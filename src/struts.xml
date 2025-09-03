@@ -1,0 +1,18 @@
+<!DOCTYPE struts PUBLIC
+"-//Apache Software Foundation//DTD Struts Configuration 2.0//EN"
+"http://struts.apache.org/dtds/struts-2.0.dtd">
+
+<struts>
+
+	<constant name="request_locale" value="th_TH" />
+	<package name="default" extends="struts-default">
+		<interceptors>
+			<interceptor name="json"
+				class="org.apache.struts2.json.JSONInterceptor" />
+		</interceptors>
+		<action name="Welcome">
+			<result>/index.jsp</result>
+		</action>
+	</package>
+	<include file="actionback.xml"></include>
+</struts>

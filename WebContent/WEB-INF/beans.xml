@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xsi:schemaLocation="
+			http://www.springframework.org/schema/beans
+			http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+			http://www.springframework.org/schema/tx 
+			http://www.springframework.org/schema/tx/spring-tx-3.0.xsd
+			http://www.springframework.org/schema/context
+			http://www.springframework.org/schema/context/spring-context-3.0.xsd"
+                        default-autowire="byName">
+
+     <bean id="propertyPlaceholderConfigurer"
+          class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+        <property name="locations">
+            <list>
+                <value>/WEB-INF/database.properties</value>
+                <value>/WEB-INF/application.properties</value>
+            </list>
+        </property>
+    </bean>
+    
+    <bean id="constant" class="com.cubesofttech.system.Constant">
+        <property name="googleApiKey" value="${google.api.key}" />
+        <property name="webPath" value="${web.path}" />
+        <property name="webContext" value="${web.context}" />
+        <property name="webEnv" value="${env}" />
+    </bean>
+    
+    <!-- DEV-FSC : ROOT DATA SOURCE [BEGIN]-->
+   <bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+        <property name="driverClassName" value="${database.driverClassName}" />
+        <property name="url" value="${database.url}" />
+        <property name="username" value="${database.username}" />
+        <property name="password" value="${database.password}" />
+    </bean>
+    <bean id="sessionFactory"
+          class="org.springframework.orm.hibernate5.LocalSessionFactoryBean">
+        <property name="dataSource" ref="dataSource" />
+		<property name="packagesToScan">
+			<list>
+				<value>com.cubesofttech.model</value>
+			</list>
+		</property>
+		<property name="hibernateProperties">
+			<props>
+				<prop key="hibernate.dialect">org.hibernate.dialect.MySQLDialect</prop>
+				<prop key="hibernate.show_sql">false</prop>
+				<prop key="hibernate.format_sql">false</prop>
+				<prop key="hibernate.hbm2ddl.auto"></prop>   <!-- create For Gen Table -->
+				<prop key="hibernate.validator.apply_to_ddl">false</prop>
+				<prop key="hibernate.validator.autoregister_listeners">false</prop>
+				<prop key="hibernate.id.new_generator_mappings">false</prop>
+			</props>
+		</property>
+    </bean>
+    <bean id="transactionManager"
+          class="org.springframework.orm.hibernate5.HibernateTransactionManager">
+        <property name="sessionFactory" ref="sessionFactory" />
+    </bean>
+    <!-- DEV-FSC : ROOT DATA SOURCE [END]-->
+     
+    <!-- Mail service -->
+	<bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl" >
+	    <property name="host" value="mail.cubesofttech.com"/>
+	    <property name="port" value="587"/>
+	    <property name="username" value="chatchai.k@cubesofttech.com"/>
+	    <property name="password" value="Xing%1234"/>
+	    <property name="javaMailProperties">
+	        <props>
+	            <!-- Use SMTP-AUTH to authenticate to SMTP server -->
+	            <prop key="mail.smtp.auth">true</prop>
+	            <!-- Use TLS to encrypt communication with SMTP server -->
+	            <prop key="mail.smtp.starttls.enable">false</prop>
+	             
+	        </props>
+	    </property>
+	</bean>
+	
+    <context:annotation-config/>
+    <tx:annotation-driven/>
+    <context:component-scan base-package="com.cubesofttech.*"/>
+</beans>

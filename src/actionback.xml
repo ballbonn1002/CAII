@@ -1,0 +1,28 @@
+<!DOCTYPE struts PUBLIC
+"-//Apache Software Foundation//DTD Struts Configuration 2.0//EN"
+"http://struts.apache.org/dtds/struts-2.0.dtd">
+<struts>
+	<package name="Authorization" namespace="/" extends="default">
+		<result-types>
+			<result-type name="tiles"
+				class="org.apache.struts2.views.tiles.TilesResult" />
+		</result-types>
+	</package>
+	<package name="UserAction" namespace="/"
+		extends="default, json-default">
+		<result-types>
+			<result-type name="tiles"
+				class="org.apache.struts2.views.tiles.TilesResult" />
+		</result-types>
+		<action name="blank_template"
+			class="com.cubesofttech.action.NewsAction" method="demoDashboard">
+			<result name="success" type="tiles">blankTemplate</result>
+			<result name="error">/index.jsp</result>
+		</action>
+		<action name="demo_dashboard"
+			class="com.cubesofttech.action.NewsAction" method="demoDashboard">
+			<result name="success" type="tiles">demoDashboard</result>
+			<result name="error">/index.jsp</result>
+		</action>
+	</package>
+</struts>
