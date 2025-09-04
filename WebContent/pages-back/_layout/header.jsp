@@ -104,6 +104,11 @@
 					<!--end::Menu-->
 				</div>
 				<!--end::Theme mode-->
+				<!--  -->
+				<div class="app-navbar-item ms-1 ms-md-4">
+					<span class="menu-title">it.admin</span>
+				</div>
+				<!--  -->
 				<!--begin::User menu-->
 				<div class="app-navbar-item ms-1 ms-md-4"
 					id="kt_header_user_menu_toggle">

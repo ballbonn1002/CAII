@@ -2,7 +2,6 @@
 	pageEncoding="UTF-8"%>
 <%@ taglib uri="/WEB-INF/tlds/permission.tld" prefix="perm"%>
 
-
 <!--begin::Sidebar-->
 <div id="kt_app_sidebar" class="app-sidebar flex-column"
 	data-kt-drawer="true" data-kt-drawer-name="app-sidebar"
@@ -61,7 +60,10 @@
 					<div class="menu-item menu-accordion">
 						<!--begin:Menu link-->
 						<span class="menu-link"> <span class="menu-icon"> <i
-								class="ki-outline ki-element-11 fs-2"></i>
+								class="ki-duotone ki-element-11 fs-1"> <span class="path1"></span>
+									<span class="path2"></span> <span class="path3"></span> <span
+									class="path4"></span>
+							</i>
 						</span> <span class="menu-title">Dashboards</span>
 						</span>
 						<!--end:Menu link-->
@@ -70,13 +72,10 @@
 					<!--begin:Menu item-->
 					<div class="menu-item menu-accordion">
 						<!--begin:Menu link-->
-						<span class="menu-link"> 
-							<span class="menu-icon"> 
-								<i class="ki-duotone ki-calendar fs-2">
-									<span class="path1"></span>
- 									<span class="path2"></span></i>
-							</span> 
-							<span class="menu-title">Calendar</span>
+						<span class="menu-link"> <span class="menu-icon"> <i
+								class="ki-duotone ki-calendar fs-1"> <span class="path1"></span>
+									<span class="path2"></span></i>
+						</span> <span class="menu-title">Calendar</span>
 						</span>
 						<!--end:Menu link-->
 					</div>
@@ -84,21 +83,23 @@
 					<!--begin:Menu item-->
 					<div class="menu-item menu-accordion">
 						<!--begin:Menu link-->
-						<span class="menu-link"> 
-							<span class="menu-icon"> 
-								<i class="ki-outline ki-element-11 fs-2"></i>
-							</span> 
-							<span class="menu-title">Announcement</span>
+						<span class="menu-link"> <span class="menu-icon"> <i
+								class="ki-duotone ki-notification-status fs-1"> <span
+									class="path1"></span> <span class="path2"></span> <span
+									class="path3"></span> <span class="path4"></span>
+							</i>
+						</span> <span class="menu-title">Announcement</span>
 						</span>
 						<!--end:Menu link-->
 					</div>
 					<!--end:Menu item-->
-					
+
 					<!--begin:Menu item-->
 					<div class="menu-item pt-5">
 						<!--begin:Menu content-->
 						<div class="menu-content">
-							<span class="menu-heading fw-bold text-uppercase fs-7">Cube Management</span>
+							<span class="menu-heading fw-bold text-uppercase fs-7">Cube
+								Management</span>
 						</div>
 						<!--end:Menu content-->
 					</div>
@@ -106,14 +107,50 @@
 					<!--begin:Menu item-->
 					<div class="menu-item">
 						<!--begin:Menu link-->
-						<a class="menu-link" href="#">
-							<span class="menu-icon"> 
-								<i class="ki-duotone ki-time">
-									<span class="path1"></span>
+						<a class="menu-link" href="check_in_out" data-route="check_in_out">
+							<span class="menu-icon"> <i
+								class="ki-duotone ki-time fs-1"> <span class="path1"></span>
 									<span class="path2"></span>
-								</i>
-							</span> 
-							<span class="menu-title">Check In / Check Out</span>
+							</i>
+						</span> <span class="menu-title">Check In / Check Out</span>
+						</a>
+						<!--end:Menu link-->
+					</div>
+					<!--end:Menu item-->
+					<!--begin:Menu item-->
+					<div class="menu-item">
+						<!--begin:Menu link-->
+						<a class="menu-link" href="#"> <span class="menu-icon">
+								<i class="ki-duotone ki-calendar-tick fs-1"> <span
+									class="path1"></span> <span class="path2"></span> <span
+									class="path3"></span> <span class="path4"></span> <span
+									class="path5"></span> <span class="path6"></span>
+							</i>
+						</span> <span class="menu-title">Check List</span>
+						</a>
+						<!--end:Menu link-->
+					</div>
+					<!--end:Menu item-->
+					<!--begin:Menu item-->
+					<div class="menu-item">
+						<!--begin:Menu link-->
+						<a class="menu-link" href="#"> <span class="menu-icon">
+								<i class="ki-duotone ki-pulse fs-1"> <span class="path1"></span>
+									<span class="path2"></span>
+							</i>
+						</span> <span class="menu-title">My Leave</span>
+						</a>
+						<!--end:Menu link-->
+					</div>
+					<!--end:Menu item-->
+					<!--begin:Menu item-->
+					<div class="menu-item">
+						<!--begin:Menu link-->
+						<a class="menu-link" href="#"> <span class="menu-icon">
+								<i class="ki-duotone ki-map fs-1"> <span class="path1"></span>
+									<span class="path2"></span> <span class="path3"></span>
+							</i>
+						</span> <span class="menu-title">My Job Site</span>
 						</a>
 						<!--end:Menu link-->
 					</div>
@@ -122,9 +159,11 @@
 					<div class="menu-item">
 						<!--begin:Menu link-->
 						<a class="menu-link" href="pages/user-profile/campaigns.html">
-							<span class="menu-bullet"> <span
-								class="bullet bullet-dot"></span>
-							</span> <span class="menu-title">Check List</span>
+							<span class="menu-icon"> <i
+								class="ki-duotone ki-timer fs-1"> <span class="path1"></span>
+									<span class="path2"></span> <span class="path3"></span>
+							</i>
+						</span> <span class="menu-title">My OT</span>
 						</a>
 						<!--end:Menu link-->
 					</div>
@@ -132,53 +171,24 @@
 					<!--begin:Menu item-->
 					<div class="menu-item">
 						<!--begin:Menu link-->
-						<a class="menu-link" href="pages/user-profile/campaigns.html">
-							<span class="menu-bullet"> <span
-								class="bullet bullet-dot"></span>
-							</span> <span class="menu-title">My Leave</span>
+						<a class="menu-link" href="#"> <span class="menu-icon">
+								<i class="ki-duotone ki-delivery-time fs-1"> <span
+									class="path1"></span> <span class="path2"></span> <span
+									class="path3"></span> <span class="path4"></span> <span
+									class="path5"></span>
+							</i>
+						</span> <span class="menu-title">My Travel</span>
 						</a>
 						<!--end:Menu link-->
 					</div>
 					<!--end:Menu item-->
-					<!--begin:Menu item-->
-					<div class="menu-item">
-						<!--begin:Menu link-->
-						<a class="menu-link" href="pages/user-profile/campaigns.html">
-							<span class="menu-bullet"> <span
-								class="bullet bullet-dot"></span>
-							</span> <span class="menu-title">My Job Site</span>
-						</a>
-						<!--end:Menu link-->
-					</div>
-					<!--end:Menu item-->
-					<!--begin:Menu item-->
-					<div class="menu-item">
-						<!--begin:Menu link-->
-						<a class="menu-link" href="pages/user-profile/campaigns.html">
-							<span class="menu-bullet"> <span
-								class="bullet bullet-dot"></span>
-							</span> <span class="menu-title">My OT</span>
-						</a>
-						<!--end:Menu link-->
-					</div>
-					<!--end:Menu item-->
-					<!--begin:Menu item-->
-					<div class="menu-item">
-						<!--begin:Menu link-->
-						<a class="menu-link" href="pages/user-profile/campaigns.html">
-							<span class="menu-bullet"> <span
-								class="bullet bullet-dot"></span>
-							</span> <span class="menu-title">My Travel</span>
-						</a>
-						<!--end:Menu link-->
-					</div>
-					<!--end:Menu item-->
-					
+
 					<!--begin:Menu item-->
 					<div class="menu-item pt-5">
 						<!--begin:Menu content-->
 						<div class="menu-content">
-							<span class="menu-heading fw-bold text-uppercase fs-7">Admin Management</span>
+							<span class="menu-heading fw-bold text-uppercase fs-7">Admin
+								Management</span>
 						</div>
 						<!--end:Menu content-->
 					</div>
@@ -186,10 +196,36 @@
 					<!--begin:Menu item-->
 					<div class="menu-item">
 						<!--begin:Menu link-->
-						<a class="menu-link" href="pages/user-profile/campaigns.html">
-							<span class="menu-bullet"> <span
-								class="bullet bullet-dot"></span>
-							</span> <span class="menu-title">User Profile</span>
+						<a class="menu-link" href=""> <span class="menu-icon">
+								<i class="ki-duotone ki-user-square fs-1"> <span
+									class="path1"></span> <span class="path2"></span> <span
+									class="path3"></span>
+							</i>
+						</span> <span class="menu-title">User Profile</span>
+						</a>
+						<!--end:Menu link-->
+					</div>
+					<!--end:Menu item-->
+					<!--begin:Menu item-->
+					<div class="menu-item">
+						<!--begin:Menu link-->
+						<a class="menu-link" href="#"> <span class="menu-icon">
+								<i class="ki-duotone ki-watch fs-1"> <span class="path1"></span>
+									<span class="path2"></span>
+							</i>
+						</span> <span class="menu-title">Check In - Approve</span>
+						</a>
+						<!--end:Menu link-->
+					</div>
+					<!--end:Menu item-->
+					<!--begin:Menu item-->
+					<div class="menu-item">
+						<!--begin:Menu link-->
+						<a class="menu-link" href="#"> <span class="menu-icon">
+								<i class="ki-duotone ki-pulse fs-1"> <span class="path1"></span>
+									<span class="path2"></span>
+							</i>
+						</span> <span class="menu-title">Leave Approve</span>
 						</a>
 						<!--end:Menu link-->
 					</div>
@@ -198,9 +234,11 @@
 					<div class="menu-item">
 						<!--begin:Menu link-->
 						<a class="menu-link" href="pages/user-profile/campaigns.html">
-							<span class="menu-bullet"> <span
-								class="bullet bullet-dot"></span>
-							</span> <span class="menu-title">Check In - Approve</span>
+							<span class="menu-icon"> <i
+								class="ki-duotone ki-timer fs-1"> <span class="path1"></span>
+									<span class="path2"></span> <span class="path3"></span>
+							</i>
+						</span> <span class="menu-title">OT Approve</span>
 						</a>
 						<!--end:Menu link-->
 					</div>
@@ -208,37 +246,18 @@
 					<!--begin:Menu item-->
 					<div class="menu-item">
 						<!--begin:Menu link-->
-						<a class="menu-link" href="pages/user-profile/campaigns.html">
-							<span class="menu-bullet"> <span
-								class="bullet bullet-dot"></span>
-							</span> <span class="menu-title">Leave Approve</span>
+						<a class="menu-link" href="#"> <span class="menu-icon">
+								<i class="ki-duotone ki-delivery-time fs-1"> <span
+									class="path1"></span> <span class="path2"></span> <span
+									class="path3"></span> <span class="path4"></span> <span
+									class="path5"></span>
+							</i>
+						</span> <span class="menu-title">Travel Approve</span>
 						</a>
 						<!--end:Menu link-->
 					</div>
 					<!--end:Menu item-->
-					<!--begin:Menu item-->
-					<div class="menu-item">
-						<!--begin:Menu link-->
-						<a class="menu-link" href="pages/user-profile/campaigns.html">
-							<span class="menu-bullet"> <span
-								class="bullet bullet-dot"></span>
-							</span> <span class="menu-title">OT Approve</span>
-						</a>
-						<!--end:Menu link-->
-					</div>
-					<!--end:Menu item-->
-					<!--begin:Menu item-->
-					<div class="menu-item">
-						<!--begin:Menu link-->
-						<a class="menu-link" href="pages/user-profile/campaigns.html">
-							<span class="menu-bullet"> <span
-								class="bullet bullet-dot"></span>
-							</span> <span class="menu-title">Travel Approve</span>
-						</a>
-						<!--end:Menu link-->
-					</div>
-					<!--end:Menu item-->
-					
+
 					<!--begin:Menu item-->
 					<div class="menu-item pt-5">
 						<!--begin:Menu content-->
@@ -251,10 +270,11 @@
 					<!--begin:Menu item-->
 					<div class="menu-item">
 						<!--begin:Menu link-->
-						<a class="menu-link" href="pages/user-profile/campaigns.html">
-							<span class="menu-bullet"> <span
-								class="bullet bullet-dot"></span>
-							</span> <span class="menu-title">Equipment</span>
+						<a class="menu-link" href="#"> <span class="menu-icon">
+								<i class="ki-duotone ki-monitor-mobile fs-1"> <span
+									class="path1"></span> <span class="path2"></span>
+							</i>
+						</span> <span class="menu-title">Equipment</span>
 						</a>
 						<!--end:Menu link-->
 					</div>
@@ -262,15 +282,17 @@
 					<!--begin:Menu item-->
 					<div class="menu-item">
 						<!--begin:Menu link-->
-						<a class="menu-link" href="pages/user-profile/campaigns.html">
-							<span class="menu-bullet"> <span
-								class="bullet bullet-dot"></span>
-							</span> <span class="menu-title">Borrow</span>
+						<a class="menu-link" href="#"> <span class="menu-icon">
+								<i class="ki-duotone ki-delivery-3 fs-1"> <span
+									class="path1"></span> <span class="path2"></span> <span
+									class="path3"></span>
+							</i>
+						</span> <span class="menu-title">Borrow</span>
 						</a>
 						<!--end:Menu link-->
 					</div>
 					<!--end:Menu item-->
-					
+
 					<!--begin:Menu item-->
 					<div class="menu-item pt-5">
 						<!--begin:Menu content-->
@@ -283,10 +305,47 @@
 					<!--begin:Menu item-->
 					<div class="menu-item">
 						<!--begin:Menu link-->
-						<a class="menu-link" href="pages/user-profile/campaigns.html">
-							<span class="menu-bullet"> <span
-								class="bullet bullet-dot"></span>
-							</span> <span class="menu-title">Position</span>
+						<a class="menu-link" href="#"> <span class="menu-icon">
+								<i class="ki-duotone ki-monitor-mobile fs-1"> <span
+									class="path1"></span> <span class="path2"></span>
+							</i>
+						</span> <span class="menu-title">Position</span>
+						</a>
+						<!--end:Menu link-->
+					</div>
+					<!--end:Menu item-->
+					<!--begin:Menu item-->
+					<div class="menu-item">
+						<!--begin:Menu link-->
+						<a class="menu-link" href="#"> <span class="menu-icon">
+								<i class="ki-duotone ki-monitor-mobile fs-1"> <span
+									class="path1"></span> <span class="path2"></span>
+							</i>
+						</span> <span class="menu-title">Department</span>
+						</a>
+						<!--end:Menu link-->
+					</div>
+					<!--end:Menu item-->
+					<!--begin:Menu item-->
+					<div class="menu-item">
+						<!--begin:Menu link-->
+						<a class="menu-link" href="#"> <span class="menu-icon">
+								<i class="ki-duotone ki-monitor-mobile fs-1"> <span
+									class="path1"></span> <span class="path2"></span>
+							</i>
+						</span> <span class="menu-title">Job Site</span>
+						</a>
+						<!--end:Menu link-->
+					</div>
+					<!--end:Menu item-->
+					<!--begin:Menu item-->
+					<div class="menu-item">
+						<!--begin:Menu link-->
+						<a class="menu-link" href="#"> <span class="menu-icon">
+								<i class="ki-duotone ki-monitor-mobile fs-1"> <span
+									class="path1"></span> <span class="path2"></span>
+							</i>
+						</span> <span class="menu-title">Leave Type</span>
 						</a>
 						<!--end:Menu link-->
 					</div>
@@ -295,47 +354,16 @@
 					<div class="menu-item">
 						<!--begin:Menu link-->
 						<a class="menu-link" href="pages/user-profile/campaigns.html">
-							<span class="menu-bullet"> <span
-								class="bullet bullet-dot"></span>
-							</span> <span class="menu-title">Department</span>
+							<span class="menu-icon"> <i
+								class="ki-duotone ki-delivery-3 fs-1"> <span class="path1"></span>
+									<span class="path2"></span> <span class="path3"></span>
+							</i>
+						</span> <span class="menu-title">Holiday</span>
 						</a>
 						<!--end:Menu link-->
 					</div>
 					<!--end:Menu item-->
-					<!--begin:Menu item-->
-					<div class="menu-item">
-						<!--begin:Menu link-->
-						<a class="menu-link" href="pages/user-profile/campaigns.html">
-							<span class="menu-bullet"> <span
-								class="bullet bullet-dot"></span>
-							</span> <span class="menu-title">Job Site</span>
-						</a>
-						<!--end:Menu link-->
-					</div>
-					<!--end:Menu item-->
-					<!--begin:Menu item-->
-					<div class="menu-item">
-						<!--begin:Menu link-->
-						<a class="menu-link" href="pages/user-profile/campaigns.html">
-							<span class="menu-bullet"> <span
-								class="bullet bullet-dot"></span>
-							</span> <span class="menu-title">Leave Type</span>
-						</a>
-						<!--end:Menu link-->
-					</div>
-					<!--end:Menu item-->
-					<!--begin:Menu item-->
-					<div class="menu-item">
-						<!--begin:Menu link-->
-						<a class="menu-link" href="pages/user-profile/campaigns.html">
-							<span class="menu-bullet"> <span
-								class="bullet bullet-dot"></span>
-							</span> <span class="menu-title">Holiday</span>
-						</a>
-						<!--end:Menu link-->
-					</div>
-					<!--end:Menu item-->
-					
+
 					<!--begin:Menu item-->
 					<div class="menu-item pt-5">
 						<!--begin:Menu content-->
@@ -349,9 +377,12 @@
 					<div class="menu-item">
 						<!--begin:Menu link-->
 						<a class="menu-link" href="pages/user-profile/campaigns.html">
-							<span class="menu-bullet"> <span
-								class="bullet bullet-dot"></span>
-							</span> <span class="menu-title">Article</span>
+							<span class="menu-icon"> <i
+								class="ki-duotone ki-book-open fs-1"> <span class="path1"></span>
+									<span class="path2"></span> <span class="path3"></span> <span
+									class="path4"></span>
+							</i>
+						</span> <span class="menu-title">Article</span>
 						</a>
 						<!--end:Menu link-->
 					</div>
@@ -360,14 +391,16 @@
 					<div class="menu-item">
 						<!--begin:Menu link-->
 						<a class="menu-link" href="pages/user-profile/campaigns.html">
-							<span class="menu-bullet"> <span
-								class="bullet bullet-dot"></span>
-							</span> <span class="menu-title">Careers</span>
+							<span class="menu-icon"> 
+							<i class="ki-duotone ki-user-square fs-1"> 
+								<span class="path1"></span><span class="path2"></span> <span class="path3"></span>
+							</i>
+						</span> <span class="menu-title">Careers</span>
 						</a>
 						<!--end:Menu link-->
 					</div>
 					<!--end:Menu item-->
-					
+
 					<!--begin:Menu item-->
 					<div class="menu-item pt-5">
 						<!--begin:Menu content-->
@@ -381,14 +414,16 @@
 					<div class="menu-item">
 						<!--begin:Menu link-->
 						<a class="menu-link" href="pages/user-profile/campaigns.html">
-							<span class="menu-bullet"> <span
-								class="bullet bullet-dot"></span>
-							</span> <span class="menu-title">Log Out</span>
+							<span class="menu-icon"> 
+							<i class="ki-duotone ki-exit-left fs-1"> 
+								<span class="path1"></span><span class="path2"></span>
+							</i>
+						</span> <span class="menu-title">Log Out</span>
 						</a>
 						<!--end:Menu link-->
 					</div>
 					<!--end:Menu item-->
-					
+
 					<!--begin:Menu item-->
 					<div class="menu-item pt-5">
 						<!--begin:Menu content-->
@@ -404,19 +439,18 @@
 						<!--begin:Menu link-->
 						<span class="menu-link"> <span class="menu-icon"> <i
 								class="ki-outline ki-address-book fs-2"></i>
-						</span> <span class="menu-title">Demo</span> <span
-							class="menu-arrow"></span>
+						</span> <span class="menu-title">Demo</span> <span class="menu-arrow"></span>
 						</span>
 						<!--end:Menu link-->
 						<!--begin:Menu sub-->
 						<div class="menu-sub menu-sub-accordion">
-							
+
 							<!--begin:Menu item-->
 							<div class="menu-item">
 								<!--begin:Menu link-->
-								<a class="menu-link" href="pages/user-profile/campaigns.html">
-									<span class="menu-bullet"> <span
-										class="bullet bullet-dot"></span>
+								<a class="menu-link" href="blank_template"
+									data-route="blank_template"> <span class="menu-icon">
+										<span class="bullet bullet-dot"></span>
 								</span> <span class="menu-title">Blank Template</span>
 								</a>
 								<!--end:Menu link-->
@@ -425,9 +459,8 @@
 							<!--begin:Menu item-->
 							<div class="menu-item">
 								<!--begin:Menu link-->
-								<a class="menu-link" href="pages/user-profile/documents.html">
-									<span class="menu-bullet"> <span
-										class="bullet bullet-dot"></span>
+								<a class="menu-link" href="demo_dashboard"> <span
+									class="menu-icon"> <span class="bullet bullet-dot"></span>
 								</span> <span class="menu-title">Dashboards</span>
 								</a>
 								<!--end:Menu link-->
@@ -436,9 +469,8 @@
 							<!--begin:Menu item-->
 							<div class="menu-item">
 								<!--begin:Menu link-->
-								<a class="menu-link" href="pages/user-profile/followers.html">
-									<span class="menu-bullet"> <span
-										class="bullet bullet-dot"></span>
+								<a class="menu-link" href="#"> <span class="menu-icon">
+										<span class="bullet bullet-dot"></span>
 								</span> <span class="menu-title">Table</span>
 								</a>
 								<!--end:Menu link-->
@@ -471,3 +503,19 @@
 	<!--end::Footer-->
 </div>
 <!--end::Sidebar-->
+
+<script type="text/javascript">
+	$(function(){
+	  var cur = (location.pathname.split('/').pop() || 'index')
+	              .replace(/\.(jsp|action|html|php)$/i,'').toLowerCase();
+	  
+	  $('a.menu-link[data-route]').each(function(){
+	    var list = $(this).data('route').toString().toLowerCase().split(',');
+	    if (list.map(s=>s.trim()).includes(cur)) {
+	      $(this).addClass('active')
+	             .closest('.menu-item, li').addClass('active')
+	             .parents('.menu-accordion,.menu-sub').addClass('show here');
+	    }
+	  });
+	});
+</script>
