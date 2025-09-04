@@ -74,8 +74,8 @@
 					<!--begin::Wrapper-->
 					<div class="w-lg-500px p-10">
 						<!--begin::Form-->
-						<form class="form w-100" novalidate="novalidate"
-							id="kt_sign_in_form" data-kt-redirect-url="index.html" action="#">
+						<!-- <form class="form w-100" novalidate="novalidate" id="kt_sign_in_form" data-kt-redirect-url="index.html" action="authorization" method="post"> -->
+						<form class="form w-100" action="authorization" method="post">
 							<!--begin::Heading-->
 							<div class="text-center mb-11">
 								<!--begin::Title-->
@@ -126,7 +126,9 @@
 							<!--begin::Input group=-->
 							<div class="fv-row mb-8">
 								<!--begin::Email-->
-								<input type="text" placeholder="Email" name="email"
+								<!-- <input type="text" placeholder="Email" name="email"
+									autocomplete="off" class="form-control bg-transparent" /> -->
+								<input type="text" placeholder="Email" name="username"
 									autocomplete="off" class="form-control bg-transparent" />
 								<!--end::Email-->
 							</div>

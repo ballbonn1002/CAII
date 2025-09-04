@@ -7,6 +7,14 @@
 			<result-type name="tiles"
 				class="org.apache.struts2.views.tiles.TilesResult" />
 		</result-types>
+		<action name="authorization"
+			class="com.cubesofttech.action.LoginAction" method="login">
+			<!-- <result name="success" type="redirectAction">check_in?userId=${onlineUser.id} </result> -->
+			<result name="success" type="redirectAction">demo_dashboard</result>
+			<result name="error">/index.jsp</result>
+			<!-- <result name="input" type="redirectAction">check_in?userId=${onlineUser.id} </result> -->
+			<result name="input" type="redirectAction">demo_dashboard</result>
+		</action>
 	</package>
 	<package name="UserAction" namespace="/"
 		extends="default, json-default">
