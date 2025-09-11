@@ -1045,5 +1045,30 @@ public class UserDAOImpl implements UserDAO {
 		return list;
 
 	}
+	
+	@Override
+	public List<Map<String, Object>> findUsersByEmail(String email) throws Exception {
+		Session session = sessionFactory.getCurrentSession();
+		final String sql = "SELECT id, email FROM `user` WHERE email = :email";
+		SQLQuery query = session.createSQLQuery(sql);
+		query.setParameter("email", email);
+		query.setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
+		@SuppressWarnings("unchecked")
+		List<Map<String, Object>> rows = query.list();
+		return rows;
+	}
+
+	@Override
+	public Map<String, Object> findUserById(String id) throws Exception {
+		Session session = sessionFactory.getCurrentSession();
+		final String sql = "SELECT id, email FROM `user` WHERE id = :id";
+		SQLQuery query = session.createSQLQuery(sql);
+		query.setParameter("id", id);
+		query.setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
+		query.setMaxResults(1);
+		@SuppressWarnings("unchecked")
+		List<Map<String, Object>> rows = query.list();
+		return (rows != null && !rows.isEmpty()) ? rows.get(0) : null;
+	}
 
 }

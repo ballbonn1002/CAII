@@ -2,10 +2,12 @@
 package com.cubesofttech.action;
 
 import java.math.BigDecimal;
+import java.security.SecureRandom;
 import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -49,7 +51,16 @@ public class LoginAction extends ActionSupport {
 	HttpServletResponse response = ServletActionContext.getResponse();
 
 	public static final String NODAY = "no_day";
-	public static final String EMAIL = "email";
+	public static final String USERIDOREMAIL = "useridOrEmail";
+	
+    private static final String CHAR_UPPER = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    private static final String CHAR_LOWER = "abcdefghijklmnopqrstuvwxyz";
+    private static final String CHAR_DIGIT = "0123456789";
+    private static final String ALL = CHAR_UPPER + CHAR_LOWER + CHAR_DIGIT;
+    private static final int PASSWORD_LENGTH = 6;
+    private final SecureRandom secureRandom = new SecureRandom();
+
+    
 	@Autowired
 	private WorkHoursDAO workHoursDAO;
 
@@ -76,21 +87,37 @@ public class LoginAction extends ActionSupport {
 
 	String username;
 	String password;
+	
+    
+    
+    private String useridOrEmail;
+    // output to JSON
+    private boolean exists;
+    private String message;
+    private String userId;
+    private String email;
 
-	public String getUsername() {
-		return username;
+    
+    
+
+	public String homePage() {
+		try {
+			log.info("homePage");
+			return SUCCESS;
+		} catch (Exception e) {
+			log.debug(e);
+			return ERROR;
+		}
 	}
 
-	public void setUsername(String username) {
-		this.username = username;
-	}
-
-	public String getPassword() {
-		return password;
-	}
-
-	public void setPassword(String password) {
-		this.password = password;
+	public String resetPasswordSuccess() {
+		try {
+			log.info("resetPasswordSuccess");
+			return SUCCESS;
+		} catch (Exception e) {
+			log.debug(e);
+			return ERROR;
+		}
 	}
 	
 	public String login() {
@@ -280,7 +307,145 @@ public class LoginAction extends ActionSupport {
 			return ERROR;
 		}
 	}
+	
+	public String forgetPassword() throws Exception {
+		try {
+			log.debug("demo");
+			return SUCCESS;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ERROR;
+		}
+	}
+	
+    public String resetPassword() {
+        try {
+        	
+//        	if (true) {
+//        		System.out.println(">>> ENTER resetPassword(), email=" + request.getParameter(EMAIL));
+//        		return SUCCESS;
+//			}
+//        	if (true) {
+//                return ERROR;
+//			}
+        	
+        String login = request.getParameter(USERIDOREMAIL);
+        if (login == null || (login = login.trim()).isEmpty()) {
+            return ERROR;
+        }
 
+        // ค้นผู้ใช้จาก email หรือ id (VARCHAR)
+        List<Map<String, Object>> rows;
+        if (login.contains("@")) {
+            rows = userDAO.findUsersByEmail(login);          // คืน id,email (ตาม DAO ที่คุณมี)
+        } else {
+            Map<String,Object> row = userDAO.findUserById(login); // คืน Map เดียว
+            rows = new java.util.ArrayList<>();
+            if (row != null) rows.add(row);
+        }
+
+        if (rows == null || rows.isEmpty()) {
+            return ERROR;
+        }
+
+        String userId    = String.valueOf(rows.get(0).get("id"));
+        String userEmail = String.valueOf(rows.get(0).get("email"));
+
+            // 1) Generate a new password (must contain at least one A-Z, a-z, 0-9)
+            String plainPassword = generateStrongPassword();
+    		log.debug("plainPassword = " + plainPassword);
+
+    		// 2) Encode with MD5 and update the user table
+            User user = userDAO.findById(userId);
+            if (user == null) {
+                return ERROR;
+            }
+
+            String md5Hash = loginService.generateMD5(plainPassword);
+            user.setPassword(md5Hash);
+            userDAO.update(user);
+
+            // 3) Send an email with the new password
+            String body = "Hello,\n\n" +
+                    "Your new password is: " + plainPassword + "\n\n" +
+                    "Please login and change it as soon as possible.\n\n" +
+                    "Thanks!";
+            loginService.sendmail2("no-reply@cubesofttech.com", userEmail, "Password Reset", body);
+
+            return SUCCESS;
+
+        } catch (Exception e) {
+            log.debug("Reset password error", e);
+            return ERROR;
+        }
+    }
+    
+    public String validateUserLogin() {
+
+        // (Optional) debug ดูพารามิเตอร์ที่ถูกส่งมา
+        try {
+            if (request != null && request.getParameterMap() != null) {
+                request.getParameterMap().forEach((k, vArr) ->
+                    System.out.println(k + "=" + java.util.Arrays.toString(vArr)));
+            }
+        } catch (Exception ignore) { /* no-op */ }
+
+        // เคลียร์ค่าผลลัพธ์ก่อน
+        this.exists  = false;
+        this.message = "No account matched.";
+        this.userId  = null;
+        this.email   = null;
+
+        // รับค่าจากพารามิเตอร์ที่ bind มาโดย Struts2
+        String v = (useridOrEmail == null) ? "" : useridOrEmail.trim();
+        if (v.isEmpty()) {
+            this.message = "Please enter user id or email.";
+            return SUCCESS; // JSON: {exists:false, message:...}
+        }
+
+        try {
+            if (v.contains("@")) {
+                // ผู้ใช้กรอกเป็น Email
+                java.util.List<java.util.Map<String, Object>> rows = userDAO.findUsersByEmail(v);
+                if (rows != null && !rows.isEmpty()) {
+                    java.util.Map<String, Object> row = rows.get(0); // ถ้า email เป็น unique จะมี 0 หรือ 1 แถว
+                    Object idObj    = row.get("id");
+                    Object emailObj = row.get("email");
+
+                    this.userId  = (idObj    == null) ? null : String.valueOf(idObj);
+                    this.email   = (emailObj == null) ? null : String.valueOf(emailObj);
+                    this.exists  = true;
+                    this.message = "Account found.";
+                }
+            } else {
+                // ผู้ใช้กรอกเป็น User ID (คอลัมน์ id เป็น VARCHAR)
+                java.util.Map<String, Object> row = userDAO.findUserById(v);
+                if (row != null && !row.isEmpty()) {
+                    Object idObj    = row.get("id");
+                    Object emailObj = row.get("email");
+
+                    this.userId  = (idObj    == null) ? null : String.valueOf(idObj);
+                    this.email   = (emailObj == null) ? null : String.valueOf(emailObj);
+                    this.exists  = true;
+                    this.message = "Account found.";
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace(); // แนะนำใช้ logger จริงในโปรดักชัน
+            this.exists  = false;
+            this.message = "Error during validation.";
+        }
+
+        return SUCCESS; // Struts2 JSON plugin จะ serialize fields ผ่าน getters
+    }
+	
+    // ===== Mock เพื่อเดโม แทนด้วย DAO จริงของคุณ =====
+    private boolean existsByEmailMock(String email) {
+        return "demo@example.com".equalsIgnoreCase(email);
+    }
+    private boolean existsByUserIdMock(String userId) {
+        return "demo".equalsIgnoreCase(userId);
+    }
 	
 //	public String forgetPassword() {
 //
@@ -345,7 +510,28 @@ public class LoginAction extends ActionSupport {
 //			return ERROR;
 //		}
 //	}
+	
+    private String generateStrongPassword() {
+        List<Character> pwChars = new ArrayList<>(PASSWORD_LENGTH);
 
+        // บังคับให้มีอย่างน้อย 1 ตัวจากแต่ละกลุ่ม
+        pwChars.add(CHAR_UPPER.charAt(secureRandom.nextInt(CHAR_UPPER.length())));
+        pwChars.add(CHAR_LOWER.charAt(secureRandom.nextInt(CHAR_LOWER.length())));
+        pwChars.add(CHAR_DIGIT.charAt(secureRandom.nextInt(CHAR_DIGIT.length())));
+
+        // เติมที่เหลือจากชุด ALL
+        while (pwChars.size() < PASSWORD_LENGTH) {
+            pwChars.add(ALL.charAt(secureRandom.nextInt(ALL.length())));
+        }
+
+        // สับตำแหน่งเพื่อความสุ่มจริง
+        Collections.shuffle(pwChars, secureRandom);
+
+        StringBuilder sb = new StringBuilder(PASSWORD_LENGTH);
+        for (char c : pwChars) sb.append(c);
+        return sb.toString();
+    }
+    
 //	public String logout() {
 //		try {
 //			Cookie cUserlogin = new Cookie("cookuser", null);
@@ -368,5 +554,61 @@ public class LoginAction extends ActionSupport {
 //			return ERROR;
 //		}
 //	}
-	
+    
+	public String getUsername() {
+		return username;
+	}
+
+	public void setUsername(String username) {
+		this.username = username;
+	}
+
+	public String getPassword() {
+		return password;
+	}
+
+	public void setPassword(String password) {
+		this.password = password;
+	}
+
+	public String getUseridOrEmail() {
+		return useridOrEmail;
+	}
+
+	public void setUseridOrEmail(String useridOrEmail) {
+		this.useridOrEmail = useridOrEmail;
+	}
+
+	public boolean isExists() {
+		return exists;
+	}
+
+	public void setExists(boolean exists) {
+		this.exists = exists;
+	}
+
+	public String getMessage() {
+		return message;
+	}
+
+	public void setMessage(String message) {
+		this.message = message;
+	}
+
+	public String getUserId() {
+		return userId;
+	}
+
+	public void setUserId(String userId) {
+		this.userId = userId;
+	}
+
+	public String getEmail() {
+		return email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
+	}
+
 }

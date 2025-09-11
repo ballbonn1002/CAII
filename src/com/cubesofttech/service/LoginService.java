@@ -60,6 +60,41 @@ public class LoginService {
 		}
 		return userAuthority;
 	}
+	
+    public boolean sendmail2(String from, String to, String subject, String body) {
+        try {
+            // validate parameter
+            if (from == null || from.trim().isEmpty()) {
+                throw new IllegalArgumentException("Sender email must not be empty");
+            }
+            if (to == null || to.trim().isEmpty()) {
+                throw new IllegalArgumentException("Recipient email must not be empty");
+            }
+            if (subject == null || subject.trim().isEmpty()) {
+                throw new IllegalArgumentException("Subject must not be empty");
+            }
+            if (body == null || body.trim().isEmpty()) {
+                throw new IllegalArgumentException("Body must not be empty");
+            }
+
+		 // Create message
+            SimpleMailMessage message = new SimpleMailMessage();
+            message.setFrom(from);
+            message.setTo(to);
+            message.setSubject(subject);
+            message.setText(body);
+
+         // Send email
+            mailSender.send(message);
+
+            return true; // Send success
+        } catch (Exception e) {
+            // log error
+            System.err.println("Error sending email: " + e.getMessage());
+            e.printStackTrace();
+            return false; // Send failed
+        }
+    }
 
 	public void sendmail(String key, String emails){
 		

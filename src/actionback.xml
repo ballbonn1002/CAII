@@ -32,5 +32,22 @@
 			<result name="success" type="tiles">demoDashboard</result>
 			<result name="error">/index.jsp</result>
 		</action>
+		<action name="forget_password" class="com.cubesofttech.action.LoginAction" method="forgetPassword">
+			<result name="success" type="tiles">forgetPassword</result>
+			<result name="error">/index.jsp</result>
+		</action>
+		<action name="reset_password" class="com.cubesofttech.action.LoginAction" method="resetPassword">
+			<result name="success" type="tiles">resetPasswordSuccess</result>
+			<result name="error">/pages-back/common/error/error_500.jsp</result>
+		</action>
+		<action name="reset_password_success" class="com.cubesofttech.action.LoginAction" method="resetPasswordSuccess">
+			<result name="success" type="tiles">resetPasswordSuccess</result>
+			<result name="error">/index.jsp</result>
+		</action>
+
+		<action name="validate_user" class="com.cubesofttech.action.LoginAction" method="validateUserLogin">
+			<result type="json" />
+		</action>
+
 	</package>
 </struts>
