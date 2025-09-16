@@ -6,6 +6,13 @@
 <%@ taglib uri="/WEB-INF/tlds/permission.tld" prefix="perm"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 
+<%
+    // ⭐ Logic ฝั่ง JSP: สุ่มรูปตามวันที่ 1–5
+    int day = java.util.Calendar.getInstance().get(java.util.Calendar.DATE);
+    int index = (day - 1) % 5 + 1; // index = 1 ถึง 5
+    String bgImage = "assets/media/auth/bg" + index + ".jpg";
+%>
+
 <!DOCTYPE html>
 <html lang="en">
 	<!--begin::Head-->
@@ -34,14 +41,14 @@
 	</head>
 	<!--end::Head-->
 	<!--begin::Body-->
-	<body id="kt_body" class="app-blank bgi-size-cover bgi-attachment-fixed bgi-position-center bgi-no-repeat">
-		<!--begin::Theme mode setup on page load-->
+<body id="kt_body" class="app-blank bgi-size-cover bgi-attachment-fixed bgi-position-center bgi-no-repeat"
+      style="background-image: url('<%= bgImage %>'); background-size: cover; background-repeat: no-repeat; background-position: center center; background-color: transparent;">
+<!-- ⭐ ใช้ bgImage ที่เซ็ตไว้ด้านบน -->
 		<script>var defaultThemeMode = "light"; var themeMode; if ( document.documentElement ) { if ( document.documentElement.hasAttribute("data-bs-theme-mode")) { themeMode = document.documentElement.getAttribute("data-bs-theme-mode"); } else { if ( localStorage.getItem("data-bs-theme") !== null ) { themeMode = localStorage.getItem("data-bs-theme"); } else { themeMode = defaultThemeMode; } } if (themeMode === "system") { themeMode = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light"; } document.documentElement.setAttribute("data-bs-theme", themeMode); }</script>
 		<!--end::Theme mode setup on page load-->
 		<!--begin::Root-->
 		<div class="d-flex flex-column flex-root" id="kt_app_root">
 			<!--begin::Page bg image-->
-			<style>body { background-image: url('assets/media/auth/bg4.jpg'); } [data-bs-theme="dark"] body { background-image: url('assets/media/auth/bg4-dark.jpg'); }</style>
 			<!--end::Page bg image-->
 			<!--begin::Authentication - Sign-in -->
 			<div class="d-flex flex-column flex-column-fluid flex-lg-row min-vh-100 align-items-center justify-content-center">
