@@ -167,25 +167,6 @@ public class UserDAOImpl implements UserDAO {
 
 			String sql = " SELECT  manager_id  FROM user " + approver + "";
 
-			// SELECT MIN(user.id), user.manager_id, user.department_id,
-			// user.name FROM user
-			// WHERE user.id = (SELECT user.id FROM user WHERE user.id =
-			// 'wishida.p' )
-
-			// SELECT user.id, user.manager_id, user.department_id, user.name
-			// FROM user WHERE user.id =
-			// ( SELECT user.id FROM user WHERE user.id = 'wishida.p' )
-
-			// SELECT Student_Fname, Student_Lname
-			// FROM Student
-			// WHERE Age= manager
-			// (SELECT Age manager
-			// FROM Student
-			// WHERE Student_Fname='เยาวภา');
-
-			// SELECT user.id, user.manager_id FROM user WHERE user.id
-			// ='wishida.p'
-
 			SQLQuery query = session.createSQLQuery(sql);
 			if (usertoappr != null) {
 				query.setParameter("usertoappr", usertoappr);
