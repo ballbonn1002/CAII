@@ -102,12 +102,12 @@
 		            </div>
 		
 		            <div class="modal-body">
-		                <p class="d-flex justify-content-center">Upon confirmation, a password will be sent to your email.</p>
+		                <p class="d-flex justify-content-center text-gray-500">Upon confirmation, a password will be sent to your email.</p>
 
 			          <!-- Display user id + email that were validated -->
 			          <p id="userLine" class="d-flex justify-content-center mb-0">
 			            <span id="userIdText"></span>
-						<span id="emailText" class="ms-2"></span>
+						<span id="emailText" class="ms-2 text-primary"></span>
 			          </p>
 						<!--begin::Illustration-->
 						<div class="mb-0 text-center">

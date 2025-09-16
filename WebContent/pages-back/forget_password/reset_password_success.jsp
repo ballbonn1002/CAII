@@ -12,7 +12,7 @@
 	<!--begin::Head-->
 	<head>
 <base href="../../" />
-		<title>Password COnfirmation</title>
+		<title>Password Confirmation</title>
 		<meta charset="utf-8" />
 		<meta name="description" content="The most advanced Tailwind CSS & Bootstrap 5 Admin Theme with 40 unique prebuilt layouts on Themeforest trusted by 100,000 beginners and professionals. Multi-demo, Dark Mode, RTL support and complete React, Angular, Vue, Asp.Net Core, Rails, Spring, Blazor, Django, Express.js, Node.js, Flask, Symfony & Laravel versions. Grab your copy now and get life-time updates for free." />
 		<meta name="keywords" content="tailwind, tailwindcss, metronic, bootstrap, bootstrap 5, angular, VueJs, React, Asp.Net Core, Rails, Spring, Blazor, Django, Express.js, Node.js, Flask, Symfony & Laravel starter kits, admin themes, web design, figma, web development, free templates, free admin themes, bootstrap theme, bootstrap template, bootstrap dashboard, bootstrap dak mode, bootstrap button, bootstrap datepicker, bootstrap timepicker, fullcalendar, datatables, flaticon" />
@@ -52,10 +52,8 @@
 					<div class="card card-flush w-lg-650px py-5">
 						<div class="card-body py-15 py-lg-20">
 							<!--begin::Logo-->
-							<div class="mb-14">
-								<a href="index.html" class="">
-									<img alt="Logo" src="assets/media/logos/custom-2.svg" class="h-40px" />
-								</a>
+							<div class="mb-14 d-flex justify-content-center">
+				                <img src="images/logo_cubesofttech.png"/>
 							</div>
 							<!--end::Logo-->
 							<!--begin::Title-->
