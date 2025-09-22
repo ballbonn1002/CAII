@@ -3,13 +3,11 @@ package com.cubesofttech.action;
 
 import java.math.BigDecimal;
 import java.security.SecureRandom;
-import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -32,17 +30,14 @@ import com.cubesofttech.dao.UserRoleDAO;
 import com.cubesofttech.dao.UserRpwDAO;
 import com.cubesofttech.dao.WorkHoursDAO;
 import com.cubesofttech.model.RoleAuthorizedObject;
+import com.cubesofttech.model.SsoToken;
 import com.cubesofttech.model.User;
 import com.cubesofttech.model.UserRole;
-import com.cubesofttech.model.UserRpw;
 import com.cubesofttech.service.LoginService;
+import com.cubesofttech.service.TokenService;
 import com.cubesofttech.system.Constant;
 import com.cubesofttech.util.DateUtil;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.opensymphony.xwork2.ActionSupport;
-
-import antlr.Token;
 
 public class LoginAction extends ActionSupport {
 	private static final long serialVersionUID = 1L;
@@ -85,6 +80,9 @@ public class LoginAction extends ActionSupport {
 	@Autowired
 	private LoginService loginService;
 
+	@Autowired
+	private TokenService tokenService;
+	
 	String username;
 	String password;
 	
@@ -125,10 +123,25 @@ public class LoginAction extends ActionSupport {
 			String userlogin = request.getParameter("username");
 			request.setAttribute("userlogin", userlogin);
 			HttpSession session = request.getSession();
+
+			// validate token
+			String tokenId = request.getParameter("token"); // get token
+			if (tokenId != null) {
+				// validate token on db
+				SsoToken ssoToken = tokenService.getToken(tokenId); // validate token on db
+				if (ssoToken != null && ssoToken.isValid()) {
+					// set token from db
+					User user = userDAO.findById(ssoToken.getUserId());
+					session.setAttribute("user", user);
+					return SUCCESS;
+				}
+			}
+
+			// old login
 			User user = userDAO.findById(username);
 			String md5Password = loginService.generateMD5(password);
 			List<Map<String, Object>> userActive = userDAO.UserEnable(userlogin);
-			
+
 			if (user != null && md5Password.equals(user.getPassword()) && !userActive.isEmpty()) {
 				String chkLogin = "sc";
 				Cookie cSuccess = new Cookie("cooksc", chkLogin);
@@ -137,20 +150,27 @@ public class LoginAction extends ActionSupport {
 				Set<String> userAuthority = new HashSet<>();
 				Constant.onlineUserList.add(user.getId());
 
-				List<RoleAuthorizedObject> roleAuthorizedObjectList = roleAuthorizedObjectDAO
-						.findByRoleId(user.getRoleId());
-
+            List<RoleAuthorizedObject> roleAuthorizedObjectList = roleAuthorizedObjectDAO.findByRoleId(user.getRoleId());
 				userAuthority = loginService.addRoleByUserTable(roleAuthorizedObjectList, userAuthority);
 
 				List<UserRole> userRoleList = userRoleDAO.findByUserId(user.getId());
 
 				userAuthority = loginService.addRoleByUserRoleTabel(userRoleList, userAuthority);
 
+				// create new token
+				tokenId = tokenService.createToken(user.getId());
+
+				// เก็บ token ใน session หรือส่งไปยัง cookie
+				session.setAttribute("token", tokenId); // เก็บใน session
+				Cookie tokenCookie = new Cookie("authToken", tokenId); // เก็บใน cookie
+				tokenCookie.setMaxAge(60 * 15); // set time cookie
+				response.addCookie(tokenCookie);
+
 				session.setAttribute("user", user);
 				session.setAttribute("onlineUser", user);
 				session.setAttribute("userAuthority", userAuthority);
 
-				User ur = (User) request.getSession().getAttribute("onlineUser");
+				User ur = (User) session.getAttribute("onlineUser");
 				String logonUser = ur.getId();
 
 				request.setAttribute("sumtravel", newsDAO.sumtravelPrice());
@@ -304,6 +324,7 @@ public class LoginAction extends ActionSupport {
 
 		} catch (Exception e) {
 			log.debug(e);
+			log.debug(e.getCause());
 			return ERROR;
 		}
 	}
