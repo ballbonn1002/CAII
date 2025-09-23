@@ -163,7 +163,7 @@ public class LoginAction extends ActionSupport {
 				// เก็บ token ใน session หรือส่งไปยัง cookie
 				session.setAttribute("token", tokenId); // เก็บใน session
 				Cookie tokenCookie = new Cookie("authToken", tokenId); // เก็บใน cookie
-				tokenCookie.setMaxAge(60 * 15); // set time cookie
+				tokenCookie.setMaxAge(60 * 60 * 24 * 15); // set time cookie
 				response.addCookie(tokenCookie);
 
 				session.setAttribute("user", user);
