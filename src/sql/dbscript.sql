@@ -107,6 +107,21 @@ ALTER TABLE `equipment` CHANGE `fix_detail` `status_log` TEXT CHARACTER SET utf8
 
 -- PROD / UAT 6 AUG 2025 -- #2 
 
+-- 23/09/2025/Benz/create table sso_token
+CREATE TABLE IF NOT EXISTS sso_token (
+  token_id      CHAR(36)     NOT NULL PRIMARY KEY,
+  user_id       VARCHAR(64)  NOT NULL,
+  issued_at     DATETIME     NOT NULL,
+  expires_at    DATETIME     NOT NULL,
+  last_seen_at  DATETIME     NULL,
+  status        ENUM('ACTIVE','REVOKED','EXPIRED') NOT NULL DEFAULT 'ACTIVE',
+  user_agent    VARCHAR(255) NULL,
+  ip_addr       VARCHAR(64)  NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE INDEX idx_sso_token_user ON sso_token (user_id, status);
+CREATE INDEX idx_sso_token_exp  ON sso_token (expires_at);
+
 
 
 
