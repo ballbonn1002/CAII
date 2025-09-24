@@ -235,21 +235,21 @@
 
 
 	<script>
-        // ===== Year Filter redirect =====
-        (function () {
-            var sel  = document.getElementById('filterYear');
-            var base = '${pageContext.request.contextPath}/holiday_list';
-            sel.addEventListener('change', function () {
-                var y = this.value;
-                if (!y || y === 'all') {
-                    window.location.href = base;
-                } else {
+  (function () {
+    var sel  = document.getElementById('filterYear');
+    var base = '${pageContext.request.contextPath}/holiday_list';
+    sel.addEventListener('change', function () {
+      var y = this.value;
+      if (!y || y === 'all') {
+        // ส่งสัญญาณชัด ๆ ไปว่า "All"
+        window.location.href = base + '?year=all';
+      } else {
+        window.location.href = base + '?year=' + encodeURIComponent(y);
+      }
+    });
+  })();
+</script>
 
-                    window.location.href = base + '?year=' + encodeURIComponent(y);
-                }
-            });
-        })();
-    </script>
 
 	<script>
         $(document).ready(function () {
