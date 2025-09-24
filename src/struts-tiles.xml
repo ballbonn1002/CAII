@@ -52,4 +52,30 @@
 	    <put-attribute name="title" value="Reset Password Success"/>
 	</definition>
 	
+	<!-- TABLE -->
+	<definition name="demoTable" extends="baseLayout">
+		<put-attribute name="title" value="Demo Table"/>
+		<put-attribute name="body"
+			value="/pages-back/table/demo_table.jsp" />
+	</definition>
+	
+	<!-- HOLIDAY -->
+	<definition name="holidayList" extends="baseLayout">
+		<put-attribute name="title" value="Holiday List"/>
+		<put-attribute name="body"
+			value="/pages-back/holiday/holiday_newlist.jsp" />
+	</definition>
+	
+	<definition name="holidayAdd" extends="baseLayout">
+		<put-attribute name="title" value="Holiday Add"/>
+		<put-attribute name="body"
+			value="/pages-back/holiday/holiday_add.jsp" />
+	</definition>
+	
+	<definition name="holiday_edit" extends="baseLayout">
+		<put-attribute name="title" value="Holiday Edit" />
+		<put-attribute name="body"
+			value="/pages-back/holiday/holiday_edit.jsp" />
+	</definition>
+
 </tiles-definitions>

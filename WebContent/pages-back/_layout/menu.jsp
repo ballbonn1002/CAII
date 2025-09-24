@@ -353,7 +353,7 @@
 					<!--begin:Menu item-->
 					<div class="menu-item">
 						<!--begin:Menu link-->
-						<a class="menu-link" href="pages/user-profile/campaigns.html">
+						<a class="menu-link " data-route="holiday_list" href="holiday_list">
 							<span class="menu-icon"> <i
 								class="ki-duotone ki-delivery-3 fs-1"> <span class="path1"></span>
 									<span class="path2"></span> <span class="path3"></span>
@@ -469,7 +469,7 @@
 							<!--begin:Menu item-->
 							<div class="menu-item">
 								<!--begin:Menu link-->
-								<a class="menu-link" href="#"> <span class="menu-icon">
+								<a class="menu-link" data-route="demo_table" href="demo_table"> <span class="menu-icon">
 										<span class="bullet bullet-dot"></span>
 								</span> <span class="menu-title">Table</span>
 								</a>

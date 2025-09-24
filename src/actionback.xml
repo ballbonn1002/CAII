@@ -32,6 +32,7 @@
 			<result name="success" type="tiles">demoDashboard</result>
 			<result name="error">/index.jsp</result>
 		</action>
+
 		<action name="forget_password" class="com.cubesofttech.action.LoginAction" method="forgetPassword">
 			<result name="success" type="tiles">forgetPassword</result>
 			<result name="error">/index.jsp</result>
@@ -49,5 +50,59 @@
 			<result type="json" />
 		</action>
 
+		<action name="demo_table"
+			class="com.cubesofttech.action.NewsAction" method="demoDashboard">
+			<result name="success" type="tiles">demoTable</result>
+			<result name="error">/index.jsp</result>
+		</action>
+		
+		<!-- Holiday -->
+		<action name="holiday_list"
+			class="com.cubesofttech.action.HolidayAction" method="List">
+			<result name="success" type="tiles">holidayList</result>
+			<result name="error">/index.jsp</result>
+		</action>
+		
+		<action name="holiday_add"
+			class="com.cubesofttech.action.HolidayAction" method="formadd">
+			<result name="success" type="tiles">holidayAdd</result> <!-- Definition หน้า JSP -->
+			<result name="error">/index.jsp</result>
+		</action>
+		
+		<action name="AddHoliday"
+			class="com.cubesofttech.action.HolidayAction" method="Add">
+			<result name="success" type="chain">holiday_list</result> <!-- type = "chain" เป้นการส่งให้ชื่อ Action นั่นทำงาน -->
+			<result name="error" type="tiles">/error.jsp</result>
+			<result name="input" type="tiles">holidayAdd</result>
+		</action>
+	
+	<action name="holiday_edit"
+			class="com.cubesofttech.action.HolidayAction" method="Edit">
+			<result name="success" type="tiles">holiday_edit</result>
+			<result name="error">/index.jsp</result>
+	</action>
+	
+	<action name="UpdateHoliday"
+  class="com.cubesofttech.action.HolidayAction" method="Update">
+  <result name="success" type="redirectAction">holiday_list</result>
+  <result name="input"   type="tiles">holiday_edit</result>
+  <result name="error">/index.jsp</result>
+</action>
+
+	
+	<action name="DeleteHoliday"
+			class="com.cubesofttech.action.HolidayAction" method="Delete">
+			<result name="success" type="chain">holiday_list</result>
+			<result name="error">/index.jsp</result>
+	</action>
+	
+	<action name="SearchHoliday"
+			class="com.cubesofttech.action.HolidayAction" method="searchtable">
+			<result name="success" type="tiles">holiday_newlist</result>
+			<result name="error">/index.jsp</result>
+	</action>
+		
+
+		
 	</package>
 </struts>
