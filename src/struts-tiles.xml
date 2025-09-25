@@ -36,6 +36,13 @@
 			value="/pages-back/dashboard/demo_dashboard.jsp" />
 	</definition>
 	
+	<!-- TABLE -->
+	<definition name="demoTable" extends="baseLayout">
+		<put-attribute name="title" value="Demo Table"/>
+		<put-attribute name="body"
+			value="/pages-back/table/demo_table.jsp"/>
+	</definition>
+	
 	<!-- FORGET PASSWORD (standalone page) -->
 	<definition name="forgetPassword" template="/pages-back/forget_password/forget_password.jsp">
 	    <put-attribute name="title" value="Forget Password"/>
@@ -50,13 +57,6 @@
 	<!-- FORGET PASSWORD SUCCESS (standalone page) -->
 	<definition name="resetPasswordSuccess" template="/pages-back/forget_password/reset_password_success.jsp">
 	    <put-attribute name="title" value="Reset Password Success"/>
-	</definition>
-	
-	<!-- TABLE -->
-	<definition name="demoTable" extends="baseLayout">
-		<put-attribute name="title" value="Demo Table"/>
-		<put-attribute name="body"
-			value="/pages-back/table/demo_table.jsp" />
 	</definition>
 	
 	<!-- HOLIDAY -->
@@ -78,4 +78,11 @@
 			value="/pages-back/holiday/holiday_edit.jsp" />
 	</definition>
 
+	<!-- CHECK-IN/CHECK-OUT -->
+	<definition name="checkInOut" extends="baseLayout">
+		<put-attribute name="title" value="Check-In/Check-Out"/>
+		<put-attribute name="body"
+			value="/pages-back/check/check_in_out.jsp"/>
+	</definition>
+	
 </tiles-definitions>
