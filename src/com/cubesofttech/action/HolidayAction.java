@@ -11,8 +11,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
 import org.apache.struts2.ServletActionContext;
-import org.json.JSONArray;
-import org.json.JSONObject;
+
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cubesofttech.dao.HolidayDAO;
@@ -93,7 +92,6 @@ public class HolidayAction extends ActionSupport {
                 request.setAttribute("isAll", false);
             }
 
-            // 5) ใส่ attribute ให้ JSP
             request.setAttribute("holidayList", holidayList);
             request.setAttribute("holidayList_year", yearsRaw);
             request.setAttribute("dbOk", true);
@@ -431,41 +429,5 @@ public class HolidayAction extends ActionSupport {
         request.setAttribute("date", date);
         request.setAttribute("flag_form", checkFlag);
         return SUCCESS;
-    }
-
-    // ------------------- Find Next Year -------------------
-    public void findnext_year() {
-        try {
-            String next = request.getParameter("year_next");
-            List<Holiday> holidayList = holidayDAO.findnext_Year(next);
-
-            JSONArray arrayObj1 = new JSONArray();
-            JSONArray arrayObj2 = new JSONArray();
-            JSONArray arrayObj3 = new JSONArray();
-            JSONArray arrayObj4 = new JSONArray();
-            JSONArray arrayObj5 = new JSONArray();
-
-            for (int i = 0; i < holidayList.size(); i++) {
-                arrayObj1.put(holidayList.get(i).getId_date());
-                arrayObj2.put(holidayList.get(i).head);
-                arrayObj3.put(holidayList.get(i).description);
-                arrayObj4.put(holidayList.get(i).getStart_date().toString());
-                arrayObj5.put(holidayList.get(i).getEnd_date().toString());
-            }
-
-            PrintWriter out = response.getWriter();
-            JSONObject json = new JSONObject();
-            json.put("id", arrayObj1);
-            json.put("title", arrayObj2);
-            json.put("des", arrayObj3);
-            json.put("start", arrayObj4);
-            json.put("end", arrayObj5);
-
-            out.print(json);
-            out.flush();
-            out.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 }

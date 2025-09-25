@@ -23,19 +23,9 @@ public interface HolidayDAO {
 	public List<Object> searchallyear() throws Exception;
 	public List<Holiday> protect(Holiday holiday) throws Exception;
 	List<Holiday> protect_edit(Holiday holiday) throws Exception;
-	List<Holiday> protect_edit1(Holiday holiday) throws Exception;
-	public List<Holiday> findnext_Year(String keyword) throws Exception;
 	public List<Map<String, Object>> findAll1() throws Exception;
 	Long getMaxId() throws Exception;
-	public List<Holiday> getall();
-	public String getallOnlyDateJSON();
-	public List<Map<String, Object>>test_holiday(int year);
-	public List<Map<String, Object>>findHolidayMonth(String month,String year) throws Exception;
-	
-	public List<Map<String, Object>> count_hoilday(String start_mouth, String today) throws Exception;
-	public List<Map<String, Object>> countHoildayByDatepicker(Timestamp startdate, Timestamp enddate) throws Exception;
-	public List<Map<String, Object>> listHoildayByDatepicker(Timestamp startdate, Timestamp enddate) throws Exception;
-	List<Holiday> findAll2years() throws Exception;
+
 	List<Holiday> findByYear(Integer year) throws Exception;
 
 	
