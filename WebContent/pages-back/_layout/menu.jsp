@@ -83,8 +83,7 @@
 					</div>
 					<!--end:Menu item-->
 					<!--begin:Menu item-->
-					<div class="menu-item">
-						<!--begin:Menu link-->
+					<!-- <div class="menu-item">
 						<a class="menu-link" href="#" data-route="#"> <span class="menu-icon"> 
 							<i class="ki-duotone ki-notification-status fs-1">
 								<span class="path1"></span> 
@@ -93,8 +92,7 @@
 								<span class="path4"></span></i>
 						</span> <span class="menu-title">Announcement</span>
 						</a>
-						<!--end:Menu link-->
-					</div>
+					</div> -->
 					<!--end:Menu item-->
 
 					<!--begin:Menu item-->
@@ -121,8 +119,7 @@
 					</div>
 					<!--end:Menu item-->
 					<!--begin:Menu item-->
-					<div class="menu-item">
-						<!--begin:Menu link-->
+					<!-- <div class="menu-item">
 						<a class="menu-link" href="#" data-route="#"> <span class="menu-icon">
 								<i class="ki-duotone ki-calendar-tick fs-1"> <span
 									class="path1"></span> <span class="path2"></span> <span
@@ -131,8 +128,7 @@
 							</i>
 						</span> <span class="menu-title">Check List</span>
 						</a>
-						<!--end:Menu link-->
-					</div>
+					</div> -->
 					<!--end:Menu item-->
 					<!--begin:Menu item-->
 					<div class="menu-item">
@@ -491,19 +487,6 @@
 		<!--end::Menu wrapper-->
 	</div>
 	<!--end::sidebar menu-->
-	<!--begin::Footer-->
-	<div class="app-sidebar-footer flex-column-auto pt-2 pb-6 px-6"
-		id="kt_app_sidebar_footer">
-		<a href="https://preview.keenthemes.com/html/metronic/docs"
-			class="btn btn-flex flex-center btn-custom btn-primary overflow-hidden text-nowrap px-0 h-40px w-100"
-			data-bs-toggle="tooltip" data-bs-trigger="hover"
-			data-bs-dismiss-="click"
-			title="200+ in-house components and 3rd-party plugins"> <span
-			class="btn-label">Docs & Components</span> <i
-			class="ki-outline ki-document btn-icon fs-2 m-0"></i>
-		</a>
-	</div>
-	<!--end::Footer-->
 </div>
 <!--end::Sidebar-->
 

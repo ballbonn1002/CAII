@@ -122,7 +122,11 @@ CREATE TABLE IF NOT EXISTS sso_token (
 CREATE INDEX idx_sso_token_user ON sso_token (user_id, status);
 CREATE INDEX idx_sso_token_exp  ON sso_token (expires_at);
 
+--Add work_type & onsite_num to User
+ALTER TABLE `user` ADD `work_type` CHAR(1) NULL DEFAULT NULL AFTER `work_time_end`, ADD `onsite_num` CHAR(1) NULL DEFAULT NULL AFTER `work_type`;
 
+-- 01/10/2025 Koy : add 'work_type' column to 'work_hour' table
+ALTER TABLE `work_hours` ADD `work_type` CHAR(1) NULL DEFAULT NULL AFTER `work_hours_time_work`;
 
-
-
+-- 01/10/2025 Koy : update work_type, onsite_num in all user
+UPDATE `user` SET `work_type`='1',`onsite_num`='3'

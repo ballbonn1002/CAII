@@ -2,6 +2,7 @@ package com.cubesofttech.dao;
 
 import java.sql.Date;
 import java.sql.Timestamp;
+import java.time.LocalDate;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
@@ -295,9 +296,6 @@ public class HolidayDAOImpl implements HolidayDAO {
 	    query.setParameter("endDate", holiday.getEnd_date());
 	    return query.list();
 	}
-
-	
-	
 	
 	@Override
 	public List<Holiday> protect_edit(Holiday holiday) throws Exception {
@@ -340,5 +338,27 @@ public class HolidayDAOImpl implements HolidayDAO {
 			return new Long(0);
 		}
 	}
-
+	
+	@Override
+	public List<Holiday> findAllInMonth() throws Exception {
+		Session session = this.sessionFactory.getCurrentSession();
+		List<Holiday> HolidayList = null;
+		Calendar calendar = Calendar.getInstance();
+		int year = calendar.get(Calendar.YEAR);
+		int month = calendar.get(Calendar.MONTH)+1;
+		LocalDate firstDay = LocalDate.of(year, month, 1);
+		LocalDate lastDay = firstDay.withDayOfMonth(firstDay.lengthOfMonth());
+		try {
+			String sql = "SELECT * FROM holiday WHERE start_date <= :lastDay "
+					+ "AND end_date >= :firstDay ORDER BY start_date";
+			SQLQuery query = session.createSQLQuery(sql);
+			query.setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
+			query.setParameter("firstDay", java.sql.Date.valueOf(firstDay));
+			query.setParameter("lastDay", java.sql.Date.valueOf(lastDay));
+			HolidayList = query.list();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return HolidayList;
+	}
 }

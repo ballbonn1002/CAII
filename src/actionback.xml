@@ -49,6 +49,18 @@
 		<action name="validate_user" class="com.cubesofttech.action.LoginAction" method="validateUserLogin">
 			<result type="json" />
 		</action>
+		
+		<!-- CHECK-IN/CHECK-OUT -->
+		<action name="check_in_out"
+			class="com.cubesofttech.action.WorkHoursAction" method="init">
+			<result name="success" type="tiles">checkInOut</result>
+			<result name="error">/index.jsp</result>
+		</action>
+		
+		<action name="saveCheckInOut"
+			class="com.cubesofttech.action.WorkHoursAction" method="savecheck">
+			<result name="error">/index.jsp</result>
+		</action>
 
 		<action name="demo_table"
 			class="com.cubesofttech.action.NewsAction" method="demoDashboard">

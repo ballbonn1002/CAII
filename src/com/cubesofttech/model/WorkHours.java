@@ -23,6 +23,7 @@ public class WorkHours implements Serializable {
             Integer workHoursId	
             , String workHoursType	
             , java.sql.Timestamp workHoursTimeWork	
+            , String workType
             , String latitude	
             , String longitude	
             , String description	
@@ -37,6 +38,7 @@ public class WorkHours implements Serializable {
         this.workHoursId = workHoursId;	
         this.workHoursType = workHoursType;	
         this.workHoursTimeWork = workHoursTimeWork;	
+        this.workType = workType;
         this.latitude = latitude;	
         this.longitude = longitude;	
         this.description = description;	
@@ -56,6 +58,8 @@ public class WorkHours implements Serializable {
     private String workHoursType;	
     @Column(name = "work_hours_time_work")
     private java.sql.Timestamp workHoursTimeWork;	
+    @Column(name = "work_type")
+    private String workType;
     @Column(name = "latitude")
     private String latitude;	
     @Column(name = "longitude")
@@ -97,6 +101,12 @@ public class WorkHours implements Serializable {
     public void setWorkHoursTimeWork(java.sql.Timestamp workHoursTimeWork) {
         this.workHoursTimeWork = workHoursTimeWork;
     }
+    public String getWorkType() {
+		return workType;
+	}
+	public void setWorkType(String workType) {
+		this.workType = workType;
+	}
     public String getLatitude() {
         return this.latitude;
     }		
@@ -158,7 +168,7 @@ public class WorkHours implements Serializable {
 
     
     public String toString() {
-        return super.toString() + "workHoursId=[" + workHoursId + "]\n" + "workHoursType=[" + workHoursType + "]\n" + "workHoursTimeWork=[" + workHoursTimeWork + "]\n" + "latitude=[" + latitude + "]\n" + "longitude=[" + longitude + "]\n" + "description=[" + description + "]\n" + "userAgent=[" + userAgent + "]\n" + "ipAddress=[" + ipAddress + "]\n" + "userCreate=[" + userCreate + "]\n" + "userUpdate=[" + userUpdate + "]\n" + "timeCreate=[" + timeCreate + "]\n" + "timeUpdate=[" + timeUpdate + "]\n";
+        return super.toString() + "workHoursId=[" + workHoursId + "]\n" + "workHoursType=[" + workHoursType + "]\n" + "workHoursTimeWork=[" + workHoursTimeWork + "]\n" + "workType=[" + workType + "]\n" + "latitude=[" + latitude + "]\n" + "longitude=[" + longitude + "]\n" + "description=[" + description + "]\n" + "userAgent=[" + userAgent + "]\n" + "ipAddress=[" + ipAddress + "]\n" + "userCreate=[" + userCreate + "]\n" + "userUpdate=[" + userUpdate + "]\n" + "timeCreate=[" + timeCreate + "]\n" + "timeUpdate=[" + timeUpdate + "]\n";
     }
 
     public boolean equals(Object obj) {
@@ -180,6 +190,9 @@ public class WorkHours implements Serializable {
         if (!(that.getWorkHoursTimeWork() == null ? this.getWorkHoursTimeWork() == null
                         : that.getWorkHoursTimeWork().equals(this.getWorkHoursTimeWork()))) {
                 return false;
+        }
+        if (!(that.getWorkType() == null ? this.getWorkType() == null
+						: that.getWorkType().equals(this.getWorkType()))) {
         }
         if (!(that.getLatitude() == null ? this.getLatitude() == null
                         : that.getLatitude().equals(this.getLatitude()))) {

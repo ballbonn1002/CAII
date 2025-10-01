@@ -106,7 +106,7 @@
 				<!--end::Theme mode-->
 				<!--  -->
 				<div class="app-navbar-item ms-1 ms-md-4">
-					<span class="menu-title">it.admin</span>
+					<span class="menu-title">${logonUser}</span>
 				</div>
 				<!--  -->
 				<!--begin::User menu-->

@@ -49,10 +49,6 @@ public interface WorkHoursDAO {
 	
 	public List<Map<String, Object>> lastcheckin(String user) throws Exception;
 	public List<Map<String, Object>> lastcheckin2(String user) throws Exception;
-
-	
-	public List<Map<String, Object>> idcheckincalendars(String datecheckin, String currentUserlist, String month, String year) throws Exception;
-
 	
 	public List<Map<String, Object>> checklistcalendarstime(String datecheckin, String currentUserlist, String month, String year) throws Exception;
 	
@@ -80,7 +76,6 @@ public interface WorkHoursDAO {
 	
 	public List<Map<String, Object>> searchcheckinhourtime(String Username, java.sql.Timestamp Datestart, java.sql.Timestamp Dateend) throws Exception;
 	
-	
 	public List<Map<String, Object>> checktimehours(String currentUserlist, String date, String month, String year) throws Exception;
 	
 	public List<Map<String, Object>> check_in(String currentUserlist) throws Exception;
@@ -94,14 +89,12 @@ public interface WorkHoursDAO {
 	public List<Map<String, Object>> checktime(String currentUserlist, String month, String year) throws Exception;
 	
 	public List<Map<String, Object>> checktimecalendar(String currentUserlist, String month, String year) throws Exception;
-
 	
 	public List<Map<String, Object>> timecheckin (String currentUserlist) throws Exception;
 	
 	public List<Map<String, Object>> datecheckin (String currentUserlist) throws Exception;
 	
 	public List<Map<String, Object>> startmonth(String currentUserlist ,String month, String year) throws Exception;
-	
 //	20/03
 	public List<Map<String, Object>> checkStatus(String currentUserlist,String month, String year) throws Exception;
 	
@@ -132,7 +125,6 @@ public interface WorkHoursDAO {
 	public List<Map<String, Object>> worksearchapproveall(String Username, java.sql.Timestamp Datestart, java.sql.Timestamp Dateend) throws Exception;
 	
 	public List<Map<String, Object>> searchcheckinhourtimeapprove(String Username, java.sql.Timestamp Datestart, java.sql.Timestamp Dateend) throws Exception;
-	
 	
 	public List<Map<String, Object>> checkin(String usercheck, String y, String m, String d) throws Exception;
 	
@@ -166,51 +158,16 @@ public interface WorkHoursDAO {
 	public List<Map<String, Object>> checkInMapAll(java.sql.Timestamp Datestart, java.sql.Timestamp Dateend) throws Exception;
 	public List<Map<String, Object>> checkInMap(String name, java.sql.Timestamp Datestart, java.sql.Timestamp Dateend) throws Exception;
 	
-
-	public List<Map<String, Object>> graph_workhours(String user, String year) throws Exception;
-	public List<Map<String, Object>> graph_workhours_out(String user, String year) throws Exception;
-	public List<String> graph_workhours_avg_in(String user, String year) throws Exception;
-	public List<String> graph_workhours_avg_in(String year) throws Exception;
-	public List<String> graph_workhours_avg_out(String user, String year) throws Exception;
-	public List<String> graph_workhours_avg_out(String year) throws Exception;
-	public  String graph_workhours_in_avg(String year) throws Exception;
-	public  String graph_workhours_out_avg(String year) throws Exception ;
-
 	List<Map<String, Object>> workallTime() throws Exception;
-	//search user list that have no description
-	public List<Map<String, Object>> searchByMonthAndYearDescriptionNull(String monthSelect, String yearSelect,int amoutDataInt) throws Exception;
-	//search user list that have description
-	public List<Map<String, Object>> searchByMonthAndYearDescriptionNotNull(String monthSelect, String yearSelect) throws Exception;
-	//search work time by user and plused by 480(8hrs)
-	public List<Map<String, Object>> searchWorkCountDescriptionNotNullbyUser(String user,int year,int month) throws Exception;
-	//search work time by user one by one
-	public List<Map<String, Object>> searchWorkCountbyUser(String user,int year,int month) throws Exception;
 	
 	//search today check in/out 
-	public List<Map<String, Object>> QRchecklist(String work_hour_id) throws Exception;
-
-	public List<Map<String, Object>> QRchecktime(String work_hour_id) throws Exception;
 
 	public List<Map<String, Object>> check_work(String currentUserlist, String type) throws Exception;
-
-	public List<Map<String, Object>> alertm(String user, String date) throws Exception;
 	
 	public List<Map<String, Object>> checkholiday(String date) throws Exception;
 	
 	public List<Map<String, Object>> checkleave(String date) throws Exception;
-	
-	public List<Map<String, Object>> test_workhoursummary(String id, int year) throws Exception;
-	
-	public List<Map<String, Object>> test_timeckeckin(String type,String logonUser,int year) throws Exception;
-
-	public List<Map<String, Object>> test_workhoursummary2(String id,int year) throws Exception ;
-	
-	public List<Map<String, Object>> test_workHoursAnniversary() throws Exception ;
-	
-	public List<Map<String, Object>> test_lastWorkHour(int year) throws Exception ;
-	
-	public List<Map<String, Object>> test_lastWorkHour2(int year) throws Exception ;
-	
+		
 	public List<Map<String, Object>> todayLogin(String date) throws Exception;
 
 	public List<Map<String, Object>> lastcheckout(String user) throws Exception;
@@ -221,10 +178,9 @@ public interface WorkHoursDAO {
 
 	public List<Map<String, Object>> getTodayCheckOutById(String id) throws Exception;
 	public List<Map<String , Object>> Duplicate_Workhour_list(String name,String year)throws Exception;
-	 public List<Map<String , Object>> Duplicate_Workhour(String daylist,String id,String year) throws Exception;
+	public List<Map<String , Object>> Duplicate_Workhour(String daylist,String id,String year) throws Exception;
 	List<Map<String, Object>> getTimeByDate(String date, String user, String type);
-	 List<Map<String, Object>> Work_Hoursesheet( String currentUserlist, java.sql.Timestamp Datenow, java.sql.Timestamp DateBefore  , String year , String month) throws Exception;
-	
+	List<Map<String, Object>> Work_Hoursesheet( String currentUserlist, java.sql.Timestamp Datenow, java.sql.Timestamp DateBefore  , String year , String month) throws Exception;
 
 	 List<Map<String, Object>> Work_Hoursesheettimesearchall(String year) throws Exception;
 	 

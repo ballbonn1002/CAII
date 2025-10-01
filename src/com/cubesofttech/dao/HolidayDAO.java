@@ -28,6 +28,7 @@ public interface HolidayDAO {
 
 	List<Holiday> findByYear(Integer year) throws Exception;
 
-	
+	public List<Holiday> findAllInMonth() throws Exception;
+
 }
 

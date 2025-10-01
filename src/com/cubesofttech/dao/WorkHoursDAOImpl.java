@@ -222,29 +222,6 @@ public class WorkHoursDAOImpl implements WorkHoursDAO {
 	}
 
 	@Override
-	public List<Map<String, Object>> QRchecklist(String work_hour_id) throws Exception {
-		Session session = this.sessionFactory.getCurrentSession();
-		List<Map<String, Object>> work_status = null;
-		try {
-
-			String sql = "select hour(m.work_hours_time_work) AS myhour, DATE(work_hours_time_work) AS checkDate, minute(m.work_hours_time_work), description "
-					+ " AS mymin,m.work_hours_id,m.work_hours_type,m.work_hours_time_work,"
-					+ " date_format(m.work_hours_time_work,'%d-%m-%y')as `date`,time(m.work_hours_time_work)as `time`,"
-					+ " m.user_create,m.time_create,m.ip_address,m.description,m.latitude,m.longitude,u.role_id as 'u_rold',u.name as 'u_name',m.work_hours_type as `check_type`"
-					+ " from work_hours m " + " inner join `user` u on m.user_create = u.id"
-					+ " where work_hours_id = :work_hour_id   " + " ORDER BY work_hours_id ASC ";
-
-			SQLQuery query = session.createSQLQuery(sql);
-			query.setParameter("work_hour_id", work_hour_id);
-			query.setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
-			work_status = query.list();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return work_status;
-	}
-
-	@Override
 	public List<Map<String, Object>> timemonth(String currentUserlist, String month, String year) throws Exception {
 		Session session = this.sessionFactory.getCurrentSession();
 		List<Map<String, Object>> work_status = null;
@@ -494,31 +471,6 @@ public class WorkHoursDAOImpl implements WorkHoursDAO {
 			query.setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
 			work_status = query.list();
 			Log.info("helloooooooooo");
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return work_status;
-	}
-
-	@Override
-	public List<Map<String, Object>> idcheckincalendars(String datecheckin, String currentUserlist, String month,
-			String year) throws Exception {
-		Session session = this.sessionFactory.getCurrentSession();
-		List<Map<String, Object>> work_status = null;
-		try {
-
-			String sql = "select work_hours_id " + " from work_hours "
-					+ " where DATE(work_hours_time_work)=:datecheckin AND user_create = :currentUserlist"
-					+ " AND YEAR(work_hours_time_work)=:year AND MONTH(work_hours_time_work)=:month AND work_hours_type=1 "
-					+ " ORDER BY work_hours_id DESC " + " LIMIT 1 ";
-
-			SQLQuery query = session.createSQLQuery(sql);
-			query.setParameter("datecheckin", datecheckin);
-			query.setParameter("currentUserlist", currentUserlist);
-			query.setParameter("month", month);
-			query.setParameter("year", year);
-			query.setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
-			work_status = query.list();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -1110,25 +1062,6 @@ public class WorkHoursDAOImpl implements WorkHoursDAO {
 			query.setParameter("currentUserlist", currentUserlist);
 			query.setParameter("month", month);
 			query.setParameter("year", year);
-			query.setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
-			checktime = query.list();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return checktime;
-	}
-
-	@Override
-	public List<Map<String, Object>> QRchecktime(String work_hour_id) throws Exception {
-		Session session = this.sessionFactory.getCurrentSession();
-		List<Map<String, Object>> checktime = null;
-		try {
-
-			String sql = "select workinghours " + " from work_hours " + " where work_hours_id = :work_hour_id "
-					+ " ORDER BY work_hours_id ASC ";
-
-			SQLQuery query = session.createSQLQuery(sql);
-			query.setParameter("work_hour_id", work_hour_id);
 			query.setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
 			checktime = query.list();
 		} catch (Exception e) {
@@ -1730,29 +1663,6 @@ public class WorkHoursDAOImpl implements WorkHoursDAO {
 		return work_status;
 	}
 
-	@Override
-	public List<String> graph_workhours_avg_in(String user, String year) throws Exception {
-		// TODO Auto-generated method stub
-		Session session = this.sessionFactory.getCurrentSession();
-		List<String> work_status = null;
-		try {
-
-			String sql = " SELECT  TIME_FORMAT(SEC_TO_TIME(AVG(TIME_TO_SEC(work_hours_time_work))),'%Hh %im')  FROM work_hours  WHERE work_hours_type= 1 and user_create=:user "
-					+ "and date(work_hours_time_work) LIKE '%" + year + "%' ";
-
-			SQLQuery query = session.createSQLQuery(sql);
-			query.setParameter("user", user);
-			// query.setParameter("year", year);
-
-			// query.setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
-			work_status = query.list();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return work_status;
-
-	}
-
 	public List<String> graph_workhours_avg_in(String year) throws Exception {
 		// TODO Auto-generated method stub
 		Session session = this.sessionFactory.getCurrentSession();
@@ -1763,29 +1673,6 @@ public class WorkHoursDAOImpl implements WorkHoursDAO {
 					+ "and date(work_hours_time_work) LIKE '%" + year + "%' ";
 
 			SQLQuery query = session.createSQLQuery(sql);
-
-			// query.setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
-			work_status = query.list();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return work_status;
-
-	}
-
-	@Override
-	public List<String> graph_workhours_avg_out(String user, String year) throws Exception {
-		// TODO Auto-generated method stub
-		Session session = this.sessionFactory.getCurrentSession();
-		List<String> work_status = null;
-		try {
-
-			String sql = " SELECT TIME_FORMAT(SEC_TO_TIME(AVG(TIME_TO_SEC(work_hours_time_work))),'%Hh %im') AS text FROM work_hours  WHERE work_hours_type= 2 and user_create=:user "
-					+ "and date(work_hours_time_work) LIKE '%" + year + "%' ";
-
-			SQLQuery query = session.createSQLQuery(sql);
-			query.setParameter("user", user);
-			// query.setParameter("year", year);
 
 			// query.setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
 			work_status = query.list();
@@ -1827,26 +1714,6 @@ public class WorkHoursDAOImpl implements WorkHoursDAO {
 			e.printStackTrace();
 		}
 		return work_status;
-	}
-
-	@Override
-	public List<String> graph_workhours_avg_out(String year) throws Exception {
-		// TODO Auto-generated method stub
-		Session session = this.sessionFactory.getCurrentSession();
-		List<String> work_status = null;
-		try {
-
-			String sql = " SELECT TIME_FORMAT(SEC_TO_TIME(AVG(TIME_TO_SEC(work_hours_time_work))),'%Hh %im') AS text FROM work_hours  WHERE work_hours_type= 2 "
-					+ "and date(work_hours_time_work) LIKE '%" + year + "%' ";
-
-			SQLQuery query = session.createSQLQuery(sql);
-
-			work_status = query.list();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return work_status;
-
 	}
 
 	// 18-01-2019
@@ -1941,79 +1808,6 @@ public class WorkHoursDAOImpl implements WorkHoursDAO {
 	}
 
 	@Override
-	public List<Map<String, Object>> searchByMonthAndYearDescriptionNull(String monthSelect, String yearSelect,
-			int amoutDataInt) throws Exception {
-		Session session = this.sessionFactory.getCurrentSession();
-		List<Map<String, Object>> searchMonth = null;
-		try {
-			String sql = "SELECT user_create, sum(workinghours) as total,time_create "
-					+ "FROM work_hours WHERE MONTH(time_create) = " + monthSelect + " AND YEAR(time_create) = "
-					+ yearSelect + " AND `description`= \"\" group by user_create order by total desc limit "
-					+ amoutDataInt;
-			SQLQuery query = session.createSQLQuery(sql);
-			query.setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
-			searchMonth = query.list();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return searchMonth;
-	}
-
-	@Override
-	public List<Map<String, Object>> searchByMonthAndYearDescriptionNotNull(String monthSelect, String yearSelect)
-			throws Exception {
-		Session session = this.sessionFactory.getCurrentSession();
-		List<Map<String, Object>> searchMonth = null;
-		try {
-			String sql = "SELECT user_create, count(`work_hours_type`)*480 as total "
-					+ "FROM work_hours WHERE work_hours_type = 2 AND MONTH(time_create) = " + monthSelect
-					+ " AND YEAR(time_create) = " + yearSelect
-					+ " AND `description`<> \"\" group by user_create order by total desc";
-			SQLQuery query = session.createSQLQuery(sql);
-			query.setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
-			searchMonth = query.list();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return searchMonth;
-	}
-
-	@Override
-	public List<Map<String, Object>> searchWorkCountbyUser(String user, int year, int month) throws Exception {
-		Session session = this.sessionFactory.getCurrentSession();
-		List<Map<String, Object>> searchUser = null;
-		try {
-			String sql = "SELECT user_create, sum(workinghours) as total "
-					+ "FROM  work_hours WHERE `description`=\"\" AND work_hours_type = 2 AND user_create ='" + user
-					+ "' AND MONTH(time_create) = " + month + " AND YEAR(time_create) = " + year;
-			SQLQuery query = session.createSQLQuery(sql);
-			query.setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
-			searchUser = query.list();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return searchUser;
-	}
-
-	@Override
-	public List<Map<String, Object>> searchWorkCountDescriptionNotNullbyUser(String user, int year, int month)
-			throws Exception {
-		Session session = this.sessionFactory.getCurrentSession();
-		List<Map<String, Object>> searchUser = null;
-		try {
-			String sql = "SELECT user_create, count(`work_hours_type`)*480 as total "
-					+ "FROM  work_hours WHERE `description`<>\"\" AND work_hours_type = 2 AND user_create ='" + user
-					+ "' AND MONTH(time_create) = " + month + " AND YEAR(time_create) = " + year;
-			SQLQuery query = session.createSQLQuery(sql);
-			query.setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
-			searchUser = query.list();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return searchUser;
-	}
-
-	@Override
 	public List<Map<String, Object>> check_work(String currentUserlist, String type) throws Exception {
 		Session session = this.sessionFactory.getCurrentSession();
 		List<Map<String, Object>> check_work = null;
@@ -2033,116 +1827,6 @@ public class WorkHoursDAOImpl implements WorkHoursDAO {
 			e.printStackTrace();
 		}
 		return check_work;
-	}
-
-	@Override
-	public List<Map<String, Object>> test_workhoursummary2(String id, int year) throws Exception {
-		Session session = this.sessionFactory.getCurrentSession();
-		List<Map<String, Object>> test_workhoursummary = null;
-		try {
-
-			String sql = "SELECT DAY(work_hours_time_work) AS DAY,MONTH(work_hours_time_work) AS MONTH,workinghours,work_hours_type,work_hours_time_work FROM `work_hours` WHERE user_create ='"
-					+ id + "' AND YEAR(work_hours_time_work)='" + year
-					+ "' AND workinghours > 0 GROUP BY DATE(work_hours_time_work) ORDER BY DATE(work_hours_time_work) ASC ";
-
-			SQLQuery query = session.createSQLQuery(sql);
-			query.setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
-			test_workhoursummary = query.list();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return test_workhoursummary;
-	}
-
-	@Override
-	public List<Map<String, Object>> test_timeckeckin(String type, String logonUser, int year) throws Exception {
-		Session session = this.sessionFactory.getCurrentSession();
-		List<Map<String, Object>> test_workhoursummary = null;
-		try {
-
-			String sql = "SELECT TIME_FORMAT(work_hours_time_work, \"%H:%i\") AS TIME,DAY(work_hours_time_work) AS DAY,MONTH(work_hours_time_work) AS MONTH FROM `work_hours` WHERE user_create ='"
-					+ logonUser + "' AND work_hours_type= '" + type + "' AND YEAR(work_hours_time_work)='" + year
-					+ "' GROUP BY DATE(work_hours_time_work)";
-
-			SQLQuery query = session.createSQLQuery(sql);
-			query.setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
-			test_workhoursummary = query.list();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return test_workhoursummary;
-	}
-
-	@Override
-	public List<Map<String, Object>> test_workhoursummary(String id, int year) throws Exception {
-		Session session = this.sessionFactory.getCurrentSession();
-		List<Map<String, Object>> test_workhoursummary = null;
-		try {
-
-			String sql = "SELECT work_hours_id,work_hours_type,work_hours_time_work,user_create FROM `work_hours`"
-					+ "WHERE user_create ='" + id + "' AND YEAR(work_hours_time_work)='" + year
-					+ "' GROUP BY DATE(work_hours_time_work) ";
-
-			SQLQuery query = session.createSQLQuery(sql);
-			query.setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
-			test_workhoursummary = query.list();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return test_workhoursummary;
-	}
-
-	@Override
-	public List<Map<String, Object>> test_workHoursAnniversary() throws Exception {
-		Session session = this.sessionFactory.getCurrentSession();
-		List<Map<String, Object>> test_workHoursAnniversary = null;
-		try {
-
-			String sql = "SELECT work_hours_time_work,user_create,DAY(MIN(work_hours_time_work))AS DAYMIN,DAY(MAX(work_hours_time_work))AS DAYMAX,MONTH(MIN(work_hours_time_work))AS MONTHMIN,MONTH(MAX(work_hours_time_work))AS MONTHMAX,YEAR(MIN(work_hours_time_work))AS YEARMIN,YEAR(MAX(work_hours_time_work))AS YEARMAX,user.enable FROM `work_hours` LEFT JOIN user ON work_hours.user_create = user.id WHERE enable=1 GROUP BY(user_create) ORDER BY MONTH(MIN(work_hours_time_work)),DAY(MIN(work_hours_time_work)) ASC";
-
-			SQLQuery query = session.createSQLQuery(sql);
-			query.setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
-			test_workHoursAnniversary = query.list();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return test_workHoursAnniversary;
-	}
-
-	@Override
-	public List<Map<String, Object>> test_lastWorkHour(int year) throws Exception {
-		Session session = this.sessionFactory.getCurrentSession();
-		List<Map<String, Object>> test_lastWorkHour = null;
-		try {
-
-			String sql = "SELECT DAY(work_hours_time_work)AS DAY,MONTH(work_hours_time_work)AS MONTH,TIME(work_hours_time_work)AS time,user_create,work_hours_type,user.enable FROM `work_hours`LEFT JOIN user ON work_hours.user_create = user.id WHERE enable=1 AND work_hours_type=1 AND YEAR(work_hours_time_work)='"
-					+ year + "' ORDER BY MONTH(work_hours_time_work),DAY(work_hours_time_work) ASC";
-
-			SQLQuery query = session.createSQLQuery(sql);
-			query.setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
-			test_lastWorkHour = query.list();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return test_lastWorkHour;
-	}
-
-	@Override
-	public List<Map<String, Object>> test_lastWorkHour2(int year) throws Exception {
-		Session session = this.sessionFactory.getCurrentSession();
-		List<Map<String, Object>> test_lastWorkHour = null;
-		try {
-
-			String sql = "SELECT date(work_hours_time_work),COUNT(user_create)AS count,DAY(work_hours_time_work)AS DAY,MONTH(work_hours_time_work)AS MONTH,user.enable FROM `work_hours` LEFT JOIN user ON work_hours.user_create = user.id WHERE  work_hours_type=1 AND ENABLE=1 AND YEAR(work_hours_time_work)='"
-					+ year + "' GROUP BY date(work_hours_time_work)   ASC";
-
-			SQLQuery query = session.createSQLQuery(sql);
-			query.setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
-			test_lastWorkHour = query.list();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return test_lastWorkHour;
 	}
 
 	@Override
@@ -2538,25 +2222,6 @@ public class WorkHoursDAOImpl implements WorkHoursDAO {
 
 			String sql = "SELECT work_hours.*,user.id ,user.name FROM work_hours LEFT JOIN user ON work_hours.user_create = user.id  WHERE work_hours.work_hours_type = '2' ORDER BY work_hours.work_hours_id DESC LIMIT 0,1";
 
-			SQLQuery query = session.createSQLQuery(sql);
-
-			query.setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
-
-			work_status = query.list();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return work_status;
-
-	}
-
-@Override
-	public List<Map<String, Object>> alertm(String user, String date) throws Exception {
-		Session session = this.sessionFactory.getCurrentSession();
-		List<Map<String, Object>> work_status = null;
-		try {
-
-			String sql = "SELECT * FROM work_hours WHERE work_hours_time_work like '"+date+"%' and user_create = '"+user+"'";
 			SQLQuery query = session.createSQLQuery(sql);
 
 			query.setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
