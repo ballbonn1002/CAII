@@ -124,51 +124,62 @@ public class LoginAction extends ActionSupport {
 			request.setAttribute("userlogin", userlogin);
 			HttpSession session = request.getSession();
 
+			String tokenId = request.getParameter("token");
+			User user = null;
+			boolean loginSuccess = false;
+
 			// validate token
-			String tokenId = request.getParameter("token"); // get token
 			if (tokenId != null) {
-				// validate token on db
 				SsoToken ssoToken = tokenService.getToken(tokenId); // validate token on db
 				if (ssoToken != null && ssoToken.isValid()) {
-					// set token from db
-					User user = userDAO.findById(ssoToken.getUserId());
-					session.setAttribute("user", user);
-					return SUCCESS;
+					// set user from token
+					user = userDAO.findById(ssoToken.getUserId());
+					loginSuccess = true;
 				}
 			}
 
-			// old login
-			User user = userDAO.findById(username);
-			String md5Password = loginService.generateMD5(password);
-			List<Map<String, Object>> userActive = userDAO.UserEnable(userlogin);
+			// validate old logic
+			if (!loginSuccess) {
+				user = userDAO.findById(username);
+				String md5Password = loginService.generateMD5(password);
+				List<Map<String, Object>> userActive = userDAO.UserEnable(userlogin);
 
-			if (user != null && md5Password.equals(user.getPassword()) && !userActive.isEmpty()) {
+				if (user != null && md5Password.equals(user.getPassword()) && !userActive.isEmpty()) {
+					loginSuccess = true;
+
+					// create new token
+					tokenId = tokenService.createToken(user.getId());
+
+					// set token in session and cookie
+					session.setAttribute("token", tokenId);
+					Cookie tokenCookie = new Cookie("authToken", tokenId);
+					tokenCookie.setMaxAge(60 * 15);
+					response.addCookie(tokenCookie);
+				}
+			}
+
+			// login success
+			if (loginSuccess && user != null) {
 				String chkLogin = "sc";
 				Cookie cSuccess = new Cookie("cooksc", chkLogin);
-				cSuccess.setMaxAge(60 * 60 * 24 * 15);
+				cSuccess.setMaxAge(60 * 15);
 				response.addCookie(cSuccess);
+
 				Set<String> userAuthority = new HashSet<>();
 				Constant.onlineUserList.add(user.getId());
 
-            List<RoleAuthorizedObject> roleAuthorizedObjectList = roleAuthorizedObjectDAO.findByRoleId(user.getRoleId());
+				List<RoleAuthorizedObject> roleAuthorizedObjectList = roleAuthorizedObjectDAO.findByRoleId(user.getRoleId());
 				userAuthority = loginService.addRoleByUserTable(roleAuthorizedObjectList, userAuthority);
 
 				List<UserRole> userRoleList = userRoleDAO.findByUserId(user.getId());
-
 				userAuthority = loginService.addRoleByUserRoleTabel(userRoleList, userAuthority);
-
-				// create new token
-				tokenId = tokenService.createToken(user.getId());
-
-				// เก็บ token ใน session หรือส่งไปยัง cookie
-				session.setAttribute("token", tokenId); // เก็บใน session
-				Cookie tokenCookie = new Cookie("authToken", tokenId); // เก็บใน cookie
-				tokenCookie.setMaxAge(60 * 60 * 24 * 15); // set time cookie
-				response.addCookie(tokenCookie);
 
 				session.setAttribute("user", user);
 				session.setAttribute("onlineUser", user);
 				session.setAttribute("userAuthority", userAuthority);
+				
+				request.setAttribute("token", tokenId);
+				session.setAttribute("token", tokenId);
 
 				User ur = (User) session.getAttribute("onlineUser");
 				String logonUser = ur.getId();

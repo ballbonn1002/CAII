@@ -1,6 +1,12 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8"
-	pageEncoding="UTF-8"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ page import="com.cubesofttech.system.Constant" %>
+
 <%@ taglib uri="/WEB-INF/tlds/permission.tld" prefix="perm"%>
+
+<%
+    String token = (String) session.getAttribute("token");  // ดึง token ที่สร้างไว้หลัง login
+    String targetURL = Constant.getWebContext2() +"/authorization?token=" + token;
+%>
 
 <!--begin::Sidebar-->
 <div id="kt_app_sidebar" class="app-sidebar flex-column"
@@ -56,6 +62,18 @@
 					class="menu menu-column menu-rounded menu-sub-indention fw-semibold fs-6"
 					id="#kt_app_sidebar_menu" data-kt-menu="true"
 					data-kt-menu-expand="false">
+					
+					<!--begin:Menu item-->
+					<div class="menu-item">
+					  <a class="menu-link" href="<%= targetURL %>" data-route="#">
+					    <span class="menu-icon">
+					      <i class="ki-solid ki-pin fs-1"></i>
+					    </span>
+					    <span class="menu-title">CA Old Version</span>
+					  </a>
+					</div>
+					<!--end:Menu item-->
+					
 					<!--begin:Menu item-->
 					<div class="menu-item">
 						<!--begin:Menu link-->
