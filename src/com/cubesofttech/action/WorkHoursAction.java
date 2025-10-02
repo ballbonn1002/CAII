@@ -69,18 +69,19 @@ public class WorkHoursAction extends ActionSupport {
 			User ur = (User) request.getSession().getAttribute("onlineUser");
 			String logonUser = ur.getId();
 			request.setAttribute("logonUser", logonUser);
-			
+	        LocalDate currentDate = LocalDate.now();
+	        request.setAttribute("currentDate", currentDate);
+	        
 			List<Map<String, Object>> lastcheckin = workHoursDAO.lastcheckin(logonUser);
 			List<Map<String, Object>> lastcheckout = workHoursDAO.lastcheckout(logonUser);
 			request.setAttribute("lastcheckin", lastcheckin);
 			request.setAttribute("lastcheckout", lastcheckout);
-			log.debug(lastcheckin);
-			log.debug(lastcheckout);
+			
 			List<Holiday> holidayList = holidayDAO.findAllInMonth();
 			request.setAttribute("holidayList", holidayList);
-			log.debug(holidayList);
+			//log.debug(holidayList);
 			User user =  userDAO.findById(logonUser);
-			log.debug(user);
+			//log.debug(user);
 			
 			return SUCCESS;
 		} catch (Exception e) {

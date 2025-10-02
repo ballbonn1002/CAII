@@ -7,6 +7,16 @@
 src="https://maps.googleapis.com/maps/api/js?key=${GOOGLE_API_KEY}&callback=initMap">
 </script>
 
+<style>
+.bs-indigo {
+	color: #6610f2;
+}
+.bs-pink {
+	color: #d63384;
+}
+
+</style>
+
 <!--begin::Main-->
 <div class="app-main flex-column flex-row-fluid" id="kt_app_main">
 	<!--begin::Content wrapper-->
@@ -276,17 +286,27 @@ src="https://maps.googleapis.com/maps/api/js?key=${GOOGLE_API_KEY}&callback=init
 											<!--begin::Wrapper-->
 											<div class="d-flex align-items-center mb-6">
 												<!--begin::Bullet-->
+												<fmt:formatDate value="${hld.start_date}" pattern="u" var="day"/>
 												<span data-kt-element="bullet"
-													class="bullet bullet-vertical d-flex align-items-center min-h-70px mh-100 me-4 bg-success"></span>
+													class="dayofWeek bullet bullet-vertical d-flex align-items-center min-h-70px mh-100 me-4
+													<c:if test="${day == '1'}"> bs-indigo</c:if>
+													<c:if test="${day == '3'}"> bs-pink</c:if>
+													<c:if test="${day == '3'}"> bs-success</c:if>
+													<c:if test="${day == '4'}"> bg-warning</c:if>
+													<c:if test="${day == '5'}"> bg-primary</c:if>"></span>
 												<!--end::Bullet-->
 												<!--begin::Info-->
 												<div class="flex-grow-1 me-5">
-													<!--begin::Time-->
 													<div class="text-grey fw-semibold fs-2">${hld.head}</div>
-													<!--end::Time-->
-													<!--begin::Description-->
-													<div class="text-grey fw-semibold fs-6">${hld.start_date}</div>
-													<!--end::Description-->
+													
+													<div class="text-grey fw-semibold fs-6">														
+														<c:if test="${day == '1'}">Mon, </c:if>
+														<c:if test="${day == '2'}">Tue, </c:if>
+														<c:if test="${day == '3'}">Wed, </c:if>
+														<c:if test="${day == '4'}">Thu, </c:if>
+														<c:if test="${day == '5'}">Fri, </c:if>
+														<fmt:formatDate value="${hld.start_date}" pattern="dd MMM"/>
+													</div>
 												</div>
 												<!--end::Info-->
 											</div>
@@ -307,14 +327,10 @@ src="https://maps.googleapis.com/maps/api/js?key=${GOOGLE_API_KEY}&callback=init
 											id="kt_timeline_widget_3_tab_content_4">
 											<!--begin::Wrapper-->
 											<div class="d-flex mb-6">
-												<!--begin::Info-->
 												<div class="flex-grow-1 me-5">
-													<!--begin::Description-->
 													<div class="text-grey-500 fw-semibold fs-6">No
 														holiday in this month.</div>
-													<!--end::Description-->
 												</div>
-												<!--end::Info-->
 											</div>
 											<!--end::Wrapper-->
 										</div>
