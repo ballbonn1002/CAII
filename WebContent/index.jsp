@@ -7,9 +7,9 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 
 <%
-    // ⭐ Logic ฝั่ง JSP: สุ่มรูปตามวันที่ 1–5
+	//random bg img
     int day = java.util.Calendar.getInstance().get(java.util.Calendar.DATE);
-    int index = (day - 1) % 5 + 1; // index = 1 ถึง 5
+    int index = (day - 1) % 5 + 1;
     String bgImage = "assets/media/auth/bg" + index + ".jpg";
 %>
 
