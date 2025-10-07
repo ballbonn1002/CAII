@@ -119,9 +119,6 @@ CREATE TABLE IF NOT EXISTS sso_token (
   ip_addr       VARCHAR(64)  NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-CREATE INDEX idx_sso_token_user ON sso_token (user_id, status);
-CREATE INDEX idx_sso_token_exp  ON sso_token (expires_at);
-
 --Add work_type & onsite_num to User
 ALTER TABLE `user` ADD `work_type` CHAR(1) NULL DEFAULT NULL AFTER `work_time_end`, ADD `onsite_num` CHAR(1) NULL DEFAULT NULL AFTER `work_type`;
 
