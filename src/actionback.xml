@@ -113,8 +113,36 @@
 			<result name="success" type="tiles">holiday_newlist</result>
 			<result name="error">/index.jsp</result>
 	</action>
-		
-
+	
+	<!-- Check All Calendar -->
+	<action name="checkAllCalendar" class="com.cubesofttech.action.WorkHoursAction" method="CheckAllCalendar">
+			<result name="success" type="tiles">CheckAllCalendar</result>
+			<result name="error">/index.jsp</result>
+	</action>
+	<action name="TestSearchAllinCalendar" class="com.cubesofttech.action.WorkHoursAction" method="CheckAllCalendar">
+			<result name="success" type="tiles">CheckAllCalendar</result>
+			<result name="error">/index.jsp</result>
+	</action>
+	<action name="new_modalLeaveStatus"
+			class="com.cubesofttech.action.LeaveAction"
+			method="New_modalLeaveStatus">
+			<result name="success" type="tiles">leave_approved</result>
+			<result name="error">/index.jsp</result>
+	</action>
+	
+	<!-- Announcement -->
+	<action name="announcementList" class="com.cubesofttech.action.AnnouncementAction" method="AnnouncementList">
+			<result name="success" type="tiles">AnnouncementList</result>
+			<result name="error">/index.jsp</result>
+	</action>
+	<action name="announcementRead" class="com.cubesofttech.action.AnnouncementAction" method="readcardannounce">
+			<result name="success" type="tiles">AnnouncementRead</result>
+			<result name="error">/index.jsp</result>
+	</action>
+	<!-- <action name="announcementAdd" class="com.cubesofttech.action.AnnouncementAction" method="readcardannounce">
+			<result name="success" type="tiles">AnnouncementAdd</result>
+			<result name="error">/index.jsp</result>
+	</action> -->
 		
 	</package>
 </struts>

@@ -3,8 +3,11 @@ package com.cubesofttech.action;
 import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.Month;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
@@ -18,12 +21,14 @@ import org.apache.struts2.ServletActionContext;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cubesofttech.dao.HolidayDAO;
+import com.cubesofttech.dao.LeaveDAO;
 import com.cubesofttech.dao.UserDAO;
 import com.cubesofttech.dao.WorkHoursDAO;
 import com.cubesofttech.model.Holiday;
 import com.cubesofttech.model.User;
 import com.cubesofttech.model.WorkHours;
 import com.cubesofttech.service.WorkHoursService;
+import com.cubesofttech.util.DateUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.opensymphony.xwork2.ActionSupport;
 
@@ -42,6 +47,8 @@ public class WorkHoursAction extends ActionSupport {
 	private HolidayDAO holidayDAO;
 	@Autowired
 	private UserDAO userDAO;
+	@Autowired
+	private LeaveDAO leaveDAO;
 	
 	private Map<String, String> getHeadersInfo(HttpServletRequest request) {
 
@@ -155,4 +162,202 @@ public class WorkHoursAction extends ActionSupport {
 	    }
 		return null;
 	}
+	
+	public String CheckAllCalendar() {
+
+		String userCalendar = request.getParameter("usercalendar");
+		if (userCalendar != null && !userCalendar.isEmpty()) {
+		    request.getSession().setAttribute("usercalendar", userCalendar);
+		} else {
+		    userCalendar = (String) request.getSession().getAttribute("usercalendar");
+		}
+
+		User onlineUser = (User) request.getSession().getAttribute("onlineUser");
+		String userId = (userCalendar != null && !userCalendar.isEmpty()) 
+		                 ? userCalendar 
+		                 : onlineUser.getId();
+
+		request.setAttribute("logonUser", userId); // ส่งไป JSP
+		
+		try {		
+	        // Get current user and date info
+	        LocalDate today = LocalDate.now();
+	        int currentYear = today.getYear();
+	        int currentMonth = today.getMonthValue();
+	        int last2year = currentYear - 1;
+	        
+			// Holiday Calendar
+			List<Holiday> allholiday = holidayDAO.findAllHoliday();
+			request.setAttribute("allholiday", allholiday);
+			
+			// Leave Calendar
+			LocalDate startOfYear = LocalDate.of(last2year, Month.JANUARY, 1);
+			LocalDate endOfYear   = LocalDate.of(currentYear, Month.DECEMBER, 31);
+
+			DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+			Timestamp start_date_leave = DateUtil.dateToTimestamp(startOfYear.format(dateFormatter), "00:00:00.0");
+			Timestamp end_date_leave = DateUtil.dateToTimestamp(endOfYear.format(dateFormatter), "23:59:59.0");
+
+			List leavelist = leaveDAO.myLeavesList(userId, start_date_leave, end_date_leave);
+			request.setAttribute("leave", leavelist);
+			log.debug("leave: " + leavelist);
+			
+			// Check in - Check out Calendar
+			User userWorkTime = userDAO.findById(userId);
+			String workStartTime = userWorkTime.getWorkTimeStart();
+			String workEndTime = userWorkTime.getWorkTimeEnd();
+
+			// Get check-in / check-out data
+			Map<LocalDate, Map<String,Object>> checkinMap = workHoursDAO.getCheckinsForYear(userId, last2year, currentYear);
+			log.debug("checkinMap: " + checkinMap);
+			Map<LocalDate, Map<String,Object>> checkoutMap = workHoursDAO.getCheckoutsForYear(userId, last2year, currentYear);
+			log.debug("checkoutMap: " + checkoutMap);
+
+			List<Map<String, Object>> workData = new ArrayList<>();
+
+			LocalDate startDate = LocalDate.of(last2year, 1, 1);
+			LocalDate endDate = LocalDate.of(currentYear, 12, 31);
+
+			for (LocalDate date = startDate; !date.isAfter(endDate); date = date.plusDays(1)) {
+			    Map<String, Object> dayData = new HashMap<>();
+			    dayData.put("DATE(work_hours_time_work)", date.toString());
+
+			    // Check-in
+			    Map<String, Object> checkinData = checkinMap.get(date);
+			    if (checkinData != null) {
+			        Timestamp checkinTs = (Timestamp) checkinData.get("checkinTs");
+			        Object descriptionIn = checkinData.get("descriptionIn");
+			        Object workTypeIn = checkinData.get("workTypeIn");
+
+			        if (checkinTs != null) {
+			            dayData.put("mycheckin", checkinTs.toLocalDateTime().toString());
+			            dayData.put("mycheckins", checkinTs);
+			        } else {
+			            dayData.put("mycheckin", null);
+			            dayData.put("mycheckins", null);
+			        }
+
+			        if (descriptionIn != null) {
+			            dayData.put("descriptionIn", descriptionIn.toString());
+			        } else {
+			            dayData.put("descriptionIn", "");
+			        }
+			        
+			        if (workTypeIn != null) {
+			        	dayData.put("workTypeIn", workTypeIn.toString());
+			        } else {
+			        	dayData.put("workTypeIn", "");
+			        }
+			    } else {
+			        dayData.put("mycheckin", null);
+			        dayData.put("mycheckins", null);
+			        dayData.put("descriptionIn", "");
+			        dayData.put("workTypeIn", null);
+			    }
+
+			    // Check-out
+			    Map<String, Object> checkoutData = checkoutMap.get(date);
+			    if (checkoutData != null) {
+			        Timestamp checkoutTs = (Timestamp) checkoutData.get("checkoutTs");
+			        Object workingHours = checkoutData.get("workinghours");
+			        Object descriptionOut = checkoutData.get("descriptionOut");
+			        Object workTypeOut = checkoutData.get("workTypeOut");
+
+			        if (checkoutTs != null) {
+			            String checkoutTimeStr = checkoutTs.toLocalDateTime().toLocalTime().toString().substring(0, 5);
+			            dayData.put("checkouttime", checkoutTimeStr);
+			        } else {
+			            dayData.put("checkouttime", "");
+			        }
+
+			        if (workingHours != null) {
+			            dayData.put("workinghours", workingHours.toString());
+			        } else {
+			            dayData.put("workinghours", "");
+			        }
+			        
+			        if (descriptionOut != null) {
+			        	dayData.put("descriptionOut", descriptionOut.toString());
+			        } else {
+			        	dayData.put("descriptionOut", "");
+			        }
+			        
+			        if (workTypeOut != null) {
+			        	dayData.put("workTypeOut", workTypeOut.toString());
+			        } else {
+			        	dayData.put("workTypeOut", "");
+			        }
+			    } else {
+			        dayData.put("checkouttime", "");
+			        dayData.put("workinghours", "");
+			        dayData.put("descriptionOut", "");
+			        dayData.put("workTypeOut", null);
+			    }
+			    
+			    // คำนวณ status
+			    String status = "Incomplete";
+			    if (dayData.get("mycheckin") != null && !dayData.get("checkouttime").equals("")) {
+			        try {
+			            LocalTime checkinTime = LocalTime.parse(dayData.get("mycheckin").toString().substring(11,16));
+			            LocalTime checkoutTime = LocalTime.parse(dayData.get("checkouttime").toString());
+
+			            String[] startParts = workStartTime.split(":");
+			            LocalTime workStart = LocalTime.of(
+			                Integer.parseInt(startParts[0].trim()),
+			                Integer.parseInt(startParts[1].trim())
+			            );
+
+			            String[] endParts = workEndTime.split(":");
+			            LocalTime workEnd = LocalTime.of(
+			                Integer.parseInt(endParts[0].trim()),
+			                Integer.parseInt(endParts[1].trim())
+			            );
+
+			            boolean isLate = checkinTime.isAfter(workStart);
+			            boolean isEarlyOut = checkoutTime.isBefore(workEnd);
+
+			            if (isLate && isEarlyOut) {
+			                status = "Unfinished Work";
+			            } else if (isLate) {
+			                status = "Late";
+			            } else if (isEarlyOut) {
+			                status = "Early out";
+			            } else {
+			                status = "On Time";
+			            }
+
+			        } catch (Exception e) {
+			            log.debug("Error parsing time for date: " + date + " - " + e.getMessage());
+			            status = "Incomplete";
+			        }
+			    }
+
+			    dayData.put("status", status);
+			    workData.add(dayData);
+			}
+
+			// Set attributes for JSP
+			ObjectMapper mapper = new ObjectMapper();
+			request.setAttribute("workList", workData);
+			request.setAttribute("stime", workStartTime);
+			request.setAttribute("etime", workEndTime);
+			request.setAttribute("user", userWorkTime);
+			request.setAttribute("month", String.valueOf(currentMonth));
+			request.setAttribute("year", String.valueOf(currentYear));
+			
+			List<Map<String, Object>> cubeUser = userDAO.sequense();
+			request.setAttribute("cubeUser", cubeUser);
+			
+			String cubeUserJson = mapper.writeValueAsString(cubeUser);
+			request.setAttribute("cubeUserJson", cubeUserJson);
+
+			log.debug("workData size: " + workData.size());
+
+			return SUCCESS;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ERROR;
+		}
+	}
+	
 }

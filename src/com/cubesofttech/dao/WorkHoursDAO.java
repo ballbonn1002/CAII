@@ -1,6 +1,7 @@
 package com.cubesofttech.dao;
 
 import java.sql.Timestamp;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 
@@ -209,6 +210,7 @@ public interface WorkHoursDAO {
 	 
 	 public List<WorkHours> findByUserYear(String userId, String year) throws Exception;
 	 
-	 
+	 public Map<LocalDate, Map<String, Object>> getCheckinsForYear(String userId, int year1, int year2) throws Exception;
+	 public Map<LocalDate, Map<String, Object>> getCheckoutsForYear(String userId, int year1, int year2) throws Exception;
 	 
 }

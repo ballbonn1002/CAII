@@ -1,9 +1,11 @@
 package com.cubesofttech.dao;
 
 import java.sql.Timestamp;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -2505,6 +2507,80 @@ public List<WorkHours> findByUserYear(String userId, String year) throws Excepti
 	}
 	return list;
 }
+
+public Map<LocalDate, Map<String, Object>> getCheckinsForYear(String userId, int year1, int year2) throws Exception {
+	Session session = this.sessionFactory.getCurrentSession();
+	Map<LocalDate, Map<String, Object>> checkinMap = new HashMap<>();
+	try {
+		String sql = "SELECT work_hours_time_work AS mycheckin, description, work_type " + "FROM work_hours "
+				+ "WHERE user_create = :userId " + "AND YEAR(work_hours_time_work) BETWEEN :year1 AND :year2 "
+				+ "AND work_hours_type = 1 " + // 1 = checkin
+				"ORDER BY work_hours_id DESC";
+
+		SQLQuery query = session.createSQLQuery(sql);
+		query.setParameter("userId", userId);
+		query.setParameter("year1", year1);
+		query.setParameter("year2", year2);
+		query.setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
+
+		List<Map<String, Object>> results = query.list();
+		for (Map<String, Object> row : results) {
+			Timestamp ts = (Timestamp) row.get("mycheckin");
+			Object description = row.get("description");
+			Object worktype = row.get("work_type");
+
+			if (ts != null) {
+				Map<String, Object> data = new HashMap<>();
+				data.put("checkinTs", ts);
+				data.put("descriptionIn", description);
+				data.put("workTypeIn", worktype);
+
+				checkinMap.put(ts.toLocalDateTime().toLocalDate(), data);
+			}
+		}
+	} catch (Exception e) {
+		e.printStackTrace();
+	}
+	return checkinMap;
+}
+
+public Map<LocalDate, Map<String, Object>> getCheckoutsForYear(String userId, int year1, int year2) throws Exception {
+	Session session = this.sessionFactory.getCurrentSession();
+	Map<LocalDate, Map<String, Object>> checkoutMap = new HashMap<>();
+	try {
+		String sql = "SELECT work_hours_time_work, workinghours, description, work_type " + "FROM work_hours "
+				+ "WHERE user_create = :userId " + "AND YEAR(work_hours_time_work) BETWEEN :year1 AND :year2 "
+				+ "AND work_hours_type = 2 " + "ORDER BY work_hours_id DESC";
+
+		SQLQuery query = session.createSQLQuery(sql);
+		query.setParameter("userId", userId);
+		query.setParameter("year1", year1);
+		query.setParameter("year2", year2);
+		query.setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
+
+		List<Map<String, Object>> results = query.list();
+		for (Map<String, Object> row : results) {
+			Timestamp checkoutTs = (Timestamp) row.get("work_hours_time_work");
+			Object workingHours = row.get("workinghours");
+			Object descriptions = row.get("description");
+			Object worktype = row.get("work_type");
+
+			if (checkoutTs != null) {
+				Map<String, Object> data = new HashMap<>();
+				data.put("checkoutTs", checkoutTs);
+				data.put("workinghours", workingHours);
+				data.put("descriptionOut", descriptions);
+				data.put("workTypeOut", worktype);
+
+				checkoutMap.put(checkoutTs.toLocalDateTime().toLocalDate(), data);
+			}
+		}
+	} catch (Exception e) {
+		e.printStackTrace();
+	}
+	return checkoutMap;
+}
+
 
 
 
