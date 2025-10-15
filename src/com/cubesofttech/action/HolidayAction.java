@@ -1,10 +1,11 @@
 package com.cubesofttech.action;
 
-import java.io.PrintWriter;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
+import java.util.ArrayList;
+import java.util.Collections;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -44,56 +45,67 @@ public class HolidayAction extends ActionSupport {
 
             String yearParam = request.getParameter("year");
 
- 
+            Integer currentYear = Calendar.getInstance().get(Calendar.YEAR);
+
             List<Object> yearsRaw = holidayDAO.searchallyear();
-            Integer fallback = Calendar.getInstance().get(Calendar.YEAR);
-            Integer maxYear = null;
-            if (yearsRaw != null && !yearsRaw.isEmpty()) {
-                for (Object o : yearsRaw) {
-                    if (o == null) continue;
-                    try {
-                        int y = Integer.parseInt(o.toString().trim());
-                        if (maxYear == null || y > maxYear) maxYear = y;
-                    } catch (NumberFormatException ignore) { 
-      
-                    }
+            if (yearsRaw == null) yearsRaw = new ArrayList<>();
+
+            boolean hasCurrent = false;
+            for (Object o : yearsRaw) {
+                if (o != null && o.toString().trim().equals(String.valueOf(currentYear))) {
+                    hasCurrent = true;
+                    break;
                 }
             }
-            if (maxYear == null) maxYear = fallback; 
+            if (!hasCurrent) {
+                yearsRaw.add(String.valueOf(currentYear));
+            }
 
 
+            List<Integer> yearsSorted = new ArrayList<>();
+            for (Object o : yearsRaw) {
+                if (o == null) continue;
+                try {
+                    yearsSorted.add(Integer.parseInt(o.toString().trim()));
+                } catch (NumberFormatException ignore) {  }
+            }
+            Collections.sort(yearsSorted, Collections.reverseOrder());
+
+            // ตัดสินใจปีที่จะใช้แสดง (ยึดปีปัจจุบันเป็นค่าเริ่มต้นเสมอ ถ้าไม่ส่ง year มา)
             boolean showAll = false;
             Integer yearToUse = null;
             if (yearParam == null || yearParam.trim().isEmpty()) {
-  
-                yearToUse = maxYear;
+                yearToUse = currentYear;
             } else if ("all".equalsIgnoreCase(yearParam.trim())) {
                 showAll = true;
             } else {
                 try {
                     yearToUse = Integer.parseInt(yearParam.trim());
                 } catch (NumberFormatException nfe) {
-                    log.warn("Invalid 'year' param: " + yearParam + " -> fallback to latest year");
-                    yearToUse = maxYear;
+                    yearToUse = currentYear; 
                 }
             }
 
 
             List<Holiday> holidayList;
             if (showAll) {
-                holidayList = holidayDAO.findAll(); 
+                holidayList = holidayDAO.findAll();
                 request.setAttribute("selectedYear", "all");
                 request.setAttribute("currentYear", null);
                 request.setAttribute("isAll", true);
             } else {
-                holidayList = holidayDAO.findByYear(yearToUse); 
+                holidayList = holidayDAO.findByYear(yearToUse);
                 request.setAttribute("selectedYear", String.valueOf(yearToUse));
                 request.setAttribute("currentYear", yearToUse);
                 request.setAttribute("isAll", false);
             }
 
             request.setAttribute("holidayList", holidayList);
-            request.setAttribute("holidayList_year", yearsRaw);
+
+            List<Object> yearsDisplay = new ArrayList<>();
+            for (Integer y : yearsSorted) yearsDisplay.add(String.valueOf(y));
+            request.setAttribute("holidayList_year", yearsDisplay);
+
             request.setAttribute("dbOk", true);
             request.setAttribute("rowCount", holidayList == null ? 0 : holidayList.size());
 
@@ -160,9 +172,6 @@ public class HolidayAction extends ActionSupport {
                     ? (User) request.getSession(false).getAttribute("onlineUser")
                     : null;
             String logonUser = (user != null && user.getId() != null) ? user.getId() : "";
-//            User user = (User) request.getSession().getAttribute("onlineUser");
-//            String logonUser = user.getId();  
-
 
             String Date_Start = request.getParameter("Date-Start");
             String Date_End   = request.getParameter("Date-End");
@@ -180,7 +189,7 @@ public class HolidayAction extends ActionSupport {
                 return INPUT;
             }
             if (Date_End == null || Date_End.trim().isEmpty()) {
-                Date_End = Date_Start; 
+                Date_End = Date_Start;
             }
 
             SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
@@ -194,7 +203,6 @@ public class HolidayAction extends ActionSupport {
                 request.setAttribute("flag_form", checkFlag);
                 return INPUT;
             }
-
 
             if (start_date.equals(end_date)) {
                 // วันเดียว
@@ -242,7 +250,6 @@ public class HolidayAction extends ActionSupport {
             return ERROR;
         }
     }
-
 
     // ------------------- Edit -------------------
     public String Edit() {
@@ -294,7 +301,7 @@ public class HolidayAction extends ActionSupport {
                 return INPUT;
             }
             if (Date_End == null || Date_End.trim().isEmpty()) {
-                Date_End = Date_Start; 
+                Date_End = Date_Start;
             }
 
             SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
@@ -321,7 +328,7 @@ public class HolidayAction extends ActionSupport {
                 boolean conflict = false;
                 if (dup != null) {
                     for (Map<String, Object> row : dup) {
-                        Object idObj = row.get("id_date"); 
+                        Object idObj = row.get("id_date");
                         if (idObj != null && !String.valueOf(id).equals(String.valueOf(idObj))) {
                             conflict = true;
                             break;
@@ -335,12 +342,10 @@ public class HolidayAction extends ActionSupport {
                     return INPUT;
                 }
             } else {
-
                 Holiday probe = new Holiday();
-                probe.setId_date((long) id); 
+                probe.setId_date((long) id);
                 probe.setStart_date(start_date);
                 probe.setEnd_date(end_date);
-
 
                 List<Holiday> overlap = holidayDAO.protect_edit(probe);
                 if (overlap != null && !overlap.isEmpty()) {
