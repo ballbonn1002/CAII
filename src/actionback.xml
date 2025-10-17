@@ -150,6 +150,100 @@
 			<result name="success" type="tiles">AnnouncementAdd</result>
 			<result name="error">/index.jsp</result>
 	</action> -->
+	
+	<!-- POSITION -->
+    <action name="position_list"
+            class="com.cubesofttech.action.PositionAction"
+            method="list">
+        <result name="success" type="tiles">positionList</result>
+        <result name="error">/index.jsp</result>
+    </action>
+
+    <action name="position_add"
+            class="com.cubesofttech.action.PositionAction"
+            method="addPosition">
+        <result name="success" type="tiles">positionAdd</result>
+        <result name="error">/index.jsp</result>
+    </action>
+
+    <action name="savePosition"
+            class="com.cubesofttech.action.PositionAction" method="savePosition">
+        <result name="success" type="redirectAction">position_list</result>
+        <result name="input" type="chain">position_add</result>
+
+        <result name="error">/index.jsp</result>
+    </action>
+
+	<action name="editPosition"
+        class="com.cubesofttech.action.PositionAction" method="PositionEdit">
+    	<result name="success" type="tiles">positionEdit</result>
+    	<result name="error">/index.jsp</result>
+	</action>
+
+
+    <action name="updatePosition"
+            class="com.cubesofttech.action.PositionAction" method="updatePosition">  
+        <result name="success" type="redirectAction">position_list</result>
+        <result name="input" type="tiles">positionEdit</result>
+        <result name="error">/index.jsp</result>
+    </action>
+
+    <action name="position_delete"
+            class="com.cubesofttech.action.PositionAction"
+            method="deletePosition">
+        <result name="success" type="redirectAction">position_list</result>
+        <result name="error">/index.jsp</result>
+    </action>
+    
+  	<action name="checkDuplicatePositionId"
+        class="com.cubesofttech.action.PositionAction"
+        method="checkDuplicatePositionId">
+	</action>
+
+		
+		<!-- Department -->
+		<action name="department_list"
+			class="com.cubesofttech.action.DepartmentAction" method="list">
+			<result name="success" type="tiles">departmentList</result>
+		</action>
+		
+		<action name="department_add"
+			class="com.cubesofttech.action.DepartmentAction" method="addDepart">
+			<result name="success" type="tiles">departmentAdd</result>
+			<result name="error">/index.jsp</result>
+		</action>
+		
+		<action name="saveDepart"
+			class="com.cubesofttech.action.DepartmentAction" method="saveDepart">
+			<result name="success" type="redirectAction">department_list</result> 
+			<result name="error">/index.jsp</result>
+			<result name="input" type="tiles">departmentAdd</result>
+		</action>
+		
+		<action name="deleteDepartment"
+			class="com.cubesofttech.action.DepartmentAction"
+			method="deleteDepartment">
+			<result name="success" type="redirectAction">department_list</result> 
+			<result name="error">/index.jsp</result>
+		</action>
+		
+		<action name="editDepartment"
+			class="com.cubesofttech.action.DepartmentAction"
+			method="updateDepart">
+			<result name="success" type="tiles">departmentEdit</result> 
+			<result name="error">/index.jsp</result>
+		</action>
+		
+		<action name="updateDepart"
+			class="com.cubesofttech.action.DepartmentAction" method="editDepart">
+			<result name="success" type="redirectAction">department_list</result> 
+			<result name="error">/index.jsp</result>
+		</action>
+		
+		<action name="checkDuplicateDepartmentId"
+        	class="com.cubesofttech.action.DepartmentAction"
+        	method="checkDuplicateDepartmentId">
+		</action>
 		
 	</package>
 </struts>

@@ -103,4 +103,42 @@
 			value="/pages-back/announcement/announcement_read.jsp"/>
 	</definition>
 	
+	<!-- POSITION -->
+	<definition name="positionList" extends="baseLayout">
+		<put-attribute name="title" value="Position List"/>
+		<put-attribute name="body"
+			value="/pages-back/position/position_list.jsp" />
+	</definition>
+	
+	<definition name="positionAdd" extends="baseLayout">
+		<put-attribute name="title" value="Add Position" />
+		<put-attribute name="body"
+			value="/pages-back/position/position_add.jsp" />
+	</definition>
+	
+	<definition name="positionEdit" extends="baseLayout">
+		<put-attribute name="title" value="Edit Position" />
+		<put-attribute name="body"
+			value="/pages-back/position/position_edit.jsp" />
+	</definition>
+	
+		<!-- DEPARTMENT -->
+	<definition name="departmentList" extends="baseLayout">
+		<put-attribute name="title" value="Department List"/>
+		<put-attribute name="body"
+			value="/pages-back/department/department_list.jsp" />
+	</definition>
+	
+	<definition name="departmentAdd" extends="baseLayout">
+		<put-attribute name="title" value="Add Department" />
+		<put-attribute name="body"
+			value="/pages-back/department/department_add.jsp" />
+	</definition>
+	
+	<definition name="departmentEdit" extends="baseLayout">
+		<put-attribute name="title" value="Edit Department" />
+		<put-attribute name="body"
+			value="/pages-back/department/department_edit.jsp" />
+	</definition>
+
 </tiles-definitions>
