@@ -304,20 +304,6 @@
 						</div>
 						
 						
-						
-						
-						
-						
-						
-
-						
-						
-						
-						
-						
-						
-						
-						
 						<!--end::Controls-->
 					</div>
 					<!-- Recent Update -->
@@ -561,16 +547,86 @@
 								<div class="d-flex align-items-center mb-2 gap-2">
 									<span class="fw-bold me-2 text-primary" style="font-size:15px !important;">#${leave.leave_id}</span>
 									
-									<!-- icon leave -->
-									<!-- <div class="symbol symbol-35px me-4">
-										<span class="symbol-label bg-light-success">
-											<i class="ki-duotone ki-airplane fs-2x text-success">
-												<span class="path1"></span>
-												<span class="path2"></span>
-											</i>
-										</span>
-									</div> -->
-									<!-- icon leave -->
+										<c:if test="${leave.leave_type_id.toString() == '1'}">
+											<div class="symbol symbol-35px me-4">
+												<span class="symbol-label bg-light-success">
+													<i class="ki-duotone ki-airplane fs-2x text-success">
+														<span class="path1"></span>
+														<span class="path2"></span>
+													</i>
+												</span>
+											</div>
+										</c:if>
+										<c:if test="${leave.leave_type_id.toString() == '2'}">
+											<div class="symbol symbol-35px me-4">
+												<span class="symbol-label bg-light-primary">
+													<i class="ki-duotone ki-car-2 fs-2x text-primary">
+														<span class="path1"></span>
+														<span class="path2"></span>
+														<span class="path3"></span>
+														<span class="path4"></span>
+														<span class="path5"></span>
+														<span class="path6"></span>
+													</i>												
+												</span>
+											</div>
+										</c:if>
+										<c:if test="${leave.leave_type_id.toString() == '3'}">
+											<div class="symbol symbol-35px me-4">
+												<span class="symbol-label bg-light-info">
+													<i class="ki-duotone ki-pulse fs-2x text-info">
+														<span class="path1"></span>
+														<span class="path2"></span>
+													</i>
+												</span>
+											</div>
+										</c:if>
+										<c:if test="${leave.leave_type_id.toString() == '4'}">
+											<div class="symbol symbol-35px me-4">
+												<span class="symbol-label bg-light-danger">
+													<i class="ki-duotone ki-calendar-remove fs-2x text-danger">
+														<span class="path1"></span>
+														<span class="path2"></span>
+														<span class="path3"></span>
+														<span class="path4"></span>
+														<span class="path5"></span>
+														<span class="path6"></span>
+													</i>												
+												</span>
+											</div>
+										</c:if>
+										<c:if test="${leave.leave_type_id.toString() == '5'}">
+											<div class="symbol symbol-35px me-4">
+												<span class="symbol-label bg-light-dark">
+													<i class="ki-duotone ki-brifecase-cros fs-2x text-dark">
+														<span class="path1"></span>
+														<span class="path2"></span>
+														<span class="path3"></span>
+													</i>												
+												</span>
+											</div>
+										</c:if>
+										<c:if test="${leave.leave_type_id.toString() == '6'}">
+											<div class="symbol symbol-35px me-4">
+												<span class="symbol-label bg-light-warning">
+													<i class="ki-duotone ki-timer fs-2x text-warning">
+														<span class="path1"></span>
+														<span class="path2"></span>
+														<span class="path3"></span>
+													</i>
+												</span>
+											</div>
+										</c:if>
+										<c:if test="${leave.leave_type_id.toString() == '7'}">
+											<div class="symbol symbol-35px me-4">
+												<span class="symbol-label" style="background-color: #4B5675;">
+													<i class="ki-duotone ki-abstract-12 fs-2x" style="color: #FFFFFF;">
+														<span class="path1"></span>
+														<span class="path2"></span>
+													</i>
+												</span>
+											</div>
+										</c:if>
 									
 									<span class="fs-4 fw-semibold" style="font-weight: 1000 !important;">${leave.leave_type_name}</span>
 								</div>
