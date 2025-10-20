@@ -49,60 +49,59 @@
 									<!-- Leave Type -->
 									<div class="col-md-4">
 										<div class="mb-5">
-											<label class="form-label">Leave Type</label>
-												<select class="form-select form-select-solid" data-placeholder="All Leave Type" name="type" onchange="this.form.submit()">
-													<option value="allType" <c:if test="${leaveType == 'allType'}"><c:out value="selected=selected"/></c:if>>All Leave Type</option>
-													<c:forEach var="leavetype" items="${leavetypelistChoice}">
-														<option value="${leavetype.leaveTypeId}"
-															<c:if test="${leaveType == leavetype.leaveTypeId}">
-																<c:out value="selected=selected"/>
-															</c:if>>${leavetype.leaveTypeName}
-														</option>
-													</c:forEach>
-												</select>
-												
+										<!-- <label class="form-label">Leave Type</label> -->
+											<select class="form-select form-select-solid" data-placeholder="All Leave Type" name="type" onchange="this.form.submit()">
+												<option value="allType" <c:if test="${leaveType == 'allType'}"><c:out value="selected=selected"/></c:if>>All Leave Type</option>
+												<c:forEach var="leavetype" items="${leavetypelistChoice}">
+													<option value="${leavetype.leaveTypeId}"
+														<c:if test="${leaveType == leavetype.leaveTypeId}">
+															<c:out value="selected=selected"/>
+														</c:if>>${leavetype.leaveTypeName}
+													</option>
+												</c:forEach>
+											</select>
 										</div>
 									</div>
 	
 									<!-- Status -->
 									<div class="col-md-4">
 										<div class="mb-5">
-											<label class="form-label">Status</label>
-												<select class="form-select form-select-solid" data-placeholder="All Status" name="appr" id="appr" onchange="this.form.submit()">
-													<option value="4" id="All1"
-														<c:if test="${ appr == 4 }">
-															<c:out value="selected=selected"/>
-														</c:if>>All Status
-													</option>
-													<option value="0"
-														<c:if test="${ appr == 0 }">
-															<c:out value="selected=selected"/>
-														</c:if>>Waiting for approve
-													</option>
-													<option value="1"
-														<c:if test="${ appr == 1 }">
-															<c:out value="selected=selected"/>
-														</c:if>>Approve
-													</option>
-													<option value="2"
-														<c:if test="${ appr == 2 }">
-															<c:out value="selected=selected"/>
-														</c:if>>Reject
-													</option>
-													<option value="3"
-														<c:if test="${ appr == 3 }">
-															<c:out value="selected=selected"/>
-														</c:if>>Cancel
-													</option>
-												</select>
-												
+											<!-- <label class="form-label">Status</label> -->
+											<select class="form-select form-select-solid" data-placeholder="All Status" name="appr" id="appr" onchange="this.form.submit()">
+												<option value="4" id="All1"
+													<c:if test="${ appr == 4 }">
+														<c:out value="selected=selected"/>
+													</c:if>>All Status
+												</option>
+												<option value="0"
+													<c:if test="${ appr == 0 }">
+														<c:out value="selected=selected"/>
+													</c:if>>Waiting for approve
+												</option>
+												<option value="1"
+													<c:if test="${ appr == 1 }">
+														<c:out value="selected=selected"/>
+													</c:if>>Approve
+												</option>
+												<option value="2"
+													<c:if test="${ appr == 2 }">
+														<c:out value="selected=selected"/>
+													</c:if>>Reject
+												</option>
+												<option value="3"
+													<c:if test="${ appr == 3 }">
+														<c:out value="selected=selected"/>
+													</c:if>>Cancel
+												</option>
+											</select>
 										</div>
 									</div>
 	
 									<!-- Date Range -->
 									<div class="col-md-4">
 										<div class="mb-5">
-											<label class="form-label">Date Range</label> <input class="form-control form-control-solid" placeholder="Pick date range" id="kt_daterangepicker" />
+											<!-- <label class="form-label">Date Range</label> -->
+											<input class="form-control form-control-solid" placeholder="Pick date range" id="kt_daterangepicker" />
 											<input type="hidden" name="startdate" id="startdate">
 											<input type="hidden" name="enddate" id="enddate">
 										</div>
