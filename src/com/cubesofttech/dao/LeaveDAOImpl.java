@@ -2178,7 +2178,7 @@ public class LeaveDAOImpl implements LeaveDAO {
 		List<Map<String, Object>> leavelist = null;
 		try {
 			StringBuilder sql = new StringBuilder(
-					"SELECT leaves.leave_id, leaves.user_id, user.name, leaves.leave_status_id, leave_type.leave_type_name, leaves.half_day, leaves.no_day, "
+					"SELECT leaves.leave_id, leaves.user_id, user.name, leaves.leave_status_id, leave_type.leave_type_id, leave_type.leave_type_name, leaves.half_day, leaves.no_day, "
 							+ "leaves.start_date, leaves.end_date, leaves.start_time, leaves.end_time, leaves.description, leaves.time_create, file.path "
 							+ "FROM leaves LEFT JOIN leave_type ON leave_type.leave_type_id = leaves.leave_type_id "
 							+ "LEFT JOIN user ON leaves.user_id = user.id "
