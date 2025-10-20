@@ -112,13 +112,13 @@
 					</form>
 					<!-- DDL -->
 
-					<!-- icon -->
+					<!-- Summary Leave -->
 					<div class="card card-flush bgi-no-repeat bgi-size-contain bgi-position-x-center border-0 mb-5 mb-xl-10">
 						<div class="card-body">
 							<div class="row g-5">
 
 								<!-- ลาพักร้อน -->
-								<div class="col-6 col-md-4 col-xl-2">
+								<div class="col-6 col-md-4 col-xl-3">
 									<div class="d-flex align-items-center">
 										<div class="symbol symbol-50px me-4">
 											<span class="symbol-label bg-light-success">
@@ -141,7 +141,7 @@
 								</div>
 
 								<!-- ลากิจ -->
-								<div class="col-6 col-md-4 col-xl-2">
+								<div class="col-6 col-md-4 col-xl-3">
 									<div class="d-flex align-items-center">
 										<div class="symbol symbol-50px me-4">
 											<span class="symbol-label bg-light-primary">
@@ -164,12 +164,36 @@
 									</div>
 								</div>
 
-								<!-- ลาป่วย -->
-								<div class="col-6 col-md-4 col-xl-2">
+								<!-- ลาพักร้อนที่เหลือ -->
+								<div class="col-6 col-md-4 col-xl-3">
 									<div class="d-flex align-items-center">
 										<div class="symbol symbol-50px me-4">
-											<span class="symbol-label bg-light-danger">
-												<i class="ki-duotone ki-pulse fs-2x text-danger">
+											<span class="symbol-label bg-light-warning">
+												<i class="ki-duotone ki-timer fs-2x text-warning">
+												 <span class="path1"></span>
+												 <span class="path2"></span>
+												 <span class="path3"></span>
+												</i>
+											</span>
+										</div>
+										<div class="d-flex flex-column">
+											<span class="fs-3 fw-bold text-dark">
+												<fmt:formatNumber type="number" pattern="#.##" value="${leave_6}"/>
+												<c:if test="${quota_4 != null || quota_4 != 0.0 || quota_4 != ''} ">
+													/<fmt:formatNumber type="number" pattern="#" value="${quota_4}"/>
+												</c:if>
+											</span>
+											<span class="text-muted">${type_6}</span>
+										</div>
+									</div>
+								</div>
+
+								<!-- ลาป่วย -->
+								<div class="col-6 col-md-4 col-xl-3">
+									<div class="d-flex align-items-center">
+										<div class="symbol symbol-50px me-4">
+											<span class="symbol-label bg-light-info">
+												<i class="ki-duotone ki-pulse fs-2x text-info">
 													<span class="path1"></span>
 													<span class="path2"></span>
 												</i>
@@ -188,11 +212,11 @@
 								</div>
 
 								<!-- ขาดงาน -->
-								<div class="col-6 col-md-4 col-xl-2">
+								<div class="col-6 col-md-4 col-xl-3">
 									<div class="d-flex align-items-center">
 										<div class="symbol symbol-50px me-4">
-											<span class="symbol-label bg-light-warning">
-												<i class="ki-duotone ki-calendar-remove fs-2x" style="color: var(--bs-orange)">
+											<span class="symbol-label bg-light-danger">
+												<i class="ki-duotone ki-calendar-remove fs-2x text-danger">
 													<span class="path1"></span>
 													<span class="path2"></span>
 													<span class="path3"></span>
@@ -214,11 +238,11 @@
 								</div>
 
 								<!-- ลาโดยไม่รับค่าจ้าง -->
-								<div class="col-6 col-md-4 col-xl-2">
+								<div class="col-6 col-md-4 col-xl-3">
 									<div class="d-flex align-items-center">
 										<div class="symbol symbol-50px me-4">
-											<span class="symbol-label bg-light-warning">
-												<i class="ki-duotone ki-brifecase-cros fs-2x text-warning">
+											<span class="symbol-label bg-light-dark">
+												<i class="ki-duotone ki-brifecase-cros fs-2x text-dark">
 													<span class="path1"></span>
 													<span class="path2"></span>
 													<span class="path3"></span>
@@ -237,7 +261,7 @@
 								</div>
 
 								<!-- ลาอื่น ๆ -->
-								<div class="col-6 col-md-4 col-xl-2">
+								<div class="col-6 col-md-4 col-xl-3">
 									<div class="d-flex align-items-center">
 										<div class="symbol symbol-50px me-4">
 											<span class="symbol-label" style="background-color: #4B5675;">
@@ -259,7 +283,7 @@
 							</div>
 						</div>
 					</div>
-					<!-- icon -->
+					<!-- Summary Leave -->
 
 					<!-- Recent Update -->
 					<div class="d-flex flex-wrap flex-stack pb-7">
