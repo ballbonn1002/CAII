@@ -9,10 +9,12 @@
 		</result-types>
 		<action name="authorization"
 			class="com.cubesofttech.action.LoginAction" method="login">
-			<!-- <result name="success" type="redirectAction">check_in?userId=${onlineUser.id} </result> -->
+			<!-- <result name="success" type="redirectAction">check_in?userId=${onlineUser.id} 
+				</result> -->
 			<result name="success" type="redirectAction">demo_dashboard</result>
 			<result name="error">/index.jsp</result>
-			<!-- <result name="input" type="redirectAction">check_in?userId=${onlineUser.id} </result> -->
+			<!-- <result name="input" type="redirectAction">check_in?userId=${onlineUser.id} 
+				</result> -->
 			<result name="input" type="redirectAction">demo_dashboard</result>
 		</action>
 	</package>
@@ -61,6 +63,82 @@
 			class="com.cubesofttech.action.WorkHoursAction" method="savecheck">
 			<result name="error">/index.jsp</result>
 		</action>
+		
+		<!-- MyLeave -->
+		
+			<!-- Listing -->
+		<action name="new_myleave_list" class="com.cubesofttech.action.LeaveAction" method="New_list">
+			<result name="success" type="tiles">new_myleave_list</result>
+			<result name="error">/index.jsp</result>
+		</action>
+			<!-- Listing -->
+			
+			<!-- Search -->
+		<action name="new_searchfromto" class="com.cubesofttech.action.LeaveAction" method="New_myleave">
+			<result name="success" type="tiles">new_myleave_list</result>
+			<result name="error">/index.jsp</result>
+		</action>
+			<!-- Search -->
+
+			<!-- Add -->
+		<action name="NewLeaveAdd" class="com.cubesofttech.action.LeaveAction" method="NewLeaveAdd">
+			<result name="success" type="tiles">newLeaveAdd</result>
+			<result name="error">/index.jsp</result>
+		</action>
+		<action name="getManagerIdAndManagerName"
+			class="com.cubesofttech.action.LeaveAction"
+			method="getManagerIdAndManagerName">
+			<result name="success" type="tiles">newLeaveAdd</result>
+			<result name="error">/index.jsp</result>
+		</action>
+		<action name="new_LeaveAdd_Do"
+			class="com.cubesofttech.action.LeaveAction" method="new_LeaveAdd_Do">
+			<result name="success" type="redirect">leavecalendar</result>
+			<result name="error">/index.jsp</result>
+		</action>
+			<!-- Add -->
+
+			<!-- Send Approve Btn | Add Page -->
+		<action name="new_LeaveAdd_Do" class="com.cubesofttech.action.LeaveAction" method="new_LeaveAdd_Do">
+			<result name="success" type="redirect">leavecalendar</result>
+			<result name="error">/index.jsp</result>
+		</action>
+			<!-- Send Approve Btn | Add Page -->
+		
+		<action name="leavecalendar" class="com.cubesofttech.action.BorrowAction" method="leave_calendar">
+			<result name="success" type="tiles">leavecalendar</result>
+			<result name="error">/index.jsp</result>
+		</action>
+		
+			<!-- Modal Leave Status Btn -->
+		<action name="new_modalLeaveStatus" class="com.cubesofttech.action.LeaveAction" method="New_modalLeaveStatus">
+			<result name="success" type="tiles">leave_approved</result>
+			<result name="error">/index.jsp</result>
+		</action>
+			<!-- Modal Leave Status Btn -->
+
+			<!-- Edit Btn -->
+		<action name="NewLeaveEdit" class="com.cubesofttech.action.LeaveAction" method="NewLeaveEdit">
+			<result name="success" type="tiles">newLeaveEdit</result>
+			<result name="error">/index.jsp</result>
+		</action>
+			<!-- Edit Btn -->
+			
+			<!-- Send Approve Btn | Edit Page -->
+		<action name="new_LeaveEdit_Do" class="com.cubesofttech.action.LeaveAction" method="new_LeaveEdit_Do">
+			<result name="success" type="redirect">leavecalendar</result>
+			<result name="error">/index.jsp</result>
+		</action>
+			<!-- Send Approve Btn | Edit Page -->
+		
+			<!-- Update Status -->
+		<action name="Leave_inListStatusToCancel" class="com.cubesofttech.action.LeaveAction" method="Leave_inListStatusToCancel">
+			<result name="success" type="chain">new_myleave_list</result>
+			<result name="error">/index.jsp</result>
+		</action>
+			<!-- Update Status -->
+		
+		<!-- MyLeave -->
 
 		<action name="demo_table"
 			class="com.cubesofttech.action.NewsAction" method="demoDashboard">
@@ -246,4 +324,5 @@
 		</action>
 		
 	</package>
+	
 </struts>
