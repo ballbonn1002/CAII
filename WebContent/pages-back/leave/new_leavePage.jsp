@@ -440,7 +440,7 @@
 
             <!-- ✅ Buttons -->
             <div class="d-flex justify-content-end gap-3">
-                <button type="button" class="btn btn-light">Cancel</button>
+                <button type="button" class="btn btn-light" onclick="window.history.go(-1); return false;">Cancel</button>
                 <button type="button" class="btn btn-success" onclick="beforeSubmit();">Submit</button>
             </div>
 
