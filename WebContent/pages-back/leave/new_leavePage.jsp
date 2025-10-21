@@ -109,7 +109,7 @@
     <div class="card shadow-sm border-0">
         <div class="card-body p-10">
 
-            <!-- ✅ Header -->
+            <!--Header -->
 			<div class="d-flex justify-content-between align-items-center mb-6">
 			    <!-- ด้านซ้าย -->
 			    <div>
@@ -146,7 +146,7 @@
 </div>
 			
 
-            <!-- ✅ Type of leave -->
+            <!--Type of leave -->
 			<div class="mb-6">
 			 <!--  <label class="form-label required">Type of leave</label> -->
 			  <div class="row g-6">
@@ -200,7 +200,7 @@
 				  	</div>
 				</div> -->
 
-            <!-- ✅ Date range & half-day -->
+            <!--Date range & half-day -->
             <div class="row mb-8">
                 <!-- <div class="col-md-6">
                     <label class="form-label required">Start Date</label>
@@ -263,7 +263,7 @@
                 
             </div>
 
-            <!-- ✅ Start-End Time -->
+            <!--Start-End Time -->
             <!-- <div class="row mb-8">
 				<div class="col-md-6">
 				  <label class="form-label required">Start Time</label>
@@ -304,7 +304,7 @@
             
             
 
-            <!-- ✅ Total -->
+            <!--Total -->
             <!-- <div class="mb-8">
                 <span class="fw-semibold text-gray-700">รวมจำนวนวันลา:</span>
                 <span class="text-primary fw-bold ms-1">0.25 day</span>
@@ -339,7 +339,7 @@
 				</div>
 			</div>
 
-            <!-- ✅ Description -->
+            <!--Description -->
             <div class="mb-8">
                 <label class="form-label required">Description</label>
                 
@@ -357,7 +357,7 @@
                 <div class="text-danger mt-2">กรุณาระบุเหตุผลในการลา ตัวอย่าง ลางานเนื่องจากท้องเสีย</div>
             </div>
 
-            <!-- ✅ File Upload -->
+            <!--File Upload -->
             <!-- <div class="mb-8">
                 <label class="form-label">Attach files</label>
                 <div class="d-flex flex-column">
@@ -429,7 +429,7 @@
 			  </div>
 			</div>
 
-            <!-- ✅ Approver -->
+            <!--Approver -->
             <div class="mb-10">
                 <label class="form-label required">Approvers</label>
 				<select id="approver" name="approver" class="form-select form-select-solid" required>
@@ -438,7 +438,7 @@
 				<input hidden name="approver_hidden" id="approver_hidden" type="text">
             </div>
 
-            <!-- ✅ Buttons -->
+            <!--Buttons -->
             <div class="d-flex justify-content-end gap-3">
                 <button type="button" class="btn btn-light" onclick="window.history.go(-1); return false;">Cancel</button>
                 <button type="button" class="btn btn-success" onclick="beforeSubmit();">Submit</button>
@@ -666,16 +666,16 @@
 			locale: {
 				format: "DD MMM YYYY"
 	        },
-	        showDropdowns: true,     // ✅ มี dropdown เดือน/ปี
-	        linkedCalendars: false,  // ✅ เดือนซ้าย-ขวาอิสระ ไม่ fix
+	        showDropdowns: true,     //มี dropdown เดือน/ปี
+	        linkedCalendars: false,  //เดือนซ้าย-ขวาอิสระ ไม่ fix
 	        alwaysShowCalendars: true,
 	        opens: 'center'
 		}, function (start, end) {
-			// ✅ อัปเดต hidden input ทุกครั้งที่เลือกช่วงวันใหม่
+			//อัปเดต hidden input ทุกครั้งที่เลือกช่วงวันใหม่
 			$("#startdate").val(start.format("DD-MM-YYYY"));
 			$("#enddate").val(end.format("DD-MM-YYYY"));
 
-			// ✅ auto-submit form
+			//auto-submit form
 			$("#searchForm").submit();
 		});
 
@@ -876,7 +876,7 @@ debugger;
   			$('#amount_sub').val(hourDiff);
   			$('#amount_sub_hidden').val(hourDiff);
 
-            // 🟢 อัปเดตค่าแสดงผล (display text)
+            // อัปเดตค่าแสดงผล (display text)
             updateLeaveDisplay();
   			
         });
@@ -888,7 +888,7 @@ debugger;
 		  $('#amount_display').text(`${total.toFixed(2)} day`);
 		}
 
-        // 🟢 เรียกอัปเดตเมื่อมีการเปลี่ยนวันที่ด้วย
+        // เรียกอัปเดตเมื่อมีการเปลี่ยนวันที่ด้วย
         $('.input-daterange').on('change', updateLeaveDisplay);
         
   		/* End amount of day from Add Leave */
@@ -1037,7 +1037,7 @@ debugger;
 
 <script>
   /* document.addEventListener('DOMContentLoaded', function () {
-    // ✅ Start time picker
+    //Start time picker
     flatpickr("#start_time", {
       enableTime: true,
       noCalendar: true,
@@ -1048,7 +1048,7 @@ debugger;
       defaultDate: "09:00",
     });
 
-    // ✅ End time picker
+    //End time picker
     flatpickr("#end_time", {
       enableTime: true,
       noCalendar: true,
@@ -1064,7 +1064,7 @@ debugger;
 	  const startTimePicker = new tempusDominus.TempusDominus(document.getElementById("time_from"), {
 	    display: {
 	      components: {
-	        calendar: false, // ❌ ไม่ต้องมีปฏิทิน
+	        calendar: false, // ไม่ต้องมีปฏิทิน
 	        clock: true,     // แสดงนาฬิกา
 	        hours: true,
 	        minutes: true,
@@ -1141,7 +1141,7 @@ function beforeSubmit() {
 <script>
 document.addEventListener("DOMContentLoaded", function () {
 
-  // 🎯 Start Date Picker
+/*   // Start Date Picker
   const startPicker = new tempusDominus.TempusDominus(document.getElementById("date_from"), {
     localization: {
       format: "dd MMM yyyy",
@@ -1159,7 +1159,7 @@ document.addEventListener("DOMContentLoaded", function () {
     useCurrent: false
   });
 
-  // 🎯 End Date Picker
+  // End Date Picker
   const endPicker = new tempusDominus.TempusDominus(document.getElementById("date_to"), {
     localization: {
       format: "dd MMM yyyy",
@@ -1175,9 +1175,52 @@ document.addEventListener("DOMContentLoaded", function () {
       theme: 'light'
     },
     useCurrent: false
+  }); */
+
+
+
+
+
+//Start Date Picker
+  $("#date_from").daterangepicker({
+    singleDatePicker: true,
+    showDropdowns: true,
+    autoApply: true,  // ยืนยันโดยอัตโนมัติเมื่อเลือกวันที่
+    locale: {
+      format: "DD MMM YYYY",  // รูปแบบวันที่
+      monthNames: [
+        "January", "February", "March", "April", "May", "June",
+        "July", "August", "September", "October", "November", "December"
+      ],  // กำหนดชื่อเดือนเต็ม
+    },
+    drops: "down",
+    theme: 'light',  // ใช้ธีมแสง
   });
 
-  // 🧠 ซิงค์ค่า hidden input
+  // End Date Picker
+  $("#date_to").daterangepicker({
+    singleDatePicker: true,
+    showDropdowns: true,
+    autoApply: true,  // ยืนยันโดยอัตโนมัติเมื่อเลือกวันที่
+    locale: {
+        format: "DD MMM YYYY",  // รูปแบบวันที่
+        monthNames: [
+          "January", "February", "March", "April", "May", "June",
+          "July", "August", "September", "October", "November", "December"
+        ],  // กำหนดชื่อเดือนเต็ม
+    },
+    drops: "down",
+    theme: 'light',  // ใช้ธีมแสง
+  });
+
+
+
+
+
+
+  
+
+  // ซิงค์ค่า hidden input
   document.getElementById("date_from").addEventListener("change.td", function (e) {
     const val = e.detail.date ? e.detail.date.format("DD-MM-YYYY") : "";
     document.getElementById("date_from_hidden").value = val;

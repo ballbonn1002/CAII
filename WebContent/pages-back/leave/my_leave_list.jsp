@@ -101,7 +101,7 @@
 									<div class="col-md-4">
 										<div class="mb-5">
 											<!-- <label class="form-label">Date Range</label> -->
-											<input class="form-control form-control-solid" placeholder="Pick date range" id="kt_daterangepicker" />
+											<input id="kt_daterangepicker" class="form-control form-control-solid" placeholder="Pick date range" autocomplete="off"/>
 											<input type="hidden" name="startdate" id="startdate">
 											<input type="hidden" name="enddate" id="enddate">
 										</div>
@@ -1062,29 +1062,34 @@
 				format: "DD MMM YYYY"
 			}
 		}, function (start, end) {
-			// ✅ อัปเดต hidden input ทุกครั้งที่เลือกช่วงวันใหม่
+			// อัปเดต hidden input ทุกครั้งที่เลือกช่วงวันใหม่
 			$("#startdate").val(start.format("DD-MM-YYYY"));
 			$("#enddate").val(end.format("DD-MM-YYYY"));
 
-			// ✅ auto-submit form
+			// auto-submit form
 			$("#searchForm").submit();
 		}); */
 		$("#kt_daterangepicker").daterangepicker({
 	        startDate: start,
 	        endDate: end,
 			locale: {
-				format: "DD MMM YYYY"
+				format: "DD MMM YYYY",  // รูปแบบวันที่
+				monthNames: [
+				  "January", "February", "March", "April", "May", "June",
+				  "July", "August", "September", "October", "November", "December"
+				],  // กำหนดชื่อเดือนเต็ม
 	        },
-	        showDropdowns: true,     // ✅ มี dropdown เดือน/ปี
-	        linkedCalendars: false,  // ✅ เดือนซ้าย-ขวาอิสระ ไม่ fix
+	        showDropdowns: true,     // มี dropdown เดือน/ปี
+	        autoApply: true,  // ยืนยันโดยอัตโนมัติเมื่อเลือกวันที่
+	        linkedCalendars: false,  // เดือนซ้าย-ขวาอิสระ ไม่ fix
 	        alwaysShowCalendars: true,
 	        opens: 'center'
 		}, function (start, end) {
-			// ✅ อัปเดต hidden input ทุกครั้งที่เลือกช่วงวันใหม่
+			// อัปเดต hidden input ทุกครั้งที่เลือกช่วงวันใหม่
 			$("#startdate").val(start.format("DD-MM-YYYY"));
 			$("#enddate").val(end.format("DD-MM-YYYY"));
 
-			// ✅ auto-submit form
+			// auto-submit form
 			$("#searchForm").submit();
 		});
 
@@ -1100,9 +1105,9 @@
 	            format: 'DD MMM YYYY'
 	        },
 	        singleDatePicker: false,    // false = ใช้ช่วงวัน (range)
-	        showDropdowns: true,        // ✅ เพิ่ม dropdown เดือน/ปี
-	        linkedCalendars: false,     // ✅ ทำให้แต่ละปฏิทินอิสระ
-	        alwaysShowCalendars: true,  // ✅ คงแสดงปฏิทินไว้
+	        showDropdowns: true,        // เพิ่ม dropdown เดือน/ปี
+	        linkedCalendars: false,     // ทำให้แต่ละปฏิทินอิสระ
+	        alwaysShowCalendars: true,  // คงแสดงปฏิทินไว้
 	        opens: 'center'             // เปิดกลางหน้าจอ
 	    }, function(start, end) {
 	        console.log("Selected range: " + start.format("DD MMM YYYY") + " - " + end.format("DD MMM YYYY"));
@@ -1114,8 +1119,8 @@
 	        locale: {
 	            format: 'DD MMM YYYY'
 	        },
-	        showDropdowns: true,     // ✅ มี dropdown เดือน/ปี
-	        linkedCalendars: false,  // ✅ เดือนซ้าย-ขวาอิสระ ไม่ fix
+	        showDropdowns: true,     // มี dropdown เดือน/ปี
+	        linkedCalendars: false,  // เดือนซ้าย-ขวาอิสระ ไม่ fix
 	        alwaysShowCalendars: true,
 	        opens: 'center'
 	    }, function(start, end) {
@@ -1260,7 +1265,7 @@ function changStatus(id) {
         buttonsStyling: false,
         focusConfirm: false,
 
-        // ✅ ฟังก์ชันตรวจสอบก่อนกด "Confirm"
+        // ฟังก์ชันตรวจสอบก่อนกด "Confirm"
         preConfirm: () => {
             const val = document.getElementById('text').value.trim();
             if (!val) {
@@ -1270,7 +1275,7 @@ function changStatus(id) {
             return val;
         }
     }).then((result) => {
-        // ✅ ถ้ากดยืนยัน (เหมือน if(inputValue == true))
+        // ถ้ากดยืนยัน (เหมือน if(inputValue == true))
         if (result.isConfirmed) {
             const val = result.value;
 
@@ -1283,7 +1288,7 @@ function changStatus(id) {
                         reason: val
                     },
                     success: function(response) {
-                        window.location.reload(true); // ✅ reload หน้าทันทีเหมือนโค้ดเดิม
+                        window.location.reload(true); // reload หน้าทันทีเหมือนโค้ดเดิม
                     },
                     error: function() {
                         Swal.fire("Error", "Unable to cancel leave. Please try again.", "error");
@@ -1292,7 +1297,7 @@ function changStatus(id) {
             }
         }
 
-        // ✅ ถ้ากด Cancel (เหมือน if(inputValue == false))
+        // ถ้ากด Cancel (เหมือน if(inputValue == false))
         if (result.isDismissed) {
             return false;
         }
