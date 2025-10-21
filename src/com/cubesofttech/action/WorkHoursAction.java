@@ -92,6 +92,7 @@ public class WorkHoursAction extends ActionSupport {
 			
 			List<Holiday> holidayList = null;
 			holidayList = holidayDAO.findAllInMonth();
+			log.debug(holidayList);
 			request.setAttribute("holidayList", holidayList);
 			//log.debug(holidayList);
 			User user =  userDAO.findById(logonUser);
@@ -144,11 +145,16 @@ public class WorkHoursAction extends ActionSupport {
 				month = ldt.getMonthValue();
 				year = ldt.getYear();
 				log.debug(ldt.getDayOfMonth()+"|"+ldt.getMonthValue()+"|"+ldt.getYear());
-				//log.debug(ts.getDate()+"|"+ts.getMonth()+"|"+ts.getYear());
-				//date = ts.getDate();	month = ts.getMonth()+1;	year = ts.getYear();
 				log.debug(ts.getTime());
 				timeString = ldt.format(timeFormat);
-
+				if(ldt.isAfter(now)) {
+					result.put("status", "error");
+					result.put("message", "Can't check-in/out time in future. Please try again.");
+				} else {
+					result.put("status", "success");
+			        result.put("type", checkType);
+			        result.put("time", checkTime);
+				}
 			} else {
 				ts = Timestamp.valueOf(now);
 				date = now.getDayOfMonth();
@@ -168,7 +174,7 @@ public class WorkHoursAction extends ActionSupport {
 			wh.setLatitude(lat);
 			wh.setLongitude(lng);
 			wh.setDescription(des);
-			wh.setUserAgent(userAgent);
+			wh.setUserAgent("CA-II | "+userAgent);
 			wh.setIpAddress(ipAddress);
 			if("retro".equals(checkMode)) {
 				wh.setTimeCreate(Timestamp.valueOf(now));
@@ -180,14 +186,16 @@ public class WorkHoursAction extends ActionSupport {
 			wh.setUserCreate(userId);
 			wh.setUserUpdate(userId);
 			wh.setWorkinghours(workinghour);
-			
 			workHoursDAO.save(wh);
 			
 	        DateTimeFormatter fmt = DateTimeFormatter.ofPattern("HH:mm");
 		    result.put("status", "success");
 		    result.put("type", checkType);
-		    result.put("time", now.format(fmt));
-
+		    if("retro".equals(checkMode)) {
+		    	result.put("time", checkTime);
+		    } else {
+		    	result.put("time", now.format(fmt));
+		    }
 		} catch (Exception e) {
 			e.printStackTrace();
 			result.put("status", "error");

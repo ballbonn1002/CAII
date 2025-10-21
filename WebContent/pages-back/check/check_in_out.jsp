@@ -61,7 +61,7 @@
 										</div>
 										<div class="d-flex flex-column">
 											<button type="button" class="btn btn-sm btn-flex btn-secondary"
-												data-bs-toggle="modal" data-bs-target="#kt_modal_1">
+												data-bs-toggle="modal" data-bs-target="#retroModal">
 											<i class="ki-duotone ki-calendar-edit fs-1">
 												<span class="path1"></span>
 												<span class="path2"></span>
@@ -107,24 +107,30 @@
 											</div>
 										</div>
 									</div> -->
-									<input type="radio" class="btn-check" name="checkType" id="checkType1" value="1">
-									<label for="checkType2"
-										class="btn btn-outline btn-outline-dashed btn-active-light-primary p-7 d-flex align-items-center mb-5">
-										<i class="ki-duotone ki-time fs-1">
-											<span class="path1"></span>
-											<span class="path2"></span>
-										</i>
-										<span>Check-In</span>
-									</label>
-									<input type="radio" class="btn-check" name="checkType" id="checkType2" value="2">
-									<label for="checkType2" 
-										class="btn btn-outline btn-outline-dashed btn-active-light-primary p-7 d-flex align-items-center mb-5">
-										<i class="ki-duotone ki-time fs-1">
-											<span class="path1"></span>
-											<span class="path2"></span>
-										</i>
-										<span>Check-Out</span>
-									</label>
+									<div class="d-flex align-items-center gap-5 py-7">
+										<div class="col-md-5">
+										<input type="radio" class="btn-check" name="checkType" id="checkType1" value="1">
+										<label for="checkType1"
+											class="btn bg-light btn-active-success p-7 d-flex align-items-center mb-5">
+											<i class="ki-duotone ki-time fs-1">
+												<span class="path1"></span>
+												<span class="path2"></span>
+											</i>
+											<span>Check-In</span>
+										</label>
+										</div>
+										<div class="col-md-5">
+										<input type="radio" class="btn-check" name="checkType" id="checkType2" value="2">
+										<label for="checkType2" 
+											class="btn bg-light btn-active-info p-7 d-flex align-items-center mb-5">
+											<i class="ki-duotone ki-time fs-1">
+												<span class="path1"></span>
+												<span class="path2"></span>
+											</i>
+											<span>Check-Out</span>
+										</label>
+										</div>
+									</div>
 									<div class="d-flex mb-4">
 										<span class="fs-3 fw-semibold text-gray-800">
 											Work Your Location</span><span class="text-danger">*</span>
@@ -277,7 +283,7 @@
 										</c:forEach>
 									</div>
 								</c:if>
-								<c:if test="${holidayList == null}">
+								<c:if test="${holidayList == null || holidayList == ''}">
 									<div class="tab-pane fade show active" id="kt_timeline_widget_3_tab_content_4">
 											<div class="d-flex align-items-center mb-6">
 												No holidays
@@ -303,7 +309,7 @@
 <!--begin:::Modal-->
 
 <!--end:::Modal-->
-<div class="modal fade" tabindex="-1" id="kt_modal_1">
+<div class="modal fade" tabindex="-1" id="retroModal">
 	<div class="modal-dialog">
 		<div class="modal-content">
 			<div class="modal-header">
@@ -327,41 +333,43 @@
 						</div>
 						<div class="col-md-6">
 							<input class="form-control" id="mdTime"/>
+							<div class="mdTime invalid-feedback" style="display:none;"></div>
 						</div>
 					</div>
 					<div class="row mb-10">
 						<div class="col-md-6">
 							<div class="form-check form-check-custom form-check-success">
 							    <input class="form-check-input" type="radio" name="mdCheckType" id="mdCheckin" value="1"/>
-							    <label class="form-check-label text-gray-800" for="mdCheckin">
-							        Check-In
-							    </label>
+							    <label class="form-check-label text-gray-800" for="mdCheckin">Check-In</label>
 							</div>
 						</div>
 						<div class="col-md-6">
-							<div class="form-check form-check-custom form-check-info">
+							<div class="form-check form-check-custom form-check-success">
 							    <input class="form-check-input" type="radio" name="mdCheckType" id="mdCheckout" value="2"/>
-							    <label class="form-check-label text-gray-800" for="mdCheckout">
-							        Check-Out
-							    </label>
+							    <label class="form-check-label text-gray-800" for="mdCheckout">Check-Out</label>
 							</div>
 						</div>
+						<div class="checkType invalid-feedback" style="display:none;">Please select your check type (Check-In or Check-Out).</div>
 					</div>
 					<div class="row mb-10">
 						<label for="workTypeInput" class="required form-label">Your Work Location</label>
 						<div class="col-md-6">
-							<input class="form-check-input" name="mdWorkType" type="radio" value="1">
+							<input class="form-check-input" name="mdWorkType" type="radio" value="1"
+							<c:if test="${user.workType == 1}"> checked </c:if>>
 							<label class="form-check-label text-gray-800" for="">On-Site</label>
 						</div>
 						<div class="col-md-6">
-							<input class="form-check-input" name="mdWorkType" type="radio" value="2">
+							<input class="form-check-input" name="mdWorkType" type="radio" value="2"
+							<c:if test="${user.workType == 2}"> checked </c:if>>
 							<label class="form-check-label text-gray-800" for="">WFH</label>
 						</div>
+						<div class="workType invalid-feedback" style="display:none;">Please select your work location (WFH or On-Site).</div>
 					</div>
 					<div class="row mb-10">
 						<div class="col-md-12">
 							<span class="">Reason</span>
-							<textarea class="form-control" name="mdReason" id="mdReason" rows="" cols=""></textarea>
+							<textarea class="form-control" name="mdReason" id="mdReason" rows="" cols="" placeholder="Please provide a reason."></textarea>
+							<div class="reason invalid-feedback" style="display:none;"></div>
 						</div>
 					</div>
 					<div class="row">
@@ -380,17 +388,33 @@
 $(document).ready(function() {
 	setInterval(updateClock, 1000);
 	updateClock();
+	
+	const now = new Date();
+	const hour = now.getHours();
+	const minute = now.getMinutes();
+	const currentTime = hour + (minute / 60);
+	
+	$("input[name='mdCheckType']").prop("checked", false);
+	if (currentTime >= 0 && currentTime <= 12) {
+		$("#checkType1").prop("checked", true);
+		$("#mdCheckin").prop("checked", true);
+		console.log("Auto selected: Check-In");
+	} else if (currentTime > 12 && currentTime < 24) {
+	    $("#checkType2").prop("checked", true);
+	    $("#mdCheckout").prop("checked", true);
+	    console.log("Auto selected: Check-Out");
+	  } else {
+	    console.log("not selecting any option");
+	  }
 });
 
 function updateClock() {
 	fetch("https://timeapi.io/api/Time/current/zone?timeZone=Asia/Bangkok")
 		.then(resp => resp.json())
 	    .then(data => {
-	    	// ดึงค่าจาก API
 	        let dateTimeStr = data.dateTime; // "2025-09-09T09:09:09"
 	        let dt = new Date(dateTimeStr);
 	        
-	     // เวลา: HH:mm:ss
 	        let hours = dt.getHours().toString().padStart(2, '0');
 	        let minutes = dt.getMinutes().toString().padStart(2, '0');
 	        let seconds = dt.getSeconds().toString().padStart(2, '0');
@@ -399,7 +423,6 @@ function updateClock() {
 	    	$("#clock-second").text(":"+seconds);
 	    	//$("#clock").text(dateTimeStr);
 	    	
-	     // วันที่: dd MMM yyyy
 	        let options = { day: '2-digit', month: 'short', year: 'numeric' };
 	        let dateStr = dt.toLocaleDateString('en-GB', options).replace(/,/g, '');
 	        $("#date").text(dateStr);
@@ -407,25 +430,12 @@ function updateClock() {
 	    .catch(err => console.error("error:", err));
 }
 
-let selectedCheckType = null;
-$(".check-btn").on("click", function () {
-	$(".check-btn").removeClass("btn-success btn-info");
-	let value = $(this).data("value");
-	if (value === 1 || value === "1") {
-		$(this).addClass("btn-success active");
-	} else if (value === 2 || value === "2") {
-		$(this).addClass("btn-info active"); 
-	}
-    selectedCheckType = value;
-});
-
 $("#submitBtn").click(function() {
 	const userId = "${logonUser}";
 	const workType = $("input[name='workType']:checked").val();
 	const checkType = $("input[name='checkType']:checked").val();
 	console.log(userId+"/"+workType+"/"+checkType);
 	saveCheckInOut(userId, workType, checkType, "normal", null, null, null);
-
 });
 
 $("#mdSubmitBtn").click(function() {
@@ -435,13 +445,73 @@ $("#mdSubmitBtn").click(function() {
 	const date = $("#mdDate").val();
 	const time = $("#mdTime").val();
 	const reason = $("#mdReason").val();
-	console.log(userId+"/"+workType+"/"+checkType+"/"+date+"/"+time+reason);
+	let valid = true;
+	if(!date){
+		$("#mdDate").addClass("is-invalid");
+		valid = false;
+	} else {
+		$("#mdDate").removeClass("is-invalid");
+	}
+	
+	if(!time){
+		$("#mdTime").addClass("is-invalid");
+		valid = false;
+	} else {
+		const [hour, minute] = time.split(":").map(Number);
+	    const selectedDateTime = new Date(date);
+	    selectedDateTime.setHours(hour);
+	    selectedDateTime.setMinutes(minute);
+	    selectedDateTime.setSeconds(0);
+	    selectedDateTime.setMilliseconds(0);
+	    const now = new Date();
+	    if (selectedDateTime > now) {
+	    	$(".mdTime.invalid-feedback").text("Can't select a future time.").show();
+	    	$("#mdTime").addClass("is-invalid");
+	    	valid = false;
+	    } else {
+	    	$(".mdTime.invalid-feedback").hide();
+	    	$("#mdTime").removeClass("is-invalid");
+	    }
+	}
+	
+	if(!checkType){
+		$(".checkType.invalid-feedback").show();
+		valid = false;
+	} else {
+		$(".checkType.invalid-feedback").hide();
+	}
+	
+	if(!workType){
+		$(".workType.invalid-feedback").show();
+		valid = false;
+	} else {
+		$(".workType.invalid-feedback").hide();
+	}
+	
+	if(!reason){
+		console.log(1);
+		$("#mdReason").addClass("is-invalid");
+		valid = false;
+	} else if(reason.length < 10){
+		console.log(2);
+		$(".reason.invalid-feedback")
+		.text("Reason must be at least 10 characters long.").show();
+		$("#mdReason").addClass("is-invalid");
+		valid = false;
+	} else {
+		$(".reason.invalid-feedback").hide();
+		$("#mdReason").removeClass("is-invalid");
+	}
+	if(!valid){
+		return;
+	}
 	saveCheckInOut(userId, workType, checkType, "retro", date, time, reason);
 });
 
 const ALLOWED_DATE = "${allowedDate}";
 const TODAY = new Date();
 console.log(ALLOWED_DATE);
+
 
 const datePicker = flatpickr("#mdDate", {
 	altInput: true,
@@ -453,11 +523,10 @@ const datePicker = flatpickr("#mdDate", {
     maxDate: "today",
     static: true,
     onOpen: function(selectedDates, dateStr, instance) {
-        // ปิด time picker ถ้าเปิดอยู่
         if (timePicker.isOpen) {
             timePicker.close();
         }
-    }
+    },
 });
 
 const timePicker = flatpickr("#mdTime", {
@@ -468,11 +537,10 @@ const timePicker = flatpickr("#mdTime", {
     defaultDate: TODAY,
     static: true,
     onOpen: function(selectedDates, dateStr, instance) {
-        // ปิด date picker ถ้าเปิดอยู่
         if (datePicker.isOpen) {
             datePicker.close();
         }
-    }
+    },
 });
 
 function saveCheckInOut(userId, workType, checkType, mode, selectDate, selectTime, reason){
@@ -495,11 +563,6 @@ function saveCheckInOut(userId, workType, checkType, mode, selectDate, selectTim
 		"hideMethod": "fadeOut"
 	};
 	
-	if(!workType){
-		toastr.error("Please select your work location (WFH or On-Site).");
-		return;
-	}
-	
 	const data = {
 			"userId": userId,
 			"workType": workType,
@@ -518,9 +581,19 @@ function saveCheckInOut(userId, workType, checkType, mode, selectDate, selectTim
 	    type: "POST",
 	    dataType: "json",
 	    data: data,
-	    success: function (response) {
-	      toastr.success("Check-In/Out saved successfully!");
-	      console.log("Response:", response);
+	    success: function (res) {
+	    	console.log(res);
+	      	let type = res.type === "1" ? "Check-in" : "Check-out";
+	      	if(res.status === "success"){
+	      		toastr.success(type + " : " + res.time, "Saved successfully!");
+	      		setTimeout(function() {
+	    			location.reload();
+	    		}, 2000);
+	      	} else {
+	      		toastr.error(res.message || "Failed to record your attendance. Please try again.");
+	      	}
+	    	
+	      console.log("Response:", res);
 	      $("#retroModal").modal("hide");
 	    },
 	    error: function (xhr, status, error) {
