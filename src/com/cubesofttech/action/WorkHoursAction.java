@@ -21,10 +21,12 @@ import org.apache.struts2.ServletActionContext;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cubesofttech.dao.HolidayDAO;
+import com.cubesofttech.dao.JobsiteDAO;
 import com.cubesofttech.dao.LeaveDAO;
 import com.cubesofttech.dao.UserDAO;
 import com.cubesofttech.dao.WorkHoursDAO;
 import com.cubesofttech.model.Holiday;
+import com.cubesofttech.model.Jobsite;
 import com.cubesofttech.model.User;
 import com.cubesofttech.model.WorkHours;
 import com.cubesofttech.service.WorkHoursService;
@@ -49,6 +51,8 @@ public class WorkHoursAction extends ActionSupport {
 	private UserDAO userDAO;
 	@Autowired
 	private LeaveDAO leaveDAO;
+	@Autowired
+	private JobsiteDAO jobsiteDAO;
 	
 	private Map<String, String> getHeadersInfo(HttpServletRequest request) {
 
@@ -82,13 +86,19 @@ public class WorkHoursAction extends ActionSupport {
 			List<Map<String, Object>> lastcheckin = workHoursDAO.lastcheckin(logonUser);
 			List<Map<String, Object>> lastcheckout = workHoursDAO.lastcheckout(logonUser);
 			request.setAttribute("lastcheckin", lastcheckin);
+			log.debug(lastcheckin);
+			log.debug(lastcheckout);
 			request.setAttribute("lastcheckout", lastcheckout);
 			
-			List<Holiday> holidayList = holidayDAO.findAllInMonth();
+			List<Holiday> holidayList = null;
+			holidayList = holidayDAO.findAllInMonth();
 			request.setAttribute("holidayList", holidayList);
 			//log.debug(holidayList);
 			User user =  userDAO.findById(logonUser);
-			//log.debug(user);
+			Jobsite jobsite = jobsiteDAO.findById(user.getId_sitejob());
+			log.debug(jobsite.getName_site());
+			request.setAttribute("jobsite", jobsite);
+			request.setAttribute("allowedDate", workHoursService.calculateAllowedWorkDateIso(currentDate));			
 			
 			return SUCCESS;
 		} catch (Exception e) {
@@ -101,27 +111,55 @@ public class WorkHoursAction extends ActionSupport {
 	    Map<String, Object> result = new HashMap<>();
 		try {
 			String userId = request.getParameter("userId");
+			String checkDate = request.getParameter("date");
+			String checkTime = request.getParameter("time");
 			String checkType = request.getParameter("checkType");
 			String workType = request.getParameter("workType");
+			String checkMode = request.getParameter("mode");
 			log.debug(userId+"/"+checkType+"/"+workType);
-			String desRaw = request.getParameter("description");
-			String des = (desRaw != null) ? desRaw.trim() : "";
+			
+			String desRaw = null;	String des = null;
+			desRaw = request.getParameter("reason");
+			des = (desRaw != null || desRaw != "") ? desRaw.trim() : "";
+			log.debug(desRaw);
+
 			String lat = request.getParameter("latitude");
 			String lng = request.getParameter("longitude");
-
-			LocalDateTime  now = LocalDateTime .now(ZoneId.of("Asia/Bangkok")); // ให้ชัดเจนเรื่องโซนเวลา
-			Timestamp ts = Timestamp.valueOf(now);
 			
 			Map<String, String> headersInfo = getHeadersInfo(request);
 			String userAgent = (String) headersInfo.get("user-agent");
 			String ipAddress = (String) headersInfo.get("ipAddress");
-			String mytime = ts.getHours() + ":" + ts.getMinutes();
-			log.debug(mytime);
-			int date = now.getDayOfMonth();
-			int month = now.getMonthValue();
-			int year = now.getYear();
-			int workinghour = workHoursService.calculateWorkingHours(userId, checkType, date, month, year, mytime);
 			
+			LocalDateTime  now = LocalDateTime .now(ZoneId.of("Asia/Bangkok")); 
+			DateTimeFormatter timeFormat = DateTimeFormatter.ofPattern("HH:mm:ss");
+
+			//Timestamp ts = Timestamp.valueOf(now);
+			Timestamp ts = null;	
+			String timeString = null;
+			int date;	int month;	int year;
+			if("retro".equals(checkMode) && checkDate != null && checkTime != null){
+				ts = Timestamp.valueOf(checkDate + " " + checkTime + ":00");
+				LocalDateTime ldt = ts.toLocalDateTime();
+				date = ldt.getDayOfMonth();
+				month = ldt.getMonthValue();
+				year = ldt.getYear();
+				log.debug(ldt.getDayOfMonth()+"|"+ldt.getMonthValue()+"|"+ldt.getYear());
+				//log.debug(ts.getDate()+"|"+ts.getMonth()+"|"+ts.getYear());
+				//date = ts.getDate();	month = ts.getMonth()+1;	year = ts.getYear();
+				log.debug(ts.getTime());
+				timeString = ldt.format(timeFormat);
+
+			} else {
+				ts = Timestamp.valueOf(now);
+				date = now.getDayOfMonth();
+				month = now.getMonthValue();
+				year = now.getYear();
+				timeString = now.format(timeFormat);
+			}
+
+			log.debug(timeString);
+			int workinghour = workHoursService.calculateWorkingHours(userId, checkType, date, month, year, timeString);
+						
 			WorkHours wh = new WorkHours();
 			wh.setWorkHoursId(workHoursDAO.getMaxId()+1);
 			wh.setWorkHoursType(checkType);
@@ -132,8 +170,13 @@ public class WorkHoursAction extends ActionSupport {
 			wh.setDescription(des);
 			wh.setUserAgent(userAgent);
 			wh.setIpAddress(ipAddress);
-			wh.setTimeCreate(ts);
-			wh.setTimeUpdate(ts);
+			if("retro".equals(checkMode)) {
+				wh.setTimeCreate(Timestamp.valueOf(now));
+				wh.setTimeUpdate(Timestamp.valueOf(now));
+			} else {
+				wh.setTimeCreate(ts);
+				wh.setTimeUpdate(ts);
+			}
 			wh.setUserCreate(userId);
 			wh.setUserUpdate(userId);
 			wh.setWorkinghours(workinghour);

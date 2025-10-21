@@ -408,7 +408,7 @@ public class WorkHoursDAOImpl implements WorkHoursDAO {
 			String sql = "SELECT MAX(work_hours_time_work) as work_hours_time_work" + " FROM work_hours "
 					+ " WHERE user_create =:user " + " AND  work_hours_type = 1 ";
 			*/
-			String sql = "SELECT work_hours_time_work FROM work_hours WHERE user_create =:user "
+			String sql = "SELECT work_hours_time_work, work_type FROM work_hours WHERE user_create =:user "
 					+ " AND work_hours_type = 1 ORDER BY work_hours_id DESC LIMIT 1";
 			SQLQuery query = session.createSQLQuery(sql);
 			query.setParameter("user", user);
@@ -446,7 +446,7 @@ public class WorkHoursDAOImpl implements WorkHoursDAO {
 			String sql = "SELECT MAX(work_hours_time_work) as work_hours_time_work" + " FROM work_hours "
 					+ " WHERE user_create =:user " + " AND  work_hours_type =  2";
 			*/
-			String sql = "SELECT work_hours_time_work FROM work_hours WHERE user_create =:user "
+			String sql = "SELECT work_hours_time_work, work_type FROM work_hours WHERE user_create =:user "
 					+ " AND work_hours_type = 2 ORDER BY work_hours_id DESC LIMIT 1";
 			SQLQuery query = session.createSQLQuery(sql);
 			query.setParameter("user", user);
