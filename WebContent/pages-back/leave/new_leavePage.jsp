@@ -499,39 +499,36 @@
 			  }
 		});
 		
- 		$('#myFile').on("change", function(){ 
-			const file = this.files[0];
-			const fileName = this.files[0].name;
-			
-			const engRegex = /^[a-zA-Z0-9_\-\.]+$/;
+		$('#myFile').on("change", function(){
+		    const file = this.files[0];
+		    const fileName = this.files[0].name;
+		    
+		    // ตรวจสอบอักขระที่ Windows ไม่อนุญาต
+		    const forbiddenChars = /[\/:*?"<>|]/;
 
-		    if(!engRegex.test(fileName)) {
-		        alert("File name must be in English letters");
-		        $(this).val('');
+		    // หากพบอักขระที่ห้ามแสดง alert
+		    if(forbiddenChars.test(fileName)) {
+		        alert("File name contains invalid characters for Windows");
+		        $(this).val('');  // รีเซ็ตไฟล์
 		        $('#linkImage').text('');
 		        $('#size').val('');
 		        return;
 		    }
-		    
+
 		    $('#linkImage').text(fileName);
-		    
-			console.log(file);
-			/*frame.src=URL.createObjectURL(event.target.files[0]);
-			console.log(frame.src);
-			$('#linkImage').attr('href', frame.src);*/
-			
-			var fSExt = new Array('Bytes', 'KB', 'MB', 'GB');
-			fSize = this.files[0].size;
-			i = 0;
-			while (fSize > 900) {
-				fSize /= 1024;
-				i++;
-			}
-			var size_n = (Math.round(fSize * 100) / 100);
-			var size = size_n + ' ' + fSExt[i];
-			console.log(size)
-			$('#size').val(size);
-		}); 
+
+		    var fSExt = new Array('Bytes', 'KB', 'MB', 'GB');
+		    fSize = this.files[0].size;
+		    i = 0;
+		    while (fSize > 900) {
+		        fSize /= 1024;
+		        i++;
+		    }
+		    var size_n = (Math.round(fSize * 100) / 100);
+		    var size = size_n + ' ' + fSExt[i];
+		    console.log(size)
+		    $('#size').val(size);
+		});
 		
 		
 	});
