@@ -5,7 +5,26 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
 <%@ taglib uri="/WEB-INF/tlds/permission.tld" prefix="perm"%>
 <!DOCTYPE html>
-<style></style>
+<style>
+.image-box {
+	width: 100%;
+	padding-top: 100%;
+	position: relative;
+	border-radius: 10px;
+	overflow: hidden;
+	margin-bottom: 20px;
+}
+
+.image-box img {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	object-fit: contain;
+	background-color: white;
+}
+</style>
 <div class="app-main flex-column flex-row-fluid">
 	<div class="d-flex flex-column flex-column-fluid">
 		<div class="app-toolbar py-5 py-lg-6">
@@ -112,64 +131,154 @@
 							class="page-heading d-flex text-gray-900 fw-bold fs-3 flex-column justify-content-center my-0">
 							${announcementList.size()} Items Found</h1>
 						<!--end::Title-->
-
 					</div>
 					<!--end::Page title-->
 					<!--begin::Actions-->
-					<div class="d-flex align-items-center gap-2 gap-lg-3">
+					<perm:permission object="announcement.edit">
+						<div class="d-flex align-items-center gap-2 gap-lg-3">
 
-						<!--begin::Primary button-->
-						<a href="announcementAdd" class="btn btn-sm fw-bold btn-success">
-							<i class="ki-duotone ki-plus"> </i>Create
-						</a>
-						<!--end::Primary button-->
-					</div>
+							<!--begin::Primary button-->
+							<a href="announcementAddPage"
+								class="btn btn-sm fw-bold btn-success"> <i
+								class="ki-duotone ki-plus"> </i>Create
+							</a>
+							<!--end::Primary button-->
+						</div>
+					</perm:permission>
 					<!--end::Actions-->
 				</div>
 			</div>
 			<!-- Card -->
 			<div class="app-container pb-10">
-				<div class="row g-3 pb-10">
-					<!-- Loop announcements -->
-					<c:forEach var="ann" items="${announcementList}">
-						<div class="col-lg-4 col-md-6 col-12">
-							<div class="card hover-elevate-up shadow-sm parent-hover"
-								style="cursor: pointer;"
-								onclick="window.location.href='announcementRead?id=${ann.announcementId}'">
+				<div class="row g-5 gx-xl-10">
+					<!-- วันที่ปัจจุบัน -->
+					<jsp:useBean id="now" class="java.util.Date" />
+					<fmt:formatDate value="${now}" pattern="yyyy-MM-dd" var="todayStr" />
 
-								<!-- รูปภาพ -->
-								<div class="card-header p-0">
-									<div class="image-box">
-										<img alt="${ann.fileUpload.path} ${ann.file_id}"
-											src="${ann.fileUpload.path}">
-									</div>
-								</div>
-								<!-- Title -->
-								<div class="card-body">
-									<span class="fs-6 fw-bold"> ${ann.topic}</span><br>
-									<div class="d-flex align-items-center gap-3">
-										<!-- วันที่ -->
-										<span class="d-flex align-items-center fs-6 fw-medium">
-											<i class="ki-duotone ki-calendar-2 fs-2 me-1"> <span
-												class="path1"></span> <span class="path2"></span> <span
-												class="path3"></span> <span class="path4"></span> <span
-												class="path5"></span>
-										</i> <fmt:formatDate value="${ann.announcement_date}"
-												pattern="dd MMM yyyy" />
-										</span>
+					<!-- ถ้ามีประกาศ -->
+					<c:if test="${not empty announcementList}">
+						<c:forEach var="ann" items="${announcementList}">
+							<!-- แปลงวันประกาศเป็น String -->
+							<fmt:formatDate value="${ann.announcement_date}"
+								pattern="yyyy-MM-dd" var="announcementDateStr" />
 
-										<!-- จำนวนคนอ่าน -->
-										<span class="d-flex align-items-center fs-6 fw-medium">
-											<i class="ki-duotone ki-eye fs-2 me-1"> <span
-												class="path1"></span> <span class="path2"></span> <span
-												class="path3"></span>
-										</i> ${ann.readcount}
-										</span>
+							<c:choose>
+								<c:when
+									test="${ann.status == '0' or announcementDateStr > todayStr}">
+									<perm:permission object="announcement.view">
+										<!-- Card แบบไม่มี permission -->
+										<div class="col-lg-4 col-md-12 col-12 mb-5 mb-xl-10">
+											<div
+												class="card hover-elevate-up shadow-sm parent-hover position-relative"
+												style="cursor: pointer;"
+												onclick="window.location.href='announcementRead?id=${ann.announcementId}'">
+
+												<!-- Badge -->
+												<div
+													style="display: flex; justify-content: flex-end; gap: 6px; position: absolute; top: 10px; right: 10px; z-index: 2;">
+													<c:if test="${ann.status == '0'}">
+														<span class="badge fw-semibold text-dark"
+															style="background-color: #FFC107;">Draft</span>
+													</c:if>
+													<c:if test="${announcementDateStr > todayStr}">
+														<span class="badge fw-semibold text-white"
+															style="background-color: #F1C40F;">Pending</span>
+													</c:if>
+													<c:if
+														test="${ann.announcementId == islastest or ann.announcementId eq islastest}">
+														<span class="badge fw-semibold text-white"
+															style="background-color: #007BFF;">New</span>
+													</c:if>
+												</div>
+
+												<!-- รูป -->
+												<div class="card-header p-0">
+													<div class="image-box">
+														<img alt="${ann.fileUpload.path}"
+															src="${ann.fileUpload.path}">
+													</div>
+												</div>
+
+												<!-- เนื้อหา -->
+												<div class="card-body">
+													<span class="fs-6 fw-bold">${ann.topic}</span><br>
+
+													<div class="d-flex align-items-center gap-3 mt-2">
+														<!-- วันที่ -->
+														<span class="d-flex align-items-center fs-6 fw-medium">
+															<i class="ki-duotone ki-calendar-2 fs-2 me-1"> <span
+																class="path1"></span><span class="path2"></span><span
+																class="path3"></span> <span class="path4"></span><span
+																class="path5"></span>
+														</i> <fmt:formatDate value="${ann.announcement_date}"
+																pattern="dd MMM yyyy" />
+														</span>
+
+														<!-- จำนวนคนอ่าน -->
+														<span class="d-flex align-items-center fs-6 fw-medium">
+															<i class="ki-duotone ki-eye fs-2 me-1"> <span
+																class="path1"></span><span class="path2"></span><span
+																class="path3"></span>
+														</i> ${empty ann.readcount ? 0 : ann.readcount}
+														</span>
+													</div>
+												</div>
+											</div>
+										</div>
+									</perm:permission>
+								</c:when>
+
+								<c:otherwise>
+									<div class="col-lg-4 col-md-12 col-12 mb-5 mb-xl-10">
+										<div
+											class="card hover-elevate-up shadow-sm parent-hover position-relative"
+											style="cursor: pointer;"
+											onclick="window.location.href='announcementRead?id=${ann.announcementId}'">
+
+											<!-- Badge -->
+											<div
+												style="display: flex; justify-content: flex-end; gap: 6px; position: absolute; top: 10px; right: 10px; z-index: 2;">
+												<c:if
+													test="${ann.announcementId == islastest or ann.announcementId eq islastest}">
+													<span class="badge fw-semibold text-white"
+														style="background-color: #007BFF;">New</span>
+												</c:if>
+											</div>
+
+											<!-- รูป -->
+											<div class="card-header p-0">
+												<div class="image-box">
+													<img alt="${ann.fileUpload.path}"
+														src="${ann.fileUpload.path}">
+												</div>
+											</div>
+
+											<!-- เนื้อหา -->
+											<div class="card-body">
+												<span class="fs-6 fw-bold">${ann.topic}</span><br>
+
+												<div class="d-flex align-items-center gap-3 mt-2">
+													<span class="d-flex align-items-center fs-6 fw-medium">
+														<i class="ki-duotone ki-calendar-2 fs-2 me-1"> <span
+															class="path1"></span><span class="path2"></span><span
+															class="path3"></span> <span class="path4"></span><span
+															class="path5"></span>
+													</i> <fmt:formatDate value="${ann.announcement_date}"
+															pattern="dd MMM yyyy" />
+													</span> <span class="d-flex align-items-center fs-6 fw-medium">
+														<i class="ki-duotone ki-eye fs-2 me-1"> <span
+															class="path1"></span><span class="path2"></span><span
+															class="path3"></span>
+													</i> ${empty ann.readcount ? 0 : ann.readcount}
+													</span>
+												</div>
+											</div>
+										</div>
 									</div>
-								</div>
-							</div>
-						</div>
-					</c:forEach>
+								</c:otherwise>
+							</c:choose>
+						</c:forEach>
+					</c:if>
 				</div>
 			</div>
 		</div>

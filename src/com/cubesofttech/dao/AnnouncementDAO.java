@@ -16,4 +16,6 @@ public interface AnnouncementDAO {
 	public void save(Announcement announcement) throws Exception;
 	public void update(Announcement announcement) throws Exception;
 	public void delete(Announcement announcement) throws Exception;
+	
+	public Integer getMaxId() throws Exception;
 }

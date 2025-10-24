@@ -126,6 +126,24 @@ public class FileUploadDAOImpl implements FileUploadDAO {
 		}
 		return FileUpload;
 	}
+	
+	@Override
+	public List<FileUpload> findByPageAndPageId(String page, String pageId) throws Exception {
+		Session session = this.sessionFactory.getCurrentSession();
+		List<FileUpload> fileList = null;
+		try {
+			String sql = "SELECT * FROM file WHERE page = :page AND page_id = :pageId";
+			SQLQuery query = session.createSQLQuery(sql);
+			query.addEntity(FileUpload.class);
+			query.setParameter("page", page);
+			query.setParameter("pageId", pageId);
+
+			fileList = query.list();
+		} catch (Exception e){ 
+			e.printStackTrace();
+		} 
+		return fileList;
+	}
 
 //	@Override
 //	public void update(FileUpload FileUpload) throws Exception {

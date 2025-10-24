@@ -224,10 +224,27 @@
 			<result name="success" type="tiles">AnnouncementRead</result>
 			<result name="error">/index.jsp</result>
 	</action>
-	<!-- <action name="announcementAdd" class="com.cubesofttech.action.AnnouncementAction" method="readcardannounce">
-			<result name="success" type="tiles">AnnouncementAdd</result>
+	<action name="announcementAdd" class="com.cubesofttech.action.AnnouncementAction" method="save">
+			<result name="success" type="redirect">announcementList</result>
 			<result name="error">/index.jsp</result>
-	</action> -->
+			<result name="input" type="tiles">AnnouncementAdd</result> 
+	</action>
+	<action name="announcementAddPage">
+			<result type="tiles">AnnouncementAdd</result>
+	</action>
+	
+	<action name="announcementEdit" class="com.cubesofttech.action.AnnouncementAction" method="edit">
+    	<result name="success" type="tiles">AnnouncementAdd</result>
+    	<result name="error">/index.jsp</result>
+	</action>
+	<action name="announcementDelete" class="com.cubesofttech.action.AnnouncementAction" method="delete">
+    	<result name="success" type="redirect">announcementList</result>
+    	<result name="error">/index.jsp</result>
+	</action>
+	<action name="uploadImageFromCkeditor" class="com.cubesofttech.action.AnnouncementAction" method="uploadImageFromCkeditor">
+    	<result name="success" type="json"/>
+    	<result name="error" type="json"/>
+	</action>
 	
 	<!-- POSITION -->
     <action name="position_list"

@@ -20,6 +20,8 @@ public interface FileUploadDAO {
     public void delete(FileUpload fileupload) throws Exception;
     
     Integer getMaxId() throws Exception;
+    
+    public List<FileUpload> findByPageAndPageId(String page, String pageId) throws Exception;
 
 //	List<FileUpload> findByuser(String user) throws Exception;
 //
