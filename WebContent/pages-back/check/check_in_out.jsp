@@ -16,6 +16,9 @@
 .btn-check:checked + label span {
   color: #fff !important;
 }
+.form-check.form-check-info .form-check-input:checked{
+	background-color: var(--bs-info);
+}
 </style>
 
 <!--begin::Main-->
@@ -323,7 +326,7 @@
 							</div>
 						</div>
 						<div class="col-md-6">
-							<div class="form-check form-check-custom form-check-success">
+							<div class="form-check form-check-custom form-check-info">
 							    <input class="form-check-input" type="radio" name="mdCheckType" id="mdCheckout" value="2"/>
 							    <label class="form-check-label text-gray-800" for="mdCheckout">Check-Out</label>
 							</div>
