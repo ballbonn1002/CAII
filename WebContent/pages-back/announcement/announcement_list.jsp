@@ -290,8 +290,8 @@
 
 	function cb(start, end) {
 		$("#kt_daterangepicker_4").html(
-				start.format("MMMM D, YYYY") + " - "
-						+ end.format("MMMM D, YYYY"));
+				start.format("DD MMM YYYY") + " - "
+						+ end.format("DD MMM YYYY"));
 	}
 
 	$("#kt_daterangepicker_4")
@@ -299,6 +299,9 @@
 					{
 						startDate : start,
 						endDate : end,
+						locale: {
+				            format: 'DD MMM YYYY'
+				        },
 						ranges : {
 							"Today" : [ moment(), moment() ],
 							"Yesterday" : [ moment().subtract(1, "days"),
