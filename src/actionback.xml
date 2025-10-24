@@ -52,6 +52,12 @@
 			<result type="json" />
 		</action>
 		
+		<action name="signout"
+			class="com.cubesofttech.action.LoginAction" method="signout">
+			<result name="success">/index.jsp</result>
+			<result name="error">/index.jsp</result>
+		</action>
+		
 		<!-- CHECK-IN/CHECK-OUT -->
 		<action name="check_in_out"
 			class="com.cubesofttech.action.WorkHoursAction" method="init">
