@@ -13,6 +13,9 @@
 .bg-orange {
 	background-color: var(--bs-orange) !important;
 }
+.btn-check:checked + label span {
+  color: #fff !important;
+}
 </style>
 
 <!--begin::Main-->
@@ -83,51 +86,27 @@
 									<!-- Date -->
 									<div id="date" class="fs-2x fw-semibold text-gray-800 text-center"></div>
 									<!-- Check Type -->
-								<!-- 	<div class="d-flex justify-content-center align-items-center gap-5 flex-wrap">
-										<div class="col-lg-5 col-md-5 col-sm-5 align-items-center">
-											<div class="rounded p-5 ">
-												<button id="checkin_btn" name="checkType"
-													class="check-btn text-gray-400 w-100 btn btn-lg btn-light" data-value="1">
-													<i class="ki-duotone ki-time fs-1 mt-5"> <span class="path1"></span>
-														<span class="path2"></span>
-													</i>
-													<div class="fs-2 my-5">Check-In</div>
-												</button>
-											</div>
-										</div>
-										<div class="col-lg-5 col-md-5 col-sm-5">
-											<div class="rounded p-5">
-												<button id="checkout_btn" name="checkType"
-													class="check-btn text-gray-400 w-100 btn btn-lg btn-light" data-value="2">
-													<i class="ki-duotone ki-time fs-1 mt-5"> <span class="path1"></span>
-														<span class="path2"></span>
-													</i>
-													<div class="fs-2 my-5">Check-Out</div>
-												</button>
-											</div>
-										</div>
-									</div> -->
-									<div class="d-flex align-items-center gap-5 py-7">
-										<div class="col-md-5">
+									<div class="d-flex justify-content-between gap-10 py-7">
+										<div class="flex-fill">
 										<input type="radio" class="btn-check" name="checkType" id="checkType1" value="1">
 										<label for="checkType1"
-											class="btn bg-light btn-active-success p-7 d-flex align-items-center mb-5">
+											class="btn bg-light btn-active-success d-flex flex-column justify-content-center align-items-center py-7">
 											<i class="ki-duotone ki-time fs-1">
 												<span class="path1"></span>
 												<span class="path2"></span>
 											</i>
-											<span>Check-In</span>
+											<span class="fs-2 text-muted">Check-In</span>
 										</label>
 										</div>
-										<div class="col-md-5">
+										<div class="flex-fill">
 										<input type="radio" class="btn-check" name="checkType" id="checkType2" value="2">
 										<label for="checkType2" 
-											class="btn bg-light btn-active-info p-7 d-flex align-items-center mb-5">
+											class="btn bg-light btn-active-info d-flex flex-column justify-content-center align-items-center py-7">
 											<i class="ki-duotone ki-time fs-1">
 												<span class="path1"></span>
 												<span class="path2"></span>
 											</i>
-											<span>Check-Out</span>
+											<span class="fs-2 text-muted">Check-Out</span>
 										</label>
 										</div>
 									</div>
@@ -135,7 +114,7 @@
 										<span class="fs-3 fw-semibold text-gray-800">
 											Work Your Location</span><span class="text-danger">*</span>
 									</div>
-									<div class="d-flex">
+									<div class="d-flex align-items-center">
 										<div class="py-2 px-4 me-6 mb-3">
 											<div class="form-check form-check-custom form-check-primary form-check-solid form-check-md">
 												<input name="workType" class="form-check-input" id="workType1" type="radio" value="1"
@@ -257,7 +236,7 @@
 							</div>
 							<div class="card-body pt-2 pb-4 px-0">
 								<div class="tab-content mb-2 px-9">
-								<c:if test="${holidayList != null}">
+								<c:if test="${not empty holidayList}">
 									<div class="tab-pane fade show active" id="kt_timeline_widget_3_tab_content_4">
 										<c:forEach var="hld" items="${holidayList}">
 											<div class="d-flex align-items-center mb-6">
@@ -270,7 +249,7 @@
 													<c:if test="${day == '4'}"> bg-orange</c:if>
 													<c:if test="${day == '5'}"> bg-primary</c:if>"></span>
 												<div class="flex-grow-1 me-5">
-													<div class="text-grey fw-semibold fs-2">${hld.head}</div>
+													<div class="text-grey fw-semibold fs-3">${hld.head}</div>
 													<div class="text-grey fw-semibold fs-6"><fmt:formatDate value="${hld.start_date}" pattern="E, dd MMM"/></div>
 												</div>
 												<jsp:useBean id="now" class="java.util.Date" />
@@ -283,10 +262,10 @@
 										</c:forEach>
 									</div>
 								</c:if>
-								<c:if test="${holidayList == null || holidayList == ''}">
+								<c:if test="${empty holidayList}">
 									<div class="tab-pane fade show active" id="kt_timeline_widget_3_tab_content_4">
 											<div class="d-flex align-items-center mb-6">
-												No holidays
+												<span class="text-danger">No holidays</span>
 											</div>
 									</div>
 								</c:if>
