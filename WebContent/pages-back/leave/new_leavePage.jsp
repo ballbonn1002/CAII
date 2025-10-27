@@ -11,21 +11,21 @@
 <html>
 <c:set var="now" value="<%=new java.util.Date()%>" />
 <fmt:formatDate type="date" value="${now}" pattern="dd-MM-yyyy" var="date_now" />
-<fmt:formatDate type="date" value="${now}" pattern="dd-MM-yyyy" var="lastday"/>
+<fmt:formatDate type="date" value="${now}" pattern="dd-MM-yyyy" var="lastday" />
 <head>
 <meta charset="utf-8">
 <title><tiles:insertAttribute name="title" ignore="true" /></title>
-  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/>
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
 
 <!--begin::Fonts(mandatory for all pages)-->
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inter:300,400,500,600,700" />
 <!--end::Fonts-->
 <!--begin::Vendor Stylesheets(used for this page only)-->
-  
+
 <!-- Keenicons (ใช้กับ .ki-*) -->
-<link rel="stylesheet" href="assets/vendors/keenicons/styles.bundle.css"/>
+<link rel="stylesheet" href="assets/vendors/keenicons/styles.bundle.css" />
 <!-- Keenicons (ใช้กับ .ki-*) -->
-  
+
 <link href="assets/plugins/custom/fullcalendar/fullcalendar.bundle.css" rel="stylesheet" type="text/css" />
 <link href="assets/plugins/custom/datatables/datatables.bundle.css" rel="stylesheet" type="text/css" />
 <!--end::Vendor Stylesheets-->
@@ -35,8 +35,8 @@
 <link href="assets/css/style.bundle.css" rel="stylesheet" type="text/css" />
 
 <!-- ===== [ใหม่] Metronic Tailwind CSS ===== -->
-<link rel="stylesheet" href="assets/vendors/apexcharts/apexcharts.css"/>
-<link rel="stylesheet" href="assets/css/styles.css"/><!-- Tailwind build -->
+<link rel="stylesheet" href="assets/vendors/apexcharts/apexcharts.css" />
+<link rel="stylesheet" href="assets/css/styles.css" /><!-- Tailwind build -->
 <!-- ===== [ใหม่] Metronic Tailwind CSS ===== -->
 
 <!--end::Global Stylesheets Bundle-->
@@ -75,13 +75,13 @@
 </head>
 <body class="app-default">
 
-<%
-  String action = (String) request.getAttribute("action"); // breakpoint ได้ตรงนี้
-%>
+	<%
+		String action = (String) request.getAttribute("action");
+	%>
 
 
-<!--begin::Theme mode setup on page load-->
-<script>
+	<!--begin::Theme mode setup on page load-->
+	<script>
 		var defaultThemeMode = "light"; 
 		var themeMode; 
 		if ( document.documentElement ) {
@@ -100,265 +100,262 @@
 			document.documentElement.setAttribute("data-bs-theme", themeMode); 
 		}
 </script>
-<!--end::Theme mode setup on page load-->
+	<!--end::Theme mode setup on page load-->
 
 
-<!--begin::Main-->
-<div class="app-main flex-column flex-row-fluid">
+	<!--begin::Main-->
+	<div class="app-main flex-column flex-row-fluid">
 
-	<!--begin::Content wrapper-->
-	<div class="d-flex flex-column flex-column-fluid">
+		<!--begin::Content wrapper-->
+		<div class="d-flex flex-column flex-column-fluid">
 
-		<!--begin::Toolbar-->
-		<div id="kt_app_toolbar" class="app-toolbar py-3 py-lg-6">
-			<!--begin::Toolbar container-->
-			<div id="kt_app_toolbar_container" class="app-container container-fluid d-flex flex-stack">
-				<!--begin::Page title-->
-				<div class="page-title d-flex flex-column justify-content-center flex-wrap me-3">
-					<!--begin::Title-->
-					<h1 class="page-heading d-flex text-gray-900 fw-bold fs-3 flex-column justify-content-center my-0">Create a leave form</h1>
-					<!--end::Title-->
-					<!--begin::Breadcrumb-->
-					<ul class="breadcrumb breadcrumb-separatorless fw-semibold fs-7 my-0 pt-1">
-						<li class="breadcrumb-item text-muted"><a href="demo_dashboard" class="text-muted text-hover-primary">Home</a></li>
-					</ul>
-					<!--end::Breadcrumb-->
+			<!--begin::Toolbar-->
+			<div id="kt_app_toolbar" class="app-toolbar py-3 py-lg-6">
+				<!--begin::Toolbar container-->
+				<div id="kt_app_toolbar_container" class="app-container container-fluid d-flex flex-stack">
+					<!--begin::Page title-->
+					<div class="page-title d-flex flex-column justify-content-center flex-wrap me-3">
+						<!--begin::Title-->
+						<h1 class="page-heading d-flex text-gray-900 fw-bold fs-3 flex-column justify-content-center my-0">Create a leave form</h1>
+						<!--end::Title-->
+						<!--begin::Breadcrumb-->
+						<ul class="breadcrumb breadcrumb-separatorless fw-semibold fs-7 my-0 pt-1">
+							<li class="breadcrumb-item text-muted"><a href="demo_dashboard" class="text-muted text-hover-primary">Home</a></li>
+						</ul>
+						<!--end::Breadcrumb-->
+					</div>
+					<!--end::Page title-->
 				</div>
-				<!--end::Page title-->
+				<!--end::Toolbar container-->
 			</div>
-			<!--end::Toolbar container-->
-		</div>
-		<!--end::Toolbar-->
+			<!--end::Toolbar-->
 
-		<!--begin::Content-->
-		<div id="kt_app_content" class="app-content flex-column-fluid">
-		
-			<!--begin::Content container-->
-			<div id="kt_app_content_container" class="app-container container-fluid">
-				
-				<!-- DDL -->
-				<div class="d-flex flex-row">
-					<div class="flex-row-fluid mb-5">
+			<!--begin::Content-->
+			<div id="kt_app_content" class="app-content flex-column-fluid">
+
+				<!--begin::Content container-->
+				<div id="kt_app_content_container" class="app-container container-fluid">
+
+					<!-- DDL -->
+					<div class="d-flex flex-row">
+						<div class="flex-row-fluid mb-5">
 							<div class="card card-flush bgi-no-repeat bgi-size-contain bgi-position-x-center border-0 mb-5 mb-xl-10">
 								<div class="card-body">
-								
+
 									<form method="post" id="formid" class="form-horizontal" action="new_LeaveEdit_Do" enctype="multipart/form-data">
-									
-            <!--Header -->
-			<div class="d-flex justify-content-between align-items-center mb-6">
-			    <!-- ด้านซ้าย -->
-			    <div>
-			        <h3 class="fw-bold text-gray-800 mb-1 fs-4">Leave form</h3>
-			    </div>
-			
-			    <!-- ด้านขวา -->
-			    <div class="d-flex justify-content-end">
-			        <select class="form-select form-select-solid" id="status" name="status" disabled required style="min-width: 200px; max-width: 300px;">
-			            <option value="0">Wait for approve</option>
-			            <option value="1">Approved</option>
-			            <option value="2">Reject</option>
-			            <option value="3">Cancel</option>
-			        </select>
-			        <input type="hidden" name="status_hidden" id="status_hidden">
-			    </div>
-			</div>
 
-			<div class="mb-10">
-				<select id="user" name="user" class="form-select form-select-solid" onchange="userOnChange()" disabled required>
-					<option></option>
-					<optgroup id='u_enable' label="Enable"></optgroup>
-					<optgroup id='u_disable' label="Disable"></optgroup>
-				</select>
-				<input hidden name="user_hidden" id="user_hidden" type="text">
-				<input hidden name="leaveId_hidden" id="leaveId_hidden" type="text">
-			</div>
-			
-			<div class="mb-8">
-			  <label class="form-label fw-semibold fs-5">Type of leave</label>
-			  <div id="leaveTypes" class="row g-6 fs-4">
-			  	<!-- Loop Leave Type Javascript -->
-			  </div>
-			</div>
+										<!--Header -->
+										<div class="d-flex justify-content-between align-items-center mb-6">
+											<!-- ด้านซ้าย -->
+											<div>
+												<h3 class="fw-bold text-gray-800 mb-1 fs-4">Leave form</h3>
+											</div>
 
-            <!--Type of leave -->
-			<div class="mb-6">
-			  <div class="row g-6">
-			  
-            <!--Date range & half-day -->
-            <div class="row mb-8">
-                
-				<!-- Date Range -->
-				<div class="row mb-8">
-				
-					<div class="col-md-6">
-						
-					<div class="row mb-6 align-items-end">
-					  <!-- Start Date -->
-					  <div class="col-md-6">
-					    <label class="form-label fw-semibold fs-5">Start Date <span class="text-danger">*</span></label>
-					    <div class="input-group date date-picker input-daterange"
-					    data-provide="datepicker"
-					    data-date-format="dd M yyyy">
-					      <input type="text" class="form-control form-control-solid" id="date_from" name="from" autocomplete="off" required>
-					      <input  class="hide" name="from_hidden" id="date_from_hidden" type="text" hidden>
-					    </div>
-					  </div>
-											
-					  <!-- End Date -->
-					  <div class="col-md-6">
-					    <label class="form-label fw-semibold fs-5">End Date <span class="text-danger">*</span></label>
-					    <div class="input-group date date-picker input-daterange"
-					    data-provide="datepicker"
-					    data-date-format="dd M yyyy">
-					      <input type="text" class="form-control form-control-solid" id="date_to" name="to" autocomplete="off" required>
-					      <input class="hide" name="to_hidden" id="date_to_hidden" type="text" hidden>
-					    </div>
-					  </div>
-					</div>
-						
-					</div>
-					
-	                <div class="col-md-6">
-	                    <label class="form-label required fs-5">ช่วงเวลาในการลา</label>
-	                    <select class="form-select form-select-solid input-daterange" id="halfDay" name="halfDay" required>
-							<option value="0" selected>เต็มวัน</option>
-							<option value="1">ช่วงเช้า</option>
-    						<option value="2">ช่วงบ่าย</option>
-    						<option value="3">เลือกช่วงเวลา</option>
-	                    </select>
-	                </div>
-					
-				</div>
-                
-            </div>
+											<!-- ด้านขวา -->
+											<div class="d-flex justify-content-end">
+												<select class="form-select form-select-solid" id="status" name="status" disabled required style="min-width: 200px; max-width: 300px;">
+													<option value="0">Wait for approve</option>
+													<option value="1">Approved</option>
+													<option value="2">Reject</option>
+													<option value="3">Cancel</option>
+												</select>
+												<input type="hidden" name="status_hidden" id="status_hidden">
+											</div>
+										</div>
 
-			<div class="row mb-8">
-				<!-- Start Time -->
-				<div class="col-md-6">
-					<label class="form-label fw-semibold fs-5">Start Time <span class="text-danger">*</span></label>
-					<div class="input-group">
-						<input type="text" class="form-control form-control-solid timepicker timepicker-24 checkHours" id="time_from" name="time_from" autocomplete="off" required disabled>
-					</div>
-					<input class="hide" id="time_from_hidden" name="time_from_hidden" hidden>
-				</div>
-				
-				<!-- End Time -->
-				<div class="col-md-6">
-					<label class="form-label fw-semibold fs-5">End Time <span class="text-danger">*</span></label>
-					<div class="input-group">
-						<input type="text" class="form-control form-control-solid timepicker timepicker-24 checkHours" id="time_to" name="time_to" autocomplete="off" required disabled>
-					</div>
-					<input class="hide" id="time_to_hidden" name="time_to_hidden" hidden>
-					<div class="form-text text-danger" id="alert_time_to"></div>
-				</div>
-			</div>
-            
-			<div class="row mb-8">
-				<!-- Start Time -->
-				<div class="col-md-6">
-					<label class="form-label fw-semibold fs-5">Day</label>
-					<div class="input-group">
-					    <input type="text" class="form-control form-control-solid timepicker timepicker-24 checkHours" id="amount" name="amount" min="1" max="1000" maxlength="3" disabled>
-					</div>
-					<input class="hide" id="amount_hidden" name="amount_hidden" hidden>
-				</div>
-	  				
-				<!-- End Time -->
-				<div class="col-md-6">
-					<label class="form-label fw-semibold fs-5">Hours</label>
-					<div class="input-group">
-					    <input type="text" class="form-control form-control-solid timepicker timepicker-24 checkHours" id="amount_sub" name="amount_sub" value="0" min="1" max="1000" maxlength="3" onchange="check()" disabled>
-					</div>
-					<input class="hide" value="0" id="amount_sub_hidden" name="amount_sub_hidden" hidden>
-				</div>
-			</div>
+										<div class="mb-10">
+											<select id="user" name="user" class="form-select form-select-solid" onchange="userOnChange()" disabled required>
+												<option></option>
+												<optgroup id='u_enable' label="Enable"></optgroup>
+												<optgroup id='u_disable' label="Disable"></optgroup>
+											</select>
+											<input hidden name="user_hidden" id="user_hidden" type="text">
+											<input hidden name="leaveId_hidden" id="leaveId_hidden" type="text">
+										</div>
 
-            <!--Description -->
-            <div class="mb-8">
-                <label class="form-label required fs-5">Description</label>
-                
-				<textarea
-					class="form-control form-control-solid"
-					style="word-break: break-all; white-space: normal;" maxlength="1024"
-					name="description"
-					id="description"
-					rows="3" placeholder="Enter a reason."
-					required>
-				</textarea>
-				
-				<input hidden class="hide" name="description_hidden" id="description_hidden" type="text">
+										<div class="mb-8">
+											<label class="form-label fw-semibold fs-5">Type of leave</label>
+											<div id="leaveTypes" class="row g-6 fs-4">
+												<!-- Loop Leave Type Javascript -->
+											</div>
+										</div>
 
-                <div class="text-danger mt-2">กรุณาระบุเหตุผลในการลา ตัวอย่าง ลางานเนื่องจากท้องเสีย</div>
-            </div>
+										<!--Type of leave -->
+										<div class="mb-6">
+											<div class="row g-6">
 
-            <!--File Upload -->
-			<div class="mb-8">
-			  <label class="form-label fs-5">Attach files</label>
-			  <div class="d-flex flex-column">
-			
-			    <!-- ปุ่มแนว Metronic แต่ยังใช้ ID/NAME เดิม -->
-			    <label for="myFile" id="lbFile" class="btn btn-primary w-150px mb-2 d-inline-flex align-items-center justify-content-center gap-2" style="height: 40px;">
-					Attach files
-			        <input type="file" id="myFile" name="fileUpload" style="display:none;" accept="image/*" onchange="showFileName(this)">
-			    </label>
-			
-			    <!-- Hidden inputs ตามต้นฉบับ -->
-			    <input type="hidden" name="fileUploadSize" value="${size}" id="size">
-			    <input type="hidden" name="fileUploadId" id="fileUploadId">
-			
-			    <!-- ข้อความเตือน -->
-			    <div class="text-danger mb-2">
-			      กรุณาอัปโหลดเฉพาะไฟล์ชื่อภาษาอังกฤษเท่านั้น
-			    </div>
-			
-			    <!-- แสดงชื่อไฟล์ (แทน linkImage เดิม) -->
-			    <div id="linkImage" class="mt-3 border border-gray-300 rounded px-4 py-3 bg-light text-gray-700">
-			      ยังไม่ได้เลือกไฟล์
-			    </div>
-			
-			    <!-- ภาพ preview -->
-			    <img id="frame" src="" style="max-width:150px; display:none; margin-top:10px;"/>
-			
-			  </div>
-			</div>
+												<!--Date range & half-day -->
+												<div class="row mb-8">
 
-            <!--Approver -->
-            <div class="mb-10">
-                <label class="form-label required fs-5">Approvers</label>
-				<select id="approver" name="approver" class="form-select form-select-solid" required>
-					<option value="admin">แอดมิน</option>
-				</select>
-				<input hidden name="approver_hidden" id="approver_hidden" type="text">
-            </div>
+													<!-- Date Range -->
+													<div class="row mb-8">
 
-            <!--Buttons -->
-            <div class="d-flex justify-content-end gap-3">
-                <button type="button" class="btn btn-light" onclick="window.history.go(-1); return false;">Cancel</button>
-                <button type="button" class="btn btn-success" onclick="beforeSubmit();">Submit</button>
-            </div>
+														<div class="col-md-6">
 
-        </div>
-    </div>
-									
+															<div class="row mb-6 align-items-end">
+																<!-- Start Date -->
+																<div class="col-md-6">
+																	<label class="form-label fw-semibold fs-5">Start Date <span class="text-danger">*</span></label>
+																	<div class="input-group date date-picker input-daterange" data-provide="datepicker" data-date-format="dd M yyyy">
+																		<input type="text" class="form-control form-control-solid" id="date_from" name="from" autocomplete="off" required>
+																		<input class="hide" name="from_hidden" id="date_from_hidden" type="text" hidden>
+																	</div>
+																</div>
+
+																<!-- End Date -->
+																<div class="col-md-6">
+																	<label class="form-label fw-semibold fs-5">End Date <span class="text-danger">*</span></label>
+																	<div class="input-group date date-picker input-daterange" data-provide="datepicker" data-date-format="dd M yyyy">
+																		<input type="text" class="form-control form-control-solid" id="date_to" name="to" autocomplete="off" required>
+																		<input class="hide" name="to_hidden" id="date_to_hidden" type="text" hidden>
+																	</div>
+																</div>
+															</div>
+
+														</div>
+
+														<div class="col-md-6">
+															<label class="form-label required fs-5">ช่วงเวลาในการลา</label>
+															<select class="form-select form-select-solid input-daterange"
+																id="halfDay" name="halfDay" required>
+																<option value="0" selected>เต็มวัน</option>
+																<option value="1">ช่วงเช้า</option>
+																<option value="2">ช่วงบ่าย</option>
+																<option value="3">เลือกช่วงเวลา</option>
+															</select>
+														</div>
+
+													</div>
+
+												</div>
+
+												<div class="row mb-8">
+													<!-- Start Time -->
+													<div class="col-md-6">
+														<label class="form-label fw-semibold fs-5">Start Time <span class="text-danger">*</span></label>
+														<div class="input-group">
+															<input type="text" class="form-control form-control-solid timepicker timepicker-24 checkHours" id="time_from" name="time_from" autocomplete="off" required disabled>
+														</div>
+														<input class="hide" id="time_from_hidden" name="time_from_hidden" hidden>
+													</div>
+
+													<!-- End Time -->
+													<div class="col-md-6">
+														<label class="form-label fw-semibold fs-5">End Time <span class="text-danger">*</span></label>
+														<div class="input-group">
+															<input type="text" class="form-control form-control-solid timepicker timepicker-24 checkHours" id="time_to" name="time_to" autocomplete="off" required disabled>
+														</div>
+														<input class="hide" id="time_to_hidden" name="time_to_hidden" hidden>
+														<div class="form-text text-danger" id="alert_time_to"></div>
+													</div>
+												</div>
+
+												<div class="row mb-8">
+													<!-- Start Time -->
+													<div class="col-md-6">
+														<label class="form-label fw-semibold fs-5">Day</label>
+														<div class="input-group">
+															<input type="text" class="form-control form-control-solid timepicker timepicker-24 checkHours" id="amount" name="amount" min="1" max="1000" maxlength="3" disabled>
+														</div>
+														<input class="hide" id="amount_hidden" name="amount_hidden" hidden>
+													</div>
+
+													<!-- End Time -->
+													<div class="col-md-6">
+														<label class="form-label fw-semibold fs-5">Hours</label>
+														<div class="input-group">
+															<input type="text" class="form-control form-control-solid timepicker timepicker-24 checkHours" id="amount_sub" name="amount_sub" value="0" min="1" max="1000" maxlength="3" onchange="check()" disabled>
+														</div>
+														<input class="hide" value="0" id="amount_sub_hidden" name="amount_sub_hidden" hidden>
+													</div>
+												</div>
+
+												<!--Description -->
+												<div class="mb-8">
+													<label class="form-label required fs-5">Description</label>
+
+													<textarea
+														class="form-control form-control-solid"
+														style="word-break: break-all; white-space: normal;" maxlength="1024"
+														name="description"
+														id="description"
+														rows="3" placeholder="Enter a reason."
+														required>
+													</textarea>
+
+													<input hidden class="hide" name="description_hidden" id="description_hidden" type="text">
+
+													<div class="text-danger mt-2">กรุณาระบุเหตุผลในการลา ตัวอย่าง ลางานเนื่องจากท้องเสีย</div>
+												</div>
+
+												<!--File Upload -->
+												<div class="mb-8">
+													<label class="form-label fs-5">Attach files</label>
+													<div class="d-flex flex-column">
+
+														<!-- ปุ่มแนว Metronic แต่ยังใช้ ID/NAME เดิม -->
+														<label for="myFile" id="lbFile" class="btn btn-primary w-150px mb-2 d-inline-flex align-items-center justify-content-center gap-2" style="height: 40px;">
+															Attach files
+															<input type="file" id="myFile" name="fileUpload" style="display:none;" accept="image/*" onchange="showFileName(this)">
+														</label>
+
+														<!-- Hidden inputs ตามต้นฉบับ -->
+														<input type="hidden" name="fileUploadSize" value="${size}" id="size">
+														<input type="hidden" name="fileUploadId" id="fileUploadId">
+
+														<!-- ข้อความเตือน -->
+														<div class="text-danger mb-2">
+															กรุณาอัปโหลดเฉพาะไฟล์ชื่อภาษาอังกฤษเท่านั้น
+														</div>
+
+														<!-- แสดงชื่อไฟล์ (แทน linkImage เดิม) -->
+														<div id="linkImage" class="mt-3 border border-gray-300 rounded px-4 py-3 bg-light text-gray-700">
+															ยังไม่ได้เลือกไฟล์
+														</div>
+
+														<!-- ภาพ preview -->
+														<img id="frame" src="" style="max-width: 150px; display: none; margin-top: 10px;" />
+
+													</div>
+												</div>
+
+												<!--Approver -->
+												<div class="mb-10">
+													<label class="form-label required fs-5">Approvers</label>
+													<select id="approver" name="approver" class="form-select form-select-solid" required>
+														<option value="admin">แอดมิน</option>
+													</select>
+													<input hidden name="approver_hidden" id="approver_hidden" type="text">
+												</div>
+
+												<!--Buttons -->
+												<div class="d-flex justify-content-end gap-3">
+													<button type="button" class="btn btn-light" onclick="window.history.go(-1); return false;">Cancel</button>
+													<button type="button" class="btn btn-success" onclick="beforeSubmit();">Submit</button>
+												</div>
+
+											</div>
+										</div>
+
 									</form>
-								
+
 								</div>
 							</div>
+						</div>
 					</div>
-				</div>				
-				<!-- DDL -->
-				
+					<!-- DDL -->
+
+				</div>
+				<!--end::Content container-->
+
 			</div>
-			<!--end::Content container-->
-			
+			<!--end::Content-->
+
 		</div>
-		<!--end::Content-->
+		<!--end::Content wrapper-->
 
 	</div>
-	<!--end::Content wrapper-->
-
-</div>
-<!--end:::Main-->
+	<!--end:::Main-->
 
 
 
@@ -555,8 +552,12 @@
 </c:if>
 <!-- End leaveType Radio -->
 
-<c:if test="${leave == null}"><c:set var="leave" value="''"/></c:if>
-<c:if test="${fileLeave == null}"><c:set var="fileLeave" value="''"/></c:if>
+<c:if test="${leave == null}">
+	<c:set var="leave" value="''" />
+</c:if>
+<c:if test="${fileLeave == null}">
+	<c:set var="fileLeave" value="''" />
+</c:if>
 
 <script>
 	/* $("#kt_daterangepicker").daterangepicker({

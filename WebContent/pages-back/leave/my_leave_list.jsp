@@ -1,7 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
-<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 
 <fmt:setLocale value="en_US" />
 <fmt:setTimeZone value="Asia/Bangkok" />
@@ -37,10 +37,10 @@
 
 		<!--begin::Content-->
 		<div id="kt_app_content" class="app-content flex-column-fluid">
-		
+
 			<!--begin::Content container-->
 			<div id="kt_app_content_container" class="app-container container-fluid">
-				
+
 				<!-- DDL -->
 				<div class="d-flex flex-row">
 					<div class="flex-row-fluid mb-5">
@@ -51,7 +51,6 @@
 										<!-- Leave Type -->
 										<div class="col-md-4">
 											<div class="mb-5">
-											<!-- <label class="form-label">Leave Type</label> -->
 												<select class="form-select form-select-solid" data-placeholder="All Leave Type" name="type" onchange="this.form.submit()">
 													<option value="allType" <c:if test="${leaveType == 'allType'}"><c:out value="selected=selected"/></c:if>>All Leave Type</option>
 													<c:forEach var="leavetype" items="${leavetypelistChoice}">
@@ -64,7 +63,7 @@
 												</select>
 											</div>
 										</div>
-		
+
 										<!-- Status -->
 										<div class="col-md-4">
 											<div class="mb-5">
@@ -73,32 +72,27 @@
 													<option value="4" id="All1"
 														<c:if test="${ appr == 4 }">
 															<c:out value="selected=selected"/>
-														</c:if>>All Status
-													</option>
-													<option value="0"
-														<c:if test="${ appr == 0 }">
+														</c:if>>All Status</option>
+													<option value="0" <c:if test="${ appr == 0 }">
 															<c:out value="selected=selected"/>
-														</c:if>>Waiting for approve
-													</option>
-													<option value="1"
-														<c:if test="${ appr == 1 }">
+														</c:if>>Waiting
+														for approve</option>
+													<option value="1" <c:if test="${ appr == 1 }">
 															<c:out value="selected=selected"/>
 														</c:if>>Approve
 													</option>
-													<option value="2"
-														<c:if test="${ appr == 2 }">
+													<option value="2" <c:if test="${ appr == 2 }">
 															<c:out value="selected=selected"/>
 														</c:if>>Reject
 													</option>
-													<option value="3"
-														<c:if test="${ appr == 3 }">
+													<option value="3" <c:if test="${ appr == 3 }">
 															<c:out value="selected=selected"/>
 														</c:if>>Cancel
 													</option>
 												</select>
 											</div>
 										</div>
-		
+
 										<!-- Date Range -->
 										<div class="col-md-4">
 											<div class="mb-5">
@@ -113,16 +107,16 @@
 							</div>
 						</form>
 					</div>
-				</div>				
+				</div>
 				<!-- DDL -->
-				
+
 				<!-- Summary Leave -->
 				<div class="d-flex flex-row">
 					<div class="flex-row-fluid mb-5">
 						<div class="card card-flush bgi-no-repeat bgi-size-contain bgi-position-x-center border-0 mb-5 mb-xl-10">
 							<div class="card-body">
 								<div class="row g-5">
-	
+
 									<!-- ลาพักร้อน -->
 									<div class="col-6 col-md-4 col-xl-3">
 										<div class="d-flex align-items-center">
@@ -144,7 +138,7 @@
 											</div>
 										</div>
 									</div>
-	
+
 									<!-- ลากิจ -->
 									<div class="col-6 col-md-4 col-xl-3">
 										<div class="d-flex align-items-center">
@@ -157,7 +151,7 @@
 														<span class="path4"></span>
 														<span class="path5"></span>
 														<span class="path6"></span>
-													</i>												
+													</i>
 												</span>
 											</div>
 											<div class="d-flex flex-column">
@@ -170,7 +164,7 @@
 											</div>
 										</div>
 									</div>
-	
+
 									<!-- ลาพักร้อนที่เหลือ -->
 									<div class="col-6 col-md-4 col-xl-3">
 										<div class="d-flex align-items-center">
@@ -196,7 +190,7 @@
 											</div>
 										</div>
 									</div>
-	
+
 									<!-- ลาป่วย -->
 									<div class="col-6 col-md-4 col-xl-3">
 										<div class="d-flex align-items-center">
@@ -221,7 +215,7 @@
 											</div>
 										</div>
 									</div>
-	
+
 									<!-- ขาดงาน -->
 									<div class="col-6 col-md-4 col-xl-3">
 										<div class="d-flex align-items-center">
@@ -234,7 +228,7 @@
 														<span class="path4"></span>
 														<span class="path5"></span>
 														<span class="path6"></span>
-													</i>												
+													</i>
 												</span>
 											</div>
 											<div class="d-flex flex-column">
@@ -247,7 +241,7 @@
 											</div>
 										</div>
 									</div>
-	
+
 									<!-- ลาโดยไม่รับค่าจ้าง -->
 									<div class="col-6 col-md-4 col-xl-3">
 										<div class="d-flex align-items-center">
@@ -257,7 +251,7 @@
 														<span class="path1"></span>
 														<span class="path2"></span>
 														<span class="path3"></span>
-													</i>												
+													</i>
 												</span>
 											</div>
 											<div class="d-flex flex-column">
@@ -270,7 +264,7 @@
 											</div>
 										</div>
 									</div>
-	
+
 									<!-- ลาอื่น ๆ -->
 									<div class="col-6 col-md-4 col-xl-3">
 										<div class="d-flex align-items-center">
@@ -292,15 +286,15 @@
 											</div>
 										</div>
 									</div>
-	
+
 								</div>
 							</div>
 						</div>
 					</div>
-				</div>				
+				</div>
 				<!-- Summary Leave -->
-				
-				
+
+
 				<!-- Recent Update -->
 				<div class="d-flex flex-wrap flex-stack pb-7">
 					<!--begin::Title-->
@@ -329,14 +323,14 @@
 						<c:forEach var="leave" items="${leavelist}" varStatus="status">
 							<!--begin::Leave Each 1-->
 							<div class="card shadow-sm mb-5 mb-xl-10">
-							
+
 								<!--begin::Header -->
 								<div class="card-header fs-4">
-	
+
 									<!-- ID , Title -->
 									<div class="d-flex align-items-center mb-2 gap-2">
 										<span class="fw-bold me-2 text-primary">#${leave.leave_id}</span>
-										
+
 											<c:if test="${leave.leave_type_id.toString() == '1'}">
 												<div class="symbol symbol-35px me-4">
 													<span class="symbol-label bg-light-success">
@@ -417,14 +411,14 @@
 													</span>
 												</div>
 											</c:if>
-										
+
 										<span class="fw-semibold" style="font-weight: 1000 !important;">${leave.leave_type_name}</span>
 									</div>
-	
+
 									<!-- Btn Info, Edit, Delete -->
 									<div class="card-toolbar">
 										<div class="d-inline-flex align-items-center justify-content-end gap-2">
-	
+
 											<!-- Btn Info -->
 											<a href="javascript:void(0)" class="btn btn-icon btn-sm btn-light-info" onclick="leaveStatus(${leave.leave_id})">
 												<i class="ki-duotone ki-document fs-5">
@@ -432,7 +426,7 @@
 													<span class="path2"></span>
 												</i>
 											</a>
-	
+
 											<!-- Btn Edit, Delete -->
 											<c:choose>
 												<c:when test="${leave.leave_status_id.toString() == 0}">
@@ -468,23 +462,23 @@
 															<span class="path5"></span>
 														</i>
 													</a>
-														
+
 												</c:when>
 											</c:choose>
-	
+
 										</div>
 									</div>
-	
+
 								</div>
 								<!--end::Header -->
-	
+
 								<!--begin::Footer -->
 								<div class="card-header fs-6">
-	
+
 									<div class="d-flex align-items-center mb-2">
 										<div class="d-flex flex-wrap align-items-center gap-3">
 											<div class="fw-bold text-dark">${leave.name}</div>
-	
+
 											<div class="d-flex align-items-center">
 												<i class="ki-duotone ki-calendar-2 fs-5">
 													<span class="path1"></span>
@@ -498,7 +492,7 @@
 												<fmt:formatNumber type="number" pattern="#.###" value="${leave.no_day}"/> day
 												</span>
 											</div>
-	
+
 											<div class="d-flex align-items-center">
 												<i class="ki-duotone ki-calendar-8 fs-5">
 													<span class="path1"></span>
@@ -515,7 +509,7 @@
 													<c:if test="${leave.half_day.toString() == 3}"><span>ช่วงเวลา</span></c:if>
 												</c:if>
 											</div>
-	
+
 											<div class="d-flex align-items-center">
 												<i class="ki-duotone ki-time fs-5">
 													<span class="path1"></span>
@@ -528,14 +522,14 @@
 											</div>
 										</div>
 									</div>
-	
+
 									<div class="card-toolbar">
 										<div class="d-inline-flex align-items-center justify-content-end gap-2">
-	
+
 											<span class="text-muted fs-7">
 												Request Date: <fmt:formatDate value="${leave.time_create}" type="date" pattern="d MMM yyyy" />
 											</span>
-											
+
 											<c:if test="${leave.leave_status_id.toString() == '0'}">
 												<span class="badge badge-light-warning badge-lg ms-2">Wait for approve</span>
 											</c:if>
@@ -548,23 +542,23 @@
 											<c:if test="${leave.leave_status_id.toString() == '3'}">
 												<span class="badge badge-light-dark badge-lg ms-2">Cancel</span>
 											</c:if>
-	
+
 										</div>
 									</div>
-	
+
 								</div>
 								<!--end::Footer -->
-	
+
 							</div>
 							<!--begin::Leave Each 1-->
 						</c:forEach>
 					</div>
-				</div>				
+				</div>
 				<!--end::Leave List-->
 
 			</div>
 			<!--end::Content container-->
-			
+
 		</div>
 		<!--end::Content-->
 
@@ -576,88 +570,90 @@
 
 <!--begin::Modal - Leave Detail-->
 <div class="modal fade" id="leaveDetailModal" tabindex="-1" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      
-      <!--begin::Header-->
-      <div class="modal-header">
-        <h2 class="modal-title">Leave</h2>
-                <div class="btn btn-icon btn-sm btn-active-light-primary ms-2" data-bs-dismiss="modal" aria-label="Close">
-                    <i class="ki-duotone ki-cross fs-1"><span class="path1"></span><span class="path2"></span></i>
-        </div>
-      </div>
-      <!--end::Header-->
+	<div class="modal-dialog">
+		<div class="modal-content">
 
-      <!--begin::Body-->
-            <div class="modal-body">
-        <div class="row gx-5 gy-4">
-          <!-- Left -->
-          <div class="col-md-7">
-            <div class="d-flex align-items-center mb-3 fs-5">
-              <a href="#" class="fw-bold text-primary me-5">#<span id="leaveid"></span></a>
-              <span class="fw-semibold text-dark me-5" id="leavetype"></span>
-              <span class="badge badge-light-primary fs-7 fw-semibold" id="noday"></span>
-            </div>
+			<!--begin::Header-->
+			<div class="modal-header">
+				<h2 class="modal-title">Leave</h2>
+				<div class="btn btn-icon btn-sm btn-active-light-primary ms-2" data-bs-dismiss="modal" aria-label="Close">
+					<i class="ki-duotone ki-cross fs-1"><span class="path1"></span><span class="path2"></span></i>
+				</div>
+			</div>
+			<!--end::Header-->
 
-            <div class="d-flex align-items-center text-gray-700 mb-2 fs-6">
-              <i class="ki-duotone ki-calendar-8 fs-5 me-2 text-gray-500"><span class="path1"></span><span class="path2"></span></i>
-              <span id="sdate"></span> - <span id="edate"></span>
-            </div>
+			<!--begin::Body-->
+			<div class="modal-body">
+				<div class="row gx-5 gy-4">
+					<!-- Left -->
+					<div class="col-md-7">
+						<div class="d-flex align-items-center mb-3 fs-5">
+							<a href="#" class="fw-bold text-primary me-5">#<span id="leaveid"></span></a>
+							<span class="fw-semibold text-dark me-5" id="leavetype"></span>
+							<span class="badge badge-light-primary fs-7 fw-semibold" id="noday"></span>
+						</div>
 
-            <div class="d-flex align-items-center text-gray-700 mb-2 fs-6">
-              <i class="ki-duotone ki-minus fs-5 me-2 text-gray-500"><span class="path1"></span><span class="path2"></span></i>
-              <span id="desc"></span>
-            </div>
+						<div class="d-flex align-items-center text-gray-700 mb-2 fs-6">
+							<i class="ki-duotone ki-calendar-8 fs-5 me-2 text-gray-500"><span class="path1"></span><span class="path2"></span></i>
+							<span id="sdate"></span> - <span id="edate"></span>
+						</div>
 
-            <span id="leavestatus" class="badge badge-lg mt-3 fs-7 fw-semibold"></span>
-          </div>
+						<div class="d-flex align-items-center text-gray-700 mb-2 fs-6">
+							<i class="ki-duotone ki-minus fs-5 me-2 text-gray-500"><span class="path1"></span><span class="path2"></span></i>
+							<span id="desc"></span>
+						</div>
 
-          <!-- Right -->
-          <div class="col-md-5">
-            <div class="fw-semibold text-dark mb-2 fs-5" id="userid"></div>
+						<span id="leavestatus" class="badge badge-lg mt-3 fs-7 fw-semibold"></span>
+					</div>
 
-            <div class="d-flex align-items-center text-gray-700 mb-2 fs-6">
-              <i class="ki-duotone ki-time fs-5 me-2 text-gray-500"><span class="path1"></span><span class="path2"></span></i>
-              <span id="stime"></span> - <span id="etime"></span>
-            </div>
-            
-            <div class="d-flex align-items-center text-gray-700 mb-2 fs-6">
-              <i class="ki-duotone ki-file fs-5 me-2 text-gray-500"><span class="path1"></span><span class="path2"></span></i>
-              <a id="file" href="#" target="_blank" class="text-primary text-hover-underline"></a>
-              <div class="text-muted fs-8">Request date: <span id="timecreate"></span></div>
-            </div>
-            
-          </div>
-        </div>
+					<!-- Right -->
+					<div class="col-md-5">
+						<div class="fw-semibold text-dark mb-2 fs-5" id="userid"></div>
 
-        <!-- Approver Info -->
-        <div id="status_panel" class="mt-5" style="display:none;">
-          <h3 class="text-info fw-semibold mb-3" id="status_title"></h3>
-          <div class="row gx-5 gy-3 fs-6" id="approved_detail">
-            <div class="col-md-4">
-              <i class="ki-duotone ki-user fs-5 me-2 text-gray-500"><span class="path1"></span><span class="path2"></span></i>
-              <span id="approver"></span>
-            </div>
-            <div class="col-md-4">
-              <i class="ki-duotone ki-calendar-8 fs-5 me-2 text-gray-500"><span class="path1"></span><span class="path2"></span></i>
-              <span id="timeupdate"></span>
-            </div>
-            <div class="col-md-4">
-              <i class="ki-duotone ki-message-text fs-5 me-2 text-gray-500"><span class="path1"></span><span class="path2"></span></i>
-              <span id="reason_s"></span>
-            </div>
-          </div>
-        </div>
-      </div>
-      <!--end::Body-->
+						<div class="d-flex align-items-center text-gray-700 mb-2 fs-6">
+							<i class="ki-duotone ki-time fs-5 me-2 text-gray-500"><span class="path1"></span><span class="path2"></span></i>
+							<span id="stime"></span> - <span id="etime"></span>
+						</div>
 
-      <!--begin::Footer-->
-      <div class="modal-footer">
-        <button type="button" class="btn btn-lg btn-light" data-bs-dismiss="modal">Close</button>
-      </div>
-      <!--end::Footer-->
-    </div>
-  </div>
+						<div class="d-flex align-items-center text-gray-700 mb-2 fs-6">
+							<i class="ki-duotone ki-file fs-5 me-2 text-gray-500"><span class="path1"></span><span class="path2"></span></i>
+							<a id="file" href="#" target="_blank" class="text-primary text-hover-underline"></a>
+							<div class="text-muted fs-8">
+								Request date: <span id="timecreate"></span>
+							</div>
+						</div>
+
+					</div>
+				</div>
+
+				<!-- Approver Info -->
+				<div id="status_panel" class="mt-5" style="display: none;">
+					<h3 class="text-info fw-semibold mb-3" id="status_title"></h3>
+					<div class="row gx-5 gy-3 fs-6" id="approved_detail">
+						<div class="col-md-4">
+							<i class="ki-duotone ki-user fs-5 me-2 text-gray-500"><span class="path1"></span><span class="path2"></span></i>
+							<span id="approver"></span>
+						</div>
+						<div class="col-md-4">
+							<i class="ki-duotone ki-calendar-8 fs-5 me-2 text-gray-500"><span class="path1"></span><span class="path2"></span></i>
+							<span id="timeupdate"></span>
+						</div>
+						<div class="col-md-4">
+							<i class="ki-duotone ki-message-text fs-5 me-2 text-gray-500"><span class="path1"></span><span class="path2"></span></i>
+							<span id="reason_s"></span>
+						</div>
+					</div>
+				</div>
+			</div>
+			<!--end::Body-->
+
+			<!--begin::Footer-->
+			<div class="modal-footer">
+				<button type="button" class="btn btn-lg btn-light" data-bs-dismiss="modal">Close</button>
+			</div>
+			<!--end::Footer-->
+		</div>
+	</div>
 </div>
 <!--end::Modal - Leave Detail-->
 
