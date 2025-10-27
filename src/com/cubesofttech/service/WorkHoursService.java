@@ -47,11 +47,9 @@ public class WorkHoursService {
             cursor = today.minusDays(1);	//Else -> Yesterday
         }
 
-        // ถ้าเมื่อวานเป็นวันหยุด → ใช้เมื่อวานเป็นจุดตั้งต้น (แล้วค่อยถอยต่อใน while)
         if (holidays.contains(today.minusDays(1))) {
             cursor = today.minusDays(1);
         }
-        // 3) ถอยจนกว่าจะเจอ "วันทำงาน" (ไม่ใช่ ส/อา/วันหยุด)
         while (isWeekend(cursor) || holidays.contains(cursor)) {
             cursor = cursor.minusDays(1);
         }
@@ -74,7 +72,7 @@ public class WorkHoursService {
 			 list = holidayDAO.findAll();
 		 } catch (Exception e) {
 			e.printStackTrace();
-		 }   // สมมติรีเทิร์นวันหยุดทั้งหมด
+		 }   
 		 
 		 Set<LocalDate> dates = new HashSet<>();
 	     for (Holiday h : list) {
@@ -152,7 +150,6 @@ public class WorkHoursService {
 			}
 			for (Map<String, Object> maps : usertype1) {
 				for (Map.Entry<String, Object> entry : maps.entrySet()) {
-					log.debug(entry.getValue());
 					Date date1 = new Date();
 					date1 = (Date) entry.getValue();
 					DateFormat dateFormat = new SimpleDateFormat("HH:mm");

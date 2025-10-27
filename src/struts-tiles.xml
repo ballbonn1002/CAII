@@ -148,6 +148,11 @@
 		<put-attribute name="body"
 			value="/pages-back/announcement/announcement_read.jsp"/>
 	</definition>
+	<definition name="AnnouncementAdd" extends="baseLayout">
+		<put-attribute name="title" value="Annoucemnet Add"/>
+		<put-attribute name="body"
+			value="/pages-back/announcement/announcement_add.jsp"/>
+	</definition>
 	
 	<!-- POSITION -->
 	<definition name="positionList" extends="baseLayout">

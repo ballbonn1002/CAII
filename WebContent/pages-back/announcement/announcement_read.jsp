@@ -5,7 +5,15 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
 <%@ taglib uri="/WEB-INF/tlds/permission.tld" prefix="perm"%>
 <!DOCTYPE html>
-<style></style>
+<style>
+.announcement-detail img {
+	max-width: 100%;
+	height: auto;
+	border-radius: 8px;
+	display: block;
+	margin: 10px auto;
+}
+</style>
 <div class="app-main flex-column flex-row-fluid">
 	<div class="d-flex flex-column flex-column-fluid">
 		<div class="app-toolbar align-items-stretch py-5 py-lg-6">
@@ -34,14 +42,19 @@
 							</ul>
 						</div>
 					</div>
-					<div class="d-flex align-items-center">
-						<a
-							class="btn btn-primary btn-flex h-40px border-0 fw-bold px-4 px-lg-6"
-							href="" target="_blank"> <i class="ki-duotone ki-pencil fs-2">
-								<span class="path1"></span> <span class="path2"></span>
-						</i>&nbsp; Edit
-						</a>
-					</div>
+					<c:forEach var="ann" items="${announcement}">
+						<perm:permission object="announcement.edit">
+							<div class="d-flex align-items-center">
+								<a
+									class="btn btn-primary btn-flex h-40px border-0 fw-bold px-4 px-lg-6"
+									href="announcementEdit?id=${ann.announcement_id}"> <i
+									class="ki-duotone ki-pencil fs-2"> <span class="path1"></span>
+										<span class="path2"></span>
+								</i>&nbsp; Edit
+								</a>
+							</div>
+						</perm:permission>
+					</c:forEach>
 				</div>
 			</div>
 		</div>
@@ -75,13 +88,14 @@
 											</i> ${ann['readcount']} Views
 											</span>
 										</div>
-										<!-- Picture -->
+										<%-- <!-- Picture -->
 										<div class="d-flex align-items-center pb-5">
 											<img src="${ann['path']}" alt="img" class="img-fluid rounded"
 												style="max-width: 100%; height: auto;">
-										</div>
+										</div> --%>
 										<!-- Detail -->
-										<div class="card mb-3 border-0 shadow-none text-gray-700">
+										<div
+											class="card mb-3 border-0 shadow-none text-gray-700 announcement-detail">
 											<c:out value="${ann['detail']}" escapeXml="false" />
 										</div>
 									</c:forEach></span>
@@ -100,8 +114,15 @@
 								<c:forEach var="ann" items="${announcement}">
 									<c:forEach var="file" items="${announcementFiles}">
 										<c:if test="${file['pageId'] == ann['announcement_id']}">
-											<div>
-												<a href="${file['path']}" target="_blank">${file['name']}</a>
+											<div
+												class="d-flex align-items-center justify-content-center mb-2">
+												<a href="${file['path']}" target="_blank"
+													class="d-flex align-items-center justify-content-between w-100 fs-6 fw-medium text-gray-800 text-decoration-none hover:text-primary p-2 rounded">
+													<span>${file['name']}</span> <i
+													class="ki-duotone ki-file-down fs-2 text-primary"> <span
+														class="path1"></span> <span class="path2"></span>
+												</i>
+												</a>
 											</div>
 										</c:if>
 									</c:forEach>

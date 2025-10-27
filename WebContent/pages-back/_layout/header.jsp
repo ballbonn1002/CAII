@@ -306,7 +306,7 @@
 						<!--begin::Menu item-->
 						<!-- Sign Out -->
 						<div class="menu-item px-5">
-							<a href="authentication/layouts/corporate/sign-in.html"
+							<a href="signout"
 								class="menu-link px-5">Sign Out</a>
 						</div>
 						<!--end::Menu item-->
