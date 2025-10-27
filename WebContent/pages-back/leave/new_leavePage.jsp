@@ -102,13 +102,48 @@
 </script>
 <!--end::Theme mode setup on page load-->
 
-<form method="post" id="formid" class="form-horizontal" action="new_LeaveEdit_Do" enctype="multipart/form-data">
 
+<!--begin::Main-->
+<div class="app-main flex-column flex-row-fluid">
 
-<div class="container-xxl py-10">
-    <div class="card shadow-sm border-0">
-        <div class="card-body p-10">
+	<!--begin::Content wrapper-->
+	<div class="d-flex flex-column flex-column-fluid">
 
+		<!--begin::Toolbar-->
+		<div id="kt_app_toolbar" class="app-toolbar py-3 py-lg-6">
+			<!--begin::Toolbar container-->
+			<div id="kt_app_toolbar_container" class="app-container container-fluid d-flex flex-stack">
+				<!--begin::Page title-->
+				<div class="page-title d-flex flex-column justify-content-center flex-wrap me-3">
+					<!--begin::Title-->
+					<h1 class="page-heading d-flex text-gray-900 fw-bold fs-3 flex-column justify-content-center my-0">Create a leave form</h1>
+					<!--end::Title-->
+					<!--begin::Breadcrumb-->
+					<ul class="breadcrumb breadcrumb-separatorless fw-semibold fs-7 my-0 pt-1">
+						<li class="breadcrumb-item text-muted"><a href="demo_dashboard" class="text-muted text-hover-primary">Home</a></li>
+					</ul>
+					<!--end::Breadcrumb-->
+				</div>
+				<!--end::Page title-->
+			</div>
+			<!--end::Toolbar container-->
+		</div>
+		<!--end::Toolbar-->
+
+		<!--begin::Content-->
+		<div id="kt_app_content" class="app-content flex-column-fluid">
+		
+			<!--begin::Content container-->
+			<div id="kt_app_content_container" class="app-container container-fluid">
+				
+				<!-- DDL -->
+				<div class="d-flex flex-row">
+					<div class="flex-row-fluid mb-5">
+							<div class="card card-flush bgi-no-repeat bgi-size-contain bgi-position-x-center border-0 mb-5 mb-xl-10">
+								<div class="card-body">
+								
+									<form method="post" id="formid" class="form-horizontal" action="new_LeaveEdit_Do" enctype="multipart/form-data">
+									
             <!--Header -->
 			<div class="d-flex justify-content-between align-items-center mb-6">
 			    <!-- ด้านซ้าย -->
@@ -138,87 +173,24 @@
 				<input hidden name="leaveId_hidden" id="leaveId_hidden" type="text">
 			</div>
 			
-<div class="mb-8">
-  <label class="form-label fw-semibold fs-5">Type of leave</label>
-  <div id="leaveTypes" class="row g-6 fs-4">
-  	<!-- Loop Leave Type Javascript -->
-  </div>
-</div>
+			<div class="mb-8">
+			  <label class="form-label fw-semibold fs-5">Type of leave</label>
+			  <div id="leaveTypes" class="row g-6 fs-4">
+			  	<!-- Loop Leave Type Javascript -->
+			  </div>
+			</div>
 
             <!--Type of leave -->
 			<div class="mb-6">
-			 <!--  <label class="form-label required">Type of leave</label> -->
 			  <div class="row g-6">
 			  
-			    <!-- <div id="leaveTypes" class="md-radio-inline">
-					<div id="leaveTypes_hidden" class="md-radio-inline">
-				  
-					    Leave Type Static
-					    <div class="col-md-4">
-					      <div class="form-check form-check-custom form-check-solid">
-					        <input class="form-check-input" type="radio" name="leaveType" id="leave1" value="1" checked>
-					        <label class="form-check-label" for="leave1">ลาพักร้อน</label>
-					      </div>
-					    </div>
-					
-					    <div class="col-md-4">
-					      <div class="form-check form-check-custom form-check-solid">
-					        <input class="form-check-input" type="radio" name="leaveType" id="leave2" value="2">
-					        <label class="form-check-label" for="leave2">ลากิจ</label>
-					      </div>
-					    </div>
-					
-					    <div class="col-md-4">
-					      <div class="form-check form-check-custom form-check-solid">
-					        <input class="form-check-input" type="radio" name="leaveType" id="leave3" value="3">
-					        <label class="form-check-label" for="leave3">ลาป่วย</label>
-					      </div>
-					    </div>
-					
-					    <div class="col-md-4">
-					      <div class="form-check form-check-custom form-check-solid">
-					        <input class="form-check-input" type="radio" name="leaveType" id="leave4" value="4">
-					        <label class="form-check-label" for="leave4">ขาดงาน</label>
-					      </div>
-					    </div>
-					
-					    <div class="col-md-4">
-					      <div class="form-check form-check-custom form-check-solid">
-					        <input class="form-check-input" type="radio" name="leaveType" id="leave5" value="5">
-					        <label class="form-check-label" for="leave5">ลาโดยไม่รับค่าจ้าง</label>
-					      </div>
-					    </div>
-					
-					    <div class="col-md-4">
-					      <div class="form-check form-check-custom form-check-solid">
-					        <input class="form-check-input" type="radio" name="leaveType" id="leave6" value="6">
-					        <label class="form-check-label" for="leave6">ลาอื่นๆ</label>
-					      </div>
-					    </div>
-				    
-				  	</div>
-				</div> -->
-
             <!--Date range & half-day -->
             <div class="row mb-8">
-                <!-- <div class="col-md-6">
-                    <label class="form-label required">Start Date</label>
-                    <input type="text" class="form-control form-control-solid" value="23/9/2025 - 24/9/2025">
-                </div> -->
                 
 				<!-- Date Range -->
 				<div class="row mb-8">
 				
 					<div class="col-md-6">
-					
-						<!-- <label class="form-label required">Start Date</label>
-						<input class="form-control form-control-solid input-daterange" placeholder="Pick date range" id="kt_daterangepicker" />
-						<input  class="hide" name="from" id="date_from" type="text" hidden>
-						<input  class="hide" name="from_hidden" id="date_from_hidden" type="text" hidden>
-						<input class="hide" name="to" id="date_to" type="text" hidden>
-						<input class="hide" name="to_hidden" id="date_to_hidden" type="text" hidden> -->
-						
-						
 						
 					<div class="row mb-6 align-items-end">
 					  <!-- Start Date -->
@@ -244,8 +216,6 @@
 					  </div>
 					</div>
 						
-						
-						
 					</div>
 					
 	                <div class="col-md-6">
@@ -262,22 +232,6 @@
                 
             </div>
 
-            <!--Start-End Time -->
-            <!-- <div class="row mb-8">
-				<div class="col-md-6">
-				  <label class="form-label required">Start Time</label>
-				  <input type="text" class="form-control form-control-solid" id="time_from" name="time_from" autocomplete="off" required disabled />
-				  <input class="hide" id="time_from_hidden" name="time_from_hidden" hidden>
-				</div>
-				
-				<div class="col-md-6">
-				  <label class="form-label required">End Time</label>
-				  <input type="text" class="form-control form-control-solid" id="time_to" name="time_to" autocomplete="off" required disabled />
-				  <input class="hide" id="time_to_hidden" name="time_to_hidden" hidden>
-				  <div class="form-control-focus" id="alert_time_to"></font></div>
-				</div>
-            </div> -->
-            <!-- Start-End Time -->
 			<div class="row mb-8">
 				<!-- Start Time -->
 				<div class="col-md-6">
@@ -299,25 +253,6 @@
 				</div>
 			</div>
             
-            
-            
-            
-
-            <!--Total -->
-            <!-- <div class="mb-8">
-                <span class="fw-semibold text-gray-700">รวมจำนวนวันลา:</span>
-                <span class="text-primary fw-bold ms-1">0.25 day</span>
-                
-                <span class="fw-semibold text-gray-700">รวมจำนวนวันลา:</span>
-                <span id="amount_display" class="text-primary fw-bold">0.00 day</span>
-			
-			  <input type="hidden" id="amount" name="amount" value="0">
-			  <input type="hidden" id="amount_hidden" name="amount_hidden" value="0">
-			  <input type="hidden" id="amount_sub" name="amount_sub" value="0">
-			  <input type="hidden" id="amount_sub_hidden" name="amount_sub_hidden" value="0">
-                
-            </div> -->
-
 			<div class="row mb-8">
 				<!-- Start Time -->
 				<div class="col-md-6">
@@ -357,42 +292,6 @@
             </div>
 
             <!--File Upload -->
-            <!-- <div class="mb-8">
-                <label class="form-label">Attach files</label>
-                <div class="d-flex flex-column">
-                    <button type="button" class="btn btn-light-primary w-150px mb-2">
-                        <i class="ki-duotone ki-clip fs-4 me-2"></i>Attach files
-                    </button>
-                    <div class="text-danger">กรุณาอัปโหลดเฉพาะไฟล์สกุลภาพ</div>
-                    <div class="mt-3 border border-gray-300 rounded px-4 py-3 bg-light text-gray-700">
-                        Leave-documents.jpg
-                    </div>
-                </div>
-            </div> -->
-            
-			<!-- <div class="mb-8">
-			    <label class="form-label">Attach files</label>
-			    <div class="d-flex flex-column">
-			
-			        ปุ่มแนว Metronic ที่เปิด file dialog
-			        <label for="uploadFile" class="btn btn-primary w-150px mb-2">
-			            <i class="ki-duotone ki-clip fs-4 me-2"></i>Attach files
-			        </label>
-			
-			        input จริงซ่อนอยู่
-			        <input type="file" id="uploadFile" name="uploadFile"
-			               accept="image/*"
-			               class="d-none" onchange="showFileName(this)" />
-			
-			        คำเตือน
-			        <div class="text-danger">กรุณาอัปโหลดเฉพาะไฟล์สกุลภาพ</div>
-			
-			        แสดงชื่อไฟล์
-			        <div id="fileNameDisplay" class="mt-3 border border-gray-300 rounded px-4 py-3 bg-light text-gray-700">
-			            ยังไม่ได้เลือกไฟล์
-			        </div>
-			    </div>
-			</div> -->
 			<div class="mb-8">
 			  <label class="form-label fs-5">Attach files</label>
 			  <div class="d-flex flex-column">
@@ -413,14 +312,10 @@
 			    </div>
 			
 			    <!-- แสดงชื่อไฟล์ (แทน linkImage เดิม) -->
-			    <!-- <div id="fileNameDisplay" class="mt-3 border border-gray-300 rounded px-4 py-3 bg-light text-gray-700"> -->
 			    <div id="linkImage" class="mt-3 border border-gray-300 rounded px-4 py-3 bg-light text-gray-700">
 			      ยังไม่ได้เลือกไฟล์
 			    </div>
 			
-			    <!-- ถ้ายังต้องการแสดงลิงก์ preview -->
-			    <!-- <a target="_blank" id="linkImage" class="mt-2 text-primary fw-semibold" style="display:block;"></a> -->
-			    
 			    <!-- ภาพ preview -->
 			    <img id="frame" src="" style="max-width:150px; display:none; margin-top:10px;"/>
 			
@@ -444,9 +339,30 @@
 
         </div>
     </div>
-</div>
+									
+									</form>
+								
+								</div>
+							</div>
+					</div>
+				</div>				
+				<!-- DDL -->
+				
+			</div>
+			<!--end::Content container-->
+			
+		</div>
+		<!--end::Content-->
 
-</form>
+	</div>
+	<!--end::Content wrapper-->
+
+</div>
+<!--end:::Main-->
+
+
+
+
 
 </body>
 
