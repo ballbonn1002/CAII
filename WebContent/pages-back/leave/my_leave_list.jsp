@@ -129,13 +129,12 @@
 											</span>
 										</div>
 										<div class="d-flex flex-column">
-											<span class="fs-3 fw-bold text-dark">
+											<span class="fs-2 fw-bold text-dark">
 												<fmt:formatNumber type="number" pattern="#.##" value="${leave_1}"/>/<fmt:formatNumber type="number" pattern="#.##" value="${quota_1-3}"/>
 											</span>
-											
-											
-											
-											<span class="text-muted">${type_1}</span>
+											<span class="text-muted fs-7">
+											${type_1}
+											</span>
 										</div>
 									</div>
 								</div>
@@ -156,10 +155,12 @@
 											</span>
 										</div>
 										<div class="d-flex flex-column">
-											<span class="fs-3 fw-bold text-dark">
-												<fmt:formatNumber type="number" pattern="#.##" value="${leave_2}"/>/<fmt:formatNumber type="number" pattern="#.##" value="${quota_2}"/>
+											<span class="fs-2 fw-bold text-dark">
+												<fmt:formatNumber type="number" pattern="#.##" value="${leave_2}"/>/<fmt:formatNumber type="number" pattern="#.##" value="3"/><!-- fix hard code 3 day -->
 											</span>
-											<span class="text-muted">${type_2}</span>
+											<span class="text-muted fs-7">
+											${type_2}
+											</span>
 										</div>
 									</div>
 								</div>
@@ -177,13 +178,15 @@
 											</span>
 										</div>
 										<div class="d-flex flex-column">
-											<span class="fs-3 fw-bold text-dark">
+											<span class="fs-2 fw-bold text-dark">
 												<fmt:formatNumber type="number" pattern="#.##" value="${leave_6}"/>
 												<c:if test="${quota_4 != null || quota_4 != 0.0 || quota_4 != ''} ">
 													/<fmt:formatNumber type="number" pattern="#" value="${quota_4}"/>
 												</c:if>
 											</span>
-											<span class="text-muted">${type_6}</span>
+											<span class="text-muted fs-7">
+											${type_6}
+											</span>
 										</div>
 									</div>
 								</div>
@@ -200,13 +203,15 @@
 											</span>
 										</div>
 										<div class="d-flex flex-column">
-											<span class="fs-3 fw-bold text-dark">
+											<span class="fs-2 fw-bold text-dark">
 												<fmt:formatNumber type="number" pattern="#.##" value="${leave_3}"/>
 												<c:if test="${quota_3 != null || quota_3 != 0.0 || quota_3 != ''} ">
 													/<fmt:formatNumber type="number" pattern="#" value="${quota_3}"/>
 												</c:if>
 											</span>
-											<span class="text-muted">${type_3}</span>
+											<span class="text-muted fs-7">
+											${type_3}
+											</span>
 										</div>
 									</div>
 								</div>
@@ -227,10 +232,10 @@
 											</span>
 										</div>
 										<div class="d-flex flex-column">
-											<span class="fs-3 fw-bold text-dark">
+											<span class="fs-2 fw-bold text-dark">
 												<fmt:formatNumber type="number" pattern="#.##" value="${leave_4}"/>
 											</span>
-											<span class="text-muted">
+											<span class="text-muted fs-7">
 												${type_4}
 											</span>
 										</div>
@@ -250,10 +255,10 @@
 											</span>
 										</div>
 										<div class="d-flex flex-column">
-											<span class="fs-3 fw-bold text-dark">
+											<span class="fs-2 fw-bold text-dark">
 												<fmt:formatNumber type="number" pattern="#.##" value="${leave_5}"/>
 											</span>
-											<span class="text-muted">
+											<span class="text-muted fs-7">
 												${type_5}
 											</span>
 										</div>
@@ -272,10 +277,12 @@
 											</span>
 										</div>
 										<div class="d-flex flex-column">
-											<span class="fs-3 fw-bold text-dark">
+											<span class="fs-2 fw-bold text-dark">
 												<fmt:formatNumber type="number" pattern="#.##" value="${leave_7}"/>
 											</span>
-											<span class="text-muted">${type_7}</span>
+											<span class="text-muted fs-7">
+											${type_7}
+											</span>
 										</div>
 									</div>
 								</div>
@@ -297,7 +304,7 @@
 
 						<!--begin::Controls-->
 						<div class="d-flex flex-wrap my-1">
-							<a href="javascript:void(0)" class="btn btn-success" onclick="add()">
+							<a href="javascript:void(0)" class="btn btn-success btn-lg" onclick="add()">
 								<i class="ki-duotone ki-plus"></i>
 								Create
 							</a>
@@ -541,11 +548,11 @@
 						<div class="card shadow-sm mb-5 mb-xl-10">
 						
 							<!--begin::Header -->
-							<div class="card-header">
+							<div class="card-header fs-4">
 
 								<!-- ID , Title -->
 								<div class="d-flex align-items-center mb-2 gap-2">
-									<span class="fw-bold me-2 text-primary" style="font-size:15px !important;">#${leave.leave_id}</span>
+									<span class="fw-bold me-2 text-primary">#${leave.leave_id}</span>
 									
 										<c:if test="${leave.leave_type_id.toString() == '1'}">
 											<div class="symbol symbol-35px me-4">
@@ -628,7 +635,7 @@
 											</div>
 										</c:if>
 									
-									<span class="fs-4 fw-semibold" style="font-weight: 1000 !important;">${leave.leave_type_name}</span>
+									<span class="fw-semibold" style="font-weight: 1000 !important;">${leave.leave_type_name}</span>
 								</div>
 
 								<!-- Btn Info, Edit, Delete -->
@@ -689,7 +696,7 @@
 							<!--end::Header -->
 
 							<!--begin::Footer -->
-							<div class="card-header">
+							<div class="card-header fs-6">
 
 								<div class="d-flex align-items-center mb-2">
 									<div class="d-flex flex-wrap align-items-center gap-3">
@@ -704,7 +711,9 @@
 												<span class="path5"></span>
 											</i>
 											<fmt:formatDate value="${leave.start_date}" type="date" pattern="d MMM yyyy"></fmt:formatDate> - <fmt:formatDate value="${leave.end_date}" type="date" pattern="d MMM yyyy"></fmt:formatDate>
-											<span class="badge badge-light-primary ms-2">1 day</span>
+											<span class="badge badge-light-primary badge-lg ms-2">
+											<fmt:formatNumber type="number" pattern="#.###" value="${leave.no_day}"/> day
+											</span>
 										</div>
 
 										<div class="d-flex align-items-center">
@@ -745,16 +754,16 @@
 										</span>
 										
 										<c:if test="${leave.leave_status_id.toString() == '0'}">
-											<span class="badge badge-light-warning ms-2">Wait for approve</span>
+											<span class="badge badge-light-warning badge-lg ms-2">Wait for approve</span>
 										</c:if>
 										<c:if test="${leave.leave_status_id.toString() == '1'}">
-											<span class="badge badge-light-success ms-2">Approved</span>
+											<span class="badge badge-light-success badge-lg ms-2">Approved</span>
 										</c:if>
 										<c:if test="${leave.leave_status_id.toString() == '2'}">
-											<span class="badge badge-light-danger ms-2">Reject</span>
+											<span class="badge badge-light-danger badge-lg ms-2">Reject</span>
 										</c:if>
 										<c:if test="${leave.leave_status_id.toString() == '3'}">
-											<span class="badge badge-light-dark ms-2">Cancel</span>
+											<span class="badge badge-light-dark badge-lg ms-2">Cancel</span>
 										</c:if>
 
 									</div>
@@ -953,7 +962,7 @@
       
       <!--begin::Header-->
       <div class="modal-header">
-        <h3 class="modal-title">Leave</h3>
+        <h2 class="modal-title">Leave</h2>
                 <div class="btn btn-icon btn-sm btn-active-light-primary ms-2" data-bs-dismiss="modal" aria-label="Close">
                     <i class="ki-duotone ki-cross fs-1"><span class="path1"></span><span class="path2"></span></i>
         </div>
@@ -965,47 +974,47 @@
         <div class="row gx-5 gy-4">
           <!-- Left -->
           <div class="col-md-7">
-            <div class="d-flex align-items-center mb-3">
+            <div class="d-flex align-items-center mb-3 fs-5">
               <a href="#" class="fw-bold text-primary me-5">#<span id="leaveid"></span></a>
               <span class="fw-semibold text-dark me-5" id="leavetype"></span>
               <span class="badge badge-light-primary fs-7 fw-semibold" id="noday"></span>
             </div>
 
-            <div class="d-flex align-items-center text-gray-700 mb-2">
+            <div class="d-flex align-items-center text-gray-700 mb-2 fs-6">
               <i class="ki-duotone ki-calendar-8 fs-5 me-2 text-gray-500"><span class="path1"></span><span class="path2"></span></i>
               <span id="sdate"></span> - <span id="edate"></span>
             </div>
 
-            <div class="d-flex align-items-center text-gray-700 mb-2">
+            <div class="d-flex align-items-center text-gray-700 mb-2 fs-6">
               <i class="ki-duotone ki-minus fs-5 me-2 text-gray-500"><span class="path1"></span><span class="path2"></span></i>
               <span id="desc"></span>
             </div>
 
-            <span id="leavestatus" class="badge mt-3 fs-7 fw-semibold"></span>
+            <span id="leavestatus" class="badge badge-lg mt-3 fs-7 fw-semibold"></span>
           </div>
 
           <!-- Right -->
           <div class="col-md-5">
-            <div class="fw-semibold text-dark mb-2" id="userid"></div>
+            <div class="fw-semibold text-dark mb-2 fs-5" id="userid"></div>
 
-            <div class="d-flex align-items-center text-gray-700 mb-2">
+            <div class="d-flex align-items-center text-gray-700 mb-2 fs-6">
               <i class="ki-duotone ki-time fs-5 me-2 text-gray-500"><span class="path1"></span><span class="path2"></span></i>
               <span id="stime"></span> - <span id="etime"></span>
             </div>
-
-            <div class="d-flex align-items-center text-gray-700 mb-2">
+            
+            <div class="d-flex align-items-center text-gray-700 mb-2 fs-6">
               <i class="ki-duotone ki-file fs-5 me-2 text-gray-500"><span class="path1"></span><span class="path2"></span></i>
               <a id="file" href="#" target="_blank" class="text-primary text-hover-underline"></a>
+              <div class="text-muted fs-8">Request date: <span id="timecreate"></span></div>
             </div>
-
-            <div class="text-muted fs-7 mt-3">Request date: <span id="timecreate"></span></div>
+            
           </div>
         </div>
 
         <!-- Approver Info -->
         <div id="status_panel" class="mt-5" style="display:none;">
-          <h5 class="text-info fw-semibold mb-3" id="status_title"></h5>
-          <div class="row gx-5 gy-3" id="approved_detail">
+          <h3 class="text-info fw-semibold mb-3" id="status_title"></h3>
+          <div class="row gx-5 gy-3 fs-6" id="approved_detail">
             <div class="col-md-4">
               <i class="ki-duotone ki-user fs-5 me-2 text-gray-500"><span class="path1"></span><span class="path2"></span></i>
               <span id="approver"></span>
@@ -1024,8 +1033,8 @@
       <!--end::Body-->
 
       <!--begin::Footer-->
-            <div class="modal-footer">
-        <button type="button" class="btn btn-light" data-bs-dismiss="modal">Close</button>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-lg btn-light" data-bs-dismiss="modal">Close</button>
       </div>
       <!--end::Footer-->
     </div>

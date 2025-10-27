@@ -113,7 +113,7 @@
 			<div class="d-flex justify-content-between align-items-center mb-6">
 			    <!-- ด้านซ้าย -->
 			    <div>
-			        <h3 class="fw-bold text-gray-800 mb-1">Leave form</h3>
+			        <h3 class="fw-bold text-gray-800 mb-1 fs-4">Leave form</h3>
 			    </div>
 			
 			    <!-- ด้านขวา -->
@@ -139,12 +139,11 @@
 			</div>
 			
 <div class="mb-8">
-  <label class="form-label fw-semibold">Type of leave</label>
-  <div id="leaveTypes" class="row g-6">
-    <!-- radio จะถูก append จาก leaveType_fixed_metronic_responsive.js -->
+  <label class="form-label fw-semibold fs-5">Type of leave</label>
+  <div id="leaveTypes" class="row g-6 fs-4">
+  	<!-- Loop Leave Type Javascript -->
   </div>
 </div>
-			
 
             <!--Type of leave -->
 			<div class="mb-6">
@@ -224,7 +223,7 @@
 					<div class="row mb-6 align-items-end">
 					  <!-- Start Date -->
 					  <div class="col-md-6">
-					    <label class="form-label fw-semibold">Start Date <span class="text-danger">*</span></label>
+					    <label class="form-label fw-semibold fs-5">Start Date <span class="text-danger">*</span></label>
 					    <div class="input-group date date-picker input-daterange"
 					    data-provide="datepicker"
 					    data-date-format="dd M yyyy">
@@ -235,7 +234,7 @@
 											
 					  <!-- End Date -->
 					  <div class="col-md-6">
-					    <label class="form-label fw-semibold">End Date <span class="text-danger">*</span></label>
+					    <label class="form-label fw-semibold fs-5">End Date <span class="text-danger">*</span></label>
 					    <div class="input-group date date-picker input-daterange"
 					    data-provide="datepicker"
 					    data-date-format="dd M yyyy">
@@ -250,7 +249,7 @@
 					</div>
 					
 	                <div class="col-md-6">
-	                    <label class="form-label required">ช่วงเวลาในการลา</label>
+	                    <label class="form-label required fs-5">ช่วงเวลาในการลา</label>
 	                    <select class="form-select form-select-solid input-daterange" id="halfDay" name="halfDay" required>
 							<option value="0" selected>เต็มวัน</option>
 							<option value="1">ช่วงเช้า</option>
@@ -282,7 +281,7 @@
 			<div class="row mb-8">
 				<!-- Start Time -->
 				<div class="col-md-6">
-					<label class="form-label fw-semibold">Start Time <span class="text-danger">*</span></label>
+					<label class="form-label fw-semibold fs-5">Start Time <span class="text-danger">*</span></label>
 					<div class="input-group">
 						<input type="text" class="form-control form-control-solid timepicker timepicker-24 checkHours" id="time_from" name="time_from" autocomplete="off" required disabled>
 					</div>
@@ -291,7 +290,7 @@
 				
 				<!-- End Time -->
 				<div class="col-md-6">
-					<label class="form-label fw-semibold">End Time <span class="text-danger">*</span></label>
+					<label class="form-label fw-semibold fs-5">End Time <span class="text-danger">*</span></label>
 					<div class="input-group">
 						<input type="text" class="form-control form-control-solid timepicker timepicker-24 checkHours" id="time_to" name="time_to" autocomplete="off" required disabled>
 					</div>
@@ -322,7 +321,7 @@
 			<div class="row mb-8">
 				<!-- Start Time -->
 				<div class="col-md-6">
-					<label class="form-label fw-semibold">Day</label>
+					<label class="form-label fw-semibold fs-5">Day</label>
 					<div class="input-group">
 					    <input type="text" class="form-control form-control-solid timepicker timepicker-24 checkHours" id="amount" name="amount" min="1" max="1000" maxlength="3" disabled>
 					</div>
@@ -331,7 +330,7 @@
 	  				
 				<!-- End Time -->
 				<div class="col-md-6">
-					<label class="form-label fw-semibold">Hours</label>
+					<label class="form-label fw-semibold fs-5">Hours</label>
 					<div class="input-group">
 					    <input type="text" class="form-control form-control-solid timepicker timepicker-24 checkHours" id="amount_sub" name="amount_sub" value="0" min="1" max="1000" maxlength="3" onchange="check()" disabled>
 					</div>
@@ -341,7 +340,7 @@
 
             <!--Description -->
             <div class="mb-8">
-                <label class="form-label required">Description</label>
+                <label class="form-label required fs-5">Description</label>
                 
 				<textarea
 					class="form-control form-control-solid"
@@ -395,13 +394,12 @@
 			    </div>
 			</div> -->
 			<div class="mb-8">
-			  <label class="form-label">Attach files</label>
+			  <label class="form-label fs-5">Attach files</label>
 			  <div class="d-flex flex-column">
 			
 			    <!-- ปุ่มแนว Metronic แต่ยังใช้ ID/NAME เดิม -->
-			    <label for="myFile" id="lbFile" class="btn btn-primary w-150px mb-2 d-inline-flex align-items-center justify-content-center gap-2"
-			           style="height: 40px;">
-			        <i class="ki-duotone ki-clip fs-4 me-2"></i>Attach files
+			    <label for="myFile" id="lbFile" class="btn btn-primary w-150px mb-2 d-inline-flex align-items-center justify-content-center gap-2" style="height: 40px;">
+					Attach files
 			        <input type="file" id="myFile" name="fileUpload" style="display:none;" accept="image/*" onchange="showFileName(this)">
 			    </label>
 			
@@ -431,7 +429,7 @@
 
             <!--Approver -->
             <div class="mb-10">
-                <label class="form-label required">Approvers</label>
+                <label class="form-label required fs-5">Approvers</label>
 				<select id="approver" name="approver" class="form-select form-select-solid" required>
 					<option value="admin">แอดมิน</option>
 				</select>
@@ -469,7 +467,6 @@
 				  $('#amount_hidden').val(0);
 				  $('#amount_sub_hidden').val(0);
 			  } else if(this.value == 0){
-				  debugger;
 				  document.getElementById('time_from').disabled = true;
 				  document.getElementById('time_to').disabled = true;
 				  document.getElementById('date_to').disabled = false;
@@ -567,14 +564,14 @@
 						let month = d.getMonth();
 						if(month <= 2){
 							if(leaveCheck[i] == '1'){
-								let radio =	'<div class="col-12 col-sm-6 col-md-4"><div class="form-check form-check-custom form-check-solid mb-3">'
-									+'<input class="form-check-input" type="radio" name="leaveType" id="lt_'+leaveTypes[i].id+'" value="'+leaveTypes[i].id+'" disabled required>'+leaveTypes[i].name
+								let radio =	'<div class="col-12 col-sm-6 col-md-3"><div class="form-check form-check-custom form-check-solid mb-3">'
+									+'<input class="form-check-input me-3" type="radio" name="leaveType" id="lt_'+leaveTypes[i].id+'" value="'+leaveTypes[i].id+'" disabled required>'+leaveTypes[i].name
 									+'</div></div>'
 									+'<input type="hidden" class="hide" name="leaveType_hidden" id="lt_hidden">';
 								$('#leaveTypes').addClass('row g-6').append(radio);
 							} else {
-								let radio =	'<div class="col-12 col-sm-6 col-md-4"><div class="form-check form-check-custom form-check-solid mb-3">'
-									+'<input class="form-check-input" type="radio" name="leaveType" id="lt_'+leaveTypes[i].id+'" value="'+leaveTypes[i].id+'" required>'+leaveTypes[i].name
+								let radio =	'<div class="col-12 col-sm-6 col-md-3"><div class="form-check form-check-custom form-check-solid mb-3">'
+									+'<input class="form-check-input me-3" type="radio" name="leaveType" id="lt_'+leaveTypes[i].id+'" value="'+leaveTypes[i].id+'" required>'+leaveTypes[i].name
 									+'</div></div>'
 									+'<input type="hidden" class="hide" name="leaveType_hidden" id="lt_hidden">';
 								$('#leaveTypes').addClass('row g-6').append(radio);
@@ -582,14 +579,14 @@
 						}
 					} else {
 						if(leaveCheck[i] == '1'){
-							let radio =	'<div class="col-12 col-sm-6 col-md-4"><div class="form-check form-check-custom form-check-solid mb-3">'
-								+'<input class="form-check-input" type="radio" name="leaveType" id="lt_'+leaveTypes[i].id+'" value="'+leaveTypes[i].id+'" disabled required>'+leaveTypes[i].name
+							let radio =	'<div class="col-12 col-sm-6 col-md-3"><div class="form-check form-check-custom form-check-solid mb-3">'
+								+'<input class="form-check-input me-3" type="radio" name="leaveType" id="lt_'+leaveTypes[i].id+'" value="'+leaveTypes[i].id+'" disabled required>'+leaveTypes[i].name
 								+'</div></div>'
 								+'<input type="hidden" class="hide" name="leaveType_hidden" id="lt_hidden">';
 							$('#leaveTypes').addClass('row g-6').append(radio);
 						} else {
-							let radio =	'<div class="col-12 col-sm-6 col-md-4"><div class="form-check form-check-custom form-check-solid mb-3">'
-								+'<input class="form-check-input" type="radio" name="leaveType" id="lt_'+leaveTypes[i].id+'" value="'+leaveTypes[i].id+'" required>'+leaveTypes[i].name
+							let radio =	'<div class="col-12 col-sm-6 col-md-3"><div class="form-check form-check-custom form-check-solid mb-3">'
+								+'<input class="form-check-input me-3" type="radio" name="leaveType" id="lt_'+leaveTypes[i].id+'" value="'+leaveTypes[i].id+'" required>'+leaveTypes[i].name
 								+'</div></div>'
 								+'<input type="hidden" class="hide" name="leaveType_hidden" id="lt_hidden">';
 							$('#leaveTypes').addClass('row g-6').append(radio);
@@ -601,8 +598,8 @@
 					// Leave w/o pay can be created by user who has 'leave.approve'
 					<perm:permission object="leave.approve">
 					
-					let radio =	'<div class="col-12 col-sm-6 col-md-4"><div class="form-check form-check-custom form-check-solid mb-3">'
-						+'<input class="form-check-input" type="radio" name="leaveType" id="lt_'+leaveTypes[i].id+'" value="'+leaveTypes[i].id+'" required>'+leaveTypes[i].name
+					let radio =	'<div class="col-12 col-sm-6 col-md-3"><div class="form-check form-check-custom form-check-solid mb-3">'
+						+'<input class="form-check-input me-3" type="radio" name="leaveType" id="lt_'+leaveTypes[i].id+'" value="'+leaveTypes[i].id+'" required>'+leaveTypes[i].name
 						+'</div></div>'
 						+'<input type="hidden" class="hide" name="leaveType_hidden" id="lt_hidden">';
 					$('#leaveTypes').addClass('row g-6').append(radio);
@@ -611,8 +608,8 @@
 				}
 				
 				else if(leaveTypes[i].id != '9') {
-					let radio =	'<div class="col-12 col-sm-6 col-md-4"><div class="form-check form-check-custom form-check-solid mb-3">'
-						+'<input class="form-check-input" type="radio" name="leaveType" id="lt_'+leaveTypes[i].id+'" value="'+leaveTypes[i].id+'" required>'+leaveTypes[i].name
+					let radio =	'<div class="col-12 col-sm-6 col-md-3"><div class="form-check form-check-custom form-check-solid mb-3">'
+						+'<input class="form-check-input me-3" type="radio" name="leaveType" id="lt_'+leaveTypes[i].id+'" value="'+leaveTypes[i].id+'" required>'+leaveTypes[i].name
 						+'</div></div>'
 						+'<input type="hidden" class="hide" name="leaveType_hidden" id="lt_hidden">';
 					$('#leaveTypes').addClass('row g-6').append(radio);
@@ -687,7 +684,6 @@
 </script>
 
 <script>
-debugger;
     $(()=>{
         var userList = ${userList};
         var action = '${action}';
@@ -713,7 +709,6 @@ debugger;
             }
             
         } else {
-        	debugger;
             user = "${onlineUser.id}";
             manager = "${onlineUser.managerId}";
             if(la == '1'){
@@ -755,7 +750,6 @@ debugger;
 		}
         
   		/* $('.input-daterange').change(function(){
-  	  		debugger;
 			let amount = 0;
 			let holiday_count = 0;
 			let from = new Date( toISODate( $('#date_from').val() ) );
@@ -796,7 +790,6 @@ debugger;
 			}
 		}); */
 		  function handleDateChange() {
-		    debugger;
 		    let amount = 0;
 		    let holiday_count = 0;
 		    let from = new Date(toISODate($('#date_from').val()));
@@ -896,7 +889,6 @@ debugger;
         
 
         /* Start Applicant/Approver List */
-        debugger;
         for(let i=0; i<userList.length; i++){
         	let id = userList[i].id.toLowerCase();
             let name = userList[i].name;
