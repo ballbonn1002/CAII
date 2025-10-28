@@ -201,10 +201,13 @@
 	</action>
 	
 	<action name="upload_holiday"
-			class="com.cubesofttech.action.FileUploadAction" method="uploadholiday">
-			<result name="success" type="redirectAction">holiday_list</result>
-			<result name="error">/index.jsp</result>
+        class="com.cubesofttech.action.FileUploadAction"
+        method="upload_holiday">
+    	<result name="toList" type="redirectAction">
+        <param name="actionName">holiday_list</param>
+    	</result>
 	</action>
+
 
 	
 	<!-- Check All Calendar -->
