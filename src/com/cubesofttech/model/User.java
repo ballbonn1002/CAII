@@ -490,7 +490,7 @@ public class User implements Serializable {
     public String getOnsiteNum() {
         return this.onsiteNum;
     }		
-    public void setOnsite_num(String onsiteNum) {
+    public void setOnsiteNum(String onsiteNum) {
         this.onsiteNum = onsiteNum;
     }
     
