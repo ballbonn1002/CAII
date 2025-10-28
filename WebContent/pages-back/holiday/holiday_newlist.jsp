@@ -58,6 +58,16 @@
 </head>
 
 <body>
+<c:set var="importStatus" value="${sessionScope.flashImportStatus}" scope="request" />
+<c:set var="importInserted" value="${sessionScope.flashImportInserted}" scope="request" />
+<c:set var="importSkipped" value="${sessionScope.flashImportSkipped}" scope="request" />
+<c:set var="importElapsed" value="${sessionScope.flashImportElapsed}" scope="request" />
+
+<c:remove var="flashImportStatus" scope="session" />
+<c:remove var="flashImportInserted" scope="session" />
+<c:remove var="flashImportSkipped" scope="session" />
+<c:remove var="flashImportElapsed" scope="session" />
+
     <!--begin::Main-->
     <div class="app-main flex-column flex-row-fluid" id="kt_app_main">
         <!--begin::Content wrapper-->
@@ -179,8 +189,8 @@
                                                     </c:otherwise>
                                                 </c:choose>
 
-                                                <td class="text-gray-900">${holiday.head}</td>
-                                                <td class="text-gray-900" style="white-space: normal; max-width: 280px; word-wrap: break-word;">
+                                                <td class="text-gray-600">${holiday.head}</td>
+                                                <td class="text-gray-600" style="white-space: normal; max-width: 280px; word-wrap: break-word;">
                                                     ${holiday.description}
                                                 </td>
 
@@ -288,6 +298,26 @@
             }
         });
     </script>
+    
+    <script>
+document.addEventListener("DOMContentLoaded", function () {
+    const status = "${importStatus}";
+    if (status === "success") {
+        Swal.fire({
+            icon: "success",
+            title: "Import Success!",
+        });
+    } else if (status === "error") {
+        Swal.fire({
+            icon: "error",
+            title: "Import Failed!",
+            text: "There was a problem importing your file. Please try again."
+        });
+    }
+});
+</script>
+
+    
     <!--end::Scripts-->
 </body>
 </html>
