@@ -134,7 +134,7 @@
 	</definition>
 		<!-- newLeave Template-->
 
-		<!-- Add Page-->
+		<!-- Add Leave Page-->
 	<definition name="newLeaveAdd" extends="newLeave">
 		<put-attribute name="title" value="Add Leave" />
 	</definition>
@@ -143,7 +143,7 @@
 		<put-attribute name="body"
 			value="/pages-back/borrow/leavecalendar.jsp" />
 	</definition>
-		<!-- Add Page-->
+		<!-- Add Leave Page-->
 		
 		<!-- Edit Page-->
 	<definition name="newLeaveEdit" extends="newLeave">

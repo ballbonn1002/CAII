@@ -812,6 +812,16 @@ public class LeaveAction extends ActionSupport {
 			request.setAttribute("type_7", type_leave.get(6).getLeaveTypeName());
 			request.setAttribute("type_9", type_leave.get(7).getLeaveTypeName());
 			New_myleave();
+
+			//Summary Leave - For Add Leave Page
+			request.getSession().setAttribute("type_1", type_leave.get(0).getLeaveTypeName());
+			request.getSession().setAttribute("type_2", type_leave.get(1).getLeaveTypeName());
+			request.getSession().setAttribute("type_3", type_leave.get(2).getLeaveTypeName());
+			request.getSession().setAttribute("type_4", type_leave.get(3).getLeaveTypeName());
+			request.getSession().setAttribute("type_5", type_leave.get(4).getLeaveTypeName());
+			request.getSession().setAttribute("type_6", type_leave.get(5).getLeaveTypeName());
+			request.getSession().setAttribute("type_7", type_leave.get(6).getLeaveTypeName());
+			
 			log.debug("leave for admin");
 			return SUCCESS;
 		} catch (Exception e) {
@@ -2936,6 +2946,12 @@ public class LeaveAction extends ActionSupport {
 				request.setAttribute("quota_2", quota_2);
 				request.setAttribute("quota_3", quota_3);
 				request.setAttribute("quota_4", quota_4);
+				
+				//Summary Leave - For Add Leave Page
+				request.getSession().setAttribute("quota_1", quota_1);
+				request.getSession().setAttribute("quota_3", quota_3);
+				request.getSession().setAttribute("quota_4", quota_4);
+				
 			} else {
 
 			}
@@ -2948,6 +2964,17 @@ public class LeaveAction extends ActionSupport {
 			log.debug(type_leave);
 			request.setAttribute("leavetypelistChoice", type_leave);
 			request.setAttribute("leaveType", leaveType);
+			
+			//Summary Leave - For Add Leave Page
+			request.getSession().setAttribute("leave_1", leave_1);
+			request.getSession().setAttribute("leave_2", leave_2);
+			request.getSession().setAttribute("leave_3", leave_3);
+			request.getSession().setAttribute("leave_4", leave_4);
+			request.getSession().setAttribute("leave_5", leave_5);
+			request.getSession().setAttribute("leave_6", leave_6);
+			request.getSession().setAttribute("leave_7", leave_7);
+			
+			
 			return SUCCESS;
 		} catch (Exception e) {
 			e.printStackTrace();

@@ -104,13 +104,13 @@
 		</action>
 			<!-- Add -->
 
-			<!-- Send Approve Btn | Add Page -->
+			<!-- Send Approve Btn | Add Leave Page -->
 		<action name="new_LeaveAdd_Do" class="com.cubesofttech.action.LeaveAction" method="new_LeaveAdd_Do">
 			<!-- <result name="success" type="redirect">leavecalendar</result> -->
 			<result name="success" type="redirect">new_myleave_list?Id=${onlineUser.id} </result>
 			<result name="error">/index.jsp</result>
 		</action>
-			<!-- Send Approve Btn | Add Page -->
+			<!-- Send Approve Btn | Add Leave Page -->
 		
 		<action name="leavecalendar" class="com.cubesofttech.action.BorrowAction" method="leave_calendar">
 			<result name="success" type="tiles">leavecalendar</result>

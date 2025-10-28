@@ -129,6 +129,196 @@
 				<!--end::Toolbar container-->
 			</div>
 			<!--end::Toolbar-->
+			
+			<div id="kt_app_content" class="app-content flex-column-fluid">
+				<div id="kt_app_content_container" class="app-container container-fluid">
+				
+				<!-- Summary Leave -->
+					<div class="d-flex flex-row">
+						<div class="flex-row-fluid mb-5">
+							<div class="card card-flush bgi-no-repeat bgi-size-contain bgi-position-x-center border-0 mb-5 mb-xl-10">
+								<div class="card-body">
+									<div class="row g-5">
+	
+										<!-- ลาพักร้อน -->
+										<div class="col-6 col-md-4 col-xl-3">
+											<div class="d-flex align-items-center">
+												<div class="symbol symbol-50px me-4">
+													<span class="symbol-label bg-light-success">
+														<i class="ki-duotone ki-airplane fs-2x text-success">
+															<span class="path1"></span>
+															<span class="path2"></span>
+														</i>
+													</span>
+												</div>
+												<div class="d-flex flex-column">
+													<span class="fs-2 fw-bold text-dark">
+														<fmt:formatNumber type="number" pattern="#.##" value="${leave_1}"/>/<fmt:formatNumber type="number" pattern="#.##" value="${quota_1-3}"/>
+													</span>
+													<span class="text-muted fs-5">
+													${type_1}
+													</span>
+												</div>
+											</div>
+										</div>
+	
+										<!-- ลากิจ -->
+										<div class="col-6 col-md-4 col-xl-3">
+											<div class="d-flex align-items-center">
+												<div class="symbol symbol-50px me-4">
+													<span class="symbol-label bg-light-primary">
+														<i class="ki-duotone ki-car-2 fs-2x text-primary">
+															<span class="path1"></span>
+															<span class="path2"></span>
+															<span class="path3"></span>
+															<span class="path4"></span>
+															<span class="path5"></span>
+															<span class="path6"></span>
+														</i>
+													</span>
+												</div>
+												<div class="d-flex flex-column">
+													<span class="fs-2 fw-bold text-dark">
+														<fmt:formatNumber type="number" pattern="#.##" value="${leave_2}"/>/<fmt:formatNumber type="number" pattern="#.##" value="3"/><!-- fix hard code 3 day -->
+													</span>
+													<span class="text-muted fs-5">
+													${type_2}
+													</span>
+												</div>
+											</div>
+										</div>
+	
+										<!-- ลาพักร้อนที่เหลือ -->
+										<div class="col-6 col-md-4 col-xl-3">
+											<div class="d-flex align-items-center">
+												<div class="symbol symbol-50px me-4">
+													<span class="symbol-label bg-light-warning">
+														<i class="ki-duotone ki-timer fs-2x text-warning">
+														 <span class="path1"></span>
+														 <span class="path2"></span>
+														 <span class="path3"></span>
+														</i>
+													</span>
+												</div>
+												<div class="d-flex flex-column">
+													<span class="fs-2 fw-bold text-dark">
+														<fmt:formatNumber type="number" pattern="#.##" value="${leave_6}"/>
+														<c:if test="${quota_4 != null || quota_4 != 0.0 || quota_4 != ''} ">
+															/<fmt:formatNumber type="number" pattern="#" value="${quota_4}"/>
+														</c:if>
+													</span>
+													<span class="text-muted fs-5">
+													${type_6}
+													</span>
+												</div>
+											</div>
+										</div>
+	
+										<!-- ลาป่วย -->
+										<div class="col-6 col-md-4 col-xl-3">
+											<div class="d-flex align-items-center">
+												<div class="symbol symbol-50px me-4">
+													<span class="symbol-label bg-light-info">
+														<i class="ki-duotone ki-pulse fs-2x text-info">
+															<span class="path1"></span>
+															<span class="path2"></span>
+														</i>
+													</span>
+												</div>
+												<div class="d-flex flex-column">
+													<span class="fs-2 fw-bold text-dark">
+														<fmt:formatNumber type="number" pattern="#.##" value="${leave_3}"/>
+														<c:if test="${quota_3 != null || quota_3 != 0.0 || quota_3 != ''} ">
+															/<fmt:formatNumber type="number" pattern="#" value="${quota_3}"/>
+														</c:if>
+													</span>
+													<span class="text-muted fs-5">
+													${type_3}
+													</span>
+												</div>
+											</div>
+										</div>
+	
+										<!-- ขาดงาน -->
+										<div class="col-6 col-md-4 col-xl-3">
+											<div class="d-flex align-items-center">
+												<div class="symbol symbol-50px me-4">
+													<span class="symbol-label bg-light-danger">
+														<i class="ki-duotone ki-calendar-remove fs-2x text-danger">
+															<span class="path1"></span>
+															<span class="path2"></span>
+															<span class="path3"></span>
+															<span class="path4"></span>
+															<span class="path5"></span>
+															<span class="path6"></span>
+														</i>
+													</span>
+												</div>
+												<div class="d-flex flex-column">
+													<span class="fs-2 fw-bold text-dark">
+														<fmt:formatNumber type="number" pattern="#.##" value="${leave_4}"/>
+													</span>
+													<span class="text-muted fs-5">
+														${type_4}
+													</span>
+												</div>
+											</div>
+										</div>
+	
+										<!-- ลาโดยไม่รับค่าจ้าง -->
+										<div class="col-6 col-md-4 col-xl-3">
+											<div class="d-flex align-items-center">
+												<div class="symbol symbol-50px me-4">
+													<span class="symbol-label bg-light-dark">
+														<i class="ki-duotone ki-brifecase-cros fs-2x text-dark">
+															<span class="path1"></span>
+															<span class="path2"></span>
+															<span class="path3"></span>
+														</i>
+													</span>
+												</div>
+												<div class="d-flex flex-column">
+													<span class="fs-2 fw-bold text-dark">
+														<fmt:formatNumber type="number" pattern="#.##" value="${leave_5}"/>
+													</span>
+													<span class="text-muted fs-5">
+														${type_5}
+													</span>
+												</div>
+											</div>
+										</div>
+	
+										<!-- ลาอื่น ๆ -->
+										<div class="col-6 col-md-4 col-xl-3">
+											<div class="d-flex align-items-center">
+												<div class="symbol symbol-50px me-4">
+													<span class="symbol-label" style="background-color: #4B5675;">
+														<i class="ki-duotone ki-abstract-12 fs-2x" style="color: #FFFFFF;">
+															<span class="path1"></span>
+															<span class="path2"></span>
+														</i>
+													</span>
+												</div>
+												<div class="d-flex flex-column">
+													<span class="fs-2 fw-bold text-dark">
+														<fmt:formatNumber type="number" pattern="#.##" value="${leave_7}"/>
+													</span>
+													<span class="text-muted fs-5">
+													${type_7}
+													</span>
+												</div>
+											</div>
+										</div>
+	
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				<!-- Summary Leave -->
+				
+				</div>
+			</div>				
 
 			<!--begin::Content-->
 			<div id="kt_app_content" class="app-content flex-column-fluid">
