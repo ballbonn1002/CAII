@@ -91,11 +91,23 @@
 					<!--begin:Menu item-->
 					<div class="menu-item">
 						<!--begin:Menu link-->
-						<a class="menu-link" href="#" data-route="#"> <span class="menu-icon"> 
+						<a class="menu-link" href="checkAllCalendar" data-route="checkAllCalendar"> <span class="menu-icon"> 
 							<i class="ki-duotone ki-calendar fs-1"> 
 								<span class="path1"></span>
 								<span class="path2"></span></i>
-						</span> <span class="menu-title">Calendar</span>
+						</span> <span class="menu-title">Calendar & Check List</span>
+						</a>
+						<!--end:Menu link-->
+					</div>
+					<!--end:Menu item-->
+					<!--begin:Menu item-->
+					<div class="menu-item">
+						<!--begin:Menu link-->
+						<a class="menu-link" href="announcementList" data-route="announcementList"> <span class="menu-icon"> 
+							<i class="ki-duotone ki-calendar fs-1"> 
+								<span class="path1"></span>
+								<span class="path2"></span></i>
+						</span> <span class="menu-title">Announcement</span>
 						</a>
 						<!--end:Menu link-->
 					</div>
@@ -151,11 +163,13 @@
 					<!--begin:Menu item-->
 					<div class="menu-item">
 						<!--begin:Menu link-->
-						<a class="menu-link" href="#" data-route="#"> <span class="menu-icon">
+						<a class="menu-link" href="new_myleave_list?Id=${onlineUser.id}" data-route="#">
+							<span class="menu-icon">
 								<i class="ki-duotone ki-pulse fs-1"> <span class="path1"></span>
 									<span class="path2"></span>
-							</i>
-						</span> <span class="menu-title">My Leave</span>
+								</i>
+							</span>
+							<span class="menu-title">My Leave</span>
 						</a>
 						<!--end:Menu link-->
 					</div>
@@ -322,7 +336,7 @@
 					<!--begin:Menu item-->
 					<div class="menu-item">
 						<!--begin:Menu link-->
-						<a class="menu-link" href="#" data-route="#"> <span class="menu-icon">
+						<a class="menu-link" href="position_list" data-route="position_list"> <span class="menu-icon">
 								<i class="ki-duotone ki-monitor-mobile fs-1"> <span
 									class="path1"></span> <span class="path2"></span>
 							</i>
@@ -334,7 +348,7 @@
 					<!--begin:Menu item-->
 					<div class="menu-item">
 						<!--begin:Menu link-->
-						<a class="menu-link" href="#" data-route="#"> <span class="menu-icon">
+						<a class="menu-link" href="department_list" data-route="department_list"> <span class="menu-icon">
 								<i class="ki-duotone ki-monitor-mobile fs-1"> <span
 									class="path1"></span> <span class="path2"></span>
 							</i>

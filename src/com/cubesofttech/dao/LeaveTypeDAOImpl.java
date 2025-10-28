@@ -33,7 +33,7 @@ public class LeaveTypeDAOImpl implements LeaveTypeDAO {
 	}
 
 	@Override
-public List<LeaveType> findAll() throws Exception {
+	public List<LeaveType> findAll() throws Exception {
 		Session session = this.sessionFactory.getCurrentSession();
 		List<LeaveType> leavetypeList = null;
 		try {
@@ -45,6 +45,7 @@ public List<LeaveType> findAll() throws Exception {
 		}
 		return leavetypeList;
 	}
+	
 	public	 List<LeaveType> findAll_calendar() throws Exception {
 		Session session = this.sessionFactory.getCurrentSession();
 		 List<LeaveType> leavetypeList = null;

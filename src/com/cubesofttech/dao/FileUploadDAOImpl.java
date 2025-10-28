@@ -160,6 +160,7 @@ public class FileUploadDAOImpl implements FileUploadDAO {
 	    return fileList;
 	}
 	
+	/*@Override
 	public void delete(String fileId) throws Exception{
 		 Session session = this.sessionFactory.getCurrentSession();
 		    FileUpload fileUpload = (FileUpload) session.get(FileUpload.class, fileId);
@@ -169,9 +170,18 @@ public class FileUploadDAOImpl implements FileUploadDAO {
 		    } else {
 		        throw new Exception("No file!");
 		    }
+	}*/
+	@Override
+	public void delete(FileUpload FileUpload) throws Exception {
+		Session session = this.sessionFactory.getCurrentSession();
+		session.delete(FileUpload);
+		session.flush();
+		// session.close();
 	}
 
 
+	
+	@Override
 	public List<FileUpload> findByPageAndPageId(String page, String pageId) throws Exception {
 		Session session = this.sessionFactory.getCurrentSession();
 		List<FileUpload> fileList = null;

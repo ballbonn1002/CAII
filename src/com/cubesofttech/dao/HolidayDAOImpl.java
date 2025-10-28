@@ -388,4 +388,22 @@ public class HolidayDAOImpl implements HolidayDAO {
 	    
 	    return holidayList;
 	}
+	
+	@Override
+	public String getallOnlyDateJSON() {
+		Session session = this.sessionFactory.getCurrentSession();
+		String result = null;
+		List<Map<String,String>> list = null;
+		try {
+			String hql = "select new map(day.start_date as start, day.end_date as end) FROM Holiday day";
+			list = session.createQuery(hql).list();
+			result = new Gson().toJson(list);
+		} catch (HibernateException e) {
+			e.printStackTrace();
+		}
+		return result;
+	}
+	
+
+
 }
