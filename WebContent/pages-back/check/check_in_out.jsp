@@ -121,7 +121,7 @@
 										<div class="col-md-6 col-sm-6 py-2 me-6 mb-3">
 											<div class="form-check form-check-custom form-check-primary form-check-solid form-check-md">
 												<input name="workType" class="form-check-input" id="workType1" type="radio" value="1"
-													<c:if test="${user.work_type == 1}">checked</c:if>> 
+													<c:if test="${user.workType == 1}">checked</c:if>> 
 												<i class="ki-duotone ki-map fs-1"> 
 													<span class="path1"></span> 
 													<span class="path2"></span> 
@@ -133,7 +133,7 @@
 										<div class="col-md-6 col-sm-6 py-2 me-6 mb-3">
 											<div class="form-check form-check-custom form-check-primary form-check-solid form-check-md">
 												<input name="workType" class="form-check-input" id="workType2" type="radio" value="2"
-													<c:if test="${user.work_type == 2}">checked</c:if>> 
+													<c:if test="${user.workType == 2}">checked</c:if>> 
 												<i class="ki-duotone ki-home-2 fs-1">
 													<span class="path1"></span>
 													<span class="path2"></span>
@@ -356,12 +356,12 @@
 						<label for="workTypeInput" class="required form-label">Your Work Location</label>
 						<div class="col-md-6 col-sm-6">
 							<input class="form-check-input" name="mdWorkType" type="radio" value="1"
-							<c:if test="${user.work_type == 1}"> checked </c:if>>
+							<c:if test="${user.workType == 1}"> checked </c:if>>
 							<label class="form-check-label text-gray-800" for="">On-Site</label>
 						</div>
 						<div class="col-md-6 col-sm-6">
 							<input class="form-check-input" name="mdWorkType" type="radio" value="2"
-							<c:if test="${user.work_type == 2}"> checked </c:if>>
+							<c:if test="${user.workType == 2}"> checked </c:if>>
 							<label class="form-check-label text-gray-800" for="">WFH</label>
 						</div>
 						<div class="workType invalid-feedback" style="display:none;">Please select your work location (WFH or On-Site).</div>

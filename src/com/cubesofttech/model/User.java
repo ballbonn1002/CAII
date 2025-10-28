@@ -41,8 +41,8 @@ public class User implements Serializable {
             , String workDayEnd	
             , String workTimeStart	
             , String workTimeEnd
-            , String work_type
-            , String onsite_num
+            , String workType
+            , String onsiteNum
             , BigDecimal latestSalary	
             , String eduInstitute1	
             , String eduInstitute2	
@@ -117,8 +117,8 @@ public class User implements Serializable {
         this.workDayEnd = workDayEnd;	
         this.workTimeStart = workTimeStart;	
         this.workTimeEnd = workTimeEnd;
-        this.work_type = work_type;
-        this.onsite_num = onsite_num;
+        this.workType = workType;
+        this.onsiteNum = onsiteNum;
         this.latestSalary = latestSalary;	
         this.eduInstitute1 = eduInstitute1;	
         this.eduInstitute2 = eduInstitute2;	
@@ -217,9 +217,9 @@ public class User implements Serializable {
     @Column(name = "work_time_end")
     private String workTimeEnd;	
     @Column (name = "work_type")
-    private String work_type;
+    private String workType;
     @Column (name = "onsite_num")
-    private String onsite_num;
+    private String onsiteNum;
     @Column(name = "latest_salary")
     private BigDecimal latestSalary;	
     @Column(name = "edu_institute_1")
@@ -480,18 +480,18 @@ public class User implements Serializable {
         this.workTimeEnd = workTimeEnd;
     }
     //addnew colum
-    public String getWork_type() {
-        return this.work_type;
+    public String getWorkType() {
+        return this.workType;
     }		
-    public void setWork_type(String work_type) {
-        this.work_type = work_type;
+    public void setWorkType(String workType) {
+        this.workType = workType;
     }
     
-    public String getOnsite_num() {
-        return this.onsite_num;
+    public String getOnsiteNum() {
+        return this.onsiteNum;
     }		
-    public void setOnsite_num(String onsite_num) {
-        this.onsite_num = onsite_num;
+    public void setOnsite_num(String onsiteNum) {
+        this.onsiteNum = onsiteNum;
     }
     
     public BigDecimal getLatestSalary() {
