@@ -51,7 +51,7 @@
 										<!-- Leave Type -->
 										<div class="col-md-4">
 											<div class="mb-5">
-												<select class="form-select form-select-solid" data-placeholder="All Leave Type" name="type" onchange="this.form.submit()">
+												<select class="form-select" data-placeholder="All Leave Type" name="type" onchange="this.form.submit()">
 													<option value="allType" <c:if test="${leaveType == 'allType'}"><c:out value="selected=selected"/></c:if>>All Leave Type</option>
 													<c:forEach var="leavetype" items="${leavetypelistChoice}">
 														<option value="${leavetype.leaveTypeId}"
@@ -68,7 +68,7 @@
 										<div class="col-md-4">
 											<div class="mb-5">
 												<!-- <label class="form-label">Status</label> -->
-												<select class="form-select form-select-solid" data-placeholder="All Status" name="appr" id="appr" onchange="this.form.submit()">
+												<select class="form-select" data-placeholder="All Status" name="appr" id="appr" onchange="this.form.submit()">
 													<option value="4" id="All1"
 														<c:if test="${ appr == 4 }">
 															<c:out value="selected=selected"/>
@@ -97,7 +97,7 @@
 										<div class="col-md-4">
 											<div class="mb-5">
 												<!-- <label class="form-label">Date Range</label> -->
-												<input id="kt_daterangepicker" class="form-control form-control-solid" placeholder="Pick date range" autocomplete="off"/>
+												<input id="kt_daterangepicker" class="form-control" placeholder="Pick date range" autocomplete="off"/>
 												<input type="hidden" name="startdate" id="startdate">
 												<input type="hidden" name="enddate" id="enddate">
 											</div>
@@ -132,7 +132,7 @@
 												<span class="fs-2 fw-bold text-dark">
 													<fmt:formatNumber type="number" pattern="#.##" value="${leave_1}"/>/<fmt:formatNumber type="number" pattern="#.##" value="${quota_1-3}"/>
 												</span>
-												<span class="text-muted fs-7">
+												<span class="text-muted fs-5">
 												${type_1}
 												</span>
 											</div>
@@ -158,7 +158,7 @@
 												<span class="fs-2 fw-bold text-dark">
 													<fmt:formatNumber type="number" pattern="#.##" value="${leave_2}"/>/<fmt:formatNumber type="number" pattern="#.##" value="3"/><!-- fix hard code 3 day -->
 												</span>
-												<span class="text-muted fs-7">
+												<span class="text-muted fs-5">
 												${type_2}
 												</span>
 											</div>
@@ -184,7 +184,7 @@
 														/<fmt:formatNumber type="number" pattern="#" value="${quota_4}"/>
 													</c:if>
 												</span>
-												<span class="text-muted fs-7">
+												<span class="text-muted fs-5">
 												${type_6}
 												</span>
 											</div>
@@ -209,7 +209,7 @@
 														/<fmt:formatNumber type="number" pattern="#" value="${quota_3}"/>
 													</c:if>
 												</span>
-												<span class="text-muted fs-7">
+												<span class="text-muted fs-5">
 												${type_3}
 												</span>
 											</div>
@@ -235,7 +235,7 @@
 												<span class="fs-2 fw-bold text-dark">
 													<fmt:formatNumber type="number" pattern="#.##" value="${leave_4}"/>
 												</span>
-												<span class="text-muted fs-7">
+												<span class="text-muted fs-5">
 													${type_4}
 												</span>
 											</div>
@@ -258,7 +258,7 @@
 												<span class="fs-2 fw-bold text-dark">
 													<fmt:formatNumber type="number" pattern="#.##" value="${leave_5}"/>
 												</span>
-												<span class="text-muted fs-7">
+												<span class="text-muted fs-5">
 													${type_5}
 												</span>
 											</div>
@@ -280,7 +280,7 @@
 												<span class="fs-2 fw-bold text-dark">
 													<fmt:formatNumber type="number" pattern="#.##" value="${leave_7}"/>
 												</span>
-												<span class="text-muted fs-7">
+												<span class="text-muted fs-5">
 												${type_7}
 												</span>
 											</div>
@@ -473,7 +473,7 @@
 								<!--end::Header -->
 
 								<!--begin::Footer -->
-								<div class="card-header fs-6">
+								<div class="card-header fs-5">
 
 									<div class="d-flex align-items-center mb-2">
 										<div class="d-flex flex-wrap align-items-center gap-3">
