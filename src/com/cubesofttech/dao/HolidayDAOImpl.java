@@ -361,4 +361,31 @@ public class HolidayDAOImpl implements HolidayDAO {
 		}
 		return HolidayList;
 	}
+	
+	@Override
+	public List<Holiday> findAll2years() throws Exception {
+		//list holidays last 2 years
+	    Session session = this.sessionFactory.getCurrentSession();
+	    List<Holiday> holidayList = null;
+	    Calendar cal = Calendar.getInstance();
+	    int currentYear = cal.get(Calendar.YEAR);
+	    int startYear = currentYear - 2;
+	    int endYear = currentYear;
+	    
+	    try {
+	        String sql = "SELECT * FROM holiday WHERE YEAR(start_date) BETWEEN :startYear AND :endYear ORDER BY start_date ASC";
+	        SQLQuery query = session.createSQLQuery(sql);
+	        query.addEntity(Holiday.class);
+	        query.setParameter("startYear", startYear);
+	        query.setParameter("endYear", endYear);
+	        
+	        holidayList = query.list();
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	    } finally {
+	        // session.close(); 
+	    }
+	    
+	    return holidayList;
+	}
 }

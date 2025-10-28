@@ -14,4 +14,12 @@ public interface JobsiteDAO {
 	public void delete(Jobsite jobsite) throws Exception;
 	
 	public Jobsite findById(Integer id) throws Exception;
+	
+	public List<Map<String, Object>> getNameSiteListByUserId(String userId) throws Exception;
+	
+	public List<Map<String, Object>> findJobsiteUser(String userId) throws Exception;
+	
+	public List<Map<String, Object>> findAll() throws Exception;
+	
+	public List<Map<String, Object>> findAll2() throws Exception;
 }

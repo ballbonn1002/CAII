@@ -68,6 +68,41 @@
 			<result name="error">/index.jsp</result>
 		</action>
 		
+		<!-- User -->
+		<action name="user-list"
+			class="com.cubesofttech.action.UserAction" method="list">
+			<result name="success" type="tiles">user.list</result>
+			<result name="error">/index.jsp</result>
+		</action>
+		<action name="update-user-status"
+			class="com.cubesofttech.action.UserAction" method="updateUserStatus">
+			<result name="json">/pages-back/common/json.jsp</result>
+			<result name="error">/index.jsp</result>
+		</action>
+		<action name="user-edit"
+			class="com.cubesofttech.action.UserAction" method="openEdit">
+			<result name="success" type="tiles">admin_edit_userprofile</result>
+			<result name="error">/index.jsp</result>
+		</action>
+		<action name="admin-perform-edit"
+			class="com.cubesofttech.action.UserAction" method="performEdit">
+			<result name="success" type="tiles">admin_edit_userprofile</result>
+			<!-- <result name="input" type="tiles">admin_edit_userprofile</result> -->
+			<result name="error">/index.jsp</result>
+		</action>
+		<!-- เพิ่ม function add -->
+		<action name="user-perform-add"
+			class="com.cubesofttech.action.UserAction" method="performAdd">
+			<result name="success" type="redirectAction">user-edit?userId=${userId}
+			</result>
+			<result name="error" type="tiles">user.add</result>
+		</action>
+		<!-- Search User with Ajax -->
+		<action name="search-User"
+			class="com.cubesofttech.action.UserAction" method="searchUser">
+			<result name="error">/index.jsp</result>
+			<result name="success" type="json">user_list</result>
+		</action>
 		<!-- Holiday -->
 		<action name="holiday_list"
 			class="com.cubesofttech.action.HolidayAction" method="List">

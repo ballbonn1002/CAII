@@ -40,9 +40,9 @@ public class User implements Serializable {
             , String workDayStart	
             , String workDayEnd	
             , String workTimeStart	
-            , String workTimeEnd	
-            , String workType	
-            , String onsiteNum	
+            , String workTimeEnd
+            , String work_type
+            , String onsite_num
             , BigDecimal latestSalary	
             , String eduInstitute1	
             , String eduInstitute2	
@@ -117,8 +117,8 @@ public class User implements Serializable {
         this.workDayEnd = workDayEnd;	
         this.workTimeStart = workTimeStart;	
         this.workTimeEnd = workTimeEnd;
-        this.workType = workType;
-        this.onsiteNum = onsiteNum;
+        this.work_type = work_type;
+        this.onsite_num = onsite_num;
         this.latestSalary = latestSalary;	
         this.eduInstitute1 = eduInstitute1;	
         this.eduInstitute2 = eduInstitute2;	
@@ -216,10 +216,10 @@ public class User implements Serializable {
     private String workTimeStart;	
     @Column(name = "work_time_end")
     private String workTimeEnd;	
-    @Column(name = "work_type")
-    private String workType;
-    @Column(name = "onsite_num")
-    private String onsiteNum;
+    @Column (name = "work_type")
+    private String work_type;
+    @Column (name = "onsite_num")
+    private String onsite_num;
     @Column(name = "latest_salary")
     private BigDecimal latestSalary;	
     @Column(name = "edu_institute_1")
@@ -479,19 +479,22 @@ public class User implements Serializable {
     public void setWorkTimeEnd(String workTimeEnd) {
         this.workTimeEnd = workTimeEnd;
     }
-    public String getWorkType() {
-		return workType;
-	}
-	public void setWorkType(String workType) {
-		this.workType = workType;
-	}
-	public String getOnsiteNum() {
-		return onsiteNum;
-	}
-	public void setOnsiteNum(String onsiteNum) {
-		this.onsiteNum = onsiteNum;
-	}
-	public BigDecimal getLatestSalary() {
+    //addnew colum
+    public String getWork_type() {
+        return this.work_type;
+    }		
+    public void setWork_type(String work_type) {
+        this.work_type = work_type;
+    }
+    
+    public String getOnsite_num() {
+        return this.onsite_num;
+    }		
+    public void setOnsite_num(String onsite_num) {
+        this.onsite_num = onsite_num;
+    }
+    
+    public BigDecimal getLatestSalary() {
         return this.latestSalary;
     }		
     public void setLatestSalary(BigDecimal latestSalary) {
@@ -827,7 +830,6 @@ public class User implements Serializable {
         						+ "emailEnable=[" + emailEnable + "]\n" + "birthDate=[" + birthDate + "]\n" + "address=[" + address + "]\n" 
         						+ "startDate=[" + startDate + "]\n" + "endDate=[" + endDate + "]\n" + "workDayStart=[" + workDayStart + "]\n" 
         						+ "workDayEnd=[" + workDayEnd + "]\n" + "workTimeStart=[" + workTimeStart + "]\n" + "workTimeEnd=[" + workTimeEnd + "]\n" 
-        						+ "workType=[" + workType + "]\n" + "onsiteNum=[" + onsiteNum + "]\n"
         						+ "latestSalary=[" + latestSalary + "]\n" + "eduInstitute1=[" + eduInstitute1 + "]\n" + "eduInstitute2=[" + eduInstitute2 + "]\n" 
         						+ "eduInstitute3=[" + eduInstitute3 + "]\n" + "eduInstitute4=[" + eduInstitute4 + "]\n" + "eduDurStart1=[" + eduDurStart1 + "]\n" 
         						+ "eduDurStart2=[" + eduDurStart2 + "]\n" + "eduDurStart3=[" + eduDurStart3 + "]\n" + "eduDurStart4=[" + eduDurStart4 + "]\n" 
@@ -936,14 +938,6 @@ public class User implements Serializable {
         if (!(that.getWorkTimeEnd() == null ? this.getWorkTimeEnd() == null
                         : that.getWorkTimeEnd().equals(this.getWorkTimeEnd()))) {
                 return false;
-        }
-        if (!(that.getWorkType() == null ? this.getWorkType() == null
-        				: that.getWorkType().equals(this.getWorkType()))) {
-        		return false;
-        }
-        if (!(that.getOnsiteNum() == null ? this.getOnsiteNum() == null
-        				: that.getOnsiteNum().equals(this.getOnsiteNum()))) {
-        		return false;
         }
         if (!(that.getLatestSalary() == null ? this.getLatestSalary() == null
                         : that.getLatestSalary().equals(this.getLatestSalary()))) {

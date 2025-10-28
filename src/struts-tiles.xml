@@ -59,6 +59,24 @@
 	    <put-attribute name="title" value="Reset Password Success"/>
 	</definition>
 	
+	<!-- User -->
+	<definition name="user.list" extends="baseLayout">
+		<put-attribute name="title" value="User Management" />
+		<put-attribute name="body"
+			value="/pages-back/user/user_list.jsp" />
+	</definition>
+	<definition name="admin_edit_userprofile"
+		extends="baseLayout">
+		<put-attribute name="title"
+			value="Admin_Edit_Userprofile" />
+		<put-attribute name="body"
+			value="/pages-back/user/admin_edit_userprofile.jsp" />
+	</definition>
+	<definition name="user.add" extends="baseLayout">
+		<put-attribute name="title" value="User Add" />
+		<put-attribute name="body"
+			value="/pages-back/user/user_add.jsp" />
+	</definition>
 	<!-- HOLIDAY -->
 	<definition name="holidayList" extends="baseLayout">
 		<put-attribute name="title" value="Holiday List"/>
