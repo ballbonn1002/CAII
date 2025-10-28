@@ -7,7 +7,7 @@ import com.cubesofttech.model.User;
 
 public interface UserDAO {
 
-//	public void save(User user) throws Exception;
+	public void save(User user) throws Exception;
 
 	public List<User> findAll() throws Exception;
 	
@@ -21,17 +21,17 @@ public interface UserDAO {
 //	 * public static User findByRoleId(String roleId) throws Exception { // TODO
 //	 * Auto-generated method stub return null; }
 //	 */
-//	public String resetLastyearQuota();
+	public String resetLastyearQuota();
 //
 //	public List<Map<String, Object>> findByemail(String id) throws Exception;
 //
-//	public List<Map<String, Object>> findById2(String id) throws Exception;
+	public List<Map<String, Object>> findById2(String id) throws Exception;
 
 	public void update(User user) throws Exception;
 
-//	public void delete(User user) throws Exception;
+	public void delete(User user) throws Exception;
 //
-//	public List<User> findBySelect(String usertoappr) throws Exception;
+	public List<User> findBySelect(String usertoappr) throws Exception;
 //	
 //	public List<Map<String, Object>> findAllforReport() throws Exception;
 //
@@ -43,7 +43,7 @@ public interface UserDAO {
 	
 	public List<Map<String, Object>> sequense_userinteam(String manager) throws Exception;
 
-//	public List<Map<String, Object>> Query_Userlist() throws Exception;
+	public List<Map<String, Object>> Query_Userlist() throws Exception;
 //
 //	public List<Map<String, Object>> findChangeLeader(String approverchange) throws Exception;
 //
@@ -77,19 +77,19 @@ public interface UserDAO {
 //
 //	List<Map<String, Object>> findRoleNameById(String id);
 //
-//	public List<Map<String, Object>> test_birthdaysummary() throws Exception;
+	public List<Map<String, Object>> test_birthdaysummary() throws Exception;
 //
-//	public List<Map<String, Object>> Query_Userlist2() throws Exception;
+	public List<Map<String, Object>> Query_Userlist2() throws Exception;
 //
-//	public List<Map<String, Object>> getGender(String[] setgender) throws Exception;
+	public List<Map<String, Object>> getGender(String[] setgender) throws Exception;
 //
-//	public List<Map<String, Object>> updateGender(String[] setgender) throws Exception;
+	public List<Map<String, Object>> updateGender(String[] setgender) throws Exception;
 //
 //	public List<Map<String, Object>> findRoleById(String id);
 //
 //	List<Map<String, Object>> apprNameById(String id);
 //
-//	public List<Map<String, Object>> findTimeUserWork(String user) throws Exception;
+	public List<Map<String, Object>> findTimeUserWork(String user) throws Exception;
 //	public List<Map<String, Object>> findAllUser(String month,String year) throws Exception;
 //	public List<Map<String, Object>> findAllUserYear(String year) throws Exception;
 //	

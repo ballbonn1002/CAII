@@ -11,6 +11,7 @@ import org.hibernate.HibernateException;
 import org.hibernate.SQLQuery;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.hibernate.transform.AliasToEntityMapResultTransformer;
@@ -403,33 +404,33 @@ public class LeaveDAOImpl implements LeaveDAO {
 //		return select;
 //	}
 
-//	@Override
-//	public List<Map<String, Object>> listwaitperson(String leaveId) throws Exception {
-//		Session session = this.sessionFactory.getCurrentSession();
-//		List<Map<String, Object>> one = null;
-//		try {
-//			String leave_id = "";
-//			if (leaveId != null) {
-//				leave_id = "WHERE user_id =  :leaveId AND leaves.leave_status_id = 0 ";
-//			}
-//
-//			String sql = "SELECT leaves.leave_id, leaves.end_date, leaves.end_time, \n"
-//					+ " leaves.leave_type_id, leaves.half_day,\n" + " leaves.no_day, leaves.reason, \n"
-//					+ " leaves.start_date, leaves.time_create, leaves.leave_status_id, \n"
-//					+ " leaves.user_id, leaves.user_update \n" + " FROM leaves \n" + leave_id
-//					+ " ORDER BY leaves.leave_id DESC \n" + " LIMIT 20 \n";
-//
-//			SQLQuery query = session.createSQLQuery(sql);
-//			if (leaveId != null) {
-//				query.setParameter("leaveId", leaveId);
-//			}
-//			query.setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
-//			one = query.list();
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//		}
-//		return one;
-//	}
+	@Override
+	public List<Map<String, Object>> listwaitperson(String leaveId) throws Exception {
+		Session session = this.sessionFactory.getCurrentSession();
+		List<Map<String, Object>> one = null;
+		try {
+			String leave_id = "";
+			if (leaveId != null) {
+				leave_id = "WHERE user_id =  :leaveId AND leaves.leave_status_id = 0 ";
+			}
+
+			String sql = "SELECT leaves.leave_id, leaves.end_date, leaves.end_time, \n"
+					+ " leaves.leave_type_id, leaves.half_day,\n" + " leaves.no_day, leaves.reason, \n"
+					+ " leaves.start_date, leaves.time_create, leaves.leave_status_id, \n"
+					+ " leaves.user_id, leaves.user_update \n" + " FROM leaves \n" + leave_id
+					+ " ORDER BY leaves.leave_id DESC \n" + " LIMIT 20 \n";
+
+			SQLQuery query = session.createSQLQuery(sql);
+			if (leaveId != null) {
+				query.setParameter("leaveId", leaveId);
+			}
+			query.setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
+			one = query.list();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return one;
+	}
 
 //	@Override
 //	public List<Map<String, Object>> searchAll() throws Exception {
@@ -765,7 +766,7 @@ public class LeaveDAOImpl implements LeaveDAO {
 	}
 
 	// use for search unapprove by type
-	public List<Map<String, Object>> searchtable3(Timestamp startDate, Timestamp endDate, String userId, String type)
+	/*public List<Map<String, Object>> searchtable3(Timestamp startDate, Timestamp endDate, String userId, String type)
 			throws Exception {
 		Session session = this.sessionFactory.getCurrentSession();
 		List<Map<String, Object>> search = null;
@@ -782,6 +783,26 @@ public class LeaveDAOImpl implements LeaveDAO {
 			query.setParameter("userId", userId);
 			query.setParameter("type", type);
 
+			query.setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
+			search = query.list();
+		} catch (
+
+		Exception e) {
+			e.printStackTrace();
+		}
+		return search;
+	}
+	*/
+	@Override
+	public List<Map<String, Object>> searchtable3(String userId) throws Exception {
+		Session session = this.sessionFactory.getCurrentSession();
+		List<Map<String, Object>> search = null;
+		try {
+			String sql = "SELECT * FROM leaves WHERE user_id = :userId " + " ORDER BY start_date DESC ";
+			SQLQuery query = session.createSQLQuery(sql);
+
+			query.setParameter("userId", userId);
+			// query.setParameter("userId", userId);
 			query.setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
 			search = query.list();
 		} catch (
@@ -1353,25 +1374,23 @@ public class LeaveDAOImpl implements LeaveDAO {
 		return searchbydate;
 	}
 
-//	@Override
-//	public List<Map<String, Object>> myLeavesList(String userId, Timestamp startDate, Timestamp endDate,
-//			String status) {
-////		Session session = this.sessionFactory.getCurrentSession();
-////		Criteria cr = session.createCriteria(Leaves.class);
-////
-////		List list = cr.add(Restrictions.eq("userId", userId)).add(Restrictions.eq("leaveStatusId", status))
-////				.add(Restrictions.gt("startDate", startDate)).add(Restrictions.lt("endDate", endDate))
-////				.addOrder(Order.desc("leaveId")).list();
-//		Session session = this.sessionFactory.getCurrentSession();
-//		List<Map<String, Object>> searchbydate = null;
-//		String sql = "SELECT * FROM leaves WHERE user_id ='" + userId + "' AND start_date>='" + startDate
-//				+ "' AND start_date<='" + endDate + "' AND leave_status_id = '" + status + "'";
-//		System.out.println(sql);
-//		SQLQuery query = session.createSQLQuery(sql);
-//		query.setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
-//		searchbydate = query.list();
-//		return searchbydate;
-//	}
+	@Override
+	public List<Map<String, Object>> myLeavesList(String userId, Timestamp startDate, Timestamp endDate, String status) {
+		Session session = this.sessionFactory.getCurrentSession();
+		Criteria cr = session.createCriteria(Leaves.class);
+
+		List list = cr.add(Restrictions.eq("userId", userId)).add(Restrictions.eq("leaveStatusId", status))
+				.add(Restrictions.gt("startDate", startDate)).add(Restrictions.lt("endDate", endDate))
+				.addOrder(Order.desc("leaveId")).list();
+		List<Map<String, Object>> searchbydate = null;
+		String sql = "SELECT * FROM leaves WHERE user_id ='" + userId + "' AND start_date>='" + startDate
+				+ "' AND start_date<='" + endDate + "' AND leave_status_id = '" + status + "'";
+		System.out.println(sql);
+		SQLQuery query = session.createSQLQuery(sql);
+		query.setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
+		searchbydate = query.list();
+		return searchbydate;
+	}
 
 	@Override
 	public List findLeaveId(String userId, Timestamp startDate, Timestamp endDate, String status) {
@@ -1386,23 +1405,23 @@ public class LeaveDAOImpl implements LeaveDAO {
 		return searchbydate;
 	}
 
-//	@Override
-//	public String sumWaitLeave(String user) throws Exception {
-//		Session session = this.sessionFactory.getCurrentSession();
-//		String result = null;
-//		try {
-//			String sql = "SELECT SUM(no_day) as sum FROM leaves WHERE user_id = '" + user
-//					+ "' AND leave_status_id = 0 ";
-//			SQLQuery query = session.createSQLQuery(sql);
-//
-//			result = query.uniqueResult().toString();
-//		} catch (
-//
-//		Exception e) {
-//			e.printStackTrace();
-//		}
-//		return result;
-//	}
+	@Override
+	public String sumWaitLeave(String user) throws Exception {
+		Session session = this.sessionFactory.getCurrentSession();
+		String result = null;
+		try {
+			String sql = "SELECT SUM(no_day) as sum FROM leaves WHERE user_id = '" + user
+					+ "' AND leave_status_id = 0 ";
+			SQLQuery query = session.createSQLQuery(sql);
+
+			result = query.uniqueResult().toString();
+		} catch (
+
+		Exception e) {
+			e.printStackTrace();
+		}
+		return result;
+	}
 
 //	@Override
 //	public List<Map<String, Object>> test_LeavesList(String userId, int year) {

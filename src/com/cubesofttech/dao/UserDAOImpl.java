@@ -26,13 +26,13 @@ public class UserDAOImpl implements UserDAO {
 	@Autowired
 	private SessionFactory sessionFactory;
 
-//	@Override
-//	public void save(User User) throws Exception {
-//		Session session = this.sessionFactory.getCurrentSession();
-//		session.save(User);
-//		session.flush();
-//		// session.close();
-//	}
+	@Override
+	public void save(User User) throws Exception {
+		Session session = this.sessionFactory.getCurrentSession();
+		session.save(User);
+		session.flush();
+		// session.close();
+	}
 
 	@Override
 	public List<User> findAll() throws Exception {
@@ -147,37 +147,37 @@ public class UserDAOImpl implements UserDAO {
 		// session.close();
 	}
 
-//	@Override
-//	public void delete(User User) throws Exception {
-//		Session session = this.sessionFactory.getCurrentSession();
-//		session.delete(User);
-//		session.flush();
-//		// session.close();
-//	}
+	@Override
+	public void delete(User User) throws Exception {
+		Session session = this.sessionFactory.getCurrentSession();
+		session.delete(User);
+		session.flush();
+		// session.close();
+	}
 
-//	@Override
-//	public List<User> findBySelect(String usertoappr) throws Exception {
-//		Session session = this.sessionFactory.getCurrentSession();
-//		List<User> selectuser = null;
-//		try {
-//			String approver = "";
-//			if (usertoappr != null) {
-//				approver = "   WHERE user.id =  :usertoappr";
-//			}
-//
-//			String sql = " SELECT  manager_id  FROM user " + approver + "";
-//
-//			SQLQuery query = session.createSQLQuery(sql);
-//			if (usertoappr != null) {
-//				query.setParameter("usertoappr", usertoappr);
-//			}
-//			query.setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
-//			selectuser = query.list();
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//		}
-//		return selectuser;
-//	}
+	@Override
+	public List<User> findBySelect(String usertoappr) throws Exception {
+		Session session = this.sessionFactory.getCurrentSession();
+		List<User> selectuser = null;
+		try {
+			String approver = "";
+			if (usertoappr != null) {
+				approver = "   WHERE user.id =  :usertoappr";
+			}
+
+			String sql = " SELECT  manager_id  FROM user " + approver + "";
+
+			SQLQuery query = session.createSQLQuery(sql);
+			if (usertoappr != null) {
+				query.setParameter("usertoappr", usertoappr);
+			}
+			query.setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
+			selectuser = query.list();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return selectuser;
+	}
 
 //	@Override
 //	public List<Map<String, Object>> findByApprove(String usertoappr) throws Exception {
@@ -252,20 +252,20 @@ public class UserDAOImpl implements UserDAO {
 		return user;
 	}
 
-//	@Override
-//	public List<Map<String, Object>> Query_Userlist() throws Exception {
-//		Session session = this.sessionFactory.getCurrentSession();
-//		List<Map<String, Object>> user = null;
-//		try {
-//			String sql = "SELECT user.id,user.name,user.employee_id,user.name_en,user.flag_search,user.role_id,user.birth_date,user.department_id,user.email,user.enable ,CONCAT(user.id), user.position_id,user.start_date,job_site.name_site FROM user LEFT JOIN job_site ON user.id_sitejob = job_site.id_sitejob WHERE flag_search = 1 ORDER BY id ASC";
-//			SQLQuery query = session.createSQLQuery(sql);
-//			query.setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
-//			user = query.list();
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//		}
-//		return user;
-//	}
+	@Override
+	public List<Map<String, Object>> Query_Userlist() throws Exception {
+		Session session = this.sessionFactory.getCurrentSession();
+		List<Map<String, Object>> user = null;
+		try {
+			String sql = "SELECT user.id,user.name,user.employee_id,user.name_en,user.flag_search,user.role_id,user.birth_date,user.department_id,user.email,user.enable ,CONCAT(user.id), user.position_id,user.start_date,job_site.name_site FROM user LEFT JOIN job_site ON user.id_sitejob = job_site.id_sitejob WHERE flag_search = 1 ORDER BY id ASC";
+			SQLQuery query = session.createSQLQuery(sql);
+			query.setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
+			user = query.list();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return user;
+	}
 
 //	@Override
 //	public List<Map<String, Object>> findChangeLeader(String approverchange) throws Exception {
@@ -292,22 +292,22 @@ public class UserDAOImpl implements UserDAO {
 //		return selectuser;
 //	}
 
-//	@Override
-//	public List<Map<String, Object>> findById2(String id) throws Exception {
-//		Session session = this.sessionFactory.getCurrentSession();
-//		List id1 = null;
-//		try {
-//			String sql = " SELECT * FROM user WHERE user.id = :id ";
-//			SQLQuery query = session.createSQLQuery(sql);
-//			query.setParameter("id", id);
-//			query.setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
-//			id1 = query.list();
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//		}
-//		return id1;
-//
-//	}
+	@Override
+	public List<Map<String, Object>> findById2(String id) throws Exception {
+		Session session = this.sessionFactory.getCurrentSession();
+		List id1 = null;
+		try {
+			String sql = " SELECT * FROM user WHERE user.id = :id ";
+			SQLQuery query = session.createSQLQuery(sql);
+			query.setParameter("id", id);
+			query.setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
+			id1 = query.list();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return id1;
+
+	}
 
 //	@Override
 //	public List<Map<String, Object>> positionuser(String currentUserlist) throws Exception {
@@ -681,28 +681,28 @@ public class UserDAOImpl implements UserDAO {
 //		return test_holiday;
 //	}
 
-//	@Override
-//	public List<Map<String, Object>> test_birthdaysummary() throws Exception {
-//		Session session = this.sessionFactory.getCurrentSession();
-//		List<Map<String, Object>> test_birthdaysummary = null;
-//		String sql;
-//		try {
-//
-////String sql = "SELECT time_create,status_id,user_id,DAY(time_create)AS DAY,MONTH(time_create) AS MONTH, YEAR(time_create) AS YEAR FROM `expense_group` WHERE user_id='yanikar.t' AND YEAR(time_create)= '2017' GROUP BY (time_create) ASC";
-//
-//			// sql = "SELECT time_create,status_id,user_id,DAY(time_create)AS
-//			// DAY,MONTH(time_create) AS MONTH, YEAR(time_create) AS YEAR FROM
-//			// `expense_group` WHERE user_id='' AND YEAR(time_create)= '' GROUP BY
-//			// (time_create) ASC";
-//			sql = "SELECT enable,birth_date,id,DAY(birth_date)AS DAY,MONTH(birth_date) AS MONTH, YEAR(birth_date) AS YEAR FROM user WHERE enable = '1' AND birth_date IS NOT NULL ORDER BY MONTH(birth_date) ASC,DAY(birth_date) ASC";
-//			SQLQuery query = session.createSQLQuery(sql);
-//			query.setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
-//			test_birthdaysummary = query.list();
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//		}
-//		return test_birthdaysummary;
-//	}
+	@Override
+	public List<Map<String, Object>> test_birthdaysummary() throws Exception {
+		Session session = this.sessionFactory.getCurrentSession();
+		List<Map<String, Object>> test_birthdaysummary = null;
+		String sql;
+		try {
+
+ //String sql = "SELECT time_create,status_id,user_id,DAY(time_create)AS DAY,MONTH(time_create) AS MONTH, YEAR(time_create) AS YEAR FROM `expense_group` WHERE user_id='yanikar.t' AND YEAR(time_create)= '2017' GROUP BY (time_create) ASC";
+
+			// sql = "SELECT time_create,status_id,user_id,DAY(time_create)AS
+			// DAY,MONTH(time_create) AS MONTH, YEAR(time_create) AS YEAR FROM
+			// `expense_group` WHERE user_id='' AND YEAR(time_create)= '' GROUP BY
+			// (time_create) ASC";
+			sql = "SELECT enable,birth_date,id,DAY(birth_date)AS DAY,MONTH(birth_date) AS MONTH, YEAR(birth_date) AS YEAR FROM user WHERE enable = '1' AND birth_date IS NOT NULL ORDER BY MONTH(birth_date) ASC,DAY(birth_date) ASC";
+			SQLQuery query = session.createSQLQuery(sql);
+			query.setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
+			test_birthdaysummary = query.list();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return test_birthdaysummary;
+	}
 
 	public List<Map<String, Object>> Query_Userlist2() throws Exception {
 		Session session = this.sessionFactory.getCurrentSession();
@@ -797,23 +797,23 @@ public class UserDAOImpl implements UserDAO {
 //		return name;
 //	}
 
-//	@Override
-//	public List<Map<String, Object>> findTimeUserWork(String user) {
-//		Session session = this.sessionFactory.getCurrentSession();
-//		List<Map<String, Object>> name = null;
-//		try {
-//
-//			String sql = "SELECT work_time_start,work_time_end FROM user WHERE id =:user ";
-//
-//			SQLQuery query = session.createSQLQuery(sql);
-//			query.setParameter("user", user);
-//			query.setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
-//			name = query.list();
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//		}
-//		return name;
-//	}
+	@Override
+	public List<Map<String, Object>> findTimeUserWork(String user) {
+		Session session = this.sessionFactory.getCurrentSession();
+		List<Map<String, Object>> name = null;
+		try {
+
+			String sql = "SELECT work_time_start,work_time_end FROM user WHERE id =:user ";
+
+			SQLQuery query = session.createSQLQuery(sql);
+			query.setParameter("user", user);
+			query.setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
+			name = query.list();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return name;
+	}
 
 //	@Override
 //	public List<Map<String, Object>> findAllUser(String month, String year) {

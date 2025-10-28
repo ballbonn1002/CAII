@@ -171,15 +171,6 @@ public class FileUploadDAOImpl implements FileUploadDAO {
 		        throw new Exception("No file!");
 		    }
 	}*/
-	@Override
-	public void delete(FileUpload FileUpload) throws Exception {
-		Session session = this.sessionFactory.getCurrentSession();
-		session.delete(FileUpload);
-		session.flush();
-		// session.close();
-	}
-
-
 	
 	@Override
 	public List<FileUpload> findByPageAndPageId(String page, String pageId) throws Exception {

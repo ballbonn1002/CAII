@@ -27,7 +27,7 @@ public interface FileUploadDAO {
 	
 	public List<FileUpload> findByTicketId(String ticket_id) throws Exception;
 
-	public void delete(String fileId) throws Exception;
+//	public void delete(String fileId) throws Exception;
 	
 	public List<FileUpload> findByPageAndPageId(String page, String pageId) throws Exception;
 	

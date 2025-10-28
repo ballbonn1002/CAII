@@ -1,19 +1,27 @@
 package com.cubesofttech.action;
 
 import java.io.File;
-import java.util.Date;
+import java.io.FileInputStream;
 import java.sql.Timestamp;
-import java.text.Format;
+import java.text.ParseException;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
-import org.apache.poi.hpsf.Util;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.DataFormatter;
 import org.apache.poi.ss.usermodel.Row;
@@ -24,20 +32,17 @@ import org.apache.struts2.ServletActionContext;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cubesofttech.dao.FileUploadDAO;
+import com.cubesofttech.dao.HolidayDAO;
 import com.cubesofttech.dao.TimesheetDAO;
 import com.cubesofttech.dao.UserDAO;
 import com.cubesofttech.model.FileUpload;
+import com.cubesofttech.model.Holiday;
 import com.cubesofttech.model.Timesheet;
 import com.cubesofttech.model.User;
 import com.cubesofttech.util.DateUtil;
 import com.cubesofttech.util.FileUtil;
 import com.ibm.icu.text.SimpleDateFormat;
 import com.opensymphony.xwork2.ActionSupport;
-
-import com.cubesofttech.model.Holiday;
-import com.cubesofttech.dao.HolidayDAO;
-import java.text.ParseException; 
-import java.util.Calendar;
 
 
 
@@ -161,6 +166,8 @@ public class FileUploadAction extends ActionSupport {
     private static final String FLASH_ELAPSED = "flashImportElapsed";
 
     private static final DataFormatter DF = new DataFormatter(Locale.UK);
+    
+    private HttpServletRequest req() { return ServletActionContext.getRequest(); }
 
 
     private static final String[] DATE_PATTERNS = {
@@ -235,12 +242,12 @@ public class FileUploadAction extends ActionSupport {
                     if (name == null) { skipped++; continue; }
 
                     // Dates: parse as D/M/Y from shown text first, fallback to serial
-                    Date start = parseCellAsSqlDate(cStart);
-                    Date end   = parseCellAsSqlDate(cEnd);
+                    java.sql.Date start = (java.sql.Date) parseCellAsSqlDate(cStart);
+                    java.sql.Date end   = (java.sql.Date) parseCellAsSqlDate(cEnd);
 
                     if (start == null) { skipped++; continue; }
                     if (end == null) end = start;
-                    if (start.after(end)) { Date tmp = start; start = end; end = tmp; }
+                    if (start.after(end)) { java.sql.Date tmp = start; start = end; end = tmp; }
 
                     String desc = Optional.ofNullable(getShown(cDesc)).orElse("");
 
@@ -249,7 +256,7 @@ public class FileUploadAction extends ActionSupport {
 
                     Holiday probe = new Holiday();
                     probe.setStart_date(start);
-                    probe.setEnd_date(end);
+                    probe.setEnd_date(end);        
                     List<Holiday> overlap = holidayDAO.protect(probe);
                     if (overlap != null && !overlap.isEmpty()) { skipped++; continue; }
 

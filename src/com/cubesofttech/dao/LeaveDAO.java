@@ -45,7 +45,7 @@ public interface LeaveDAO {
 
 	Integer getMaxId() throws Exception;
 
-//	public List<Map<String, Object>> listwaitperson(String leaveid) throws Exception;
+	public List<Map<String, Object>> listwaitperson(String leaveid) throws Exception;
 //
 //	public List<Map<String, Object>> searchtable(Timestamp startDate, Timestamp endDate, String userId) throws Exception;
 	
@@ -86,7 +86,7 @@ public interface LeaveDAO {
 
 	public List<Map<String, Object>> findleaveallByType(String userLogin, int type) throws Exception;
 
-//	public List<Map<String, Object>> searchtable3(String userId) throws Exception;
+	public List<Map<String, Object>> searchtable3(String userId) throws Exception;
 //
 //	List<Map<String, Object>> searchAll_user(String user) throws Exception;
 //	
@@ -128,9 +128,9 @@ public interface LeaveDAO {
 	public Double ThisYearQuota(String userId) throws Exception;
 //	public Double ThisYearQuota2(String userId) throws Exception;
 //
-//	List<Map<String, Object>> myLeavesList(String userId, Timestamp startDate, Timestamp endDate, String status);
+	List<Map<String, Object>> myLeavesList(String userId, Timestamp startDate, Timestamp endDate, String status);
 //
-//	public String sumWaitLeave(String user) throws Exception;
+	public String sumWaitLeave(String user) throws Exception;
 //	public List<Map<String, Object>> test_LeavesList(String userId, int year);
 //	
 //	public List<Map<String, Object>> test_LeavesSummary(int year,int type);

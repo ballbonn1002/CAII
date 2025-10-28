@@ -50,7 +50,7 @@ public interface HolidayDAO {
 //	public List<Map<String, Object>> count_hoilday(String start_mouth, String today) throws Exception;
 //	public List<Map<String, Object>> countHoildayByDatepicker(Timestamp startdate, Timestamp enddate) throws Exception;
 //	public List<Map<String, Object>> listHoildayByDatepicker(Timestamp startdate, Timestamp enddate) throws Exception;
-	List<Holiday> findAll2years() throws Exception;
+
 	
 }
 
