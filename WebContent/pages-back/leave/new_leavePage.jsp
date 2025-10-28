@@ -153,7 +153,7 @@
 
 											<!-- ด้านขวา -->
 											<div class="d-flex justify-content-end">
-												<select class="form-select form-select-solid" id="status" name="status" disabled required style="min-width: 200px; max-width: 300px;">
+												<select class="form-select" id="status" name="status" disabled required style="min-width: 200px; max-width: 300px;">
 													<option value="0">Wait for approve</option>
 													<option value="1">Approved</option>
 													<option value="2">Reject</option>
@@ -164,7 +164,7 @@
 										</div>
 
 										<div class="mb-10">
-											<select id="user" name="user" class="form-select form-select-solid" onchange="userOnChange()" disabled required>
+											<select id="user" name="user" class="form-select" onchange="userOnChange()" disabled required>
 												<option></option>
 												<optgroup id='u_enable' label="Enable"></optgroup>
 												<optgroup id='u_disable' label="Disable"></optgroup>
@@ -197,7 +197,7 @@
 																<div class="col-md-6">
 																	<label class="form-label fw-semibold fs-5">Start Date <span class="text-danger">*</span></label>
 																	<div class="input-group date date-picker input-daterange" data-provide="datepicker" data-date-format="dd M yyyy">
-																		<input type="text" class="form-control form-control-solid" id="date_from" name="from" autocomplete="off" required>
+																		<input type="text" class="form-control" id="date_from" name="from" autocomplete="off" required>
 																		<input class="hide" name="from_hidden" id="date_from_hidden" type="text" hidden>
 																	</div>
 																</div>
@@ -206,7 +206,7 @@
 																<div class="col-md-6">
 																	<label class="form-label fw-semibold fs-5">End Date <span class="text-danger">*</span></label>
 																	<div class="input-group date date-picker input-daterange" data-provide="datepicker" data-date-format="dd M yyyy">
-																		<input type="text" class="form-control form-control-solid" id="date_to" name="to" autocomplete="off" required>
+																		<input type="text" class="form-control" id="date_to" name="to" autocomplete="off" required>
 																		<input class="hide" name="to_hidden" id="date_to_hidden" type="text" hidden>
 																	</div>
 																</div>
@@ -216,7 +216,7 @@
 
 														<div class="col-md-6">
 															<label class="form-label required fs-5">ช่วงเวลาในการลา</label>
-															<select class="form-select form-select-solid input-daterange"
+															<select class="form-select input-daterange"
 																id="halfDay" name="halfDay" required>
 																<option value="0" selected>เต็มวัน</option>
 																<option value="1">ช่วงเช้า</option>
@@ -234,7 +234,7 @@
 													<div class="col-md-6">
 														<label class="form-label fw-semibold fs-5">Start Time <span class="text-danger">*</span></label>
 														<div class="input-group">
-															<input type="text" class="form-control form-control-solid timepicker timepicker-24 checkHours" id="time_from" name="time_from" autocomplete="off" required disabled>
+															<input type="text" class="form-control timepicker timepicker-24 checkHours" id="time_from" name="time_from" autocomplete="off" required disabled>
 														</div>
 														<input class="hide" id="time_from_hidden" name="time_from_hidden" hidden>
 													</div>
@@ -243,7 +243,7 @@
 													<div class="col-md-6">
 														<label class="form-label fw-semibold fs-5">End Time <span class="text-danger">*</span></label>
 														<div class="input-group">
-															<input type="text" class="form-control form-control-solid timepicker timepicker-24 checkHours" id="time_to" name="time_to" autocomplete="off" required disabled>
+															<input type="text" class="form-control timepicker timepicker-24 checkHours" id="time_to" name="time_to" autocomplete="off" required disabled>
 														</div>
 														<input class="hide" id="time_to_hidden" name="time_to_hidden" hidden>
 														<div class="form-text text-danger" id="alert_time_to"></div>
@@ -255,7 +255,7 @@
 													<div class="col-md-6">
 														<label class="form-label fw-semibold fs-5">Day</label>
 														<div class="input-group">
-															<input type="text" class="form-control form-control-solid timepicker timepicker-24 checkHours" id="amount" name="amount" min="1" max="1000" maxlength="3" disabled>
+															<input type="text" class="form-control timepicker timepicker-24 checkHours" id="amount" name="amount" min="1" max="1000" maxlength="3" disabled>
 														</div>
 														<input class="hide" id="amount_hidden" name="amount_hidden" hidden>
 													</div>
@@ -264,7 +264,7 @@
 													<div class="col-md-6">
 														<label class="form-label fw-semibold fs-5">Hours</label>
 														<div class="input-group">
-															<input type="text" class="form-control form-control-solid timepicker timepicker-24 checkHours" id="amount_sub" name="amount_sub" value="0" min="1" max="1000" maxlength="3" onchange="check()" disabled>
+															<input type="text" class="form-control timepicker timepicker-24 checkHours" id="amount_sub" name="amount_sub" value="0" min="1" max="1000" maxlength="3" onchange="check()" disabled>
 														</div>
 														<input class="hide" value="0" id="amount_sub_hidden" name="amount_sub_hidden" hidden>
 													</div>
@@ -275,7 +275,7 @@
 													<label class="form-label required fs-5">Description</label>
 
 													<textarea
-														class="form-control form-control-solid"
+														class="form-control"
 														style="word-break: break-all; white-space: normal;" maxlength="1024"
 														name="description"
 														id="description"
@@ -322,7 +322,7 @@
 												<!--Approver -->
 												<div class="mb-10">
 													<label class="form-label required fs-5">Approvers</label>
-													<select id="approver" name="approver" class="form-select form-select-solid" required>
+													<select id="approver" name="approver" class="form-select" required>
 														<option value="admin">แอดมิน</option>
 													</select>
 													<input hidden name="approver_hidden" id="approver_hidden" type="text">
