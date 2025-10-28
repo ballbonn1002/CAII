@@ -156,13 +156,19 @@
 
 						<div class="card-body d-flex flex-row flex-wrap pt-0">
 							<div class="d-flex align-items-center me-5">
-								<span class="badge badge-primary">None</span>
+								<span class="badge badge-primary">${user.workType == 1 ? 'On-site' : 'WFH'}</span>
 							</div>
 							<div class="d-flex align-items-center me-5">
-								Working Time : &nbsp;<span class="text-primary">${user.workTimeStart}
+								Working Time : <span class="ms-2 text-primary">${user.workTimeStart}
 									- ${user.workTimeEnd}</span>
 							</div>
-							<div class="d-flex align-items-center me-5">Onsite :</div>
+							<div class="d-flex align-items-center me-5">
+								On-site : <span class="ms-2 text-primary">
+									${user.onsiteNum == 3 ? '4 – 5 Days (On-site)' :
+          							user.onsiteNum == 2 ? '2 – 3 Days (Hybrid)' :
+          							user.onsiteNum == 1 ? '0.5 – 1 Day (WFH)' : 'N/A'}
+								</span>
+							</div>
 						</div>
 					</div>
 				</div>

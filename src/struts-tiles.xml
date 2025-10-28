@@ -90,6 +90,52 @@
 		<put-attribute name="body"
 			value="/pages-back/check/check_in_out.jsp"/>
 	</definition>
+
+	<!-- My Leave -->
+	
+		<!-- Listing Page-->
+	<!-- <definition name="new_myleave_list" extends="baseLayout">
+		<put-attribute name="title" value="My leave list" />
+		<put-attribute name="body" value="/pages-back/leave/new_myleave_list.jsp"/>
+	</definition> -->
+	<!-- <definition name="new_myleave_list">
+		<put-attribute name="title" value="My leave list" />
+		<put-attribute name="body" value="/pages-back/leave/new_myleave_list.jsp"/>
+	</definition> -->
+	
+	<definition name="new_myleave_list" extends="baseLayout">
+	    <put-attribute name="title" value="My Leave List"/>
+	    <put-attribute name="body" value="/pages-back/leave/my_leave_list.jsp"/>
+	</definition>
+	
+		<!-- Listing Page-->
+
+		<!-- newLeave Template-->
+	<definition name="newLeave" extends="baseLayout">
+		<put-attribute name="body" value="/pages-back/leave/new_leavePage.jsp" />
+	</definition>
+		<!-- newLeave Template-->
+
+		<!-- Add Page-->
+	<definition name="newLeaveAdd" extends="newLeave">
+		<put-attribute name="title" value="Add Leave" />
+	</definition>
+	<definition name="leavecalendar" extends="baseLayout">
+		<put-attribute name="title" value="calendar leave" />
+		<put-attribute name="body"
+			value="/pages-back/borrow/leavecalendar.jsp" />
+	</definition>
+		<!-- Add Page-->
+		
+		<!-- Edit Page-->
+	<definition name="newLeaveEdit" extends="newLeave">
+		<put-attribute name="title" value="Edit Leave" />
+	</definition>
+		<!-- Edit Page-->
+
+
+	<!-- My Leave -->
+
 	
 	<!-- Announcement -->
 	<definition name="AnnouncementList" extends="baseLayout">
@@ -101,6 +147,11 @@
 		<put-attribute name="title" value="Annoucemnet Read"/>
 		<put-attribute name="body"
 			value="/pages-back/announcement/announcement_read.jsp"/>
+	</definition>
+	<definition name="AnnouncementAdd" extends="baseLayout">
+		<put-attribute name="title" value="Annoucemnet Add"/>
+		<put-attribute name="body"
+			value="/pages-back/announcement/announcement_add.jsp"/>
 	</definition>
 	
 	<!-- POSITION -->

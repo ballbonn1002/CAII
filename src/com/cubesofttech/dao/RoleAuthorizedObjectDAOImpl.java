@@ -23,45 +23,45 @@ public class RoleAuthorizedObjectDAOImpl implements RoleAuthorizedObjectDAO{
     private SessionFactory sessionFactory;
     
  
-    @Override
-    public void save(RoleAuthorizedObject RoleAuthorizedObject) throws Exception{
-        Session session = this.sessionFactory.getCurrentSession();
-        session.save(RoleAuthorizedObject);
-        session.flush();
-        //session.close();
-    }
+//    @Override
+//    public void save(RoleAuthorizedObject RoleAuthorizedObject) throws Exception{
+//        Session session = this.sessionFactory.getCurrentSession();
+//        session.save(RoleAuthorizedObject);
+//        session.flush();
+//        //session.close();
+//    }
 
-    @Override
-    public List<RoleAuthorizedObject> findAll() throws Exception {
-        Session session = this.sessionFactory.getCurrentSession();
-        List<RoleAuthorizedObject> roleAuthorizedObject = null;
-        try {
-            roleAuthorizedObject = session.createCriteria(RoleAuthorizedObject.class).list();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }finally{
-            //session.close();
-        }        
-        return roleAuthorizedObject;
-    }
+//    @Override
+//    public List<RoleAuthorizedObject> findAll() throws Exception {
+//        Session session = this.sessionFactory.getCurrentSession();
+//        List<RoleAuthorizedObject> roleAuthorizedObject = null;
+//        try {
+//            roleAuthorizedObject = session.createCriteria(RoleAuthorizedObject.class).list();
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }finally{
+//            //session.close();
+//        }        
+//        return roleAuthorizedObject;
+//    }
 
 
-    @Override
-    public void update(RoleAuthorizedObject roleAuthorizedObject) throws Exception {
-        Session session = this.sessionFactory.getCurrentSession();
-        session.clear();
-        session.update(roleAuthorizedObject);
-        session.flush();
-        //session.close();
-    }
+//    @Override
+//    public void update(RoleAuthorizedObject roleAuthorizedObject) throws Exception {
+//        Session session = this.sessionFactory.getCurrentSession();
+//        session.clear();
+//        session.update(roleAuthorizedObject);
+//        session.flush();
+//        //session.close();
+//    }
 
-    @Override
-    public void delete(RoleAuthorizedObject roleAuthorizedObject) throws Exception {
-        Session session = this.sessionFactory.getCurrentSession();
-        session.delete(roleAuthorizedObject);
-        session.flush();
-        //session.close();
-    }
+//    @Override
+//    public void delete(RoleAuthorizedObject roleAuthorizedObject) throws Exception {
+//        Session session = this.sessionFactory.getCurrentSession();
+//        session.delete(roleAuthorizedObject);
+//        session.flush();
+//        //session.close();
+//    }
 
 	@Override
 	public List<RoleAuthorizedObject> findByRoleId(String roleId) throws Exception {
@@ -83,25 +83,25 @@ public class RoleAuthorizedObjectDAOImpl implements RoleAuthorizedObjectDAO{
         return list;
 	}
 	
-    @Override
-    public int deleteByRoleId(String roleId) throws Exception {
-    	Session session = this.sessionFactory.getCurrentSession();
-    	int updated = 0;
-        List<Role> list = null;
-        try {
-        	Query deleteQuery = session.createSQLQuery(
-        		    "delete from role_authorized_object "
-        		    + "where role_id = ? ");
-        		deleteQuery.setString(0, roleId);
-        		updated = deleteQuery.executeUpdate();
-        } catch (Exception e) {
-        	e.printStackTrace();
-
-        } finally {
-
-        }
-		return updated;
-    }
+//    @Override
+//    public int deleteByRoleId(String roleId) throws Exception {
+//    	Session session = this.sessionFactory.getCurrentSession();
+//    	int updated = 0;
+//        List<Role> list = null;
+//        try {
+//        	Query deleteQuery = session.createSQLQuery(
+//        		    "delete from role_authorized_object "
+//        		    + "where role_id = ? ");
+//        		deleteQuery.setString(0, roleId);
+//        		updated = deleteQuery.executeUpdate();
+//        } catch (Exception e) {
+//        	e.printStackTrace();
+//
+//        } finally {
+//
+//        }
+//		return updated;
+//    }
 
 	@Override
 	public List<RoleAuthorizedObject> findLeaveViewAllByRoleId(String roleId) throws Exception {
@@ -124,15 +124,15 @@ public class RoleAuthorizedObjectDAOImpl implements RoleAuthorizedObjectDAO{
         return role_authorized;
 	}   
 
-	@Override
-	public RoleAuthorizedObject findByRoleIdAndAuthorizedObjectId(String roleId, String authorizedObjectId) throws Exception {
-		Session session = this.sessionFactory.getCurrentSession();
-		Criteria criteria = session.createCriteria(RoleAuthorizedObject.class);
-		RoleAuthorizedObject roleAuthorizedObject = (RoleAuthorizedObject) criteria
-				.add(Restrictions.eq("id.roleId", roleId))
-				.add(Restrictions.eq("id.authorizedObjectId", authorizedObjectId))
-				.uniqueResult();
-		return roleAuthorizedObject;
-	}
+//	@Override
+//	public RoleAuthorizedObject findByRoleIdAndAuthorizedObjectId(String roleId, String authorizedObjectId) throws Exception {
+//		Session session = this.sessionFactory.getCurrentSession();
+//		Criteria criteria = session.createCriteria(RoleAuthorizedObject.class);
+//		RoleAuthorizedObject roleAuthorizedObject = (RoleAuthorizedObject) criteria
+//				.add(Restrictions.eq("id.roleId", roleId))
+//				.add(Restrictions.eq("id.authorizedObjectId", authorizedObjectId))
+//				.uniqueResult();
+//		return roleAuthorizedObject;
+//	}
     
 }

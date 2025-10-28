@@ -4,9 +4,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.hibernate.Criteria;
+import org.hibernate.Query;
 import org.hibernate.SQLQuery;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.criterion.Projections;
 import org.hibernate.transform.AliasToEntityMapResultTransformer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -25,7 +28,7 @@ public class AnnouncementDAOImpl implements AnnouncementDAO {
 		Session session = this.sessionFactory.getCurrentSession();
 		List<Announcement> announcementList = null;
 	    try {
-	        String hql = "SELECT a FROM Announcement a LEFT JOIN FETCH a.fileUpload";
+	        String hql = "SELECT a FROM Announcement a LEFT JOIN FETCH a.fileUpload ORDER BY a.announcement_date DESC";
 	        announcementList = session.createQuery(hql).list();
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -102,5 +105,30 @@ public class AnnouncementDAOImpl implements AnnouncementDAO {
 			// session.close();
 		}
 		return announcementList;
+	}
+	
+	@Override
+	public Integer getMaxId() throws Exception {
+		Session session = this.sessionFactory.getCurrentSession();
+		Integer maxId;
+
+		try {
+
+			Criteria criteria = session.createCriteria(Announcement.class)
+					.setProjection(Projections.max("announcementId"));
+			maxId = (Integer) criteria.uniqueResult();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			return new Integer(0);
+
+		} finally {
+
+		}
+		if (maxId != null) {
+			return maxId;
+		} else {
+			return new Integer(0);
+		}
 	}
 }

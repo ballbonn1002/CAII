@@ -9,10 +9,12 @@
 		</result-types>
 		<action name="authorization"
 			class="com.cubesofttech.action.LoginAction" method="login">
-			<!-- <result name="success" type="redirectAction">check_in?userId=${onlineUser.id} </result> -->
+			<!-- <result name="success" type="redirectAction">check_in?userId=${onlineUser.id} 
+				</result> -->
 			<result name="success" type="redirectAction">demo_dashboard</result>
 			<result name="error">/index.jsp</result>
-			<!-- <result name="input" type="redirectAction">check_in?userId=${onlineUser.id} </result> -->
+			<!-- <result name="input" type="redirectAction">check_in?userId=${onlineUser.id} 
+				</result> -->
 			<result name="input" type="redirectAction">demo_dashboard</result>
 		</action>
 	</package>
@@ -50,6 +52,12 @@
 			<result type="json" />
 		</action>
 		
+		<action name="signout"
+			class="com.cubesofttech.action.LoginAction" method="signout">
+			<result name="success">/index.jsp</result>
+			<result name="error">/index.jsp</result>
+		</action>
+		
 		<!-- CHECK-IN/CHECK-OUT -->
 		<action name="check_in_out"
 			class="com.cubesofttech.action.WorkHoursAction" method="init">
@@ -61,6 +69,84 @@
 			class="com.cubesofttech.action.WorkHoursAction" method="savecheck">
 			<result name="error">/index.jsp</result>
 		</action>
+		
+		<!-- MyLeave -->
+		
+			<!-- Listing -->
+		<action name="new_myleave_list" class="com.cubesofttech.action.LeaveAction" method="New_list">
+			<result name="success" type="tiles">new_myleave_list</result>
+			<result name="error">/index.jsp</result>
+		</action>
+			<!-- Listing -->
+			
+			<!-- Search -->
+		<action name="new_searchfromto" class="com.cubesofttech.action.LeaveAction" method="New_myleave">
+			<result name="success" type="tiles">new_myleave_list</result>
+			<result name="error">/index.jsp</result>
+		</action>
+			<!-- Search -->
+
+			<!-- Add -->
+		<action name="NewLeaveAdd" class="com.cubesofttech.action.LeaveAction" method="NewLeaveAdd">
+			<result name="success" type="tiles">newLeaveAdd</result>
+			<result name="error">/index.jsp</result>
+		</action>
+		<action name="getManagerIdAndManagerName"
+			class="com.cubesofttech.action.LeaveAction"
+			method="getManagerIdAndManagerName">
+			<result name="success" type="tiles">newLeaveAdd</result>
+			<result name="error">/index.jsp</result>
+		</action>
+		<action name="new_LeaveAdd_Do"
+			class="com.cubesofttech.action.LeaveAction" method="new_LeaveAdd_Do">
+			<result name="success" type="redirect">leavecalendar</result>
+			<result name="error">/index.jsp</result>
+		</action>
+			<!-- Add -->
+
+			<!-- Send Approve Btn | Add Page -->
+		<action name="new_LeaveAdd_Do" class="com.cubesofttech.action.LeaveAction" method="new_LeaveAdd_Do">
+			<!-- <result name="success" type="redirect">leavecalendar</result> -->
+			<result name="success" type="redirect">new_myleave_list?Id=${onlineUser.id} </result>
+			<result name="error">/index.jsp</result>
+		</action>
+			<!-- Send Approve Btn | Add Page -->
+		
+		<action name="leavecalendar" class="com.cubesofttech.action.BorrowAction" method="leave_calendar">
+			<result name="success" type="tiles">leavecalendar</result>
+			<result name="error">/index.jsp</result>
+		</action>
+		
+			<!-- Modal Leave Status Btn -->
+		<action name="new_modalLeaveStatus" class="com.cubesofttech.action.LeaveAction" method="New_modalLeaveStatus">
+			<result name="success" type="tiles">leave_approved</result>
+			<result name="error">/index.jsp</result>
+		</action>
+			<!-- Modal Leave Status Btn -->
+
+			<!-- Edit Btn -->
+		<action name="NewLeaveEdit" class="com.cubesofttech.action.LeaveAction" method="NewLeaveEdit">
+			<result name="success" type="tiles">newLeaveEdit</result>
+			<result name="error">/index.jsp</result>
+		</action>
+			<!-- Edit Btn -->
+			
+			<!-- Send Approve Btn | Edit Page -->
+		<action name="new_LeaveEdit_Do" class="com.cubesofttech.action.LeaveAction" method="new_LeaveEdit_Do">
+			<!-- <result name="success" type="redirect">leavecalendar</result> -->
+			<result name="success" type="redirect">new_myleave_list?Id=${onlineUser.id} </result>
+			<result name="error">/index.jsp</result>
+		</action>
+			<!-- Send Approve Btn | Edit Page -->
+		
+			<!-- Update Status -->
+		<action name="Leave_inListStatusToCancel" class="com.cubesofttech.action.LeaveAction" method="Leave_inListStatusToCancel">
+			<result name="success" type="chain">new_myleave_list</result>
+			<result name="error">/index.jsp</result>
+		</action>
+			<!-- Update Status -->
+		
+		<!-- MyLeave -->
 
 		<action name="demo_table"
 			class="com.cubesofttech.action.NewsAction" method="demoDashboard">
@@ -149,10 +235,27 @@
 			<result name="success" type="tiles">AnnouncementRead</result>
 			<result name="error">/index.jsp</result>
 	</action>
-	<!-- <action name="announcementAdd" class="com.cubesofttech.action.AnnouncementAction" method="readcardannounce">
-			<result name="success" type="tiles">AnnouncementAdd</result>
+	<action name="announcementAdd" class="com.cubesofttech.action.AnnouncementAction" method="save">
+			<result name="success" type="redirect">announcementList</result>
 			<result name="error">/index.jsp</result>
-	</action> -->
+			<result name="input" type="tiles">AnnouncementAdd</result> 
+	</action>
+	<action name="announcementAddPage">
+			<result type="tiles">AnnouncementAdd</result>
+	</action>
+	
+	<action name="announcementEdit" class="com.cubesofttech.action.AnnouncementAction" method="edit">
+    	<result name="success" type="tiles">AnnouncementAdd</result>
+    	<result name="error">/index.jsp</result>
+	</action>
+	<action name="announcementDelete" class="com.cubesofttech.action.AnnouncementAction" method="delete">
+    	<result name="success" type="redirect">announcementList</result>
+    	<result name="error">/index.jsp</result>
+	</action>
+	<action name="uploadImageFromCkeditor" class="com.cubesofttech.action.AnnouncementAction" method="uploadImageFromCkeditor">
+    	<result name="success" type="json"/>
+    	<result name="error" type="json"/>
+	</action>
 	
 	<!-- POSITION -->
     <action name="position_list"
@@ -249,4 +352,5 @@
 		</action>
 		
 	</package>
+	
 </struts>

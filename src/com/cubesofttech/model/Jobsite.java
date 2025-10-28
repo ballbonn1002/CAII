@@ -13,7 +13,27 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "job_site")
 public class Jobsite implements Serializable {
-
+	public Jobsite() {}
+	public Jobsite(
+			Integer idSitejob
+			, String nameSite
+			, java.sql.Timestamp timeCreate
+			, java.sql.Timestamp timeUpdate
+			, String userCreate
+			, String userUpdate
+			, String description
+			, String isActive
+		) {
+		this.id_sitejob = idSitejob;
+		this.name_site = nameSite;
+		this.time_create = timeCreate;
+		this.time_update = timeUpdate;
+		this.user_create = userCreate;
+		this.user_update = userUpdate;
+		this.description = description;
+		this.is_active = isActive;
+	}
+	
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	@Column(name = "id_sitejob")
@@ -44,48 +64,48 @@ public class Jobsite implements Serializable {
 		return id_sitejob;
 	}
 
-	public void setId_sitejob(Integer id_sitejob) {
-		this.id_sitejob = id_sitejob;
+	public void setId_sitejob(Integer idSitejob) {
+		this.id_sitejob = idSitejob;
 	}
 
 	public String getName_site() {
 		return name_site;
 	}
 
-	public void setName_site(String name_site) {
-		this.name_site = name_site;
+	public void setName_site(String nameSite) {
+		this.name_site = nameSite;
 	}
 
 	public Timestamp getTime_create() {
 		return time_create;
 	}
 
-	public void setTime_create(Timestamp time_create) {
-		this.time_create = time_create;
+	public void setTime_create(Timestamp timeCreate) {
+		this.time_create = timeCreate;
 	}
 
 	public Timestamp getTime_update() {
 		return time_update;
 	}
 
-	public void setTime_update(Timestamp time_update) {
-		this.time_update = time_update;
+	public void setTime_update(Timestamp timeUpdate) {
+		this.time_update = timeUpdate;
 	}
 
 	public String getUser_create() {
 		return user_create;
 	}
 
-	public void setUser_create(String user_create) {
-		this.user_create = user_create;
+	public void setUser_create(String userCreate) {
+		this.user_create = userCreate;
 	}
 
 	public String getUser_update() {
 		return user_update;
 	}
 
-	public void setUser_update(String user_update) {
-		this.user_update = user_update;
+	public void setUser_update(String userUpdate) {
+		this.user_update = userUpdate;
 	}
 
 	public String getDescription() {
@@ -100,8 +120,8 @@ public class Jobsite implements Serializable {
 		return is_active;
 	}
 
-	public void setIs_active(String is_active) {
-		this.is_active = is_active;
+	public void setIs_active(String isActive) {
+		this.is_active = isActive;
 	}
 	
 }

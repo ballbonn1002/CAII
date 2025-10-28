@@ -564,28 +564,28 @@ public class LoginAction extends ActionSupport {
         return sb.toString();
     }
     
-//	public String logout() {
-//		try {
-//			Cookie cUserlogin = new Cookie("cookuser", null);
-//			Cookie cMd5Password = new Cookie("cookmd5", null);
-//			Cookie cRemember = new Cookie("cookrem", null);
-//			Cookie cSuccess = new Cookie("cooksc", null);
-//			cUserlogin.setMaxAge(0);
-//			cMd5Password.setMaxAge(0);
-//			cRemember.setMaxAge(0);
-//			cSuccess.setMaxAge(0);
-//			response.addCookie(cUserlogin);
-//			response.addCookie(cMd5Password);
-//			response.addCookie(cRemember);
-//			response.addCookie(cSuccess);
-//			request.getSession().invalidate();
-//			System.out.println(Constant.onlineUserList);
-//			return SUCCESS;
-//		} catch (Exception e) {
-//			log.debug(e);
-//			return ERROR;
-//		}
-//	}
+	public String signout() {
+		try {
+			Cookie cUserlogin = new Cookie("cookuser", null);
+			Cookie cMd5Password = new Cookie("cookmd5", null);
+			Cookie cRemember = new Cookie("cookrem", null);
+			Cookie cSuccess = new Cookie("cooksc", null);
+			cUserlogin.setMaxAge(0);
+			cMd5Password.setMaxAge(0);
+			cRemember.setMaxAge(0);
+			cSuccess.setMaxAge(0);
+			response.addCookie(cUserlogin);
+			response.addCookie(cMd5Password);
+			response.addCookie(cRemember);
+			response.addCookie(cSuccess);
+			request.getSession().invalidate();
+			System.out.println(Constant.onlineUserList);
+			return SUCCESS;
+		} catch (Exception e) {
+			log.debug(e);
+			return ERROR;
+		}
+	}
     
 	public String getUsername() {
 		return username;
