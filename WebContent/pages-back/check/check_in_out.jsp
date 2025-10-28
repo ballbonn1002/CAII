@@ -55,7 +55,7 @@
 						<div class="card card-flush h-auto mb-5 mb-xl-10">
 							<!--begin::Header-->
 							<div class="card-header pt-5 d-flex justify-content-between align-items-center">
-								<div class="card-title col-lg-12 col-md-12">
+								<div class="card-title col-lg-12 col-md-12 col-sm-12">
 										<div class="d-flex flex-column w-100">
 											<span class="fs-2 fw-bold text-gray-900 me-2 lh-1 ls-n2">
 											Work Hours</span>
@@ -118,10 +118,10 @@
 											Work Your Location</span><span class="text-danger">*</span>
 									</div>
 									<div class="d-flex align-items-center">
-										<div class="py-2 px-4 me-6 mb-3">
+										<div class="col-md-6 col-sm-6 py-2 me-6 mb-3">
 											<div class="form-check form-check-custom form-check-primary form-check-solid form-check-md">
 												<input name="workType" class="form-check-input" id="workType1" type="radio" value="1"
-													<c:if test="${user.workType == 1}">checked</c:if>> 
+													<c:if test="${user.work_type == 1}">checked</c:if>> 
 												<i class="ki-duotone ki-map fs-1"> 
 													<span class="path1"></span> 
 													<span class="path2"></span> 
@@ -130,10 +130,10 @@
 												<label for="workType1" class="form-check-label fs-6">On-Site</label>
 											</div>
 										</div>
-										<div class="py-2 px-4 me-6 mb-3">
+										<div class="col-md-6 col-sm-6 py-2 me-6 mb-3">
 											<div class="form-check form-check-custom form-check-primary form-check-solid form-check-md">
 												<input name="workType" class="form-check-input" id="workType2" type="radio" value="2"
-													<c:if test="${user.workType == 2}">checked</c:if>> 
+													<c:if test="${user.work_type == 2}">checked</c:if>> 
 												<i class="ki-duotone ki-home-2 fs-1">
 													<span class="path1"></span>
 													<span class="path2"></span>
@@ -181,9 +181,9 @@
 											<div class="flex-grow-1 me-5">
 												<div class=" col-lg-12 text-gray-900">
 													<span class="fs-2 me-4"><fmt:formatDate
-														value="${lastcheckin[0].work_hours_time_work}" pattern="HH:mm"/></span>
+														value="${lastcheckin[0].work_hours_time_work}" pattern="dd MMM yyyy"/></span>	
 													<span class="fs-6"><fmt:formatDate 
-														value="${lastcheckin[0].work_hours_time_work}" pattern="dd MMM yyyy" /></span>													
+														value="${lastcheckin[0].work_hours_time_work}" pattern="HH:mm"/></span>												
 												</div>
 											</div>
 											<c:if test="${lastcheckin[0].work_type.toString() eq '1'}">
@@ -206,9 +206,9 @@
 											<div class="flex-grow-1 me-5">
 												<div class=" col-lg-12 text-gray-900">
 													<span class="fs-2 me-4"><fmt:formatDate
-														value="${lastcheckout[0].work_hours_time_work}" pattern="HH:mm"/></span>
-													<span class="fs-6"><fmt:formatDate 
 														value="${lastcheckout[0].work_hours_time_work}" pattern="dd MMM yyyy" /></span>
+													<span class="fs-6"><fmt:formatDate 
+														value="${lastcheckout[0].work_hours_time_work}" pattern="HH:mm"/></span>
 												</div>												
 											</div>
 											<c:if test="${lastcheckout[0].work_type.toString() eq '1'}">
@@ -268,14 +268,33 @@
 								<c:if test="${empty holidayList}">
 									<div class="tab-pane fade show active" id="kt_timeline_widget_3_tab_content_4">
 											<div class="d-flex align-items-center mb-6">
-												<span class="text-danger">No holidays</span>
+												<span class="fs-2 fw-semibold text-danger">No holidays</span>
 											</div>
 									</div>
 								</c:if>
 								</div>
 							</div>
 						</div>
-					
+						<div class="card card-flush h-auto mb-5 mb-xl-10">
+							<div class="accordion" id="kt_accordion_1">
+								<div class="accordion-item">
+							        <h2 class="accordion-header" id="kt_accordion_1_header_1">
+							            <button class="accordion-button fs-2 fw-bold lh-1 ls-n2" type="button" data-bs-toggle="collapse" 
+							            	data-bs-target="#kt_accordion_1_body_1" aria-expanded="true" aria-controls="kt_accordion_1_body_1">
+							                Your Location
+							            </button>
+							        </h2>
+							        <div id="kt_accordion_1_body_1" class="accordion-collapse collapse show" aria-labelledby="kt_accordion_1_header_1" data-bs-parent="#kt_accordion_1">
+							            <div class="accordion-body">
+											<div id="map" style="width:100%; height:350px;"></div>
+											<input type="hidden" id="x" class="latitude" name="latitude">
+											<input type="hidden" id="y" class="longitude" name="longitude">
+							            </div>
+							        </div>
+							    </div>
+							</div>
+							
+						</div>
 					</div>
 					<!--end::Last Check-->
 					
@@ -310,22 +329,22 @@
 					</div>
 					<div class="row mb-10">
 						<label for="dateTimeInput" class="required form-label">Date-Time</label>
-						<div class="col-md-6">
+						<div class="col-md-6 col-sm-6">
 							<input class="form-control" id="mdDate"/>
 						</div>
-						<div class="col-md-6">
+						<div class="col-md-6 col-sm-6">
 							<input class="form-control" id="mdTime"/>
 							<div class="mdTime invalid-feedback" style="display:none;"></div>
 						</div>
 					</div>
 					<div class="row mb-10">
-						<div class="col-md-6">
+						<div class="col-md-6 col-sm-6">
 							<div class="form-check form-check-custom form-check-success">
 							    <input class="form-check-input" type="radio" name="mdCheckType" id="mdCheckin" value="1"/>
 							    <label class="form-check-label text-gray-800" for="mdCheckin">Check-In</label>
 							</div>
 						</div>
-						<div class="col-md-6">
+						<div class="col-md-6 col-sm-6">
 							<div class="form-check form-check-custom form-check-info">
 							    <input class="form-check-input" type="radio" name="mdCheckType" id="mdCheckout" value="2"/>
 							    <label class="form-check-label text-gray-800" for="mdCheckout">Check-Out</label>
@@ -335,20 +354,20 @@
 					</div>
 					<div class="row mb-10">
 						<label for="workTypeInput" class="required form-label">Your Work Location</label>
-						<div class="col-md-6">
+						<div class="col-md-6 col-sm-6">
 							<input class="form-check-input" name="mdWorkType" type="radio" value="1"
-							<c:if test="${user.workType == 1}"> checked </c:if>>
+							<c:if test="${user.work_type == 1}"> checked </c:if>>
 							<label class="form-check-label text-gray-800" for="">On-Site</label>
 						</div>
-						<div class="col-md-6">
+						<div class="col-md-6 col-sm-6">
 							<input class="form-check-input" name="mdWorkType" type="radio" value="2"
-							<c:if test="${user.workType == 2}"> checked </c:if>>
+							<c:if test="${user.work_type == 2}"> checked </c:if>>
 							<label class="form-check-label text-gray-800" for="">WFH</label>
 						</div>
 						<div class="workType invalid-feedback" style="display:none;">Please select your work location (WFH or On-Site).</div>
 					</div>
 					<div class="row mb-10">
-						<div class="col-md-12">
+						<div class="col-md-12 col-sm-12">
 							<span class="">Reason</span>
 							<textarea class="form-control" name="mdReason" id="mdReason" rows="" cols="" placeholder="Please provide a reason."></textarea>
 							<div class="reason invalid-feedback" style="display:none;"></div>
@@ -416,8 +435,10 @@ $("#submitBtn").click(function() {
 	const userId = "${logonUser}";
 	const workType = $("input[name='workType']:checked").val();
 	const checkType = $("input[name='checkType']:checked").val();
+	const lat = $("input[name='latitude']").val();
+	const lng = $("input[name='longitude']").val();
 	console.log(userId+"/"+workType+"/"+checkType);
-	saveCheckInOut(userId, workType, checkType, "normal", null, null, null);
+	saveCheckInOut(userId, workType, checkType, "normal", null, null, null, lat, lng);
 });
 
 $("#mdSubmitBtn").click(function() {
@@ -427,6 +448,8 @@ $("#mdSubmitBtn").click(function() {
 	const date = $("#mdDate").val();
 	const time = $("#mdTime").val();
 	const reason = $("#mdReason").val();
+	const lat = $("input[name='latitude']").val();
+	const lng = $("input[name='longitude']").val();
 	let valid = true;
 	if(!date){
 		$("#mdDate").addClass("is-invalid");
@@ -487,7 +510,7 @@ $("#mdSubmitBtn").click(function() {
 	if(!valid){
 		return;
 	}
-	saveCheckInOut(userId, workType, checkType, "retro", date, time, reason);
+	saveCheckInOut(userId, workType, checkType, "retro", date, time, reason, lat, lng);
 });
 
 const ALLOWED_DATE = "${allowedDate}";
@@ -525,7 +548,7 @@ const timePicker = flatpickr("#mdTime", {
     },
 });
 
-function saveCheckInOut(userId, workType, checkType, mode, selectDate, selectTime, reason){
+function saveCheckInOut(userId, workType, checkType, mode, selectDate, selectTime, reason, lat, lng){
 	console.log(userId+"|"+workType+"|"+checkType+"|"+mode+"|"+selectDate+"|"+selectTime+"|"+reason);
 	toastr.options = {
 		"closeButton": false,
@@ -550,7 +573,9 @@ function saveCheckInOut(userId, workType, checkType, mode, selectDate, selectTim
 			"workType": workType,
 			"checkType": checkType,
 			"mode": mode,
-			"reason": reason
+			"reason": reason,
+			"latitude": lat,
+			"longitude": lng,
 	};
 	
 	if(mode === "retro"){
@@ -583,4 +608,92 @@ function saveCheckInOut(userId, workType, checkType, mode, selectDate, selectTim
 	    }
 	  });
 }
+</script>
+<script>
+var map, infoWindow, marker;
+function initMap() {
+	map = new google.maps.Map(document.getElementById('map'), {
+		center : {
+			lat : -34.397,
+			lng : 150.644
+		},
+		zoom : 16
+	});
+	var latEl = document.querySelector('.latitude');
+	var longEl = document.querySelector('.longitude');
+	infoWindow = new google.maps.InfoWindow;
+	marker = new google.maps.Marker;
+	if (navigator.geolocation) {
+		navigator.geolocation.getCurrentPosition(function(position) {
+			var pos = {
+				lat : position.coords.latitude,
+				lng : position.coords.longitude
+			};
+			x = pos.lat;	y = pos.lng;
+
+			marker.setPosition(pos),
+			marker.setMap(map),
+			marker.setDraggable(true);
+
+			infoWindow.setContent('Current Position');
+			infoWindow.open(map,marker);
+			map.setCenter(pos);
+			adddata();
+			google.maps.event.addListener(marker, "dragend", function(event) {
+				var lati, lngti, address;
+				console.log('i am dragged');
+				lati = marker.getPosition().lat();
+				lngti = marker.getPosition().lng();
+				var geocoder = new google.maps.Geocoder();
+				geocoder.geocode({
+					latLng : marker.getPosition()
+				},
+				function(result, status) {
+					if ('OK' === status) { // This line can also be written like if ( status == google.maps.GeocoderStatus.OK ) {
+						address = result[0].formatted_address;
+						resultArray = result[0].address_components;
+						// Get the city and set the city input value to the one selected
+							
+						latEl.value = lati;
+						longEl.value = lngti;
+					} else {
+						console.log('Geocode was not successful for the following reason: ' + status);
+					}
+					if (infoWindow) {
+						infoWindow.close();
+					}
+					/* Creates the info Window at the top of the marker */
+					infoWindow = new google.maps.InfoWindow({
+						content : address
+					});
+					infoWindow.open(map, marker);
+				});
+			});
+		},
+		function() {
+			handleLocationError(true, infoWindow, map.getCenter());
+		});
+	} else {
+		// Browser doesn't support Geolocation
+		handleLocationError(false, infoWindow, map.getCenter());
+	}
+}
+function adddata() {
+	$(document).ready(function() {
+		document.getElementById("x").value = x;
+	});
+
+	$(document).ready(function() {
+		document.getElementById("y").value = y;
+	});
+}
+function handleLocationError(browserHasGeolocation, infoWindow, pos) {
+	infoWindow.setPosition(pos);
+	infoWindow.setContent(browserHasGeolocation ? 'Error: The Geolocation service failed.' 
+			: 'Error: Your browser doesn\'t support geolocation.');
+	infoWindow.open(map);
+}
+</script>
+<script async defer
+	src="https://maps.googleapis.com/maps/api/js?key=${GOOGLE_API_KEY}&callback=initMap">
 </script>
