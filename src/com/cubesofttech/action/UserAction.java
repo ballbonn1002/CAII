@@ -779,10 +779,10 @@ public class UserAction extends ActionSupport {
 				u.setWorkTimeStart(user.getWorkTimeStart());
 				u.setWorkTimeEnd(user.getWorkTimeEnd());
 				
-				u.setWork_type(user.getWork_type());
-				u.setOnsite_num(user.getOnsite_num());
-				log.debug("Work Type: " + u.getWork_type());
-				log.debug("Onsite_num: "+ u.getOnsite_num());
+				u.setWorkType(user.getWorkType());
+				u.setOnsiteNum(user.getOnsiteNum());
+				log.debug("Work Type: " + u.getWorkType());
+				log.debug("Onsite_num: "+ u.getOnsiteNum());
 				
 				u.setEduInstitute1(user.getEduInstitute1());
 				u.setEduInstitute2(user.getEduInstitute2());
