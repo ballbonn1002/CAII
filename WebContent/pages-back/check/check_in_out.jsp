@@ -122,7 +122,7 @@
 											<div class="form-check form-check-custom form-check-primary form-check-solid form-check-md">
 												<input name="workType" class="form-check-input" id="workType1" type="radio" value="1"
 													<c:if test="${user.workType == 1}">checked</c:if>> 
-												<i class="ki-duotone ki-map fs-1"> 
+												<i class="ki-duotone ki-map fs-1 ms-1"> 
 													<span class="path1"></span> 
 													<span class="path2"></span> 
 													<span class="path3"></span>
@@ -132,9 +132,9 @@
 										</div>
 										<div class="col-md-6 col-sm-6 py-2 me-6 mb-3">
 											<div class="form-check form-check-custom form-check-primary form-check-solid form-check-md">
-												<input name="workType" class="form-check-input" id="workType2" type="radio" value="2"
+												<input name="workType" class="form-check-input pe-2" id="workType2" type="radio" value="2"
 													<c:if test="${user.workType == 2}">checked</c:if>> 
-												<i class="ki-duotone ki-home-2 fs-1">
+												<i class="ki-duotone ki-home-2 fs-1 ms-1">
 													<span class="path1"></span>
 													<span class="path2"></span>
 												</i>
@@ -420,7 +420,7 @@ function updateClock() {
 	        let minutes = dt.getMinutes().toString().padStart(2, '0');
 	        let seconds = dt.getSeconds().toString().padStart(2, '0');
 	        let time = hours+":"+minutes
-	    	$("#clock").text(time); // หรือ format เอา
+	    	$("#clock").text(time);
 	    	$("#clock-second").text(":"+seconds);
 	    	//$("#clock").text(dateTimeStr);
 	    	
