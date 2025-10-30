@@ -19,12 +19,12 @@
 	<div class="app-sidebar-logo px-6" id="kt_app_sidebar_logo">
 		<!--begin::Logo image-->
 		<a href="index.html"> <img alt="Logo"
-			src="assets/media/logos/default.svg"
-			class="h-25px app-sidebar-logo-default theme-light-show" /> <img
-			alt="Logo" src="assets/media/logos/default-dark.svg"
-			class="h-25px app-sidebar-logo-default theme-dark-show" /> <img
-			alt="Logo" src="assets/media/logos/default-small.svg"
-			class="h-20px app-sidebar-logo-minimize" />
+			src="assets/media/logos/Logo2.png"
+			class="h-50px app-sidebar-logo-default theme-light-show" /> <img
+			alt="Logo" src="assets/media/logos/logo2-w.png"
+			class="h-50px app-sidebar-logo-default theme-dark-show" /> <img
+			alt="Logo" src="assets/media/logos/cube-small-ico.ico"
+			class="h-40px app-sidebar-logo-minimize" />
 		</a>
 		<!--end::Logo image-->
 		<!--begin::Sidebar toggle-->
