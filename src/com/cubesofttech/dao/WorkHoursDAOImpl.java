@@ -409,7 +409,7 @@ public class WorkHoursDAOImpl implements WorkHoursDAO {
 					+ " WHERE user_create =:user " + " AND  work_hours_type = 1 ";
 			*/
 			String sql = "SELECT work_hours_time_work, work_type FROM work_hours WHERE user_create =:user "
-					+ " AND work_hours_type = 1 ORDER BY work_hours_id DESC LIMIT 1";
+					+ " AND work_hours_type = 1 ORDER BY DATE(work_hours_time_work) DESC, work_hours_id DESC LIMIT 1";
 			SQLQuery query = session.createSQLQuery(sql);
 			query.setParameter("user", user);
 			query.setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
@@ -447,7 +447,7 @@ public class WorkHoursDAOImpl implements WorkHoursDAO {
 					+ " WHERE user_create =:user " + " AND  work_hours_type =  2";
 			*/
 			String sql = "SELECT work_hours_time_work, work_type FROM work_hours WHERE user_create =:user "
-					+ " AND work_hours_type = 2 ORDER BY work_hours_id DESC LIMIT 1";
+					+ " AND work_hours_type = 2 ORDER BY DATE(work_hours_time_work) DESC, work_hours_id ASC LIMIT 1";
 			SQLQuery query = session.createSQLQuery(sql);
 			query.setParameter("user", user);
 			query.setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
