@@ -145,8 +145,8 @@ public interface LeaveDAO {
 //	public List<Map<String, Object>> searchDashboardQuota(String jsonId, String date) throws Exception;
 //	
 //	public List<Map<String, Object>> leaveUpdateStatus(String userId, String leave) throws Exception;
-//	
-//	public List<Map<String, Object>> findUserLeave(String user ,Timestamp start_date1,Timestamp end_date1) throws Exception;
+	
+	public List<Map<String, Object>> findUserLeave(String user ,Timestamp start_date1,Timestamp end_date1) throws Exception;
 	public List<Map<String, Object>> findUserAllLeave(Timestamp start_date1,Timestamp end_date1) throws Exception;
 //	public List<Map<String, Object>> reportleavemonth(String months, String years) throws Exception;
 //	public List<Map<String, Object>> searchreportleavemonth1(String monthsee, String yearsee) throws Exception;
@@ -160,8 +160,8 @@ public interface LeaveDAO {
 //	public List<Map<String, Object>> leavejson() throws Exception;
 //	
 	public List<Map<String, Object>> findLeaveInTeamByManager(Timestamp startDate, Timestamp endDate, String manager) throws Exception;
-//	public List<Map<String, Object>> findLeaveInTeamByManagerAndType(Timestamp startDate, Timestamp endDate, String manager, String status, String leaveType) throws Exception;
-//	public List<Map<String, Object>> findUserAllLeaveInTeam(Timestamp start_date1,Timestamp end_date1, String manager) throws Exception;
+	public List<Map<String, Object>> findLeaveInTeamByManagerAndType(Timestamp startDate, Timestamp endDate, String manager, String status, String leaveType) throws Exception;
+	public List<Map<String, Object>> findUserAllLeaveInTeam(Timestamp start_date1,Timestamp end_date1, String manager) throws Exception;
 	public List<Map<String, Object>> findUserLeaveByTypeAndStatus(Timestamp startDate, Timestamp endDate, String userId, String status, String type) throws Exception;
 //	
 //	public List<Map<String, Object>> listUserByDatepicker(Timestamp startdate, Timestamp enddate) throws Exception;

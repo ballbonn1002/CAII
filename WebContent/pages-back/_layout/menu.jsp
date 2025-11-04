@@ -160,20 +160,23 @@
 						</a>
 					</div> -->
 					<!--end:Menu item-->
-					<!--begin:Menu item-->
+					
+					<!--My Leave-->
 					<div class="menu-item">
-						<!--begin:Menu link-->
 						<a class="menu-link" href="new_myleave_list?Id=${onlineUser.id}" data-route="#">
 							<span class="menu-icon">
-								<i class="ki-duotone ki-pulse fs-1"> <span class="path1"></span>
+								<i class="ki-duotone ki-pulse fs-1">
+									<span class="path1"></span>
 									<span class="path2"></span>
 								</i>
 							</span>
-							<span class="menu-title">My Leave</span>
+							<span class="menu-title">
+								My Leave
+							</span>
 						</a>
-						<!--end:Menu link-->
 					</div>
-					<!--end:Menu item-->
+					<!--My Leave-->
+					
 					<!--begin:Menu item-->
 					<div class="menu-item">
 						<!--begin:Menu link-->
@@ -249,18 +252,25 @@
 						<!--end:Menu link-->
 					</div>
 					<!--end:Menu item-->
-					<!--begin:Menu item-->
-					<div class="menu-item">
-						<!--begin:Menu link-->
-						<a class="menu-link" href="#" data-route="#"> <span class="menu-icon">
-								<i class="ki-duotone ki-pulse fs-1"> <span class="path1"></span>
-									<span class="path2"></span>
-							</i>
-						</span> <span class="menu-title">Leave Approve</span>
-						</a>
-						<!--end:Menu link-->
-					</div>
-					<!--end:Menu item-->
+					
+					<!--Leave Approve-->
+					<perm:permission object="leave.approve">
+						<div class="menu-item">
+							<a class="menu-link" href="new_leave_approved" data-route="#">
+								<span class="menu-icon">
+									<i class="ki-duotone ki-pulse fs-1">
+										<span class="path1"></span>
+										<span class="path2"></span>
+									</i>
+								</span>
+								<span class="menu-title">
+									Leave Approve
+								</span>
+							</a>
+						</div>
+					</perm:permission>
+					<!--Leave Approve-->
+
 					<!--begin:Menu item-->
 					<div class="menu-item">
 						<!--begin:Menu link-->

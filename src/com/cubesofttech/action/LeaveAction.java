@@ -1731,267 +1731,267 @@ public class LeaveAction extends ActionSupport {
 //		}
 //	}
 
-//	public String New_searchleaveapproved() {
-//		try {
-//			String userSelect = request.getParameter("name1");
-//			String userSelect2 = request.getParameter("name2");
-//			String leaveStatus = request.getParameter("appr");
-//			String startdate = request.getParameter("startdate");
-//			String enddate = request.getParameter("enddate");
-//			String leaveType = request.getParameter("type");
-//			log.debug(userSelect+"/"+userSelect2);
-//			log.debug(leaveStatus);
-//			log.debug(leaveType);
-//
-//			User ur = (User) request.getSession().getAttribute("onlineUser");
-//			String userLogin = ur.getId();
-//			log.debug(userLogin);
-//
-//			String user_role = ur.getRoleId();
-//			log.debug("user_role: " + user_role);
-//			request.setAttribute("user_role", user_role);
-//
-//			DateTimeFormatter date1 = DateTimeFormatter.ofPattern("01-01-yyyy");
-//			LocalDate localDate = LocalDate.now();
-//			String s = "00:00:00.0";
-//
-//			String start = request.getParameter("startdate");
-//			String end = request.getParameter("enddate");
-//			Timestamp start_date;
-//			Timestamp end_date;
-//
-//			if (start == null && end == null) {
-//				start_date = DateUtil.dateToTimestamp(date1.format(localDate), s);
-//				end_date = DateUtil.changetoEndYear(date1.format(localDate));
-//			} else {
-//				start_date = DateUtil.dateFormatEdit(start);
-//				end_date = DateUtil.dateFormatEdit(end);
-//			}
-//			
-//			List<Map<String, Object>> leaveList = null;
-//			if((!userSelect.isEmpty() || userSelect != null) && (userSelect2.isEmpty() || userSelect2 == null)) {
-//				log.debug("all");		
-//				if (userSelect.equalsIgnoreCase("All")) { //if choose "All Employee"
-//					request.setAttribute("role_authorized", "1");
-//					userLogin = null;
-//					log.debug(start_date+"/"+end_date+"/"+userLogin+"/"+leaveStatus+"/"+leaveType);
-//					leaveList = leaveDAO.findLeaveInTeamByManagerAndType(start_date, end_date, userLogin, leaveStatus, leaveType);
-//
-//				} else {	//if choose "All Manage"
-//					request.setAttribute("role_authorized", "0");
-//					log.debug(start_date+"/"+end_date+"/"+userLogin+"/"+leaveStatus+"/"+leaveType);
-//					leaveList = leaveDAO.findLeaveInTeamByManagerAndType(start_date, end_date, userLogin, leaveStatus, leaveType);
-//				}
-//
-//			} else if((!userSelect.isEmpty() || userSelect != null) && (!userSelect2.isEmpty() || userSelect2 != null)) {
-//				log.debug("1 user");
-//				if (userSelect.equalsIgnoreCase("All")) {	//if choose "All Employee"
-//					request.setAttribute("role_authorized", "1");
-//					log.debug(start_date+"/"+end_date+"/"+userSelect2+"/"+leaveStatus+"/"+leaveType);
-//					leaveList = leaveDAO.findUserLeaveByTypeAndStatus(start_date, end_date, userSelect2, leaveStatus, leaveType);
-//				} else {	//if choose "All Manage"
-//					request.setAttribute("role_authorized", "0");
-//					log.debug(start_date+"/"+end_date+"/"+userSelect2+"/"+leaveStatus+"/"+leaveType);
-//					leaveList = leaveDAO.findUserLeaveByTypeAndStatus(start_date, end_date, userSelect2, leaveStatus, leaveType);
-//
-//				}
-//
-//			}
-//			request.setAttribute("leaveList", leaveList);
-//			
-//			log.debug(request.getAttribute("leaveList"));
-//			log.debug(leaveStatus);
-//			log.debug(startdate + "/" + enddate);
-//			log.debug(userSelect + "/" + userSelect2);
-//			Date day = new Date();
-//			LocalDate localdate = day.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-//			List<Map<String, Object>> userleave = null;
-//			BigDecimal quota_1 = null;
-//			BigDecimal quota_2 = null;
-//			BigDecimal quota_3 = null;
-//			BigDecimal quota_4 = null;
-//			if ("All".equals(userSelect) && userSelect2.equals("")) {
-//				userleave = leaveDAO.findUserAllLeave(start_date, end_date);
-//			} else if ("All".equals(userSelect) && !userSelect2.equals("")) {
-//				userleave = leaveDAO.findUserLeave(userSelect2, start_date, end_date);
-//				Double LastYear = leaveDAO.LastYearQuota(userSelect2, localdate.getYear());
-//				request.setAttribute("LastYear", LastYear);
-//				// Double ThisYear = leaveDAO.ThisYearQuota(userSelect2);
-//				// request.setAttribute("ThisYear", ThisYear);
-//				log.debug("lastyear: " + LastYear);
-//				// log.debug("thisyear: "+ThisYear);
-//				quota_1 = userDAO.findById(userSelect2).getLeaveQuota1();
-//				quota_2 = userDAO.findById(userSelect2).getLeaveQuota2();
-//				quota_3 = userDAO.findById(userSelect2).getLeaveQuota3();
-//				quota_4 = userDAO.findById(userSelect2).getLeaveQuota4();
-//			} else if ("All2".equals(userSelect) && userSelect2.equals("")) {
-//				userleave = leaveDAO.findUserAllLeaveInTeam(start_date, end_date, userLogin);
-//			} else {
-//				userleave = leaveDAO.findUserLeave(userSelect2, start_date, end_date);
-//				Double LastYear = leaveDAO.LastYearQuota(userSelect2, localdate.getYear());
-//				request.setAttribute("LastYear", LastYear);
-//				// Double ThisYear = leaveDAO.ThisYearQuota(userSelect2);
-//				// request.setAttribute("ThisYear", ThisYear);
-//				log.debug("lastyear: " + LastYear);
-//				// log.debug("thisyear: "+ThisYear);
-//				quota_1 = userDAO.findById(userSelect2).getLeaveQuota1();
-//				quota_2 = userDAO.findById(userSelect2).getLeaveQuota2();
-//				quota_3 = userDAO.findById(userSelect2).getLeaveQuota3();
-//				quota_4 = userDAO.findById(userSelect2).getLeaveQuota4();
-//			}
-//			request.setAttribute("userleave", userleave);
-//			request.setAttribute("quota_1", quota_1);
-//			request.setAttribute("quota_2", quota_2);
-//			request.setAttribute("quota_3", quota_3);
-//			request.setAttribute("quota_4", quota_4);
-//			log.debug(userSelect2 + " quota: " + quota_1);
-//			BigDecimal LeavenumT1 = new BigDecimal(0);
-//			BigDecimal LeavenumT2 = new BigDecimal(0);
-//			BigDecimal LeavenumT3 = new BigDecimal(0);
-//			BigDecimal LeavenumT4 = new BigDecimal(0);
-//			BigDecimal LeavenumT5 = new BigDecimal(0);
-//			BigDecimal LeavenumT6 = new BigDecimal(0);
-//			BigDecimal LeavenumT7 = new BigDecimal(0);
-//			BigDecimal LeavenumT9 = new BigDecimal(0);
-//
-//			BigDecimal LeaveWAnumT1 = new BigDecimal(0);
-//			BigDecimal LeaveWAnumT2 = new BigDecimal(0);
-//			BigDecimal LeaveWAnumT3 = new BigDecimal(0);
-//			BigDecimal LeaveWAnumT4 = new BigDecimal(0);
-//			BigDecimal LeaveWAnumT5 = new BigDecimal(0);
-//			BigDecimal LeaveWAnumT6 = new BigDecimal(0);
-//			BigDecimal LeaveWAnumT7 = new BigDecimal(0);
-//			BigDecimal LeaveWAnumT9 = new BigDecimal(0);
-//
-//			for (int i = 0; i < userleave.size(); i++) {
-//				Character type = (Character) userleave.get(i).get(TYPELEAVE);
-//				BigDecimal num = (BigDecimal) userleave.get(i).get(NODAY);
-//				Character status = (Character) userleave.get(i).get(STATUS);
-//				// log.debug(type + " " + num);
-//
-//				try {
-//					switch (status) {
-//					case '0':
-//						switch (type) {
-//						case '1':
-//							LeaveWAnumT1 = num.add(LeaveWAnumT1);
-//							break;
-//						case '2':
-//							LeaveWAnumT2 = num.add(LeaveWAnumT2);
-//							break;
-//						case '3':
-//							LeaveWAnumT3 = num.add(LeaveWAnumT3);
-//							break;
-//						case '4':
-//							LeaveWAnumT4 = num.add(LeaveWAnumT4);
-//							break;
-//						case '5':
-//							LeaveWAnumT5 = num.add(LeaveWAnumT5);
-//							break;
-//						case '6':
-//							LeaveWAnumT6 = num.add(LeaveWAnumT6);
-//							break;
-//						case '7':
-//							LeaveWAnumT7 = num.add(LeaveWAnumT7);
-//							break;
-//						case '9':
-//							LeaveWAnumT9 = num.add(LeaveWAnumT9);
-//							break;
-//						}
-//						break;
-//					case '1':
-//						switch (type) {
-//						case '1':
-//							LeavenumT1 = num.add(LeavenumT1);
-//							break;
-//						case '2':
-//							LeavenumT2 = num.add(LeavenumT2);
-//							break;
-//						case '3':
-//							LeavenumT3 = num.add(LeavenumT3);
-//							break;
-//						case '4':
-//							LeavenumT4 = num.add(LeavenumT4);
-//							break;
-//						case '5':
-//							LeavenumT5 = num.add(LeavenumT5);
-//							break;
-//						case '6':
-//							LeavenumT6 = num.add(LeavenumT6);
-//							break;
-//						case '7':
-//							LeavenumT7 = num.add(LeavenumT7);
-//							break;
-//						case '9':
-//							LeavenumT9 = num.add(LeavenumT9);
-//							break;
-//						}
-//						break;
-//					default:
-//						break;
-//					}
-//				} catch (Exception e) {
-//
-//				}
-//			}
-//
-//			request.setAttribute("LeavenumT1", LeavenumT1);
-//			request.setAttribute("LeaveWAnumT1", LeaveWAnumT1);
-//			request.setAttribute("LeavenumT2", LeavenumT2);
-//			request.setAttribute("LeaveWAnumT2", LeaveWAnumT2);
-//			request.setAttribute("LeavenumT3", LeavenumT3);
-//			request.setAttribute("LeaveWAnumT3", LeaveWAnumT3);
-//			request.setAttribute("LeavenumT4", LeavenumT4);
-//			request.setAttribute("LeaveWAnumT4", LeaveWAnumT4);
-//			request.setAttribute("LeavenumT5", LeavenumT5);
-//			request.setAttribute("LeaveWAnumT5", LeaveWAnumT5);
-//			request.setAttribute("LeavenumT6", LeavenumT6);
-//			request.setAttribute("LeaveWAnumT6", LeaveWAnumT6);
-//			request.setAttribute("LeavenumT7", LeavenumT7);
-//			request.setAttribute("LeaveWAnumT7", LeaveWAnumT7);
-//			request.setAttribute("LeavenumT9", LeavenumT9);
-//			request.setAttribute("LeaveWAnumT9", LeaveWAnumT9);
-//
-//			request.setAttribute("flag_search", "1");
-//			request.setAttribute("appr", leaveStatus);
-//			request.setAttribute("userId", userSelect);
-//			request.setAttribute("userS", userSelect);
-//			// request.setAttribute("logonUser", userSelect);
-//			request.setAttribute("userSelect", userSelect);
-//			request.setAttribute("userSelect2", userSelect2);
-//			request.setAttribute("leaveType", leaveType);
-//
-//			List<Map<String, Object>> cubeUser = userDAO.allName();
-//			request.setAttribute("cubeUser", cubeUser);
-//
-//			List<Map<String, Object>> userseq = userDAO.sequense();
-//			request.setAttribute("userseq", userseq);
-//			List<Map<String, Object>> userseqTeam = userDAO.sequense_userinteam(userLogin);
-//			request.setAttribute("userseqTeam", userseqTeam);
-//
-//			request.setAttribute("startdate", start_date);
-//			request.setAttribute("enddate", end_date);
-//
-//			List<Map<String, Object>> leavenameList = leaveDAO.findLeave();
-//			request.setAttribute("leavenameList", leavenameList);
-//			List<LeaveType> type_leave = leavetypeDAO.findAll();
-//
-//			request.setAttribute("type_1", type_leave.get(0).getLeaveTypeName());
-//			request.setAttribute("type_2", type_leave.get(1).getLeaveTypeName());
-//			request.setAttribute("type_3", type_leave.get(2).getLeaveTypeName());
-//			request.setAttribute("type_4", type_leave.get(3).getLeaveTypeName());
-//			request.setAttribute("type_5", type_leave.get(4).getLeaveTypeName());
-//			request.setAttribute("type_6", type_leave.get(5).getLeaveTypeName());
-//			request.setAttribute("type_7", type_leave.get(6).getLeaveTypeName());
-//			request.setAttribute("type_9", type_leave.get(7).getLeaveTypeName());
-//			request.setAttribute("leavetypelistChoice", type_leave);
-//			// New_myleave();
-//			return SUCCESS;
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//			return ERROR;
-//		}
-//	}
+	public String New_searchleaveapproved() {
+		try {
+			String userSelect = request.getParameter("name1");
+			String userSelect2 = request.getParameter("name2");
+			String leaveStatus = request.getParameter("appr");
+			String startdate = request.getParameter("startdate");
+			String enddate = request.getParameter("enddate");
+			String leaveType = request.getParameter("type");
+			log.debug(userSelect+"/"+userSelect2);
+			log.debug(leaveStatus);
+			log.debug(leaveType);
+
+			User ur = (User) request.getSession().getAttribute("onlineUser");
+			String userLogin = ur.getId();
+			log.debug(userLogin);
+
+			String user_role = ur.getRoleId();
+			log.debug("user_role: " + user_role);
+			request.setAttribute("user_role", user_role);
+
+			DateTimeFormatter date1 = DateTimeFormatter.ofPattern("01-01-yyyy");
+			LocalDate localDate = LocalDate.now();
+			String s = "00:00:00.0";
+
+			String start = request.getParameter("startdate");
+			String end = request.getParameter("enddate");
+			Timestamp start_date;
+			Timestamp end_date;
+
+			if (start == null && end == null) {
+				start_date = DateUtil.dateToTimestamp(date1.format(localDate), s);
+				end_date = DateUtil.changetoEndYear(date1.format(localDate));
+			} else {
+				start_date = DateUtil.dateFormatEdit(start);
+				end_date = DateUtil.dateFormatEdit(end);
+			}
+			
+			List<Map<String, Object>> leaveList = null;
+			if((!userSelect.isEmpty() || userSelect != null) && (userSelect2.isEmpty() || userSelect2 == null)) {
+				log.debug("all");		
+				if (userSelect.equalsIgnoreCase("All")) { //if choose "All Employee"
+					request.setAttribute("role_authorized", "1");
+					userLogin = null;
+					log.debug(start_date+"/"+end_date+"/"+userLogin+"/"+leaveStatus+"/"+leaveType);
+					leaveList = leaveDAO.findLeaveInTeamByManagerAndType(start_date, end_date, userLogin, leaveStatus, leaveType);
+
+				} else {	//if choose "All Manage"
+					request.setAttribute("role_authorized", "0");
+					log.debug(start_date+"/"+end_date+"/"+userLogin+"/"+leaveStatus+"/"+leaveType);
+					leaveList = leaveDAO.findLeaveInTeamByManagerAndType(start_date, end_date, userLogin, leaveStatus, leaveType);
+				}
+
+			} else if((!userSelect.isEmpty() || userSelect != null) && (!userSelect2.isEmpty() || userSelect2 != null)) {
+				log.debug("1 user");
+				if (userSelect.equalsIgnoreCase("All")) {	//if choose "All Employee"
+					request.setAttribute("role_authorized", "1");
+					log.debug(start_date+"/"+end_date+"/"+userSelect2+"/"+leaveStatus+"/"+leaveType);
+					leaveList = leaveDAO.findUserLeaveByTypeAndStatus(start_date, end_date, userSelect2, leaveStatus, leaveType);
+				} else {	//if choose "All Manage"
+					request.setAttribute("role_authorized", "0");
+					log.debug(start_date+"/"+end_date+"/"+userSelect2+"/"+leaveStatus+"/"+leaveType);
+					leaveList = leaveDAO.findUserLeaveByTypeAndStatus(start_date, end_date, userSelect2, leaveStatus, leaveType);
+
+				}
+
+			}
+			request.setAttribute("leaveList", leaveList);
+			
+			log.debug(request.getAttribute("leaveList"));
+			log.debug(leaveStatus);
+			log.debug(startdate + "/" + enddate);
+			log.debug(userSelect + "/" + userSelect2);
+			Date day = new Date();
+			LocalDate localdate = day.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+			List<Map<String, Object>> userleave = null;
+			BigDecimal quota_1 = null;
+			BigDecimal quota_2 = null;
+			BigDecimal quota_3 = null;
+			BigDecimal quota_4 = null;
+			if ("All".equals(userSelect) && userSelect2.equals("")) {
+				userleave = leaveDAO.findUserAllLeave(start_date, end_date);
+			} else if ("All".equals(userSelect) && !userSelect2.equals("")) {
+				userleave = leaveDAO.findUserLeave(userSelect2, start_date, end_date);
+				Double LastYear = leaveDAO.LastYearQuota(userSelect2, localdate.getYear());
+				request.setAttribute("LastYear", LastYear);
+				// Double ThisYear = leaveDAO.ThisYearQuota(userSelect2);
+				// request.setAttribute("ThisYear", ThisYear);
+				log.debug("lastyear: " + LastYear);
+				// log.debug("thisyear: "+ThisYear);
+				quota_1 = userDAO.findById(userSelect2).getLeaveQuota1();
+				quota_2 = userDAO.findById(userSelect2).getLeaveQuota2();
+				quota_3 = userDAO.findById(userSelect2).getLeaveQuota3();
+				quota_4 = userDAO.findById(userSelect2).getLeaveQuota4();
+			} else if ("All2".equals(userSelect) && userSelect2.equals("")) {
+				userleave = leaveDAO.findUserAllLeaveInTeam(start_date, end_date, userLogin);
+			} else {
+				userleave = leaveDAO.findUserLeave(userSelect2, start_date, end_date);
+				Double LastYear = leaveDAO.LastYearQuota(userSelect2, localdate.getYear());
+				request.setAttribute("LastYear", LastYear);
+				// Double ThisYear = leaveDAO.ThisYearQuota(userSelect2);
+				// request.setAttribute("ThisYear", ThisYear);
+				log.debug("lastyear: " + LastYear);
+				// log.debug("thisyear: "+ThisYear);
+				quota_1 = userDAO.findById(userSelect2).getLeaveQuota1();
+				quota_2 = userDAO.findById(userSelect2).getLeaveQuota2();
+				quota_3 = userDAO.findById(userSelect2).getLeaveQuota3();
+				quota_4 = userDAO.findById(userSelect2).getLeaveQuota4();
+			}
+			request.setAttribute("userleave", userleave);
+			request.setAttribute("quota_1", quota_1);
+			request.setAttribute("quota_2", quota_2);
+			request.setAttribute("quota_3", quota_3);
+			request.setAttribute("quota_4", quota_4);
+			log.debug(userSelect2 + " quota: " + quota_1);
+			BigDecimal LeavenumT1 = new BigDecimal(0);
+			BigDecimal LeavenumT2 = new BigDecimal(0);
+			BigDecimal LeavenumT3 = new BigDecimal(0);
+			BigDecimal LeavenumT4 = new BigDecimal(0);
+			BigDecimal LeavenumT5 = new BigDecimal(0);
+			BigDecimal LeavenumT6 = new BigDecimal(0);
+			BigDecimal LeavenumT7 = new BigDecimal(0);
+			BigDecimal LeavenumT9 = new BigDecimal(0);
+
+			BigDecimal LeaveWAnumT1 = new BigDecimal(0);
+			BigDecimal LeaveWAnumT2 = new BigDecimal(0);
+			BigDecimal LeaveWAnumT3 = new BigDecimal(0);
+			BigDecimal LeaveWAnumT4 = new BigDecimal(0);
+			BigDecimal LeaveWAnumT5 = new BigDecimal(0);
+			BigDecimal LeaveWAnumT6 = new BigDecimal(0);
+			BigDecimal LeaveWAnumT7 = new BigDecimal(0);
+			BigDecimal LeaveWAnumT9 = new BigDecimal(0);
+
+			for (int i = 0; i < userleave.size(); i++) {
+				Character type = (Character) userleave.get(i).get(TYPELEAVE);
+				BigDecimal num = (BigDecimal) userleave.get(i).get(NODAY);
+				Character status = (Character) userleave.get(i).get(STATUS);
+				// log.debug(type + " " + num);
+
+				try {
+					switch (status) {
+					case '0':
+						switch (type) {
+						case '1':
+							LeaveWAnumT1 = num.add(LeaveWAnumT1);
+							break;
+						case '2':
+							LeaveWAnumT2 = num.add(LeaveWAnumT2);
+							break;
+						case '3':
+							LeaveWAnumT3 = num.add(LeaveWAnumT3);
+							break;
+						case '4':
+							LeaveWAnumT4 = num.add(LeaveWAnumT4);
+							break;
+						case '5':
+							LeaveWAnumT5 = num.add(LeaveWAnumT5);
+							break;
+						case '6':
+							LeaveWAnumT6 = num.add(LeaveWAnumT6);
+							break;
+						case '7':
+							LeaveWAnumT7 = num.add(LeaveWAnumT7);
+							break;
+						case '9':
+							LeaveWAnumT9 = num.add(LeaveWAnumT9);
+							break;
+						}
+						break;
+					case '1':
+						switch (type) {
+						case '1':
+							LeavenumT1 = num.add(LeavenumT1);
+							break;
+						case '2':
+							LeavenumT2 = num.add(LeavenumT2);
+							break;
+						case '3':
+							LeavenumT3 = num.add(LeavenumT3);
+							break;
+						case '4':
+							LeavenumT4 = num.add(LeavenumT4);
+							break;
+						case '5':
+							LeavenumT5 = num.add(LeavenumT5);
+							break;
+						case '6':
+							LeavenumT6 = num.add(LeavenumT6);
+							break;
+						case '7':
+							LeavenumT7 = num.add(LeavenumT7);
+							break;
+						case '9':
+							LeavenumT9 = num.add(LeavenumT9);
+							break;
+						}
+						break;
+					default:
+						break;
+					}
+				} catch (Exception e) {
+
+				}
+			}
+
+			request.setAttribute("LeavenumT1", LeavenumT1);
+			request.setAttribute("LeaveWAnumT1", LeaveWAnumT1);
+			request.setAttribute("LeavenumT2", LeavenumT2);
+			request.setAttribute("LeaveWAnumT2", LeaveWAnumT2);
+			request.setAttribute("LeavenumT3", LeavenumT3);
+			request.setAttribute("LeaveWAnumT3", LeaveWAnumT3);
+			request.setAttribute("LeavenumT4", LeavenumT4);
+			request.setAttribute("LeaveWAnumT4", LeaveWAnumT4);
+			request.setAttribute("LeavenumT5", LeavenumT5);
+			request.setAttribute("LeaveWAnumT5", LeaveWAnumT5);
+			request.setAttribute("LeavenumT6", LeavenumT6);
+			request.setAttribute("LeaveWAnumT6", LeaveWAnumT6);
+			request.setAttribute("LeavenumT7", LeavenumT7);
+			request.setAttribute("LeaveWAnumT7", LeaveWAnumT7);
+			request.setAttribute("LeavenumT9", LeavenumT9);
+			request.setAttribute("LeaveWAnumT9", LeaveWAnumT9);
+
+			request.setAttribute("flag_search", "1");
+			request.setAttribute("appr", leaveStatus);
+			request.setAttribute("userId", userSelect);
+			request.setAttribute("userS", userSelect);
+			// request.setAttribute("logonUser", userSelect);
+			request.setAttribute("userSelect", userSelect);
+			request.setAttribute("userSelect2", userSelect2);
+			request.setAttribute("leaveType", leaveType);
+
+			List<Map<String, Object>> cubeUser = userDAO.allName();
+			request.setAttribute("cubeUser", cubeUser);
+
+			List<Map<String, Object>> userseq = userDAO.sequense();
+			request.setAttribute("userseq", userseq);
+			List<Map<String, Object>> userseqTeam = userDAO.sequense_userinteam(userLogin);
+			request.setAttribute("userseqTeam", userseqTeam);
+
+			request.setAttribute("startdate", start_date);
+			request.setAttribute("enddate", end_date);
+
+			List<Map<String, Object>> leavenameList = leaveDAO.findLeave();
+			request.setAttribute("leavenameList", leavenameList);
+			List<LeaveType> type_leave = leavetypeDAO.findAll();
+
+			request.setAttribute("type_1", type_leave.get(0).getLeaveTypeName());
+			request.setAttribute("type_2", type_leave.get(1).getLeaveTypeName());
+			request.setAttribute("type_3", type_leave.get(2).getLeaveTypeName());
+			request.setAttribute("type_4", type_leave.get(3).getLeaveTypeName());
+			request.setAttribute("type_5", type_leave.get(4).getLeaveTypeName());
+			request.setAttribute("type_6", type_leave.get(5).getLeaveTypeName());
+			request.setAttribute("type_7", type_leave.get(6).getLeaveTypeName());
+			request.setAttribute("type_9", type_leave.get(7).getLeaveTypeName());
+			request.setAttribute("leavetypelistChoice", type_leave);
+			// New_myleave();
+			return SUCCESS;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ERROR;
+		}
+	}
 
 //	public String searchmyleave() {
 //		try {
@@ -4858,34 +4858,34 @@ public class LeaveAction extends ActionSupport {
 //		}
 //	}
 
-//	public String CreateListUsers() {
-//		try {
-//			String value = request.getParameter("select_list");
-//			log.debug(value);
-//			String userLogin = request.getParameter("user_login");
-//			log.debug(userLogin);
-//			Gson gson = new GsonBuilder().setPrettyPrinting().create();
-//			String responseJSON = "";
-//			List<Map<String, Object>> list = null;
-//			if (value.equals("All")) {
-//				list = userDAO.sequense();
-//				responseJSON = gson.toJson(list);
-//			} else {
-//				list = userDAO.sequense_userinteam(userLogin);
-//				responseJSON = gson.toJson(list);
-//			}
-//			request.setAttribute("json", responseJSON);
-//			PrintWriter out = response.getWriter();
-//			out.print(responseJSON);
-//			out.flush();
-//			out.close();
-//
-//			return SUCCESS;
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//			return ERROR;
-//		}
-//	}
+	public String CreateListUsers() {
+		try {
+			String value = request.getParameter("select_list");
+			log.debug(value);
+			String userLogin = request.getParameter("user_login");
+			log.debug(userLogin);
+			Gson gson = new GsonBuilder().setPrettyPrinting().create();
+			String responseJSON = "";
+			List<Map<String, Object>> list = null;
+			if (value.equals("All")) {
+				list = userDAO.sequense();
+				responseJSON = gson.toJson(list);
+			} else {
+				list = userDAO.sequense_userinteam(userLogin);
+				responseJSON = gson.toJson(list);
+			}
+			request.setAttribute("json", responseJSON);
+			PrintWriter out = response.getWriter();
+			out.print(responseJSON);
+			out.flush();
+			out.close();
+
+			return SUCCESS;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ERROR;
+		}
+	}
 	
 	public String getManagerIdAndManagerName() {
 		log.info("getManagerIdAndManagerName");

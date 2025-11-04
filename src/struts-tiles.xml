@@ -153,7 +153,14 @@
 
 
 	<!-- My Leave -->
-
+	
+	<!-- Leave Approve -->
+	<definition name="new_leave_approved" extends="baseLayout">
+		<put-attribute name="title" value="Leave approved" />
+		<put-attribute name="body"
+			value="/pages-back/leave/new_leave_approved.jsp" />
+	</definition>
+	<!-- Leave Approve -->
 	
 	<!-- Announcement -->
 	<definition name="AnnouncementList" extends="baseLayout">

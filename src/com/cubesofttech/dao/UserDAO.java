@@ -34,9 +34,9 @@ public interface UserDAO {
 	public List<User> findBySelect(String usertoappr) throws Exception;
 //	
 //	public List<Map<String, Object>> findAllforReport() throws Exception;
-//
-//	public List<Map<String, Object>> allName() throws Exception;
-//
+
+	public List<Map<String, Object>> allName() throws Exception;
+
 //	public List<Map<String, Object>> findByApprove(String usertoappr) throws Exception;
 //
 	public List<Map<String, Object>> sequense() throws Exception;

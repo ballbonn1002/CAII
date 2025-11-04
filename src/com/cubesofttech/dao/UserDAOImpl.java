@@ -203,21 +203,21 @@ public class UserDAOImpl implements UserDAO {
 //		return selectuser;
 //	}
 
-//	@Override
-//	public List<Map<String, Object>> allName() throws Exception {
-//		Session session = this.sessionFactory.getCurrentSession();
-//		List<Map<String, Object>> user = null;
-//		try {
-//			String sql = "SELECT id,department_id,CONCAT(department_id,' - ',id) AS roleuser,name FROM user "
-//					+ " ORDER BY enable DESC, department_id ASC ";
-//			SQLQuery query = session.createSQLQuery(sql);
-//			query.setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
-//			user = query.list();
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//		}
-//		return user;
-//	}
+	@Override
+	public List<Map<String, Object>> allName() throws Exception {
+		Session session = this.sessionFactory.getCurrentSession();
+		List<Map<String, Object>> user = null;
+		try {
+			String sql = "SELECT id,department_id,CONCAT(department_id,' - ',id) AS roleuser,name FROM user "
+					+ " ORDER BY enable DESC, department_id ASC ";
+			SQLQuery query = session.createSQLQuery(sql);
+			query.setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
+			user = query.list();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return user;
+	}
 
 	@Override
 	public List<Map<String, Object>> sequense() throws Exception {
