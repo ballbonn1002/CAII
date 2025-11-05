@@ -23,7 +23,6 @@
 
 <!--begin::Main-->
 <div class="app-main flex-column flex-row-fluid" id="kt_app_main">
-
 	<!--begin::Content wrapper-->
 	<div class="d-flex flex-column flex-column-fluid">
 		<!--begin::Toolbar-->
@@ -60,7 +59,13 @@
 											<span class="fs-2 fw-bold text-gray-900 me-2 lh-1 ls-n2">
 											Work Hours</span>
 											<div class="d-flex align-items-center pt-2">
-												<span class="text-white fw-semibold fs-7 bg-primary">${jobsite.name_site}</span>
+												<span class="text-white fw-semibold fs-7 bg-primary">
+													<c:if test="${not empty jobsite.name_site || jobsite.name_site != null}">
+														${jobsite.name_site}</c:if>
+													<c:if test="${empty jobsite.name_site || jobsite.name_site == null}">
+														None</c:if>
+												</span>
+												
 												<span class="text-gray-700 px-2 fw-semibold fs-7">${user.workTimeStart}
 													- ${user.workTimeEnd}</span>
 											</div>
@@ -173,25 +178,27 @@
 							</div>
 							<div class="card-body pt-2 pb-4 d-flex flex-wrap">
 								<div class="tab-content mb-2 px-0">
-									<div class="tab-pane fade show active"
-										id="kt_timeline_widget_3_tab_content_4">
-										<div class="d-flex mb-6">
+									<div class="tab-pane fade show active" id="kt_timeline_widget_3_tab_content_4">
+										<div class="d-flex align-items-center mb-6">
 											<span data-kt-element="bullet"
 												class="bullet bullet-vertical d-flex align-items-center bg-success min-h-40px mh-100 me-4"></span>
 											<div class="flex-grow-1 me-5">
 												<div class=" col-lg-12 text-gray-900">
+												<c:if test="${not empty lastcheckin[0].work_hours_time_work || lastcheckin[0].work_hours_time_work != null}">
 													<span class="fs-2 me-4"><fmt:formatDate
 														value="${lastcheckin[0].work_hours_time_work}" pattern="dd MMM yyyy"/></span>	
 													<span class="fs-6"><fmt:formatDate 
 														value="${lastcheckin[0].work_hours_time_work}" pattern="HH:mm"/></span>												
+												</c:if>
+												<c:if test="${empty lastcheckin[0].work_hours_time_work || lastcheckin[0].work_hours_time_work == null}">
+													<span class="fs-4 me-4">No Data</span>
+												</c:if>
 												</div>
 											</div>
 											<c:if test="${lastcheckin[0].work_type.toString() eq '1'}">
-														<i class="ki-duotone ki-map fs-1"> 
-															<span class="path1"></span> 
-															<span class="path2"></span> 
-															<span class="path3"></span>
-														</i>
+												<i class="ki-duotone ki-map fs-1"> 
+													<span class="path1"></span><span class="path2"></span><span class="path3"></span>
+												</i>
 											</c:if>
 											<c:if test="${lastcheckin[0].work_type.toString() eq '2'}">
 														<i class="ki-duotone ki-home-2 fs-1">
@@ -205,10 +212,15 @@
 												class="bullet bullet-vertical d-flex align-items-center bg-info min-h-40px mh-100 me-4"></span>
 											<div class="flex-grow-1 me-5">
 												<div class=" col-lg-12 text-gray-900">
+												<c:if test="${not empty lastcheckout[0].work_hours_time_work || lastcheckout[0].work_hours_time_work != null}">
 													<span class="fs-2 me-4"><fmt:formatDate
 														value="${lastcheckout[0].work_hours_time_work}" pattern="dd MMM yyyy" /></span>
 													<span class="fs-6"><fmt:formatDate 
 														value="${lastcheckout[0].work_hours_time_work}" pattern="HH:mm"/></span>
+												</c:if>
+												<c:if test="${empty lastcheckout[0].work_hours_time_work || lastcheckout[0].work_hours_time_work == null}">
+													<span class="fs-4 me-4">No Data</span>
+												</c:if>
 												</div>												
 											</div>
 											<c:if test="${lastcheckout[0].work_type.toString() eq '1'}">
@@ -268,7 +280,7 @@
 								<c:if test="${empty holidayList}">
 									<div class="tab-pane fade show active" id="kt_timeline_widget_3_tab_content_4">
 											<div class="d-flex align-items-center mb-6">
-												<span class="fs-2 fw-semibold text-danger">No holidays</span>
+												<span class="fs-4 fw-semibold text-danger">No holidays</span>
 											</div>
 									</div>
 								</c:if>
@@ -308,8 +320,6 @@
 </div>
 <!--end:::Main-->
 <!--begin:::Modal-->
-
-<!--end:::Modal-->
 <div class="modal fade" tabindex="-1" id="retroModal">
 	<div class="modal-dialog">
 		<div class="modal-content">
@@ -384,7 +394,7 @@
 		</div>
 	</div>
 </div>
-
+<!--end:::Modal-->
 <script>
 $(document).ready(function() {
 	setInterval(updateClock, 1000);

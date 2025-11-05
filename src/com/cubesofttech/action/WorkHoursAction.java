@@ -94,11 +94,26 @@ public class WorkHoursAction extends ActionSupport {
 			holidayList = holidayDAO.findAllInMonth();
 			log.debug(holidayList);
 			request.setAttribute("holidayList", holidayList);
-			//log.debug(holidayList);
 			User user =  userDAO.findById(logonUser);
-			Jobsite jobsite = jobsiteDAO.findById(user.getId_sitejob());
-			log.debug(jobsite.getName_site());
-			request.setAttribute("jobsite", jobsite);
+			if (user == null) {
+				log.warn("User not found: " + logonUser);
+			    request.setAttribute("jobsite", null);
+			} else {
+				Integer idSitejob = user.getId_sitejob();
+				if(idSitejob == null || idSitejob.toString().trim().isEmpty()) {
+					log.warn("User " + logonUser + " has no sitejob id");
+			        request.setAttribute("jobsite", null);
+				} else {
+					Jobsite jobsite = jobsiteDAO.findById(idSitejob);
+					if (jobsite == null) {
+						log.warn("Jobsite not found by id: " + idSitejob);
+					} else {
+						log.debug("jobsite name = " + jobsite.getName_site());
+					}
+					request.setAttribute("jobsite", jobsite);
+				}
+			}
+			
 			request.setAttribute("allowedDate", workHoursService.calculateAllowedWorkDateIso(currentDate));			
 			
 			return SUCCESS;
