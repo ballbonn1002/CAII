@@ -96,6 +96,9 @@
 								<span class="path1"></span>
 								<span class="path2"></span></i>
 						</span> <span class="menu-title">Calendar & Check List</span>
+						<i class="ki-duotone ki-check-circle text-success">
+							<span class="path1"></span><span class="path2"></span>
+						</i>
 						</a>
 						<!--end:Menu link-->
 					</div>
@@ -108,6 +111,9 @@
 								<span class="path1"></span>
 								<span class="path2"></span></i>
 						</span> <span class="menu-title">Announcement</span>
+						<i class="ki-duotone ki-check-circle text-success">
+							<span class="path1"></span><span class="path2"></span>
+						</i>
 						</a>
 						<!--end:Menu link-->
 					</div>
@@ -144,6 +150,9 @@
 									<span class="path2"></span>
 							</i>
 						</span> <span class="menu-title">Check In / Check Out</span>
+						<i class="ki-duotone ki-check-circle text-success">
+							<span class="path1"></span><span class="path2"></span>
+						</i>
 						</a>
 						<!--end:Menu link-->
 					</div>
@@ -163,7 +172,7 @@
 					
 					<!--My Leave-->
 					<div class="menu-item">
-						<a class="menu-link" href="new_myleave_list?Id=${onlineUser.id}" data-route="#">
+						<a class="menu-link" href="new_myleave_list?Id=${onlineUser.id}" data-route="new_myleave_list">
 							<span class="menu-icon">
 								<i class="ki-duotone ki-pulse fs-1">
 									<span class="path1"></span>
@@ -173,6 +182,9 @@
 							<span class="menu-title">
 								My Leave
 							</span>
+							<i class="ki-duotone ki-check-circle text-success">
+								<span class="path1"></span><span class="path2"></span>
+							</i>
 						</a>
 					</div>
 					<!--My Leave-->
@@ -256,7 +268,7 @@
 					<!--Leave Approve-->
 					<perm:permission object="leave.approve">
 						<div class="menu-item">
-							<a class="menu-link" href="new_leave_approved" data-route="#">
+							<a class="menu-link" href="new_leave_approved" data-route="new_leave_approved">
 								<span class="menu-icon">
 									<i class="ki-duotone ki-pulse fs-1">
 										<span class="path1"></span>
@@ -266,6 +278,9 @@
 								<span class="menu-title">
 									Leave Approve
 								</span>
+								<i class="ki-duotone ki-check-circle text-success">
+									<span class="path1"></span><span class="path2"></span>
+								</i>
 							</a>
 						</div>
 					</perm:permission>
@@ -351,6 +366,9 @@
 									class="path1"></span> <span class="path2"></span>
 							</i>
 						</span> <span class="menu-title">Position</span>
+						<i class="ki-duotone ki-check-circle text-success">
+							<span class="path1"></span><span class="path2"></span>
+						</i>
 						</a>
 						<!--end:Menu link-->
 					</div>
@@ -363,6 +381,9 @@
 									class="path1"></span> <span class="path2"></span>
 							</i>
 						</span> <span class="menu-title">Department</span>
+						<i class="ki-duotone ki-check-circle text-success">
+							<span class="path1"></span><span class="path2"></span>
+						</i>
 						</a>
 						<!--end:Menu link-->
 					</div>
@@ -400,6 +421,9 @@
 									<span class="path2"></span> <span class="path3"></span>
 							</i>
 						</span> <span class="menu-title">Holiday</span>
+						<i class="ki-duotone ki-check-circle text-success">
+							<span class="path1"></span><span class="path2"></span>
+						</i>
 						</a>
 						<!--end:Menu link-->
 					</div>
