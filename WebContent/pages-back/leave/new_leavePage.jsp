@@ -486,7 +486,7 @@
 														<!-- ปุ่มแนว Metronic แต่ยังใช้ ID/NAME เดิม -->
 														<label for="myFile" id="lbFile" class="btn btn-primary w-150px mb-2 d-inline-flex align-items-center justify-content-center gap-2" style="height: 40px;">
 															Attach files
-															<input type="file" id="myFile" name="fileUpload" style="display:none;" accept="image/*" onchange="showFileName(this)">
+															<input type="file" id="myFile" name="fileUpload" style="display:none;" accept="image/*, application/zip" onchange="showFileName(this)">
 														</label>
 
 														<!-- Hidden inputs ตามต้นฉบับ -->
@@ -498,13 +498,12 @@
 															กรุณาอัปโหลดเฉพาะไฟล์ชื่อภาษาอังกฤษเท่านั้น
 														</div>
 
-														<!-- แสดงชื่อไฟล์ (แทน linkImage เดิม) -->
-														<div id="linkImage" class="mt-3 border border-gray-300 rounded px-4 py-3 bg-light text-gray-700">
+														<a target="_blank" id="linkImage" class="mt-3 border border-gray-300 rounded px-4 py-3 bg-light text-gray-700">
 															ยังไม่ได้เลือกไฟล์
-														</div>
+														</a>
 
 														<!-- ภาพ preview -->
-														<img id="frame" src="" style="max-width: 150px; display: none; margin-top: 10px;" />
+														<!-- <img id="frame" src="" style="max-width: 150px; display: none; margin-top: 10px;" /> -->
 
 													</div>
 												</div>

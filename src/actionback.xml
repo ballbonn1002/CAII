@@ -145,6 +145,13 @@
 			<result name="error">/index.jsp</result>
 		</action>
 			<!-- Update Status -->
+			
+			<!-- File -->
+		<action name="preview_File" class="com.cubesofttech.action.LeaveAction" method="preview_File">
+			<result name="success" type="tiles">previewFile</result>
+			<result name="error">/index.jsp</result>
+		</action>
+			<!-- File -->
 		
 		<!-- MyLeave =========================================================================================================== -->
 		

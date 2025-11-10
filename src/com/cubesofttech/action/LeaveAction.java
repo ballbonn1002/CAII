@@ -3844,16 +3844,28 @@ public class LeaveAction extends ActionSupport {
 				ServletContext context = request.getServletContext();
 				String fileServerPath = context.getRealPath("/");
 				String fileName = fileUploadFileName;
-				log.debug("fileName"+fileName);
+				log.debug("fileName = " + fileName);
 				fileupload.setSize(fileUploadSize);
-				log.debug("fileName"+fileUploadSize);
-				fileupload.setPath("/upload/user/" + maxId + "_" + fileName);
-				FileUtil.upload(fileUpload, fileServerPath + "upload/user/", maxId + "_" + fileName);
-				// log.debug(fileServerPath + "upload/user/" + maxId + "_" + fileName);
+				log.debug("fileUploadSize = " + fileUploadSize);
+				
 				int l = fileUploadFileName.length();
 				int split = fileUploadFileName.lastIndexOf('.');
 				String name = fileUploadFileName.substring(0, split);
 				String type = (String) fileUploadFileName.subSequence(split, l);
+
+				String serverFileName = maxId + type; // 101.jpg
+				
+//				fileupload.setPath("/upload/user/" + maxId + "_" + fileName);
+//				FileUtil.upload(fileUpload, fileServerPath + "upload/user/", maxId + "_" + fileName);
+				fileupload.setPath("/upload/user/" + serverFileName);
+				FileUtil.upload(fileUpload, fileServerPath + "upload/user/", serverFileName);
+				
+				log.debug("File Upload Path = " + fileServerPath + "upload/user/" + serverFileName);
+				
+//				int l = fileUploadFileName.length();
+//				int split = fileUploadFileName.lastIndexOf('.');
+//				String name = fileUploadFileName.substring(0, split);
+//				String type = (String) fileUploadFileName.subSequence(split, l);
 
 				fileupload.setFileId(maxId);
 				fileupload.setUserId(user);
@@ -4044,19 +4056,19 @@ public class LeaveAction extends ActionSupport {
 		}
 	}
 
-//	public String preview_File() {
-//		try {
-//			User onlineUser = (User) request.getSession().getAttribute("onlineUser");
-//			String id = request.getParameter("id");
-//			log.debug(id);
-//			FileUpload fileUpload = fileuploadDAO.findById(Integer.parseInt(id));
-//			request.setAttribute("pathImage", fileUpload.getPath());
-//			return SUCCESS;
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//			return ERROR;
-//		}
-//	}
+	public String preview_File() {
+		try {
+			User onlineUser = (User) request.getSession().getAttribute("onlineUser");
+			String id = request.getParameter("id");
+			log.debug(id);
+			FileUpload fileUpload = fileuploadDAO.findById(Integer.parseInt(id));
+			request.setAttribute("pathImage", fileUpload.getPath());
+			return SUCCESS;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ERROR;
+		}
+	}
 
 //	public String Leave_inList() {
 //		try {
