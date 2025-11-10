@@ -3790,8 +3790,8 @@ public class LeaveAction extends ActionSupport {
 			if (to == null) {
 				to = to_hidden;
 			}
-			
-			if(halfDay != null) {
+
+			if (halfDay != null) {
 				if (halfDay.equals("0")) {
 					time_from = "9:00";
 					time_to = "18:00";
@@ -3803,7 +3803,6 @@ public class LeaveAction extends ActionSupport {
 					time_to = "17:00";
 				}
 			}
-
 
 			if (amount == null) {
 				amount = amount_hidden;
@@ -3847,21 +3846,21 @@ public class LeaveAction extends ActionSupport {
 				log.debug("fileName = " + fileName);
 				fileupload.setSize(fileUploadSize);
 				log.debug("fileUploadSize = " + fileUploadSize);
-				
+
 				int l = fileUploadFileName.length();
 				int split = fileUploadFileName.lastIndexOf('.');
 				String name = fileUploadFileName.substring(0, split);
 				String type = (String) fileUploadFileName.subSequence(split, l);
 
 				String serverFileName = maxId + type; // 101.jpg
-				
+
 //				fileupload.setPath("/upload/user/" + maxId + "_" + fileName);
 //				FileUtil.upload(fileUpload, fileServerPath + "upload/user/", maxId + "_" + fileName);
 				fileupload.setPath("/upload/user/" + serverFileName);
 				FileUtil.upload(fileUpload, fileServerPath + "upload/user/", serverFileName);
-				
+
 				log.debug("File Upload Path = " + fileServerPath + "upload/user/" + serverFileName);
-				
+
 //				int l = fileUploadFileName.length();
 //				int split = fileUploadFileName.lastIndexOf('.');
 //				String name = fileUploadFileName.substring(0, split);
@@ -3927,7 +3926,7 @@ public class LeaveAction extends ActionSupport {
 			log.debug(leaveId_hidden);
 			int id = Integer.parseInt(leaveId_hidden);
 			Leaves leave = leaveDAO.findByLeaveId(id);
-			
+
 			if (user == null) {
 				user = leave.getUserId();
 			}
@@ -4006,17 +4005,23 @@ public class LeaveAction extends ActionSupport {
 				ServletContext context = request.getServletContext();
 				String fileServerPath = context.getRealPath("/");
 				String fileName = fileUploadFileName;
-				
+				log.debug("fileName = " + fileName);
 				fileupload.setSize(fileUploadSize);
+				log.debug("fileUploadSize = " + fileUploadSize);
 
-				log.debug("fileSize"+fileUploadSize);
-				fileupload.setPath("/upload/user/" + maxId + "_" + fileName);
-				FileUtil.upload(fileUpload, fileServerPath + "upload/user/", maxId + "_" + fileName);
-				// log.debug(fileServerPath + "upload/user/" + maxId + "_" + fileName);
 				int l = fileUploadFileName.length();
 				int split = fileUploadFileName.lastIndexOf('.');
 				String name = fileUploadFileName.substring(0, split);
 				String type = (String) fileUploadFileName.subSequence(split, l);
+
+				String serverFileName = maxId + type; // 101.jpg
+
+//				fileupload.setPath("/upload/user/" + maxId + "_" + fileName);
+//				FileUtil.upload(fileUpload, fileServerPath + "upload/user/", maxId + "_" + fileName);
+				fileupload.setPath("/upload/user/" + serverFileName);
+				FileUtil.upload(fileUpload, fileServerPath + "upload/user/", serverFileName);
+
+				log.debug("File Upload Path = " + fileServerPath + "upload/user/" + serverFileName);
 
 				fileupload.setFileId(maxId);
 				fileupload.setUserId(user);
