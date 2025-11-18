@@ -50,13 +50,13 @@
 				<!--begin::Row-->
 				<div class="row gx-5 gx-xl-10 mb-xl-10">
 					<!--begin::Col-->
-					<div class="col-xl-8 col-lg-8 col-md-8 mb-10">
+					<div class="col-xl-8 col-lg-8 col-md-8 col-sm-12 col-12 mb-10">
 						<div class="card card-flush h-auto mb-5 mb-xl-10">
 							<!--begin::Header-->
 							<div class="card-header pt-5 d-flex justify-content-between align-items-center">
-								<div class="card-title col-lg-12 col-md-12 col-sm-12">
+								<div class="card-title col-lg-12 col-md-12 col-sm-12 col-12">
 										<div class="d-flex flex-column w-100">
-											<span class="fs-2 fw-bold text-gray-900 me-2 lh-1 ls-n2">
+											<span class="fs-2 fw-bold text-gray-900 me-2 lh-1">
 											Work Hours</span>
 											<div class="d-flex align-items-center pt-2">
 												<span class="text-white fw-semibold fs-7 bg-primary">
@@ -123,7 +123,7 @@
 											Work Your Location</span><span class="text-danger">*</span>
 									</div>
 									<div class="d-flex align-items-center">
-										<div class="col-md-6 col-sm-6 py-2 me-6 mb-3">
+										<div class="col-md-6 col-sm-6 col-6 py-2 me-6 mb-3">
 											<div class="form-check form-check-custom form-check-primary form-check-solid form-check-md">
 												<input name="workType" class="form-check-input" id="workType1" type="radio" value="1"
 													<c:if test="${user.workType == 1}">checked</c:if>> 
@@ -135,7 +135,7 @@
 												<label for="workType1" class="form-check-label fs-6">On-Site</label>
 											</div>
 										</div>
-										<div class="col-md-6 col-sm-6 py-2 me-6 mb-3">
+										<div class="col-md-6 col-sm-6 col-6 py-2 me-6 mb-3">
 											<div class="form-check form-check-custom form-check-primary form-check-solid form-check-md">
 												<input name="workType" class="form-check-input pe-2" id="workType2" type="radio" value="2"
 													<c:if test="${user.workType == 2}">checked</c:if>> 
@@ -158,11 +158,11 @@
 					</div>
 					<!--end::Col-->
 					<!--begin::Last Check-->
-					<div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 mb-10">
+					<div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 col-12 mb-10">
 						<div class="card card-flush h-auto mb-5 mb-xl-10">
 							<div class="card-header pt-5">
 								<div class="card-title d-flex flex-column">
-									<span class="fs-2 fw-bold text-gray-900 me-2 lh-1 ls-n2">
+									<span class="fs-2 fw-bold text-gray-900 me-2 lh-1">
 										Last Update</span>
 									<span class="text-gray-500 pt-1 fs-7">Check
 										In / Check Out</span>
@@ -245,7 +245,7 @@
 						<div class="card card-flush h-auto mb-5 mb-xl-10">
 							<div class="card-header pt-5">
 								<div class="card-title col-lg-12 d-flex flex-column">
-									<span class="fs-2 fw-bold text-gray-900 me-2 lh-1 ls-n2">
+									<span class="fs-2 fw-bold text-gray-900 me-2 lh-1">
 										Holiday</span>
 								</div>
 							</div>
@@ -291,7 +291,7 @@
 							<div class="accordion" id="kt_accordion_1">
 								<div class="accordion-item">
 							        <h2 class="accordion-header" id="kt_accordion_1_header_1">
-							            <button class="accordion-button fs-2 fw-bold lh-1 ls-n2" type="button" data-bs-toggle="collapse" 
+							            <button class="accordion-button fs-2 fw-bold lh-1" type="button" data-bs-toggle="collapse" 
 							            	data-bs-target="#kt_accordion_1_body_1" aria-expanded="true" aria-controls="kt_accordion_1_body_1">
 							                Your Location
 							            </button>
@@ -339,22 +339,22 @@
 					</div>
 					<div class="row mb-10">
 						<label for="dateTimeInput" class="required form-label">Date-Time</label>
-						<div class="col-md-6 col-sm-6">
+						<div class="col-md-6 col-sm-6 col-6">
 							<input class="form-control" id="mdDate"/>
 						</div>
-						<div class="col-md-6 col-sm-6">
+						<div class="col-md-6 col-sm-6 col-6">
 							<input class="form-control" id="mdTime"/>
 							<div class="mdTime invalid-feedback" style="display:none;"></div>
 						</div>
 					</div>
 					<div class="row mb-10">
-						<div class="col-md-6 col-sm-6">
+						<div class="col-md-6 col-sm-6 col-6">
 							<div class="form-check form-check-custom form-check-success">
 							    <input class="form-check-input" type="radio" name="mdCheckType" id="mdCheckin" value="1"/>
 							    <label class="form-check-label text-gray-800" for="mdCheckin">Check-In</label>
 							</div>
 						</div>
-						<div class="col-md-6 col-sm-6">
+						<div class="col-md-6 col-sm-6 col-6">
 							<div class="form-check form-check-custom form-check-info">
 							    <input class="form-check-input" type="radio" name="mdCheckType" id="mdCheckout" value="2"/>
 							    <label class="form-check-label text-gray-800" for="mdCheckout">Check-Out</label>
@@ -364,12 +364,12 @@
 					</div>
 					<div class="row mb-10">
 						<label for="workTypeInput" class="required form-label">Your Work Location</label>
-						<div class="col-md-6 col-sm-6">
+						<div class="col-md-6 col-sm-6 col-6">
 							<input class="form-check-input" name="mdWorkType" type="radio" value="1"
 							<c:if test="${user.workType == 1}"> checked </c:if>>
 							<label class="form-check-label text-gray-800" for="">On-Site</label>
 						</div>
-						<div class="col-md-6 col-sm-6">
+						<div class="col-md-6 col-sm-6 col-6">
 							<input class="form-check-input" name="mdWorkType" type="radio" value="2"
 							<c:if test="${user.workType == 2}"> checked </c:if>>
 							<label class="form-check-label text-gray-800" for="">WFH</label>
@@ -377,7 +377,7 @@
 						<div class="workType invalid-feedback" style="display:none;">Please select your work location (WFH or On-Site).</div>
 					</div>
 					<div class="row mb-10">
-						<div class="col-md-12 col-sm-12">
+						<div class="col-md-12 col-sm-12 col-12">
 							<span class="">Reason</span>
 							<textarea class="form-control" name="mdReason" id="mdReason" rows="" cols="" placeholder="Please provide a reason."></textarea>
 							<div class="reason invalid-feedback" style="display:none;"></div>

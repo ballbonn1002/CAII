@@ -11,11 +11,11 @@
 			class="com.cubesofttech.action.LoginAction" method="login">
 			<!-- <result name="success" type="redirectAction">check_in?userId=${onlineUser.id} 
 				</result> -->
-			<result name="success" type="redirectAction">demo_dashboard</result>
+			<result name="success" type="redirectAction">check_in_out</result>
 			<result name="error">/index.jsp</result>
 			<!-- <result name="input" type="redirectAction">check_in?userId=${onlineUser.id} 
 				</result> -->
-			<result name="input" type="redirectAction">demo_dashboard</result>
+			<result name="input" type="redirectAction">check_in_out</result>
 		</action>
 	</package>
 	<package name="UserAction" namespace="/"
