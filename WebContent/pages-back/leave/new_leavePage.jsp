@@ -470,8 +470,7 @@
 														name="description"
 														id="description"
 														rows="3" placeholder="Enter a reason."
-														required>
-													</textarea>
+														required></textarea>
 
 													<input hidden class="hide" name="description_hidden" id="description_hidden" type="text">
 
