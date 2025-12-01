@@ -149,7 +149,6 @@ public class WorkHoursAction extends ActionSupport {
 			LocalDateTime  now = LocalDateTime .now(ZoneId.of("Asia/Bangkok")); 
 			DateTimeFormatter timeFormat = DateTimeFormatter.ofPattern("HH:mm:ss");
 
-			//Timestamp ts = Timestamp.valueOf(now);
 			Timestamp ts = null;	
 			String timeString = null;
 			int date;	int month;	int year;

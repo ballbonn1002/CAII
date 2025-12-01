@@ -396,10 +396,9 @@
 </div>
 <!--end:::Modal-->
 <script>
+let serverTimeOffset = 0;
+
 $(document).ready(function() {
-	setInterval(updateClock, 1000);
-	updateClock();
-	
 	const now = new Date();
 	const hour = now.getHours();
 	const minute = now.getMinutes();
@@ -417,28 +416,36 @@ $(document).ready(function() {
 	  } else {
 	    console.log("not selecting any option");
 	  }
+	
+	syncServerTime();
+	setInterval(updateClock, 1000);
+	
 });
 
-function updateClock() {
+function syncServerTime() {
 	fetch("https://timeapi.io/api/Time/current/zone?timeZone=Asia/Bangkok")
-		.then(resp => resp.json())
-	    .then(data => {
-	        let dateTimeStr = data.dateTime; // "2025-09-09T09:09:09"
-	        let dt = new Date(dateTimeStr);
-	        
-	        let hours = dt.getHours().toString().padStart(2, '0');
-	        let minutes = dt.getMinutes().toString().padStart(2, '0');
-	        let seconds = dt.getSeconds().toString().padStart(2, '0');
-	        let time = hours+":"+minutes
-	    	$("#clock").text(time);
-	    	$("#clock-second").text(":"+seconds);
-	    	//$("#clock").text(dateTimeStr);
-	    	
-	        let options = { day: '2-digit', month: 'short', year: 'numeric' };
-	        let dateStr = dt.toLocaleDateString('en-GB', options).replace(/,/g, '');
-	        $("#date").text(dateStr);
-	    })
-	    .catch(err => console.error("error:", err));
+	.then(resp => resp.json())
+	.then(data => {
+        let serverTime = new Date(data.dateTime).getTime();
+        let localTime = new Date().getTime();
+        serverTimeOffset = serverTime - localTime;
+        updateClock();
+    })
+    .catch(err => console.error("Sync error:", err));
+}
+
+function updateClock() {
+	let currentServerTime = new Date(new Date().getTime() + serverTimeOffset);
+	let hours = currentServerTime.getHours().toString().padStart(2, '0');
+	let minutes = currentServerTime.getMinutes().toString().padStart(2, '0');
+	let seconds = currentServerTime.getSeconds().toString().padStart(2, '0');
+	
+	$("#clock").text(hours + ":" + minutes);
+	$("#clock-second").text(":" + seconds);
+	
+	let options = { day: '2-digit', month: 'short', year: 'numeric' };
+	let dateStr = currentServerTime.toLocaleDateString('en-GB', options).replace(/,/g, '');
+	$("#date").text(dateStr);
 }
 
 $("#submitBtn").click(function() {
