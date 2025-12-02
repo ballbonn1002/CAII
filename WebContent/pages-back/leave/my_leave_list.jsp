@@ -332,6 +332,7 @@
 										<span class="fw-bold me-2 text-primary">#${leave.leave_id}</span>
 
 											<c:if test="${leave.leave_type_id.toString() == '1'}">
+											
 												<div class="symbol symbol-35px me-4">
 													<span class="symbol-label bg-light-success">
 														<i class="ki-duotone ki-airplane fs-2x text-success">
@@ -340,6 +341,9 @@
 														</i>
 													</span>
 												</div>
+												
+												<span class="badge badge-light-success fs-2">${leave.leave_type_name}</span>
+
 											</c:if>
 											<c:if test="${leave.leave_type_id.toString() == '2'}">
 												<div class="symbol symbol-35px me-4">
@@ -354,8 +358,12 @@
 														</i>												
 													</span>
 												</div>
+												
+												<span class="badge badge-light-primary fs-2">${leave.leave_type_name}</span>
+												
 											</c:if>
 											<c:if test="${leave.leave_type_id.toString() == '3'}">
+											
 												<div class="symbol symbol-35px me-4">
 													<span class="symbol-label bg-light-info">
 														<i class="ki-duotone ki-pulse fs-2x text-info">
@@ -364,8 +372,12 @@
 														</i>
 													</span>
 												</div>
+												
+												<span class="badge badge-light-info fs-2">${leave.leave_type_name}</span>
+												
 											</c:if>
 											<c:if test="${leave.leave_type_id.toString() == '4'}">
+											
 												<div class="symbol symbol-35px me-4">
 													<span class="symbol-label bg-light-danger">
 														<i class="ki-duotone ki-calendar-remove fs-2x text-danger">
@@ -378,8 +390,12 @@
 														</i>												
 													</span>
 												</div>
+												
+												<span class="badge badge-light-danger fs-2">${leave.leave_type_name}</span>
+												
 											</c:if>
 											<c:if test="${leave.leave_type_id.toString() == '5'}">
+											
 												<div class="symbol symbol-35px me-4">
 													<span class="symbol-label bg-light-dark">
 														<i class="ki-duotone ki-brifecase-cros fs-2x text-dark">
@@ -389,8 +405,12 @@
 														</i>												
 													</span>
 												</div>
+												
+												<span class="badge badge-light-dark fs-2">${leave.leave_type_name}</span>
+												
 											</c:if>
 											<c:if test="${leave.leave_type_id.toString() == '6'}">
+											
 												<div class="symbol symbol-35px me-4">
 													<span class="symbol-label bg-light-warning">
 														<i class="ki-duotone ki-timer fs-2x text-warning">
@@ -400,8 +420,12 @@
 														</i>
 													</span>
 												</div>
+												
+												<span class="badge badge-light-warning fs-2">${leave.leave_type_name}</span>
+												
 											</c:if>
 											<c:if test="${leave.leave_type_id.toString() == '7'}">
+											
 												<div class="symbol symbol-35px me-4">
 													<span class="symbol-label" style="background-color: #4B5675;">
 														<i class="ki-duotone ki-abstract-12 fs-2x" style="color: #FFFFFF;">
@@ -410,9 +434,12 @@
 														</i>
 													</span>
 												</div>
+												
+												<span class="badge badge-light-dark fs-2">${leave.leave_type_name}</span>
+												
 											</c:if>
 
-										<span class="fw-semibold" style="font-weight: 1000 !important;">${leave.leave_type_name}</span>
+										<%-- <span class="fw-semibold" style="font-weight: 1000 !important;">${leave.leave_type_name}</span> --%>
 									</div>
 
 									<!-- Btn Info, Edit, Delete -->
@@ -868,7 +895,7 @@ function leaveStatus(id) {
 			$('#timecreate').html(tcreate);
 
 	      // leave status
-			if (obj.leave_status_id == '0') {
+			if (obj.leave_status_id == '0') {//Wait for Approving
 				$('#leavestatus')
 					.html("Wait for Approving")
 					.removeClass()
@@ -878,7 +905,7 @@ function leaveStatus(id) {
 					.removeClass('text-danger')
 					.addClass('text-primary');
 			}
-			else if (obj.leave_status_id == '1') {
+			else if (obj.leave_status_id == '1') {//Approved
 				$('#leavestatus')
 					.html("Approved")
 					.removeClass()
@@ -893,7 +920,7 @@ function leaveStatus(id) {
 				$('#timeupdate').html(moment(obj.time_update).format("D MMM YYYY, HH:mm"));
 				$('#reason_s').html(obj.reason);
 			}
-			else if (obj.leave_status_id == '2') {
+			else if (obj.leave_status_id == '2') {//Reject
 				$('#leavestatus')
 					.html("Reject")
 					.removeClass()
@@ -908,7 +935,7 @@ function leaveStatus(id) {
 				$('#timeupdate').html(moment(obj.time_update).format("D MMM YYYY, HH:mm"));
 				$('#reason_s').html(obj.reason);
 			}
-			else if (obj.leave_status_id == '3') {
+			else if (obj.leave_status_id == '3') {//Cancel
 				$('#leavestatus')
 					.html("Cancel")
 					.removeClass()
