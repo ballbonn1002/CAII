@@ -663,23 +663,22 @@ public class UserDAOImpl implements UserDAO {
 	}
 
 	/* test */
-//	@Override
-//	public List<Map<String, Object>> findRoleNameById(String id) {
-//		Session session = this.sessionFactory.getCurrentSession();
-//		List<Map<String, Object>> test_holiday = null;
-//		try {
-//
-//			String sql = "SELECT user.id, user.path, role.name FROM user  INNER JOIN role ON user.role_id=role.id  WHERE user.id IN ("
-//					+ id + ") ORDER BY `id` ASC";
-//
-//			SQLQuery query = session.createSQLQuery(sql);
-//			query.setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
-//			test_holiday = query.list();
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//		}
-//		return test_holiday;
-//	}
+	@Override
+	public List<Map<String, Object>> findRoleNameById(String id) {
+		Session session = this.sessionFactory.getCurrentSession();
+		List<Map<String, Object>> test_holiday = null;
+		try {
+			String sql = "SELECT user.id, user.path, role.name FROM user INNER JOIN role ON user.role_id=role.id  "
+					+ "WHERE user.id IN (" + id + ") ORDER BY `id` ASC";
+
+			SQLQuery query = session.createSQLQuery(sql);
+			query.setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
+			test_holiday = query.list();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return test_holiday;
+	}
 
 	@Override
 	public List<Map<String, Object>> test_birthdaysummary() throws Exception {

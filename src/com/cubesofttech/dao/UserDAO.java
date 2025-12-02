@@ -75,7 +75,7 @@ public interface UserDAO {
 //
 //	public List<Map<String, Object>> findByWhereInId(String online_user);
 //
-//	List<Map<String, Object>> findRoleNameById(String id);
+	List<Map<String, Object>> findRoleNameById(String id);
 //
 	public List<Map<String, Object>> test_birthdaysummary() throws Exception;
 //
