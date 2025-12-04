@@ -23,7 +23,7 @@
 <!--begin::Vendor Stylesheets(used for this page only)-->
 
 <!-- Keenicons (ใช้กับ .ki-*) -->
-<link rel="stylesheet" href="assets/vendors/keenicons/styles.bundle.css" />
+<!-- <link rel="stylesheet" href="assets/vendors/keenicons/styles.bundle.css" /> -->
 <!-- Keenicons (ใช้กับ .ki-*) -->
 
 <link href="assets/plugins/custom/fullcalendar/fullcalendar.bundle.css" rel="stylesheet" type="text/css" />
@@ -35,8 +35,8 @@
 <link href="assets/css/style.bundle.css" rel="stylesheet" type="text/css" />
 
 <!-- ===== [ใหม่] Metronic Tailwind CSS ===== -->
-<link rel="stylesheet" href="assets/vendors/apexcharts/apexcharts.css" />
-<link rel="stylesheet" href="assets/css/styles.css" /><!-- Tailwind build -->
+<!-- <link rel="stylesheet" href="assets/vendors/apexcharts/apexcharts.css" /> -->
+<!-- <link rel="stylesheet" href="assets/css/styles.css" /> --><!-- Tailwind build -->
 <!-- ===== [ใหม่] Metronic Tailwind CSS ===== -->
 
 <!--end::Global Stylesheets Bundle-->
@@ -76,7 +76,9 @@
 <body class="app-default">
 
 	<%
-		String action = (String) request.getAttribute("action");
+		//comment for fix ClassCastException
+		//var action = '${action}'; can still be used
+		//String action = (String) request.getAttribute("action");
 	%>
 
 
@@ -478,7 +480,7 @@
 												</div>
 
 												<!--File Upload -->
-												<div class="mb-8">
+												<%-- <div class="mb-8">
 													<label class="form-label fs-5">Attach files</label>
 													<div class="d-flex flex-column">
 
@@ -505,6 +507,23 @@
 														<!-- <img id="frame" src="" style="max-width: 150px; display: none; margin-top: 10px;" /> -->
 
 													</div>
+												</div> --%>
+												
+												<!--File Upload -->
+												<div class="mb-8">
+												    <label class="form-label fs-5">Attach files</label>
+												    <div class="d-flex flex-column">
+												        <label for="myFile" id="lbFile" class="btn btn-primary w-150px mb-2 d-inline-flex align-items-center justify-content-center gap-2" style="height: 40px;">
+												            Attach files
+												            <input type="file" id="myFile" name="fileUpload" style="display:none;" accept="image/*, application/zip"> 
+												        </label>
+												
+												        <input type="hidden" name="deleteFileId" id="deleteFileId">
+												        <input type="hidden" name="fileUploadSize" value="${size}" id="size">
+												        <input type="hidden" name="fileUploadId" id="fileUploadId">
+												
+												        <div id="filePreviewContainer" class="mt-2" style="max-width: 400px;"></div>
+												    </div>
 												</div>
 
 												<!--Approver -->
@@ -552,7 +571,9 @@
 </body>
 
 <script>
-	var action = '${action}';
+	//var action = '${action}';
+	var action = '${empty action ? "" : action}';
+	console.log("action = " + action);
 	$( document ).ready(function() {
 		$('#halfDay').on('change', function() {
 			  if(this.value == 3){
@@ -1075,10 +1096,20 @@
 			$('#lt_'+leave.leaveTypeId).prop('checked','checked');
 			$('#halfDay').val(leave.halfDay).change();
 			$('#approver').val(leave.apprUserId).change();
-			if(fileLeave != ''){
-				$('#linkImage').text(fileLeave.name+fileLeave.type);
-				$('#linkImage').attr('href', 'preview_File?id='+fileLeave.fileId);
-				$('#fileUploadId').val(fileLeave.fileId);
+			
+			// old
+			/* if(fileLeave != ''){
+			    $('#linkImage').text(fileLeave.name+fileLeave.type);
+			    $('#linkImage').attr('href', 'preview_File?id='+fileLeave.fileId);
+			    $('#fileUploadId').val(fileLeave.fileId);
+			} */
+
+			// new
+			if(fileLeave != '' && fileLeave != null){
+			    const fullFileName = fileLeave.name + fileLeave.type;
+			    const downloadPath = 'preview_File?id=' + fileLeave.fileId;
+			    renderSingleFilePreview(fullFileName, downloadPath, true, fileLeave.fileId);
+			    $('#fileUploadId').val(fileLeave.fileId);
 			}
         }
         /* End Leave Edit init */
@@ -1328,6 +1359,7 @@ document.addEventListener("DOMContentLoaded", function () {
     document.getElementById("date_to_hidden").value = val;
   });
 
+/*
   // ⚙️ บังคับ End ≥ Start
   startPicker.subscribe(tempusDominus.Namespace.events.change, (e) => {
     if (e.date) {
@@ -1359,9 +1391,137 @@ document.addEventListener("DOMContentLoaded", function () {
       }
     }
   });
+*/
 
   
 });
 </script>
 
+<script>
+    function renderSingleFilePreview(fileName, fileUrl, isExisting = false, fileId = null) {
+        const container = document.getElementById('filePreviewContainer');
+        if (!container) return; 
+        container.innerHTML = '';
+        const fileExtension = fileName.split('.').pop().toLowerCase();
+        
+        // เลือกไอคอนตามนามสกุลไฟล์
+        let iconClass = "fa-file"; 
+        if (fileExtension === "pdf") iconClass = "ki-duotone ki-file-pdf";
+        else if (["doc", "docx"].includes(fileExtension)) iconClass = "fa-file-word-o";
+        else if (["xls", "xlsx"].includes(fileExtension)) iconClass = "fa-file-excel-o";
+        else if (["png", "jpg", "jpeg", "gif"].includes(fileExtension)) iconClass = "fa-file-image-o";
+
+        const fileWrapper = document.createElement('div');
+        fileWrapper.className = 'd-flex justify-content-between align-items-center p-2 border rounded bg-light';
+
+        // Left Group (Icon + Link)
+        const leftGroup = document.createElement('div');
+        leftGroup.className = 'd-flex align-items-center overflow-hidden';
+        
+        const icon = document.createElement('i');
+        icon.className = `${iconClass} fs-2 me-3`; 
+
+        const link = document.createElement('a');
+        link.href = fileUrl || '#';
+        link.target = '_blank';
+        link.className = 'text-gray-800 fw-medium text-hover-primary text-truncate';
+        link.textContent = fileName;
+        link.style.maxWidth = '250px';
+
+        leftGroup.appendChild(icon);
+        leftGroup.appendChild(link);
+        
+        // Right Group (Delete Button)
+        const removeBtn = document.createElement('span');
+        removeBtn.className = 'btn btn-icon btn-sm btn-light-danger cursor-pointer';
+        
+        // Event Handler
+        removeBtn.onclick = function() {
+            removeSingleFile(isExisting, fileId);
+        };
+
+        const trashIcon = document.createElement('i');
+        trashIcon.className = 'ki-duotone ki-trash fs-3';
+        trashIcon.innerHTML = `<span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span><span class="path5"></span>`;
+        
+        removeBtn.appendChild(trashIcon);
+
+        fileWrapper.appendChild(leftGroup);
+        fileWrapper.appendChild(removeBtn);
+        container.appendChild(fileWrapper);
+    }
+
+    // fn remove file
+    window.removeSingleFile = function(isExisting, fileId) {
+        document.getElementById('filePreviewContainer').innerHTML = '';
+        
+        const fileInput = document.getElementById('myFile');
+        if (fileInput) {
+             fileInput.value = '';
+        }
+        
+        const sizeInput = document.getElementById('size');
+        if (sizeInput) {
+            sizeInput.value = '';
+        }
+        
+        if (isExisting === true && fileId != null) {
+            document.getElementById('deleteFileId').value = fileId;
+            document.getElementById('fileUploadId').value = ''; 
+        } else if (isExisting === 'true' && fileId !== 'null' && fileId !== '') {
+            document.getElementById('deleteFileId').value = fileId;
+            document.getElementById('fileUploadId').value = ''; 
+        }
+    };
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const fileInput = document.getElementById('myFile');
+        
+        if (typeof action !== 'undefined' && action === 'Edit' && typeof fileLeave !== 'undefined' && fileLeave != null && fileLeave != ''){
+            
+            const fullFileName = fileLeave.name + fileLeave.type;
+            const downloadPath = 'preview_File?id=' + fileLeave.fileId;
+            
+            renderSingleFilePreview(fullFileName, downloadPath, true, fileLeave.fileId);
+
+            $('#fileUploadId').val(fileLeave.fileId);
+            
+            $('#deleteFileId').val('');
+        }
+
+        if (!fileInput) {
+             console.error("Critical Error: File input element with ID 'myFile' not found.");
+             return;
+        }
+
+        fileInput.addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            
+            if (!file) return;
+
+            const forbiddenChars = /[\/:*?"<>|]/;
+            if(forbiddenChars.test(file.name)) {
+                alert("File name contains invalid characters.");
+                this.value = ''; 
+                document.getElementById('filePreviewContainer').innerHTML = '';
+                document.getElementById('size').value = '';
+                return;
+            }
+
+            var fSExt = new Array('Bytes', 'KB', 'MB', 'GB');
+            var fSize = file.size;
+            var i = 0;
+            while (fSize > 900) { fSize /= 1024; i++; }
+            var size_n = (Math.round(fSize * 100) / 100);
+            document.getElementById('size').value = size_n + ' ' + fSExt[i];
+
+            const tempUrl = URL.createObjectURL(file); 
+            renderSingleFilePreview(file.name, tempUrl, false);
+            
+            document.getElementById('deleteFileId').value = '';
+            document.getElementById('fileUploadId').value = ''; 
+        });
+
+    });
+</script>
 </html>
