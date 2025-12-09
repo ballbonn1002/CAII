@@ -272,6 +272,16 @@ public class LeaveAction extends ActionSupport {
 	private String fileUploadId;
 
 	private List<Object[]> summaryData;
+	
+	private String deleteFileId;
+	
+	public String getDeleteFileId() {
+		return deleteFileId;
+	}
+
+	public void setDeleteFileId(String deleteFileId) {
+		this.deleteFileId = deleteFileId;
+	}
 
 	public InputStream getExcelStream() {
 		return excelStream;
@@ -3919,147 +3929,192 @@ public class LeaveAction extends ActionSupport {
 	}
 
 	public String new_LeaveEdit_Do() {
-		try {
-			log.debug("new_LeaveEdit_Do");
-			User onlineUser = (User) request.getSession().getAttribute("onlineUser");
-			// String id_s = (String) request.getSession().getAttribute("leaveId");
-			log.debug(leaveId_hidden);
-			int id = Integer.parseInt(leaveId_hidden);
-			Leaves leave = leaveDAO.findByLeaveId(id);
+	    try {
+	        log.info("new_LeaveEdit_Do");
+	        User onlineUser = (User) request.getSession().getAttribute("onlineUser");
+	        
+	        log.debug(leaveId_hidden);
+	        int id = Integer.parseInt(leaveId_hidden);
+	        Leaves leave = leaveDAO.findByLeaveId(id);
 
-			if (user == null) {
-				user = leave.getUserId();
-			}
-			if (approver == null) {
-				approver = approver_hidden;
-			}
-			if (status == null) {
-				status = status_hidden;
-			}
-			if (to == null) {
-				to = to_hidden;
-			}
-			log.debug(user);
-			log.debug(approver);
-			if (halfDay.equals("0")) {
-				time_from = "9:00";
-				time_to = "18:00";
-			} else if (halfDay.equals("1")) {
-				time_from = "8:00";
-				time_to = "12:00";
-			} else if (halfDay.equals("2")) {
-				time_from = "13:00";
-				time_to = "17:00";
-			}
+	        if (user == null) {
+	            user = leave.getUserId();
+	        }
+	        if (approver == null) {
+	            approver = approver_hidden;
+	        }
+	        if (status == null) {
+	            status = status_hidden;
+	        }
+	        if (to == null) {
+	            to = to_hidden;
+	        }
+	        log.debug(user);
+	        log.debug(approver);
+	        
+	        if (halfDay.equals("0")) {
+	            time_from = "9:00";
+	            time_to = "18:00";
+	        } else if (halfDay.equals("1")) {
+	            time_from = "8:00";
+	            time_to = "12:00";
+	        } else if (halfDay.equals("2")) {
+	            time_from = "13:00";
+	            time_to = "17:00";
+	        }
 
-			if (amount == null) {
-				amount = amount_hidden;
-			}
-			if (amount_sub == null) {
-				amount_sub = amount_sub_hidden;
-			}
-			float amount_n = Float.parseFloat(amount);
-			float amount_sub_n = Float.parseFloat(amount_sub);
-			log.debug(amount_n);
-			log.debug(amount_sub_n);
-			BigDecimal noDay = BigDecimal.valueOf(amount_n + (amount_sub_n / 8));
-			log.debug("no day" + noDay);
+	        if (amount == null) {
+	            amount = amount_hidden;
+	        }
+	        if (amount_sub == null) {
+	            amount_sub = amount_sub_hidden;
+	        }
+	        float amount_n = Float.parseFloat(amount);
+	        float amount_sub_n = Float.parseFloat(amount_sub);
+	        log.debug(amount_n);
+	        log.debug(amount_sub_n);
+	        BigDecimal noDay = BigDecimal.valueOf(amount_n + (amount_sub_n / 8));
+	        log.debug("no day" + noDay);
 
-			final String OLD_FORMAT = "dd MMM yyyy";
-			final String NEW_FORMAT = "dd-MM-yyyy";
-			String newDateFrom;
-			String newDateTo;
+	        final String OLD_FORMAT = "dd MMM yyyy";
+	        final String NEW_FORMAT = "dd-MM-yyyy";
+	        String newDateFrom;
+	        String newDateTo;
 
-			SimpleDateFormat sdf = new SimpleDateFormat(OLD_FORMAT);
-			Date date_from = sdf.parse(from);
-			Date date_to = sdf.parse(to);
-			sdf.applyPattern(NEW_FORMAT);
-			newDateFrom = sdf.format(date_from);
-			newDateTo = sdf.format(date_to);
-			Timestamp startDate = DateUtil.dateFormatEdit(newDateFrom);
-			Timestamp endDate = DateUtil.dateFormatEdit(newDateTo);
+	        SimpleDateFormat sdf = new SimpleDateFormat(OLD_FORMAT);
+	        Date date_from = sdf.parse(from);
+	        Date date_to = sdf.parse(to);
+	        sdf.applyPattern(NEW_FORMAT);
+	        newDateFrom = sdf.format(date_from);
+	        newDateTo = sdf.format(date_to);
+	        Timestamp startDate = DateUtil.dateFormatEdit(newDateFrom);
+	        Timestamp endDate = DateUtil.dateFormatEdit(newDateTo);
 
-			int maxId = fileuploadDAO.getMaxId() + 1;
-			FileUpload fileupload = new FileUpload();
+	        // Logic Manage File Attach
+	        String oldFileIdStr = leave.getLeaveFile();
+	        
+	        // logic delete file from bin icon
+	        if (deleteFileId != null && !deleteFileId.isEmpty()) {
+	            try {
+	                int delFileId = Integer.parseInt(deleteFileId);
+	                FileUpload fileuploadDel = fileuploadDAO.findById(delFileId);
 
-			if (fileUpload != null) {
-				if (!fileUploadId.isEmpty()) {
-					FileUpload fileuploadDel = fileuploadDAO.findById(Integer.parseInt(fileUploadId));
-					ServletContext context = request.getServletContext();
-					String fileServerPath = context.getRealPath("/");
-					log.debug(fileServerPath + fileuploadDel.getPath());
-					File file = new File(fileServerPath + fileuploadDel.getPath());
-					boolean fileDelete = file.delete();
-					if (fileDelete) {
-						log.debug("successfully deleted");
-					} else {
-						log.debug("cant delete a file");
-					}
-					log.debug(fileuploadDel);
-					fileuploadDAO.delete(fileuploadDel);
+	                if (fileuploadDel != null) {
+	                    ServletContext context = request.getServletContext();
+	                    String fileServerPath = context.getRealPath("/");
+	                    File file = new File(fileServerPath + fileuploadDel.getPath());
+	                    
+	                    if (file.delete()) {
+	                        log.info("Successfully deleted file on server (Trash Icon): " + delFileId);
+	                    } else {
+	                        log.info("Cannot delete file on server (Trash Icon): " + delFileId);
+	                    }
+	                    
+	                    fileuploadDAO.delete(fileuploadDel);
+	                    log.info("Successfully deleted file record from DB (Trash Icon): " + delFileId);
+	                    
+	                    // Clear the file link on the server object
+	                    oldFileIdStr = null; 
+	                }
+	                
+	                // update leave file to null
+	                leave.setLeaveFile(null); 
+	                
+	            } catch (NumberFormatException e) {
+	                log.error("Invalid deleteFileId format: " + deleteFileId, e);
+	            }
+	        }
 
-					maxId = Integer.parseInt(fileUploadId);
-				}
+	        // logic manage file on update file attach
+	        if (fileUpload != null) {
+	            log.info("New file uploaded. Processing replacement/upload.");
+	            
+	            // delete old file
+	            if (oldFileIdStr != null && !oldFileIdStr.isEmpty()) {
+	                try {
+	                    int oldFileId = Integer.parseInt(oldFileIdStr);
+	                    FileUpload fileuploadDel = fileuploadDAO.findById(oldFileId);
+	                    
+	                    if (fileuploadDel != null) {
+	                        ServletContext context = request.getServletContext();
+	                        String fileServerPath = context.getRealPath("/");
+	                        File file = new File(fileServerPath + fileuploadDel.getPath());
+	                        
+	                        if (file.delete()) {
+	                            log.info("Successfully deleted OLD file during replacement: " + oldFileId);
+	                        } else {
+	                            log.info("Cannot delete OLD file during replacement: " + oldFileId);
+	                        }
+	                        fileuploadDAO.delete(fileuploadDel);
+	                        log.info("Successfully deleted OLD file record from DB: " + oldFileId);
+	                    }
+	                } catch (NumberFormatException e) {
+	                    log.error("Invalid oldFileId format in Leaves object during replacement: " + oldFileIdStr, e);
+	                }
+	            }
 
-				log.debug(maxId);
-				ServletContext context = request.getServletContext();
-				String fileServerPath = context.getRealPath("/");
-				String fileName = fileUploadFileName;
-				log.debug("fileName = " + fileName);
-				fileupload.setSize(fileUploadSize);
-				log.debug("fileUploadSize = " + fileUploadSize);
+	            // upload new file
+	            int maxId = fileuploadDAO.getMaxId() + 1;
+	            FileUpload fileupload = new FileUpload();
+	            
+	            ServletContext context = request.getServletContext();
+	            String fileServerPath = context.getRealPath("/");
+	            String fileName = fileUploadFileName;
+	            
+	            int l = fileUploadFileName.length();
+	            int split = fileUploadFileName.lastIndexOf('.');
+	            String name = fileUploadFileName.substring(0, split);
+	            String type = (String) fileUploadFileName.subSequence(split, l); //.jpg
 
-				int l = fileUploadFileName.length();
-				int split = fileUploadFileName.lastIndexOf('.');
-				String name = fileUploadFileName.substring(0, split);
-				String type = (String) fileUploadFileName.subSequence(split, l);
+	            String serverFileName = maxId + type; //101.jpg
+	            
+	            fileupload.setPath("/upload/user/" + serverFileName);
+	            FileUtil.upload(fileUpload, fileServerPath + "upload/user/", serverFileName);
+	            log.info("File Upload Path = " + fileServerPath + "upload/user/" + serverFileName);
 
-				String serverFileName = maxId + type; // 101.jpg
+	            // save on db
+	            fileupload.setFileId(maxId);
+	            fileupload.setUserId(user); 
+	            fileupload.setUserCreate(onlineUser.getId());
+	            fileupload.setName(name);
+	            fileupload.setType(type);
+	            fileupload.setSize(fileUploadSize);
+	            fileupload.setUserUpdate(onlineUser.getId());
+	            fileupload.setTimeCreate(DateUtil.getCurrentTime());
+	            fileupload.setTimeUpdate(DateUtil.getCurrentTime());
+	            fileuploadDAO.save(fileupload);
 
-//				fileupload.setPath("/upload/user/" + maxId + "_" + fileName);
-//				FileUtil.upload(fileUpload, fileServerPath + "upload/user/", maxId + "_" + fileName);
-				fileupload.setPath("/upload/user/" + serverFileName);
-				FileUtil.upload(fileUpload, fileServerPath + "upload/user/", serverFileName);
-
-				log.debug("File Upload Path = " + fileServerPath + "upload/user/" + serverFileName);
-
-				fileupload.setFileId(maxId);
-				fileupload.setUserId(user);
-				fileupload.setUserCreate(onlineUser.getId());
-				fileupload.setName(name);
-				fileupload.setType(type);
-				fileupload.setUserUpdate(onlineUser.getId());
-				fileupload.setTimeCreate(DateUtil.getCurrentTime());
-				fileupload.setTimeUpdate(DateUtil.getCurrentTime());
-				fileuploadDAO.save(fileupload);
-
-				leave.setLeaveFile(Integer.toString(maxId));
-			}
-			log.debug(leaveType);
-			leave.setLeaveTypeId(leaveType);
-			leave.setLeaveStatusId(status);
-			leave.setHalfDay(halfDay);
-			leave.setUserId(user);
-			leave.setApprUserId(approver);
-			leave.setDescription(description);
-			leave.setReason(reason);
-			leave.setStartDate(startDate);
-			leave.setEndDate(endDate);
-			leave.setStartTime(time_from);
-			leave.setEndTime(time_to);
-			leave.setNoDay(noDay);
-			leave.setUserUpdate(onlineUser.getId());
-			leave.setTimeUpdate(DateUtil.getCurrentTime());
-			if (!noDay.equals(BigDecimal.ZERO)) {
-				leaveDAO.update(leave);
-			}
-
-			return SUCCESS;
-		} catch (Exception e) {
-			e.printStackTrace();
-			return ERROR;
-		}
+	            leave.setLeaveFile(Integer.toString(maxId));
+	        }
+	        
+	        // Logic Manage File Attach
+	        
+	        // Update Leave
+	        log.info(leaveType);
+	        leave.setLeaveTypeId(leaveType);
+	        leave.setLeaveStatusId(status);
+	        leave.setHalfDay(halfDay);
+	        leave.setUserId(user);
+	        leave.setApprUserId(approver);
+	        leave.setDescription(description);
+	        leave.setReason(reason);
+	        leave.setStartDate(startDate);
+	        leave.setEndDate(endDate);
+	        leave.setStartTime(time_from);
+	        leave.setEndTime(time_to);
+	        leave.setNoDay(noDay);
+	        leave.setUserUpdate(onlineUser.getId());
+	        leave.setTimeUpdate(DateUtil.getCurrentTime());
+	        
+	        leaveDAO.update(leave);
+	        
+	        return SUCCESS;
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        return ERROR;
+	    }
 	}
+
 
 	public String preview_File() {
 		try {
