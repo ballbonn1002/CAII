@@ -7,29 +7,20 @@
 
 <!DOCTYPE html>
 <!-- jQuery ต้องโหลดก่อนทุกอย่าง -->
-<script
-	src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
 <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"></script>
 
 <!-- Select2 -->
-<link
-	href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css"
-	rel="stylesheet">
-<link
-	href="https://cdn.jsdelivr.net/npm/select2-bootstrap-theme@0.1.0-beta.10/dist/select2-bootstrap.min.css"
-	rel="stylesheet" />
-<script
-	src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/select2-bootstrap-theme@0.1.0-beta.10/dist/select2-bootstrap.min.css" rel="stylesheet" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
 
-<link href="assets/css/style.bundle.css" rel="stylesheet"
-	type="text/css" />
+<link href="assets/css/style.bundle.css" rel="stylesheet" type="text/css" />
 <script src="assets/js/scripts.bundle.js"></script>
 
 <!-- FullCalendar -->
-<link href="assets/plugins/custom/fullcalendar/fullcalendar.bundle.css"
-	rel="stylesheet" type="text/css" />
+<link href="assets/plugins/custom/fullcalendar/fullcalendar.bundle.css" rel="stylesheet" type="text/css" />
 <script src="assets/plugins/custom/fullcalendar/fullcalendar.bundle.js"></script>
-
 
 <style>
 .bg-pink {
@@ -66,6 +57,8 @@
 	max-height: 75px;
 	overflow: hidden;
 }
+
+
 </style>
 
 <div class="app-main flex-column flex-row-fluid">
@@ -73,13 +66,10 @@
 		<!-- Header -->
 		<div class="app-toolbar py-3 py-lg-6">
 			<div class="app-container container-fluid d-flex flex-stack">
-				<div
-					class="page-title d-flex flex-column justify-content-center flex-wrap me-3">
-					<h1
-						class="page-heading d-flex text-gray-900 fw-bold fs-3 flex-column justify-content-center my-0">
+				<div class="page-title d-flex flex-column justify-content-center flex-wrap me-3">
+					<h1 class="page-heading d-flex text-gray-900 fw-semibold flex-column justify-content-center my-0">
 						Calendar and Check List</h1>
-					<ul
-						class="breadcrumb breadcrumb-separatorless fw-semibold fs-7 my-0 pt-1">
+					<ul class="breadcrumb breadcrumb-separatorless fw-semibold fs-7 my-0 pt-1">
 						<li class="breadcrumb-item text-muted"><a
 							href="demo_dashboard" class="text-muted text-hover-primary">Home</a>
 						</li>
@@ -91,12 +81,12 @@
 		<!-- Content -->
 		<div class="app-content flex-column-fluid">
 			<div class="app-container container-fluid">
-
 				<!-- Form without submit button -->
 				<div class="d-flex flex-row">
 					<div class="card flex-row-fluid mb-5">
 						<div class="card-header" style="border-bottom: none;">
 							<!--begin::Main wrapper-->
+							
 							<div id="kt_docs_search_handler_responsive"
 								class="d-flex align-items-center w-100"
 								data-kt-search-keypress="true" data-kt-search-min-length="1"
@@ -108,30 +98,23 @@
 								<!--begin::Form-->
 								<form id="userCalendarForm"
 									class="d-none d-lg-block w-100 position-relative mb-5 mb-lg-0"
-									autocomplete="off" action="TestSearchAllinCalendar"
-									method="post">
-
+									autocomplete="off" action="TestSearchAllinCalendar" method="post">
 									<!--begin::Icon-->
-									<i
-										class="ki-duotone ki-magnifier fs-2 fs-lg-1 text-gray-500 position-absolute top-50 translate-middle-y ms-5">
+									<i class="ki-duotone ki-magnifier fs-2 fs-lg-1 text-gray-500 position-absolute top-50 translate-middle-y ms-5">
 										<span class="path1"></span> <span class="path2"></span>
 									</i>
 									<!--end::Icon-->
-
 									<!--begin::Input-->
 									<input type="text" class="form-control form-solid ps-14"
 										name="usercalendar" id="userSearchInput"
 										placeholder="${user.employeeId} - ${user.name} - ${user.nameEN}"
 										data-kt-search-element="input" />
 									<!--end::Input-->
-
 								</form>
 								<!--end::Form-->
-
 								<!--begin::Menu-->
 								<div data-kt-search-element="content"
 									class="menu menu-sub menu-sub-dropdown w-50 py-7 px-7">
-
 									<!--begin::Wrapper-->
 									<div data-kt-search-element="wrapper">
 										<!--begin::Results-->
@@ -139,7 +122,6 @@
 											style="max-height: 400px; overflow-y: auto; overflow-x: hidden;">
 										</div>
 										<!--end::Results-->
-
 										<!--begin::Empty search-->
 										<div data-kt-search-element="empty" class="text-center d-none">
 											<span class="text-muted">No user found</span>
@@ -151,7 +133,6 @@
 								<!--end::Menu-->
 							</div>
 							<!--end::Main wrapper-->
-
 						</div>
 
 						<div class="card-body d-flex flex-row flex-wrap pt-0">
@@ -183,35 +164,29 @@
 						<div class="card-body" id="kt_docs_fullcalendar_populated">
 						</div>
 						<div class="card-footer d-flex flex-row flex-wrap">
-							<div
-								class="d-flex align-items-center me-15 fw-semibold text-gray-600">
-								<span class="bullet bullet-dot bg-danger me-2 h-10px w-10px"></span>
-								Holiday
+							<div class="d-flex align-items-center me-10 fw-semibold">
+								<span class="badge badge-secondary">Holiday</span>
 							</div>
-							<div
-								class="d-flex align-items-center me-15 fw-semibold text-gray-600">
-								<span class="bullet bullet-dot bg-success me-2 h-10px w-10px"></span>
-								On time
+							<div class="d-flex align-items-center me-10 fw-semibold">
+								<span class="badge badge-success">On time</span>
 							</div>
-							<div
-								class="d-flex align-items-center me-15 fw-semibold text-gray-600">
-								<span class="bullet bullet-dot bg-warning me-2 h-10px w-10px"></span>
-								Late / Early Out / Unfinished Work
+							<div class="d-flex align-items-center me-10 fw-semibold">
+								<span class="badge badge-warning">Late</span>
 							</div>
-							<div
-								class="d-flex align-items-center me-15 fw-semibold text-gray-600">
-								<span class="bullet bullet-dot bg-secondary me-2 h-10px w-10px"></span>
-								Incomplete
+							<div class="d-flex align-items-center me-10 fw-semibold">
+								<span class="badge badge-warning">Early Out</span>
 							</div>
-							<div
-								class="d-flex align-items-center me-15 fw-semibold text-gray-600">
-								<span class="bullet bullet-dot bg-primary me-2 h-10px w-10px"></span>
-								Leave
+							<div class="d-flex align-items-center me-10 fw-semibold">
+								<span class="badge badge-warning">Unfinished Work</span>
 							</div>
-							<div
-								class="d-flex align-items-center me-15 fw-semibold text-gray-600">
-								<span class="bullet bullet-dot bg-info me-2 h-10px w-10px"></span>
-								Sick Leave
+							<div class="d-flex align-items-center me-10 fw-semibold">
+								<span class="badge badge-dark">Incomplete</span>
+							</div>
+							<div class="d-flex align-items-center me-10 fw-semibold">
+								<span class="badge badge-primary">Leave</span>
+							</div>
+							<div class="d-flex align-items-center me-10 fw-semibold">
+								<span class="badge badge-info">Sick Leave</span>
 							</div>
 						</div>
 					</div>
@@ -356,7 +331,7 @@
 					<div class="col-md-6">
 						<div class="d-flex align-items-center mb-2">
 							<i class="ki-duotone ki-message-text fs-2 me-2"> <span
-								class="path1"></span> <span class="path2"></span>
+								class="path1"></span> <span class="path2"></span> <span class="path3"></span>
 							</i> <span id="desc"></span>
 						</div>
 					</div>
@@ -539,10 +514,11 @@ var AppCalendar = function() {
                 start: '${holiday.start_date}',
                 end: moment('${holiday.end_date}').add(1, 'days').format("YYYY-MM-DD"),
                 description: '${holidayDescClean}',
-                backgroundColor: '#dc3545',
-                borderColor: '#dc3545',
+                backgroundColor: '#F1F1F4',
+                borderColor: '#F1F1F4',
+                textColor: '#071437',
                 allDay: true,
-                className: 'fc-event-danger'
+                className: 'fc-event-secondary'
             });
         </c:forEach>
         return events;
@@ -623,9 +599,9 @@ var AppCalendar = function() {
         case 'Unfinished Work': 
             return { className: 'bg-warning border-warning ' };
         case 'Incomplete': 
-            return { className: 'bg-secondary border-secondary ' };
+            return { className: 'bg-dark border-dark ' };
         default: 
-            return { className: 'bg-secondary border-secondary ' };
+            return { className: 'bg-dark border-dark ' };
     	}
     }
     
@@ -666,9 +642,12 @@ var AppCalendar = function() {
     	var events = calendar.getEvents();
     	var $tableBody = $('#calendarTableBody');
     	$tableBody.empty();
-
-    	var start = moment(view.start);
-    	var end = moment(view.end);
+    	
+    	var currentDate = calendar.getDate();
+    	//var start = moment(view.start);
+    	//var end = moment(view.end);
+    	var start = moment(currentDate).startOf('month');
+    	var end = moment(currentDate).endOf('month').add(1, 'days');
     	var today = moment();
 
     	for (var day = start.clone(); day.isBefore(end); day.add(1, 'days')) {
@@ -701,7 +680,7 @@ var AppCalendar = function() {
             } else if (dayEvents.length > 0) {
         	    // Check holiday first
         	    var holidayEvent = dayEvents.find(function(ev) {
-        	        return ev.classNames.includes('fc-event-danger');
+        	        return ev.classNames.includes('fc-event-secondary');
         	    });
         	    if (holidayEvent) {
         	        status = getHolidayStatusHTML(holidayEvent);
@@ -715,53 +694,62 @@ var AppCalendar = function() {
         	            status = statusLeave;
         	        } else {
         	            // Then Check work time (Check in - Check out)
-        	            var workEvent = dayEvents.find(function(ev) {
-        	                return ev.extendedProps && ev.extendedProps.eventType === 'work';
-        	            });
-        	            if (workEvent) {
-        	            	const typeIn = Number(workEvent.extendedProps.workTypeIn);
-        	            	checkin = workEvent.extendedProps.checkin 
-        	            	    ? (typeIn === 1 
-        	            	          ? '<i class="ki-duotone ki-home-2 fs-2 text-gray-600 me-1 align-middle">' +
-              	            	            '<span class="path1"></span>' +
-            	            	            '<span class="path2"></span>' +
-            	            	            '</i> '
-        	            	          : typeIn === 2 
-        	            	            ? '<i class="ki-duotone ki-map fs-2 text-primary me-1 align-middle">' +
-                      	            	  	'<span class="path1"></span>' +
-                    	            	  	'<span class="path2"></span>' +
-                    	            	  	'</i> ' 
-        	            	            : ''
-        	            	      ) + workEvent.extendedProps.checkin.substring(11,16)
-        	            	    : '';
-        	            	const typeOut = Number(workEvent.extendedProps.workTypeOut);
-        	            	checkout = workEvent.extendedProps.checkout 
-        	            	    ? (typeOut === 1 
-        	            	          ? '<i class="ki-duotone ki-home-2 fs-2 text-gray-600 me-1 align-middle">' +
-        	            	            	'<span class="path1"></span>' +
-        	            	            	'<span class="path2"></span>' +
-        	            	            	'</i>  ' 
-        	            	          : typeOut === 2 
-        	            	            ? '<i class="ki-duotone ki-map fs-2 text-primary me-1 align-middle">' +
-                	            	     	 '<span class="path1"></span>' +
-                	            	      	'<span class="path2"></span>' +
-                	            	      	'</i> ' 
-        	            	            : ''
-        	            	      ) + workEvent.extendedProps.checkout.substring(0,5)
-        	            	    : '';
-            	            desIn = workEvent.extendedProps.descriptionIn ? '<i class="ki-duotone ki-message-text-2 fs-2 text-gray-500 me-1 align-middle">' +
-            	                '<span class="path1"></span>' +
-            	                '<span class="path2"></span>' +
-            	                '</i>' + '<span class="fs-6 fw-400">' + workEvent.extendedProps.descriptionIn + '</span>'
-            	                : '';
-            	            desOut = workEvent.extendedProps.descriptionOut ? '<i class="ki-duotone ki-message-text-2 fs-2 text-gray-500 me-1 align-middle">' +
-            	                '<span class="path1"></span>' +
-            	                '<span class="path2"></span>' +
-            	                '</i>' + '<span class="fs-6 fw-400">' + workEvent.extendedProps.descriptionOut + '</span>'
-            	                : '';
-        	                workinghour = workEvent.extendedProps.workinghour || '';
-        	                status = workEvent.extendedProps.status;
-        	            }
+						var workEvents = dayEvents.filter(function(ev) {
+							return ev.extendedProps && ev.extendedProps.eventType === 'work';
+						});
+						
+						if (workEvents.length > 0) {
+                        workEvents.sort(function(a, b) { 
+                            return moment(a.start).diff(moment(b.start)); 
+                        });
+
+                        var totalWorkingMinutes = 0;
+
+                        workEvents.forEach(function(workEvent, index) {
+                            var separator = index > 0 ? '<div class="separator separator-dashed my-2"></div>' : '';
+
+                            // --- Check-in ---
+                            const typeIn = Number(workEvent.extendedProps.workTypeIn);
+                            var iconIn = (typeIn === 1) ? '<i class="ki-duotone ki-home-2 fs-2 text-gray-600 me-1 align-middle"><span class="path1"></span><span class="path2"></span></i> ' 
+                                       : (typeIn === 2) ? '<i class="ki-duotone ki-map fs-2 text-primary me-1 align-middle"><span class="path1"></span><span class="path2"></span><span class="path3"></span></i> ' 
+                                       : '';
+                            
+                            var timeIn = workEvent.extendedProps.checkin ? iconIn + workEvent.extendedProps.checkin.substring(11, 16) : '';
+                            var desIn = workEvent.extendedProps.descriptionIn ? 
+                                '<div class="text-muted fs-7 ms-1">' + workEvent.extendedProps.descriptionIn + '</div>' : '';
+
+                            checkin += separator + '<div>' + timeIn + desIn + '</div>';
+
+
+                            // --- Check-out ---
+                            const typeOut = Number(workEvent.extendedProps.workTypeOut);
+                            var iconOut = (typeOut === 1) ? '<i class="ki-duotone ki-home-2 fs-2 text-gray-600 me-1 align-middle"><span class="path1"></span><span class="path2"></span></i> ' 
+                                        : (typeOut === 2) ? '<i class="ki-duotone ki-map fs-2 text-primary me-1 align-middle"><span class="path1"></span><span class="path2"></span><span class="path3"></span></i> ' 
+                                        : '';
+                            
+                            var timeOut = workEvent.extendedProps.checkout ? iconOut + workEvent.extendedProps.checkout.substring(0, 5) : '';
+                            var desOut = workEvent.extendedProps.descriptionOut ? 
+                                '<div class="text-muted fs-7 ms-1">' + workEvent.extendedProps.descriptionOut + '</div>' : '';
+
+                            checkout += separator + '<div>' + timeOut + desOut + '</div>';
+
+
+                            // --- Working Hours ---
+                            var currentWh = parseInt(workEvent.extendedProps.workinghour) || 0;
+                            totalWorkingMinutes += currentWh;
+
+                            status = workEvent.extendedProps.status;
+                        });
+
+                        if (totalWorkingMinutes > 0) {
+                            var hrs = Math.floor(totalWorkingMinutes / 60);
+                            var mins = totalWorkingMinutes % 60;
+                            workinghour = ('0' + hrs).slice(-2) + ':' + ('0' + mins).slice(-2);
+                        } else {
+                            workinghour = ''; 
+                        }
+                    }
+
         	        }
         	    }
         	}
@@ -773,7 +761,7 @@ var AppCalendar = function() {
             }
             
             var isHoliday = dayEvents.some(function(ev) { 
-                return ev.classNames.includes('fc-event-danger'); 
+                return ev.classNames.includes('fc-event-secondary'); 
             });
             if (isHoliday) {
                 rowStyle = "bg-light";
@@ -831,7 +819,7 @@ var AppCalendar = function() {
 	    var year = moment(view.currentStart).year();
 	    var month = moment(view.currentStart).month();
 	    
-	    var holidayEvents = events.filter(ev => ev.classNames.includes("fc-event-danger"));
+	    var holidayEvents = events.filter(ev => ev.classNames.includes("fc-event-secondary"));
 	    
 	    var summary = {
 	        workingDay: calculateWorkingDays(year, month, holidayEvents),
@@ -866,7 +854,7 @@ var AppCalendar = function() {
 	            
 	        } else if (dayEvents.length > 0) {
 	            // holiday
-	            if (dayEvents.some(ev => ev.classNames.includes("fc-event-danger"))) {
+	            if (dayEvents.some(ev => ev.classNames.includes("fc-event-secondary"))) {
 	                status = "Holiday";
 	                summary.holiday++;
 	            }
@@ -922,10 +910,7 @@ var AppCalendar = function() {
     
 	function getHolidayStatusHTML(holidayEvent) {
 	    var title = holidayEvent.title;
-	    return '<span class="fs-6 text-gray-600 fw-bold">' + 
-	           '<span class="bullet bullet-dot bg-danger me-2 h-10px w-10px"></span>' + 
-	           title + 
-	           '</span>';
+	    return '<span class="badge badge-secondary">'+ title +'</span>';
 	}
 	
 	function getDayIconClass(dayName) {
@@ -945,17 +930,17 @@ var AppCalendar = function() {
     function getWorkStatusHTML(status) {
         switch(status) {
         	case 'On Time': 
-        	    return '<span class="fs-6 text-gray-600 fw-bold"><span class="bullet bullet-dot bg-success me-2 h-10px w-10px"></span>On Time</span>';
+        	    return '<span class="badge badge-success fw-semibold me-2">On Time</span>';
         	case 'Incomplete': 
-        	    return '<span class="fs-6 text-gray-600 fw-bold"><span class="bullet bullet-dot bg-dark me-2 h-10px w-10px"></span> Incomplete</span>';
+        	    return '<span class="badge badge-dark fw-semibold me-2">Incomplete</span>';
         	case 'Unfinished Work': 
-        	    return '<span class="fs-6 text-gray-600 fw-bold"><span class="bullet bullet-dot bg-warning me-2 h-10px w-10px"></span> Unfinished Work</span>';
+        	    return '<span class="badge badge-warning fw-semibold me-2">Unfinished Work</span>';
         	case 'Late': 
-        	    return '<span class="fs-6 text-gray-600 fw-bold"><span class="bullet bullet-dot bg-warning me-2 h-10px w-10px"></span> Late</span>';
+        	    return '<span class="badge badge-warning fw-semibold me-2">Late</span>';
         	case 'Early out': 
-        	    return '<span class="fs-6 text-gray-600 fw-bold"><span class="bullet bullet-dot bg-warning me-2 h-10px w-10px"></span> Early out</span>';
+        	    return '<span class="badge badge-warning fw-semibold me-2">Early out</span>';
         	case 'No Record': 
-        	    return '<span class="fs-6 text-gray-600 fw-bold"><span class="bullet bullet-dot bg-dark me-2 h-10px w-10px"></span> No Record</span>';
+        	    return '<span class="badge badge-danger fw-semibold me-2">No Record</span>';
         	default: 
         	    return status || '';
         }
