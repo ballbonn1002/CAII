@@ -179,7 +179,7 @@
 					</div>
 					<!--end:Menu item-->
 					<!--begin:Menu item-->
-					<div class="menu-item">
+					<!-- <div class="menu-item">
 						<a class="menu-link" href="#" data-route="#">
 							<span class="menu-icon"> <i
 								class="ki-duotone ki-timer fs-1"> <span class="path1"></span>
@@ -187,11 +187,11 @@
 							</i>
 						</span> <span class="menu-title">My OT</span>
 						</a>
-					</div>
+					</div> -->
 					<!--end:Menu item-->
 					<!--begin:Menu item-->
-					<div class="menu-item">
-						<!--begin:Menu link-->
+					<!-- <div class="menu-item">
+						begin:Menu link
 						<a class="menu-link" href="#" data-route="#"> <span class="menu-icon">
 								<i class="ki-duotone ki-delivery-time fs-1"> <span
 									class="path1"></span> <span class="path2"></span> <span
@@ -200,8 +200,8 @@
 							</i>
 						</span> <span class="menu-title">My Travel</span>
 						</a>
-						<!--end:Menu link-->
-					</div>
+						end:Menu link
+					</div> -->
 					<!--end:Menu item-->
 
 					<!--begin:Menu item-->
@@ -228,16 +228,16 @@
 					</div>
 					<!--end:Menu item-->
 					<!--begin:Menu item-->
-					<div class="menu-item">
-						<!--begin:Menu link-->
+					<!-- <div class="menu-item">
+						begin:Menu link
 						<a class="menu-link" href="#" data-route="#"> <span class="menu-icon">
 								<i class="ki-duotone ki-watch fs-1"> <span class="path1"></span>
 									<span class="path2"></span>
 							</i>
 						</span> <span class="menu-title">Check In - Approve</span>
 						</a>
-						<!--end:Menu link-->
-					</div>
+						end:Menu link
+					</div> -->
 					<!--end:Menu item-->
 					
 					<!--Leave Approve-->
@@ -262,8 +262,8 @@
 					<!--Leave Approve-->
 
 					<!--begin:Menu item-->
-					<div class="menu-item">
-						<!--begin:Menu link-->
+					<!-- <div class="menu-item">
+						begin:Menu link
 						<a class="menu-link" href="#" data-route="#">
 							<span class="menu-icon"> <i
 								class="ki-duotone ki-timer fs-1"> <span class="path1"></span>
@@ -271,12 +271,12 @@
 							</i>
 						</span> <span class="menu-title">OT Approve</span>
 						</a>
-						<!--end:Menu link-->
-					</div>
+						end:Menu link
+					</div> -->
 					<!--end:Menu item-->
 					<!--begin:Menu item-->
-					<div class="menu-item">
-						<!--begin:Menu link-->
+					<!-- <div class="menu-item">
+						begin:Menu link
 						<a class="menu-link" href="#" data-route="#"> <span class="menu-icon">
 								<i class="ki-duotone ki-delivery-time fs-1"> <span
 									class="path1"></span> <span class="path2"></span> <span
@@ -285,8 +285,8 @@
 							</i>
 						</span> <span class="menu-title">Travel Approve</span>
 						</a>
-						<!--end:Menu link-->
-					</div>
+						end:Menu link
+					</div> -->
 					<!--end:Menu item-->
 
 					<!--begin:Menu item-->
@@ -376,16 +376,16 @@
 					</div>
 					<!--end:Menu item-->
 					<!--begin:Menu item-->
-					<div class="menu-item">
-						<!--begin:Menu link-->
+					<!-- <div class="menu-item">
+						begin:Menu link
 						<a class="menu-link" href="#" data-route="#"> <span class="menu-icon">
 								<i class="ki-duotone ki-monitor-mobile fs-1"> <span
 									class="path1"></span> <span class="path2"></span>
 							</i>
 						</span> <span class="menu-title">Leave Type</span>
 						</a>
-						<!--end:Menu link-->
-					</div>
+						end:Menu link
+					</div> -->
 					<!--end:Menu item-->
 					<!--begin:Menu item-->
 					<div class="menu-item">
@@ -414,8 +414,8 @@
 					</div>
 					<!--end:Menu item-->
 					<!--begin:Menu item-->
-					<div class="menu-item">
-						<!--begin:Menu link-->
+					<!-- <div class="menu-item">
+						begin:Menu link
 						<a class="menu-link" href="#" data-route="#">
 							<span class="menu-icon"> <i
 								class="ki-duotone ki-book-open fs-1"> <span class="path1"></span>
@@ -424,12 +424,12 @@
 							</i>
 						</span> <span class="menu-title">Article</span>
 						</a>
-						<!--end:Menu link-->
-					</div>
+						end:Menu link
+					</div> -->
 					<!--end:Menu item-->
 					<!--begin:Menu item-->
-					<div class="menu-item">
-						<!--begin:Menu link-->
+					<!-- <div class="menu-item">
+						begin:Menu link
 						<a class="menu-link" href="#" data-route="#">
 							<span class="menu-icon"> 
 							<i class="ki-duotone ki-user-square fs-1"> 
@@ -437,8 +437,8 @@
 							</i>
 						</span> <span class="menu-title">Careers</span>
 						</a>
-						<!--end:Menu link-->
-					</div>
+						end:Menu link
+					</div> -->
 					<!--end:Menu item-->
 
 					<!--begin:Menu item-->
