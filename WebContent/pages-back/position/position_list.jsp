@@ -227,7 +227,7 @@ $(function () {
   }).get();
 
   const dt = $('#kt_table').DataTable({
-    scrollX: true,
+    //scrollX: true,
     scrollCollapse: true,
     autoWidth: false,
     responsive: false,

@@ -58,16 +58,6 @@
 </head>
 
 <body>
-<c:set var="importStatus" value="${sessionScope.flashImportStatus}" scope="request" />
-<c:set var="importInserted" value="${sessionScope.flashImportInserted}" scope="request" />
-<c:set var="importSkipped" value="${sessionScope.flashImportSkipped}" scope="request" />
-<c:set var="importElapsed" value="${sessionScope.flashImportElapsed}" scope="request" />
-
-<c:remove var="flashImportStatus" scope="session" />
-<c:remove var="flashImportInserted" scope="session" />
-<c:remove var="flashImportSkipped" scope="session" />
-<c:remove var="flashImportElapsed" scope="session" />
-
     <!--begin::Main-->
     <div class="app-main flex-column flex-row-fluid" id="kt_app_main">
         <!--begin::Content wrapper-->
@@ -112,10 +102,11 @@
                                     </a>
 
                                     <form id="upload_form"
-                                          action="${pageContext.request.contextPath}/upload_holiday"
-                                          method="post"
-                                          enctype="multipart/form-data"
-                                          class="d-inline">
+									      action="${pageContext.request.contextPath}/upload_holiday"
+									      method="post"
+									      enctype="multipart/form-data"
+									      class="d-inline">
+
                                         <label class="btn btn-light-info me-3 fw-semibold mb-0" for="importFile">
                                             Import
                                             <input id="importFile"
@@ -155,10 +146,10 @@
                             <!--begin::Table-->
                             <div class="table-responsive">
                                 <table class="table table-striped table-hover align-middle table-row-bordered fs-6 gy-5"
-                                       id="kt_table" style="min-width: 1200px;">
+                                       id="kt_table">
                                     <thead>
                                         <tr class="text-start text-gray-500 fw-bold fs-7 text-uppercase gs-0 border-bottom border-gray-200">
-                                            <th style="width: 120px; padding-left: 40px;" class="text-start">#</th>
+                                            <th style="width: 120px;" class="text-start px-6 ">#</th>
                                             <th style="width: 350px;">Start Date</th>
                                             <th style="width: 350px;">End Date</th>
                                             <th style="width: 350px;">Name</th>
@@ -280,7 +271,7 @@
     <script>
         $(document).ready(function () {
             $('#kt_table').DataTable({
-                scrollX: true,
+                //scrollX: true,
                 searching: false,
                 paging: false,
                 info: false,
@@ -292,32 +283,79 @@
     </script>
 
     <script>
-        document.getElementById('importFile').addEventListener('change', function () {
-            if (this.files && this.files.length) {
-                document.getElementById('upload_form').submit();
-            }
-        });
-    </script>
-    
-    <script>
-document.addEventListener("DOMContentLoaded", function () {
-    const status = "${importStatus}";
-    if (status === "success") {
-        Swal.fire({
-            icon: "success",
-            title: "Import Success!",
-        });
-    } else if (status === "error") {
-        Swal.fire({
-            icon: "error",
-            title: "Import Failed!",
-            text: "There was a problem importing your file. Please try again."
-        });
-    }
-});
+    document.getElementById('importFile').addEventListener('change', function () {
+        if (!(this.files && this.files.length)) {
+            return;
+        }
+
+        const file = this.files[0];
+        const fileName = file.name.toLowerCase();
+
+
+        const isExcel =
+            fileName.endsWith('.xls') ||
+            fileName.endsWith('.xlsx');
+
+        if (!isExcel) {
+
+            this.value = '';
+
+            Swal.fire({
+                icon: 'error',
+                title: 'Invalid file type',
+                text: 'Can upload only Excel file(.xls or .xlsx) ',
+                confirmButtonText: 'OK'
+            });
+            return;
+        }
+
+        // ถ้าชนิดไฟล์ถูกต้อง ค่อย submit ฟอร์ม
+        document.getElementById('upload_form').submit();
+    });
 </script>
 
     
+<c:set var="__status" value="${param.importStatus}" />
+<c:if test="${empty __status}">
+    <c:set var="__status" value="${sessionScope.importStatus}" />
+</c:if>
+
+<c:set var="__inserted"  value="${sessionScope.importInserted}" />
+<c:set var="__duplicate" value="${sessionScope.importDuplicate}" />
+
+<c:if test="${not empty __status}">
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const status    = "${__status}";
+            const inserted  = ${empty __inserted ? 0 : __inserted};
+            const duplicate = ${empty __duplicate ? 0 : __duplicate};
+
+            if (status === "success") {
+                Swal.fire({
+                    icon: "success",
+                    title: "Import completed",
+                    html:
+                        '<div style="text-align:left">' +
+                            '<p><b>Inserted rows:</b> ' + inserted + '</p>' +
+                            '<p><b>Skipped duplicates:</b> ' + duplicate + '</p>' +
+                        '</div>'
+                });
+            } else if (status === "error") {
+                Swal.fire({
+                    icon: "error",
+                    title: "Import failed",
+                    text: "There was a problem while importing your file. Please check the file format and data."
+                });
+            }
+        });
+    </script>
+
+    <!-- ล้างค่าใน session กัน alert ซ้ำรอบถัดไป -->
+    <c:remove var="importStatus"    scope="session" />
+    <c:remove var="importInserted"  scope="session" />
+    <c:remove var="importDuplicate" scope="session" />
+</c:if>
+   
     <!--end::Scripts-->
 </body>
 </html>

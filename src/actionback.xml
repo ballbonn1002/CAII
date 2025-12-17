@@ -222,12 +222,51 @@
 			<!-- <result name="input" type="tiles">admin_edit_userprofile</result> -->
 			<result name="error">/index.jsp</result>
 		</action>
-		<!-- เพิ่ม function add -->
+		
+		<action name="update-user-statustest"
+			class="com.cubesofttech.action.UserAction"
+			method="updateUserStatustest">
+			<result name="json">/pages-back/common/json.jsp</result>
+			<result name="error">/index.jsp</result>
+		</action>
+		
+		<action name="user-perform-changepass"
+			class="com.cubesofttech.action.UserAction" method="changepass">
+			<result name="success" type="redirectAction">user-edit?userId=${userId}
+			</result>
+			<result name="error" type="redirectAction">change-password?massage=11</result>
+		</action>
+		<!-- User add -->
+		<action name="user-add"
+			class="com.cubesofttech.action.UserAction" method="open">
+			<result name="success" type="tiles">user.add</result>
+			<result name="error">/index.jsp</result>
+		</action>
+		
 		<action name="user-perform-add"
 			class="com.cubesofttech.action.UserAction" method="performAdd">
 			<result name="success" type="redirectAction">user-edit?userId=${userId}
 			</result>
 			<result name="error" type="tiles">user.add</result>
+		</action>
+		
+		<action name="user-perform-add"
+			class="com.cubesofttech.action.UserAction" method="performAdd">
+			<result name="success" type="redirectAction">user-edit?userId=${userId}
+			</result>
+			<result name="error" type="tiles">user.add</result>
+		</action>
+		
+		<action name="user-delete"
+            class="com.cubesofttech.action.UserAction" method="deleteUser">
+        	<result name="success" type="redirectAction">user-list</result>
+        	<result name="error">/index.jsp</result>
+    	</action>
+		
+		<action name="user_noti"
+			class="com.cubesofttech.action.UserAction" method="user_notifi">
+			<result name="success" type="tiles">user.add</result>
+			<result name="error">/index.jsp</result>
 		</action>
 		<!-- Search User with Ajax -->
 		<action name="search-User"
@@ -282,12 +321,16 @@
 	</action>
 	
 	<action name="upload_holiday"
-        class="com.cubesofttech.action.FileUploadAction"
-        method="upload_holiday">
-    	<result name="toList" type="redirectAction">
-        <param name="actionName">holiday_list</param>
-    	</result>
-	</action>
+			class="com.cubesofttech.action.FileUploadAction" method="uploadholiday">
+			<result name="success" type="redirectAction">holiday_list</result>
+			<result name="error">/index.jsp</result>
+		</action>
+	
+	<action name="upload_timesheet"
+			class="com.cubesofttech.action.FileUploadAction" method="uploadexcel">
+			<result name="success" type="tiles">timesheet.edit</result>
+			<result name="error">/index.jsp</result>
+		</action>
 
 
 	

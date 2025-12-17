@@ -26,6 +26,7 @@ import org.apache.log4j.Logger;
 import org.apache.struts2.ServletActionContext;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.cubesofttech.dao.WorkHoursDAO;
 import com.cubesofttech.dao.BorrowDAO;
 import com.cubesofttech.dao.DepartmentDAO;
 import com.cubesofttech.dao.EquipmentDAO;
@@ -86,6 +87,9 @@ public class UserAction extends ActionSupport {
 
 	@Autowired
 	private JobSiteTeamDAO jobSiteTeamDAO;
+	
+	@Autowired
+	private WorkHoursDAO workHoursDAO;
 
 	private User onlineUser = (User) request.getSession().getAttribute("onlineUser");
 
@@ -165,8 +169,25 @@ public class UserAction extends ActionSupport {
 	private String id_sitejob;
 	
 	
-	 private String work_type; 
+	 private String work_type;
+	 
+	 public String getWorkType() {
+		    return work_type;
+		}
+
+		public void setWorkType(String work_type) {
+		    this.work_type = work_type;
+		}
+		
 	 private String onsite_num;
+	 
+	 public String getOnsiteNum() {
+		    return onsite_num;
+		}
+
+		public void setOnsiteNum(String onsite_num) {
+		    this.onsite_num = onsite_num;
+		}
 	
 
 	public String getId_sitejob() {
@@ -439,18 +460,89 @@ public class UserAction extends ActionSupport {
 
 	public String list() {
 		try {
-			List<Map<String, Object>> cubesoftUsers = userDAO.Query_Userlist();
-		
-			for (Map<String, Object> map : cubesoftUsers) {
-				String userId = (String) map.get("id");
-				List<Map<String, Object>> siteList = jobsiteDAO.getNameSiteListByUserId(userId);
+	        List<Map<String, Object>> cubesoftUsers = userDAO.Query_Userlist();
+	    
+	        for (Map<String, Object> map : cubesoftUsers) {
+	            String userId = (String) map.get("id");
 
-				if (siteList == null) {
-					siteList = new ArrayList<>();
-				}
 
-				map.put("job_site", siteList);
-			}
+	            List<Map<String, Object>> siteList = jobsiteDAO.getNameSiteListByUserId(userId);
+	            if (siteList == null) {
+	                siteList = new ArrayList<>();
+	            }
+	            map.put("job_site", siteList);
+
+	            try {
+	                List<Map<String, Object>> rawSites = jobsiteDAO.findJobsiteUser(userId); 
+
+	                List<Map<String, Object>> relatedSites = new ArrayList<>();
+	                if (rawSites != null) {
+	                    for (Map<String, Object> js : rawSites) {
+	                        Object rel = js.get("is_related");
+	                        if ("1".equals(String.valueOf(rel))) {
+	                            relatedSites.add(js);
+	                        }
+	                    }
+	                }
+
+	                map.put("job_site_all", relatedSites);
+
+	                if (!relatedSites.isEmpty()) {
+	                    StringBuilder sb = new StringBuilder();
+	                    for (Map<String, Object> js : relatedSites) {
+	                        Object nameObj = js.get("name_site");
+	                        if (nameObj != null) {
+	                            if (sb.length() > 0) sb.append(", ");
+	                            sb.append(nameObj.toString());
+	                        }
+	                    }
+	                    map.put("job_site_all_names", sb.toString());
+	                } else {
+	                    map.put("job_site_all_names", "");
+	                }
+
+	            } catch (Exception ex) {
+	                map.put("job_site_all", new ArrayList<Map<String, Object>>());
+	                map.put("job_site_all_names", "");
+	            }
+	            
+	            if (map.get("end_date") == null) {
+	                // à¸•à¸±à¸§à¸­à¸¢à¹ˆà¸²à¸‡: à¸–à¹‰à¸²à¸‚à¸­à¸‡à¹€à¸”à¸´à¸¡à¹ƒà¸Šà¹‰à¸Šà¸·à¹ˆà¸­ resign_date
+	                Object resign = map.get("resign_date");
+	                if (resign != null) {
+	                    map.put("end_date", resign);
+	                }
+	            }
+
+	            // map work_type / onsite_num
+	            Object wtObj = map.get("work_type");
+	            String wt = wtObj != null ? wtObj.toString() : null;
+
+	            String work_type = null;
+	            if ("1".equals(wt)) {
+	                work_type = "On-site";
+	            } else if ("2".equals(wt)) {
+	                work_type = "Hybrid";
+	            } else if ("3".equals(wt)) {
+	                work_type = "WFH";
+	            }
+	            map.put("work_type", work_type);
+
+	            Object osObj = map.get("onsite_num"); 
+	            String os = osObj != null ? osObj.toString() : null;
+
+	            String onsite_num = null;
+	            if ("1".equals(os)) {
+	                onsite_num = "0.5-1 day";
+	            } else if ("2".equals(os)) {
+	                onsite_num = "2-3 day";
+	            } else if ("3".equals(os)) {
+	                onsite_num = "4-5 day";
+	            }
+	            map.put("onsite_num", onsite_num);
+	        }
+			
+			
 
 			/*
 			 * String cubesoftUsersJson = new Gson().toJson(cubesoftUsers);
@@ -586,8 +678,10 @@ public class UserAction extends ActionSupport {
 			request.setAttribute("borrow_history", borrowDAO.findHistoryByUser(selectUser.getId()));
 
 			List<Borrow> borrows = borrowDAO.findBorrowByUser(selectUser.getId());
-
+			
 			log.info("borrows=" + borrows);
+			
+
 
 			List<Equipment> equipments = new ArrayList<Equipment>();
 			for (int i = 0; i < borrows.size(); i++) {
@@ -648,7 +742,6 @@ public class UserAction extends ActionSupport {
 			/* String[] siteJobId = id_sitejob.split(","); */
 			String rawSiteJob = (id_sitejob == null) ? "" : id_sitejob.trim();
 
-			// ถ้าว่าง → array ว่าง
 			String[] siteJobId = rawSiteJob.isEmpty() ? new String[0] : rawSiteJob.split(",");
 
 			log.debug("siteJobId array = " + Arrays.toString(siteJobId));
@@ -684,10 +777,10 @@ public class UserAction extends ActionSupport {
 					}
 				}
 			}else {
-			    // ✅ กรณีไม่มีค่าเลย → ให้เซฟ record ค่าว่าง
+			    // Ã¢Å“â€¦ Ã Â¸ï¿½Ã Â¸Â£Ã Â¸â€œÃ Â¸ÂµÃ Â¹â€žÃ Â¸Â¡Ã Â¹Ë†Ã Â¸Â¡Ã Â¸ÂµÃ Â¸â€žÃ Â¹Ë†Ã Â¸Â²Ã Â¹â‚¬Ã Â¸Â¥Ã Â¸Â¢ Ã¢â€ â€™ Ã Â¹Æ’Ã Â¸Â«Ã Â¹â€°Ã Â¹â‚¬Ã Â¸â€¹Ã Â¸Å¸ record Ã Â¸â€žÃ Â¹Ë†Ã Â¸Â²Ã Â¸Â§Ã Â¹Ë†Ã Â¸Â²Ã Â¸â€¡
 			    JobSiteTeam emptyLink = new JobSiteTeam();
 			    emptyLink.setUser_id(UserIdEdit);
-			    emptyLink.setId_sitejob(""); // เก็บเป็น string ว่าง (เพราะ column NOT NULL)
+			    emptyLink.setId_sitejob(""); // Ã Â¹â‚¬Ã Â¸ï¿½Ã Â¹â€¡Ã Â¸Å¡Ã Â¹â‚¬Ã Â¸â€ºÃ Â¹â€¡Ã Â¸â„¢ string Ã Â¸Â§Ã Â¹Ë†Ã Â¸Â²Ã Â¸â€¡ (Ã Â¹â‚¬Ã Â¸Å¾Ã Â¸Â£Ã Â¸Â²Ã Â¸Â° column NOT NULL)
 			    jobSiteTeamDAO.save(emptyLink);
 			    log.debug("Added empty siteJobId for user=" + UserIdEdit);
 			}
@@ -702,7 +795,7 @@ public class UserAction extends ActionSupport {
 				}
 			}
 
-			// ถ้ามีไฟล์อัปโหลด
+			// Ã Â¸â€“Ã Â¹â€°Ã Â¸Â²Ã Â¸Â¡Ã Â¸ÂµÃ Â¹â€žÃ Â¸Å¸Ã Â¸Â¥Ã Â¹Å’Ã Â¸Â­Ã Â¸Â±Ã Â¸â€ºÃ Â¹â€šÃ Â¸Â«Ã Â¸Â¥Ã Â¸â€�
 			if (fileUpload != null) {
 				int maxId = fileuploadDAO.getMaxId() + 1;
 				ServletContext context = request.getServletContext();
@@ -729,7 +822,7 @@ public class UserAction extends ActionSupport {
 				u.setPath("/upload/user/" + maxId + "_" + fileUploadFileName);
 			}
 
-			// อัปเดตข้อมูล User ที่ซ้ำทั้งสองกรณี
+			// Ã Â¸Â­Ã Â¸Â±Ã Â¸â€ºÃ Â¹â‚¬Ã Â¸â€�Ã Â¸â€¢Ã Â¸â€šÃ Â¹â€°Ã Â¸Â­Ã Â¸Â¡Ã Â¸Â¹Ã Â¸Â¥ User Ã Â¸â€”Ã Â¸ÂµÃ Â¹Ë†Ã Â¸â€¹Ã Â¹â€°Ã Â¸Â³Ã Â¸â€”Ã Â¸Â±Ã Â¹â€°Ã Â¸â€¡Ã Â¸ÂªÃ Â¸Â­Ã Â¸â€¡Ã Â¸ï¿½Ã Â¸Â£Ã Â¸â€œÃ Â¸Âµ
 			u.setName(user.getName());
 			u.setNickName(user.getNickName());
 			u.setUsername(user_username);
@@ -754,6 +847,9 @@ public class UserAction extends ActionSupport {
 			 * if (password.equalsIgnoreCase(u.getPassword())) { u.setPassword(password); }
 			 * else { u.setPassword(MD5.getInstance().hashData(password.getBytes())); }
 			 */
+			
+			if (password.equalsIgnoreCase(u.getPassword())) { u.setPassword(password); }
+			else { u.setPassword(MD5.getInstance().hashData(password.getBytes())); }
 
 			u.setSocialSecurity(user.getSocialSecurity() != null ? user.getSocialSecurity() : "0");
 			u.setWithHoldAuto(user.getWithHoldAuto() != null ? user.getWithHoldAuto() : "0");
@@ -765,7 +861,7 @@ public class UserAction extends ActionSupport {
 			if (position_id != null)
 				u.setPositionId(position_id);
 
-			// กรณี page = 1 หรือ 2
+			// Ã Â¸ï¿½Ã Â¸Â£Ã Â¸â€œÃ Â¸Âµ page = 1 Ã Â¸Â«Ã Â¸Â£Ã Â¸Â·Ã Â¸Â­ 2
 			if (page.equals("1")) {
 				log.debug("user edit");
 				u.setEmailHost(user.getEmailHost());
@@ -828,7 +924,7 @@ public class UserAction extends ActionSupport {
 
 			userDAO.update(u);
 
-			// โหลดข้อมูลกลับ JSP
+			// Ã Â¹â€šÃ Â¸Â«Ã Â¸Â¥Ã Â¸â€�Ã Â¸â€šÃ Â¹â€°Ã Â¸Â­Ã Â¸Â¡Ã Â¸Â¹Ã Â¸Â¥Ã Â¸ï¿½Ã Â¸Â¥Ã Â¸Â±Ã Â¸Å¡ JSP
 			userId = user.getId();
 			request.setAttribute("selectUser", userDAO.findById(userId));
 			request.setAttribute("departmentList", departmentDAO.sequense());
@@ -887,35 +983,50 @@ public class UserAction extends ActionSupport {
 			List<Role> roleList = roleDAO.findAll();
 			request.setAttribute("roleList", roleList);
 
-			String email = request.getParameter("user.email");
+			String email = user.getEmail();
+	        String phone = user.getPhonenum();
+	        String nickname = user.getNickName();
+	        String nicknameEN = user.getNickNameEN();
+	        String titlenameTH = user.getTitleNameTH();
+	        String titlenameEN = user.getTitleNameEN();
+	        String gender = user.getGender();
+	        String role = user.getRoleId();
+	        String address = user.getAddress();
+	        String department = user.getDepartmentId();
+	        String position = user.getPositionId();
+	        
+	        if (password.equalsIgnoreCase(user.getPassword())) { user.setPassword(password); }
+			else { user.setPassword(MD5.getInstance().hashData(password.getBytes())); }
+	        
+//			String email = request.getParameter("user.email");
 //			String emailpas = request.getParameter("user.emailPassword");
 //			String emailpass = MD5.getInstance().hashData(emailpas.getBytes());
-			String phone = request.getParameter("user.phone_num");
-			String nickname = request.getParameter("user.nickName");
-			String nicknameEN = request.getParameter("user.nickNameEN");
-			String titlenameTH = request.getParameter("user.titleNameTH");
-			String titlenameEN = request.getParameter("user.titleNameEN");
+//			String phone = request.getParameter("user.phone_num");
+//			String nickname = request.getParameter("user.nickName");
+//			String nicknameEN = request.getParameter("user.nickNameEN");
+//			String titlenameTH = request.getParameter("user.titleNameTH");
+//			String titlenameEN = request.getParameter("user.titleNameEN");
 //			String emailhost = request.getParameter("user.emailHost");
-			String gender = request.getParameter("user.gender");
-			String role = request.getParameter("user.roleId");
-			String address = request.getParameter("user.address");
-			String department = request.getParameter("user.departmentId");
-			String position = request.getParameter("user.positionId");
-			String leaveQuota4 = request.getParameter("user.leaveQuota4");
-			BigDecimal lastYearQuota = new BigDecimal(leaveQuota4);
+//			String gender = request.getParameter("user.gender");
+//			String role = request.getParameter("user.roleId");
+//			String address = request.getParameter("user.address");
+//			String department = request.getParameter("user.departmentId");
+//			String position = request.getParameter("user.positionId");
+//			String leaveQuota4 = request.getParameter("user.leaveQuota4");
+//			BigDecimal lastYearQuota = new BigDecimal(leaveQuota4);
 
 			user.setTimeCreate(DateUtil.getCurrentTime());
 			user.setTimeUpdate(DateUtil.getCurrentTime());
-			String bd = request.getParameter("birthDate");
-			if (bd != null && !bd.equals("")) {
-				Date birthDate = Convert.parseDate(bd);
-				user.setBirthDate(birthDate);
-			}
-			String sd = request.getParameter("startDate");
-			if (sd != null && !sd.equals("")) {
-				Date startDate = Convert.parseDate(sd);
-				user.setStartDate(startDate);
-			}
+			String bd = this.birthDate; 
+	        if (bd != null && !bd.equals("")) {
+	            Date birthDate = Convert.parseDate(bd);
+	            user.setBirthDate(birthDate);
+	        }
+	        String sd = this.startDate; 
+	        if (sd != null && !sd.equals("")) {
+	            Date startDate = Convert.parseDate(sd);
+	            user.setStartDate(startDate);
+	        }
 			user.setEnable("1");
 			user.setName(user.getName().trim());
 			user.setNameEN(user.getNameEN().trim());
@@ -933,9 +1044,9 @@ public class UserAction extends ActionSupport {
 			user.setDepartmentId(department);
 			user.setPositionId(position);
 			user.setFlagSearch("1");
-			user.setLeaveQuota4(lastYearQuota);
-			user.setWorkTimeStart("9:00");
-			user.setWorkTimeEnd("18:00");
+//			user.setLeaveQuota4(lastYearQuota);
+//			user.setWorkTimeStart("9:00");
+//			user.setWorkTimeEnd("18:00");
 			user.setSocialSecurity("0");
 			user.setWithHoldAuto("0");
 			user.setBankType("");
@@ -943,7 +1054,44 @@ public class UserAction extends ActionSupport {
 			user.setPassportId("");
 
 			userDAO.save(user);
+			
+			
+			
+			if (fileUpload != null) {
+	            int maxId = fileuploadDAO.getMaxId() + 1;
+	            ServletContext context = request.getServletContext();
+	            String fileServerPath = context.getRealPath("/");
+	            String newFileName = maxId + "_" + fileUploadFileName;
 
+	            // Upload
+	            FileUtil.upload(fileUpload, fileServerPath + "upload/user/", newFileName);
+
+	            // Save File Log
+	            FileUpload fileupload = new FileUpload();
+	            fileupload.setFileId(maxId);
+	            fileupload.setUserId(user.getId());
+	            fileupload.setUserCreate(user.getId());
+	            
+	            // à¹�à¸¢à¸�à¸Šà¸·à¹ˆà¸­à¸�à¸±à¸šà¸™à¸²à¸¡à¸ªà¸�à¸¸à¸¥à¹„à¸Ÿà¸¥à¹Œ
+	            String name = fileUploadFileName;
+	            String type = "";
+	            int split = fileUploadFileName.lastIndexOf(".");
+	            if(split >= 0) {
+	                 name = fileUploadFileName.substring(0, split);
+	                 type = fileUploadFileName.substring(split);
+	            }
+	            fileupload.setName(name);
+	            fileupload.setType(type);
+	            fileupload.setSize(fileUploadSize);
+	            fileupload.setPath("/upload/user/" + newFileName);
+	            fileupload.setTimeCreate(DateUtil.getCurrentTime());
+	            fileuploadDAO.save(fileupload);
+
+	            // Update User Path
+	            user.setPath("/upload/user/" + newFileName);
+	            userDAO.update(user);
+	        }
+			
 			userId = user.getId();
 
 			return SUCCESS;
@@ -1221,7 +1369,7 @@ public class UserAction extends ActionSupport {
 
 	        response.setContentType("application/json; charset=UTF-8");
 	        response.getWriter().write(json);
-	        return NONE;   // จบที่นี่ ไม่ forward
+	        return NONE;   // Ã Â¸Ë†Ã Â¸Å¡Ã Â¸â€”Ã Â¸ÂµÃ Â¹Ë†Ã Â¸â„¢Ã Â¸ÂµÃ Â¹Ë† Ã Â¹â€žÃ Â¸Â¡Ã Â¹Ë† forward
 	    } catch (Exception e) {
 	        response.setStatus(500);
 	        response.setContentType("application/json; charset=UTF-8");
@@ -1246,6 +1394,17 @@ public class UserAction extends ActionSupport {
 	public String deleteUser() {
 		try {
 			String id = request.getParameter("id");
+			this.userId = id;
+			
+			List<Map<String, Object>> history = workHoursDAO.checkIn(id);
+			if (history != null && !history.isEmpty()) {
+				ServletActionContext.getResponse().setStatus(400);	            
+				List<User> userList = userDAO.findAll();
+	            request.setAttribute(User, userList);
+	            
+	            return ERROR;
+	        }
+			
 			User user = new User();
 			user = userDAO.findById(id);
 			log.debug(user);

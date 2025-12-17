@@ -77,6 +77,12 @@
 		<put-attribute name="body"
 			value="/pages-back/user/user_add.jsp" />
 	</definition>
+	
+	<definition name="borrowTable" extends="baseLayout">
+		<put-attribute name="body"
+			value="/pages-back/borrow/bTable.jsp" />
+	</definition>
+	
 	<!-- Check All Calendar -->
 	<definition name="CheckAllCalendar" extends="baseLayout">
 		<put-attribute name="title" value="Check All Calendar" />
