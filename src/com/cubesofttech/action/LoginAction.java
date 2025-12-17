@@ -54,7 +54,6 @@ public class LoginAction extends ActionSupport {
     private static final String ALL = CHAR_UPPER + CHAR_LOWER + CHAR_DIGIT;
     private static final int PASSWORD_LENGTH = 6;
     private final SecureRandom secureRandom = new SecureRandom();
-
     
 	@Autowired
 	private WorkHoursDAO workHoursDAO;
@@ -86,17 +85,12 @@ public class LoginAction extends ActionSupport {
 	String username;
 	String password;
 	
-    
-    
     private String useridOrEmail;
     // output to JSON
     private boolean exists;
     private String message;
     private String userId;
     private String email;
-
-    
-    
 
 	public String homePage() {
 		try {
@@ -580,6 +574,28 @@ public class LoginAction extends ActionSupport {
 			response.addCookie(cSuccess);
 			request.getSession().invalidate();
 			System.out.println(Constant.onlineUserList);
+			return SUCCESS;
+		} catch (Exception e) {
+			log.debug(e);
+			return ERROR;
+		}
+	}
+	
+	public String onlineUser() {
+		try {
+			String s1 = "";  
+			int i = 0 ;
+			for (String temp2 : Constant.onlineUserList) {
+				if ( i > 0) {
+					s1 = s1 + " , ";
+				}
+				i++;
+				s1 = s1+ "'" + temp2 + "'";
+			}
+			log.info(s1);  
+			List<Map<String, Object>> sessionOnlineUser  = userDAO.findRoleNameById(s1);
+			request.setAttribute("sessionOnlineUser", sessionOnlineUser);
+			log.info(sessionOnlineUser); 
 			return SUCCESS;
 		} catch (Exception e) {
 			log.debug(e);

@@ -270,7 +270,7 @@
 												<jsp:useBean id="now" class="java.util.Date" />
 												<fmt:formatDate var="todayStr" value="${now}" pattern="yyyy-MM-dd" />
 												<fmt:formatDate var="holidayStr" value="${hld.start_date}" pattern="yyyy-MM-dd" />
-												<c:if test="${holidayStr eq todayStr}}">
+												<c:if test="${holidayStr eq todayStr}">
 													<span class="badge badge-light-danger">Today</span>
 												</c:if>
 											</div>
@@ -317,6 +317,9 @@
 		<!--end::Content-->
 	</div>
 	<!--end::Content wrapper-->
+	<!--begin::Page loader-->
+	<div id="page-loader"></div>
+	<!--end::Page loader-->
 </div>
 <!--end:::Main-->
 <!--begin:::Modal-->
@@ -600,6 +603,25 @@ function saveCheckInOut(userId, workType, checkType, mode, selectDate, selectTim
 	    data.time = selectTime;
 	}
 	
+	var loadingEl = $("<div>")
+		.attr("id", "page-loader")
+		.css({
+            "position": "fixed",
+            "top": "0", "left": "0",
+            "width": "100%", "height": "100%",
+            "background-color": "rgba(0, 0, 0, 0.5)",
+            "z-index": "9999",
+            "display": "flex",
+            "align-items": "center",
+            "justify-content": "center",
+            "flex-direction": "column",
+            "backdrop-filter": "blur(2px)"
+        })
+        .html('<div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;"></div>'
+        	+'<span class="text-white fs-4 fw-bold mt-3">Processing...</span>');
+	
+	$("body").append(loadingEl);
+	
 	$.ajax({
 	    url: "saveCheckInOut",
 	    type: "POST",
@@ -614,14 +636,15 @@ function saveCheckInOut(userId, workType, checkType, mode, selectDate, selectTim
 	    			location.reload();
 	    		}, 2000);
 	      	} else {
+	      		$("#page-loader").remove();
 	      		toastr.error(res.message || "Failed to record your attendance. Please try again.");
 	      	}
 	    	
-	      console.log("Response:", res);
 	      $("#retroModal").modal("hide");
 	    },
 	    error: function (xhr, status, error) {
-	      toastr.error("Error saving data: " + error);
+	    	$("#page-loader").remove();
+	    	toastr.error("Error saving data: " + error);
 	    }
 	  });
 }
