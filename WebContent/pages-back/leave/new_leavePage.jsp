@@ -370,7 +370,7 @@
 											<!--DDL User -->
 
 											<!--Type of leave -->
-											<div class="mb-8">
+											<div class="mb-14">
 												<label class="form-label fw-semibold fs-5">Type of leave</label>
 												<div id="leaveTypes" class="row g-6 fs-4">
 													<!-- Loop Leave Type Javascript -->
@@ -378,55 +378,55 @@
 											</div>
 											<!--Type of leave -->
 
-											<div class="mb-6">
+											<div class="mb-10">
 												<div class="row g-6">
 
 													<!--Date range & half-day -->
-													<div class="row mb-8">
+													<!-- <div class="row mb-10"> -->
 
-														<!-- Date Range -->
-														<div class="row mb-8">
+													<!-- Date Range -->
+													<div class="row mb-10">
 
-															<div class="col-md-6">
+														<div class="col-md-6">
 
-																<div class="row mb-6 align-items-end">
-																	<!-- Start Date -->
-																	<div class="col-md-6">
-																		<label class="form-label fw-semibold fs-5">Start Date <span class="text-danger">*</span></label>
-																		<div class="input-group date date-picker input-daterange" data-provide="datepicker" data-date-format="dd M yyyy">
-																			<input type="text" class="form-control" id="date_from" name="from" autocomplete="off" required>
-																			<input class="hide" name="from_hidden" id="date_from_hidden" type="text" hidden>
-																		</div>
-																	</div>
-
-																	<!-- End Date -->
-																	<div class="col-md-6">
-																		<label class="form-label fw-semibold fs-5">End Date <span class="text-danger">*</span></label>
-																		<div class="input-group date date-picker input-daterange" data-provide="datepicker" data-date-format="dd M yyyy">
-																			<input type="text" class="form-control" id="date_to" name="to" autocomplete="off" required>
-																			<input class="hide" name="to_hidden" id="date_to_hidden" type="text" hidden>
-																		</div>
+															<div class="row align-items-end">
+																<!-- Start Date -->
+																<div class="col-md-6">
+																	<label class="form-label fw-semibold fs-5">Start Date <span class="text-danger">*</span></label>
+																	<div class="input-group date date-picker input-daterange" data-provide="datepicker" data-date-format="dd M yyyy">
+																		<input type="text" class="form-control" id="date_from" name="from" autocomplete="off" required>
+																		<input class="hide" name="from_hidden" id="date_from_hidden" type="text" hidden>
 																	</div>
 																</div>
 
-															</div>
-
-															<div class="col-md-6">
-																<label class="form-label required fs-5">ช่วงเวลาในการลา</label>
-																<select class="form-select input-daterange"
-																	id="halfDay" name="halfDay" required>
-																	<option value="0" selected>เต็มวัน</option>
-																	<option value="1">ช่วงเช้า</option>
-																	<option value="2">ช่วงบ่าย</option>
-																	<option value="3">เลือกช่วงเวลา</option>
-																</select>
+																<!-- End Date -->
+																<div class="col-md-6">
+																	<label class="form-label fw-semibold fs-5">End Date <span class="text-danger">*</span></label>
+																	<div class="input-group date date-picker input-daterange" data-provide="datepicker" data-date-format="dd M yyyy">
+																		<input type="text" class="form-control" id="date_to" name="to" autocomplete="off" required>
+																		<input class="hide" name="to_hidden" id="date_to_hidden" type="text" hidden>
+																	</div>
+																</div>
 															</div>
 
 														</div>
 
+														<div class="col-md-6">
+															<label class="form-label required fs-5">ช่วงเวลาในการลา</label>
+															<select class="form-select input-daterange"
+																id="halfDay" name="halfDay" required>
+																<option value="0" selected>เต็มวัน</option>
+																<option value="1">ช่วงเช้า</option>
+																<option value="2">ช่วงบ่าย</option>
+																<option value="3">เลือกช่วงเวลา</option>
+															</select>
+														</div>
+
 													</div>
 
-													<div class="row mb-8">
+													<!-- </div> -->
+
+													<div class="row mb-10">
 														<!-- Start Time -->
 														<div class="col-md-6">
 															<label class="form-label fw-semibold fs-5">Start Time <span class="text-danger">*</span></label>
@@ -447,7 +447,7 @@
 														</div>
 													</div>
 
-													<div class="row mb-8">
+													<div class="row mb-10">
 														<!-- Start Time -->
 														<div class="col-md-6">
 															<label class="form-label fw-semibold fs-5">Day</label>
@@ -468,7 +468,7 @@
 													</div>
 
 													<!--Description -->
-													<div class="mb-8">
+													<div class="mb-10">
 														<label class="form-label required fs-5">Description</label>
 
 														<textarea
@@ -485,7 +485,7 @@
 													</div>
 
 													<!--File Upload -->
-													<%-- <div class="mb-8">
+													<%-- <div class="mb-10">
 														<label class="form-label fs-5">Attach files</label>
 														<div class="d-flex flex-column">
 														
@@ -515,7 +515,7 @@
 														</div> --%>
 
 													<!--File Upload -->
-													<div class="mb-8">
+													<div class="mb-10">
 														<label class="form-label fs-5">Attach files</label>
 														<div class="d-flex flex-column">
 															<label for="myFile" id="lbFile" class="btn btn-primary w-150px mb-2 d-inline-flex align-items-center justify-content-center gap-2" style="height: 40px;">
