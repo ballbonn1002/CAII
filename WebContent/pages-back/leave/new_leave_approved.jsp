@@ -758,6 +758,13 @@
 						</div>
 
 					</div>
+					
+					<div id="change_panel">
+						<h5 class="text-primary sbold" id="status_title_action" style="margin-bottom:20px;"></h5>
+						<div><span>Reason <span class="text-danger">*</span></span></div>
+						<textarea class="form-control" rows="3" id="appr_reason"></textarea>
+					</div>
+					
 				</div>
 				<!-- Approver Info -->
 
@@ -767,6 +774,8 @@
 			<!--begin::Footer-->
 			<div class="modal-footer">
 				<button type="button" class="btn btn-lg btn-light" data-bs-dismiss="modal">Close</button>
+				<button type="button" value="2" class="btn btn-lg btn-danger" id="btn_reject">Reject</button>
+				<button type="button" value="1" class="btn btn-lg btn-success" id="btn_approve">Approved</button>
 			</div>
 			<!--end::Footer-->
 		</div>
@@ -971,10 +980,7 @@ function leaveStatus(id) {
 			$('#stime').html(obj.start_time);
 			$('#etime').html(obj.end_time);
 			$('#desc').html(obj.description);
-			$('#file')
-				.html(obj.leave_file_name + obj.leave_file_type)
-				.attr('href', 'preview_File?id=' + obj.leave_file_id)
-				.attr('target', '_blank');
+			$('#file').html(obj.leave_file_name + obj.leave_file_type).attr('href', 'preview_File?id=' + obj.leave_file_id).attr('target', '_blank');
 
 	      // leave type name
 			if (obj.leave_type_id == 1) { $('#leavetype').html("ลาพักร้อน"); }
@@ -986,7 +992,7 @@ function leaveStatus(id) {
 			if (obj.leave_type_id == 7) { $('#leavetype').html("ลาอื่นๆ"); }
 			if (obj.leave_type_id == 9) { $('#leavetype').html("อื่นๆ"); }
 
-	      // date formatting
+			// date formatting
 			var startdate = (obj.start_date).split(",");
 			var sdate = moment(startdate[0]).format("D MMM YYYY");
 			$('#sdate').html(sdate);
@@ -1001,57 +1007,49 @@ function leaveStatus(id) {
 			var tcreate = moment(timecreate[0]).format("D MMM YYYY");
 			$('#timecreate').html(tcreate);
 
-	      // leave status
+			$("#appr_reason").val("");
+
+			// leave status
 			if (obj.leave_status_id == '0') {
-				$('#leavestatus')
-					.html("Wait for Approving")
-					.removeClass()
-					.addClass('badge badge-light-warning');
+				//Wait for Approving
+				$('#leavestatus').html("Wait for Approving").removeClass().addClass('badge badge-light-warning');
 				$('#status_panel').hide();
-				$('#status_title').html("Approver")
-					.removeClass('text-danger')
-					.addClass('text-info');
-			}
-			else if (obj.leave_status_id == '1') {
-				$('#leavestatus')
-					.html("Approved")
-					.removeClass()
-					.addClass('badge badge-light-success');
-				$('#status_title')
-					.html("Approver")
-					.removeClass('text-danger')
-					.addClass('text-info');
+				$('#status_title_action').html("Approver").removeClass('text-danger').addClass('text-dark');
+				$("#change_panel").show();
+				$("#btn_reject").show().attr("onclick", "sentData(" + obj.leave_id + ", 2)");
+				$("#btn_approve").show().attr("onclick", "sentData(" + obj.leave_id + ", 1)");
+			} else if (obj.leave_status_id == '1') {
+				//Approved
+				$('#leavestatus').html("Approved").removeClass().addClass('badge badge-light-success');
+				$('#status_title').html("Approver").removeClass('text-danger').addClass('text-primary');
 				$('#status_panel').show();
+				$("#change_panel").hide();
+				$("#btn_reject").hide();
+				$("#btn_approve").hide();
 				$('#approved_detail').show();
 				$('#approver').html(obj.user_update);
 				$('#timeupdate').html(moment(obj.time_update).format("D MMM YYYY"));
 				$('#reason_s').html(obj.reason);
-			}
-			else if (obj.leave_status_id == '2') {
-				$('#leavestatus')
-					.html("Reject")
-					.removeClass()
-					.addClass('badge badge-light-danger');
-				$('#status_title')
-					.html("Approver")
-					.removeClass('text-danger')
-					.addClass('text-info');
+			} else if (obj.leave_status_id == '2') {
+				//Reject
+				$('#leavestatus').html("Reject").removeClass().addClass('badge badge-light-danger');
+				$('#status_title').html("Approver").removeClass('text-danger').addClass('text-primary');
 				$('#status_panel').show();
+				$("#change_panel").hide();
+				$("#btn_reject").hide();
+				$("#btn_approve").hide();
 				$('#approved_detail').show();
 				$('#approver').html(obj.user_update);
 				$('#timeupdate').html(moment(obj.time_update).format("D MMM YYYY"));
 				$('#reason_s').html(obj.reason);
-			}
-			else if (obj.leave_status_id == '3') {
-				$('#leavestatus')
-					.html("Cancel")
-					.removeClass()
-					.addClass('badge badge-light-dark');
-				$('#status_title')
-					.html("Cancel")
-					.removeClass('text-info')
-					.addClass('text-danger');
+			} else if (obj.leave_status_id == '3') {
+				//Cancel
+				$('#leavestatus').html("Cancel").removeClass().addClass('badge badge-light-dark');
+				$('#status_title').html("Cancel").removeClass('text-primary').addClass('text-danger');
 				$('#status_panel').show();
+				$("#change_panel").hide();
+				$("#btn_reject").hide();
+				$("#btn_approve").hide();
 				$('#approved_detail').show();
 				$('#approver').html(obj.user_update);
 				$('#timeupdate').html(moment(obj.time_update).format("D MMM YYYY"));
@@ -1060,8 +1058,8 @@ function leaveStatus(id) {
 		},
 		error: function () {
 			alert("Error retrieving leave detail.");
-		}
-	});
+        }
+    });
 }
 </script>
 <script>
@@ -1124,6 +1122,34 @@ function changStatus(id) {
         }
     });
 }
+
+function sentData(id, value) {
+	console.log("sentdata: " + id);
+	var appr_reason = $("#appr_reason").val();
+	console.log(appr_reason);
+	console.log(value);
+
+	if (value == 2 && (appr_reason.length == 0)) {
+		$("#appr_reason").attr("required", "true");
+		return false;
+	} else {
+		$("#btn_reject").attr("type", "submit");
+		$.ajax({
+				url: "Leave_inListUpdateStatus",
+				type: "POST",
+				data: {
+					"leave_id": id,
+					"status": value,
+					"reason": appr_reason
+				}
+			})
+			.done(function () {
+				console.log("sentData done");
+				location.reload();
+			});
+	}
+}
+
 </script>
 
 

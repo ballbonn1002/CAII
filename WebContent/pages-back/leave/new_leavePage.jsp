@@ -328,7 +328,6 @@
 					<!--begin::Content container-->
 					<div id="kt_app_content_container" class="app-container container-fluid">
 
-						<!-- DDL -->
 						<div class="d-flex flex-row">
 							<div class="flex-row-fluid mb-5">
 								<div class="card card-flush bgi-no-repeat bgi-size-contain bgi-position-x-center border-0 mb-5 mb-xl-10">
@@ -344,6 +343,7 @@
 												</div>
 
 												<!-- ด้านขวา -->
+												<!--DDL Status -->
 												<div class="d-flex justify-content-end">
 													<select class="form-select" id="status" name="status" disabled required style="min-width: 200px; max-width: 300px;">
 														<option value="0">Wait for approve</option>
@@ -353,8 +353,11 @@
 													</select>
 													<input type="hidden" name="status_hidden" id="status_hidden">
 												</div>
+												<!--DDL Status -->
+
 											</div>
 
+											<!--DDL User -->
 											<div class="mb-10">
 												<select id="user" name="user" class="form-select" onchange="userOnChange()" disabled required>
 													<option></option>
@@ -364,15 +367,17 @@
 												<input hidden name="user_hidden" id="user_hidden" type="text">
 												<input hidden name="leaveId_hidden" id="leaveId_hidden" type="text">
 											</div>
+											<!--DDL User -->
 
+											<!--Type of leave -->
 											<div class="mb-8">
 												<label class="form-label fw-semibold fs-5">Type of leave</label>
 												<div id="leaveTypes" class="row g-6 fs-4">
 													<!-- Loop Leave Type Javascript -->
 												</div>
 											</div>
-
 											<!--Type of leave -->
+
 											<div class="mb-6">
 												<div class="row g-6">
 
@@ -550,7 +555,6 @@
 								</div>
 							</div>
 						</div>
-						<!-- DDL -->
 
 					</div>
 					<!--end::Content container-->

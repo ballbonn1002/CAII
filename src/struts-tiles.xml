@@ -168,8 +168,8 @@
 	<!-- Leave Approve -->
 	<definition name="new_leave_approved" extends="baseLayout">
 		<put-attribute name="title" value="Leave approved" />
-		<put-attribute name="body"
-			value="/pages-back/leave/new_leave_approved.jsp" />
+		<put-attribute name="body" value="/pages-back/leave/new_leave_approved.jsp" />
+	</definition>
 	</definition>
 	<!-- Leave Approve -->
 	
