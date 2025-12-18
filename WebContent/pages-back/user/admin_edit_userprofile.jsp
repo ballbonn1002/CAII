@@ -265,20 +265,23 @@
                                             </c:otherwise>
                                         </c:choose>
                                         
-                                        <div class="border border-dashed rounded-3 px-4 py-2">
-                                            <div class="fw-semibold text-gray-900">
-                                                <c:choose>
-                                                <c:when test="${not empty selectUser.startDate}">
-                                                  <fmt:formatDate value="${selectUser.startDate}" pattern="dd MMM yyyy"/>
-                                                </c:when>
-                                                <c:otherwise>-</c:otherwise>
-                                              </c:choose>
-                                            </div>
-                                            <div class="text-muted fs-8">
-                                                <fmt:formatDate value="${selectUser.startDate}"
-                                                                pattern="dd MMM yyyy"/>
-                                            </div>
-                                        </div>
+                                        <div id="workDurationBlock" 
+										     class="border border-dashed rounded-3 px-4 py-2"
+										     data-start-date="<fmt:formatDate value='${selectUser.startDate}' pattern='yyyy-MM-dd'/>">
+										    
+										    <div class="fw-semibold text-gray-900" id="durationLabel">
+										        - 
+										    </div>
+										
+										    <div class="text-muted fs-8">
+										        <c:choose>
+										            <c:when test="${not empty selectUser.startDate}">
+										                <fmt:formatDate value="${selectUser.startDate}" pattern="dd MMM yyyy"/>
+										            </c:when>
+										            <c:otherwise>-</c:otherwise>
+										        </c:choose>
+										    </div>
+										</div>
 
                                         <div class="border border-dashed rounded-3 px-4 py-2">
                                             <div class="fw-semibold text-gray-900">
@@ -573,8 +576,10 @@
                                     <div class="col-md-6 fv-row">
                                         <label class="required form-label">Citizen ID</label>
                                         <input type="text" class="form-control"
-                                               name="user.citizenId"
-                                               maxlength="32"
+										       name="user.citizenId"
+										       name="user.citizenId"
+										       maxlength="13"
+										       pattern="[0-9]{13}"
                                                value="${selectUser.citizenId}" required />
                                     </div>
                                     <div class="col-md-6 fv-row">
@@ -611,7 +616,8 @@
                                         <label class="required form-label">Phone Number</label>
                                         <input type="text" class="form-control"
                                                name="user.phonenum"
-                                               maxlength="10"
+										       maxlength="10"
+       										   pattern="[0-9]{10}"
                                                value="${selectUser.phonenum}" required />
                                     </div>
 
@@ -1618,203 +1624,204 @@
     </script>
     
     <script>
-    document.addEventListener('DOMContentLoaded', function () {
 
-      // ====== อ้างอิงปุ่ม & ฟอร์มหลัก ======
-      const form              = document.querySelector('form[action="admin-perform-edit"]');
-      const btnDelete         = document.getElementById('btnDelete');
-      const btnCancel         = document.getElementById('btnCancel');
-      const btnPasswordCancel = document.getElementById('btnPasswordCancel');
-      const btnSubmit         = document.getElementById('btnSubmit');
+    function calculateWorkDuration() {
+        var container = document.getElementById('workDurationBlock');
+        var label = document.getElementById('durationLabel');
+        
+        if (!container || !label) return;
 
-      // ปุ่มในส่วน Security
-      const btnShowResetCard  = document.getElementById('btnShowResetCard');
-      const btnPasswordUpdate = document.getElementById('btnPasswordUpdate');
-      const resetPasswordCard = document.getElementById('resetPasswordCard');
+        var startStr = container.getAttribute('data-start-date');
+        if (!startStr) { label.textContent = "-"; return; }
 
-      function showSuccess(message) {
-        if (window.Swal) {
-          Swal.fire({ icon: 'success', text: message, confirmButtonText: 'OK' });
-        } else {
-          alert(message);
+        var startDate = new Date(startStr);
+        var now = new Date();
+
+        if (isNaN(startDate.getTime())) { label.textContent = "-"; return; }
+
+        var years = now.getFullYear() - startDate.getFullYear();
+        var months = now.getMonth() - startDate.getMonth();
+        var days = now.getDate() - startDate.getDate();
+
+        if (days < 0) {
+            months--;
+            var lastMonth = new Date(now.getFullYear(), now.getMonth(), 0);
+            days += lastMonth.getDate(); 
         }
-      }
-      function showError(message) {
-        if (window.Swal) {
-          Swal.fire({ icon: 'error', text: message, confirmButtonText: 'OK' });
-        } else {
-          alert(message);
+        if (months < 0) {
+            years--;
+            months += 12;
         }
-      }
 
-      if (btnSubmit && form) {
-        btnSubmit.addEventListener('click', function () {
-          form.submit();
+        var result = [];
+        if (years > 0) result.push(years + "y");
+        if (months > 0) result.push(months + "m");
+        if (years === 0 && months === 0) result.push(days + "d");
+
+        label.textContent = result.join(" ");
+    }
+
+    function forceOpenTab(targetId) {
+        var allCards = ['#account-info', '#employee-info', '#education-info', '#payment-info', '#security-info', '#borrow-info'];
+        allCards.forEach(function(id) { $(id).addClass('d-none'); });
+
+        $(targetId).removeClass('d-none').show();
+
+        $('#profileNav .nav-link').removeClass('active');
+        $('#profileNav .nav-link[data-target="' + targetId + '"]').addClass('active');
+
+        if (targetId === '#security-info' || targetId === '#borrow-info') {
+            $('#btnCancel, #btnSubmit').addClass('d-none');
+        } else {
+            $('#btnCancel, #btnSubmit').removeClass('d-none');
+        }
+    }
+
+
+    $(document).ready(function() {
+        
+        if (typeof flatpickr === 'function') {
+            $('[data-kt-date-picker="true"]').each(function() {
+                flatpickr(this, { dateFormat: 'd-m-Y', altInput: true, altFormat: 'j M Y', allowInput: true });
+            });
+        }
+        $('[data-control="select2"]').each(function() {
+            if ($(this).hasClass('select2-hidden-accessible')) return;
+            $(this).select2({ width: '100%', minimumResultsForSearch: 5 });
         });
-      }
 
-      // ====== ปุ่ม Cancel (หน้า edit) ======
-      if (btnCancel) {
-        $('#btnCancel').on('click', function(){
-          window.location.href = 'user-list';
+        $('[data-kt-image-input-action="remove"]').click(function() {
+            $('#avatarRemoveHidden').val('true');
         });
-      }
 
+        $('#imageInputFile').change(function() {
+            $('#avatarRemoveHidden').val('false');
+        });
+        $('[data-kt-image-input-action="cancel"]').click(function() {
+            $('#avatarRemoveHidden').val('false');
+        });
 
-      if (btnDelete) {
-        btnDelete.addEventListener('click', function () {
-            const userId = this.getAttribute('data-user-id') || '${selectUser.id}';
+        $('#emailEnableSwitch').change(function() { $('#emailEnableHidden').val(this.checked ? '1' : '0'); });
+        $('#socialSecurity').change(function() { $('#socialSecurityHidden').val(this.checked ? '1' : '0'); });
+        $('#withHoldAuto').change(function() {
+            var on = this.checked;
+            $('#withHoldAutoHidden').val(on ? '1' : '0');
+            $('#withHold').prop('disabled', on).val(on ? '0.00' : '');
+        });
+        $('form[action="admin-perform-edit"]').on('submit', function() {
+            var vals = $('#id_sitejob').val() || [];
+            $('#id_sitejob_join').val(vals.join(','));
+            $('#id_sitejob').attr('name', 'id_sitejob_client_only');
+        });
 
-            if (!userId) {
-                Swal.fire('Error', 'ไม่พบรหัสผู้ใช้', 'error');
-                return;
+        forceOpenTab('#account-info');
+        calculateWorkDuration();       
+
+        $('#profileNav .nav-link').on('click', function(e) {
+            e.preventDefault();
+            var target = $(this).attr('data-target');
+            forceOpenTab(target);
+            $('html, body').animate({ scrollTop: $(target).offset().top - 120 }, 300);
+        });
+
+        $('#btnSubmit').on('click', function(e) {
+            e.preventDefault(); 
+
+            var form = document.querySelector('form[action="admin-perform-edit"]');
+            var firstErrorInput = null;
+
+            for (var i = 0; i < form.elements.length; i++) {
+                var el = form.elements[i];
+                if (el.hasAttribute('required') && (el.value === "" || el.value === null)) {
+                    firstErrorInput = el; break;
+                }
+                if ($(el).is('select') && el.hasAttribute('required')) {
+                     if($(el).val() === "" || $(el).val() === null || $(el).val().length === 0){
+                         firstErrorInput = el; break;
+                     }
+                }
+                if (el.willValidate && !el.checkValidity()) {
+                    firstErrorInput = el; break;
+                }
             }
 
+            if (firstErrorInput) {
+                var parentCard = $(firstErrorInput).closest('.card[id]');
+                var targetTabId = parentCard.length ? '#' + parentCard.attr('id') : null;
+
+                if (targetTabId) forceOpenTab(targetTabId);
+
+                setTimeout(function() {
+                    $('html, body').animate({ scrollTop: $(firstErrorInput).offset().top - 200 }, 200);
+                    if ($(firstErrorInput).hasClass('select2-hidden-accessible')) {
+                        $(firstErrorInput).select2('open'); 
+                    } else {
+                        $(firstErrorInput).focus();
+                    }
+                    try { firstErrorInput.reportValidity(); } catch(err){}
+                }, 300);
+
+            } else {
+                form.submit();
+            }
+        });
+
+        $('#btnCancel').click(function() { window.location.href = 'user-list'; });
+
+        $('#btnDelete').click(function() {
+            var userId = $(this).data('user-id');
+            if (!userId) return;
             Swal.fire({
-                title: 'ยืนยันการลบ?',
-                text: "ข้อมูลจะถูกลบถาวร (หากมีประวัติการทำงานจะไม่สามารถลบได้)",
-                icon: 'warning',
-                showCancelButton: true,
-                cancelButtonText: 'Cancel',
-                confirmButtonText: 'Confirm'
+                title: 'ยืนยันการลบ?', text: "ข้อมูลจะถูกลบถาวร", icon: 'warning',
+                showCancelButton: true, confirmButtonText: 'Confirm'
             }).then((result) => {
                 if (result.isConfirmed) {
-                    
-                    // AJAX 
-                    $.ajax({
-                        url: '${pageContext.request.contextPath}/user-delete.action',
-                        type: 'POST',
-                        data: { id: userId },
-                        success: function(response) {
-                            Swal.fire({
-                                icon: 'success',
-                                title: 'ลบข้อมูลสำเร็จ',
-                                showConfirmButton: false,
-                                timer: 1500
-                            }).then(() => {
-                                window.location.href = 'user-list';
-                            });
-                        },
-                        error: function(xhr, status, error) {
-
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'ไม่สามารถทำรายการได้',
-                                text: 'ไม่สามารถลบ User นี้ได้ เนื่องจากมีประวัติการลงเวลา (Check-in/out)',
-                                confirmButtonText: 'Done',
-                            });
-                        }
-                    });
-
+                    $.post('${pageContext.request.contextPath}/user-delete.action', { id: userId })
+                     .done(function() { Swal.fire('Deleted!', '', 'success').then(() => window.location.href = 'user-list'); })
+                     .fail(function() { Swal.fire('Error', 'ไม่สามารถลบได้ (อาจมี Time Attendance)', 'error'); });
                 }
             });
         });
-      }
 
-      // ====== แสดงการ์ด Reset Password เมื่อกดปุ่ม Reset Password ======
-      if (btnShowResetCard && resetPasswordCard) {
-        btnShowResetCard.addEventListener('click', function () {
-          resetPasswordCard.classList.remove('d-none');
-          resetPasswordCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        $('#btnShowResetCard').click(function() {
+            $('#resetPasswordCard').removeClass('d-none');
+            $('html, body').animate({ scrollTop: $("#resetPasswordCard").offset().top - 100 }, 500);
         });
-      }
-
-      // ====== ปุ่ม Cancel ในการ์ด Reset Password (แค่ซ่อนและเคลียร์ค่า) ======
-      if (btnPasswordCancel) {
-        $('#btnPasswordCancel').on('click', function(){
+        $('#btnPasswordCancel').click(function() {
             $('#resetPasswordCard').addClass('d-none');
-            $('#password').val('');
-            $('#confirm_password').val('');
+            $('#password, #confirm_password').val('');
             $('#passwordMessage').html('');
         });
-      }
-
-      // ====== Logic เช็ค Password ตรงกัน (Realtime Code แบบระบบเก่า) ======
-      $('#password, #confirm_password').on('keyup', function() {
-        var pass = $('#password').val();
-        var confirm = $('#confirm_password').val();
-        var msg = $('#passwordMessage');
-
-        if (pass == "" && confirm == "") {
-            msg.html('');
-            return;
-        }
-        if (pass == confirm) {
-            msg.html('<span class="text-success">รหัสผ่านตรงกัน</span>');
-        } else {
-            msg.html('<span class="text-danger">รหัสผ่านไม่ตรงกัน</span>');
-        }
-      });
-
-      // ====== ปุ่ม Change Password (สีเขียว) -> สั่ง Submit Form หลัก ======
-      if (btnPasswordUpdate) {
-        btnPasswordUpdate.addEventListener('click', function () {
-            var pass = $('#password').val();
-            var confirm = $('#confirm_password').val();
-
-            // Validation พื้นฐาน
-            if (pass === "" || confirm === "") {
-                if(typeof Swal !== 'undefined'){
-                    Swal.fire('Error', 'กรุณากรอกรหัสผ่านให้ครบถ้วน', 'error');
-                } else {
-                    alert('กรุณากรอกรหัสผ่านให้ครบถ้วน');
-                }
-                return;
-            }
-
-            if (pass !== confirm) {
-                 if(typeof Swal !== 'undefined'){
-                    Swal.fire('Error', 'รหัสผ่านไม่ตรงกัน', 'error');
-                } else {
-                    alert('รหัสผ่านไม่ตรงกัน');
-                }
-                return;
-            }
-
-            // *** สั่ง Submit Form หลักของหน้า ***
+        $('#password, #confirm_password').keyup(function() {
+            var p = $('#password').val(), c = $('#confirm_password').val();
+            if(p == "" && c == "") { $('#passwordMessage').html(''); return; }
+            $('#passwordMessage').html(p == c ? '<span class="text-success">ตรงกัน</span>' : '<span class="text-danger">ไม่ตรงกัน</span>');
+        });
+        $('#btnPasswordUpdate').click(function() {
+            var p = $('#password').val(), c = $('#confirm_password').val();
+            if(p === "" || c === "") { alert('กรุณากรอกรหัสผ่าน'); return; }
+            if(p !== c) { alert('รหัสผ่านไม่ตรงกัน'); return; }
             $('form[action="admin-perform-edit"]').submit();
         });
-      }
 
-    });
-    </script>
-    <script>
-    $(document).ready(function() {
-        // ฟังก์ชันดึงค่าจาก URL Parameter
-        function getUrlParameter(sParam) {
+        var getUrlParameter = function getUrlParameter(sParam) {
             var sPageURL = window.location.search.substring(1),
-                sURLVariables = sPageURL.split('&'),
-                sParameterName, i;
+                sURLVariables = sPageURL.split('&'), sParameterName, i;
             for (i = 0; i < sURLVariables.length; i++) {
                 sParameterName = sURLVariables[i].split('=');
-                if (sParameterName[0] === sParam) {
-                    return sParameterName[1] === undefined ? true : decodeURIComponent(sParameterName[1]);
-                }
+                if (sParameterName[0] === sParam) return sParameterName[1] === undefined ? true : decodeURIComponent(sParameterName[1]);
             }
             return false;
         };
-
-        // ดึงค่า massage มาเช็ค (เผื่อมี Error จาก Backend กลับมา)
         var msg = getUrlParameter('massage');
-
         if (msg === '11') {
-            var resetCard = document.getElementById('resetPasswordCard');
-            if(resetCard) {
-                resetCard.classList.remove('d-none');
-                $('html, body').animate({
-                    scrollTop: $("#resetPasswordCard").offset().top - 100
-                }, 500);
-            }
-            if (typeof swal !== 'undefined') {
-                swal({ title: "Error", text: "Something went wrong", type: "error", confirmButtonText: "OK" });
-            } 
+            $('#resetPasswordCard').removeClass('d-none');
+            if(typeof swal !== 'undefined') swal({ title: "Error", text: "Something went wrong", type: "error", confirmButtonText: "OK" });
         } else if (msg === 'success') {
-            if (typeof swal !== 'undefined') {
-                swal({ title: "Success", text: "Update Success", type: "success", confirmButtonText: "OK" });
-            } 
+            if(typeof swal !== 'undefined') swal({ title: "Success", text: "Update Success", type: "success", confirmButtonText: "OK" });
         }
     });
-    </script>
+</script>
 
 </body>
 </html>
