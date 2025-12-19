@@ -6,7 +6,6 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Add Employee Profile</title>
 
   <link href="${pageContext.request.contextPath}/assets/plugins/global/plugins.bundle.css" rel="stylesheet" />
   <link href="${pageContext.request.contextPath}/assets/css/style.bundle.css" rel="stylesheet" />
@@ -161,7 +160,7 @@
                   </div>
                   <div class="flex-grow-1">
                     <label for="name" class="form-label fw-semibold text-gray-800 required">ชื่อ - สกุล</label>
-                    <input type="text" id="name" name="user.name" class="form-control userinfo" maxlength="190" placeholder="ชื่อ - สกุล" />
+                    <input type="text" id="name" name="user.name" class="form-control userinfo" maxlength="190" placeholder="ชื่อ - สกุล" required/>
                     <div id="hintNameTh" class="text-danger fs-8 mt-1 d-none">Please enter full name</div>
                   </div>
                 </div>
@@ -180,7 +179,7 @@
                     </div>
                     <div class="flex-grow-1">
                       <label for="nameEN" class="form-label fw-semibold text-gray-800 required">Full Name EN</label>
-                      <input type="text" id="nameEN" name="user.nameEN" class="form-control userinfo" maxlength="190" placeholder="Name - Surname" />
+                      <input type="text" id="nameEN" name="user.nameEN" class="form-control userinfo" maxlength="190" placeholder="Name - Surname" required/>
                       <div id="hintNameEn" class="text-danger fs-8 mt-1 d-none">Please enter name</div>
                     </div>
                   </div>
@@ -226,7 +225,7 @@
 
                 <div class="col-12 col-md-6">
                   <label class="form-label fw-semibold text-gray-800 required">Phone Number</label>
-                  <input type="text" name="user.phone_num" id="phone" class="form-control userinfo" maxlength="10" pattern="[0-9]{10}" placeholder="0xxxxxxxxx" required>
+                  <input type="text" name="user.phonenum" id="phone" class="form-control userinfo" maxlength="10" pattern="[0-9]{10}" placeholder="0xxxxxxxxx" required>
                   <div id="hintPhone" class="text-danger fs-8 mt-1 d-none">Please enter a phone number</div>
                 </div>
 

@@ -175,6 +175,8 @@ public class UserAction extends ActionSupport {
 	
 	 private String work_type;
 	 
+	 private String avatar_remove;
+	 
 	 public String getWorkType() {
 		    return work_type;
 		}
@@ -192,6 +194,14 @@ public class UserAction extends ActionSupport {
 		public void setOnsiteNum(String onsite_num) {
 		    this.onsite_num = onsite_num;
 		}
+		
+		public String getAvatar_remove() {
+	        return avatar_remove;
+	    }
+
+	    public void setAvatar_remove(String avatar_remove) {
+	        this.avatar_remove = avatar_remove;
+	    }
 	
 
 	public String getId_sitejob() {
@@ -798,8 +808,11 @@ public class UserAction extends ActionSupport {
 					log.debug("Deleted siteJobId=" + link.getId_sitejob());
 				}
 			}
+			
+			if ("true".equals(this.avatar_remove)) { 
+		        u.setPath(null); 
+		    }
 
-			// Ã Â¸â€“Ã Â¹â€°Ã Â¸Â²Ã Â¸Â¡Ã Â¸ÂµÃ Â¹â€žÃ Â¸Å¸Ã Â¸Â¥Ã Â¹Å’Ã Â¸Â­Ã Â¸Â±Ã Â¸â€ºÃ Â¹â€šÃ Â¸Â«Ã Â¸Â¥Ã Â¸â€�
 			if (fileUpload != null) {
 				int maxId = fileuploadDAO.getMaxId() + 1;
 				ServletContext context = request.getServletContext();

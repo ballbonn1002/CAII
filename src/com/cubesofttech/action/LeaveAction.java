@@ -4902,33 +4902,33 @@ public class LeaveAction extends ActionSupport {
 
 	}
 
-//	public String Leave_inListUpdateStatus() {
-//		try {
-//			User onlineUser = (User) request.getSession().getAttribute("onlineUser");
-//			log.debug(onlineUser);
-//			String leave_id = request.getParameter("leave_id");
-//			String reason = request.getParameter("reason");
-//			String status = request.getParameter("status");
-//			log.debug(status);
-//			log.debug(reason);
-//			
-//		    if(reason == null || reason.trim().isEmpty()){
-//		        reason = null;
-//		    }
-//		    
-//			Leaves leave = leaveDAO.findByLeaveId(Integer.parseInt(leave_id));
-//			leave.setLeaveStatusId(status);
-//			leave.setReason(reason);
-//			leave.setTimeUpdate(DateUtil.getCurrentTime());
-//			leave.setUserUpdate(onlineUser.getId());
-//			leaveDAO.save(leave);
-//			log.debug(leave);
-//			return SUCCESS;
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//			return ERROR;
-//		}
-//	}
+	public String Leave_inListUpdateStatus() {
+		try {
+			User onlineUser = (User) request.getSession().getAttribute("onlineUser");
+			log.debug(onlineUser);
+			String leave_id = request.getParameter("leave_id");
+			String reason = request.getParameter("reason");
+			String status = request.getParameter("status");
+			log.debug(status);
+			log.debug(reason);
+			
+		    if(reason == null || reason.trim().isEmpty()){
+		        reason = null;
+		    }
+		    
+			Leaves leave = leaveDAO.findByLeaveId(Integer.parseInt(leave_id));
+			leave.setLeaveStatusId(status);
+			leave.setReason(reason);
+			leave.setTimeUpdate(DateUtil.getCurrentTime());
+			leave.setUserUpdate(onlineUser.getId());
+			leaveDAO.save(leave);
+			log.debug(leave);
+			return SUCCESS;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ERROR;
+		}
+	}
 
 	public String CreateListUsers() {
 		try {

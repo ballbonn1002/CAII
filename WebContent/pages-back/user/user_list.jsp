@@ -46,9 +46,18 @@
                         </ul>
                     </div>
                     <div class="d-flex align-items-center gap-2 ms-auto">
-                        <button type="button" class="btn btn-light-primary btn-sm px-3 py-2">
-                            <i class="ki-duotone ki-printer fs-3 me-1"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span><span class="path5"></span></i> Print
-                        </button>
+                    <!-- 
+                        <a href="userAllReport" class="btn btn-light-primary btn-sm px-3 py-2">
+						    <i class="ki-duotone ki-printer fs-3 me-1">
+						        <span class="path1"></span>
+						        <span class="path2"></span>
+						        <span class="path3"></span>
+						        <span class="path4"></span>
+						        <span class="path5"></span>
+						    </i>
+						    Print
+						</a>
+					-->
                         <button type="button" class="btn btn-success btn-sm px-3 py-2" onclick="addUser()">
                             <i class="ki-outline ki-plus fs-3 me-1"></i>Create
                         </button>
@@ -274,7 +283,7 @@
 					                            <div class="symbol symbol-40px symbol-circle me-8">
 					                                <c:choose>
 					                                    <c:when test="${not empty user.path}">
-					                                        <div class="symbol-label"><img src="${user.path}" class="w-100 h-100 rounded-circle" /></div>
+					                                        <div class="symbol-label"><img src="${user.path}" class="w-100 h-100 rounded-circle" style="object-fit: cover;" /></div>
 					                                    </c:when>
 					                                    <c:otherwise>
 					                                        <span class="symbol-label bg-light-primary text-primary fw-bold d-flex align-items-center justify-content-center">
