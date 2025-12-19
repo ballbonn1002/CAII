@@ -149,7 +149,7 @@
 						<!--end::Menu separator-->
 						<!-- My Profile -->
 						<div class="menu-item px-5">
-							<a href="#" class="menu-link px-5">My
+							<a href="my_profile" class="menu-link px-5">My
 								Profile</a>
 						</div>
 						<!-- My Projects -->

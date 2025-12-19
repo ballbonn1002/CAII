@@ -568,4 +568,22 @@ public class BorrowDAOImpl implements BorrowDAO {
 		}
 		return list;
 	}
+
+	@Override
+	public List<Map<String, Object>> getBorrowListByUserId(String logonUser) {
+		Session session = this.sessionFactory.getCurrentSession();
+
+		List<Map<String, Object>> list = null;
+		try {
+			String sql = "SELECT b.borrow_id, b.date_start, b.location, b.status, e.name, e.item_no FROM borrow b JOIN equipment e ON b.equipment_id = e.equipment_id WHERE b.user_borrowid = :logonUser";
+
+			SQLQuery query = session.createSQLQuery(sql);
+			query.setParameter("logonUser", logonUser);
+			query.setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
+			list = query.list();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return list;
+	}
 }

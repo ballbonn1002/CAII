@@ -1,5 +1,6 @@
 package com.cubesofttech.dao;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -76,7 +77,7 @@ public class UserDAOImpl implements UserDAO {
 		}
 		return User;
 	}
-	
+
 //	@SuppressWarnings("unchecked")
 //	@Override
 //	public List<Map<String, Object>> findByemail(String email) throws Exception {
@@ -500,55 +501,51 @@ public class UserDAOImpl implements UserDAO {
 		}
 		return UserActive;
 	}
-	
+
 	// USER ACTIVE / IN
-		public List<Map<String, Object>> userCheckInYear(String year) {
+	public List<Map<String, Object>> userCheckInYear(String year) {
 
-			// Use to create COS working time
-			
-			Session session = this.sessionFactory.getCurrentSession();
-			List<Map<String, Object>> list = null;
-			
-			String y = "";
-			String month = "";
-			// year format yyyy-MM-dd
-			if (year.contains("-")) {
-			    String[] parts = year.split("-");
-			    y= parts[0].trim();
-				month = parts[1].trim();
-			} else {
-				y = year;
-			}
-			
+		// Use to create COS working time
 
-			try {
-				
-				String sql = " select distinct(user.id), user.name, user.employee_id, user.employee_type_id, user.position_id ,user.department_id from user left join work_hours on user.id = work_hours.user_create "
-								+" where (YEAR(work_hours.work_hours_time_work) = :year) order by user.employee_type_id, user.employee_id asc ";
-				
-				if (year.contains("-")) {
-					sql = " select distinct(user.id), user.name, user.employee_id, user.employee_type_id, user.position_id ,user.department_id from user left join work_hours on user.id = work_hours.user_create "
-							+" where (YEAR(work_hours.work_hours_time_work) = :year) and (MONTH(work_hours.work_hours_time_work) = :month) order by user.employee_type_id, user.employee_id asc ";
-				}
-				
-				Log.debug("SQL  = "+sql);	
-				SQLQuery query = session.createSQLQuery(sql);
-				query.setParameter("year", y);
-				
-				if (year.contains("-")) {
-					query.setParameter("month", month);
-				}
-				query.setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
-				list = query.list();
-				
-				
-				
-			} catch (HibernateException e) {
-				e.printStackTrace();
-			}
-			return list;
+		Session session = this.sessionFactory.getCurrentSession();
+		List<Map<String, Object>> list = null;
+
+		String y = "";
+		String month = "";
+		// year format yyyy-MM-dd
+		if (year.contains("-")) {
+			String[] parts = year.split("-");
+			y = parts[0].trim();
+			month = parts[1].trim();
+		} else {
+			y = year;
 		}
-	
+
+		try {
+
+			String sql = " select distinct(user.id), user.name, user.employee_id, user.employee_type_id, user.position_id ,user.department_id from user left join work_hours on user.id = work_hours.user_create "
+					+ " where (YEAR(work_hours.work_hours_time_work) = :year) order by user.employee_type_id, user.employee_id asc ";
+
+			if (year.contains("-")) {
+				sql = " select distinct(user.id), user.name, user.employee_id, user.employee_type_id, user.position_id ,user.department_id from user left join work_hours on user.id = work_hours.user_create "
+						+ " where (YEAR(work_hours.work_hours_time_work) = :year) and (MONTH(work_hours.work_hours_time_work) = :month) order by user.employee_type_id, user.employee_id asc ";
+			}
+
+			Log.debug("SQL  = " + sql);
+			SQLQuery query = session.createSQLQuery(sql);
+			query.setParameter("year", y);
+
+			if (year.contains("-")) {
+				query.setParameter("month", month);
+			}
+			query.setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
+			list = query.list();
+
+		} catch (HibernateException e) {
+			e.printStackTrace();
+		}
+		return list;
+	}
 
 	public List<Map<String, Object>> AllUserEnable() {
 		Session session = this.sessionFactory.getCurrentSession();
@@ -570,7 +567,8 @@ public class UserDAOImpl implements UserDAO {
 		List<Map<String, Object>> UserActive = null;
 
 		try {
-			String sql = "SELECT name,id,department_id,path FROM user WHERE enable = '1' And (id LIKE '%"+name+"%' OR name LIKE '%"+name+"%')";
+			String sql = "SELECT name,id,department_id,path FROM user WHERE enable = '1' And (id LIKE '%" + name
+					+ "%' OR name LIKE '%" + name + "%')";
 			SQLQuery query = session.createSQLQuery(sql);
 			query.setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
 			UserActive = query.list();
@@ -585,7 +583,8 @@ public class UserDAOImpl implements UserDAO {
 		List<Map<String, Object>> UserActive = null;
 
 		try {
-			String sql = "SELECT name,id,department_id,path FROM user WHERE enable = '1' And department_id LIKE '%"+Department+"%'";
+			String sql = "SELECT name,id,department_id,path FROM user WHERE enable = '1' And department_id LIKE '%"
+					+ Department + "%'";
 			SQLQuery query = session.createSQLQuery(sql);
 			query.setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
 			UserActive = query.list();
@@ -601,7 +600,8 @@ public class UserDAOImpl implements UserDAO {
 		List<Map<String, Object>> UserActive = null;
 
 		try {
-			String sql = "SELECT name,id,department_id,path FROM user WHERE enable = '1' And (id LIKE '%"+nameorid+"%' OR name LIKE '%"+nameorid+"%') And department_id =:deid";
+			String sql = "SELECT name,id,department_id,path FROM user WHERE enable = '1' And (id LIKE '%" + nameorid
+					+ "%' OR name LIKE '%" + nameorid + "%') And department_id =:deid";
 			SQLQuery query = session.createSQLQuery(sql);
 			query.setParameter("deid", Department);
 			query.setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
@@ -687,7 +687,10 @@ public class UserDAOImpl implements UserDAO {
 		String sql;
 		try {
 
- //String sql = "SELECT time_create,status_id,user_id,DAY(time_create)AS DAY,MONTH(time_create) AS MONTH, YEAR(time_create) AS YEAR FROM `expense_group` WHERE user_id='yanikar.t' AND YEAR(time_create)= '2017' GROUP BY (time_create) ASC";
+			// String sql = "SELECT time_create,status_id,user_id,DAY(time_create)AS
+			// DAY,MONTH(time_create) AS MONTH, YEAR(time_create) AS YEAR FROM
+			// `expense_group` WHERE user_id='yanikar.t' AND YEAR(time_create)= '2017' GROUP
+			// BY (time_create) ASC";
 
 			// sql = "SELECT time_create,status_id,user_id,DAY(time_create)AS
 			// DAY,MONTH(time_create) AS MONTH, YEAR(time_create) AS YEAR FROM
@@ -875,7 +878,8 @@ public class UserDAOImpl implements UserDAO {
 		Session session = this.sessionFactory.getCurrentSession();
 		List<Map<String, Object>> Onlinelist_body = null;
 		try {
-			String sql = "SELECT name,id,path FROM user WHERE enable = '1' And (id LIKE '"+name+"%' OR name LIKE '"+name+"%')";
+			String sql = "SELECT name,id,path FROM user WHERE enable = '1' And (id LIKE '" + name + "%' OR name LIKE '"
+					+ name + "%')";
 			SQLQuery query = session.createSQLQuery(sql);
 			query.setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
 			Onlinelist_body = query.list();
@@ -958,8 +962,7 @@ public class UserDAOImpl implements UserDAO {
 //		}
 //		return list;
 //	}
-	
-	
+
 //	@Override
 //	public List<Map<String, Object>> findAllUserOrderByEnableAndName() throws Exception {
 //		Session session = this.sessionFactory.getCurrentSession();
@@ -1006,7 +1009,7 @@ public class UserDAOImpl implements UserDAO {
 //		}
 //		return list;
 //	}
-	
+
 	@Override
 	public List<Map<String, Object>> getManagerIdAndManagerNameByUserId(String reqUserId) throws Exception {
 		Session session = this.sessionFactory.getCurrentSession();
@@ -1025,7 +1028,7 @@ public class UserDAOImpl implements UserDAO {
 		return list;
 
 	}
-	
+
 	@Override
 	public List<Map<String, Object>> findUsersByEmail(String email) throws Exception {
 		Session session = sessionFactory.getCurrentSession();
@@ -1050,5 +1053,101 @@ public class UserDAOImpl implements UserDAO {
 		List<Map<String, Object>> rows = query.list();
 		return (rows != null && !rows.isEmpty()) ? rows.get(0) : null;
 	}
+
+	@Override
+	public  List<Map<String,Object>> getJobSiteByUserId(String userId) throws Exception {
+		Session session = this.sessionFactory.getCurrentSession();
+		List<Map<String, Object>> jobSite = new ArrayList<>();
+
+		try {
+			String sql = "SELECT j.id_sitejob, j.name_site, j.description FROM job_site_team jt JOIN job_site j ON jt.id_sitejob = j.id_sitejob WHERE jt.user_id = :userId";
+			SQLQuery query = session.createSQLQuery(sql);
+			query.setParameter("userId", userId);
+			query.setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
+
+			jobSite = query.list();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		return jobSite;
+	}
+
+	@Override
+	public void update_my_profile(User u) {
+		 Session session = this.sessionFactory.getCurrentSession();
+		 
+		 try {
+			 String sql = "UPDATE user SET name = :name , nick_name = :nickName , email = :email , birth_date =:birthDate, address = :address,"
+			 		+ "phone_num = :phonenum, gender =:gender, title_name_th = :titleNameTH, title_name_en = :titleNameEN , name_en =:nameEN,"
+			 		+ "nick_name_en = :nickNameEN , emergency_contact = :emergContact , emergency_phone = :emergPhone , citizen_id = :citizenId ,"
+			 		+ "passport_id = :passportId   WHERE id = :logonUser";
+			 
+			 SQLQuery query = session.createSQLQuery(sql);
+			 query.setParameter("name", u.getName());
+		        query.setParameter("nickName", u.getNickName());
+		        query.setParameter("email", u.getEmail());
+		        query.setParameter("birthDate", u.getBirthDate());
+		        query.setParameter("address", u.getAddress());
+		        query.setParameter("phonenum", u.getPhonenum());
+		        query.setParameter("gender", u.getGender());
+		        query.setParameter("titleNameTH", u.getTitleNameTH());
+		        query.setParameter("titleNameEN", u.getTitleNameEN());
+		        query.setParameter("nameEN", u.getNameEN());
+		        query.setParameter("nickNameEN", u.getNickNameEN());
+		        query.setParameter("emergContact", u.getEmergContact());
+		        query.setParameter("emergPhone", u.getEmergPhone());
+		        query.setParameter("citizenId", u.getCitizenId());
+		        query.setParameter("passportId", u.getPassportId());
+		        query.setParameter("logonUser", u.getId());
+
+		        query.executeUpdate();
+//			 User existingUser = session.get(User.class, u.getId());
+//		        if (existingUser != null) {
+//		            existingUser.setTitleNameTH(u.getTitleNameTH());
+//		            existingUser.setName(u.getName());
+//		            existingUser.setNickName(u.getNickName());
+//		            existingUser.setTitleNameEN(u.getTitleNameEN());
+//		            existingUser.setNameEN(u.getNameEN());
+//		            existingUser.setNickNameEN(u.getNickNameEN());
+//		            existingUser.setGender(u.getGender());
+//		            existingUser.setBirthDate(u.getBirthDate());
+//		            existingUser.setCitizenId(u.getCitizenId());
+//		            existingUser.setPassportId(u.getPassportId());
+//		            existingUser.setEmail(u.getEmail());
+//		            existingUser.setPhonenum(u.getPhonenum());
+//		            existingUser.setAddress(u.getAddress());
+//		            existingUser.setEmergContact(u.getEmergContact());
+//		            existingUser.setEmergPhone(u.getEmergPhone());
+//
+//		     
+//		            session.update(existingUser);
+//		        }
+		 } catch (Exception e) {
+		        e.printStackTrace();
+		 }
+		 
+	}
+
+	@Override
+	public List<Map<String, Object>> getBorrowListByUserId(String logonUser) {
+		Session session = this.sessionFactory.getCurrentSession();
+
+		List<Map<String, Object>> list = null;
+		try {
+			String sql = "SELECT b.borrow_id, b.date_start, b.location, b.status, e.name, e.item_no FROM borrow b JOIN equipment e ON b.equipment_id = e.equipment_id WHERE b.user_borrowid = :logonUser";
+
+			SQLQuery query = session.createSQLQuery(sql);
+			query.setParameter("logonUser", logonUser);
+			query.setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
+			list = query.list();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return list;
+	}
+	
+	
+
 
 }

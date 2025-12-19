@@ -227,5 +227,50 @@
 		<put-attribute name="body"
 			value="/pages-back/department/department_edit.jsp" />
 	</definition>
-
+	
+	
+	<!-- MY PROFILE-->
+	<!-- <definition name="my_profile" extends="baseLayout">
+		<put-attribute name="title" value="My Profile"/>
+		<put-attribute name="body"
+			value="/pages-back/my_profile/my_profile.jsp" />
+	</definition> -->
+	<definition name="my_profile"
+		extends="baseLayout">
+		<put-attribute name="title"
+			value="My Profile" />
+		<put-attribute name="body"
+			value="/pages-back/my_profile/myProfile.jsp" />
+	</definition>
+	
+	
+	<definition name="edit_my_profile" extends="baseLayout">
+		<put-attribute name="title" value="Edit MyProfile"/>
+		<put-attribute name="body"
+			value="/pages-back/my_profile/edit_my_profile.jsp" />
+	</definition>
+	
+	<!-- MY PROFILE Security-->
+	<definition name="security_password" extends="baseLayout">
+		<put-attribute name="title" value="Security Password"/>
+		<put-attribute name="body"
+			value="/pages-back/my_profile/security_password.jsp" />
+	</definition>
+	
+	<definition name="security_reset_password" extends="baseLayout">
+		<put-attribute name="title" value="Security Reset Password"/>
+		<put-attribute name="body"
+			value="/pages-back/my_profile/security_reset_password.jsp" />
+	</definition>
+	
+	<!-- MY PROFILE Borrow -->
+	<definition name="borrow" extends="baseLayout">
+		<put-attribute name="title" value="Borrow"/>
+		<put-attribute name="body"
+			value="/pages-back/my_profile/borrow.jsp" />
+	</definition>
+	
+	
+	
+	
 </tiles-definitions>
