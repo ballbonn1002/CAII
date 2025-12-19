@@ -1,5 +1,6 @@
 package com.cubesofttech.dao;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -144,4 +145,24 @@ public class JobsiteDAOImpl implements JobsiteDAO {
 		return faqJoin;
 
 	}
+	
+	@Override
+	public  List<Map<String,Object>> getJobSiteByUserId(String userId) throws Exception {
+		Session session = this.sessionFactory.getCurrentSession();
+		List<Map<String, Object>> jobSite = new ArrayList<>();
+
+		try {
+			String sql = "SELECT j.id_sitejob, j.name_site, j.description FROM job_site_team jt JOIN job_site j ON jt.id_sitejob = j.id_sitejob WHERE jt.user_id = :userId";
+			SQLQuery query = session.createSQLQuery(sql);
+			query.setParameter("userId", userId);
+			query.setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
+
+			jobSite = query.list();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		return jobSite;
+	}
+
 }

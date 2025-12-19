@@ -156,7 +156,7 @@
 											class="border border-gray-300 rounded-1 px-4 py-3 border-dashed ">
 											<div class="d-flex flex-column">
 												<p class="fs-4 fw-bold text-gray-900 mb-0">
-													${workPeriod}</p>
+													${empty workPeriod ? '-' :workPeriod}</p>
 												<p class="fs-6 fw-bold text-gray-600 mb-0">
 													<c:choose>
 														<c:when test="${empty user.startDate}">
@@ -259,7 +259,9 @@
 					<div class="card mb-10" id="account-info">
 						<div
 							class="card-header d-flex align-items-center justify-content-between">
-							<h3 class="card-title fw-bold m-0">Account Info</h3>
+							<div class="card-title">
+								<h3 class="fw-semibold text-gray-900">Account Info</h3>
+							</div>
 
 							<a class="btn btn-light py-4 px-6 align-self-center rounded-1"
 								href="#" data-target="#edit_overview">Edit</a>
@@ -269,14 +271,11 @@
 							<div class="row">
 								<div class="col-6 gap-2">
 									<p class="fs-5 text-muted fw-medium mb-0">Nickname TH</p>
-									<%-- <p class="fs-5 text-gray-800 fw-semibold">${user.titleNameTH}
-									${user.name} - ${user.nickName}</p> --%>
 									<p class="fs-5 text-gray-800 fw-semibold">${user.nickName}</p>
 								</div>
 								<div class="col-6">
 									<p class="fs-5 text-muted fw-medium mb-0">Nickname EN</p>
-									<%-- <p class="fs-5 text-gray-800 fw-semibold">${user.titleNameEN}
-									${user.nameEN} - ${user.nickNameEN}</p> --%>
+						
 									<p class="fs-5 text-gray-800 fw-semibold">${user.nickNameEN}</p>
 								</div>
 							</div>
@@ -344,6 +343,7 @@
 					</div>
 
 
+
 					<div class="card mb-10" id="edit_overview">
 
 						<!--begin::Card header-->
@@ -352,9 +352,6 @@
 							<div class="card-title">
 								<h3 class="fw-semibold text-gray-900">Account Info</h3>
 							</div>
-
-
-
 						</div>
 						<!--end::Card header-->
 
@@ -433,7 +430,7 @@
 								<div class="row mb-8">
 									<div class="col-2 gap-2">
 										<label class="required fs-6 fw-medium text-gray-800 mb-2">คำนำหน้า</label>
-										<select name="titleNameTH" data-control="select2"
+										<select name="user_titleNameTH" data-control="select2"
 											data-placeholder=""
 											class="form-select py-2 px-4 border border-gray-300">
 											<option value="นาย"
@@ -448,13 +445,13 @@
 										<label class="required fs-6 fw-medium text-gray-800 mb-2">ชื่อ
 											สกุล</label> <input type="text"
 											class="form-control py-2 px-4 border border-gray-300"
-											placeholder="" name="name" id="name" value="${user.name}" />
+											placeholder="" name="user_name" id="user_name" value="${user.name}" />
 									</div>
 									<div class="col-5">
 										<label class="required fs-6 fw-medium text-gray-800 mb-2">Nickname
 											TH</label> <input type="text"
 											class="form-control py-2 px-4 border border-gray-300"
-											placeholder="" name="nickName" id="nickName"
+											placeholder="" name="user_nickName" id="user_nickName"
 											value="${user.nickName}" />
 									</div>
 								</div>
@@ -462,7 +459,7 @@
 								<div class="row mb-8">
 									<div class="col-2 gap-2 ">
 										<label class="required fs-6 fw-medium text-gray-800 mb-2">Title
-											Name</label> <select name="titleNameEN" data-control="select2"
+											Name</label> <select name="user_titleNameEN" data-control="select2"
 											data-placeholder=""
 											class="form-select py-2 px-4 border border-gray-300">
 											<option value="Mr."
@@ -480,7 +477,7 @@
 										<label class="required fs-6 fw-medium text-gray-800 mb-2">Full
 											Name EN</label> <input type="text"
 											class="form-control py-2 px-4 border border-gray-300"
-											placeholder="" name="nameEN" id="nameEN"
+											placeholder="" name="user_fullNameEN" id="user_fullNameEN"
 											value="${user.nameEN}" pattern="[A-Za-z ]+"
 											oninput="this.value = this.value.replace(/[^A-Za-z ]/g, '')" />
 									</div>
@@ -488,7 +485,7 @@
 										<label class="required fs-6 fw-medium text-gray-800 mb-2">Nickname
 											EN</label> <input type="text"
 											class="form-control py-2 px-4 border border-gray-300"
-											placeholder="" name="nickNameEN" id="nickNameEN"
+											placeholder="" name="user_nickNameEN" id="user_nickNameEN"
 											value="${user.nickNameEN}" pattern="[A-Za-z ]+"
 											oninput="this.value = this.value.replace(/[^A-Za-z ]/g, '')" />
 									</div>
@@ -501,7 +498,7 @@
 										<div class="form-check form-check-inline mt-1">
 											<!-- <input type="radio" id="genderMale" name="gender"
 											class="form-check-input" value="M" /> -->
-											<input type="radio" name="gender" class="form-check-input"
+											<input type="radio" name="user_gender" class="form-check-input"
 												value="M" ${user.gender == 'M' ? 'checked' : ''} required />
 											<label class="form-check-label fs-6 text-gray-800 fw-normal"
 												for="genderMale">Male</label>
@@ -510,7 +507,7 @@
 										<div class="form-check form-check-inline mt-1">
 											<!-- <input type="radio" id="genderFemale" name="gender"
 											class="form-check-input" value="F" />  -->
-											<input type="radio" name="gender" class="form-check-input"
+											<input type="radio" name="user_gender" class="form-check-input"
 												value="F" ${user.gender == 'F' ? 'checked' : ''} /> <label
 												class="form-check-label fs-6 text-gray-800 fw-normal"
 												for="genderFemale">Female</label>
@@ -525,7 +522,7 @@
 												<span class="path1"></span><span class="path2"></span> <span
 												class="path3"></span><span class="path4"></span> <span
 												class="path5"></span><span class="path6"></span>
-											</i> <input type="text" id="birthDate" name="birthDate"
+											</i> <input type="text" id="user_birthDate" name="user_birthDate"
 												class="form-control ps-10 date-picker"
 												placeholder="1 Jan 2025" autocomplete="off"
 												value="<fmt:formatDate value='${user.birthDate}' pattern='dd MMM yyyy'/>"
@@ -541,7 +538,7 @@
 											ID</p>
 										<input type="text"
 											class="form-control py-2 px-4 border border-gray-300"
-											placeholder="" name="citizenId" id="citizenId"
+											placeholder="" name="user_citizenId" id="user_citizenId"
 											value="${user.citizenId}" maxlength="13" inputmode="numeric"
 											oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0,13)" />
 
@@ -550,7 +547,7 @@
 										<p class="fs-6 fw-medium text-gray-800 mb-2">Passport ID</p>
 										<input type="text"
 											class="form-control py-2 px-4 border border-gray-300"
-											placeholder="" name="passportId" value="${user.passportId}" />
+											placeholder="" name="user_passportId" value="${user.passportId}" />
 
 									</div>
 								</div>
@@ -559,7 +556,7 @@
 										<p class="required fs-6 fw-medium text-gray-800 mb-2">E-Mail</p>
 										<input type="email"
 											class="form-control py-2 px-4 border border-gray-300"
-											placeholder="" name="email" id="email" value="${user.email}" />
+											placeholder="" name="user_email" id="user_email" value="${user.email}" />
 
 									</div>
 									<div class="col-6">
@@ -567,7 +564,7 @@
 											Number</p>
 										<input type="text"
 											class="form-control py-2 px-4 border border-gray-300"
-											placeholder="" name="phonenum" id="phonenum"
+											placeholder="" name="user_phonenum" id="user_phonenum"
 											value="${user.phonenum}" maxlength="10" inputmode="numeric"
 											oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0,10)" />
 
@@ -579,7 +576,7 @@
 
 										<textarea rows="3" cols=""
 											class="form-control py-2 px-4 border border-gray-300"
-											placeholder="" name="address">${user.address}</textarea>
+											placeholder="" name="user_address">${user.address}</textarea>
 									</div>
 
 								</div>
@@ -589,7 +586,7 @@
 											Contact</p>
 										<input type="text"
 											class="form-control py-2 px-4 border border-gray-300"
-											placeholder="" name="emergContact"
+											placeholder="" name="user_emergContact"
 											value="${user.emergContact}" />
 
 									</div>
@@ -598,7 +595,7 @@
 											Phone</p>
 										<input type="text"
 											class="form-control py-2 px-4 border border-gray-300"
-											placeholder="" name="emergPhone" value="${user.emergPhone}"
+											placeholder="" name="user_emergPhone" value="${user.emergPhone}"
 											maxlength="10" inputmode="numeric"
 											oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0,10)" />
 
@@ -706,7 +703,7 @@
 							</div>
 							<div class="card-footer d-flex justify-content-end">
 								<button type="button"
-									onclick="window.location.href='security_password'"
+									data-target="#security-info"
 									class="btn btn-light text-light-inverse fw-medium rounded me-2 py-4">Cancel
 								</button>
 								<button type="button" onclick="validatePassword()"
@@ -789,11 +786,11 @@
 
   function toggleFormButtons(targetId) {
     const hideOn = ["#security-info", "#borrow-info"];
-    ["btnCancel", "btnSubmit"].forEach(id => {
+   /*  ["btnCancel", "btnSubmit"].forEach(id => {
       const btn = document.getElementById(id);
       if (!btn) return;
       btn.classList.toggle("d-none", hideOn.includes(targetId));
-    });
+    }); */
   }
 
   function showSection(targetId) {
@@ -803,7 +800,7 @@
     });
 
     toggleFormButtons(targetId);
-  }
+  } 
 
   //default
   showSection("#account-info");
@@ -818,26 +815,40 @@
     e.preventDefault();
 
  	//active nav เฉพาะตอนคลิก nav
-    if (trigger.classList.contains("nav-link")) {
+   if (trigger.classList.contains("nav-link")) {
 
       navLinks.forEach(l => l.classList.remove("active"));
       trigger.classList.add("active");
 
     } else {
-      navLinks.forEach(l => l.classList.remove("active"));
-      const overviewNav = document.querySelector(
-        '#profileNav .nav-link[data-target="#account-info"]'
-      );
-      overviewNav?.classList.add("active");
+      const buttonNavMap = {
+    		"#edit_overview": "#account-info",
+    		"#reset_password": "#security-info"
+    	};
+    	navTarget = trigger.classList.contains("nav-link")
+    		? target
+    		: buttonNavMap[target];
     }
-
-
+   
     showSection(target);
 
     const el = document.querySelector(target);
     	el?.scrollIntoView({ behavior: "smooth", block: "start" });
   	});
 
+	});
+</script>
+
+<script>
+	document.addEventListener("DOMContentLoaded", function() {
+	    const removeBtn = document.querySelector('[data-kt-image-input-action="remove"]');
+	    const removeHidden = document.getElementById('avatarRemoveHidden');
+	    
+	    if (removeBtn) {
+	        removeBtn.addEventListener("click", function() {
+	            removeHidden.value = "true";
+	        });
+	    }
 	});
 </script>
 
@@ -852,14 +863,14 @@
 	function submitForm(){
 		  var errorFields = [];
 		  
-		  const name = document.getElementById("name").value.trim();
-		  const nickName = document.getElementById("nickName").value.trim();
-		  const nameEN = document.getElementById("nameEN").value.trim();
-		  const nickNameEN = document.getElementById("nickNameEN").value.trim();
-		  const birthDate = document.getElementById("birthDate").value.trim();
-		  const citizenId = document.getElementById("citizenId").value.trim();
-		  const email = document.getElementById("email").value.trim();
-		  const phonenum = document.getElementById("phonenum").value.trim();
+		  const name = document.getElementById("user_name").value.trim();
+		  const nickName = document.getElementById("user_nickName").value.trim();
+		  const nameEN = document.getElementById("user_fullNameEN").value.trim();
+		  const nickNameEN = document.getElementById("user_nickNameEN").value.trim();
+		  const birthDate = document.getElementById("user_birthDate").value.trim();
+		  const citizenId = document.getElementById("user_citizenId").value.trim();
+		  const email = document.getElementById("user_email").value.trim();
+		  const phonenum = document.getElementById("user_phonenum").value.trim();
 		  
 		  if(!name) errorFields.push("ชื่อ สกุล")
 		  if(!nickName) errorFields.push("Nickname TH")
@@ -899,7 +910,8 @@
 		 	        }
 		    }).then((result) => {
 		        if (result.isConfirmed) {
-		        	 document.getElementById("formUpdateOverview").submit();
+		        	const form = document.getElementById("formUpdateOverview");
+		        	form.submit();
 		        }
 		    });
 		  return false;
@@ -969,7 +981,7 @@
 	    const currentPw = document.getElementById("currentPw").value.trim();
 	    const newPw = document.getElementById("newPw").value.trim();
 	    
-	    //มีสัญลักษณ์ และ ยาว 6 ตัวขึ้นไป
+	    //มีสัญลักษณ์และยาว 6 ตัวขึ้นไป
 	    const pattern = /^(?=.*[^A-Za-z0-9]).{6,}$/; 
 	    
 	    //clearError ก่อนเริ่มตรวจ
@@ -1060,7 +1072,7 @@
 	    }
 
 	    if (!newPwInput.disabled) {
-	        //เรียกfunc เพื่อ update สถานะล่าสุด
+	        //เรียกfunc ให้update สถานะล่าสุด
 	        const isPwPatternOk = validateNewPassword(); 
 	        const isConfirmOk = validateConfirmPassword();
 
@@ -1071,7 +1083,6 @@
 
 	    if (!isValid) return false;
 
-	    //ผ่านหมด
 	    Swal.fire({
 	        title: "Are you sure?!",
 	        text: "Do you want to save the changes?",

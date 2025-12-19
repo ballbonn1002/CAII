@@ -22,4 +22,6 @@ public interface JobsiteDAO {
 	public List<Map<String, Object>> findAll() throws Exception;
 	
 	public List<Map<String, Object>> findAll2() throws Exception;
+
+	List<Map<String, Object>> getJobSiteByUserId(String userId) throws Exception;
 }

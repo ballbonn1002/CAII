@@ -1011,7 +1011,7 @@ public class UserDAOImpl implements UserDAO {
 //	}
 
 	@Override
-	public List<Map<String, Object>> getManagerIdAndManagerNameByUserId(String reqUserId) throws Exception {
+	public List<Map<String, Object>> getManagerByUserId(String reqUserId) throws Exception {
 		Session session = this.sessionFactory.getCurrentSession();
 
 		List<Map<String, Object>> list = null;
@@ -1054,54 +1054,36 @@ public class UserDAOImpl implements UserDAO {
 		return (rows != null && !rows.isEmpty()) ? rows.get(0) : null;
 	}
 
-	@Override
-	public  List<Map<String,Object>> getJobSiteByUserId(String userId) throws Exception {
-		Session session = this.sessionFactory.getCurrentSession();
-		List<Map<String, Object>> jobSite = new ArrayList<>();
-
-		try {
-			String sql = "SELECT j.id_sitejob, j.name_site, j.description FROM job_site_team jt JOIN job_site j ON jt.id_sitejob = j.id_sitejob WHERE jt.user_id = :userId";
-			SQLQuery query = session.createSQLQuery(sql);
-			query.setParameter("userId", userId);
-			query.setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
-
-			jobSite = query.list();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-
-		return jobSite;
-	}
-
-	@Override
-	public void update_my_profile(User u) {
-		 Session session = this.sessionFactory.getCurrentSession();
-		 
-		 try {
-			 String sql = "UPDATE user SET name = :name , nick_name = :nickName , email = :email , birth_date =:birthDate, address = :address,"
-			 		+ "phone_num = :phonenum, gender =:gender, title_name_th = :titleNameTH, title_name_en = :titleNameEN , name_en =:nameEN,"
-			 		+ "nick_name_en = :nickNameEN , emergency_contact = :emergContact , emergency_phone = :emergPhone , citizen_id = :citizenId ,"
-			 		+ "passport_id = :passportId   WHERE id = :logonUser";
-			 
-			 SQLQuery query = session.createSQLQuery(sql);
-			 query.setParameter("name", u.getName());
-		        query.setParameter("nickName", u.getNickName());
-		        query.setParameter("email", u.getEmail());
-		        query.setParameter("birthDate", u.getBirthDate());
-		        query.setParameter("address", u.getAddress());
-		        query.setParameter("phonenum", u.getPhonenum());
-		        query.setParameter("gender", u.getGender());
-		        query.setParameter("titleNameTH", u.getTitleNameTH());
-		        query.setParameter("titleNameEN", u.getTitleNameEN());
-		        query.setParameter("nameEN", u.getNameEN());
-		        query.setParameter("nickNameEN", u.getNickNameEN());
-		        query.setParameter("emergContact", u.getEmergContact());
-		        query.setParameter("emergPhone", u.getEmergPhone());
-		        query.setParameter("citizenId", u.getCitizenId());
-		        query.setParameter("passportId", u.getPassportId());
-		        query.setParameter("logonUser", u.getId());
-
-		        query.executeUpdate();
+	
+//	@Override
+//	public void update_my_profile(User u) {
+//		 Session session = this.sessionFactory.getCurrentSession();
+//		 
+//		 try {
+//			 String sql = "UPDATE user SET name = :name , nick_name = :nickName , email = :email , birth_date =:birthDate, address = :address,"
+//			 		+ "phone_num = :phonenum, gender =:gender, title_name_th = :titleNameTH, title_name_en = :titleNameEN , name_en =:nameEN,"
+//			 		+ "nick_name_en = :nickNameEN , emergency_contact = :emergContact , emergency_phone = :emergPhone , citizen_id = :user_citizenId ,"
+//			 		+ "passport_id = :passportId   WHERE id = :logonUser";
+//			 
+//			 SQLQuery query = session.createSQLQuery(sql);
+//			 query.setParameter("name", u.getName());
+//		        query.setParameter("nickName", u.getNickName());
+//		        query.setParameter("email", u.getEmail());
+//		        query.setParameter("birthDate", u.getBirthDate());
+//		        query.setParameter("address", u.getAddress());
+//		        query.setParameter("phonenum", u.getPhonenum());
+//		        query.setParameter("gender", u.getGender());
+//		        query.setParameter("titleNameTH", u.getTitleNameTH());
+//		        query.setParameter("titleNameEN", u.getTitleNameEN());
+//		        query.setParameter("nameEN", u.getNameEN());
+//		        query.setParameter("nickNameEN", u.getNickNameEN());
+//		        query.setParameter("emergContact", u.getEmergContact());
+//		        query.setParameter("emergPhone", u.getEmergPhone());
+//		        query.setParameter("user_citizenId", u.getCitizenId());
+//		        query.setParameter("passportId", u.getPassportId());
+//		        query.setParameter("logonUser", u.getId());
+//
+//		        query.executeUpdate();
 //			 User existingUser = session.get(User.class, u.getId());
 //		        if (existingUser != null) {
 //		            existingUser.setTitleNameTH(u.getTitleNameTH());
@@ -1123,31 +1105,11 @@ public class UserDAOImpl implements UserDAO {
 //		     
 //		            session.update(existingUser);
 //		        }
-		 } catch (Exception e) {
-		        e.printStackTrace();
-		 }
-		 
-	}
-
-	@Override
-	public List<Map<String, Object>> getBorrowListByUserId(String logonUser) {
-		Session session = this.sessionFactory.getCurrentSession();
-
-		List<Map<String, Object>> list = null;
-		try {
-			String sql = "SELECT b.borrow_id, b.date_start, b.location, b.status, e.name, e.item_no FROM borrow b JOIN equipment e ON b.equipment_id = e.equipment_id WHERE b.user_borrowid = :logonUser";
-
-			SQLQuery query = session.createSQLQuery(sql);
-			query.setParameter("logonUser", logonUser);
-			query.setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
-			list = query.list();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return list;
-	}
-	
-	
+//		 } catch (Exception e) {
+//		        e.printStackTrace();
+//		 }
+//		 
+//	}
 
 
 }

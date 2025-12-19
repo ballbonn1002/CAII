@@ -6,6 +6,7 @@ import java.math.BigDecimal;
 import java.sql.Date;
 import java.sql.Timestamp;
 import java.time.LocalDate;
+import java.time.Period;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -19,6 +20,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.GregorianCalendar;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
@@ -57,8 +59,7 @@ import com.cubesofttech.util.FileUtil;
 import com.cubesofttech.util.MD5;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.ibm.icu.text.SimpleDateFormat;
-import com.ibm.icu.util.GregorianCalendar;
+import java.text.SimpleDateFormat;
 import com.opensymphony.xwork2.ActionSupport;
 
 public class UserAction extends ActionSupport {
@@ -174,7 +175,6 @@ public class UserAction extends ActionSupport {
 	
 	
 	 private String work_type;
-	 
 	 private String avatar_remove;
 	 
 	 public String getWorkType() {
@@ -191,18 +191,17 @@ public class UserAction extends ActionSupport {
 		    return onsite_num;
 		}
 
-		public void setOnsiteNum(String onsite_num) {
+	public void setOnsiteNum(String onsite_num) {
 		    this.onsite_num = onsite_num;
-		}
+	}
 		
-		public String getAvatar_remove() {
-	        return avatar_remove;
-	    }
+	public String getAvatar_remove() {
+		return avatar_remove;
+	}
 
-	    public void setAvatar_remove(String avatar_remove) {
-	        this.avatar_remove = avatar_remove;
-	    }
-	
+	public void setAvatar_remove(String avatar_remove) {
+		this.avatar_remove = avatar_remove;
+	}
 
 	public String getId_sitejob() {
 		return id_sitejob;
@@ -277,7 +276,7 @@ public class UserAction extends ActionSupport {
 	private String user_birthDate;
 	private String user_emergContact;
 	private String user_emergPhone;
-
+	
 	public String getUser_phonenum() {
 		return user_phonenum;
 	}
@@ -356,6 +355,15 @@ public class UserAction extends ActionSupport {
 
 	public void setUser_passportId(String user_passportId) {
 		this.user_passportId = user_passportId;
+	}
+	
+
+	public String getUser_birthDate() {
+		return user_birthDate;
+	}
+
+	public void setUser_birthDate(String user_birthDate) {
+		this.user_birthDate = user_birthDate;
 	}
 
 	public String getUser_emergContact() {
@@ -521,7 +529,6 @@ public class UserAction extends ActionSupport {
 	            }
 	            
 	            if (map.get("end_date") == null) {
-	                // à¸•à¸±à¸§à¸­à¸¢à¹ˆà¸²à¸‡: à¸–à¹‰à¸²à¸‚à¸­à¸‡à¹€à¸”à¸´à¸¡à¹ƒà¸Šà¹‰à¸Šà¸·à¹ˆà¸­ resign_date
 	                Object resign = map.get("resign_date");
 	                if (resign != null) {
 	                    map.put("end_date", resign);
@@ -791,10 +798,10 @@ public class UserAction extends ActionSupport {
 					}
 				}
 			}else {
-			    // Ã¢Å“â€¦ Ã Â¸ï¿½Ã Â¸Â£Ã Â¸â€œÃ Â¸ÂµÃ Â¹â€žÃ Â¸Â¡Ã Â¹Ë†Ã Â¸Â¡Ã Â¸ÂµÃ Â¸â€žÃ Â¹Ë†Ã Â¸Â²Ã Â¹â‚¬Ã Â¸Â¥Ã Â¸Â¢ Ã¢â€ â€™ Ã Â¹Æ’Ã Â¸Â«Ã Â¹â€°Ã Â¹â‚¬Ã Â¸â€¹Ã Â¸Å¸ record Ã Â¸â€žÃ Â¹Ë†Ã Â¸Â²Ã Â¸Â§Ã Â¹Ë†Ã Â¸Â²Ã Â¸â€¡
+
 			    JobSiteTeam emptyLink = new JobSiteTeam();
 			    emptyLink.setUser_id(UserIdEdit);
-			    emptyLink.setId_sitejob(""); // Ã Â¹â‚¬Ã Â¸ï¿½Ã Â¹â€¡Ã Â¸Å¡Ã Â¹â‚¬Ã Â¸â€ºÃ Â¹â€¡Ã Â¸â„¢ string Ã Â¸Â§Ã Â¹Ë†Ã Â¸Â²Ã Â¸â€¡ (Ã Â¹â‚¬Ã Â¸Å¾Ã Â¸Â£Ã Â¸Â²Ã Â¸Â° column NOT NULL)
+			    emptyLink.setId_sitejob("");
 			    jobSiteTeamDAO.save(emptyLink);
 			    log.debug("Added empty siteJobId for user=" + UserIdEdit);
 			}
@@ -808,10 +815,6 @@ public class UserAction extends ActionSupport {
 					log.debug("Deleted siteJobId=" + link.getId_sitejob());
 				}
 			}
-			
-			if ("true".equals(this.avatar_remove)) { 
-		        u.setPath(null); 
-		    }
 
 			if (fileUpload != null) {
 				int maxId = fileuploadDAO.getMaxId() + 1;
@@ -839,7 +842,6 @@ public class UserAction extends ActionSupport {
 				u.setPath("/upload/user/" + maxId + "_" + fileUploadFileName);
 			}
 
-			// Ã Â¸Â­Ã Â¸Â±Ã Â¸â€ºÃ Â¹â‚¬Ã Â¸â€�Ã Â¸â€¢Ã Â¸â€šÃ Â¹â€°Ã Â¸Â­Ã Â¸Â¡Ã Â¸Â¹Ã Â¸Â¥ User Ã Â¸â€”Ã Â¸ÂµÃ Â¹Ë†Ã Â¸â€¹Ã Â¹â€°Ã Â¸Â³Ã Â¸â€”Ã Â¸Â±Ã Â¹â€°Ã Â¸â€¡Ã Â¸ÂªÃ Â¸Â­Ã Â¸â€¡Ã Â¸ï¿½Ã Â¸Â£Ã Â¸â€œÃ Â¸Âµ
 			u.setName(user.getName());
 			u.setNickName(user.getNickName());
 			u.setUsername(user_username);
@@ -878,7 +880,6 @@ public class UserAction extends ActionSupport {
 			if (position_id != null)
 				u.setPositionId(position_id);
 
-			// Ã Â¸ï¿½Ã Â¸Â£Ã Â¸â€œÃ Â¸Âµ page = 1 Ã Â¸Â«Ã Â¸Â£Ã Â¸Â·Ã Â¸Â­ 2
 			if (page.equals("1")) {
 				log.debug("user edit");
 				u.setEmailHost(user.getEmailHost());
@@ -941,7 +942,6 @@ public class UserAction extends ActionSupport {
 
 			userDAO.update(u);
 
-			// Ã Â¹â€šÃ Â¸Â«Ã Â¸Â¥Ã Â¸â€�Ã Â¸â€šÃ Â¹â€°Ã Â¸Â­Ã Â¸Â¡Ã Â¸Â¹Ã Â¸Â¥Ã Â¸ï¿½Ã Â¸Â¥Ã Â¸Â±Ã Â¸Å¡ JSP
 			userId = user.getId();
 			request.setAttribute("selectUser", userDAO.findById(userId));
 			request.setAttribute("departmentList", departmentDAO.sequense());
@@ -1652,7 +1652,7 @@ public class UserAction extends ActionSupport {
 
 			User u = userDAO.findById(logonUser);
 
-			List<Map<String, Object>> managerList = userDAO.getManagerIdAndManagerNameByUserId(logonUser);
+			List<Map<String, Object>> managerList = userDAO.getManagerByUserId(logonUser);
 			Map<String, Object> manager = null;
 
 			if (managerList != null && !managerList.isEmpty()) {
@@ -1660,16 +1660,16 @@ public class UserAction extends ActionSupport {
 			}
 			request.setAttribute("manager", manager);
 
-			List<Map<String,Object>> jobSite = userDAO.getJobSiteByUserId(logonUser);
+			List<Map<String,Object>> jobSite = jobsiteDAO.getJobSiteByUserId(logonUser);
 			request.setAttribute("jobSite", jobSite);
 
 			String workPeriod = "-";
 
 	        if (u.getStartDate() != null) {
-	            Calendar start = Calendar.getInstance();
-	            start.setTime(u.getStartDate());
+	        	GregorianCalendar start = new GregorianCalendar(Locale.US);
+	        	start.setTime(u.getStartDate());
 
-	            Calendar now = Calendar.getInstance();
+	        	GregorianCalendar now = new GregorianCalendar(Locale.US);
 
 	            long diffMillis = now.getTimeInMillis() - start.getTimeInMillis();
 	            long oneDayMillis = 1000L * 60 * 60 * 24;
@@ -1704,16 +1704,34 @@ public class UserAction extends ActionSupport {
 	            }
 	        }
 	        
+			LocalDate start = u.getStartDate().toLocalDate();
+			LocalDate now = LocalDate.now();
+
+			Period p = Period.between(start, now);
+
+			if (p.getYears() == 0 && p.getMonths() == 0) {
+			    workPeriod = p.getDays() + "d";
+			} else if (p.getYears() == 0) {
+			    workPeriod = p.getMonths() + "m " + p.getDays() + "d";
+			} else {
+			    workPeriod = p.getYears() + "y " + p.getMonths() + "m";
+			}
+
+			
 	        List<Map<String,Object>> borrow = borrowDAO.getBorrowListByUserId(logonUser);
 			
 			if (borrow != null && !borrow.isEmpty()) {
-				SimpleDateFormat inputDate =  new SimpleDateFormat("yyyy-MM-dd");
+				SimpleDateFormat inputDate =
+				        new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
 				inputDate.setCalendar(new GregorianCalendar());
-				SimpleDateFormat outputDate = new SimpleDateFormat("dd MMM yyyy", Locale.ENGLISH);
+
+				SimpleDateFormat outputDate =
+				        new SimpleDateFormat("dd MMM yyyy", Locale.ENGLISH);
 				outputDate.setCalendar(new GregorianCalendar());
+
 				
 				for(Map<String, Object> row: borrow) {
-					Object dateStartObj = row.get("date_start");
+					Object dateStartObj = row.get("time_create");
 					if(dateStartObj == null) {
 						continue;
 					}
@@ -1734,10 +1752,9 @@ public class UserAction extends ActionSupport {
 				request.setAttribute("borrowList", borrow);
 			}
 
-	        request.setAttribute("workPeriod", workPeriod);
+	       request.setAttribute("workPeriod", workPeriod);
 			request.setAttribute("user", u);
 
-			
 			return SUCCESS;
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -1746,80 +1763,167 @@ public class UserAction extends ActionSupport {
 	}
 	
 	public String update_my_profile() {
-		try {
-			User ur = (User) request.getSession().getAttribute("onlineUser");
-			String logonUser = ur.getId();
-			
-			if(fileUpload != null) {
-				String originalName = fileUploadFileName;
-				String fileName = originalName.substring(0,originalName.lastIndexOf("."));
-				String typeFile = originalName.substring(originalName.lastIndexOf("."));
-				long fileSize = fileUpload.length();
-				
-				FileUpload file = new FileUpload();
-				file.setPage("myProfile");
-				file.setPageId(null);
-				file.setUserId(logonUser);
-				file.setName(fileName);
-				file.setType(typeFile);
-				file.setSize(String.valueOf(fileSize));
-				file.setAltName(null);
-				file.setUserCreate(logonUser);
-				file.setUserUpdate(logonUser);
-				file.setTimeCreate(DateUtil.getCurrentTime());
-			}
+	    try {
+	        User ur = (User) request.getSession().getAttribute("onlineUser");
+	        String logonUser = ur.getId();
 
+			User u = userDAO.findById(logonUser);
 
-			String titleNameTH = request.getParameter("titleNameTH");
-			String name = request.getParameter("name");
-			String nickName = request.getParameter("nickName");
-			String titleNameEN = request.getParameter("titleNameEN");
-			String nameEN = request.getParameter("nameEN");
-			String nickNameEN = request.getParameter("nickNameEN");
-			String gender = request.getParameter("gender");
-			String citizenId = request.getParameter("citizenId");
-			String passportId = request.getParameter("passportId");
-			String email = request.getParameter("email");
-			String phonenum = request.getParameter("phonenum");
-			String address = request.getParameter("address");
-			String emergContact = request.getParameter("emergContact");
-			String emergPhone = request.getParameter("emergPhone");
+	        if (u != null) {
+	        	if(avatar_remove != null && avatar_remove.equalsIgnoreCase("true")) {
+	        		u.setPath(null);
+	        		
+	        	}else if (fileUpload != null) {
+	                int maxId = fileuploadDAO.getMaxId() + 1;
+	                String fileServerPath = request.getServletContext().getRealPath("/");
+	                String newFileName = maxId + "_" + fileUploadFileName;
+	                String originalName = fileUploadFileName;
+	                String fileName = originalName.substring(0,originalName.lastIndexOf("."));
+					String typeFile = originalName.substring(originalName.lastIndexOf("."));
+					
+					long fileSize = fileUpload.length(); //byte
+	                double sizeKB = fileSize / 1024.0;
+	                double sizeMB = fileSize / (1024.0 * 1024.0);
+	                String sizeText;
+	                if (fileSize < 1024) {
+	                    sizeText = fileSize + " B";
+	                } else if (fileSize < 1024 * 1024) {
+	                    sizeText = String.format("%.2f KB", sizeKB);
+	                } else {
+	                    sizeText = String.format("%.2f MB", sizeMB);
+	                }
 
-			User u = new User();
-			u.setId(logonUser);
-			u.setTitleNameTH(titleNameTH);
-			u.setName(name);
-			u.setNickName(nickName);
-			u.setTitleNameEN(titleNameEN);
-			u.setNameEN(nameEN);
-			u.setNickNameEN(nickNameEN);
-			u.setGender(gender);
-			u.setCitizenId(citizenId);
-			u.setPassportId(passportId != null && !passportId.isEmpty() ? passportId : "-");
-			u.setEmail(email);
-			u.setPhonenum(phonenum);
-			u.setAddress(address != null && !address.isEmpty() ? address : null);
-			u.setEmergContact(emergContact != null && !emergContact.isEmpty() ? emergContact : null);
-			u.setEmergPhone(emergPhone != null && !emergPhone.isEmpty() ? emergPhone : null);
-			u.setTimeUpdate(DateUtil.getCurrentTime());
+	                FileUtil.upload(fileUpload, fileServerPath + "upload/user/", newFileName);
 
-			String birthDateStr = request.getParameter("birthDate");
-			if (birthDateStr != null && !birthDateStr.trim().isEmpty()) {
-				SimpleDateFormat sdf = new SimpleDateFormat("dd MMM yyyy", Locale.ENGLISH);
-				java.util.Date utilDate = sdf.parse(birthDateStr); // แปลง string เป็น java.util.Date
-				java.sql.Date sqlDate = new java.sql.Date(utilDate.getTime()); // แปลงเป็น java.sql.Date
-				u.setBirthDate(sqlDate);
-			} else {
-				u.setBirthDate(null);
-			}
-			userDAO.update_my_profile(u);
+	                FileUpload file = new FileUpload();
+	                file.setFileId(maxId);
+	                file.setUserId(u.getId());
+	                file.setName(fileName);
+					file.setPage("user");
+					file.setPageId(null);
+					file.setUserId(logonUser);
+					file.setType(typeFile);
+					file.setSize(sizeText);
+					file.setAltName(null);
+					file.setUserCreate(logonUser);
+					file.setPath("/upload/user/" + newFileName);
+					file.setTimeCreate(DateUtil.getCurrentTime());
+	                fileuploadDAO.save(file);
 
-			return SUCCESS;
-		} catch (Exception e) {
-			e.printStackTrace();
-			return ERROR;
-		}
+	                u.setPath("/upload/user/" + newFileName);
+	            }
+
+	            u.setName(this.user_name);
+	            u.setNickName(this.user_nickName);
+	            u.setNameEN(this.user_fullNameEN);
+	            u.setNickNameEN(this.user_nickNameEN);
+	            u.setGender(this.user_gender);
+	            u.setCitizenId(this.user_citizenId); 
+	            u.setPassportId(this.user_passportId);
+	            u.setEmail(this.user_email);
+	            u.setPhonenum(this.user_phonenum);
+	            u.setAddress(this.user_address);
+	            u.setEmergContact(this.user_emergContact);
+	            u.setEmergPhone(this.user_emergPhone);
+	            u.setTimeUpdate(DateUtil.getCurrentTime());
+
+	            if (this.user_birthDate != null && !this.user_birthDate.isEmpty()) {
+	                SimpleDateFormat sdf = new SimpleDateFormat("dd MMM yyyy", Locale.ENGLISH);
+	                java.util.Date bDate = sdf.parse(this.user_birthDate);
+	                u.setBirthDate(new java.sql.Date(bDate.getTime()));
+	            }
+
+	            userDAO.update(u); 
+	        }
+	        
+	        return SUCCESS;
+
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        return ERROR;
+	    }
 	}
+	
+//	public String update_my_profile() {
+//		try {
+//			User ur = (User) request.getSession().getAttribute("onlineUser");
+//			String logonUser = ur.getId();
+//			User u = userDAO.findById(logonUser);
+//			if(fileUpload != null) {
+//				String originalName = fileUploadFileName;
+//				String fileName = originalName.substring(0,originalName.lastIndexOf("."));
+//				String typeFile = originalName.substring(originalName.lastIndexOf("."));
+//				long fileSize = fileUpload.length();
+//				
+//				FileUpload file = new FileUpload();
+//				file.setPage("myProfile");
+//				file.setPageId(null);
+//				file.setUserId(logonUser);
+//				file.setName(fileName);
+//				file.setType(typeFile);
+//				file.setSize(String.valueOf(fileSize));
+//				file.setAltName(null);
+//				file.setUserCreate(logonUser);
+//				file.setUserUpdate(logonUser);
+//				file.setTimeCreate(DateUtil.getCurrentTime());
+//				
+//			//	long fileId = fileuploadDAO.save(file);
+//				
+//			}
+//
+//
+//			String user_titleNameTH = request.getParameter("user_titleNameTH");
+//			String user_name = request.getParameter("user_name");
+//			String user_nickName = request.getParameter("user_nickName");
+//			String user_titleNameEN = request.getParameter("user_titleNameEN");
+//			String user_nameEN = request.getParameter("user_nameEN");
+//			String user_nickNameEN = request.getParameter("user_nickNameEN");
+//			String user_gender = request.getParameter("user_gender");
+//			String user_citizenId = request.getParameter("user_citizenId");
+//			String user_passportId = request.getParameter("user_passportId");
+//			String user_email = request.getParameter("user_email");
+//			String user_phonenum = request.getParameter("user_phonenum");
+//			String user_address = request.getParameter("user_address");
+//			String user_emergContact = request.getParameter("user_emergContact");
+//			String user_emergPhone = request.getParameter("user_emergPhone");
+//			
+//
+////			User u = new User();
+//			u.setId(logonUser);
+//			u.setTitleNameTH(user_titleNameTH);
+//			u.setName(user_name);
+//			u.setNickName(user_nickName);
+//			u.setTitleNameEN(user_titleNameEN);
+//			u.setNameEN(user_nameEN);
+//			u.setNickNameEN(user_nickNameEN);
+//			u.setGender(user_gender);
+//			u.setCitizenId(user_citizenId);
+//			u.setPassportId(user_passportId != null && !user_passportId.isEmpty() ? user_passportId : "-");
+//			u.setEmail(user_email);
+//			u.setPhonenum(user_phonenum);
+//			u.setAddress(user_address != null && !user_address.isEmpty() ? user_address : null);
+//			u.setEmergContact(user_emergContact != null && !user_emergContact.isEmpty() ? user_emergContact : null);
+//			u.setEmergPhone(user_emergPhone != null && !user_emergPhone.isEmpty() ? user_emergPhone : null);
+//			u.setTimeUpdate(DateUtil.getCurrentTime());
+//
+//			
+//			String birthDateStr = request.getParameter("user_birthDate");
+//			if (birthDateStr != null && !birthDateStr.trim().isEmpty()) {
+//				SimpleDateFormat sdf = new SimpleDateFormat("dd MMM yyyy", Locale.ENGLISH);
+//				java.util.Date utilDate = sdf.parse(birthDateStr); // แปลง string เป็น java.util.Date
+//				java.sql.Date sqlDate = new java.sql.Date(utilDate.getTime()); // แปลงเป็น java.sql.Date
+//				u.setBirthDate(sqlDate);
+//			} else {
+//				u.setBirthDate(null);
+//			}
+//			userDAO.update_my_profile(u);
+//
+//			return SUCCESS;
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//			return ERROR;
+//		}
+//	}
 	
 	public String validate_current_password() {
 	    try {
