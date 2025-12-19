@@ -55,10 +55,11 @@
 								<div class="card-body">
 								
 									<div class="row g-5">
-										<!-- Employee -->
+
+										<!-- All Employee -->
 										<div class="col-md-2">
 											<div class="mb-5">
-												<select class="form-select" id="name1" name="name1" >
+												<select class="form-select" id="name1" name="name1" onchange="this.form.submit()">
 													<perm:permission object="leave.viewall">
 														<option value="All" id="All"
 															<c:if test="${userSelect != null && userSelect == 'All'}"> selected </c:if>>All Employee</option>
@@ -68,20 +69,24 @@
 												</select>
 											</div>
 										</div>
-										
+										<!-- All Employee -->
+
+										<!-- Select Employee -->
 										<div class="col-md-10">
 											<div class="mb-5">
 												<select class="form-select" id="name2" name="name2" onchange="this.form.submit()"></select>
 											</div>
 										</div>
-										<!-- Employee -->
+										<!-- Select Employee -->
+
 									</div>
 									
 									<div class="row g-5">
+
 										<!-- Leave Type -->
 										<div class="col-md-4">
 											<div class="mb-5">
-												<select class="form-select" data-placeholder="All Leave Type" name="type" onchange="this.form.submit()">
+												<select class="form-select" data-placeholder="All Leave Type" id="leaveType" name="type" onchange="this.form.submit()">
 													<option value="allType" <c:if test="${leaveType == 'allType'}"><c:out value="selected=selected"/></c:if>>All Leave Type</option>
 													<c:forEach var="leavetype" items="${leavetypelistChoice}">
 														<option value="${leavetype.leaveTypeId}"
@@ -93,6 +98,7 @@
 												</select>
 											</div>
 										</div>
+										<!-- Leave Type -->
 
 										<!-- Status -->
 										<div class="col-md-4">
@@ -122,6 +128,7 @@
 												</select>
 											</div>
 										</div>
+										<!-- Status -->
 
 										<!-- Date Range -->
 										<div class="col-md-4">
@@ -790,7 +797,10 @@ $(document).ready(function(){
 	var role_authorized = '${role_authorized}';
 	
 	var value = null;
-	var user_login = '${userS}';
+	console.log("userS = " + '${userS}');
+	console.log("logonUser = " + '${logonUser}');
+	//var user_login = '${userS}';
+	var user_login = '${logonUser}';
 
 	console.log(userSelect);
 	console.log(userSelect2);
@@ -804,13 +814,22 @@ $(document).ready(function(){
 		CreateListUsers(value, user_login, userSelect2);
 	}
 	
- 	if(userSelect2 == null || userSelect2 == ""){
+ 	//if(userSelect2 == null || userSelect2 == ""){
 	 	$("#name2").select2({
 		    placeholder: "Select Employee",
 		    allowClear: true,
 		});
-	}
-	
+	//}
+
+ 	$("#leaveType, #appr").select2({
+        /*placeholder: function() {
+            return $(this).data('placeholder');
+        },*/
+        allowClear: true,
+        width: '100%',
+        //minimumResultsForSearch: Infinity	//disable search
+    });
+
 	$('#name1').on('change', function() {
 		console.log("name1 change");
 		console.log($(this).val());
@@ -878,13 +897,11 @@ function CreateListUsers(value, user_login, userSelect2) {
 	}); */
 
 	$(document).ready(function () {
-		// กำหนดค่าเริ่มต้น
 		/* var start = moment("2025-01-01", "YYYY-MM-DD");
 		var end = moment("2025-12-31", "YYYY-MM-DD"); */
 		var start = moment("<fmt:formatDate value='${startdate}' pattern='dd-MM-yyyy'/>", "DD-MM-YYYY");
 		var end = moment("<fmt:formatDate value='${enddate}' pattern='dd-MM-yyyy'/>", "DD-MM-YYYY");
 
-		// สร้าง Date Range Picker
 		/* $("#kt_daterangepicker").daterangepicker({
 			startDate: start,
 			endDate: end,
@@ -892,7 +909,6 @@ function CreateListUsers(value, user_login, userSelect2) {
 				format: "DD MMM YYYY"
 			}
 		}, function (start, end) {
-			// อัปเดต hidden input ทุกครั้งที่เลือกช่วงวันใหม่
 			$("#startdate").val(start.format("DD-MM-YYYY"));
 			$("#enddate").val(end.format("DD-MM-YYYY"));
 
@@ -903,27 +919,23 @@ function CreateListUsers(value, user_login, userSelect2) {
 	        startDate: start,
 	        endDate: end,
 			locale: {
-				format: "DD MMM YYYY",  // รูปแบบวันที่
+				format: "DD MMM YYYY",
 				monthNames: [
 				  "January", "February", "March", "April", "May", "June",
 				  "July", "August", "September", "October", "November", "December"
-				],  // กำหนดชื่อเดือนเต็ม
+				],
 	        },
 	        showDropdowns: true,     // มี dropdown เดือน/ปี
-	        autoApply: true,  // ยืนยันโดยอัตโนมัติเมื่อเลือกวันที่
-	        linkedCalendars: false,  // เดือนซ้าย-ขวาอิสระ ไม่ fix
+	        autoApply: true,
+	        linkedCalendars: false,  // เดือนซ้าย ขวาอิสระ ไม่ fix
 	        alwaysShowCalendars: true,
 	        opens: 'center'
 		}, function (start, end) {
-			// อัปเดต hidden input ทุกครั้งที่เลือกช่วงวันใหม่
 			$("#startdate").val(start.format("DD-MM-YYYY"));
 			$("#enddate").val(end.format("DD-MM-YYYY"));
-
-			// auto-submit form
 			$("#searchForm").submit();
 		});
 
-		// ตั้งค่าเริ่มต้นตอนโหลด
 		$("#startdate").val(start.format("DD-MM-YYYY"));
 		$("#enddate").val(end.format("DD-MM-YYYY"));
 
@@ -1108,7 +1120,6 @@ function changStatus(id) {
         buttonsStyling: false,
         focusConfirm: false,
 
-        // ฟังก์ชันตรวจสอบก่อนกด "Confirm"
         preConfirm: () => {
             const val = document.getElementById('text').value.trim();
             if (!val) {
@@ -1118,7 +1129,6 @@ function changStatus(id) {
             return val;
         }
     }).then((result) => {
-        // ถ้ากดยืนยัน (เหมือน if(inputValue == true))
         if (result.isConfirmed) {
             const val = result.value;
 
@@ -1131,7 +1141,7 @@ function changStatus(id) {
                         reason: val
                     },
                     success: function(response) {
-                        window.location.reload(true); // reload หน้าทันทีเหมือนโค้ดเดิม
+                        window.location.reload(true);
                     },
                     error: function() {
                         Swal.fire("Error", "Unable to cancel leave. Please try again.", "error");
@@ -1140,7 +1150,6 @@ function changStatus(id) {
             }
         }
 
-        // ถ้ากด Cancel (เหมือน if(inputValue == false))
         if (result.isDismissed) {
             return false;
         }

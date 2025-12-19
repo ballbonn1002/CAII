@@ -807,6 +807,7 @@ public class LeaveAction extends ActionSupport {
 			request.setAttribute("leavetypeList", leavetypeDAO.findAll2());
 			request.setAttribute("leaveuserList", leaveuserDAO.findAll());
 			request.setAttribute("userList", userDAO.findAll());
+			request.setAttribute("logonUser", userLogin);
 			request.setAttribute("userS", userLogin);
 			request.setAttribute("flag_search", "0");
 
@@ -1755,6 +1756,8 @@ public class LeaveAction extends ActionSupport {
 
 			User ur = (User) request.getSession().getAttribute("onlineUser");
 			String userLogin = ur.getId();
+			request.setAttribute("logonUser", userLogin);
+			
 			log.debug(userLogin);
 
 			String user_role = ur.getRoleId();

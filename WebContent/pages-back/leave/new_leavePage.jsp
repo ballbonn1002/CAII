@@ -1292,9 +1292,10 @@
 			    useCurrent: false
 			  }); */
 
-
-
-
+			$("#user").select2({
+				allowClear: true,
+				width: '100%'
+			});
 
 			//Start Date Picker
 			$("#date_from").daterangepicker({
