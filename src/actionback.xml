@@ -480,6 +480,43 @@
         	method="checkDuplicateDepartmentId">
 		</action>
 		
+		
+		<!-- My Profile Oveview -->
+		<action name="my_profile"
+			class="com.cubesofttech.action.UserAction" method="my_profile">
+			<result name="success" type="tiles">my_profile</result>
+			<result name="error">/index.jsp</result>
+		</action>
+		<action name="edit_my_profile"
+			class="com.cubesofttech.action.UserAction" method="edit_my_profile">
+			<result name="success" type="tiles">edit_my_profile</result>
+			<result name="error">/index.jsp</result>
+		</action>
+		
+		<action name="update_my_profile"
+			class="com.cubesofttech.action.UserAction" method="update_my_profile">
+			<result name="success" type="redirectAction">my_profile</result> 
+			<result name="error">/index.jsp</result>
+		</action>
+		
+		<!-- My Profile Security-->
+		<action name="update_password"
+			class="com.cubesofttech.action.UserAction" method="update_password">
+			<result name="success" type="redirectAction">my_profile</result>
+			<result name="error">/index.jsp</result>
+		</action>
+		
+		<action name="validate_current_password"
+    		class="com.cubesofttech.action.UserAction" method="validate_current_password">
+    		<result name="none" type="httpheader"/>
+		</action>
+ 	
+		<!-- <action name="my_profile"
+			class="com.cubesofttech.action.UserAction" method="openEdit">
+			<result name="success" type="tiles">my_profile</result>
+			<result name="error">/index.jsp</result>
+		</action> -->
+
 	</package>
 	
 </struts>

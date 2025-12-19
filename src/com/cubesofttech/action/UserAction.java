@@ -9,10 +9,12 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -55,6 +57,8 @@ import com.cubesofttech.util.FileUtil;
 import com.cubesofttech.util.MD5;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.ibm.icu.text.SimpleDateFormat;
+import com.ibm.icu.util.GregorianCalendar;
 import com.opensymphony.xwork2.ActionSupport;
 
 public class UserAction extends ActionSupport {
@@ -1639,4 +1643,240 @@ public class UserAction extends ActionSupport {
 			return ERROR;
 		}
 	}
+	
+
+	public String my_profile() {
+		try {
+			User ur = (User) request.getSession().getAttribute("onlineUser");
+			String logonUser = ur.getId();
+
+			User u = userDAO.findById(logonUser);
+
+			List<Map<String, Object>> managerList = userDAO.getManagerIdAndManagerNameByUserId(logonUser);
+			Map<String, Object> manager = null;
+
+			if (managerList != null && !managerList.isEmpty()) {
+				manager = managerList.get(0);
+			}
+			request.setAttribute("manager", manager);
+
+			List<Map<String,Object>> jobSite = userDAO.getJobSiteByUserId(logonUser);
+			request.setAttribute("jobSite", jobSite);
+
+			String workPeriod = "-";
+
+	        if (u.getStartDate() != null) {
+	            Calendar start = Calendar.getInstance();
+	            start.setTime(u.getStartDate());
+
+	            Calendar now = Calendar.getInstance();
+
+	            long diffMillis = now.getTimeInMillis() - start.getTimeInMillis();
+	            long oneDayMillis = 1000L * 60 * 60 * 24;
+
+	            boolean isToday = diffMillis < oneDayMillis;
+
+	            if (isToday) {
+	                workPeriod = "Starting";
+	            } else {
+	                int years = now.get(Calendar.YEAR) - start.get(Calendar.YEAR);
+	                int months = now.get(Calendar.MONTH) - start.get(Calendar.MONTH);
+
+	                if (months < 0) {
+	                    years--;
+	                    months += 12;
+	                }
+
+	                Calendar temp = (Calendar) start.clone();
+	                temp.add(Calendar.YEAR, years);
+	                temp.add(Calendar.MONTH, months);
+
+	                long remainMillis = now.getTimeInMillis() - temp.getTimeInMillis();
+	                long days = remainMillis / oneDayMillis;
+
+	                if (years == 0 && months == 0) {
+	                    workPeriod = days + "d";
+	                } else if (years == 0) {
+	                    workPeriod = months + "m " + days + "d";
+	                } else {
+	                    workPeriod = years + "y " + months + "m";
+	                }
+	            }
+	        }
+	        
+	        List<Map<String,Object>> borrow = borrowDAO.getBorrowListByUserId(logonUser);
+			
+			if (borrow != null && !borrow.isEmpty()) {
+				SimpleDateFormat inputDate =  new SimpleDateFormat("yyyy-MM-dd");
+				inputDate.setCalendar(new GregorianCalendar());
+				SimpleDateFormat outputDate = new SimpleDateFormat("dd MMM yyyy", Locale.ENGLISH);
+				outputDate.setCalendar(new GregorianCalendar());
+				
+				for(Map<String, Object> row: borrow) {
+					Object dateStartObj = row.get("date_start");
+					if(dateStartObj == null) {
+						continue;
+					}
+					 String dt = dateStartObj.toString();         
+					 String[] parts = dt.split(" ");
+					 
+					 String datePart = parts[0]; 
+					 String timePart = parts[1].split("\\.")[0];
+					 
+					 java.util.Date date = inputDate.parse(datePart);
+
+					 row.put("formatted_date", outputDate.format(date));
+					 row.put("formatted_time", timePart);
+				}
+				
+				request.setAttribute("borrowList", borrow);
+			}else {
+				request.setAttribute("borrowList", borrow);
+			}
+
+	        request.setAttribute("workPeriod", workPeriod);
+			request.setAttribute("user", u);
+
+			
+			return SUCCESS;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ERROR;
+		}
+	}
+	
+	public String update_my_profile() {
+		try {
+			User ur = (User) request.getSession().getAttribute("onlineUser");
+			String logonUser = ur.getId();
+			
+			if(fileUpload != null) {
+				String originalName = fileUploadFileName;
+				String fileName = originalName.substring(0,originalName.lastIndexOf("."));
+				String typeFile = originalName.substring(originalName.lastIndexOf("."));
+				long fileSize = fileUpload.length();
+				
+				FileUpload file = new FileUpload();
+				file.setPage("myProfile");
+				file.setPageId(null);
+				file.setUserId(logonUser);
+				file.setName(fileName);
+				file.setType(typeFile);
+				file.setSize(String.valueOf(fileSize));
+				file.setAltName(null);
+				file.setUserCreate(logonUser);
+				file.setUserUpdate(logonUser);
+				file.setTimeCreate(DateUtil.getCurrentTime());
+			}
+
+
+			String titleNameTH = request.getParameter("titleNameTH");
+			String name = request.getParameter("name");
+			String nickName = request.getParameter("nickName");
+			String titleNameEN = request.getParameter("titleNameEN");
+			String nameEN = request.getParameter("nameEN");
+			String nickNameEN = request.getParameter("nickNameEN");
+			String gender = request.getParameter("gender");
+			String citizenId = request.getParameter("citizenId");
+			String passportId = request.getParameter("passportId");
+			String email = request.getParameter("email");
+			String phonenum = request.getParameter("phonenum");
+			String address = request.getParameter("address");
+			String emergContact = request.getParameter("emergContact");
+			String emergPhone = request.getParameter("emergPhone");
+
+			User u = new User();
+			u.setId(logonUser);
+			u.setTitleNameTH(titleNameTH);
+			u.setName(name);
+			u.setNickName(nickName);
+			u.setTitleNameEN(titleNameEN);
+			u.setNameEN(nameEN);
+			u.setNickNameEN(nickNameEN);
+			u.setGender(gender);
+			u.setCitizenId(citizenId);
+			u.setPassportId(passportId != null && !passportId.isEmpty() ? passportId : "-");
+			u.setEmail(email);
+			u.setPhonenum(phonenum);
+			u.setAddress(address != null && !address.isEmpty() ? address : null);
+			u.setEmergContact(emergContact != null && !emergContact.isEmpty() ? emergContact : null);
+			u.setEmergPhone(emergPhone != null && !emergPhone.isEmpty() ? emergPhone : null);
+			u.setTimeUpdate(DateUtil.getCurrentTime());
+
+			String birthDateStr = request.getParameter("birthDate");
+			if (birthDateStr != null && !birthDateStr.trim().isEmpty()) {
+				SimpleDateFormat sdf = new SimpleDateFormat("dd MMM yyyy", Locale.ENGLISH);
+				java.util.Date utilDate = sdf.parse(birthDateStr); // แปลง string เป็น java.util.Date
+				java.sql.Date sqlDate = new java.sql.Date(utilDate.getTime()); // แปลงเป็น java.sql.Date
+				u.setBirthDate(sqlDate);
+			} else {
+				u.setBirthDate(null);
+			}
+			userDAO.update_my_profile(u);
+
+			return SUCCESS;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ERROR;
+		}
+	}
+	
+	public String validate_current_password() {
+	    try {
+	        User onlineUser = (User) request.getSession().getAttribute("onlineUser");
+	        String currentPw = request.getParameter("currentPw");
+
+	        Map<String, Object> result = new HashMap<>();
+	        boolean isValid = false;
+
+	        if (onlineUser != null && currentPw != null && !currentPw.isEmpty()) {
+	            User u = userDAO.findById(onlineUser.getId());
+	            String inputHash = MD5.getInstance().hashData(currentPw.getBytes());
+	            isValid = inputHash.equals(u.getPassword());
+//	            System.out.println("--------------- " );
+//	            System.out.println("Input Hash: " + inputHash);
+//		        System.out.println("DB Hash   : " + u.getPassword());
+//		        System.out.println("Is valid  : " + isValid);
+	        }
+	       
+
+	        result.put("valid", isValid);
+
+	        response.setContentType("application/json; charset=UTF-8");
+	        response.getWriter().write(new Gson().toJson(result));
+
+	        return NONE;
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        return NONE;
+	    }
+	}
+	
+	public String update_password() {
+		try {
+			User ur = (User) request.getSession().getAttribute("onlineUser");
+			String logonUser = ur.getId();
+			
+			String currentPw = request.getParameter("currentPw");
+	        String newPw = request.getParameter("newPw");
+			
+	        User dbUser = userDAO.findById(logonUser);
+	        
+	        String hashedCurrentPw = MD5.getInstance().hashData(currentPw.getBytes()); 
+	        boolean match = hashedCurrentPw.equals(dbUser.getPassword());
+	        
+	        if(match) {
+	        	String hashedNewPassword = MD5.getInstance().hashData(newPw.getBytes());
+	        	dbUser.setPassword(hashedNewPassword);
+	            userDAO.update(dbUser);
+	        	
+	        }
+			return SUCCESS;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ERROR;
+		}
+	}
+	
+	
 }
