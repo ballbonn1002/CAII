@@ -111,7 +111,7 @@ public interface UserDAO {
 //	
 //	public List<Map<String, Object>> findAllUserOrderByEnableAndName() throws Exception;
 	
-	public List<Map<String, Object>> getManagerByUserId(String reqUserId) throws Exception;
+	public List<Map<String, Object>> getManagerIdAndManagerNameByUserId(String reqUserId) throws Exception;
 	
     List<Map<String, Object>> findUsersByEmail(String email) throws Exception;
     Map<String, Object> findUserById(String id) throws Exception;

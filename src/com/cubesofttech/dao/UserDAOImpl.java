@@ -1011,7 +1011,7 @@ public class UserDAOImpl implements UserDAO {
 //	}
 
 	@Override
-	public List<Map<String, Object>> getManagerByUserId(String reqUserId) throws Exception {
+	public List<Map<String, Object>> getManagerIdAndManagerNameByUserId(String reqUserId) throws Exception {
 		Session session = this.sessionFactory.getCurrentSession();
 
 		List<Map<String, Object>> list = null;

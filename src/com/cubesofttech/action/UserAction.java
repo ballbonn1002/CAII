@@ -1652,7 +1652,7 @@ public class UserAction extends ActionSupport {
 
 			User u = userDAO.findById(logonUser);
 
-			List<Map<String, Object>> managerList = userDAO.getManagerByUserId(logonUser);
+			List<Map<String, Object>> managerList = userDAO.getManagerIdAndManagerNameByUserId(logonUser);
 			Map<String, Object> manager = null;
 
 			if (managerList != null && !managerList.isEmpty()) {
@@ -1665,45 +1665,6 @@ public class UserAction extends ActionSupport {
 
 			String workPeriod = "-";
 
-	        if (u.getStartDate() != null) {
-	        	GregorianCalendar start = new GregorianCalendar(Locale.US);
-	        	start.setTime(u.getStartDate());
-
-	        	GregorianCalendar now = new GregorianCalendar(Locale.US);
-
-	            long diffMillis = now.getTimeInMillis() - start.getTimeInMillis();
-	            long oneDayMillis = 1000L * 60 * 60 * 24;
-
-	            boolean isToday = diffMillis < oneDayMillis;
-
-	            if (isToday) {
-	                workPeriod = "Starting";
-	            } else {
-	                int years = now.get(Calendar.YEAR) - start.get(Calendar.YEAR);
-	                int months = now.get(Calendar.MONTH) - start.get(Calendar.MONTH);
-
-	                if (months < 0) {
-	                    years--;
-	                    months += 12;
-	                }
-
-	                Calendar temp = (Calendar) start.clone();
-	                temp.add(Calendar.YEAR, years);
-	                temp.add(Calendar.MONTH, months);
-
-	                long remainMillis = now.getTimeInMillis() - temp.getTimeInMillis();
-	                long days = remainMillis / oneDayMillis;
-
-	                if (years == 0 && months == 0) {
-	                    workPeriod = days + "d";
-	                } else if (years == 0) {
-	                    workPeriod = months + "m " + days + "d";
-	                } else {
-	                    workPeriod = years + "y " + months + "m";
-	                }
-	            }
-	        }
-	        
 			LocalDate start = u.getStartDate().toLocalDate();
 			LocalDate now = LocalDate.now();
 
@@ -1753,7 +1714,7 @@ public class UserAction extends ActionSupport {
 			}
 
 	       request.setAttribute("workPeriod", workPeriod);
-			request.setAttribute("user", u);
+	       request.setAttribute("user", u);
 
 			return SUCCESS;
 		} catch (Exception e) {
