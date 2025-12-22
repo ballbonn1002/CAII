@@ -510,12 +510,7 @@
     		class="com.cubesofttech.action.UserAction" method="validate_current_password">
     		<result name="none" type="httpheader"/>
 		</action>
- 	
-		<!-- <action name="my_profile"
-			class="com.cubesofttech.action.UserAction" method="openEdit">
-			<result name="success" type="tiles">my_profile</result>
-			<result name="error">/index.jsp</result>
-		</action> -->
+
 
 	</package>
 	
