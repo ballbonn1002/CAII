@@ -61,25 +61,25 @@ public class RoleDAOImpl implements RoleDAO{
         //session.close();
     }
 
-	@Override
-	public List<Role> findByRoleId(String roleId) throws Exception {
-		Session session = this.sessionFactory.getCurrentSession();
-        List<Role> list = null;
-        try {
-            
-            Criteria cr = session.createCriteria(Role.class);
-            cr.add(Restrictions.eq("roleId", roleId));
-            list = cr.list();
-  
-        } catch (Exception e) {
-        	e.printStackTrace();
-        	return null;
-
-        } finally {
-
-        }
-        return list;
-	}
+//	@Override
+//	public List<Role> findByRoleId(String roleId) throws Exception {
+//		Session session = this.sessionFactory.getCurrentSession();
+//        List<Role> list = null;
+//        try {
+//            
+//            Criteria cr = session.createCriteria(Role.class);
+//            cr.add(Restrictions.eq("roleId", roleId));
+//            list = cr.list();
+//  
+//        } catch (Exception e) {
+//        	e.printStackTrace();
+//        	return null;
+//
+//        } finally {
+//
+//        }
+//        return list;
+//	}
  
     @Override
     public Role findById(String id) throws Exception {
@@ -95,21 +95,21 @@ public class RoleDAOImpl implements RoleDAO{
         return role;
     }
     
-    @Override
-	public List<Map<String, Object>> sequense() throws Exception {
-		Session session = this.sessionFactory.getCurrentSession();
-		List<Map<String, Object>> department_id = null;
-		try {
-			String sql = " SELECT id, CONCAT(id) "
-					+ " FROM role  ORDER BY id ASC ";
-			SQLQuery query = session.createSQLQuery(sql);
-			query.setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
-			department_id = query.list();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return department_id;
-	}
+//    @Override
+//	public List<Map<String, Object>> sequense() throws Exception {
+//		Session session = this.sessionFactory.getCurrentSession();
+//		List<Map<String, Object>> department_id = null;
+//		try {
+//			String sql = " SELECT id, CONCAT(id) "
+//					+ " FROM role  ORDER BY id ASC ";
+//			SQLQuery query = session.createSQLQuery(sql);
+//			query.setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
+//			department_id = query.list();
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//		}
+//		return department_id;
+//	}
     
     @Override
 	public List<Map<String, Object>> sequense2() throws Exception {

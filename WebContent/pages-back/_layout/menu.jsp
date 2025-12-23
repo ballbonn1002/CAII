@@ -403,6 +403,35 @@
 						<!--end:Menu link-->
 					</div>
 					<!--end:Menu item-->
+					
+					<!--begin:Menu Authority-->
+					<div class="menu-item pt-5">
+						<div class="menu-content">
+							<span class="menu-heading fw-bold text-uppercase fs-7">Authority</span>
+						</div>
+					</div>
+					
+					<!--Role Management-->
+					<perm:permission object="role.view">
+						<div class="menu-item">
+							<a class="menu-link" href="role-list" data-route="role-list">
+								<span class="menu-icon">
+									<i class="ki-duotone ki-security-user fs-1">
+										<span class="path1"></span>
+										<span class="path2"></span>
+									</i>
+								</span>
+								<span class="menu-title">
+									Role Management
+								</span>
+								<i class="ki-duotone ki-check-circle fs-3 text-success">
+									<span class="path1"></span><span class="path2"></span>
+								</i>
+							</a>
+						</div>
+					</perm:permission>
+					<!--Role Management-->
+					<!--end:Menu Authority-->
 
 					<!--begin:Menu item-->
 					<div class="menu-item pt-5">

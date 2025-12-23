@@ -8,13 +8,13 @@ import com.cubesofttech.model.Role;
 
 public interface RoleDAO {
     
-	public List<Map<String, Object>> sequense() throws Exception;
+//	public List<Map<String, Object>> sequense() throws Exception;
 	
     public void save(Role role) throws Exception;
     
     public List<Role> findAll() throws Exception;
     
-    public List<Role> findByRoleId(String roleId) throws Exception;
+//    public List<Role> findByRoleId(String roleId) throws Exception;
     
     public Role findById(String id) throws Exception;
     

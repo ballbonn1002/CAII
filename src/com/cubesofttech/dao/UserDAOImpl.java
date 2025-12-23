@@ -123,21 +123,21 @@ public class UserDAOImpl implements UserDAO {
 		return list;
 	}
 
-//	@Override
-//	public List<Map<String, Object>> findById3(String ur) throws Exception {
-//		Session session = this.sessionFactory.getCurrentSession();
-//		List<Map<String, Object>> user = null;
-//		try {
-//			String sql = " SELECT role_id FROM user WHERE user.id = :ur ";
-//			SQLQuery query = session.createSQLQuery(sql);
-//			query.setParameter("ur", ur);
-//			query.setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
-//			user = query.list();
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//		}
-//		return user;
-//	}
+	@Override
+	public List<Map<String, Object>> findById3(String ur) throws Exception {
+		Session session = this.sessionFactory.getCurrentSession();
+		List<Map<String, Object>> user = null;
+		try {
+			String sql = " SELECT role_id FROM user WHERE user.id = :ur ";
+			SQLQuery query = session.createSQLQuery(sql);
+			query.setParameter("ur", ur);
+			query.setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
+			user = query.list();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return user;
+	}
 
 	@Override
 	public void update(User User) throws Exception {

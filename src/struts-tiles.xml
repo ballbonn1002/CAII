@@ -172,6 +172,21 @@
 	</definition>
 	<!-- Leave Approve -->
 	
+	<!-- Role Management -->
+	<definition name="role.list" extends="baseLayout">
+		<put-attribute name="title" value="Role Management" />
+		<put-attribute name="body" value="/pages-back/role/role_list.jsp" />
+	</definition>
+	<definition name="role.edit" extends="baseLayout">
+		<put-attribute name="title" value="Role Edit" />
+		<put-attribute name="body" value="/pages-back/role/role_edit.jsp" />
+	</definition>
+	<definition name="role.add" extends="baseLayout">
+		<put-attribute name="title" value="Role Add" />
+		<put-attribute name="body" value="/pages-back/role/role_add.jsp" />
+	</definition>
+	<!-- Role Management -->
+	
 	<!-- Announcement -->
 	<definition name="AnnouncementList" extends="baseLayout">
 		<put-attribute name="title" value="Annoucemnet List"/>
@@ -227,7 +242,6 @@
 			value="/pages-back/department/department_edit.jsp" />
 	</definition>
 	
-	
 	<!-- MY PROFILE-->
 	<definition name="my_profile"
 		extends="baseLayout">
@@ -236,7 +250,5 @@
 		<put-attribute name="body"
 			value="/pages-back/my_profile/my_profile.jsp" />
 	</definition>
-	
-	
-	
+
 </tiles-definitions>

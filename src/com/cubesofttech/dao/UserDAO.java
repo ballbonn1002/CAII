@@ -46,9 +46,9 @@ public interface UserDAO {
 	public List<Map<String, Object>> Query_Userlist() throws Exception;
 //
 //	public List<Map<String, Object>> findChangeLeader(String approverchange) throws Exception;
-//
-//	public List<Map<String, Object>> findById3(String ur) throws Exception;
-//
+
+	public List<Map<String, Object>> findById3(String ur) throws Exception;
+
 //	public List<Map<String, Object>> positionuser(String logonUser) throws Exception;
 //
 //	public int[] count_user(); // PieCharts

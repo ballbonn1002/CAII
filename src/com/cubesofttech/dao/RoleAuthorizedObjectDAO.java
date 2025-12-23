@@ -6,7 +6,7 @@ import com.cubesofttech.model.RoleAuthorizedObject;
 
 public interface RoleAuthorizedObjectDAO {
 
-//	public void save(RoleAuthorizedObject roleAuthorizaedObject) throws Exception;
+	public void save(RoleAuthorizedObject roleAuthorizaedObject) throws Exception;
 //
 //	public List<RoleAuthorizedObject> findAll() throws Exception;
 
@@ -16,7 +16,7 @@ public interface RoleAuthorizedObjectDAO {
 //
 //	public void delete(RoleAuthorizedObject roleAuthorizaedObject) throws Exception;
 //
-//	int deleteByRoleId(String roleId) throws Exception;
+	int deleteByRoleId(String roleId) throws Exception;
 
 	public List<RoleAuthorizedObject> findLeaveViewAllByRoleId(String roleId) throws Exception;
 

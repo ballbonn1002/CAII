@@ -199,7 +199,44 @@
 			<result name="error">/index.jsp</result>
 		</action>
 			<!-- Btn Approve : Modal -->
+
 		<!-- Leave Approve ================================================================================================== -->
+		
+		<!-- Role Management ================================================================================================== -->
+		<action name="role-list" class="com.cubesofttech.action.RoleAction" method="list">
+			<result name="success" type="tiles">role.list</result>
+			<result name="error">/index.jsp</result>
+		</action>
+		<action name="role-edit" class="com.cubesofttech.action.RoleAction" method="openEdit">
+			<result name="success" type="tiles">role.edit</result>
+			<result name="error">/index.jsp</result>
+		</action>
+		<!-- เพิ่ม function add -->
+		<action name="role-add" class="com.cubesofttech.action.RoleAction" method="openEdit2">
+			<result name="success" type="tiles">role.add</result>
+			<result name="error">/index.jsp</result>
+		</action>
+
+		<!-- เพิ่ม function add -->
+		<action name="role-perform-add" class="com.cubesofttech.action.RoleAction" method="performAdd">
+			<result name="success" type="redirectAction">role-edit?roleId=${roleId}
+			</result>
+			<result name="error">/index.jsp</result>
+		</action>
+
+		<!-- เพิ่ม function add -->
+		<action name="role-perform-edit-*" class="com.cubesofttech.action.RoleAction" method="performEdit">
+			<result name="success" type="redirectAction">role-edit?roleId=${roleId}
+			</result>
+			<result name="error">/index.jsp</result>
+		</action>
+
+		<!-- function delete -->
+		<action name="role-delete" class="com.cubesofttech.action.RoleAction" method="deleteRole">
+			<result name="success" type="chain">role-list</result>	<!-- type = "chain" เป้นการส่งให้ชื่อ Action นั้นทำงาน -->
+			<result name="error">/index.jsp</result>
+		</action>
+		<!-- Role Management ================================================================================================== -->
 
 		<action name="demo_table"
 			class="com.cubesofttech.action.NewsAction" method="demoDashboard">
