@@ -91,9 +91,11 @@
 			<result name="success" type="tiles">newLeaveAdd</result>
 			<result name="error">/index.jsp</result>
 		</action>
-		<action name="getManagerIdAndManagerName"
-			class="com.cubesofttech.action.LeaveAction"
-			method="getManagerIdAndManagerName">
+		<action name="getManagerIdAndManagerName" class="com.cubesofttech.action.LeaveAction" method="getManagerIdAndManagerName">
+			<result name="success" type="tiles">newLeaveAdd</result>
+			<result name="error">/index.jsp</result>
+		</action>
+		<action name="getLeaveCheckStatusJson" class="com.cubesofttech.action.LeaveAction" method="getLeaveCheckStatusJson">
 			<result name="success" type="tiles">newLeaveAdd</result>
 			<result name="error">/index.jsp</result>
 		</action>

@@ -5031,4 +5031,122 @@ public class LeaveAction extends ActionSupport {
 
 	}
 	
+	public String getLeaveCheckStatusJson() {
+	    log.info("getLeaveCheckStatusJson");
+	    
+	    try {
+	        String reqUserId = request.getParameter("userId");
+	        log.info("Checking quota for userId = " + reqUserId);
+
+	        if (reqUserId == null || reqUserId.isEmpty()) {
+	            log.error("Required parameter 'userId' is missing.");
+	            return ERROR;
+	        }
+
+	        User ur = userDAO.findById(reqUserId);
+	        
+	        if (ur == null) {
+	            log.error("Target User object not found in database for ID: " + reqUserId);
+	            return ERROR;
+	        }
+	        
+	        DateTimeFormatter date1 = DateTimeFormatter.ofPattern("01-01-yyyy");
+	        LocalDate localDate = LocalDate.now();
+	        String s = "00:00:00.0";
+
+	        Timestamp start_date = DateUtil.dateToTimestamp(date1.format(localDate), s);
+	        Timestamp end_date = DateUtil.changetoEndYear(date1.format(localDate));
+	        
+	        log.debug("Start Date: " + start_date);
+	        log.debug("End Date: " + end_date);
+
+	        String status = "1";
+	        
+	        List LeaveID = leaveDAO.findLeaveId(reqUserId, start_date, end_date, status);
+
+	        Double leave_1 = 0.000, leave_2 = 0.000, leave_3 = 0.000, leave_5 = 0.000, leave_6 = 0.000;
+	        int x = 0;
+
+	        while (x <= LeaveID.size() - 1) {
+	            String a[] = LeaveID.get(x).toString().split("[={}]");
+	            int id = 0;
+	            for (int b = 0; b <= a.length - 1; b++) {
+	                if (tryParseInt(a[b])) {
+	                    id = Integer.parseInt(a[b]);
+	                    Leaves leaveDashboard = leaveDAO.findByLeaveId(id);
+	                    
+	                    if (leaveDashboard != null && leaveDashboard.getNoDay() != null) {
+	                        Double noday = leaveDashboard.getNoDay().doubleValue();
+	                        
+	                        if (leaveDashboard.getLeaveTypeId().contains("1")) {
+	                            leave_1 = leave_1 + noday;
+	                        }
+	                        if (leaveDashboard.getLeaveTypeId().contains("2")) {
+	                            leave_2 = leave_2 + noday;
+	                        }
+	                        if (leaveDashboard.getLeaveTypeId().contains("3")) {
+	                            leave_3 = leave_3 + noday;
+	                        }
+	                        if (leaveDashboard.getLeaveTypeId().contains("5")) {
+	                            leave_5 = leave_5 + noday;
+	                        }
+	                        if (leaveDashboard.getLeaveTypeId().contains("6")) {
+	                            leave_6 = leave_6 + noday;
+	                        }
+	                    }
+	                }
+	            }
+	            x++;
+	        }
+	        log.debug("Days Used: L1=" + leave_1 + ", L2=" + leave_2 + ", L3=" + leave_3 + ", L6=" + leave_6);
+
+	        Map<String, Boolean> leaveCheckMap = new HashMap<>(); 
+
+	        // leave1Check: (Quota1 - leave_2) <= leave_1
+	        if (ur.getLeaveQuota1() != null) {
+	            boolean isFull = ur.getLeaveQuota1().doubleValue() - leave_2 <= leave_1;
+	            leaveCheckMap.put("1", isFull);
+	        } else {
+	            leaveCheckMap.put("1", false); 
+	        }
+
+	        // leave2Check: 3 <= leave_2
+	        leaveCheckMap.put("2", (3 <= leave_2));
+
+	        // leave3Check: (Quota3 หรือ 30) <= leave_3
+	        if (ur.getLeaveQuota3() != null) {
+	            boolean isFull = ur.getLeaveQuota3().doubleValue() <= leave_3;
+	            leaveCheckMap.put("3", isFull);
+	        } else {
+	            boolean isFull = 30 <= leave_3; // ใช้ค่า 30 เป็น Default
+	            leaveCheckMap.put("3", isFull);
+	        }
+
+	        // leave6Check: Quota4 <= leave_6
+	        if (ur.getLeaveQuota4() != null) {
+	            boolean isFull = ur.getLeaveQuota4().doubleValue() <= leave_6;
+	            leaveCheckMap.put("6", isFull);
+	        } else {
+	            leaveCheckMap.put("6", false);
+	        }
+	        
+	        Map<String, Object> finalResponse = new HashMap<>();
+	        finalResponse.put("leaveCheckStatus", leaveCheckMap);
+	        
+	        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+	        String json = gson.toJson(finalResponse);
+	        
+	        PrintWriter out = response.getWriter();
+	        out.print(json);
+	        out.flush();
+	        out.close();
+
+	        log.info("[getLeaveCheckStatusJson] SUCCESS");
+	        return SUCCESS;
+	    } catch (Exception e) {
+	        log.error("[getLeaveCheckStatusJson] ERROR", e);
+	        return ERROR;
+	    }
+	}
+	
 }
