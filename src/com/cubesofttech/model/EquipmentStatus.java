@@ -18,8 +18,10 @@ public class EquipmentStatus {
 	private String statusId;
 	@Column(name = "description")
 	private String description;
-	@Column(name = "color_2")
+	@Column(name = "color")
 	private String color;
+	@Column(name = "color_2")
+	private String color2;
 	@Column(name = "user_create")
 	private String userCreate;
 	@Column(name = "time_create")
@@ -46,6 +48,12 @@ public class EquipmentStatus {
 	}
 	public void setColor(String color) {
 		this.color = color;
+	}
+	public String getColor2() {
+	    return color2;
+	}
+	public void setColor2(String color2) {
+	    this.color2 = color2;
 	}
 	public String getUserCreate() {
 		return userCreate;
