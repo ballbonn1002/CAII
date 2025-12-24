@@ -18,7 +18,7 @@ public class EquipmentStatus {
 	private String statusId;
 	@Column(name = "description")
 	private String description;
-	@Column(name = "color")
+	@Column(name = "color_2")
 	private String color;
 	@Column(name = "user_create")
 	private String userCreate;
