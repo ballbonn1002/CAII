@@ -1774,8 +1774,10 @@ public class UserAction extends ActionSupport {
 	                u.setPath("/upload/user/" + newFileName);
 	            }
 
+	        	u.setTitleNameTH(this.user_titleNameTH);
 	            u.setName(this.user_name);
 	            u.setNickName(this.user_nickName);
+	            u.setTitleNameEN(this.user_titleNameEN);
 	            u.setNameEN(this.user_fullNameEN);
 	            u.setNickNameEN(this.user_nickNameEN);
 	            u.setGender(this.user_gender);

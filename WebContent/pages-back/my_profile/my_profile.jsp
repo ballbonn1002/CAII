@@ -84,15 +84,13 @@
 						<div class="card-body pt-6 pb-0">
 							<div class="d-flex flex-column flex-md-row align-items-start">
 
-								<div class="mb-3 mb-md-0 me-md-9 mb-md-0">
-									<div
-										class="border border-2 border-white rounded-1 w-150px h-150px" 
-										>
+								<div class="mb-4 mb-md-0 me-md-9 mb-md-0 w-150px h-150px mx-auto">
+									
 										<c:choose>
 											<c:when test="${not empty user.path}">
 												<img id="avatarPreview" src="${user.path}"
 													alt="${not empty user.nameEN ? user.nameEN : user.name}"
-													class="w-100 h-100 rounded-1" style="object-fit: cover;">
+													class="border border-2 border-white rounded-1 w-150px h-150px" style="object-fit: cover;">
 											</c:when>
 											<c:otherwise>
 												<div id="avatarPreview"
@@ -112,7 +110,7 @@
 												</div>
 											</c:otherwise>
 										</c:choose>
-									</div>
+									
 								</div>
 
 								<div class="flex-grow-1 ">
@@ -189,7 +187,7 @@
 												<p class="fs-6 fw-bold text-gray-600 mb-0">
 													${user.onsiteNum == 3 ? '4–5 Day' :
           							          user.onsiteNum == 2 ? '2–3 Day' :
-          							          user.onsiteNum == 1 ? '0.5–1 Day' : 'N/A'}</p>
+          							          user.onsiteNum == 1 ? '0.5–1 Day' : '-'}</p>
 											</div>
 										</div>
 										<div
@@ -235,22 +233,23 @@
 							</div>
 						</div>
 
-						<div class="separator my-2 mx-9 "></div>
+						<div class="separator mt-3 mb-2 mx-9 "></div>
 						<ul
-							class="nav nav-stretch nav-line-tabs nav-line-tabs-2x border-0 fs-6 fw-semibold px-9 mt-1 mb-1"
+							class="nav nav-stretch nav-line-tabs nav-line-tabs-2x border-0 fs-6 fw-semibold px-9  mb-1"
 							id="profileNav">
 
 							<li class="nav-item"><a
 								class="nav-link text-active-primary active py-3 ms-0 fw-bold"
-								href="#" data-target="#account-info"> Overview </a></li>
+								 data-target="#account-info"> Overview </a></li>
 
 							<li class="nav-item"><a
-								class="nav-link text-active-primary py-3 fw-bold" href="#"
+								class="nav-link text-active-primary py-3 fw-bold" 
 								data-target="#security-info"> Security </a></li>
 							<li class="nav-item"><a
-								class="nav-link text-active-primary py-3 fw-bold" href="#"
+								class="nav-link text-active-primary py-3 fw-bold" 
 								data-target="#borrow-info"> Borrow </a></li>
 						</ul>
+						
 					</div>
 
 
@@ -261,24 +260,24 @@
 								<h3 class="fw-semibold text-gray-900">Account Info</h3>
 							</div>
 
-							<a class="btn btn-light py-4 px-6 align-self-center rounded-1"
-								href="#" data-target="#edit_overview">Edit</a>
+							<a class="btn btn-lg btn-light fw-medium text-light-inverse"
+								 data-target="#edit_overview">Edit</a>
 						</div>
 
 						<div class="card-body px-10 py-9">
 							<div class="row">
-								<div class="col-12 col-md-6 col-lg-6 gap-2">
-									<p class="fs-5 text-muted fw-medium mb-0">Nickname TH</p>
-									<p class="fs-5 text-gray-800 fw-semibold">${empty user.nickName ? '-': user.nickName}</p>
+								<div class="col-12 col-md-6 col-lg-6">
+									<p class="fs-5 text-muted fw-medium mb-0">Name TH</p>
+									<p class="fs-5 text-gray-800 fw-semibold">${empty user.titleNameTH ? '': user.titleNameTH} ${empty user.name ? '': user.name} - ${empty user.nickName ? '-': user.nickName}</p>
 								</div>
 								<div class="col-12 col-md-6 col-lg-6">
-									<p class="fs-5 text-muted fw-medium mb-0">Nickname EN</p>
+									<p class="fs-5 text-muted fw-medium mb-0">Name EN</p>
 						
-									<p class="fs-5 text-gray-800 fw-semibold">${empty user.nickNameEN ? '-': user.nickNameEN}</p>
+									<p class="fs-5 text-gray-800 fw-semibold">${empty user.titleNameEN ? '': user.titleNameEN} ${empty user.nameEN ? '': user.nameEN} - ${empty user.nickNameEN ? '-': user.nickNameEN}</p>
 								</div>
 							</div>
 							<div class="row">
-								<div class="col-12 col-md-6 col-lg-6 gap-2">
+								<div class="col-12 col-md-6 col-lg-6">
 									<p class="fs-5 text-muted fw-medium mb-0">Gender</p>
 									<p class="fs-5 text-gray-800 fw-semibold">${empty user.gender ? '-' : (user.gender == 'M' ? 'Male' : 'Female')}</p>
 								</div>
@@ -297,7 +296,7 @@
 								</div>
 							</div>
 							<div class="row">
-								<div class="col-12 col-md-6 col-lg-6 gap-2">
+								<div class="col-12 col-md-6 col-lg-6">
 									<p class="fs-5 text-muted fw-medium mb-0">Citizen ID</p>
 									<p class="fs-5 text-gray-800 fw-semibold">${empty user.citizenId ? '-' : user.citizenId}</p>
 								</div>
@@ -307,7 +306,7 @@
 								</div>
 							</div>
 							<div class="row">
-								<div class="col-12 col-md-6 col-lg-6 gap-2">
+								<div class="col-12 col-md-6 col-lg-6">
 									<p class="fs-5 text-muted fw-medium mb-0">E-Mail</p>
 									<p class="fs-5 text-gray-800 fw-semibold">${empty user.email ? '-' : user.email }</p>
 								</div>
@@ -324,7 +323,7 @@
 
 							</div>
 							<div class="row">
-								<div class="col-12 col-md-6 col-lg-6  gap-2">
+								<div class="col-12 col-md-6 col-lg-6">
 									<p class="fs-5 text-muted fw-medium mb-0">Emergency Contact</p>
 									<p class="fs-5 text-gray-800 fw-semibold">${empty user.emergContact ? '-' : user.emergContact }</p>
 								</div>
@@ -365,7 +364,7 @@
 											style="background-image: url('${pageContext.request.contextPath}/assets/media/svg/avatars/blank.svg');">
 
 											<div id="imageInputWrapper"
-												class="image-input-wrapper w-150px h-150px d-flex align-items-center justify-content-center"
+												class="border border-2 border-white rounded image-input-wrapper w-150px h-150px d-flex align-items-center justify-content-center"
 												style="
 								                <c:choose>
 								                    <c:when test='${not empty user.path}'>
@@ -426,11 +425,11 @@
 
 
 								<div class="row mb-0 mb-lg-5">
-									<div class="col-12 col-md-2 col-lg-2 gap-2">
-										<label class="required fs-6 fw-medium text-gray-800 mb-2">คำนำหน้า</label>
-										<select name="user_titleNameTH" data-control="select2"
-											data-placeholder=""
-											class="form-select py-2 px-4 border border-gray-300">
+									<div class="col-12 col-md-2 col-lg-2  mt-md-4">
+										<label class="required fw-medium text-gray-800 mb-2">คำนำหน้า</label>
+										<select name="user_titleNameTH" 
+											data-placeholder="" data-control="select2"
+											class="form-select text-gray-700">
 											<option value="นาย"
 												${user.titleNameTH == 'นาย' ? 'selected' : ''}>นาย</option>
 											<option value="นาง"
@@ -439,50 +438,51 @@
 												${user.titleNameTH == 'นางสาว' ? 'selected' : ''}>นางสาว</option>
 										</select>
 									</div>
-									<div class="col-12 col-md-5 col-lg-5 mt-3 mt-lg-0">
-										<label class="required fs-6 fw-medium text-gray-800 mb-2">ชื่อ
+									<div class="col-12 col-md-5 col-lg-5 mt-9 mt-md-4">
+										<label class="required fw-medium text-gray-800 mb-2">ชื่อ
 											สกุล</label> <input type="text"
-											class="form-control py-2 px-4 border border-gray-300"
+											class="form-control text-gray-700"
 											placeholder="" name="user_name" id="user_name" value="${user.name}" />
 									</div>
-									<div class="col-12 col-md-5 col-lg-5 mt-3 mt-lg-0">
-										<label class="required fs-6 fw-medium text-gray-800 mb-2">Nickname
+									<div class="col-12 col-md-5 col-lg-5 mt-9 mt-md-4">
+										<label class="required fw-medium text-gray-800 mb-2">Nickname
 											TH</label> <input type="text"
-											class="form-control py-2 px-4 border border-gray-300"
+											class="form-control text-gray-700"
 											placeholder="" name="user_nickName" id="user_nickName"
 											value="${user.nickName}" />
 									</div>
 								</div>
 
 								<div class="row mb-0 mb-lg-5">
-									<div class="col-12 col-md-2 col-lg-2 gap-2 mt-3 mt-lg-0">
-										<label class="required fs-6 fw-medium text-gray-800 mb-2">Title
-											Name</label> <select name="user_titleNameEN" data-control="select2"
+									<div class="col-12 col-md-2 col-lg-2 mt-9 mt-md-4">
+										<label class="required fw-medium text-gray-800 mb-2">Title
+											Name</label> <select name="user_titleNameEN" 
+											
 											data-placeholder=""
-											class="form-select py-2 px-4 border border-gray-300">
+											class="form-select text-gray-700">
 											<option value="Mr."
 												${user.titleNameEN == 'Mr.' ? 'selected' : ''}>Mr.</option>
 											<option value="Mrs."
 												${user.titleNameEN == 'Mrs.' ? 'selected' : ''}>Mrs.</option>
-											<option value="Miss"
-												${user.titleNameEN == 'Miss' ? 'selected' : ''}>Miss</option>
+											<%-- <option value="Miss"
+												${user.titleNameEN == 'Miss' ? 'selected' : ''}>Miss</option> --%>
 											<option value="Ms."
 												${user.titleNameEN == 'Ms.' ? 'selected' : ''}>Ms.</option>
 										</select>
 
 									</div>
-									<div class="col-12 col-md-5 col-lg-5 mt-3 mt-lg-0">
-										<label class="required fs-6 fw-medium text-gray-800 mb-2">Full
+									<div class="col-12 col-md-5 col-lg-5 mt-9 mt-md-4">
+										<label class="required fw-medium text-gray-800 mb-2">Full
 											Name EN</label> <input type="text"
-											class="form-control py-2 px-4 border border-gray-300"
+											class="form-control text-gray-700"
 											placeholder="" name="user_fullNameEN" id="user_fullNameEN"
 											value="${user.nameEN}" pattern="[A-Za-z ]+"
 											oninput="this.value = this.value.replace(/[^A-Za-z ]/g, '')" />
 									</div>
-									<div class="col-12 col-md-5 col-lg-5 mt-3 mt-lg-0">
-										<label class="required fs-6 fw-medium text-gray-800 mb-2">Nickname
+									<div class="col-12 col-md-5 col-lg-5 mt-9 mt-md-4">
+										<label class="required fw-medium text-gray-800 mb-2">Nickname
 											EN</label> <input type="text"
-											class="form-control py-2 px-4 border border-gray-300"
+											class="form-control text-gray-700"
 											placeholder="" name="user_nickNameEN" id="user_nickNameEN"
 											value="${user.nickNameEN}" pattern="[A-Za-z ]+"
 											oninput="this.value = this.value.replace(/[^A-Za-z ]/g, '')" />
@@ -490,8 +490,8 @@
 								</div>
 
 								<div class="row mb-0 mb-lg-5">
-									<div class="col-12 col-md-6 col-lg-6 gap-2 mt-3 mt-lg-0">
-										<p class="required fs-6 fw-medium text-gray-800 mb-2">Gender</p>
+									<div class="col-12 col-md-6 col-lg-6 mt-9 mt-md-4">
+										<p class="required fw-medium text-gray-800 mb-2">Gender</p>
 
 										<div class="form-check form-check-inline mt-1">
 											<!-- <input type="radio" id="genderMale" name="gender"
@@ -511,8 +511,8 @@
 												for="genderFemale">Female</label>
 										</div>
 									</div>
-									<div class="col-12 col-md-6 col-lg-6 mt-3 mt-lg-0">
-										<p class="required fs-6 fw-medium text-gray-800 mb-2">Birth
+									<div class="col-12 col-md-6 col-lg-6 mt-9 mt-md-4">
+										<p class="required fw-medium text-gray-800 mb-2">Birth
 											Date</p>
 										<div class="position-relative">
 											<i
@@ -521,7 +521,7 @@
 												class="path3"></span><span class="path4"></span> <span
 												class="path5"></span><span class="path6"></span>
 											</i> <input type="text" id="user_birthDate" name="user_birthDate"
-												class="form-control ps-10 date-picker"
+												class="form-control ps-10 date-picker text-gray-700"
 												placeholder="1 Jan 2025" autocomplete="off"
 												value="<fmt:formatDate value='${user.birthDate}' pattern='dd MMM yyyy'/>"
 												required />
@@ -531,37 +531,37 @@
 									</div>
 								</div>
 								<div class="row mb-0 mb-lg-5">
-									<div class="ol-12 col-md-6 col-lg-6 gap-2 mt-3 mt-lg-0">
-										<p class="required fs-6 fw-medium text-gray-800 mb-2">Citizen
+									<div class="ol-12 col-md-6 col-lg-6 mt-9 mt-md-4">
+										<p class="required fw-medium text-gray-800 mb-2">Citizen
 											ID</p>
 										<input type="text"
-											class="form-control py-2 px-4 border border-gray-300"
+											class="form-control text-gray-700"
 											placeholder="" name="user_citizenId" id="user_citizenId"
 											value="${user.citizenId}" maxlength="13" inputmode="numeric"
 											oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0,13)" />
 
 									</div>
-									<div class="ol-12 col-md-6 col-lg-6 mt-3 mt-lg-0">
+									<div class="ol-12 col-md-6 col-lg-6 mt-9 mt-md-4">
 										<p class="fs-6 fw-medium text-gray-800 mb-2">Passport ID</p>
 										<input type="text"
-											class="form-control py-2 px-4 border border-gray-300"
+											class="form-control text-gray-700"
 											placeholder="" name="user_passportId" value="${user.passportId}" />
 
 									</div>
 								</div>
 								<div class="row mb-0 mb-lg-5">
-									<div class="col-12 col-md-6 col-lg-6 gap-2 mt-3 mt-lg-0">
-										<p class="required fs-6 fw-medium text-gray-800 mb-2">E-Mail</p>
+									<div class="col-12 col-md-6 col-lg-6 mt-9 mt-md-4">
+										<p class="required fw-medium text-gray-800 mb-2">E-Mail</p>
 										<input type="email"
-											class="form-control py-2 px-4 border border-gray-300"
+											class="form-control text-gray-700"
 											placeholder="" name="user_email" id="user_email" value="${user.email}" />
 
 									</div>
-									<div class="col-12 col-md-6 col-lg-6 mt-3 mt-lg-0">
-										<p class="required fs-6 fw-medium text-gray-800 mb-2">Phone
+									<div class="col-12 col-md-6 col-lg-6 mt-9 mt-md-4">
+										<p class="required fw-medium text-gray-800 mb-2">Phone
 											Number</p>
 										<input type="text"
-											class="form-control py-2 px-4 border border-gray-300"
+											class="form-control text-gray-700"
 											placeholder="" name="user_phonenum" id="user_phonenum"
 											value="${user.phonenum}" maxlength="10" inputmode="numeric"
 											oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0,10)" />
@@ -569,30 +569,30 @@
 									</div>
 								</div>
 								<div class="row mb-0 mb-lg-5">
-									<div class="col-12 mt-3 mt-lg-0">
+									<div class="col-12 mt-9 mt-md-4">
 										<p class="fs-6 fw-medium text-gray-800 mb-2">Address</p>
 
 										<textarea rows="3" cols=""
-											class="form-control py-2 px-4 border border-gray-300"
+											class="form-control text-gray-700"
 											placeholder="" name="user_address">${user.address}</textarea>
 									</div>
 
 								</div>
 								<div class="row ">
-									<div class="col-12 col-md-6 col-lg-6 mt-3 mt-lg-0">
+									<div class="col-12 col-md-6 col-lg-6 mt-9 mt-md-4">
 										<p class="fs-6 fw-medium text-gray-800 mb-2">Emergency
 											Contact</p>
 										<input type="text"
-											class="form-control py-2 px-4 border border-gray-300"
+											class="form-control text-gray-700"
 											placeholder="" name="user_emergContact"
 											value="${user.emergContact}" />
 
 									</div>
-									<div class="col-12 col-md-6 col-lg-6 mt-3 mt-lg-0">
+									<div class="col-12 col-md-6 col-lg-6 mt-9 mt-md-4">
 										<p class="fs-6 fw-medium text-gray-800 mb-2">Emergency
 											Phone</p>
 										<input type="text"
-											class="form-control py-2 px-4 border border-gray-300"
+											class="form-control text-gray-700"
 											placeholder="" name="user_emergPhone" value="${user.emergPhone}"
 											maxlength="10" inputmode="numeric"
 											oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0,10)" />
@@ -603,11 +603,11 @@
 							</div>
 							<div class="card-footer d-flex justify-content-end">
 								<button type="button" id="cancelFormBtn"
-									onclick="window.location.href='my_profile'"
-									class="btn btn-light text-light-inverse fw-medium rounded me-2 py-4">Cancel
+									onclick="confirmLeaveForm('my_profile')"
+									class="btn btn-lg btn-light fw-medium text-light-inverse me-2">Cancel
 								</button>
 								<button type="submit" id="saveFormBtn"
-									class="btn btn-success text-white fw-medium rounded py-4">Save</button>
+									class="btn btn-lg btn-success text-white fw-medium">Save</button>
 							</div>
 						</form>
 
@@ -630,8 +630,8 @@
 									<p class="fs-5 text-muted fw-medium mb-0">************</p>
 								</div>
 								<a
-									class="btn btn-light py-4 px-6 rounded-1 text-light-inverse fw-medium fs-5"
-									href="#" data-target="#reset_password">Reset Password</a>
+									class="btn btn-lg btn-light fw-medium text-light-inverse"
+									 data-target="#reset_password">Reset Password</a>
 
 
 							</div>
@@ -652,12 +652,12 @@
 							id="resetPasswordForm" autocomplete="off">
 							<div class="card-body px-10 py-9">
 								<div class="row mb-8">
-									<div class="col-12 col-lg-4 gap-2 ">
-										<label class="required fs-6 fw-medium text-gray-800 mb-2">Current
+									<div class="col-12 col-lg-4 mt-4 mb-0">
+										<label class="required fs-6 fw-medium text-gray-800  mb-2">Current
 											Password</label>
 										<div class="position-relative">
 											 <input type="password"
-											class="form-control py-2 px-4 border border-gray-300"
+											class="form-control text-gray-800"
 											placeholder="" name="currentPw" id="currentPw"
 											oninput="validateCurrentPassword();" />
 											<span class="btn btn-sm btn-icon position-absolute top-50 end-0 translate-middle-y toggle-password "
@@ -679,16 +679,16 @@
 										</div>
 										<!-- error message -->
 										<span id="currentPwError"
-											class="text-danger fs-7 fw-medium d-none mt-2  mb-0">
-											Incorrect password </span>
+											class="text-danger fs-7 fw-medium d-none mt-2 mb-0">
+											Incorrect password.</span>
 									</div>
-									<div class="col-12 col-lg-4 mt-3 mt-lg-0">
+									<div class="col-12 col-lg-4 mt-9 mt-md-4">
 
-										<label class="required fs-6 fw-medium text-gray-800 mb-2">New
+										<label class="required fs-6 fw-medium text-gray-800  mb-2">New
 											Password</label> 
 											<div class="position-relative">
 											<input type="password"
-											class="form-control py-2 px-4 border border-gray-300"
+											class="form-control text-gray-800"
 											placeholder="" name="newPw" id="newPw"
 											oninput="validateNewPassword();" minlength="6" disabled />
 											<span class="btn btn-sm btn-icon position-absolute top-50 end-0 translate-middle-y toggle-password d-none"
@@ -712,15 +712,15 @@
 										<!-- error message -->
 										<span id="newPwError"
 											class="text-danger fs-7 fw-medium d-none mt-2  mb-0">
-											New password must be different from Current Password </span>
+											New password must be different from Current Password.</span>
 
 									</div>
-									<div class="col-12 col-lg-4 mt-3  mt-lg-0">
-										<label class="required fs-6 fw-medium text-gray-800 mb-2">Confirm
+									<div class="col-12 col-lg-4 mt-9 mt-md-4">
+										<label class="required fs-6 fw-medium text-gray-800  mb-2">Confirm
 											New Password</label> 
 											<div class="position-relative">
 											<input type="password"
-											class="form-control py-2 px-4 border border-gray-300"
+											class="form-control text-gray-800"
 											placeholder="" name="confirmNewPw" id="confirmNewPw"
 											oninput="validateConfirmPassword()" minlength="6" disabled />
 										<span class="btn btn-sm btn-icon position-absolute top-50 end-0 translate-middle-y toggle-password d-none"
@@ -755,11 +755,11 @@
 							</div>
 							<div class="card-footer d-flex justify-content-end">
 								<button type="button"
-									data-target="#security-info"
-									class="btn btn-light text-light-inverse fw-medium rounded me-2 py-4">Cancel
+									onclick="confirmLeaveForm('my_profile')"
+									class="btn btn-lg btn-light fw-medium text-light-inverse me-2">Cancel
 								</button>
 								<button type="button" onclick="validatePassword()"
-									class="btn btn-success text-white fw-medium rounded py-4">Update
+									class="btn btn-lg btn-success text-white fw-medium">Update
 									Password</button>
 							</div>
 						</form>
@@ -807,12 +807,12 @@
 												<c:if test="${borrowList.status == 'B'}">
 													<span class="badge badge-lg bg-warning text-white fw-semibold fs-8">Borrowing</span>
 												</c:if>
-												<c:if test="${borrowList.status == 'W'}">
-													<span class="badge badge-lg bg-info text-white fw-semibold fs-8">Waiting</span>
+												 <c:if test="${borrowList.status == 'W'}">
+													<span class="badge badge-lg badge-secondary text-dark fw-semibold fs-8">Waiting</span>
 												</c:if>
 												<c:if test="${borrowList.status == 'C'}">
-													<span class="badge badge-lg bg-light-danger text-white fw-semibold fs-8">Cancel</span>
-												</c:if>
+													<span class="badge badge-lg bg-dark text-white fw-semibold fs-8">Cancel</span>
+												</c:if> 
 												<c:if test="${empty borrowList.status || borrowList.status == '-'}">
 													<span class="badge badge-lg bg-light-secondary text-white fw-semibold fs-8">-</span>
 												</c:if>
@@ -1231,6 +1231,30 @@
 		 }
 	 }
 </script>
+
+<script>
+function confirmLeaveForm(redirectUrl){
+	
+    Swal.fire({
+        title: "Are you sure?!",
+        text: "Closing will discard any unsaved data.",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonText: "Yes, discard it",
+        cancelButtonText: "Cancel",
+        buttonsStyling: false,
+        customClass: {
+            confirmButton: "btn btn-danger",
+            cancelButton: "btn btn-secondary"
+        }
+    }).then((result) => {
+        if (result.isConfirmed) {
+            window.location.href = redirectUrl;
+        }
+    });
+}
+</script>
+
 
 </body>
 </html>
