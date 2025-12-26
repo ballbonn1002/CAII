@@ -250,5 +250,31 @@
 		<put-attribute name="body"
 			value="/pages-back/my_profile/my_profile.jsp" />
 	</definition>
+	
+	<!-- JOB SITE -->
+	<definition name="jobsiteList" extends="baseLayout">
+		<put-attribute name="title" value="Jobsite List" />
+		<put-attribute name="body"
+			value="/pages-back/jobsite/jobsite_list.jsp" />
+	</definition>
+	
+	<definition name="jobsiteAdd" extends="baseLayout">
+		<put-attribute name="title" value="Create Jobsite" />
+		<put-attribute name="body"
+			value="/pages-back/jobsite/jobsite_add.jsp" />
+	</definition>
+	
+	<definition name="jobsiteEdit" extends="baseLayout">
+		<put-attribute name="title" value="Edit Jobsite" />
+		<put-attribute name="body"
+			value="/pages-back/jobsite/jobsite_edit.jsp" />
+	</definition>
+	
+	<!-- MY JOB SITE -->
+	<definition name="myJobsite" extends="baseLayout">
+		<put-attribute name="title" value="My Job Site" />
+		<put-attribute name="body"
+			value="/pages-back/my_jobsite/my_jobsite.jsp" />
+	</definition>
 
 </tiles-definitions>

@@ -119,7 +119,8 @@ public interface UserDAO {
     //List<Map<String,Object>> getJobSiteByUserId(String userId) throws Exception;
 
 	//public void update_my_profile(User u);
-
+    
+    String findEmployeeIdByName(String nameEn, String nameTh) throws Exception;
 	
 	
 }

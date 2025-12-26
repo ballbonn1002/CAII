@@ -213,4 +213,7 @@ public interface WorkHoursDAO {
 	 public Map<LocalDate, Map<String, Object>> getCheckinsForYear(String userId, int year1, int year2) throws Exception;
 	 public Map<LocalDate, Map<String, Object>> getCheckoutsForYear(String userId, int year1, int year2) throws Exception;
 	 
+	 Timestamp findMinTimeByType(String userId, LocalDate workDate, String type);
+	 Timestamp findMaxTimeByType(String userId, LocalDate workDate, String type);
+	 
 }

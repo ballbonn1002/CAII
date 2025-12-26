@@ -405,9 +405,10 @@ public class WorkHoursDAOImpl implements WorkHoursDAO {
 		List<Map<String, Object>> work_status = null;
 		try {
 			/*
-			String sql = "SELECT MAX(work_hours_time_work) as work_hours_time_work" + " FROM work_hours "
-					+ " WHERE user_create =:user " + " AND  work_hours_type = 1 ";
-			*/
+			 * String sql = "SELECT MAX(work_hours_time_work) as work_hours_time_work" +
+			 * " FROM work_hours " + " WHERE user_create =:user " +
+			 * " AND  work_hours_type = 1 ";
+			 */
 			String sql = "SELECT work_hours_time_work, work_type FROM work_hours WHERE user_create =:user "
 					+ " AND work_hours_type = 1 ORDER BY DATE(work_hours_time_work) DESC, work_hours_id DESC LIMIT 1";
 			SQLQuery query = session.createSQLQuery(sql);
@@ -436,16 +437,17 @@ public class WorkHoursDAOImpl implements WorkHoursDAO {
 		}
 		return work_status;
 	}
-	
+
 	@Override
 	public List<Map<String, Object>> lastcheckout(String user) throws Exception {
 		Session session = this.sessionFactory.getCurrentSession();
 		List<Map<String, Object>> work_status = null;
 		try {
 			/*
-			String sql = "SELECT MAX(work_hours_time_work) as work_hours_time_work" + " FROM work_hours "
-					+ " WHERE user_create =:user " + " AND  work_hours_type =  2";
-			*/
+			 * String sql = "SELECT MAX(work_hours_time_work) as work_hours_time_work" +
+			 * " FROM work_hours " + " WHERE user_create =:user " +
+			 * " AND  work_hours_type =  2";
+			 */
 			String sql = "SELECT work_hours_time_work, work_type FROM work_hours WHERE user_create =:user "
 					+ " AND work_hours_type = 2 ORDER BY DATE(work_hours_time_work) DESC, work_hours_id ASC LIMIT 1";
 			SQLQuery query = session.createSQLQuery(sql);
@@ -458,7 +460,7 @@ public class WorkHoursDAOImpl implements WorkHoursDAO {
 		}
 		return work_status;
 	}
-	
+
 	@Override
 	public List<Map<String, Object>> lastcheck(String user) throws Exception {
 		Session session = this.sessionFactory.getCurrentSession();
@@ -1909,7 +1911,7 @@ public class WorkHoursDAOImpl implements WorkHoursDAO {
 		}
 		return workHours;
 	}
-	
+
 	@Override
 	public List<Map<String, Object>> getTimeByDate(String date, String user, String type) {
 		Session session = this.sessionFactory.getCurrentSession();
@@ -2137,7 +2139,7 @@ public class WorkHoursDAOImpl implements WorkHoursDAO {
 			SQLQuery query = session.createSQLQuery(sql);
 
 			query.setParameter("username", username);
-		
+
 			query.setParameter("year", year);
 			query.setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
 
@@ -2148,9 +2150,9 @@ public class WorkHoursDAOImpl implements WorkHoursDAO {
 		return work_status;
 
 	}
-	
+
 	@Override
-	public List<Map<String, Object>> UserworkYear(String username,String year) throws Exception {
+	public List<Map<String, Object>> UserworkYear(String username, String year) throws Exception {
 		Session session = this.sessionFactory.getCurrentSession();
 		List<Map<String, Object>> work_status = null;
 		try {
@@ -2174,7 +2176,7 @@ public class WorkHoursDAOImpl implements WorkHoursDAO {
 	}
 
 	@Override
-	public List<Map<String, Object>> UserworkOUTYear(String username,  String year) throws Exception {
+	public List<Map<String, Object>> UserworkOUTYear(String username, String year) throws Exception {
 		Session session = this.sessionFactory.getCurrentSession();
 		List<Map<String, Object>> work_status = null;
 		try {
@@ -2195,7 +2197,7 @@ public class WorkHoursDAOImpl implements WorkHoursDAO {
 		return work_status;
 
 	}
-	
+
 	@Override
 	public List<Map<String, Object>> lastusercheckin() throws Exception {
 		Session session = this.sessionFactory.getCurrentSession();
@@ -2215,7 +2217,7 @@ public class WorkHoursDAOImpl implements WorkHoursDAO {
 		return work_status;
 
 	}
-	
+
 	@Override
 	public List<Map<String, Object>> lastusercheckout() throws Exception {
 		Session session = this.sessionFactory.getCurrentSession();
@@ -2236,352 +2238,360 @@ public class WorkHoursDAOImpl implements WorkHoursDAO {
 
 	}
 
-@Override
-public List<Map<String, Object>> checkholiday(String date) throws Exception {
-	Session session = this.sessionFactory.getCurrentSession();
-	List<Map<String, Object>> work_status = null;
-	try {
+	@Override
+	public List<Map<String, Object>> checkholiday(String date) throws Exception {
+		Session session = this.sessionFactory.getCurrentSession();
+		List<Map<String, Object>> work_status = null;
+		try {
 
-		String sql = "SELECT `start_date` FROM `holiday` where start_date like '"+date+"%'";
-		SQLQuery query = session.createSQLQuery(sql);
+			String sql = "SELECT `start_date` FROM `holiday` where start_date like '" + date + "%'";
+			SQLQuery query = session.createSQLQuery(sql);
 
-		query.setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
-	work_status = query.list();
-} catch (Exception e) {
-	e.printStackTrace();
-}
-return work_status;
-
-}@Override
-public List<Map<String, Object>> checkleave(String date) throws Exception {
-	Session session = this.sessionFactory.getCurrentSession();
-	List<Map<String, Object>> work_status = null;
-	try {
-
-		String sql = "SELECT `start_date` FROM `leaves` WHERE start_date LIKE '"+date+"%'";
-		SQLQuery query = session.createSQLQuery(sql);
-
-		query.setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
-	work_status = query.list();
-} catch (Exception e) {
-	e.printStackTrace();
-}
-return work_status;
-}
-	
-@Override
-public List<Map<String , Object>> Duplicate_Workhour_list(String id,String year)throws Exception {
-	List<Map<String, Object>> Duplicate_list = null;
-	Session session = this.sessionFactory.getCurrentSession();
-	
-	try {
-		String sql ="SELECT work_hours_id,work_hours_type,work_hours_time_work,user_create,DATE_FORMAT(work_hours_time_work, \"%d/%m/%Y\") as workday"
-				+ ",COUNT(DATE_FORMAT(work_hours_time_work, \"%d/%m/%Y\")) as check_in_out_count FROM `work_hours` "
-				+ "WHERE work_hours_time_work LIKE '"+year+"-%' AND user_create = '"+id+"' GROUP BY workday ORDER by work_hours_id ASC";
-		SQLQuery query = session.createSQLQuery(sql);
-		System.out.println(sql);
-		query.setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
-		Duplicate_list = query.list();
-	}catch(Exception e) {
-		e.printStackTrace();
+			query.setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
+			work_status = query.list();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return work_status;
 	}
-	
-	
-	return Duplicate_list;
-}
-@Override
-public List<Map<String , Object>> Duplicate_Workhour(String daylist,String id,String year)throws Exception{
-	List<Map<String, Object>> Duplicate_list = null;
-	Session session = this.sessionFactory.getCurrentSession();
-	try {
-		String sql ="SELECT work_hours_id,work_hours_type,work_hours_time_work,user_create,description,"
-				+ "DATE_FORMAT(work_hours_time_work, \"%d/%m/%Y\") as workday FROM `work_hours` "
-				+ "WHERE work_hours_time_work LIKE '"+year+"-%' AND user_create = '"+id+"' "
-				+ "AND DATE_FORMAT(work_hours_time_work, \"%d/%m/%Y\") IN ("+daylist+") "
-				+ "ORDER by work_hours_id ASC";
-		
-		SQLQuery query = session.createSQLQuery(sql);
-		System.out.println(sql);
-		query.setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
-		Duplicate_list = query.list();
-	}catch(Exception e) {
-		e.printStackTrace();
-	}
-	return Duplicate_list;
-	
-}
 
-@Override
-public List<Map<String, Object>> descheckin(String currentUserlist, java.sql.Timestamp Datenow,
-		java.sql.Timestamp DateBefore, String month, String year) throws Exception {
-	Session session = this.sessionFactory.getCurrentSession();
-	List<Map<String, Object>> descheckin = null;
-	try {
-		String sql = "SELECT work_hours_time_work, work_hours_type, description "
-				+ "FROM work_hours "
-				+ "WHERE user_create =:currentUserlist AND YEAR(work_hours_time_work)=:year AND MONTH(work_hours_time_work)=:month "
-				+ "ORDER BY work_hours_time_work ASC";
-		
-		SQLQuery query = session.createSQLQuery(sql);
-		query.setParameter("currentUserlist", currentUserlist);
-		query.setParameter("month", month);
-		query.setParameter("year", year);
-		query.setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
-		descheckin = query.list();
-	} catch (Exception e) {
-		e.printStackTrace();
-	}
-	return descheckin;
-}
+	@Override
+	public List<Map<String, Object>> checkleave(String date) throws Exception {
+		Session session = this.sessionFactory.getCurrentSession();
+		List<Map<String, Object>> work_status = null;
+		try {
 
-@Override
-public List<Map<String, Object>> Count_checkList(String user,String start_mouth, String today) {
-	Session session = this.sessionFactory.getCurrentSession();
-	List<Map<String, Object>> count_checklist = null;
-	try {
-		String sql = "SELECT COUNT(*) AS count_workday FROM work_hours WHERE user_create = :user AND DATE(work_hours_time_work) BETWEEN :start_mouth AND :today  AND work_hours_type = \"1\"";
-		
-		SQLQuery query = session.createSQLQuery(sql);
-		query.setParameter("user", user);
-		query.setParameter("start_mouth", start_mouth);
-		query.setParameter("today", today);
-		query.setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
-		count_checklist = query.list();
-	}catch (Exception e) {
-		e.printStackTrace();
-	}
-	return count_checklist;
-}
+			String sql = "SELECT `start_date` FROM `leaves` WHERE start_date LIKE '" + date + "%'";
+			SQLQuery query = session.createSQLQuery(sql);
 
-@Override
-public List<Map<String, Object>> getCheckInList(String dateStart,String dateEnd, String workHoursType, String idSiteJob) {
-	Session session = this.sessionFactory.getCurrentSession();
-	List<Map<String, Object>> count_checklist = null;
-	try {
-		String sql = "SELECT\n" +
-				"	wh.work_hours_id,\n" +
-				"	u.id,\n" +
-				"	u.employee_id,\n" +
-				"	u.name,\n" +
-				" 	CASE\n" +
-				" 	    WHEN u.employee_id is not null && u.employee_id != '' THEN concat(u.employee_id, ' - ', u.name_en, ' - ', u.name)\n" +
-				" 	    ELSE concat(u.name_en, ' - ', u.name)\n" +
-				" 	END AS name_display,\n" +
-				"	TIME_FORMAT(wh.work_hours_time_work, '%H:%i') as check_in\n" +
-				"FROM  work_hours wh\n" +
-				"inner join user u on wh.user_create = u.id\n" +
-				"where wh.work_hours_time_work >= :dateStart\n" +
-				"and wh.work_hours_time_work < :dateEnd\n" +
-				"and wh.work_hours_type = :workHoursType\n" +
-				"and u.id in (SELECT jst.user_id FROM job_site_team jst where jst.id_sitejob = :idSiteJob)\n" +
-				"order by u.employee_id";
-		
-		SQLQuery query = session.createSQLQuery(sql);
-		query.setParameter("dateStart", dateStart);
-		query.setParameter("dateEnd", dateEnd);
-		query.setParameter("workHoursType", workHoursType);
-		query.setParameter("idSiteJob", idSiteJob);
-		query.setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
-		count_checklist = query.list();
-	}catch (Exception e) {
-		e.printStackTrace();
+			query.setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
+			work_status = query.list();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return work_status;
 	}
-	return count_checklist;
-}
 
-@Override
-public List<Map<String, Object>> getWorkHourByUserIdAndWorkHoursTypeAndDate(String userId, String workHoursType, String dateFrom, String dateTo) {
-	Session session = this.sessionFactory.getCurrentSession();
-	List<Map<String, Object>> ret = null;
-	try {
-		String sql = "SELECT\n" +
-				"	wh.work_hours_id,\n" +
-				"	u.id as user_id,\n" +
-				"	u.employee_id,\n" +
-				"	u.name,\n" +
-				"	u.name_en,\n" +
-				"	wh.work_hours_type,\n" +
-				"	wh.work_hours_time_work,\n" +
-				"	HOUR(wh.work_hours_time_work) as work_hours_time_work_hour,\n" +
-				"	MINUTE(wh.work_hours_time_work) as work_hours_time_work_min,\n" +
-				"	wh.description,\n" +
-				"	u.work_time_start,\n" +
-				"	HOUR(u.work_time_start) as work_time_start_hour,\n" +
-				"	MINUTE(u.work_time_start) as work_time_start_min,\n" +
-				"	u.work_time_end,\n" +
-				"	HOUR(u.work_time_end) as work_time_end_hour,\n" +
-				"	MINUTE(u.work_time_end) as work_time_end_min,\n" +
-				"	TIME_FORMAT(wh.work_hours_time_work, '%H:%i') as work_hours_time_work_display\n" +
-				"FROM\n" +
-				"	work_hours wh\n" +
-				"INNER JOIN user u ON wh.user_create = u.id\n" +
-				"WHERE 1 = 1\n" +
-				"	AND wh.user_create = :userId\n" +
-				"	AND wh.work_hours_type = :workHoursType\n" +
-				"	AND wh.work_hours_time_work >= TIMESTAMP(:dateFrom)\n";
-		
-				if (StringUtil.isEmpty(dateTo)) {
-					sql += "	AND wh.work_hours_time_work < TIMESTAMP(TIMESTAMPADD(DAY, 1, :dateFrom))\n";
-				}else {
-					sql += "	AND wh.work_hours_time_work < TIMESTAMP(:dateTo)\n";
-				}
-				
-				if (workHoursType.equalsIgnoreCase("1")) {
-					sql += "ORDER BY work_hours_time_work ASC\n";
-				}else {
-					sql += "ORDER BY work_hours_time_work DESC\n";
-				}
+	@Override
+	public List<Map<String, Object>> Duplicate_Workhour_list(String id, String year) throws Exception {
+		List<Map<String, Object>> Duplicate_list = null;
+		Session session = this.sessionFactory.getCurrentSession();
 
-				sql += "LIMIT 1;";
-		
-		SQLQuery query = session.createSQLQuery(sql);
-		query.setParameter("userId", userId);
-		query.setParameter("workHoursType", workHoursType);
-		query.setParameter("dateFrom", dateFrom);
-		query.setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
-		ret = query.list();
-	}catch (Exception e) {
-		e.printStackTrace();
+		try {
+			String sql = "SELECT work_hours_id,work_hours_type,work_hours_time_work,user_create,DATE_FORMAT(work_hours_time_work, \"%d/%m/%Y\") as workday"
+					+ ",COUNT(DATE_FORMAT(work_hours_time_work, \"%d/%m/%Y\")) as check_in_out_count FROM `work_hours` "
+					+ "WHERE work_hours_time_work LIKE '" + year + "-%' AND user_create = '" + id
+					+ "' GROUP BY workday ORDER by work_hours_id ASC";
+			SQLQuery query = session.createSQLQuery(sql);
+			System.out.println(sql);
+			query.setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
+			Duplicate_list = query.list();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		return Duplicate_list;
 	}
-	return ret;
-}
+
+	@Override
+	public List<Map<String, Object>> Duplicate_Workhour(String daylist, String id, String year) throws Exception {
+		List<Map<String, Object>> Duplicate_list = null;
+		Session session = this.sessionFactory.getCurrentSession();
+		try {
+			String sql = "SELECT work_hours_id,work_hours_type,work_hours_time_work,user_create,description,"
+					+ "DATE_FORMAT(work_hours_time_work, \"%d/%m/%Y\") as workday FROM `work_hours` "
+					+ "WHERE work_hours_time_work LIKE '" + year + "-%' AND user_create = '" + id + "' "
+					+ "AND DATE_FORMAT(work_hours_time_work, \"%d/%m/%Y\") IN (" + daylist + ") "
+					+ "ORDER by work_hours_id ASC";
+
+			SQLQuery query = session.createSQLQuery(sql);
+			System.out.println(sql);
+			query.setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
+			Duplicate_list = query.list();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return Duplicate_list;
+
+	}
+
+	@Override
+	public List<Map<String, Object>> descheckin(String currentUserlist, java.sql.Timestamp Datenow,
+			java.sql.Timestamp DateBefore, String month, String year) throws Exception {
+		Session session = this.sessionFactory.getCurrentSession();
+		List<Map<String, Object>> descheckin = null;
+		try {
+			String sql = "SELECT work_hours_time_work, work_hours_type, description " + "FROM work_hours "
+					+ "WHERE user_create =:currentUserlist AND YEAR(work_hours_time_work)=:year AND MONTH(work_hours_time_work)=:month "
+					+ "ORDER BY work_hours_time_work ASC";
+
+			SQLQuery query = session.createSQLQuery(sql);
+			query.setParameter("currentUserlist", currentUserlist);
+			query.setParameter("month", month);
+			query.setParameter("year", year);
+			query.setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
+			descheckin = query.list();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return descheckin;
+	}
+
+	@Override
+	public List<Map<String, Object>> Count_checkList(String user, String start_mouth, String today) {
+		Session session = this.sessionFactory.getCurrentSession();
+		List<Map<String, Object>> count_checklist = null;
+		try {
+			String sql = "SELECT COUNT(*) AS count_workday FROM work_hours WHERE user_create = :user AND DATE(work_hours_time_work) BETWEEN :start_mouth AND :today  AND work_hours_type = \"1\"";
+
+			SQLQuery query = session.createSQLQuery(sql);
+			query.setParameter("user", user);
+			query.setParameter("start_mouth", start_mouth);
+			query.setParameter("today", today);
+			query.setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
+			count_checklist = query.list();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return count_checklist;
+	}
+
+	@Override
+	public List<Map<String, Object>> getCheckInList(String dateStart, String dateEnd, String workHoursType,
+			String idSiteJob) {
+		Session session = this.sessionFactory.getCurrentSession();
+		List<Map<String, Object>> count_checklist = null;
+		try {
+			String sql = "SELECT\n" + "	wh.work_hours_id,\n" + "	u.id,\n" + "	u.employee_id,\n" + "	u.name,\n"
+					+ " 	CASE\n"
+					+ " 	    WHEN u.employee_id is not null && u.employee_id != '' THEN concat(u.employee_id, ' - ', u.name_en, ' - ', u.name)\n"
+					+ " 	    ELSE concat(u.name_en, ' - ', u.name)\n" + " 	END AS name_display,\n"
+					+ "	TIME_FORMAT(wh.work_hours_time_work, '%H:%i') as check_in\n" + "FROM  work_hours wh\n"
+					+ "inner join user u on wh.user_create = u.id\n" + "where wh.work_hours_time_work >= :dateStart\n"
+					+ "and wh.work_hours_time_work < :dateEnd\n" + "and wh.work_hours_type = :workHoursType\n"
+					+ "and u.id in (SELECT jst.user_id FROM job_site_team jst where jst.id_sitejob = :idSiteJob)\n"
+					+ "order by u.employee_id";
+
+			SQLQuery query = session.createSQLQuery(sql);
+			query.setParameter("dateStart", dateStart);
+			query.setParameter("dateEnd", dateEnd);
+			query.setParameter("workHoursType", workHoursType);
+			query.setParameter("idSiteJob", idSiteJob);
+			query.setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
+			count_checklist = query.list();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return count_checklist;
+	}
+
+	@Override
+	public List<Map<String, Object>> getWorkHourByUserIdAndWorkHoursTypeAndDate(String userId, String workHoursType,
+			String dateFrom, String dateTo) {
+		Session session = this.sessionFactory.getCurrentSession();
+		List<Map<String, Object>> ret = null;
+		try {
+			String sql = "SELECT\n" + "	wh.work_hours_id,\n" + "	u.id as user_id,\n" + "	u.employee_id,\n"
+					+ "	u.name,\n" + "	u.name_en,\n" + "	wh.work_hours_type,\n" + "	wh.work_hours_time_work,\n"
+					+ "	HOUR(wh.work_hours_time_work) as work_hours_time_work_hour,\n"
+					+ "	MINUTE(wh.work_hours_time_work) as work_hours_time_work_min,\n" + "	wh.description,\n"
+					+ "	u.work_time_start,\n" + "	HOUR(u.work_time_start) as work_time_start_hour,\n"
+					+ "	MINUTE(u.work_time_start) as work_time_start_min,\n" + "	u.work_time_end,\n"
+					+ "	HOUR(u.work_time_end) as work_time_end_hour,\n"
+					+ "	MINUTE(u.work_time_end) as work_time_end_min,\n"
+					+ "	TIME_FORMAT(wh.work_hours_time_work, '%H:%i') as work_hours_time_work_display\n" + "FROM\n"
+					+ "	work_hours wh\n" + "INNER JOIN user u ON wh.user_create = u.id\n" + "WHERE 1 = 1\n"
+					+ "	AND wh.user_create = :userId\n" + "	AND wh.work_hours_type = :workHoursType\n"
+					+ "	AND wh.work_hours_time_work >= TIMESTAMP(:dateFrom)\n";
+
+			if (StringUtil.isEmpty(dateTo)) {
+				sql += "	AND wh.work_hours_time_work < TIMESTAMP(TIMESTAMPADD(DAY, 1, :dateFrom))\n";
+			} else {
+				sql += "	AND wh.work_hours_time_work < TIMESTAMP(:dateTo)\n";
+			}
+
+			if (workHoursType.equalsIgnoreCase("1")) {
+				sql += "ORDER BY work_hours_time_work ASC\n";
+			} else {
+				sql += "ORDER BY work_hours_time_work DESC\n";
+			}
+
+			sql += "LIMIT 1;";
+
+			SQLQuery query = session.createSQLQuery(sql);
+			query.setParameter("userId", userId);
+			query.setParameter("workHoursType", workHoursType);
+			query.setParameter("dateFrom", dateFrom);
+			query.setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
+			ret = query.list();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return ret;
+	}
 
 //@Override
-public List<Map<String, Object>> getWorkHourTimeWorkByUserIdAndWorkHoursTypeAndDate(String userId, String workHoursType, String dateFrom, String dateTo) {
-	Session session = this.sessionFactory.getCurrentSession();
-	List<Map<String, Object>> ret = null;
-	try {
-		String sql = "SELECT\n" +
-				"	wh.user_create,\n" +
-				"	TIME_FORMAT(wh.work_hours_time_work, '%H:%i') as work_hours_time_work_display\n" +
-				"FROM\n" +
-				"	work_hours wh\n" +
-				"WHERE 1 = 1\n" +
-				"	AND wh.user_create = :userId\n" +
-				"	AND wh.work_hours_type = :workHoursType\n" +
-				"	AND wh.work_hours_time_work >= TIMESTAMP(:dateFrom)\n";
-		
-				if (StringUtil.isEmpty(dateTo)) {
-					sql += "	AND wh.work_hours_time_work < TIMESTAMP(TIMESTAMPADD(DAY, 1, :dateFrom))\n";
-				}else {
-					sql += "	AND wh.work_hours_time_work < TIMESTAMP(:dateTo)\n";
-				}
-				
-				if (workHoursType.equalsIgnoreCase("1")) {
-					sql += "wh.ORDER BY work_hours_time_work ASC\n";
-				}else {
-					sql += "wh.ORDER BY work_hours_time_work DESC\n";
-				}
+	public List<Map<String, Object>> getWorkHourTimeWorkByUserIdAndWorkHoursTypeAndDate(String userId,
+			String workHoursType, String dateFrom, String dateTo) {
+		Session session = this.sessionFactory.getCurrentSession();
+		List<Map<String, Object>> ret = null;
+		try {
+			String sql = "SELECT\n" + "	wh.user_create,\n"
+					+ "	TIME_FORMAT(wh.work_hours_time_work, '%H:%i') as work_hours_time_work_display\n" + "FROM\n"
+					+ "	work_hours wh\n" + "WHERE 1 = 1\n" + "	AND wh.user_create = :userId\n"
+					+ "	AND wh.work_hours_type = :workHoursType\n"
+					+ "	AND wh.work_hours_time_work >= TIMESTAMP(:dateFrom)\n";
 
-				sql += "LIMIT 1;";
-		
-		SQLQuery query = session.createSQLQuery(sql);
-		query.setParameter("userId", userId);
-		query.setParameter("workHoursType", workHoursType);
-		query.setParameter("dateFrom", dateFrom);
-		query.setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
-		ret = query.list();
-	}catch (Exception e) {
-		e.printStackTrace();
-	}
-	return ret;
-}
-
-public List<WorkHours> findByUserYear(String userId, String year) throws Exception {
-	Session session = this.sessionFactory.getCurrentSession();
-	List  list = null;
-	try {
-
-		String sql = "select * "
-				+ " from work_hours " + " WHERE user_create='"+userId+"' and YEAR(work_hours_time_work) = "+year+" order by work_hours_time_work asc, work_hours_type asc ";
-
-		SQLQuery query = session.createSQLQuery(sql);
-		
-		//query.setParameter("userId", userId);
-		//query.setParameter("year", year);
-		
-		query.setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
-		list = query.list();
-	} catch (Exception e) {
-		e.printStackTrace();
-	}
-	return list;
-}
-
-public Map<LocalDate, Map<String, Object>> getCheckinsForYear(String userId, int year1, int year2) throws Exception {
-	Session session = this.sessionFactory.getCurrentSession();
-	Map<LocalDate, Map<String, Object>> checkinMap = new HashMap<>();
-	try {
-		String sql = "SELECT work_hours_time_work AS mycheckin, description, work_type " + "FROM work_hours "
-				+ "WHERE user_create = :userId " + "AND YEAR(work_hours_time_work) BETWEEN :year1 AND :year2 "
-				+ "AND work_hours_type = 1 " + // 1 = checkin
-				"ORDER BY work_hours_id DESC";
-
-		SQLQuery query = session.createSQLQuery(sql);
-		query.setParameter("userId", userId);
-		query.setParameter("year1", year1);
-		query.setParameter("year2", year2);
-		query.setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
-
-		List<Map<String, Object>> results = query.list();
-		for (Map<String, Object> row : results) {
-			Timestamp ts = (Timestamp) row.get("mycheckin");
-			Object description = row.get("description");
-			Object worktype = row.get("work_type");
-
-			if (ts != null) {
-				Map<String, Object> data = new HashMap<>();
-				data.put("checkinTs", ts);
-				data.put("descriptionIn", description);
-				data.put("workTypeIn", worktype);
-
-				checkinMap.put(ts.toLocalDateTime().toLocalDate(), data);
+			if (StringUtil.isEmpty(dateTo)) {
+				sql += "	AND wh.work_hours_time_work < TIMESTAMP(TIMESTAMPADD(DAY, 1, :dateFrom))\n";
+			} else {
+				sql += "	AND wh.work_hours_time_work < TIMESTAMP(:dateTo)\n";
 			}
-		}
-	} catch (Exception e) {
-		e.printStackTrace();
-	}
-	return checkinMap;
-}
 
-public Map<LocalDate, Map<String, Object>> getCheckoutsForYear(String userId, int year1, int year2) throws Exception {
-	Session session = this.sessionFactory.getCurrentSession();
-	Map<LocalDate, Map<String, Object>> checkoutMap = new HashMap<>();
-	try {
-		String sql = "SELECT work_hours_time_work, workinghours, description, work_type " + "FROM work_hours "
-				+ "WHERE user_create = :userId " + "AND YEAR(work_hours_time_work) BETWEEN :year1 AND :year2 "
-				+ "AND work_hours_type = 2 " + "ORDER BY work_hours_id DESC";
+			if (workHoursType.equalsIgnoreCase("1")) {
+				sql += "wh.ORDER BY work_hours_time_work ASC\n";
+			} else {
+				sql += "wh.ORDER BY work_hours_time_work DESC\n";
+			}
+
+			sql += "LIMIT 1;";
+
+			SQLQuery query = session.createSQLQuery(sql);
+			query.setParameter("userId", userId);
+			query.setParameter("workHoursType", workHoursType);
+			query.setParameter("dateFrom", dateFrom);
+			query.setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
+			ret = query.list();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return ret;
+	}
+
+	public List<WorkHours> findByUserYear(String userId, String year) throws Exception {
+		Session session = this.sessionFactory.getCurrentSession();
+		List list = null;
+		try {
+
+			String sql = "select * " + " from work_hours " + " WHERE user_create='" + userId
+					+ "' and YEAR(work_hours_time_work) = " + year
+					+ " order by work_hours_time_work asc, work_hours_type asc ";
+
+			SQLQuery query = session.createSQLQuery(sql);
+			// query.setParameter("userId", userId);
+			// query.setParameter("year", year);
+
+			query.setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
+			list = query.list();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return list;
+	}
+
+	public Map<LocalDate, Map<String, Object>> getCheckinsForYear(String userId, int year1, int year2)
+			throws Exception {
+		Session session = this.sessionFactory.getCurrentSession();
+		Map<LocalDate, Map<String, Object>> checkinMap = new HashMap<>();
+		try {
+			String sql = "SELECT work_hours_time_work AS mycheckin, description, work_type " + "FROM work_hours "
+					+ "WHERE user_create = :userId " + "AND YEAR(work_hours_time_work) BETWEEN :year1 AND :year2 "
+					+ "AND work_hours_type = 1 " + // 1 = checkin
+					"ORDER BY work_hours_id DESC";
+
+			SQLQuery query = session.createSQLQuery(sql);
+			query.setParameter("userId", userId);
+			query.setParameter("year1", year1);
+			query.setParameter("year2", year2);
+			query.setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
+
+			List<Map<String, Object>> results = query.list();
+			for (Map<String, Object> row : results) {
+				Timestamp ts = (Timestamp) row.get("mycheckin");
+				Object description = row.get("description");
+				Object worktype = row.get("work_type");
+
+				if (ts != null) {
+					Map<String, Object> data = new HashMap<>();
+					data.put("checkinTs", ts);
+					data.put("descriptionIn", description);
+					data.put("workTypeIn", worktype);
+
+					checkinMap.put(ts.toLocalDateTime().toLocalDate(), data);
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return checkinMap;
+	}
+
+	public Map<LocalDate, Map<String, Object>> getCheckoutsForYear(String userId, int year1, int year2)
+			throws Exception {
+		Session session = this.sessionFactory.getCurrentSession();
+		Map<LocalDate, Map<String, Object>> checkoutMap = new HashMap<>();
+		try {
+			String sql = "SELECT work_hours_time_work, workinghours, description, work_type " + "FROM work_hours "
+					+ "WHERE user_create = :userId " + "AND YEAR(work_hours_time_work) BETWEEN :year1 AND :year2 "
+					+ "AND work_hours_type = 2 " + "ORDER BY work_hours_id DESC";
+
+			SQLQuery query = session.createSQLQuery(sql);
+			query.setParameter("userId", userId);
+			query.setParameter("year1", year1);
+			query.setParameter("year2", year2);
+			query.setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
+
+			List<Map<String, Object>> results = query.list();
+			for (Map<String, Object> row : results) {
+				Timestamp checkoutTs = (Timestamp) row.get("work_hours_time_work");
+				Object workingHours = row.get("workinghours");
+				Object descriptions = row.get("description");
+				Object worktype = row.get("work_type");
+
+				if (checkoutTs != null) {
+					Map<String, Object> data = new HashMap<>();
+					data.put("checkoutTs", checkoutTs);
+					data.put("workinghours", workingHours);
+					data.put("descriptionOut", descriptions);
+					data.put("workTypeOut", worktype);
+
+					checkoutMap.put(checkoutTs.toLocalDateTime().toLocalDate(), data);
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return checkoutMap;
+	}
+
+	@Override
+	public Timestamp findMinTimeByType(String userId, LocalDate workDate, String type) {
+		Session session = this.sessionFactory.getCurrentSession();
+
+		String sql = "SELECT MIN(work_hours_time_work) " + "FROM work_hours " + "WHERE user_create = :userId "
+				+ "AND work_hours_type = :type " + "AND DATE(work_hours_time_work) = :workDate";
 
 		SQLQuery query = session.createSQLQuery(sql);
 		query.setParameter("userId", userId);
-		query.setParameter("year1", year1);
-		query.setParameter("year2", year2);
-		query.setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
+		query.setParameter("type", type);
+		query.setParameter("workDate", workDate.toString());
 
-		List<Map<String, Object>> results = query.list();
-		for (Map<String, Object> row : results) {
-			Timestamp checkoutTs = (Timestamp) row.get("work_hours_time_work");
-			Object workingHours = row.get("workinghours");
-			Object descriptions = row.get("description");
-			Object worktype = row.get("work_type");
-
-			if (checkoutTs != null) {
-				Map<String, Object> data = new HashMap<>();
-				data.put("checkoutTs", checkoutTs);
-				data.put("workinghours", workingHours);
-				data.put("descriptionOut", descriptions);
-				data.put("workTypeOut", worktype);
-
-				checkoutMap.put(checkoutTs.toLocalDateTime().toLocalDate(), data);
-			}
-		}
-	} catch (Exception e) {
-		e.printStackTrace();
+		return (Timestamp) query.uniqueResult();
 	}
-	return checkoutMap;
-}
 
+	@Override
+	public Timestamp findMaxTimeByType(String userId, LocalDate workDate, String type) {
+		Session session = this.sessionFactory.getCurrentSession();
 
+		String sql = "SELECT MAX(work_hours_time_work) " + "FROM work_hours " + "WHERE user_create = :userId "
+				+ "AND work_hours_type = :type " + "AND DATE(work_hours_time_work) = :workDate";
 
+		SQLQuery query = session.createSQLQuery(sql);
+		query.setParameter("userId", userId);
+		query.setParameter("type", type);
+		query.setParameter("workDate", workDate.toString());
+
+		return (Timestamp) query.uniqueResult();
+	}
 
 }

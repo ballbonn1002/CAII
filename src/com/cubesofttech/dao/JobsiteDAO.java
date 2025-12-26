@@ -13,6 +13,8 @@ public interface JobsiteDAO {
 
 	public void delete(Jobsite jobsite) throws Exception;
 	
+	void deleteTeamByJobsite(String idSitejob) throws Exception;
+	
 	public Jobsite findById(Integer id) throws Exception;
 	
 	public List<Map<String, Object>> getNameSiteListByUserId(String userId) throws Exception;
@@ -24,4 +26,6 @@ public interface JobsiteDAO {
 	public List<Map<String, Object>> findAll2() throws Exception;
 
 	List<Map<String, Object>> getJobSiteByUserId(String userId) throws Exception;
+	
+	public List<Map<String, Object>> findAllWithTeamAmount() throws Exception;
 }

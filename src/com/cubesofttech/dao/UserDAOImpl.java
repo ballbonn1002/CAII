@@ -1110,6 +1110,29 @@ public class UserDAOImpl implements UserDAO {
 //		 }
 //		 
 //	}
+	
+	@Override
+	public String findEmployeeIdByName(String nameEn, String nameTh) throws Exception {
+	    Session session = sessionFactory.getCurrentSession();
+
+	    if (nameEn != null && !nameEn.isEmpty()) {
+	        String sqlEn = "SELECT employee_id FROM user WHERE name_en = :nameEn LIMIT 1";
+	        SQLQuery q1 = session.createSQLQuery(sqlEn);
+	        q1.setParameter("nameEn", nameEn);
+	        Object r1 = q1.uniqueResult();
+	        if (r1 != null) return r1.toString();
+	    }
+
+	    if (nameTh != null && !nameTh.isEmpty()) {
+	        String sqlTh = "SELECT employee_id FROM user WHERE name = :nameTh LIMIT 1";
+	        SQLQuery q2 = session.createSQLQuery(sqlTh);
+	        q2.setParameter("nameTh", nameTh);
+	        Object r2 = q2.uniqueResult();
+	        if (r2 != null) return r2.toString();
+	    }
+
+	    return null;
+	}
 
 
 }

@@ -20,5 +20,15 @@ public interface JobSiteTeamDAO {
 	
 	public List<JobSiteTeam> findAllJobsiteByJobsiteId(String jobsiteId) throws Exception;
 	
+	List<Map<String, Object>> findByJobsite(Integer id_sitejob) throws Exception;
+	
+	List<Map<String, Object>> findSiteByUserId(String userId) throws Exception;
+	
+	List<Map<String, Object>> findTeamByUserId(String userId) throws Exception;
+	
+	List<Map<String, Object>> findSitesAndMembersByUserId(String userId) throws Exception;
+	
+	List<Map<String, Object>> findSitesMembersWorkByUserAndDate(String loginUserId, String selectedDate) throws Exception;
+	
 	
 }

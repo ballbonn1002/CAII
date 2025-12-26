@@ -170,7 +170,7 @@
 					
 					<!--begin:Menu item-->
 					<div class="menu-item">
-						<a class="menu-link" href="#" data-route="#"> <span class="menu-icon">
+						<a class="menu-link" href="my_jobsite?Id=${onlineUser.id}" data-route="my_jobsite"> <span class="menu-icon">
 								<i class="ki-duotone ki-map fs-1"> <span class="path1"></span>
 									<span class="path2"></span> <span class="path3"></span>
 							</i>
@@ -366,7 +366,7 @@
 					<!--begin:Menu item-->
 					<div class="menu-item">
 						<!--begin:Menu link-->
-						<a class="menu-link" href="#" data-route="#"> <span class="menu-icon">
+						<a class="menu-link" href="jobsite_list" data-route="jobsite_list"> <span class="menu-icon">
 								<i class="ki-duotone ki-monitor-mobile fs-1"> <span
 									class="path1"></span> <span class="path2"></span>
 							</i>
