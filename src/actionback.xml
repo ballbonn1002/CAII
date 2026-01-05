@@ -636,7 +636,7 @@
 			<result name="success" type="tiles">jobsiteEdit</result>
 			<result name="error">/index.jsp</result>
 		</action>
-		
+
 		<action name="updateJobsite"
 			class="com.cubesofttech.action.JobsiteAction" method="updateJobsite">
 			<result name="success" type="redirectAction">jobsite_list</result>
@@ -659,7 +659,12 @@
 			class="com.cubesofttech.action.JobsiteAction"
 			method="deleteJobSiteTeam">
 			<result name="success" type="tiles">jobsiteEdit</result>
-			<result name="error" type="tiles">jobsiteEdit</result>
+			<result name="error" type="tiles">index.jsp</result>
+		</action>
+
+		<action name="updateJobsiteStatus"
+			class="com.cubesofttech.action.JobsiteAction"
+			method="updateJobsiteStatus">
 		</action>
 
 		<!-- MY JOB SITE -->

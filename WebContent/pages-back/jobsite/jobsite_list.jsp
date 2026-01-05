@@ -192,9 +192,10 @@ table.dataTable tbody td {
 
 									<thead>
 										<tr
-											class="text-start text-gray-500 fw-bold fs-7 text-uppercase gs-0 border-bottom border-gray-200" style="height: 39px;">
+											class="text-start text-gray-500 fw-bold fs-7 text-uppercase gs-0 border-bottom border-gray-200"
+											style="height: 39px;">
 											<th class="min-w-75px w-75px text-center">#</th>
-											<th class="min-w-222px w-222px "> Jobsite Name</th>
+											<th class="min-w-222px w-222px ">Jobsite Name</th>
 											<th class="min-w-222px w-222px ">Team Amount</th>
 											<th class="min-w-222px w-222px ">Description</th>
 											<th class="min-w-150px w-150px ">STATUS</th>
@@ -202,7 +203,8 @@ table.dataTable tbody td {
 										</tr>
 									</thead>
 
-									<tbody id="jobsiteTable" class="fw-normal fs-6 text-gray-900" style="height: 61px;">
+									<tbody id="jobsiteTable" class="fw-normal fs-6 text-gray-900"
+										style="height: 61px;">
 										<c:forEach var="j" items="${jobsiteList}" varStatus="st">
 											<tr
 												class="jobsite-row align-middle border-bottom border-gray-200">
@@ -219,12 +221,12 @@ table.dataTable tbody td {
 												<td class="min-w-150px w-150px">${j.description}</td>
 
 												<!-- STATUS -->
-												<td class="status-column"
-													data-status="${j.is_active}">
+												<td class="status-column" data-status="${j.is_active}">
 													<div
 														class="form-check form-switch form-switch-sm form-check-success">
 														<input class="form-check-input status-toggle"
 															type="checkbox" style="width: 33px;"
+															data-id="${j.id_sitejob}"
 															<c:if test="${j.is_active == '1'}">checked</c:if> />
 													</div>
 												</td>
@@ -274,8 +276,8 @@ table.dataTable tbody td {
 	}
 	</script>
 
-		<!-- Delete confirm -->
-		<script type="text/javascript">
+	<!-- Delete confirm -->
+	<script type="text/javascript">
 		document.querySelectorAll('.btn-delete-jobsite').forEach(function(btn){
 		    btn.addEventListener('click', function(){
 		        var siteId = this.getAttribute('data-id');
@@ -392,6 +394,31 @@ table.dataTable tbody td {
 	
 	    // 5. Initial draw
 	    table.draw();
+	});
+	</script>
+
+	<script>
+	$(document).ready(function() {
+	    $(document).on('change', '.status-toggle', function() {
+	        var $checkbox = $(this);
+	        var siteId = $checkbox.data('id');
+	        var isActive = $checkbox.is(':checked') ? '1' : '0';
+
+	        $.ajax({
+	            url: '${pageContext.request.contextPath}/updateJobsiteStatus', 
+	            type: 'POST',
+	            data: {
+	                id_sitejob: siteId,
+	                is_active: isActive
+	            },
+	            success: function(response) {
+	                $checkbox.closest('td').attr('data-status', isActive);
+	            },
+	            error: function(xhr, status, error) {
+	                $checkbox.prop('checked', !$checkbox.is(':checked'));
+	            }
+	        });
+	    });
 	});
 	</script>
 

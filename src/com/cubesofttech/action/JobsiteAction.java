@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
 import org.apache.struts2.ServletActionContext;
@@ -392,6 +393,51 @@ public class JobsiteAction extends ActionSupport {
 			addActionError("Error updating jobsite: " + e.getMessage());
 			return ERROR;
 		}
+	}
+
+	// ------------------------ UPDATE STATUS ------------------------
+	public String updateJobsiteStatus() {
+		HttpServletRequest request = ServletActionContext.getRequest();
+		HttpServletResponse response = ServletActionContext.getResponse();
+
+		response.setContentType("text/plain;charset=UTF-8");
+
+		try {
+			String idParam = request.getParameter("id_sitejob");
+			String activeParam = request.getParameter("is_active");
+
+			if (idParam != null && activeParam != null) {
+				Integer id = Integer.parseInt(idParam);
+				
+				Jobsite js = jobsiteDAO.findById(id);
+
+				if (js != null) {
+					js.setIs_active(activeParam); 
+
+					User user = (User) request.getSession().getAttribute("onlineUser");
+					if (user != null) {
+						js.setUser_update(user.getId());
+					}
+					js.setTime_update(DateUtil.getCurrentTime());
+
+					jobsiteDAO.update(js);
+
+					response.getWriter().write("success");
+				} else {
+					response.getWriter().write("error: jobsite not found");
+				}
+			} else {
+				response.getWriter().write("error: missing parameters");
+			}
+
+		} catch (Exception e) {
+			log.error("Error in updateJobsiteStatus", e);
+			try {
+				response.getWriter().write("error: " + e.getMessage());
+			} catch (Exception ex) {
+			}
+		}
+		return NONE;
 	}
 
 	public String myJobsite() {

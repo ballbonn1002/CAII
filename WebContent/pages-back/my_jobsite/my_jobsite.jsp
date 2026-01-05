@@ -20,6 +20,7 @@
 .cursor-default {
 	cursor: default !important;
 }
+
 </style>
 </head>
 <body>
@@ -224,7 +225,7 @@
 													</c:if></td>
 
 												<c:set var="statusIcon" value="" />
-												<c:set var="badgeClass" value="badge-info" />
+												<c:set var="badgeClass" value="badge-primary" />
 												<c:set var="statusText" value="${t.status}" />
 
 												<c:choose>
@@ -245,18 +246,18 @@
 														<c:set var="statusText" value="Unfinished Work" />
 													</c:when>
 													<c:when test="${t.status == 'INCOMPLETE'}">
-														<c:set var="badgeClass" value="badge-dark" />
+														<c:set var="badgeClass" value="badge bg-gray-800 text-white" />
 														<c:set var="statusText" value="Incomplete" />
 													</c:when>
 													<c:when test="${t.status == 'SICK_LEAVE'}">
-														<c:set var="badgeClass" value="badge-info" />
+														<c:set var="badgeClass" value="badge bg-purple text-white" />
 														<c:set var="statusText" value="${t.leave_desc}" />
 													</c:when>
 													<c:when test="${t.status == 'WAITING'}">
 														<c:set var="statusIcon" value="ki-duotone ki-watch" />
 														<c:choose>
 															<c:when test="${t.leave_desc == 'ลาป่วย'}">
-																<c:set var="badgeClass" value="badge-info" />
+																<c:set var="badgeClass" value="badge bg-purple text-white" />
 															</c:when>
 															<c:otherwise>
 																<c:set var="badgeClass" value="badge-primary" />
