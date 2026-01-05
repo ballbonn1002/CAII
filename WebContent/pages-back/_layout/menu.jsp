@@ -301,7 +301,7 @@
 					<!--begin:Menu item-->
 					<div class="menu-item">
 						<!--begin:Menu link-->
-						<a class="menu-link" href="#" data-route="#"> <span class="menu-icon">
+						<a class="menu-link" href="equipment_list" data-route="equipment_list"> <span class="menu-icon">
 								<i class="ki-duotone ki-monitor-mobile fs-1"> <span
 									class="path1"></span> <span class="path2"></span>
 							</i>

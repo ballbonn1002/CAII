@@ -26,7 +26,16 @@ public class EquipmentType {
 	private String userUpdate;
 	@Column(name = "time_update")
 	private java.sql.Timestamp timeUpdate;
+	@Column(name = "type_text")
+    private String typeText;
 	
+	public String getTypeText() {
+        return typeText;
+    }
+
+    public void setTypeText(String typeText) {
+        this.typeText = typeText;
+    }
 	
 	@Override
 	public String toString() {
@@ -90,7 +99,7 @@ public class EquipmentType {
 	}
 
 	public EquipmentType(String typeID, String description, String userCreate, Timestamp timeCreate, String userUpdate,
-			Timestamp timeUpdate) {
+			Timestamp timeUpdate, String typeText) {
 		super();
 		TypeID = typeID;
 		this.description = description;
@@ -98,6 +107,7 @@ public class EquipmentType {
 		this.timeCreate = timeCreate;
 		this.userUpdate = userUpdate;
 		this.timeUpdate = timeUpdate;
+		this.typeText = typeText;
 	}
 
 	public String getTypeID() {
