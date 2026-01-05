@@ -19,6 +19,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.GregorianCalendar;
 
@@ -1089,7 +1090,6 @@ public class UserAction extends ActionSupport {
 	            fileupload.setUserId(user.getId());
 	            fileupload.setUserCreate(user.getId());
 	            
-	            // à¹�à¸¢à¸�à¸Šà¸·à¹ˆà¸­à¸�à¸±à¸šà¸™à¸²à¸¡à¸ªà¸�à¸¸à¸¥à¹„à¸Ÿà¸¥à¹Œ
 	            String name = fileUploadFileName;
 	            String type = "";
 	            int split = fileUploadFileName.lastIndexOf(".");
@@ -1651,6 +1651,30 @@ public class UserAction extends ActionSupport {
 			String logonUser = ur.getId();
 
 			User u = userDAO.findById(logonUser);
+			
+			String imgPath = null;
+
+			if (u.getPath() != null && u.getPath().contains("_")) {
+			    try {
+			        String originalFileName = new File(u.getPath()).getName();
+			       
+			        String fileIdStr = originalFileName.substring(0, originalFileName.indexOf("_"));
+			        int fileId = Integer.parseInt(fileIdStr);
+
+			        String typeFile = originalFileName.substring(originalFileName.lastIndexOf("."));
+			        
+			        imgPath = "/upload/user/user_" + fileId + typeFile;
+
+			        String server = request.getServletContext().getRealPath("/");
+			        File f = new File(server + imgPath);
+
+			        if (!f.exists()) {
+			            imgPath = null;
+			        }
+			    } catch (Exception e) {
+			        imgPath = null;
+			    }
+			}
 
 			List<Map<String, Object>> managerList = userDAO.getManagerIdAndManagerNameByUserId(logonUser);
 			Map<String, Object> manager = null;
@@ -1715,6 +1739,7 @@ public class UserAction extends ActionSupport {
 
 	       request.setAttribute("workPeriod", workPeriod);
 	       request.setAttribute("user", u);
+	       request.setAttribute("userImgPath", imgPath);
 
 			return SUCCESS;
 		} catch (Exception e) {
@@ -1737,10 +1762,23 @@ public class UserAction extends ActionSupport {
 	        	}else if (fileUpload != null) {
 	                int maxId = fileuploadDAO.getMaxId() + 1;
 	                String fileServerPath = request.getServletContext().getRealPath("/");
-	                String newFileName = maxId + "_" + fileUploadFileName;
 	                String originalName = fileUploadFileName;
 	                String fileName = originalName.substring(0,originalName.lastIndexOf("."));
 					String typeFile = originalName.substring(originalName.lastIndexOf("."));
+					
+//					boolean validateFileName = fileName.matches("[a-zA-Z0-9 ]+");
+//					
+//					if(validateFileName) {
+//						fileName = fileName.trim().replaceAll("\\s+", "_");
+//					}else {
+//						fileName = UUID.randomUUID().toString();;
+//					}
+					if(fileName.contains(" ")) {
+						fileName = fileName.trim().replaceAll(" ", "_");
+					}
+					
+					String newFileName = maxId + "_" + fileName + typeFile;
+					String serverFileName = "user_" + maxId + typeFile;
 					
 					long fileSize = fileUpload.length(); //byte
 	                double sizeKB = fileSize / 1024.0;
@@ -1754,7 +1792,7 @@ public class UserAction extends ActionSupport {
 	                    sizeText = String.format("%.2f MB", sizeMB);
 	                }
 
-	                FileUtil.upload(fileUpload, fileServerPath + "upload/user/", newFileName);
+	                FileUtil.upload(fileUpload, fileServerPath + "upload/user/", serverFileName);
 
 	                FileUpload file = new FileUpload();
 	                file.setFileId(maxId);

@@ -87,10 +87,15 @@
 								<div class="mb-4 mb-md-0 me-md-9 mb-md-0 w-150px h-150px mx-auto">
 									
 										<c:choose>
-											<c:when test="${not empty user.path}">
-												<img id="avatarPreview" src="${user.path}"
+											<c:when test="${not empty userImgPath}">
+											<%-- <img id="avatarPreview"  src="/upload/user/user_${user.fileId}${user.type}"
+											     alt="${not empty user.nameEN ? user.nameEN : user.name}"
+											     class="border border-2 border-white rounded-1 w-150px h-150px"
+											     style="object-fit: cover;"> --%>
+											
+												<img id="avatarPreview" src="${userImgPath}"
 													alt="${not empty user.nameEN ? user.nameEN : user.name}"
-													class="border border-2 border-white rounded-1 w-150px h-150px" style="object-fit: cover;">
+													class="border border-2 border-white rounded-1 w-150px h-150px" style="object-fit: cover;"> 
 											</c:when>
 											<c:otherwise>
 												<div id="avatarPreview"
@@ -268,12 +273,12 @@
 							<div class="row">
 								<div class="col-12 col-md-6 col-lg-6">
 									<p class="fs-5 text-muted fw-medium mb-0">Name TH</p>
-									<p class="fs-5 text-gray-800 fw-semibold">${empty user.titleNameTH ? '': user.titleNameTH} ${empty user.name ? '': user.name} - ${empty user.nickName ? '-': user.nickName}</p>
+									<p class="fs-5 text-gray-800 fw-semibold">${empty user.titleNameTH ? '': user.titleNameTH} ${empty user.name ? '': user.name} ${not empty user.nickName ? '- ' : ''}${user.nickName}</p>
 								</div>
 								<div class="col-12 col-md-6 col-lg-6">
 									<p class="fs-5 text-muted fw-medium mb-0">Name EN</p>
 						
-									<p class="fs-5 text-gray-800 fw-semibold">${empty user.titleNameEN ? '': user.titleNameEN} ${empty user.nameEN ? '': user.nameEN} - ${empty user.nickNameEN ? '-': user.nickNameEN}</p>
+									<p class="fs-5 text-gray-800 fw-semibold">${empty user.titleNameEN ? '': user.titleNameEN} ${empty user.nameEN ? '': user.nameEN} ${not empty user.nickNameEN ? '- ' : ''}${user.nickNameEN}</p>
 								</div>
 							</div>
 							<div class="row">
@@ -286,6 +291,7 @@
 									<p class="fs-5 text-gray-800 fw-semibold">
 										<c:choose>
 											<c:when test="${empty user.birthDate}">
+											-
 											</c:when>
 											<c:otherwise>
 												<fmt:formatDate value="${user.birthDate}"
@@ -367,8 +373,8 @@
 												class="border border-2 border-white rounded image-input-wrapper w-150px h-150px d-flex align-items-center justify-content-center"
 												style="
 								                <c:choose>
-								                    <c:when test='${not empty user.path}'>
-								                        background-image: url(${user.path});
+								                    <c:when test='${not empty userImgPath}'>
+								                        background-image: url(${userImgPath});
 								                        background-size: cover;
 								                        background-position: center;
 								                    </c:when>
@@ -379,7 +385,7 @@
 								                </c:choose>
 								             ">
 
-												<c:if test="${empty user.path}">
+												<c:if test="${empty userImgPath}">
 													<span class="initials-text"> <c:choose>
 															<c:when
 																test="${not empty user.nameEN and fn:length(user.nameEN) >= 1}">
@@ -427,7 +433,7 @@
 								<div class="row mb-0 mb-lg-5">
 									<div class="col-12 col-md-2 col-lg-2  mt-md-4">
 										<label class="required fw-medium text-gray-800 mb-2">คำนำหน้า</label>
-										<select name="user_titleNameTH" 
+										<select name="user_titleNameTH" id="user_titleNameTH" 
 											data-placeholder="" data-control="select2"
 											class="form-select text-gray-700">
 											<option value="นาย"
@@ -441,13 +447,13 @@
 									<div class="col-12 col-md-5 col-lg-5 mt-9 mt-md-4">
 										<label class="required fw-medium text-gray-800 mb-2">ชื่อ
 											สกุล</label> <input type="text"
-											class="form-control text-gray-700"
+											class="form-control text-gray-700" oninput="this.value = this.value.replace(/[^ก-๙\s]/g, '')"
 											placeholder="" name="user_name" id="user_name" value="${user.name}" />
 									</div>
 									<div class="col-12 col-md-5 col-lg-5 mt-9 mt-md-4">
 										<label class="required fw-medium text-gray-800 mb-2">Nickname
 											TH</label> <input type="text"
-											class="form-control text-gray-700"
+											class="form-control text-gray-700" oninput="this.value = this.value.replace(/[^ก-๙\s]/g, '')
 											placeholder="" name="user_nickName" id="user_nickName"
 											value="${user.nickName}" />
 									</div>
@@ -456,7 +462,7 @@
 								<div class="row mb-0 mb-lg-5">
 									<div class="col-12 col-md-2 col-lg-2 mt-9 mt-md-4">
 										<label class="required fw-medium text-gray-800 mb-2">Title
-											Name</label> <select name="user_titleNameEN" 
+											Name</label> <select name="user_titleNameEN" id="user_titleNameEN" 
 											
 											data-placeholder=""
 											class="form-select text-gray-700">
@@ -494,18 +500,14 @@
 										<p class="required fw-medium text-gray-800 mb-2">Gender</p>
 
 										<div class="form-check form-check-inline mt-1">
-											<!-- <input type="radio" id="genderMale" name="gender"
-											class="form-check-input" value="M" /> -->
-											<input type="radio" name="user_gender" class="form-check-input"
+											<input type="radio" name="user_gender" id="user_gender" class="form-check-input"
 												value="M" ${user.gender == 'M' ? 'checked' : ''} required />
 											<label class="form-check-label fs-6 text-gray-800 fw-normal"
 												for="genderMale">Male</label>
 										</div>
 
 										<div class="form-check form-check-inline mt-1">
-											<!-- <input type="radio" id="genderFemale" name="gender"
-											class="form-check-input" value="F" />  -->
-											<input type="radio" name="user_gender" class="form-check-input"
+											<input type="radio" name="user_gender" id="user_gender" class="form-check-input"
 												value="F" ${user.gender == 'F' ? 'checked' : ''} /> <label
 												class="form-check-label fs-6 text-gray-800 fw-normal"
 												for="genderFemale">Female</label>
@@ -545,7 +547,7 @@
 										<p class="fs-6 fw-medium text-gray-800 mb-2">Passport ID</p>
 										<input type="text"
 											class="form-control text-gray-700"
-											placeholder="" name="user_passportId" value="${user.passportId}" />
+											placeholder="" name="user_passportId" id="user_passportId" value="${user.passportId}" />
 
 									</div>
 								</div>
@@ -574,7 +576,7 @@
 
 										<textarea rows="3" cols=""
 											class="form-control text-gray-700"
-											placeholder="" name="user_address">${user.address}</textarea>
+											placeholder="" name="user_address" id="user_address">${user.address}</textarea>
 									</div>
 
 								</div>
@@ -584,7 +586,7 @@
 											Contact</p>
 										<input type="text"
 											class="form-control text-gray-700"
-											placeholder="" name="user_emergContact"
+											placeholder="" name="user_emergContact" id="user_emergContact"
 											value="${user.emergContact}" />
 
 									</div>
@@ -594,7 +596,7 @@
 										<input type="text"
 											class="form-control text-gray-700"
 											placeholder="" name="user_emergPhone" value="${user.emergPhone}"
-											maxlength="10" inputmode="numeric"
+											maxlength="10" inputmode="numeric" id="user_emergPhone"
 											oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0,10)" />
 
 									</div>
@@ -791,29 +793,36 @@
 									</thead>
 
 									<tbody>
-										<c:forEach var="borrowList" items="${borrowList}">
+									<c:if test="${empty borrowList}">
+										<tr>
+											<td colspan="5" class="text-center text-muted py-4">
+												Not found borrow list.
+											</td>
+										</tr>
+									</c:if>
+										<c:forEach var="item" items="${borrowList}">
 											<tr class="align-middle">
 												<td class="px-3 py-4 text-gray-900 fs-6 fw-normal">
-													${borrowList.formatted_date}
-													<p class="text-gray-600 fs-6 fw-normal mb-0">${borrowList.formatted_time}</p>
+													${item.formatted_date}
+													<p class="text-gray-600 fs-6 fw-normal mb-0">${item.formatted_time}</p>
 												</td>
-												<td class="px-3 py-4 text-gray-900 fs-6 fw-normal">${borrowList.item_no}</td>
-												<td class="px-3 py-4 text-gray-900 fs-6 fw-normal">${borrowList.name}</td>
-												<td class="px-3 py-4 text-gray-900 fs-6 fw-normal">${borrowList.location}</td>
+												<td class="px-3 py-4 text-gray-900 fs-6 fw-normal">${item.item_no}</td>
+												<td class="px-3 py-4 text-gray-900 fs-6 fw-normal">${item.name}</td>
+												<td class="px-3 py-4 text-gray-900 fs-6 fw-normal">${item.location}</td>
 												<td class="px-3 py-4 ">
-												<c:if test="${borrowList.status == 'R'}">
+												<c:if test="${item.status == 'R'}">
 													<span class="badge badge-lg bg-success text-white fw-semibold fs-8">Returned</span>
 												</c:if> 
-												<c:if test="${borrowList.status == 'B'}">
+												<c:if test="${item.status == 'B'}">
 													<span class="badge badge-lg bg-warning text-white fw-semibold fs-8">Borrowing</span>
 												</c:if>
-												 <c:if test="${borrowList.status == 'W'}">
+												 <c:if test="${item.status == 'W'}">
 													<span class="badge badge-lg badge-secondary text-dark fw-semibold fs-8">Waiting</span>
 												</c:if>
-												<c:if test="${borrowList.status == 'C'}">
+												<c:if test="${item.status == 'C'}">
 													<span class="badge badge-lg bg-dark text-white fw-semibold fs-8">Cancel</span>
 												</c:if> 
-												<c:if test="${empty borrowList.status || borrowList.status == '-'}">
+												<c:if test="${empty item.status || item.status == '-'}">
 													<span class="badge badge-lg bg-light-secondary text-white fw-semibold fs-8">-</span>
 												</c:if>
 												</td>
@@ -919,19 +928,39 @@
 	function submitForm(){
 		  var errorFields = [];
 		  
-		  const name = document.getElementById("user_name").value.trim();
-		  const nickName = document.getElementById("user_nickName").value.trim();
-		  const nameEN = document.getElementById("user_fullNameEN").value.trim();
-		  const nickNameEN = document.getElementById("user_nickNameEN").value.trim();
-		  const birthDate = document.getElementById("user_birthDate").value.trim();
-		  const citizenId = document.getElementById("user_citizenId").value.trim();
-		  const email = document.getElementById("user_email").value.trim();
-		  const phonenum = document.getElementById("user_phonenum").value.trim();
+		  [ "user_titleNameTH", "user_name",  "user_nickName", "user_titleNameEN","user_fullNameEN", "user_nickNameEN", "user_gender","user_birthDate",
+			  "user_citizenId", "user_passportId",  "user_email", "user_phonenum", "user_address", "user_emergContact", "user_emergPhone"
+			].forEach(id => {
+			    const element = document.getElementById(id);
+			    if (element && element.value) {
+			    	element.value = element.value.trim();
+			    }
+			});
+
 		  
+		  const titleNameTH  = document.getElementById("user_titleNameTH").value
+		  const name = document.getElementById("user_name").value
+		  const nickName = document.getElementById("user_nickName").value
+		  const titleNameEN  = document.getElementById("user_titleNameEN").value
+		  const nameEN = document.getElementById("user_fullNameEN").value
+		  const nickNameEN = document.getElementById("user_nickNameEN").value
+		  const gender = document.getElementById("user_gender").value
+		  const birthDate = document.getElementById("user_birthDate").value
+		  const citizenId = document.getElementById("user_citizenId").value
+		  const passportId = document.getElementById("user_passportId").value
+		  const email = document.getElementById("user_email").value
+		  const phonenum = document.getElementById("user_phonenum").value
+		  const address = document.getElementById("user_address").value
+		  const emergContact = document.getElementById("user_emergContact").value
+		  const emergPhone = document.getElementById("user_emergPhone").value
+
+		  if(!titleNameTH) errorFields.push("คำนำหน้า")
 		  if(!name) errorFields.push("ชื่อ สกุล")
 		  if(!nickName) errorFields.push("Nickname TH")
+		  if(!titleNameEN) errorFields.push("Title Name")
 		  if(!nameEN) errorFields.push("Full Name EN")
 		  if(!nickNameEN) errorFields.push("Nickname EN")
+		  if(!gender) errorFields.push("Gender")
 		  if(!birthDate) errorFields.push("Birth Date")
 		  if(!citizenId) errorFields.push("Citizen ID")
 		  if(!email) errorFields.push("E-Mail")
