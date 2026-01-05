@@ -43,6 +43,62 @@
 			value="/pages-back/table/demo_table.jsp"/>
 	</definition>
 	
+	<!-- Equipment List -->
+	<definition name="equipmentList" extends="baseLayout">
+		<put-attribute name="title" value="Equipment List"/>
+		<put-attribute name="body"
+			value="/pages-back/equipment/equipment_list.jsp" />
+	</definition>
+	
+	<!-- Equipment Add -->
+	<definition name="equipmentAdd" extends="baseLayout">
+		<put-attribute name="title" value="Equipment Add"/>
+		<put-attribute name="body"
+			value="/pages-back/equipment/equipment_add.jsp" />
+	</definition>
+	
+	<!-- Equipment Edit -->
+	<definition name="equipmentEdit" extends="baseLayout">
+		<put-attribute name="title" value="Equipment Edit"/>
+		<put-attribute name="body"
+			value="/pages-back/equipment/equipment_edit.jsp" />
+	</definition>
+	
+	<!-- Equipment Setting -->
+	<definition name="equipmentSetting" extends="baseLayout">
+		<put-attribute name="title" value="Equipment Setting"/>
+		<put-attribute name="body"
+			value="/pages-back/equipment/equipment_setting.jsp" />
+	</definition>
+	
+	<!-- Equipment Setting Stasus Edit -->
+	<definition name="equipmentStatusEdit" extends="baseLayout">
+		<put-attribute name="title" value="Equipment Status Edit"/>
+		<put-attribute name="body"
+			value="/pages-back/equipment/equipment_status_edit.jsp" />
+	</definition>
+	
+	<!-- Equipment Setting Type Edit -->
+	<definition name="equipmentTypeEdit" extends="baseLayout">
+		<put-attribute name="title" value="Equipment Type Edit"/>
+		<put-attribute name="body"
+			value="/pages-back/equipment/equipment_type_edit.jsp" />
+	</definition>
+	
+	<!-- Equipment Setting Stasus Add -->
+	<definition name="equipmentStatusAdd" extends="baseLayout">
+		<put-attribute name="title" value="Equipment Status Add"/>
+		<put-attribute name="body"
+			value="/pages-back/equipment/equipment_status_add.jsp" />
+	</definition>
+	
+	<!-- Equipment Setting Type Add -->
+	<definition name="equipmentTypeAdd" extends="baseLayout">
+		<put-attribute name="title" value="Equipment Type Add"/>
+		<put-attribute name="body"
+			value="/pages-back/equipment/equipment_type_add.jsp" />
+	</definition>
+	
 	<!-- FORGET PASSWORD (standalone page) -->
 	<definition name="forgetPassword" template="/pages-back/forget_password/forget_password.jsp">
 	    <put-attribute name="title" value="Forget Password"/>

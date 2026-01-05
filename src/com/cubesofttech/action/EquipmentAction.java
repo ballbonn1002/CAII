@@ -93,12 +93,17 @@ public class EquipmentAction extends ActionSupport {
 	private String UPLOAD_PATH = "upload/equipment/";
 	private String id; // use for redirect this id to edit page
 	
+	private String datePurchase;
+	
 	private User onlineUser = (User) request.getSession().getAttribute("onlineUser");
 	
 	public String eAdd() {
 		try {
 			List<EquipmentStatus> status = equipmentStatusDAO.getall();
 			List<EquipmentType> type = equipmentTypeDAO.getall();
+			
+			// String jsonStatus = new Gson().toJson(status);
+			// System.out.println("DEBUG STATUS JSON: " + jsonStatus);
 			
 			request.setAttribute("type", new Gson().toJson(type));
 			request.setAttribute("status", new Gson().toJson(status));
@@ -202,7 +207,20 @@ public class EquipmentAction extends ActionSupport {
 			e.setRam(ram);
 			e.setSerialNo(serialNo);
 			e.setStatus(status);
-			e.setTimeCreate(timestamp);
+			// e.setTimeCreate(timestamp);
+			if (datePurchase != null && !datePurchase.trim().isEmpty()) {
+	            try {
+	                SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy", Locale.ENGLISH);
+	                Date parsedDate = sdf.parse(datePurchase);    
+	                e.setTimeCreate(new Timestamp(parsedDate.getTime()));
+	                
+	            } catch (Exception ex) {
+	                e.setTimeCreate(timestamp);
+	            }
+	        } else {
+	            // ถ้าไม่เลือกวันที่ ให้ใช้วันปัจจุบัน
+	            e.setTimeCreate(timestamp);
+	        }
 			e.setType(type);
 			e.setUserCreate(user.getId());
 			e.setWindows(windows);
@@ -248,6 +266,7 @@ public class EquipmentAction extends ActionSupport {
 			Timestamp timestamp = new Timestamp(System.currentTimeMillis());
 			
 			Equipment e = equipmentDAO.getById(id_s);
+			Timestamp oldTimeCreate = e.getTimeCreate();
 			String oldStatus = e.getStatus();
 			
 			if(image != null) {
@@ -290,7 +309,28 @@ public class EquipmentAction extends ActionSupport {
 			e.setRam(ram);
 			e.setSerialNo(serialNo);
 			e.setStatus(status);
-			e.setTimeCreate(timestamp);
+			if (datePurchase != null && !datePurchase.trim().isEmpty()) {
+	            try {
+	                SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy", Locale.ENGLISH);
+	                Date parsedDate = sdf.parse(datePurchase);      
+	                Timestamp newTimestamp = new Timestamp(parsedDate.getTime());
+	               
+	                SimpleDateFormat compareSdf = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
+	                String newDateStr = compareSdf.format(newTimestamp);
+	                String oldDateStr = (oldTimeCreate != null) ? compareSdf.format(oldTimeCreate) : "";
+
+	                if (newDateStr.equals(oldDateStr)) {
+	                    e.setTimeCreate(oldTimeCreate);
+	                } else {
+	                    e.setTimeCreate(newTimestamp);
+	                }
+
+	            } catch (Exception ex) {
+	                e.setTimeCreate(oldTimeCreate);
+	            }
+	        } else {
+	            e.setTimeCreate(oldTimeCreate);
+	        }
 			e.setType(type);
 			e.setWifiaddress(wifiaddress);
 			e.setLanaddress(lanaddress);
@@ -299,37 +339,40 @@ public class EquipmentAction extends ActionSupport {
 			e.setDisplay(display);
 			
 			// status log
-			System.out.println("Old status: " + oldStatus + " new Status : " + status);
+			// System.out.println("Old status: " + oldStatus + " new Status : " + status);
 			
 			if (!oldStatus.equals(status)) {
-				String statusLogData = e.getStatusLog();
-				
-				Gson gson = new GsonBuilder().setPrettyPrinting().create();
-				List<Map<String, Object>> logList;
+			    String statusLogData = e.getStatusLog();
+			    
+			    Gson gson = new GsonBuilder().setPrettyPrinting().create();
+			    List<Map<String, Object>> logList;
 
-				if (statusLogData == null || statusLogData.trim().isEmpty()) {
-				    logList = new ArrayList<>();
-				} else {
-				    Type listType = new TypeToken<List<Map<String, Object>>>(){}.getType();
-				    logList = gson.fromJson(statusLogData, listType);
-				}
-				
-				Map<String, Object> newLog = new HashMap<>();
-				newLog.put("status", status);
-				Date currentTime = new Date();
-				SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy", Locale.ENGLISH);
-				String currentDate = sdf.format(currentTime);
-				newLog.put("timeUpdate", currentDate);
-				newLog.put("userUpdate", user.getId());
-				if (statusChange == null || statusChange.trim().isEmpty()) {
-					statusChange = null;
-				}
-				newLog.put("statusChange", statusChange);
-				
-				logList.add(newLog);
+			    if (statusLogData == null || statusLogData.trim().isEmpty()) {
+			        logList = new ArrayList<>();
+			    } else {
+			        Type listType = new TypeToken<List<Map<String, Object>>>(){}.getType();
+			        logList = gson.fromJson(statusLogData, listType);
+			    }
+			    
+			    Map<String, Object> newLog = new HashMap<>();
+			    newLog.put("userUpdate", user.getId()); 
+			    newLog.put("status", status);     
+			    
+			    if (statusChange == null || statusChange.trim().isEmpty()) {
+			        newLog.put("statusChange", null); 
+			    } else {
+			        newLog.put("statusChange", statusChange); 
+			    }
 
-				String updatedStatusLog = gson.toJson(logList);
-				e.setStatusLog(updatedStatusLog);
+			    Date currentTime = new Date();
+			    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.ENGLISH);
+			    String currentDate = sdf.format(currentTime);
+			    newLog.put("timeUpdate", currentDate); 
+			    
+			    logList.add(newLog);
+
+			    String updatedStatusLog = gson.toJson(logList);
+			    e.setStatusLog(updatedStatusLog);
 				
 				// if change new status -> "B" or "W" create new history
 				if (("B".equals(status) || "W".equals(status)) && (!"B".equals(oldStatus) && !"W".equals(oldStatus))) {
@@ -410,12 +453,17 @@ public class EquipmentAction extends ActionSupport {
 		try {
 			String status = request.getParameter("status");
 			String color = request.getParameter("color");
+			String color2 = request.getParameter("color2"); 
 			String description = request.getParameter("description");
 			User user = (User) request.getSession().getAttribute("onlineUser");
 			Timestamp timestamp = new Timestamp(System.currentTimeMillis());
 			
 			EquipmentStatus eStatus = new EquipmentStatus();
-			eStatus.setColor(color);
+			if (color2 != null && !color2.trim().isEmpty()) {
+			    eStatus.setColor2(color2);
+			} else {
+			    eStatus.setColor(color);
+			};
 			eStatus.setDescription(description);
 			eStatus.setStatusId(status);
 			eStatus.setTimeCreate(timestamp);
@@ -433,6 +481,7 @@ public class EquipmentAction extends ActionSupport {
 		try {
 			String status = request.getParameter("status");
 			String color = request.getParameter("color");
+			String color2 = request.getParameter("color2"); 
 			String description = request.getParameter("description");
 			User user = (User) request.getSession().getAttribute("onlineUser");
 			Timestamp timestamp = new Timestamp(System.currentTimeMillis());
@@ -440,14 +489,22 @@ public class EquipmentAction extends ActionSupport {
 			EquipmentStatus eStatus = equipmentStatusDAO.findByStatus(status);
 			if(eStatus == null) {
 				eStatus = new EquipmentStatus();
-				eStatus.setColor(color);
+				if (color2 != null && !color2.trim().isEmpty()) {
+				    eStatus.setColor2(color2);
+				} else {
+				    eStatus.setColor(color);
+				}
 				eStatus.setDescription(description);
 				eStatus.setStatusId(status);
 				eStatus.setTimeCreate(timestamp);
 				eStatus.setUserCreate(user.getId());
 				equipmentStatusDAO.save(eStatus);
 			} else {
-				eStatus.setColor(color);
+				if (color2 != null && !color2.trim().isEmpty()) {
+			        eStatus.setColor2(color2);
+			    } else {
+			        eStatus.setColor(color);
+			    }
 				eStatus.setDescription(description);
 				eStatus.setUserUpdate(user.getId());
 				eStatus.setTimeUpdate(timestamp);
@@ -488,6 +545,10 @@ public class EquipmentAction extends ActionSupport {
 			return ERROR;
 		}
 	}
+	
+	public String statusAdd() {
+        return SUCCESS;
+    }
 
 	
 	public String table() {
@@ -578,7 +639,7 @@ public class EquipmentAction extends ActionSupport {
 			Map<String, Object> newLog = new HashMap<>();
 			newLog.put("status", "A");
 			Date currentTime = new Date();
-			SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy", Locale.ENGLISH);
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.ENGLISH);
 			String currentDate = sdf.format(currentTime);
 			newLog.put("timeUpdate", currentDate);
 			newLog.put("userUpdate", user.getId());
@@ -852,6 +913,7 @@ public class EquipmentAction extends ActionSupport {
 			String Type = request.getParameter("Type");
 			String description = request.getParameter("description");
 			User user = (User) request.getSession().getAttribute("onlineUser");
+			String typeText = request.getParameter("type_text");
 			Timestamp timestamp = new Timestamp(System.currentTimeMillis());
 			
 			EquipmentType typeS = new EquipmentType();
@@ -859,6 +921,7 @@ public class EquipmentAction extends ActionSupport {
 			typeS.setTypeID(Type);
 			typeS.setTimeCreate(timestamp);
 			typeS.setUserCreate(user.getId());
+			typeS.setTypeText(typeText);
 			equipmentTypeDAO.save(typeS);
 
 			return SUCCESS;
@@ -873,6 +936,7 @@ public class EquipmentAction extends ActionSupport {
 			String Type = request.getParameter("Type");
 			String description = request.getParameter("description");
 			User user = (User) request.getSession().getAttribute("onlineUser");
+			String typeText = request.getParameter("type_text");
 			Timestamp timestamp = new Timestamp(System.currentTimeMillis());
 			
 			EquipmentType TypeU = equipmentTypeDAO.findByType(Type);
@@ -882,11 +946,13 @@ public class EquipmentAction extends ActionSupport {
 				TypeU.setTypeID(Type);
 				TypeU.setTimeCreate(timestamp);
 				TypeU.setUserCreate(user.getId());
+				TypeU.setTypeText(typeText);
 				equipmentTypeDAO.save(TypeU);
 			} else {
 				TypeU.setDescription(description);
 				TypeU.setUserUpdate(user.getId());
 				TypeU.setTimeUpdate(timestamp);
+				TypeU.setTypeText(typeText);
 				equipmentTypeDAO.update(TypeU);
 			}
 	
@@ -896,6 +962,10 @@ public class EquipmentAction extends ActionSupport {
 			return ERROR;
 		}
 	}
+	
+	public String typeAdd() {
+        return SUCCESS;
+    }
 	
 	public String typeDelete() {
 		try {
@@ -977,11 +1047,16 @@ public class EquipmentAction extends ActionSupport {
 		try {
 			String id = request.getParameter("id");
 			String color = request.getParameter("color");
+			String color2 = request.getParameter("color2"); 
 			User user = (User) request.getSession().getAttribute("onlineUser");
 			Timestamp timestamp = new Timestamp(System.currentTimeMillis());
 			
 			EquipmentStatus eStatus = equipmentStatusDAO.findByStatus(id);
-			eStatus.setColor(color);
+			if (color2 != null && !color2.trim().isEmpty()) {
+			    eStatus.setColor2(color2);
+			} else {
+			    eStatus.setColor(color);
+			}
 			eStatus.setUserUpdate(user.getId());
 			eStatus.setTimeUpdate(timestamp);
 			equipmentStatusDAO.update(eStatus);
@@ -1101,6 +1176,15 @@ public class EquipmentAction extends ActionSupport {
 			return ERROR;
 		}
 	}
+	
+	// Getter/Setter
+	public String getDatePurchase() {
+		   return datePurchase;
+	}
+	public void setDatePurchase(String datePurchase) {
+		    this.datePurchase = datePurchase;
+	}
+	
 	//END JSON API
 	
 }

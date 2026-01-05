@@ -34,6 +34,128 @@
 			<result name="success" type="tiles">demoDashboard</result>
 			<result name="error">/index.jsp</result>
 		</action>
+				
+		<!-- Equipment List -->
+		<action name="equipment_list"
+			class="com.cubesofttech.action.EquipmentAction" method="table">
+			<result name="success" type="tiles">equipmentList</result>
+			<result name="error">/index.jsp</result>
+		</action>
+		<!-- Equipment List -->
+		
+		<!-- Equipment Setting -->
+		<action name="equipment_setting"
+			class="com.cubesofttech.action.EquipmentAction" method="statusList">
+			<result name="success" type="tiles">equipmentSetting</result>
+			<result name="error">/index.jsp</result>
+		</action>
+		<!-- Equipment Setting-->
+		
+		<!-- Equipment Setting Status Edit -->
+		<action name="equipment_status_edit"
+			class="com.cubesofttech.action.EquipmentAction" method="statusEdit">
+			<result name="success" type="tiles">equipmentStatusEdit</result>
+			<result name="error">/index.jsp</result>
+		</action>
+		<!-- Equipment Setting Status Edit -->
+		
+		<!-- Equipment Setting Type Edit -->
+		<action name="equipment_type_edit"
+			class="com.cubesofttech.action.EquipmentAction" method="typeEdit">
+			<result name="success" type="tiles">equipmentTypeEdit</result>
+			<result name="error">/index.jsp</result>
+		</action>
+		<!-- Equipment Setting Type Edit -->
+		
+		<!-- Equipment Setting Status Add -->
+		<action name="equipment_status_add"
+			class="com.cubesofttech.action.EquipmentAction" method="statusAdd">
+			<result name="success" type="tiles">equipmentStatusAdd</result>
+			<result name="error">/index.jsp</result>
+		</action>
+		<!-- Equipment Setting Status Add -->
+		
+		<!-- Equipment Setting Type Add -->
+		<action name="equipment_type_add"
+			class="com.cubesofttech.action.EquipmentAction" method="typeAdd">
+			<result name="success" type="tiles">equipmentTypeAdd</result>
+			<result name="error">/index.jsp</result>
+		</action>
+		<!-- Equipment Setting Type Add -->
+		
+		<!-- Equipment Return -->
+		<action name="equipment_return"
+			class="com.cubesofttech.action.EquipmentAction" method="returnEquipment">
+		</action>
+		<!-- Equipment Return -->
+	
+		<!-- ========================== Equipment CRUD ============================== -->
+		<action name="equipment_add" 
+			class="com.cubesofttech.action.EquipmentAction" method="eAdd">
+		    <result name="success" type="tiles">equipmentAdd</result>
+		    <result name="error">/index.jsp</result>
+		</action>
+		
+		<action name="equipment_save" 
+			class="com.cubesofttech.action.EquipmentAction" method="newE">
+		    <result name="success" type="redirect">equipment_list</result>
+		    <result name="error">/index.jsp</result>
+		</action>
+		
+		<action name="equipment_edit" 
+			class="com.cubesofttech.action.EquipmentAction" method="eEdit">
+		    <result name="success" type="tiles">equipmentEdit</result>
+		    <result name="error">/index.jsp</result>
+		</action>
+		
+		<action name="equipment_update" 
+			class="com.cubesofttech.action.EquipmentAction" method="updateE">
+		    <result name="success" type="redirect">equipment_list</result>
+		    <result name="error">/index.jsp</result>
+		</action>
+		
+		<action name="equipment_delete" 
+			class="com.cubesofttech.action.EquipmentAction" method="deleteE">
+		    <result name="success" type="redirect">equipment_list</result>
+		    <result name="error">/index.jsp</result>
+		</action>
+		
+		<action name="equipment_status_update" 
+			class="com.cubesofttech.action.EquipmentAction" method="statusUpdate">
+		    <result name="success" type="redirect">equipment_setting</result>
+		    <result name="error">/index.jsp</result>
+		</action>
+		
+		<action name="equipment_type_update" 
+			class="com.cubesofttech.action.EquipmentAction" method="typeUpdate">
+		    <result name="success" type="redirect">equipment_setting?tab=type</result>
+		    <result name="error">/index.jsp</result>
+		</action>
+		
+		<action name="equipment_status_save"
+			class="com.cubesofttech.action.EquipmentAction" method="statusSave">
+			<result name="success" type="redirect">equipment_setting</result>
+			<result name="error">/index.jsp</result>
+		</action>
+		
+		<action name="equipment_type_save"
+			class="com.cubesofttech.action.EquipmentAction" method="typeSave">
+			<result name="success" type="redirect">equipment_setting?tab=type</result>
+			<result name="error">/index.jsp</result>
+		</action>
+		
+		<action name="equipment_status_delete"
+			class="com.cubesofttech.action.EquipmentAction" method="statusDelete">
+			<result name="success" type="redirect">equipment_setting</result>
+			<result name="error">/index.jsp</result>
+		</action>
+		
+		<action name="equipment_type_delete"
+			class="com.cubesofttech.action.EquipmentAction" method="typeDelete">
+			<result name="success" type="redirect">equipment_setting?tab=type</result>
+			<result name="error">/index.jsp</result>
+		</action>
+		<!-- ========================== Equipment CRUD ============================== -->
 
 		<action name="forget_password"
 			class="com.cubesofttech.action.LoginAction" method="forgetPassword">
