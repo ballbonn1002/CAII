@@ -2593,5 +2593,25 @@ public class WorkHoursDAOImpl implements WorkHoursDAO {
 
 		return (Timestamp) query.uniqueResult();
 	}
+	
+	@Override
+	public List<Map<String, Object>> getCheckListFromLastAndCurrentYear(String userId, int lastyear, int currentYear)
+			throws Exception {
+		Session session = this.sessionFactory.getCurrentSession();
+		List<Map<String, Object>> checkList = null;
+		try {
+			String sql = "SELECT * FROM work_hours  WHERE user_create= :userId AND YEAR(work_hours_time_work) BETWEEN :lastyear AND :currentYear "
+					+ "ORDER BY work_hours_time_work ASC;";
+			SQLQuery query = session.createSQLQuery(sql);
+			query.setParameter("userId", userId);
+			query.setParameter("lastyear", lastyear);
+			query.setParameter("currentYear", currentYear);
+			query.setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
+			checkList = query.list();
 
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return checkList;
+	}
 }
