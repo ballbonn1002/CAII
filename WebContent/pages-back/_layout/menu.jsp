@@ -90,19 +90,6 @@
 					<!--end:Menu item-->
 					<!--begin:Menu item-->
 					<div class="menu-item">
-						<a class="menu-link" href="checkAllCalendar" data-route="checkAllCalendar"> <span class="menu-icon"> 
-							<i class="ki-duotone ki-calendar fs-1"> 
-								<span class="path1"></span>
-								<span class="path2"></span></i>
-						</span> <span class="menu-title">Calendar & Check List</span>
-						<i class="ki-duotone ki-check-circle fs-3 text-success">
-							<span class="path1"></span><span class="path2"></span>
-						</i>
-						</a>
-					</div>
-					<!--end:Menu item-->
-					<!--begin:Menu item-->
-					<div class="menu-item">
 						<a class="menu-link" href="announcementList" data-route="announcementList"> <span class="menu-icon"> 
 							<i class="ki-duotone ki-calendar fs-1"> 
 								<span class="path1"></span>
@@ -132,6 +119,19 @@
 									<span class="path2"></span>
 							</i>
 						</span> <span class="menu-title">Check In / Check Out</span>
+						<i class="ki-duotone ki-check-circle fs-3 text-success">
+							<span class="path1"></span><span class="path2"></span>
+						</i>
+						</a>
+					</div>
+					<!--end:Menu item-->
+					<!--begin:Menu item-->
+					<div class="menu-item">
+						<a class="menu-link" href="checkAllCalendar" data-route="checkAllCalendar"> <span class="menu-icon"> 
+							<i class="ki-duotone ki-calendar fs-1"> 
+								<span class="path1"></span>
+								<span class="path2"></span></i>
+						</span> <span class="menu-title">Calendar & Check List</span>
 						<i class="ki-duotone ki-check-circle fs-3 text-success">
 							<span class="path1"></span><span class="path2"></span>
 						</i>
@@ -175,6 +175,9 @@
 									<span class="path2"></span> <span class="path3"></span>
 							</i>
 						</span> <span class="menu-title">My Job Site</span>
+						<i class="ki-duotone ki-check-circle fs-3 text-success">
+							<span class="path1"></span><span class="path2"></span>
+						</i>
 						</a>
 					</div>
 					<!--end:Menu item-->
@@ -223,6 +226,9 @@
 									class="path3"></span>
 							</i>
 						</span> <span class="menu-title">Employee Profile</span>
+						<i class="ki-duotone ki-check-circle fs-3 text-success">
+							<span class="path1"></span><span class="path2"></span>
+						</i>
 						</a>
 						<!--end:Menu link-->
 					</div>
@@ -371,6 +377,9 @@
 									class="path1"></span> <span class="path2"></span>
 							</i>
 						</span> <span class="menu-title">Job Site</span>
+						<i class="ki-duotone ki-check-circle fs-3 text-success">
+							<span class="path1"></span><span class="path2"></span>
+						</i>
 						</a>
 						<!--end:Menu link-->
 					</div>
@@ -481,18 +490,15 @@
 					<!--end:Menu item-->
 					<!--begin:Menu item-->
 					<div class="menu-item">
-						<!--begin:Menu link-->
-						<a class="menu-link" href="#" data-route="#">
+						<a class="menu-link" href="signout" data-route="#">
 							<span class="menu-icon"> 
 							<i class="ki-duotone ki-exit-left fs-1"> 
 								<span class="path1"></span><span class="path2"></span>
 							</i>
 						</span> <span class="menu-title">Log Out</span>
 						</a>
-						<!--end:Menu link-->
 					</div>
 					<!--end:Menu item-->
-
 					<!--begin:Menu item-->
 					<div class="menu-item pt-5">
 						<!--begin:Menu content-->
