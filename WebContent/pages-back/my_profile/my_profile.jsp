@@ -88,10 +88,6 @@
 									
 										<c:choose>
 											<c:when test="${not empty userImgPath}">
-											<%-- <img id="avatarPreview"  src="/upload/user/user_${user.fileId}${user.type}"
-											     alt="${not empty user.nameEN ? user.nameEN : user.name}"
-											     class="border border-2 border-white rounded-1 w-150px h-150px"
-											     style="object-fit: cover;"> --%>
 											
 												<img id="avatarPreview" src="${userImgPath}"
 													alt="${not empty user.nameEN ? user.nameEN : user.name}"
@@ -525,7 +521,7 @@
 											</i> <input type="text" id="user_birthDate" name="user_birthDate"
 												class="form-control ps-10 date-picker text-gray-700"
 												placeholder="1 Jan 2025" autocomplete="off"
-												value="<fmt:formatDate value='${user.birthDate}' pattern='dd MMM yyyy'/>"
+												value="${user.birthDate}"   
 												required />
 										</div>
 
@@ -539,7 +535,7 @@
 										<input type="text"
 											class="form-control text-gray-700"
 											placeholder="" name="user_citizenId" id="user_citizenId"
-											value="${user.citizenId}" maxlength="13" inputmode="numeric"
+											value="${user.citizenId}" maxlength="13" inputmode="numeric" required
 											oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0,13)" />
 
 									</div>
@@ -556,18 +552,17 @@
 										<p class="required fw-medium text-gray-800 mb-2">E-Mail</p>
 										<input type="email"
 											class="form-control text-gray-700"
-											placeholder="" name="user_email" id="user_email" value="${user.email}" />
+											placeholder="" name="user_email" id="user_email" value="${user.email}" required/>
 
 									</div>
 									<div class="col-12 col-md-6 col-lg-6 mt-9 mt-md-4">
 										<p class="required fw-medium text-gray-800 mb-2">Phone
 											Number</p>
 										<input type="text"
-											class="form-control text-gray-700"
-											placeholder="" name="user_phonenum" id="user_phonenum"
-											value="${user.phonenum}" maxlength="10" inputmode="numeric"
-											oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0,10)" />
-
+										    class="form-control text-gray-700" name="user_phonenum"   id="user_phonenum"
+										    value="${user.phonenum}"  required
+										    pattern="[0-9]{10}" maxlength="10"
+										    inputmode="numeric" oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0,10)" />
 									</div>
 								</div>
 								<div class="row mb-0 mb-lg-5">
@@ -596,8 +591,9 @@
 										<input type="text"
 											class="form-control text-gray-700"
 											placeholder="" name="user_emergPhone" value="${user.emergPhone}"
-											maxlength="10" inputmode="numeric" id="user_emergPhone"
-											oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0,10)" />
+											 pattern="^$|^[0-9]{10}$"
+										    maxlength="10" inputmode="numeric"
+										    oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0,10)" />
 
 									</div>
 
@@ -742,13 +738,10 @@
 												  </i>
 										  	</span>
 										</div>
-
-
-										<!-- error message -->
+										
 										<span id="confirmNewPwError"
 											class="text-danger fs-7 fw-medium d-none mt-2 mb-0">
 											The password is incorrect. Please enter it again.</span>
-
 									</div>
 
 								</div>
@@ -920,8 +913,11 @@
 <script>
 	document.addEventListener("DOMContentLoaded", function() {
 		flatpickr(".date-picker", {
-			dateFormat : "d M Y",
-			allowInput : true
+			dateFormat: "Y-m-d",
+			altInput: true,
+			altFormat: "d M Y",
+			locale: "en",
+			allowInput : false,
 		});
 	});
 	
@@ -1000,7 +996,6 @@
 		        }
 		    });
 		  return false;
-
 	}
 </script>
 	
@@ -1028,9 +1023,7 @@
 			        eye.classList.add("d-none");
 			        eyeSlash.classList.remove("d-none");
 			        this.classList.remove("active-eye");
-			      }
-			      
-			     
+			      }  
 			})
 			
 		})
