@@ -68,7 +68,6 @@
 						<div class="d-flex flex-column flex-wrap gap-2 gap-lg-3">
 							<h1 class="page-heading d-flex text-gray-900 fw-bold fs-3 my-0">
 								My Profile</h1>
-
 							<ul
 								class="breadcrumb breadcrumb-separatorless fw-semibold fs-7 my-0">
 								<li class="breadcrumb-item text-muted"><a
@@ -83,12 +82,9 @@
 					<div class="card mb-10">
 						<div class="card-body pt-6 pb-0">
 							<div class="d-flex flex-column flex-md-row align-items-start">
-
 								<div class="mb-4 mb-md-0 me-md-9 mb-md-0 w-150px h-150px mx-auto">
-									
 										<c:choose>
 											<c:when test="${not empty userImgPath}">
-											
 												<img id="avatarPreview" src="${userImgPath}"
 													alt="${not empty user.nameEN ? user.nameEN : user.name}"
 													class="border border-2 border-white rounded-1 w-150px h-150px" style="object-fit: cover;"> 
@@ -120,7 +116,6 @@
 										<div class="d-flex flex-column">
 											<div class="d-flex align-items-center gap-4">
 												<p class="fs-2 fw-bold text-gray-900  mb-0">${user.id}</p>
-
 												<c:forEach var="jobSite" items="${jobSite}">
 													<span
 														class="badge badge-lg bg-primary text-white fw-semibold fs-8">${jobSite.name_site}</span>
@@ -130,7 +125,6 @@
 												<span class="fs-4 fw-normal text-gray-900">${user.employeeId}
 													${user.nameEN} - ${user.name}</span>
 											</div>
-
 										</div>
 										<div class="d-flex ms-auto">
 											<c:if test="${user.enable eq '1'}">
@@ -138,7 +132,6 @@
 													<span
 														class="badge badge-lg bg-light-success text-success fw-semibold fs-8">Active</span>
 												</p>
-
 											</c:if>
 											<c:if test="${user.enable ne '1'}">
 												<p>
@@ -355,8 +348,7 @@
 						<!--end::Card header-->
 
 						<form id="formUpdateOverview" action="update_my_profile"
-							method="POST" class="form" autocomplete="off" enctype="multipart/form-data"
-							onsubmit="return submitForm()">
+							method="POST" class="form" autocomplete="off" enctype="multipart/form-data">
 							<div class="card-body px-10 py-9">
 
 								<div class="row mb-8">
@@ -496,14 +488,14 @@
 										<p class="required fw-medium text-gray-800 mb-2">Gender</p>
 
 										<div class="form-check form-check-inline mt-1">
-											<input type="radio" name="user_gender" id="user_gender" class="form-check-input"
+											<input type="radio" name="user_gender" id="user_genderM" class="form-check-input"
 												value="M" ${user.gender == 'M' ? 'checked' : ''} required />
 											<label class="form-check-label fs-6 text-gray-800 fw-normal"
 												for="genderMale">Male</label>
 										</div>
 
 										<div class="form-check form-check-inline mt-1">
-											<input type="radio" name="user_gender" id="user_gender" class="form-check-input"
+											<input type="radio" name="user_gender" id="user_genderF" class="form-check-input"
 												value="F" ${user.gender == 'F' ? 'checked' : ''} /> <label
 												class="form-check-label fs-6 text-gray-800 fw-normal"
 												for="genderFemale">Female</label>
@@ -590,8 +582,8 @@
 											Phone</p>
 										<input type="text"
 											class="form-control text-gray-700"
-											placeholder="" name="user_emergPhone" value="${user.emergPhone}"
-											 pattern="^$|^[0-9]{10}$"
+											placeholder="" name="user_emergPhone" id="user_emergPhone" value="${user.emergPhone}"
+											pattern="^$|^[0-9]{10}$"
 										    maxlength="10" inputmode="numeric"
 										    oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0,10)" />
 
@@ -604,8 +596,8 @@
 									onclick="confirmLeaveForm('my_profile')"
 									class="btn btn-lg btn-light fw-medium text-light-inverse me-2">Cancel
 								</button>
-								<button type="submit" id="saveFormBtn"
-									class="btn btn-lg btn-success text-white fw-medium">Save</button>
+								<button type="button" id="saveFormBtn" class="btn btn-lg btn-success text-white fw-medium"
+								    onclick="submitForm()">Save</button>
 							</div>
 						</form>
 
@@ -920,7 +912,9 @@
 			allowInput : false,
 		});
 	});
+	</script>
 	
+	<script>
 	function submitForm(){
 		  var errorFields = [];
 		  
@@ -932,7 +926,6 @@
 			    	element.value = element.value.trim();
 			    }
 			});
-
 		  
 		  const titleNameTH  = document.getElementById("user_titleNameTH").value
 		  const name = document.getElementById("user_name").value
@@ -940,7 +933,6 @@
 		  const titleNameEN  = document.getElementById("user_titleNameEN").value
 		  const nameEN = document.getElementById("user_fullNameEN").value
 		  const nickNameEN = document.getElementById("user_nickNameEN").value
-		  const gender = document.getElementById("user_gender").value
 		  const birthDate = document.getElementById("user_birthDate").value
 		  const citizenId = document.getElementById("user_citizenId").value
 		  const passportId = document.getElementById("user_passportId").value
@@ -949,6 +941,14 @@
 		  const address = document.getElementById("user_address").value
 		  const emergContact = document.getElementById("user_emergContact").value
 		  const emergPhone = document.getElementById("user_emergPhone").value
+		  var gender = "";
+		  const genderValue = document.getElementsByName("user_gender");
+		  for (const g of genderValue) {
+		      if (g.checked) {
+		          gender = g.value;
+		          break;
+		      }
+		  }
 
 		  if(!titleNameTH) errorFields.push("คำนำหน้า")
 		  if(!name) errorFields.push("ชื่อ สกุล")
@@ -958,11 +958,22 @@
 		  if(!nickNameEN) errorFields.push("Nickname EN")
 		  if(!gender) errorFields.push("Gender")
 		  if(!birthDate) errorFields.push("Birth Date")
-		  if(!citizenId) errorFields.push("Citizen ID")
+		  if(!citizenId){
+			  errorFields.push("Citizen ID")
+		  }else if(citizenId.length !== 13){
+			  errorFields.push("Citizen ID (must be 13 digits)");
+		  }
 		  if(!email) errorFields.push("E-Mail")
-		  if(!phonenum) errorFields.push("Phone Number")
-		  
-		  
+		  if(!phonenum){
+			  errorFields.push("Phone Number")
+		  }else if(phonenum.length !== 10){
+			  errorFields.push("Phone Number (must be 10 digits)");
+		  }
+		  if(emergPhone && emergPhone.length !== 10) {
+			    errorFields.push("Emergency Phone (must be 10 digits)");
+			}
+		  //console.log({titleNameTH, name, nickName, titleNameEN, nameEN, nickNameEN, gender, birthDate, citizenId, email, phonenum});
+				  
 		  if (errorFields.length > 0) {
 			  Swal.fire({
 		    		title: "Please complete the form!",

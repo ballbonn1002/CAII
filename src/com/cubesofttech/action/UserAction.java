@@ -1829,7 +1829,7 @@ public class UserAction extends ActionSupport {
 	            u.setTimeUpdate(DateUtil.getCurrentTime());
 
 	            if (this.user_birthDate != null && !this.user_birthDate.isEmpty()) {
-	                SimpleDateFormat sdf = new SimpleDateFormat("dd MMM yyyy", Locale.ENGLISH);
+	                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
 	                java.util.Date bDate = sdf.parse(this.user_birthDate);
 	                u.setBirthDate(new java.sql.Date(bDate.getTime()));
 	            }
