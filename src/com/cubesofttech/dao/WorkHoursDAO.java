@@ -215,5 +215,8 @@ public interface WorkHoursDAO {
 	 
 	 Timestamp findMinTimeByType(String userId, LocalDate workDate, String type);
 	 Timestamp findMaxTimeByType(String userId, LocalDate workDate, String type);
-	 
+
+	 // get all column by using userid, lastyear, currentyears
+	 public List<Map<String, Object>> getCheckListFromLastAndCurrentYear(String userId, int lastyear, int currentYear) throws Exception;
+
 }

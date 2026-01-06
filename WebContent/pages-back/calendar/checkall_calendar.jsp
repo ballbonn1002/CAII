@@ -23,10 +23,6 @@
 <script src="assets/plugins/custom/fullcalendar/fullcalendar.bundle.js"></script>
 
 <style>
-.bg-pink {
-	background-color: var(--bs-pink) !important;
-}
-
 .bg-grey {
 	background-color: var(--bs-grey);
 }
@@ -57,8 +53,6 @@
 	max-height: 75px;
 	overflow: hidden;
 }
-
-
 </style>
 
 <div class="app-main flex-column flex-row-fluid">
@@ -697,42 +691,39 @@ var AppCalendar = function() {
 						var workEvents = dayEvents.filter(function(ev) {
 							return ev.extendedProps && ev.extendedProps.eventType === 'work';
 						});
-						
+        	            
+						var checkin = '';
+						var checkout = '';
+						var workinghour = '';
+                        var totalWorkingMinutes = 0;
 						if (workEvents.length > 0) {
                         workEvents.sort(function(a, b) { 
                             return moment(a.start).diff(moment(b.start)); 
                         });
 
-                        var totalWorkingMinutes = 0;
-
                         workEvents.forEach(function(workEvent, index) {
-                            var separator = index > 0 ? '<div class="separator separator-dashed my-2"></div>' : '';
-
+                            //var separator = index > 0 ? '<div class="separator separator-dashed my-2"></div>' : '';
                             // --- Check-in ---
                             const typeIn = Number(workEvent.extendedProps.workTypeIn);
-                            var iconIn = (typeIn === 1) ? '<i class="ki-duotone ki-home-2 fs-2 text-gray-600 me-1 align-middle"><span class="path1"></span><span class="path2"></span></i> ' 
-                                       : (typeIn === 2) ? '<i class="ki-duotone ki-map fs-2 text-primary me-1 align-middle"><span class="path1"></span><span class="path2"></span><span class="path3"></span></i> ' 
+                            var iconIn = (typeIn === 1) ? '<i class="ki-duotone ki-map fs-2 text-primary me-1 align-middle"><span class="path1"></span><span class="path2"></span><span class="path3"></span></i> ' 
+                                       : (typeIn === 2) ? '<i class="ki-duotone ki-home-2 fs-2 text-teal me-1 align-middle"><span class="path1"></span><span class="path2"></span></i> ' 
                                        : '';
                             
                             var timeIn = workEvent.extendedProps.checkin ? iconIn + workEvent.extendedProps.checkin.substring(11, 16) : '';
                             var desIn = workEvent.extendedProps.descriptionIn ? 
                                 '<div class="text-muted fs-7 ms-1">' + workEvent.extendedProps.descriptionIn + '</div>' : '';
-
-                            checkin += separator + '<div>' + timeIn + desIn + '</div>';
-
+                            checkin += '<div>' + timeIn + desIn + '</div>';
 
                             // --- Check-out ---
                             const typeOut = Number(workEvent.extendedProps.workTypeOut);
-                            var iconOut = (typeOut === 1) ? '<i class="ki-duotone ki-home-2 fs-2 text-gray-600 me-1 align-middle"><span class="path1"></span><span class="path2"></span></i> ' 
-                                        : (typeOut === 2) ? '<i class="ki-duotone ki-map fs-2 text-primary me-1 align-middle"><span class="path1"></span><span class="path2"></span><span class="path3"></span></i> ' 
+                            var iconOut = (typeOut === 1) ? '<i class="ki-duotone ki-map fs-2 text-primary me-1 align-middle"><span class="path1"></span><span class="path2"></span><span class="path3"></span></i> ' 
+                                        : (typeOut === 2) ? '<i class="ki-duotone ki-home-2 fs-2 text-teal me-1 align-middle"><span class="path1"></span><span class="path2"></span></i> ' 
                                         : '';
                             
                             var timeOut = workEvent.extendedProps.checkout ? iconOut + workEvent.extendedProps.checkout.substring(0, 5) : '';
                             var desOut = workEvent.extendedProps.descriptionOut ? 
                                 '<div class="text-muted fs-7 ms-1">' + workEvent.extendedProps.descriptionOut + '</div>' : '';
-
-                            checkout += separator + '<div>' + timeOut + desOut + '</div>';
-
+                            checkout += '<div>' + timeOut + desOut + '</div>';
 
                             // --- Working Hours ---
                             var currentWh = parseInt(workEvent.extendedProps.workinghour) || 0;
@@ -743,6 +734,8 @@ var AppCalendar = function() {
 
                         if (totalWorkingMinutes > 0) {
                             var hrs = Math.floor(totalWorkingMinutes / 60);
+                            console.log(hrs);
+                            console.log(mins);
                             var mins = totalWorkingMinutes % 60;
                             workinghour = ('0' + hrs).slice(-2) + ':' + ('0' + mins).slice(-2);
                         } else {
@@ -949,14 +942,12 @@ var AppCalendar = function() {
     function getLeaveStatusHTML(leaveEvent) {
         var leaveTitle = leaveEvent.title;
         var statusLeave = '';
-        var bulletColor = leaveTitle === 'ลาป่วย' ? 'bg-info' : 'bg-primary';
-        var textColor = leaveTitle === 'ลาป่วย' ? 'text-info' : 'text-primary';
+        var badgeColor = leaveTitle === 'ลาป่วย' ? 'badge-info' : 'badge-primary';
+        //var textColor = leaveTitle === 'ลาป่วย' ? 'text-info' : 'text-primary';
         console.log('leaveEvent:', leaveEvent);
         
-        statusLeave = '<span class="fs-6 fw-bold ' + textColor + '" ' +
-        	'style="cursor: pointer;" ' + 'onclick="leaveStatus(' + leaveEvent.id + ')">' +
-            '<span class="bullet bullet-dot ' + bulletColor + ' me-2 h-10px w-10px"></span>' +
-            leaveTitle + '</span>';
+        statusLeave = '<span class="badge ' + badgeColor + ' fs-6 fw-bold me-2"' +
+        	'style="cursor: pointer;" ' + 'onclick="leaveStatus(' + leaveEvent.id + ')">' + leaveTitle + '</span>';
 
 		if (leaveEvent.extendedProps && leaveEvent.extendedProps.status === '0') {
         	statusLeave += ' <i class="ki-duotone ki-watch fs-2 text-warning align-middle">' +
@@ -976,7 +967,6 @@ var AppCalendar = function() {
                 		"<i class='path2'></i>" +
             			"</i> " + "</a>";
         }
-        
         return statusLeave;
     }
 	
@@ -1027,7 +1017,7 @@ var AppCalendar = function() {
                     }
                	},
 
-                eventDidMount: function(info) {
+               /*  eventDidMount: function(info) {
                     var event = info.event;
                     if (event.extendedProps && event.extendedProps.status === '0') {
                         var titleEl = info.el.querySelector('.fc-event-title');
@@ -1037,6 +1027,26 @@ var AppCalendar = function() {
                     }
                     
                     // Add Bootstrap tooltip
+                    info.el.setAttribute('data-bs-toggle', 'tooltip');
+                    info.el.setAttribute('data-bs-placement', 'top');
+                    info.el.setAttribute('data-bs-html', 'true');
+                    info.el.setAttribute('title', '<strong>' + event.title + '</strong><br/>' + (event.extendedProps.description || ''));
+                }, */
+                eventDidMount: function(info) {
+                	var event = info.event;
+                    var element = info.el;
+                    var titleEl = element.querySelector('.fc-event-title');
+                    if (titleEl && event.extendedProps.eventType === 'work') {
+                    	var iconHtml = '';
+                    	var workType = event.extendedProps.workTypeIn;
+                    	if (workType == '1') {	//on-site
+                    		iconHtml = '<i class="ki-duotone ki-map"><span class="path1"></span><span class="path2"></span><span class="path3"></span></i>';
+                    	} else if (workType == '2') {	//wfh
+                    		iconHtml = '<i class="ki-duotone ki-home-2"><span class="path1"></span><span class="path2"></span></i>';
+                    	}
+                        titleEl.innerHTML = iconHtml + ' ' + titleEl.innerHTML;
+                    }
+                 	// Add Bootstrap tooltip
                     info.el.setAttribute('data-bs-toggle', 'tooltip');
                     info.el.setAttribute('data-bs-placement', 'top');
                     info.el.setAttribute('data-bs-html', 'true');
