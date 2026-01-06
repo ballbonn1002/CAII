@@ -4220,7 +4220,4 @@
 
 </body>
 <!--end::Body-->
-<script>
-	
-</script>
 </html>

@@ -4,15 +4,6 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
 
 <style>
-.bg-yellow {
-	background-color: var(--bs-yellow) !important;
-}
-.bg-pink {
-	background-color: var(--bs-pink) !important;
-}
-.bg-orange {
-	background-color: var(--bs-orange) !important;
-}
 .btn-check:checked + label span {
   color: #fff !important;
 }
@@ -30,7 +21,7 @@
 		<div id="kt_app_toolbar_container" class="app-container container-fluid d-flex flex-stack">
 			<!--begin::Page title-->
 			<div class="page-title d-flex flex-column justify-content-center flex-wrap me-3">
-				<h1 class="page-heading d-flex text-gray-900 fw-bold fs-3 flex-column justify-content-center my-0">Check
+				<h1 class="page-heading d-flex text-gray-900 fw-bold flex-column justify-content-center my-0">Check
 						In / Check Out</h1>
 				<ul class="breadcrumb breadcrumb-separatorless fw-semibold fs-7 my-0 pt-1">
 					<li class="breadcrumb-item text-muted"><a href="demo_dashboard"
@@ -406,7 +397,7 @@ $(document).ready(function() {
 	const hour = now.getHours();
 	const minute = now.getMinutes();
 	const currentTime = hour + (minute / 60);
-	
+// Set check type button by time
 	$("input[name='mdCheckType']").prop("checked", false);
 	if (currentTime >= 0 && currentTime <= 12) {
 		$("#checkType1").prop("checked", true);
@@ -424,7 +415,7 @@ $(document).ready(function() {
 	setInterval(updateClock, 1000);
 	
 });
-
+// Real-Time Clock
 function syncServerTime() {
 	fetch("https://timeapi.io/api/Time/current/zone?timeZone=Asia/Bangkok")
 	.then(resp => resp.json())
@@ -436,7 +427,7 @@ function syncServerTime() {
     })
     .catch(err => console.error("Sync error:", err));
 }
-
+//Real-Time Clock Helper
 function updateClock() {
 	let currentServerTime = new Date(new Date().getTime() + serverTimeOffset);
 	let hours = currentServerTime.getHours().toString().padStart(2, '0');
@@ -619,7 +610,6 @@ function saveCheckInOut(userId, workType, checkType, mode, selectDate, selectTim
         })
         .html('<div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;"></div>'
         	+'<span class="text-white fs-4 fw-bold mt-3">Processing...</span>');
-	
 	$("body").append(loadingEl);
 	
 	$.ajax({
@@ -639,7 +629,6 @@ function saveCheckInOut(userId, workType, checkType, mode, selectDate, selectTim
 	      		$("#page-loader").remove();
 	      		toastr.error(res.message || "Failed to record your attendance. Please try again.");
 	      	}
-	    	
 	      $("#retroModal").modal("hide");
 	    },
 	    error: function (xhr, status, error) {
@@ -736,4 +725,35 @@ function handleLocationError(browserHasGeolocation, infoWindow, pos) {
 </script>
 <script async defer
 	src="https://maps.googleapis.com/maps/api/js?key=${GOOGLE_API_KEY}&callback=initMap">
+</script>
+<script>
+var inactivityTime = function () {
+    var time;
+    const TIMEOUT_PERIOD = 1800000;	// 30 * minutes * 1000
+
+    function resetTimer() {
+        clearTimeout(time);
+        time = setTimeout(logout, TIMEOUT_PERIOD);
+    }
+
+    function logout() {
+        window.location.href = 'signout.action';
+    }
+
+    // --- Events for Desktop ---
+    document.onmousemove = resetTimer;
+    document.onkeypress = resetTimer;
+    document.onclick = resetTimer;
+    // --- Events for Mobile ---
+    document.ontouchstart = resetTimer; 
+    document.ontouchmove = resetTimer;
+    // --- Event for Scroll ---
+    window.onscroll = resetTimer; 
+
+    resetTimer();
+};
+
+window.onload = function() {
+    inactivityTime();
+};
 </script>
