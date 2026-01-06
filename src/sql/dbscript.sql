@@ -35,3 +35,5 @@ UPDATE `equipment_type` SET `type_text` = 'ki-solid ki-phone' WHERE `Type` = 'Mo
 UPDATE `equipment_type` SET `type_text` = 'ki-solid ki-dots-square' WHERE `Type` = 'o';
 UPDATE `equipment_type` SET `type_text` = 'ki-solid ki-wifi-square' WHERE `Type` = 'p';
 UPDATE `equipment_type` SET `type_text` = 'ki-solid ki-verify' WHERE `Type` = 'sl';
+
+-- PROD 2026 JAN 06
