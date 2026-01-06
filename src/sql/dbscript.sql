@@ -26,3 +26,12 @@ UPDATE `equipment_status` SET `color_2` = 'dark' WHERE `status` = 'L';
 UPDATE `equipment_status` SET `color_2` = 'info' WHERE `status` = 'S';
 UPDATE `equipment_status` SET `color_2` = 'warning' WHERE `status` = 'W';
 UPDATE `equipment_status` SET `color_2` = 'secondary' WHERE `status` = 'Z';
+
+-- 6/01/2026 fluk(Intern): Populate 'type_text' column in 'equipment_type' table --
+UPDATE `equipment_type` SET `type_text` = 'ki-solid ki-laptop' WHERE `Type` = 'c';
+UPDATE `equipment_type` SET `type_text` = 'ki-solid ki-keyboard' WHERE `Type` = 'in';
+UPDATE `equipment_type` SET `type_text` = 'ki-solid ki-verify' WHERE `Type` = 'L';
+UPDATE `equipment_type` SET `type_text` = 'ki-solid ki-phone' WHERE `Type` = 'Mob';
+UPDATE `equipment_type` SET `type_text` = 'ki-solid ki-dots-square' WHERE `Type` = 'o';
+UPDATE `equipment_type` SET `type_text` = 'ki-solid ki-wifi-square' WHERE `Type` = 'p';
+UPDATE `equipment_type` SET `type_text` = 'ki-solid ki-verify' WHERE `Type` = 'sl';
