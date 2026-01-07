@@ -1,18 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 
-<!-- <style>
-    .badge-cyan {
-        color: var(--bs-cyan-inverse);
-        background-color: var(--bs-cyan)
-    }
-    .badge-cyan.badge-outline {
-        border: 1px solid var(--bs-cyan);
-        background-color: transparent;
-        color: var(--bs-cyan)
-    }
-</style> -->
-
 <div class="app-main flex-column flex-row-fluid" id="kt_app_main">
     <div class="d-flex flex-column flex-column-fluid">
    
@@ -51,7 +39,8 @@
                           
                             <div class="mb-10">
                                 <label class="form-label required fw-bold">Type (ID)</label>
-                                <input type="text" class="form-control" name="status" id="field_status" placeholder="e.g. A, B, C" required />
+                                <input type="text" class="form-control" name="status" id="field_status" placeholder="e.g. A, B, C" maxlength="3" required />
+                                <div id="status_id_error" class="text-danger mt-2" style="display:none;">This Type (ID) already exists in the system. Please use a different name.</div>
                             </div>
 
                             <div class="mb-10">
@@ -72,7 +61,7 @@
 
                         <div class="card-footer d-flex justify-content-end gap-3 p-8">
                             <a href="equipment_setting" class="btn btn-light px-8">Cancel</a> 
-                            <button type="submit" class="btn btn-success px-8">Save</button>
+                            <button type="submit" id="submit_btn" class="btn btn-success px-8">Save</button>
                         </div>
                     
                     </div>
@@ -113,7 +102,7 @@
             minimumResultsForSearch: Infinity
         });
 
-        // Event Listeners ---
+        // Event Listeners
         $('#field_color').on('change', function() {
             var selectedColor = $(this).val();
             var text = $('#field_description').val() || 'Preview';
@@ -140,5 +129,53 @@
             }
             badge.classList.add(color);
         }
+    
+     	// Check Duplicate
+        $(document).ready(function() {
+            var statusInput = document.getElementById('field_status');
+            var submitBtn = document.getElementById('submit_btn');
+            var errorMsg = document.getElementById('status_id_error');
+
+            if(statusInput) {
+                statusInput.addEventListener('input', function() {
+                    this.classList.remove('is-invalid');
+                    this.classList.remove('border-success');
+                    errorMsg.style.display = 'none';
+                    submitBtn.disabled = false;
+                });
+
+                statusInput.addEventListener('blur', function() {
+                    var id = this.value.trim();
+                    
+                    if(id === "") return; 
+
+                    $.ajax({
+                        url: 'checkStatusDuplicate',
+                        type: 'POST',
+                        data: { statusId: id },
+                        success: function(response) {
+                            if (response.status === 'duplicate') {
+                                // กรณีซ้ำ
+                                statusInput.classList.remove('border-success');
+                                statusInput.classList.add('is-invalid');
+                                errorMsg.style.display = 'block';
+                                submitBtn.disabled = true;
+                                
+                            } else {
+                                // กรณีใช้ได้
+                                statusInput.classList.remove('is-invalid');
+                                statusInput.classList.add('border-success');
+                                errorMsg.style.display = 'none';
+                                submitBtn.disabled = false;
+                            }
+                        },
+                        error: function(err) {
+                            console.error("Error checking status duplicate:", err);
+                        }
+                    });
+                });
+            }
+        });
+    
     });
 </script>

@@ -298,6 +298,7 @@ String targetURL = Constant.getWebContext2() + "/authorization?token=" + token;
 					</div>
 					<!--end:Menu item-->
 					<!--begin:Menu item-->
+                    <perm:permission object="equipmentlist.view">
 					<div class="menu-item">
 						<!--begin:Menu link-->
 						<a class="menu-link" href="equipment_list"
@@ -309,6 +310,7 @@ String targetURL = Constant.getWebContext2() + "/authorization?token=" + token;
 						</a>
 						<!--end:Menu link-->
 					</div>
+                    </perm:permission>
 					<!--end:Menu item-->
 					<!--begin:Menu item-->
 					<perm:permission object="borrow.view">

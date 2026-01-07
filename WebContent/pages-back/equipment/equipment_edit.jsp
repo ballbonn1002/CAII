@@ -2,21 +2,6 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 
-<!-- <style>
-    .badge-cyan {
-        color: var(--bs-cyan-inverse);
-        background-color: var(--bs-cyan);
-    }
-    .badge-cyan.badge-outline {
-        border: 1px solid var(--bs-cyan);
-        background-color: transparent;
-        color: var(--bs-cyan);
-    }
-    .text-cyan {
-        color: var(--bs-cyan);
-    }
-</style> -->
-
 <div class="app-main flex-column flex-row-fluid" id="kt_app_main">
     <div class="d-flex flex-column flex-column-fluid">
         
@@ -113,7 +98,12 @@
                                         </div>
                                         <div class="col-md-6">
                                             <label class="required form-label fw-medium text-gray-800">Item No.</label>
-                                            <input type="text" name="itemNo" class="form-control" placeholder="Item No." value="${equipmentbyId.itemNo}" />
+                                            <input type="text" id="itemNo" name="itemNo" class="form-control" 
+                                                   placeholder="Item No." value="${equipmentbyId.itemNo}" required 
+                                                   oninput="this.classList.remove('is-invalid'); $('#itemNoFeedback').hide(); $('button[type=submit]').prop('disabled', false);"/>
+                                            <div id="itemNoFeedback" class="invalid-feedback" style="display:none; color: #dc3545; margin-top: 0.5rem; font-size: 0.875em;">
+                                                This item No. already exists in the system.
+                                            </div>
                                         </div>
                                     </div>
 
@@ -133,7 +123,7 @@
                                         <div class="col-md-6">
                                             <label class="form-label fw-medium text-gray-800">Date of Purchase</label>
                                             <fmt:setLocale value="en_US" />
-                                            <fmt:formatDate value="${equipmentbyId.timeCreate}" pattern="dd-MM-yyyy" var="fmtDatePurchase" />
+                                            <fmt:formatDate value="${equipmentbyId.timeCreate}" pattern="dd MMM yyyy" var="fmtDatePurchase" />
                                             <div class="position-relative d-flex align-items-center">
                                                 <span class="svg-icon svg-icon-2 position-absolute mx-4">
                                                    <i class="ki-duotone ki-calendar-8 fs-2">
@@ -448,6 +438,7 @@
                         <div class="col-md-6">
                             <span class="text-gray-700 fw-normal fs-5 me-2">Date of Purchase:</span>
                             <span class="text-gray-800 fw-normal fs-5">
+                                <fmt:setLocale value="en_US" />
                                 <fmt:formatDate value="${equipmentbyId.timeCreate}" pattern="dd MMM yyyy" />
                             </span>
                         </div>
@@ -555,7 +546,7 @@
 </div>
 
 <script>
-    // --- 1. Image Preview Logic ---
+    // Image Preview Logic
     document.addEventListener('DOMContentLoaded', function () {
         const fileInput   = document.getElementById('itemImageInput');
         const previewImg  = document.getElementById('itemImagePreview');
@@ -580,10 +571,10 @@
         });
     });
 
-    // --- 2. Main Logic & Modal ---
+    // Main Logic & Modal
     $(document).ready(function() {
         
-        // --- 2.1 Initialization Data ---
+        // Initialization Data
         var typeList = ${type != null ? type : '[]'};
 		var statusList = ${status != null ? status : '[]'};
         var savedTypeID = "${equipmentbyId.type}";
@@ -597,7 +588,6 @@
      // Update Icon Type
         if (typeList && typeList.length > 0) {
             var foundType = typeList.find(function(item) {
-                // ข้อมูลจริงใช้ TypeID (จากรูป Debug)
                 var tId = item.TypeID || item.typeID || item.type; 
                 return tId == savedTypeID;
             });
@@ -611,7 +601,7 @@
             }
         }
         
-        // --- 2.2 Status Log & Badge Logic ---
+        // Status Log & Badge Logic
         var STATUS_MAP = {};
         
         // Create Map
@@ -659,7 +649,7 @@
             }
         });
 
-        // --- 2.3 Populate Selects ---
+        // Populate Selects
         var $typeSelect = $('#typeSelect');
         var typeOptions = '<option></option>';
         $.each(typeList, function(index, item) {
@@ -682,9 +672,9 @@
 
         // Init Components
         $('#typeSelect, #statusSelect').select2({ minimumResultsForSearch: Infinity });
-        $("#kt_datepicker_1").flatpickr({ dateFormat: "d-m-Y" });
+        $("#kt_datepicker_1").flatpickr({ dateFormat: "d M Y" });
 
-        // --- 2.4 Toggle More Detail ---
+        // Toggle More Detail
         var moreDetailCollapse = document.getElementById('kt_view_equipment_more_details_edit');
         if (moreDetailCollapse) {
             moreDetailCollapse.addEventListener('show.bs.collapse', function () {
@@ -695,7 +685,7 @@
             });
         }
         
-        // --- 2.5 Modal: Return Action ---
+        // Modal: Return Action
         $('#modal_return_action').on('show.bs.modal', function () {
             $('#edit_return_note').val('');
             $('#btn_confirm_return_edit').prop('disabled', false).text('Request for Return');
@@ -724,5 +714,46 @@
                 }
             });
         });
+        
+     	// เช็ค Duplicate Item No
+     	var originalItemNo = $('#itemNo').val().trim();
+        $('#itemNo').on('blur', function() {
+            var itemNoVal = $(this).val().trim();
+            var $input = $(this);
+            var $feedback = $('#itemNoFeedback');
+            var $btnSave = $('button[type="submit"]');
+
+            if(itemNoVal === "") return;
+            if (itemNoVal === originalItemNo) {
+                $input.removeClass('is-invalid');
+                $feedback.hide();
+                $btnSave.prop('disabled', false);
+                return;
+            }
+            
+            $.ajax({
+                url: 'check_item_no', 
+                method: 'POST',
+                data: { itemNo: itemNoVal },
+                dataType: 'json',
+                success: function(response) {
+
+                    if (response.message === 'used') {
+                        $input.removeClass('border-success'); 
+                        $input.addClass('is-invalid'); 
+                        
+                        $feedback.text('This item No. already exists in the system. (Used by: ' + response.name + ')').show();
+                        $btnSave.prop('disabled', true);
+                    } else {
+                        $input.removeClass('is-invalid'); 
+                        $input.addClass('border-success');
+                        $feedback.hide();
+                        $btnSave.prop('disabled', false);
+                    }
+                },
+                error: function() { console.error("Error checking item no."); }
+            });
+        });
+    
     });
 </script>

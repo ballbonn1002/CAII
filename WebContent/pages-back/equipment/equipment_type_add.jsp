@@ -39,11 +39,12 @@
                             
                             <div class="mb-10">
                                 <label class="form-label required fw-bold">Type ID</label>
-                                <input type="text" class="form-control" name="Type" id="field_type_id" placeholder="Enter ID (e.g. NB, PC)" required />
+                                <input type="text" class="form-control" name="Type" id="field_type_id" placeholder="Enter ID (e.g. NB, PC)" maxlength="3" required />
+                                <div id="type_id_error" class="text-danger mt-2" style="display:none;">This Type ID already exists in the system. Please use a different name.</div>
                             </div>
 
                             <div class="mb-10">
-                                 <label class="form-label required fw-bold">Type Name</label>
+                                <label class="form-label required fw-bold">Type Name</label>
                                 <input type="text" class="form-control" name="description" id="field_description" placeholder="Enter type name" required />
                             </div>
 
@@ -51,7 +52,7 @@
                                 <label class="form-label required fw-bold">Type Icon</label>
                                 <div class="d-flex align-items-center">
                                     <div class="flex-grow-1 me-3">
-                                        <select class="form-select" name="type_text" id="field_icon" data-control="select2" data-placeholder="Select an icon">
+                                        <select class="form-select" name="type_text" id="field_icon" data-control="select2" data-placeholder="Select an icon" required>
                                             <option></option>
                                         </select>
                                      </div>
@@ -64,8 +65,8 @@
                         </div>
 
                         <div class="card-footer d-flex justify-content-end gap-3 p-8">
-                             <a href="equipment_setting" class="btn btn-light px-8">Cancel</a> 
-                            <button type="submit" class="btn btn-success px-8">Save</button>
+                            <a href="equipment_setting" class="btn btn-light px-8">Cancel</a> 
+                            <button type="submit" id="submit_btn" class="btn btn-success px-8">Save</button>
                         </div>
                     
                     </div>
@@ -103,6 +104,49 @@
             var data = e.params.data;
             updatePreview(data.id);
         });
+     
+        // Check Duplicate
+        var typeIdInput = document.getElementById('field_type_id');
+        var submitBtn = document.getElementById('submit_btn');
+        var errorMsg = document.getElementById('type_id_error');
+
+        typeIdInput.addEventListener('input', function() {
+        	typeIdInput.classList.remove('is-invalid');
+            typeIdInput.classList.remove('border-success');
+            errorMsg.style.display = 'none';
+            submitBtn.disabled = false;
+        });
+
+        typeIdInput.addEventListener('blur', function() {
+            var id = this.value.trim();
+            
+            if(id === "") return;
+            $.ajax({
+                url: 'checkTypeDuplicate',
+                type: 'POST',
+                data: { typeId: id },
+                success: function(response) {
+                    if (response.status === 'duplicate') {
+                        // กรณีซ้ำ
+                        typeIdInput.classList.remove('border-success');
+                        typeIdInput.classList.add('is-invalid');
+                        errorMsg.style.display = 'block';
+                        submitBtn.disabled = true;
+                 
+                    } else {
+                        // กรณีใช้ได้
+                        typeIdInput.classList.remove('is-invalid');
+                        typeIdInput.classList.add('border-success');
+                        errorMsg.style.display = 'none';
+                        submitBtn.disabled = false;
+                    }
+                },
+                error: function(err) {
+                    console.error("Error checking duplicate:", err);
+                }
+            });
+        });
+    
     });
 
     function updatePreview(iconClass) {

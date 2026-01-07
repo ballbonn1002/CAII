@@ -1,18 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 
-<!-- <style>
-    .badge-cyan {
-    color: var(--bs-cyan-inverse);
-    background-color: var(--bs-cyan)
-    }
-    .badge-cyan.badge-outline {
-        border: 1px solid var(--bs-cyan);
-        background-color: transparent;
-        color: var(--bs-cyan)
-    }
-</style> -->
-
 <div class="app-main flex-column flex-row-fluid" id="kt_app_main">
     <div class="d-flex flex-column flex-column-fluid">
    
@@ -51,7 +39,7 @@
                             
                             <div class="mb-10">
                                 <label class="form-label required fw-bold">Type</label>
-                                <input type="text" class="form-control" name="status" id="field_status" required />
+                                <input type="text" class="form-control" name="status" id="field_status" readonly />
                             </div>
 
                             <div class="mb-10">
@@ -84,7 +72,6 @@
 
 <script>
     document.addEventListener("DOMContentLoaded", function() {
-        // --- 1. กำหนดรายการสี ---
         var COLOR_LIST = [
             { id: 'success',   name: 'Green-Success' },
             { id: 'primary',   name: 'Blue-Primary' },
@@ -96,14 +83,14 @@
             { id: 'secondary', name: 'Gray-Secondary' }
         ];
 
-        // --- 2. สร้าง Option ลงใน Dropdown ---
+        // สร้าง Option ลงใน Dropdown
         var colorSelect = document.getElementById('field_color');
-        // ล้างค่าเก่า (เผื่อมี)
+        // ล้างค่าเก่า
         colorSelect.innerHTML = ''; 
         
         COLOR_LIST.forEach(function(color) {
             // สร้าง <option value="success">Green - Success</option>
-            // ใช้ value เป็น id เพียวๆ ตามที่ DB น่าจะเก็บ (เช่น 'success')
+            // ใช้ value เป็น id
             var option = new Option(color.name, color.id);
             colorSelect.add(option);
         });
@@ -112,18 +99,18 @@
             minimumResultsForSearch: Infinity
         });
 
-        // --- 3. รับข้อมูลจาก Server ---
+        // รับข้อมูลจาก Server
         var info = ${info != null ? info : '{}'};
         console.log("Status Data:", info);
 
-        // --- 4. นำข้อมูลมาใส่ใน Input Fields ---
+        // นำข้อมูลมาใส่ใน Input Fields
         if(info.statusId || info.status) {
             document.getElementById('field_status').value = info.statusId || info.status;
             document.getElementById('field_description').value = info.description || '';
             
             // จัดการเรื่องสีที่มาจาก DB
             var dbColor = info.color2 ? info.color2.toLowerCase() : 'secondary';
-            // ตัดคำว่า badge- ออก (ถ้ามี) เพื่อให้เทียบกับ id ใน list ได้
+            // ตัดคำว่า badge- ออก
             dbColor = dbColor.replace('badge-', '');
             
             // เลือกค่าใน Dropdown
@@ -132,8 +119,7 @@
             // Update Preview
             updateBadgePreview(info.description, dbColor);
         }
-
-        // --- 5. Event Listeners ---
+        // Event Listeners
         $('#field_color').on('change', function() {
             var selectedColor = $(this).val();
             var text = $('#field_description').val() || 'Preview';

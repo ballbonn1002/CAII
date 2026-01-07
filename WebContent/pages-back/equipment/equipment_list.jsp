@@ -2,18 +2,6 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 
-<!-- <style>
-    .badge-cyan {
-    color: var(--bs-cyan-inverse);
-    background-color: var(--bs-cyan)
-    }
-    .badge-cyan.badge-outline {
-        border: 1px solid var(--bs-cyan);
-        background-color: transparent;
-        color: var(--bs-cyan)
-    }
-</style> -->
-
 <div class="app-main flex-column flex-row-fluid" id="kt_app_main">
     <div class="d-flex flex-column flex-column-fluid">
         <div id="kt_app_toolbar" class="app-toolbar py-3 py-lg-6">
@@ -265,8 +253,8 @@
                         <div id="view_borrow_section" class="d-none">
                         <div class="separator separator-dashed border-gray-300 my-10"></div>
                         <div class="d-flex align-items-center mb-5">
-                             <span class="fs-5 fw-bold text-gray-800 me-3">Borrow ID</span>
-                             <span class="fs-5 fw-bold text-primary" id="view_borrow_id_display">ID: ITEMxxxx</span>
+                             <span class="fs-5 fw-bold text-gray-800 me-3">Borrow ID:</span>
+                             <span class="fs-5 fw-bold text-primary" id="view_borrow_id_display">xxxx</span>
                         </div>
                         
                         <div class="row g-5 mb-5" id="view_borrow_detailed_info">
@@ -476,6 +464,19 @@
                 {
                     data: null,
                     render: function(data, type, row) {
+                    	if (type === 'filter') {
+                            var searchStr = (row.name || '') + ' ' + (row.detail || ''); 
+                            if (row.status === 'B') {
+                                var eqIdStr = String(row.equipmentId);
+                                var borrow = lastBorrowByEqId[eqIdStr];
+                                var borrowerName = (borrow && borrow.userBorrowid) ?
+                                    (userById[(borrow.userBorrowid || '').toLowerCase()] || borrow.userBorrowid) : '';
+                                
+                                searchStr += ' ' + borrowerName;
+                            }
+                            return searchStr;
+                        }
+                    	
                         var nameHtml = '<div class="fw-normal fs-5 text-gray-900">' + (row.name || '') + '</div>';
                         var detailHtml = row.detail ? 
                             '<div class="d-flex align-items-center mt-1 fw-semibold fs-5 text-gray-900">' +
@@ -492,7 +493,7 @@
                     render: function(status, type, row) {
                         var val = (status) ? status.toString().trim() : '';
                         if (type === 'filter' || type === 'sort') return val;
-                        return getStatusBadgeHtml(val, row); // เรียกฟังก์ชันสร้าง Badge
+                        return getStatusBadgeHtml(val, row);
                     }
                 },
                 // Col 6: Actions
@@ -687,7 +688,7 @@
             
             if (borrow) {
                 borrowSection.removeClass('d-none');
-                $('#view_borrow_id_display').text('ID: ' + (item.itemNo || '-'));
+                $('#view_borrow_id_display').text(borrow.borrowId || '-');
                 
                 // หาชื่อคนยืมจาก User List
                 var borrowerID = (borrow.userBorrowid || '').toLowerCase();
@@ -733,10 +734,14 @@
                             borrowId: borrow.borrowId,
                             note: note
                         }, function(res) {
+                            res = res.trim();
                             if(res === 'success') {
-                                // ถ้าสำเร็จ -> รีโหลดหน้าเว็บเพื่ออัปเดตสถานะ
                                 location.reload();
-                            } else {
+                            } 
+                            else if (res === 'login') {
+                                window.location.href = 'index.jsp'; 
+                            } 
+                            else {
                                 alert('Error returning item.');
                                 btnReturn.prop('disabled', false).text(originalText);
                             }

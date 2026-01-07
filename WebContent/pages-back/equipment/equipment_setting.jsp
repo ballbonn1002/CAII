@@ -1,18 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 
-<!-- <style>
-    .badge-cyan {
-    color: var(--bs-cyan-inverse);
-    background-color: var(--bs-cyan)
-    }
-    .badge-cyan.badge-outline {
-        border: 1px solid var(--bs-cyan);
-        background-color: transparent;
-        color: var(--bs-cyan)
-    }
-</style> -->
-
 <div class="app-main flex-column flex-row-fluid" id="kt_app_main">
     <div class="d-flex flex-column flex-column-fluid">
 
@@ -126,15 +114,12 @@
         var tabs = document.querySelectorAll('[data-kt-table-widget-3="tab"]');
         tabs.forEach(function(tab) {
             tab.addEventListener('click', function() {
-                // Reset Visuals
                 tabs.forEach(function(t) {
                     t.classList.remove('border-bottom', 'border-3', 'border-primary','text-primary');
                     t.classList.add('text-muted');
                 });
-                // Set Active Visuals
                 this.classList.remove('text-muted');
                 this.classList.add('border-bottom', 'border-3', 'border-primary','text-primary');
-                // Switch Content
                 var targetSelector = this.getAttribute('data-tab-target');
                 document.querySelectorAll('.tab-pane').forEach(function(pane) {
                     pane.classList.remove('show', 'active');
@@ -147,13 +132,11 @@
         });
     });
 
- // --- Render Functions ---
- // ====================== Status Table =================================
+    // ====================== Status Table =================================
     function renderStatusTable(data) {
         var tbody = document.getElementById('tbody_status');
         var html = '';
 
-        // Color List
         var COLOR_LIST = [
             { id: 'success',   name: 'Success' },
             { id: 'primary',   name: 'Primary' },
@@ -166,32 +149,34 @@
         ];
 
         data.forEach(function(item) {
-            var statusId = item.statusId || item.status; 
+            // Mapping (Java Model and SQL Map)
+            var statusId = item.statusId; 
+            var color2Value = item.color2;
+            var userCreate = item.userCreate || '-';
+            var userUpdate = item.userUpdate || '-';
+            var timeCreateRaw = item.timeCreate;
+            var timeUpdateRaw = item.timeUpdate;
+            var count = item.count || 0;
+
+            // Logic เดิม
+            var badgeClass = getBadgeClassFromDB(color2Value, statusId);
+            var dbColorId = badgeClass.replace('badge-', '');
             
-            // Badge Class From Color Field 
-            var badgeClass = getBadgeClassFromDB(item.color2, statusId);
-            var dbColorId = badgeClass.replace('badge-', ''); // remove 'badge-'
-            
-            // Map COLOR_LIST to Text
-            var colorName = dbColorId; // Default show text
+            var colorName = dbColorId; 
             COLOR_LIST.forEach(function(c) {
-                if (c.id === dbColorId) {
-                    colorName = c.name;
-                }
+                if (c.id === dbColorId) { colorName = c.name; }
             });
 
-            // Format Date/Time
-            var createDate = formatDateTime(item.timeCreate);
-            var updateDate = formatDateTime(item.timeUpdate);
+            var createDate = formatDateTime(timeCreateRaw);
+            var updateDate = formatDateTime(timeUpdateRaw);
 
-         	// Status Table Show Data
             html += '<tr>';
             html += '<td class="fw-bold text-gray-900 fs-7 ps-4 align-top">' + (statusId || '-') + '</td>';
             html += '<td class="align-top"><span class="badge ' + badgeClass + ' fs-7 px-4 py-2">' + (item.description) + '</span></td>';
             html += '<td class="text-gray-900 fw-normal fs-6 mb-1 align-top">' + colorName + '</td>';
-            html += '<td class="align-top"><div class="d-flex flex-column"><span class="text-gray-900 fw-normal fs-6 mb-1">' + (item.userCreate || '-') + '</span><span class="text-gray-700 fw-normal fs-6">' + createDate + '</span></div></td>';
-            html += '<td class="align-top"><div class="d-flex flex-column"><span class="text-gray-900 fw-normal fs-6 mb-1">' + (item.userUpdate || '-') + '</span><span class="text-gray-700 fw-normal fs-6">' + updateDate + '</span></div></td>';
-         	// Actions
+            html += '<td class="align-top"><div class="d-flex flex-column"><span class="text-gray-900 fw-normal fs-6 mb-1">' + userCreate + '</span><span class="text-gray-700 fw-normal fs-6">' + createDate + '</span></div></td>';
+            html += '<td class="align-top"><div class="d-flex flex-column"><span class="text-gray-900 fw-normal fs-6 mb-1">' + userUpdate + '</span><span class="text-gray-700 fw-normal fs-6">' + updateDate + '</span></div></td>';
+            
             html += '<td class="text-end"> <a href="equipment_status_edit?id=' + statusId + '" class="btn btn-icon btn-sm btn-light-primary mb-1 fs-3 me-3"><i class="ki-duotone ki-pencil fs-1"><span class="path1"></span><span class="path2"></span></i></a>' +
                     '<a href="javascript:;" onclick="confirmStatusDelete(\'' + statusId + '\')" class="btn btn-icon btn-sm btn-light-danger mb-1 fs-3 me-3"><i class="ki-duotone ki-trash fs-1"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span><span class="path5"></span></i></a></td>';
             html += '</tr>';
@@ -202,10 +187,8 @@
         tbody.innerHTML = html;
     }
 
- 	// Mapping Keyword to Class
     function getBadgeClassFromDB(dbColor, statusId) {
-    	var color = (dbColor || '').toString().toLowerCase()
-         
+        var color = (dbColor || '').toString().toLowerCase()
         if (color.includes('success')) return 'badge-success';
         if (color.includes('primary')) return 'badge-primary';
         if (color.includes('danger')) return 'badge-danger';
@@ -214,41 +197,57 @@
         if (color.includes('warning')) return 'badge-warning';
         if (color.includes('dark')) return 'badge-dark';
         if (color.includes('secondary')) return 'badge-secondary';
-        if (color.startsWith('badge-')) return color; // Have prefix 'badge-' return color   
-
-        // Non: return 'badge-secondary'
+        if (color.startsWith('badge-')) return color;
         return 'badge-secondary';
     }
- 	
+    
     function confirmStatusDelete(statusId) {
-        Swal.fire({
-            title: '<h1 class="fw-semibold text-gray-900 mt-10">Confirm Delete ?</h1>',
-            html: `<span class="fw-medium text-gray-800 fs-5">Are you sure you want to delete it?</span> <br>
-                   <span class="fw-medium text-gray-800 fs-5">Once the data is deleted, it cannot be recovered.</span>`,
-            width: '500px',
-            icon: undefined, 
-            iconHtml: `
-                <i class="ki-duotone ki-information text-danger" style="font-size: 10rem;">
-                    <span class="path1"></span>
-                    <span class="path2"></span>
-                    <span class="path3"></span>
-                </i>
-            `,
-            showCancelButton: true,
-            cancelButtonText: 'Cancel',
-            confirmButtonText: 'Delete',
-            customClass: {
-                icon: 'border-0',
-                cancelButton: 'btn btn-light',
-                confirmButton: "btn btn-danger"
+        $.ajax({
+            url: 'checkEStatusRecord', 
+            type: 'POST',
+            data: { status: statusId },
+            dataType: 'json',
+            success: function(response) {
+                if (response.message === "can't") {
+                    // กรณี: ใช้งานอยู่ ลบไม่ได้
+                    Swal.fire({
+                        title: '<h1 class="fw-bold text-gray-900 mt-5">Cannot be deleted!</h1>',
+                        html: `<span class="fw-medium text-gray-800 fs-5">This status is currently active (` + response.count + ` item) <br>Cannot be deleted.</span>`,
+                        icon: 'warning',
+                        confirmButtonText: 'OK',
+                        customClass: { confirmButton: "btn btn-primary" }
+                    });
+                } else {
+                    // กรณี: ลบได้
+                    Swal.fire({
+                        title: '<h1 class="fw-semibold text-gray-900 mt-10">Confirm Delete ?</h1>',
+                        html: `<span class="fw-medium text-gray-800 fs-5">Are you sure you want to delete status '`+ statusId +`'?</span> <br>
+                               <span class="fw-medium text-gray-800 fs-5">Once deleted, it cannot be recovered.</span>`,
+                        width: '500px',
+                        icon: undefined, 
+                        iconHtml: `<i class="ki-duotone ki-information text-danger" style="font-size: 10rem;"><span class="path1"></span><span class="path2"></span><span class="path3"></span></i>`,
+                        showCancelButton: true,
+                        cancelButtonText: 'Cancel',
+                        confirmButtonText: 'Delete',
+                        customClass: {
+                            icon: 'border-0',
+                            cancelButton: 'btn btn-light',
+                            confirmButton: "btn btn-danger"
+                        },
+                        focusConfirm: false,
+                        focusCancel: true
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            window.location.href = "equipment_status_delete?id=" + statusId;
+                        }
+                    });
+                }
             },
-            focusConfirm: false,
-            focusCancel: true
-        }).then((result) => {
-            if (result.isConfirmed) {
-                window.location.href = "equipment_status_delete?id=" + statusId;
+            error: function(err) {
+                console.error("Error checking status:", err);
+                Swal.fire("Error", "There was an error validating the data.", "error");
             }
-        })
+        });
     }
 
     // ====================== Type Table =================================
@@ -257,22 +256,27 @@
         var html = '';
         
         data.forEach(function(item) {
-            // ดึงค่า typeText ถ้าไม่มีใช้ default
-            var dbIcon = item.typeText; 
-            var iconClass = (dbIcon && dbIcon.trim() !== '') ? dbIcon : 'ki-solid ki-dots-square'; 
+            // Mapping 
+            var typeText = item.typeText;
+            var iconClass = (typeText && typeText.trim() !== '') ? typeText : 'ki-solid ki-dots-square'; 
+            var typeId = (item.TypeID || item.typeID || '').toString();
             
-            var typeId = (item.TypeID || '').toString();
-            var createDate = formatDateTime(item.timeCreate);
-            var updateDate = formatDateTime(item.timeUpdate);
+            var userCreate = item.userCreate || '-'; 
+            var userUpdate = item.userUpdate || '-';
+            var timeCreateRaw = item.timeCreate;
+            var timeUpdateRaw = item.timeUpdate;
+            var count = item.count || 0;
 
-            // Type Table Show Data
+            var createDate = formatDateTime(timeCreateRaw);
+            var updateDate = formatDateTime(timeUpdateRaw);
+
             html += '<tr>';
             html += '<td class="fw-normal text-gray-900 fs-6 ps-3 align-top">' + (typeId || '-') + '</td>';
             html += '<td class="align-top"><i class="' + iconClass + ' fs-2x text-gray-500"></i></td>';
             html += '<td class="text-gray-900 fw-normal fs-6 align-top">' + (item.description || '-') + '</td>';
-            html += '<td class="align-top"><div class="d-flex flex-column"><span class="text-gray-900 fw-normal fs-6 mb-1">' + (item.userCreate || '-') + '</span><span class="text-gray-700 fw-normal fs-6">' + createDate + '</span></div></td>';
-            html += '<td class="align-top"><div class="d-flex flex-column"><span class="text-gray-900 fw-normal fs-6 mb-1">' + (item.userUpdate || '-') + '</span><span class="text-gray-700 fw-normal fs-6">' + updateDate + '</span></div></td>';
-         	// Actions
+            html += '<td class="align-top"><div class="d-flex flex-column"><span class="text-gray-900 fw-normal fs-6 mb-1">' + userCreate + '</span><span class="text-gray-700 fw-normal fs-6">' + createDate + '</span></div></td>';
+            html += '<td class="align-top"><div class="d-flex flex-column"><span class="text-gray-900 fw-normal fs-6 mb-1">' + userUpdate + '</span><span class="text-gray-700 fw-normal fs-6">' + updateDate + '</span></div></td>';
+            
             html += '<td class="text-end"> <a href="equipment_type_edit?id=' + typeId + '" class="btn btn-icon btn-sm btn-light-primary mb-1 fs-3 me-3"><i class="ki-duotone ki-pencil fs-1"><span class="path1"></span><span class="path2"></span></i></a>' +
                     '<a href="javascript:;" onclick="confirmTypeDelete(\'' + typeId + '\')" class="btn btn-icon btn-sm btn-light-danger mb-1 fs-3 me-3"><i class="ki-duotone ki-trash fs-1"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span><span class="path5"></span></i></a></td>';
             html += '</tr>';
@@ -282,67 +286,73 @@
         tbody.innerHTML = html;
     }
     
- // --- Format Date/Time ---
+    function confirmTypeDelete(typeId) {
+        $.ajax({
+            url: 'TypeRecord',
+            type: 'POST',
+            data: { Type: typeId },
+            dataType: 'json',
+            success: function(response) {
+                if (response.message === "can't") {
+                    // กรณี: ใช้งานอยู่ ลบไม่ได้
+                    Swal.fire({
+                        title: '<h1 class="fw-bold text-gray-900 mt-5">Cannot be deleted!</h1>',
+                        html: `<span class="fw-medium text-gray-800 fs-5">This type is currently active (` + response.count + ` item) <br>Cannot be deleted.</span>`,
+                        icon: 'warning',
+                        confirmButtonText: 'OK',
+                        customClass: { confirmButton: "btn btn-primary" }
+                    });
+                } else {
+                    // กรณี: ลบได้
+                    Swal.fire({
+                        title: '<h1 class="fw-semibold text-gray-900 mt-10">Confirm Delete ?</h1>',
+                        html: `<span class="fw-medium text-gray-800 fs-5">Are you sure you want to delete type '`+ typeId +`'?</span> <br>
+                               <span class="fw-medium text-gray-800 fs-5">Once deleted, it cannot be recovered.</span>`,
+                        width: '500px',
+                        icon: undefined, 
+                        iconHtml: `<i class="ki-duotone ki-information text-danger" style="font-size: 10rem;"><span class="path1"></span><span class="path2"></span><span class="path3"></span></i>`,
+                        showCancelButton: true,
+                        cancelButtonText: 'Cancel',
+                        confirmButtonText: 'Delete',
+                        customClass: {
+                            icon: 'border-0',
+                            cancelButton: 'btn btn-light',
+                            confirmButton: "btn btn-danger"
+                        },
+                        focusConfirm: false,
+                        focusCancel: true
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            window.location.href = "equipment_type_delete?id=" + typeId;
+                        }
+                    });
+                }
+            },
+            error: function(err) {
+                console.error("Error checking type:", err);
+                Swal.fire("Error", "There was an error validating the data.", "error");
+            }
+        });
+    }
+    
     function formatDateTime(dateStr) {
         if (!dateStr) return '-';
-        
-        // ลองแปลงเป็น Date Object
         var date = new Date(dateStr);
-        
-        // เช็คว่าแปลงสำเร็จไหม
         if (isNaN(date.getTime())) return dateStr;
-        
         var day = String(date.getDate()).padStart(2, '0');
         var month = String(date.getMonth() + 1).padStart(2, '0');
         var year = date.getFullYear();
         var hours = String(date.getHours()).padStart(2, '0');
         var minutes = String(date.getMinutes()).padStart(2, '0');
         var seconds = String(date.getSeconds()).padStart(2, '0');
-        
-        // คืนค่ารูปแบบ "dd/MM/yyyy, HH:mm:ss"
         return day + '/' + month + '/' + year + ', ' + hours + ':' + minutes + ':' + seconds;
     }
  
-    function confirmTypeDelete(typeId) {
-        Swal.fire({
-            title: '<h1 class="fw-semibold text-gray-900 mt-10">Confirm Delete ?</h1>',
-            html: `<span class="fw-medium text-gray-800 fs-5">Are you sure you want to delete it?</span> <br>
-                   <span class="fw-medium text-gray-800 fs-5">Once the data is deleted, it cannot be recovered.</span>`,
-            width: '500px',
-            icon: undefined, 
-            iconHtml: `
-                <i class="ki-duotone ki-information text-danger" style="font-size: 10rem;">
-                    <span class="path1"></span>
-                    <span class="path2"></span>
-                    <span class="path3"></span>
-                </i>
-            `,
-            showCancelButton: true,
-            cancelButtonText: 'Cancel',
-            confirmButtonText: 'Delete',
-            customClass: {
-                icon: 'border-0',
-                cancelButton: 'btn btn-light',
-                confirmButton: "btn btn-danger"
-            },
-            focusConfirm: false,
-            focusCancel: true
-        }).then((result) => {
-            if (result.isConfirmed) {
-                window.location.href = "equipment_type_delete?id=" + typeId;
-            }
-        })
-    }
- 
     function goToCreatePage() {
-        // เช็คว่า Tab Status มี class 'active' หรือไม่ 
         var statusTab = document.getElementById('kt_tab_equipment_status');
-        
         if (statusTab.classList.contains('active')) {
-            // ถ้าอยู่หน้า Status ให้ไปหน้า Add Status
-            window.location.href = 'equipment_status_add'; 
+            window.location.href = 'equipment_status_add';
         } else {
-            // ถ้าไม่อย่างนั้น ให้ไปหน้า Add Type
             window.location.href = 'equipment_type_add';
         }
     }

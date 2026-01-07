@@ -96,7 +96,12 @@
                                         </div>
                                         <div class="col-md-6">
                                             <label class="required form-label">Item No.</label>
-                                            <input type="text" name="itemNo" class="form-control" placeholder="Item No." value="${equipmentbyId.itemNo}" required/>
+                                            <input type="text" id="itemNoInput" name="itemNo" class="form-control" 
+                                                   placeholder="Item No." value="${equipmentbyId.itemNo}" required 
+                                                   oninput="this.classList.remove('is-invalid'); $('#itemNoFeedback').hide(); $('button[type=submit]').prop('disabled', false);"/>
+                                            <div id="itemNoFeedback" class="invalid-feedback" style="display:none; color: #dc3545; margin-top: 0.5rem; font-size: 0.875em;">
+                                                This item No. already exists in the system.
+                                            </div>
                                         </div>
                                     </div>
 
@@ -239,10 +244,8 @@
 </div>
 
 <script>
-    // --- 1. Main Form Logic ---
     $(document).ready(function() {
-        
-        // --- 1.1 Initialization Data ---
+        // Initialization Data
         // รับค่าจาก Java requestScope
         var typeList = ${requestScope.type != null ? requestScope.type : '[]'};
 		var statusList = ${requestScope.status != null ? requestScope.status : '[]'};
@@ -252,7 +255,7 @@
             if (rawStatus) statusList = JSON.parse(rawStatus);
         } catch (e) { console.error("JSON Parse Error:", e); }
 
-        // --- 1.2 Populate Dropdowns ---
+        // Populate Dropdowns
         
         // TYPE Select
         var $typeSelect = $('#typeSelect');
@@ -281,11 +284,45 @@
         // Init Select2
         $('#typeSelect, #statusSelect').select2({ minimumResultsForSearch: Infinity });
         
-        // --- 1.3 Init Components ---
+        // Init Components
         $("#kt_datepicker_1").flatpickr({ dateFormat: "d-m-Y" });
+    
+     	// เช็ค Duplicate Item No
+        $('#itemNoInput').on('blur', function() {
+            var itemNoVal = $(this).val().trim();
+            var $input = $(this);
+            var $feedback = $('#itemNoFeedback');
+            var $btnSave = $('button[type="submit"]');
+
+            if(itemNoVal === "") return;
+
+            $.ajax({
+                url: 'check_item_no', 
+                method: 'POST',
+                data: { itemNo: itemNoVal },
+                dataType: 'json',
+                success: function(response) {
+
+                    if (response.message === 'used') {
+                        $input.removeClass('border-success'); 
+                        $input.addClass('is-invalid'); 
+                        
+                        $feedback.text('This item No. already exists in the system. (Used by: ' + response.name + ')').show();
+                        $btnSave.prop('disabled', true);
+                    } else {
+                        $input.removeClass('is-invalid'); 
+                        $input.addClass('border-success');
+                        $feedback.hide();
+                        $btnSave.prop('disabled', false);
+                    }
+                },
+                error: function() { console.error("Error checking item no."); }
+            });
+        });
+    
     });
 
-    // --- 2. Image Preview Logic ---
+    // Image Preview Logic
     document.addEventListener('DOMContentLoaded', function () {
         const fileInput   = document.getElementById('itemImageInput');
         const previewImg  = document.getElementById('itemImagePreview');

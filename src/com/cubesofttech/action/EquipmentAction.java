@@ -99,6 +99,9 @@ public class EquipmentAction extends ActionSupport {
 	
 	public String eAdd() {
 		try {
+			if (onlineUser == null) {
+				return "login";
+			}
 			List<EquipmentStatus> status = equipmentStatusDAO.getall();
 			List<EquipmentType> type = equipmentTypeDAO.getall();
 			
@@ -116,6 +119,9 @@ public class EquipmentAction extends ActionSupport {
 	
 	public String eEdit() {
 		try {
+			if (onlineUser == null) {
+				return "login";
+			}
 			int id = Integer.parseInt(request.getParameter("id"));
 			Equipment e = equipmentDAO.getById(id);
 			
@@ -162,6 +168,14 @@ public class EquipmentAction extends ActionSupport {
 	public String newE() {
 		try {					
 			User user = (User) request.getSession().getAttribute("onlineUser");
+			if (user == null) {
+				return "login";
+			}
+			Equipment existingEq = equipmentDAO.findByItemNo(itemNo);
+	        if (existingEq != null) {
+	            request.setAttribute("errMsg", "Duplicate Item No: " + itemNo);
+	            return ERROR;
+	        }
 			Timestamp timestamp = new Timestamp(System.currentTimeMillis());
 			
 			Equipment e = new Equipment();
@@ -210,7 +224,7 @@ public class EquipmentAction extends ActionSupport {
 			// e.setTimeCreate(timestamp);
 			if (datePurchase != null && !datePurchase.trim().isEmpty()) {
 	            try {
-	                SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy", Locale.ENGLISH);
+	                SimpleDateFormat sdf = new SimpleDateFormat("dd-MMM-yyyy", Locale.ENGLISH);
 	                Date parsedDate = sdf.parse(datePurchase);    
 	                e.setTimeCreate(new Timestamp(parsedDate.getTime()));
 	                
@@ -262,6 +276,9 @@ public class EquipmentAction extends ActionSupport {
 	public String updateE() {
 		try {
 			User user = (User) request.getSession().getAttribute("onlineUser");
+	        if (user == null) {
+	            return "login";
+	        }
 			int id_s = (int) request.getSession().getAttribute("id_s");
 			Timestamp timestamp = new Timestamp(System.currentTimeMillis());
 			
@@ -311,7 +328,7 @@ public class EquipmentAction extends ActionSupport {
 			e.setStatus(status);
 			if (datePurchase != null && !datePurchase.trim().isEmpty()) {
 	            try {
-	                SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy", Locale.ENGLISH);
+	                SimpleDateFormat sdf = new SimpleDateFormat("dd MMM yyyy", Locale.ENGLISH);
 	                Date parsedDate = sdf.parse(datePurchase);      
 	                Timestamp newTimestamp = new Timestamp(parsedDate.getTime());
 	               
@@ -419,6 +436,9 @@ public class EquipmentAction extends ActionSupport {
 		
 	public String deleteE() {
 		try {
+			if (onlineUser == null) { 
+	            return "login"; 
+	        }
 			String id = request.getParameter("id");
 			
 			Equipment e = equipmentDAO.findByEquipmentId(Integer.parseInt(id));
@@ -438,6 +458,9 @@ public class EquipmentAction extends ActionSupport {
 
 	public String statusList() {
 		try {
+			if (onlineUser == null) { 
+	            return "login"; 
+	        }
 			List<EquipmentStatus> list = equipmentStatusDAO.getall();
 			request.setAttribute("list", new Gson().toJson(list));
 			List<EquipmentType> listT = equipmentTypeDAO.getall();
@@ -451,6 +474,9 @@ public class EquipmentAction extends ActionSupport {
 		
 	public String statusSave() {
 		try {
+			if (onlineUser == null) { 
+	            return "login"; 
+	        }
 			String status = request.getParameter("status");
 			String color = request.getParameter("color");
 			String color2 = request.getParameter("color2"); 
@@ -479,6 +505,9 @@ public class EquipmentAction extends ActionSupport {
 	
 	public String statusUpdate() {
 		try {
+			if (onlineUser == null) { 
+	            return "login"; 
+	        }
 			String status = request.getParameter("status");
 			String color = request.getParameter("color");
 			String color2 = request.getParameter("color2"); 
@@ -520,6 +549,9 @@ public class EquipmentAction extends ActionSupport {
 	
 	public String statusDelete() {
 		try {
+			if (onlineUser == null) { 
+	            return "login"; 
+	        }
 			String id = request.getParameter("id");
 			
 			EquipmentStatus eStatus = equipmentStatusDAO.findByStatus(id);
@@ -534,6 +566,9 @@ public class EquipmentAction extends ActionSupport {
 
 	public String statusEdit() {
 		try {
+			if (onlineUser == null) { 
+	            return "login"; 
+	        }
 			String id = request.getParameter("id");
 			
 			EquipmentStatus eStatus = equipmentStatusDAO.findByStatus(id);
@@ -610,7 +645,11 @@ public class EquipmentAction extends ActionSupport {
 	public String returnEquipment() {
 	    try {
 	    	User user = (User) request.getSession().getAttribute("onlineUser");
-	    	
+	    	if (user == null) {
+	            response.setCharacterEncoding("UTF-8");
+	            response.getWriter().write("login");
+	            return null;
+	        }
 	        int equipmentId = Integer.parseInt(request.getParameter("equipmentId"));
 	        int borrowId = Integer.parseInt(request.getParameter("borrowId"));
 	        String note = request.getParameter("note");
@@ -910,6 +949,9 @@ public class EquipmentAction extends ActionSupport {
 	
 	public String typeSave() {
 		try {
+			if (onlineUser == null) { 
+	            return "login"; 
+	        }
 			String Type = request.getParameter("Type");
 			String description = request.getParameter("description");
 			User user = (User) request.getSession().getAttribute("onlineUser");
@@ -933,6 +975,9 @@ public class EquipmentAction extends ActionSupport {
 	
 	public String typeUpdate() {
 		try {
+			if (onlineUser == null) { 
+	            return "login"; 
+	        }
 			String Type = request.getParameter("Type");
 			String description = request.getParameter("description");
 			User user = (User) request.getSession().getAttribute("onlineUser");
@@ -969,6 +1014,9 @@ public class EquipmentAction extends ActionSupport {
 	
 	public String typeDelete() {
 		try {
+			if (onlineUser == null) { 
+	            return "login"; 
+	        }
 			String id = request.getParameter("id");
 			EquipmentType TypeD = equipmentTypeDAO.findByType(id);
 			equipmentTypeDAO.delete(TypeD);
@@ -982,6 +1030,9 @@ public class EquipmentAction extends ActionSupport {
 
 	public String typeEdit() {
 		try {
+			if (onlineUser == null) { 
+	            return "login"; 
+	        }
 			String id = request.getParameter("id");
 			EquipmentType TypeE = equipmentTypeDAO.findByType(id);
 			request.setAttribute("info", new Gson().toJson(TypeE));
@@ -993,6 +1044,9 @@ public class EquipmentAction extends ActionSupport {
 	}
 	public String typeEdit2() {
 		try {
+			if (onlineUser == null) { 
+	            return "login"; 
+	        }
 			String id = request.getParameter("Type");
 			EquipmentType TypeE = equipmentTypeDAO.findByType(id);
 			request.setAttribute("save", new Gson().toJson(TypeE));
@@ -1176,6 +1230,50 @@ public class EquipmentAction extends ActionSupport {
 			return ERROR;
 		}
 	}
+	
+    public void checkStatusDuplicate() {
+        try {
+            String statusId = request.getParameter("statusId");
+            EquipmentStatus status = equipmentStatusDAO.findByStatus(statusId);
+            
+            Map<String, String> map = new HashMap<String, String>();
+
+            if (status != null) {
+                map.put("status", "duplicate");
+            } else {
+                map.put("status", "available");
+            }
+
+            response.setContentType("application/json");
+            response.setCharacterEncoding("UTF-8");
+            response.getWriter().write(new Gson().toJson(map));
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+	
+	public void checkTypeDuplicate() {
+        try {
+            String typeId = request.getParameter("typeId");
+            EquipmentType type = equipmentTypeDAO.findByType(typeId);
+            
+            Map<String, String> map = new HashMap<String, String>();
+
+            if (type != null) {
+                map.put("status", "duplicate");
+            } else {
+                map.put("status", "available");
+            }
+
+            response.setContentType("application/json");
+            response.setCharacterEncoding("UTF-8");
+            response.getWriter().write(new Gson().toJson(map));
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 	
 	// Getter/Setter
 	public String getDatePurchase() {

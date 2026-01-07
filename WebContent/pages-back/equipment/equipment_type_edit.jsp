@@ -76,7 +76,6 @@
 </div>
 
 <script>
-    // รายการไอคอนตามที่คุณระบุ
     const AVAILABLE_ICONS = [
         "ki-solid ki-laptop",
         "ki-solid ki-keyboard",
@@ -87,12 +86,12 @@
     ];
 
     document.addEventListener("DOMContentLoaded", function() {
-        // รับค่า JSON จาก Action (request.setAttribute("save", ...))
+        // รับค่า JSON จาก Action 
         var typeData = ${requestScope.info != null ? requestScope.info : 'null'};
         
         var select = $('#field_icon');
 
-        // 1. สร้างตัวเลือกใน Dropdown
+        // สร้างตัวเลือกใน Dropdown
         AVAILABLE_ICONS.forEach(function(iconClass) {
             select.append(new Option(iconClass, iconClass, false, false));
         });
@@ -101,9 +100,8 @@
             minimumResultsForSearch: Infinity
         });
 
-        // 2. ใส่ข้อมูลเดิมลงในฟอร์ม (ถ้ามี)
+        // ใส่ข้อมูลเดิมลงในฟอร์ม
         if (typeData) {
-            // Gson จะแปลง field Java: TypeID -> TypeID, typeText -> typeText
             $('#field_type_id').val(typeData.TypeID || '');
             $('#field_description').val(typeData.description || '');
             
