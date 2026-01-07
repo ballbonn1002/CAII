@@ -1,1 +1,11 @@
 /bin/
+WebContent/pages-back/my_profile/security_password.jsp
+WebContent/pages-back/my_profile/borrow.jsp
+WebContent/pages-back/my_profile/edit_my_profile.jsp
+WebContent/pages-back/my_profile/over_view.jsp
+WebContent/pages-back/my_profile/security_reset_password.jsp
+WebContent/WEB-INF/database.properties
+WebContent/WEB-INF/database.properties
+WebContent/WEB-INF/lib/jaxb-api-2.3.1.jar
+WebContent/WEB-INF/database.properties
+WebContent/WEB-INF/lib/jaxb-runtime-2.3.1.jar

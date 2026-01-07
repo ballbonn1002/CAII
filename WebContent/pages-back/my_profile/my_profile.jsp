@@ -145,9 +145,9 @@
 										<div
 											class="border border-gray-300 rounded-1 px-4 py-3 border-dashed ">
 											<div class="d-flex flex-column">
-												<p class="fs-4 fw-bold text-gray-900 mb-0">
+												<p class="fs-4 fw-bold text-gray-800 mb-2">
 													${empty workPeriod ? '-' :workPeriod}</p>
-												<p class="fs-6 fw-bold text-gray-600 mb-0">
+												<p class="fs-6 fw-bold text-gray-500 mb-0">
 													<c:choose>
 														<c:when test="${empty user.startDate}">
 														</c:when>
@@ -293,7 +293,18 @@
 							<div class="row">
 								<div class="col-12 col-md-6 col-lg-6">
 									<p class="fs-5 text-muted fw-medium mb-0">Citizen ID</p>
-									<p class="fs-5 text-gray-800 fw-semibold">${empty user.citizenId ? '-' : user.citizenId}</p>
+									<p class="fs-5 text-gray-800 fw-semibold">
+									<%-- ${empty user.citizenId ? '-' : user.citizenId} --%>
+									<c:choose>
+										<c:when test="${empty user.citizenId}">
+										-
+										</c:when>
+										<c:otherwise>
+										 ${fn:substring(user.citizenId, 0,1)}-${fn:substring(user.citizenId, 1,5)}-${fn:substring(user.citizenId, 5,10)}-${fn:substring(user.citizenId, 10,12)}-${fn:substring(user.citizenId, 12,13)}
+										</c:otherwise>
+										
+									</c:choose>
+									</p>
 								</div>
 								<div class="col-12 col-md-6 col-lg-6">
 									<p class="fs-5 text-muted fw-medium mb-0">Passport ID</p>
@@ -307,7 +318,22 @@
 								</div>
 								<div class="col-12 col-md-6 col-lg-6">
 									<p class="fs-5 text-muted fw-medium mb-0">Phone Number</p>
-									<p class="fs-5 text-gray-800 fw-semibold">${empty user.phonenum ? '-' : user.phonenum }</p>
+									<p class="fs-5 text-gray-800 fw-semibold">
+									<%-- ${empty user.phonenum ? '-' : user.phonenum } --%>
+									<c:choose>
+										<c:when test="${empty user.phonenum}">
+										-
+										</c:when>
+										
+										<c:otherwise>
+										 ${fn:substring(user.phonenum, 0,3)}-${fn:substring(user.phonenum, 3,6)}-${fn:substring(user.phonenum, 6,10)}
+										<c:if test="${fn:length(user.phonenum) > 10}">
+									          ${fn:substring(user.phonenum, 10, fn:length(user.phonenum))}
+									        </c:if>
+										</c:otherwise>
+										
+									</c:choose>
+									</p>
 								</div>
 							</div>
 							<div class="row">
@@ -324,7 +350,20 @@
 								</div>
 								<div class="col-12 col-md-6 col-lg-6">
 									<p class="fs-5 text-muted fw-medium mb-0">Emergency Phone</p>
-									<p class="fs-5 text-gray-800 fw-semibold">${empty user.emergPhone ? '-' : user.emergPhone }</p>
+									<p class="fs-5 text-gray-800 fw-semibold">
+									<%-- ${empty user.emergPhone ? '-' : user.emergPhone } --%>
+									<c:choose>
+										<c:when test="${empty user.emergPhone}">
+										-
+										</c:when>
+										
+										<c:otherwise>
+										 ${fn:substring(user.emergPhone, 0,3)}-${fn:substring(user.emergPhone, 3,6)}-${fn:substring(user.emergPhone, 6,10)}
+										</c:otherwise>
+										
+									</c:choose>
+									</p>
+									
 								</div>
 
 							</div>
@@ -366,16 +405,18 @@
 								                        background-size: cover;
 								                        background-position: center;
 								                    </c:when>
-								                    <c:otherwise>
-								                        background-color: #f3f6f9; 
-								                        background-image: none;
-								                    </c:otherwise>
+								                   <c:otherwise>
+											            background-image: url('${pageContext.request.contextPath}/assets/media/svg/avatars/blank.svg');
+											            background-size: cover;
+											            background-position: center;
+											        </c:otherwise>
 								                </c:choose>
 								             ">
 
-												<c:if test="${empty userImgPath}">
-													<span class="initials-text"> <c:choose>
-															<c:when
+												<%-- <c:if test="${empty userImgPath}">
+												
+												 <span class="initials-text"> <c:choose>
+														<c:when
 																test="${not empty user.nameEN and fn:length(user.nameEN) >= 1}">
 								                            ${fn:toUpperCase(fn:substring(user.nameEN, 0, 1))}
 								                        </c:when>
@@ -385,16 +426,18 @@
 								                        </c:when>
 															<c:otherwise>-</c:otherwise>
 														</c:choose>
-													</span>
-												</c:if>
+													</span> 
+												</c:if> --%>
 											</div>
 
 											<label id="changeBtn"
 												class="btn btn-icon btn-circle btn-color-muted btn-active-color-primary w-30px h-30px bg-body shadow"
 												data-kt-image-input-action="change" data-bs-toggle="tooltip"
-												data-bs-dismiss="click" title="Change avatar"> <i
-												class="ki-duotone ki-pencil fs-6"><span class="path1"></span><span
-													class="path2"></span></i> <input id="imageInputFile"
+												data-bs-dismiss="click" title="Change avatar"> 
+												<i class="ki-duotone ki-pencil fs-6">
+												<span class="path1"></span>
+												<span class="path2"></span></i> 
+												<input id="imageInputFile"
 												type="file" name="fileUpload" accept=".png, .jpg, .jpeg" />
 
 												<input id="avatarRemoveHidden" type="hidden"
@@ -404,12 +447,24 @@
 												data-kt-image-input-action="cancel" data-bs-toggle="tooltip"
 												data-bs-dismiss="click" title="Cancel avatar"> <i
 												class="ki-outline ki-cross fs-3"></i>
-											</span> <span id="removeBtn"
+											</span> 
+											<c:if test="${not empty userImgPath}">
+											    <span id="removeBtn"
+											        class="btn btn-icon btn-circle btn-color-muted btn-active-color-primary w-30px h-30px bg-body shadow"
+											        data-kt-image-input-action="remove"
+											        data-bs-toggle="tooltip"
+											        data-bs-dismiss="click"
+											        title="Remove avatar">
+											        <i class="ki-outline ki-cross fs-3"></i>
+											    </span>
+											</c:if>
+																						
+											<!-- <span id="removeBtn"
 												class="btn btn-icon btn-circle btn-color-muted btn-active-color-primary w-30px h-30px bg-body shadow"
 												data-kt-image-input-action="remove" data-bs-toggle="tooltip"
 												data-bs-dismiss="click" title="Remove avatar"> <i
 												class="ki-outline ki-cross fs-3"></i>
-											</span>
+											</span> -->
 										</div>
 									</div>
 									<div
@@ -422,7 +477,7 @@
 									<div class="col-12 col-md-2 col-lg-2  mt-md-4">
 										<label class="required fw-medium text-gray-800 mb-2">คำนำหน้า</label>
 										<select name="user_titleNameTH" id="user_titleNameTH" 
-											data-placeholder="" data-control="select2"
+											data-placeholder=""
 											class="form-select text-gray-700">
 											<option value="นาย"
 												${user.titleNameTH == 'นาย' ? 'selected' : ''}>นาย</option>
@@ -439,9 +494,9 @@
 											placeholder="" name="user_name" id="user_name" value="${user.name}" />
 									</div>
 									<div class="col-12 col-md-5 col-lg-5 mt-9 mt-md-4">
-										<label class="required fw-medium text-gray-800 mb-2">Nickname
+										<label class="fw-medium text-gray-800 mb-2">Nickname
 											TH</label> <input type="text"
-											class="form-control text-gray-700" oninput="this.value = this.value.replace(/[^ก-๙\s]/g, '')
+											class="form-control text-gray-700" oninput="this.value = this.value.replace(/[^ก-๙\s]/g, '')"
 											placeholder="" name="user_nickName" id="user_nickName"
 											value="${user.nickName}" />
 									</div>
@@ -451,15 +506,12 @@
 									<div class="col-12 col-md-2 col-lg-2 mt-9 mt-md-4">
 										<label class="required fw-medium text-gray-800 mb-2">Title
 											Name</label> <select name="user_titleNameEN" id="user_titleNameEN" 
-											
 											data-placeholder=""
 											class="form-select text-gray-700">
 											<option value="Mr."
 												${user.titleNameEN == 'Mr.' ? 'selected' : ''}>Mr.</option>
 											<option value="Mrs."
 												${user.titleNameEN == 'Mrs.' ? 'selected' : ''}>Mrs.</option>
-											<%-- <option value="Miss"
-												${user.titleNameEN == 'Miss' ? 'selected' : ''}>Miss</option> --%>
 											<option value="Ms."
 												${user.titleNameEN == 'Ms.' ? 'selected' : ''}>Ms.</option>
 										</select>
@@ -474,7 +526,7 @@
 											oninput="this.value = this.value.replace(/[^A-Za-z ]/g, '')" />
 									</div>
 									<div class="col-12 col-md-5 col-lg-5 mt-9 mt-md-4">
-										<label class="required fw-medium text-gray-800 mb-2">Nickname
+										<label class="fw-medium text-gray-800 mb-2">Nickname
 											EN</label> <input type="text"
 											class="form-control text-gray-700"
 											placeholder="" name="user_nickNameEN" id="user_nickNameEN"
@@ -521,17 +573,24 @@
 									</div>
 								</div>
 								<div class="row mb-0 mb-lg-5">
-									<div class="ol-12 col-md-6 col-lg-6 mt-9 mt-md-4">
+									<div class="col-12 col-md-6 col-lg-6 mt-9 mt-md-4">
 										<p class="required fw-medium text-gray-800 mb-2">Citizen
 											ID</p>
 										<input type="text"
 											class="form-control text-gray-700"
 											placeholder="" name="user_citizenId" id="user_citizenId"
-											value="${user.citizenId}" maxlength="13" inputmode="numeric" required
-											oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0,13)" />
+											value="${user.citizenId}" maxlength="17" inputmode="numeric" required
+											oninput="formatCitizenId(this)"
+											/>
+											<!-- oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0,13)" /> -->
+											
+											<!-- error message -->
+										<span id="citizenIdError"
+											class="text-danger fs-7 fw-medium d-none mt-2 mb-0">
+											Please enter a valid 13-digit.</span>
 
 									</div>
-									<div class="ol-12 col-md-6 col-lg-6 mt-9 mt-md-4">
+									<div class="col-12 col-md-6 col-lg-6 mt-9 mt-md-4">
 										<p class="fs-6 fw-medium text-gray-800 mb-2">Passport ID</p>
 										<input type="text"
 											class="form-control text-gray-700"
@@ -552,9 +611,9 @@
 											Number</p>
 										<input type="text"
 										    class="form-control text-gray-700" name="user_phonenum"   id="user_phonenum"
-										    value="${user.phonenum}"  required
-										    pattern="[0-9]{10}" maxlength="10"
-										    inputmode="numeric" oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0,10)" />
+										    value="${user.phonenum}"  required oninput="formatPhone(this)" maxlength="20"/>
+										   <!--  pattern="[0-9]{10}" maxlength="10"
+										    inputmode="numeric" oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0,10)" /> -->
 									</div>
 								</div>
 								<div class="row mb-0 mb-lg-5">
@@ -911,7 +970,47 @@
 			locale: "en",
 			allowInput : false,
 		});
+		
+		const citizenInput = document.getElementById("user_citizenId");
+		if (citizenInput.value) {
+	        formatCitizenId(citizenInput);
+	    }
 	});
+	</script>
+	
+	<script>
+	function formatCitizenId(input){
+		var value = input.value.replace(/\D/g, '').slice(0, 13);
+		if (!value) { 
+	        input.value = "";
+	        document.getElementById("citizenIdError").classList.add("d-none");
+	        return;
+	    }
+		
+		var formatted = value;
+		if (value.length > 1)
+			formatted = value.slice(0,1) + '-' + value.slice(1);
+		if (value.length > 5)
+			formatted = value.slice(0,1) + '-' + value.slice(1,5) + '-' + value.slice(5);
+		if (value.length > 10)
+			formatted = value.slice(0,1) + '-' + value.slice(1,5) + '-' + value.slice(5,10) + '-' + value.slice(10);
+		if (value.length > 12)
+			formatted = value.slice(0,1) + '-' + value.slice(1,5) + '-' + value.slice(5,10) + '-' + value.slice(10,12) + '-' + value.slice(12);
+
+		input.value = formatted;
+
+		const error = document.getElementById("citizenIdError");
+		if (value.length === 13) {
+			error.classList.add("d-none");
+		} else {
+			error.classList.remove("d-none");
+		}
+	}
+	
+	
+	function formatPhone(input){
+		input.value = input.value.replace(/[^0-9\-a-zA-Zก-๙\s]/g, '');
+	}
 	</script>
 	
 	<script>
@@ -934,10 +1033,11 @@
 		  const nameEN = document.getElementById("user_fullNameEN").value
 		  const nickNameEN = document.getElementById("user_nickNameEN").value
 		  const birthDate = document.getElementById("user_birthDate").value
-		  const citizenId = document.getElementById("user_citizenId").value
+		  /* const citizenId = document.getElementById("user_citizenId").value */
 		  const passportId = document.getElementById("user_passportId").value
 		  const email = document.getElementById("user_email").value
-		  const phonenum = document.getElementById("user_phonenum").value
+		  /* const phonenumRaw = document.getElementById("user_phonenum").value
+		  const phonenum = phonenumRaw.replace(/\D/g, ''); */
 		  const address = document.getElementById("user_address").value
 		  const emergContact = document.getElementById("user_emergContact").value
 		  const emergPhone = document.getElementById("user_emergPhone").value
@@ -949,29 +1049,61 @@
 		          break;
 		      }
 		  }
+		  const citizenIdInput = document.getElementById("user_citizenId");
+		  const citizenIdFormatted = citizenIdInput.value.trim();
+		  const citizenId = citizenIdFormatted.replace(/\D/g, '');
+		  
+		  const phoneInput = document.getElementById("user_phonenum");
+		  const phoneRaw = phoneInput.value.trim();
+		  const digits = phoneRaw.replace(/\D/g, '');
+		  const mainPhone = digits.slice(0, 10);
+		  var extra = "";
+		  if (digits.length > 10) {
+			  var digitCount = 0;
+			  var cutIndex = phoneRaw.length;
+
+			  for (var i = 0; i < phoneRaw.length; i++) {
+			    if (/\d/.test(phoneRaw[i])) {
+			      digitCount++;
+			      if (digitCount === 10) {
+			        cutIndex = i + 1;
+			        break;
+			      }
+			    }
+			  }
+
+			  extra = phoneRaw.slice(cutIndex);
+			}
+		  const phonenum = mainPhone + extra;
+		  phoneInput.value = phonenum;
 
 		  if(!titleNameTH) errorFields.push("คำนำหน้า")
 		  if(!name) errorFields.push("ชื่อ สกุล")
-		  if(!nickName) errorFields.push("Nickname TH")
+		  /* if(!nickName) errorFields.push("Nickname TH") */
 		  if(!titleNameEN) errorFields.push("Title Name")
 		  if(!nameEN) errorFields.push("Full Name EN")
-		  if(!nickNameEN) errorFields.push("Nickname EN")
+		  /* if(!nickNameEN) errorFields.push("Nickname EN") */
 		  if(!gender) errorFields.push("Gender")
 		  if(!birthDate) errorFields.push("Birth Date")
-		  if(!citizenId){
-			  errorFields.push("Citizen ID")
-		  }else if(citizenId.length !== 13){
-			  errorFields.push("Citizen ID (must be 13 digits)");
+		  if (!citizenId) {
+		    errorFields.push("Citizen ID");
+		    document.getElementById("citizenIdError").classList.remove("d-none");
+		  }else if (citizenId.length !== 13) {
+				document.getElementById("citizenIdError").classList.remove("d-none");
+				return false
+		  } else {
+			    document.getElementById("citizenIdError").classList.add("d-none");
 		  }
 		  if(!email) errorFields.push("E-Mail")
 		  if(!phonenum){
 			  errorFields.push("Phone Number")
-		  }else if(phonenum.length !== 10){
-			  errorFields.push("Phone Number (must be 10 digits)");
 		  }
-		  if(emergPhone && emergPhone.length !== 10) {
+		  /* else if(phonenum.length !== 10){
+			  errorFields.push("Phone Number (must be 10 digits)");
+		  } */
+		  /* if(emergPhone && emergPhone.length !== 10) {
 			    errorFields.push("Emergency Phone (must be 10 digits)");
-			}
+			} */
 		  //console.log({titleNameTH, name, nickName, titleNameEN, nameEN, nickNameEN, gender, birthDate, citizenId, email, phonenum});
 				  
 		  if (errorFields.length > 0) {
@@ -1002,6 +1134,8 @@
 		 	        }
 		    }).then((result) => {
 		        if (result.isConfirmed) {
+		        	const citizenIdInput = document.getElementById("user_citizenId");
+		        	citizenIdInput.value = citizenIdInput.value.replace(/\D/g, '');
 		        	const form = document.getElementById("formUpdateOverview");
 		        	form.submit();
 		        }
