@@ -194,7 +194,7 @@ public class JobSiteTeamDAOImpl implements JobSiteTeamDAO {
 				+ "LEFT JOIN work_hours wh " + "       ON wh.user_create = u.id "
 				+ "      AND DATE(wh.work_hours_time_work) = :selectedDate " + "WHERE jt_me.user_id = :loginUserId "
 				+ "GROUP BY " + "    js.id_sitejob, js.name_site, " + "    u.id, u.employee_id, u.name_en, u.name "
-				+ "ORDER BY js.name_site, u.employee_id";
+				+ "ORDER BY js.id_sitejob ASC, jt.job_site_team_id ASC";
 
 		SQLQuery query = session.createSQLQuery(sql);
 		query.setParameter("loginUserId", loginUserId);

@@ -324,77 +324,80 @@ table.dataTable tbody td {
 	        }
 	    });
 	
-	    // 2. Initialize DataTable
-	    var table = $('#kt_table').DataTable({
-	        paging: true,
-	        pageLength: 10,
-	        lengthChange: false,
-	        info: false,
-	        searching: true,
-	        ordering: true,
-	        order: [],
-	        autoWidth: false,
-	        scrollCollapse: true,
-	        
-	        columnDefs: [
-	            { orderable: false, targets: [0, 2, 3, 4, 5] },
-	            { orderable: true, targets: 1 },
-	            { className: 'dt-center', targets: 0 },
-	            { className: 'dt-left', targets: 2 }
-	        ],
-	
-	        language: {
-	            emptyTable: "No data",
-	            paginate: {
-	                previous: "Previous",
-	                next: "Next"
-	            }
-	        }
-	    });
-	
-	    // 3. Custom Filter Function สำหรับ DataTable
-	    $.fn.dataTable.ext.search.push(
-	        function(settings, data, dataIndex) {
-	            if (settings.nTable.id !== 'kt_table') {
-	                return true;
-	            }
-	
-	            const siteVal = $('#jobsiteFilter').val();
-	            const statusVal = $('#statusFilter').val();
-	            
-	            // data[1] = Jobsite Name
-	            const name = data[1];
-	            
-	            // ดึง status จาก DOM
-	            const row = table.row(dataIndex).node();
-	            const status = $(row).find('.status-column').attr('data-status');
-	            
-	            // Filter by site
-	            let matchSite = true;
-	            if (siteVal && siteVal !== '') {
-	                matchSite = (name === siteVal);
-	            }
-	            
-	            // Filter by status
-	            let matchStatus = true;
-	            if (statusVal === 'active') {
-	                matchStatus = (status === "1");
-	            } else if (statusVal === 'inactive') {
-	                matchStatus = (status === "0" || !status || status === "");
-	            }
-	            
-	            return matchSite && matchStatus;
-	        }
-	    );
-	
-	    // 4. Event listeners สำหรับ filters
-	    $('#jobsiteFilter, #statusFilter').on('change', function() {
-	        table.draw();
-	    });
-	
-	    // 5. Initial draw
-	    table.draw();
-	});
+		// 2. Initialize DataTable
+		    var table = $('#kt_table').DataTable({
+		        paging: true,
+		        lengthChange: true,
+		        lengthMenu: [
+		        	[10, 25, 50 , -1], 
+		        	[10, 25, 50, "All"]
+		        ],
+		        info: false,
+		        searching: true,
+		        ordering: true,
+		        order: [],
+		        autoWidth: false,
+		        scrollCollapse: true,
+		        
+		        columnDefs: [
+		            { orderable: false, targets: [0, 2, 3, 4, 5] },
+		            { orderable: true, targets: 1 },
+		            { className: 'dt-center', targets: 0 },
+		            { className: 'dt-left', targets: 2 }
+		        ],
+		
+		        language: {
+		            emptyTable: "No data",
+		            paginate: {
+		                previous: "Previous",
+		                next: "Next"
+		            }
+		        }
+		    });
+		
+		    // 3. Custom Filter Function สำหรับ DataTable
+		    $.fn.dataTable.ext.search.push(
+		        function(settings, data, dataIndex) {
+		            if (settings.nTable.id !== 'kt_table') {
+		                return true;
+		            }
+		
+		            const siteVal = $('#jobsiteFilter').val();
+		            const statusVal = $('#statusFilter').val();
+		            
+		            // data[1] = Jobsite Name
+		            const name = data[1];
+		            
+		            // ดึง status จาก DOM
+		            const row = table.row(dataIndex).node();
+		            const status = $(row).find('.status-column').attr('data-status');
+		            
+		            // Filter by site
+		            let matchSite = true;
+		            if (siteVal && siteVal !== '') {
+		                matchSite = (name === siteVal);
+		            }
+		            
+		            // Filter by status
+		            let matchStatus = true;
+		            if (statusVal === 'active') {
+		                matchStatus = (status === "1");
+		            } else if (statusVal === 'inactive') {
+		                matchStatus = (status === "0" || !status || status === "");
+		            }
+		            
+		            return matchSite && matchStatus;
+		        }
+		    );
+		
+		    // 4. Event listeners สำหรับ filters
+		    $('#jobsiteFilter, #statusFilter').on('change', function() {
+		        table.draw();
+		    });
+		
+		    // 5. Initial draw
+		    table.draw();
+		});
 	</script>
 
 	<script>

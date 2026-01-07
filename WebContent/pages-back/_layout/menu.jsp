@@ -329,7 +329,8 @@
 						<!--end:Menu link-->
 					</div>
 					<!--end:Menu item-->
-
+					
+					<perm:permission object="master.view">
 					<!--begin:Menu item-->
 					<div class="menu-item pt-5">
 						<!--begin:Menu content-->
@@ -412,6 +413,7 @@
 						<!--end:Menu link-->
 					</div>
 					<!--end:Menu item-->
+					</perm:permission>
 					
 					<!--begin:Menu Authority-->
 					<div class="menu-item pt-5">

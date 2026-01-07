@@ -492,8 +492,11 @@ to {
     $(document).ready(function () {
         $('#kt_table_team').DataTable({
             paging: true,
-            pageLength: 10,
-            lengthChange: false,
+            lengthChange: true,
+	        lengthMenu: [
+	        	[10, 25, 50 , -1], 
+	        	[10, 25, 50, "All"]
+	        ],
             searching: false, 
             info: false,    
             autoWidth: false,

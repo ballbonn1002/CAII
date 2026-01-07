@@ -334,8 +334,11 @@
 									.DataTable(
 											{
 												paging : true,
-												pageLength : 10,
-												lengthChange : false,
+												lengthChange: true,
+										        lengthMenu: [
+										        	[10, 25, 50 , -1], 
+										        	[10, 25, 50, "All"]
+										        ],
 												searching : false,
 												info : false,
 												autoWidth : false,
@@ -352,8 +355,6 @@
 													targets : 1,
 													orderable : true
 												} ],
-
-												dom : "<'table-responsive'tr><'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7 d-flex align-items-center justify-content-center justify-content-md-end'p>>"
 											});
 						});
 	</script>
