@@ -37,3 +37,6 @@ UPDATE `equipment_type` SET `type_text` = 'ki-solid ki-wifi-square' WHERE `Type`
 UPDATE `equipment_type` SET `type_text` = 'ki-solid ki-verify' WHERE `Type` = 'sl';
 
 -- PROD 2026 JAN 06
+
+-- 07/01/2026 Koy : change length of 'head' in holiday
+ALTER TABLE `holiday` CHANGE `head` `head` VARCHAR(256) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL;
