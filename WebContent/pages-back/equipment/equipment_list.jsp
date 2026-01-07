@@ -677,7 +677,7 @@
         if (item.status === 'A') {
             btnBorrow.removeClass('d-none');
             btnBorrow.off('click').on('click', function() {
-                 window.location.href = 'borrow_equipment?equipmentId=' + id;
+                 window.location.href = 'borrow_add?equipmentId=' + id;
             });
         
         // กรณี B: Borrowed โชว์ปุ่ม Return และรายละเอียดคนยืม
