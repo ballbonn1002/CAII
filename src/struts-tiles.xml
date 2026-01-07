@@ -332,5 +332,20 @@
 		<put-attribute name="body"
 			value="/pages-back/my_jobsite/my_jobsite.jsp" />
 	</definition>
-
+	<!-- Borrow -->
+    <definition name="borrowList" extends="baseLayout">
+        <put-attribute name="title" value="Borrow List"/>
+        <put-attribute name="body"
+            value="/pages-back/borrow/borrow_list.jsp" />
+    </definition>
+    <definition name="borrowEdit" extends="baseLayout">
+        <put-attribute name="title" value="Borrow Edit"/>
+        <put-attribute name="body"
+            value="/pages-back/borrow/borrow_edit.jsp" />
+    </definition>
+    <definition name="borrowAdd" extends="baseLayout">
+        <put-attribute name="title" value="Borrow Add"/>
+        <put-attribute name="body"
+            value="/pages-back/borrow/borrow_add.jsp" />
+    </definition>
 </tiles-definitions>

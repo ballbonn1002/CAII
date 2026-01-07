@@ -1,11 +1,12 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ page import="com.cubesofttech.system.Constant" %>
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+	pageEncoding="UTF-8"%>
+<%@ page import="com.cubesofttech.system.Constant"%>
 
 <%@ taglib uri="/WEB-INF/tlds/permission.tld" prefix="perm"%>
 
 <%
-    String token = (String) session.getAttribute("token");  // ดึง token ที่สร้างไว้หลัง login
-    String targetURL = Constant.getWebContext2() +"/authorization?token=" + token;
+String token = (String) session.getAttribute("token"); // ดึง token ที่สร้างไว้หลัง login
+String targetURL = Constant.getWebContext2() + "/authorization?token=" + token;
 %>
 
 <!--begin::Sidebar-->
@@ -62,27 +63,24 @@
 					class="menu menu-column menu-rounded menu-sub-indention fw-semibold fs-6"
 					id="#kt_app_sidebar_menu" data-kt-menu="true"
 					data-kt-menu-expand="false">
-					
+
 					<!--begin:Menu item-->
 					<div class="menu-item">
-					  <a class="menu-link" href="<%= targetURL %>" data-route="#">
-					    <span class="menu-icon">
-					      <i class="ki-solid ki-pin fs-1"></i>
-					    </span>
-					    <span class="menu-title">CA Old Version</span>
-					  </a>
+						<a class="menu-link" href="<%=targetURL%>" data-route="#"> <span
+							class="menu-icon"> <i class="ki-solid ki-pin fs-1"></i>
+						</span> <span class="menu-title">CA Old Version</span>
+						</a>
 					</div>
 					<!--end:Menu item-->
-					
+
 					<!--begin:Menu item-->
 					<div class="menu-item">
 						<!--begin:Menu link-->
-						<a class="menu-link" href="#" data-route="#"> <span class="menu-icon"> 
-							<i class="ki-duotone ki-element-11 fs-1"> 
-								<span class="path1"></span>
-								<span class="path2"></span> 
-								<span class="path3"></span> 
-								<span class="path4"></span></i>
+						<a class="menu-link" href="#" data-route="#"> <span
+							class="menu-icon"> <i
+								class="ki-duotone ki-element-11 fs-1"> <span class="path1"></span>
+									<span class="path2"></span> <span class="path3"></span> <span
+									class="path4"></span></i>
 						</span> <span class="menu-title">Dashboards</span>
 						</a>
 						<!--end:Menu link-->
@@ -90,13 +88,13 @@
 					<!--end:Menu item-->
 					<!--begin:Menu item-->
 					<div class="menu-item">
-						<a class="menu-link" href="announcementList" data-route="announcementList"> <span class="menu-icon"> 
-							<i class="ki-duotone ki-calendar fs-1"> 
-								<span class="path1"></span>
-								<span class="path2"></span></i>
-						</span> <span class="menu-title">Announcement</span>
-						<i class="ki-duotone ki-check-circle fs-3 text-success">
-							<span class="path1"></span><span class="path2"></span>
+						<a class="menu-link" href="announcementList"
+							data-route="announcementList"> <span class="menu-icon">
+								<i class="ki-duotone ki-calendar fs-1"> <span class="path1"></span>
+									<span class="path2"></span></i>
+						</span> <span class="menu-title">Announcement</span> <i
+							class="ki-duotone ki-check-circle fs-3 text-success"> <span
+								class="path1"></span><span class="path2"></span>
 						</i>
 						</a>
 					</div>
@@ -118,22 +116,22 @@
 								class="ki-duotone ki-time fs-1"> <span class="path1"></span>
 									<span class="path2"></span>
 							</i>
-						</span> <span class="menu-title">Check In / Check Out</span>
-						<i class="ki-duotone ki-check-circle fs-3 text-success">
-							<span class="path1"></span><span class="path2"></span>
+						</span> <span class="menu-title">Check In / Check Out</span> <i
+							class="ki-duotone ki-check-circle fs-3 text-success"> <span
+								class="path1"></span><span class="path2"></span>
 						</i>
 						</a>
 					</div>
 					<!--end:Menu item-->
 					<!--begin:Menu item-->
 					<div class="menu-item">
-						<a class="menu-link" href="checkAllCalendar" data-route="checkAllCalendar"> <span class="menu-icon"> 
-							<i class="ki-duotone ki-calendar fs-1"> 
-								<span class="path1"></span>
-								<span class="path2"></span></i>
-						</span> <span class="menu-title">Calendar & Check List</span>
-						<i class="ki-duotone ki-check-circle fs-3 text-success">
-							<span class="path1"></span><span class="path2"></span>
+						<a class="menu-link" href="checkAllCalendar"
+							data-route="checkAllCalendar"> <span class="menu-icon">
+								<i class="ki-duotone ki-calendar fs-1"> <span class="path1"></span>
+									<span class="path2"></span></i>
+						</span> <span class="menu-title">Calendar & Check List</span> <i
+							class="ki-duotone ki-check-circle fs-3 text-success"> <span
+								class="path1"></span><span class="path2"></span>
 						</i>
 						</a>
 					</div>
@@ -150,33 +148,32 @@
 						</a>
 					</div> -->
 					<!--end:Menu item-->
-					
+
 					<!--My Leave-->
 					<div class="menu-item">
-						<a class="menu-link" href="new_myleave_list?Id=${onlineUser.id}" data-route="new_myleave_list">
-							<span class="menu-icon">
-								<i class="ki-duotone ki-pulse fs-1">
-									<span class="path1"></span>
+						<a class="menu-link" href="new_myleave_list?Id=${onlineUser.id}"
+							data-route="new_myleave_list"> <span class="menu-icon">
+								<i class="ki-duotone ki-pulse fs-1"> <span class="path1"></span>
 									<span class="path2"></span>
-								</i>
-							</span>
-							<span class="menu-title">My Leave</span>
-							<i class="ki-duotone ki-check-circle fs-3 text-success">
-								<span class="path1"></span><span class="path2"></span>
 							</i>
+						</span> <span class="menu-title">My Leave</span> <i
+							class="ki-duotone ki-check-circle fs-3 text-success"> <span
+								class="path1"></span><span class="path2"></span>
+						</i>
 						</a>
 					</div>
 					<!--My Leave-->
-					
+
 					<!--begin:Menu item-->
 					<div class="menu-item">
-						<a class="menu-link" href="my_jobsite?Id=${onlineUser.id}" data-route="my_jobsite"> <span class="menu-icon">
-								<i class="ki-duotone ki-map fs-1"> <span class="path1"></span>
+						<a class="menu-link" href="my_jobsite?Id=${onlineUser.id}"
+							data-route="my_jobsite"> <span class="menu-icon"> <i
+								class="ki-duotone ki-map fs-1"> <span class="path1"></span>
 									<span class="path2"></span> <span class="path3"></span>
 							</i>
-						</span> <span class="menu-title">My Job Site</span>
-						<i class="ki-duotone ki-check-circle fs-3 text-success">
-							<span class="path1"></span><span class="path2"></span>
+						</span> <span class="menu-title">My Job Site</span> <i
+							class="ki-duotone ki-check-circle fs-3 text-success"> <span
+								class="path1"></span><span class="path2"></span>
 						</i>
 						</a>
 					</div>
@@ -220,14 +217,14 @@
 					<!--begin:Menu item-->
 					<div class="menu-item">
 						<!--begin:Menu link-->
-						<a class="menu-link" href="user-list" data-route="user-list"> <span class="menu-icon">
-								<i class="ki-duotone ki-user-square fs-1"> <span
-									class="path1"></span> <span class="path2"></span> <span
-									class="path3"></span>
+						<a class="menu-link" href="user-list" data-route="user-list">
+							<span class="menu-icon"> <i
+								class="ki-duotone ki-user-square fs-1"> <span class="path1"></span>
+									<span class="path2"></span> <span class="path3"></span>
 							</i>
-						</span> <span class="menu-title">Employee Profile</span>
-						<i class="ki-duotone ki-check-circle fs-3 text-success">
-							<span class="path1"></span><span class="path2"></span>
+						</span> <span class="menu-title">Employee Profile</span> <i
+							class="ki-duotone ki-check-circle fs-3 text-success"> <span
+								class="path1"></span><span class="path2"></span>
 						</i>
 						</a>
 						<!--end:Menu link-->
@@ -245,23 +242,19 @@
 						end:Menu link
 					</div> -->
 					<!--end:Menu item-->
-					
+
 					<!--Leave Approve-->
 					<perm:permission object="leave.approve">
 						<div class="menu-item">
-							<a class="menu-link" href="new_leave_approved" data-route="new_leave_approved">
-								<span class="menu-icon">
-									<i class="ki-duotone ki-pulse fs-1">
-										<span class="path1"></span>
+							<a class="menu-link" href="new_leave_approved"
+								data-route="new_leave_approved"> <span class="menu-icon">
+									<i class="ki-duotone ki-pulse fs-1"> <span class="path1"></span>
 										<span class="path2"></span>
-									</i>
-								</span>
-								<span class="menu-title">
-									Leave Approve
-								</span>
-								<i class="ki-duotone ki-check-circle fs-3 text-success">
-									<span class="path1"></span><span class="path2"></span>
 								</i>
+							</span> <span class="menu-title"> Leave Approve </span> <i
+								class="ki-duotone ki-check-circle fs-3 text-success"> <span
+									class="path1"></span><span class="path2"></span>
+							</i>
 							</a>
 						</div>
 					</perm:permission>
@@ -307,7 +300,8 @@
 					<!--begin:Menu item-->
 					<div class="menu-item">
 						<!--begin:Menu link-->
-						<a class="menu-link" href="equipment_list" data-route="equipment_list"> <span class="menu-icon">
+						<a class="menu-link" href="equipment_list"
+							data-route="equipment_list"> <span class="menu-icon">
 								<i class="ki-duotone ki-monitor-mobile fs-1"> <span
 									class="path1"></span> <span class="path2"></span>
 							</i>
@@ -317,76 +311,81 @@
 					</div>
 					<!--end:Menu item-->
 					<!--begin:Menu item-->
-					<div class="menu-item">
-						<!--begin:Menu link-->
-						<a class="menu-link" href="#" data-route="#"> <span class="menu-icon">
-								<i class="ki-duotone ki-delivery-3 fs-1"> <span
-									class="path1"></span> <span class="path2"></span> <span
-									class="path3"></span>
-							</i>
-						</span> <span class="menu-title">Borrow</span>
-						</a>
-						<!--end:Menu link-->
-					</div>
-					<!--end:Menu item-->
-					
-					<perm:permission object="master.view">
-					<!--begin:Menu item-->
-					<div class="menu-item pt-5">
-						<!--begin:Menu content-->
-						<div class="menu-content">
-							<span class="menu-heading fw-bold text-uppercase fs-7">Master</span>
+					<perm:permission object="borrow.view">
+						<div class="menu-item">
+							<!--begin:Menu link-->
+							<a class="menu-link" href="borrow_list" data-route="borrow_list">
+								<span class="menu-icon"> <i
+									class="ki-duotone ki-delivery-3 fs-1"> <span class="path1"></span>
+										<span class="path2"></span> <span class="path3"></span>
+								</i>
+							</span> <span class="menu-title">Borrow</span>
+							</a>
+							<!--end:Menu link-->
 						</div>
-						<!--end:Menu content-->
-					</div>
+					</perm:permission>
 					<!--end:Menu item-->
-					<!--begin:Menu item-->
-					<div class="menu-item">
-						<!--begin:Menu link-->
-						<a class="menu-link" href="position_list" data-route="position_list"> <span class="menu-icon">
-								<i class="ki-duotone ki-monitor-mobile fs-1"> <span
-									class="path1"></span> <span class="path2"></span>
+
+					<perm:permission object="master.view">
+						<!--begin:Menu item-->
+						<div class="menu-item pt-5">
+							<!--begin:Menu content-->
+							<div class="menu-content">
+								<span class="menu-heading fw-bold text-uppercase fs-7">Master</span>
+							</div>
+							<!--end:Menu content-->
+						</div>
+						<!--end:Menu item-->
+						<!--begin:Menu item-->
+						<div class="menu-item">
+							<!--begin:Menu link-->
+							<a class="menu-link" href="position_list"
+								data-route="position_list"> <span class="menu-icon">
+									<i class="ki-duotone ki-monitor-mobile fs-1"> <span
+										class="path1"></span> <span class="path2"></span>
+								</i>
+							</span> <span class="menu-title">Position</span> <i
+								class="ki-duotone ki-check-circle fs-3 text-success"> <span
+									class="path1"></span><span class="path2"></span>
 							</i>
-						</span> <span class="menu-title">Position</span>
-						<i class="ki-duotone ki-check-circle fs-3 text-success">
-							<span class="path1"></span><span class="path2"></span>
-						</i>
-						</a>
-						<!--end:Menu link-->
-					</div>
-					<!--end:Menu item-->
-					<!--begin:Menu item-->
-					<div class="menu-item">
-						<!--begin:Menu link-->
-						<a class="menu-link" href="department_list" data-route="department_list"> <span class="menu-icon">
-								<i class="ki-duotone ki-monitor-mobile fs-1"> <span
-									class="path1"></span> <span class="path2"></span>
+							</a>
+							<!--end:Menu link-->
+						</div>
+						<!--end:Menu item-->
+						<!--begin:Menu item-->
+						<div class="menu-item">
+							<!--begin:Menu link-->
+							<a class="menu-link" href="department_list"
+								data-route="department_list"> <span class="menu-icon">
+									<i class="ki-duotone ki-monitor-mobile fs-1"> <span
+										class="path1"></span> <span class="path2"></span>
+								</i>
+							</span> <span class="menu-title">Department</span> <i
+								class="ki-duotone ki-check-circle fs-3 text-success"> <span
+									class="path1"></span><span class="path2"></span>
 							</i>
-						</span> <span class="menu-title">Department</span>
-						<i class="ki-duotone ki-check-circle fs-3 text-success">
-							<span class="path1"></span><span class="path2"></span>
-						</i>
-						</a>
-						<!--end:Menu link-->
-					</div>
-					<!--end:Menu item-->
-					<!--begin:Menu item-->
-					<div class="menu-item">
-						<!--begin:Menu link-->
-						<a class="menu-link" href="jobsite_list" data-route="jobsite_list"> <span class="menu-icon">
-								<i class="ki-duotone ki-monitor-mobile fs-1"> <span
-									class="path1"></span> <span class="path2"></span>
+							</a>
+							<!--end:Menu link-->
+						</div>
+						<!--end:Menu item-->
+						<!--begin:Menu item-->
+						<div class="menu-item">
+							<!--begin:Menu link-->
+							<a class="menu-link" href="jobsite_list"
+								data-route="jobsite_list"> <span class="menu-icon"> <i
+									class="ki-duotone ki-monitor-mobile fs-1"> <span
+										class="path1"></span> <span class="path2"></span>
+								</i>
+							</span> <span class="menu-title">Job Site</span> <i
+								class="ki-duotone ki-check-circle fs-3 text-success"> <span
+									class="path1"></span><span class="path2"></span>
 							</i>
-						</span> <span class="menu-title">Job Site</span>
-						<i class="ki-duotone ki-check-circle fs-3 text-success">
-							<span class="path1"></span><span class="path2"></span>
-						</i>
-						</a>
-						<!--end:Menu link-->
-					</div>
-					<!--end:Menu item-->
-					<!--begin:Menu item-->
-					<!-- <div class="menu-item">
+							</a>
+							<!--end:Menu link-->
+						</div>
+						<!--end:Menu item-->
+						<!--begin:Menu item-->
+						<!-- <div class="menu-item">
 						begin:Menu link
 						<a class="menu-link" href="#" data-route="#"> <span class="menu-icon">
 								<i class="ki-duotone ki-monitor-mobile fs-1"> <span
@@ -396,48 +395,44 @@
 						</a>
 						end:Menu link
 					</div> -->
-					<!--end:Menu item-->
-					<!--begin:Menu item-->
-					<div class="menu-item">
-						<!--begin:Menu link-->
-						<a class="menu-link " data-route="holiday_list" href="holiday_list">
-							<span class="menu-icon"> <i
-								class="ki-duotone ki-delivery-3 fs-1"> <span class="path1"></span>
-									<span class="path2"></span> <span class="path3"></span>
+						<!--end:Menu item-->
+						<!--begin:Menu item-->
+						<div class="menu-item">
+							<!--begin:Menu link-->
+							<a class="menu-link " data-route="holiday_list"
+								href="holiday_list"> <span class="menu-icon"> <i
+									class="ki-duotone ki-delivery-3 fs-1"> <span class="path1"></span>
+										<span class="path2"></span> <span class="path3"></span>
+								</i>
+							</span> <span class="menu-title">Holiday</span> <i
+								class="ki-duotone ki-check-circle fs-3 text-success"> <span
+									class="path1"></span><span class="path2"></span>
 							</i>
-						</span> <span class="menu-title">Holiday</span>
-						<i class="ki-duotone ki-check-circle fs-3 text-success">
-							<span class="path1"></span><span class="path2"></span>
-						</i>
-						</a>
-						<!--end:Menu link-->
-					</div>
-					<!--end:Menu item-->
+							</a>
+							<!--end:Menu link-->
+						</div>
+						<!--end:Menu item-->
 					</perm:permission>
-					
+
 					<!--begin:Menu Authority-->
 					<div class="menu-item pt-5">
 						<div class="menu-content">
 							<span class="menu-heading fw-bold text-uppercase fs-7">Authority</span>
 						</div>
 					</div>
-					
+
 					<!--Role Management-->
 					<perm:permission object="role.view">
 						<div class="menu-item">
 							<a class="menu-link" href="role-list" data-route="role-list">
-								<span class="menu-icon">
-									<i class="ki-duotone ki-security-user fs-1">
-										<span class="path1"></span>
-										<span class="path2"></span>
-									</i>
-								</span>
-								<span class="menu-title">
-									Role Management
-								</span>
-								<i class="ki-duotone ki-check-circle fs-3 text-success">
-									<span class="path1"></span><span class="path2"></span>
+								<span class="menu-icon"> <i
+									class="ki-duotone ki-security-user fs-1"> <span
+										class="path1"></span> <span class="path2"></span>
 								</i>
+							</span> <span class="menu-title"> Role Management </span> <i
+								class="ki-duotone ki-check-circle fs-3 text-success"> <span
+									class="path1"></span><span class="path2"></span>
+							</i>
 							</a>
 						</div>
 					</perm:permission>
@@ -492,10 +487,9 @@
 					<!--end:Menu item-->
 					<!--begin:Menu item-->
 					<div class="menu-item">
-						<a class="menu-link" href="signout" data-route="#">
-							<span class="menu-icon"> 
-							<i class="ki-duotone ki-exit-left fs-1"> 
-								<span class="path1"></span><span class="path2"></span>
+						<a class="menu-link" href="signout" data-route="#"> <span
+							class="menu-icon"> <i class="ki-duotone ki-exit-left fs-1">
+									<span class="path1"></span><span class="path2"></span>
 							</i>
 						</span> <span class="menu-title">Log Out</span>
 						</a>
@@ -536,8 +530,9 @@
 							<!--begin:Menu item-->
 							<div class="menu-item">
 								<!--begin:Menu link-->
-								<a class="menu-link" href="demo_dashboard" data-route="demo_dashboard"> <span
-									class="menu-icon"> <span class="bullet bullet-dot"></span>
+								<a class="menu-link" href="demo_dashboard"
+									data-route="demo_dashboard"> <span class="menu-icon">
+										<span class="bullet bullet-dot"></span>
 								</span> <span class="menu-title">Dashboards</span>
 								</a>
 								<!--end:Menu link-->
@@ -546,8 +541,8 @@
 							<!--begin:Menu item-->
 							<div class="menu-item">
 								<!--begin:Menu link-->
-								<a class="menu-link" data-route="demo_table" href="demo_table"> <span class="menu-icon">
-										<span class="bullet bullet-dot"></span>
+								<a class="menu-link" data-route="demo_table" href="demo_table">
+									<span class="menu-icon"> <span class="bullet bullet-dot"></span>
 								</span> <span class="menu-title">Table</span>
 								</a>
 								<!--end:Menu link-->

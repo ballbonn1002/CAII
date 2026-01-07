@@ -796,7 +796,61 @@
 			<result name="login">/index.jsp</result>
 			<result name="error">/index.jsp</result>
 		</action>
+		<!--Borrow -->
+		<action name="borrow_list"
+			class="com.cubesofttech.action.BorrowingAction" method="open">
+			<result name="success" type="tiles">borrowList</result>
+		</action>
+		<action name="borrow_list"
+			class="com.cubesofttech.action.BorrowingAction"
+			method="newEquipBorrowList">
 
+			<result name="success" type="tiles">borrowList</result>
+			<result name="error">/index.jsp</result>
+		</action>
+		<action name="borrow_edit"
+			class="com.cubesofttech.action.BorrowingAction" method="eBorrowEdit">
+
+			<result name="success" type="tiles">borrowEdit</result>
+			<result name="error">/index.jsp</result>
+		</action>
+		<action name="eBorrowUpdate"
+			class="com.cubesofttech.action.BorrowingAction"
+			method="eBorrowUpdate">
+			<result name="success" type="redirectAction">borrow_list</result>
+			<result name="error">/index.jsp</result>
+			<result name="input" type="tiles">borrowEdit</result>
+		</action>
+		<action name="borrow_add"
+			class="com.cubesofttech.action.BorrowingAction" method="eBorrow">
+
+			<result name="success" type="tiles">borrowAdd</result>
+			<result name="error">/index.jsp</result>
+		</action>
+		<action name="eBorrowAdd"
+			class="com.cubesofttech.action.BorrowingAction" method="eBorrowAdd">
+			<result name="success" type="redirectAction">borrow_list</result>
+			<result name="error">/index.jsp</result>
+			<result name="input" type="tiles">borrowAdd</result>
+		</action>
+		<action name="eBorrowCancel"
+			class="com.cubesofttech.action.BorrowingAction"
+			method="cancelMyNewBorrow">
+			<result name="success" type="redirectAction">borrow_list</result>
+			<result name="error">/index.jsp</result>
+			<result name="input" type="tiles">borrowList</result>
+		</action>
+		<action name="eBorrowConfirm"
+			class="com.cubesofttech.action.BorrowingAction"
+			method="borrowMyNewBorrow">
+			<result name="success" type="redirectAction">borrow_list</result>
+			<result name="error">/index.jsp</result>
+			<result name="input" type="tiles">borrowList</result>
+		</action>
+		<action name="eBorrowReturn"
+			class="com.cubesofttech.action.BorrowingAction"
+			method="returnMyNewBorrow">
+		</action>
 	</package>
 
 </struts>
