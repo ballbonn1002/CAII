@@ -40,3 +40,5 @@ UPDATE `equipment_type` SET `type_text` = 'ki-solid ki-verify' WHERE `Type` = 's
 
 -- 07/01/2026 Koy : change length of 'head' in holiday
 ALTER TABLE `holiday` CHANGE `head` `head` VARCHAR(256) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL;
+
+-- PROD 2026 JAN 08
