@@ -63,10 +63,14 @@ public class RoleAction extends ActionSupport {
 
 	private Role role;
 
+	private AuthorizedObjectGroup authorizedObjectGroup;
+
 	private User user;
 
 	private String roleId;
 
+	private Integer authorizedObjectGroupId;
+	
 	@Autowired
 	public RoleService roleService;
 
@@ -152,6 +156,15 @@ public class RoleAction extends ActionSupport {
 	    }
 	}
 
+	public String roleSettingAddingPage() {
+		try {
+			return SUCCESS;
+		} catch (Exception e) {
+			log.error(e);
+			return ERROR;
+		}
+	}
+	
 	public String listSetting() {
 		try {
 			request.setAttribute("role", role);
@@ -229,6 +242,20 @@ public class RoleAction extends ActionSupport {
 		}
 	}
 
+	public String performAddSetting() {
+		try {
+			
+			authorizedObjectGroup.setTimeCreate(DateUtil.getCurrentTime());
+			authorizedObjectGroup.setTimeUpdate(DateUtil.getCurrentTime());
+			authorizedObjectGroupDAO.save(authorizedObjectGroup);
+
+			return SUCCESS;
+		} catch (Exception e) {
+			log.error(e);
+			return ERROR;
+		}
+	}
+	
 	public String deleteRole() {
 		try {
 			String id = request.getParameter("id");
@@ -245,4 +272,24 @@ public class RoleAction extends ActionSupport {
 		}
 	}
 
+	public String deleteRoleSetting() {
+		try {
+			String id = request.getParameter("id");
+			
+			AuthorizedObjectGroup authorizedObjectGroup = new AuthorizedObjectGroup();
+			authorizedObjectGroup = authorizedObjectGroupDAO.findById(id);
+			log.debug(authorizedObjectGroup);
+			
+			authorizedObjectGroupDAO.delete(authorizedObjectGroup);
+			
+			List<AuthorizedObjectGroup> authorizedHierarchy = authorizedObjectGroupDAO.getAuthorizedHierarchy();
+			request.setAttribute("aoList", authorizedHierarchy);
+			
+			return SUCCESS;
+		} catch (Exception e) {
+			
+			return ERROR;
+		}
+	}
+	
 }

@@ -398,9 +398,19 @@
 			<result name="error">/index.jsp</result>
 		</action>
 		<!-- เพิ่ม function add -->
-		<action name="role-add"
-			class="com.cubesofttech.action.RoleAction" method="openEdit2">
+		<action name="role-add" class="com.cubesofttech.action.RoleAction" method="openEdit2">
 			<result name="success" type="tiles">role.add</result>
+			<result name="error">/index.jsp</result>
+		</action>
+
+		<!-- role setting adding page -->
+		<action name="role-add-setting" class="com.cubesofttech.action.RoleAction" method="roleSettingAddingPage">
+			<result name="success" type="tiles">role.add</result>
+			<result name="error">/index.jsp</result>
+		</action>
+		<!-- role setting action save -->
+		<action name="role-perform-add-setting" class="com.cubesofttech.action.RoleAction" method="performAddSetting">
+			<result name="success" type="redirectAction">role-edit-setting?roleIdSetting=${roleIdSetting}</result>
 			<result name="error">/index.jsp</result>
 		</action>
 
@@ -410,8 +420,7 @@
 		</action>
 
 		<!-- เพิ่ม function add -->
-		<action name="role-perform-add"
-			class="com.cubesofttech.action.RoleAction" method="performAdd">
+		<action name="role-perform-add" class="com.cubesofttech.action.RoleAction" method="performAdd">
 			<result name="success" type="redirectAction">role-edit?roleId=${roleId}
 			</result>
 			<result name="error">/index.jsp</result>
@@ -428,7 +437,13 @@
 		<!-- function delete -->
 		<action name="role-delete"
 			class="com.cubesofttech.action.RoleAction" method="deleteRole">
-			<result name="success" type="chain">role-list</result>	<!-- type = "chain" เป้นการส่งให้ชื่อ Action นั้นทำงาน -->
+			<result name="success" type="chain">role-list</result>
+			<result name="error">/index.jsp</result>
+		</action>
+
+		<!-- role setting delete -->
+		<action name="role-delete-setting" class="com.cubesofttech.action.RoleAction" method="deleteRoleSetting">
+			<result name="success" type="chain">role-list-setting</result>
 			<result name="error">/index.jsp</result>
 		</action>
 		<!-- Role Management ================================================================================================== -->

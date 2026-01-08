@@ -2,14 +2,19 @@ package com.cubesofttech.dao;
 
 import java.util.List;
 
-import com.cubesofttech.model.AuthorizedObject;
 import com.cubesofttech.model.AuthorizedObjectGroup;
 
 
 public interface AuthorizedObjectGroupDAO {
     
-    public List<AuthorizedObjectGroup> findAll() throws Exception;
+	void save(AuthorizedObjectGroup authorizedObjectGroup) throws Exception;
+	
+    public AuthorizedObjectGroup findById(String id) throws Exception;
+    
+    public void delete(AuthorizedObjectGroup authorizedObjectGroup) throws Exception;
+
+	public List<AuthorizedObjectGroup> findAll() throws Exception;
     
     public List<AuthorizedObjectGroup> getAuthorizedHierarchy() throws Exception;
-    
+
 }

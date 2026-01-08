@@ -16,12 +16,43 @@ import org.springframework.stereotype.Repository;
 
 import com.cubesofttech.model.AuthorizedObject;
 import com.cubesofttech.model.AuthorizedObjectGroup;
+import com.cubesofttech.model.Role;
 
 @Repository
 public class AuthorizedObjectGroupDAOImpl implements AuthorizedObjectGroupDAO {
 
 	@Autowired
 	private SessionFactory sessionFactory;
+	
+    @Override
+    public void save(AuthorizedObjectGroup authorizedObjectGroup) throws Exception{
+        Session session = this.sessionFactory.getCurrentSession();
+        session.save(authorizedObjectGroup);
+        session.flush();
+        //session.close();
+    }
+    
+    @Override
+    public AuthorizedObjectGroup findById(String id) throws Exception {
+        Session session = this.sessionFactory.getCurrentSession();
+        AuthorizedObjectGroup authorizedObjectGroup = null;
+        try {
+            authorizedObjectGroup = (AuthorizedObjectGroup) session.get(AuthorizedObjectGroup.class, id);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }finally{
+            //session.close();
+        }        
+        return authorizedObjectGroup;
+    }
+    
+    @Override
+    public void delete(AuthorizedObjectGroup authorizedObjectGroup) throws Exception {
+        Session session = this.sessionFactory.getCurrentSession();
+        session.delete(authorizedObjectGroup);
+        session.flush();
+        //session.close();
+    }
 
 	@Override
 	public List<AuthorizedObjectGroup> findAll() throws Exception {
