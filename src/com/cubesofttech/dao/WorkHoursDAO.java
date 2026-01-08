@@ -218,5 +218,7 @@ public interface WorkHoursDAO {
 
 	 // get all column by using userid, lastyear, currentyears
 	 public List<Map<String, Object>> getCheckListFromLastAndCurrentYear(String userId, int lastyear, int currentYear) throws Exception;
+	 
+	 public String findWorkTypeByDaily(String userId, LocalDate date, String workHoursType, String orderType) throws Exception;
 
 }

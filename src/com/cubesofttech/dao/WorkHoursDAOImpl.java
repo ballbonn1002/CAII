@@ -2614,4 +2614,31 @@ public class WorkHoursDAOImpl implements WorkHoursDAO {
 		}
 		return checkList;
 	}
+	
+	@Override
+	public String findWorkTypeByDaily(String userId, LocalDate date, String workHoursType, String orderType) {
+	    Session session = this.sessionFactory.getCurrentSession();
+	    try {
+	    	
+	        String sql = "SELECT work_type FROM work_hours " +
+	                     "WHERE user_create = :userId " +
+	                     "AND DATE(work_hours_time_work) = :date " +
+	                     "AND work_hours_type = :whType " +
+	                     "ORDER BY work_hours_time_work " + orderType + " LIMIT 1";
+	        
+	        SQLQuery query = session.createSQLQuery(sql);
+	        query.setParameter("userId", userId);
+	        query.setParameter("date", date.toString());
+	        query.setParameter("whType", workHoursType);
+	        
+	        Object result = query.uniqueResult();
+	        
+	        if (result != null) {
+	            return result.toString();
+	        }
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	    }
+	    return "2"; // Default "WFH"
+	}
 }

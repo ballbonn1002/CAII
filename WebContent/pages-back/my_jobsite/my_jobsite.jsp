@@ -20,7 +20,6 @@
 .cursor-default {
 	cursor: default !important;
 }
-
 </style>
 </head>
 <body>
@@ -59,7 +58,7 @@
 								class="card-title d-flex flex-column justify-content-between"
 								style="margin: 0 !important;">
 
-								<h3 class="page-heading text-gray-900 fw-medium fs-4 my-0">
+								<h3 class="page-heading text-gray-900 fw-medium fs-4 my-7">
 									<c:set var="headerDisplay" value="" />
 
 									<c:if test="${not empty userData.employeeId}">
@@ -192,8 +191,8 @@
 														</c:if>
 													</c:if> ${displayTeam}</td>
 
-															<c:set var="isLeaveStatus"
-																value="${t.status == 'WAITING' || 
+												<c:set var="isLeaveStatus"
+													value="${t.status == 'WAITING' || 
 			                                                 t.status == 'ANNUAL_LEAVE' || 
 			                                                 t.status == 'BUSINESS_LEAVE' || 
 			                                                 t.status == 'SICK_LEAVE' || 
@@ -206,10 +205,23 @@
 												<td class="fw-bold fs-6 text-gray-800"><c:if
 														test="${!isLeaveStatus && not empty t.check_in}">
 														<div class="d-flex align-items-center">
-															<i class="ki-duotone ki-home-2 text-success me-2"
-																style="font-size: 20px;"> <span class="path1"></span>
-																<span class="path2"></span>
-															</i> <span>${t.check_in}</span>
+
+															<c:choose>
+																<c:when test="${t.check_in_type == '1'}">
+																	<i class="ki-duotone ki-map text-primary me-2"
+																		style="font-size: 20px;"> <span class="path1"></span><span
+																		class="path2"></span><span class="path3"></span>
+																	</i>
+																</c:when>
+
+																<c:otherwise>
+																	<i class="ki-duotone ki-home-2 text-success me-2"
+																		style="font-size: 20px;"> <span class="path1"></span><span
+																		class="path2"></span>
+																	</i>
+																</c:otherwise>
+															</c:choose>
+															<span>${t.check_in}</span>
 														</div>
 													</c:if></td>
 
@@ -217,10 +229,23 @@
 												<td class="fw-bold fs-6 text-gray-800"><c:if
 														test="${!isLeaveStatus && not empty t.check_out}">
 														<div class="d-flex align-items-center">
-															<i class="ki-duotone ki-home-2 text-success me-2"
-																style="font-size: 20px;"> <span class="path1"></span>
-																<span class="path2"></span>
-															</i> <span>${t.check_out}</span>
+
+															<c:choose>
+																<c:when test="${t.check_out_type == '1'}">
+																	<i class="ki-duotone ki-map text-primary me-2"
+																		style="font-size: 20px;"> <span class="path1"></span><span
+																		class="path2"></span><span class="path3"></span>
+																	</i>
+																</c:when>
+
+																<c:otherwise>
+																	<i class="ki-duotone ki-home-2 text-success me-2"
+																		style="font-size: 20px;"> <span class="path1"></span><span
+																		class="path2"></span>
+																	</i>
+																</c:otherwise>
+															</c:choose>
+															<span>${t.check_out}</span>
 														</div>
 													</c:if></td>
 
@@ -246,7 +271,8 @@
 														<c:set var="statusText" value="Unfinished Work" />
 													</c:when>
 													<c:when test="${t.status == 'INCOMPLETE'}">
-														<c:set var="badgeClass" value="badge bg-gray-800 text-white" />
+														<c:set var="badgeClass"
+															value="badge bg-gray-800 text-white" />
 														<c:set var="statusText" value="Incomplete" />
 													</c:when>
 													<c:when test="${t.status == 'SICK_LEAVE'}">
@@ -257,7 +283,8 @@
 														<c:set var="statusIcon" value="ki-duotone ki-watch" />
 														<c:choose>
 															<c:when test="${t.leave_desc == 'ลาป่วย'}">
-																<c:set var="badgeClass" value="badge bg-purple text-white" />
+																<c:set var="badgeClass"
+																	value="badge bg-purple text-white" />
 															</c:when>
 															<c:otherwise>
 																<c:set var="badgeClass" value="badge-primary" />
@@ -282,8 +309,9 @@
 												<td><span class="badge ${badgeClass} badge-lg"
 													style="height: 26px;"> <c:if
 															test="${not empty statusIcon}">
-															<i class="${statusIcon} text-warning me-2" style="font-size: 16px;">
-																<span class="path1"></span> <span class="path2"></span>
+															<i class="${statusIcon} text-warning me-2"
+																style="font-size: 16px;"> <span class="path1"></span>
+																<span class="path2"></span>
 															</i>
 														</c:if> ${statusText}
 												</span></td>
@@ -327,36 +355,29 @@
 
 	<!-- DATA TABLE -->
 	<script>
-		$(document)
-				.ready(
-						function() {
-							$('.table-jobsite')
-									.DataTable(
-											{
-												paging : true,
-												lengthChange: true,
-										        lengthMenu: [
-										        	[10, 25, 50 , -1], 
-										        	[10, 25, 50, "All"]
-										        ],
-												searching : false,
-												info : false,
-												autoWidth : false,
-												order : [],
+		$(document).ready(function() {
+			$('.table-jobsite').DataTable({
+				paging : true,
+				lengthChange : true,
+				lengthMenu : [ [ 10, 25, 50, -1 ], [ 10, 25, 50, "All" ] ],
+				searching : false,
+				info : false,
+				autoWidth : false,
+				order : [],
 
-												language : {
-													emptyTable : "No employee",
-												},
+				language : {
+					emptyTable : "No employee",
+				},
 
-												columnDefs : [ {
-													targets : [ 0, 2, 3, 4 ],
-													orderable : false
-												}, {
-													targets : 1,
-													orderable : true
-												} ],
-											});
-						});
+				columnDefs : [ {
+					targets : [ 0, 2, 3, 4 ],
+					orderable : false
+				}, {
+					targets : 1,
+					orderable : true
+				} ],
+			});
+		});
 	</script>
 
 </body>

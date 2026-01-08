@@ -290,6 +290,12 @@ public class WorkHoursService {
 
 		Timestamp tsIn = workHoursDAO.findMinTimeByType(userId, workDate, "1");
 		Timestamp tsOut = workHoursDAO.findMaxTimeByType(userId, workDate, "2");
+		
+		String checkInType = workHoursDAO.findWorkTypeByDaily(userId, workDate, "1", "ASC");
+        String checkOutType = workHoursDAO.findWorkTypeByDaily(userId, workDate, "2", "DESC");
+        
+        result.put("check_in_type", checkInType);
+        result.put("check_out_type", checkOutType);
 
 		// ================== Priority 2 : Incomplete ==================
 		if (tsIn == null || tsOut == null) {

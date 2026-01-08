@@ -495,6 +495,8 @@ public class JobsiteAction extends ActionSupport {
 				member.put("check_in", statusMap.get("check_in"));
 				member.put("check_out", statusMap.get("check_out"));
 				member.put("leave_desc", statusMap.get("leave_desc"));
+				member.put("check_in_type", statusMap.get("check_in_type"));
+			    member.put("check_out_type", statusMap.get("check_out_type"));
 
 				teamBySite.get(siteId).add(member);
 			}

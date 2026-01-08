@@ -41,4 +41,7 @@ UPDATE `equipment_type` SET `type_text` = 'ki-solid ki-verify' WHERE `Type` = 's
 -- 07/01/2026 Koy : change length of 'head' in holiday
 ALTER TABLE `holiday` CHANGE `head` `head` VARCHAR(256) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL;
 
+-- 7/01/2026 max(Intern): Modify 'description' column in 'job_site' table to support Thai characters --
+ALTER TABLE job_site MODIFY description VARCHAR(1024) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
 -- PROD 2026 JAN 08
