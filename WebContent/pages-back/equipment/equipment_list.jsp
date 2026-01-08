@@ -5,7 +5,7 @@
 <div class="app-main flex-column flex-row-fluid" id="kt_app_main">
     <div class="d-flex flex-column flex-column-fluid">
         <div id="kt_app_toolbar" class="app-toolbar py-3 py-lg-6">
-            <div id="kt_app_toolbar_container" class="app-container container-xxl d-flex flex-stack">
+            <div id="kt_app_toolbar_container" class="app-container container-fluid d-flex flex-stack">
                 <div class="page-title d-flex flex-column justify-content-center flex-wrap me-3">
                     <h1 class="page-heading d-flex text-gray-700 fw-semibold my-0">Equipment List</h1>
                     <ul class="breadcrumb breadcrumb-separatorless fw-semibold fs-7 my-0 pt-1">
@@ -23,7 +23,7 @@
             </div>
         </div>
         <div id="kt_app_content" class="app-content flex-column-fluid">
-            <div id="kt_app_content_container" class="app-container container-xxl">
+            <div id="kt_app_content_container" class="app-container container-fluid">
 
                 <div class="card">
                     <div class="card-border-radius">
@@ -97,20 +97,7 @@
                             <div class="border border-dashed border-gray-400 rounded-3 px-7 py-6 mb-8 bg-transparent">
                                 <div class="d-flex flex-column">
                                     <span class="fs-4 text-gray-800 fw-bold mb-4">Type</span>
-                                    <div class="d-flex flex-wrap gap-3">
-                                        <div class="d-inline-flex align-items-center me-10"><i class="ki-solid ki-laptop fs-1 text-gray-500 me-3"></i>
-                                            <span class="fs-6 fw-normal text-gray-900">Computer</span></div>
-                                        <div class="d-inline-flex align-items-center me-10"><i class="ki-solid ki-keyboard fs-1 text-gray-500 me-3"></i>
-                                            <span class="fs-6 fw-normal text-gray-900">Instrument</span></div>
-                                        <div class="d-inline-flex align-items-center me-10"><i class="ki-solid ki-verify fs-1 text-gray-500 me-3"></i>
-                                            <span class="fs-6 fw-normal text-gray-900">Software License</span></div>
-                                        <div class="d-inline-flex align-items-center me-10"><i class="ki-solid ki-phone fs-1 text-gray-500 me-3"></i>
-                                            <span class="fs-6 fw-normal text-gray-900">Mobile</span></div>
-                                        <div class="d-inline-flex align-items-center me-10"><i class="ki-solid ki-dots-square fs-1 text-gray-500 me-3"></i>
-                                            <span class="fs-6 fw-normal text-gray-900">Other</span></div>
-                                        <div class="d-inline-flex align-items-center me-10"><i class="ki-solid ki-wifi-square fs-1 text-gray-500 me-3"></i>
-                                            <span class="fs-6 fw-normal text-gray-900">Pocket WIFI</span></div>
-                                    </div>
+                                    <div class="d-flex flex-wrap gap-3" id="typeSummaryContainer"></div>
                                 </div>
                             </div>
 
@@ -424,6 +411,43 @@
         // Set Filter
         $('#statusFilterContainer').html(statusFilterHtml);
         $('#typeFilterContainer').html(typeFilterHtml);
+        
+      // Dynamic Type Summary
+        var summaryContainer = $('#typeSummaryContainer');
+        summaryContainer.empty();
+        var activeTypes = new Set();
+        // Check Type ID
+        if (equipments && equipments.length > 0) {
+            equipments.forEach(function(item) {
+                if (item.type) {
+                    activeTypes.add(item.type.toString().trim());
+                }
+            });
+        }
+    
+        var displayedSummary = new Set(); 
+        if (dbTypeList && dbTypeList.length > 0) {
+            dbTypeList.forEach(function(t) {
+
+                var typeId = (t.TypeID || t.Type || '').toString().trim();
+                if (activeTypes.has(typeId)) {
+                    var desc = (t.description || typeId).trim(); 
+                    var iconClass = (t.typeText && t.typeText.trim() !== '') ? t.typeText : 'ki-solid ki-dots-square';
+                    
+                    // Duplicate name & icon
+                    var uniqueKey = desc + '|' + iconClass;
+                    if (!displayedSummary.has(uniqueKey)) {
+                        var htmlItem = 
+                            '<div class="d-inline-flex align-items-center me-10 mb-2">' +
+                                '<i class="' + iconClass + ' fs-1 text-gray-500 me-3"></i>' +
+                                '<span class="fs-6 fw-normal text-gray-900">' + desc + '</span>' +
+                            '</div>';
+                        summaryContainer.append(htmlItem);
+                        displayedSummary.add(uniqueKey);
+                    }
+                }
+            });
+        }
 
         // Set Data Table
         var table = $('#eqTable').DataTable({
@@ -503,11 +527,19 @@
                     className: 'text-end align-top',
                     render: function(data, type, row) {
                     	var id = row.equipmentId;
-                        return '<div class="eq-actions">' +
-                               '<a href="javascript:;" onclick="openViewModal(\'' + id + '\')" class="btn btn-icon btn-sm btn-light-info mb-1 fs-3"><i class="ki-duotone ki-document fs-1"><span class="path1"></span><span class="path2"></span></i></a> ' +
-                               '<a href="equipment_edit?id=' + id + '" class="btn btn-icon btn-sm btn-light-primary mb-1 fs-3"><i class="ki-duotone ki-pencil fs-1"><span class="path1"></span><span class="path2"></span></i></a> ' +
-                               '<a href="javascript:;" onclick="confirmDelete(\'' + id + '\')" class="btn btn-icon btn-sm btn-light-danger mb-1 fs-3 me-3"><i class="ki-duotone ki-trash fs-1"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span><span class="path5"></span></i></a>' +
-                               '</div>';
+                    	var btnView = '<a href="javascript:;" onclick="openViewModal(\'' + id + '\')" class="btn btn-icon btn-sm btn-light-info mb-1 fs-3"><i class="ki-duotone ki-document fs-1"><span class="path1"></span><span class="path2"></span></i></a> ';
+                        var btnEdit = '<a href="equipment_edit?id=' + id + '" class="btn btn-icon btn-sm btn-light-primary mb-1 fs-3"><i class="ki-duotone ki-pencil fs-1"><span class="path1"></span><span class="path2"></span></i></a> ';
+						var btnDelete = '';
+                        // Borrowed: Disable
+                            if (row.status === 'B') {
+                            	btnDelete = '<a href="javascript:;" class="btn btn-icon btn-sm btn-light-danger mb-1 fs-3 me-3 disabled" style="opacity: 0.4; cursor: not-allowed;" title="Cannot delete borrowed item">' +
+                                            '<i class="ki-duotone ki-trash fs-1"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span><span class="path5"></span></i></a>';
+                            } else {
+                                btnDelete = '<a href="javascript:;" onclick="confirmDelete(\'' + id + '\')" class="btn btn-icon btn-sm btn-light-danger mb-1 fs-3 me-3">' +
+                                            '<i class="ki-duotone ki-trash fs-1"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span><span class="path5"></span></i></a>';
+                              }
+						
+                       return '<div class="eq-actions">' + btnView + btnEdit + btnDelete + '</div>';
                     }
                 }
             ]
