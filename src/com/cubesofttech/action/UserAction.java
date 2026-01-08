@@ -718,6 +718,10 @@ public class UserAction extends ActionSupport {
 			request.setAttribute("equipments", new Gson().toJson(equipments));
 			log.debug(selectUser.getPaymentRemark());
 
+			System.out.println("---- Employee Profile  Menu Get img ----");
+			System.out.println("DB path = " + selectUser.getPath());
+	        System.out.println("---- End ----");
+	        
 			return SUCCESS;
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -841,6 +845,17 @@ public class UserAction extends ActionSupport {
 				fileuploadDAO.save(fileupload);
 
 				u.setPath("/upload/user/" + maxId + "_" + fileUploadFileName);
+				
+
+				log.info("=== Edit User PROFILE IMAGE UPLOAD ===");
+				log.info("Original filename = {}"+fileUploadFileName);
+				log.info("Saved filename on server = {}"+maxId + "_" + fileUploadFileName);
+				log.info("Saved filename in DB = {}"+ 
+				    u.getPath().substring(u.getPath().lastIndexOf("/") + 1)
+				);
+
+				log.info("============================");
+
 			}
 
 			u.setName(user.getName());
@@ -1179,6 +1194,8 @@ public class UserAction extends ActionSupport {
 
 					u.setPath("/upload/user/" + maxId + "_" + fileName);
 					userDAO.update(u);
+
+			        log.info("Upload to server SUCCESS");
 				}
 			} else {
 				if (fileUpload != null) {
@@ -1208,7 +1225,7 @@ public class UserAction extends ActionSupport {
 					userDAO.update(u);
 				}
 			}
-
+	        
 			request.setAttribute("logonUser", logonUser);
 			return SUCCESS;
 		} catch (Exception e) {
@@ -1386,7 +1403,7 @@ public class UserAction extends ActionSupport {
 
 	        response.setContentType("application/json; charset=UTF-8");
 	        response.getWriter().write(json);
-	        return NONE;   // Ã Â¸Ë†Ã Â¸Å¡Ã Â¸â€”Ã Â¸ÂµÃ Â¹Ë†Ã Â¸â„¢Ã Â¸ÂµÃ Â¹Ë† Ã Â¹â€žÃ Â¸Â¡Ã Â¹Ë† forward
+	        return NONE;   
 	    } catch (Exception e) {
 	        response.setStatus(500);
 	        response.setContentType("application/json; charset=UTF-8");
@@ -1657,20 +1674,29 @@ public class UserAction extends ActionSupport {
 			if (u.getPath() != null && u.getPath().contains("_")) {
 			    try {
 			        String originalFileName = new File(u.getPath()).getName();
-			       
+			        
 			        String fileIdStr = originalFileName.substring(0, originalFileName.indexOf("_"));
 			        int fileId = Integer.parseInt(fileIdStr);
-
+			       
 			        String typeFile = originalFileName.substring(originalFileName.lastIndexOf("."));
 			        
 			        imgPath = "/upload/user/user_" + fileId + typeFile;
-
+			        
 			        String server = request.getServletContext().getRealPath("/");
 			        File f = new File(server + imgPath);
 
 			        if (!f.exists()) {
 			            imgPath = null;
 			        }
+			        
+			        System.out.println("---- My Profile Menu Get img ----");
+			        System.out.println("originalFileName from DB = " + originalFileName);
+			        System.out.println("fileId = " + fileId);
+			        System.out.println("typeFile = " + typeFile);
+			        System.out.println("Generated imgPath = " + imgPath);
+			        System.out.println("Full file path in server= " + f.getAbsolutePath());
+			        System.out.println("---- End ----");
+
 			    } catch (Exception e) {
 			        imgPath = null;
 			    }
@@ -1766,6 +1792,7 @@ public class UserAction extends ActionSupport {
 	                String fileName = originalName.substring(0,originalName.lastIndexOf("."));
 					String typeFile = originalName.substring(originalName.lastIndexOf("."));
 					
+					
 //					boolean validateFileName = fileName.matches("[a-zA-Z0-9 ]+");
 //					
 //					if(validateFileName) {
@@ -1793,7 +1820,9 @@ public class UserAction extends ActionSupport {
 	                }
 
 	                FileUtil.upload(fileUpload, fileServerPath + "upload/user/", serverFileName);
-
+	                
+	               
+					
 	                FileUpload file = new FileUpload();
 	                file.setFileId(maxId);
 	                file.setUserId(u.getId());
@@ -1810,6 +1839,13 @@ public class UserAction extends ActionSupport {
 	                fileuploadDAO.save(file);
 
 	                u.setPath("/upload/user/" + newFileName);
+	                
+	                System.out.println("---- My Profile Menu update img ----");
+	                System.out.println("Original filename = " + fileUploadFileName);
+					System.out.println("DB filename = " + newFileName);
+					System.out.println("Server filename = " + serverFileName);
+					System.out.println("DB path = " + file.getPath());
+					System.out.println("---- End ----");
 	            }
 
 	        	u.setTitleNameTH(this.user_titleNameTH);
@@ -1836,6 +1872,7 @@ public class UserAction extends ActionSupport {
 
 	            userDAO.update(u); 
 	        }
+	        
 	        
 	        return SUCCESS;
 

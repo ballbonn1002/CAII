@@ -145,7 +145,7 @@
 										<div
 											class="border border-gray-300 rounded-1 px-4 py-3 border-dashed ">
 											<div class="d-flex flex-column">
-												<p class="fs-4 fw-bold text-gray-800 mb-2">
+												<p class="fs-5 fw-bold text-gray-800 mb-2">
 													${empty workPeriod ? '-' :workPeriod}</p>
 												<p class="fs-6 fw-bold text-gray-500 mb-0">
 													<c:choose>
@@ -163,22 +163,22 @@
 										<div
 											class="border border-gray-300 rounded-1 px-4 py-3 border-dashed ">
 											<div class="d-flex flex-column">
-												<p class="fs-4 fw-bold text-gray-900 mb-0">${user.positionId}</p>
-												<p class="fs-6 fw-bold text-gray-600 mb-0">Position</p>
+												<p class="fs-5 fw-bold text-gray-800 mb-2">${user.positionId}</p>
+												<p class="fs-6 fw-bold text-gray-500 mb-0">Position</p>
 											</div>
 										</div>
 										<div
 											class="border border-gray-300 rounded-1 px-4 py-3 border-dashed ">
 											<div class="d-flex flex-column">
-												<p class="fs-4 fw-bold text-gray-900 mb-0">${user.departmentId}</p>
-												<p class="fs-6 fw-bold text-gray-600 mb-0">Department</p>
+												<p class="fs-5 fw-bold text-gray-800 mb-2">${user.departmentId}</p>
+												<p class="fs-6 fw-bold text-gray-500 mb-0">Department</p>
 											</div>
 										</div>
 										<div
 											class="border border-gray-300 rounded-1 px-4 py-3 border-dashed ">
 											<div class="d-flex flex-column">
-												<p class="fs-4 fw-bold text-gray-900 mb-0">${user.workType == 1 ? 'On-site' : 'WFH'}</p>
-												<p class="fs-6 fw-bold text-gray-600 mb-0">
+												<p class="fs-5 fw-bold text-gray-800 mb-2">${user.workType == 1 ? 'On-site' : 'WFH'}</p>
+												<p class="fs-6 fw-bold text-gray-500 mb-0">
 													${user.onsiteNum == 3 ? '4–5 Day' :
           							          user.onsiteNum == 2 ? '2–3 Day' :
           							          user.onsiteNum == 1 ? '0.5–1 Day' : '-'}</p>
@@ -187,7 +187,7 @@
 										<div
 											class="border border-gray-300 rounded-1 px-4 py-3 border-dashed ">
 											<div class="d-flex flex-column">
-												<p class="fs-4 fw-bold text-gray-900 mb-0">${user.workDayStart == 1 ? 'Mon' :
+												<p class="fs-5 fw-bold text-gray-800 mb-2">${user.workDayStart == 1 ? 'Mon' :
  											user.workDayStart == 2 ? 'Tue' :
  											user.workDayStart == 3 ? 'Wed' :
  											user.workDayStart == 4 ? 'Thu' :
@@ -201,24 +201,24 @@
  											user.workDayEnd == 5 ? '- Fri' :
  											user.workDayEnd == 6 ? '- Sat' :
  											user.workDayEnd == 7 ? '- Sun' : ''}</p>
-												<p class="fs-6 fw-bold text-gray-600 mb-0">${user.workTimeStart}
+												<p class="fs-6 fw-bold text-gray-500 mb-0">${user.workTimeStart}
 													- ${user.workTimeEnd}</p>
 											</div>
 										</div>
 										<div
 											class="border border-gray-300 rounded-1 px-4 py-3 border-dashed ">
 											<div class="d-flex flex-column">
-												<p class="fs-4 fw-bold text-gray-900 mb-0">${user.employeeTypeId == 1 ? 'พนักงานประจำ' 
+												<p class="fs-5 fw-bold text-gray-800 mb-2">${user.employeeTypeId == 1 ? 'พนักงานประจำ' 
 											: user.employeeTypeId == 2 ? 'พนักงานอัตราจ้าง'
 											: 'นักศึกษาฝึกงาน'}</p>
-												<p class="fs-6 fw-bold text-gray-600 mb-0">Employee Type</p>
+												<p class="fs-6 fw-bold text-gray-500 mb-0">Employee Type</p>
 											</div>
 										</div>
 										<div
 											class="border border-gray-300 rounded-1 px-4 py-3 border-dashed ">
 											<div class="d-flex flex-column">
-												<p class="fs-4 fw-bold text-gray-900 mb-0">${manager.managerNameEn}</p>
-												<p class="fs-6 fw-bold text-gray-600 mb-0">Manager</p>
+												<p class="fs-5 fw-bold text-gray-800 mb-2">${manager.managerNameEn}</p>
+												<p class="fs-6 fw-bold text-gray-500 mb-0">Manager</p>
 											</div>
 										</div>
 
