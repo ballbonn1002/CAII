@@ -58,27 +58,25 @@
 </head>
 
 <body class="app-default">
-	<div class="app-main flex-column flex-row-fluid">
-		<div class="d-flex flex-column flex-column-fluid">
-			<div class="app-toolbar py-3 py-lg-6">
-				<div class="app-container container-xxl" id="pageRoot">
-					<div
-						class="page-title d-flex flex-row align-items-center justify-content-between me-3 mb-6">
+<div class="app-main flex-column flex-row-fluid">
+	<div class="d-flex flex-column flex-column-fluid">
+	<!-- Header -->
+		<div class="app-toolbar py-3 py-lg-6">
+			<div class="app-container container-fluid d-flex flex-stack">
+				<div class="page-title d-flex flex-column justify-content-center flex-wrap me-3">
+					<h1 class="page-heading d-flex text-gray-900 fw-semibold flex-column justify-content-center my-0">
+						My Profile</h1>
+					<ul class="breadcrumb breadcrumb-separatorless fw-semibold fs-7 my-0 pt-1">
+						<li class="breadcrumb-item text-muted"><a
+							href="demo_dashboard" class="text-muted text-hover-primary">Home</a>
+						</li>
+					</ul>
+				</div>
+			</div>
+		</div>
 
-						<div class="d-flex flex-column flex-wrap gap-2 gap-lg-3">
-							<h1 class="page-heading d-flex text-gray-900 fw-bold fs-3 my-0">
-								My Profile</h1>
-							<ul
-								class="breadcrumb breadcrumb-separatorless fw-semibold fs-7 my-0">
-								<li class="breadcrumb-item text-muted"><a
-									href="${pageContext.request.contextPath}/demo_dashboard"
-									class="text-muted text-hover-primary"> Home </a></li>
-							</ul>
-						</div>
-						<input type="hidden" name="user.id" value="${selectUser.id}" />
-					</div>
-
-
+					<div class="app-content flex-column-fluid">
+			<div class="app-container container-fluid">
 					<div class="card mb-10">
 						<div class="card-body pt-6 pb-0">
 							<div class="d-flex flex-column flex-md-row align-items-start">
@@ -880,10 +878,10 @@
 						</div>
 
 					</div>
-				</div>
-			</div>
+				</div></div></div>
+			
 		</div>
-	</div>
+
 
 <script>
 	document.addEventListener("DOMContentLoaded", function () {
