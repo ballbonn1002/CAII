@@ -122,7 +122,7 @@
 		                <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
 		                <button type="submit" class="btn btn-primary">Submit</button>
 		            </div>
-      </form>
+			      </form>
 		    </div>
 		</div>
 		<!--end::Modal-->

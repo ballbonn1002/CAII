@@ -121,7 +121,7 @@
 							<c:forEach var="group" items="${aoList}">
 								<div class="card card-flush mb-5 mb-xl-10 shadow-sm">
 
-									<div class="card-header fs-4">
+									<%-- <div class="card-header fs-4">
 										<div class="d-flex align-items-center mb-2 gap-2">
 											<h4 class="mb-0 me-3">${group.description}</h4>
 										</div>
@@ -131,17 +131,32 @@
 												<div class="fs-5">id : ${group.authorizedObjectGroupId != null ? group.authorizedObjectGroupId : '-'}</div>
 											</div>
 										</div>
-									</div>
+									</div> --%>
+									
 									<div class="card-body pt-0">
 										<div class="table-responsive">
 											<table class="table align-middle table-row-dashed fs-6 gy-5">
+											
+												<thead>
+													<tr>
+														<th>id : ${group.authorizedObjectGroupId != null ? group.authorizedObjectGroupId : '-'}</th>
+														<th class="fw-bold fs-3">${group.description}</th>
+														<th></th>
+														<th class="text-end">
+														</th>
+													</tr>
+												</thead>											
 												<tbody>
 
 													<c:forEach var="obj" items="${group.objects}" varStatus="loop">
 														<tr class="fs-5">
 															<td class="min-w-200px">${obj.authorizedObjectId}</td>
 
-
+															<td>
+																<label class="form-check-label cursor-pointer" for="checkbox_${group.authorizedObjectGroupId}_${loop.count}">
+																	${obj.name}
+																</label>
+															</td>
 															<td>
 																<label class="form-check-label cursor-pointer" for="checkbox_${group.authorizedObjectGroupId}_${loop.count}">
 																	${obj.description}
@@ -167,7 +182,7 @@
 
 													<c:if test="${empty group.objects}">
 														<tr>
-															<td colspan="3" class="text-center text-muted">ไม่พบข้อมูลสิทธิ์ในกลุ่มนี้</td>
+															<td colspan="3" class="text-center text-muted">No Data</td>
 														</tr>
 													</c:if>
 												</tbody>

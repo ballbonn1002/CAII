@@ -334,10 +334,9 @@
 		<!-- MyLeave =========================================================================================================== -->
 
 		<!-- Leave Approve ================================================================================================== -->
-
-		<!-- Listing -->
-		<action name="new_leave_approved"
-			class="com.cubesofttech.action.LeaveAction" method="New_list">
+		
+			<!-- Listing -->
+		<action name="new_leave_approved" class="com.cubesofttech.action.LeaveAction" method="New_list">
 			<result name="success" type="tiles">new_leave_approved</result>
 			<result name="error">/index.jsp</result>
 		</action>
@@ -402,6 +401,11 @@
 		<action name="role-add"
 			class="com.cubesofttech.action.RoleAction" method="openEdit2">
 			<result name="success" type="tiles">role.add</result>
+			<result name="error">/index.jsp</result>
+		</action>
+
+		<action name="role-list-setting" class="com.cubesofttech.action.RoleAction" method="listSetting">
+			<result name="success" type="tiles">role.list.setting</result>
 			<result name="error">/index.jsp</result>
 		</action>
 

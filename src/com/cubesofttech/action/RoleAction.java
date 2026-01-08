@@ -152,6 +152,23 @@ public class RoleAction extends ActionSupport {
 	    }
 	}
 
+	public String listSetting() {
+		try {
+			request.setAttribute("role", role);
+			
+			List<AuthorizedObjectGroup> authorizedHierarchy = authorizedObjectGroupDAO.getAuthorizedHierarchy();
+			
+			request.setAttribute("aoList", authorizedHierarchy);
+			
+			request.setAttribute("raoList", roleAuthorizedObjectDAO.findByRoleId(roleId));
+			
+			return SUCCESS;
+		} catch (Exception e) {
+			log.error(e);
+			return ERROR;
+		}
+	}
+	
 	public String performEdit() {
 		try {
 			Role r = roleDAO.findById(role.getId());

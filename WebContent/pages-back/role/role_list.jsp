@@ -59,6 +59,18 @@
 					</ul>
 
 				</div>
+				
+						<!--Btn Create-->
+						<perm:permission object="role.edit">
+							<div class="d-flex flex-wrap my-1">
+								<a href="javascript:void(0)" class="btn btn-primary btn-lg" onclick="document.location = 'role-list-setting';">
+								    <i class="ki-duotone ki-plus"></i>
+								    Setting
+								</a>
+							</div>
+						</perm:permission>
+						<!--Btn Create-->
+				
 			</div>
 		</div>
 		<!--Breadcrumb-->
@@ -168,6 +180,38 @@
 <div class="modal fade" tabindex="-1" id="modal_delete_role">
 	<div class="modal-dialog">
 		<form id="deleteRoleForm" action="role-delete" method="get" class="modal-content">
+			<div class="modal-body py-15 px-lg-17">
+				<div class="mb-10 text-center">
+					<i class="ki-duotone ki-information text-danger" style="font-size: 200px">
+						<span class="path1"></span>
+						<span class="path2"></span>
+						<span class="path3"></span>
+					</i>        
+				</div>
+
+				<div class="text-center mb-13">
+					<h2 class="text-dark fw-bold mb-10 fs-1">Confirm Delete ?</h2>
+					<div class="fw-semibold fs-5">
+						<div>Are you sure you want to delete it?</div>
+						<div>Once the data is deleted, it cannot be recovered.</div>
+					</div>
+					<input type="hidden" name="id" id="hiddenRoleId" />
+				</div>
+
+				<div class="d-flex flex-center">
+					<button type="button" class="btn btn-light me-3" data-bs-dismiss="modal">Cancel</button>
+					<button type="submit" class="btn btn-danger">Delete</button>
+				</div>
+			</div>
+		</form>
+	</div>
+</div>
+<!--Modal-->
+
+<!--Modal-->
+<%-- <div class="modal fade" tabindex="-1" id="modal_delete_role">
+	<div class="modal-dialog">
+		<form id="deleteRoleForm" action="role-delete" method="get" class="modal-content">
 			<div class="modal-header position-relative">
 				<h3 class="modal-title w-100 text-center">Confirm Delete Role?</h3>
 				<div class="btn btn-icon btn-sm btn-active-light-primary ms-2" data-bs-dismiss="modal" aria-label="Close">
@@ -199,7 +243,7 @@
 			</div>
 		</form>
 	</div>
-</div>
+</div> --%>
 <!--Modal-->
 
 <%-- <div class="portlet light bordered">

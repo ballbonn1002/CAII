@@ -226,6 +226,10 @@
 		<put-attribute name="title" value="Leave approved" />
 		<put-attribute name="body" value="/pages-back/leave/new_leave_approved.jsp" />
 	</definition>
+	<definition name="leave_list" extends="baseLayout">
+		<put-attribute name="title" value="Leave list" />
+		<put-attribute name="body" value="/pages-back/leave/my_leave_list.jsp" />
+	</definition>
 	<!-- Leave Approve -->
 	
 	<!-- Role Management -->
@@ -240,6 +244,10 @@
 	<definition name="role.add" extends="baseLayout">
 		<put-attribute name="title" value="Role Add" />
 		<put-attribute name="body" value="/pages-back/role/role_add.jsp" />
+	</definition>
+	<definition name="role.list.setting" extends="baseLayout">
+		<put-attribute name="title" value="Role List Setting" />
+		<put-attribute name="body" value="/pages-back/role/role_list_setting.jsp" />
 	</definition>
 	<!-- Role Management -->
 	
