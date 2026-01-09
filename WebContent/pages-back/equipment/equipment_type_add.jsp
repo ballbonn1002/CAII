@@ -5,7 +5,7 @@
     <div class="d-flex flex-column flex-column-fluid">
         
         <div id="kt_app_toolbar" class="app-toolbar py-3 py-lg-6">
-            <div id="kt_app_toolbar_container" class="app-container container-xxl d-flex flex-stack">
+            <div id="kt_app_toolbar_container" class="app-container container-fluid d-flex flex-stack">
                 <div class="page-title d-flex flex-column justify-content-center flex-wrap me-3">
                     <h1 class="page-heading d-flex text-gray-700 fw-semibold my-0">Create Equipment Type</h1>
                     <ul class="breadcrumb breadcrumb-separatorless fw-semibold fs-7 my-0 pt-1">
@@ -24,7 +24,7 @@
         </div>
 
         <div id="kt_app_content" class="app-content flex-column-fluid">
-            <div id="kt_app_content_container" class="app-container container-xxl">
+            <div id="kt_app_content_container" class="app-container container-fluid">
                 
                 <form action="/equipment_type_save.action" method="post" id="kt_equipment_type_add_form">
                      
@@ -76,35 +76,29 @@
     </div>
 </div>
 
+<script src="${pageContext.request.contextPath}/assets/js/custom/icons/keenicons.js"></script>
 <script>
-    // รายการไอคอน
-    const AVAILABLE_ICONS = [
-        "ki-solid ki-laptop",
-        "ki-solid ki-keyboard",
-        "ki-solid ki-verify",
-        "ki-solid ki-phone",
-        "ki-solid ki-wifi-square",
-        "ki-solid ki-dots-square"
-    ];
-
     document.addEventListener("DOMContentLoaded", function() {
         var select = $('#field_icon');
+        var data = getIconsForSelect2()
 
-        // สร้างตัวเลือกใน Dropdown
-        AVAILABLE_ICONS.forEach(function(iconClass) {
-            select.append(new Option(iconClass, iconClass, false, false));
-        });
-        
-        $('#field_icon').select2({
-            minimumResultsForSearch: Infinity
+        select.select2({
+            data: data,
+            placeholder: "Select or Search Icon...",
+            allowClear: true,
+            minimumInputLength: 0
         });
 
-        // อัปเดต Preview เมื่อเลือกเปลี่ยน
+        // Preview
         select.on('select2:select', function (e) {
-            var data = e.params.data;
-            updatePreview(data.id);
+            var iconClass = e.params.data.id;
+            updatePreview(iconClass);
         });
-     
+
+        select.on('select2:clear', function (e) {
+             updatePreview('');
+        });
+
         // Check Duplicate
         var typeIdInput = document.getElementById('field_type_id');
         var submitBtn = document.getElementById('submit_btn');
@@ -119,22 +113,19 @@
 
         typeIdInput.addEventListener('blur', function() {
             var id = this.value.trim();
-            
             if(id === "") return;
+            
             $.ajax({
                 url: 'checkTypeDuplicate',
                 type: 'POST',
                 data: { typeId: id },
                 success: function(response) {
                     if (response.status === 'duplicate') {
-                        // กรณีซ้ำ
                         typeIdInput.classList.remove('border-success');
                         typeIdInput.classList.add('is-invalid');
                         errorMsg.style.display = 'block';
                         submitBtn.disabled = true;
-                 
                     } else {
-                        // กรณีใช้ได้
                         typeIdInput.classList.remove('is-invalid');
                         typeIdInput.classList.add('border-success');
                         errorMsg.style.display = 'none';
@@ -146,11 +137,11 @@
                 }
             });
         });
-    
     });
 
+    // Update Preview
     function updatePreview(iconClass) {
         if(!iconClass) iconClass = 'ki-solid ki-dots-square';
-        $('#icon_preview').attr('class', 'fs-2x text-gray-600 ' + iconClass);
+        $('#icon_preview').attr('class', 'fs-2x text-gray-500 ' + iconClass);
     }
 </script>

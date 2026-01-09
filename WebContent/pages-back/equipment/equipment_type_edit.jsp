@@ -5,7 +5,7 @@
     <div class="d-flex flex-column flex-column-fluid">
         
         <div id="kt_app_toolbar" class="app-toolbar py-3 py-lg-6">
-            <div id="kt_app_toolbar_container" class="app-container container-xxl d-flex flex-stack">
+            <div id="kt_app_toolbar_container" class="app-container container-fluid d-flex flex-stack">
                 <div class="page-title d-flex flex-column justify-content-center flex-wrap me-3">
                     <h1 class="page-heading d-flex text-gray-700 fw-semibold my-0">Equipment Status</h1>
                     <ul class="breadcrumb breadcrumb-separatorless fw-semibold fs-7 my-0 pt-1">
@@ -24,10 +24,9 @@
         </div>
 
         <div id="kt_app_content" class="app-content flex-column-fluid">
-            <div id="kt_app_content_container" class="app-container container-xxl">
+            <div id="kt_app_content_container" class="app-container container-fluid">
                 
                 <form action="/equipment_type_update.action" method="post" id="kt_equipment_type_edit_form">
-                    
                     <div class="card shadow-sm">
                         <div class="card-header border-0 pt-7">
                             <div class="card-title">
@@ -51,9 +50,9 @@
                                 <label class="form-label required fw-bold">Type Icon</label>
                                 <div class="d-flex align-items-center">
                                     <div class="flex-grow-1 me-3">
-                                        <select class="form-select" name="type_text" id="field_icon" data-control="select2" data-placeholder="Select an icon">
+                                        <select class="form-select" name="type_text" id="field_icon" data-control="select2" data-placeholder="Select an Icon">
                                             <option></option>
-                                            </select>
+                                        </select>
                                     </div>
                                     
                                     <div class="d-flex justify-content-center align-items-center px-6">
@@ -67,7 +66,6 @@
                             <a href="equipment_setting" class="btn btn-light px-8">Cancel</a> 
                             <button type="submit" class="btn btn-success px-8">Save</button>
                         </div>
-                    
                     </div>
                 </form>
             </div>
@@ -75,32 +73,20 @@
     </div>
 </div>
 
+<script src="${pageContext.request.contextPath}/assets/js/custom/icons/keenicons.js"></script>
 <script>
-    const AVAILABLE_ICONS = [
-        "ki-solid ki-laptop",
-        "ki-solid ki-keyboard",
-        "ki-solid ki-verify",
-        "ki-solid ki-phone",
-        "ki-solid ki-wifi-square",
-        "ki-solid ki-dots-square"
-    ];
-
     document.addEventListener("DOMContentLoaded", function() {
-        // รับค่า JSON จาก Action 
         var typeData = ${requestScope.info != null ? requestScope.info : 'null'};
-        
         var select = $('#field_icon');
-
-        // สร้างตัวเลือกใน Dropdown
-        AVAILABLE_ICONS.forEach(function(iconClass) {
-            select.append(new Option(iconClass, iconClass, false, false));
-        });
+        var data = getIconsForSelect2()
         
-        $('#field_icon').select2({
-            minimumResultsForSearch: Infinity
+        select.select2({
+            data: data,
+            placeholder: "Select or Search Icon...",
+            allowClear: true,
+            minimumInputLength: 0
         });
 
-        // ใส่ข้อมูลเดิมลงในฟอร์ม
         if (typeData) {
             $('#field_type_id').val(typeData.TypeID || '');
             $('#field_description').val(typeData.description || '');
@@ -112,15 +98,19 @@
             }
         }
       
-        // อัปเดต Preview เมื่อเปลี่ยนค่า
+        // อัปเดต Preview
         select.on('select2:select', function (e) {
             var data = e.params.data;
             updatePreview(data.id);
         });
+        select.on('select2:clear', function (e) {
+             updatePreview('');
+        });
     });
 
     function updatePreview(iconClass) {
-        // อัปเดต class ของไอคอน preview
+        if(!iconClass) iconClass = 'ki-solid ki-dots-square';
+        // preview
         $('#icon_preview').attr('class', 'fs-2x text-gray-500 ' + iconClass);
     }
 </script>
