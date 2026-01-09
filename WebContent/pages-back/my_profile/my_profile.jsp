@@ -109,10 +109,41 @@
 								</div>
 
 								<div class="flex-grow-1 ">
-									<div
+								<div class="d-flex justify-content-between align-items-start mb-4">
+                                            <div>
+                                               <div class="d-flex flex-column">
+											<div class="d-flex align-items-center gap-4 ">
+												<p class="fs-2 fw-bold text-gray-900  mb-0">${user.id}</p>
+												<c:forEach var="jobSite" items="${jobSite}">
+													<span
+														class="badge badge-lg bg-primary text-white fw-semibold fs-8">${jobSite.name_site}</span>
+												</c:forEach>
+											</div>
+											<div class="d-flex flex-wrap">
+												<span class="fs-4 fw-normal text-gray-900">${user.employeeId}
+													${user.nameEN} - ${user.name}</span>
+											</div>
+										</div>
+                                            </div>
+
+                                            <c:if test="${user.enable eq '1'}">
+												<p>
+													<span
+														class="badge badge-lg bg-light-success text-success fw-semibold fs-8">Active</span>
+												</p>
+											</c:if>
+											<c:if test="${user.enable ne '1'}">
+												<p>
+													<span
+														class="badge badge-lg bg-light-danger text-danger fw-semibold fs-8">Inactive</span>
+												</p>
+											</c:if>
+                                        </div>
+									
+									<%-- <div
 										class="d-flex justify-content-between aling-items-start flex-wrap mb-4">
 										<div class="d-flex flex-column">
-											<div class="d-flex align-items-center gap-4">
+											<div class="d-flex align-items-center gap-4 ">
 												<p class="fs-2 fw-bold text-gray-900  mb-0">${user.id}</p>
 												<c:forEach var="jobSite" items="${jobSite}">
 													<span
@@ -138,7 +169,7 @@
 												</p>
 											</c:if>
 										</div>
-									</div>
+									</div>  --%>
 									<div class="d-flex flex-wrap gap-4">
 										<div
 											class="border border-gray-300 rounded-1 px-4 py-3 border-dashed ">
@@ -878,7 +909,9 @@
 						</div>
 
 					</div>
-				</div></div></div>
+				</div>
+				</div>
+				</div>
 			
 		</div>
 
