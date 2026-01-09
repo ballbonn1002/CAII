@@ -397,6 +397,20 @@
 			<result name="success" type="tiles">role.edit</result>
 			<result name="error">/index.jsp</result>
 		</action>
+		
+		<!-- role setting editing page -->
+		<action name="role-edit-setting" class="com.cubesofttech.action.RoleAction" method="roleSettingEditingPage">
+			<result name="success" type="tiles">role.edit.setting</result>
+			<result name="error">/index.jsp</result>
+		</action>
+		
+		<!-- role setting action update -->
+		<action name="role-perform-edit-setting-*" class="com.cubesofttech.action.RoleAction" method="performEditSetting">
+			<result name="success" type="redirectAction">role-edit-setting?roleIdSetting=${roleIdSetting}
+			</result>
+			<result name="error">/index.jsp</result>
+		</action>
+
 		<!-- เพิ่ม function add -->
 		<action name="role-add" class="com.cubesofttech.action.RoleAction" method="openEdit2">
 			<result name="success" type="tiles">role.add</result>

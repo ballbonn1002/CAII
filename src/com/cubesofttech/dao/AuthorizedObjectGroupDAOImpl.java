@@ -33,7 +33,7 @@ public class AuthorizedObjectGroupDAOImpl implements AuthorizedObjectGroupDAO {
     }
     
     @Override
-    public AuthorizedObjectGroup findById(String id) throws Exception {
+    public AuthorizedObjectGroup findById(Integer id) throws Exception {
         Session session = this.sessionFactory.getCurrentSession();
         AuthorizedObjectGroup authorizedObjectGroup = null;
         try {
@@ -44,6 +44,15 @@ public class AuthorizedObjectGroupDAOImpl implements AuthorizedObjectGroupDAO {
             //session.close();
         }        
         return authorizedObjectGroup;
+    }
+    
+    @Override
+    public void update(AuthorizedObjectGroup authorizedObjectGroup) throws Exception {
+        Session session = this.sessionFactory.getCurrentSession();
+        session.clear();
+        session.update(authorizedObjectGroup);
+        session.flush();
+        //session.close();
     }
     
     @Override

@@ -139,6 +139,18 @@ public class RoleAction extends ActionSupport {
 		}
 	}
 
+	public String roleSettingEditingPage() {
+		try {
+			authorizedObjectGroup = authorizedObjectGroupDAO.findById(authorizedObjectGroupId);
+			request.setAttribute("roleSetting", authorizedObjectGroup);
+			
+			return SUCCESS;
+		} catch (Exception e) {
+			log.error(e.getMessage());
+			return ERROR;
+		}
+	}
+	
 	public String openEdit2() {
 	    try {
 	        request.setAttribute("role", role);
@@ -214,6 +226,22 @@ public class RoleAction extends ActionSupport {
 		}
 	}
 
+	public String performEditSetting() {
+		try {
+			AuthorizedObjectGroup r = authorizedObjectGroupDAO.findById(authorizedObjectGroup.getAuthorizedObjectGroupId());
+			r.setName(authorizedObjectGroup.getName());
+			r.setDescription(authorizedObjectGroup.getDescription());
+			r.setTimeUpdate(DateUtil.getCurrentTime());
+			authorizedObjectGroupDAO.update(r);
+			
+			return SUCCESS;
+			
+		} catch (Exception e) {
+			log.error(e);
+			return ERROR;
+		}
+	}
+	
 	public String performAdd() {
 		try {
 
@@ -277,7 +305,7 @@ public class RoleAction extends ActionSupport {
 			String id = request.getParameter("id");
 			
 			AuthorizedObjectGroup authorizedObjectGroup = new AuthorizedObjectGroup();
-			authorizedObjectGroup = authorizedObjectGroupDAO.findById(id);
+			authorizedObjectGroup = authorizedObjectGroupDAO.findById(Integer.valueOf(id));
 			log.debug(authorizedObjectGroup);
 			
 			authorizedObjectGroupDAO.delete(authorizedObjectGroup);

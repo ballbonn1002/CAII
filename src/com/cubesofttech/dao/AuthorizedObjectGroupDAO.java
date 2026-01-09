@@ -9,7 +9,9 @@ public interface AuthorizedObjectGroupDAO {
     
 	void save(AuthorizedObjectGroup authorizedObjectGroup) throws Exception;
 	
-    public AuthorizedObjectGroup findById(String id) throws Exception;
+    public AuthorizedObjectGroup findById(Integer authorizedObjectGroupId) throws Exception;
+    
+    public void update(AuthorizedObjectGroup authorizedObjectGroup) throws Exception;
     
     public void delete(AuthorizedObjectGroup authorizedObjectGroup) throws Exception;
 
