@@ -120,9 +120,8 @@
                                 <div class="d-flex flex-column flex-md-row align-items-start">
 
                                     <div class="me-md-9 mb-md-0" style="width: 150px;">
-                                        <div class="border border-2 border-default rounded-sm overflow-hidden mb-3"
-                                             style="width: 130px; aspect-ratio: 1/1;">
-                                            <c:choose>
+                                        <div class="mb-4 mb-md-0 me-md-9 mb-md-0 w-150px h-150px mx-auto">
+                                           <%--  <c:choose>
                                             <c:when test="${not empty selectUser.path}">
                                                 <img id="avatarPreview"
                                                      src="${selectUser.path}"
@@ -145,14 +144,38 @@
                                                     </c:choose>
                                                 </div>
                                             </c:otherwise>
-                                        </c:choose>
+                                        </c:choose> --%>
+                                        <c:choose>
+											<c:when test="${not empty editUserImgPath}">
+												<img id="avatarPreview" src="${pageContext.request.contextPath}${editUserImgPath}"
+													alt="${not empty selectUser.nameEN ? selectUser.nameEN : selectUser.name}"
+													class="border border-2 border-white rounded-1 w-150px h-150px" style="object-fit: cover;"> 
+											</c:when>
+											<c:otherwise>
+												<div id="avatarPreview"
+													class="w-150px h-150px rounded-1 d-flex align-items-center justify-content-center"
+													style="background-color: #f3f6f9; font-size: 48px; color: #0d6efd;">
+													<c:choose>
+														<c:when
+															test="${not empty selectUser.nameEN and fn:length(selectUser.nameEN) >= 1}">
+                                                            ${fn:toUpperCase(fn:substring(selectUser.nameEN, 0, 1))}
+                                                        </c:when>
+														<c:when
+															test="${not empty selectUser.name and fn:length(selectUser.name) >= 1}">
+                                                            ${fn:toUpperCase(fn:substring(selectUser.name, 0, 1))}
+                                                        </c:when>
+														<c:otherwise>-</c:otherwise>
+													</c:choose>
+												</div>
+											</c:otherwise>
+										</c:choose>
                                         </div>
                                     </div>
 
                                     <div class="flex-grow-1 w-100">
 
                                         <div class="d-flex justify-content-between align-items-start mb-4">
-                                            <div>
+                                            <%-- <div>
                                                 <div class="d-flex align-items-center mb-2">
                                                     <h2 class="fw-bold text-gray-900 mb-0 me-3">
                                                         ${selectUser.id}
@@ -172,6 +195,22 @@
                                                     <span class="me-2">${selectUser.nameEN}</span>
                                                     <span class="me-2">${selectUser.name}</span>
                                                 </div>
+                                            </div> --%>
+
+											<div>
+                                               <div class="d-flex flex-column">
+											<div class="d-flex align-items-center gap-4 ">
+												<p class="fs-2 fw-bold text-gray-900  mb-0">${selectUser.id}</p>
+												<c:forEach var="jobSite" items="${jobSite}">
+													<span
+														class="badge badge-lg bg-primary text-white fw-semibold fs-8">${jobSite.name_site}</span>
+												</c:forEach>
+											</div>
+											<div class="d-flex flex-wrap">
+												<span class="fs-4 fw-normal text-gray-900">${selectUser.employeeId}
+													${selectUser.nameEN} - ${selectUser.name}</span>
+											</div>
+										</div>
                                             </div>
 
                                             <span id="userActiveBadge"
@@ -183,7 +222,7 @@
                                             </span>
                                         </div>
 
-                                        <div class="d-flex flex-wrap gap-3">
+                                        <%-- <div class="d-flex flex-wrap gap-3">
                                         <c:choose>
                                             <c:when test="${selectUser.workType == '1'}">
                                                 <c:set var="workTypeLabel" value="On-Site" />
@@ -336,7 +375,72 @@
                                             </div>
                                         </div>
 
-                                        </div>
+                                        </div> --%>
+                                        <div class="d-flex flex-wrap gap-4">
+										<div
+											class="border border-gray-300 rounded-1 px-4 py-3 border-dashed ">
+											<div class="d-flex flex-column">
+												<p class="fs-5 fw-bold text-gray-800 mb-2">
+													${empty workPeriod ? '-' :workPeriod}</p>
+												<p class="fs-6 fw-bold text-gray-500 mb-0">
+													<c:choose>
+														<c:when test="${empty selectUser.startDate}">
+														</c:when>
+														<c:otherwise>
+															<fmt:formatDate value="${selectUser.startDate}"
+																pattern="dd MMM yyyy" />
+														</c:otherwise>
+													</c:choose>
+
+												</p>
+											</div>
+										</div>
+										<div
+											class="border border-gray-300 rounded-1 px-4 py-3 border-dashed ">
+											<div class="d-flex flex-column">
+												<p class="fs-5 fw-bold text-gray-800 mb-2">${selectUser.positionId}</p>
+												<p class="fs-6 fw-bold text-gray-500 mb-0">Position</p>
+											</div>
+										</div>
+										<div
+											class="border border-gray-300 rounded-1 px-4 py-3 border-dashed ">
+											<div class="d-flex flex-column">
+												<p class="fs-5 fw-bold text-gray-800 mb-2">${selectUser.departmentId}</p>
+												<p class="fs-6 fw-bold text-gray-500 mb-0">Department</p>
+											</div>
+										</div>
+										<div
+											class="border border-gray-300 rounded-1 px-4 py-3 border-dashed ">
+											<div class="d-flex flex-column">
+												<p class="fs-5 fw-bold text-gray-800 mb-2">${selectUser.workType == 1 ? 'On-site' : 'WFH'}</p>
+												<p class="fs-6 fw-bold text-gray-500 mb-0">
+													${selectUser.onsiteNum == 3 ? '4–5 Day' :
+          							          selectUser.onsiteNum == 2 ? '2–3 Day' :
+          							          selectUser.onsiteNum == 1 ? '0.5–1 Day' : '-'}</p>
+											</div>
+										</div>
+										<div
+											class="border border-gray-300 rounded-1 px-4 py-3 border-dashed ">
+											<div class="d-flex flex-column">
+												<p class="fs-5 fw-bold text-gray-800 mb-2">${selectUser.workDayStart == 1 ? 'Mon' :
+ 											selectUser.workDayStart == 2 ? 'Tue' :
+ 											selectUser.workDayStart == 3 ? 'Wed' :
+ 											selectUser.workDayStart == 4 ? 'Thu' :
+ 											selectUser.workDayStart == 5 ? 'Fri' :
+ 											selectUser.workDayStart == 6 ? 'Sat' :
+ 											selectUser.workDayStart == 7 ? 'Sun' : ''}
+													${selectUser.workDayEnd == 1 ? '- Mon' :
+ 											selectUser.workDayEnd == 2 ? '- Tue' :
+ 											selectUser.workDayEnd == 3 ? '- Wed' :
+ 											selectUser.workDayEnd == 4 ? '- Thu' :
+ 											selectUser.workDayEnd == 5 ? '- Fri' :
+ 											selectUser.workDayEnd == 6 ? '- Sat' :
+ 											selectUser.workDayEnd == 7 ? '- Sun' : ''}</p>
+												<p class="fs-6 fw-bold text-gray-500 mb-0">${selectUser.workTimeStart}
+													- ${selectUser.workTimeEnd}</p>
+											</div>
+										</div>
+									</div>
 
                                     </div>
                                 </div>
@@ -421,7 +525,7 @@
                                    value="${selectUser.enable}" />
 
                             <div class="card-body pt-6">
-                                <div class="d-flex justify-content-center mb-16">
+                                <%-- <div class="d-flex justify-content-center mb-16">
 								    <div id="ktImageInput" 
 								         class="image-input image-input-outline"
 								         data-kt-image-input="true"
@@ -480,6 +584,87 @@
 								            <i class="ki-outline ki-cross fs-3"></i>
 								        </span>
 								    </div>
+								</div> --%>
+								<div class="row mb-8">
+									<div class="col-12 d-flex justify-content-center ">
+										<div id="ktImageInput" class="image-input image-input-outline"
+											data-kt-image-input="true"
+											style="background-image: url('${pageContext.request.contextPath}/assets/media/svg/avatars/blank.svg');">
+
+											<div id="imageInputWrapper"
+												class="border border-2 border-white rounded image-input-wrapper w-150px h-150px d-flex align-items-center justify-content-center"
+												style="
+								                <c:choose>
+								                    <c:when test='${not empty editUserImgPath}'>
+								                        background-image: url(${editUserImgPath});
+								                        background-size: cover;
+								                        background-position: center;
+								                    </c:when>
+								                   <c:otherwise>
+											            background-image: url('${pageContext.request.contextPath}/assets/media/svg/avatars/blank.svg');
+											            background-size: cover;
+											            background-position: center;
+											        </c:otherwise>
+								                </c:choose>
+								             ">
+
+												<%-- <c:if test="${empty userImgPath}">
+												
+												 <span class="initials-text"> <c:choose>
+														<c:when
+																test="${not empty user.nameEN and fn:length(user.nameEN) >= 1}">
+								                            ${fn:toUpperCase(fn:substring(user.nameEN, 0, 1))}
+								                        </c:when>
+															<c:when
+																test="${not empty user.name and fn:length(user.name) >= 1}">
+								                            ${fn:toUpperCase(fn:substring(user.name, 0, 1))}
+								                        </c:when>
+															<c:otherwise>-</c:otherwise>
+														</c:choose>
+													</span> 
+												</c:if> --%>
+											</div>
+
+											<label id="changeBtn"
+												class="btn btn-icon btn-circle btn-color-muted btn-active-color-primary w-30px h-30px bg-body shadow"
+												data-kt-image-input-action="change" data-bs-toggle="tooltip"
+												data-bs-dismiss="click" title="Change avatar"> 
+												<i class="ki-duotone ki-pencil fs-6">
+												<span class="path1"></span>
+												<span class="path2"></span></i> 
+												<input id="imageInputFile"
+												type="file" name="fileUpload" accept=".png, .jpg, .jpeg" />
+
+												<input id="avatarRemoveHidden" type="hidden"
+												name="avatar_remove" value="false" />
+											</label> <span id="cancelBtn"
+												class="btn btn-icon btn-circle btn-color-muted btn-active-color-primary w-30px h-30px bg-body shadow"
+												data-kt-image-input-action="cancel" data-bs-toggle="tooltip"
+												data-bs-dismiss="click" title="Cancel avatar"> <i
+												class="ki-outline ki-cross fs-3"></i>
+											</span> 
+											<c:if test="${not empty editUserImgPath}">
+											    <span id="removeBtn"
+											        class="btn btn-icon btn-circle btn-color-muted btn-active-color-primary w-30px h-30px bg-body shadow"
+											        data-kt-image-input-action="remove"
+											        data-bs-toggle="tooltip"
+											        data-bs-dismiss="click"
+											        title="Remove avatar">
+											        <i class="ki-outline ki-cross fs-3"></i>
+											    </span>
+											</c:if>
+																						
+											<!-- <span id="removeBtn"
+												class="btn btn-icon btn-circle btn-color-muted btn-active-color-primary w-30px h-30px bg-body shadow"
+												data-kt-image-input-action="remove" data-bs-toggle="tooltip"
+												data-bs-dismiss="click" title="Remove avatar"> <i
+												class="ki-outline ki-cross fs-3"></i>
+											</span> -->
+										</div>
+									</div>
+									<div
+										class="form-text fs-7 text-muted fw-medium mt-6 mb-0  d-flex justify-content-center">Allowed
+										file types: png, jpg, jpeg.</div>
 								</div>
                                 <div class="row g-9">
 
@@ -817,12 +1002,19 @@
                                         <select class="form-select" name="id_sitejob" id="id_sitejob"
                                             multiple data-control="select2" data-placeholder="Job site"
                                             required>
-                                            <c:forEach var="jobsite" items="${test}">
+                                             <c:forEach var="jobsite" items="${test}">
                                                 <option value="${jobsite.id_sitejob}"
                                                     ${jobsite.is_related == 1 ? 'selected':''}>
                                                     ${jobsite.name_site}
                                                 </option>
                                             </c:forEach>
+                                           <%--  <c:forEach var="jobsite" items="${jobSite}">
+											    <option value="${jobsite['id_sitejob']}"
+											        <c:if test="${jobsite['is_related'] == 1}">selected</c:if>>
+											        ${jobsite['name_site']}
+											    </option>
+											</c:forEach> --%>
+
                                         </select>
                                         <input type="hidden" name="id_sitejob" id="id_sitejob_join" />
                                     </div>
@@ -1299,6 +1491,11 @@
                                 
                             </div>
                         </div>
+                        </form>
+                    <div class="text-end mt-10 d-flex justify-content-end gap-6">
+                      <button type="button" class="btn btn-light" id="btnCancel">Cancel</button>
+                      <button type="button" class="btn btn-success" id="btnSubmit">Save</button>
+                    </div>
                         
                         <div class="d-none" id="security-info">
                             
@@ -1371,15 +1568,24 @@
                             </div>
                         </div>
                         
-                    </form>
-                    <div class="text-end mt-10 d-flex justify-content-end gap-6">
-                      <button type="button" class="btn btn-light" id="btnCancel">Cancel</button>
-                      <button type="button" class="btn btn-success" id="btnSubmit">Save</button>
-                    </div>
+                    
                 </div>
             </div>
         </div>
     </div>
+
+<script>
+	document.addEventListener("DOMContentLoaded", function() {
+	    const removeBtn = document.querySelector('[data-kt-image-input-action="remove"]');
+	    const removeHidden = document.getElementById('avatarRemoveHidden');
+	    
+	    if (removeBtn) {
+	        removeBtn.addEventListener("click", function() {
+	            removeHidden.value = "true";
+	        });
+	    }
+	});
+</script>
 
     <script>
     const STEP_MIN = 30;

@@ -1,6 +1,7 @@
 
 package com.cubesofttech.action;
 
+import java.io.File;
 import java.math.BigDecimal;
 import java.security.SecureRandom;
 import java.text.DateFormat;
@@ -167,7 +168,28 @@ public class LoginAction extends ActionSupport {
 
 				List<UserRole> userRoleList = userRoleDAO.findByUserId(user.getId());
 				userAuthority = loginService.addRoleByUserRoleTabel(userRoleList, userAuthority);
+				
+				//ดึงรูปprofileผู้ใช้
+				String imgPath = null;
+				if (user.getPath() != null && user.getPath().contains("_")) {
+				    try {
+				        String originalFileName = new File(user.getPath()).getName();
+				        String fileIdStr = originalFileName.substring(0, originalFileName.indexOf("_"));
+				        int fileId = Integer.parseInt(fileIdStr);
+				        String typeFile = originalFileName.substring(originalFileName.lastIndexOf("."));
+				        imgPath = "/upload/user/user_" + fileId + typeFile;
 
+				        String server = request.getServletContext().getRealPath("/");
+				        File f = new File(server + imgPath);
+				        if (!f.exists()) {
+				            imgPath = null;
+				        }
+				    } catch (Exception e) {
+				        imgPath = null;
+				    }
+				}
+				session.setAttribute("userImgPath", imgPath);
+				
 				session.setAttribute("user", user);
 				session.setAttribute("onlineUser", user);
 				session.setAttribute("userAuthority", userAuthority);
@@ -177,6 +199,8 @@ public class LoginAction extends ActionSupport {
 
 				User ur = (User) session.getAttribute("onlineUser");
 				String logonUser = ur.getId();
+				
+				
 
 				request.setAttribute("sumtravel", newsDAO.sumtravelPrice());
 

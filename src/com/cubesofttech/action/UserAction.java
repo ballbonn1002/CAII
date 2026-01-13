@@ -26,6 +26,7 @@ import java.util.GregorianCalendar;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.apache.log4j.Logger;
 import org.apache.struts2.ServletActionContext;
@@ -529,6 +530,36 @@ public class UserAction extends ActionSupport {
 	                map.put("job_site_all_names", "");
 	            }
 	            
+	            String imgPath = null;
+	            Object pathObj = map.get("path");
+	            if(pathObj != null) {
+	            	String path = pathObj.toString();
+	            	if (path.contains("_")) {
+					    try {
+					        String originalFileName = new File(path).getName();
+					        
+					        String fileIdStr = originalFileName.substring(0, originalFileName.indexOf("_"));
+					        int fileId = Integer.parseInt(fileIdStr);
+					       
+					        String typeFile = originalFileName.substring(originalFileName.lastIndexOf("."));
+					        
+					        imgPath = "/upload/user/user_" + fileId + typeFile;
+					        
+					        String server = request.getServletContext().getRealPath("/");
+					        File f = new File(server + imgPath);
+
+					        if (!f.exists()) {
+					            imgPath = null;
+					        }
+
+
+					    } catch (Exception e) {
+					        imgPath = null;
+					    }
+					}
+	            }
+	            map.put("ListUserImgPath", imgPath);
+				
 	            if (map.get("end_date") == null) {
 	                Object resign = map.get("resign_date");
 	                if (resign != null) {
@@ -562,8 +593,11 @@ public class UserAction extends ActionSupport {
 	                onsite_num = "4-5 day";
 	            }
 	            map.put("onsite_num", onsite_num);
+	            
+	            
 	        }
 			
+	        
 			
 
 			/*
@@ -670,6 +704,8 @@ public class UserAction extends ActionSupport {
 			log.debug(id);
 			List<Map<String, Object>> jobsiteList = jobsiteDAO.findJobsiteUser(id);
 			request.setAttribute("test", jobsiteList);
+			List<Map<String,Object>> jobSite = jobsiteDAO.getJobSiteByUserId(id);
+			request.setAttribute("jobSite", jobSite);
 			/*
 			 * List<Map<String, Object>> jobuser = jobsiteDAO.findJobsiteUser(UserIdEdit);
 			 * request.setAttribute("test2", jobuser);
@@ -687,6 +723,22 @@ public class UserAction extends ActionSupport {
 			request.setAttribute("roleList", roleList);
 
 			request.setAttribute("userList", userDAO.sequense());
+			
+			String workPeriod = "-";
+
+			LocalDate start = selectUser.getStartDate().toLocalDate();
+			LocalDate now = LocalDate.now();
+
+			Period p = Period.between(start, now);
+
+			if (p.getYears() == 0 && p.getMonths() == 0) {
+			    workPeriod = p.getDays() + "d";
+			} else if (p.getYears() == 0) {
+			    workPeriod = p.getMonths() + "m " + p.getDays() + "d";
+			} else {
+			    workPeriod = p.getYears() + "y " + p.getMonths() + "m";
+			}
+	       request.setAttribute("workPeriod", workPeriod);
 
 			request.setAttribute("selectUser", selectUser);
 
@@ -717,10 +769,50 @@ public class UserAction extends ActionSupport {
 			request.setAttribute("borrows", new Gson().toJson(borrows));
 			request.setAttribute("equipments", new Gson().toJson(equipments));
 			log.debug(selectUser.getPaymentRemark());
+			
+			String imgPath = null;
+			if (selectUser.getPath() != null && selectUser.getPath().contains("_")) {
+			    try {
+			        String originalFileName = new File(selectUser.getPath()).getName();
+			        
+			        String fileIdStr = originalFileName.substring(0, originalFileName.indexOf("_"));
+			        int fileId = Integer.parseInt(fileIdStr);
+			       
+			        String typeFile = originalFileName.substring(originalFileName.lastIndexOf("."));
+			        
+			        imgPath = "/upload/user/user_" + fileId + typeFile;
+			        
+			        String server = request.getServletContext().getRealPath("/");
+			        File f = new File(server + imgPath);
 
-			System.out.println("---- Employee Profile  Menu Get img ----");
-			System.out.println("DB path = " + selectUser.getPath());
-	        System.out.println("---- End ----");
+			        if (!f.exists()) {
+			            imgPath = null;
+			        }
+			        
+//			        System.out.println("---- My Profile Menu Get img ----");
+//			        System.out.println("originalFileName from DB = " + originalFileName);
+//			        System.out.println("fileId = " + fileId);
+//			        System.out.println("typeFile = " + typeFile);
+//			        System.out.println("Generated imgPath = " + imgPath);
+//			        System.out.println("Full file path in server= " + f.getAbsolutePath());
+//			        System.out.println("---- End ----");
+
+			    } catch (Exception e) {
+			        imgPath = null;
+			    }
+			}
+			
+//			log.debug("EDIT USER ID = " + selectUser.getId());
+//			log.debug("EDIT USER PATH = " + selectUser.getPath());
+//			log.debug("EDIT IMG PATH = " + imgPath);
+
+			request.setAttribute("editUserImgPath", imgPath);
+
+			
+
+//			System.out.println("---- Employee Profile  Menu Get img ----");
+//			System.out.println("DB path = " + selectUser.getPath());
+//	        System.out.println("---- End ----");
 	        
 			return SUCCESS;
 		} catch (Exception e) {
@@ -821,42 +913,101 @@ public class UserAction extends ActionSupport {
 				}
 			}
 
-			if (fileUpload != null) {
-				int maxId = fileuploadDAO.getMaxId() + 1;
-				ServletContext context = request.getServletContext();
-				String fileServerPath = context.getRealPath("/");
-
-				FileUtil.upload(fileUpload, fileServerPath + "upload/user/", maxId + "_" + fileUploadFileName);
-
-				int split = fileUploadFileName.indexOf(".");
-				String name = fileUploadFileName.substring(0, split);
-				String type = fileUploadFileName.substring(split);
-
-				FileUpload fileupload = new FileUpload();
-				fileupload.setFileId(maxId);
-				fileupload.setUserId(logonUser);
-				fileupload.setUserCreate(logonUser);
-				fileupload.setName(name);
-				fileupload.setType(type);
-				fileupload.setSize(fileUploadSize);
-				fileupload.setPath("/upload/user/" + maxId + "_" + fileUploadFileName);
-				fileupload.setTimeCreate(DateUtil.getCurrentTime());
-
-				fileuploadDAO.save(fileupload);
-
-				u.setPath("/upload/user/" + maxId + "_" + fileUploadFileName);
+//			if (fileUpload != null) {
+//				int maxId = fileuploadDAO.getMaxId() + 1;
+//				ServletContext context = request.getServletContext();
+//				String fileServerPath = context.getRealPath("/");
+//
+//				FileUtil.upload(fileUpload, fileServerPath + "upload/user/", maxId + "_" + fileUploadFileName);
+//
+//				int split = fileUploadFileName.indexOf(".");
+//				String name = fileUploadFileName.substring(0, split);
+//				String type = fileUploadFileName.substring(split);
+//
+//				FileUpload fileupload = new FileUpload();
+//				fileupload.setFileId(maxId);
+//				fileupload.setUserId(logonUser);
+//				fileupload.setUserCreate(logonUser);
+//				fileupload.setName(name);
+//				fileupload.setType(type);
+//				fileupload.setSize(fileUploadSize);
+//				fileupload.setPath("/upload/user/" + maxId + "_" + fileUploadFileName);
+//				fileupload.setTimeCreate(DateUtil.getCurrentTime());
+//
+//				fileuploadDAO.save(fileupload);
+//
+//				u.setPath("/upload/user/" + maxId + "_" + fileUploadFileName);
+//				
+//
+//				log.info("=== Edit User PROFILE IMAGE UPLOAD ===");
+//				log.info("Original filename = {}"+fileUploadFileName);
+//				log.info("Saved filename on server = {}"+maxId + "_" + fileUploadFileName);
+//				log.info("Saved filename in DB = {}"+ 
+//				    u.getPath().substring(u.getPath().lastIndexOf("/") + 1)
+//				);
+//
+//				log.info("============================");
+//
+//			}
+			if(avatar_remove != null && avatar_remove.equalsIgnoreCase("true")) {
+        		u.setPath(null);
+        		
+        	}else if (fileUpload != null) {
+                int maxId = fileuploadDAO.getMaxId() + 1;
+                String fileServerPath = request.getServletContext().getRealPath("/");
+                String originalName = fileUploadFileName;
+                String fileName = originalName.substring(0,originalName.lastIndexOf("."));
+				String typeFile = originalName.substring(originalName.lastIndexOf("."));
 				
+				
+//				boolean validateFileName = fileName.matches("[a-zA-Z0-9 ]+");
+//				
+//				if(validateFileName) {
+//					fileName = fileName.trim().replaceAll("\\s+", "_");
+//				}else {
+//					fileName = UUID.randomUUID().toString();;
+//				}
+				if(fileName.contains(" ")) {
+					fileName = fileName.trim().replaceAll(" ", "_");
+				}
+				
+				String newFileName = maxId + "_" + fileName + typeFile;
+				String serverFileName = "user_" + maxId + typeFile;
+				
+				long fileSize = fileUpload.length(); //byte
+                double sizeKB = fileSize / 1024.0;
+                double sizeMB = fileSize / (1024.0 * 1024.0);
+                String sizeText;
+                if (fileSize < 1024) {
+                    sizeText = fileSize + " B";
+                } else if (fileSize < 1024 * 1024) {
+                    sizeText = String.format("%.2f KB", sizeKB);
+                } else {
+                    sizeText = String.format("%.2f MB", sizeMB);
+                }
 
-				log.info("=== Edit User PROFILE IMAGE UPLOAD ===");
-				log.info("Original filename = {}"+fileUploadFileName);
-				log.info("Saved filename on server = {}"+maxId + "_" + fileUploadFileName);
-				log.info("Saved filename in DB = {}"+ 
-				    u.getPath().substring(u.getPath().lastIndexOf("/") + 1)
-				);
+                FileUtil.upload(fileUpload, fileServerPath + "upload/user/", serverFileName);
+                
+               
+				
+                FileUpload file = new FileUpload();
+                file.setFileId(maxId);
+                file.setUserId(u.getId());
+                file.setName(fileName);
+				file.setPage("user");
+				file.setPageId(null);
+				file.setUserId(logonUser);
+				file.setType(typeFile);
+				file.setSize(sizeText);
+				file.setAltName(null);
+				file.setUserCreate(logonUser);
+				file.setPath("/upload/user/" + newFileName);
+				file.setTimeCreate(DateUtil.getCurrentTime());
+                fileuploadDAO.save(file);
 
-				log.info("============================");
+                u.setPath("/upload/user/" + newFileName);
 
-			}
+            }
 
 			u.setName(user.getName());
 			u.setNickName(user.getNickName());
@@ -883,8 +1034,8 @@ public class UserAction extends ActionSupport {
 			 * else { u.setPassword(MD5.getInstance().hashData(password.getBytes())); }
 			 */
 			
-			if (password.equalsIgnoreCase(u.getPassword())) { u.setPassword(password); }
-			else { u.setPassword(MD5.getInstance().hashData(password.getBytes())); }
+//			if (password.equalsIgnoreCase(u.getPassword())) { u.setPassword(password); }
+//			else { u.setPassword(MD5.getInstance().hashData(password.getBytes())); }
 
 			u.setSocialSecurity(user.getSocialSecurity() != null ? user.getSocialSecurity() : "0");
 			u.setWithHoldAuto(user.getWithHoldAuto() != null ? user.getWithHoldAuto() : "0");
@@ -1689,13 +1840,13 @@ public class UserAction extends ActionSupport {
 			            imgPath = null;
 			        }
 			        
-			        System.out.println("---- My Profile Menu Get img ----");
-			        System.out.println("originalFileName from DB = " + originalFileName);
-			        System.out.println("fileId = " + fileId);
-			        System.out.println("typeFile = " + typeFile);
-			        System.out.println("Generated imgPath = " + imgPath);
-			        System.out.println("Full file path in server= " + f.getAbsolutePath());
-			        System.out.println("---- End ----");
+//			        System.out.println("---- My Profile Menu Get img ----");
+//			        System.out.println("originalFileName from DB = " + originalFileName);
+//			        System.out.println("fileId = " + fileId);
+//			        System.out.println("typeFile = " + typeFile);
+//			        System.out.println("Generated imgPath = " + imgPath);
+//			        System.out.println("Full file path in server= " + f.getAbsolutePath());
+//			        System.out.println("---- End ----");
 
 			    } catch (Exception e) {
 			        imgPath = null;
@@ -1776,6 +1927,7 @@ public class UserAction extends ActionSupport {
 	
 	public String update_my_profile() {
 	    try {
+	    	HttpSession session = request.getSession();
 	        User ur = (User) request.getSession().getAttribute("onlineUser");
 	        String logonUser = ur.getId();
 
@@ -1840,12 +1992,12 @@ public class UserAction extends ActionSupport {
 
 	                u.setPath("/upload/user/" + newFileName);
 	                
-	                System.out.println("---- My Profile Menu update img ----");
-	                System.out.println("Original filename = " + fileUploadFileName);
-					System.out.println("DB filename = " + newFileName);
-					System.out.println("Server filename = " + serverFileName);
-					System.out.println("DB path = " + file.getPath());
-					System.out.println("---- End ----");
+//	                System.out.println("---- My Profile Menu update img ----");
+//	                System.out.println("Original filename = " + fileUploadFileName);
+//					System.out.println("DB filename = " + newFileName);
+//					System.out.println("Server filename = " + serverFileName);
+//					System.out.println("DB path = " + file.getPath());
+//					System.out.println("---- End ----");
 	            }
 
 	        	u.setTitleNameTH(this.user_titleNameTH);
@@ -1871,6 +2023,29 @@ public class UserAction extends ActionSupport {
 	            }
 
 	            userDAO.update(u); 
+	            
+	            String imgPathForSession = null;
+	            if (u.getPath() != null && u.getPath().contains("_")) {
+	                try {
+	                    String originalFileName = new File(u.getPath()).getName();
+	                    String fileIdStr = originalFileName.substring(0, originalFileName.indexOf("_"));
+	                    String typeFile = originalFileName.substring(originalFileName.lastIndexOf("."));
+	                    
+	                    imgPathForSession = "/upload/user/user_" + fileIdStr + typeFile;
+
+	                    String server = request.getServletContext().getRealPath("/");
+	                    File f = new File(server + imgPathForSession);
+	                    if (!f.exists()) {
+	                        imgPathForSession = null;
+	                    }
+	                } catch (Exception e) {
+	                    imgPathForSession = null;
+	                }
+	            }
+	            
+	            session.setAttribute("onlineUser", u);
+	            session.setAttribute("userImgPath", imgPathForSession);
+
 	        }
 	        
 	        

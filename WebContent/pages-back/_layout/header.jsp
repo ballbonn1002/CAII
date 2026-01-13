@@ -135,18 +135,18 @@
 						<!-- <img src="assets/media/avatars/300-3.jpg" class="rounded-3"
 							alt="user" /> -->
 							<c:choose>
-								<c:when test="${not empty userImgPath}">
-										<img id="avatarPreview" src="${userImgPath}" alt="${not empty user.nameEN ? user.nameEN : user.name}"
+								<c:when test="${not empty sessionScope.userImgPath}">
+										<img id="avatarPreview" src="${sessionScope.userImgPath}" alt="${not empty onlineUser.nameEN ? onlineUser.nameEN : onlineUser.name}"
 										class="rounded-3 w-35px h-35px" style="object-fit: cover;"> 
 								</c:when>
 								<c:otherwise>
 										<div id="avatarPreview" class="rounded-3 w-35px h-35px" >
 										<c:choose>
-											<c:when test="${not empty user.nameEN and fn:length(user.nameEN) >= 1}">
-                                                    ${fn:toUpperCase(fn:substring(user.nameEN, 0, 1))}
+											<c:when test="${not empty onlineUser.nameEN and fn:length(onlineUser.nameEN) >= 1}">
+                                                    ${fn:toUpperCase(fn:substring(onlineUser.nameEN, 0, 1))}
                                             </c:when>
-											<c:when test="${not empty user.name and fn:length(user.name) >= 1}">
-                                                    ${fn:toUpperCase(fn:substring(user.name, 0, 1))}
+											<c:when test="${not empty onlineUser.name and fn:length(onlineUser.name) >= 1}">
+                                                    ${fn:toUpperCase(fn:substring(onlineUser.name, 0, 1))}
                                             </c:when>
 											<c:otherwise>-</c:otherwise>
 										</c:choose>
@@ -165,9 +165,9 @@
 								<div class="symbol symbol-50px me-5">
 									<!-- <img alt="Logo" src="assets/media/avatars/300-3.jpg" /> -->
 									<c:choose>
-											<c:when test="${not empty userImgPath}">
-												<img id="avatarPreview" src="${userImgPath}"
-													alt="${not empty user.nameEN ? user.nameEN : user.name}"
+											<c:when test="${not empty sessionScope.userImgPath}">
+												<img id="avatarPreview" src="${sessionScope.userImgPath}"
+													alt="${not empty onlineUser.nameEN ? onlineUser.nameEN : onlineUser.name}"
 													class="rounded-1 w-50px h-50px" style="object-fit: cover;"> 
 											</c:when>
 											<c:otherwise>
@@ -175,12 +175,12 @@
 													class="rounded-1 w-50px h-50px">
 													<c:choose>
 														<c:when
-															test="${not empty user.nameEN and fn:length(user.nameEN) >= 1}">
-                                                            ${fn:toUpperCase(fn:substring(user.nameEN, 0, 1))}
+															test="${not empty onlineUser.nameEN and fn:length(onlineUser.nameEN) >= 1}">
+                                                            ${fn:toUpperCase(fn:substring(onlineUser.nameEN, 0, 1))}
                                                         </c:when>
 														<c:when
-															test="${not empty user.name and fn:length(user.name) >= 1}">
-                                                            ${fn:toUpperCase(fn:substring(user.name, 0, 1))}
+															test="${not empty onlineUser.name and fn:length(onlineUser.name) >= 1}">
+                                                            ${fn:toUpperCase(fn:substring(onlineUser.name, 0, 1))}
                                                         </c:when>
 														<c:otherwise>-</c:otherwise>
 													</c:choose>
@@ -192,11 +192,10 @@
 								<!--begin::Username-->
 								<div class="d-flex flex-column">
 									<div class="fw-bold d-flex align-items-center fs-5">
-										Robert Fox <span
-											class="badge badge-light-success fw-bold fs-8 px-2 py-1 ms-2">Pro</span>
+										${empty onlineUser.nameEN ? onlineUser.name: onlineUser.nameEN}
 									</div>
 									<a href="#"
-										class="fw-semibold text-muted text-hover-primary fs-7">robert@kt.com</a>
+										class="fw-semibold text-muted text-hover-primary fs-7">${onlineUser.id}</a>
 								</div>
 								<!--end::Username-->
 							</div>
