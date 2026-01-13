@@ -330,7 +330,8 @@
 										-
 										</c:when>
 										<c:otherwise>
-										 ${fn:substring(user.citizenId, 0,1)}-${fn:substring(user.citizenId, 1,5)}-${fn:substring(user.citizenId, 5,10)}-${fn:substring(user.citizenId, 10,12)}-${fn:substring(user.citizenId, 12,13)}
+										<c:set var="cid" value="${fn:replace(user.citizenId, '-', '')}" />
+										${fn:substring(cid, 0,1)}-${fn:substring(cid, 1,5)}-${fn:substring(cid, 5,10)}-${fn:substring(cid, 10,12)}-${fn:substring(cid, 12,13)}
 										</c:otherwise>
 										
 									</c:choose>
@@ -356,10 +357,12 @@
 										</c:when>
 										
 										<c:otherwise>
-										 ${fn:substring(user.phonenum, 0,3)}-${fn:substring(user.phonenum, 3,6)}-${fn:substring(user.phonenum, 6,10)}
-										<c:if test="${fn:length(user.phonenum) > 10}">
-									          ${fn:substring(user.phonenum, 10, fn:length(user.phonenum))}
-									        </c:if>
+										<c:set var="phone" value="${fn:replace(fn:replace(user.phonenum, '-', ''), ' ', '')}" />
+      										${fn:substring(phone, 0,3)}-${fn:substring(phone, 3,6)}-${fn:substring(phone, 6,10)}
+
+											<c:if test="${fn:length(phone) > 10}">
+												${fn:substring(phone, 10, fn:length(phone))}
+											</c:if>
 										</c:otherwise>
 										
 									</c:choose>
