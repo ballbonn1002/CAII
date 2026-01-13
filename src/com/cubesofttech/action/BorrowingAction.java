@@ -550,26 +550,76 @@ public class BorrowingAction extends ActionSupport {
 		}
 	}
 	
+	public String eBorrowLog() {
+	    try {
+	        String equipmentId = request.getParameter("equipmentId");
+
+	        // กัน null/ว่าง
+	        if (equipmentId == null || equipmentId.trim().isEmpty()) {
+	            ServletActionContext.getResponse().setContentType("application/json;charset=UTF-8");
+	            ServletActionContext.getResponse().getWriter().write("[]");
+	            return null;
+	        }
+
+	        List<Map<String, Object>> borrowWithUser =
+	                borrowDAO.findBorrowWithUserByEquipmentId(equipmentId.trim());
+
+	        ServletActionContext.getResponse().setContentType("application/json;charset=UTF-8");
+	        ServletActionContext.getResponse().getWriter().write(new Gson().toJson(borrowWithUser));
+	        return null; // ✅ เขียน response เองแล้ว
+
+	    } catch (Exception ex) {
+	        ex.printStackTrace();
+	        try {
+	            ServletActionContext.getResponse().setContentType("application/json;charset=UTF-8");
+	            ServletActionContext.getResponse().getWriter().write("[]");
+	        } catch (Exception ignore) {}
+	        return null;
+	    }
+	}
+	
 	public String eBorrowEdit() {
-		try {
-			String bId = request.getParameter("id");
-			String userJSON = userDAO.userListJSON();
-			List<Equipment> equipments = equipmentDAO.getAll();
-			List<EquipmentType> type = equipmentTypeDAO.getall();
-			List<EquipmentStatus> status = equipmentStatusDAO.getall();
-			Borrow borrow = borrowDAO.findById(Integer.parseInt(bId));
-			
-			request.setAttribute("userList", userJSON);
-			request.setAttribute("type", new Gson().toJson(type));
-			request.setAttribute("equipments", new Gson().toJson(equipments));
-			request.setAttribute("borrow", new Gson().toJson(borrow));
-			request.setAttribute("status", new Gson().toJson(status));
-			request.getSession().setAttribute("bId", bId);
-			return SUCCESS;
-		} catch (Exception e) {
-			e.printStackTrace();
-			return ERROR;
-		}
+	    try {
+	        String bId = request.getParameter("id");
+
+	        String userJSON = userDAO.userListJSON();
+	        List<Equipment> equipments = equipmentDAO.getAll();
+	        List<EquipmentType> type = equipmentTypeDAO.getall();
+	        List<EquipmentStatus> status = equipmentStatusDAO.getall();
+
+	        Borrow borrow = borrowDAO.findById(Integer.parseInt(bId));
+
+	        // ✅ 1) เอา equipmentId จาก borrow (ปรับชื่อ getter ให้ตรงกับของคุณ)
+	        String equipmentId = String.valueOf(borrow.getEquipmentId()); 
+	        // ถ้าของคุณชื่อ getId_equipment() ก็เปลี่ยนเป็น borrow.getId_equipment()
+
+	        // ✅ 2) Usage history ต้องหาโดย equipmentId ไม่ใช่ bId
+	        List<Map<String, Object>> borrowWithUser =
+	                borrowDAO.findBorrowWithUserByEquipmentId(equipmentId);
+
+	        request.setAttribute("borrowlistwithUser", borrowWithUser);
+	        request.setAttribute("borrowlistwithUserJSON", new Gson().toJson(borrowWithUser));
+
+	        // ✅ 3) Status log (ของ equipment) ให้ส่งไปด้วยเหมือน eEdit
+	        Equipment eq = equipmentDAO.getById(Integer.parseInt(equipmentId));
+
+	        // ===== ของเดิม =====
+	        request.setAttribute("userList", userJSON);
+	        request.setAttribute("type", new Gson().toJson(type));
+	        request.setAttribute("equipments", new Gson().toJson(equipments));
+	        request.setAttribute("borrow", new Gson().toJson(borrow));
+	        request.setAttribute("status", new Gson().toJson(status));
+	        request.getSession().setAttribute("bId", bId);
+
+	        // เผื่อ JSP ใช้
+	        request.setAttribute("equipId", equipmentId);
+	        request.setAttribute("equipmentbyId", eq);
+
+	        return SUCCESS;
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        return ERROR;
+	    }
 	}
 
 	public String eBorrowAdd() {

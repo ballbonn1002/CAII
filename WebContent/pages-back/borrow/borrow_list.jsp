@@ -405,16 +405,36 @@ if (request.getAttribute("borrowList") == null) {
 												<label class="form-label fw-semibold fs-7 mb-2">Type</label>
 												<select name="type"
 													class="form-select form-select-solid text-muted">
-													<option value="">Select</option>
+													<option value="">All Type</option>
 													<!-- ให้ value ตรงกับ row.type ที่ใช้เลือก icon -->
 													<option value="c">Computer</option>
 													<option value="in">instument</option>
 													<option value="L">Software License</option>
-													<option value="sl">Software License</option>
 													<option value="Mob">Mobile</option>
 													<option value="p">Pocket WIFI</option>
 												</select>
 											</div>
+											<script>
+												document
+														.addEventListener(
+																"DOMContentLoaded",
+																function() {
+																	const selectType = document
+																			.querySelector('select[name="type"]');
+																	if (!selectType)
+																		return;
+
+																	let type = "${row.type}"; // หรือค่าที่คุณดึงมาจาก DB
+
+																	if (type
+																			&& type
+																					.toLowerCase() === "sl") {
+																		type = "L";
+																	}
+
+																	selectType.value = type;
+																});
+											</script>
 										</div>
 									</div>
 								</div>
@@ -497,12 +517,13 @@ if (request.getAttribute("borrowList") == null) {
 										class="table align-middle table-row-dashed fs-7 gy-3">
 										<thead>
 											<tr class="text-gray-500 text-uppercase fw-semibold">
-												<th class="min-w-60px">ID</th>
-												<th class="min-w-90px">ITEM NO</th>
-												<th class="min-w-80px">TYPE</th>
-												<th class="min-w-220px">EQUIPMENT / DETAIL</th>
-												<th class="min-w-120px">LOCATION</th>
-												<th class="min-w-180px">STATUS</th>
+												<th class="min-w-60px sort" data-sort="number">ID</th>
+												<th class="min-w-90px sort" data-sort="text">ITEM NO</th>
+												<th class="min-w-80px sort" data-sort="type">TYPE</th>
+												<th class="min-w-220px sort" data-sort="text">EQUIPMENT
+													/ DETAIL</th>
+												<th class="min-w-120px sort" data-sort="text">LOCATION</th>
+												<th class="min-w-180px sort" data-sort="status">STATUS</th>
 												<th class="min-w-120px text-end">ACTIONS</th>
 											</tr>
 										</thead>
@@ -655,7 +676,6 @@ if (request.getAttribute("borrowList") == null) {
 												</tr>
 											</c:forEach>
 										</tbody>
-
 									</table>
 								</div>
 							</div>
@@ -781,7 +801,52 @@ if (request.getAttribute("borrowList") == null) {
 
 						});
 	</script>
+	<!-- Sort Script -->
+	<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const tbody = document.getElementById("borrowTableBody");
+    const headers = document.querySelectorAll("th.sort");
+    let sortDir = {};
 
+    headers.forEach((th, colIndex) => {
+        th.addEventListener("click", () => {
+            const type = th.dataset.sort;
+            const dir = sortDir[colIndex] = !(sortDir[colIndex]);
+            const rows = Array.from(tbody.querySelectorAll("tr"));
+
+            rows.sort((a, b) => {
+                let A, B;
+
+                switch (type) {
+                    case "number":
+                        A = parseInt(a.children[colIndex].textContent.trim(), 10) || 0;
+                        B = parseInt(b.children[colIndex].textContent.trim(), 10) || 0;
+                        return dir ? A - B : B - A;
+
+                    case "type":
+                        A = a.querySelector("td[data-type]")?.dataset.type || "";
+                        B = b.querySelector("td[data-type]")?.dataset.type || "";
+                        A = A.toLowerCase() === "sl" ? "l" : A.toLowerCase();
+                        B = B.toLowerCase() === "sl" ? "l" : B.toLowerCase();
+                        return dir ? A.localeCompare(B) : B.localeCompare(A);
+
+                    case "status":
+                        A = a.querySelector("td[data-status]")?.dataset.status || "";
+                        B = b.querySelector("td[data-status]")?.dataset.status || "";
+                        return dir ? A.localeCompare(B) : B.localeCompare(A);
+
+                    default:
+                        A = a.children[colIndex].textContent.trim().toLowerCase();
+                        B = b.children[colIndex].textContent.trim().toLowerCase();
+                        return dir ? A.localeCompare(B, undefined, { numeric: true })
+                                   : B.localeCompare(A, undefined, { numeric: true });
+                }
+            });
+            rows.forEach(r => tbody.appendChild(r));
+        });
+    });
+});
+</script>
 	<!-- Modal: Equipment Detail -->
 	<div class="modal fade" id="borrowModal" tabindex="-1"
 		aria-hidden="true">
@@ -1028,7 +1093,7 @@ if (request.getAttribute("borrowList") == null) {
 								const min = String(d.getMinutes()).padStart(2,
 										'0');
 
-								return month + ' ' + day + ' ' + "," + ' ' + year;
+								return day + ' ' + month + ' ' + year;
 							}
 
 							function formatDateRange(startStr, endStr) {
@@ -1183,7 +1248,18 @@ if (request.getAttribute("borrowList") == null) {
 								// reset note
 								$('#bd_approver_note').val('');
 							}
+							function resetMoreDetailTop() {
+								  const el = document.getElementById('moreDetailCollapse');
+								  if (!el) return;
 
+								  // บังคับให้ปิดเสมอ
+								  const c = bootstrap.Collapse.getOrCreateInstance(el, { toggle: false });
+								  c.hide();
+
+								  // รีเซ็ตไอคอน/aria
+								  $('#moreDetailIcon').removeClass('is-open');
+								  $('#moreDetailToggle').attr('aria-expanded', 'false');
+								}
 							// ===== เมื่อกดปุ่ม View (ปุ่มในตาราง) =====
 							// ต้องมี class .btn-view-borrow ที่ปุ่มในตาราง
 							$(document)
@@ -1225,6 +1301,9 @@ if (request.getAttribute("borrowList") == null) {
 
 												const serial = $tr
 														.data('serial')
+														|| '';
+												const borrower = $tr
+														.data('borrowerName')
 														|| '';
 
 												// amount (ตัด .0)
@@ -1279,8 +1358,8 @@ if (request.getAttribute("borrowList") == null) {
 												setText('m_item_link', 'ID: '
 														+ itemNo);
 												setText('m_borrow_id', 'ID: '
-														+ itemNo);
-												setText('m_name', name);
+														+ borrowId);
+												setText('m_borrower', borrower);
 												setText('m_serial', serial);
 												setText('m_detail_top', detail);
 												setText('m_amount', amountText);
@@ -1368,7 +1447,15 @@ if (request.getAttribute("borrowList") == null) {
 																	wifi : wifi,
 																	lan : lan
 																});
+												resetMoreDetailTop();
 
+												// ถ้าเป็นคอมค่อยโชว์ wrapper ไม่ใช่คอมก็ซ่อน + รีเซ็ตอีกที
+												if (String(type).toLowerCase() === 'c') {
+												  $('#moreDetailWrapper').show();
+												} else {
+												  $('#moreDetailWrapper').hide();
+												  resetMoreDetailTop();
+												}
 												// show modal บน
 												modalObj.show();
 											});
@@ -1687,280 +1774,191 @@ if (request.getAttribute("borrowList") == null) {
 		</div>
 	</div>
 	<script>
-		$(document)
-				.ready(
-						function() {
+  $(document).ready(function () {
 
-							// modal instance
-							var bdModalEl = document
-									.getElementById('borrowDetailModal');
-							var bdModalObj = new bootstrap.Modal(bdModalEl);
+    // modal instance
+    var bdModalEl = document.getElementById('borrowDetailModal');
+    var bdModalObj = new bootstrap.Modal(bdModalEl);
 
-							// collapse instance
-							var bdCollapseEl = document
-									.getElementById('bd_moreDetailCollapse');
-							var bdCollapseObj = bootstrap.Collapse
-									.getOrCreateInstance(bdCollapseEl, {
-										toggle : false
-									});
+    // collapse instance
+    var bdCollapseEl = document.getElementById('bd_moreDetailCollapse');
+    var bdCollapseObj = bootstrap.Collapse.getOrCreateInstance(bdCollapseEl, {
+      toggle: false
+    });
 
-							// toggle more detail
-							$('#bd_moreDetailToggle').on('click', function(e) {
-								e.preventDefault();
-								bdCollapseObj.toggle();
-							});
+    // toggle more detail
+    $('#bd_moreDetailToggle').on('click', function (e) {
+      e.preventDefault();
+      bdCollapseObj.toggle();
+    });
 
-							bdCollapseEl.addEventListener('shown.bs.collapse',
-									function() {
-										$('#bd_moreDetailIcon').addClass(
-												'is-open');
-										$('#bd_moreDetailToggle').attr(
-												'aria-expanded', 'true');
-									});
+    bdCollapseEl.addEventListener('shown.bs.collapse', function () {
+      $('#bd_moreDetailIcon').addClass('is-open');
+      $('#bd_moreDetailToggle').attr('aria-expanded', 'true');
+    });
 
-							bdCollapseEl.addEventListener('hidden.bs.collapse',
-									function() {
-										$('#bd_moreDetailIcon').removeClass(
-												'is-open');
-										$('#bd_moreDetailToggle').attr(
-												'aria-expanded', 'false');
-									});
+    bdCollapseEl.addEventListener('hidden.bs.collapse', function () {
+      $('#bd_moreDetailIcon').removeClass('is-open');
+      $('#bd_moreDetailToggle').attr('aria-expanded', 'false');
+    });
 
-							// format date (ใช้แบบเดิมของคุณ)
-							function formatBorrowDate(dtStr) {
-								if (!dtStr)
-									return '';
-								var d = new Date(dtStr.replace(' ', 'T'));
-								if (isNaN(d.getTime()))
-									return dtStr;
+    // ✅ รีเซ็ต More Detail ทุกครั้งที่ปิด modal (ไม่ให้เปิดค้าง)
+    bdModalEl.addEventListener('hidden.bs.modal', function () {
+      bdCollapseObj.hide();
+      $('#bd_moreDetailIcon').removeClass('is-open');
+      $('#bd_moreDetailToggle').attr('aria-expanded', 'false');
+    });
 
-								var day = d.getDate();
-								var monthNames = [ 'Jan', 'Feb', 'Mar', 'Apr',
-										'May', 'Jun', 'Jul', 'Aug', 'Sep',
-										'Oct', 'Nov', 'Dec' ];
-								var month = monthNames[d.getMonth()];
-								var year = d.getFullYear();
-								return month + ' ' + day + ' ' + "," + ' ' + year;
-							}
+    // format date (ใช้แบบเดิมของคุณ)
+    function formatBorrowDate(dtStr) {
+      if (!dtStr) return '';
+      var d = new Date(dtStr.replace(' ', 'T'));
+      if (isNaN(d.getTime())) return dtStr;
 
-							// click open Borrow Detail
-							$(document)
-									.on(
-											'click',
-											'.btn-borrow-detail',
-											function(e) {
-												e.preventDefault();
+      var day = d.getDate();
+      var monthNames = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+      var month = monthNames[d.getMonth()];
+      var year = d.getFullYear();
+      return month + ' ' + day + ' , ' + year;
+    }
 
-												var $tr = $(this).closest('tr');
+    // click open Borrow Detail
+    $(document).on('click', '.btn-borrow-detail', function (e) {
+      e.preventDefault();
 
-												var borrowId = $.trim($tr.find(
-														'td').eq(0).text()); // ใช้คอลัมน์แรกเป็น Borrow ID
+      var $tr = $(this).closest('tr');
 
-												// basic
-												var itemNo = $tr.data('itemNo')
-														|| $tr.data('item-no')
-														|| '';
-												var name = $tr.data('name')
-														|| '';
-												var detail = $tr.data('detail')
-														|| '';
-												var serial = $tr.data('serial')
-														|| '';
-												var status = (($tr
-														.data('status') || '') + '')
-														.toUpperCase();
+      var borrowId = $.trim($tr.find('td').eq(0).text()); // ใช้คอลัมน์แรกเป็น Borrow ID
 
-												// right
-												var amountRaw = $tr
-														.data('amount');
-												var amountText = '1';
-												if (amountRaw !== undefined
-														&& amountRaw !== null
-														&& amountRaw !== '') {
-													var n = parseFloat(amountRaw);
-													amountText = (!isNaN(n) && n % 1 === 0) ? parseInt(
-															n, 10).toString()
-															: (amountRaw + '');
-												}
+      // basic
+      var itemNo = $tr.data('itemNo') || $tr.data('item-no') || '';
+      var name = $tr.data('name') || '';
+      var detail = $tr.data('detail') || '';
+      var serial = $tr.data('serial') || '';
+      var status = (($tr.data('status') || '') + '').toUpperCase();
 
-												var timeCreate = $tr
-														.data('timeCreate')
-														|| $tr
-																.data('time-create')
-														|| '';
+      // right
+      var amountRaw = $tr.data('amount');
+      var amountText = '1';
+      if (amountRaw !== undefined && amountRaw !== null && amountRaw !== '') {
+        var n = parseFloat(amountRaw);
+        amountText = (!isNaN(n) && n % 1 === 0) ? parseInt(n, 10).toString() : (amountRaw + '');
+      }
 
-												// more detail
-												var type = (($tr.data('type') || '') + '')
-														.toLowerCase();
-												var windows = $tr
-														.data('windows')
-														|| '';
-												var ram = $tr.data('ram') || '';
-												var hdd = $tr.data('hdd') || '';
-												var wifi = $tr.data('wifi')
-														|| '';
-												var lan = $tr.data('lan') || '';
-												var display = $tr
-														.data('display')
-														|| '';
-												var cpu = $tr.data('process')
-														|| $tr.data('cpu')
-														|| '';
-												var battery = $tr
-														.data('battery')
-														|| '';
+      var timeCreate = $tr.data('timeCreate') || $tr.data('time-create') || '';
 
-												// badge
-												var $badge = $('#bd_status_badge');
-												$badge
-														.removeClass()
-														.addClass(
-																'badge badge-lg rounded-pill px-4 fw-semibold');
+      // more detail
+      var type = (($tr.data('type') || '') + '').toLowerCase();
+      var windows = $tr.data('windows') || '';
+      var ram = $tr.data('ram') || '';
+      var hdd = $tr.data('hdd') || '';
+      var wifi = $tr.data('wifi') || '';
+      var lan = $tr.data('lan') || '';
+      var display = $tr.data('display') || '';
+      var cpu = $tr.data('process') || $tr.data('cpu') || '';
+      var battery = $tr.data('battery') || '';
 
-												if (status === 'B') {
-													$badge
-															.addClass(
-																	'bg-warning text-white')
-															.text('Borrowing');
-												} else if (status === 'R') {
-													$badge
-															.addClass(
-																	'bg-success text-white')
-															.text('Returned');
-												} else if (status === 'W') {
-													$badge
-															.addClass(
-																	'bg-light text-dark')
-															.text(
-																	'Wait for Approve');
-												} else {
-													$badge
-															.addClass(
-																	'bg-light text-muted')
-															.text('-');
-												}
+      // badge
+      var $badge = $('#bd_status_badge');
+      $badge.removeClass().addClass('badge badge-lg rounded-pill px-4 fw-semibold');
 
-												// fill
-												$('#bd_item_link').text(
-														'ID: ' + itemNo);
-												$('#bd_name').text(name);
-												$('#bd_serial').text(serial);
-												$('#bd_detail').text(detail);
-												$('#bd_amount')
-														.text(amountText);
-												$('#bd_purchase_date')
-														.text(
-																formatBorrowDate(timeCreate)
-																		|| '-');
+      if (status === 'B') {
+        $badge.addClass('bg-warning text-white').text('Borrowing');
+      } else if (status === 'R') {
+        $badge.addClass('bg-success text-white').text('Returned');
+      } else if (status === 'W') {
+        $badge.addClass('bg-light text-dark').text('Wait for Approve');
+      } else {
+        $badge.addClass('bg-light text-muted').text('-');
+      }
 
-												// reset collapse to closed every time
-												bdCollapseObj.hide();
-												$('#bd_moreDetailIcon')
-														.removeClass('is-open');
-												$('#bd_moreDetailToggle').attr(
-														'aria-expanded',
-														'false');
+      // fill
+      $('#bd_item_link').text('ID: ' + itemNo);
+      $('#bd_name').text(name);
+      $('#bd_serial').text(serial);
+      $('#bd_detail').text(detail);
+      $('#bd_amount').text(amountText);
+      $('#bd_purchase_date').text(formatBorrowDate(timeCreate) || '-');
 
-												// show/hide more detail (ตามแนวเดิม: type === 'c' เท่านั้น)
-												if (type === 'c') {
-													$('#bd_moreDetailWrapper')
-															.show();
-													$('#bd_windows').text(
-															windows);
-													$('#bd_ram').text(ram);
-													$('#bd_storage').text(hdd);
-													$('#bd_storage2').text(hdd);
-													$('#bd_wifi').text(wifi);
-													$('#bd_lan').text(lan);
-													$('#bd_display').text(
-															display);
-													$('#bd_cpu').text(cpu);
-													$('#bd_battery').text(
-															battery);
-												} else {
-													$('#bd_moreDetailWrapper')
-															.hide();
-												}
-												$('#borrowDetailModal').data(
-														'borrowId', borrowId);
+      // ✅ สำคัญ: เปิด modal ใหม่ให้ "ปิด" More Detail เสมอ
+      bdCollapseObj.hide();
+      $('#bd_moreDetailIcon').removeClass('is-open');
+      $('#bd_moreDetailToggle').attr('aria-expanded', 'false');
 
-												// clear note each open (ตามรูป)
-												$('#bd_approver_note').val('');
+      // show/hide more detail (type === 'c' เท่านั้น)
+      if (type === 'c') {
+        $('#bd_moreDetailWrapper').show();
+        $('#bd_windows').text(windows);
+        $('#bd_ram').text(ram);
+        $('#bd_storage').text(hdd);
+        $('#bd_storage2').text(hdd);
+        $('#bd_wifi').text(wifi);
+        $('#bd_lan').text(lan);
+        $('#bd_display').text(display);
+        $('#bd_cpu').text(cpu);
+        $('#bd_battery').text(battery);
+      } else {
+        $('#bd_moreDetailWrapper').hide();
+        // เผื่อเคยเปิดค้างไว้ ให้ปิดไว้ด้วย
+        bdCollapseObj.hide();
+        $('#bd_moreDetailIcon').removeClass('is-open');
+        $('#bd_moreDetailToggle').attr('aria-expanded', 'false');
+      }
 
-												// show modal
-												bdModalObj.show();
-											});
-							const CTX = "${pageContext.request.contextPath}";
+      $('#borrowDetailModal').data('borrowId', borrowId);
 
-							$('#bd_request_return')
-									.on(
-											'click',
-											function(e) {
-												e.preventDefault();
+      // clear note each open
+      $('#bd_approver_note').val('');
 
-												const borrowId = $(
-														'#borrowDetailModal')
-														.data('borrowId')
-														|| '';
-												const note = $(
-														'#bd_approver_note')
-														.val();
+      // show modal
+      bdModalObj.show();
+    });
 
-												if (!borrowId) {
-													alert('Borrow ID not found.');
-													return;
-												}
+    const CTX = "${pageContext.request.contextPath}";
 
-												if (!confirm('Are you sure you want to request return for this item?'))
-													return;
+    $('#bd_request_return').on('click', function (e) {
+      e.preventDefault();
 
-												$
-														.ajax({
-															url : CTX
-																	+ "/eBorrowReturn.action",
-															type : "POST",
-															dataType : "json",
-															data : {
-																id : borrowId,
-																note : note
-															},
-															success : function(
-																	data) {
-																if (data
-																		&& data.message === "success") {
-																	alert("Return request submitted successfully!");
-																	bdModalObj
-																			.hide();
-																	window.location.href = CTX
-																			+ "/borrow_list.action";
-																} else {
-																	alert("Something went wrong: "
-																			+ (data ? data.message
-																					: "no data"));
-																}
-															},
-															error : function(
-																	xhr) {
-																console
-																		.log(
-																				"HTTP",
-																				xhr.status);
-																console
-																		.log(
-																				"RAW",
-																				xhr.responseText);
-																alert("Failed to submit return request.");
-															}
-														});
-											});
-							// FIX: ให้ปุ่ม X / Cancel ปิด modal แน่นอน (กันโดน theme กัน event)
-							$('#borrowDetailModal').on('click',
-									'[data-bs-dismiss="modal"]', function(e) {
-										e.preventDefault();
-										e.stopPropagation();
-										bdModalObj.hide();
-									});
-						});
-	</script>
+      const borrowId = $('#borrowDetailModal').data('borrowId') || '';
+      const note = $('#bd_approver_note').val();
+
+      if (!borrowId) {
+        alert('Borrow ID not found.');
+        return;
+      }
+
+      if (!confirm('Are you sure you want to request return for this item?')) return;
+
+      $.ajax({
+        url: CTX + "/eBorrowReturn.action",
+        type: "POST",
+        dataType: "json",
+        data: { id: borrowId, note: note },
+        success: function (data) {
+          if (data && data.message === "success") {
+            alert("Return request submitted successfully!");
+            bdModalObj.hide();
+            window.location.href = CTX + "/borrow_list.action";
+          } else {
+            alert("Something went wrong: " + (data ? data.message : "no data"));
+          }
+        },
+        error: function (xhr) {
+          console.log("HTTP", xhr.status);
+          console.log("RAW", xhr.responseText);
+          alert("Failed to submit return request.");
+        }
+      });
+    });
+
+    // FIX: ให้ปุ่ม X / Cancel ปิด modal แน่นอน (กันโดน theme กัน event)
+    $('#borrowDetailModal').on('click', '[data-bs-dismiss="modal"]', function (e) {
+      e.preventDefault();
+      e.stopPropagation();
+      bdModalObj.hide();
+    });
+
+  });
+</script>
 </body>
 </html>

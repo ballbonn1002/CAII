@@ -149,9 +149,7 @@ Logger log = Logger.getLogger("com.cubesofttech.jsp.borrow_add");
 								method="post" class="card h-xl-100 shadow-none">
 
 								<!-- ถ้าเป็นหน้าเพิ่มใหม่ ไม่ต้องมี id ก็ลบได้ -->
-								<input type="hidden" name="id" value="" /> <input type="hidden"
-									name="onlineUser.id" value="${sessionScope.onlineUser.id}" />
-
+								<input type="hidden" name="id" value="" />
 
 								<div class="card-header py-4"
 									style="border-bottom: 1px solid #E4E6EF;">
@@ -166,7 +164,7 @@ Logger log = Logger.getLogger("com.cubesofttech.jsp.borrow_add");
 										<select name="user"
 											class="form-select form-select-lg fw-medium"
 											data-control="select2" data-placeholder="Select Borrower"
-											data-hide-search="true" required>
+											required>
 											<option value="">-- Select borrower --</option>
 
 											<c:forEach var="u" items="${userListObj}">
@@ -216,7 +214,9 @@ Logger log = Logger.getLogger("com.cubesofttech.jsp.borrow_add");
 
 										<select id="equipment_select" name="equipment"
 											class="form-select form-select-lg fw-medium text-muted"
+											data-control="select2" data-placeholder="Select equipment"
 											required>
+
 											<option value="">Select equipment</option>
 
 											<c:forEach var="e" items="${equipmentsObj}">
@@ -317,8 +317,6 @@ Logger log = Logger.getLogger("com.cubesofttech.jsp.borrow_add");
 											</c:forEach>
 										</select>
 									</div>
-
-
 									<!-- Start / End Date -->
 									<div class="row mb-7">
 										<div class="col-lg-6">
@@ -335,15 +333,13 @@ Logger log = Logger.getLogger("com.cubesofttech.jsp.borrow_add");
 										</div>
 
 										<div class="col-lg-6">
-											<label class="form-label required fw-medium fs-6">End
-												Date</label>
+											<label class="form-label fw-medium fs-6">End Date</label>
 											<div class="position-relative d-flex align-items-center">
 												<i
 													class="ki-outline ki-calendar fs-3 position-absolute ms-4"></i>
 												<input type="text" id="end_date"
 													class="form-control form-control-lg ps-12" name="date_to"
-													placeholder="Select Date" value="" autocomplete="off"
-													required />
+													placeholder="Select Date" value="" autocomplete="off" />
 											</div>
 										</div>
 									</div>
@@ -410,17 +406,13 @@ Logger log = Logger.getLogger("com.cubesofttech.jsp.borrow_add");
 											class="mb-3 d-flex justify-content-between align-items-center w-100">
 											<span class="fw-bold fs-1 text-primary" id="d_itemNo">-</span>
 
-											<span> <!-- badge จะถูกเปลี่ยน class/ข้อความ --> <span
-												id="d_badge"
-												class="badge badge-lg rounded-pill px-4 fw-semibold bg-light text-gray-700">
-													- </span>
+											<span> <span id="d_badge"
+												class="badge badge-lg rounded-pill px-4 fw-semibold bg-light text-gray-700">-</span>
 											</span>
 										</div>
 
-										<div class="symbol symbol-150px">
-											<img id="d_img" src="/assets/media/placeholder/equipment.png"
-												alt="equipment" class="border rounded-3" />
-										</div>
+										<!-- ✅ container สำหรับสลับ img / icon -->
+										<div id="d_imgWrap"></div>
 									</div>
 
 									<!-- ROWS (แบบรูปซ้าย ไม่เพิ่ม style) -->
@@ -499,9 +491,9 @@ Logger log = Logger.getLogger("com.cubesofttech.jsp.borrow_add");
 										<button type="button" id="btn_moreDetail_1"
 											class="btn btn-link p-0 w-100 text-primary fw-semibold d-flex justify-content-between align-items-center py-5 border-bottom border-gray-200"
 											aria-expanded="false" aria-controls="moreDetailCollapse_1">
-											<span>More Detail</span> <i
-												class="ki-duotone ki-down fs-3" id="icon_1"> <span
-												class="path1"></span><span class="path2"></span>
+											<span>More Detail</span> <i class="ki-duotone ki-down fs-3"
+												id="icon_1"> <span class="path1"></span><span
+												class="path2"></span>
 											</i>
 										</button>
 
@@ -568,20 +560,33 @@ Logger log = Logger.getLogger("com.cubesofttech.jsp.borrow_add");
 								</div>
 							</div>
 							<!-- ================== Status Log (STATIC TEMPLATE) ================== -->
-							<div class="card">
-								<div class="card-header border-0 pt-6">
+							<div class="card shadow-sm mb-5 mb-xl-10">
+								<div class="card-header fs-4">
 									<div class="card-title">
-										<span class="fw-bold fs-5">Status Log</span>
+										<h3 class="fw-semibold m-0 bs-gray-900">Status Log</h3>
+									</div>
+
+									<div class="card-toolbar">
+										<!-- ซ่อนก่อน แล้วค่อยเปิดด้วย JS -->
+										<button id="btnRequestReturn" type="button"
+											class="btn btn-sm btn-warning btn-open-return-modal d-none">
+											Request for Return</button>
 									</div>
 								</div>
 
-								<div class="card-body pt-0">
-									<div id="statusLogList"></div>
+								<div class="card-body pt-0 mt-6">
+									<div id="statusLogBox"></div>
 
-									<div id="statusLogEmpty" class="text-muted d-none">No
-										status log</div>
+									<div id="statusLogEmpty" class="d-none">
+										<div
+											class="d-flex flex-column align-items-center justify-content-center py-10">
+											<i class="ki-duotone ki-cube-2 fs-3x text-gray-500 mb-4">
+												<span class="path1"></span><span class="path2"></span><span
+												class="path3"></span>
+											</i> <span class="text-gray-800 fw-semibold fs-5">No data</span>
+										</div>
+									</div>
 								</div>
-
 							</div>
 						</div>
 					</div>
@@ -589,6 +594,19 @@ Logger log = Logger.getLogger("com.cubesofttech.jsp.borrow_add");
 			</div>
 		</div>
 	</div>
+	<!-- Js ID -->
+	<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const borrowerSelect = document.querySelector('select[name="user"]');
+    const hiddenId = document.querySelector('input[name="id"]');
+
+    if (!borrowerSelect || !hiddenId) return;
+
+    borrowerSelect.addEventListener("change", function () {
+        hiddenId.value = this.value || "";
+    });
+});
+</script>
 	<script>
 document.addEventListener("DOMContentLoaded", function () {
   const collapseEl = document.getElementById("moreDetailCollapse_1");
@@ -631,19 +649,24 @@ document.addEventListener("DOMContentLoaded", function () {
   const endEl   = document.getElementById("end_date");
 
   // init flatpickr (ส่งค่าแบบ dd-MM-yyyy)
-  const startPicker = flatpickr(startEl, {
-	enableTime : true,
-	time_24hr : true,
-    dateFormat: "d-m-Y",
-    allowInput: true
-  });
+ const startPicker = flatpickr(startEl, {
+  enableTime: true,
+  time_24hr: true,
+  dateFormat: "d m Y , H : i",
+  altInput: true,
+  altFormat: "d M Y , H : i",
 
-  const endPicker = flatpickr(endEl, {
-	enableTime : true,
-	time_24hr : true,
-    dateFormat: "d-m-Y",
-    allowInput: true
-  });
+  allowInput: true
+});
+
+const endPicker = flatpickr(endEl, {
+  enableTime: true,
+  time_24hr: true,
+  dateFormat: "d m Y , H : i",
+  altInput: true,
+  altFormat: "d M Y , H : i",
+  allowInput: true
+});
 
   // end ต้องไม่ก่อน start (ใช้ minDate ของ flatpickr)
   startEl.addEventListener("change", function () {
@@ -703,22 +726,36 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
 							function setImage(imgPath, altText) {
-								const img = document.getElementById("d_img");
-								if (!img)
-									return;
+								  const wrap = document.getElementById("d_imgWrap");
+								  if (!wrap) return;
 
-								let src = (imgPath || "").trim();
-								if (!src) {
-									src = CTX
-											+ "/assets/media/placeholder/equipment.png";
-								} else if (!src.startsWith("http")) {
-									if (!src.startsWith("/"))
-										src = "/" + src;
-									src = CTX + src;
+								  let src = (imgPath || "").trim();
+
+								  // ====== ไม่มีรูป => แสดง icon เหมือน c:otherwise ======
+								  if (!src) {
+								    wrap.innerHTML = `
+								      <div class="symbol symbol-150px border rounded-3 bg-light d-flex align-items-center justify-content-center">
+								        <i class="fa-solid fa-image fs-1 text-muted"></i>
+								      </div>
+								    `;
+								    return;
+								  }
+
+								  // ====== มีรูป => ทำ path เหมือนเดิม ======
+								  if (!src.startsWith("http")) {
+								    if (!src.startsWith("/")) src = "/" + src;
+								    src = CTX + src;
+								  }
+
+								  // ====== แสดง img เหมือน c:when ======
+								  wrap.innerHTML = `
+								    <div class="symbol symbol-150px">
+								      <img src="${src}"
+								           alt="${altText || "equipment"}"
+								           class="border rounded-3 object-fit-cover w-100 h-100" />
+								    </div>
+								  `;
 								}
-								img.src = src;
-								img.alt = altText || "equipment";
-							}
 							function setTypeUI(typeCode) {
 								  const textEl = document.getElementById("d_typeText");
 								  const iconsWrap = document.getElementById("d_typeIcons");
@@ -884,122 +921,192 @@ document.addEventListener("DOMContentLoaded", function () {
 	<!-- JS StatusLog -->
 	<script>
 document.addEventListener("DOMContentLoaded", function () {
-
+  const CTX = "${pageContext.request.contextPath}";
   const sel = document.getElementById("equipment_select");
-  const box = document.getElementById("statusLogList");
+  if (!sel) return;
+
+  const box = document.getElementById("statusLogBox");
   const empty = document.getElementById("statusLogEmpty");
+  const btnReturn = document.getElementById("btnRequestReturn");
+  if (!box || !empty) return;
 
-  if (!sel || !box || !empty) return;
+  function formatEN(dtStr){
+    if(!dtStr) return "";
+    let s = String(dtStr).trim();
+    if (/^\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}/.test(s)) s = s.replace(" ", "T");
+    const d = new Date(s);
+    if (isNaN(d.getTime())) return String(dtStr);
 
-  function statusMeta(st) {
-    const s = (st || "").toUpperCase();
-    if (s === "B") return { text: "Borrowing", badge: "bg-warning text-white" };
-    if (s === "R") return { text: "Return", badge: "bg-success text-white" };
-    if (s === "W") return { text: "Wait for approve", badge: "bg-info text-white" };
-    if (s === "C") return { text: "Corrupted", badge: "bg-danger text-white" };
-    if (s === "A") return { text: "Available", badge: "bg-success text-white" };
-    return { text: (s || "-"), badge: "bg-secondary text-white" };
+    const months = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+    const dd = d.getDate();
+    const mm = months[d.getMonth()];
+    const yy = d.getFullYear();
+    const HH = String(d.getHours()).padStart(2,"0");
+    const MI = String(d.getMinutes()).padStart(2,"0");
+    return dd + " " + mm + " " + yy + ", " + HH + ":" + MI;
   }
 
-  function parseStatusLog(raw) {
-    raw = (raw || "").trim();
-    if (!raw || raw.toLowerCase() === "null") return [];
-
-    try {
-      // กันเคสถูกห่อเป็นสตริงอีกชั้น
-      if ((raw.startsWith('"') && raw.endsWith('"')) || (raw.startsWith("'") && raw.endsWith("'"))) {
-        raw = JSON.parse(raw);
-      }
-      const arr = JSON.parse(raw);
-      return Array.isArray(arr) ? arr : [];
-    } catch (e) {
-      console.log("statuslog parse error:", e, raw);
-      return [];
-    }
+  function whoText(row){
+    const emp  = row.employee_id || "";
+    const name = row.name || "";
+    const en   = row.name_en || "";
+    let t = "";
+    if (emp) t += emp + " - ";
+    t += name || "-";
+    if (en) t += " - " + en;
+    return t;
   }
 
-  function clearLogs() {
+  function el(tag, cls){
+    const e = document.createElement(tag);
+    if (cls) e.className = cls;
+    return e;
+  }
+
+  function renderTimeline(list){
     box.innerHTML = "";
     empty.classList.add("d-none");
-  }
+    if (btnReturn) btnReturn.classList.add("d-none");
 
-  function showEmpty() {
-    box.innerHTML = "";
-    empty.classList.remove("d-none");
-  }
-
-  function renderLogs(logs) {
-    clearLogs();
-
-    if (!logs || logs.length === 0) {
-      showEmpty();
+    if (!list || list.length === 0) {
+      empty.classList.remove("d-none");
       return;
     }
 
-    logs.forEach(function (it, idx) {
-      const meta = statusMeta(it && it.status);
-      const user = (it && it.userUpdate) ? it.userUpdate : "-";
-      const time = (it && it.timeUpdate) ? it.timeUpdate : "-";
+    // ✅ เหมือน JSTL: ถ้ารายการแรก status == B → โชว์ปุ่ม
+    if (btnReturn && String(list[0].status || "").toUpperCase() === "B") {
+      btnReturn.classList.remove("d-none");
+    }
 
-      const wrap = document.createElement("div");
-      wrap.className = "d-flex mb-5";
+    const tl = el("div", "timeline timeline-border-dashed");
 
-      const left = document.createElement("span");
-      left.className = "d-inline-flex align-items-center justify-content-center rounded-circle border border-2 border-dashed border-gray-300 flex-shrink-0 me-3";
-      left.style.width = "38px";
-      left.style.height = "38px";
-      left.innerHTML = '<i class="ki-duotone ki-cd dashed fs-2 text-gray-300"><span class="path1"></span><span class="path2"></span></i>';
+    list.forEach(function (borrow) {
+      const st = String(borrow.status || "").toUpperCase();
 
-      const right = document.createElement("div");
-      right.className = "flex-grow-1";
+      if (st === "R") {
+        const item = el("div", "timeline-item");
 
-      const badgeRow = document.createElement("div");
-      badgeRow.className = "mb-2";
-      const badge = document.createElement("b");
-      badge.className = "badge badge-lg rounded-pill px-2 fw-semibold " + meta.badge;
-      badge.textContent = meta.text;
-      badgeRow.appendChild(badge);
+        item.appendChild(el("div", "timeline-line"));
 
-      const userRow = document.createElement("div");
-      userRow.className = "d-flex align-items-center";
-      userRow.innerHTML = '<i class="ki-duotone ki-user fs-5 me-2"><span class="path1"></span><span class="path2"></span></i>';
-      const userSpan = document.createElement("span");
-      userSpan.textContent = user;
-      userRow.appendChild(userSpan);
+        const icon = el("div", "timeline-icon");
+        icon.innerHTML = '<i class="ki-duotone ki-cd fs-2 text-success"><span class="path1"></span><span class="path2"></span></i>';
+        item.appendChild(icon);
 
-      const timeRow = document.createElement("div");
-      timeRow.className = "d-flex align-items-center mt-1";
-      timeRow.innerHTML = '<i class="ki-duotone ki-calendar fs-5 me-2"><span class="path1"></span><span class="path2"></span></i>';
-      const timeSpan = document.createElement("span");
-      timeSpan.textContent = time;
-      timeRow.appendChild(timeSpan);
+        const content = el("div", "timeline-content mb-5 mt-n1");
 
-      right.appendChild(badgeRow);
-      right.appendChild(userRow);
-      right.appendChild(timeRow);
+        const bRow = el("div", "mb-2");
+        bRow.innerHTML = '<span class="badge badge-success fw-bold fs-7">Returned</span>';
+        content.appendChild(bRow);
 
-      wrap.appendChild(left);
-      wrap.appendChild(right);
+        // user row
+        const uRow = el("div", "d-flex align-items-center mt-4 mb-2");
+        uRow.innerHTML = '<i class="ki-duotone ki-user fs-4 text-gray-700 me-3"><span class="path1"></span><span class="path2"></span></i>';
+        const uDiv = el("div", "fs-5 fw-semibold text-gray-800");
+        uDiv.textContent = whoText(borrow);
+        uRow.appendChild(uDiv);
+        content.appendChild(uRow);
 
-      box.appendChild(wrap);
+        // date_end
+        const tRow = el("div", "d-flex align-items-center mt-4 fs-7 text-muted");
+        tRow.innerHTML = '<i class="ki-duotone ki-calendar fs-4 text-gray-700 me-3"><span class="path1"></span><span class="path2"></span></i>';
+        const tDiv = el("div", "fs-5 fw-semibold text-gray-800");
+        tDiv.textContent = formatEN(borrow.date_end) || "Unknown Return Date";
+        tRow.appendChild(tDiv);
+        content.appendChild(tRow);
 
-      if (idx < logs.length - 1) {
-        box.appendChild(document.createElement("hr"));
+        // location
+        if (borrow.location) {
+          const lRow = el("div", "d-flex align-items-center mt-4 mb-2 fs-7 text-muted");
+          lRow.innerHTML = '<i class="ki-duotone ki-geolocation fs-2 me-3"><span class="path1"></span><span class="path2"></span></i>';
+          const lDiv = el("div", "fs-5 fw-semibold text-gray-800");
+          lDiv.textContent = String(borrow.location);
+          lRow.appendChild(lDiv);
+          content.appendChild(lRow);
+        }
+
+        item.appendChild(content);
+        tl.appendChild(item);
+      }
+
+      // ========== Borrowing/Borrowed block (เหมือน JSTL) ==========
+      const item2 = el("div", "timeline-item");
+
+      const icon2 = el("div", "timeline-icon");
+      icon2.innerHTML = '<i class="ki-duotone ki-cd fs-2 text-warning"><span class="path1"></span><span class="path2"></span></i>';
+      item2.appendChild(icon2);
+
+      const content2 = el("div", "timeline-content mb-0 mt-n1");
+
+      const bRow2 = el("div", "mb-2");
+      const badgeText = (st === "B") ? "Borrowing" : "Borrowed";
+      bRow2.innerHTML = '<span class="badge badge-warning fw-bold fs-7">' + badgeText + '</span>';
+      content2.appendChild(bRow2);
+
+      const uRow2 = el("div", "d-flex align-items-center mt-4 mb-2");
+      uRow2.innerHTML = '<i class="ki-duotone ki-user fs-4 text-gray-700 me-3"><span class="path1"></span><span class="path2"></span></i>';
+      const uDiv2 = el("div", "fs-5 fw-semibold text-gray-800");
+      uDiv2.textContent = whoText(borrow);
+      uRow2.appendChild(uDiv2);
+      content2.appendChild(uRow2);
+
+      const tRow2 = el("div", "d-flex align-items-center mt-4 fs-7 text-muted");
+      tRow2.innerHTML = '<i class="ki-duotone ki-calendar fs-4 text-gray-700 me-3"><span class="path1"></span><span class="path2"></span></i>';
+      const tDiv2 = el("div", "fs-5 fw-semibold text-gray-800");
+      tDiv2.textContent = formatEN(borrow.date_start) || "-";
+      tRow2.appendChild(tDiv2);
+      content2.appendChild(tRow2);
+
+      if (borrow.location) {
+        const lRow2 = el("div", "d-flex align-items-center mt-4 fs-7 text-muted");
+        lRow2.innerHTML = '<i class="ki-duotone ki-geolocation fs-4 text-gray-700 me-3"><span class="path1"></span><span class="path2"></span></i>';
+        const lDiv2 = el("div", "fs-5 fw-semibold text-gray-800");
+        lDiv2.textContent = String(borrow.location);
+        lRow2.appendChild(lDiv2);
+        content2.appendChild(lRow2);
+      }
+
+      item2.appendChild(content2);
+      tl.appendChild(item2);
+
+      // separator
+      tl.appendChild(el("div", "separator separator-dashed border-gray-300 my-5"));
+    });
+
+    box.appendChild(tl);
+  }
+
+  function loadByEquipmentId(eqId){
+    if (!eqId) { renderTimeline([]); return; }
+
+    // ใช้ jQuery ajax แบบที่คุณมีอยู่ก็ได้
+    if (!window.jQuery || !window.jQuery.ajax) {
+      console.error("jQuery not loaded");
+      renderTimeline([]);
+      return;
+    }
+
+    jQuery.ajax({
+      url: CTX + "/eBorrowLog.action",
+      type: "GET",
+      dataType: "json",
+      data: { equipmentId: eqId },
+      success: function(list){
+        renderTimeline(Array.isArray(list) ? list : []);
+      },
+      error: function(xhr){
+        console.log("AJAX ERROR", xhr.status, xhr.responseText);
+        renderTimeline([]);
       }
     });
   }
 
-  function onChange() {
-    const opt = sel.options[sel.selectedIndex];
-    const raw = opt ? (opt.dataset.statuslog || "") : "";
-    const logs = parseStatusLog(raw);
-    console.log("selected=", sel.value);
-    console.log("raw statuslog=", raw);
-    console.log("parsed logs size=", logs.length, logs);
-    renderLogs(logs);
+  function onChange(){
+    const eqId = (sel.value || "").trim(); // ✅ equipmentId จาก option value
+    loadByEquipmentId(eqId);
   }
 
   sel.addEventListener("change", onChange);
+  if (window.jQuery) jQuery(sel).on("change.select2", onChange);
   onChange();
 });
 </script>

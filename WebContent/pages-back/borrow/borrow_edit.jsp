@@ -8,6 +8,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
 <fmt:setLocale value="en_US" />
+<fmt:formatDate value="${equipmentbyId.timeCreate}" pattern="d MMM yyyy" var="purchaseFmt" />
 <%
 /* =========================
    1) รับ JSON จาก eBorrowEdit
@@ -35,190 +36,6 @@ request.setAttribute("userListObj", userListObj);
 request.setAttribute("equipmentsObj", equipmentsObj);
 request.setAttribute("statusObj", statusObj);
 request.setAttribute("borrowObj", borrowObj);
-%>
-
-<%!/* ===== Helper: normalize id ให้เทียบกันได้ (กันเคส 90.0 จาก Gson/DB) ===== */
-	private String normId2(Object o) {
-		if (o == null)
-			return "";
-		String s = String.valueOf(o).trim();
-		if (s.isEmpty() || "null".equalsIgnoreCase(s))
-			return "";
-
-		try {
-			double d = Double.parseDouble(s);
-			long L = (long) d;
-			if (Math.abs(d - L) < 0.0000001)
-				return String.valueOf(L);
-		} catch (Exception ignore) {
-		}
-
-		return s;
-	}%>
-
-<%
-String _borrowLocation = "";
-if (borrowObj != null) {
-	Object _loc = borrowObj.get("location");
-	if (_loc != null)
-		_borrowLocation = String.valueOf(_loc).trim();
-}
-request.setAttribute("borrowLocation", _borrowLocation);
-
-String _equipIdStr = "";
-if (borrowObj != null) {
-	Object _eid = borrowObj.get("equipmentId");
-	if (_eid == null)
-		_eid = borrowObj.get("equipment_id");
-	_equipIdStr = normId2(_eid);
-}
-request.setAttribute("equipIdStr", _equipIdStr);
-
-// 3.2 หา equip ตัวเดียวใน equipmentsObj
-Map<String, Object> _equip = null;
-if (equipmentsObj != null && _equipIdStr != null && !_equipIdStr.isEmpty()) {
-	for (Map<String, Object> e : equipmentsObj) {
-		Object _id1 = e.get("equipmentId");
-		if (_id1 == null)
-	_id1 = e.get("equipment_id");
-		String _eIdStr = normId2(_id1);
-		if (_equipIdStr.equals(_eIdStr)) {
-	_equip = e;
-	break;
-		}
-	}
-}
-request.setAttribute("equip", _equip);
-
-// 3.3 ดึง raw status_log จาก equip (ตาราง equipment)
-String _rawStatusLog = "";
-if (_equip != null) {
-	Object _rawObj = _equip.get("statusLog");
-	if (_rawObj == null)
-		_rawObj = _equip.get("status_log");
-	if (_rawObj == null)
-		_rawObj = _equip.get("STATUS_LOG");
-	_rawStatusLog = (_rawObj == null) ? "" : String.valueOf(_rawObj);
-}
-request.setAttribute("RAW_STATUS_LOG", _rawStatusLog);
-
-// 3.4 parse JSON array -> statusLogList
-List<Map<String, Object>> _statusLogList = new ArrayList<>();
-String _statusLogParseError = null;
-
-try {
-	String raw = (_rawStatusLog == null) ? "" : _rawStatusLog.trim();
-
-	if (!raw.isEmpty() && !"null".equalsIgnoreCase(raw)) {
-		Gson _gsonn = new Gson();
-
-		// เคส: เก็บเป็น "...." (JSON string ครอบอีกชั้น)
-		if ((raw.startsWith("\"") && raw.endsWith("\"")) || (raw.startsWith("'") && raw.endsWith("'"))) {
-	raw = _gsonn.fromJson(raw, String.class);
-	if (raw != null)
-		raw = raw.trim();
-		}
-
-		// เคส: มี escape \" เยอะๆ เช่น [{\"userUpdate\":\"x\"}]
-		if (raw != null && raw.contains("\\\""))
-	raw = raw.replace("\\\"", "\"");
-		if (raw != null && raw.contains("\\\\"))
-	raw = raw.replace("\\\\", "\\");
-
-		Type statusLogListType = new TypeToken<List<Map<String, Object>>>() {
-		}.getType();
-
-		// ใช้ gson เดิมของหน้า ถ้ามี; ถ้าไม่มีให้ fallback เป็น _gsonn
-		Gson _useGson = (gson != null) ? gson : _gsonn;
-
-		List<Map<String, Object>> parsed = _useGson.fromJson(raw, statusLogListType);
-		if (parsed != null)
-	_statusLogList = parsed;
-	}
-} catch (Exception ex) {
-	_statusLogParseError = ex.toString();
-}
-
-try {
-	final java.text.SimpleDateFormat[] fms = new java.text.SimpleDateFormat[]{
-	new java.text.SimpleDateFormat("MMM d, yyyy, h:mm:ss a", java.util.Locale.ENGLISH),
-	new java.text.SimpleDateFormat("MMM dd, yyyy, h:mm:ss a", java.util.Locale.ENGLISH),
-	new java.text.SimpleDateFormat("MMM d, yyyy, h:mm a", java.util.Locale.ENGLISH),
-	new java.text.SimpleDateFormat("MMM dd, yyyy, h:mm a", java.util.Locale.ENGLISH),
-
-	new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss", java.util.Locale.ENGLISH),
-	new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss.S", java.util.Locale.ENGLISH),
-	new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SS", java.util.Locale.ENGLISH),
-	new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS", java.util.Locale.ENGLISH),
-
-	new java.text.SimpleDateFormat("yyyy/MM/dd HH:mm:ss", java.util.Locale.ENGLISH),
-	new java.text.SimpleDateFormat("dd/MM/yyyy HH:mm:ss", java.util.Locale.ENGLISH),
-	new java.text.SimpleDateFormat("dd-MM-yyyy HH:mm:ss", java.util.Locale.ENGLISH),
-
-	new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm", java.util.Locale.ENGLISH),
-	new java.text.SimpleDateFormat("dd/MM/yyyy HH:mm", java.util.Locale.ENGLISH),
-	new java.text.SimpleDateFormat("dd-MM-yyyy HH:mm", java.util.Locale.ENGLISH),
-
-	new java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.ENGLISH),
-	new java.text.SimpleDateFormat("dd/MM/yyyy", java.util.Locale.ENGLISH),
-	new java.text.SimpleDateFormat("dd-MM-yyyy", java.util.Locale.ENGLISH)};
-	for (java.text.SimpleDateFormat fm : fms)
-		fm.setLenient(true);
-
-	java.util.Collections.sort(_statusLogList, new java.util.Comparator<Map<String, Object>>() {
-		private long toMillis(Object o) {
-	if (o == null)
-		return 0L;
-
-	String t = String.valueOf(o).trim();
-	if (t.isEmpty() || "null".equalsIgnoreCase(t))
-		return 0L;
-
-	if (t.startsWith("[") && t.endsWith("]"))
-		t = t.substring(1, t.length() - 1).trim();
-	t = t.replace("T", " ");
-	if (t.endsWith("Z"))
-		t = t.substring(0, t.length() - 1).trim();
-	t = t.replace('\u202F', ' ').replace('\u00A0', ' ').trim();
-	t = t.replaceAll(" +", " ");
-
-	java.util.Date d = null;
-	for (java.text.SimpleDateFormat fm : fms) {
-		try {
-			d = fm.parse(t);
-			break;
-		} catch (Exception ignore) {
-		}
-	}
-	if (d == null)
-		return 0L;
-
-	java.util.Calendar cal = java.util.Calendar.getInstance(java.util.Locale.ENGLISH);
-	cal.setTime(d);
-	int year = cal.get(java.util.Calendar.YEAR);
-	if (year >= 2500) { // กันปี พ.ศ.
-		cal.add(java.util.Calendar.YEAR, -543);
-		d = cal.getTime();
-	}
-	return d.getTime();
-		}
-
-		@Override
-		public int compare(Map<String, Object> a, Map<String, Object> b) {
-	Object ta = (a != null) ? a.get("timeUpdate") : null;
-	Object tb = (b != null) ? b.get("timeUpdate") : null;
-
-	long ma = toMillis(ta);
-	long mb = toMillis(tb);
-
-	return Long.compare(mb, ma);
-		}
-	});
-} catch (Exception ignoreSort) {
-}
-
-request.setAttribute("statusLogList", _statusLogList);
-request.setAttribute("statusLogParseError", _statusLogParseError);
 %>
 <!DOCTYPE html>
 <html>
@@ -375,8 +192,7 @@ request.setAttribute("statusLogParseError", _statusLogParseError);
 
 										<select name="user"
 											class="form-select form-select-lg fw-medium"
-											data-control="select2" data-placeholder="Select Borrower"
-											data-hide-search="true">
+											data-control="select2" data-placeholder="Select Borrower">
 
 											<c:forEach var="u" items="${userListObj}">
 												<c:set var="uid"
@@ -392,7 +208,7 @@ request.setAttribute("statusLogParseError", _statusLogParseError);
 													value="${not empty u['role_id'] ? u['role_id'] : (not empty u['roleId'] ? u['roleId'] : u['role'])}" />
 
 												<option value="${uid}"
-													<c:if test="${fn:trim(uid) == fn:trim(borrowerId)}">selected</c:if>>
+													<c:if test="${fn:toLowerCase(fn:trim(uid)) == fn:toLowerCase(fn:trim(borrowerId))}">selected</c:if>>
 													<c:out value="${empty employeeId ? '-' : employeeId}" />&nbsp;&nbsp;-&nbsp;&nbsp;
 													<c:out value="${empty nameTh ? '-' : nameTh}" />&nbsp;&nbsp;-&nbsp;&nbsp;
 													<c:out value="${empty nameEn ? '-' : nameEn}" />&nbsp;&nbsp;-&nbsp;&nbsp;
@@ -464,15 +280,14 @@ request.setAttribute("statusLogParseError", _statusLogParseError);
 										</div>
 
 										<div class="col-lg-6">
-											<label class="form-label required fw-semibold fs-6">End
-												Date</label>
+											<label class="form-label fw-semibold fs-6">End Date</label>
 											<div class="position-relative d-flex align-items-center">
 												<i
 													class="ki-outline ki-calendar fs-3 position-absolute ms-4"></i>
 												<input type="text" id="end_date"
 													class="form-control form-control-lg ps-12" name="date_to"
 													placeholder="Select Date" value="${borrowObj['dateEnd']}"
-													autocomplete="off" required />
+													autocomplete="off" />
 											</div>
 										</div>
 									</div>
@@ -598,10 +413,22 @@ request.setAttribute("statusLogParseError", _statusLogParseError);
 										</div>
 
 										<!-- รูปชิดซ้ายใต้ ID -->
-										<div class="symbol symbol-150px">
-											<img src="${pageContext.request.contextPath}${equip.image}"
-												alt="${equip.code}" class="border rounded-3" />
-										</div>
+										<c:choose>
+											<c:when test="${not empty equip.image}">
+												<div class="symbol symbol-150px">
+													<img src="${equip.image}"
+														alt="${equip.code}"
+														class="border rounded-3 object-fit-cover w-100 h-100" />
+												</div>
+											</c:when>
+
+											<c:otherwise>
+												<div
+													class="symbol symbol-150px border rounded-3 bg-light d-flex align-items-center justify-content-center">
+													<i class="fa-solid fa-image fs-1 text-muted"></i>
+												</div>
+											</c:otherwise>
+										</c:choose>
 									</div>
 
 									<!-- ===== ROW STYLE: label ซ้าย (กว้างคงที่) / value อยู่ถัดมา (ไม่ชิดขวา) ===== -->
@@ -723,8 +550,8 @@ request.setAttribute("statusLogParseError", _statusLogParseError);
 												data-collapse-target="#moreDetailCollapse_${equipId}"
 												aria-expanded="false"
 												aria-controls="moreDetailCollapse_${equipId}">
-												<span>More Detail</span> <i
-													class="ki-duotone ki-down fs-3" id="icon_${equipId}"
+												<span>More Detail</span> <i class="ki-duotone ki-down fs-3"
+													id="icon_${equipId}"
 													style="transition: transform .2s ease;"> <span
 													class="path1"></span><span class="path2"></span>
 												</i>
@@ -799,247 +626,145 @@ request.setAttribute("statusLogParseError", _statusLogParseError);
 							</div>
 
 							<!-- Status Log -->
-							<div class="card">
-								<div class="card-header border-0 pt-6">
+							<div class="card shadow-sm mb-5 mb-xl-10">
+								<div class="card-header fs-4">
 									<div class="card-title">
-										<span class="fw-bold fs-5">Status Log</span>
+										<h3 class="fw-semibold m-0 bs-gray-900">Status Log</h3>
 									</div>
 
 									<div class="card-toolbar">
-										<c:if test="${equip.status == 'B' || equip.status == 'b'}">
-											<a href="#"
-												class="btn btn-sm btn-warning btn-open-return-modal"
-												data-borrow-id="${param.id}" data-item-no="${equip.itemNo}"
-												data-name="${equip.name}" data-serial="${equip.serial}"
-												data-detail="${equip.detail}" data-amount="${equip.amount}"
-												data-time-create="${equip.time_create}"
-												data-type="${equip.type}" data-windows="${equip.windows}"
-												data-ram="${equip.ram}" data-hdd="${equip.hdd}"
-												data-wifi="${equip.wifi}" data-lan="${equip.lan}"
-												data-display="${equip.display}"
-												data-process="${equip.process}"
-												data-battery="${equip.battery}"> Request for Return </a>
+										<c:if test="${not empty borrowlistwithUser}">
+											<c:if test="${borrowlistwithUser[0].status == 'B'}">
+												<button type="button"
+													class="btn btn-sm btn-warning btn-open-return-modal">
+													Request for Return</button>
+											</c:if>
 										</c:if>
 									</div>
-
 								</div>
 
-								<div class="card-body pt-0">
+								<div class="card-body pt-0 mt-6">
+									<c:choose>
+										<c:when test="${not empty borrowlistwithUser}">
+											<div class="timeline timeline-border-dashed">
+												<c:forEach var="borrow" items="${borrowlistwithUser}">
 
-									<c:if test="${not empty statusLogParseError}">
-										<div class="text-danger">Parse error:
-											${statusLogParseError}</div>
-									</c:if>
+													<c:if test="${borrow.status == 'R'}">
+														<div class="timeline-item">
+															<div class="timeline-line"></div>
+															<div class="timeline-icon">
+																<i class="ki-duotone ki-cd fs-2 text-success"><span
+																	class="path1"></span><span class="path2"></span></i>
+															</div>
 
-									<c:if test="${empty statusLogList}">
-										<div class="text-muted">No status log.</div>
-									</c:if>
+															<div class="timeline-content mb-5 mt-n1">
+																<div class="mb-2">
+																	<span class="badge badge-success fw-bold fs-7">Returned</span>
+																</div>
 
-									<c:forEach var="log" items="${statusLogList}">
-										<c:set var="st" value="${log.status}" />
+																<div class="d-flex align-items-center mt-4 mb-2">
+																	<i class="ki-duotone ki-user fs-4 text-gray-700 me-3"><span
+																		class="path1"></span><span class="path2"></span></i>
+																	<div class="fs-5 fw-semibold text-gray-800">
+																		<c:if test="${not empty borrow.employee_id}">${borrow.employee_id} - </c:if>${borrow.name}
+																		<c:if test="${not empty borrow.name_en}"> - ${borrow.name_en}</c:if>
+																	</div>
+																</div>
 
-										<%-- badge/dot ตาม status --%>
-										<c:set var="badgeText" value="${st}" />
-										<c:set var="badgeClass"
-											value="badge badge-lg px-2 fw-semibold bg-light text-gray-700" />
+																<div
+																	class="d-flex align-items-center mt-4 fs-7 text-muted">
+																	<i
+																		class="ki-duotone ki-calendar fs-4 text-gray-700 me-3"><span
+																		class="path1"></span><span class="path2"></span></i>
+																	<div class="fs-5 fw-semibold text-gray-800">
+																		<c:choose>
+																			<c:when test="${not empty borrow.date_end}">
+																				<fmt:setLocale value="en_US" />
+																				<fmt:formatDate value="${borrow.date_end}"
+																					pattern="d MMMM yyyy, HH:mm" />
+																			</c:when>
+																			<c:otherwise>Unknown Return Date</c:otherwise>
+																		</c:choose>
+																	</div>
+																</div>
 
-										<c:choose>
-											<c:when test="${st == 'A' || st == 'a'}">
-												<c:set var="badgeText" value="Available" />
-												<c:set var="badgeClass"
-													value="badge badge-lg px-2 fw-semibold bg-success text-white" />
-											</c:when>
+																<c:if test="${not empty borrow.location}">
+																	<div
+																		class="d-flex align-items-center mt-4 mb-2 fs-7 text-muted">
+																		<i class="ki-duotone ki-geolocation fs-2 me-3"><span
+																			class="path1"></span><span class="path2"></span></i>
+																		<div class="fs-5 fw-semibold text-gray-800">${borrow.location}</div>
+																	</div>
+																</c:if>
+															</div>
+														</div>
+													</c:if>
 
-											<c:when test="${st == 'B' || st == 'b'}">
-												<c:set var="badgeText" value="Borrowing" />
-												<c:set var="badgeClass"
-													value="badge badge-lg px-2 fw-semibold bg-warning text-white" />
-											</c:when>
+													<div class="timeline-item">
+														<div class="timeline-icon">
+															<i class="ki-duotone ki-cd fs-2 text-warning"><span
+																class="path1"></span><span class="path2"></span></i>
+														</div>
 
-											<c:when test="${st == 'W' || st == 'w'}">
-												<c:set var="badgeText" value="Wait for approve" />
-												<c:set var="badgeClass"
-													value="badge badge-lg px-2 fw-semibold bg-primary text-white" />
-											</c:when>
+														<div class="timeline-content mb-0 mt-n1">
+															<div class="mb-2">
+																<span class="badge badge-warning fw-bold fs-7">
+																	${borrow.status == 'B' ? 'Borrowing' : 'Borrowed'} </span>
+															</div>
 
-											<c:when test="${st == 'R' || st == 'r'}">
-												<c:set var="badgeText" value="Return" />
-												<c:set var="badgeClass"
-													value="badge badge-lg px-2 fw-semibold bg-success text-white" />
-											</c:when>
+															<div class="d-flex align-items-center mt-4 mb-2">
+																<i class="ki-duotone ki-user fs-4 text-gray-700 me-3"><span
+																	class="path1"></span><span class="path2"></span></i>
+																<div class="fs-5 fw-semibold text-gray-800">
+																	<c:if test="${not empty borrow.employee_id}">${borrow.employee_id} - </c:if>${borrow.name}
+																	<c:if test="${not empty borrow.name_en}"> - ${borrow.name_en}</c:if>
+																</div>
+															</div>
 
-											<c:when test="${st == 'C' || st == 'c'}">
-												<c:set var="badgeText" value="Cancel" />
-												<c:set var="badgeClass"
-													value="badge badge-lg px-2 fw-semibold bg-danger text-white" />
-											</c:when>
-										</c:choose>
+															<div
+																class="d-flex align-items-center mt-4 fs-7 text-muted">
+																<i
+																	class="ki-duotone ki-calendar fs-4 text-gray-700 me-3"><span
+																	class="path1"></span><span class="path2"></span></i>
+																<div class="fs-5 fw-semibold text-gray-800">
+																	<fmt:setLocale value="en_US" />
+																	<fmt:formatDate value="${borrow.date_start}"
+																		pattern="d MMMM yyyy, HH:mm" />
+																</div>
+															</div>
 
-										<%-- ✅ userUpdate จาก JSON (ตามที่คุณบอกว่ามีเก็บ) --%>
-										<c:set var="logUserUpdate" value="${log.userUpdate}" />
+															<c:if test="${not empty borrow.location}">
+																<div
+																	class="d-flex align-items-center mt-4 fs-7 text-muted">
+																	<i
+																		class="ki-duotone ki-geolocation fs-4 text-gray-700 me-3"><span
+																		class="path1"></span><span class="path2"></span></i>
+																	<div class="fs-5 fw-semibold text-gray-800">${borrow.location}</div>
+																</div>
+															</c:if>
+														</div>
+													</div>
 
-										<%-- หา user ใน userListObj (พยายาม match ทั้ง id/username) --%>
-										<c:set var="emp" value="-" scope="page" />
-										<c:set var="nmTH" value="-" scope="page" />
-										<c:set var="nmEN" value="-" scope="page" />
-										<c:set var="foundUser" value="false" scope="page" />
-
-										<c:forEach var="u" items="${userListObj}">
-											<c:set var="uUser"
-												value="${not empty u['username'] ? u['username']
-                : (not empty u['user_name'] ? u['user_name']
-                : (not empty u['USER_NAME'] ? u['USER_NAME']
-                : (not empty u['email'] ? u['email']
-                : (not empty u['EMAIL'] ? u['EMAIL'] : ''))))}" />
-
-											<c:if
-												test="${not foundUser && fn:trim(uUser) == fn:trim(logUserUpdate)}">
-												<c:set var="emp"
-													value="${not empty u['employee_id'] ? u['employee_id']
-                  : (not empty u['employeeId'] ? u['employeeId']
-                  : (not empty u['EMPLOYEE_ID'] ? u['EMPLOYEE_ID'] : '-'))}"
-													scope="page" />
-
-												<c:set var="nmTH"
-													value="${not empty u['name'] ? u['name']
-                  : (not empty u['fullname'] ? u['fullname']
-                  : (not empty u['USER_NAME'] ? u['USER_NAME'] : '-'))}"
-													scope="page" />
-
-												<c:set var="nmEN"
-													value="${not empty u['name_en'] ? u['name_en']
-                  : (not empty u['nameEn'] ? u['nameEn']
-                  : (not empty u['NAME_EN'] ? u['NAME_EN'] : '-'))}"
-													scope="page" />
-
-												<c:set var="foundUser" value="true" scope="page" />
-											</c:if>
-										</c:forEach>
-
-										<%-- ====== format เวลา จาก log.timeUpdate (เดิมของคุณ ใช้ได้เลย) ====== --%>
-										<%
-										Map<String, Object> logMap = (Map<String, Object>) pageContext.getAttribute("log");
-										String z = (logMap != null && logMap.get("timeUpdate") != null) ? String.valueOf(logMap.get("timeUpdate")).trim() : "";
-
-										String t = z;
-										if (t != null) {
-											t = t.trim();
-											if (t.startsWith("[") && t.endsWith("]"))
-												t = t.substring(1, t.length() - 1).trim();
-											t = t.replace("T", " ");
-											if (t.endsWith("Z"))
-												t = t.substring(0, t.length() - 1).trim();
-											t = t.replace('\u202F', ' ').replace('\u00A0', ' ').trim();
-											t = t.replaceAll(" +", " ");
-										}
-
-										String timeDisplay = (t == null || t.isEmpty()) ? "-" : t;
-										java.util.Date d = null;
-
-										String[] patterns = new String[]{"MMM d, yyyy, h:mm:ss a", "MMM dd, yyyy, h:mm:ss a", "MMM d, yyyy, h:mm a",
-												"MMM dd, yyyy, h:mm a", "dd-MM-yyyy", "dd/MM/yyyy", "yyyy-MM-dd", "yyyy/MM/dd", "dd-MM-yyyy HH:mm",
-												"dd/MM/yyyy HH:mm", "yyyy-MM-dd HH:mm", "yyyy/MM/dd HH:mm", "dd-MM-yyyy HH:mm:ss", "dd/MM/yyyy HH:mm:ss",
-												"yyyy-MM-dd HH:mm:ss", "yyyy/MM/dd HH:mm:ss", "yyyy-MM-dd HH:mm:ss.S", "yyyy-MM-dd HH:mm:ss.SS",
-												"yyyy-MM-dd HH:mm:ss.SSS", "yyyy/MM/dd HH:mm:ss.S", "yyyy/MM/dd HH:mm:ss.SS", "yyyy/MM/dd HH:mm:ss.SSS"};
-
-										if (t != null && !t.isEmpty() && !"null".equalsIgnoreCase(t)) {
-											for (String p : patterns) {
-												try {
-											java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat(p, java.util.Locale.ENGLISH);
-											sdf.setLenient(true);
-											d = sdf.parse(t);
-											if (d != null)
-												break;
-												} catch (Exception ignore) {
-												}
-											}
-										}
-
-										if (d != null) {
-											java.util.Calendar cal = java.util.Calendar.getInstance(java.util.Locale.ENGLISH);
-											cal.setTime(d);
-											int year = cal.get(java.util.Calendar.YEAR);
-											if (year >= 2500) {
-												cal.add(java.util.Calendar.YEAR, -543);
-												d = cal.getTime();
-											}
-											timeDisplay = new java.text.SimpleDateFormat("dd MMM yyyy", java.util.Locale.ENGLISH).format(d);
-										} else {
-											timeDisplay = (t == null || t.isEmpty()) ? "-" : t;
-										}
-
-										pageContext.setAttribute("TIME_DISPLAY", timeDisplay);
-										%>
-
-										<%-- ====== UI แสดงผล ====== --%>
-										<div class="d-flex mb-5">
-											<span
-												class="d-inline-flex align-items-center justify-content-center position-relative flex-shrink-0 me-3
-                 rounded-circle border border-2 border-dashed border-gray-300"
-												style="width: 38px; height: 38px;"> <i
-												class="ki-duotone ki-cd dashed position-absolute top-50 start-50 translate-middle fs-2 text-gray-300">
-													<span class="path1 text-warning"></span><span
-													class="path2 text-warning"></span>
-											</i>
-											</span>
-
-											<div class="flex-grow-1">
-												<div class="mb-2">
-													<b class="${badgeClass}">${badgeText}</b>
-												</div>
-
-												<div class="d-flex align-items-center">
-													<i class="ki-duotone ki-user fs-5 me-2"><span
-														class="path1"></span><span class="path2"></span></i> <span>
-														<c:choose>
-															<c:when test="${foundUser}">
-                  ${emp} - ${nmTH} - ${nmEN}
-                </c:when>
-															<c:otherwise>
-                  ${log.userUpdate}
-                </c:otherwise>
-														</c:choose>
-													</span>
-												</div>
-
-												<div class="d-flex align-items-center mt-1">
-													<i class="ki-duotone ki-calendar fs-5 me-2"><span
-														class="path1"></span><span class="path2"></span></i> <span>${TIME_DISPLAY}</span>
-												</div>
-
-												<div class="d-flex align-items-center mt-1">
-													<c:set var="borrowLocation" value="" />
-													<c:choose>
-														<c:when test="${not empty borrowObj['location']}">
-															<c:set var="borrowLocation"
-																value="${borrowObj['location']}" />
-														</c:when>
-														<c:when test="${not empty borrowObj['LOCATION']}">
-															<c:set var="borrowLocation"
-																value="${borrowObj['LOCATION']}" />
-														</c:when>
-														<c:otherwise>
-															<c:set var="borrowLocation" value="" />
-														</c:otherwise>
-													</c:choose>
-
-													<i class="ki-duotone ki-geolocation fs-5 me-2"><span
-														class="path1"></span><span class="path2"></span></i> <span>
-														<c:out
-															value="${empty borrowLocation ? '-' : borrowLocation}" />
-													</span>
-												</div>
-
+													<div
+														class="separator separator-dashed border-gray-300 my-5"></div>
+												</c:forEach>
 											</div>
-										</div>
+										</c:when>
 
-										<hr />
-									</c:forEach>
+										<c:otherwise>
+											<div
+												class="d-flex flex-column align-items-center justify-content-center py-10">
+												<i class="ki-duotone ki-cube-2 fs-3x text-gray-500 mb-4">
+													<span class="path1"></span><span class="path2"></span><span
+													class="path3"></span>
+												</i> <span class="text-gray-800 fw-semibold fs-5">No data</span>
+											</div>
+										</c:otherwise>
+									</c:choose>
 								</div>
 							</div>
 						</div>
 						<!-- end RIGHT -->
-
 					</div>
 				</div>
 			</div>
@@ -1205,7 +930,6 @@ request.setAttribute("statusLogParseError", _statusLogParseError);
 					<button type="button" class="btn btn-warning"
 						id="bd_request_return">Request for Return</button>
 				</div>
-
 			</div>
 		</div>
 	</div>
@@ -1215,13 +939,13 @@ request.setAttribute("statusLogParseError", _statusLogParseError);
 			flatpickr("#start_date", {
 				enableTime : true,
 				time_24hr : true,
-				dateFormat : "d/m/Y" // <-- ได้ 16/12/2025, 00.00
+				dateFormat : "d M Y , H : i"
 			});
 
 			flatpickr("#end_date", {
 				enableTime : true,
 				time_24hr : true,
-				dateFormat : "d/m/Y"
+				dateFormat : "d M Y , H : i"
 			});
 		});
 	</script>
@@ -1284,41 +1008,49 @@ request.setAttribute("statusLogParseError", _statusLogParseError);
 							const bdModalObj = bdModalEl ? bootstrap.Modal
 									.getOrCreateInstance(bdModalEl) : null;
 
-							// ===== collapse instance =====
+							// ✅✅✅ [เพิ่มตรงนี้] ===== collapse instance สำหรับ More Detail =====
 							const bdCollapseEl = document
 									.getElementById('bd_moreDetailCollapse');
-							let bdCollapseObj = null;
+							const bdCollapseObj = bdCollapseEl ? bootstrap.Collapse
+									.getOrCreateInstance(bdCollapseEl, {
+										toggle : false
+									})
+									: null;
 
+							// ✅✅✅ [เพิ่มตรงนี้] click toggle (กัน href="#" + กัน event อื่น)
+							$(document)
+									.on(
+											'click',
+											'#bd_moreDetailToggle',
+											function(e) {
+												e.preventDefault();
+												e.stopPropagation();
+												if (typeof e.stopImmediatePropagation === 'function')
+													e
+															.stopImmediatePropagation();
+												if (!bdCollapseObj)
+													return;
+												bdCollapseObj.toggle();
+											});
+
+							// ✅✅✅ [เพิ่มตรงนี้] sync icon/aria
 							if (bdCollapseEl) {
-								bdCollapseObj = bootstrap.Collapse
-										.getOrCreateInstance(bdCollapseEl, {
-											toggle : false
-										});
-
-								$('#bd_moreDetailToggle').on('click',
-										function(e) {
-											e.preventDefault();
-											bdCollapseObj.toggle();
-										});
-
 								bdCollapseEl.addEventListener(
 										'shown.bs.collapse', function() {
-											$('#bd_moreDetailIcon').addClass(
-													'is-open');
 											$('#bd_moreDetailToggle').attr(
 													'aria-expanded', 'true');
+											$('#bd_moreDetailIcon').addClass(
+													'rotate-180');
 										});
-
 								bdCollapseEl.addEventListener(
 										'hidden.bs.collapse', function() {
-											$('#bd_moreDetailIcon')
-													.removeClass('is-open');
 											$('#bd_moreDetailToggle').attr(
 													'aria-expanded', 'false');
+											$('#bd_moreDetailIcon')
+													.removeClass('rotate-180');
 										});
 							}
 
-							// ===== helpers =====
 							function setText(id, val) {
 								const el = document.getElementById(id);
 								if (!el)
@@ -1326,29 +1058,6 @@ request.setAttribute("statusLogParseError", _statusLogParseError);
 								el.textContent = (val !== undefined
 										&& val !== null && String(val).trim() !== "") ? val
 										: "-";
-							}
-
-							function formatBorrowDate(dtStr) {
-								if (!dtStr)
-									return '';
-								const d = new Date(String(dtStr).replace(' ',
-										'T'));
-								if (isNaN(d.getTime()))
-									return String(dtStr);
-
-								const day = d.getDate();
-								const monthNames = [ 'Jan', 'Feb', 'Mar',
-										'Apr', 'May', 'Jun', 'Jul', 'Aug',
-										'Sep', 'Oct', 'Nov', 'Dec' ];
-								const month = monthNames[d.getMonth()];
-								const year = d.getFullYear();
-								return day + ' ' + month + ' ' + year;
-							}
-
-							function getBorrowIdFromUrl() {
-								const u = new URLSearchParams(
-										window.location.search);
-								return (u.get('id') || '').trim();
 							}
 
 							function setBadge(status) {
@@ -1377,75 +1086,73 @@ request.setAttribute("statusLogParseError", _statusLogParseError);
 								}
 							}
 
-							function fillBorrowDetailModalFromBtn($btn) {
-								// 1) borrowId: เอาจาก data ก่อน ถ้าไม่มีให้ใช้จาก URL (?id=...)
-								const borrowId = ($btn.data('borrowId')
-										|| $btn.data('borrow-id') || getBorrowIdFromUrl());
+							function formatPurchaseDMY(dtStr) {
+								  if (!dtStr) return "";
+
+								  let s = String(dtStr).trim();
+								  if (!s || s === "null") return "";
+
+								  // รองรับ: "2021-04-27 08:08:51.0" / "2021-04-27 08:08:51"
+								  const m = s.match(/^(\d{4})-(\d{2})-(\d{2})(?:[ T](\d{2}):(\d{2})(?::(\d{2}))?(?:\.\d+)?)?$/);
+								  if (!m) return s; // ถ้าไม่ตรง format ก็คืนค่าเดิม
+
+								  const y = parseInt(m[1], 10);
+								  const mo = parseInt(m[2], 10);
+								  const d = parseInt(m[3], 10);
+
+								  const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+								  const dd = String(d);                  // ไม่ต้อง 0 นำหน้า
+								  const mon = months[mo - 1] || "";
+
+								  return `${dd} ${mon} ${y}`;            // d M Y
+								}
+
+							// ✅ เปิด modal แล้วเติมค่าจาก JSP (ไม่ต้องใช้ data-*)
+							function openBorrowDetailModalFromJsp() {
+								if (!bdModalObj) {
+									alert('Modal #borrowDetailModal not found');
+									return;
+								}
+
+								const borrowId = '${not empty borrowlistwithUser ? borrowlistwithUser[0].borrow_id : ""}';
+								const itemNo = '${equipmentbyId.itemNo}';
+								const name = '${equipmentbyId.name}';
+								const serial = '${equipmentbyId.serialNo}';
+								const detail = '${equipmentbyId.detail}';
+								const amount = '${equipmentbyId.amount}';
+								const timeCreate = '${equipmentbyId.timeCreate}';
+
+								const type = '${equipmentbyId.type}';
+								const windows = '${equipmentbyId.windows}';
+								const ram = '${equipmentbyId.ram}';
+								const hdd = '${equipmentbyId.hdd}';
+								const wifi = '${equipmentbyId.wifiaddress}';
+								const lan = '${equipmentbyId.lanaddress}';
+								const display = '${equipmentbyId.display}';
+								const cpu = '${equipmentbyId.process}';
+								const battery = '${equipmentbyId.battery}';
+								const purchaseFmt = '${purchaseFmt}';
 
 								if (!borrowId) {
 									alert('Borrow ID not found.');
-									return false;
+									return;
 								}
 
-								// เก็บ borrowId ไว้ให้ปุ่มยิง action ใช้
 								$('#borrowDetailModal').data('borrowId',
 										String(borrowId).trim());
 
-								// --- ถ้าไม่มี data fields ก็ไม่เป็นไร (จะแสดง "-") ---
-								const amountRaw = $btn.data('amount');
-								let amountText = '1';
-								if (amountRaw !== undefined
-										&& amountRaw !== null
-										&& amountRaw !== '') {
-									const n = parseFloat(amountRaw);
-									amountText = (!isNaN(n) && n % 1 === 0) ? String(parseInt(
-											n, 10))
-											: String(amountRaw);
-								}
-
-								const itemNo = $btn.data('itemNo')
-										|| $btn.data('item-no')
-										|| ('Borrow ID: ' + borrowId);
-								const name = $btn.data('name') || '';
-								const serial = $btn.data('serial') || '';
-								const detail = $btn.data('detail') || '';
-								const timeCreate = $btn.data('timeCreate')
-										|| $btn.data('time-create') || '';
-
-								const type = String($btn.data('type') || '')
-										.toLowerCase();
-								const windows = $btn.data('windows') || '';
-								const ram = $btn.data('ram') || '';
-								const hdd = $btn.data('hdd') || '';
-								const wifi = $btn.data('wifi') || '';
-								const lan = $btn.data('lan') || '';
-								const display = $btn.data('display') || '';
-								const process = $btn.data('process')
-										|| $btn.data('cpu') || '';
-								const battery = $btn.data('battery') || '';
-
-								// fill top
 								$('#bd_item_link').text(
 										'ID: ' + (itemNo || '-'));
 								setText('bd_name', name);
 								setText('bd_serial', serial);
 								setText('bd_detail', detail);
-								setText('bd_amount', amountText);
-								setText('bd_purchase_date',
-										formatBorrowDate(timeCreate) || '-');
-
-								// badge (หน้านี้ปุ่มแสดงเฉพาะ Borrowing)
+								setText('bd_amount', amount || '1');
+								setText('bd_purchase_date', purchaseFmt || '-');
 								setBadge('B');
 
-								// reset collapse ทุกครั้ง
-								if (bdCollapseObj)
-									bdCollapseObj.hide();
-								$('#bd_moreDetailIcon').removeClass('is-open');
-								$('#bd_moreDetailToggle').attr('aria-expanded',
-										'false');
-
-								// show/hide more detail
-								if (type === 'c') {
+								// more detail
+								const t = String(type || '').toLowerCase();
+								if (t === 'c') {
 									$('#bd_moreDetailWrapper').show();
 									setText('bd_windows', windows);
 									setText('bd_ram', ram);
@@ -1454,42 +1161,31 @@ request.setAttribute("statusLogParseError", _statusLogParseError);
 									setText('bd_wifi', wifi);
 									setText('bd_lan', lan);
 									setText('bd_display', display);
-									setText('bd_cpu', process);
+									setText('bd_cpu', cpu);
 									setText('bd_battery', battery);
 								} else {
 									$('#bd_moreDetailWrapper').hide();
 								}
 
-								// clear note
 								$('#bd_approver_note').val('');
 
-								return true;
+								// ✅✅✅ [เพิ่มตรงนี้] reset collapse ทุกครั้งก่อน show
+								if (bdCollapseObj)
+									bdCollapseObj.hide();
+								$('#bd_moreDetailToggle').attr('aria-expanded',
+										'false');
+								$('#bd_moreDetailIcon').removeClass(
+										'rotate-180');
+
+								bdModalObj.show();
 							}
 
-							// =========================================================
-							// 1) กดปุ่มหน้า borrow_edit -> เปิด modal
-							// =========================================================
-							$(document)
-									.on(
-											'click',
-											'.btn-open-return-modal',
-											function(e) {
-												e.preventDefault();
-												if (!bdModalObj) {
-													alert('Modal #borrowDetailModal not found');
-													return;
-												}
+							$(document).on('click', '.btn-open-return-modal',
+									function(e) {
+										e.preventDefault();
+										openBorrowDetailModalFromJsp();
+									});
 
-												const ok = fillBorrowDetailModalFromBtn($(this));
-												if (!ok)
-													return;
-
-												bdModalObj.show();
-											});
-
-							// =========================================================
-							// 2) กดปุ่มใน modal -> ยิง eBorrowReturn.action
-							// =========================================================
 							$('#bd_request_return')
 									.on(
 											'click',
@@ -1529,13 +1225,14 @@ request.setAttribute("statusLogParseError", _statusLogParseError);
 																				data.message)
 																				.toLowerCase() === "success") {
 																	alert("Return request submitted successfully!");
-																	bdModalObj
-																			.hide();
+																	if (bdModalObj)
+																		bdModalObj
+																				.hide();
 
-																	// กลับหน้า borrow_list
+																	// ✅ เด้งไปหน้า borrow_list
 																	window.location
 																			.replace(CTX
-																					+ "/borrow_list.action");
+																					+ "/borrow_list");
 																} else {
 																	alert("Something went wrong: "
 																			+ (data ? data.message
@@ -1557,9 +1254,6 @@ request.setAttribute("statusLogParseError", _statusLogParseError);
 														});
 											});
 
-							// =========================================================
-							// 3) FIX ปุ่ม X / Cancel ให้ปิดแน่นอน
-							// =========================================================
 							$('#borrowDetailModal').on('click',
 									'[data-bs-dismiss="modal"]', function(e) {
 										e.preventDefault();

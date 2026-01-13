@@ -914,6 +914,10 @@
 			class="com.cubesofttech.action.BorrowingAction"
 			method="returnMyNewBorrow">
 		</action>
+		<action name="eBorrowLog"
+			class="com.cubesofttech.action.BorrowingAction"
+			method="eBorrowLog">
+		</action>
 	</package>
 
 </struts>
