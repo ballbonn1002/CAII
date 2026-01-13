@@ -31,7 +31,7 @@
                     <div class="card shadow-sm">
                         <div class="card-header border-0 pt-7">
                             <div class="card-title">
-                                <h2 class="mb-0">New Status Details</h2>
+                                <h2 class="mb-0">Equipment Status</h2>
                             </div>
                         </div>
 

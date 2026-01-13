@@ -30,7 +30,7 @@
                     <div class="card shadow-sm">
                         <div class="card-header border-0 pt-7">
                             <div class="card-title">
-                                <h2 class="mb-0">Edit Type Details</h2>
+                                <h2 class="mb-0">Equipment Type</h2>
                             </div>
                         </div>
 
@@ -59,6 +59,7 @@
                                         <i id="icon_preview" class="fs-2 text-gray-500"></i>
                                     </div>
                                 </div>
+                                <div class="fw-semibold mt-1 text-gray-500">Browse available icons at  <a href="https://preview.keenthemes.com/html/metronic/docs/?page=icons/keenicons#listing" target="_blank" rel="noopener noreferrer" class="fw-semibold">KeenIcons.</a></div>
                             </div>
                         </div>
 

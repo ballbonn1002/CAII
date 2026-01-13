@@ -31,7 +31,7 @@
                     <div class="card shadow-sm">
                         <div class="card-header border-0 pt-7">
                             <div class="card-title">
-                                <h2 class="mb-0">New Type Details</h2>
+                                <h2 class="mb-0">Equipment Type</h2>
                             </div>
                         </div>
 
@@ -61,6 +61,7 @@
                                          <i id="icon_preview" class="fs-2x text-gray-600 ki-solid ki-dots-square"></i>
                                     </div>
                                 </div>
+                                <div class="fw-semibold mt-1 text-muted">Browse available icons at  <a href="https://preview.keenthemes.com/html/metronic/docs/?page=icons/keenicons#listing" target="_blank" rel="noopener noreferrer" class="fw-semibold">KeenIcons.</a></div>
                              </div>
                         </div>
 
