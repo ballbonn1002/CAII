@@ -264,7 +264,7 @@ public class WorkHoursAction extends ActionSupport {
 			Timestamp start_date_leave = DateUtil.dateToTimestamp(startOfYear.format(dateFormatter), "00:00:00.0");
 			Timestamp end_date_leave = DateUtil.dateToTimestamp(endOfYear.format(dateFormatter), "23:59:59.0");
 
-			List<Map<String, Object>> leavelist = leaveDAO.myLeavesList(userId, start_date_leave, end_date_leave);
+			List leavelist = leaveDAO.myLeavesList(userId, start_date_leave, end_date_leave);
 			request.setAttribute("leave", leavelist);
 			//log.debug("leave: " + leavelist);
 			
@@ -272,70 +272,136 @@ public class WorkHoursAction extends ActionSupport {
 			User userWorkTime = userDAO.findById(userId);
 			String workStartTime = userWorkTime.getWorkTimeStart();
 			String workEndTime = userWorkTime.getWorkTimeEnd();
-			log.debug("WorkStartTime from DB: " + workStartTime);
-			log.debug("WorkEndTime from DB: " + workEndTime);
+
 			// Get check-in / check-out data
-			List<Map<String, Object>> rawCheckList = workHoursDAO.getCheckListFromLastAndCurrentYear(userId, last2year, currentYear);
+			Map<LocalDate, Map<String,Object>> checkinMap = workHoursDAO.getCheckinsForYear(userId, last2year, currentYear);
+			//log.debug("checkinMap: " + checkinMap);
+			Map<LocalDate, Map<String,Object>> checkoutMap = workHoursDAO.getCheckoutsForYear(userId, last2year, currentYear);
+			//log.debug("checkoutMap: " + checkoutMap);
+
 			List<Map<String, Object>> workData = new ArrayList<>();
-			Map<String, Object> currentPair = null;
 
-			log.debug(userId+"/"+last2year+"/"+currentYear);
-			log.debug(rawCheckList);
-			
-			for (Map<String, Object> row : rawCheckList) {
-				try {
-					String workType = row.get("work_hours_type").toString();
-					Timestamp time = (Timestamp) row.get("work_hours_time_work");
-					if (workType == null || time == null) continue;
-					if ("1".equals(workType)) {
-						currentPair = new HashMap<>();
-                        currentPair.put("DATE(work_hours_time_work)", time.toLocalDateTime().toLocalDate().toString());
-                        currentPair.put("mycheckins", time);
-                        currentPair.put("mycheckin", time.toLocalDateTime().toString());
-                        currentPair.put("descriptionIn", row.get("description") != null ? row.get("description").toString() : "");
-                        currentPair.put("workTypeIn", row.get("work_type") != null ? row.get("work_type").toString() : "");
-                        
-                        // Default values
-                        currentPair.put("checkouttime", "");
-                        currentPair.put("workinghours", ""); 
-                        currentPair.put("descriptionOut", "");
-                        currentPair.put("workTypeOut", "");
-                        currentPair.put("status", "Incomplete");
-                        workData.add(currentPair);
-					} else if ("2".equals(workType) && currentPair != null) {
-						Timestamp checkinTime = (Timestamp) currentPair.get("mycheckins");
-                        
-                        boolean isSameDay = checkinTime.toLocalDateTime().toLocalDate().isEqual(time.toLocalDateTime().toLocalDate());
-                        
-                        long diff = time.getTime() - checkinTime.getTime();
-                        boolean isWithin24Hours = diff < (24 * 60 * 60 * 1000);
+			LocalDate startDate = LocalDate.of(last2year, 1, 1);
+			LocalDate endDate = LocalDate.of(currentYear, 12, 31);
 
-						if (isSameDay || isWithin24Hours) {
-                            String checkoutTimeStr = time.toLocalDateTime().toLocalTime().toString().substring(0, 5);
-                            currentPair.put("checkouttime", checkoutTimeStr);
-                            currentPair.put("descriptionOut", row.get("description") != null ? row.get("description").toString() : "");
-                            currentPair.put("workTypeOut", row.get("work_type") != null ? row.get("work_type").toString() : "");
-                            
-                            long minutes = diff / (60 * 1000);
-                            currentPair.put("workinghours", String.valueOf(minutes)); 
+			for (LocalDate date = startDate; !date.isAfter(endDate); date = date.plusDays(1)) {
+			    Map<String, Object> dayData = new HashMap<>();
+			    dayData.put("DATE(work_hours_time_work)", date.toString());
 
-                            // คำนวณ Status (On Time / Late)
-                            // ... (ใส่ Logic คำนวณ Status ตามโค้ดเดิมของคุณตรงนี้) ...
-                             boolean hasWorkConfig = (workStartTime != null && !workStartTime.isEmpty() && workEndTime != null && !workEndTime.isEmpty());
-                             if (hasWorkConfig) {
-                                 // ... logic คำนวณ Late/Early ...
-                             } else {
-                                 currentPair.put("status", "On Time");
-                             }
-                            currentPair = null;
-                        } else {
-                            currentPair = null; 
-                        }
-					}
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
+			    // Check-in
+			    Map<String, Object> checkinData = checkinMap.get(date);
+			    if (checkinData != null) {
+			        Timestamp checkinTs = (Timestamp) checkinData.get("checkinTs");
+			        Object descriptionIn = checkinData.get("descriptionIn");
+			        Object workTypeIn = checkinData.get("workTypeIn");
+
+			        if (checkinTs != null) {
+			            dayData.put("mycheckin", checkinTs.toLocalDateTime().toString());
+			            dayData.put("mycheckins", checkinTs);
+			        } else {
+			            dayData.put("mycheckin", null);
+			            dayData.put("mycheckins", null);
+			        }
+
+			        if (descriptionIn != null) {
+			            dayData.put("descriptionIn", descriptionIn.toString());
+			        } else {
+			            dayData.put("descriptionIn", "");
+			        }
+			        
+			        if (workTypeIn != null) {
+			        	dayData.put("workTypeIn", workTypeIn.toString());
+			        } else {
+			        	dayData.put("workTypeIn", "");
+			        }
+			    } else {
+			        dayData.put("mycheckin", null);
+			        dayData.put("mycheckins", null);
+			        dayData.put("descriptionIn", "");
+			        dayData.put("workTypeIn", null);
+			    }
+
+			    // Check-out
+			    Map<String, Object> checkoutData = checkoutMap.get(date);
+			    if (checkoutData != null) {
+			        Timestamp checkoutTs = (Timestamp) checkoutData.get("checkoutTs");
+			        Object workingHours = checkoutData.get("workinghours");
+			        Object descriptionOut = checkoutData.get("descriptionOut");
+			        Object workTypeOut = checkoutData.get("workTypeOut");
+
+			        if (checkoutTs != null) {
+			            String checkoutTimeStr = checkoutTs.toLocalDateTime().toLocalTime().toString().substring(0, 5);
+			            dayData.put("checkouttime", checkoutTimeStr);
+			        } else {
+			            dayData.put("checkouttime", "");
+			        }
+
+			        if (workingHours != null) {
+			            dayData.put("workinghours", workingHours.toString());
+			        } else {
+			            dayData.put("workinghours", "");
+			        }
+			        
+			        if (descriptionOut != null) {
+			        	dayData.put("descriptionOut", descriptionOut.toString());
+			        } else {
+			        	dayData.put("descriptionOut", "");
+			        }
+			        
+			        if (workTypeOut != null) {
+			        	dayData.put("workTypeOut", workTypeOut.toString());
+			        } else {
+			        	dayData.put("workTypeOut", "");
+			        }
+			    } else {
+			        dayData.put("checkouttime", "");
+			        dayData.put("workinghours", "");
+			        dayData.put("descriptionOut", "");
+			        dayData.put("workTypeOut", null);
+			    }
+			    
+			    // คำนวณ status
+			    String status = "Incomplete";
+			    if (dayData.get("mycheckin") != null && !dayData.get("checkouttime").equals("")) {
+			        try {
+			            LocalTime checkinTime = LocalTime.parse(dayData.get("mycheckin").toString().substring(11,16));
+			            LocalTime checkoutTime = LocalTime.parse(dayData.get("checkouttime").toString());
+
+			            String[] startParts = workStartTime.split(":");
+			            LocalTime workStart = LocalTime.of(
+			                Integer.parseInt(startParts[0].trim()),
+			                Integer.parseInt(startParts[1].trim())
+			            );
+
+			            String[] endParts = workEndTime.split(":");
+			            LocalTime workEnd = LocalTime.of(
+			                Integer.parseInt(endParts[0].trim()),
+			                Integer.parseInt(endParts[1].trim())
+			            );
+
+			            boolean isLate = checkinTime.isAfter(workStart);
+			            boolean isEarlyOut = checkoutTime.isBefore(workEnd);
+
+			            if (isLate && isEarlyOut) {
+			                status = "Unfinished Work";
+			            } else if (isLate) {
+			                status = "Late";
+			            } else if (isEarlyOut) {
+			                status = "Early out";
+			            } else {
+			                status = "On Time";
+			            }
+
+			        } catch (Exception e) {
+			            log.debug("Error parsing time for date: " + date + " - " + e.getMessage());
+			            status = "Incomplete";
+			        }
+			    }
+
+			    dayData.put("status", status);
+			    workData.add(dayData);
 			}
+
 			// Set attributes for JSP
 			ObjectMapper mapper = new ObjectMapper();
 			request.setAttribute("workList", workData);
@@ -360,4 +426,33 @@ public class WorkHoursAction extends ActionSupport {
 		}
 	}
 	
+	
+	public String CheckAllCalendar2() {
+		log.debug("CheckAllCalendar2");
+		String userCalendar = request.getParameter("usercalendar");
+		if (userCalendar != null && !userCalendar.isEmpty()) {
+		    request.getSession().setAttribute("usercalendar", userCalendar);
+		} else {
+		    userCalendar = (String) request.getSession().getAttribute("usercalendar");
+		}
+		User onlineUser = (User) request.getSession().getAttribute("onlineUser");
+		String userId = (userCalendar != null && !userCalendar.isEmpty()) 
+		                 ? userCalendar 
+		                 : onlineUser.getId();
+
+		request.setAttribute("logonUser", userId);
+		try {
+			ObjectMapper mapper = new ObjectMapper();
+			
+			List<Map<String, Object>> cubeUser = userDAO.sequense();
+			request.setAttribute("cubeUser", cubeUser);
+			
+			String cubeUserJson = mapper.writeValueAsString(cubeUser);
+			request.setAttribute("cubeUserJson", cubeUserJson);
+			return SUCCESS;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ERROR;
+	    }
+	}
 }
