@@ -90,7 +90,7 @@
 											</c:when>
 											<c:otherwise>
 												<div id="avatarPreview"
-													class="w-100 h-100 rounded-1 d-flex align-items-center justify-content-center"
+													class="w-150px h-150px rounded-1 d-flex align-items-center justify-content-center"
 													style="background-color: #f3f6f9; font-size: 48px; color: #0d6efd;">
 													<c:choose>
 														<c:when
