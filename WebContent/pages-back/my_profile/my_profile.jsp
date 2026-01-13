@@ -3,6 +3,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
+<fmt:setLocale value="en_US" />
 
 <!DOCTYPE html>
 <html lang="en">
@@ -591,10 +592,12 @@
 												<span class="path1"></span><span class="path2"></span> <span
 												class="path3"></span><span class="path4"></span> <span
 												class="path5"></span><span class="path6"></span>
-											</i> <input type="text" id="user_birthDate" name="user_birthDate"
-												class="form-control ps-10 date-picker text-gray-700"
+											</i> 
+											<input type="text" id="user_birthDate" name="user_birthDate"
+												class="form-control ps-10 text-gray-700"
 												placeholder="1 Jan 2025" autocomplete="off"
-												value="${user.birthDate}"   
+												<%-- value="${user.birthDate}" --%>
+												value="<fmt:formatDate value='${user.birthDate}' pattern='yyyy-MM-dd' />"
 												required />
 										</div>
 
@@ -994,14 +997,14 @@
 
 <script>
 	document.addEventListener("DOMContentLoaded", function() {
-		flatpickr(".date-picker", {
-			dateFormat: "Y-m-d",
-			altInput: true,
-			altFormat: "d M Y",
-			locale: "en",
-			allowInput : false,
-		});
-		
+		/* $("#user_birthDate").flatpickr(); */
+		flatpickr("#user_birthDate", {
+        dateFormat: "Y-m-d",  
+        altInput: true,
+        altFormat: "d M Y",   
+        locale: "en",        
+        allowInput: false
+    });
 		const citizenInput = document.getElementById("user_citizenId");
 		if (citizenInput.value) {
 	        formatCitizenId(citizenInput);
