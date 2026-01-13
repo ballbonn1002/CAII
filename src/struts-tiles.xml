@@ -144,6 +144,10 @@
 		<put-attribute name="title" value="Check All Calendar" />
 		<put-attribute name="body" value="/pages-back/calendar/checkall_calendar.jsp" />
 	</definition>
+	<definition name="CheckAllCalendar2" extends="baseLayout">
+		<put-attribute name="title" value="Check All Calendar" />
+		<put-attribute name="body" value="/pages-back/calendar/checkall_calendar2.jsp" />
+	</definition>
 	
 	<!-- HOLIDAY -->
 	<definition name="holidayList" extends="baseLayout">

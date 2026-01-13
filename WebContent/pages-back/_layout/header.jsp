@@ -1,5 +1,21 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
+
+<style>
+#avatarPreview{
+    background-color: #f3f6f9;
+    color: #0d6efd;
+    font-size: 1.9rem;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+}
+
+</style>
 
 <!--begin::Header-->
 <div id="kt_app_header" class="app-header" data-kt-sticky="true"
@@ -116,8 +132,27 @@
 					<div class="cursor-pointer symbol symbol-35px"
 						data-kt-menu-trigger="{default: 'click', lg: 'hover'}"
 						data-kt-menu-attach="parent" data-kt-menu-placement="bottom-end">
-						<img src="assets/media/avatars/300-3.jpg" class="rounded-3"
-							alt="user" />
+						<!-- <img src="assets/media/avatars/300-3.jpg" class="rounded-3"
+							alt="user" /> -->
+							<c:choose>
+								<c:when test="${not empty userImgPath}">
+										<img id="avatarPreview" src="${userImgPath}" alt="${not empty user.nameEN ? user.nameEN : user.name}"
+										class="rounded-3 w-35px h-35px" style="object-fit: cover;"> 
+								</c:when>
+								<c:otherwise>
+										<div id="avatarPreview" class="rounded-3 w-35px h-35px" >
+										<c:choose>
+											<c:when test="${not empty user.nameEN and fn:length(user.nameEN) >= 1}">
+                                                    ${fn:toUpperCase(fn:substring(user.nameEN, 0, 1))}
+                                            </c:when>
+											<c:when test="${not empty user.name and fn:length(user.name) >= 1}">
+                                                    ${fn:toUpperCase(fn:substring(user.name, 0, 1))}
+                                            </c:when>
+											<c:otherwise>-</c:otherwise>
+										</c:choose>
+										</div>
+								</c:otherwise>
+							</c:choose>
 					</div>
 					<!--begin::User account menu-->
 					<div
@@ -128,7 +163,30 @@
 							<div class="menu-content d-flex align-items-center px-3">
 								<!--begin::Avatar-->
 								<div class="symbol symbol-50px me-5">
-									<img alt="Logo" src="assets/media/avatars/300-3.jpg" />
+									<!-- <img alt="Logo" src="assets/media/avatars/300-3.jpg" /> -->
+									<c:choose>
+											<c:when test="${not empty userImgPath}">
+												<img id="avatarPreview" src="${userImgPath}"
+													alt="${not empty user.nameEN ? user.nameEN : user.name}"
+													class="rounded-1 w-50px h-50px" style="object-fit: cover;"> 
+											</c:when>
+											<c:otherwise>
+												<div id="avatarPreview"
+													class="rounded-1 w-50px h-50px">
+													<c:choose>
+														<c:when
+															test="${not empty user.nameEN and fn:length(user.nameEN) >= 1}">
+                                                            ${fn:toUpperCase(fn:substring(user.nameEN, 0, 1))}
+                                                        </c:when>
+														<c:when
+															test="${not empty user.name and fn:length(user.name) >= 1}">
+                                                            ${fn:toUpperCase(fn:substring(user.name, 0, 1))}
+                                                        </c:when>
+														<c:otherwise>-</c:otherwise>
+													</c:choose>
+												</div>
+											</c:otherwise>
+										</c:choose>
 								</div>
 								<!--end::Avatar-->
 								<!--begin::Username-->

@@ -34,9 +34,7 @@
 							Job Site</h1>
 						<ul
 							class="breadcrumb breadcrumb-separatorless fw-medium fs-7 text-muted pt-1">
-							<li class="breadcrumb-item text-muted"><a
-								href="${pageContext.request.contextPath}/demo_dashboard"
-								class="text-muted text-hover-primary">Home</a></li>
+							<li class="breadcrumb-item text-muted">Home</li>
 							<li class="breadcrumb-item"><span class="bullet w-5px h-2px"></span>
 							</li>
 							<li class="breadcrumb-item">Cube Management</li>
@@ -58,7 +56,7 @@
 								class="card-title d-flex flex-column justify-content-between"
 								style="margin: 0 !important;">
 
-								<h3 class="page-heading text-gray-900 fw-medium fs-4 my-7">
+								<h3 class="page-heading text-gray-900 fw-medium fs-4 mb-7">
 									<c:set var="headerDisplay" value="" />
 
 									<c:if test="${not empty userData.employeeId}">

@@ -3,6 +3,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
+<fmt:setLocale value="en_US" />
 
 <!DOCTYPE html>
 <html lang="en">
@@ -89,7 +90,7 @@
 											</c:when>
 											<c:otherwise>
 												<div id="avatarPreview"
-													class="w-100 h-100 rounded-1 d-flex align-items-center justify-content-center"
+													class="w-150px h-150px rounded-1 d-flex align-items-center justify-content-center"
 													style="background-color: #f3f6f9; font-size: 48px; color: #0d6efd;">
 													<c:choose>
 														<c:when
@@ -329,7 +330,8 @@
 										-
 										</c:when>
 										<c:otherwise>
-										 ${fn:substring(user.citizenId, 0,1)}-${fn:substring(user.citizenId, 1,5)}-${fn:substring(user.citizenId, 5,10)}-${fn:substring(user.citizenId, 10,12)}-${fn:substring(user.citizenId, 12,13)}
+										<c:set var="cid" value="${fn:replace(user.citizenId, '-', '')}" />
+										${fn:substring(cid, 0,1)}-${fn:substring(cid, 1,5)}-${fn:substring(cid, 5,10)}-${fn:substring(cid, 10,12)}-${fn:substring(cid, 12,13)}
 										</c:otherwise>
 										
 									</c:choose>
@@ -355,10 +357,12 @@
 										</c:when>
 										
 										<c:otherwise>
-										 ${fn:substring(user.phonenum, 0,3)}-${fn:substring(user.phonenum, 3,6)}-${fn:substring(user.phonenum, 6,10)}
-										<c:if test="${fn:length(user.phonenum) > 10}">
-									          ${fn:substring(user.phonenum, 10, fn:length(user.phonenum))}
-									        </c:if>
+										<c:set var="phone" value="${fn:replace(fn:replace(user.phonenum, '-', ''), ' ', '')}" />
+      										${fn:substring(phone, 0,3)}-${fn:substring(phone, 3,6)}-${fn:substring(phone, 6,10)}
+
+											<c:if test="${fn:length(phone) > 10}">
+												${fn:substring(phone, 10, fn:length(phone))}
+											</c:if>
 										</c:otherwise>
 										
 									</c:choose>
@@ -591,10 +595,12 @@
 												<span class="path1"></span><span class="path2"></span> <span
 												class="path3"></span><span class="path4"></span> <span
 												class="path5"></span><span class="path6"></span>
-											</i> <input type="text" id="user_birthDate" name="user_birthDate"
-												class="form-control ps-10 date-picker text-gray-700"
+											</i> 
+											<input type="text" id="user_birthDate" name="user_birthDate"
+												class="form-control ps-10 text-gray-700"
 												placeholder="1 Jan 2025" autocomplete="off"
-												value="${user.birthDate}"   
+												<%-- value="${user.birthDate}" --%>
+												value="<fmt:formatDate value='${user.birthDate}' pattern='yyyy-MM-dd' />"
 												required />
 										</div>
 
@@ -994,14 +1000,14 @@
 
 <script>
 	document.addEventListener("DOMContentLoaded", function() {
-		flatpickr(".date-picker", {
-			dateFormat: "Y-m-d",
-			altInput: true,
-			altFormat: "d M Y",
-			locale: "en",
-			allowInput : false,
-		});
-		
+		/* $("#user_birthDate").flatpickr(); */
+		flatpickr("#user_birthDate", {
+        dateFormat: "Y-m-d",  
+        altInput: true,
+        altFormat: "d M Y",   
+        locale: "en",        
+        allowInput: false
+    });
 		const citizenInput = document.getElementById("user_citizenId");
 		if (citizenInput.value) {
 	        formatCitizenId(citizenInput);
