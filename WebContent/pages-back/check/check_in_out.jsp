@@ -159,12 +159,12 @@
 										In / Check Out</span>
 								</div>
 								<div class="d-flex flex-column">
-								<button type="button" class="btn btn-sm btn-flex btn-secondary px-2">
+								<a class="btn btn-sm btn-flex btn-secondary px-2" href="checkAllCalendar2">
 								<i class="ki-duotone ki-calendar-tick fs-1">
 									<span class="path1"></span><span class="path2"></span>
 									<span class="path3"></span><span class="path4"></span>
 									<span class="path5"></span><span class="path6"></span>
-								</i></button>
+								</i></a>
 								</div>
 							</div>
 							<div class="card-body pt-2 pb-4 d-flex flex-wrap">
@@ -531,6 +531,8 @@ console.log(ALLOWED_DATE);
 
 const datePicker = flatpickr("#mdDate", {
 	altInput: true,
+	static: true,
+    disableMobile: "true",
 	altFormat: "j M Y",
 	dateFormat: "Y-m-d",
     enableTime: false,
