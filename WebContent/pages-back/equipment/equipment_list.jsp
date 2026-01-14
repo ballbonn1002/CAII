@@ -108,9 +108,9 @@
                                             <th class="min-w-60px">ID</th>
                                             <th class="min-w-120px">Item No</th>
                                             <th class="min-w-90px text-center">Type</th>
-                                            <th class="min-w-350px">Equipment / Detail</th>
-                                            <th class="min-w-250px">Status</th>
-                                            <th class="min-w-200px text-end">Actions</th>
+                                            <th style="width: 500px; max-width: 550px;">Equipment / Detail</th>
+                                            <th class="min-w-210px">Status</th>
+                                            <th class="min-w-150px text-end">Actions</th>
                                         </tr>
                                     </thead>
                                 </table>
@@ -365,7 +365,7 @@
     // ============= Badge Status ===========================
     function getStatusBadgeHtml(statusId, rowData) {
     	var config = STATUS_CONFIG[statusId];
-        var cssClass = config ? config.class : 'badge-primary'; // ใช้ค่าจาก config ถ้าไม่มีใช้ badge-primary เป็น default
+        var cssClass = config ? config.class : 'badge-primary';
         var labelText = config ? config.label : 'Borrowed';
         // กรณีถ้าสถานะเป็น 'B' (Borrowed) ให้โชว์ชื่อคนยืม
         if (statusId === 'B') {
@@ -480,8 +480,8 @@
                     className: 'text-center',
                     render: function(data, type) {
                         var val = (data) ? data.toString().trim() : '';
-                        if (type === 'filter' || type === 'sort') return val; // ถ้า Sort ให้ใช้ค่า Text
-                        return getIconHtml(val); // ถ้า Show ให้ใช้ค่า Icon
+                        if (type === 'filter' || type === 'sort') return val;
+                        return getIconHtml(val);
                     }
                 },
                 // Col 4: Detail 
@@ -524,7 +524,7 @@
                 {
                     data: null,
                     orderable: false,
-                    className: 'text-end align-top',
+                    className: 'text-end',
                     render: function(data, type, row) {
                     	var id = row.equipmentId;
                     	var btnView = '<a href="javascript:;" onclick="openViewModal(\'' + id + '\')" class="btn btn-icon btn-sm btn-light-info mb-1 fs-3"><i class="ki-duotone ki-document fs-1"><span class="path1"></span><span class="path2"></span></i></a> ';
@@ -532,14 +532,14 @@
 						var btnDelete = '';
                         // Borrowed: Disable
                             if (row.status === 'B') {
-                            	btnDelete = '<a href="javascript:;" class="btn btn-icon btn-sm btn-light-danger mb-1 fs-3 me-3 disabled" style="opacity: 0.4; cursor: not-allowed;" title="Cannot delete borrowed item">' +
+                            	btnDelete = '<a href="javascript:;" class="btn btn-icon btn-sm btn-light-danger mb-1 fs-3 me-1 disabled" style="opacity: 0.4; cursor: not-allowed;" title="Cannot delete borrowed item">' +
                                             '<i class="ki-duotone ki-trash fs-1"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span><span class="path5"></span></i></a>';
                             } else {
-                                btnDelete = '<a href="javascript:;" onclick="confirmDelete(\'' + id + '\')" class="btn btn-icon btn-sm btn-light-danger mb-1 fs-3 me-3">' +
+                                btnDelete = '<a href="javascript:;" onclick="confirmDelete(\'' + id + '\')" class="btn btn-icon btn-sm btn-light-danger mb-1 fs-3 me-1">' +
                                             '<i class="ki-duotone ki-trash fs-1"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span><span class="path5"></span></i></a>';
                               }
 						
-                       return '<div class="eq-actions">' + btnView + btnEdit + btnDelete + '</div>';
+                       return '<div class="eq-actions text-end align-middle">' + btnView + btnEdit + btnDelete + '</div>';
                     }
                 }
             ]
@@ -600,7 +600,7 @@
         $('.dropdown-menu .btn-primary').on('click', function(e) {
             e.stopPropagation();
             var menu = $(this).closest('.dropdown-menu');
-            menu.find('input[type="checkbox"]').prop('checked', true); // ติ๊กทุกอัน
+            menu.find('input[type="checkbox"]').prop('checked', true);
             if (menu.find('#statusFilterContainer').length) updateFilter('#statusFilterContainer', 4);
             if (menu.find('#typeFilterContainer').length) updateFilter('#typeFilterContainer', 2);
         });
@@ -608,7 +608,7 @@
         $('.dropdown-menu .btn-light').on('click', function(e) {
             e.stopPropagation();
             var menu = $(this).closest('.dropdown-menu');
-            menu.find('input[type="checkbox"]').prop('checked', false); // เอาติ๊กออกหมด
+            menu.find('input[type="checkbox"]').prop('checked', false);
             if (menu.find('#statusFilterContainer').length) updateFilter('#statusFilterContainer', 4);
             if (menu.find('#typeFilterContainer').length) updateFilter('#typeFilterContainer', 2);
         });

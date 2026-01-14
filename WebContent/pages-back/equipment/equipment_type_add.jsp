@@ -15,7 +15,9 @@
                         <li class="breadcrumb-item"><span class="bullet bg-gray-500 w-5px h-2px"></span></li>
                         <li class="breadcrumb-item text-muted">Borrow</li>
                         <li class="breadcrumb-item"><span class="bullet bg-gray-500 w-5px h-2px"></span></li>
-                        <li class="breadcrumb-item text-muted">Equipment</li>
+                        <li class="breadcrumb-item text-muted">
+                            <a href="${pageContext.request.contextPath}/equipment_list" class="text-muted text-hover-primary">Equipment</a>
+                        </li>
                         <li class="breadcrumb-item"><span class="bullet bg-gray-500 w-5px h-2px"></span></li>
                         <li class="breadcrumb-item text-muted">Setting Equipment</li>
                     </ul>
@@ -48,21 +50,13 @@
                                 <input type="text" class="form-control" name="description" id="field_description" placeholder="Enter type name" required />
                             </div>
 
-                            <div class="mb-8">
+                            <div class="mb-10">
                                 <label class="form-label required fw-bold">Type Icon</label>
-                                <div class="d-flex align-items-center">
-                                    <div class="flex-grow-1 me-3">
-                                        <select class="form-select" name="type_text" id="field_icon" data-control="select2" data-placeholder="Select an icon" required>
-                                            <option></option>
+                                <select class="form-select" name="type_text" id="field_icon" data-control="select2" data-placeholder="Select an icon" required>
+                                    <option></option>
                                         </select>
-                                     </div>
-                                    
-                                    <div class="d-flex justify-content-center align-items-center px-6">
-                                         <i id="icon_preview" class="fs-2x text-gray-600 ki-solid ki-dots-square"></i>
-                                    </div>
-                                </div>
                                 <div class="fw-semibold mt-1 text-muted">Browse available icons at  <a href="https://preview.keenthemes.com/html/metronic/docs/?page=icons/keenicons#listing" target="_blank" rel="noopener noreferrer" class="fw-semibold">KeenIcons.</a></div>
-                             </div>
+                           </div>
                         </div>
 
                         <div class="card-footer d-flex justify-content-end gap-3 p-8">
@@ -100,16 +94,6 @@
                    '<span>' + icon.text + '</span>' + 
                    '</span>';
         }
-        
-        // Preview
-        select.on('select2:select', function (e) {
-            var iconClass = e.params.data.id;
-            updatePreview(iconClass);
-        });
-
-        select.on('select2:clear', function (e) {
-             updatePreview('');
-        });
 
         // Check Duplicate
         var typeIdInput = document.getElementById('field_type_id');
@@ -150,10 +134,4 @@
             });
         });
     });
-
-    // Update Preview
-    function updatePreview(iconClass) {
-        if(!iconClass) iconClass = 'ki-solid ki-dots-square';
-        $('#icon_preview').attr('class', 'fs-2x text-gray-500 ' + iconClass);
-    }
 </script>

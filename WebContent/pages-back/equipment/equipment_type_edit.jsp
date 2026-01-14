@@ -15,7 +15,9 @@
                         <li class="breadcrumb-item"><span class="bullet bg-gray-500 w-5px h-2px"></span></li>
                         <li class="breadcrumb-item text-muted">Borrow</li>
                         <li class="breadcrumb-item"><span class="bullet bg-gray-500 w-5px h-2px"></span></li>
-                        <li class="breadcrumb-item text-muted">Equipment</li>
+                        <li class="breadcrumb-item text-muted">
+                            <a href="${pageContext.request.contextPath}/equipment_list" class="text-muted text-hover-primary">Equipment</a>
+                        </li>
                         <li class="breadcrumb-item"><span class="bullet bg-gray-500 w-5px h-2px"></span></li>
                         <li class="breadcrumb-item text-muted">Setting Equipment</li>
                     </ul>
@@ -48,17 +50,9 @@
 
                             <div class="mb-8">
                                 <label class="form-label required fw-bold">Type Icon</label>
-                                <div class="d-flex align-items-center">
-                                    <div class="flex-grow-1 me-3">
-                                        <select class="form-select" name="type_text" id="field_icon" data-control="select2" data-placeholder="Select an Icon">
-                                            <option></option>
-                                        </select>
-                                    </div>
-                                    
-                                    <div class="d-flex justify-content-center align-items-center px-6">
-                                        <i id="icon_preview" class="fs-2 text-gray-500"></i>
-                                    </div>
-                                </div>
+                                <select class="form-select" name="type_text" id="field_icon" data-control="select2" data-placeholder="Select an Icon">
+                                    <option></option>
+                                </select>
                                 <div class="fw-semibold mt-1 text-gray-500">Browse available icons at  <a href="https://preview.keenthemes.com/html/metronic/docs/?page=icons/keenicons#listing" target="_blank" rel="noopener noreferrer" class="fw-semibold">KeenIcons.</a></div>
                             </div>
                         </div>
@@ -109,20 +103,5 @@
                 updatePreview(currentIcon);
             }
         }
-      
-        // อัปเดต Preview
-        select.on('select2:select', function (e) {
-            var data = e.params.data;
-            updatePreview(data.id);
-        });
-        select.on('select2:clear', function (e) {
-             updatePreview('');
-        });
     });
-
-    function updatePreview(iconClass) {
-        if(!iconClass) iconClass = 'ki-solid ki-dots-square';
-        // preview
-        $('#icon_preview').attr('class', 'fs-2x text-gray-500 ' + iconClass);
-    }
 </script>

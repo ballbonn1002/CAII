@@ -22,6 +22,12 @@
                         <li class="breadcrumb-item text-muted">Setting Equipment</li>
                     </ul>
                 </div>
+                <div class="d-flex align-items-center gap-2 gap-lg-3">
+                    <a href="equipment_list" class="btn btn-secondary">
+                        <i class="ki-duotone ki-black-left fs-1 text-dark"></i>
+                        <span class="fw-medium">Back to Equipment</span>
+                    </a>
+                </div>
             </div>
         </div>
         <div id="kt_app_content" class="app-content flex-column-fluid">
