@@ -400,9 +400,9 @@
 </div>
 
 <div class="modal fade" id="modal_return_action" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered mw-700px">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content">
-            <div class="modal-header pb-0 border-0 justify-content-between">
+            <div class="modal-header border-0 px-6 pt-5 pb-0 align-items-center">
                 <h2 class="fw-bold m-0 text-gray-800 ps-4 pt-4">Request for Return Equipment</h2>
                 <div class="btn btn-sm btn-icon btn-active-color-primary" data-bs-dismiss="modal">
                     <i class="ki-duotone ki-cross fs-1"><span class="path1"></span><span class="path2"></span></i>
@@ -493,8 +493,8 @@
                     <div id="view_borrow_section">
                         <div class="separator separator-dashed border-gray-300 my-10"></div>
                         <div class="d-flex align-items-center mb-5">
-                            <span class="fs-5 fw-bold text-gray-800 me-3">Borrow ID</span>
-                            <span class="fs-5 fw-bold text-primary">ID: ${equipmentbyId.itemNo}</span>
+                            <span class="fs-5 fw-bold text-gray-800 me-3">Borrow ID:</span>
+                            <span class="fs-5 fw-bold text-primary">${borrowlistwithUser[0].borrow_id}</span>
                         </div>
                         <div class="row g-5 mb-5" id="view_borrow_detailed_info">
                             <div class="col-12">

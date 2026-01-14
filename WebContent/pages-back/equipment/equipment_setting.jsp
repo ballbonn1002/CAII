@@ -149,7 +149,7 @@
         ];
 
         data.forEach(function(item) {
-            // Mapping (Java Model and SQL Map)
+            // Mapping
             var statusId = item.statusId; 
             var color2Value = item.color2;
             var userCreate = item.userCreate || '-';

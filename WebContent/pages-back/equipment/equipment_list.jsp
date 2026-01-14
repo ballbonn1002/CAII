@@ -125,10 +125,10 @@
 </div>
 
 <div class="modal fade" id="kt_modal_view_equipment" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered mw-700px">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content">
-            <div class="modal-header pb-0 border-0 justify-content-between">
-                <h2 class="fw-bold m-0 text-gray-800 ps-4 pt-4">Equipment Detail</h2>
+            <div class="modal-header border-0 px-6 pt-5 pb-0 align-items-center">
+                <h2 class="fw-bold m-0 text-gray-800 ps-4 pt-1">Equipment Detail</h2>
                 <div class="btn btn-sm btn-icon btn-active-color-primary" data-bs-dismiss="modal">
                     <i class="ki-duotone ki-cross fs-1"><span class="path1"></span><span class="path2"></span></i>
                 </div>

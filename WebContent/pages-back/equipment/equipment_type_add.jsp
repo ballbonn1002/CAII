@@ -87,9 +87,20 @@
             data: data,
             placeholder: "Select or Search Icon...",
             allowClear: true,
-            minimumInputLength: 0
+            minimumInputLength: 0,
+            escapeMarkup: function(markup) { return markup; }, 
+            templateResult: formatIcon,
+            templateSelection: formatIcon
         });
 
+        function formatIcon(icon) {
+            if (!icon.id) return icon.text;
+            return '<span class="d-flex align-items-center">' + 
+                   '<i class="' + icon.id + ' fs-2 me-2"></i>' + 
+                   '<span>' + icon.text + '</span>' + 
+                   '</span>';
+        }
+        
         // Preview
         select.on('select2:select', function (e) {
             var iconClass = e.params.data.id;

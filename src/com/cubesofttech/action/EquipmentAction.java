@@ -582,6 +582,9 @@ public class EquipmentAction extends ActionSupport {
 	}
 	
 	public String statusAdd() {
+		if (onlineUser == null) { 
+            return "login"; 
+        }
         return SUCCESS;
     }
 
@@ -590,6 +593,9 @@ public class EquipmentAction extends ActionSupport {
 		String selType = request.getParameter("type");
 		String selStatus = request.getParameter("status");
 		try {
+			if (onlineUser == null) { 
+	            return "login"; 
+	        }
 			List<EquipmentStatus> status = equipmentStatusDAO.getall();
 			List<EquipmentType> type = equipmentTypeDAO.getall();
 			List<Borrow> borrows = borrowDAO.findAll();
@@ -722,6 +728,9 @@ public class EquipmentAction extends ActionSupport {
 	
 	public String EquipmentPieChart() {
 		try {
+			if (onlineUser == null) {
+				return "login";
+			}
 			List<Equipment> list = equipmentDAO.getAll();
 			List<EquipmentStatus> status = equipmentStatusDAO.getall();
 			List<EquipmentType> type = equipmentTypeDAO.getall();
@@ -916,6 +925,9 @@ public class EquipmentAction extends ActionSupport {
 	//Equipment Type
 	public String typelist() {
 		try {
+			if (onlineUser == null) {
+				return "login";
+			}
 			List<EquipmentType> list = equipmentTypeDAO.getall();
 			request.setAttribute("tlist", new Gson().toJson(list));
 			return SUCCESS;
@@ -1009,6 +1021,9 @@ public class EquipmentAction extends ActionSupport {
 	}
 	
 	public String typeAdd() {
+		if (onlineUser == null) { 
+			return "login"; 
+		}
         return SUCCESS;
     }
 	
@@ -1099,6 +1114,9 @@ public class EquipmentAction extends ActionSupport {
 	
 	public void updateStatusColor() {
 		try {
+			if (onlineUser == null) { 
+				return; 
+			}
 			String id = request.getParameter("id");
 			String color = request.getParameter("color");
 			String color2 = request.getParameter("color2"); 
@@ -1199,6 +1217,9 @@ public class EquipmentAction extends ActionSupport {
 	public String changeEquipStatusAndBorrowStatus() {
 		try {
 			User onlineUser = (User) request.getSession().getAttribute("onlineUser");
+			if (onlineUser == null) {
+				return "login";
+			}
 			String id_s = request.getParameter("equip_id");
 			String eStatus = request.getParameter("equip_status");
 			int id = Integer.parseInt(id_s);

@@ -40,6 +40,7 @@
 			class="com.cubesofttech.action.EquipmentAction" method="table">
 			<result name="success" type="tiles">equipmentList</result>
 			<result name="error">/index.jsp</result>
+			<result name="login" type="redirect">/index.jsp</result>
 		</action>
 		<!-- Equipment List -->
 		
@@ -171,6 +172,7 @@
 			class="com.cubesofttech.action.EquipmentAction" method="statusAdd">
 			<result name="success" type="tiles">equipmentStatusAdd</result>
 			<result name="error">/index.jsp</result>
+			<result name="login" type="redirect">/index.jsp</result>
 		</action>
 		
 		<!-- Equipment Setting Type Add -->
@@ -178,6 +180,7 @@
 			class="com.cubesofttech.action.EquipmentAction" method="typeAdd">
 			<result name="success" type="tiles">equipmentTypeAdd</result>
 			<result name="error">/index.jsp</result>
+			<result name="login" type="redirect">/index.jsp</result>
 		</action>
 		
 		<!-- Equipment Return -->
