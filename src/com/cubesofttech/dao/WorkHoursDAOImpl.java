@@ -2565,35 +2565,43 @@ public class WorkHoursDAOImpl implements WorkHoursDAO {
 	}
 
 	@Override
-	public Timestamp findMinTimeByType(String userId, LocalDate workDate, String type) {
+	public Object[] findMinTimeByType(String userId, LocalDate workDate, String type) {
 		Session session = this.sessionFactory.getCurrentSession();
 
-		String sql = "SELECT MIN(work_hours_time_work) " + "FROM work_hours " + "WHERE user_create = :userId "
-				+ "AND work_hours_type = :type " + "AND DATE(work_hours_time_work) = :workDate";
+		String sql = "SELECT work_hours_time_work, work_type " + 
+					 "FROM work_hours " + 
+					 "WHERE user_create = :userId " + 
+					 "AND work_hours_type = :type " + 
+					 "AND DATE(work_hours_time_work) = :workDate " + 
+					 "ORDER BY work_hours_time_work ASC LIMIT 1";
 
 		SQLQuery query = session.createSQLQuery(sql);
 		query.setParameter("userId", userId);
-		query.setParameter("type", type);
+		query.setParameter("type", type); 
 		query.setParameter("workDate", workDate.toString());
 
-		return (Timestamp) query.uniqueResult();
+		return (Object[]) query.uniqueResult();
 	}
 
 	@Override
-	public Timestamp findMaxTimeByType(String userId, LocalDate workDate, String type) {
+	public Object[] findMaxTimeByType(String userId, LocalDate workDate, String type) {
 		Session session = this.sessionFactory.getCurrentSession();
 
-		String sql = "SELECT MAX(work_hours_time_work) " + "FROM work_hours " + "WHERE user_create = :userId "
-				+ "AND work_hours_type = :type " + "AND DATE(work_hours_time_work) = :workDate";
+		String sql = "SELECT work_hours_time_work, work_type " + 
+					 "FROM work_hours " + 
+					 "WHERE user_create = :userId " + 
+					 "AND work_hours_type = :type " + 
+					 "AND DATE(work_hours_time_work) = :workDate " + 
+					 "ORDER BY work_hours_time_work DESC LIMIT 1";
 
 		SQLQuery query = session.createSQLQuery(sql);
 		query.setParameter("userId", userId);
 		query.setParameter("type", type);
 		query.setParameter("workDate", workDate.toString());
 
-		return (Timestamp) query.uniqueResult();
+		return (Object[]) query.uniqueResult();
 	}
-	
+
 	@Override
 	public List<Map<String, Object>> getCheckListFromLastAndCurrentYear(String userId, int lastyear, int currentYear)
 			throws Exception {
@@ -2614,31 +2622,5 @@ public class WorkHoursDAOImpl implements WorkHoursDAO {
 		}
 		return checkList;
 	}
-	
-	@Override
-	public String findWorkTypeByDaily(String userId, LocalDate date, String workHoursType, String orderType) {
-	    Session session = this.sessionFactory.getCurrentSession();
-	    try {
-	    	
-	        String sql = "SELECT work_type FROM work_hours " +
-	                     "WHERE user_create = :userId " +
-	                     "AND DATE(work_hours_time_work) = :date " +
-	                     "AND work_hours_type = :whType " +
-	                     "ORDER BY work_hours_time_work " + orderType + " LIMIT 1";
-	        
-	        SQLQuery query = session.createSQLQuery(sql);
-	        query.setParameter("userId", userId);
-	        query.setParameter("date", date.toString());
-	        query.setParameter("whType", workHoursType);
-	        
-	        Object result = query.uniqueResult();
-	        
-	        if (result != null) {
-	            return result.toString();
-	        }
-	    } catch (Exception e) {
-	        e.printStackTrace();
-	    }
-	    return "2"; // Default "WFH"
-	}
+
 }

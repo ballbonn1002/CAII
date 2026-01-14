@@ -213,12 +213,12 @@ public interface WorkHoursDAO {
 	 public Map<LocalDate, Map<String, Object>> getCheckinsForYear(String userId, int year1, int year2) throws Exception;
 	 public Map<LocalDate, Map<String, Object>> getCheckoutsForYear(String userId, int year1, int year2) throws Exception;
 	 
-	 Timestamp findMinTimeByType(String userId, LocalDate workDate, String type);
-	 Timestamp findMaxTimeByType(String userId, LocalDate workDate, String type);
+	 public Object[] findMinTimeByType(String userId, LocalDate workDate, String type);
+	 
+	 public Object[] findMaxTimeByType(String userId, LocalDate workDate, String type);
 
 	 // get all column by using userid, lastyear, currentyears
 	 public List<Map<String, Object>> getCheckListFromLastAndCurrentYear(String userId, int lastyear, int currentYear) throws Exception;
 	 
-	 public String findWorkTypeByDaily(String userId, LocalDate date, String workHoursType, String orderType) throws Exception;
 
 }

@@ -2207,7 +2207,8 @@ public class LeaveDAOImpl implements LeaveDAO {
 							+ "FROM leaves LEFT JOIN leave_type ON leave_type.leave_type_id = leaves.leave_type_id "
 							+ "LEFT JOIN user ON leaves.user_id = user.id "
 							+ "LEFT JOIN file ON leaves.leave_file = file.file_id "
-							+ "WHERE leaves.user_id = :userId AND leaves.start_date BETWEEN :startDate AND :endDate "
+							+ "WHERE leaves.user_id = :userId "
+							+ "AND (leaves.start_date <= :endDate AND leaves.end_date >= :startDate) " 
 					);
 			
 			if(status != null && !status.isEmpty() && !status.equals("4")) {
@@ -2217,7 +2218,7 @@ public class LeaveDAOImpl implements LeaveDAO {
 			if(type != null && !type.isEmpty() && !type.equals("allType")) {
 				sql.append("AND leaves.leave_type_id = :leaveType ");
 			}
-//			sql.append("ORDER BY leaves.leave_status_id ASC, leaves.start_date DESC; ");
+
 	        sql.append("ORDER BY leaves.start_date DESC, leaves.leave_status_id ASC");
 
 			SQLQuery query = session.createSQLQuery(sql.toString());

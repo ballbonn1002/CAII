@@ -7,6 +7,7 @@ import java.time.LocalDate;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Date;
 import java.text.SimpleDateFormat;
@@ -408,11 +409,11 @@ public class JobsiteAction extends ActionSupport {
 
 			if (idParam != null && activeParam != null) {
 				Integer id = Integer.parseInt(idParam);
-				
+
 				Jobsite js = jobsiteDAO.findById(id);
 
 				if (js != null) {
-					js.setIs_active(activeParam); 
+					js.setIs_active(activeParam);
 
 					User user = (User) request.getSession().getAttribute("onlineUser");
 					if (user != null) {
@@ -459,7 +460,7 @@ public class JobsiteAction extends ActionSupport {
 
 			String selectedDate = request.getParameter("date");
 			if (selectedDate == null || selectedDate.trim().isEmpty()) {
-				selectedDate = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
+				selectedDate = new SimpleDateFormat("yyyy-MM-dd", Locale.US).format(new Date());
 			}
 
 			LocalDate workDate = LocalDate.parse(selectedDate);
@@ -473,6 +474,7 @@ public class JobsiteAction extends ActionSupport {
 
 				String siteId = String.valueOf(r.get("id_sitejob"));
 
+				// Grouping by Site
 				if (!siteMap.containsKey(siteId)) {
 					Map<String, Object> siteItem = new HashMap<>();
 					siteItem.put("id_sitejob", r.get("id_sitejob"));
@@ -489,6 +491,7 @@ public class JobsiteAction extends ActionSupport {
 				member.put("u_id", r.get("u_id"));
 
 				String memberUserId = String.valueOf(r.get("u_id"));
+
 				Map<String, Object> statusMap = WorkHoursService.calculateDailyStatus(memberUserId, workDate);
 
 				member.put("status", statusMap.get("status"));
@@ -496,7 +499,7 @@ public class JobsiteAction extends ActionSupport {
 				member.put("check_out", statusMap.get("check_out"));
 				member.put("leave_desc", statusMap.get("leave_desc"));
 				member.put("check_in_type", statusMap.get("check_in_type"));
-			    member.put("check_out_type", statusMap.get("check_out_type"));
+				member.put("check_out_type", statusMap.get("check_out_type"));
 
 				teamBySite.get(siteId).add(member);
 			}
@@ -509,7 +512,7 @@ public class JobsiteAction extends ActionSupport {
 			return SUCCESS;
 
 		} catch (Exception e) {
-			log.error("Error in myJobsite()", e);
+			e.printStackTrace();
 			return ERROR;
 		}
 	}

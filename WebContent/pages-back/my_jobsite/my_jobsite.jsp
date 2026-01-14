@@ -273,6 +273,10 @@
 															value="badge bg-gray-800 text-white" />
 														<c:set var="statusText" value="Incomplete" />
 													</c:when>
+													<c:when test="${t.status == 'NO_RECORD'}">
+														<c:set var="badgeClass" value="badge-danger" />
+														<c:set var="statusText" value="No Record" />
+													</c:when>
 													<c:when test="${t.status == 'SICK_LEAVE'}">
 														<c:set var="badgeClass" value="badge bg-purple text-white" />
 														<c:set var="statusText" value="${t.leave_desc}" />
