@@ -740,8 +740,6 @@ public class UserAction extends ActionSupport {
 			}
 	       request.setAttribute("workPeriod", workPeriod);
 
-			request.setAttribute("selectUser", selectUser);
-
 			List<Map<String, Object>> leavwait = leaveDAO.listwaitperson(String.valueOf(userId));
 			List<Map<String, Object>> leavhis = leaveDAO.listoneperson(String.valueOf(userId));
 			int sum_w = leavwait.size();
@@ -789,30 +787,14 @@ public class UserAction extends ActionSupport {
 			            imgPath = null;
 			        }
 			        
-//			        System.out.println("---- My Profile Menu Get img ----");
-//			        System.out.println("originalFileName from DB = " + originalFileName);
-//			        System.out.println("fileId = " + fileId);
-//			        System.out.println("typeFile = " + typeFile);
-//			        System.out.println("Generated imgPath = " + imgPath);
-//			        System.out.println("Full file path in server= " + f.getAbsolutePath());
-//			        System.out.println("---- End ----");
-
 			    } catch (Exception e) {
 			        imgPath = null;
 			    }
 			}
 			
-//			log.debug("EDIT USER ID = " + selectUser.getId());
-//			log.debug("EDIT USER PATH = " + selectUser.getPath());
-//			log.debug("EDIT IMG PATH = " + imgPath);
-
+			request.setAttribute("selectUser", selectUser);
 			request.setAttribute("editUserImgPath", imgPath);
 
-			
-
-//			System.out.println("---- Employee Profile  Menu Get img ----");
-//			System.out.println("DB path = " + selectUser.getPath());
-//	        System.out.println("---- End ----");
 	        
 			return SUCCESS;
 		} catch (Exception e) {
@@ -855,7 +837,16 @@ public class UserAction extends ActionSupport {
 			String logonUser = ur.getId();
 			log.info(logonUser);
 
-			User u = userDAO.findById(user.getId());
+//			User u = userDAO.findById(user.getId());
+//			String UserIdEdit = user.getId();
+			if (user == null || user.getId() == null || user.getId().trim().isEmpty()) {
+			    log.error("User id is null from request");
+			    return ERROR;
+			}
+
+			String UserIdEdit = user.getId().trim();
+			User u = userDAO.findById(UserIdEdit);
+
 			log.debug(id_sitejob);
 			/* String[] siteJobId = id_sitejob.split(","); */
 			String rawSiteJob = (id_sitejob == null) ? "" : id_sitejob.trim();
@@ -864,91 +855,91 @@ public class UserAction extends ActionSupport {
 
 			log.debug("siteJobId array = " + Arrays.toString(siteJobId));
 			
-			String UserIdEdit = user.getId();
+			
 			log.debug("effectiveUserId = " + UserIdEdit);
 			List<JobSiteTeam> ListuserId = jobSiteTeamDAO.findAllByUserId(UserIdEdit);
 			log.debug("ListuserId size = " + (ListuserId == null ? "null" : ListuserId.size()));
 
 			//Clean Data and Change String To List
+//			List<String> selectedSiteIds = new ArrayList<>();
+//			if (siteJobId != null) {
+//				for (String s : siteJobId) {
+//					if (s != null && !s.trim().isEmpty()) {
+//						selectedSiteIds.add(s.trim());
+//					}
+//				}
+//			}
+//			log.debug("Selected siteJobId set = " + selectedSiteIds);
+//
+//			// Add newly selected links that don't exist yet
+//			if (!selectedSiteIds.isEmpty()) {
+//				for (String siteId : selectedSiteIds) {
+//					JobSiteTeam Add_jobuser = jobSiteTeamDAO.findByIdSiteJobAndUserId(siteId, UserIdEdit);
+//					if (Add_jobuser == null) {
+//						JobSiteTeam Jobuser = new JobSiteTeam();
+//						Jobuser.setUser_id(UserIdEdit);
+//						Jobuser.setId_sitejob(siteId);
+//						jobSiteTeamDAO.save(Jobuser);
+//						log.debug("Added siteJobId=" + siteId);
+//					} else {
+//						log.debug("Already exists siteJobId=" + siteId);
+//					}
+//				}
+//			}
+//			else {
+//
+//			    JobSiteTeam emptyLink = new JobSiteTeam();
+//			    emptyLink.setUser_id(UserIdEdit);
+//			    emptyLink.setId_sitejob("");
+//			    jobSiteTeamDAO.save(emptyLink);
+//			    log.debug("Added empty siteJobId for user=" + UserIdEdit);
+//			}
+//
+//			// Delete links that exist in DB but were not selected
+//
+//			for (JobSiteTeam link : ListuserId) {
+//				boolean stillSelected = selectedSiteIds.contains(link.getId_sitejob());
+//				if (!stillSelected) {
+//					jobSiteTeamDAO.delete(link);
+//					log.debug("Deleted siteJobId=" + link.getId_sitejob());
+//				}
+//			}
 			List<String> selectedSiteIds = new ArrayList<>();
+
 			if (siteJobId != null) {
-				for (String s : siteJobId) {
-					if (s != null && !s.trim().isEmpty()) {
-						selectedSiteIds.add(s.trim());
-					}
-				}
+			    for (String s : siteJobId) {
+			        if (s != null && !s.trim().isEmpty()) {
+			            selectedSiteIds.add(s.trim());
+			        }
+			    }
 			}
+
 			log.debug("Selected siteJobId set = " + selectedSiteIds);
 
-			// Add newly selected links that don't exist yet
-			if (!selectedSiteIds.isEmpty()) {
-				for (String siteId : selectedSiteIds) {
-					JobSiteTeam Add_jobuser = jobSiteTeamDAO.findByIdSiteJobAndUserId(siteId, UserIdEdit);
-					if (Add_jobuser == null) {
-						JobSiteTeam Jobuser = new JobSiteTeam();
-						Jobuser.setUser_id(UserIdEdit);
-						Jobuser.setId_sitejob(siteId);
-						jobSiteTeamDAO.save(Jobuser);
-						log.debug("Added siteJobId=" + siteId);
-					} else {
-						log.debug("Already exists siteJobId=" + siteId);
-					}
-				}
-			}else {
+			//เพิ่มsiteใหม่ที่ยังไม่มีในDB
+			for (String siteId : selectedSiteIds) {
+			    JobSiteTeam existing =
+			        jobSiteTeamDAO.findByIdSiteJobAndUserId(siteId, UserIdEdit);
 
-			    JobSiteTeam emptyLink = new JobSiteTeam();
-			    emptyLink.setUser_id(UserIdEdit);
-			    emptyLink.setId_sitejob("");
-			    jobSiteTeamDAO.save(emptyLink);
-			    log.debug("Added empty siteJobId for user=" + UserIdEdit);
+			    if (existing == null) {
+			        JobSiteTeam jobSiteTeam = new JobSiteTeam();
+			        jobSiteTeam.setUser_id(UserIdEdit);
+			        jobSiteTeam.setId_sitejob(siteId);
+			        jobSiteTeamDAO.save(jobSiteTeam);
+
+			        log.debug("Added siteJobId=" + siteId);
+			    }
 			}
 
-			// Delete links that exist in DB but were not selected
-
+			//ลบsiteเดิมที่ไม่ได้ถูกเลือก
 			for (JobSiteTeam link : ListuserId) {
-				boolean stillSelected = selectedSiteIds.contains(link.getId_sitejob());
-				if (!stillSelected) {
-					jobSiteTeamDAO.delete(link);
-					log.debug("Deleted siteJobId=" + link.getId_sitejob());
-				}
+			    if (!selectedSiteIds.contains(link.getId_sitejob())) {
+			        jobSiteTeamDAO.delete(link);
+			        log.debug("Deleted siteJobId=" + link.getId_sitejob());
+			    }
 			}
 
-//			if (fileUpload != null) {
-//				int maxId = fileuploadDAO.getMaxId() + 1;
-//				ServletContext context = request.getServletContext();
-//				String fileServerPath = context.getRealPath("/");
-//
-//				FileUtil.upload(fileUpload, fileServerPath + "upload/user/", maxId + "_" + fileUploadFileName);
-//
-//				int split = fileUploadFileName.indexOf(".");
-//				String name = fileUploadFileName.substring(0, split);
-//				String type = fileUploadFileName.substring(split);
-//
-//				FileUpload fileupload = new FileUpload();
-//				fileupload.setFileId(maxId);
-//				fileupload.setUserId(logonUser);
-//				fileupload.setUserCreate(logonUser);
-//				fileupload.setName(name);
-//				fileupload.setType(type);
-//				fileupload.setSize(fileUploadSize);
-//				fileupload.setPath("/upload/user/" + maxId + "_" + fileUploadFileName);
-//				fileupload.setTimeCreate(DateUtil.getCurrentTime());
-//
-//				fileuploadDAO.save(fileupload);
-//
-//				u.setPath("/upload/user/" + maxId + "_" + fileUploadFileName);
-//				
-//
-//				log.info("=== Edit User PROFILE IMAGE UPLOAD ===");
-//				log.info("Original filename = {}"+fileUploadFileName);
-//				log.info("Saved filename on server = {}"+maxId + "_" + fileUploadFileName);
-//				log.info("Saved filename in DB = {}"+ 
-//				    u.getPath().substring(u.getPath().lastIndexOf("/") + 1)
-//				);
-//
-//				log.info("============================");
-//
-//			}
+			
 			if(avatar_remove != null && avatar_remove.equalsIgnoreCase("true")) {
         		u.setPath(null);
         		
@@ -959,14 +950,6 @@ public class UserAction extends ActionSupport {
                 String fileName = originalName.substring(0,originalName.lastIndexOf("."));
 				String typeFile = originalName.substring(originalName.lastIndexOf("."));
 				
-				
-//				boolean validateFileName = fileName.matches("[a-zA-Z0-9 ]+");
-//				
-//				if(validateFileName) {
-//					fileName = fileName.trim().replaceAll("\\s+", "_");
-//				}else {
-//					fileName = UUID.randomUUID().toString();;
-//				}
 				if(fileName.contains(" ")) {
 					fileName = fileName.trim().replaceAll(" ", "_");
 				}
@@ -987,8 +970,6 @@ public class UserAction extends ActionSupport {
                 }
 
                 FileUtil.upload(fileUpload, fileServerPath + "upload/user/", serverFileName);
-                
-               
 				
                 FileUpload file = new FileUpload();
                 file.setFileId(maxId);
@@ -1019,23 +1000,17 @@ public class UserAction extends ActionSupport {
 			u.setAddress(user.getAddress());
 			u.setTimeUpdate(DateUtil.getCurrentTime());
 
-			if (startDate != null && !startDate.equals("")) {
-				u.setStartDate(Convert.parseDate(startDate));
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
+			if (this.startDate != null && !this.startDate.isEmpty()) {
+			    u.setStartDate(new java.sql.Date(sdf.parse(this.startDate).getTime()));
 			}
-			if (birthDate != null && !birthDate.equals("")) {
-				u.setBirthDate(Convert.parseDate(birthDate));
+			if (this.birthDate != null && !this.birthDate.isEmpty()) {
+			    u.setBirthDate(new java.sql.Date(sdf.parse(this.birthDate).getTime()));
 			}
-			if (endDate != null && !endDate.equals("")) {
-				u.setEndDate(Convert.parseDate(endDate));
+			if (this.endDate != null && !this.endDate.isEmpty()) {
+			    u.setEndDate(new java.sql.Date(sdf.parse(this.endDate).getTime()));
 			}
 
-			/*JSP didn't send password if want to send password can uncomment this!!
-			 * if (password.equalsIgnoreCase(u.getPassword())) { u.setPassword(password); }
-			 * else { u.setPassword(MD5.getInstance().hashData(password.getBytes())); }
-			 */
-			
-//			if (password.equalsIgnoreCase(u.getPassword())) { u.setPassword(password); }
-//			else { u.setPassword(MD5.getInstance().hashData(password.getBytes())); }
 
 			u.setSocialSecurity(user.getSocialSecurity() != null ? user.getSocialSecurity() : "0");
 			u.setWithHoldAuto(user.getWithHoldAuto() != null ? user.getWithHoldAuto() : "0");
@@ -1108,8 +1083,48 @@ public class UserAction extends ActionSupport {
 			}
 
 			userDAO.update(u);
+			
+			//ถ้าแก้ของตัวเอง(user ที่กำลังlogin)
+			HttpSession session = request.getSession();
+			User onlineUser = (User) session.getAttribute("onlineUser");
+			 if (onlineUser != null && onlineUser.getId().equals(u.getId())) {
+
+		            onlineUser.setPath(u.getPath());
+
+		            String imgPathForSession = null;
+		            if (u.getPath() != null && u.getPath().contains("_")) {
+		                try {
+		                    String fileName = new File(u.getPath()).getName();
+		                    String fileId = fileName.substring(0, fileName.indexOf("_"));
+		                    String type = fileName.substring(fileName.lastIndexOf("."));
+
+		                    imgPathForSession = "/upload/user/user_" + fileId + type;
+
+		                    File f = new File(request.getServletContext().getRealPath("/") + imgPathForSession);
+		                    if (!f.exists()) imgPathForSession = null;
+
+		                } catch (Exception e) {
+		                    imgPathForSession = null;
+		                }
+		            }
+
+		            session.setAttribute("onlineUser", onlineUser);
+		            session.setAttribute("userImgPath", imgPathForSession);
+		        }
 
 			userId = user.getId();
+			//ดึงค่าที่พิ่ง Save
+			User updatedUser = userDAO.findById(userId); 
+			String newEditPath = null;
+			if (updatedUser.getPath() != null && updatedUser.getPath().contains("_")) {
+			    String fileName = new File(updatedUser.getPath()).getName();
+			    String fId = fileName.substring(0, fileName.indexOf("_"));
+			    String fType = fileName.substring(fileName.lastIndexOf("."));
+			    newEditPath = "/upload/user/user_" + fId + fType;
+			}
+			request.setAttribute("editUserImgPath", newEditPath); 
+			request.setAttribute("selectUser", updatedUser);
+			
 			request.setAttribute("selectUser", userDAO.findById(userId));
 			request.setAttribute("departmentList", departmentDAO.sequense());
 			request.setAttribute("positionList", positionDAO.sequense());
@@ -1124,6 +1139,10 @@ public class UserAction extends ActionSupport {
 			List<Map<String, Object>> leavhis = leaveDAO.listoneperson(String.valueOf(userId));
 			request.setAttribute("leaveW", leavwait.size());
 			request.setAttribute("leaveH", leavhis.size());
+
+			log.debug("Request user id = " + user.getId());
+			log.debug("UserIdEdit = " + UserIdEdit);
+			log.debug("siteJobId = " + Arrays.toString(siteJobId));
 
 			return SUCCESS;
 		} catch (Exception e) {
@@ -1839,14 +1858,6 @@ public class UserAction extends ActionSupport {
 			        if (!f.exists()) {
 			            imgPath = null;
 			        }
-			        
-//			        System.out.println("---- My Profile Menu Get img ----");
-//			        System.out.println("originalFileName from DB = " + originalFileName);
-//			        System.out.println("fileId = " + fileId);
-//			        System.out.println("typeFile = " + typeFile);
-//			        System.out.println("Generated imgPath = " + imgPath);
-//			        System.out.println("Full file path in server= " + f.getAbsolutePath());
-//			        System.out.println("---- End ----");
 
 			    } catch (Exception e) {
 			        imgPath = null;
@@ -1944,14 +1955,6 @@ public class UserAction extends ActionSupport {
 	                String fileName = originalName.substring(0,originalName.lastIndexOf("."));
 					String typeFile = originalName.substring(originalName.lastIndexOf("."));
 					
-					
-//					boolean validateFileName = fileName.matches("[a-zA-Z0-9 ]+");
-//					
-//					if(validateFileName) {
-//						fileName = fileName.trim().replaceAll("\\s+", "_");
-//					}else {
-//						fileName = UUID.randomUUID().toString();;
-//					}
 					if(fileName.contains(" ")) {
 						fileName = fileName.trim().replaceAll(" ", "_");
 					}
@@ -1973,8 +1976,6 @@ public class UserAction extends ActionSupport {
 
 	                FileUtil.upload(fileUpload, fileServerPath + "upload/user/", serverFileName);
 	                
-	               
-					
 	                FileUpload file = new FileUpload();
 	                file.setFileId(maxId);
 	                file.setUserId(u.getId());
@@ -1991,13 +1992,6 @@ public class UserAction extends ActionSupport {
 	                fileuploadDAO.save(file);
 
 	                u.setPath("/upload/user/" + newFileName);
-	                
-//	                System.out.println("---- My Profile Menu update img ----");
-//	                System.out.println("Original filename = " + fileUploadFileName);
-//					System.out.println("DB filename = " + newFileName);
-//					System.out.println("Server filename = " + serverFileName);
-//					System.out.println("DB path = " + file.getPath());
-//					System.out.println("---- End ----");
 	            }
 
 	        	u.setTitleNameTH(this.user_titleNameTH);
@@ -2021,7 +2015,6 @@ public class UserAction extends ActionSupport {
 	                java.util.Date bDate = sdf.parse(this.user_birthDate);
 	                u.setBirthDate(new java.sql.Date(bDate.getTime()));
 	            }
-
 	            userDAO.update(u); 
 	            
 	            String imgPathForSession = null;
@@ -2047,96 +2040,13 @@ public class UserAction extends ActionSupport {
 	            session.setAttribute("userImgPath", imgPathForSession);
 
 	        }
-	        
-	        
+	     
 	        return SUCCESS;
-
 	    } catch (Exception e) {
 	        e.printStackTrace();
 	        return ERROR;
 	    }
 	}
-	
-//	public String update_my_profile() {
-//		try {
-//			User ur = (User) request.getSession().getAttribute("onlineUser");
-//			String logonUser = ur.getId();
-//			User u = userDAO.findById(logonUser);
-//			if(fileUpload != null) {
-//				String originalName = fileUploadFileName;
-//				String fileName = originalName.substring(0,originalName.lastIndexOf("."));
-//				String typeFile = originalName.substring(originalName.lastIndexOf("."));
-//				long fileSize = fileUpload.length();
-//				
-//				FileUpload file = new FileUpload();
-//				file.setPage("myProfile");
-//				file.setPageId(null);
-//				file.setUserId(logonUser);
-//				file.setName(fileName);
-//				file.setType(typeFile);
-//				file.setSize(String.valueOf(fileSize));
-//				file.setAltName(null);
-//				file.setUserCreate(logonUser);
-//				file.setUserUpdate(logonUser);
-//				file.setTimeCreate(DateUtil.getCurrentTime());
-//				
-//			//	long fileId = fileuploadDAO.save(file);
-//				
-//			}
-//
-//
-//			String user_titleNameTH = request.getParameter("user_titleNameTH");
-//			String user_name = request.getParameter("user_name");
-//			String user_nickName = request.getParameter("user_nickName");
-//			String user_titleNameEN = request.getParameter("user_titleNameEN");
-//			String user_nameEN = request.getParameter("user_nameEN");
-//			String user_nickNameEN = request.getParameter("user_nickNameEN");
-//			String user_gender = request.getParameter("user_gender");
-//			String user_citizenId = request.getParameter("user_citizenId");
-//			String user_passportId = request.getParameter("user_passportId");
-//			String user_email = request.getParameter("user_email");
-//			String user_phonenum = request.getParameter("user_phonenum");
-//			String user_address = request.getParameter("user_address");
-//			String user_emergContact = request.getParameter("user_emergContact");
-//			String user_emergPhone = request.getParameter("user_emergPhone");
-//			
-//
-////			User u = new User();
-//			u.setId(logonUser);
-//			u.setTitleNameTH(user_titleNameTH);
-//			u.setName(user_name);
-//			u.setNickName(user_nickName);
-//			u.setTitleNameEN(user_titleNameEN);
-//			u.setNameEN(user_nameEN);
-//			u.setNickNameEN(user_nickNameEN);
-//			u.setGender(user_gender);
-//			u.setCitizenId(user_citizenId);
-//			u.setPassportId(user_passportId != null && !user_passportId.isEmpty() ? user_passportId : "-");
-//			u.setEmail(user_email);
-//			u.setPhonenum(user_phonenum);
-//			u.setAddress(user_address != null && !user_address.isEmpty() ? user_address : null);
-//			u.setEmergContact(user_emergContact != null && !user_emergContact.isEmpty() ? user_emergContact : null);
-//			u.setEmergPhone(user_emergPhone != null && !user_emergPhone.isEmpty() ? user_emergPhone : null);
-//			u.setTimeUpdate(DateUtil.getCurrentTime());
-//
-//			
-//			String birthDateStr = request.getParameter("user_birthDate");
-//			if (birthDateStr != null && !birthDateStr.trim().isEmpty()) {
-//				SimpleDateFormat sdf = new SimpleDateFormat("dd MMM yyyy", Locale.ENGLISH);
-//				java.util.Date utilDate = sdf.parse(birthDateStr); // แปลง string เป็น java.util.Date
-//				java.sql.Date sqlDate = new java.sql.Date(utilDate.getTime()); // แปลงเป็น java.sql.Date
-//				u.setBirthDate(sqlDate);
-//			} else {
-//				u.setBirthDate(null);
-//			}
-//			userDAO.update_my_profile(u);
-//
-//			return SUCCESS;
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//			return ERROR;
-//		}
-//	}
 	
 	public String validate_current_password() {
 	    try {

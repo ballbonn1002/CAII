@@ -1,371 +1,446 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+	pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
 
-  <link href="${pageContext.request.contextPath}/assets/plugins/global/plugins.bundle.css" rel="stylesheet" />
-  <link href="${pageContext.request.contextPath}/assets/css/style.bundle.css" rel="stylesheet" />
-  
+<link
+	href="${pageContext.request.contextPath}/assets/plugins/global/plugins.bundle.css"
+	rel="stylesheet" />
+<link
+	href="${pageContext.request.contextPath}/assets/css/style.bundle.css"
+	rel="stylesheet" />
+
 
 </head>
-<body class="bg-dark">
-  <div class="d-flex flex-column flex-column-fluid">
-    <div id="kt_app_toolbar" class="app-toolbar py-3 py-lg-6">
-      <div id="kt_app_toolbar_container" class="app-container container-xxl d-flex flex-stack">
-        <div class="page-title d-flex flex-column justify-content-center flex-wrap me-3">
-          <h1 class="page-heading d-flex fw-bold fs-3 flex-column justify-content-center my-0">
-            Add Employee Profile
-          </h1>
-          <ul class="breadcrumb breadcrumb-separatorless fw-semibold fs-7 my-0 pt-1">
-            <li class="breadcrumb-item text-muted">
-              <a href="${pageContext.request.contextPath}/demo_dashboard" class="text-muted text-hover-primary">Home</a>
-            </li>
-            <li class="breadcrumb-item"><span class="bullet bg-gray-500 w-5px h-2px"></span></li>
-            <li class="breadcrumb-item text-muted">Admin Management</li>
-            <li class="breadcrumb-item"><span class="bullet bg-gray-500 w-5px h-2px"></span></li>
-            <li class="breadcrumb-item text-muted">Employee Profile</li>
-          </ul>
-        </div>
-      </div>
-    </div>
 
-    <div id="kt_app_content" class="app-content flex-column-fluid">
-      <div id="kt_app_content_container" class="app-container container-xxl">
+<body class="app-default">
+	<div class="app-main flex-column flex-row-fluid">
+		<div class="d-flex flex-column flex-column-fluid">
+			<div id="kt_app_toolbar" class="app-toolbar py-3 py-lg-6">
+				<div id="kt_app_toolbar_container"
+					class="app-container container-fluid d-flex flex-stack">
+					<div
+						class="page-title d-flex flex-column justify-content-center flex-wrap me-3">
+						<h1
+							class="page-heading d-flex fw-bold fs-3 flex-column justify-content-center my-0">
+							Add Employee Profile</h1>
+						<ul
+							class="breadcrumb breadcrumb-separatorless fw-semibold fs-7 my-0 pt-1">
+							<li class="breadcrumb-item text-muted"><a
+								href="${pageContext.request.contextPath}/demo_dashboard"
+								class="text-muted text-hover-primary">Home</a></li>
+							<li class="breadcrumb-item"><span
+								class="bullet bg-gray-500 w-5px h-2px"></span></li>
+							<li class="breadcrumb-item text-muted">Admin Management</li>
+							<li class="breadcrumb-item"><span
+								class="bullet bg-gray-500 w-5px h-2px"></span></li>
+							<li class="breadcrumb-item text-muted">Employee Profile</li>
+						</ul>
+					</div>
+				</div>
+			</div>
 
-        <form action="user-perform-add" method="post" autocomplete="off" id="userAddForm" enctype="multipart/form-data">
-          <div class="card border-2">
-            <div class="card-header d-flex align-items-center justify-content-between py-4">
-              <h1 class="card-title fs-5 fw-bold text-gray-900 mb-0">Account Info</h1>
-              <div class="d-flex align-items-center gap-2 fw-semibold text-gray-900">
-                <span>Active</span>
-                <label class="form-check form-switch form-check-success form-check-solid m-0">
-                  <input class="form-check-input h-20px w-35px" type="checkbox" name="user.enable" checked />
-                </label>
-              </div>
-            </div>
+			<div id="kt_app_content" class="app-content flex-column-fluid">
+				<div id="kt_app_content_container"
+					class="app-container container-fluid">
 
-            <div class="card-body py-10">
-              
-              <div class="d-flex flex-column align-items-center mb-16">
-                <div class="image-input image-input-outline"
-                     data-kt-image-input="true"
-                     style="background-image: url(${pageContext.request.contextPath}/assets/media/svg/avatars/blank.svg)">
+					<form action="user-perform-add" method="post" autocomplete="off"
+						id="userAddForm" enctype="multipart/form-data">
+						<div class="card border-2">
+							<div
+								class="card-header d-flex align-items-center justify-content-between py-4">
+								<h1 class="card-title fs-5 fw-bold text-gray-900 mb-0">Account
+									Info</h1>
+								<div
+									class="d-flex align-items-center gap-2 fw-semibold text-gray-900">
+									<span>Active</span> <label
+										class="form-check form-switch form-check-success form-check-solid m-0">
+										<input class="form-check-input h-20px w-35px" type="checkbox"
+										name="user.enable" checked />
+									</label>
+								</div>
+							</div>
 
-                    <div class="image-input-wrapper w-150px h-150px"
-                         style="background-image: url(${pageContext.request.contextPath}/assets/media/svg/avatars/blank.svg)">
-                    </div>
+							<div class="card-body py-10">
 
-                    <label class="btn btn-icon btn-circle btn-color-muted btn-active-color-primary w-30px h-30px bg-body shadow"
-                           data-kt-image-input-action="change"
-                           data-bs-toggle="tooltip"
-                           title="Change avatar">
-                        <i class="ki-duotone ki-pencil fs-6"><span class="path1"></span><span class="path2"></span></i>
-                        <input type="file" name="fileUpload" accept=".png, .jpg, .jpeg" />
-                        <input type="hidden" name="avatar_remove" />
-                    </label>
+								<div class="d-flex flex-column align-items-center mb-16">
+									<div class="image-input image-input-outline"
+										data-kt-image-input="true"
+										style="background-image: url(${pageContext.request.contextPath}/assets/media/svg/avatars/blank.svg)">
 
-                    <span class="btn btn-icon btn-circle btn-color-muted btn-active-color-primary w-30px h-30px bg-body shadow"
-                          data-kt-image-input-action="cancel"
-                          data-bs-toggle="tooltip"
-                          title="Cancel avatar">
-                        <i class="ki-outline ki-cross fs-3"></i>
-                    </span>
+										<div class="image-input-wrapper w-150px h-150px"
+											style="background-image: url(${pageContext.request.contextPath}/assets/media/svg/avatars/blank.svg)">
+										</div>
 
-                    <span class="btn btn-icon btn-circle btn-color-muted btn-active-color-primary w-30px h-30px bg-body shadow"
-                          data-kt-image-input-action="remove"
-                          data-bs-toggle="tooltip"
-                          title="Remove avatar">
-                        <i class="ki-outline ki-cross fs-3"></i>
-                    </span>
-                </div>
-                <div class="text-muted fs-7 mt-3">Allowed file types: png, jpg, jpeg.</div>
-              </div>
-              
-              <div class="row g-8">
-                <div class="col-12 col-md-6">
-                  <label class="form-label fw-semibold text-gray-800 required">User ID</label>
-                  <div class="position-relative">
-                    <input id="userid" name="user.id" type="text" class="form-control userinfo pe-12" placeholder="User ID" />
-                    
-                    <div class="position-absolute top-50 end-0 translate-middle-y me-3 d-none icon-wrapper" id="userIdLoading">
-                        <span class="spinner-border spinner-border-sm text-primary" role="status"></span>
-                    </div>
+										<label
+											class="btn btn-icon btn-circle btn-color-muted btn-active-color-primary w-30px h-30px bg-body shadow"
+											data-kt-image-input-action="change" data-bs-toggle="tooltip"
+											title="Change avatar"> <i
+											class="ki-duotone ki-pencil fs-6"><span class="path1"></span><span
+												class="path2"></span></i> <input type="file" name="fileUpload"
+											accept=".png, .jpg, .jpeg" /> <input type="hidden"
+											name="avatar_remove" />
+										</label> <span
+											class="btn btn-icon btn-circle btn-color-muted btn-active-color-primary w-30px h-30px bg-body shadow"
+											data-kt-image-input-action="cancel" data-bs-toggle="tooltip"
+											title="Cancel avatar"> <i
+											class="ki-outline ki-cross fs-3"></i>
+										</span> <span
+											class="btn btn-icon btn-circle btn-color-muted btn-active-color-primary w-30px h-30px bg-body shadow"
+											data-kt-image-input-action="remove" data-bs-toggle="tooltip"
+											title="Remove avatar"> <i
+											class="ki-outline ki-cross fs-3"></i>
+										</span>
+									</div>
+									<div class="text-muted fs-7 mt-3">Allowed file types:
+										png, jpg, jpeg.</div>
+								</div>
 
-                    <div class="position-absolute top-50 end-0 translate-middle-y me-3 d-none icon-wrapper" id="userIdCheck">
-                        <i class="ki-duotone ki-check-circle fs-1 text-success">
-                            <span class="path1"></span>
-                            <span class="path2"></span>
-                        </i>
-                    </div>
-                  </div>
-                  <div id="hintUserId" class="text-danger fs-8 mt-1 d-none">This ID is already taken</div>
-                </div>
+								<div class="row g-8">
+									<div class="col-12 col-md-6">
+										<label class="form-label fw-semibold text-gray-800 required">User
+											ID</label>
+										<div class="position-relative">
+											<input id="userid" name="user.id" type="text"
+												class="form-control userinfo pe-12" placeholder="User ID" />
 
-                <div class="col-12 col-md-6">
-                  <label for="date_s" class="form-label fw-semibold required" >
-                    Start Working Date
-                  </label>
-                  <div class="position-relative">
-                    <i class="ki-duotone ki-calendar-8 fs-2 text-gray-500 position-absolute top-50 start-0 translate-middle-y ms-4">
-                      <span class="path1"></span><span class="path2"></span>
-                      <span class="path3"></span><span class="path4"></span>
-                      <span class="path5"></span><span class="path6"></span>
-                    </i>
-                    <input type="text" id="date_s" name="startDate" class="form-control ps-12 userinfo" placeholder="Select" autocomplete="off" required />
-                  </div>
-                </div>
+											<div
+												class="position-absolute top-50 end-0 translate-middle-y me-3 d-none icon-wrapper"
+												id="userIdLoading">
+												<span class="spinner-border spinner-border-sm text-primary"
+													role="status"></span>
+											</div>
 
-                <div class="col-12 col-md-6">
-                  <label for="roleId" class="form-label fw-semibold required">Role</label>
-                  <select class="form-select userinfo" name="user.roleId" data-control="select2" data-hide-search="true" id="roleId">
-                    <option value="">Select</option>
-                    <c:forEach var="role" items="${roleList}">
-                      <option value="${role.id}">${role.id}</option>
-                    </c:forEach>
-                  </select>
-                  <div id="hintRole" class="text-danger fs-8 mt-1 d-none">Please select a role</div>
-                </div>
+											<div
+												class="position-absolute top-50 end-0 translate-middle-y me-3 d-none icon-wrapper"
+												id="userIdCheck">
+												<i class="ki-duotone ki-check-circle fs-1 text-success">
+													<span class="path1"></span> <span class="path2"></span>
+												</i>
+											</div>
+										</div>
+										<div id="hintUserId" class="text-danger fs-8 mt-1 d-none">This
+											ID is already taken</div>
+									</div>
 
-                <div class="col-12 col-md-6 d-flex align-items-center">
-                  <div class="w-100">
-                    <label class="form-label fw-semibold text-gray-800 me-3 mb-2 required">Gender</label>
-                    <div class="d-flex h-50 align-items-center gap-4">
-                      <label class="form-check form-check-custom">
-                        <input class="form-check-input me-2" type="radio" name="user.gender" value="M" />
-                        <span class="form-check-label text-gray-800">Male</span>
-                      </label>
-                      <label class="form-check form-check-custom m-0">
-                        <input class="form-check-input me-2" type="radio" name="user.gender" value="F" />
-                        <span class="form-check-label text-gray-800">Female</span>
-                      </label>
-                    </div>
-                    <div id="hintGender" class="text-danger fs-8 mt-1 d-none">Please select gender</div>
-                  </div>
-                </div>
+									<div class="col-12 col-md-6">
+										<label for="date_s" class="form-label fw-semibold required">
+											Start Working Date </label>
+										<div class="position-relative">
+											<i
+												class="ki-duotone ki-calendar-8 fs-2 text-gray-500 position-absolute top-50 start-0 translate-middle-y ms-4">
+												<span class="path1"></span><span class="path2"></span> <span
+												class="path3"></span><span class="path4"></span> <span
+												class="path5"></span><span class="path6"></span>
+											</i> <input type="text" id="date_s" name="startDate"
+												class="form-control ps-12 userinfo" placeholder="Select"
+												autocomplete="off" required />
+										</div>
+									</div>
 
-                <div class="col-12 d-flex gap-4">
-                  <div class="flex-shrink-0" style="width: 160px;">
-                    <label for="titleNameTH" class="form-label fw-semibold text-gray-800 required">คำนำหน้า</label>
-                    <select class="form-select userinfo" name="user.titleNameTH" id="titleNameTH" data-control="select2" data-hide-search="true" required>
-                      <option value="">Select</option>
-                      <option value="นาย">นาย</option>
-                      <option value="นาง">นาง</option>
-                      <option value="นางสาว">นางสาว</option>
-                    </select>
-                    <div id="hintTitleTh" class="text-danger fs-8 mt-1 d-none">Please select a title</div>
-                  </div>
-                  <div class="flex-grow-1">
-                    <label for="name" class="form-label fw-semibold text-gray-800 required">ชื่อ - สกุล</label>
-                    <input type="text" id="name" name="user.name" class="form-control userinfo" maxlength="190" placeholder="ชื่อ - สกุล" required/>
-                    <div id="hintNameTh" class="text-danger fs-8 mt-1 d-none">Please enter full name</div>
-                  </div>
-                </div>
+									<div class="col-12 col-md-6">
+										<label for="roleId" class="form-label fw-semibold required">Role</label>
+										<select class="form-select userinfo" name="user.roleId"
+											data-control="select2" data-hide-search="true" id="roleId">
+											<option value="">Select</option>
+											<c:forEach var="role" items="${roleList}">
+												<option value="${role.id}">${role.id}</option>
+											</c:forEach>
+										</select>
+										<div id="hintRole" class="text-danger fs-8 mt-1 d-none">Please
+											select a role</div>
+									</div>
 
-                <div class="col-12">
-                  <div class="d-flex flex-column flex-md-row gap-4">
-                    <div class="flex-shrink-0" style="width: 160px;">
-                      <label for="titleNameEN" class="form-label fw-semibold text-gray-800 required">Title Name</label>
-                      <select class="form-select userinfo" name="user.titleNameEN" id="titleNameEN" data-control="select2" data-hide-search="true" required>
-                        <option value="">Select</option>
-                        <option value="Mr.">Mr.</option>
-                        <option value="Mrs.">Mrs.</option>
-                        <option value="Ms.">Ms.</option>
-                      </select>
-                      <div id="hintTitleEn" class="text-danger fs-8 mt-1 d-none">Please select a title</div>
-                    </div>
-                    <div class="flex-grow-1">
-                      <label for="nameEN" class="form-label fw-semibold text-gray-800 required">Full Name EN</label>
-                      <input type="text" id="nameEN" name="user.nameEN" class="form-control userinfo" maxlength="190" placeholder="Name - Surname" required/>
-                      <div id="hintNameEn" class="text-danger fs-8 mt-1 d-none">Please enter name</div>
-                    </div>
-                  </div>
-                </div>
+									<div class="col-12 col-md-6 d-flex align-items-center">
+										<div class="w-100">
+											<label
+												class="form-label fw-semibold text-gray-800 me-3 mb-2 required">Gender</label>
+											<div class="d-flex h-50 align-items-center gap-4">
+												<label class="form-check form-check-custom"> <input
+													class="form-check-input me-2" type="radio"
+													name="user.gender" value="M" /> <span
+													class="form-check-label text-gray-800">Male</span>
+												</label> <label class="form-check form-check-custom m-0"> <input
+													class="form-check-input me-2" type="radio"
+													name="user.gender" value="F" /> <span
+													class="form-check-label text-gray-800">Female</span>
+												</label>
+											</div>
+											<div id="hintGender" class="text-danger fs-8 mt-1 d-none">Please
+												select gender</div>
+										</div>
+									</div>
 
-                <div class="col-12 col-md-6">
-                  <label for="nickName" class="form-label fw-semibold text-gray-800">Nickname TH</label>
-                  <input type="text" id="nickName" name="user.nickName" class="form-control" maxlength="32" placeholder="ชื่อเล่น (ไทย)" />
-                </div>
-                <div class="col-12 col-md-6">
-                  <label for="nickNameEN" class="form-label fw-semibold text-gray-800">Nickname EN</label>
-                  <input type="text" id="nickNameEN" name="user.nickNameEN" class="form-control" maxlength="32" placeholder="Nickname (EN)" />
-                </div>
+									<div class="col-12 d-flex gap-4">
+										<div class="flex-shrink-0" style="width: 160px;">
+											<label for="titleNameTH"
+												class="form-label fw-semibold text-gray-800 required">คำนำหน้า</label>
+											<select class="form-select userinfo" name="user.titleNameTH"
+												id="titleNameTH" data-control="select2"
+												data-hide-search="true" required>
+												<option value="">Select</option>
+												<option value="นาย">นาย</option>
+												<option value="นาง">นาง</option>
+												<option value="นางสาว">นางสาว</option>
+											</select>
+											<div id="hintTitleTh" class="text-danger fs-8 mt-1 d-none">Please
+												select a title</div>
+										</div>
+										<div class="flex-grow-1">
+											<label for="name"
+												class="form-label fw-semibold text-gray-800 required">ชื่อ
+												- สกุล</label> <input type="text" id="name" name="user.name"
+												class="form-control userinfo" maxlength="190"
+												placeholder="ชื่อ - สกุล" required />
+											<div id="hintNameTh" class="text-danger fs-8 mt-1 d-none">Please
+												enter full name</div>
+										</div>
+									</div>
 
-                <div class="col-12 col-md-6">
-                  <label class="form-label fw-semibold text-gray-800 required">Department</label>
-                  <select class="form-select userinfo" name="user.departmentId" data-control="select2" data-hide-search="true" required>
-                    <option value="">Select</option>
-                    <c:forEach var="department" items="${departmentList}">
-                      <option value="${department.id}">${department.id}</option>
-                    </c:forEach>
-                  </select>
-                  <div id="hintDept" class="text-danger fs-8 mt-1 d-none">Please select a department</div>
-                </div>
+									<div class="col-12">
+										<div class="d-flex flex-column flex-md-row gap-4">
+											<div class="flex-shrink-0" style="width: 160px;">
+												<label for="titleNameEN"
+													class="form-label fw-semibold text-gray-800 required">Title
+													Name</label> <select class="form-select userinfo"
+													name="user.titleNameEN" id="titleNameEN"
+													data-control="select2" data-hide-search="true" required>
+													<option value="">Select</option>
+													<option value="Mr.">Mr.</option>
+													<option value="Mrs.">Mrs.</option>
+													<option value="Ms.">Ms.</option>
+												</select>
+												<div id="hintTitleEn" class="text-danger fs-8 mt-1 d-none">Please
+													select a title</div>
+											</div>
+											<div class="flex-grow-1">
+												<label for="nameEN"
+													class="form-label fw-semibold text-gray-800 required">Full
+													Name EN</label> <input type="text" id="nameEN" name="user.nameEN"
+													class="form-control userinfo" maxlength="190"
+													placeholder="Name - Surname" required />
+												<div id="hintNameEn" class="text-danger fs-8 mt-1 d-none">Please
+													enter name</div>
+											</div>
+										</div>
+									</div>
 
-                <div class="col-12 col-md-6">
-                  <label class="form-label fw-semibold text-gray-800 required">Position</label>
-                  <select class="form-select userinfo" name="user.positionId" data-control="select2" data-hide-search="true" required>
-                    <option value="">Select</option>
-                    <option value="none">None</option>
-                    <c:forEach var="position" items="${positionList}">
-                      <option value="${position.position_id}">${position.name}</option>
-                    </c:forEach>
-                  </select>
-                  <div id="hintPosition" class="text-danger fs-8 mt-1 d-none">Please select a position</div>
-                </div>
+									<div class="col-12 col-md-6">
+										<label for="nickName"
+											class="form-label fw-semibold text-gray-800">Nickname
+											TH</label> <input type="text" id="nickName" name="user.nickName"
+											class="form-control" maxlength="32"
+											placeholder="ชื่อเล่น (ไทย)" />
+									</div>
+									<div class="col-12 col-md-6">
+										<label for="nickNameEN"
+											class="form-label fw-semibold text-gray-800">Nickname
+											EN</label> <input type="text" id="nickNameEN" name="user.nickNameEN"
+											class="form-control" maxlength="32"
+											placeholder="Nickname (EN)" />
+									</div>
 
-                <div class="col-12 col-md-6">
-                  <label class="form-label fw-semibold text-gray-800 required">E-Mail</label>
-                  <input type="email" name="user.email" class="form-control userinfo" maxlength="50" placeholder="name@example.com" required>
-                  <div id="hintEmail" class="text-danger fs-8 mt-1 d-none">Please enter a valid email</div>
-                </div>
+									<div class="col-12 col-md-6">
+										<label class="form-label fw-semibold text-gray-800 required">Department</label>
+										<select class="form-select userinfo" name="user.departmentId"
+											data-control="select2" data-hide-search="true" required>
+											<option value="">Select</option>
+											<c:forEach var="department" items="${departmentList}">
+												<option value="${department.id}">${department.id}</option>
+											</c:forEach>
+										</select>
+										<div id="hintDept" class="text-danger fs-8 mt-1 d-none">Please
+											select a department</div>
+									</div>
 
-                <div class="col-12 col-md-6">
-                  <label class="form-label fw-semibold text-gray-800 required">Phone Number</label>
-                  <input type="text" name="user.phonenum" id="phone" class="form-control userinfo" maxlength="10" pattern="[0-9]{10}" placeholder="0xxxxxxxxx" required>
-                  <div id="hintPhone" class="text-danger fs-8 mt-1 d-none">Please enter a phone number</div>
-                </div>
+									<div class="col-12 col-md-6">
+										<label class="form-label fw-semibold text-gray-800 required">Position</label>
+										<select class="form-select userinfo" name="user.positionId"
+											data-control="select2" data-hide-search="true" required>
+											<option value="">Select</option>
+											<option value="none">None</option>
+											<c:forEach var="position" items="${positionList}">
+												<option value="${position.position_id}">${position.name}</option>
+											</c:forEach>
+										</select>
+										<div id="hintPosition" class="text-danger fs-8 mt-1 d-none">Please
+											select a position</div>
+									</div>
 
-                <div class="col-12 col-md-6 w-100">
-                  <label for="address" class="form-label fw-semibold text-gray-800">Address</label>
-                  <textarea id="address" name="user.address" class="form-control w-100" rows="3" maxlength="255"></textarea>
-                </div>
+									<div class="col-12 col-md-6">
+										<label class="form-label fw-semibold text-gray-800 required">E-Mail</label>
+										<input type="email" name="user.email"
+											class="form-control userinfo" maxlength="50"
+											placeholder="name@example.com" required>
+										<div id="hintEmail" class="text-danger fs-8 mt-1 d-none">Please
+											enter a valid email</div>
+									</div>
 
-              </div>
-            </div>
-          </div>
-          
-          <div class="card mb-10 mt-12 border-2">
-		    <div class="card-header">
-		        <h3 class="card-title fw-bold m-0">Setting For Working</h3>
-		    </div>
-		    <div class="card-body pt-6">
-		        <div class="row g-8">
-		        <div class="col-md-6 fv-row mb-6">
-                    <label class="required form-label">Working Day</label>
-                    <div class="d-flex align-items-stretch gap-3">
-                        <select class="form-select flex-fill" data-control="select2" data-hide-search="true" name="user.workDayStart" id="workDayStart">
-                            <option value="1" selected>Mon</option>
-                            <option value="2">Tue</option>
-                            <option value="3">Wed</option>
-                            <option value="4">Thu</option>                    
-                            <option value="5">Fri</option>
-                            <option value="6">Sat</option>
-                            <option value="7">Sun</option>
-                        </select>
-                        <span class="d-flex align-items-center">to</span>
-                        <select class="form-select flex-fill" data-control="select2" data-hide-search="true" name="user.workDayEnd" id="workDayEnd">
-                            <option value="1">Mon</option>
-                            <option value="2">Tue</option>
-                            <option value="3">Wed</option>
-                            <option value="4">Thu</option>                    
-                            <option value="5" selected>Fri</option>
-                            <option value="6">Sat</option>
-                            <option value="7">Sun</option>
-                        </select>
-                    </div>
-                </div>
-                                    
-                <div class="col-md-6 fv-row mb-6">
-                    <label class="required form-label">Working Hour</label>
-                    <div class="d-flex align-items-stretch gap-3">
-                        <select class="form-select flex-fill" data-control="select2" data-hide-search="true" id="workTimeStart" name="user.workTimeStart">
-                            <option value="8:00">8:00</option>
-                            <option value="8:30">8:30</option>
-                            <option value="9:00" selected>9:00</option>
-                        </select>
-                        <span class="d-flex align-items-center text-muted">to</span>
-                        <select class="form-select flex-fill" data-control="select2" data-hide-search="true" id="workTimeEnd" name="user.workTimeEnd">
-                            <option value="17:00">17:00</option>
-                            <option value="17:30">17:30</option>
-                            <option value="18:00" selected>18:00</option>
-                        </select>
-                    </div>
-                </div>
+									<div class="col-12 col-md-6">
+										<label class="form-label fw-semibold text-gray-800 required">Phone
+											Number</label> <input type="text" name="user.phonenum" id="phone"
+											class="form-control userinfo" maxlength="10"
+											pattern="[0-9]{10}" placeholder="0xxxxxxxxx" required>
+										<div id="hintPhone" class="text-danger fs-8 mt-1 d-none">Please
+											enter a phone number</div>
+									</div>
 
-                <div class="col-md-6 fv-row">
-                    <label class="required form-label">Default Working</label>
-                    <div class="mt-2">
-                        <label class="form-check form-check-custom mb-6 mt-6">
-                            <input class="form-check-input" type="radio" name="user.workType" value="1" checked>
-                            <span class="form-check-label text-gray-800">On-Site</span>
-                        </label>
-                        <label class="form-check form-check-custom mb-6 mt-6">
-                            <input class="form-check-input" type="radio" name="user.workType" value="2">
-                            <span class="form-check-label text-gray-800">WFH</span>
-                        </label>
-                    </div>
-                </div>
+									<div class="col-12 col-md-6 w-100">
+										<label for="address"
+											class="form-label fw-semibold text-gray-800">Address</label>
+										<textarea id="address" name="user.address"
+											class="form-control w-100" rows="3" maxlength="255"></textarea>
+									</div>
 
-                <div class="col-md-6 fv-row">
-                    <label class="required form-label">Number of On-Site Days</label>
-                    <div class="mt-2">
-                        <label class="form-check form-check-custom mb-6 mt-6">
-                            <input class="form-check-input" type="radio" name="user.onsiteNum" value="3" checked>
-                            <span class="form-check-label text-gray-800 fw-500">4 - 5 days (On-Site)</span>
-                        </label>
-                        <label class="form-check form-check-custom mb-6 mt-6">
-                            <input class="form-check-input" type="radio" name="user.onsiteNum" value="2">
-                            <span class="form-check-label text-gray-800 fw-500">2 - 3 days (Hybrid)</span>
-                        </label>
-                        <label class="form-check form-check-custom mb-6 mt-6">
-                            <input class="form-check-input" type="radio" name="user.onsiteNum" value="1">
-                            <span class="form-check-label text-gray-800 fw-500">0.5 - 1 day (WFH)</span>
-                        </label>
-                    </div>
-                </div>
-               </div>
-		
-		    </div>
+								</div>
+							</div>
+						</div>
+
+						<div class="card mb-10 mt-12 border-2">
+							<div class="card-header">
+								<h3 class="card-title fw-bold m-0">Setting For Working</h3>
+							</div>
+							<div class="card-body pt-6">
+								<div class="row g-8">
+									<div class="col-md-6 fv-row mb-6">
+										<label class="required form-label">Working Day</label>
+										<div class="d-flex align-items-stretch gap-3">
+											<select class="form-select flex-fill" data-control="select2"
+												data-hide-search="true" name="user.workDayStart"
+												id="workDayStart">
+												<option value="1" selected>Mon</option>
+												<option value="2">Tue</option>
+												<option value="3">Wed</option>
+												<option value="4">Thu</option>
+												<option value="5">Fri</option>
+												<option value="6">Sat</option>
+												<option value="7">Sun</option>
+											</select> <span class="d-flex align-items-center">to</span> <select
+												class="form-select flex-fill" data-control="select2"
+												data-hide-search="true" name="user.workDayEnd"
+												id="workDayEnd">
+												<option value="1">Mon</option>
+												<option value="2">Tue</option>
+												<option value="3">Wed</option>
+												<option value="4">Thu</option>
+												<option value="5" selected>Fri</option>
+												<option value="6">Sat</option>
+												<option value="7">Sun</option>
+											</select>
+										</div>
+									</div>
+
+									<div class="col-md-6 fv-row mb-6">
+										<label class="required form-label">Working Hour</label>
+										<div class="d-flex align-items-stretch gap-3">
+											<select class="form-select flex-fill" data-control="select2"
+												data-hide-search="true" id="workTimeStart"
+												name="user.workTimeStart">
+												<option value="8:00">8:00</option>
+												<option value="8:30">8:30</option>
+												<option value="9:00" selected>9:00</option>
+											</select> <span class="d-flex align-items-center text-muted">to</span>
+											<select class="form-select flex-fill" data-control="select2"
+												data-hide-search="true" id="workTimeEnd"
+												name="user.workTimeEnd">
+												<option value="17:00">17:00</option>
+												<option value="17:30">17:30</option>
+												<option value="18:00" selected>18:00</option>
+											</select>
+										</div>
+									</div>
+
+									<div class="col-md-6 fv-row">
+										<label class="required form-label">Default Working</label>
+										<div class="mt-2">
+											<label class="form-check form-check-custom mb-6 mt-6">
+												<input class="form-check-input" type="radio"
+												name="user.workType" value="1" checked> <span
+												class="form-check-label text-gray-800">On-Site</span>
+											</label> <label class="form-check form-check-custom mb-6 mt-6">
+												<input class="form-check-input" type="radio"
+												name="user.workType" value="2"> <span
+												class="form-check-label text-gray-800">WFH</span>
+											</label>
+										</div>
+									</div>
+
+									<div class="col-md-6 fv-row">
+										<label class="required form-label">Number of On-Site
+											Days</label>
+										<div class="mt-2">
+											<label class="form-check form-check-custom mb-6 mt-6">
+												<input class="form-check-input" type="radio"
+												name="user.onsiteNum" value="3" checked> <span
+												class="form-check-label text-gray-800 fw-500">4 - 5
+													days (On-Site)</span>
+											</label> <label class="form-check form-check-custom mb-6 mt-6">
+												<input class="form-check-input" type="radio"
+												name="user.onsiteNum" value="2"> <span
+												class="form-check-label text-gray-800 fw-500">2 - 3
+													days (Hybrid)</span>
+											</label> <label class="form-check form-check-custom mb-6 mt-6">
+												<input class="form-check-input" type="radio"
+												name="user.onsiteNum" value="1"> <span
+												class="form-check-label text-gray-800 fw-500">0.5 - 1
+													day (WFH)</span>
+											</label>
+										</div>
+									</div>
+								</div>
+
+							</div>
+						</div>
+
+						<div class="card mb-10 mt-12 border-2" id="securityInfoCard">
+							<div class="card-header">
+								<h3 class="card-title fw-bold m-0">Security</h3>
+							</div>
+							<div class="card-body pt-6">
+								<div class="row g-9">
+									<div class="col-md-6 fv-row">
+										<label class="required form-label">New Password</label> <input
+											type="password" class="form-control" name="password"
+											id="newPassword" placeholder="Enter password"
+											autocomplete="new-password" required />
+									</div>
+
+									<div class="col-md-6 fv-row">
+										<label class="required form-label">Confirm New
+											Password</label> <input type="password" class="form-control"
+											id="confirmPassword" placeholder="Confirm password" required />
+
+										<div id="passwordMatchMessage" class="mt-2 fw-semibold fs-7"></div>
+									</div>
+								</div>
+								<div class="text-muted fs-7 mt-4">Password must be at
+									least 8 characters and contain symbols.</div>
+							</div>
+						</div>
+
+					</form>
+
+					<div class="text-end mt-10 d-flex justify-content-end gap-6">
+						<button type="button" class="btn btn-light" id="btnCancel">Cancel</button>
+						<button type="button" class="btn btn-success" id="btnSubmit">Save</button>
+					</div>
+
+				</div>
+			</div>
 		</div>
-		
-          <div class="card mb-10 mt-12 border-2" id="securityInfoCard">
-    <div class="card-header">
-        <h3 class="card-title fw-bold m-0">Security</h3>
-    </div>
-    <div class="card-body pt-6">
-        <div class="row g-9">
-            <div class="col-md-6 fv-row">
-                <label class="required form-label">New Password</label>
-                <input type="password" class="form-control" 
-                       name="password" id="newPassword" 
-                       placeholder="Enter password"
-                       autocomplete="new-password" required />
-            </div>
+	</div>
 
-            <div class="col-md-6 fv-row">
-                <label class="required form-label">Confirm New Password</label>
-                <input type="password" class="form-control" 
-                       id="confirmPassword" 
-                       placeholder="Confirm password" required />
-                
-                <div id="passwordMatchMessage" class="mt-2 fw-semibold fs-7"></div>
-            </div>
-        </div>
-        <div class="text-muted fs-7 mt-4">
-            Password must be at least 8 characters and contain symbols.
-        </div>
-    </div>
-</div>
-          
-        </form>
+	<script
+		src="${pageContext.request.contextPath}/assets/plugins/global/plugins.bundle.js"></script>
+	<script
+		src="${pageContext.request.contextPath}/assets/js/scripts.bundle.js"></script>
 
-        <div class="text-end mt-10 d-flex justify-content-end gap-6">
-          <button type="button" class="btn btn-light" id="btnCancel">Cancel</button>
-          <button type="button" class="btn btn-success" id="btnSubmit">Save</button>
-        </div>
-
-      </div>
-    </div>
-  </div>
-
-  <script src="${pageContext.request.contextPath}/assets/plugins/global/plugins.bundle.js"></script>
-  <script src="${pageContext.request.contextPath}/assets/js/scripts.bundle.js"></script>
-
-  <script>
+	<script>
 (function () {
     const $doc = $(document);
 
@@ -563,7 +638,7 @@
 
 })();
 </script>
-<script>
+	<script>
 document.addEventListener('DOMContentLoaded', function () {
  const passwordInput = document.getElementById('newPassword');
  const confirmInput = document.getElementById('confirmPassword');
