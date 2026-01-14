@@ -32,11 +32,11 @@
 </style>
 </head>
 
-<body>
+<body class="app-default">
     <div class="app-main flex-column flex-row-fluid" id="kt_app_main">
         <div class="d-flex flex-column flex-column-fluid">
             <div id="kt_app_toolbar" class="app-toolbar py-2 py-lg-3">
-                <div id="kt_app_toolbar_container" class="app-container container-xxl d-flex align-items-center justify-content-between">
+                <div id="kt_app_toolbar_container" class="app-container container-fluid d-flex flex-stack align-items-center justify-content-between">
                     <div class="page-title d-flex flex-column justify-content-center">
                         <h1 class="page-heading d-flex text-gray-900 fw-bold fs-3 my-0">Employee Profile</h1>
                         <ul class="breadcrumb breadcrumb-separatorless fw-semibold fs-7 my-0 pt-1">
@@ -66,7 +66,7 @@
             </div>
 
             <div id="kt_app_content" class="app-content flex-column-fluid">
-                <div id="kt_app_content_container" class="app-container container-xxl">
+                <div id="kt_app_content_container" class="app-container container-fluid">
 
                     <div class="card mb-5">
                         <div class="card-body p-4">
@@ -282,8 +282,8 @@
 					                        <div class="d-flex align-items-center mb-3">
 					                            <div class="symbol symbol-40px symbol-circle me-8">
 					                                <c:choose>
-					                                    <c:when test="${not empty user.path}">
-					                                        <div class="symbol-label"><img src="${user.path}" class="w-100 h-100 rounded-circle" style="object-fit: cover;" /></div>
+					                                    <c:when test="${not empty user.ListUserImgPath}">
+					                                        <div class="symbol-label"><img src="${user.ListUserImgPath}" class="w-100 h-100 rounded-circle" style="object-fit: cover;" /></div>
 					                                    </c:when>
 					                                    <c:otherwise>
 					                                        <span class="symbol-label bg-light-primary text-primary fw-bold d-flex align-items-center justify-content-center">
@@ -291,6 +291,20 @@
 					                                        </span>
 					                                    </c:otherwise>
 					                                </c:choose>
+					                                <%-- <c:choose>
+													    <c:when test="${not empty user.userImgPath}">
+													    <div class="symbol-label">
+													        <img src="${pageContext.request.contextPath}${user.userImgPath}"
+													             class="w-100 h-100 rounded-circle" style="object-fit: cover;">
+													             </div>
+													    </c:when>
+													    <c:otherwise>
+													        <span class="symbol-label bg-light-primary text-primary fw-bold d-flex align-items-center justify-content-center">
+													            ${fn:toUpperCase(fn:substring(user.nameEN,0,1))}
+													        </div>
+													    </c:otherwise>
+													</c:choose> --%>
+																		                                
 					                            </div>
 					                            <div class="employee-info mb-4">
 					                                <span style="font-weight: 500;">${not empty user.name_en ? user.name_en : '-'}</span><br/>
