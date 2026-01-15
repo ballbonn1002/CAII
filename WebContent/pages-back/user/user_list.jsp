@@ -202,7 +202,7 @@
                                                 <c:set var="uid" value="${user.id != null ? fn:trim(user.id) : ''}" />
                                                 <tr data-user-id="${uid}" data-birth="<fmt:formatDate value='${user.birth_date}' pattern='yyyy-MM-dd'/>">
                                                     
-                                                    <td class="fw-bold text-gray-800 text-start">${st.count}</td>
+                                                    <td class="fw-bold text-gray-800 text-start row-number "></td>
                                                     
                                                     <td class="fw-bold text-gray-800" data-order="${user.employee_id}">
                                                         ${not empty user.employee_id ? user.employee_id : '-'}
@@ -751,6 +751,15 @@
     html += '</ul>';
     $nav.html(html);
   }
+  
+  function renumberTableRows(startIndex){
+		 startIndex = startIndex || 0;
+		 let count = startIndex + 1;
+
+		  $('#myTable tbody tr:visible').each(function () {
+		    $(this).find('.row-number').text(count++);
+		  });
+	}
 
   function showTablePage(page) {
     annotateAnniversaries();
@@ -768,6 +777,9 @@
     renderTablePagination(totalPages);
     renderPeriods();
     renderTableBirthdayIcons(); 
+    
+    renumberTableRows(start);
+    
     updateShowingText(totalEligible, $all.length);
   }
 
@@ -911,6 +923,9 @@
         renderTablePagination(totalPages);
         renderPeriods();
         renderTableBirthdayIcons(); 
+        
+        renumberTableRows(start);
+        
         updateShowingText(totalEligible, $all.length);
       };
       refreshCurrentView();
@@ -1069,6 +1084,10 @@
   }, 100);
 
 })();
+</script>
+
+<script>
+	
 </script>
 </body>
 </html>
