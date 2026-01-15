@@ -822,11 +822,9 @@ const endPicker = flatpickr(endEl, {
 								  var monthNames = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
 
 								  function fmt(mIndex, day, year) {
-								    // mIndex = 0-11
-								    return monthNames[mIndex] + " " + String(day).padStart(2, "0") + ", " + year;
+								    return String(day).padStart(2, "0") + " " + monthNames[mIndex] + " " + year;
 								  }
 
-								  // 1) yyyy-MM-dd (หรือมีเวลา)
 								  var m = s.match(/^(\d{4})-(\d{2})-(\d{2})/);
 								  if (m) {
 								    var y = parseInt(m[1], 10);
@@ -835,7 +833,6 @@ const endPicker = flatpickr(endEl, {
 								    return fmt(mo - 1, d, y);
 								  }
 
-								  // 2) dd-MM-yyyy หรือ dd/MM/yyyy
 								  m = s.match(/^(\d{2})[\/-](\d{2})[\/-](\d{4})/);
 								  if (m) {
 								    var d2 = parseInt(m[1], 10);
@@ -844,7 +841,6 @@ const endPicker = flatpickr(endEl, {
 								    return fmt(mo2 - 1, d2, y2);
 								  }
 
-								  // 3) อังกฤษ เช่น "May 15, 2024, 2:22:35 AM"
 								  var parsed = Date.parse(s);
 								  if (!Number.isNaN(parsed)) {
 								    var dt = new Date(parsed);
@@ -856,6 +852,7 @@ const endPicker = flatpickr(endEl, {
 
 								  return s;
 								}
+
 
 							function updateCard() {
 								const opt = sel.options[sel.selectedIndex];
