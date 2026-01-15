@@ -87,8 +87,6 @@ if (request.getAttribute("borrowList") == null) {
 	userByKey.put(k, u);
 		}
 	}
-	// ================== สร้าง viewList ที่ JSP ใช้ ==================
-	// ================== สร้าง viewList ที่ JSP ใช้ ==================
 	List<Map<String, Object>> viewList = new ArrayList<Map<String, Object>>();
 
 	for (Map<String, Object> b : borrows) {
@@ -256,7 +254,6 @@ if (request.getAttribute("borrowList") == null) {
 }
 %>
 
-
 <html>
 <head>
 <meta charset="UTF-8" />
@@ -329,6 +326,68 @@ if (request.getAttribute("borrowList") == null) {
 #bd_moreDetailIcon.is-open {
 	transform: rotate(180deg);
 }
+
+.select2-selection--multiple {
+	min-height: 38px !important;
+}
+
+.select2-selection__choice {
+	background-color: #e7e9ed !important;
+	border: none !important;
+	border-radius: 4px !important;
+	padding: 4px 8px !important;
+	color: #6c757d !important;
+}
+
+.select2-selection__choice__remove {
+	color: #6c757d !important;
+	margin-right: 5px !important;
+}
+
+.select2-results__option {
+	padding: 8px 12px !important;
+}
+
+.select2-results__option input[type="checkbox"] {
+	cursor: pointer;
+}
+
+.type-select-buttons {
+	position: sticky;
+	bottom: 0;
+	z-index: 1000;
+}
+
+.select2-container--default .select2-results__option--highlighted {
+	background-color: #f8f9fa !important;
+	color: inherit !important;
+}
+
+.select2-results__options {
+	max-height: 250px !important;
+}
+
+.type-select-buttons .btn {
+	font-size: 14px;
+	padding: 8px 16px;
+}
+
+th.sort {
+	cursor: pointer;
+	user-select: none;
+}
+
+th.sort:hover {
+	background-color: rgba(0, 0, 0, 0.02);
+}
+
+.sort-arrow {
+	display: inline-block;
+	margin-left: 5px;
+	font-size: 10px;
+	color: #6c757d;
+	vertical-align: middle;
+}
 </style>
 </head>
 <body>
@@ -391,10 +450,10 @@ if (request.getAttribute("borrowList") == null) {
 
 											<!-- Status -->
 											<div class="col-md-3">
-												<label class="form-label fw-semibold fs-7 mb-2">Status</label>
-												<select name="status" class="form-select form-select-solid">
+												<label class="select-default">Status:</label> <select
+													name="status"
+													class="form-select form-select-solid border border-gray-300 rounded-3 px-4 py-2 gap-3 h-55px bg-body">
 													<option value="">All Status</option>
-													<!-- ให้ value = B / R ตรงกับ statusborrow ใน DB -->
 													<option value="B">Borrowed</option>
 													<option value="W">Wait for Approve</option>
 												</select>
@@ -402,281 +461,259 @@ if (request.getAttribute("borrowList") == null) {
 
 											<!-- Type -->
 											<div class="col-md-3">
-												<label class="form-label fw-semibold fs-7 mb-2">Type</label>
-												<select name="type"
-													class="form-select form-select-solid text-muted">
-													<option value="">All Type</option>
-													<!-- ให้ value ตรงกับ row.type ที่ใช้เลือก icon -->
+												<label class="select-default">Type:</label> <select
+													id="typeFilter" name="type"
+													class="form-select form-select-solid text-muted border border-gray-300 rounded-3 px-4 py-2 gap-3 h-55px bg-body"
+													multiple data-control="select2" data-placeholder="Select">
 													<option value="c">Computer</option>
-													<option value="in">instument</option>
-													<option value="L">Software License</option>
-													<option value="Mob">Mobile</option>
+													<option value="in">Instrument</option>
+													<option value="l">Software License</option>
+													<option value="mob">Mobile</option>
+													<option value="other">Other</option>
 													<option value="p">Pocket WIFI</option>
 												</select>
 											</div>
-											<script>
-												document
-														.addEventListener(
-																"DOMContentLoaded",
-																function() {
-																	const selectType = document
-																			.querySelector('select[name="type"]');
-																	if (!selectType)
-																		return;
-
-																	let type = "${row.type}"; // หรือค่าที่คุณดึงมาจาก DB
-
-																	if (type
-																			&& type
-																					.toLowerCase() === "sl") {
-																		type = "L";
-																	}
-
-																	selectType.value = type;
-																});
-											</script>
 										</div>
 									</div>
 								</div>
 							</form>
 
 							<!-- items -->
-							<div class="d-flex flex-stack mb-4">
-								<div>
-									<span id="itemsFound" class="fw-semibold fs-6">${borrowList.size()}
-										Items Found</span> <span class="text-gray-500 fs-7 ms-2">by
-										Recent Updates ↓</span>
+							<div
+								class="d-flex align-items-center justify-content-between mt-8 mb-6">
+								<div class="d-flex align-items-baseline gap-1">
+									<h3
+										class="page-heading text-gray-900 fw-bold mb-0 d-flex align-items-baseline flex-nowrap">
+										<span id="itemsFound" class="me-2">
+											${borrowList.size()} Items Found </span> <span
+											class="fs-6 fw-semibold text-gray-500 d-inline-flex align-items-center text-nowrap">
+											by Recent Updates ↓ </span>
+									</h3>
 								</div>
+
 								<div>
 									<a href="${pageContext.request.contextPath}/borrow_add"
 										data-route="borrow_add"
-										class="btn btn-success d-inline-flex align-items-center py-2 px-4 gap-2">
+										class="btn btn-success d-inline-flex align-items-center py-3 px-6 gap-2">
 										<i class="ki-duotone ki-plus fs-5"> <span class="path1"></span>
 											<span class="path2"></span>
-									</i> <span class="fw-500">Create</span>
+									</i> <span class="fw-bold">Create</span>
 									</a>
-
 								</div>
 							</div>
 							<!-- Type Box -->
 							<div class="card">
-								<div class="card-body px-7 py-7">
-									<div class="border border-dashed border-gray-300 rounded-3 p-7">
-										<!-- หัวข้อ -->
-										<div class="fw-semibold fs-4 text-gray-800 mb-7">Type</div>
+								<div class="card-border-radius">
+									<div class="card-body">
+										<!-- Type Box (อยู่ในกล่องเดียวกัน) -->
+										<div
+											class="border border-dashed border-gray-400 rounded-3 px-7 py-6 mb-8 bg-transparent">
+											<div class="d-flex flex-column">
+												<!-- หัวข้อ -->
+												<div class="fs-4 text-gray-800 fw-bold mb-4">Type</div>
 
-										<!-- รายการ Type -->
-										<div class="d-flex flex-wrap align-items-center gap-9">
+												<!-- รายการ Type -->
+												<div class="d-flex flex-wrap align-items-center gap-9">
 
-											<div class="d-flex align-items-center gap-4">
-												<i class="ki-duotone ki-laptop fs-4 text-gray-600"><span
-													class="path1"></span> <span class="path2"></span></i> <span
-													class="text-gray-800">Computer</span>
+													<div class="d-flex align-items-center gap-4">
+														<i class="ki-duotone ki-laptop fs-4 text-gray-600"> <span
+															class="path1"></span><span class="path2"></span>
+														</i> <span class="text-gray-800">Computer</span>
+													</div>
+
+													<div class="d-flex align-items-center gap-4">
+														<i class="ki-duotone ki-keyboard fs-4 text-gray-600">
+															<span class="path1"></span><span class="path2"></span>
+														</i> <span class="text-gray-800">Instrument</span>
+													</div>
+
+													<div class="d-flex align-items-center gap-4">
+														<i class="ki-duotone ki-verify fs-4 text-gray-600"> <span
+															class="path1"></span><span class="path2"></span>
+														</i> <span class="text-gray-800">Software License</span>
+													</div>
+
+													<div class="d-flex align-items-center gap-4">
+														<i class="ki-duotone ki-phone fs-4 text-gray-600"> <span
+															class="path1"></span><span class="path2"></span>
+														</i> <span class="text-gray-800">Mobile</span>
+													</div>
+
+													<div class="d-flex align-items-center gap-4">
+														<i class="ki-duotone ki-dots-square fs-4 text-gray-600">
+															<span class="path1"></span><span class="path2"></span> <span
+															class="path3"></span><span class="path4"></span>
+														</i> <span class="text-gray-800">Other</span>
+													</div>
+
+													<div class="d-flex align-items-center gap-4">
+														<i class="ki-duotone ki-wifi-square fs-4 text-gray-600">
+															<span class="path1"></span><span class="path2"></span> <span
+															class="path3"></span><span class="path4"></span>
+														</i> <span class="text-gray-800">Pocket WIFI</span>
+													</div>
+												</div>
 											</div>
+										</div>
 
-											<div class="d-flex align-items-center gap-4">
-												<i class="ki-duotone ki-keyboard fs-4 text-gray-600"><span
-													class="path1"></span> <span class="path2"></span></i> <span
-													class="text-gray-800">Instrument</span>
-											</div>
+										<!-- ตาราง Borrow (อยู่ในกล่องเดียวกัน) -->
+										<div class="table-responsive">
+											<table id="borrow_table"
+												class="table align-middle fs-6 mb-0 ca-eq-table">
+												<thead class="fs-7 text-gray-500 text-uppercase">
+													<tr class="fw-semibold">
+														<th class="min-w-60px sort" data-sort="number">ID</th>
+														<th class="min-w-120px sort" data-sort="text">ITEM NO</th>
+														<th class="min-w-90px text-center sort" data-sort="type">TYPE</th>
+														<th class="min-w-350px sort" data-sort="text">EQUIPMENT
+															/ DETAIL</th>
+														<th class="min-w-250px sort" data-sort="text">LOCATION</th>
+														<th class="min-w-250px sort" data-sort="status">STATUS</th>
+														<th class="min-w-200px text-end">ACTIONS</th>
+													</tr>
+												</thead>
 
-											<div class="d-flex align-items-center gap-4">
-												<i class="ki-duotone ki-verify fs-4 text-gray-600"><span
-													class="path1"></span> <span class="path2"></span></i> <span
-													class="text-gray-800">Software License</span>
-											</div>
+												<tbody id="borrowTableBody" class="text-gray-700">
+													<c:forEach var="row" items="${borrowList}">
+														<tr data-item-no="${row.item_no}" data-name="${row.name}"
+															data-detail="${row.detail}"
+															data-location="${row.location}"
+															data-borrower="${row.user_borrowid}"
+															data-status="${row.statusborrow}" data-type="${row.type}"
+															data-serial="${row.serial_no}"
+															data-amount="${row.amount}" data-ram="${row.ram}"
+															data-process="${row.process}"
+															data-battery="${row.battery}" data-hdd="${row.hdd}"
+															data-windows="${row.windows}"
+															data-wifi="${row.wifiaddress}"
+															data-lan="${row.lanaddress}"
+															data-display="${row.display}"
+															data-date-start="${row.date_start}"
+															data-date-end="${row.date_end}"
+															data-borrower-name="${row.borrower_name}"
+															data-employee-id="${row.employee_id}"
+															data-name-en="${row.name_en}"
+															data-department="${row.department}"
+															data-time-create="${row.time_create }"
+															data-role-id="${row.role_id }">
 
-											<div class="d-flex align-items-center gap-4">
-												<i class="ki-duotone ki-phone fs-4 text-gray-600"><span
-													class="path1"></span> <span class="path2"></span></i> <span
-													class="text-gray-800">Mobile</span>
-											</div>
+															<td class="text-gray-900 fw-bold fs-6">${row.borrow_id}</td>
+															<td class="text-gray-900 fw-normal fs-5">${row.item_no}</td>
 
-											<div class="d-flex align-items-center gap-4">
-												<i class="ki-duotone ki-dots-square fs-4 text-gray-600"><span
-													class="path1"></span> <span class="path2"></span><span
-													class="path3"></span><span class="path4"></span></i> <span
-													class="text-gray-800">Other</span>
-											</div>
+															<td data-type="${row.type}" class="text-center">
+																<div
+																	class="d-flex align-items-center justify-content-center">
+																	<c:choose>
+																		<c:when test="${row.type == 'c'}">
+																			<i class="ki-duotone ki-laptop fs-1 text-gray-500">
+																				<span class="path1"></span><span class="path2"></span>
+																			</i>
+																		</c:when>
+																		<c:when test="${row.type == 'in'}">
+																			<i class="ki-duotone ki-keyboard fs-1 text-gray-500">
+																				<span class="path1"></span><span class="path2"></span>
+																			</i>
+																		</c:when>
+																		<c:when test="${row.type == 'L' || row.type == 'sl'}">
+																			<i class="ki-duotone ki-verify fs-1 text-gray-500">
+																				<span class="path1"></span><span class="path2"></span>
+																			</i>
+																		</c:when>
+																		<c:when test="${row.type == 'Mob'}">
+																			<i class="ki-duotone ki-phone fs-1 text-gray-500">
+																				<span class="path1"></span><span class="path2"></span>
+																			</i>
+																		</c:when>
+																		<c:when test="${row.type == 'p'}">
+																			<i
+																				class="ki-duotone ki-wifi-square fs-1 text-gray-500">
+																				<span class="path1"></span><span class="path2"></span>
+																				<span class="path3"></span><span class="path4"></span>
+																			</i>
+																		</c:when>
+																		<c:otherwise>
+																			<i
+																				class="ki-duotone ki-dots-square fs-1 text-gray-500">
+																				<span class="path1"></span><span class="path2"></span>
+																				<span class="path3"></span><span class="path4"></span>
+																			</i>
+																		</c:otherwise>
+																	</c:choose>
+																</div>
+															</td>
 
-											<div class="d-flex align-items-center gap-4">
-												<i class="ki-duotone ki-wifi-square fs-4 text-gray-600"><span
-													class="path1"></span> <span class="path2"></span><span
-													class="path3"></span><span class="path4"></span></i> <span
-													class="text-gray-800">Pocket WIFI</span>
-											</div>
+															<td>
+																<div class="fw-semibold text-gray-900 mb-1">${row.name}</div>
+																<div class="d-flex align-items-center">
+																	<span
+																		class="btn btn-icon btn-light-secondary btn-sm me-2">
+																		<i
+																		class="ki-duotone ki-message-text fs-4 text-gray-600">
+																			<span class="path1"></span><span class="path2"></span>
+																			<span class="path3"></span><span class="path4"></span>
+																	</i>
+																	</span>
+																	<div class="text-gray-500 fs-8">${row.detail}</div>
+																</div>
+															</td>
 
+															<td class="fw-semibold">${row.location}</td>
+
+															<td data-status="${row.statusborrow}">
+																<div class="d-flex flex-column">
+																	<div>
+																		<c:choose>
+																			<c:when test="${row.statusborrow == 'B'}">
+																				<span class="badge badge-primary me-2">Borrowed</span>
+																			</c:when>
+																			<c:when test="${row.statusborrow == 'W'}">
+																				<span class="badge badge-light me-2">Wait for
+																					Approve</span>
+																			</c:when>
+																			<c:otherwise>
+																				<span class="badge badge-light me-2">-</span>
+																			</c:otherwise>
+																		</c:choose>
+																	</div>
+
+																	<span class="fw-normal fs-6 text-gray-800 mt-1">
+																		<c:choose>
+																			<c:when test="${not empty row.name_en}">${row.name_en}</c:when>
+																			<c:otherwise>${row.borrower_name}</c:otherwise>
+																		</c:choose>
+																	</span>
+																</div>
+															</td>
+
+															<td class="text-end"><a href="javascript:void(0);"
+																class="btn btn-icon btn-sm btn-light-info mb-1 fs-3 btn-view-borrow"
+																data-borrow-id="${row.borrow_id}"> <i
+																	class="ki-duotone ki-document fs-1"> <span
+																		class="path1"></span><span class="path2"></span>
+																</i>
+															</a> <a
+																href="${pageContext.request.contextPath}/borrow_edit?id=${row.borrow_id}"
+																data-route="borrow_edit"
+																class="btn btn-icon btn-sm btn-light-primary mb-1 fs-3">
+																	<i class="ki-duotone ki-pencil fs-1"> <span
+																		class="path1"></span><span class="path2"></span>
+																</i>
+															</a>
+
+																<button type="button"
+																	class="btn btn-icon btn-sm btn-light-warning btn-borrow-detail mb-1 fs-3 me-3"
+																	title="Borrow Detail">
+																	<i class="ki-duotone ki-file-left fs-1"> <span
+																		class="path1"></span><span class="path2"></span> <span
+																		class="path3"></span><span class="path4"></span>
+																	</i>
+																</button></td>
+														</tr>
+													</c:forEach>
+												</tbody>
+											</table>
 										</div>
 									</div>
-								</div>
-							</div>
-							<!-- ตาราง Borrow -->
-							<div class="card">
-								<div class="card-body px-6 py-5">
-									<table id="borrow_table"
-										class="table align-middle table-row-dashed fs-7 gy-3">
-										<thead>
-											<tr class="text-gray-500 text-uppercase fw-semibold">
-												<th class="min-w-60px sort" data-sort="number">ID</th>
-												<th class="min-w-90px sort" data-sort="text">ITEM NO</th>
-												<th class="min-w-80px sort" data-sort="type">TYPE</th>
-												<th class="min-w-220px sort" data-sort="text">EQUIPMENT
-													/ DETAIL</th>
-												<th class="min-w-120px sort" data-sort="text">LOCATION</th>
-												<th class="min-w-180px sort" data-sort="status">STATUS</th>
-												<th class="min-w-120px text-end">ACTIONS</th>
-											</tr>
-										</thead>
-										<tbody id="borrowTableBody" class="text-gray-700">
-											<c:forEach var="row" items="${borrowList}">
-												<tr data-item-no="${row.item_no}" data-name="${row.name}"
-													data-detail="${row.detail}" data-location="${row.location}"
-													data-borrower="${row.user_borrowid}"
-													data-status="${row.statusborrow}" data-type="${row.type}"
-													data-serial="${row.serial_no}" data-amount="${row.amount}"
-													data-ram="${row.ram}" data-process="${row.process}"
-													data-battery="${row.battery}" data-hdd="${row.hdd}"
-													data-windows="${row.windows}"
-													data-wifi="${row.wifiaddress}" data-lan="${row.lanaddress}"
-													data-display="${row.display}"
-													data-date-start="${row.date_start}"
-													data-date-end="${row.date_end}"
-													data-borrower-name="${row.borrower_name}"
-													data-employee-id="${row.employee_id}"
-													data-name-en="${row.name_en}"
-													data-department="${row.department}"
-													data-time-create="${row.time_create }"
-													data-role-id="${row.role_id }">
-
-													<td class="fw-semibold text-gray-800">
-														${row.borrow_id}</td>
-
-													<!-- ITEM NO -->
-													<td class="fw-semibold">${row.item_no}</td>
-
-													<!-- TYPE : ใส่ data-type="${row.type}" -->
-													<td data-type="${row.type}">
-														<div class="d-flex align-items-center">
-															<c:choose>
-																<c:when test="${row.type == 'c'}">
-																	<span class="btn btn-icon btn-light-secondary btn-sm">
-																		<i class="ki-duotone ki-laptop fs-4 text-gray-600">
-																			<span class="path1"></span><span class="path2"></span>
-																	</i>
-																	</span>
-																</c:when>
-																<c:when test="${row.type == 'in'}">
-																	<span class="btn btn-icon btn-light-secondary btn-sm">
-																		<i class="ki-duotone ki-keyboard fs-4 text-gray-600">
-																			<span class="path1"></span><span class="path2"></span>
-																	</i>
-																	</span>
-																</c:when>
-																<c:when test="${row.type == 'L' || row.type == 'sl'}">
-																	<span class="btn btn-icon btn-light-secondary btn-sm">
-																		<i class="ki-duotone ki-verify fs-4 text-gray-600">
-																			<span class="path1"></span><span class="path2"></span>
-																	</i>
-																	</span>
-																</c:when>
-																<c:when test="${row.type == 'Mob'}">
-																	<span class="btn btn-icon btn-light-secondary btn-sm">
-																		<i class="ki-duotone ki-phone fs-4 text-gray-600">
-																			<span class="path1"></span><span class="path2"></span>
-																	</i>
-																	</span>
-																</c:when>
-																<c:when test="${row.type == 'p'}">
-																	<span class="btn btn-icon btn-light-secondary btn-sm">
-																		<i
-																		class="ki-duotone ki-wifi-square fs-4 text-gray-600">
-																			<span class="path1"></span><span class="path2"></span>
-																			<span class="path3"></span><span class="path4"></span>
-																	</i>
-																	</span>
-																</c:when>
-																<c:otherwise>
-																	<span class="btn btn-icon btn-light-secondary btn-sm">
-																		<i
-																		class="ki-duotone ki-dots-square fs-4 text-gray-600">
-																			<span class="path1"></span><span class="path2"></span>
-																			<span class="path3"></span><span class="path4"></span>
-																	</i>
-																	</span>
-																</c:otherwise>
-															</c:choose>
-														</div>
-													</td>
-
-													<!-- EQUIPMENT / DETAIL -->
-													<td>
-														<div class="fw-semibold text-gray-900 mb-1">
-															${row.name}</div>
-														<div class="d-flex align-items-center">
-															<span
-																class="btn btn-icon btn-light-secondary btn-sm me-2">
-																<i class="ki-duotone ki-message-text fs-4 text-gray-600">
-																	<span class="path1"></span><span class="path2"></span>
-																	<span class="path3"></span><span class="path4"></span>
-															</i>
-															</span>
-
-															<div class="text-gray-500 fs-8">${row.detail}</div>
-														</div>
-													</td>
-
-													<!-- LOCATION -->
-													<td class="fw-semibold">${row.location}</td>
-
-													<!-- STATUS : ใส่ data-status="${row.statusborrow}" -->
-													<td data-status="${row.statusborrow}">
-														<div class="d-flex flex-column">
-															<div>
-																<c:choose>
-																	<c:when test="${row.statusborrow == 'B'}">
-																		<span class="badge badge-primary me-2">Borrowed</span>
-																	</c:when>
-																	<c:when test="${row.statusborrow == 'W'}">
-																		<span class="badge badge-light me-2">Wait for
-																			Approve</span>
-																	</c:when>
-																	<c:otherwise>
-																		<span class="badge badge-light me-2">-</span>
-																	</c:otherwise>
-																</c:choose>
-															</div>
-															<span class="fw-normal fs-6 text-gray-800 mt-1">
-																${row.borrower_name} </span>
-														</div>
-													</td>
-
-													<!-- ACTIONS -->
-													<td class="text-end"><a href="javascript:void(0);"
-														class="btn btn-icon btn-sm btn-light-info me-2 btn-view-borrow"
-														data-borrow-id="${row.borrow_id}"> <i
-															class="ki-duotone ki-document fs-4"> <span
-																class="path1"></span><span class="path2"></span>
-														</i>
-													</a> <a
-														href="${pageContext.request.contextPath}/borrow_edit?id=${row.borrow_id}"
-														data-route="borrow_edit"
-														class="btn btn-icon btn-sm btn-light-primary me-2"> <i
-															class="ki-duotone ki-pencil fs-4"> <span
-																class="path1"></span><span class="path2"></span>
-														</i>
-													</a>
-														<button type="button"
-															class="btn btn-icon btn-sm btn-light-warning btn-borrow-detail"
-															title="Borrow Detail">
-															<i class="ki-duotone ki-file-left fs-4"> <span
-																class="path1"></span><span class="path2"></span> <span
-																class="path3"></span><span class="path4"></span>
-															</i>
-														</button></td>
-												</tr>
-											</c:forEach>
-										</tbody>
-									</table>
 								</div>
 							</div>
 						</div>
@@ -691,161 +728,230 @@ if (request.getAttribute("borrowList") == null) {
 	</div>
 	<!--end::Main-->
 	<script>
-		$(document)
-				.ready(
-						function() {
+$(document).ready(function() {
+    
+    const $keywordInput = $('#searchForm input[name="keyword"]');
+    const $statusSelect = $('#searchForm select[name="status"]');
+    const $typeSelect = $('#searchForm select[name="type"]');
+    const $searchForm = $('#searchForm');
 
-							const $keywordInput = $('#searchForm input[name="keyword"]');
-							const $statusSelect = $('#searchForm select[name="status"]');
-							const $typeSelect = $('#searchForm select[name="type"]');
-							const $searchForm = $('#searchForm');
+    // ---------- Initialize Select2 with custom template ----------
+    $typeSelect.select2({
+        placeholder: "Select",
+        closeOnSelect: false,
+        allowClear: true,
+        width: '100%',
+        templateResult: formatStateWithCheckbox
+    });
 
-							// ---------- Custom filter ----------
-							$.fn.dataTable.ext.search
-									.push(function(settings, data, dataIndex) {
+    // Format option with checkbox only (no checkmark)
+    function formatStateWithCheckbox(state) {
+        if (!state.id) {
+            return state.text;
+        }
 
-										// ใช้กับตารางนี้เท่านั้น
-										if (settings.nTable.id !== 'borrow_table')
-											return true;
+        var isSelected = $typeSelect.val() && $typeSelect.val().includes(state.id);
+        
+        var $state = $(
+            '<div class="d-flex align-items-center w-100">' +
+                '<input type="checkbox" class="form-check-input me-2" ' + 
+                (isSelected ? 'checked' : '') + '> ' +
+                '<span>' + state.text + '</span>' +
+            '</div>'
+        );
+        
+        return $state;
+    }
 
-										// ค่าจากฟอร์ม
-										var keyword = ($keywordInput.val() || '')
-												.trim().toLowerCase();
-										var statusFilter = ($statusSelect.val() || '')
-												.toUpperCase(); // "", B, R
-										var typeFilter = ($typeSelect.val() || '')
-												.toLowerCase(); // "", c,in,L,...
+    // Prevent checkbox click from closing dropdown
+    $(document).on('mousedown', '.select2-results__option input[type="checkbox"]', function(e) {
+        e.stopPropagation();
+    });
 
-										// แถวจริงใน DOM
-										var rowNode = settings.aoData[dataIndex].nTr;
-										var statusCode = (rowNode.dataset.status || '')
-												.toUpperCase(); // B/R/W
-										var typeCode = (rowNode.dataset.type || '')
-												.toLowerCase(); // c,in,l,sl,...
+    // Update UI when selection changes
+    $typeSelect.on('select2:select select2:unselect', function(e) {
+        // Redraw options to update checkboxes
+        $typeSelect.select2('close');
+        $typeSelect.select2('open');
+    });
 
-										// ----- filter ตาม status -----
-										if (statusFilter
-												&& statusCode !== statusFilter) {
-											return false;
-										}
+    // Add buttons when dropdown opens
+    $typeSelect.on('select2:open', function() {
+        setTimeout(function() {
+            if (!$('.type-select-buttons').length) {
+                var buttonsHtml = 
+                    '<div class="type-select-buttons d-flex gap-2 p-3 border-top bg-white">' +
+                        '<button type="button" class="btn btn-light flex-fill type-deselect-btn">Deselect All</button>' +
+                        '<button type="button" class="btn btn-primary flex-fill type-select-btn">Select All</button>' +
+                    '</div>';
+                
+                $('.select2-dropdown').append(buttonsHtml);
+                
+                // Deselect All button
+                $('.type-deselect-btn').on('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    $typeSelect.val(null).trigger('change');
+                    $typeSelect.select2('close');
+                });
+                
+                // Select All button
+                $('.type-select-btn').on('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    var allValues = $typeSelect.find('option').map(function() {
+                        return $(this).val();
+                    }).get();
+                    $typeSelect.val(allValues).trigger('change');
+                    $typeSelect.select2('close');
+                });
+            }
+        }, 10);
+    });
 
-										// ----- filter ตาม type -----
-										if (typeFilter
-												&& typeCode !== typeFilter) {
-											return false;
-										}
+    // ---------- Custom filter ----------
+    $.fn.dataTable.ext.search.push(function(settings, data, dataIndex) {
+        
+        if (settings.nTable.id !== 'borrow_table') return true;
 
-										// ----- filter ตาม keyword -----
-										var rowText = (rowNode.textContent || '')
-												.toLowerCase();
-										if (keyword
-												&& rowText.indexOf(keyword) === -1) {
-											return false;
-										}
+        var keyword = ($keywordInput.val() || '').trim().toLowerCase();
+        var statusFilter = ($statusSelect.val() || '').toUpperCase();
+        var typeFilterArray = $typeSelect.val() || [];
 
-										return true;
-									});
+        var rowNode = settings.aoData[dataIndex].nTr;
+        var statusCode = (rowNode.dataset.status || '').toUpperCase();
+        var typeCode = (rowNode.dataset.type || '').toLowerCase();
 
-							// ---------- init DataTable ----------
-							var table = $('#borrow_table')
-									.DataTable(
-											{
-												pageLength : 10,
-												lengthMenu : [ 10, 20, 50, 100 ],
-												ordering : false,
-												searching : true,
-												info : false,
-												pagingType : "simple_numbers",
-												dom : "<'row'<'col-12'tr>>"
-														+ "<'row mt-3'<'col-sm-6 d-flex align-items-center'l>"
-														+ "<'col-sm-6 d-flex justify-content-end'p>>",
-												language : {
-													lengthMenu : "_MENU_",
-													paginate : {
-														first : "«",
-														last : "»",
-														next : ">",
-														previous : "<"
-													},
-													zeroRecords : "ไม่พบข้อมูล"
-												}
-											});
+        if (typeCode === 'sl') {
+            typeCode = 'l';
+        }
 
-							// 🔢 อัปเดตจำนวน Items Found ตามแถวที่ถูก filter แล้ว
-							table.on('draw', function() {
-								var count = table.rows({
-									filter : 'applied'
-								}).count(); // นับเฉพาะที่มองเห็นหลัง filter
-								$('#itemsFound').text(count + ' Items Found');
-							});
+        if (statusFilter && statusCode !== statusFilter) {
+            return false;
+        }
 
-							// เรียกครั้งแรกให้ sync กับค่าเริ่มต้น
-							table.draw();
-							// ---------- event ทำให้ redraw ทันที ----------
-							$keywordInput.on('input', function() {
-								table.draw();
-							});
+        if (typeFilterArray.length > 0) {
+            if (!typeFilterArray.includes(typeCode)) {
+                return false;
+            }
+        }
 
-							$statusSelect.on('change', function() {
-								table.draw();
-							});
+        var rowText = (rowNode.textContent || '').toLowerCase();
+        if (keyword && rowText.indexOf(keyword) === -1) {
+            return false;
+        }
 
-							$typeSelect.on('change', function() {
-								table.draw();
-							});
+        return true;
+    });
 
-							$searchForm.on('submit', function(e) {
-								e.preventDefault(); // กันไม่ให้ยิงไป action
-								table.draw();
-							});
+    // ---------- init DataTable ----------
+    var table = $('#borrow_table').DataTable({
+        pageLength: 10,
+        lengthMenu: [10, 20, 50, 100],
+        ordering: false,
+        searching: true,
+        info: false,
+        pagingType: "simple_numbers",
+        dom: "<'row'<'col-12'tr>>" +
+             "<'row mt-3'<'col-sm-6 d-flex align-items-center'l>" +
+             "<'col-sm-6 d-flex justify-content-end'p>>",
+        language: {
+            lengthMenu: "_MENU_",
+            paginate: {
+                first: "«",
+                last: "»",
+                next: ">",
+                previous: "<"
+            },
+            zeroRecords: "ไม่พบข้อมูล"
+        }
+    });
 
-						});
-	</script>
-	<!-- Sort Script -->
-	<script>
-document.addEventListener("DOMContentLoaded", function () {
-    const tbody = document.getElementById("borrowTableBody");
-    const headers = document.querySelectorAll("th.sort");
-    let sortDir = {};
+    table.on('draw', function() {
+        var count = table.rows({ filter: 'applied' }).count();
+        $('#itemsFound').text(count + ' Items Found');
+    });
 
-    headers.forEach((th, colIndex) => {
-        th.addEventListener("click", () => {
-            const type = th.dataset.sort;
-            const dir = sortDir[colIndex] = !(sortDir[colIndex]);
-            const rows = Array.from(tbody.querySelectorAll("tr"));
+    table.draw();
 
-            rows.sort((a, b) => {
-                let A, B;
+    // ---------- Events ----------
+    $keywordInput.on('input', function() {
+        table.draw();
+    });
 
-                switch (type) {
-                    case "number":
-                        A = parseInt(a.children[colIndex].textContent.trim(), 10) || 0;
-                        B = parseInt(b.children[colIndex].textContent.trim(), 10) || 0;
-                        return dir ? A - B : B - A;
+    $statusSelect.on('change', function() {
+        table.draw();
+    });
 
-                    case "type":
-                        A = a.querySelector("td[data-type]")?.dataset.type || "";
-                        B = b.querySelector("td[data-type]")?.dataset.type || "";
-                        A = A.toLowerCase() === "sl" ? "l" : A.toLowerCase();
-                        B = B.toLowerCase() === "sl" ? "l" : B.toLowerCase();
-                        return dir ? A.localeCompare(B) : B.localeCompare(A);
+    $typeSelect.on('change', function() {
+        table.draw();
+    });
 
-                    case "status":
-                        A = a.querySelector("td[data-status]")?.dataset.status || "";
-                        B = b.querySelector("td[data-status]")?.dataset.status || "";
-                        return dir ? A.localeCompare(B) : B.localeCompare(A);
-
-                    default:
-                        A = a.children[colIndex].textContent.trim().toLowerCase();
-                        B = b.children[colIndex].textContent.trim().toLowerCase();
-                        return dir ? A.localeCompare(B, undefined, { numeric: true })
-                                   : B.localeCompare(A, undefined, { numeric: true });
-                }
-            });
-            rows.forEach(r => tbody.appendChild(r));
-        });
+    $searchForm.on('submit', function(e) {
+        e.preventDefault();
+        table.draw();
     });
 });
+</script>
+	<!-- Sort Script -->
+	<script>
+	document.addEventListener("DOMContentLoaded", function () {
+	    const tbody = document.getElementById("borrowTableBody");
+	    const headers = document.querySelectorAll("th.sort");
+	    let sortDir = {};
+	    
+	    headers.forEach((th, colIndex) => {
+	        th.addEventListener("click", () => {
+	            const type = th.dataset.sort;
+	            const dir = sortDir[colIndex] = !(sortDir[colIndex]);
+	            const rows = Array.from(tbody.querySelectorAll("tr"));
+	            
+	            // Remove arrows and classes from all headers
+	            headers.forEach(header => {
+	                header.classList.remove("sort-asc", "sort-desc");
+	                const arrow = header.querySelector('.sort-arrow');
+	                if (arrow) arrow.remove();
+	            });
+	            
+	            // Add arrow to current header
+	            th.classList.add(dir ? "sort-asc" : "sort-desc");
+	            const arrow = document.createElement('span');
+	            arrow.className = 'sort-arrow';
+	            arrow.innerHTML = dir ? ' ▲' : ' ▼';
+	            th.appendChild(arrow);
+	            
+	            rows.sort((a, b) => {
+	                let A, B;
+	                
+	                switch (type) {
+	                    case "number":
+	                        A = parseInt(a.children[colIndex].textContent.trim(), 10) || 0;
+	                        B = parseInt(b.children[colIndex].textContent.trim(), 10) || 0;
+	                        return dir ? A - B : B - A;
+	                    
+	                    case "type":
+	                        A = a.querySelector("td[data-type]")?.dataset.type || "";
+	                        B = b.querySelector("td[data-type]")?.dataset.type || "";
+	                        A = A.toLowerCase() === "sl" ? "l" : A.toLowerCase();
+	                        B = B.toLowerCase() === "sl" ? "l" : B.toLowerCase();
+	                        return dir ? A.localeCompare(B) : B.localeCompare(A);
+	                    
+	                    case "status":
+	                        A = a.querySelector("td[data-status]")?.dataset.status || "";
+	                        B = b.querySelector("td[data-status]")?.dataset.status || "";
+	                        return dir ? A.localeCompare(B) : B.localeCompare(A);
+	                    
+	                    default:
+	                        A = a.children[colIndex].textContent.trim().toLowerCase();
+	                        B = b.children[colIndex].textContent.trim().toLowerCase();
+	                        return dir ? A.localeCompare(B, undefined, { numeric: true })
+	                                   : B.localeCompare(A, undefined, { numeric: true });
+	                }
+	            });
+	            rows.forEach(r => tbody.appendChild(r));
+	        });
+	    });
+	});
 </script>
 	<!-- Modal: Equipment Detail -->
 	<div class="modal fade" id="borrowModal" tabindex="-1"
@@ -1023,8 +1129,7 @@ document.addEventListener("DOMContentLoaded", function () {
 				<div
 					class="modal-footer border-0 pt-0 pb-6 px-6 d-flex justify-content-end gap-3">
 
-					<button type="button" class="btn btn-light" data-bs-dismiss="modal">
-						Cancel</button>
+					<button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
 
 					<button type="button" class="btn btn-primary" id="btn_edit">
 						Edit</button>
@@ -1755,9 +1860,8 @@ document.addEventListener("DOMContentLoaded", function () {
 						<div class="text-gray-800 fs-7 mb-4">Specify a note when
 							changing status (optional)</div>
 
-						<textarea id="bd_approver_note"
-							class="form-control form-control-solid" rows="3"
-							placeholder="Enter maintenance or repair notes..."></textarea>
+						<textarea id="bd_approver_note" class="form-control form-control"
+							rows="4" placeholder="Enter maintenance or repair notes..."></textarea>
 					</div>
 
 				</div>
@@ -1774,191 +1878,534 @@ document.addEventListener("DOMContentLoaded", function () {
 		</div>
 	</div>
 	<script>
-  $(document).ready(function () {
+$(document).ready(function() {
+	const CTX = "${pageContext.request.contextPath}";
 
-    // modal instance
-    var bdModalEl = document.getElementById('borrowDetailModal');
-    var bdModalObj = new bootstrap.Modal(bdModalEl);
+	// ===== Bootstrap modal instances =====
+	const borrowModalEl = document.getElementById('borrowModal');
+	const modalObj = bootstrap.Modal.getOrCreateInstance(borrowModalEl);
 
-    // collapse instance
-    var bdCollapseEl = document.getElementById('bd_moreDetailCollapse');
-    var bdCollapseObj = bootstrap.Collapse.getOrCreateInstance(bdCollapseEl, {
-      toggle: false
-    });
+	const bdModalEl = document.getElementById('borrowDetailModal');
+	const bdModalObj = bootstrap.Modal.getOrCreateInstance(bdModalEl);
 
-    // toggle more detail
-    $('#bd_moreDetailToggle').on('click', function (e) {
-      e.preventDefault();
-      bdCollapseObj.toggle();
-    });
+	// ===== Helpers =====
+	function setText(id, val) {
+		const el = document.getElementById(id);
+		if (!el) return;
+		el.textContent = (val !== undefined && val !== null && String(val).trim() !== "") ? val : "-";
+	}
 
-    bdCollapseEl.addEventListener('shown.bs.collapse', function () {
-      $('#bd_moreDetailIcon').addClass('is-open');
-      $('#bd_moreDetailToggle').attr('aria-expanded', 'true');
-    });
+	// "2014-09-22 17:00:00" -> "22 Sep 2014, 17:00"
+	function formatBorrowDate(dtStr) {
+		if (!dtStr) return '';
+		const d = new Date(String(dtStr).replace(' ', 'T'));
+		if (isNaN(d.getTime())) return String(dtStr);
 
-    bdCollapseEl.addEventListener('hidden.bs.collapse', function () {
-      $('#bd_moreDetailIcon').removeClass('is-open');
-      $('#bd_moreDetailToggle').attr('aria-expanded', 'false');
-    });
+		const day = d.getDate();
+		const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+		const month = monthNames[d.getMonth()];
+		const year = d.getFullYear();
 
-    // ✅ รีเซ็ต More Detail ทุกครั้งที่ปิด modal (ไม่ให้เปิดค้าง)
-    bdModalEl.addEventListener('hidden.bs.modal', function () {
-      bdCollapseObj.hide();
-      $('#bd_moreDetailIcon').removeClass('is-open');
-      $('#bd_moreDetailToggle').attr('aria-expanded', 'false');
-    });
+		const hour = String(d.getHours()).padStart(2, '0');
+		const min = String(d.getMinutes()).padStart(2, '0');
 
-    // format date (ใช้แบบเดิมของคุณ)
-    function formatBorrowDate(dtStr) {
-      if (!dtStr) return '';
-      var d = new Date(dtStr.replace(' ', 'T'));
-      if (isNaN(d.getTime())) return dtStr;
+		return day + ' ' + month + ' ' + year;
+	}
 
-      var day = d.getDate();
-      var monthNames = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-      var month = monthNames[d.getMonth()];
-      var year = d.getFullYear();
-      return month + ' ' + day + ' , ' + year;
-    }
+	function formatDateRange(startStr, endStr) {
+		const s = formatBorrowDate(startStr);
+		const e = formatBorrowDate(endStr);
+		if (!s && !e) return '-';
+		if (s && e) return s + ' - ' + e;
+		return s || e;
+	}
 
-    // click open Borrow Detail
-    $(document).on('click', '.btn-borrow-detail', function (e) {
-      e.preventDefault();
+	function formatTime(x) {
+		const z = formatBorrowDate(x);
+		return z ? z : '-';
+	}
 
-      var $tr = $(this).closest('tr');
+	function setBorrowModalButtons(status) {
+		$('#btn_request_return').hide();
+		$('#btn_cancel_borrow').hide();
+		$('#btn_confirm_borrow').hide();
 
-      var borrowId = $.trim($tr.find('td').eq(0).text()); // ใช้คอลัมน์แรกเป็น Borrow ID
+		if (status === 'B') {
+			$('#btn_request_return').show();
+		} else if (status === 'W') {
+			$('#btn_cancel_borrow').show();
+			$('#btn_confirm_borrow').show();
+		}
+	}
 
-      // basic
-      var itemNo = $tr.data('itemNo') || $tr.data('item-no') || '';
-      var name = $tr.data('name') || '';
-      var detail = $tr.data('detail') || '';
-      var serial = $tr.data('serial') || '';
-      var status = (($tr.data('status') || '') + '').toUpperCase();
+	// ===== Collapse: More Detail (modal บน) =====
+	const moreCollapseEl = document.getElementById('moreDetailCollapse');
+	if (moreCollapseEl) {
+		const moreCollapseObj = bootstrap.Collapse.getOrCreateInstance(moreCollapseEl, {
+			toggle: false
+		});
 
-      // right
-      var amountRaw = $tr.data('amount');
-      var amountText = '1';
-      if (amountRaw !== undefined && amountRaw !== null && amountRaw !== '') {
-        var n = parseFloat(amountRaw);
-        amountText = (!isNaN(n) && n % 1 === 0) ? parseInt(n, 10).toString() : (amountRaw + '');
-      }
+		$('#moreDetailToggle').on('click', function(e) {
+			e.preventDefault();
+			moreCollapseObj.toggle();
+		});
 
-      var timeCreate = $tr.data('timeCreate') || $tr.data('time-create') || '';
+		moreCollapseEl.addEventListener('shown.bs.collapse', function() {
+			$('#moreDetailIcon').addClass('is-open');
+			$('#moreDetailToggle').attr('aria-expanded', 'true');
+		});
 
-      // more detail
-      var type = (($tr.data('type') || '') + '').toLowerCase();
-      var windows = $tr.data('windows') || '';
-      var ram = $tr.data('ram') || '';
-      var hdd = $tr.data('hdd') || '';
-      var wifi = $tr.data('wifi') || '';
-      var lan = $tr.data('lan') || '';
-      var display = $tr.data('display') || '';
-      var cpu = $tr.data('process') || $tr.data('cpu') || '';
-      var battery = $tr.data('battery') || '';
+		moreCollapseEl.addEventListener('hidden.bs.collapse', function() {
+			$('#moreDetailIcon').removeClass('is-open');
+			$('#moreDetailToggle').attr('aria-expanded', 'false');
+		});
+	}
 
-      // badge
-      var $badge = $('#bd_status_badge');
-      $badge.removeClass().addClass('badge badge-lg rounded-pill px-4 fw-semibold');
+	// ===== Collapse: More Detail (modal ล่าง) =====
+	const bdCollapseEl = document.getElementById('bd_moreDetailCollapse');
+	if (bdCollapseEl) {
+		const bdCollapseObj = bootstrap.Collapse.getOrCreateInstance(bdCollapseEl, {
+			toggle: false
+		});
 
-      if (status === 'B') {
-        $badge.addClass('bg-warning text-white').text('Borrowing');
-      } else if (status === 'R') {
-        $badge.addClass('bg-success text-white').text('Returned');
-      } else if (status === 'W') {
-        $badge.addClass('bg-light text-dark').text('Wait for Approve');
-      } else {
-        $badge.addClass('bg-light text-muted').text('-');
-      }
+		$('#bd_moreDetailToggle').on('click', function(e) {
+			e.preventDefault();
+			bdCollapseObj.toggle();
+		});
 
-      // fill
-      $('#bd_item_link').text('ID: ' + itemNo);
-      $('#bd_name').text(name);
-      $('#bd_serial').text(serial);
-      $('#bd_detail').text(detail);
-      $('#bd_amount').text(amountText);
-      $('#bd_purchase_date').text(formatBorrowDate(timeCreate) || '-');
+		bdCollapseEl.addEventListener('shown.bs.collapse', function() {
+			$('#bd_moreDetailIcon').addClass('is-open');
+			$('#bd_moreDetailToggle').attr('aria-expanded', 'true');
+		});
 
-      // ✅ สำคัญ: เปิด modal ใหม่ให้ "ปิด" More Detail เสมอ
-      bdCollapseObj.hide();
-      $('#bd_moreDetailIcon').removeClass('is-open');
-      $('#bd_moreDetailToggle').attr('aria-expanded', 'false');
+		bdCollapseEl.addEventListener('hidden.bs.collapse', function() {
+			$('#bd_moreDetailIcon').removeClass('is-open');
+			$('#bd_moreDetailToggle').attr('aria-expanded', 'false');
+		});
 
-      // show/hide more detail (type === 'c' เท่านั้น)
-      if (type === 'c') {
-        $('#bd_moreDetailWrapper').show();
-        $('#bd_windows').text(windows);
-        $('#bd_ram').text(ram);
-        $('#bd_storage').text(hdd);
-        $('#bd_storage2').text(hdd);
-        $('#bd_wifi').text(wifi);
-        $('#bd_lan').text(lan);
-        $('#bd_display').text(display);
-        $('#bd_cpu').text(cpu);
-        $('#bd_battery').text(battery);
-      } else {
-        $('#bd_moreDetailWrapper').hide();
-        // เผื่อเคยเปิดค้างไว้ ให้ปิดไว้ด้วย
-        bdCollapseObj.hide();
-        $('#bd_moreDetailIcon').removeClass('is-open');
-        $('#bd_moreDetailToggle').attr('aria-expanded', 'false');
-      }
+		// ✅ รีเซ็ต More Detail ทุกครั้งที่ปิด modal Return
+		bdModalEl.addEventListener('hidden.bs.modal', function() {
+			bdCollapseObj.hide();
+			$('#bd_moreDetailIcon').removeClass('is-open');
+			$('#bd_moreDetailToggle').attr('aria-expanded', 'false');
+		});
+	}
 
-      $('#borrowDetailModal').data('borrowId', borrowId);
+	// ===== เติมข้อมูลลง modal ล่าง (bd_) =====
+	function fillBorrowDetailModal(p) {
+		if (!p) return;
 
-      // clear note each open
-      $('#bd_approver_note').val('');
+		// เก็บ borrowId ไว้สำหรับยิง action eBorrowReturn
+		$('#borrowDetailModal').data('borrowId', p.borrowId);
 
-      // show modal
-      bdModalObj.show();
-    });
+		// Top info
+		$('#bd_item_link').text('ID: ' + (p.itemNo || '-'));
+		setText('bd_name', p.name);
+		setText('bd_serial', p.serial);
+		setText('bd_detail', p.detail);
+		setText('bd_amount', p.amountText || '1');
+		setText('bd_purchase_date', formatTime(p.purchaseDate));
 
-    const CTX = "${pageContext.request.contextPath}";
+		// badge
+		const $b = $('#bd_status_badge');
+		$b.removeClass().addClass('badge badge-lg rounded-pill px-4 fw-semibold');
 
-    $('#bd_request_return').on('click', function (e) {
-      e.preventDefault();
+		if (p.status === 'B') {
+			$b.addClass('bg-warning text-white').text('Borrowing');
+		} else if (p.status === 'W') {
+			$b.addClass('bg-light text-dark').text('Wait for Approve');
+		} else if (p.status === 'R') {
+			$b.addClass('bg-success text-white').text('Returned');
+		} else {
+			$b.addClass('bg-light text-muted').text('-');
+		}
 
-      const borrowId = $('#borrowDetailModal').data('borrowId') || '';
-      const note = $('#bd_approver_note').val();
+		// More detail: เฉพาะ Computer (type = 'c')
+		const isComputer = String(p.type || '').toLowerCase() === 'c';
+		if (isComputer) {
+			$('#bd_moreDetailWrapper').show();
+			setText('bd_windows', p.windows);
+			setText('bd_ram', p.ram);
+			setText('bd_storage', p.hdd);
+			setText('bd_storage2', p.hdd);
+			setText('bd_display', p.display);
+			setText('bd_cpu', p.process);
+			setText('bd_battery', p.battery);
+			setText('bd_wifi', p.wifi);
+			setText('bd_lan', p.lan);
+		} else {
+			$('#bd_moreDetailWrapper').hide();
+		}
 
-      if (!borrowId) {
-        alert('Borrow ID not found.');
-        return;
-      }
+		// reset note
+		$('#bd_approver_note').val('');
+	}
 
-      if (!confirm('Are you sure you want to request return for this item?')) return;
+	function resetMoreDetailTop() {
+		const el = document.getElementById('moreDetailCollapse');
+		if (!el) return;
 
-      $.ajax({
-        url: CTX + "/eBorrowReturn.action",
-        type: "POST",
-        dataType: "json",
-        data: { id: borrowId, note: note },
-        success: function (data) {
-          if (data && data.message === "success") {
-            alert("Return request submitted successfully!");
-            bdModalObj.hide();
-            window.location.href = CTX + "/borrow_list.action";
-          } else {
-            alert("Something went wrong: " + (data ? data.message : "no data"));
-          }
-        },
-        error: function (xhr) {
-          console.log("HTTP", xhr.status);
-          console.log("RAW", xhr.responseText);
-          alert("Failed to submit return request.");
-        }
-      });
-    });
+		// บังคับให้ปิดเสมอ
+		const c = bootstrap.Collapse.getOrCreateInstance(el, { toggle: false });
+		c.hide();
 
-    // FIX: ให้ปุ่ม X / Cancel ปิด modal แน่นอน (กันโดน theme กัน event)
-    $('#borrowDetailModal').on('click', '[data-bs-dismiss="modal"]', function (e) {
-      e.preventDefault();
-      e.stopPropagation();
-      bdModalObj.hide();
-    });
+		// รีเซ็ตไอคอน/aria
+		$('#moreDetailIcon').removeClass('is-open');
+		$('#moreDetailToggle').attr('aria-expanded', 'false');
+	}
 
-  });
+	// ===== เมื่อกดปุ่ม View (ปุ่มในตาราง) =====
+	$(document).on('click', '.btn-view-borrow', function(e) {
+		e.preventDefault();
+
+		const $tr = $(this).closest('tr');
+
+		// ✅ borrowId = id ของรายการยืม (ควรเป็นคอลัมน์แรก)
+		const borrowId = $.trim($tr.find('td').eq(0).text());
+
+		// ข้อมูลจาก data-* ใน <tr>
+		const itemNo = $tr.data('itemNo') || '';
+		const name = $tr.data('name') || '';
+		const detail = $tr.data('detail') || '';
+		const location = $tr.data('location') || '';
+		const status = String($tr.data('status') || '').toUpperCase();
+		const type = String($tr.data('type') || '');
+
+		setBorrowModalButtons(status);
+
+		const serial = $tr.data('serial') || '';
+		const borrower = $tr.data('borrowerName') || '';
+
+		// amount (ตัด .0)
+		const amountRaw = $tr.data('amount');
+		let amountText = '1';
+		if (amountRaw !== undefined && amountRaw !== null && amountRaw !== '') {
+			const n = parseFloat(amountRaw);
+			if (!isNaN(n))
+				amountText = (n % 1 === 0) ? String(parseInt(n, 10)) : String(n);
+			else
+				amountText = String(amountRaw);
+		}
+
+		const ram = $tr.data('ram') || '';
+		const process = $tr.data('process') || '';
+		const battery = $tr.data('battery') || '';
+		const hdd = $tr.data('hdd') || '';
+		const windows = $tr.data('windows') || '';
+		const wifi = $tr.data('wifi') || '';
+		const lan = $tr.data('lan') || '';
+		const display = $tr.data('display') || '';
+
+		const dateStart = $tr.data('dateStart') || '';
+		const dateEnd = $tr.data('dateEnd') || '';
+		const timeCreate = $tr.data('timeCreate') || '';
+
+		// ===== เติม modal บน (ของคุณเดิม) =====
+		setText('m_item_link', 'ID: ' + itemNo);
+		setText('m_borrow_id', 'ID: ' + borrowId);
+		setText('m_borrower', borrower);
+		setText('m_serial', serial);
+		setText('m_detail_top', detail);
+		setText('m_amount', amountText);
+		setText('m_location', location);
+		setText('m_borrow_date', formatDateRange(dateStart, dateEnd));
+		setText('m_purchase_date', formatTime(timeCreate));
+
+		// badge modal บน
+		const $badge = $('#m_status_badge');
+		if ($badge.length) {
+			$badge.removeClass().addClass('badge badge-lg rounded-pill px-4 fw-semibold');
+			if (status === 'B')
+				$badge.addClass('bg-warning text-white').text('Borrowing');
+			else if (status === 'R')
+				$badge.addClass('bg-success text-white').text('Returned');
+			else if (status === 'W')
+				$badge.addClass('bg-light text-dark').text('Wait for Approve');
+			else
+				$badge.addClass('bg-light text-muted').text('-');
+		}
+
+		// More detail modal บน
+		const moreWrapper = $('#moreDetailWrapper');
+		if (String(type).toLowerCase() === 'c') {
+			moreWrapper.show();
+			setText('m_windows', windows);
+			setText('m_ram', ram);
+			setText('m_hdd', hdd);
+			setText('m_hddd', hdd);
+			setText('m_display', display);
+			setText('m_process', process);
+			setText('m_battery', battery);
+			setText('m_wifi', wifi);
+			setText('m_lan', lan);
+		} else {
+			moreWrapper.hide();
+		}
+
+		// ✅ เก็บ payload ไว้ให้ modal ล่างใช้
+		$('#borrowModal').data('borrowPayload', {
+			borrowId: borrowId,
+			itemNo: itemNo,
+			name: name,
+			serial: serial,
+			detail: detail,
+			amountText: amountText,
+			purchaseDate: timeCreate,
+			status: status,
+			type: type,
+			windows: windows,
+			ram: ram,
+			hdd: hdd,
+			display: display,
+			process: process,
+			battery: battery,
+			wifi: wifi,
+			lan: lan
+		});
+
+		resetMoreDetailTop();
+
+		// ถ้าเป็นคอมค่อยโชว์ wrapper ไม่ใช่คอมก็ซ่อน + รีเซ็ตอีกที
+		if (String(type).toLowerCase() === 'c') {
+			$('#moreDetailWrapper').show();
+		} else {
+			$('#moreDetailWrapper').hide();
+			resetMoreDetailTop();
+		}
+
+		// show modal บน
+		modalObj.show();
+	});
+
+	// ===== กดปุ่ม Request for Return (ใน modal บน) -> เปิด modal ล่าง =====
+	$('#btn_request_return').on('click', function(e) {
+		e.preventDefault();
+
+		const payload = $('#borrowModal').data('borrowPayload');
+
+		// ✅ แก้ไขปัญหา backdrop ซ้อน
+		$('.modal-backdrop').remove();
+		$('body').removeClass('modal-open');
+
+		modalObj.hide();
+
+		// รอให้ modal แรกปิดสนิทก่อนเปิด modal ใหม่
+		setTimeout(function() {
+			fillBorrowDetailModal(payload);
+			bdModalObj.show();
+		}, 300);
+	});
+
+	// ===== ปุ่ม Cancel / Confirm (status=W) ใน modal บน =====
+	function ajaxBorrowAction(actionUrl, borrowId) {
+		return $.ajax({
+			url: actionUrl,
+			type: 'POST',
+			dataType: 'json',
+			data: {
+				id: borrowId
+			}
+		});
+	}
+
+	$('#btn_cancel_borrow').on('click', function(e) {
+		e.preventDefault();
+		const payload = $('#borrowModal').data('borrowPayload') || {};
+		const borrowId = payload.borrowId || '';
+		if (!borrowId) return alert('Borrow ID not found.');
+
+		if (!confirm('Cancel this borrow request?')) return;
+
+		ajaxBorrowAction(CTX + '/eBorrowCancel.action', borrowId)
+			.done(function(data) {
+				if (data && data.message === 'success') {
+					window.location.href = CTX + '/borrow_list.action';
+				} else {
+					alert('Cancel failed: ' + (data ? data.message : 'no response'));
+				}
+			})
+			.fail(function(xhr) {
+				console.log('RAW:', xhr.responseText);
+				alert('Cancel error');
+			});
+	});
+
+	$('#btn_confirm_borrow').on('click', function(e) {
+		e.preventDefault();
+		const payload = $('#borrowModal').data('borrowPayload') || {};
+		const borrowId = payload.borrowId || '';
+		if (!borrowId) return alert('Borrow ID not found.');
+
+		if (!confirm('Confirm this borrow request?')) return;
+
+		ajaxBorrowAction(CTX + '/eBorrowConfirm.action', borrowId)
+			.done(function(data) {
+				if (data && data.message === 'success') {
+					window.location.href = CTX + '/borrow_list.action';
+				} else {
+					alert('Confirm failed: ' + (data ? data.message : 'no response'));
+				}
+			})
+			.fail(function(xhr) {
+				console.log('RAW:', xhr.responseText);
+				alert('Confirm error');
+			});
+	});
+
+	// ===== Edit -> ไปหน้า borrow_edit.jsp?id=borrowId =====
+	$('#btn_edit').on('click', function(e) {
+		e.preventDefault();
+
+		const payload = $('#borrowModal').data('borrowPayload') || {};
+		const borrowId = payload.borrowId || '';
+
+		if (!borrowId) {
+			alert('Borrow ID not found.');
+			return;
+		}
+
+		window.location.href = CTX + '/borrow_edit.action?id=' + encodeURIComponent(borrowId);
+	});
+
+	// ===== ปุ่ม Request for Return ใน modal Return =====
+	$('#bd_request_return').on('click', function(e) {
+		e.preventDefault();
+
+		const borrowId = $('#borrowDetailModal').data('borrowId') || '';
+		const note = $('#bd_approver_note').val();
+
+		if (!borrowId) {
+			alert('Borrow ID not found.');
+			return;
+		}
+
+		if (!confirm('Are you sure you want to request return for this item?')) return;
+
+		$.ajax({
+			url: CTX + "/eBorrowReturn.action",
+			type: "POST",
+			dataType: "json",
+			data: { id: borrowId, note: note },
+			success: function(data) {
+				if (data && data.message === "success") {
+					alert("Return request submitted successfully!");
+					bdModalObj.hide();
+					window.location.href = CTX + "/borrow_list.action";
+				} else {
+					alert("Something went wrong: " + (data ? data.message : "no data"));
+				}
+			},
+			error: function(xhr) {
+				console.log("HTTP", xhr.status);
+				console.log("RAW", xhr.responseText);
+				alert("Failed to submit return request.");
+			}
+		});
+	});
+
+	// ✅ แก้ไขปัญหาปุ่ม X และ Cancel ใน modal Return
+	$('#borrowDetailModal').on('click', '[data-bs-dismiss="modal"]', function(e) {
+		e.preventDefault();
+		e.stopPropagation();
+		bdModalObj.hide();
+	});
+
+	// ✅ เมื่อเปิด modal Return ให้จัดการ z-index
+	$('#borrowDetailModal').on('shown.bs.modal', function() {
+		const $backdrop = $('.modal-backdrop').last();
+		const currentZIndex = parseInt($(this).css('z-index'), 10);
+
+		if ($backdrop.length) {
+			$backdrop.css('z-index', currentZIndex - 1);
+		}
+
+		$(this).css('z-index', currentZIndex + 2);
+	});
+
+	// ===== เปิด modal Return โดยตรง (ไม่ผ่าน modal Detail) =====
+	$(document).on('click', '.btn-borrow-detail', function(e) {
+		e.preventDefault();
+
+		const $tr = $(this).closest('tr');
+		const borrowId = $.trim($tr.find('td').eq(0).text());
+
+		const itemNo = $tr.data('itemNo') || $tr.data('item-no') || '';
+		const name = $tr.data('name') || '';
+		const detail = $tr.data('detail') || '';
+		const serial = $tr.data('serial') || '';
+		const status = (($tr.data('status') || '') + '').toUpperCase();
+
+		const amountRaw = $tr.data('amount');
+		let amountText = '1';
+		if (amountRaw !== undefined && amountRaw !== null && amountRaw !== '') {
+			const n = parseFloat(amountRaw);
+			amountText = (!isNaN(n) && n % 1 === 0) ? parseInt(n, 10).toString() : (amountRaw + '');
+		}
+
+		const timeCreate = $tr.data('timeCreate') || $tr.data('time-create') || '';
+
+		const type = (($tr.data('type') || '') + '').toLowerCase();
+		const windows = $tr.data('windows') || '';
+		const ram = $tr.data('ram') || '';
+		const hdd = $tr.data('hdd') || '';
+		const wifi = $tr.data('wifi') || '';
+		const lan = $tr.data('lan') || '';
+		const display = $tr.data('display') || '';
+		const cpu = $tr.data('process') || $tr.data('cpu') || '';
+		const battery = $tr.data('battery') || '';
+
+		// badge
+		const $badge = $('#bd_status_badge');
+		$badge.removeClass().addClass('badge badge-lg rounded-pill px-4 fw-semibold');
+
+		if (status === 'B') {
+			$badge.addClass('bg-warning text-white').text('Borrowing');
+		} else if (status === 'R') {
+			$badge.addClass('bg-success text-white').text('Returned');
+		} else if (status === 'W') {
+			$badge.addClass('bg-light text-dark').text('Wait for Approve');
+		} else {
+			$badge.addClass('bg-light text-muted').text('-');
+		}
+
+		// fill
+		$('#bd_item_link').text('ID: ' + itemNo);
+		$('#bd_name').text(name);
+		$('#bd_serial').text(serial);
+		$('#bd_detail').text(detail);
+		$('#bd_amount').text(amountText);
+		$('#bd_purchase_date').text(formatBorrowDate(timeCreate) || '-');
+
+		// ✅ รีเซ็ต collapse ก่อนเปิด modal
+		if (bdCollapseEl) {
+			const bdCollapseObj = bootstrap.Collapse.getOrCreateInstance(bdCollapseEl, { toggle: false });
+			bdCollapseObj.hide();
+			$('#bd_moreDetailIcon').removeClass('is-open');
+			$('#bd_moreDetailToggle').attr('aria-expanded', 'false');
+		}
+
+		// show/hide more detail
+		if (type === 'c') {
+			$('#bd_moreDetailWrapper').show();
+			$('#bd_windows').text(windows);
+			$('#bd_ram').text(ram);
+			$('#bd_storage').text(hdd);
+			$('#bd_storage2').text(hdd);
+			$('#bd_wifi').text(wifi);
+			$('#bd_lan').text(lan);
+			$('#bd_display').text(display);
+			$('#bd_cpu').text(cpu);
+			$('#bd_battery').text(battery);
+		} else {
+			$('#bd_moreDetailWrapper').hide();
+		}
+
+		$('#borrowDetailModal').data('borrowId', borrowId);
+		$('#bd_approver_note').val('');
+
+		bdModalObj.show();
+	});
+});
 </script>
 </body>
 </html>

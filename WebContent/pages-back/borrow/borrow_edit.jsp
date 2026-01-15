@@ -8,7 +8,8 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
 <fmt:setLocale value="en_US" />
-<fmt:formatDate value="${equipmentbyId.timeCreate}" pattern="d MMM yyyy" var="purchaseFmt" />
+<fmt:formatDate value="${equipmentbyId.timeCreate}" pattern="d MMM yyyy"
+	var="purchaseFmt" />
 <%
 /* =========================
    1) รับ JSON จาก eBorrowEdit
@@ -191,8 +192,9 @@ request.setAttribute("borrowObj", borrowObj);
 										<label class="form-label required fw-medium">Borrower</label>
 
 										<select name="user"
-											class="form-select form-select-lg fw-medium"
-											data-control="select2" data-placeholder="Select Borrower">
+											class="form-select form-select fw-medium text muted"
+											data-control="select2" data-placeholder="Select Borrower"
+											disabled>
 
 											<c:forEach var="u" items="${userListObj}">
 												<c:set var="uid"
@@ -223,8 +225,7 @@ request.setAttribute("borrowObj", borrowObj);
 									<div class="mb-7">
 										<label class="required fw-semibold fs-6 mb-2 d-block">Status</label>
 
-										<select name="status" class="form-select form-select-lg"
-											required>
+										<select name="status" class="form-select form-select" required>
 											<option value="">-- Select status --</option>
 
 											<c:forEach var="s" items="${statusObj}">
@@ -249,8 +250,7 @@ request.setAttribute("borrowObj", borrowObj);
 									<div class="mb-7">
 										<label class="required fw-semibold fs-6 mb-2 d-block">Equipment</label>
 
-										<select
-											class="form-select form-select-lg fw-medium text-muted"
+										<select class="form-select form-select fw-medium text-muted"
 											required disabled>
 											<option value="">-- Select equipment --</option>
 
@@ -273,7 +273,7 @@ request.setAttribute("borrowObj", borrowObj);
 												<i
 													class="ki-outline ki-calendar fs-3 position-absolute ms-4"></i>
 												<input type="text" id="start_date"
-													class="form-control form-control-lg ps-12" name="date_from"
+													class="form-control form-control ps-12" name="date_from"
 													placeholder="Select Date" value="${borrowObj['dateStart']}"
 													autocomplete="off" required />
 											</div>
@@ -285,7 +285,7 @@ request.setAttribute("borrowObj", borrowObj);
 												<i
 													class="ki-outline ki-calendar fs-3 position-absolute ms-4"></i>
 												<input type="text" id="end_date"
-													class="form-control form-control-lg ps-12" name="date_to"
+													class="form-control form-control ps-12" name="date_to"
 													placeholder="Select Date" value="${borrowObj['dateEnd']}"
 													autocomplete="off" />
 											</div>
@@ -296,7 +296,7 @@ request.setAttribute("borrowObj", borrowObj);
 									<div class="mb-7">
 										<label class="required fw-semibold fs-6 mb-2 d-block">Location</label>
 
-										<input class="form-control form-control-lg" type="text"
+										<input class="form-control form-control" type="text"
 											name="location" value="${locationVal}" />
 
 									</div>
@@ -304,7 +304,7 @@ request.setAttribute("borrowObj", borrowObj);
 									<!-- Reason -->
 									<div class="mb-7">
 										<label class="fw-semibold fs-6 mb-2 d-block">Reason</label>
-										<textarea class="form-control form-control-lg" rows="4"
+										<textarea class="form-control form-control" rows="4"
 											name="reason" placeholder="ระบุเหตุผลการยืม"><c:out
 												value="${borrowObj['reason']}" /></textarea>
 									</div>
@@ -313,7 +313,7 @@ request.setAttribute("borrowObj", borrowObj);
 									<div class="mb-7">
 										<label class="fw-semibold fs-6 mb-2 d-block">Contact
 											Address</label>
-										<textarea class="form-control form-control-lg" rows="4"
+										<textarea class="form-control form-control" rows="4"
 											name="contact" placeholder="Address"><c:out
 												value="${borrowObj['contactAddr']}" /></textarea>
 									</div>
@@ -321,7 +321,7 @@ request.setAttribute("borrowObj", borrowObj);
 									<!-- Remark -->
 									<div class="mb-7">
 										<label class="fw-semibold fs-6 mb-2 d-block">Remark</label>
-										<textarea class="form-control form-control-lg" rows="4"
+										<textarea class="form-control form-control" rows="4"
 											name="remark" placeholder="Remark"><c:out
 												value="${borrowObj['remark']}" /></textarea>
 									</div>
@@ -416,8 +416,7 @@ request.setAttribute("borrowObj", borrowObj);
 										<c:choose>
 											<c:when test="${not empty equip.image}">
 												<div class="symbol symbol-150px">
-													<img src="${equip.image}"
-														alt="${equip.code}"
+													<img src="${equip.image}" alt="${equip.code}"
 														class="border rounded-3 object-fit-cover w-100 h-100" />
 												</div>
 											</c:when>
@@ -432,14 +431,16 @@ request.setAttribute("borrowObj", borrowObj);
 									</div>
 
 									<!-- ===== ROW STYLE: label ซ้าย (กว้างคงที่) / value อยู่ถัดมา (ไม่ชิดขวา) ===== -->
-									<div class="d-flex py-2">
+									<div
+										class="d-flex justify-content-between align-items-center py-5 border-bottom border-gray-200">
 										<div class="text-gray-500" style="min-width: 130px;">Name:</div>
 										<div class="fw-semibold text-gray-800 text-break">
 											<c:out value="${equip.name}" />
 										</div>
 									</div>
 
-									<div class="d-flex py-2">
+									<div
+										class="d-flex justify-content-between align-items-center py-5 border-bottom border-gray-200">
 										<div class="text-gray-500" style="min-width: 130px;">Type:</div>
 										<div
 											class="fw-semibold text-gray-800 d-flex align-items-center gap-2 text-break">
@@ -480,7 +481,8 @@ request.setAttribute("borrowObj", borrowObj);
 										</div>
 									</div>
 
-									<div class="d-flex py-2">
+									<div
+										class="d-flex justify-content-between align-items-center py-5 border-bottom border-gray-200">
 										<div class="text-gray-500" style="min-width: 130px;">Serial
 											No:</div>
 										<div class="fw-semibold text-gray-800 text-break">
@@ -488,14 +490,16 @@ request.setAttribute("borrowObj", borrowObj);
 										</div>
 									</div>
 
-									<div class="d-flex py-2">
+									<div
+										class="d-flex justify-content-between align-items-center py-5 border-bottom border-gray-200">
 										<div class="text-gray-500" style="min-width: 130px;">Amount:</div>
 										<div class="fw-semibold text-gray-800">
 											<fmt:formatNumber value="${equip.amount}" pattern="#" />
 										</div>
 									</div>
 
-									<div class="d-flex py-2">
+									<div
+										class="d-flex justify-content-between align-items-center py-5 border-bottom border-gray-200">
 										<div class="text-gray-500" style="min-width: 130px;">Date
 											of Purchase:</div>
 										<div class="fw-semibold text-gray-800 text-break">
@@ -524,7 +528,7 @@ request.setAttribute("borrowObj", borrowObj);
 											}
 
 											String display = (parsed != null)
-													? new java.text.SimpleDateFormat("MMM dd , yyyy", java.util.Locale.ENGLISH).format(parsed)
+													? new java.text.SimpleDateFormat("dd MMM yyyy", java.util.Locale.ENGLISH).format(parsed)
 													: raww;
 
 											pageContext.setAttribute("PURCHASE_DISPLAY", display);
@@ -533,7 +537,8 @@ request.setAttribute("borrowObj", borrowObj);
 										</div>
 									</div>
 
-									<div class="d-flex py-2">
+									<div
+										class="d-flex justify-content-between align-items-center py-5 border-bottom border-gray-200">
 										<div class="text-gray-500" style="min-width: 130px;">Detail:</div>
 										<div class="fw-semibold text-gray-800 text-break">
 											<c:out value="${equip.detail}" />
@@ -542,11 +547,10 @@ request.setAttribute("borrowObj", borrowObj);
 
 									<c:if test="${equip.type == 'c'}">
 
-										<div class="border-top mt-4 pt-3">
-
+										<div>
 											<!-- ใช้ button แทน a เพื่อให้ toggle ปิด/เปิดชัวร์ -->
 											<button type="button"
-												class="btn btn-link p-0 w-100 text-primary fw-semibold d-flex justify-content-between align-items-center"
+												class="btn btn-link p-0 w-100 text-primary fw-semibold d-flex justify-content-between align-items-center py-5 border-bottom border-gray-200"
 												data-collapse-target="#moreDetailCollapse_${equipId}"
 												aria-expanded="false"
 												aria-controls="moreDetailCollapse_${equipId}">
@@ -560,42 +564,48 @@ request.setAttribute("borrowObj", borrowObj);
 											<div class="collapse mt-3" id="moreDetailCollapse_${equipId}"
 												data-equip-id="${equipId}">
 
-												<div class="d-flex py-2">
+												<div
+													class="d-flex justify-content-between align-items-center py-5 border-bottom border-gray-200">
 													<div class="text-gray-500" style="min-width: 130px;">Windows</div>
 													<div class="fw-semibold text-gray-800 text-break">
 														<c:out value="${equip.windows}" />
 													</div>
 												</div>
 
-												<div class="d-flex py-2">
+												<div
+													class="d-flex justify-content-between align-items-center py-5 border-bottom border-gray-200">
 													<div class="text-gray-500" style="min-width: 130px;">CPU</div>
 													<div class="fw-semibold text-gray-800 text-break">
 														<c:out value="${equip.process}" />
 													</div>
 												</div>
 
-												<div class="d-flex py-2">
+												<div
+													class="d-flex justify-content-between align-items-center py-5 border-bottom border-gray-200">
 													<div class="text-gray-500" style="min-width: 130px;">Ram</div>
 													<div class="fw-semibold text-gray-800 text-break">
 														<c:out value="${equip.ram}" />
 													</div>
 												</div>
 
-												<div class="d-flex py-2">
+												<div
+													class="d-flex justify-content-between align-items-center py-5 border-bottom border-gray-200">
 													<div class="text-gray-500" style="min-width: 130px;">Storage</div>
 													<div class="fw-semibold text-gray-800 text-break">
 														<c:out value="${equip.hdd}" />
 													</div>
 												</div>
 
-												<div class="d-flex py-2">
+												<div
+													class="d-flex justify-content-between align-items-center py-5 border-bottom border-gray-200">
 													<div class="text-gray-500" style="min-width: 130px;">Battery</div>
 													<div class="fw-semibold text-gray-800 text-break">
 														<c:out value="${equip.battery}" />
 													</div>
 												</div>
 
-												<div class="d-flex py-2">
+												<div
+													class="d-flex justify-content-between align-items-center py-5 border-bottom border-gray-200">
 													<div class="text-gray-500" style="min-width: 130px;">WIFI
 														Address</div>
 													<div class="fw-semibold text-gray-800 text-break">
@@ -603,7 +613,8 @@ request.setAttribute("borrowObj", borrowObj);
 													</div>
 												</div>
 
-												<div class="d-flex py-2">
+												<div
+													class="d-flex justify-content-between align-items-center py-5 border-bottom border-gray-200">
 													<div class="text-gray-500" style="min-width: 130px;">LAN
 														Address</div>
 													<div class="fw-semibold text-gray-800 text-break">
@@ -611,7 +622,8 @@ request.setAttribute("borrowObj", borrowObj);
 													</div>
 												</div>
 
-												<div class="d-flex py-2">
+												<div
+													class="d-flex justify-content-between align-items-center py-5 border-bottom border-gray-200">
 													<div class="text-gray-500" style="min-width: 130px;">Display</div>
 													<div class="fw-semibold text-gray-800 text-break">
 														<c:out value="${equip.display}" />
@@ -1087,25 +1099,31 @@ request.setAttribute("borrowObj", borrowObj);
 							}
 
 							function formatPurchaseDMY(dtStr) {
-								  if (!dtStr) return "";
+								if (!dtStr)
+									return "";
 
-								  let s = String(dtStr).trim();
-								  if (!s || s === "null") return "";
+								let s = String(dtStr).trim();
+								if (!s || s === "null")
+									return "";
 
-								  // รองรับ: "2021-04-27 08:08:51.0" / "2021-04-27 08:08:51"
-								  const m = s.match(/^(\d{4})-(\d{2})-(\d{2})(?:[ T](\d{2}):(\d{2})(?::(\d{2}))?(?:\.\d+)?)?$/);
-								  if (!m) return s; // ถ้าไม่ตรง format ก็คืนค่าเดิม
+								// รองรับ: "2021-04-27 08:08:51.0" / "2021-04-27 08:08:51"
+								const m = s
+										.match(/^(\d{4})-(\d{2})-(\d{2})(?:[ T](\d{2}):(\d{2})(?::(\d{2}))?(?:\.\d+)?)?$/);
+								if (!m)
+									return s; // ถ้าไม่ตรง format ก็คืนค่าเดิม
 
-								  const y = parseInt(m[1], 10);
-								  const mo = parseInt(m[2], 10);
-								  const d = parseInt(m[3], 10);
+								const y = parseInt(m[1], 10);
+								const mo = parseInt(m[2], 10);
+								const d = parseInt(m[3], 10);
 
-								  const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
-								  const dd = String(d);                  // ไม่ต้อง 0 นำหน้า
-								  const mon = months[mo - 1] || "";
+								const months = [ "Jan", "Feb", "Mar", "Apr",
+										"May", "Jun", "Jul", "Aug", "Sep",
+										"Oct", "Nov", "Dec" ];
+								const dd = String(d); // ไม่ต้อง 0 นำหน้า
+								const mon = months[mo - 1] || "";
 
-								  return `${dd} ${mon} ${y}`;            // d M Y
-								}
+								return `${dd} ${mon} ${y}`; // d M Y
+							}
 
 							// ✅ เปิด modal แล้วเติมค่าจาก JSP (ไม่ต้องใช้ data-*)
 							function openBorrowDetailModalFromJsp() {

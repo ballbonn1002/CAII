@@ -856,6 +856,10 @@ public class BorrowingAction extends ActionSupport {
 			List<Equipment> equipments = equipmentDAO.getAll();
 			List<EquipmentType> type = equipmentTypeDAO.getall(); //append type to sort by type in borrow list
 			String userJSON = userDAO.userListJSON();
+			log.debug(borrows);
+			log.debug(equipments);
+			log.debug(type);
+			log.debug(userJSON);
 			
 			request.setAttribute("userList", userJSON);
 			request.setAttribute("borrows", new Gson().toJson(borrows));
