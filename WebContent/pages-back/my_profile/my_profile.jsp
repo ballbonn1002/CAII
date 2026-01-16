@@ -705,8 +705,8 @@
 							id="resetPasswordForm" autocomplete="off">
 							<div class="card-body px-10 py-9">
 								<div class="row mb-8">
-									<div class="col-12 col-lg-4 mt-4 mb-0">
-										<label class="required fs-6 fw-medium text-gray-800  mb-2">Current
+									<div class="col-12 col-lg-4 mt-4 mb-0 mt-md-0 mt-lg-0">
+										<label class="required fs-6 fw-medium text-gray-800 mb-2">Current
 											Password</label>
 										<div class="position-relative">
 											 <input type="password"
@@ -735,7 +735,7 @@
 											class="text-danger fs-7 fw-medium d-none mt-2 mb-0">
 											Incorrect password.</span>
 									</div>
-									<div class="col-12 col-lg-4 mt-9 mt-md-4">
+									<div class="col-12 col-lg-4 mt-9 mt-md-4 mt-lg-0">
 
 										<label class="required fs-6 fw-medium text-gray-800  mb-2">New
 											Password</label> 
@@ -768,7 +768,7 @@
 											New password must be different from Current Password.</span>
 
 									</div>
-									<div class="col-12 col-lg-4 mt-9 mt-md-4">
+									<div class="col-12 col-lg-4 mt-9 mt-md-4 mt-lg-0">
 										<label class="required fs-6 fw-medium text-gray-800  mb-2">Confirm
 											New Password</label> 
 											<div class="position-relative">

@@ -2,6 +2,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
+<fmt:setLocale value="en_US" />
 <%
     String yearParam = request.getParameter("year");
 %>
@@ -721,7 +722,10 @@
     if (String(activeFilters.birthdays) === '1') badges.push('Birthday month');
     if (String(activeFilters.birthdays) === '2') badges.push('Birthday week');
 
-    var base = 'Employee (' + totalAll + ')';
+ 	var count = badges.length ? total : totalAll;
+    
+    var base = 'Employee (' + count + ')';
+    /* var base = 'Employee (' + totalAll + ')'; */
     var desc = badges.length ? '<span class="fs-6 text-muted fw-normal ms-2"> • Filtered by: ' + badges.join(', ') + '</span>' : '';
     $('#dt_showing').html('<h3 class="fw-bold text-gray-900 m-0 d-flex align-items-center">' + base + desc + '</h3>');
     $('#dt_showing').removeClass('fs-7 text-dark'); 

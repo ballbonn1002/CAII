@@ -463,6 +463,14 @@
 			<result name="success" type="chain">role-list-setting</result>
 			<result name="error">/index.jsp</result>
 		</action>
+		
+		<!-- Employee Profile Edit User Security -->
+		<action name="admin_update_password"
+			class="com.cubesofttech.action.UserAction" method="admin_update_password">
+			<result name="success" type="redirectAction">user-edit?userId=${userId}</result>
+			<result name="error">/index.jsp</result>
+		</action>
+		
 		<!-- Role Management ================================================================================================== -->
 
 		<action name="demo_table"
@@ -489,11 +497,11 @@
 		</action>
 		<action name="admin-perform-edit"
 			class="com.cubesofttech.action.UserAction" method="performEdit">
-			<result name="success" type="tiles">admin_edit_userprofile</result>
+			<result name="success" type="redirectAction">user-edit?userId=${userId}</result>
+			<!-- <result name="success" type="tiles">admin_edit_userprofile</result> -->
 			<!-- <result name="input" type="tiles">admin_edit_userprofile</result> -->
 			<result name="error">/index.jsp</result>
 		</action>
-
 		<action name="update-user-statustest"
 			class="com.cubesofttech.action.UserAction"
 			method="updateUserStatustest">

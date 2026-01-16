@@ -50,6 +50,15 @@
 	border-color: #009ef7 !important;
 	color: #fff !important;
 }
+
+.toggle-password.d-none {
+	display: none !important;
+}
+
+#password.is-invalid,
+#confirm_password.is-invalid {
+    background-image: none !important;
+}
 </style>
 
 </head>
@@ -732,9 +741,15 @@
 
 								<div class="col-md-6 fv-row">
 									<label class="required form-label">Citizen ID</label> <input
-										type="text" class="form-control" name="user.citizenId"
-										name="user.citizenId" maxlength="13" pattern="[0-9]{13}"
+										type="text" class="form-control" id="user_citizenId"
+										name="user.citizenId" maxlength="17" inputmode="numeric"
+										required oninput="formatCitizenId(this)"
 										value="${selectUser.citizenId}" required />
+
+									<!-- error message -->
+									<span id="citizenIdError"
+										class="text-danger fs-7 fw-medium d-none mt-2 mb-0">
+										Please enter a valid 13-digit.</span>
 								</div>
 								<div class="col-md-6 fv-row">
 									<label class="form-label">Passport ID</label> <input
@@ -763,7 +778,7 @@
 								<div class="col-md-6 fv-row">
 									<label class="required form-label">Phone Number</label> <input
 										type="text" class="form-control" name="user.phonenum"
-										maxlength="10" pattern="[0-9]{10}"
+										oninput="formatPhone(this)" maxlength="20"
 										value="${selectUser.phonenum}" required />
 								</div>
 
@@ -1378,71 +1393,116 @@
 					</div>
 
 					<div class="text-end mt-10 d-flex justify-content-end gap-6">
-						<button type="button" class="btn btn-light" id="btnCancel">Cancel</button>
+						<button type="button" class="btn btn-light" id="btnCancel"
+							onclick="confirmLeaveForm('user-list')">Cancel</button>
 						<button type="button" class="btn btn-success" id="btnSubmit">Save</button>
 					</div>
 				</form>
-				<div class="d-none" id="security-info">
 
-					<div class="card mb-10">
-						<div class="card-header">
-							<h3 class="card-title fw-bold m-0">Security</h3>
+				<form action="admin_update_password" method="post" id="resetPasswordForm" 
+					 autocomplete="off">
+					<input type="hidden" name="user_id" value="${selectUser.id}" />
+					<div class="d-none" id="security-info">
+
+						<div class="card mb-10">
+							<div class="card-header">
+								<h3 class="card-title fw-bold m-0">Security</h3>
+							</div>
+							<div class="card-body pt-6">
+								<div class="row g-9">
+									<div
+										class="col d-flex align-items-center justify-content-between">
+										<div class="col">
+											<p class="fs-6 text-gray-800 fw-bold mb-0">Password</p>
+											<p class="fs-5 text-muted fw-medium mb-0">************</p>
+										</div>
+										<a class="btn btn-lg btn-light fw-medium text-light-inverse"
+											id="btnShowResetCard">Reset Password</a>
+									</div>
+								</div>
+							</div>
+
 						</div>
-						<div class="card-body pt-6">
-							<div class="row g-9">
-								<div class="col-md-12 fv-row">
-									<label class="form-label">Password</label>
 
-									<div class="input-group">
-										<input type="password"
-											class="form-control border-0 shadow-none bg-transparent"
-											readonly value="${selectUser.password}" />
+						<div class="card mb-10 d-none" id="resetPasswordCard">
+							<div class="card-header">
+								<h3 class="card-title fw-bold m-0">Security</h3>
+							</div>
+							<div class="card-body px-10 py-9">
+								<div class="row mb-8">
+									<div class="col-12 col-lg-6 mt-4 mb-0 mt-md-0 mt-lg-0">
+										<label class="required fs-6 fw-medium text-gray-800  mb-2">New
+											Password</label>
+										<div class="position-relative">
+											<input type="password" class="form-control" name="password"
+												id="password" placeholder="New Password"
+												autocomplete="new-password" oninput="validateNewPassword();"
+												minlength="6" /> 
+												<span class="btn btn-sm btn-icon position-absolute top-50 end-0 translate-middle-y toggle-password"
+										         data-eye-target="password">
+										   	 	<i class="ki-duotone ki-eye-slash fs-2">
+												    <span class="path1"></span>
+												    <span class="path2"></span>
+												    <span class="path3"></span>
+												    <span class="path4"></span>
+												 </i>
+												
+												  <i class="ki-duotone ki-eye fs-2 d-none">
+												    <span class="path1"></span>
+												    <span class="path2"></span>
+												    <span class="path3"></span>
+												    <span class="path4"></span>
+												  </i>
+										  	</span>
+										</div>
 
-										<button class="btn btn-light btn-md" type="button"
-											id="btnShowResetCard">Reset Password</button>
+									</div>
+									<div class="col-12 col-lg-6 mt-9 mt-md-4 mt-lg-0">
+										<label class="required fs-6 fw-medium text-gray-800  mb-2">Confirm
+											New Password</label>
+										<div class="position-relative">
+											<input type="password" class="form-control"
+												name="confirmpassword" id="confirm_password"
+												placeholder="Confirm Password"
+												oninput="validateConfirmPassword()" minlength="6" /> 
+												<span class="btn btn-sm btn-icon position-absolute top-50 end-0 translate-middle-y toggle-password"
+										         data-eye-target="confirm_password">
+										   	 	<i class="ki-duotone ki-eye-slash fs-2">
+												    <span class="path1"></span>
+												    <span class="path2"></span>
+												    <span class="path3"></span>
+												    <span class="path4"></span>
+												 </i>
+												
+												  <i class="ki-duotone ki-eye fs-2 d-none">
+												    <span class="path1"></span>
+												    <span class="path2"></span>
+												    <span class="path3"></span>
+												    <span class="path4"></span>
+												  </i>
+										  	</span>
+										</div>
 
+										<span id="confirmNewPwError"
+											class="text-danger fs-7 fw-medium d-none mt-2 mb-0">
+											The password is incorrect. Please enter it again.</span>
 									</div>
 
 								</div>
+								<p id="pwPattern" class="fs-6 fw-normal text-muted mb-0">Password
+									must be at least 6 character.</p>
 							</div>
-						</div>
-
-					</div>
-
-					<div class="card mb-10 d-none" id="resetPasswordCard">
-						<div class="card-header">
-							<h3 class="card-title fw-bold m-0">Security</h3>
-						</div>
-						<div class="card-body pt-6">
-							<div class="row g-9">
-								<div class="col-md-6 fv-row">
-									<label class="form-label">New Password</label> <input
-										type="password" class="form-control" name="password"
-										id="password" placeholder="New Password"
-										autocomplete="new-password" />
+							<div class="card-footer">
+								<div class="text-end d-flex justify-content-end gap-6">
+									<button type="button" class="btn btn-light"
+										id="btnPasswordCancel">Cancel</button>
+									<button type="button" class="btn btn-success" onclick="validatePassword()"
+										id="btnPasswordUpdate">Update Password</button>
 								</div>
-
-								<div class="col-md-6 fv-row">
-									<label class="form-label">Confirm Password</label> <input
-										type="password" class="form-control" name="confirmpassword"
-										id="confirm_password" placeholder="Confirm Password" />
-									<div id="passwordMessage" class="mt-2 fw-semibold fs-7"></div>
-								</div>
-							</div>
-
-						</div>
-
-						<div class="card-footer">
-							<div class="text-end d-flex justify-content-end gap-6">
-								<button type="button" class="btn btn-light"
-									id="btnPasswordCancel">Cancel</button>
-								<button type="button" class="btn btn-success"
-									id="btnPasswordUpdate">Update Password</button>
 							</div>
 						</div>
 					</div>
-				</div>
-
+				</form>
 
 				<div id="borrow-info">
 					<div class="portlet light bordered" id="borrow-info">
@@ -1460,6 +1520,8 @@
 
 	<script>
 	document.addEventListener("DOMContentLoaded", function() {
+		toggleEyeIcon();
+		
 	    const removeBtn = document.querySelector('[data-kt-image-input-action="remove"]');
 	    const removeHidden = document.getElementById('avatarRemoveHidden');
 	    
@@ -1476,8 +1538,49 @@
 	        locale: "en",        
 	        allowInput: false
 	    });
+	    
+	    const citizenInput = document.getElementById("user_citizenId");
+		if (citizenInput.value) {
+	        formatCitizenId(citizenInput);
+	    }
 	});
 </script>
+
+	<script>
+	function formatCitizenId(input){
+		var value = input.value.replace(/\D/g, '').slice(0, 13);
+		if (!value) { 
+	        input.value = "";
+	        document.getElementById("citizenIdError").classList.add("d-none");
+	        return;
+	    }
+		
+		var formatted = value;
+		if (value.length > 1)
+			formatted = value.slice(0,1) + '-' + value.slice(1);
+		if (value.length > 5)
+			formatted = value.slice(0,1) + '-' + value.slice(1,5) + '-' + value.slice(5);
+		if (value.length > 10)
+			formatted = value.slice(0,1) + '-' + value.slice(1,5) + '-' + value.slice(5,10) + '-' + value.slice(10);
+		if (value.length > 12)
+			formatted = value.slice(0,1) + '-' + value.slice(1,5) + '-' + value.slice(5,10) + '-' + value.slice(10,12) + '-' + value.slice(12);
+
+		input.value = formatted;
+
+		const error = document.getElementById("citizenIdError");
+		if (value.length === 13) {
+			error.classList.add("d-none");
+		} else {
+			error.classList.remove("d-none");
+		}
+	}
+	
+	
+	function formatPhone(input){
+		input.value = input.value.replace(/[^0-9\-a-zA-Zก-๙\s]/g, '');
+	}
+	</script>
+
 
 	<script>
     const STEP_MIN = 30;
@@ -1659,7 +1762,7 @@
 
           const targets = Array.from(navLinks).map(link => link.getAttribute("data-target"));
 
-          function toggleFormButtons(targetId) {
+        /*   function toggleFormButtons(targetId) {
             const hideOn = ["#security-info", "#borrow-info"];   
             const shouldHide = hideOn.includes(targetId);
 
@@ -1674,7 +1777,7 @@
                 btn.classList.remove("d-none");   
               }
             });
-          }
+          } */
 
           function showSection(targetId) {
             targets.forEach(sel => {
@@ -1860,11 +1963,33 @@
                 }, 300);
 
             } else {
-                form.submit();
+                /* form.submit(); */
+            	Swal.fire({
+   		    	 title: "Are you sure?!",
+   		 	        text: "Do you want to save the changes?",
+   		 	        icon: "warning",
+   		 	        showCancelButton: true,
+   		 	        confirmButtonText: "Save",
+   		 	        cancelButtonText: "Close",
+   		 	        buttonsStyling: false,
+   		 	        customClass: {
+   		 	            confirmButton: "btn btn-success",
+   		 	            cancelButton: "btn btn-secondary"
+   		 	        }
+   		    }).then((result) => {
+   		        if (result.isConfirmed) {
+   		        	const citizenIdInput = document.getElementById("user_citizenId");
+   		            if (citizenIdInput) {
+   		                citizenIdInput.value = citizenIdInput.value.replace(/\D/g, '');
+   		            }
+   		        	
+   		        	form.submit();
+   		        }
+   		    });
             }
         });
 
-        $('#btnCancel').click(function() { window.location.href = 'user-list'; });
+       /*  $('#btnCancel').click(function() { window.location.href = 'user-list'; }); */
 
         $('#btnDelete').click(function() {
             var userId = $(this).data('user-id');
@@ -1885,22 +2010,51 @@
             $('#resetPasswordCard').removeClass('d-none');
             $('html, body').animate({ scrollTop: $("#resetPasswordCard").offset().top - 100 }, 500);
         });
-        $('#btnPasswordCancel').click(function() {
+       /*  $('#btnPasswordCancel').click(function() {
             $('#resetPasswordCard').addClass('d-none');
             $('#password, #confirm_password').val('');
             $('#passwordMessage').html('');
+        }); */
+        $('#btnPasswordCancel').click(function () {
+        	Swal.fire({
+                title: "Are you sure?!",
+                text: "Closing will discard any unsaved data.",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonText: "Yes, discard it",
+                cancelButtonText: "Cancel",
+                buttonsStyling: false,
+                customClass: {
+                    confirmButton: "btn btn-danger",
+                    cancelButton: "btn btn-secondary"
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $('#resetPasswordCard').addClass('d-none');
+                    $('#password, #confirm_password').val('');
+                    $('#passwordMessage').html(''); 
+                    
+                    $('#password').removeClass('is-invalid');
+                    $('#confirm_password').removeClass('is-invalid');
+                    $('#confirmNewPwError').addClass('d-none');
+                    $('#pwPattern')
+                        .removeClass('text-danger')
+                        .addClass('text-muted');
+                }
+            });
         });
-        $('#password, #confirm_password').keyup(function() {
+
+        /* $('#password, #confirm_password').keyup(function() {
             var p = $('#password').val(), c = $('#confirm_password').val();
             if(p == "" && c == "") { $('#passwordMessage').html(''); return; }
             $('#passwordMessage').html(p == c ? '<span class="text-success">ตรงกัน</span>' : '<span class="text-danger">ไม่ตรงกัน</span>');
         });
         $('#btnPasswordUpdate').click(function() {
-            var p = $('#password').val(), c = $('#confirm_password').val();
+           var p = $('#password').val(), c = $('#confirm_password').val();
             if(p === "" || c === "") { alert('กรุณากรอกรหัสผ่าน'); return; }
             if(p !== c) { alert('รหัสผ่านไม่ตรงกัน'); return; }
-            $('form[action="admin-perform-edit"]').submit();
-        });
+            $('form[action="admin-perform-edit"]').submit(); 
+        }); */
 
         var getUrlParameter = function getUrlParameter(sParam) {
             var sPageURL = window.location.search.substring(1),
@@ -1920,6 +2074,189 @@
         }
     });
 </script>
+
+
+	<script>
+function confirmLeaveForm(redirectUrl){
+	
+    Swal.fire({
+        title: "Are you sure?!",
+        text: "Closing will discard any unsaved data.",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonText: "Yes, discard it",
+        cancelButtonText: "Cancel",
+        buttonsStyling: false,
+        customClass: {
+            confirmButton: "btn btn-danger",
+            cancelButton: "btn btn-secondary"
+        }
+    }).then((result) => {
+        if (result.isConfirmed) {
+            window.location.href = redirectUrl;
+        }
+    });
+}
+</script>
+
+	<script>
+	function toggleEyeIcon(){
+		document.querySelectorAll(".toggle-password").forEach(btn =>{
+			
+			if (btn.dataset.bound === "true") return;
+		    btn.dataset.bound = "true";
+		    
+			btn.addEventListener("click", function(){
+				const input =document.getElementById(this.dataset.eyeTarget);
+				/* if (input.disabled) return; */
+
+			      const eyeSlash = this.querySelector(".ki-eye-slash");
+			      const eye = this.querySelector(".ki-eye");
+
+			      if (input.type === "password") {
+			        input.type = "text";
+			        eyeSlash.classList.add("d-none");
+			        eye.classList.remove("d-none");
+			        this.classList.add("active-eye");
+			      } else {
+			        input.type = "password";
+			        eye.classList.add("d-none");
+			        eyeSlash.classList.remove("d-none");
+			        this.classList.remove("active-eye");
+			      }  
+			})
+			
+		})
+	}
+
+	var isNewPwValid = false;
+		
+	function validateNewPassword() {
+	    const password = document.getElementById("password").value.trim();
+	    const pattern = /^\S{6,}$/;
+
+	    if (password === "") {
+	        setPwPattern("normal");
+	        isNewPwValid = false;
+	        return false;
+	    }
+
+	    if (!pattern.test(password)) {
+	        setPwPattern("error");  
+	        isNewPwValid = false;
+	        return false;
+	    }
+
+	    setPwPattern("normal");
+	    isNewPwValid = true;
+	    return true;
+	}
+	
+
+	
+	function validateConfirmPassword() {
+	    const password = document.getElementById("password");
+	    const confirmPassword = document.getElementById("confirm_password");
+	    const errorEl = document.getElementById("confirmNewPwError");
+
+	    if (confirmPassword.value.trim() === "") {
+	        confirmPassword.classList.remove("is-invalid");
+	        errorEl.classList.add("d-none");
+	        return true;
+	    }
+
+	    if (password.value !== confirmPassword.value) {
+	    	confirmPassword.classList.add("is-invalid");
+	    	errorEl.classList.remove("d-none"); 
+	        return false;
+	    }
+
+	    confirmPassword.classList.remove("is-invalid");
+	    errorEl.classList.add("d-none");
+	    return true;
+	}
+
+
+	
+	function validatePassword() {
+	    var errorFields = [];
+	    var isValid = true;
+
+	    const newPwInput = document.getElementById("password");
+	    const newPwValue = newPwInput.value.trim();
+	    const confirmNewPw = document.getElementById("confirm_password").value.trim();
+
+	  
+	        if (!newPwValue){
+	        	errorFields.push("New Password");
+	        }
+	        if (!confirmNewPw) {
+		        errorFields.push("Confirm New Password");
+		    }
+
+	    if (errorFields.length > 0) {
+	        Swal.fire({
+	            title: "Please complete the form!",
+	            html: "Please fill in the following fields:<br><strong>" + errorFields.join(", ") + "</strong>",
+	            icon: "error",
+	            confirmButtonText: "OK",
+	            buttonsStyling: false,
+	            customClass: { confirmButton: "btn btn-danger" }
+	        });
+	        return false;
+	    }
+
+	    if (!newPwInput.disabled) {
+	        //เรียกfunc ให้update สถานะล่าสุด
+	        const isPwPatternOk = validateNewPassword(); 
+	        const isConfirmOk = validateConfirmPassword();
+
+	        if (!isPwPatternOk || !isConfirmOk) {
+	            isValid = false;
+	        }
+	    }
+
+	    if (!isValid) return false;
+
+	    Swal.fire({
+	        title: "Are you sure?!",
+	        text: "Do you want to save the changes?",
+	        icon: "warning",
+	        showCancelButton: true,
+	        confirmButtonText: "Save",
+	        cancelButtonText: "Close",
+	        buttonsStyling: false,
+	        customClass: {
+	            confirmButton: "btn btn-success",
+	            cancelButton: "btn btn-secondary"
+	        }
+	    }).then((result) => {
+	        if (result.isConfirmed) {
+	            document.getElementById("resetPasswordForm").submit();
+	        }
+	    });
+	}
+	
+	 
+	
+	function setPwPattern(state){
+		 const pwPattern = document.getElementById("pwPattern");
+		 const passwordInput = document.getElementById("password");
+		  if (!pwPattern || !passwordInput) return;
+
+		  pwPattern.classList.remove("text-muted", "text-danger");
+		   passwordInput.classList.remove("is-invalid");
+		 
+		 if(state === "error"){
+			 pwPattern.classList.add("text-danger");
+			 passwordInput.classList.add("is-invalid");
+		 }else{
+			 pwPattern.classList.add("text-muted");
+		 }
+	 }
+	 
+</script>
+
 
 </body>
 </html>

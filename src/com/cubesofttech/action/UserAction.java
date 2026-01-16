@@ -1151,6 +1151,39 @@ public class UserAction extends ActionSupport {
 			return ERROR;
 		}
 	}
+	public String admin_update_password() {
+	    try {
+	        String targetUserId = request.getParameter("user_id");
+	        String newPw  = request.getParameter("password");
+
+	        log.debug("user_id:" + targetUserId );
+	        log.debug("password:" + newPw );
+
+	        if (targetUserId != null) targetUserId = targetUserId.trim();
+	        if (newPw != null)  newPw  = newPw.trim();
+
+	        if (targetUserId == null || targetUserId.isEmpty()
+	                || newPw == null || newPw.isEmpty()) {
+	            return ERROR;
+	        }
+
+	        User dbUser = userDAO.findById(targetUserId);
+	        
+	        String hashedNewPassword =
+	                MD5.getInstance().hashData(newPw.getBytes());
+
+	        dbUser.setPassword(hashedNewPassword);
+	        userDAO.update(dbUser);
+
+	        this.userId = targetUserId;
+
+	        return SUCCESS;
+	    } catch (Exception e) {
+	    	e.printStackTrace();
+	        return ERROR;
+	    }
+	}
+
 
 	public String changepass() {
 		try {
