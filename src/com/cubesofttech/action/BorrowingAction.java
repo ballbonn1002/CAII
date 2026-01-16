@@ -554,7 +554,6 @@ public class BorrowingAction extends ActionSupport {
 	    try {
 	        String equipmentId = request.getParameter("equipmentId");
 
-	        // กัน null/ว่าง
 	        if (equipmentId == null || equipmentId.trim().isEmpty()) {
 	            ServletActionContext.getResponse().setContentType("application/json;charset=UTF-8");
 	            ServletActionContext.getResponse().getWriter().write("[]");
@@ -566,7 +565,7 @@ public class BorrowingAction extends ActionSupport {
 
 	        ServletActionContext.getResponse().setContentType("application/json;charset=UTF-8");
 	        ServletActionContext.getResponse().getWriter().write(new Gson().toJson(borrowWithUser));
-	        return null; // ✅ เขียน response เองแล้ว
+	        return null;
 
 	    } catch (Exception ex) {
 	        ex.printStackTrace();
@@ -589,18 +588,14 @@ public class BorrowingAction extends ActionSupport {
 
 	        Borrow borrow = borrowDAO.findById(Integer.parseInt(bId));
 
-	        // ✅ 1) เอา equipmentId จาก borrow (ปรับชื่อ getter ให้ตรงกับของคุณ)
 	        String equipmentId = String.valueOf(borrow.getEquipmentId()); 
-	        // ถ้าของคุณชื่อ getId_equipment() ก็เปลี่ยนเป็น borrow.getId_equipment()
 
-	        // ✅ 2) Usage history ต้องหาโดย equipmentId ไม่ใช่ bId
 	        List<Map<String, Object>> borrowWithUser =
 	                borrowDAO.findBorrowWithUserByEquipmentId(equipmentId);
 
 	        request.setAttribute("borrowlistwithUser", borrowWithUser);
 	        request.setAttribute("borrowlistwithUserJSON", new Gson().toJson(borrowWithUser));
 
-	        // ✅ 3) Status log (ของ equipment) ให้ส่งไปด้วยเหมือน eEdit
 	        Equipment eq = equipmentDAO.getById(Integer.parseInt(equipmentId));
 
 	        // ===== ของเดิม =====
@@ -849,12 +844,12 @@ public class BorrowingAction extends ActionSupport {
 		}
 	}
 	
-	// New Equipment Borrow List
 	public String newEquipBorrowList() {
 		try {
+			log.debug("Test BorrowList");
 			List<Borrow> borrows = borrowDAO.findAll_exceptStatus_A();
 			List<Equipment> equipments = equipmentDAO.getAll();
-			List<EquipmentType> type = equipmentTypeDAO.getall(); //append type to sort by type in borrow list
+			List<EquipmentType> type = equipmentTypeDAO.getall();
 			String userJSON = userDAO.userListJSON();
 			log.debug(borrows);
 			log.debug(equipments);
