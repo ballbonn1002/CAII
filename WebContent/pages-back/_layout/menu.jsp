@@ -298,19 +298,19 @@ String targetURL = Constant.getWebContext2() + "/authorization?token=" + token;
 					</div>
 					<!--end:Menu item-->
 					<!--begin:Menu item-->
-                    <perm:permission object="equipmentlist.view">
-					<div class="menu-item">
-						<!--begin:Menu link-->
-						<a class="menu-link" href="equipment_list"
-							data-route="equipment_list"> <span class="menu-icon">
-								<i class="ki-duotone ki-monitor-mobile fs-1"> <span
-									class="path1"></span> <span class="path2"></span>
-							</i>
-						</span> <span class="menu-title">Equipment</span>
-						</a>
-						<!--end:Menu link-->
-					</div>
-                    </perm:permission>
+					<perm:permission object="equipmentlist.view">
+						<div class="menu-item">
+							<!--begin:Menu link-->
+							<a class="menu-link" href="equipment_list"
+								data-route="equipment_list"> <span class="menu-icon">
+									<i class="ki-duotone ki-monitor-mobile fs-1"> <span
+										class="path1"></span> <span class="path2"></span>
+								</i>
+							</span> <span class="menu-title">Equipment</span>
+							</a>
+							<!--end:Menu link-->
+						</div>
+					</perm:permission>
 					<!--end:Menu item-->
 					<!--begin:Menu item-->
 					<perm:permission object="borrow.view">
@@ -546,6 +546,16 @@ String targetURL = Constant.getWebContext2() + "/authorization?token=" + token;
 								<a class="menu-link" data-route="demo_table" href="demo_table">
 									<span class="menu-icon"> <span class="bullet bullet-dot"></span>
 								</span> <span class="menu-title">Table</span>
+								</a>
+								<!--end:Menu link-->
+							</div>
+							<!--end:Menu item-->
+							<!--begin:Menu item-->
+							<div class="menu-item">
+								<!--begin:Menu link-->
+								<a class="menu-link" href="demo_add_holiday"> <span
+									class="menu-icon"> <span class="bullet bullet-dot"></span>
+								</span> <span class="menu-title">Holiday Add</span>
 								</a>
 								<!--end:Menu link-->
 							</div>
