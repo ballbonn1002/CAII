@@ -1362,7 +1362,7 @@ public class LeaveDAOImpl implements LeaveDAO {
 	             "AND leaves.start_date >= '" + startDate + "' " +
 	             "AND leaves.start_date <= '" + endDate + "' " +
 	             "ORDER BY leaves.time_create DESC";
-		System.out.println(sql);
+		//System.out.println(sql);
 		SQLQuery query = session.createSQLQuery(sql);
 		query.setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
 		searchbydate = query.list();
@@ -1393,7 +1393,6 @@ public class LeaveDAOImpl implements LeaveDAO {
 		List searchbydate = null;
 		String sql = "SELECT leave_id FROM leaves WHERE user_id ='" + userId + "' AND start_date>='" + startDate
 				+ "' AND start_date<='" + endDate + "' AND leave_status_id = '" + status + "'";
-		System.out.println(sql);
 		SQLQuery query = session.createSQLQuery(sql);
 		query.setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
 		searchbydate = query.list();

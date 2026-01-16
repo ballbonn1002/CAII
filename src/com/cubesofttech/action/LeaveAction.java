@@ -778,14 +778,6 @@ public class LeaveAction extends ActionSupport {
 
 			log.debug(start_date + " userleave " + end_date);
 			log.debug("*****************************");
-			log.debug(LeavenumT1);
-			log.debug(LeavenumT2);
-			log.debug(LeavenumT3);
-			log.debug(LeavenumT4);
-			log.debug(LeavenumT5);
-			log.debug(LeavenumT6);
-			log.debug(LeavenumT7);
-			log.debug(LeavenumT9);
 
 			request.setAttribute("LeavenumT1", LeavenumT1);
 			request.setAttribute("LeaveWAnumT1", LeaveWAnumT1);
@@ -812,7 +804,6 @@ public class LeaveAction extends ActionSupport {
 			request.setAttribute("flag_search", "0");
 
 			List<LeaveType> type_leave = leavetypeDAO.findAll();
-			log.debug(type_leave);
 			request.setAttribute("leavetypelistChoice", type_leave);
 			request.setAttribute("type_1", type_leave.get(0).getLeaveTypeName());
 			request.setAttribute("type_2", type_leave.get(1).getLeaveTypeName());

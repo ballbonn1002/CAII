@@ -4,7 +4,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
 <%@ taglib uri="/WEB-INF/tlds/permission.tld" prefix="perm"%>
-<fmt:setLocale value="en_US" scope="page"/>
+<fmt:setLocale value="en_US" scope="page" />
 
 <link href="assets/plugins/global/plugins.bundle.css" rel="stylesheet"
 	type="text/css" />
@@ -89,7 +89,7 @@
 											<input class="form-check-input h-20px w-33px" type="checkbox"
 												name="highlight" value="1" checked id="highlight" />
 										</div>
-										
+
 										<div
 											class="form-check form-switch form-check-custom form-check-success form-check-solid">
 											<span class="fs-6 fw-medium text-gray-700">Active&nbsp;&nbsp;</span><input
@@ -186,12 +186,14 @@
 										<!--end::Cancel button-->
 
 										<!--begin::Remove button-->
-										<span
-											class="btn btn-icon btn-circle btn-color-muted btn-active-color-primary w-25px h-25px bg-body shadow"
-											data-kt-image-input-action="remove" data-bs-toggle="tooltip"
-											data-bs-dismiss="click" title="Remove avatar"> <i
-											class="ki-outline ki-cross fs-3"></i>
-										</span>
+										<c:if test="${not empty announcement}">
+											<span
+												class="btn btn-icon btn-circle btn-color-muted btn-active-color-primary w-25px h-25px bg-body shadow"
+												data-kt-image-input-action="remove" data-bs-toggle="tooltip"
+												data-bs-dismiss="click" title="Remove avatar"> <i
+												class="ki-outline ki-cross fs-3"></i>
+											</span>
+										</c:if>
 										<!--end::Remove button-->
 									</div>
 									<!--end::Image input-->
