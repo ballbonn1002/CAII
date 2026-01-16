@@ -179,11 +179,11 @@ public class LoginAction extends ActionSupport {
 				        String typeFile = originalFileName.substring(originalFileName.lastIndexOf("."));
 				        imgPath = "/upload/user/user_" + fileId + typeFile;
 
-				        String server = request.getServletContext().getRealPath("/");
-				        File f = new File(server + imgPath);
-				        if (!f.exists()) {
-				            imgPath = null;
-				        }
+//				        String server = request.getServletContext().getRealPath("/");
+//				        File f = new File(server + imgPath);
+//				        if (!f.exists()) {
+//				            imgPath = null;
+//				        }
 				    } catch (Exception e) {
 				        imgPath = null;
 				    }

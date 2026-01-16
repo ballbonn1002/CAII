@@ -161,8 +161,9 @@ Logger log = Logger.getLogger("com.cubesofttech.jsp.borrow_add");
 									<!-- Borrower -->
 									<div class="mb-7">
 										<label class="form-label required fw-medium">Borrower</label>
+
 										<select name="user"
-											class="form-select form-select-lg fw-medium"
+											class="form-select form-select fw-medium"
 											data-control="select2" data-placeholder="Select Borrower"
 											required>
 											<option value="">-- Select borrower --</option>
@@ -170,37 +171,48 @@ Logger log = Logger.getLogger("com.cubesofttech.jsp.borrow_add");
 											<c:forEach var="u" items="${userListObj}">
 												<c:set var="uid"
 													value="${not empty u['id'] ? u['id']
-            : (not empty u['user_id'] ? u['user_id']
-            : (not empty u['USER_ID'] ? u['USER_ID'] : ''))}" />
+        : (not empty u['user_id'] ? u['user_id']
+        : (not empty u['USER_ID'] ? u['USER_ID'] : ''))}" />
 
 												<c:set var="emp"
 													value="${not empty u['employee_id'] ? u['employee_id']
-            : (not empty u['employeeId'] ? u['employeeId']
-            : '')}" />
+        : (not empty u['employeeId'] ? u['employeeId']
+        : '')}" />
 
 												<c:set var="nameTH"
 													value="${not empty u['name'] ? u['name']
-            : (not empty u['fullname'] ? u['fullname']
-            : '')}" />
+        : (not empty u['fullname'] ? u['fullname']
+        : '')}" />
 
 												<c:set var="nameEN"
 													value="${not empty u['name_en'] ? u['name_en']
-            : (not empty u['nameEn'] ? u['nameEn']
-            : '')}" />
+        : (not empty u['nameEn'] ? u['nameEn']
+        : '')}" />
+
 												<c:set var="role"
 													value="${not empty u['role'] ? u['role'] : ''}" />
-												<option value="${uid}">${emp}-${nameTH}-${nameEN}-
-													${role}</option>
+
+												<!-- enable: รองรับ key ได้หลายแบบ + แปลงให้เป็น string เพื่อเทียบง่าย -->
+												<c:set var="enableVal"
+													value="${not empty u['enable'] ? u['enable']
+        : (not empty u['ENABLE'] ? u['ENABLE']
+        : (not empty u['is_enable'] ? u['is_enable']
+        : (not empty u['isEnable'] ? u['isEnable']
+        : '0')))}" />
+
+												<c:if
+													test="${enableVal == 1 || enableVal == '1' || enableVal == true || enableVal == 'true'}">
+													<option value="${uid}">${emp}-${nameTH}-${nameEN}-${role}</option>
+												</c:if>
 											</c:forEach>
 										</select>
-
 									</div>
 
 									<!-- Status -->
 									<div class="mb-7">
 										<label class="required fw-medium mb-2 d-block">Status</label>
 										<select name="status"
-											class="form-select form-select-lg text-muted" required>
+											class="form-select form-select text-muted" required>
 											<option value="">Select status</option>
 											<option value="B">Borrowing</option>
 											<option value="W">Wait for approve</option>
@@ -213,7 +225,7 @@ Logger log = Logger.getLogger("com.cubesofttech.jsp.borrow_add");
 										<label class="required fw-medium mb-2 d-block">Equipment</label>
 
 										<select id="equipment_select" name="equipment"
-											class="form-select form-select-lg fw-medium text-muted"
+											class="form-select form-select fw-medium text-muted"
 											data-control="select2" data-placeholder="Select equipment"
 											required>
 
@@ -326,7 +338,7 @@ Logger log = Logger.getLogger("com.cubesofttech.jsp.borrow_add");
 												<i
 													class="ki-outline ki-calendar fs-3 position-absolute ms-4"></i>
 												<input type="text" id="start_date"
-													class="form-control form-control-lg ps-12" name="date_from"
+													class="form-control form-control ps-12" name="date_from"
 													placeholder="Select Date" value="" autocomplete="off"
 													required />
 											</div>
@@ -338,7 +350,7 @@ Logger log = Logger.getLogger("com.cubesofttech.jsp.borrow_add");
 												<i
 													class="ki-outline ki-calendar fs-3 position-absolute ms-4"></i>
 												<input type="text" id="end_date"
-													class="form-control form-control-lg ps-12" name="date_to"
+													class="form-control form-control ps-12" name="date_to"
 													placeholder="Select Date" value="" autocomplete="off" />
 											</div>
 										</div>
@@ -348,14 +360,14 @@ Logger log = Logger.getLogger("com.cubesofttech.jsp.borrow_add");
 									<!-- Location -->
 									<div class="mb-7">
 										<label class="required fw-medium fs-6 mb-2 d-block">Location</label>
-										<input class="form-control form-control-lg" type="text"
+										<input class="form-control form-control" type="text"
 											name="location" value="" placeholder="Location" required />
 									</div>
 
 									<!-- Reason -->
 									<div class="mb-7">
 										<label class="fw-medium fs-6 mb-2 d-block">Reason</label>
-										<textarea class="form-control form-control-lg" rows="4"
+										<textarea class="form-control form-control" rows="4"
 											name="reason" placeholder="ระบุเหตุผลการยืม"></textarea>
 									</div>
 
@@ -363,14 +375,14 @@ Logger log = Logger.getLogger("com.cubesofttech.jsp.borrow_add");
 									<div class="mb-7">
 										<label class="fw-medium fs-6 mb-2 d-block">Contact
 											Address</label>
-										<textarea class="form-control form-control-lg" rows="4"
+										<textarea class="form-control form-control" rows="4"
 											name="contact" placeholder="Address"></textarea>
 									</div>
 
 									<!-- Remark -->
 									<div class="mb-7">
 										<label class="fw-medium fs-6 mb-2 d-block">Remark</label>
-										<textarea class="form-control form-control-lg" rows="4"
+										<textarea class="form-control form-control" rows="4"
 											name="remark" placeholder="Remark"></textarea>
 									</div>
 
@@ -810,11 +822,9 @@ const endPicker = flatpickr(endEl, {
 								  var monthNames = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
 
 								  function fmt(mIndex, day, year) {
-								    // mIndex = 0-11
-								    return monthNames[mIndex] + " " + String(day).padStart(2, "0") + ", " + year;
+								    return String(day).padStart(2, "0") + " " + monthNames[mIndex] + " " + year;
 								  }
 
-								  // 1) yyyy-MM-dd (หรือมีเวลา)
 								  var m = s.match(/^(\d{4})-(\d{2})-(\d{2})/);
 								  if (m) {
 								    var y = parseInt(m[1], 10);
@@ -823,7 +833,6 @@ const endPicker = flatpickr(endEl, {
 								    return fmt(mo - 1, d, y);
 								  }
 
-								  // 2) dd-MM-yyyy หรือ dd/MM/yyyy
 								  m = s.match(/^(\d{2})[\/-](\d{2})[\/-](\d{4})/);
 								  if (m) {
 								    var d2 = parseInt(m[1], 10);
@@ -832,7 +841,6 @@ const endPicker = flatpickr(endEl, {
 								    return fmt(mo2 - 1, d2, y2);
 								  }
 
-								  // 3) อังกฤษ เช่น "May 15, 2024, 2:22:35 AM"
 								  var parsed = Date.parse(s);
 								  if (!Number.isNaN(parsed)) {
 								    var dt = new Date(parsed);
@@ -844,6 +852,7 @@ const endPicker = flatpickr(endEl, {
 
 								  return s;
 								}
+
 
 							function updateCard() {
 								const opt = sel.options[sel.selectedIndex];

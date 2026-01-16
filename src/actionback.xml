@@ -873,10 +873,6 @@
 		</action>
 		<!--Borrow -->
 		<action name="borrow_list"
-			class="com.cubesofttech.action.BorrowingAction" method="open">
-			<result name="success" type="tiles">borrowList</result>
-		</action>
-		<action name="borrow_list"
 			class="com.cubesofttech.action.BorrowingAction"
 			method="newEquipBorrowList">
 
