@@ -21,100 +21,105 @@
 		<put-attribute name="footer"
 			value="/pages-back/_layout/footer.jsp" />
 	</definition>
-	
+
 	<!-- BLANK TEMPLATE -->
 	<definition name="blankTemplate" extends="baseLayout">
-		<put-attribute name="title" value="Blank Template"/>
+		<put-attribute name="title" value="Blank Template" />
 		<put-attribute name="body"
 			value="/pages-back/_layout/blank_template.jsp" />
 	</definition>
-	
+
 	<!-- DASHBOARD -->
 	<definition name="demoDashboard" extends="baseLayout">
-		<put-attribute name="title" value="Demo Dashboard"/>
+		<put-attribute name="title" value="Demo Dashboard" />
 		<put-attribute name="body"
 			value="/pages-back/dashboard/demo_dashboard.jsp" />
 	</definition>
-	
+
 	<!-- TABLE -->
 	<definition name="demoTable" extends="baseLayout">
-		<put-attribute name="title" value="Demo Table"/>
+		<put-attribute name="title" value="Demo Table" />
 		<put-attribute name="body"
-			value="/pages-back/table/demo_table.jsp"/>
+			value="/pages-back/table/demo_table.jsp" />
 	</definition>
-	
+
 	<!-- Equipment List -->
 	<definition name="equipmentList" extends="baseLayout">
-		<put-attribute name="title" value="Equipment List"/>
+		<put-attribute name="title" value="Equipment List" />
 		<put-attribute name="body"
 			value="/pages-back/equipment/equipment_list.jsp" />
 	</definition>
-	
+
 	<!-- Equipment Add -->
 	<definition name="equipmentAdd" extends="baseLayout">
-		<put-attribute name="title" value="Equipment Add"/>
+		<put-attribute name="title" value="Equipment Add" />
 		<put-attribute name="body"
 			value="/pages-back/equipment/equipment_add.jsp" />
 	</definition>
-	
+
 	<!-- Equipment Edit -->
 	<definition name="equipmentEdit" extends="baseLayout">
-		<put-attribute name="title" value="Equipment Edit"/>
+		<put-attribute name="title" value="Equipment Edit" />
 		<put-attribute name="body"
 			value="/pages-back/equipment/equipment_edit.jsp" />
 	</definition>
-	
+
 	<!-- Equipment Setting -->
 	<definition name="equipmentSetting" extends="baseLayout">
-		<put-attribute name="title" value="Equipment Setting"/>
+		<put-attribute name="title" value="Equipment Setting" />
 		<put-attribute name="body"
 			value="/pages-back/equipment/equipment_setting.jsp" />
 	</definition>
-	
+
 	<!-- Equipment Setting Stasus Edit -->
 	<definition name="equipmentStatusEdit" extends="baseLayout">
-		<put-attribute name="title" value="Equipment Status Edit"/>
+		<put-attribute name="title"
+			value="Equipment Status Edit" />
 		<put-attribute name="body"
 			value="/pages-back/equipment/equipment_status_edit.jsp" />
 	</definition>
-	
+
 	<!-- Equipment Setting Type Edit -->
 	<definition name="equipmentTypeEdit" extends="baseLayout">
-		<put-attribute name="title" value="Equipment Type Edit"/>
+		<put-attribute name="title" value="Equipment Type Edit" />
 		<put-attribute name="body"
 			value="/pages-back/equipment/equipment_type_edit.jsp" />
 	</definition>
-	
+
 	<!-- Equipment Setting Stasus Add -->
 	<definition name="equipmentStatusAdd" extends="baseLayout">
-		<put-attribute name="title" value="Equipment Status Add"/>
+		<put-attribute name="title" value="Equipment Status Add" />
 		<put-attribute name="body"
 			value="/pages-back/equipment/equipment_status_add.jsp" />
 	</definition>
-	
+
 	<!-- Equipment Setting Type Add -->
 	<definition name="equipmentTypeAdd" extends="baseLayout">
-		<put-attribute name="title" value="Equipment Type Add"/>
+		<put-attribute name="title" value="Equipment Type Add" />
 		<put-attribute name="body"
 			value="/pages-back/equipment/equipment_type_add.jsp" />
 	</definition>
-	
+
 	<!-- FORGET PASSWORD (standalone page) -->
-	<definition name="forgetPassword" template="/pages-back/forget_password/forget_password.jsp">
-	    <put-attribute name="title" value="Forget Password"/>
+	<definition name="forgetPassword"
+		template="/pages-back/forget_password/forget_password.jsp">
+		<put-attribute name="title" value="Forget Password" />
 	</definition>
-	
+
 	<!-- RESET PASSWORD -->
 	<definition name="resetPassword" extends="baseLayout">
-		<put-attribute name="title" value="Reset Password"/>
-		<put-attribute name="body" value="/pages-back/forget_password/reset_password.jsp" />
+		<put-attribute name="title" value="Reset Password" />
+		<put-attribute name="body"
+			value="/pages-back/forget_password/reset_password.jsp" />
 	</definition>
 
 	<!-- FORGET PASSWORD SUCCESS (standalone page) -->
-	<definition name="resetPasswordSuccess" template="/pages-back/forget_password/reset_password_success.jsp">
-	    <put-attribute name="title" value="Reset Password Success"/>
+	<definition name="resetPasswordSuccess"
+		template="/pages-back/forget_password/reset_password_success.jsp">
+		<put-attribute name="title"
+			value="Reset Password Success" />
 	</definition>
-	
+
 	<!-- User -->
 	<definition name="user.list" extends="baseLayout">
 		<put-attribute name="title" value="User Management" />
@@ -133,35 +138,43 @@
 		<put-attribute name="body"
 			value="/pages-back/user/user_add.jsp" />
 	</definition>
-	
+
 	<definition name="borrowTable" extends="baseLayout">
 		<put-attribute name="body"
 			value="/pages-back/borrow/bTable.jsp" />
 	</definition>
-	
+
 	<!-- Check All Calendar -->
 	<definition name="CheckAllCalendar" extends="baseLayout">
 		<put-attribute name="title" value="Check All Calendar" />
-		<put-attribute name="body" value="/pages-back/calendar/checkall_calendar.jsp" />
+		<put-attribute name="body"
+			value="/pages-back/calendar/checkall_calendar.jsp" />
 	</definition>
 	<definition name="CheckAllCalendar2" extends="baseLayout">
 		<put-attribute name="title" value="Check All Calendar" />
-		<put-attribute name="body" value="/pages-back/calendar/checkall_calendar2.jsp" />
+		<put-attribute name="body"
+			value="/pages-back/calendar/checkall_calendar2.jsp" />
 	</definition>
-	
+
 	<!-- HOLIDAY -->
 	<definition name="holidayList" extends="baseLayout">
-		<put-attribute name="title" value="Holiday List"/>
+		<put-attribute name="title" value="Holiday List" />
 		<put-attribute name="body"
 			value="/pages-back/holiday/holiday_newlist.jsp" />
 	</definition>
-	
+
 	<definition name="holidayAdd" extends="baseLayout">
-		<put-attribute name="title" value="Holiday Add"/>
+		<put-attribute name="title" value="Holiday Add" />
 		<put-attribute name="body"
 			value="/pages-back/holiday/holiday_add.jsp" />
 	</definition>
-	
+
+	<definition name="demoHolidayAdd" extends="baseLayout">
+		<put-attribute name="title" value="Holiday Add" />
+		<put-attribute name="body"
+			value="/pages-back/holiday/demo_holiday_add.jsp" />
+	</definition>
+
 	<definition name="holiday_edit" extends="baseLayout">
 		<put-attribute name="title" value="Holiday Edit" />
 		<put-attribute name="body"
@@ -170,37 +183,37 @@
 
 	<!-- CHECK-IN/CHECK-OUT -->
 	<definition name="checkInOut" extends="baseLayout">
-		<put-attribute name="title" value="Check-In/Check-Out"/>
+		<put-attribute name="title" value="Check-In/Check-Out" />
 		<put-attribute name="body"
-			value="/pages-back/check/check_in_out.jsp"/>
+			value="/pages-back/check/check_in_out.jsp" />
 	</definition>
 
 	<!-- My Leave -->
-	
-		<!-- Listing Page-->
-	<!-- <definition name="new_myleave_list" extends="baseLayout">
-		<put-attribute name="title" value="My leave list" />
-		<put-attribute name="body" value="/pages-back/leave/new_myleave_list.jsp"/>
-	</definition> -->
-	<!-- <definition name="new_myleave_list">
-		<put-attribute name="title" value="My leave list" />
-		<put-attribute name="body" value="/pages-back/leave/new_myleave_list.jsp"/>
-	</definition> -->
-	
+
+	<!-- Listing Page -->
+	<!-- <definition name="new_myleave_list" extends="baseLayout"> <put-attribute 
+		name="title" value="My leave list" /> <put-attribute name="body" value="/pages-back/leave/new_myleave_list.jsp"/> 
+		</definition> -->
+	<!-- <definition name="new_myleave_list"> <put-attribute name="title" value="My 
+		leave list" /> <put-attribute name="body" value="/pages-back/leave/new_myleave_list.jsp"/> 
+		</definition> -->
+
 	<definition name="new_myleave_list" extends="baseLayout">
-	    <put-attribute name="title" value="My Leave List"/>
-	    <put-attribute name="body" value="/pages-back/leave/my_leave_list.jsp"/>
+		<put-attribute name="title" value="My Leave List" />
+		<put-attribute name="body"
+			value="/pages-back/leave/my_leave_list.jsp" />
 	</definition>
-	
-		<!-- Listing Page-->
 
-		<!-- newLeave Template-->
+	<!-- Listing Page -->
+
+	<!-- newLeave Template -->
 	<definition name="newLeave" extends="baseLayout">
-		<put-attribute name="body" value="/pages-back/leave/new_leavePage.jsp" />
+		<put-attribute name="body"
+			value="/pages-back/leave/new_leavePage.jsp" />
 	</definition>
-		<!-- newLeave Template-->
+	<!-- newLeave Template -->
 
-		<!-- Add Leave Page-->
+	<!-- Add Leave Page -->
 	<definition name="newLeaveAdd" extends="newLeave">
 		<put-attribute name="title" value="Add Leave" />
 	</definition>
@@ -209,135 +222,140 @@
 		<put-attribute name="body"
 			value="/pages-back/borrow/leavecalendar.jsp" />
 	</definition>
-		<!-- Add Leave Page-->
-		
-		<!-- Edit Page-->
+	<!-- Add Leave Page -->
+
+	<!-- Edit Page -->
 	<definition name="newLeaveEdit" extends="newLeave">
 		<put-attribute name="title" value="Edit Leave" />
 	</definition>
-		<!-- Edit Page-->
-		
-		<!-- File -->
-	<definition name="previewFile" template="/pages-back/leave/preview_file.jsp">
+	<!-- Edit Page -->
+
+	<!-- File -->
+	<definition name="previewFile"
+		template="/pages-back/leave/preview_file.jsp">
 		<put-attribute name="title" value="Preview File" />
 	</definition>
-		<!-- File -->
+	<!-- File -->
 
 	<!-- My Leave -->
-	
+
 	<!-- Leave Approve -->
 	<definition name="new_leave_approved" extends="baseLayout">
 		<put-attribute name="title" value="Leave approved" />
-		<put-attribute name="body" value="/pages-back/leave/new_leave_approved.jsp" />
+		<put-attribute name="body"
+			value="/pages-back/leave/new_leave_approved.jsp" />
 	</definition>
 	<definition name="leave_list" extends="baseLayout">
 		<put-attribute name="title" value="Leave list" />
-		<put-attribute name="body" value="/pages-back/leave/my_leave_list.jsp" />
+		<put-attribute name="body"
+			value="/pages-back/leave/my_leave_list.jsp" />
 	</definition>
 	<!-- Leave Approve -->
-	
+
 	<!-- Role Management -->
 	<definition name="role.list" extends="baseLayout">
 		<put-attribute name="title" value="Role Management" />
-		<put-attribute name="body" value="/pages-back/role/role_list.jsp" />
+		<put-attribute name="body"
+			value="/pages-back/role/role_list.jsp" />
 	</definition>
 	<definition name="role.edit" extends="baseLayout">
 		<put-attribute name="title" value="Role Edit" />
-		<put-attribute name="body" value="/pages-back/role/role_edit.jsp" />
+		<put-attribute name="body"
+			value="/pages-back/role/role_edit.jsp" />
 	</definition>
 	<definition name="role.add" extends="baseLayout">
 		<put-attribute name="title" value="Role Add" />
-		<put-attribute name="body" value="/pages-back/role/role_add.jsp" />
+		<put-attribute name="body"
+			value="/pages-back/role/role_add.jsp" />
 	</definition>
 	<definition name="role.list.setting" extends="baseLayout">
 		<put-attribute name="title" value="Role List Setting" />
-		<put-attribute name="body" value="/pages-back/role/role_list_setting.jsp" />
+		<put-attribute name="body"
+			value="/pages-back/role/role_list_setting.jsp" />
 	</definition>
 	<!-- Role Management -->
-	
+
 	<!-- Announcement -->
 	<definition name="AnnouncementList" extends="baseLayout">
-		<put-attribute name="title" value="Annoucemnet List"/>
+		<put-attribute name="title" value="Annoucemnet List" />
 		<put-attribute name="body"
-			value="/pages-back/announcement/announcement_list.jsp"/>
+			value="/pages-back/announcement/announcement_list.jsp" />
 	</definition>
 	<definition name="AnnouncementRead" extends="baseLayout">
-		<put-attribute name="title" value="Annoucemnet Read"/>
+		<put-attribute name="title" value="Annoucemnet Read" />
 		<put-attribute name="body"
-			value="/pages-back/announcement/announcement_read.jsp"/>
+			value="/pages-back/announcement/announcement_read.jsp" />
 	</definition>
 	<definition name="AnnouncementAdd" extends="baseLayout">
-		<put-attribute name="title" value="Annoucemnet Add"/>
+		<put-attribute name="title" value="Annoucemnet Add" />
 		<put-attribute name="body"
-			value="/pages-back/announcement/announcement_add.jsp"/>
+			value="/pages-back/announcement/announcement_add.jsp" />
 	</definition>
-	
+
 	<!-- POSITION -->
 	<definition name="positionList" extends="baseLayout">
-		<put-attribute name="title" value="Position List"/>
+		<put-attribute name="title" value="Position List" />
 		<put-attribute name="body"
 			value="/pages-back/position/position_list.jsp" />
 	</definition>
-	
+
 	<definition name="positionAdd" extends="baseLayout">
 		<put-attribute name="title" value="Add Position" />
 		<put-attribute name="body"
 			value="/pages-back/position/position_add.jsp" />
 	</definition>
-	
+
 	<definition name="positionEdit" extends="baseLayout">
 		<put-attribute name="title" value="Edit Position" />
 		<put-attribute name="body"
 			value="/pages-back/position/position_edit.jsp" />
 	</definition>
-	
-		<!-- DEPARTMENT -->
+
+	<!-- DEPARTMENT -->
 	<definition name="departmentList" extends="baseLayout">
-		<put-attribute name="title" value="Department List"/>
+		<put-attribute name="title" value="Department List" />
 		<put-attribute name="body"
 			value="/pages-back/department/department_list.jsp" />
 	</definition>
-	
+
 	<definition name="departmentAdd" extends="baseLayout">
 		<put-attribute name="title" value="Add Department" />
 		<put-attribute name="body"
 			value="/pages-back/department/department_add.jsp" />
 	</definition>
-	
+
 	<definition name="departmentEdit" extends="baseLayout">
 		<put-attribute name="title" value="Edit Department" />
 		<put-attribute name="body"
 			value="/pages-back/department/department_edit.jsp" />
 	</definition>
-	
-	<!-- MY PROFILE-->
-	<definition name="my_profile"
-		extends="baseLayout">
-		<put-attribute name="title"
-			value="My Profile" />
+
+	<!-- MY PROFILE -->
+	<definition name="my_profile" extends="baseLayout">
+		<put-attribute name="title" value="My Profile" />
 		<put-attribute name="body"
 			value="/pages-back/my_profile/my_profile.jsp" />
 	</definition>
-	
+
 	<!-- JOB SITE -->
 	<definition name="jobsiteList" extends="baseLayout">
 		<put-attribute name="title" value="Jobsite List" />
 		<put-attribute name="body"
 			value="/pages-back/jobsite/jobsite_list.jsp" />
 	</definition>
-	
+
 	<definition name="jobsiteAdd" extends="baseLayout">
 		<put-attribute name="title" value="Create Jobsite" />
 		<put-attribute name="body"
 			value="/pages-back/jobsite/jobsite_add.jsp" />
 	</definition>
-	
+
 	<definition name="jobsiteEdit" extends="baseLayout">
 		<put-attribute name="title" value="Edit Jobsite" />
 		<put-attribute name="body"
 			value="/pages-back/jobsite/jobsite_edit.jsp" />
 	</definition>
-	
+
 	<!-- MY JOB SITE -->
 	<definition name="myJobsite" extends="baseLayout">
 		<put-attribute name="title" value="My Job Site" />
@@ -345,19 +363,19 @@
 			value="/pages-back/my_jobsite/my_jobsite.jsp" />
 	</definition>
 	<!-- Borrow -->
-    <definition name="borrowList" extends="baseLayout">
-        <put-attribute name="title" value="Borrow List"/>
-        <put-attribute name="body"
-            value="/pages-back/borrow/borrow_list.jsp" />
-    </definition>
-    <definition name="borrowEdit" extends="baseLayout">
-        <put-attribute name="title" value="Borrow Edit"/>
-        <put-attribute name="body"
-            value="/pages-back/borrow/borrow_edit.jsp" />
-    </definition>
-    <definition name="borrowAdd" extends="baseLayout">
-        <put-attribute name="title" value="Borrow Add"/>
-        <put-attribute name="body"
-            value="/pages-back/borrow/borrow_add.jsp" />
-    </definition>
+	<definition name="borrowList" extends="baseLayout">
+		<put-attribute name="title" value="Borrow List" />
+		<put-attribute name="body"
+			value="/pages-back/borrow/borrow_list.jsp" />
+	</definition>
+	<definition name="borrowEdit" extends="baseLayout">
+		<put-attribute name="title" value="Borrow Edit" />
+		<put-attribute name="body"
+			value="/pages-back/borrow/borrow_edit.jsp" />
+	</definition>
+	<definition name="borrowAdd" extends="baseLayout">
+		<put-attribute name="title" value="Borrow Add" />
+		<put-attribute name="body"
+			value="/pages-back/borrow/borrow_add.jsp" />
+	</definition>
 </tiles-definitions>

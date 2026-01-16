@@ -564,6 +564,10 @@
 			<result name="error" type="tiles">/error.jsp</result>
 			<result name="input" type="tiles">holidayAdd</result>
 		</action>
+		
+		<action name="demo_add_holiday" class="com.cubesofttech.action.DemoAddHoliday">
+			<result name="success" type="tiles">demoHolidayAdd</result>
+		</action>
 
 		<action name="holiday_edit"
 			class="com.cubesofttech.action.HolidayAction" method="Edit">
