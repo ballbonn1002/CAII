@@ -180,6 +180,16 @@
 														<span class="badge fw-semibold text-dark"
 															style="background-color: #FFC107;">Draft</span>
 													</c:if>
+													<c:if test="${ann.highlight == '1'}">
+														<span
+															class="badge badge-light-danger d-inline-flex justify-content-center align-items-center"
+															style="width: 26px; height: 26px; padding: 0;"> <i
+															class="ki-duotone ki-pin text-danger"
+															style="font-size: 16px;"> <span class="path1"></span>
+																<span class="path2"></span>
+														</i>
+														</span>
+													</c:if>
 													<c:if test="${announcementDateStr > todayStr}">
 														<span class="badge fw-semibold text-white"
 															style="background-color: #F1C40F;">Pending</span>
@@ -243,6 +253,16 @@
 													<span class="badge fw-semibold text-white"
 														style="background-color: #007BFF;">New</span>
 												</c:if>
+												<c:if test="${ann.highlight == '1'}">
+													<span
+														class="badge badge-light-danger d-inline-flex justify-content-center align-items-center"
+														style="width: 26px; height: 26px; padding: 0;"> <i
+														class="ki-duotone ki-pin text-danger"
+														style="font-size: 16px;"> <span class="path1"></span>
+															<span class="path2"></span>
+													</i>
+													</span>
+												</c:if>
 											</div>
 
 											<!-- รูป -->
@@ -289,9 +309,10 @@
 	var end = moment();
 
 	function cb(start, end) {
-		$("#kt_daterangepicker_4").html(
-				start.format("DD MMM YYYY") + " - "
-						+ end.format("DD MMM YYYY"));
+		$("#kt_daterangepicker_4")
+				.html(
+						start.format("DD MMM YYYY") + " - "
+								+ end.format("DD MMM YYYY"));
 	}
 
 	$("#kt_daterangepicker_4")
@@ -299,9 +320,9 @@
 					{
 						startDate : start,
 						endDate : end,
-						locale: {
-				            format: 'DD MMM YYYY'
-				        },
+						locale : {
+							format : 'DD MMM YYYY'
+						},
 						ranges : {
 							"Today" : [ moment(), moment() ],
 							"Yesterday" : [ moment().subtract(1, "days"),

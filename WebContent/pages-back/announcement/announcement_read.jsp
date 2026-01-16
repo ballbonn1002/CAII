@@ -65,8 +65,16 @@
 						<div class="card card-flush py-3">
 							<div class="card-header pt-5">
 								<h3 class="card-title align-items-start flex-column">
-									<span class="card-label fw-bold text-gray-900"><c:forEach
+									<span class="card-label fw-bold text-gray-900 d-flex align-items-center"><c:forEach
 											var="ann" items="${announcement}">
+											<c:if test="${ann['highlight'] == '1'}">
+							                    <span class="badge badge-light-danger me-3 justify-content-center align-items-center" style="width: 26px; height: 26px; padding: 0;">
+							                        <i class="ki-duotone ki-pin text-danger" style="font-size: 16px;">
+							                            <span class="path1"></span>
+							                            <span class="path2"></span>
+							                        </i>
+							                    </span>
+							                </c:if>
 											${ann['topic']}
 										</c:forEach></span>
 								</h3>

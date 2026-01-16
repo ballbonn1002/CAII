@@ -51,6 +51,7 @@ public class AnnouncementAction extends ActionSupport {
 	private String topic;
 	private String anndate;
 	private String status;
+	private String highlight;
 	private String detail;
 	private String announcementId;
 
@@ -96,6 +97,14 @@ public class AnnouncementAction extends ActionSupport {
 
 	public void setStatus(String status) {
 		this.status = status;
+	}
+	
+	public String getHighlight() {
+		return highlight;
+	}
+
+	public void setHighlight(String highlight) {
+		this.highlight = highlight;
 	}
 
 	public String getDetail() {
@@ -231,6 +240,10 @@ public class AnnouncementAction extends ActionSupport {
 			if (status == null || status.isEmpty()) {
 				status = "0";
 			}
+			
+			if (highlight == null || highlight.isEmpty()) {
+			    highlight = "0";
+			}
 
 			DateTimeFormatter inputFormatter = DateTimeFormatter.ofPattern("dd MMM yyyy", Locale.ENGLISH);
 			LocalDate localDate = LocalDate.parse(anndate, inputFormatter);
@@ -255,6 +268,8 @@ public class AnnouncementAction extends ActionSupport {
 			announcement.setDetail(detail);
 			announcement.setStatus(status);
 			announcement.setannouncement_date(date);
+			announcement.setHighlight(highlight);
+			
 
 			// Then save or update
 			if (isEdit) {

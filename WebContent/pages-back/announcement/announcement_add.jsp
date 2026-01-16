@@ -4,6 +4,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
 <%@ taglib uri="/WEB-INF/tlds/permission.tld" prefix="perm"%>
+<fmt:setLocale value="en_US" scope="page"/>
 
 <link href="assets/plugins/global/plugins.bundle.css" rel="stylesheet"
 	type="text/css" />
@@ -82,6 +83,13 @@
 								<div class="card-header pt-5">
 									<h3 class="card-title fw-semibold">Announcement</h3>
 									<div class="card-toolbar">
+										<div
+											class="form-check form-switch form-check-custom form-check-primary form-check-solid me-7">
+											<span class="fs-6 fw-medium text-gray-700">Highlight&nbsp;&nbsp;</span>
+											<input class="form-check-input h-20px w-33px" type="checkbox"
+												name="highlight" value="1" checked id="highlight" />
+										</div>
+										
 										<div
 											class="form-check form-switch form-check-custom form-check-success form-check-solid">
 											<span class="fs-6 fw-medium text-gray-700">Active&nbsp;&nbsp;</span><input
@@ -253,6 +261,7 @@ document.addEventListener('DOMContentLoaded', function() {
             components: { clock: false }
         },
         localization: {
+        	locale: 'en',
             format: "dd MMM yyyy"
         }
     });
@@ -502,6 +511,7 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById("topic").value = "${announcement.topic}";
     document.getElementById("kt_td_picker_basic_input").value = "<fmt:formatDate value='${announcement.announcement_date}' pattern='dd MMM yyyy'/>";
     document.getElementById("status").checked = ${announcement.status == '1' ? 'true' : 'false'};
+    document.getElementById("highlight").checked = ${announcement.highlight == '1' ? 'true' : 'false'};
 
     // วนไฟล์เก่ามา preview
     const fileListDiv = document.getElementById("fileList");
