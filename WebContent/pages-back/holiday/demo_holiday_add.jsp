@@ -5,10 +5,6 @@
 <head>
 <meta charset="UTF-8">
 <title>Demo</title>
-<link rel="stylesheet"
-	href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-<script
-	src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
 <!-- Metronic core -->
 <link
@@ -23,20 +19,12 @@
 <script
 	src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/1.1.3/sweetalert.min.js"></script>
 
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link
-	href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
-	rel="stylesheet">
+
 
 <style type="text/css">
 .icon-width {
 	width: 40px;
 	justify-content: center;
-}
-
-.app-main {
-	font-family: 'Inter', sans-serif;
 }
 </style>
 </head>
@@ -61,10 +49,10 @@
 		<div class="app-content">
 			<div class="card  shadow-sm">
 				<div class="card-header pt-7 border-0">
-					<h3 class="mb-0 fw-seminbold text-gray-900">Holiday
-						Application From</h3>
+					<h3 class="mb-0 fw-semibold text-gray-900">Holiday Application
+						From</h3>
 				</div>
-				<form id="holidayForm" action="">
+				<form id="holidayForm" action="" onsubmit="return onSubmit()">
 					<div class="card-body">
 						<div class="date d-flex flex-row gap-5 mb-3">
 							<div id="strat-date" class="date-lg flex-fill">
@@ -77,7 +65,8 @@
 											<span class="path2"></span> <span class="path3"></span> <span
 											class="path4"></span> <span class="path5"></span> <span
 											class="path6"></span>
-									</i> </span> <input type="text" class="form-control py-4" placeholder="1 Jan 2025"/>
+									</i> </span> <input type="text" class="form-control py-4"
+										placeholder="1 Jan 2026" required="required" id="date_start" />
 								</div>
 
 							</div>
@@ -91,7 +80,8 @@
 											<span class="path2"></span> <span class="path3"></span> <span
 											class="path4"></span> <span class="path5"></span> <span
 											class="path6"></span>
-									</i> </span> <input type="text" class="form-control py-4" placeholder="1 Jan 2025"/>
+									</i> </span> <input type="text" class="form-control py-4"
+										placeholder="1 Jan 2026" required="required" id="date_end" />
 								</div>
 							</div>
 						</div>
@@ -99,11 +89,10 @@
 							<label for="holiday-name"
 								class="required form-label text-gray-800 fw-medium">Holiday
 								Name</label> <input type="text" class="form-control py-4 px-3"
-								placeholder="Holiday Name" />
+								placeholder="Holiday Name" required="required" />
 						</div>
 						<div id="description">
-							<label for="description"
-								class="required form-label text-gray-800 fw-medium">Description</label>
+							<label for="description" class="text-gray-800 fw-medium">Description</label>
 							<textarea class="form-control px-3" rows="4"
 								placeholder="Optional details"></textarea>
 						</div>
@@ -116,15 +105,34 @@
 
 					</div>
 				</form>
-
 			</div>
-
 		</div>
-
-
 	</div>
+	<script type="text/javascript">
+	
+	const fpOpts = {
+		dateFormat : "d-m-Y",
+		altInput : true,
+		altFormat : "j M Y",
+		allowInput : true,
+		disableMobile : true,
+		defaultDate : "today"
+	};
 
+	const fpStart = flatpickr("#date_start", fpOpts);
+	const fpEnd = flatpickr("#date_end", fpOpts);
+	
 
+	const onSubmit = () => {
+		const sd = fpStart.selectedDates[0];
+	    const ed = fpEnd.selectedDates[0] || sd;
+		if (sd > ed) {
+			 swal("Error", "Start Date ต้องไม่มากกว่า End Date", "error");
+		    return false;
+		}
+		return true;
+	}
+	</script>
 
 
 </body>
