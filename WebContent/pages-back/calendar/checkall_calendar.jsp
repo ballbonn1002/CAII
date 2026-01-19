@@ -22,10 +22,8 @@
 <link href="assets/plugins/custom/fullcalendar/fullcalendar.bundle.css" rel="stylesheet" type="text/css" />
 <script src="assets/plugins/custom/fullcalendar/fullcalendar.bundle.js"></script>
 
+
 <style>
-.bg-grey {
-	background-color: var(--bs-grey);
-}
 
 .fc-header-toolbar {
 	padding-bottom: 16px;
@@ -60,10 +58,13 @@
 		<!-- Header -->
 		<div class="app-toolbar py-3 py-lg-6">
 			<div class="app-container container-fluid d-flex flex-stack">
-				<div class="page-title d-flex flex-column justify-content-center flex-wrap me-3">
-					<h1 class="page-heading d-flex text-gray-900 fw-semibold flex-column justify-content-center my-0">
+				<div
+					class="page-title d-flex flex-column justify-content-center flex-wrap me-3">
+					<h1
+						class="page-heading d-flex text-gray-900 fw-bold fs-3 flex-column justify-content-center my-0">
 						Calendar and Check List</h1>
-					<ul class="breadcrumb breadcrumb-separatorless fw-semibold fs-7 my-0 pt-1">
+					<ul
+						class="breadcrumb breadcrumb-separatorless fw-semibold fs-7 my-0 pt-1">
 						<li class="breadcrumb-item text-muted"><a
 							href="demo_dashboard" class="text-muted text-hover-primary">Home</a>
 						</li>
@@ -80,7 +81,6 @@
 					<div class="card flex-row-fluid mb-5">
 						<div class="card-header" style="border-bottom: none;">
 							<!--begin::Main wrapper-->
-							
 							<div id="kt_docs_search_handler_responsive"
 								class="d-flex align-items-center w-100"
 								data-kt-search-keypress="true" data-kt-search-min-length="1"
@@ -127,6 +127,7 @@
 								<!--end::Menu-->
 							</div>
 							<!--end::Main wrapper-->
+
 						</div>
 
 						<div class="card-body d-flex flex-row flex-wrap pt-0">
@@ -158,30 +159,14 @@
 						<div class="card-body" id="kt_docs_fullcalendar_populated">
 						</div>
 						<div class="card-footer d-flex flex-row flex-wrap">
-							<div class="d-flex align-items-center me-10 fw-semibold">
-								<span class="badge badge-secondary">Holiday</span>
-							</div>
-							<div class="d-flex align-items-center me-10 fw-semibold">
-								<span class="badge badge-success">On time</span>
-							</div>
-							<div class="d-flex align-items-center me-10 fw-semibold">
-								<span class="badge badge-warning">Late</span>
-							</div>
-							<div class="d-flex align-items-center me-10 fw-semibold">
-								<span class="badge badge-warning">Early Out</span>
-							</div>
-							<div class="d-flex align-items-center me-10 fw-semibold">
-								<span class="badge badge-warning">Unfinished Work</span>
-							</div>
-							<div class="d-flex align-items-center me-10 fw-semibold">
-								<span class="badge badge-dark">Incomplete</span>
-							</div>
-							<div class="d-flex align-items-center me-10 fw-semibold">
-								<span class="badge badge-primary">Leave</span>
-							</div>
-							<div class="d-flex align-items-center me-10 fw-semibold">
-								<span class="badge badge-info">Sick Leave</span>
-							</div>
+							<div class="badge badge-secondary me-7 fw-semibold">Holiday</div>
+							<div class="badge badge-success me-7 fw-semibold">On time</div>
+							<div class="badge badge-warning me-7 fw-semibold">Late</div>
+							<div class="badge badge-warning me-7 fw-semibold">Early Out</div>
+							<div class="badge badge-warning me-7 fw-semibold">Unfinished Work</div>
+							<div class="badge badge-dark me-7 fw-semibold">Incomplete</div>
+							<div class="badge badge-primary me-7 fw-semibold">Leave</div>
+							<div class="badge badge-info me-7 fw-semibold">Sick Leave</div>
 						</div>
 					</div>
 				</div>
@@ -634,15 +619,18 @@ var AppCalendar = function() {
  	// Populate calendar checklist
 	function populateCheckList(view) {
     	var events = calendar.getEvents();
+    	console.log(events);
     	var $tableBody = $('#calendarTableBody');
     	$tableBody.empty();
-    	
-    	var currentDate = calendar.getDate();
+
     	//var start = moment(view.start);
     	//var end = moment(view.end);
+    	var currentDate = calendar.getDate();
     	var start = moment(currentDate).startOf('month');
-    	var end = moment(currentDate).endOf('month').add(1, 'days');
+    	var end = moment(currentDate).endOf('month');
     	var today = moment();
+    	console.log(end);
+
 
     	for (var day = start.clone(); day.isBefore(end); day.add(1, 'days')) {
     		var dayStr = day.format('dd D MMM');
@@ -688,61 +676,58 @@ var AppCalendar = function() {
         	            status = statusLeave;
         	        } else {
         	            // Then Check work time (Check in - Check out)
-						var workEvents = dayEvents.filter(function(ev) {
-							return ev.extendedProps && ev.extendedProps.eventType === 'work';
-						});
-        	            
-						var checkin = '';
-						var checkout = '';
-						var workinghour = '';
-                        var totalWorkingMinutes = 0;
-						if (workEvents.length > 0) {
-                        workEvents.sort(function(a, b) { 
-                            return moment(a.start).diff(moment(b.start)); 
-                        });
-
-                        workEvents.forEach(function(workEvent, index) {
-                            //var separator = index > 0 ? '<div class="separator separator-dashed my-2"></div>' : '';
-                            // --- Check-in ---
-                            const typeIn = Number(workEvent.extendedProps.workTypeIn);
-                            var iconIn = (typeIn === 1) ? '<i class="ki-duotone ki-map fs-2 text-primary me-1 align-middle"><span class="path1"></span><span class="path2"></span><span class="path3"></span></i> ' 
-                                       : (typeIn === 2) ? '<i class="ki-duotone ki-home-2 fs-2 text-teal me-1 align-middle"><span class="path1"></span><span class="path2"></span></i> ' 
-                                       : '';
-                            
-                            var timeIn = workEvent.extendedProps.checkin ? iconIn + workEvent.extendedProps.checkin.substring(11, 16) : '';
-                            var desIn = workEvent.extendedProps.descriptionIn ? 
-                                '<div class="text-muted fs-7 ms-1">' + workEvent.extendedProps.descriptionIn + '</div>' : '';
-                            checkin += '<div>' + timeIn + desIn + '</div>';
-
-                            // --- Check-out ---
-                            const typeOut = Number(workEvent.extendedProps.workTypeOut);
-                            var iconOut = (typeOut === 1) ? '<i class="ki-duotone ki-map fs-2 text-primary me-1 align-middle"><span class="path1"></span><span class="path2"></span><span class="path3"></span></i> ' 
-                                        : (typeOut === 2) ? '<i class="ki-duotone ki-home-2 fs-2 text-teal me-1 align-middle"><span class="path1"></span><span class="path2"></span></i> ' 
-                                        : '';
-                            
-                            var timeOut = workEvent.extendedProps.checkout ? iconOut + workEvent.extendedProps.checkout.substring(0, 5) : '';
-                            var desOut = workEvent.extendedProps.descriptionOut ? 
-                                '<div class="text-muted fs-7 ms-1">' + workEvent.extendedProps.descriptionOut + '</div>' : '';
-                            checkout += '<div>' + timeOut + desOut + '</div>';
-
-                            // --- Working Hours ---
-                            var currentWh = parseInt(workEvent.extendedProps.workinghour) || 0;
-                            totalWorkingMinutes += currentWh;
-
-                            status = workEvent.extendedProps.status;
-                        });
-
-                        if (totalWorkingMinutes > 0) {
-                            var hrs = Math.floor(totalWorkingMinutes / 60);
-                            console.log(hrs);
-                            console.log(mins);
-                            var mins = totalWorkingMinutes % 60;
-                            workinghour = ('0' + hrs).slice(-2) + ':' + ('0' + mins).slice(-2);
-                        } else {
-                            workinghour = ''; 
-                        }
-                    }
-
+        	            var workEvent = dayEvents.find(function(ev) {
+        	                return ev.extendedProps && ev.extendedProps.eventType === 'work';
+        	            });
+        	            if (workEvent) {
+        	            	const typeIn = Number(workEvent.extendedProps.workTypeIn);
+        	            	checkin = workEvent.extendedProps.checkin 
+        	            	    ? (typeIn === 1 
+        	            	          ? '<i class="ki-duotone ki-map text-primary fs-2 me-1 align-middle">' +
+              	            	            '<span class="path1"></span>' +
+            	            	            '<span class="path2"></span>' +
+        	            	            	'<span class="path3"></span>' +
+            	            	            '</i> '
+        	            	          : typeIn === 2 
+        	            	            ? '<i class="ki-duotone ki-home-2 fs-2 text-teal me-1 align-middle">' +
+                      	            	  	'<span class="path1"></span>' +
+                    	            	  	'<span class="path2"></span>' +
+                    	            	  	'</i> ' 
+        	            	            : ''
+        	            	      ) + workEvent.extendedProps.checkin.substring(11,16)
+        	            	    : '';
+        	            	const typeOut = Number(workEvent.extendedProps.workTypeOut);
+        	            	checkout = workEvent.extendedProps.checkout 
+        	            	    ? (typeOut === 1 
+        	            	          ? '<i class="ki-duotone ki-map fs-2 text-primary me-1 align-middle">' +
+        	            	            	'<span class="path1"></span>' +
+        	            	            	'<span class="path2"></span>' +
+        	            	            	'<span class="path3"></span>' +
+        	            	            	'</i>  ' 
+        	            	          : typeOut === 2 
+        	            	            ? '<i class="ki-duotone ki-home-2 fs-2 text-teal me-1 align-middle">' +
+                	            	     	 '<span class="path1"></span>' +
+                	            	      	'<span class="path2"></span>' +
+                	            	      	
+                	            	      	'</i> ' 
+        	            	            : ''
+        	            	      ) + workEvent.extendedProps.checkout.substring(0,5)
+        	            	    : '';
+            	            desIn = workEvent.extendedProps.descriptionIn ? '<i class="ki-duotone ki-message-text-2 fs-2 text-gray-500 me-1 align-middle">' +
+            	                '<span class="path1"></span>' +
+            	                '<span class="path2"></span>' +
+            	                '<span class="path3"></span>' +
+            	                '</i>' + '<span class="fs-6 fw-400">' + workEvent.extendedProps.descriptionIn + '</span>'
+            	                : '';
+            	            desOut = workEvent.extendedProps.descriptionOut ? '<i class="ki-duotone ki-message-text-2 fs-2 text-gray-500 me-1 align-middle">' +
+            	                '<span class="path1"></span>' +
+            	                '<span class="path2"></span>' +
+            	            	'<span class="path3"></span>' +
+            	                '</i>' + '<span class="fs-6 fw-400">' + workEvent.extendedProps.descriptionOut + '</span>'
+            	                : '';
+        	                workinghour = workEvent.extendedProps.workinghour || '';
+        	                status = workEvent.extendedProps.status;
+        	            }
         	        }
         	    }
         	}
@@ -903,7 +888,7 @@ var AppCalendar = function() {
     
 	function getHolidayStatusHTML(holidayEvent) {
 	    var title = holidayEvent.title;
-	    return '<span class="badge badge-secondary">'+ title +'</span>';
+	    return '<span class="badge badge-secondary fs-7 fw-semibold">' + title + '</span>';
 	}
 	
 	function getDayIconClass(dayName) {
@@ -923,17 +908,17 @@ var AppCalendar = function() {
     function getWorkStatusHTML(status) {
         switch(status) {
         	case 'On Time': 
-        	    return '<span class="badge badge-success fw-semibold me-2">On Time</span>';
+        	    return '<span class="badge badge-success fs-7 fw-semibold">On Time</span>';
         	case 'Incomplete': 
-        	    return '<span class="badge badge-dark fw-semibold me-2">Incomplete</span>';
+        	    return '<span class="badge badge-dark fs-7 fw-semibold">Incomplete</span>';
         	case 'Unfinished Work': 
-        	    return '<span class="badge badge-warning fw-semibold me-2">Unfinished Work</span>';
+        	    return '<span class="badge badge-warning fs-7 fw-semibold">Unfinished Work</span>';
         	case 'Late': 
-        	    return '<span class="badge badge-warning fw-semibold me-2">Late</span>';
+        	    return '<span class="badge badge-warning fs-7 fw-semibold">Late</span>';
         	case 'Early out': 
-        	    return '<span class="badge badge-warning fw-semibold me-2">Early out</span>';
+        	    return '<span class="badge badge-warning fs-7 fw-semibold">Early out</span>';
         	case 'No Record': 
-        	    return '<span class="badge badge-danger fw-semibold me-2">No Record</span>';
+        	    return '<span class="badge badge-danger fs-7 fw-semibold">No Record</span>';
         	default: 
         	    return status || '';
         }
@@ -942,12 +927,11 @@ var AppCalendar = function() {
     function getLeaveStatusHTML(leaveEvent) {
         var leaveTitle = leaveEvent.title;
         var statusLeave = '';
-        var badgeColor = leaveTitle === 'ลาป่วย' ? 'badge-info' : 'badge-primary';
-        //var textColor = leaveTitle === 'ลาป่วย' ? 'text-info' : 'text-primary';
+        var badgeColor = leaveTitle === 'ลาป่วย' ? 'badge badge-info' : 'badge badge-primary';
+        var textColor = leaveTitle === 'ลาป่วย' ? 'text-info' : 'text-primary';
         console.log('leaveEvent:', leaveEvent);
         
-        statusLeave = '<span class="badge ' + badgeColor + ' fs-6 fw-bold me-2"' +
-        	'style="cursor: pointer;" ' + 'onclick="leaveStatus(' + leaveEvent.id + ')">' + leaveTitle + '</span>';
+        statusLeave = '<span class="' + badgeColor + ' fs-7 fw-bold style="cursor: pointer;" onclick="leaveStatus('+ leaveEvent.id +')">' + leaveTitle ;
 
 		if (leaveEvent.extendedProps && leaveEvent.extendedProps.status === '0') {
         	statusLeave += ' <i class="ki-duotone ki-watch fs-2 text-warning align-middle">' +
@@ -967,6 +951,7 @@ var AppCalendar = function() {
                 		"<i class='path2'></i>" +
             			"</i> " + "</a>";
         }
+        
         return statusLeave;
     }
 	
@@ -1017,7 +1002,7 @@ var AppCalendar = function() {
                     }
                	},
 
-               /*  eventDidMount: function(info) {
+                eventDidMount: function(info) {
                     var event = info.event;
                     if (event.extendedProps && event.extendedProps.status === '0') {
                         var titleEl = info.el.querySelector('.fc-event-title');
@@ -1027,26 +1012,6 @@ var AppCalendar = function() {
                     }
                     
                     // Add Bootstrap tooltip
-                    info.el.setAttribute('data-bs-toggle', 'tooltip');
-                    info.el.setAttribute('data-bs-placement', 'top');
-                    info.el.setAttribute('data-bs-html', 'true');
-                    info.el.setAttribute('title', '<strong>' + event.title + '</strong><br/>' + (event.extendedProps.description || ''));
-                }, */
-                eventDidMount: function(info) {
-                	var event = info.event;
-                    var element = info.el;
-                    var titleEl = element.querySelector('.fc-event-title');
-                    if (titleEl && event.extendedProps.eventType === 'work') {
-                    	var iconHtml = '';
-                    	var workType = event.extendedProps.workTypeIn;
-                    	if (workType == '1') {	//on-site
-                    		iconHtml = '<i class="ki-duotone ki-map"><span class="path1"></span><span class="path2"></span><span class="path3"></span></i>';
-                    	} else if (workType == '2') {	//wfh
-                    		iconHtml = '<i class="ki-duotone ki-home-2"><span class="path1"></span><span class="path2"></span></i>';
-                    	}
-                        titleEl.innerHTML = iconHtml + ' ' + titleEl.innerHTML;
-                    }
-                 	// Add Bootstrap tooltip
                     info.el.setAttribute('data-bs-toggle', 'tooltip');
                     info.el.setAttribute('data-bs-placement', 'top');
                     info.el.setAttribute('data-bs-html', 'true');

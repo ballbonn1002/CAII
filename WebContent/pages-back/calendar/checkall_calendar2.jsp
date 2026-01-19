@@ -15,7 +15,7 @@
 				<div
 					class="page-title d-flex flex-column justify-content-center flex-wrap me-3">
 					<h1
-						class="page-heading d-flex text-gray-900 fw-bold fs-3 flex-column justify-content-center my-0">
+						class="page-heading d-flex text-gray-900 fw-bold flex-column justify-content-center my-0">
 						Calendar and Check List</h1>
 					<ul
 						class="breadcrumb breadcrumb-separatorless fw-semibold fs-7 my-0 pt-1">
@@ -121,36 +121,14 @@
 						<div class="card-body" id="kt_docs_fullcalendar_populated">
 						</div>
 						<div class="card-footer d-flex flex-row flex-wrap">
-							<div
-								class="d-flex align-items-center me-15 fw-semibold text-gray-600">
-								<span class="bullet bullet-dot bg-danger me-2 h-10px w-10px"></span>
-								Holiday
-							</div>
-							<div
-								class="d-flex align-items-center me-15 fw-semibold text-gray-600">
-								<span class="bullet bullet-dot bg-success me-2 h-10px w-10px"></span>
-								On time
-							</div>
-							<div
-								class="d-flex align-items-center me-15 fw-semibold text-gray-600">
-								<span class="bullet bullet-dot bg-warning me-2 h-10px w-10px"></span>
-								Late / Early Out / Unfinished Work
-							</div>
-							<div
-								class="d-flex align-items-center me-15 fw-semibold text-gray-600">
-								<span class="bullet bullet-dot bg-secondary me-2 h-10px w-10px"></span>
-								Incomplete
-							</div>
-							<div
-								class="d-flex align-items-center me-15 fw-semibold text-gray-600">
-								<span class="bullet bullet-dot bg-primary me-2 h-10px w-10px"></span>
-								Leave
-							</div>
-							<div
-								class="d-flex align-items-center me-15 fw-semibold text-gray-600">
-								<span class="bullet bullet-dot bg-info me-2 h-10px w-10px"></span>
-								Sick Leave
-							</div>
+							<div class="badge badge-secondary me-7 fw-semibold">Holiday</div>
+							<div class="badge badge-success me-7 fw-semibold">On time</div>
+							<div class="badge badge-warning me-7 fw-semibold">Late</div>
+							<div class="badge badge-warning me-7 fw-semibold">Early Out</div>
+							<div class="badge badge-warning me-7 fw-semibold">Unfinished Work</div>
+							<div class="badge badge-dark me-7 fw-semibold">Incomplete</div>
+							<div class="badge badge-primary me-7 fw-semibold">Leave</div>
+							<div class="badge badge-info me-7 fw-semibold">Sick Leave</div>
 						</div>
 					</div>
 				</div>
@@ -164,46 +142,45 @@
 						<div class="card-body">
 							<div class="row align-items-center mt-10 mx-5 fs-6 fw-bold">
 								<div class="col-lg-3 col-md-4 mb-10 d-flex align-items-center">
-									<span style="color: var(--bs-green);" id="summaryWorkingDay"></span><span
-										class="bullet bullet-vertical mx-2 h-15px w-2px"
-										style="background-color: var(--bs-green);"></span><span
-										style="color: var(--bs-green);">Working Day</span>
+									<span class="fs-2 text-green" id="summaryWorkingDay"></span><span
+										class="bullet bullet-vertical bg-green fs-6 mx-2 h-15px w-2px"></span><span
+										class="text-green">Working Day</span>
 								</div>
 								<div class="col-lg-3 col-md-4 mb-10 d-flex align-items-center">
-									<span class="text-success" id="summaryOnTime"></span><span
-										class="bullet bullet-vertical bg-success mx-2 h-15px w-2px"></span><span
+									<span class="fs-2 text-success" id="summaryOnTime"></span><span
+										class="bullet bullet-vertical bg-success fs-6 mx-2 h-15px w-2px"></span><span
 										class="text-gray-600">On Time</span>
 								</div>
 								<div class="col-lg-3 col-md-4 mb-10 d-flex align-items-center">
-									<span class="text-primary" id="summaryLeave"></span><span
-										class="bullet bullet-vertical bg-primary mx-2 h-15px w-2px"></span><span
+									<span class="fs-2 text-primary" id="summaryLeave"></span><span
+										class="bullet bullet-vertical bg-primary fs-6 mx-2 h-15px w-2px"></span><span
 										class="text-gray-600">Leave</span>
 								</div>
 								<div class="col-lg-3 col-md-4 mb-10 d-flex align-items-center">
-									<span class="text-info" id="summarySickLeave"></span><span
-										class="bullet bullet-vertical bg-info mx-2 h-15px w-2px"></span><span
+									<span class="fs-2 text-info" id="summarySickLeave"></span><span
+										class="bullet bullet-vertical bg-info fs-6 mx-2 h-15px w-2px"></span><span
 										class="text-gray-600">Sick Leave</span>
 								</div>
 								<div class="col-lg-3 col-md-4 mb-10 d-flex align-items-center">
-									<span class="text-danger" id="summaryHoliday"></span><span
-										class="bullet bullet-vertical bg-danger mx-2 h-15px w-2px"></span><span
+									<span class="fs-2 text-gray-600" id="summaryHoliday"></span><span
+										class="bullet bullet-vertical bg-gray-600 fs-6 mx-2 h-15px w-2px"></span><span
 										class="text-gray-600">Holiday</span>
 								</div>
 								<div class="col-lg-3 col-md-4 mb-10 d-flex align-items-center">
-									<span class="text-warning" id="summaryLateEarly"></span><span
-										class="bullet bullet-vertical bg-warning mx-2 h-15px w-2px"></span><span
+									<span class="fs-2 text-warning" id="summaryLateEarly"></span><span
+										class="bullet bullet-vertical bg-warning fs-6 mx-2 h-15px w-2px"></span><span
 										class="text-gray-600">Late / Early Out /<br>
 										Unfinished Work
 									</span>
 								</div>
 								<div class="col-lg-3 col-md-4 mb-10 d-flex align-items-center">
-									<span class="text-muted" id="summaryIncomplete"></span><span
-										class="bullet bullet-vertical bg-muted mx-2 h-15px w-2px"></span><span
+									<span class="fs-2 text-dark" id="summaryIncomplete"></span><span
+										class="bullet bullet-vertical bg-dark fs-6 mx-2 h-15px w-2px"></span><span
 										class="text-gray-600">Incomplete</span>
 								</div>
 								<div class="col-lg-3 col-md-4 mb-10 d-flex align-items-center">
-									<span class="text-dark" id="summaryNoRecord"></span><span
-										class="bullet bullet-vertical bg-dark mx-2 h-15px w-2px"></span><span
+									<span class="fs-2 text-danger" id="summaryNoRecord"></span><span
+										class="bullet bullet-vertical bg-danger fs-6 mx-2 h-15px w-2px"></span><span
 										class="text-gray-600">No Record</span>
 								</div>
 							</div>
@@ -565,6 +542,377 @@ var AppCalendar = function() {
     	}
     }
 
+	// Helper: (Check-In/Out) format event title
+	function getEventTitle(status, checkin, checkout, typein, typeout) {
+        if (status === 'Incomplete') {
+            return checkin.substring(11, 16) + "-";
+        }
+        
+        var checkinTime = checkin ? checkin.substring(11, 16) : '--:--';
+        var checkoutTime = checkout && checkout !== '' ? checkout.substring(0, 5) : '--:--';
+        
+        return checkinTime + ' - ' + checkoutTime;
+    }
+
+	// Helper: (Check-In/Out) format event description
+	function getEventDescription(checkin, checkout, status, workhour) {
+        var checkinDateObj = checkin ? new Date(checkin) : null;
+        var checkDate = checkinDateObj ? checkinDateObj.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' }) : '';
+        var checkinTime = checkin ? checkin.substring(11, 16) : '';
+        var checkoutTime = checkout && checkout !== '' ? checkout.substring(0, 5) : '';
+        var workingHours = workhour ? workhour : '';
+        
+        var hours = Math.floor(workingHours / 60);
+        var minutes = workingHours % 60;
+
+        var formattedWorkingHours = ('0' + hours).slice(-2) + ':' + ('0' + minutes).slice(-2);
+        
+        return '<b>' + checkDate + '</b><br/>' +
+        	   'Check-in: ' + checkinTime + '<br/>' +
+               'Check-out: ' + checkoutTime + '<br/>' +
+               'Work-time (hrs): ' + formattedWorkingHours + '<br/>' +
+               'Status: ' + status;
+    }
+
+	// Populate calendar checklist
+	function populateCheckList(view) {
+    	var events = calendar.getEvents();
+    	console.log(events);
+    	var $tableBody = $('#calendarTableBody');
+    	$tableBody.empty();
+
+    	//var start = moment(view.start);
+    	//var end = moment(view.end);
+    	var currentDate = calendar.getDate();
+    	var start = moment(currentDate).startOf('month');
+    	var end = moment(currentDate).endOf('month');
+    	var today = moment();
+    	console.log(end);
+
+
+    	for (var day = start.clone(); day.isBefore(end); day.add(1, 'days')) {
+    		var dayStr = day.format('dd D MMM');
+    		var dayName = day.format('dd');
+
+    		var dayEvents = events.filter(function(ev) {
+    			if (ev.extendedProps && ev.extendedProps.leave_type_id) {
+                    var evStart = moment(ev.start);
+                    var evEnd = ev.end ? moment(ev.end).subtract(1, 'days') : evStart; // ลด end 1 วัน
+
+                    return day.isSameOrAfter(evStart, 'day') && day.isSameOrBefore(evEnd, 'day');
+                } else {
+                    return moment(ev.start).format('dd D MMM') === dayStr;
+                }
+    		});
+
+        	var checkin = '';
+        	var checkout = '';
+        	var workinghour = '';
+        	var status = '';
+        	var desIn = '';
+        	var desOut = '';
+        	
+        	var dayNum = parseInt(day.format('YYYYMMDD'));
+            var todayNum = parseInt(today.format('YYYYMMDD'));
+            
+            if (dayEvents.length === 0 && dayNum <= todayNum) {
+                status = 'No Record';
+            } else if (dayEvents.length > 0) {
+        	    // Check holiday first
+        	    var holidayEvent = dayEvents.find(function(ev) {
+        	        return ev.classNames.includes('fc-event-secondary');
+        	    });
+        	    if (holidayEvent) {
+        	        status = getHolidayStatusHTML(holidayEvent);
+        	    } else {
+        	        // Check Leave Second
+        	        var leaveEvent = dayEvents.find(function(ev) {
+        	            return ev.extendedProps && ev.extendedProps.leave_type_id;
+        	        });
+        	        if (leaveEvent) {
+        	            var statusLeave = getLeaveStatusHTML(leaveEvent);
+        	            status = statusLeave;
+        	        } else {
+        	            // Then Check work time (Check in - Check out)
+        	            var workEvent = dayEvents.find(function(ev) {
+        	                return ev.extendedProps && ev.extendedProps.eventType === 'work';
+        	            });
+        	            if (workEvent) {
+        	            	const typeIn = Number(workEvent.extendedProps.workTypeIn);
+        	            	checkin = workEvent.extendedProps.checkin 
+        	            	    ? (typeIn === 1 
+        	            	          ? '<i class="ki-duotone ki-map text-primary fs-2 me-1 align-middle">' +
+              	            	            '<span class="path1"></span>' +
+            	            	            '<span class="path2"></span>' +
+        	            	            	'<span class="path3"></span>' +
+            	            	            '</i> '
+        	            	          : typeIn === 2 
+        	            	            ? '<i class="ki-duotone ki-home-2 fs-2 text-teal me-1 align-middle">' +
+                      	            	  	'<span class="path1"></span>' +
+                    	            	  	'<span class="path2"></span>' +
+                    	            	  	'</i> ' 
+        	            	            : ''
+        	            	      ) + workEvent.extendedProps.checkin.substring(11,16)
+        	            	    : '';
+        	            	const typeOut = Number(workEvent.extendedProps.workTypeOut);
+        	            	checkout = workEvent.extendedProps.checkout 
+        	            	    ? (typeOut === 1 
+        	            	          ? '<i class="ki-duotone ki-map fs-2 text-primary me-1 align-middle">' +
+        	            	            	'<span class="path1"></span>' +
+        	            	            	'<span class="path2"></span>' +
+        	            	            	'<span class="path3"></span>' +
+        	            	            	'</i>  ' 
+        	            	          : typeOut === 2 
+        	            	            ? '<i class="ki-duotone ki-home-2 fs-2 text-teal me-1 align-middle">' +
+                	            	     	 '<span class="path1"></span>' +
+                	            	      	'<span class="path2"></span>' +
+                	            	      	
+                	            	      	'</i> ' 
+        	            	            : ''
+        	            	      ) + workEvent.extendedProps.checkout.substring(0,5)
+        	            	    : '';
+            	            desIn = workEvent.extendedProps.descriptionIn ? '<i class="ki-duotone ki-message-text-2 fs-2 text-gray-500 me-1 align-middle">' +
+            	                '<span class="path1"></span>' +
+            	                '<span class="path2"></span>' +
+            	                '<span class="path3"></span>' +
+            	                '</i>' + '<span class="fs-6 fw-400">' + workEvent.extendedProps.descriptionIn + '</span>'
+            	                : '';
+            	            desOut = workEvent.extendedProps.descriptionOut ? '<i class="ki-duotone ki-message-text-2 fs-2 text-gray-500 me-1 align-middle">' +
+            	                '<span class="path1"></span>' +
+            	                '<span class="path2"></span>' +
+            	            	'<span class="path3"></span>' +
+            	                '</i>' + '<span class="fs-6 fw-400">' + workEvent.extendedProps.descriptionOut + '</span>'
+            	                : '';
+        	                workinghour = workEvent.extendedProps.workinghour || '';
+        	                status = workEvent.extendedProps.status;
+        	            }
+        	        }
+        	    }
+        	}
+
+        	var rowStyle = "";
+            if (dayName === 'Sa' || dayName === 'Su') {
+                rowStyle = "bg-light";
+                status = "";
+            }
+            
+            var isHoliday = dayEvents.some(function(ev) { 
+                return ev.classNames.includes('fc-event-secondary'); 
+            });
+            if (isHoliday) {
+                rowStyle = "bg-light";
+            }
+            
+        	var iconClass = getDayIconClass(dayName);
+            var statusClass = getWorkStatusHTML(status);
+            
+            // get time work by format from minutes to HH:mm
+            var formattedWorkingHours = '';
+            if (workinghour) {
+                var hours = Math.floor(workinghour / 60);
+                var minutes = workinghour % 60;
+                formattedWorkingHours = ('0' + hours).slice(-2) + ':' + ('0' + minutes).slice(-2);
+            }
+        
+        	var rowHtml = '<tr class="' + rowStyle + '">';
+        	rowHtml += '<td><span class="bullet bullet-vertical me-2 h-20px w-3px ' + iconClass + '" style="vertical-align: middle;"></span>' + dayStr + '</td>';
+        	rowHtml += '<td>' + checkin + (desIn ? '<br/><small class="text-muted">' + desIn + '</small>' : '') + '</td>';
+        	rowHtml += '<td>' + checkout + (desOut ? '<br/><small class="text-muted">' + desOut + '</small>' : '') + '</td>';
+        	rowHtml += '<td>' + formattedWorkingHours + '</td>';
+       		rowHtml += '<td>' + statusClass + '</td>';
+        	rowHtml += '</tr>';
+
+        	$tableBody.append(rowHtml);
+    	}
+	}
+    
+	// Calculate working days excluding weekends/holidays
+	function calculateWorkingDays(year, month, holidays) {
+	    // month = 0 (Jan) → 11 (Dec)
+	    var start = moment([year, month]);
+	    var end = start.clone().endOf("month");
+	    var workingDays = 0;
+
+	    for (var day = start.clone(); day.isSameOrBefore(end); day.add(1, "days")) {
+	        var dow = day.day(); // 0=Sunday, 6=Saturday
+	        if (dow !== 0 && dow !== 6) { // Not include Sat & Sun
+	            // Check holiday ?
+	            var isHoliday = holidays.some(function(hd) {
+	                return moment(hd.start).isSame(day, "day");
+	            });
+	            if (!isHoliday) {
+	                workingDays++;
+	            }
+	        }
+	    }
+	    return workingDays;
+	}
+    
+	// Calculate summary
+	function calculateSummary() {
+		var events = calendar.getEvents();
+	    var view = calendar.view;
+	    var year = moment(view.currentStart).year();
+	    var month = moment(view.currentStart).month();
+	    
+	    var holidayEvents = events.filter(ev => ev.classNames.includes("fc-event-secondary"));
+	    
+	    var summary = {
+	        workingDay: calculateWorkingDays(year, month, holidayEvents),
+	        onTime: 0,
+	        leave: 0,
+	        sickLeave: 0,
+	        holiday: 0,
+	        lateEarlyUnfinished: 0,
+	        incomplete: 0,
+	        noRecord: 0
+	    };
+
+	    var view = calendar.view;
+	    var start = moment(view.currentStart);
+	    var end = moment(view.currentEnd);
+	    var today = moment();
+
+	    for (var day = start.clone(); day.isBefore(end); day.add(1, 'days')) {
+	        var dayEvents = events.filter(function(ev) {
+	            return moment(ev.start).isSame(day, 'day');
+	        });
+
+	        var status = "";
+	        if (dayEvents.length === 0 && day.isSameOrBefore(today)) {
+	        	var dow = day.day(); // 0=Sunday, 6=Saturday
+	            var isHoliday = holidayEvents.some(hd => moment(hd.start).isSame(day, "day"));
+	            
+	            if (dow !== 0 && dow !== 6 && !isHoliday) {
+	                status = "No Record";
+	                summary.noRecord++;
+	            }
+	            
+	        } else if (dayEvents.length > 0) {
+	            // holiday
+	            if (dayEvents.some(ev => ev.classNames.includes("fc-event-secondary"))) {
+	                status = "Holiday";
+	                summary.holiday++;
+	            }
+	            // leave
+	            else if (dayEvents.some(ev => ev.extendedProps && ev.extendedProps.leave_type_id)) {
+	            	dayEvents.forEach(ev => {
+	                    if (ev.extendedProps && ev.extendedProps.leave_type_id) {
+	                        var evStart = moment(ev.start);
+	                        var evEnd = ev.end ? moment(ev.end).subtract(1, 'days') : evStart; // ลด 1 วัน
+
+	                        // คำนวณจำนวนวัน leave
+	                        var leaveDays = evEnd.diff(evStart, 'days') + 1; // +1 เพราะ diff คืนค่าเป็นจำนวนวันเต็มระหว่างวันที่
+	                        if (ev.title === "ลาป่วย") {
+	                            status = "Sick Leave";
+	                            summary.sickLeave += leaveDays;
+	                        } else {
+	                            status = "Leave";
+	                            summary.leave += leaveDays;
+	                        }
+	                    }
+	                });
+	            }
+	            // work
+	            else if (dayEvents.some(ev => ev.extendedProps && ev.extendedProps.eventType === "work")) {
+	                var workEv = dayEvents.find(ev => ev.extendedProps.eventType === "work");
+	                switch (workEv.extendedProps.status) {
+	                case "On Time":
+	                    summary.onTime++;
+	                    break;
+	                case "Late":
+	                case "Early out":
+	                case "Unfinished Work":
+	                    summary.lateEarlyUnfinished++;
+	                    break;
+	                case "Incomplete":
+	                    summary.incomplete++;
+	                    break;
+	            	}
+	            }
+	        }
+	    }
+
+	    // Update value
+	    document.querySelector("#summaryWorkingDay").textContent = summary.workingDay;
+	    document.querySelector("#summaryOnTime").textContent = summary.onTime;
+	    document.querySelector("#summaryLeave").textContent = summary.leave;
+	    document.querySelector("#summarySickLeave").textContent = summary.sickLeave;
+	    document.querySelector("#summaryHoliday").textContent = summary.holiday;
+	    document.querySelector("#summaryLateEarly").textContent = summary.lateEarlyUnfinished;
+	    document.querySelector("#summaryIncomplete").textContent = summary.incomplete;
+	    document.querySelector("#summaryNoRecord").textContent = summary.noRecord;
+	}
+    
+	function getHolidayStatusHTML(holidayEvent) {
+	    var title = holidayEvent.title;
+	    return '<span class="badge badge-secondary fs-7 fw-semibold">' + title + '</span>';
+	}
+
+	function getDayIconClass(dayName) {
+        switch(dayName) {
+            case 'Mo': return 'bg-warning';
+            case 'Tu': return 'bg-pink';
+            case 'We': return 'bg-success';
+            case 'Th': return 'bg-warning';
+            case 'Fr': return 'bg-primary';
+            case 'Sa': return 'bg-info';
+            case 'Su': return 'bg-danger';
+            default: return 'bg-muted';
+        }
+        return '<span class="bullet bullet-vertical me-2 ' + colorClass + '"></span>';
+    }
+    
+	function getWorkStatusHTML(status) {
+        switch(status) {
+        	case 'On Time': 
+        	    return '<span class="badge badge-success fs-7 fw-semibold">On Time</span>';
+        	case 'Incomplete': 
+        	    return '<span class="badge badge-dark fs-7 fw-semibold">Incomplete</span>';
+        	case 'Unfinished Work': 
+        	    return '<span class="badge badge-warning fs-7 fw-semibold">Unfinished Work</span>';
+        	case 'Late': 
+        	    return '<span class="badge badge-warning fs-7 fw-semibold">Late</span>';
+        	case 'Early out': 
+        	    return '<span class="badge badge-warning fs-7 fw-semibold">Early out</span>';
+        	case 'No Record': 
+        	    return '<span class="badge badge-danger fs-7 fw-semibold">No Record</span>';
+        	default: 
+        	    return status || '';
+        }
+    }
+    
+	function getLeaveStatusHTML(leaveEvent) {
+        var leaveTitle = leaveEvent.title;
+        var statusLeave = '';
+        var badgeColor = leaveTitle === 'ลาป่วย' ? 'badge badge-info' : 'badge badge-primary';
+        var textColor = leaveTitle === 'ลาป่วย' ? 'text-info' : 'text-primary';
+        console.log('leaveEvent:', leaveEvent);
+        
+        statusLeave = '<span class="' + badgeColor + ' fs-7 fw-bold style="cursor: pointer;" onclick="leaveStatus('+ leaveEvent.id +')">' + leaveTitle ;
+
+		if (leaveEvent.extendedProps && leaveEvent.extendedProps.status === '0') {
+        	statusLeave += ' <i class="ki-duotone ki-watch fs-2 text-warning align-middle">' +
+            '<i class="path1"></i>' + '<i class="path2"></i>' + '</i>';
+        }
+        
+        statusLeave += '</span>';
+        
+        // Check File Leave
+        console.log(leaveEvent.extendedProps);
+        console.log("Path:", "${pageContext.request.contextPath}");
+        if (leaveEvent.extendedProps && leaveEvent.extendedProps.leave_file) {
+            var fileUrl = "${pageContext.request.contextPath}" + leaveEvent.extendedProps.leave_file;
+            statusLeave += "&nbsp;<a href='" + fileUrl + "' target='_blank' class='text-primary'>" +
+            			"<i class='ki-duotone ki-document fs-2x text-primary align-middle'>" +
+                		"<i class='path1'></i>" +
+                		"<i class='path2'></i>" +
+            			"</i> " + "</a>";
+        }
+        
+        return statusLeave;
+    }
+	
 	var calendar; // Global calendar variable
 	return {
 		//main function to initiate the module

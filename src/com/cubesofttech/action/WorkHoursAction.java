@@ -56,7 +56,6 @@ public class WorkHoursAction extends ActionSupport {
 	private JobsiteDAO jobsiteDAO;
 	
 	private Map<String, String> getHeadersInfo(HttpServletRequest request) {
-
 		String ipAddress = request.getHeader("x-forwarded-for");
 		if (ipAddress == null) {
 			ipAddress = request.getHeader("X_FORWARDED_FOR");
@@ -93,7 +92,7 @@ public class WorkHoursAction extends ActionSupport {
 			
 			List<Holiday> holidayList = null;
 			holidayList = holidayDAO.findAllInMonth();
-			log.debug(holidayList);
+			//log.debug(holidayList);
 			request.setAttribute("holidayList", holidayList);
 			User user =  userDAO.findById(logonUser);
 			if (user == null) {
@@ -264,7 +263,7 @@ public class WorkHoursAction extends ActionSupport {
 			Timestamp start_date_leave = DateUtil.dateToTimestamp(startOfYear.format(dateFormatter), "00:00:00.0");
 			Timestamp end_date_leave = DateUtil.dateToTimestamp(endOfYear.format(dateFormatter), "23:59:59.0");
 
-			List leavelist = leaveDAO.myLeavesList(userId, start_date_leave, end_date_leave);
+			List<Map<String, Object>> leavelist = leaveDAO.myLeavesList(userId, start_date_leave, end_date_leave);
 			request.setAttribute("leave", leavelist);
 			//log.debug("leave: " + leavelist);
 			
@@ -426,33 +425,219 @@ public class WorkHoursAction extends ActionSupport {
 		}
 	}
 	
-	
 	public String CheckAllCalendar2() {
-		log.debug("CheckAllCalendar2");
-		String userCalendar = request.getParameter("usercalendar");
-		if (userCalendar != null && !userCalendar.isEmpty()) {
-		    request.getSession().setAttribute("usercalendar", userCalendar);
-		} else {
-		    userCalendar = (String) request.getSession().getAttribute("usercalendar");
-		}
-		User onlineUser = (User) request.getSession().getAttribute("onlineUser");
-		String userId = (userCalendar != null && !userCalendar.isEmpty()) 
-		                 ? userCalendar 
-		                 : onlineUser.getId();
 
-		request.setAttribute("logonUser", userId);
-		try {
-			ObjectMapper mapper = new ObjectMapper();
-			
-			List<Map<String, Object>> cubeUser = userDAO.sequense();
-			request.setAttribute("cubeUser", cubeUser);
-			
-			String cubeUserJson = mapper.writeValueAsString(cubeUser);
-			request.setAttribute("cubeUserJson", cubeUserJson);
-			return SUCCESS;
-		} catch (Exception e) {
-			e.printStackTrace();
-			return ERROR;
+	    String userCalendar = request.getParameter("usercalendar");
+	    if (userCalendar != null && !userCalendar.isEmpty()) {
+	        request.getSession().setAttribute("usercalendar", userCalendar);
+	    } else {
+	        userCalendar = (String) request.getSession().getAttribute("usercalendar");
+	    }
+
+	    User onlineUser = (User) request.getSession().getAttribute("onlineUser");
+	    String userId = (userCalendar != null && !userCalendar.isEmpty()) 
+	                     ? userCalendar 
+	                     : onlineUser.getId();
+
+	    request.setAttribute("logonUser", userId);
+
+	    try { 
+			// Get current user and date info
+	        LocalDate today = LocalDate.now();
+	        int currentYear = today.getYear();
+	        int currentMonth = today.getMonthValue();
+	        int last2year = currentYear - 1;
+
+			// Holiday Calendar
+	        List<Holiday> allholiday = holidayDAO.findAllHoliday();
+	        request.setAttribute("allholiday", allholiday);
+
+	        // Leave Calendar
+	        LocalDate startDate = LocalDate.of(currentYear, currentMonth, 1);
+	        LocalDate endDate = startDate.withDayOfMonth(startDate.lengthOfMonth());
+	        
+	        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+	        Timestamp start_date_leave = DateUtil.dateToTimestamp(LocalDate.of(last2year, 1, 1).format(dateFormatter), "00:00:00.0");
+	        Timestamp end_date_leave = DateUtil.dateToTimestamp(LocalDate.of(currentYear, 12, 31).format(dateFormatter), "23:59:59.0");
+
+	        List<Map<String, Object>> leavelist = leaveDAO.myLeavesList(userId, start_date_leave, end_date_leave);
+	        request.setAttribute("leave", leavelist);
+
+	        // Check in - Check out Calendar
+	        User userWorkTime = userDAO.findById(userId);
+	        String workStartTime = userWorkTime.getWorkTimeStart();
+	        String workEndTime = userWorkTime.getWorkTimeEnd();
+
+			// Get check-in / check-out data
+	        Map<LocalDate, Map<String,Object>> checkinMap = workHoursDAO.getCheckinsForYear(userId, last2year, currentYear);
+	        Map<LocalDate, Map<String,Object>> checkoutMap = workHoursDAO.getCheckoutsForYear(userId, last2year, currentYear);
+
+	        List<Map<String, Object>> workData = new ArrayList<>();
+
+	        // 2. Loop ตามวันที่ในเดือนที่เลือก
+	        for (LocalDate date = startDate; !date.isAfter(endDate); date = date.plusDays(1)) {
+	            
+				List<Map<String, Object>> dailyIns = new ArrayList<>();
+				List<Map<String, Object>> dailyOuts = new ArrayList<>();
+				Map<String, Object> singleIn = checkinMap.get(date);
+				Map<String, Object> singleOut = checkoutMap.get(date);
+				if (singleIn != null) {
+					dailyIns.add(singleIn);
+				}
+				if (singleOut != null) {
+					dailyOuts.add(singleOut);
+				}
+	            // -------------------------------------------------------------
+	            // ส่วนคำนวณ Status และ Hours โดยใช้ Service กลาง
+	            // -------------------------------------------------------------
+	            
+	            // A. คำนวณ Status ของวัน (ใช้ Service)
+	            String dailyStatus = "No Record";
+	            String leaveDescription = ""; // เผื่อกรณีเป็นวันลา
+	            try {
+	                // Service จะเช็ควันลา, วันหยุด, ขาดงาน, สาย ให้อัตโนมัติ
+	                Map<String, Object> statusResult = workHoursService.calculateDailyStatus(userId, date);
+	                dailyStatus = (String) statusResult.getOrDefault("status", "No Record");
+	                
+	                // เช็คว่าเป็นวันลาหรือไม่ (ถ้า Service ส่ง description มา)
+	                if (statusResult.containsKey("leave_desc")) {
+	                    leaveDescription = (String) statusResult.get("leave_desc");
+	                }
+	            } catch (Exception e) {
+	                // log.error("Error calculating status", e);
+	            }
+
+	            // B. คำนวณชั่วโมงทำงาน (ใช้ Service) - ต้องหาเวลาออก "ช้าที่สุด" (Last Out)
+	            String dailyTotalHours = "";
+	            String latestOutTimeStr = null;
+	            
+	            if (!dailyOuts.isEmpty()) {
+	                Timestamp maxOut = null;
+	                for(Map<String, Object> out : dailyOuts) {
+	                    Timestamp ts = (Timestamp) out.get("checkoutTs");
+	                    if(ts != null && (maxOut == null || ts.after(maxOut))) {
+	                        maxOut = ts;
+	                    }
+	                }
+	                if (maxOut != null) {
+	                    latestOutTimeStr = maxOut.toLocalDateTime().toLocalTime().toString();
+	                    if (latestOutTimeStr.length() > 5) latestOutTimeStr = latestOutTimeStr.substring(0, 5);
+	                }
+	            }
+
+	            if (latestOutTimeStr != null) {
+	                try {
+	                    // เรียก Service กลางคำนวณชั่วโมง (Type "2" คือคำนวณ diff)
+	                    int totalMinutes = workHoursService.calculateWorkingHours(
+	                        userId, 
+	                        "2", 
+	                        date.getDayOfMonth(), 
+	                        date.getMonthValue(), 
+	                        date.getYear(), 
+	                        latestOutTimeStr
+	                    );
+	                    
+	                    if (totalMinutes > 0) {
+	                        int hrs = totalMinutes / 60;
+	                        int mins = totalMinutes % 60;
+	                        dailyTotalHours = String.format("%02d:%02d", hrs, mins);
+	                    }
+	                } catch (Exception e) {
+	                    // log.error("Error calculating hours", e);
+	                }
+	            }
+
+	            // -------------------------------------------------------------
+	            // ส่วน Loop สร้าง Row เพื่อแสดงผล (Display All Items)
+	            // -------------------------------------------------------------
+	            int maxRows = Math.max(dailyIns.size(), dailyOuts.size());
+
+	            if (maxRows == 0) {
+	                // กรณีไม่มีข้อมูล (สร้างแถวว่าง หรือแสดงสถานะวันลา)
+	                Map<String, Object> dayData = new HashMap<>();
+	                dayData.put("DATE(work_hours_time_work)", date.toString());
+	                dayData.put("mycheckin", null);
+	                dayData.put("checkouttime", "");
+	                dayData.put("workinghours", "");
+	                dayData.put("descriptionOut", "");
+	                dayData.put("workTypeOut", "");
+	                
+	                // ถ้าเป็นวันลา ให้เอา description มาใส่ช่อง descriptionIn
+	                if (!leaveDescription.isEmpty()) {
+	                    dayData.put("descriptionIn", leaveDescription);
+	                    dayData.put("status", dailyStatus); // เช่น "Annual Leave"
+	                } else {
+	                    dayData.put("descriptionIn", "");
+	                    dayData.put("status", dailyStatus); // เช่น "Absent" หรือ "Incomplete"
+	                }
+	                
+	                workData.add(dayData);
+	            } else {
+	                // กรณีมีข้อมูล (วนลูปสร้างบรรทัด)
+	                for (int i = 0; i < maxRows; i++) {
+	                    Map<String, Object> dayData = new HashMap<>();
+	                    dayData.put("DATE(work_hours_time_work)", date.toString());
+
+	                    // ใส่ข้อมูล Check-in (ตาม Index)
+	                    if (i < dailyIns.size()) {
+	                        Map<String, Object> inData = dailyIns.get(i);
+	                        dayData.put("mycheckin", inData.get("checkinTs")); // ส่ง Timestamp ไปเลยเหมือนเดิม
+	                        dayData.put("descriptionIn", inData.getOrDefault("descriptionIn", "").toString());
+	                        dayData.put("workTypeIn", inData.getOrDefault("workTypeIn", "").toString());
+	                    } else {
+	                        dayData.put("mycheckin", null);
+	                        dayData.put("descriptionIn", "");
+	                        dayData.put("workTypeIn", "");
+	                    }
+
+	                    // ใส่ข้อมูล Check-out (ตาม Index)
+	                    if (i < dailyOuts.size()) {
+	                        Map<String, Object> outData = dailyOuts.get(i);
+	                        Timestamp ts = (Timestamp) outData.get("checkoutTs");
+	                        if (ts != null) {
+	                            String tStr = ts.toLocalDateTime().toLocalTime().toString();
+	                            dayData.put("checkouttime", tStr.length() > 5 ? tStr.substring(0, 5) : tStr);
+	                        } else {
+	                            dayData.put("checkouttime", "");
+	                        }
+	                        dayData.put("descriptionOut", outData.getOrDefault("descriptionOut", "").toString());
+	                        dayData.put("workTypeOut", outData.getOrDefault("workTypeOut", "").toString());
+	                    } else {
+	                        dayData.put("checkouttime", "");
+	                        dayData.put("descriptionOut", "");
+	                        dayData.put("workTypeOut", "");
+	                    }
+
+	                    // ใส่ Status และ WorkingHours (ค่าเดียวกันทุก Row ในวันนี้)
+	                    dayData.put("status", dailyStatus);
+	                    dayData.put("workinghours", dailyTotalHours);
+
+	                    workData.add(dayData);
+	                }
+	            }
+	        }
+			log.debug(workData);
+	        // Set attributes for JSP (เหมือนเดิม)
+	        ObjectMapper mapper = new ObjectMapper();
+	        request.setAttribute("workList", workData);
+	        request.setAttribute("stime", workStartTime);
+	        request.setAttribute("etime", workEndTime);
+	        request.setAttribute("user", userWorkTime);
+	        
+	        // ส่งค่าเดือน/ปี ที่เลือกกลับไปหน้า JSP
+	        request.setAttribute("month", String.valueOf(currentMonth));
+	        request.setAttribute("year", String.valueOf(currentYear));
+	        request.setAttribute("currentYear", today.getYear());
+	        request.setAttribute("lastYear", today.getYear() - 1);
+	        
+	        List<Map<String, Object>> cubeUser = userDAO.sequense();
+	        request.setAttribute("cubeUser", cubeUser);
+	        request.setAttribute("cubeUserJson", mapper.writeValueAsString(cubeUser));
+
+	        return SUCCESS;
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        return ERROR;
 	    }
 	}
 }
