@@ -15,6 +15,12 @@
 	href="${pageContext.request.contextPath}/assets/css/style.bundle.css"
 	rel="stylesheet" />
 
+<style>
+#password.is-invalid,
+#confirm_password.is-invalid {
+    background-image: none !important;
+}
+</style>
 
 </head>
 
@@ -138,7 +144,7 @@
 												class="path3"></span><span class="path4"></span> <span
 												class="path5"></span><span class="path6"></span>
 											</i> <input type="text" id="date_s" name="startDate"
-												class="form-control ps-12 userinfo" placeholder="Select"
+												class="form-control ps-12 userinfo" placeholder="1 Jan 2025"
 												autocomplete="off" required />
 										</div>
 									</div>
@@ -251,7 +257,8 @@
 											data-control="select2" data-hide-search="true" required>
 											<option value="">Select</option>
 											<c:forEach var="department" items="${departmentList}">
-												<option value="${department.id}">${department.id}</option>
+												<option value="${department.id}">${department.id} ${empty department.name ? '' : ' - '}${department.name}
+</option>
 											</c:forEach>
 										</select>
 										<div id="hintDept" class="text-danger fs-8 mt-1 d-none">Please
@@ -404,22 +411,59 @@
 							<div class="card-body pt-6">
 								<div class="row g-9">
 									<div class="col-md-6 fv-row">
-										<label class="required form-label">New Password</label> <input
+										<label class="required form-label">New Password</label>
+										<div class="position-relative">
+											<input type="password" class="form-control userinfo" name="password"
+												id="password" placeholder="New password"
+												autocomplete="new-password" oninput="validateNewPassword();"
+												minlength="6" /> <span
+												class="btn btn-sm btn-icon position-absolute top-50 end-0 translate-middle-y toggle-password"
+												data-eye-target="password"> <i
+												class="ki-duotone ki-eye-slash fs-2"> <span
+													class="path1"></span> <span class="path2"></span> <span
+													class="path3"></span> <span class="path4"></span>
+											</i> <i class="ki-duotone ki-eye fs-2 d-none"> <span
+													class="path1"></span> <span class="path2"></span> <span
+													class="path3"></span> <span class="path4"></span>
+											</i>
+											</span>
+										</div>
+										<!-- <input
 											type="password" class="form-control" name="password"
 											id="newPassword" placeholder="Enter password"
-											autocomplete="new-password" required />
+											autocomplete="new-password" required /> -->
 									</div>
 
 									<div class="col-md-6 fv-row">
 										<label class="required form-label">Confirm New
-											Password</label> <input type="password" class="form-control"
-											id="confirmPassword" placeholder="Confirm password" required />
-
-										<div id="passwordMatchMessage" class="mt-2 fw-semibold fs-7"></div>
+											Password</label>
+										<div class="position-relative">
+											<input type="password" class="form-control userinfo"
+												name="confirm_password" id="confirm_password"
+												placeholder="Confirm password"
+												oninput="validateConfirmPassword()" minlength="6" /> 
+												<span
+												class="btn btn-sm btn-icon position-absolute top-50 end-0 translate-middle-y toggle-password "
+												data-eye-target="confirm_password"> <i
+												class="ki-duotone ki-eye-slash fs-2"> <span
+													class="path1"></span> <span class="path2"></span> <span
+													class="path3"></span> <span class="path4"></span>
+											</i> <i class="ki-duotone ki-eye fs-2 d-none"> <span
+													class="path1"></span> <span class="path2"></span> <span
+													class="path3"></span> <span class="path4"></span>
+											</i>
+											</span>
+										</div>
+										<!--  <input type="password" class="form-control"
+											id="confirmPassword" placeholder="Confirm password" required /> -->
+										<span id="confirmNewPwError"
+											class="text-danger fs-7 fw-medium d-none mt-2 mb-0">
+											The password is incorrect. Please enter it again.</span>
+										<!-- <div id="passwordMatchMessage" class="mt-2 fw-semibold fs-7"></div> -->
 									</div>
 								</div>
-								<div class="text-muted fs-7 mt-4">Password must be at
-									least 8 characters and contain symbols.</div>
+								<p id="pwPattern" class="fs-6 fw-normal text-muted mt-4 mb-0">Password
+									must be at least 6 character.</p>
 							</div>
 						</div>
 
@@ -509,10 +553,11 @@
 
     if (typeof flatpickr === 'function') {
         flatpickr('#date_s', {
-            dateFormat: 'd-m-Y',
-            altInput: true,
-            altFormat: 'd M Y',
-            allowInput: true
+        	 dateFormat: "Y-m-d",  
+             altInput: true,
+             altFormat: "d M Y",   
+             locale: "en",        
+             allowInput: false
         });
     }
 
@@ -530,6 +575,18 @@
     $('#userid').on('keypress', e =>
         /^[A-Za-z.]$/.test(e.key) || e.preventDefault()
     );
+    $('#userid').on('input', function () {
+        let val = this.value.trim();
+
+        if (val && !/^[A-Za-z]/.test(val)) {
+            val = val.replace(/^[^A-Za-z]+/, '');
+        }
+
+        val = val.replace(/[^A-Za-z.]/g, '');
+
+        this.value = val;
+    });
+
 
     $('#phone').on('keypress', e =>
         /^[0-9]$/.test(e.key) || e.preventDefault()
@@ -613,6 +670,13 @@
             markInvalid($phone, '#hintPhone', true);
             ok = false;
         }
+        
+        const pwOk = validateNewPassword();
+        const cfOk = validateConfirmPassword();
+
+        if (!pwOk || !cfOk) {
+            ok = false;
+        }
 
         if (!ok) {
             e.preventDefault();
@@ -633,21 +697,132 @@
     });
 
 
-    $('#btnCancel').on('click', () => location.href = 'user-list');
-    $('#btnSubmit').on('click', () => $('#userAddForm').submit());
+    /* $('#btnCancel').on('click', () => location.href = 'user-list'); */
+    $('#btnCancel').on('click', function () {
+    Swal.fire({
+        title: "Are you sure?!",
+        text: "Closing will discard any unsaved data.",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonText: "Yes, discard it",
+        cancelButtonText: "Cancel",
+        buttonsStyling: false,
+        customClass: {
+            confirmButton: "btn btn-danger",
+            cancelButton: "btn btn-secondary"
+        }
+    }).then((result) => {
+        if (result.isConfirmed) {
+            location.href = 'user-list';
+        }
+    });
+});
+
+    /* $('#btnSubmit').on('click', () => $('#userAddForm').submit()); */
 
 })();
 </script>
+
 	<script>
+	function toggleEyeIcon(){
+		document.querySelectorAll(".toggle-password").forEach(btn =>{
+			
+			if (btn.dataset.bound === "true") return;
+		    btn.dataset.bound = "true";
+		    
+			btn.addEventListener("click", function(){
+				const input =document.getElementById(this.dataset.eyeTarget);
+				/* if (input.disabled) return; */
+
+			      const eyeSlash = this.querySelector(".ki-eye-slash");
+			      const eye = this.querySelector(".ki-eye");
+
+			      if (input.type === "password") {
+			        input.type = "text";
+			        eyeSlash.classList.add("d-none");
+			        eye.classList.remove("d-none");
+			        this.classList.add("active-eye");
+			      } else {
+			        input.type = "password";
+			        eye.classList.add("d-none");
+			        eyeSlash.classList.remove("d-none");
+			        this.classList.remove("active-eye");
+			      }  
+			})
+			
+		})
+	}
+	
+	
+	function validateNewPassword() {
+	    const password = document.getElementById("password").value.trim();
+	    const pattern = /^\S{6,}$/;
+	    
+	    if (password === "") {
+	        setPwPattern("normal");
+	        return false;
+	    }
+
+	    if (!pattern.test(password)) {
+	        setPwPattern("error");  
+	        return false;
+	    }
+
+	    setPwPattern("normal");
+	    return true;
+	}
+	
+	function validateConfirmPassword() {
+	    const password = document.getElementById("password").value.trim();
+	    const confirmPassword = document.getElementById("confirm_password");
+	    const errorEl = document.getElementById("confirmNewPwError");
+
+	    if (confirmPassword.value.trim() === "") {
+	        confirmPassword.classList.remove("is-invalid");
+	        errorEl.classList.add("d-none");
+	        return true;
+	    }
+
+	    if (password !== confirmPassword.value.trim()) {
+	    	confirmPassword.classList.add("is-invalid");
+	    	errorEl.classList.remove("d-none"); 
+	        return false;
+	    }
+
+	    confirmPassword.classList.remove("is-invalid");
+	    errorEl.classList.add("d-none");
+	    return true;
+	}
+	
+	function setPwPattern(state) {
+	    const pw = document.getElementById("password");
+	    const patternText = document.getElementById("pwPattern");
+
+	    if (state === "error") {
+	        pw.classList.add("is-invalid");
+	        patternText.classList.remove("text-muted");
+	        patternText.classList.add("text-danger");
+	    } else {
+	        pw.classList.remove("is-invalid");
+	        patternText.classList.remove("text-danger");
+	        patternText.classList.add("text-muted");
+	    }
+	}
+
+	
+	
+	
 document.addEventListener('DOMContentLoaded', function () {
- const passwordInput = document.getElementById('newPassword');
- const confirmInput = document.getElementById('confirmPassword');
+	toggleEyeIcon();
+	
+ const passwordInput = document.getElementById('password');
+ const confirmInput = document.getElementById('confirm_password');
  const msgElement = document.getElementById('passwordMatchMessage');
  const mainForm = document.getElementById('userAddForm');
  const btnSubmit = document.getElementById('btnSubmit');
 
  // 1. Real-time Password Matching Check
- function checkPasswordMatch() {
+/*  function checkPasswordMatch() {
      const pass = passwordInput.value;
      const conf = confirmInput.value;
 
@@ -672,7 +847,10 @@ document.addEventListener('DOMContentLoaded', function () {
  if (passwordInput && confirmInput) {
      passwordInput.addEventListener('keyup', checkPasswordMatch);
      confirmInput.addEventListener('keyup', checkPasswordMatch);
- }
+ } */
+ validateNewPassword();
+ validateConfirmPassword();
+ 
 
  if (btnSubmit) {
 
@@ -697,10 +875,11 @@ document.addEventListener('DOMContentLoaded', function () {
              }
          });
 
-         const passVal = passwordInput.value;
+       
+		/* const passVal = passwordInput.value;
          const confVal = confirmInput.value;
 
-         if (passVal.length < 8) {
+         if (passVal.length < 6) {
              Swal.fire('Password too short', 'Password must be at least 8 characters.', 'warning');
              return; // หยุดทำงาน
          }
@@ -708,10 +887,29 @@ document.addEventListener('DOMContentLoaded', function () {
          if (passVal !== confVal) {
              Swal.fire('Password Mismatch', 'Please confirm your password correctly.', 'error');
              return; 
-         }
+         } */
 
          if (isValid) {
-             mainForm.submit();
+             	e.preventDefault();
+             	Swal.fire({
+         	        title: "Are you sure?!",
+         	        text: "Do you want to save the changes?",
+         	        icon: "warning",
+         	        showCancelButton: true,
+         	        confirmButtonText: "Save",
+         	        cancelButtonText: "Close",
+         	        buttonsStyling: false,
+         	        customClass: {
+         	            confirmButton: "btn btn-success",
+         	            cancelButton: "btn btn-secondary"
+         	        }
+         	    }).then((result) => {
+         	        if (result.isConfirmed) {
+         	        	 mainForm.submit();
+         	        }
+         	    });
+   
+            
          } else {
              Swal.fire(
                  'Form Incomplete',

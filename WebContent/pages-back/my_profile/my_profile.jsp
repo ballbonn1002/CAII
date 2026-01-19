@@ -460,13 +460,7 @@
 											        <i class="ki-outline ki-cross fs-3"></i>
 											    </span>
 											</c:if>
-																						
-											<!-- <span id="removeBtn"
-												class="btn btn-icon btn-circle btn-color-muted btn-active-color-primary w-30px h-30px bg-body shadow"
-												data-kt-image-input-action="remove" data-bs-toggle="tooltip"
-												data-bs-dismiss="click" title="Remove avatar"> <i
-												class="ki-outline ki-cross fs-3"></i>
-											</span> -->
+											
 										</div>
 									</div>
 									<div
