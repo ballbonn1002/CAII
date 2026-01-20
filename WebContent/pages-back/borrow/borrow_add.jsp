@@ -9,372 +9,243 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-<link
-	href="${pageContext.request.contextPath}/assets/plugins/global/plugins.bundle.css"
-	rel="stylesheet" type="text/css" />
-<script
-	src="${pageContext.request.contextPath}/assets/plugins/global/plugins.bundle.js"></script>
+<link href="${pageContext.request.contextPath}/assets/plugins/global/plugins.bundle.css" rel="stylesheet" type="text/css" />
+<script src="${pageContext.request.contextPath}/assets/plugins/global/plugins.bundle.js"></script>
+<link href="${pageContext.request.contextPath}/assets/plugins/custom/datatables/datatables.bundle.css" rel="stylesheet" type="text/css" />
+<script src="${pageContext.request.contextPath}/assets/plugins/custom/datatables/datatables.bundle.js"></script>
+<script src="${pageContext.request.contextPath}/assets/js/scripts.bundle.js"></script>
 
-<link
-	href="${pageContext.request.contextPath}/assets/plugins/custom/datatables/datatables.bundle.css"
-	rel="stylesheet" type="text/css" />
-<script
-	src="${pageContext.request.contextPath}/assets/plugins/custom/datatables/datatables.bundle.js"></script>
-<script
-	src="${pageContext.request.contextPath}/assets/js/scripts.bundle.js"></script>
 <style>
-/* Light Mode */
-[data-bs-theme="light"] #kt_table.table.table-striped>tbody>tr:nth-of-type(odd)>*
-	{
+[data-bs-theme="light"] #kt_table.table.table-striped>tbody>tr:nth-of-type(odd)>* {
 	background-color: #FBFBFB !important;
 	box-shadow: none !important;
 }
-
-[data-bs-theme="light"] #kt_table.table-hover tbody tr:hover>*, [data-bs-theme="light"] #kt_table.dataTable>tbody>tr:hover>*
-	{
+[data-bs-theme="light"] #kt_table.table-hover tbody tr:hover>*, 
+[data-bs-theme="light"] #kt_table.dataTable>tbody>tr:hover>* {
 	background-color: #F9F9F9 !important;
 	box-shadow: none !important;
 	transition: background-color .15s ease-in-out;
 }
-
-/* Dark Mode */
-[data-bs-theme="dark"] #kt_table.table.table-striped>tbody>tr:nth-of-type(odd)>*
-	{
+[data-bs-theme="dark"] #kt_table.table.table-striped>tbody>tr:nth-of-type(odd)>* {
 	background-color: #191B20 !important;
 	box-shadow: none !important;
 }
-
-[data-bs-theme="dark"] #kt_table.table.table-striped>tbody>tr:nth-of-type(even)>*
-	{
+[data-bs-theme="dark"] #kt_table.table.table-striped>tbody>tr:nth-of-type(even)>* {
 	background-color: #15171C !important;
 	box-shadow: none !important;
 }
-
-[data-bs-theme="dark"] #kt_table.table-hover tbody tr:hover>*, [data-bs-theme="dark"] #kt_table.dataTable>tbody>tr:hover>*
-	{
+[data-bs-theme="dark"] #kt_table.table-hover tbody tr:hover>*, 
+[data-bs-theme="dark"] #kt_table.dataTable>tbody>tr:hover>* {
 	background-color: #1B1C22 !important;
 	box-shadow: none !important;
 	transition: background-color .15s ease-in-out;
 }
-
-.rotate-180 {
-	transform: rotate(180deg);
-}
+.rotate-180 { transform: rotate(180deg); }
 </style>
-
 </head>
+
 <body>
 	<div class="app-main flex-column flex-row-fluid" id="kt_app_main">
 		<div class="d-flex flex-column flex-column-fluid">
 
 			<!-- Toolbar -->
 			<div id="kt_app_toolbar" class="app-toolbar py-3 py-lg-6">
-				<div id="kt_app_toolbar_container"
-					class="app-container container-fluid d-flex align-items-center justify-content-start">
-					<div
-						class="page-title d-flex flex-column flex-wrap me-3 align-items-start">
-						<h1 class="page-heading fw-semibold my-0 text-start"
-							style="color: #4b5675;">Borrow Add</h1>
-						<ul
-							class="breadcrumb breadcrumb-separatorless fw-medium fs-7 my-0 pt-1">
-							<li class="breadcrumb-item text-muted"><a
-								href="${pageContext.request.contextPath}/demo_dashboard"
-								class="text-muted text-hover-primary">Home</a></li>
-							<li class="breadcrumb-item"><span
-								class="bullet bg-gray-500 w-4px h-1px"></span></li>
-							<li class="breadcrumb-item text-muted"><a
-								href="${pageContext.request.contextPath}/borrow_list"
-								class="text-muted text-hover-primary">Borrow</a></li>
-							<li class="breadcrumb-item"><span
-								class="bullet bg-gray-500 w-4px h-1px"></span></li>
+				<div id="kt_app_toolbar_container" class="app-container container-fluid d-flex align-items-center justify-content-start">
+					<div class="page-title d-flex flex-column flex-wrap me-3 align-items-start">
+						<h1 class="page-heading fw-semibold my-0 text-start" style="color: #4b5675;">Borrow Add</h1>
+						<ul class="breadcrumb breadcrumb-separatorless fw-medium fs-7 my-0 pt-1">
+							<li class="breadcrumb-item text-muted"><a href="${pageContext.request.contextPath}/demo_dashboard" class="text-muted text-hover-primary">Home</a></li>
+							<li class="breadcrumb-item"><span class="bullet bg-gray-500 w-4px h-1px"></span></li>
+							<li class="breadcrumb-item text-muted"><a href="${pageContext.request.contextPath}/borrow_list" class="text-muted text-hover-primary">Borrow</a></li>
+							<li class="breadcrumb-item"><span class="bullet bg-gray-500 w-4px h-1px"></span></li>
 							<li class="breadcrumb-item text-muted">Borrow Add</li>
 						</ul>
 					</div>
 				</div>
 			</div>
-			<!-- end Toolbar -->
 
 			<div id="kt_app_content" class="app-content flex-column-fluid">
-				<div id="kt_app_content_container"
-					class="app-container container-fluid">
-
+				<div id="kt_app_content_container" class="app-container container-fluid">
 					<div class="row g-5 g-xl-10">
 
-						<!-- LEFT : FORM -->
+						<!-- LEFT FORM -->
 						<div class="col-xl-8">
-							<form
-								action="${pageContext.request.contextPath}/eBorrowAdd.action"
-								method="post" class="card shadow-none"
-								style="height: fit-content;">
-
+							<form action="${pageContext.request.contextPath}/eBorrowAdd.action" method="post" class="card shadow-none" style="height: fit-content;">
 								<input type="hidden" name="id" value="" />
 
-								<div class="card-header py-4"
-									style="border-bottom: 1px solid #E4E6EF;">
+								<div class="card-header py-4" style="border-bottom: 1px solid #E4E6EF;">
 									<h3 class="card-title fw-bold mb-0">Borrow Equipment</h3>
 								</div>
 
 								<div class="card-body pt-6">
-
-									<!-- Borrower -->
 									<div class="mb-7">
 										<label class="form-label required fw-medium">Borrower</label>
-										<select name="user" id="user_select"
-											class="form-select form-select fw-medium"
-											data-control="select2" data-placeholder="Select Borrower"
-											required>
+										<select name="user" id="user_select" class="form-select form-select fw-medium" data-control="select2" data-placeholder="Select Borrower" required>
 											<option value="">-- Select borrower --</option>
 										</select>
 									</div>
 
-									<!-- Status -->
 									<div class="mb-7">
 										<label class="required fw-medium mb-2 d-block">Status</label>
-										<select name="status"
-											class="form-select form-select text-muted" required>
+										<select name="status" class="form-select form-select text-muted" required>
 											<option value="">Select status</option>
 											<option value="B">Borrowing</option>
 											<option value="W">Wait for approve</option>
 										</select>
 									</div>
 
-									<!-- Equipment -->
 									<div class="mb-7">
 										<label class="required fw-medium mb-2 d-block">Equipment</label>
-										<select id="equipment_select" name="equipment"
-											class="form-select form-select fw-medium text-muted"
-											data-control="select2" data-placeholder="Select equipment"
-											required>
+										<select id="equipment_select" name="equipment" class="form-select form-select fw-medium text-muted" data-control="select2" data-placeholder="Select equipment" required>
 											<option value="">Select equipment</option>
 										</select>
 									</div>
 
-									<!-- Start / End Date -->
 									<div class="row mb-7">
 										<div class="col-lg-6">
-											<label class="form-label required fw-medium fs-6">Start
-												Date</label>
+											<label class="form-label required fw-medium fs-6">Start Date</label>
 											<div class="position-relative d-flex align-items-center">
-												<i
-													class="ki-outline ki-calendar fs-3 position-absolute ms-4"></i>
-												<input type="text" id="start_date"
-													class="form-control form-control ps-12" name="date_from"
-													placeholder="Select Date" value="" autocomplete="off"
-													required />
+												<i class="ki-outline ki-calendar fs-3 position-absolute ms-4"></i>
+												<input type="text" id="start_date" class="form-control form-control ps-12" name="date_from" placeholder="Select Date" autocomplete="off" required />
 											</div>
 										</div>
-
 										<div class="col-lg-6">
 											<label class="form-label fw-medium fs-6">End Date</label>
 											<div class="position-relative d-flex align-items-center">
-												<i
-													class="ki-outline ki-calendar fs-3 position-absolute ms-4"></i>
-												<input type="text" id="end_date"
-													class="form-control form-control ps-12" name="date_to"
-													placeholder="Select Date" value="" autocomplete="off" />
+												<i class="ki-outline ki-calendar fs-3 position-absolute ms-4"></i>
+												<input type="text" id="end_date" class="form-control form-control ps-12" name="date_to" placeholder="Select Date" autocomplete="off" />
 											</div>
 										</div>
 									</div>
 
-									<!-- Location -->
 									<div class="mb-7">
 										<label class="required fw-medium fs-6 mb-2 d-block">Location</label>
-										<input class="form-control form-control" type="text"
-											name="location" value="" placeholder="Location" required />
+										<input class="form-control form-control" type="text" name="location" placeholder="Location" required />
 									</div>
 
-									<!-- Reason -->
 									<div class="mb-7">
 										<label class="fw-medium fs-6 mb-2 d-block">Reason</label>
-										<textarea class="form-control form-control" rows="4"
-											name="reason" placeholder="ระบุเหตุผลการยืม"></textarea>
+										<textarea class="form-control form-control" rows="4" name="reason" placeholder="ระบุเหตุผลการยืม"></textarea>
 									</div>
 
-									<!-- Contact Address -->
 									<div class="mb-7">
-										<label class="fw-medium fs-6 mb-2 d-block">Contact
-											Address</label>
-										<textarea class="form-control form-control" rows="4"
-											name="contact" placeholder="Address"></textarea>
+										<label class="fw-medium fs-6 mb-2 d-block">Contact Address</label>
+										<textarea class="form-control form-control" rows="4" name="contact" placeholder="Address"></textarea>
 									</div>
 
-									<!-- Remark -->
 									<div class="mb-7">
 										<label class="fw-medium fs-6 mb-2 d-block">Remark</label>
-										<textarea class="form-control form-control" rows="4"
-											name="remark" placeholder="Remark"></textarea>
+										<textarea class="form-control form-control" rows="4" name="remark" placeholder="Remark"></textarea>
 									</div>
-
 								</div>
 
 								<div class="card-footer d-flex justify-content-end">
-									<a href="${pageContext.request.contextPath}/borrow_list"
-										class="btn btn-light me-3">Cancel</a>
+									<a href="${pageContext.request.contextPath}/borrow_list" class="btn btn-light me-3">Cancel</a>
 									<button type="submit" class="btn btn-success">
 										<span class="indicator-label">Save</span>
 									</button>
 								</div>
-
 							</form>
 						</div>
 
-						<!-- Right -->
+						<!-- RIGHT -->
 						<div class="col-xl-4">
-
 							<!-- Equipment Detail Card -->
 							<div class="card mb-5">
 								<div class="card-header border-0 pt-6">
-									<div
-										class="card-title d-flex justify-content-between align-items-center w-100">
+									<div class="card-title d-flex justify-content-between align-items-center w-100">
 										<span class="fw-bold fs-4 me-2">Equipment Detail</span>
 									</div>
 								</div>
 
 								<div class="card-body pt-0">
-
-									<!-- TOP -->
 									<div class="mb-4 d-flex flex-column align-items-start">
-										<div
-											class="mb-3 d-flex justify-content-between align-items-center w-100">
+										<div class="mb-3 d-flex justify-content-between align-items-center w-100">
 											<span class="fw-bold fs-1 text-primary" id="d_itemNo">-</span>
-											<span> <span id="d_badge"
-												class="badge badge-lg rounded-pill px-4 fw-semibold bg-light text-gray-700">-</span>
-											</span>
+											<span id="d_badge" class="badge badge-lg rounded-pill px-4 fw-semibold bg-light text-gray-700">-</span>
 										</div>
 										<div id="d_imgWrap"></div>
 									</div>
 
-									<!-- ROWS -->
-									<div
-										class="d-flex justify-content-between align-items-center py-5 border-bottom border-gray-200">
+									<div class="d-flex justify-content-between align-items-center py-5 border-bottom border-gray-200">
 										<div class="text-gray-600">Name:</div>
-										<div class="fw-semibold text-gray-800 text-end text-break"
-											id="d_name"></div>
+										<div class="fw-semibold text-gray-800 text-end text-break" id="d_name"></div>
 									</div>
 
-									<div
-										class="d-flex justify-content-between align-items-center py-5 border-bottom border-gray-200">
+									<div class="d-flex justify-content-between align-items-center py-5 border-bottom border-gray-200">
 										<div class="text-gray-600">Type:</div>
-										<div
-											class="fw-semibold text-gray-800 d-flex align-items-center justify-content-end text-end w-100">
+										<div class="fw-semibold text-gray-800 d-flex align-items-center justify-content-end text-end w-100">
 											<span id="d_typeText">-</span>
-											<span id="d_typeIcons"
-												class="d-inline-flex align-items-center ms-3"> 
-												<i id="ico_c" class="ki-duotone ki-laptop fs-4 text-gray-600 d-none">
-													<span class="path1"></span><span class="path2"></span>
-												</i> 
-												<i id="ico_in" class="ki-duotone ki-keyboard fs-4 text-gray-600 d-none">
-													<span class="path1"></span><span class="path2"></span>
-												</i> 
-												<i id="ico_sl" class="ki-duotone ki-verify fs-4 text-gray-600 d-none">
-													<span class="path1"></span><span class="path2"></span>
-												</i> 
-												<i id="ico_mob" class="ki-duotone ki-phone fs-4 text-gray-600 d-none">
-													<span class="path1"></span><span class="path2"></span>
-												</i> 
-												<i id="ico_p" class="ki-duotone ki-wifi-square fs-4 text-gray-600 d-none">
-													<span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span>
-												</i> 
-												<i id="ico_other" class="ki-duotone ki-dots-square fs-4 text-gray-600 d-none">
-													<span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span>
-												</i>
+											<span id="d_typeIcons" class="d-inline-flex align-items-center ms-3"> 
+												<i id="ico_c" class="ki-duotone ki-laptop fs-4 text-gray-600 d-none"><span class="path1"></span><span class="path2"></span></i> 
+												<i id="ico_in" class="ki-duotone ki-keyboard fs-4 text-gray-600 d-none"><span class="path1"></span><span class="path2"></span></i> 
+												<i id="ico_sl" class="ki-duotone ki-verify fs-4 text-gray-600 d-none"><span class="path1"></span><span class="path2"></span></i> 
+												<i id="ico_mob" class="ki-duotone ki-phone fs-4 text-gray-600 d-none"><span class="path1"></span><span class="path2"></span></i> 
+												<i id="ico_p" class="ki-duotone ki-wifi-square fs-4 text-gray-600 d-none"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span></i> 
+												<i id="ico_other" class="ki-duotone ki-dots-square fs-4 text-gray-600 d-none"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span></i>
 											</span>
 										</div>
 									</div>
 
-									<div
-										class="d-flex justify-content-between align-items-center py-5 border-bottom border-gray-200">
+									<div class="d-flex justify-content-between align-items-center py-5 border-bottom border-gray-200">
 										<div class="text-gray-600">Serial No:</div>
-										<div class="fw-semibold text-gray-800 text-end text-break"
-											id="d_serial"></div>
+										<div class="fw-semibold text-gray-800 text-end text-break" id="d_serial"></div>
 									</div>
 
-									<div
-										class="d-flex justify-content-between align-items-center py-5 border-bottom border-gray-200">
+									<div class="d-flex justify-content-between align-items-center py-5 border-bottom border-gray-200">
 										<div class="text-gray-600">Amount:</div>
 										<div class="fw-semibold text-gray-800 text-end" id="d_amount"></div>
 									</div>
 
-									<div
-										class="d-flex justify-content-between align-items-center py-5 border-bottom border-gray-200">
+									<div class="d-flex justify-content-between align-items-center py-5 border-bottom border-gray-200">
 										<div class="text-gray-600">Date of Purchase:</div>
-										<div class="fw-semibold text-gray-800 text-end text-break"
-											id="d_purchase"></div>
+										<div class="fw-semibold text-gray-800 text-end text-break" id="d_purchase"></div>
 									</div>
 
-									<div
-										class="d-flex justify-content-between align-items-center py-5 border-bottom border-gray-200">
+									<div class="d-flex justify-content-between align-items-center py-5 border-bottom border-gray-200">
 										<div class="text-gray-600">Detail:</div>
-										<div class="fw-semibold text-gray-800 text-end text-break"
-											id="d_detail"></div>
+										<div class="fw-semibold text-gray-800 text-end text-break" id="d_detail"></div>
 									</div>
 
 									<!-- More Detail -->
-									<div id="moreDetailSection">
-										<button type="button" id="btn_moreDetail_1"
-											class="btn btn-link p-0 w-100 text-primary fw-semibold d-flex justify-content-between align-items-center py-5 border-bottom border-gray-200"
-											aria-expanded="false" aria-controls="moreDetailCollapse_1">
-											<span>More Detail</span> <i class="ki-duotone ki-down fs-3"
-												id="icon_1"> <span class="path1"></span><span
-												class="path2"></span>
-											</i>
+									<div id="moreDetailSection" class="d-none">
+										<button type="button" id="btn_moreDetail" class="btn btn-link p-0 w-100 text-primary fw-semibold d-flex justify-content-between align-items-center py-5 border-bottom border-gray-200">
+											<span>More Detail</span> 
+											<i class="ki-duotone ki-down fs-3" id="icon_more"><span class="path1"></span><span class="path2"></span></i>
 										</button>
 
-										<div class="collapse" id="moreDetailCollapse_1">
-											<div
-												class="d-flex justify-content-between align-items-center py-5 border-bottom border-gray-200">
+										<div class="collapse" id="moreDetailCollapse">
+											<div class="d-flex justify-content-between align-items-center py-5 border-bottom border-gray-200">
 												<div class="text-gray-600">Windows</div>
-												<div class="fw-semibold text-gray-800 text-end text-break"
-													id="d_windows">-</div>
+												<div class="fw-semibold text-gray-800 text-end text-break" id="d_windows">-</div>
 											</div>
-
-											<div
-												class="d-flex justify-content-between align-items-center py-5 border-bottom border-gray-200">
+											<div class="d-flex justify-content-between align-items-center py-5 border-bottom border-gray-200">
 												<div class="text-gray-600">CPU</div>
-												<div class="fw-semibold text-gray-800 text-end text-break"
-													id="d_cpu">-</div>
+												<div class="fw-semibold text-gray-800 text-end text-break" id="d_cpu">-</div>
 											</div>
-
-											<div
-												class="d-flex justify-content-between align-items-center py-5 border-bottom border-gray-200">
+											<div class="d-flex justify-content-between align-items-center py-5 border-bottom border-gray-200">
 												<div class="text-gray-600">Ram</div>
-												<div class="fw-semibold text-gray-800 text-end text-break"
-													id="d_ram">-</div>
+												<div class="fw-semibold text-gray-800 text-end text-break" id="d_ram">-</div>
 											</div>
-
-											<div
-												class="d-flex justify-content-between align-items-center py-5 border-bottom border-gray-200">
+											<div class="d-flex justify-content-between align-items-center py-5 border-bottom border-gray-200">
 												<div class="text-gray-600">Storage</div>
-												<div class="fw-semibold text-gray-800 text-end text-break"
-													id="d_storage">-</div>
+												<div class="fw-semibold text-gray-800 text-end text-break" id="d_storage">-</div>
 											</div>
-
-											<div
-												class="d-flex justify-content-between align-items-center py-5 border-bottom border-gray-200">
+											<div class="d-flex justify-content-between align-items-center py-5 border-bottom border-gray-200">
 												<div class="text-gray-600">Battery</div>
-												<div class="fw-semibold text-gray-800 text-end text-break"
-													id="d_battery">-</div>
+												<div class="fw-semibold text-gray-800 text-end text-break" id="d_battery">-</div>
 											</div>
-
-											<div
-												class="d-flex justify-content-between align-items-center py-5 border-bottom border-gray-200">
+											<div class="d-flex justify-content-between align-items-center py-5 border-bottom border-gray-200">
 												<div class="text-gray-600">WIFI Address</div>
-												<div class="fw-semibold text-gray-800 text-end text-break"
-													id="d_wifi">-</div>
+												<div class="fw-semibold text-gray-800 text-end text-break" id="d_wifi">-</div>
 											</div>
-
-											<div
-												class="d-flex justify-content-between align-items-center py-5 border-bottom border-gray-200">
+											<div class="d-flex justify-content-between align-items-center py-5 border-bottom border-gray-200">
 												<div class="text-gray-600">LAN Address</div>
-												<div class="fw-semibold text-gray-800 text-end text-break"
-													id="d_lan">-</div>
+												<div class="fw-semibold text-gray-800 text-end text-break" id="d_lan">-</div>
 											</div>
-
-											<div
-												class="d-flex justify-content-between align-items-center py-5 border-bottom border-gray-200">
+											<div class="d-flex justify-content-between align-items-center py-5 border-bottom border-gray-200">
 												<div class="text-gray-600">Display</div>
-												<div class="fw-semibold text-gray-800 text-end text-break"
-													id="d_display">-</div>
+												<div class="fw-semibold text-gray-800 text-end text-break" id="d_display">-</div>
 											</div>
 										</div>
 									</div>
@@ -387,24 +258,19 @@
 									<div class="card-title">
 										<h3 class="fw-semibold m-0 bs-gray-900">Status Log</h3>
 									</div>
-
 									<div class="card-toolbar">
-										<button id="btnRequestReturn" type="button"
-											class="btn btn-sm btn-warning btn-open-return-modal d-none">
-											Request for Return</button>
+										<button id="btnRequestReturn" type="button" class="btn btn-sm btn-warning btn-open-return-modal d-none">
+											Request for Return
+										</button>
 									</div>
 								</div>
 
 								<div class="card-body pt-0 mt-6">
 									<div id="statusLogBox"></div>
-
 									<div id="statusLogEmpty" class="d-none">
-										<div
-											class="d-flex flex-column align-items-center justify-content-center py-10">
-											<i class="ki-duotone ki-cube-2 fs-3x text-gray-500 mb-4">
-												<span class="path1"></span><span class="path2"></span><span
-												class="path3"></span>
-											</i> <span class="text-gray-800 fw-semibold fs-5">No data</span>
+										<div class="d-flex flex-column align-items-center justify-content-center py-10">
+											<i class="ki-duotone ki-cube-2 fs-3x text-gray-500 mb-4"><span class="path1"></span><span class="path2"></span><span class="path3"></span></i> 
+											<span class="text-gray-800 fw-semibold fs-5">No data</span>
 										</div>
 									</div>
 								</div>
@@ -416,218 +282,39 @@
 		</div>
 	</div>
 
-	<!-- Initialize Data Variables -->
 	<script>
-		// ดึงข้อมูลจาก request attributes
-		var equipments = ${equipments != null ? equipments : '[]'};
-		var users = ${userList != null ? userList : '[]'};
-		var dbStatusList = ${status != null ? status : '[]'};
-		var dbTypeList = ${type != null ? type : '[]'};
-		var preselectedEquipId = '${eId != null ? eId : ""}';
-	</script>
-
-	<!-- Populate User Select -->
-	<script>
-document.addEventListener("DOMContentLoaded", function () {
-	const userSelect = document.getElementById("user_select");
-	const hiddenId = document.querySelector('input[name="id"]');
-	
-	if (!userSelect || !Array.isArray(users)) return;
-
-	users.forEach(function(u) {
-		const uid = u.id || u.user_id || u.USER_ID || '';
-		const emp = u.employee_id || u.employeeId || '';
-		const nameTH = u.name || u.fullname || '';
-		const nameEN = u.name_en || u.nameEn || '';
-		const role = u.role || '';
-		const enableVal = u.enable || u.ENABLE || u.is_enable || u.isEnable || '0';
-
-		// เช็คว่า enable = true
-		if (enableVal == 1 || enableVal == '1' || enableVal == true || enableVal == 'true') {
-			const opt = document.createElement('option');
-			opt.value = uid;
-			opt.textContent = emp + '-' + nameTH + '-' + nameEN + '-' + role;
-			userSelect.appendChild(opt);
-		}
-	});
-
-	// อัพเดท hidden id เมื่อเลือก user
-	if (hiddenId) {
-		userSelect.addEventListener("change", function () {
-			hiddenId.value = this.value || "";
-		});
-	}
-});
-	</script>
-
-	<!-- Populate Equipment Select -->
-	<script>
-document.addEventListener("DOMContentLoaded", function () {
-	const equipSelect = document.getElementById("equipment_select");
-	
-	if (!equipSelect || !Array.isArray(equipments)) return;
-
-	equipments.forEach(function(e) {
-		const eqId = e.equipmentId || e.equipment_id || '';
-		const itemNo = e.itemNo || e.item_no || '';
-		const eqName = e.name || '';
-		const eqStatus = e.status || '';
-		const eqType = e.type || '';
-		const eqSerial = e.serialNo || e.serial_no || '';
-		const eqAmount = e.amount || '';
-		const eqDetail = e.detail || '';
-		const eqImage = e.image || '';
-		const eqPurchase = e.timeCreate || e.time_create || '';
-		const eqWindows = e.windows || '';
-		const eqCPU = e.process || e.cpu || '';
-		const eqRam = e.ram || '';
-		const eqStorage = e.hdd || e.storage || '';
-		const eqBattery = e.battery || '';
-		const eqWifi = e.wifiaddress || e.wifiAddress || '';
-		const eqLan = e.lanaddress || e.lanAddress || '';
-		const eqDisplay = e.display || '';
-		const eqStatusLog = e.statusLog || e.status_log || e.STATUS_LOG || '';
-
-		const opt = document.createElement('option');
-		opt.value = String(eqId).replace('.0', '');
-		opt.textContent = itemNo + ' - ' + eqName;
+	(function() {
+		'use strict';
 		
-		// เก็บ data attributes
-		opt.dataset.itemno = itemNo;
-		opt.dataset.name = eqName;
-		opt.dataset.status = eqStatus;
-		opt.dataset.type = eqType;
-		opt.dataset.serial = eqSerial;
-		opt.dataset.amount = eqAmount;
-		opt.dataset.detail = eqDetail;
-		opt.dataset.image = eqImage;
-		opt.dataset.purchase = eqPurchase;
-		opt.dataset.windows = eqWindows;
-		opt.dataset.cpu = eqCPU;
-		opt.dataset.ram = eqRam;
-		opt.dataset.storage = eqStorage;
-		opt.dataset.battery = eqBattery;
-		opt.dataset.wifi = eqWifi;
-		opt.dataset.lan = eqLan;
-		opt.dataset.display = eqDisplay;
-		opt.dataset.statuslog = eqStatusLog;
+		// Data variables
+		const CTX = "${pageContext.request.contextPath}";
+		const equipments = ${equipments != null ? equipments : '[]'};
+		const users = ${userList != null ? userList : '[]'};
+		const preselectedEquipId = '${eId != null ? eId : ""}';
 
-		equipSelect.appendChild(opt);
-	});
+		// Cache DOM elements
+		const els = {
+			userSelect: null,
+			equipSelect: null,
+			hiddenId: null,
+			startDate: null,
+			endDate: null,
+			moreDetailSection: null,
+			moreDetailBtn: null,
+			moreDetailCollapse: null,
+			moreDetailIcon: null,
+			statusLogBox: null,
+			statusLogEmpty: null,
+			btnReturn: null
+		};
 
-	// ถ้ามี preselected id
-	if (preselectedEquipId) {
-		equipSelect.value = preselectedEquipId;
-		// trigger change event
-		const event = new Event('change');
-		equipSelect.dispatchEvent(event);
-	}
-});
-	</script>
+		// Detail field IDs
+		const detailFields = ['d_itemNo','d_badge','d_imgWrap','d_name','d_typeText','d_typeIcons',
+			'd_serial','d_amount','d_purchase','d_detail','d_windows','d_cpu','d_ram','d_storage',
+			'd_battery','d_wifi','d_lan','d_display'];
 
-	<!-- Borrower ID Handler -->
-	<script>
-document.addEventListener("DOMContentLoaded", function () {
-	const borrowerSelect = document.querySelector('select[name="user"]');
-	const hiddenId = document.querySelector('input[name="id"]');
-
-	if (!borrowerSelect || !hiddenId) return;
-
-	borrowerSelect.addEventListener("change", function () {
-		hiddenId.value = this.value || "";
-	});
-});
-	</script>
-
-	<!-- More Detail Collapse -->
-	<script>
-document.addEventListener("DOMContentLoaded", function () {
-	const collapseEl = document.getElementById("moreDetailCollapse_1");
-	const btn = document.getElementById("btn_moreDetail_1");
-	const iconEl = document.getElementById("icon_1");
-	if (!collapseEl || !btn || !iconEl) return;
-
-	const instance = bootstrap.Collapse.getOrCreateInstance(collapseEl, { toggle: false });
-
-	btn.addEventListener("click", function (e) {
-		e.preventDefault();
-		e.stopPropagation();
-
-		if (collapseEl.classList.contains("show")) instance.hide();
-		else instance.show();
-	});
-
-	collapseEl.addEventListener("show.bs.collapse", function () {
-		iconEl.style.transform = "rotate(180deg)";
-		btn.setAttribute("aria-expanded", "true");
-	});
-
-	collapseEl.addEventListener("hide.bs.collapse", function () {
-		iconEl.style.transform = "rotate(0deg)";
-		btn.setAttribute("aria-expanded", "false");
-	});
-});
-	</script>
-
-	<!-- Flatpickr Date Picker -->
-	<script>
-document.addEventListener("DOMContentLoaded", function () {
-	if (typeof flatpickr === "undefined") {
-		console.error("flatpickr not loaded");
-		return;
-	}
-
-	const startEl = document.getElementById("start_date");
-	const endEl = document.getElementById("end_date");
-
-	const startPicker = flatpickr(startEl, {
-		enableTime: true,
-		time_24hr: true,
-		dateFormat: "d m Y , H : i",
-		altInput: true,
-		altFormat: "d M Y , H : i",
-		allowInput: true
-	});
-
-	const endPicker = flatpickr(endEl, {
-		enableTime: true,
-		time_24hr: true,
-		dateFormat: "d m Y , H : i",
-		altInput: true,
-		altFormat: "d M Y , H : i",
-		allowInput: true
-	});
-
-	startEl.addEventListener("change", function () {
-		const v = this.value || "";
-		endPicker.set("minDate", v || null);
-
-		if (v && endEl.value && endEl.value < v) {
-			endEl.value = v;
-		}
-	});
-});
-	</script>
-
-	<!-- Equipment Detail Card Update -->
-	<script>
-document.addEventListener("DOMContentLoaded", function() {
-	const CTX = "${pageContext.request.contextPath}";
-	const sel = document.getElementById("equipment_select");
-
-	function setText(id, val) {
-		const el = document.getElementById(id);
-		if (!el) return;
-		el.textContent = (val && String(val).trim() !== "") ? val : "";
-	}
-
-	function setBadge(status) {
-		const badge = document.getElementById("d_badge");
-		if (!badge) return;
-
-		const st = (status || "").toUpperCase();
-
-		const map = {
+		// Status badge config
+		const statusConfig = {
 			A: { text: "Available", cls: "bg-success text-white" },
 			B: { text: "Borrowing", cls: "bg-primary text-white" },
 			W: { text: "Wait for approve", cls: "bg-warning text-dark" },
@@ -638,370 +325,422 @@ document.addEventListener("DOMContentLoaded", function() {
 			Z: { text: "Disabled", cls: "bg-secondary text-white" }
 		};
 
-		badge.className = "badge badge-lg rounded-pill px-4 fw-semibold bg-light text-gray-700";
-		badge.textContent = "";
+		// Type config
+		const typeConfig = {
+			c: { text: "Computer", icon: "ico_c" },
+			in: { text: "Instrument", icon: "ico_in" },
+			sl: { text: "Software License", icon: "ico_sl" },
+			l: { text: "Software License", icon: "ico_sl" },
+			mob: { text: "Mobile", icon: "ico_mob" },
+			p: { text: "Pocket WIFI", icon: "ico_p" }
+		};
 
-		if (map[st]) {
-			badge.textContent = map[st].text;
-			badge.className = "badge badge-lg rounded-pill px-4 fw-semibold " + map[st].cls;
-		}
-	}
+		const monthNames = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
 
-	function setImage(imgPath, altText) {
-		const wrap = document.getElementById("d_imgWrap");
-		if (!wrap) return;
-
-		let src = (imgPath || "").trim();
-
-		if (!src) {
-			wrap.innerHTML = `
-				<div class="symbol symbol-150px border rounded-3 bg-light d-flex align-items-center justify-content-center">
-					<i class="fa-solid fa-image fs-1 text-muted"></i>
-				</div>
-			`;
-			return;
+		// Utility functions
+		function setText(id, val) {
+			const el = document.getElementById(id);
+			if (el) el.textContent = (val && String(val).trim()) || "";
 		}
 
-		if (!src.startsWith("http")) {
-			if (!src.startsWith("/")) src = "/" + src;
-			src = CTX + src;
+		function formatDate(raw) {
+			const s = (raw || "").toString().trim().replace(/[TZ\u202F\u00A0]/g, " ").trim();
+			if (!s || s === "null") return "-";
+
+			const m1 = s.match(/^(\d{4})-(\d{2})-(\d{2})/);
+			if (m1) {
+				const d = String(m1[3]).padStart(2, "0");
+				const m = monthNames[parseInt(m1[2], 10) - 1];
+				return `${d} ${m} ${m1[1]}`;
+			}
+
+			const m2 = s.match(/^(\d{2})[\/-](\d{2})[\/-](\d{4})/);
+			if (m2) {
+				const d = String(m2[1]).padStart(2, "0");
+				const m = monthNames[parseInt(m2[2], 10) - 1];
+				return `${d} ${m} ${m2[3]}`;
+			}
+
+			const parsed = Date.parse(s);
+			if (!isNaN(parsed)) {
+				const dt = new Date(parsed);
+				const d = String(dt.getDate()).padStart(2, "0");
+				const m = monthNames[dt.getMonth()];
+				return `${d} ${m} ${dt.getFullYear()}`;
+			}
+
+			return s;
 		}
 
-		wrap.innerHTML = `
-			<div class="symbol symbol-150px">
-				<img src="${src}"
-					 alt="${altText || "equipment"}"
-					 class="border rounded-3 object-fit-cover w-100 h-100" />
-			</div>
-		`;
-	}
+		function formatDateTimeLong(dtStr) {
+			if (!dtStr) return "";
+			let s = String(dtStr).trim();
+			if (/^\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}/.test(s)) s = s.replace(" ", "T");
+			const d = new Date(s);
+			if (isNaN(d.getTime())) return String(dtStr);
 
-	function setTypeUI(typeCode) {
-		const textEl = document.getElementById("d_typeText");
-		const iconsWrap = document.getElementById("d_typeIcons");
-		if (!textEl) return;
-
-		const ids = ["ico_c","ico_in","ico_sl","ico_mob","ico_p","ico_other"];
-		ids.forEach(id => document.getElementById(id)?.classList.add("d-none"));
-
-		const t = (typeCode ?? "").toString().trim().toLowerCase();
-
-		if (!t) {
-			textEl.textContent = ""; 
-			if (iconsWrap) iconsWrap.classList.add("d-none");
-			return;
+			const months = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+			return `${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()}, ${String(d.getHours()).padStart(2,"0")}:${String(d.getMinutes()).padStart(2,"0")}`;
 		}
 
-		if (iconsWrap) iconsWrap.classList.remove("d-none");
+		// Populate users
+		function populateUsers() {
+			if (!els.userSelect || !Array.isArray(users)) return;
 
-		if (t === "c") {
-			textEl.textContent = "Computer";
-			document.getElementById("ico_c")?.classList.remove("d-none");
-		} else if (t === "in") {
-			textEl.textContent = "Instrument";
-			document.getElementById("ico_in")?.classList.remove("d-none");
-		} else if (t === "sl" || t === "l") {
-			textEl.textContent = "Software License";
-			document.getElementById("ico_sl")?.classList.remove("d-none");
-		} else if (t === "mob") {
-			textEl.textContent = "Mobile";
-			document.getElementById("ico_mob")?.classList.remove("d-none");
-		} else if (t === "p") {
-			textEl.textContent = "Pocket WIFI";
-			document.getElementById("ico_p")?.classList.remove("d-none");
-		} else {
-			textEl.textContent = "Other";
-			document.getElementById("ico_other")?.classList.remove("d-none");
-		}
-	}
+			const fragment = document.createDocumentFragment();
+			users.forEach(u => {
+				const enable = u.enable || u.ENABLE || u.is_enable || u.isEnable || '0';
+				if (enable == 1 || enable == '1' || enable == true || enable == 'true') {
+					const opt = document.createElement('option');
+					opt.value = u.id || u.user_id || u.USER_ID || '';
+					opt.textContent = `${u.employee_id || u.employeeId || ''}-${u.name || u.fullname || ''}-${u.name_en || u.nameEn || ''}-${u.role || ''}`;
+					fragment.appendChild(opt);
+				}
+			});
+			els.userSelect.appendChild(fragment);
 
-	function formatPurchase(raw) {
-		var s = (raw || "").toString().trim();
-		if (!s || s.toLowerCase() === "null") return "-";
-
-		s = s.replace(/\u202F/g, " ").replace(/\u00A0/g, " ").trim();
-		s = s.replace("T", " ");
-		if (s.endsWith("Z")) s = s.slice(0, -1).trim();
-
-		var monthNames = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
-
-		function fmt(mIndex, day, year) {
-			return String(day).padStart(2, "0") + " " + monthNames[mIndex] + " " + year;
+			els.userSelect.addEventListener("change", () => {
+				if (els.hiddenId) els.hiddenId.value = els.userSelect.value || "";
+			});
 		}
 
-		var m = s.match(/^(\d{4})-(\d{2})-(\d{2})/);
-		if (m) {
-			var y = parseInt(m[1], 10);
-			var mo = parseInt(m[2], 10);
-			var d = parseInt(m[3], 10);
-			return fmt(mo - 1, d, y);
+		// Populate equipment
+		function populateEquipment() {
+			if (!els.equipSelect || !Array.isArray(equipments)) return;
+
+			const fragment = document.createDocumentFragment();
+			equipments.forEach(e => {
+				const opt = document.createElement('option');
+				const eqId = String(e.equipmentId || e.equipment_id || '').replace('.0', '');
+				opt.value = eqId;
+				opt.textContent = `${e.itemNo || e.item_no || ''} - ${e.name || ''}`;
+				
+				// Store data
+				opt.dataset.itemno = e.itemNo || e.item_no || '';
+				opt.dataset.name = e.name || '';
+				opt.dataset.status = e.status || '';
+				opt.dataset.type = e.type || '';
+				opt.dataset.serial = e.serialNo || e.serial_no || '';
+				opt.dataset.amount = e.amount || '';
+				opt.dataset.detail = e.detail || '';
+				opt.dataset.image = e.image || '';
+				opt.dataset.purchase = e.timeCreate || e.time_create || '';
+				opt.dataset.windows = e.windows || '';
+				opt.dataset.cpu = e.process || e.cpu || '';
+				opt.dataset.ram = e.ram || '';
+				opt.dataset.storage = e.hdd || e.storage || '';
+				opt.dataset.battery = e.battery || '';
+				opt.dataset.wifi = e.wifiaddress || e.wifiAddress || '';
+				opt.dataset.lan = e.lanaddress || e.lanAddress || '';
+				opt.dataset.display = e.display || '';
+
+				fragment.appendChild(opt);
+			});
+			els.equipSelect.appendChild(fragment);
+
+			els.equipSelect.addEventListener("change", updateEquipmentDetail);
+			if (window.jQuery) jQuery(els.equipSelect).on("change.select2", updateEquipmentDetail);
+
+			if (preselectedEquipId) {
+				els.equipSelect.value = preselectedEquipId;
+				updateEquipmentDetail();
+			}
 		}
 
-		m = s.match(/^(\d{2})[\/-](\d{2})[\/-](\d{4})/);
-		if (m) {
-			var d2 = parseInt(m[1], 10);
-			var mo2 = parseInt(m[2], 10);
-			var y2 = parseInt(m[3], 10);
-			return fmt(mo2 - 1, d2, y2);
+		// Update equipment detail card
+		function updateEquipmentDetail() {
+			const opt = els.equipSelect.options[els.equipSelect.selectedIndex];
+			
+			if (!opt || !opt.value) {
+				clearEquipmentDetail();
+				return;
+			}
+
+			const d = opt.dataset;
+			const type = (d.type || "").trim().toLowerCase();
+			const isComputer = type === "c";
+
+			// Update basic info
+			setText('d_itemNo', d.itemno);
+			updateBadge(d.status);
+			updateImage(d.image, d.itemno);
+			setText('d_name', d.name);
+			updateType(type);
+			setText('d_serial', d.serial);
+			setText('d_amount', d.amount);
+			setText('d_purchase', formatDate(d.purchase));
+			setText('d_detail', d.detail);
+
+			// Show/hide more detail section
+			if (els.moreDetailSection) {
+				els.moreDetailSection.classList.toggle('d-none', !isComputer);
+			}
+
+			// Update computer details
+			if (isComputer) {
+				setText('d_windows', d.windows);
+				setText('d_cpu', d.cpu);
+				setText('d_ram', d.ram);
+				setText('d_storage', d.storage);
+				setText('d_battery', d.battery);
+				setText('d_wifi', d.wifi);
+				setText('d_lan', d.lan);
+				setText('d_display', d.display);
+			}
+
+			// Collapse more detail if open
+			if (els.moreDetailCollapse?.classList.contains("show") && window.bootstrap) {
+				bootstrap.Collapse.getOrCreateInstance(els.moreDetailCollapse).hide();
+			}
+
+			// Load status log
+			loadStatusLog(opt.value);
 		}
 
-		var parsed = Date.parse(s);
-		if (!Number.isNaN(parsed)) {
-			var dt = new Date(parsed);
-			var d3 = dt.getDate();
-			var mo3 = dt.getMonth();
-			var y3 = dt.getFullYear();
-			return fmt(mo3, d3, y3);
+		function clearEquipmentDetail() {
+			detailFields.forEach(id => {
+				const el = document.getElementById(id);
+				if (el) el.textContent = "";
+			});
+			
+			const badge = document.getElementById("d_badge");
+			if (badge) {
+				badge.className = "badge badge-lg rounded-pill px-4 fw-semibold bg-light text-gray-700";
+				badge.textContent = "-";
+			}
+
+			const imgWrap = document.getElementById("d_imgWrap");
+			if (imgWrap) imgWrap.innerHTML = "";
+
+			if (els.moreDetailSection) els.moreDetailSection.classList.add('d-none');
+			
+			renderStatusLog([]);
 		}
 
-		return s;
-	}
+		function updateBadge(status) {
+			const badge = document.getElementById("d_badge");
+			if (!badge) return;
 
-	function updateCard() {
-		const opt = sel.options[sel.selectedIndex];
-		const moreSec = document.getElementById("moreDetailSection");
-		const collapseEl = document.getElementById("moreDetailCollapse_1");
+			const st = (status || "").toUpperCase();
+			const config = statusConfig[st];
 
-		if (!opt || !opt.value) {
-			setText("d_itemNo", "");
-			setBadge("");
-			setImage("", "");
-			setText("d_name", "");
-			setTypeUI("");
-			setText("d_serial", "");
-			setText("d_amount", "");
-			setText("d_purchase", "");
-			setText("d_detail", "");
-
-			if (moreSec) moreSec.classList.add("d-none");
-			return;
+			badge.className = "badge badge-lg rounded-pill px-4 fw-semibold " + (config ? config.cls : "bg-light text-gray-700");
+			badge.textContent = config ? config.text : "";
 		}
 
-		const d = opt.dataset;
+		function updateImage(imgPath, altText) {
+			const wrap = document.getElementById("d_imgWrap");
+			if (!wrap) return;
 
-		setText("d_itemNo", d.itemno);
-		setBadge(d.status);
-		setImage(d.image, d.itemno);
-		setText("d_name", d.name);
-		setTypeUI(d.type);
-		setText("d_serial", d.serial);
-		setText("d_amount", d.amount);
-		setText("d_purchase", formatPurchase(d.purchase));
-		setText("d_detail", d.detail);
+			let src = (imgPath || "").trim();
+			if (!src) {
+				wrap.innerHTML = '<div class="symbol symbol-150px border rounded-3 bg-light d-flex align-items-center justify-content-center"><i class="fa-solid fa-image fs-1 text-muted"></i></div>';
+				return;
+			}
 
-		const isComputer = (d.type || "").trim().toLowerCase() === "c";
-		if (moreSec) moreSec.classList.toggle("d-none", !isComputer);
-
-		if (isComputer) {
-			setText("d_windows", d.windows);
-			setText("d_cpu", d.cpu);
-			setText("d_ram", d.ram);
-			setText("d_storage", d.storage);
-			setText("d_battery", d.battery);
-			setText("d_wifi", d.wifi);
-			setText("d_lan", d.lan);
-			setText("d_display", d.display);
+			if (!src.startsWith("http")) src = CTX + (src.startsWith("/") ? src : "/" + src);
+			wrap.innerHTML = `<div class="symbol symbol-150px"><img src="${src}" alt="${altText || 'equipment'}" class="border rounded-3 object-fit-cover w-100 h-100" /></div>`;
 		}
 
-		if (collapseEl && collapseEl.classList.contains("show")) {
-			if (window.bootstrap) bootstrap.Collapse.getOrCreateInstance(collapseEl).hide();
-		}
-	}
+		function updateType(typeCode) {
+			const textEl = document.getElementById("d_typeText");
+			const iconsWrap = document.getElementById("d_typeIcons");
+			if (!textEl) return;
 
-	sel.addEventListener("change", updateCard);
+			// Hide all icons
+			['ico_c','ico_in','ico_sl','ico_mob','ico_p','ico_other'].forEach(id => {
+				document.getElementById(id)?.classList.add("d-none");
+			});
 
-	if (window.jQuery) {
-		jQuery(sel).on("change.select2", updateCard);
-	}
+			const t = (typeCode || "").trim().toLowerCase();
+			if (!t) {
+				textEl.textContent = "";
+				if (iconsWrap) iconsWrap.classList.add("d-none");
+				return;
+			}
 
-	updateCard();
-});
-	</script>
-
-	<!-- Status Log -->
-	<script>
-document.addEventListener("DOMContentLoaded", function () {
-	const CTX = "${pageContext.request.contextPath}";
-	const sel = document.getElementById("equipment_select");
-	if (!sel) return;
-
-	const box = document.getElementById("statusLogBox");
-	const empty = document.getElementById("statusLogEmpty");
-	const btnReturn = document.getElementById("btnRequestReturn");
-	if (!box || !empty) return;
-
-	function formatEN(dtStr){
-		if(!dtStr) return "";
-		let s = String(dtStr).trim();
-		if (/^\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}/.test(s)) s = s.replace(" ", "T");
-		const d = new Date(s);
-		if (isNaN(d.getTime())) return String(dtStr);
-
-		const months = ["January","February","March","April","May","June","July","August","September","October","November","December"];
-		const dd = d.getDate();
-		const mm = months[d.getMonth()];
-		const yy = d.getFullYear();
-		const HH = String(d.getHours()).padStart(2,"0");
-		const MI = String(d.getMinutes()).padStart(2,"0");
-		return dd + " " + mm + " " + yy + ", " + HH + ":" + MI;
-	}
-
-	function whoText(row){
-		const emp = row.employee_id || "";
-		const name = row.name || "";
-		const en = row.name_en || "";
-		let t = "";
-		if (emp) t += emp + " - ";
-		t += name || "-";
-		if (en) t += " - " + en;
-		return t;
-	}
-
-	function el(tag, cls){
-		const e = document.createElement(tag);
-		if (cls) e.className = cls;
-		return e;
-	}
-
-	function renderTimeline(list){
-		box.innerHTML = "";
-		empty.classList.add("d-none");
-		if (btnReturn) btnReturn.classList.add("d-none");
-
-		if (!list || list.length === 0) {
-			empty.classList.remove("d-none");
-			return;
+			if (iconsWrap) iconsWrap.classList.remove("d-none");
+			const config = typeConfig[t] || { text: "Other", icon: "ico_other" };
+			textEl.textContent = config.text;
+			document.getElementById(config.icon)?.classList.remove("d-none");
 		}
 
-		if (btnReturn && String(list[0].status || "").toUpperCase() === "B") {
-			btnReturn.classList.remove("d-none");
+		// Status log functions
+		function loadStatusLog(eqId) {
+			if (!eqId || !window.jQuery?.ajax) {
+				renderStatusLog([]);
+				return;
+			}
+
+			jQuery.ajax({
+				url: `${CTX}/eBorrowLog.action`,
+				type: "GET",
+				dataType: "json",
+				data: { equipmentId: eqId },
+				success: list => renderStatusLog(Array.isArray(list) ? list : []),
+				error: () => renderStatusLog([])
+			});
 		}
 
-		const tl = el("div", "timeline timeline-border-dashed");
+		function renderStatusLog(list) {
+			if (!els.statusLogBox || !els.statusLogEmpty) return;
 
-		list.forEach(function (borrow) {
-			const st = String(borrow.status || "").toUpperCase();
+			els.statusLogBox.innerHTML = "";
+			els.statusLogEmpty.classList.add("d-none");
+			if (els.btnReturn) els.btnReturn.classList.add("d-none");
 
-			if (st === "R") {
-				const item = el("div", "timeline-item");
+			if (!list || list.length === 0) {
+				els.statusLogEmpty.classList.remove("d-none");
+				return;
+			}
 
-				item.appendChild(el("div", "timeline-line"));
+			if (els.btnReturn && String(list[0].status || "").toUpperCase() === "B") {
+				els.btnReturn.classList.remove("d-none");
+			}
 
-				const icon = el("div", "timeline-icon");
-				icon.innerHTML = '<i class="ki-duotone ki-cd fs-2 text-success"><span class="path1"></span><span class="path2"></span></i>';
-				item.appendChild(icon);
+			const fragment = document.createDocumentFragment();
+			const timeline = document.createElement("div");
+			timeline.className = "timeline timeline-border-dashed";
 
-				const content = el("div", "timeline-content mb-5 mt-n1");
-
-				const bRow = el("div", "mb-2");
-				bRow.innerHTML = '<span class="badge badge-success fw-bold fs-7">Returned</span>';
-				content.appendChild(bRow);
-
-				const uRow = el("div", "d-flex align-items-center mt-4 mb-2");
-				uRow.innerHTML = '<i class="ki-duotone ki-user fs-4 text-gray-700 me-3"><span class="path1"></span><span class="path2"></span></i>';
-				const uDiv = el("div", "fs-5 fw-semibold text-gray-800");
-				uDiv.textContent = whoText(borrow);
-				uRow.appendChild(uDiv);
-				content.appendChild(uRow);
-
-				const tRow = el("div", "d-flex align-items-center mt-4 fs-7 text-muted");
-				tRow.innerHTML = '<i class="ki-duotone ki-calendar fs-4 text-gray-700 me-3"><span class="path1"></span><span class="path2"></span></i>';
-				const tDiv = el("div", "fs-5 fw-semibold text-gray-800");
-				tDiv.textContent = formatEN(borrow.date_end) || "Unknown Return Date";
-				tRow.appendChild(tDiv);
-				content.appendChild(tRow);
-
-				if (borrow.location) {
-					const lRow = el("div", "d-flex align-items-center mt-4 mb-2 fs-7 text-muted");
-					lRow.innerHTML = '<i class="ki-duotone ki-geolocation fs-2 me-3"><span class="path1"></span><span class="path2"></span></i>';
-					const lDiv = el("div", "fs-5 fw-semibold text-gray-800");
-					lDiv.textContent = String(borrow.location);
-					lRow.appendChild(lDiv);
-					content.appendChild(lRow);
+			list.forEach(borrow => {
+				const st = String(borrow.status || "").toUpperCase();
+				
+				// Returned status
+				if (st === "R") {
+					timeline.appendChild(createTimelineItem(borrow, "Returned", "success", borrow.date_end || "Unknown Return Date"));
 				}
 
-				item.appendChild(content);
-				tl.appendChild(item);
-			}
+				// Borrowed/Borrowing status
+				const badgeText = st === "B" ? "Borrowing" : "Borrowed";
+				timeline.appendChild(createTimelineItem(borrow, badgeText, "warning", borrow.date_start || "-"));
+				
+				// Separator
+				const sep = document.createElement("div");
+				sep.className = "separator separator-dashed border-gray-300 my-5";
+				timeline.appendChild(sep);
+			});
 
-			const item2 = el("div", "timeline-item");
-
-			const icon2 = el("div", "timeline-icon");
-			icon2.innerHTML = '<i class="ki-duotone ki-cd fs-2 text-warning"><span class="path1"></span><span class="path2"></span></i>';
-			item2.appendChild(icon2);
-
-			const content2 = el("div", "timeline-content mb-0 mt-n1");
-
-			const bRow2 = el("div", "mb-2");
-			const badgeText = (st === "B") ? "Borrowing" : "Borrowed";
-			bRow2.innerHTML = '<span class="badge badge-warning fw-bold fs-7">' + badgeText + '</span>';
-			content2.appendChild(bRow2);
-
-			const uRow2 = el("div", "d-flex align-items-center mt-4 mb-2");
-			uRow2.innerHTML = '<i class="ki-duotone ki-user fs-4 text-gray-700 me-3"><span class="path1"></span><span class="path2"></span></i>';
-			const uDiv2 = el("div", "fs-5 fw-semibold text-gray-800");
-			uDiv2.textContent = whoText(borrow);
-			uRow2.appendChild(uDiv2);
-			content2.appendChild(uRow2);
-
-			const tRow2 = el("div", "d-flex align-items-center mt-4 fs-7 text-muted");
-			tRow2.innerHTML = '<i class="ki-duotone ki-calendar fs-4 text-gray-700 me-3"><span class="path1"></span><span class="path2"></span></i>';
-			const tDiv2 = el("div", "fs-5 fw-semibold text-gray-800");
-			tDiv2.textContent = formatEN(borrow.date_start) || "-";
-			tRow2.appendChild(tDiv2);
-			content2.appendChild(tRow2);
-
-			if (borrow.location) {
-				const lRow2 = el("div", "d-flex align-items-center mt-4 fs-7 text-muted");
-				lRow2.innerHTML = '<i class="ki-duotone ki-geolocation fs-4 text-gray-700 me-3"><span class="path1"></span><span class="path2"></span></i>';
-				const lDiv2 = el("div", "fs-5 fw-semibold text-gray-800");
-				lDiv2.textContent = String(borrow.location);
-				lRow2.appendChild(lDiv2);
-				content2.appendChild(lRow2);
-			}
-
-			item2.appendChild(content2);
-			tl.appendChild(item2);
-
-			tl.appendChild(el("div", "separator separator-dashed border-gray-300 my-5"));
-		});
-
-		box.appendChild(tl);
-	}
-
-	function loadByEquipmentId(eqId){
-		if (!eqId) { renderTimeline([]); return; }
-
-		if (!window.jQuery || !window.jQuery.ajax) {
-			console.error("jQuery not loaded");
-			renderTimeline([]);
-			return;
+			fragment.appendChild(timeline);
+			els.statusLogBox.appendChild(fragment);
 		}
 
-		jQuery.ajax({
-			url: CTX + "/eBorrowLog.action",
-			type: "GET",
-			dataType: "json",
-			data: { equipmentId: eqId },
-			success: function(list){
-				renderTimeline(Array.isArray(list) ? list : []);
-			},
-			error: function(xhr){
-				console.log("AJAX ERROR", xhr.status, xhr.responseText);
-				renderTimeline([]);
-			}
+		function createTimelineItem(borrow, badgeText, badgeType, dateValue) {
+			const item = document.createElement("div");
+			item.className = "timeline-item";
+
+			const iconColor = badgeType === "success" ? "text-success" : "text-warning";
+			item.innerHTML = `
+				<div class="timeline-line"></div>
+				<div class="timeline-icon">
+					<i class="ki-duotone ki-cd fs-2 ${iconColor}"><span class="path1"></span><span class="path2"></span></i>
+				</div>
+				<div class="timeline-content mb-5 mt-n1">
+					<div class="mb-2">
+						<span class="badge badge-${badgeType} fw-bold fs-7">${badgeText}</span>
+					</div>
+					<div class="d-flex align-items-center mt-4 mb-2">
+						<i class="ki-duotone ki-user fs-4 text-gray-700 me-3"><span class="path1"></span><span class="path2"></span></i>
+						<div class="fs-5 fw-semibold text-gray-800">${getUserText(borrow)}</div>
+					</div>
+					<div class="d-flex align-items-center mt-4 fs-7 text-muted">
+						<i class="ki-duotone ki-calendar fs-4 text-gray-700 me-3"><span class="path1"></span><span class="path2"></span></i>
+						<div class="fs-5 fw-semibold text-gray-800">${formatDateTimeLong(dateValue)}</div>
+					</div>
+					${borrow.location ? `
+					<div class="d-flex align-items-center mt-4 mb-2 fs-7 text-muted">
+						<i class="ki-duotone ki-geolocation fs-2 me-3"><span class="path1"></span><span class="path2"></span></i>
+						<div class="fs-5 fw-semibold text-gray-800">${borrow.location}</div>
+					</div>` : ''}
+				</div>
+			`;
+
+			return item;
+		}
+
+		function getUserText(row) {
+			const emp = row.employee_id || "";
+			const name = row.name || "-";
+			const en = row.name_en || "";
+			return `${emp ? emp + " - " : ""}${name}${en ? " - " + en : ""}`;
+		}
+
+		// Initialize collapse
+		function initCollapse() {
+			if (!els.moreDetailCollapse || !els.moreDetailBtn || !els.moreDetailIcon) return;
+
+			const instance = bootstrap.Collapse.getOrCreateInstance(els.moreDetailCollapse, { toggle: false });
+
+			els.moreDetailBtn.addEventListener("click", e => {
+				e.preventDefault();
+				if (els.moreDetailCollapse.classList.contains("show")) instance.hide();
+				else instance.show();
+			});
+
+			els.moreDetailCollapse.addEventListener("show.bs.collapse", () => {
+				els.moreDetailIcon.style.transform = "rotate(180deg)";
+				els.moreDetailBtn.setAttribute("aria-expanded", "true");
+			});
+
+			els.moreDetailCollapse.addEventListener("hide.bs.collapse", () => {
+				els.moreDetailIcon.style.transform = "rotate(0deg)";
+				els.moreDetailBtn.setAttribute("aria-expanded", "false");
+			});
+		}
+
+		// Initialize date pickers
+		function initDatePickers() {
+			if (typeof flatpickr === "undefined" || !els.startDate || !els.endDate) return;
+
+			const startPicker = flatpickr(els.startDate, {
+				enableTime: true,
+				time_24hr: true,
+				dateFormat: "d m Y , H : i",
+				altInput: true,
+				altFormat: "d M Y , H : i",
+				allowInput: true
+			});
+
+			const endPicker = flatpickr(els.endDate, {
+				enableTime: true,
+				time_24hr: true,
+				dateFormat: "d m Y , H : i",
+				altInput: true,
+				altFormat: "d M Y , H : i",
+				allowInput: true
+			});
+
+			els.startDate.addEventListener("change", function() {
+				const v = this.value || "";
+				endPicker.set("minDate", v || null);
+				if (v && els.endDate.value && els.endDate.value < v) {
+					els.endDate.value = v;
+				}
+			});
+		}
+
+		// Initialize
+		document.addEventListener("DOMContentLoaded", function() {
+			// Cache all DOM elements
+			els.userSelect = document.getElementById("user_select");
+			els.equipSelect = document.getElementById("equipment_select");
+			els.hiddenId = document.querySelector('input[name="id"]');
+			els.startDate = document.getElementById("start_date");
+			els.endDate = document.getElementById("end_date");
+			els.moreDetailSection = document.getElementById("moreDetailSection");
+			els.moreDetailBtn = document.getElementById("btn_moreDetail");
+			els.moreDetailCollapse = document.getElementById("moreDetailCollapse");
+			els.moreDetailIcon = document.getElementById("icon_more");
+			els.statusLogBox = document.getElementById("statusLogBox");
+			els.statusLogEmpty = document.getElementById("statusLogEmpty");
+			els.btnReturn = document.getElementById("btnRequestReturn");
+
+			// Initialize all features
+			populateUsers();
+			populateEquipment();
+			initCollapse();
+			initDatePickers();
 		});
-	}
-
-	function onChange(){
-		const eqId = (sel.value || "").trim();
-		loadByEquipmentId(eqId);
-	}
-
-	sel.addEventListener("change", onChange);
-	if (window.jQuery) jQuery(sel).on("change.select2", onChange);
-	onChange();
-});
+	})();
 	</script>
 </body>
 </html>

@@ -415,18 +415,15 @@
 
 	<!-- ===== JavaScript ===== -->
 	<script>
-	// ดึงข้อมูลจาก JSP attributes ที่ส่งมาจาก Action
+	// ===== Global Variables =====
 	var userList = ${userList != null ? userList : '[]'};
 	var equipments = ${equipments != null ? equipments : '[]'};
 	var borrowData = ${borrow != null ? borrow : '{}'};
 	var statusList = ${status != null ? status : '[]'};
-	var typeList = ${type != null ? type : '[]'};
 	var borrowWithUserList = ${borrowlistwithUserJSON != null ? borrowlistwithUserJSON : '[]'};
-
-	// Context path
 	var CTX = "${pageContext.request.contextPath}";
 
-	// ข้อมูล Equipment ปัจจุบัน
+	// ✅ ข้อมูล Equipment ปัจจุบัน
 	var currentEquipment = {
 		id: "${equipmentbyId.equipmentId}",
 		itemNo: "${equipmentbyId.itemNo}",
@@ -437,7 +434,6 @@
 		status: "${equipmentbyId.status}",
 		type: "${equipmentbyId.type}",
 		image: "${equipmentbyId.image}",
-		timeCreate: "${equipmentbyId.timeCreate}",
 		purchaseFmt: "${purchaseFmt}",
 		windows: "${equipmentbyId.windows}",
 		process: "${equipmentbyId.process}",
@@ -449,128 +445,137 @@
 		display: "${equipmentbyId.display}"
 	};
 
-	// Helper functions
+	// ===== Helper Functions =====
 	function getBorrowField(field) {
 		return borrowData[field] || borrowData[field.replace(/([A-Z])/g, '_$1').toLowerCase()] || '';
 	}
 
 	function setText(id, val) {
-		const el = document.getElementById(id);
+		var el = document.getElementById(id);
 		if (!el) return;
 		el.textContent = (val !== undefined && val !== null && String(val).trim() !== "") ? val : "-";
 	}
 
-	function setBadge(status) {
-		const $b = $('#bd_status_badge');
-		if (!$b.length) return;
-
-		$b.removeClass().addClass('badge badge-lg rounded-pill px-4 fw-semibold');
-
-		const st = String(status || '').toUpperCase();
-		if (st === 'B') {
-			$b.addClass('bg-warning text-white').text('Borrowing');
-		} else if (st === 'W') {
-			$b.addClass('bg-light text-dark').text('Wait for Approve');
-		} else if (st === 'R') {
-			$b.addClass('bg-success text-white').text('Returned');
-		} else {
-			$b.addClass('bg-light text-muted').text('-');
-		}
-	}
-
 	function formatNumber(num) {
 		if (!num) return '1';
-		return Math.floor(Number(num));
+		var n = Number(num);
+		return isNaN(n) ? '1' : Math.floor(n).toString();
 	}
 
-	function getEquipmentStatusBadge(status) {
-		const badges = {
-			'B': '<span class="badge badge-lg px-4 fw-semibold bg-primary text-white">Borrowing</span>',
-			'A': '<span class="badge badge-lg px-4 fw-semibold bg-success text-white">Available</span>',
-			'C': '<span class="badge badge-lg px-4 fw-semibold bg-danger text-white">Corrupted</span>',
-			'F': '<span class="badge badge-lg px-4 fw-semibold bg-info text-white">Fixed</span>',
-			'L': '<span class="badge badge-lg px-4 fw-semibold bg-dark text-white">Lost</span>',
-			'S': '<span class="badge badge-lg px-4 fw-semibold bg-warning text-dark">Sold Out</span>',
-			'W': '<span class="badge badge-lg px-4 fw-semibold bg-warning text-dark">Wait for approve</span>',
-			'Z': '<span class="badge badge-lg px-4 fw-semibold bg-secondary text-white">Disabled</span>'
+	// ✅ Equipment Status Badge
+	function getStatusBadge(status) {
+		var badges = {
+			'B': 'bg-primary text-white">Borrowing',
+			'A': 'bg-success text-white">Available',
+			'C': 'bg-danger text-white">Corrupted',
+			'F': 'bg-info text-white">Fixed',
+			'L': 'bg-dark text-white">Lost',
+			'S': 'bg-warning text-dark">Sold Out',
+			'W': 'bg-warning text-dark">Wait for approve',
+			'Z': 'bg-secondary text-white">Disabled'
 		};
-		return badges[status] || '<span class="badge badge-lg px-4 fw-semibold bg-light text-gray-700">-</span>';
+		var badge = badges[status] || 'bg-light text-gray-700">-';
+		return '<span class="badge badge-lg px-4 fw-semibold ' + badge + '</span>';
 	}
 
-	function getEquipmentTypeInfo(type) {
-		const types = {
-			'c': { label: 'Computer', icon: 'ki-duotone ki-laptop fs-4 text-gray-600' },
-			'in': { label: 'Instrument', icon: 'ki-duotone ki-keyboard fs-4 text-gray-600' },
-			'L': { label: 'Software License', icon: 'ki-duotone ki-verify fs-4 text-gray-600' },
-			'sl': { label: 'Software License', icon: 'ki-duotone ki-verify fs-4 text-gray-600' },
-			'Mob': { label: 'Mobile', icon: 'ki-duotone ki-phone fs-4 text-gray-600' },
-			'p': { label: 'Pocket Wifi', icon: 'ki-duotone ki-wifi-square fs-4 text-gray-600' }
+	// ✅ Equipment Type Info
+	function getTypeInfo(type) {
+		var types = {
+			'c': { label: 'Computer', icon: 'ki-laptop' },
+			'in': { label: 'Instrument', icon: 'ki-keyboard' },
+			'L': { label: 'Software License', icon: 'ki-verify' },
+			'sl': { label: 'Software License', icon: 'ki-verify' },
+			'Mob': { label: 'Mobile', icon: 'ki-phone' },
+			'p': { label: 'Pocket Wifi', icon: 'ki-wifi-square' }
 		};
-		return types[type] || { label: 'Other', icon: 'ki-duotone ki-dots-square fs-4 text-gray-600' };
+		return types[type] || { label: 'Other', icon: 'ki-dots-square' };
+	}
+
+	// ✅ Create Detail Row
+	function createDetailRow(label, value) {
+		return '<div class="d-flex justify-content-between align-items-center py-5 border-bottom border-gray-200">' +
+			'<div class="text-gray-500" style="min-width: 130px;">' + label + '</div>' +
+			'<div class="fw-semibold text-gray-800 text-break">' + (value || '-') + '</div></div>';
 	}
 
 	// ===== Initialize Page =====
 	$(document).ready(function() {
-		// Populate Borrower Select
-		const $borrowerSelect = $('#borrower-select');
-		const borrowerId = getBorrowField('userBorrowid') || getBorrowField('user_borrowid');
+		initializeBorrowerSelect();
+		initializeStatusSelect();
+		initializeEquipmentSelect();
+		setFormValues();
+		initializeDatePickers();
+		renderEquipmentCard();
+		setupEventHandlers();
+	});
+
+	// ===== 1. Initialize Borrower Select =====
+	function initializeBorrowerSelect() {
+		var $select = $('#borrower-select');
+		var borrowerId = getBorrowField('userBorrowid') || getBorrowField('user_borrowid');
 		
-		$borrowerSelect.empty();
+		$select.empty();
+		
 		userList.forEach(function(user) {
-			const uid = user.id || user.user_id || user.USER_ID || '';
-			const employeeId = user.employee_id || user.employeeId || user.EMPLOYEE_ID || '';
-			const nameTh = user.name || user.fullname || user.USER_NAME || '';
-			const nameEn = user.name_en || user.nameEn || user.NAME_EN || '';
-			const roleId = user.role_id || user.roleId || user.role || '';
+			var uid = user.id || user.user_id || user.USER_ID || '';
+			var empId = user.employee_id || user.employeeId || user.EMPLOYEE_ID || '';
+			var nameTh = user.name || user.fullname || user.USER_NAME || '';
+			var nameEn = user.name_en || user.nameEn || user.NAME_EN || '';
+			var role = user.role_id || user.roleId || user.role || '';
 			
-			const text = (employeeId || '-') + '  -  ' + (nameTh || '-') + '  -  ' + (nameEn || '-') + '  -  ' + (roleId || '-');
-			const isSelected = String(uid).toLowerCase().trim() === String(borrowerId).toLowerCase().trim();
+			var text = (empId || '-') + '  -  ' + (nameTh || '-') + '  -  ' + (nameEn || '-') + '  -  ' + (role || '-');
+			var isSelected = String(uid).toLowerCase().trim() === String(borrowerId).toLowerCase().trim();
 			
-			$borrowerSelect.append(new Option(text, uid, isSelected, isSelected));
+			$select.append(new Option(text, uid, isSelected, isSelected));
 		});
 		
-		if ($.fn.select2 && $borrowerSelect.data('control') === 'select2') {
-			$borrowerSelect.select2();
+		if ($.fn.select2 && $select.data('control') === 'select2') {
+			$select.select2();
 		}
+	}
 
-		// Populate Status Select
-		const $statusSelect = $('#status-select');
-		const currentStatus = getBorrowField('status') || getBorrowField('statusborrow') || getBorrowField('status_code');
+	// ===== 2. Initialize Status Select =====
+	function initializeStatusSelect() {
+		var $select = $('#status-select');
+		var currentStatus = getBorrowField('status') || getBorrowField('statusborrow');
 		
-		const allowedStatuses = ['B', 'C', 'W'];
-		const statusLabels = {
+		var allowedStatuses = {
 			'B': 'Borrowing',
 			'C': 'Cancel',
 			'W': 'Wait for Approve'
 		};
 		
 		statusList.forEach(function(status) {
-			const statusId = status.statusId || status.status_id || '';
-			if (allowedStatuses.includes(statusId)) {
-				const label = statusLabels[statusId] || statusId;
-				const isSelected = statusId === currentStatus;
-				$statusSelect.append(new Option(label, statusId, isSelected, isSelected));
+			var statusId = status.statusId || status.status_id || '';
+			if (allowedStatuses[statusId]) {
+				var isSelected = statusId === currentStatus;
+				$select.append(new Option(allowedStatuses[statusId], statusId, isSelected, isSelected));
 			}
 		});
+	}
 
-		// Populate Equipment Select
-		const $equipmentSelect = $('#equipment-select');
-		const currentEquipId = getBorrowField('equipmentId') || getBorrowField('equipment_id');
+	// ===== 3. Initialize Equipment Select =====
+	function initializeEquipmentSelect() {
+		var $select = $('#equipment-select');
+		var currentEquipId = getBorrowField('equipmentId') || getBorrowField('equipment_id');
 		
 		equipments.forEach(function(equip) {
-			const equipId = equip.equipmentId || equip.equipment_id || '';
-			const itemNo = equip.itemNo || equip.item_no || '';
-			const name = equip.name || '';
-			const text = itemNo + ' - ' + name;
-			const isSelected = String(equipId) === String(currentEquipId);
-			$equipmentSelect.append(new Option(text, equipId, isSelected, isSelected));
+			var equipId = equip.equipmentId || equip.equipment_id || '';
+			var itemNo = equip.itemNo || equip.item_no || '';
+			var name = equip.name || '';
+			var text = itemNo + ' - ' + name;
+			var isSelected = String(equipId) === String(currentEquipId);
+			
+			$select.append(new Option(text, equipId, isSelected, isSelected));
 		});
 		
 		$('#equipment-hidden').val(currentEquipId);
+	}
 
-		// Set Form Values
-		const dateStart = getBorrowField('dateStart') || getBorrowField('date_start');
-		const dateEnd = getBorrowField('dateEnd') || getBorrowField('date_end');
+	// ===== 4. Set Form Values =====
+	function setFormValues() {
+		var dateStart = getBorrowField('dateStart') || getBorrowField('date_start');
+		var dateEnd = getBorrowField('dateEnd') || getBorrowField('date_end');
 		
 		if (dateStart) $('#start_date').val(dateStart);
 		if (dateEnd) $('#end_date').val(dateEnd);
@@ -579,322 +584,220 @@
 		$('#reason-textarea').val(getBorrowField('reason') || '');
 		$('#contact-textarea').val(getBorrowField('contactAddr') || getBorrowField('contact_addr') || '');
 		$('#remark-textarea').val(getBorrowField('remark') || '');
+	}
 
-		// Initialize DatePickers
-		if (typeof flatpickr !== 'undefined') {
-			flatpickr("#start_date", {
-				enableTime: true,
-				time_24hr: true,
-				dateFormat: "d M Y , H:i"
-			});
+	// ===== 5. Initialize DatePickers =====
+	function initializeDatePickers() {
+		if (typeof flatpickr === 'undefined') return;
+		
+		var config = {
+			enableTime: true,
+			time_24hr: true,
+			dateFormat: "d M Y , H:i"
+		};
+		
+		flatpickr("#start_date", config);
+		flatpickr("#end_date", config);
+	}
 
-			flatpickr("#end_date", {
-				enableTime: true,
-				time_24hr: true,
-				dateFormat: "d M Y , H:i"
-			});
-		}
-
-		// Render Equipment Detail Card
-		renderEquipmentDetailCard();
-
-		// Setup Collapse Toggle
-		setupCollapseToggle();
-
-		// Setup Modal Handlers
-		setupModalHandlers();
-	});
-
-	// ===== Render Equipment Detail Card =====
-	function renderEquipmentDetailCard() {
-		const equip = currentEquipment;
-		const equipId = equip.id;
+	// ===== 6. Render Equipment Card =====
+	function renderEquipmentCard() {
+		var eq = currentEquipment;
+		var typeInfo = getTypeInfo(eq.type);
 		
-		const statusBadge = getEquipmentStatusBadge(equip.status);
-		const typeInfo = getEquipmentTypeInfo(equip.type);
+		// Image
+		var imageHTML = eq.image 
+			? '<img src="' + eq.image + '" alt="' + eq.itemNo + '" class="border rounded-3 object-fit-cover w-100 h-100" />'
+			: '<i class="fa-solid fa-image fs-1 text-muted"></i>';
 		
-		const imageHTML = equip.image 
-			? '<div class="symbol symbol-150px"><img src="' + equip.image + '" alt="' + equip.itemNo + '" class="border rounded-3 object-fit-cover w-100 h-100" /></div>'
-			: '<div class="symbol symbol-150px border rounded-3 bg-light d-flex align-items-center justify-content-center"><i class="fa-solid fa-image fs-1 text-muted"></i></div>';
+		// Basic Details
+		var details = '';
+		details += createDetailRow('Name:', eq.name);
+		details += createDetailRow('Type:', typeInfo.label + ' <i class="ki-duotone ' + typeInfo.icon + ' fs-4 text-gray-600"><span class="path1"></span><span class="path2"></span></i>');
+		details += createDetailRow('Serial No:', eq.serialNo);
+		details += createDetailRow('Amount:', formatNumber(eq.amount));
+		details += createDetailRow('Date of Purchase:', eq.purchaseFmt);
+		details += createDetailRow('Detail:', eq.detail);
 		
-		let detailRows = '';
-		detailRows += '<div class="d-flex justify-content-between align-items-center py-5 border-bottom border-gray-200">';
-		detailRows += '<div class="text-gray-500" style="min-width: 130px;">Name:</div>';
-		detailRows += '<div class="fw-semibold text-gray-800 text-break">' + (equip.name || '-') + '</div></div>';
-		
-		detailRows += '<div class="d-flex justify-content-between align-items-center py-5 border-bottom border-gray-200">';
-		detailRows += '<div class="text-gray-500" style="min-width: 130px;">Type:</div>';
-		detailRows += '<div class="fw-semibold text-gray-800 d-flex align-items-center gap-2 text-break">';
-		detailRows += typeInfo.label + ' <i class="' + typeInfo.icon + '"><span class="path1"></span><span class="path2"></span></i></div></div>';
-		
-		detailRows += '<div class="d-flex justify-content-between align-items-center py-5 border-bottom border-gray-200">';
-		detailRows += '<div class="text-gray-500" style="min-width: 130px;">Serial No:</div>';
-		detailRows += '<div class="fw-semibold text-gray-800 text-break">' + (equip.serialNo || '-') + '</div></div>';
-		
-		detailRows += '<div class="d-flex justify-content-between align-items-center py-5 border-bottom border-gray-200">';
-		detailRows += '<div class="text-gray-500" style="min-width: 130px;">Amount:</div>';
-		detailRows += '<div class="fw-semibold text-gray-800">' + formatNumber(equip.amount) + '</div></div>';
-		
-		detailRows += '<div class="d-flex justify-content-between align-items-center py-5 border-bottom border-gray-200">';
-		detailRows += '<div class="text-gray-500" style="min-width: 130px;">Date of Purchase:</div>';
-		detailRows += '<div class="fw-semibold text-gray-800 text-break">' + (equip.purchaseFmt || '-') + '</div></div>';
-		
-		detailRows += '<div class="d-flex justify-content-between align-items-center py-5 border-bottom border-gray-200">';
-		detailRows += '<div class="text-gray-500" style="min-width: 130px;">Detail:</div>';
-		detailRows += '<div class="fw-semibold text-gray-800 text-break">' + (equip.detail || '-') + '</div></div>';
-		
-		let moreDetailSection = '';
-		if (equip.type && equip.type.toLowerCase() === 'c') {
-			moreDetailSection = '<div>';
-			moreDetailSection += '<button type="button" class="btn btn-link p-0 w-100 text-primary fw-semibold d-flex justify-content-between align-items-center py-5 border-bottom border-gray-200" ';
-			moreDetailSection += 'data-collapse-target="#moreDetailCollapse_' + equipId + '" aria-expanded="false" aria-controls="moreDetailCollapse_' + equipId + '">';
-			moreDetailSection += '<span>More Detail</span>';
-			moreDetailSection += '<i class="ki-duotone ki-down fs-3" id="icon_' + equipId + '" style="transition: transform .2s ease;"><span class="path1"></span><span class="path2"></span></i>';
-			moreDetailSection += '</button>';
-			
-			moreDetailSection += '<div class="collapse mt-3" id="moreDetailCollapse_' + equipId + '" data-equip-id="' + equipId + '">';
-			moreDetailSection += '<div class="d-flex justify-content-between align-items-center py-5 border-bottom border-gray-200">';
-			moreDetailSection += '<div class="text-gray-500" style="min-width: 130px;">Windows</div>';
-			moreDetailSection += '<div class="fw-semibold text-gray-800 text-break">' + (equip.windows || '-') + '</div></div>';
-			
-			moreDetailSection += '<div class="d-flex justify-content-between align-items-center py-5 border-bottom border-gray-200">';
-			moreDetailSection += '<div class="text-gray-500" style="min-width: 130px;">CPU</div>';
-			moreDetailSection += '<div class="fw-semibold text-gray-800 text-break">' + (equip.process || '-') + '</div></div>';
-			
-			moreDetailSection += '<div class="d-flex justify-content-between align-items-center py-5 border-bottom border-gray-200">';
-			moreDetailSection += '<div class="text-gray-500" style="min-width: 130px;">Ram</div>';
-			moreDetailSection += '<div class="fw-semibold text-gray-800 text-break">' + (equip.ram || '-') + '</div></div>';
-			
-			moreDetailSection += '<div class="d-flex justify-content-between align-items-center py-5 border-bottom border-gray-200">';
-			moreDetailSection += '<div class="text-gray-500" style="min-width: 130px;">Storage</div>';
-			moreDetailSection += '<div class="fw-semibold text-gray-800 text-break">' + (equip.hdd || '-') + '</div></div>';
-			
-			moreDetailSection += '<div class="d-flex justify-content-between align-items-center py-5 border-bottom border-gray-200">';
-			moreDetailSection += '<div class="text-gray-500" style="min-width: 130px;">Battery</div>';
-			moreDetailSection += '<div class="fw-semibold text-gray-800 text-break">' + (equip.battery || '-') + '</div></div>';
-			
-			moreDetailSection += '<div class="d-flex justify-content-between align-items-center py-5 border-bottom border-gray-200">';
-			moreDetailSection += '<div class="text-gray-500" style="min-width: 130px;">WIFI Address</div>';
-			moreDetailSection += '<div class="fw-semibold text-gray-800 text-break">' + (equip.wifiaddress || '-') + '</div></div>';
-			
-			moreDetailSection += '<div class="d-flex justify-content-between align-items-center py-5 border-bottom border-gray-200">';
-			moreDetailSection += '<div class="text-gray-500" style="min-width: 130px;">LAN Address</div>';
-			moreDetailSection += '<div class="fw-semibold text-gray-800 text-break">' + (equip.lanaddress || '-') + '</div></div>';
-			
-			moreDetailSection += '<div class="d-flex justify-content-between align-items-center py-5 border-bottom border-gray-200">';
-			moreDetailSection += '<div class="text-gray-500" style="min-width: 130px;">Display</div>';
-			moreDetailSection += '<div class="fw-semibold text-gray-800 text-break">' + (equip.display || '-') + '</div></div>';
-			
-			moreDetailSection += '</div></div>';
+		// More Details (สำหรับ Computer เท่านั้น)
+		var moreDetails = '';
+		if (eq.type && eq.type.toLowerCase() === 'c') {
+			moreDetails = '<div>' +
+				'<button type="button" class="btn btn-link p-0 w-100 text-primary fw-semibold d-flex justify-content-between align-items-center py-5 border-bottom border-gray-200" ' +
+				'data-collapse-target="#moreDetailCollapse" aria-expanded="false">' +
+				'<span>More Detail</span>' +
+				'<i class="ki-duotone ki-down fs-3 collapse-icon"><span class="path1"></span><span class="path2"></span></i>' +
+				'</button>' +
+				'<div class="collapse mt-3" id="moreDetailCollapse">' +
+				createDetailRow('Windows', eq.windows) +
+				createDetailRow('CPU', eq.process) +
+				createDetailRow('Ram', eq.ram) +
+				createDetailRow('Storage', eq.hdd) +
+				createDetailRow('Battery', eq.battery) +
+				createDetailRow('WIFI Address', eq.wifiaddress) +
+				createDetailRow('LAN Address', eq.lanaddress) +
+				createDetailRow('Display', eq.display) +
+				'</div></div>';
 		}
 		
-		let cardHTML = '';
-		cardHTML += '<div class="card-header border-0 pt-6">';
-		cardHTML += '<div class="card-title d-flex justify-content-between align-items-center w-100">';
-		cardHTML += '<span class="fw-bold fs-4 me-2">Equipment Detail</span></div></div>';
-		
-		cardHTML += '<div class="card-body pt-0">';
-		cardHTML += '<div class="mb-4 d-flex flex-column align-items-start">';
-		cardHTML += '<div class="mb-3 d-flex justify-content-between align-items-center w-100">';
-		cardHTML += '<span class="fw-bold fs-1 text-primary">' + (equip.itemNo || '-') + '</span>';
-		cardHTML += '<span>' + statusBadge + '</span></div>';
-		cardHTML += imageHTML + '</div>';
-		cardHTML += detailRows + moreDetailSection + '</div>';
+		// Build Card HTML
+		var cardHTML = 
+			'<div class="card-header border-0 pt-6">' +
+			'<div class="card-title fw-bold fs-4">Equipment Detail</div></div>' +
+			'<div class="card-body pt-0">' +
+			'<div class="mb-4 d-flex flex-column align-items-start">' +
+			'<div class="mb-3 d-flex justify-content-between align-items-center w-100">' +
+			'<span class="fw-bold fs-1 text-primary">' + (eq.itemNo || '-') + '</span>' +
+			getStatusBadge(eq.status) + '</div>' +
+			'<div class="symbol symbol-150px border rounded-3 bg-light d-flex align-items-center justify-content-center">' + imageHTML + '</div>' +
+			'</div>' + details + moreDetails + '</div>';
 		
 		$('#equipment-detail-card').html(cardHTML);
 	}
 
-	// ===== Setup Collapse Toggle =====
-	function setupCollapseToggle() {
-		document.addEventListener('click', function(e) {
-			const btn = e.target.closest('[data-collapse-target]');
-			if (!btn) return;
-
+	// ===== 7. Setup Event Handlers =====
+	function setupEventHandlers() {
+		// Collapse Toggle
+		$(document).on('click', '[data-collapse-target]', function(e) {
 			e.preventDefault();
-			e.stopPropagation();
-			if (typeof e.stopImmediatePropagation === 'function') {
-				e.stopImmediatePropagation();
-			}
-
-			const sel = btn.getAttribute('data-collapse-target');
-			const target = document.querySelector(sel);
-			if (!target) {
-				console.warn('[CollapseFix] target not found:', sel);
-				return;
-			}
-
-			const inst = bootstrap.Collapse.getOrCreateInstance(target, { toggle: false });
-			const isOpen = target.classList.contains('show');
 			
-			if (isOpen) {
-				inst.hide();
-			} else {
-				inst.show();
-			}
-
-			btn.setAttribute('aria-expanded', String(!isOpen));
-			const iconId = 'icon_' + target.id.replace('moreDetailCollapse_', '');
-			const icon = document.getElementById(iconId);
-			if (icon) {
-				icon.classList.toggle('rotate-180', !isOpen);
-			}
-		}, true);
-	}
-
-	// ===== Setup Modal Handlers =====
-	function setupModalHandlers() {
-		const bdModalEl = document.getElementById('borrowDetailModal');
-		const bdModalObj = bdModalEl ? bootstrap.Modal.getOrCreateInstance(bdModalEl) : null;
-		
-		const bdCollapseEl = document.getElementById('bd_moreDetailCollapse');
-		const bdCollapseObj = bdCollapseEl ? bootstrap.Collapse.getOrCreateInstance(bdCollapseEl, { toggle: false }) : null;
-
-		$(document).on('click', '#bd_moreDetailToggle', function(e) {
-			e.preventDefault();
-			e.stopPropagation();
-			if (typeof e.stopImmediatePropagation === 'function') {
-				e.stopImmediatePropagation();
-			}
-			if (bdCollapseObj) {
-				bdCollapseObj.toggle();
-			}
+			var target = document.querySelector($(this).data('collapse-target'));
+			if (!target) return;
+			
+			var collapse = bootstrap.Collapse.getOrCreateInstance(target, { toggle: false });
+			var isOpen = target.classList.contains('show');
+			
+			isOpen ? collapse.hide() : collapse.show();
+			
+			$(this).attr('aria-expanded', !isOpen);
+			$(this).find('.collapse-icon').toggleClass('rotate-180', !isOpen);
 		});
-
-		if (bdCollapseEl) {
-			bdCollapseEl.addEventListener('shown.bs.collapse', function() {
-				$('#bd_moreDetailToggle').attr('aria-expanded', 'true');
-				$('#bd_moreDetailIcon').addClass('rotate-180');
-			});
-			
-			bdCollapseEl.addEventListener('hidden.bs.collapse', function() {
-				$('#bd_moreDetailToggle').attr('aria-expanded', 'false');
-				$('#bd_moreDetailIcon').removeClass('rotate-180');
-			});
-		}
-
+		
+		// Modal: Open Return Modal
 		$(document).on('click', '.btn-open-return-modal', function(e) {
 			e.preventDefault();
-			openBorrowDetailModal();
+			openReturnModal();
 		});
-
+		
+		// Modal: Submit Return Request
 		$('#bd_request_return').on('click', function(e) {
 			e.preventDefault();
-			handleReturnRequest();
+			submitReturnRequest();
 		});
-
+		
+		// Modal: Close
 		$('#borrowDetailModal').on('click', '[data-bs-dismiss="modal"]', function(e) {
 			e.preventDefault();
-			e.stopPropagation();
-			if (bdModalObj) {
-				bdModalObj.hide();
-			}
+			var modal = bootstrap.Modal.getInstance(document.getElementById('borrowDetailModal'));
+			if (modal) modal.hide();
+		});
+		
+		// Modal Collapse
+		$(document).on('click', '#bd_moreDetailToggle', function(e) {
+			e.preventDefault();
+			var collapse = bootstrap.Collapse.getInstance(document.getElementById('bd_moreDetailCollapse'));
+			if (collapse) collapse.toggle();
+		});
+		
+		$('#bd_moreDetailCollapse').on('shown.bs.collapse hidden.bs.collapse', function(e) {
+			var isOpen = e.type === 'shown';
+			$('#bd_moreDetailToggle').attr('aria-expanded', isOpen);
+			$('#bd_moreDetailIcon').toggleClass('rotate-180', isOpen);
 		});
 	}
 
-	// ===== Open Borrow Detail Modal =====
-	function openBorrowDetailModal() {
-		const bdModalEl = document.getElementById('borrowDetailModal');
-		const bdModalObj = bdModalEl ? bootstrap.Modal.getOrCreateInstance(bdModalEl) : null;
-		
-		if (!bdModalObj) {
-			alert('Modal #borrowDetailModal not found');
+	// ===== Open Return Modal =====
+	function openReturnModal() {
+		var modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('borrowDetailModal'));
+		if (!modal) {
+			alert('Modal not found');
 			return;
 		}
-
-		const borrowId = borrowWithUserList.length > 0 ? borrowWithUserList[0].borrow_id : '';
-		const equip = currentEquipment;
-
+		
+		var borrowId = borrowWithUserList.length > 0 ? borrowWithUserList[0].borrow_id : '';
 		if (!borrowId) {
 			alert('Borrow ID not found.');
 			return;
 		}
-
-		$('#borrowDetailModal').data('borrowId', String(borrowId).trim());
-
-		$('#bd_item_link').text('ID: ' + (equip.itemNo || '-'));
-		setText('bd_name', equip.name);
-		setText('bd_serial', equip.serialNo);
-		setText('bd_detail', equip.detail);
-		setText('bd_amount', equip.amount || '1');
-		setText('bd_purchase_date', equip.purchaseFmt || '-');
-		setBadge('B');
-
-		const t = String(equip.type || '').toLowerCase();
-		if (t === 'c') {
-			$('#bd_moreDetailWrapper').show();
-			setText('bd_windows', equip.windows);
-			setText('bd_ram', equip.ram);
-			setText('bd_storage', equip.hdd);
-			setText('bd_storage2', equip.hdd);
-			setText('bd_wifi', equip.wifiaddress);
-			setText('bd_lan', equip.lanaddress);
-			setText('bd_display', equip.display);
-			setText('bd_cpu', equip.process);
-			setText('bd_battery', equip.battery);
-		} else {
-			$('#bd_moreDetailWrapper').hide();
-		}
-
-		$('#bd_approver_note').val('');
-
-		const bdCollapseEl = document.getElementById('bd_moreDetailCollapse');
-		const bdCollapseObj = bdCollapseEl ? bootstrap.Collapse.getOrCreateInstance(bdCollapseEl, { toggle: false }) : null;
 		
-		if (bdCollapseObj) {
-			bdCollapseObj.hide();
+		var eq = currentEquipment;
+		
+		// Set modal data
+		$('#borrowDetailModal').data('borrowId', String(borrowId).trim());
+		$('#bd_item_link').text('ID: ' + (eq.itemNo || '-'));
+		setText('bd_name', eq.name);
+		setText('bd_serial', eq.serialNo);
+		setText('bd_detail', eq.detail);
+		setText('bd_amount', eq.amount || '1');
+		setText('bd_purchase_date', eq.purchaseFmt || '-');
+		
+		// Status Badge
+		var $badge = $('#bd_status_badge');
+		$badge.removeClass().addClass('badge badge-lg rounded-pill px-4 fw-semibold bg-warning text-white').text('Borrowing');
+		
+		// More Details (Computer only)
+		var isComputer = String(eq.type || '').toLowerCase() === 'c';
+		$('#bd_moreDetailWrapper').toggle(isComputer);
+		
+		if (isComputer) {
+			setText('bd_windows', eq.windows);
+			setText('bd_ram', eq.ram);
+			setText('bd_storage', eq.hdd);
+			setText('bd_storage2', eq.hdd);
+			setText('bd_wifi', eq.wifiaddress);
+			setText('bd_lan', eq.lanaddress);
+			setText('bd_display', eq.display);
+			setText('bd_cpu', eq.process);
+			setText('bd_battery', eq.battery);
 		}
+		
+		// Reset
+		$('#bd_approver_note').val('');
+		var collapse = bootstrap.Collapse.getInstance(document.getElementById('bd_moreDetailCollapse'));
+		if (collapse) collapse.hide();
 		$('#bd_moreDetailToggle').attr('aria-expanded', 'false');
 		$('#bd_moreDetailIcon').removeClass('rotate-180');
-
-		bdModalObj.show();
+		
+		modal.show();
 	}
 
-	// ===== Handle Return Request =====
-	function handleReturnRequest() {
-		const borrowId = ($('#borrowDetailModal').data('borrowId') || '').toString().trim();
-		const note = $('#bd_approver_note').val();
-
+	// ===== Submit Return Request =====
+	function submitReturnRequest() {
+		var borrowId = ($('#borrowDetailModal').data('borrowId') || '').toString().trim();
+		var note = $('#bd_approver_note').val();
+		
 		if (!borrowId) {
 			alert('Borrow ID not found.');
 			return;
 		}
-
+		
 		if (!confirm('Are you sure you want to request return for this item?')) {
 			return;
 		}
-
+		
 		$.ajax({
 			url: CTX + "/eBorrowReturn.action",
 			type: "POST",
 			dataType: "json",
-			data: {
-				id: borrowId,
-				note: note
-			},
+			data: { id: borrowId, note: note },
 			success: function(data) {
 				if (data && String(data.message).toLowerCase() === "success") {
 					alert("Return request submitted successfully!");
 					
-					const bdModalEl = document.getElementById('borrowDetailModal');
-					const bdModalObj = bdModalEl ? bootstrap.Modal.getOrCreateInstance(bdModalEl) : null;
+					var modal = bootstrap.Modal.getInstance(document.getElementById('borrowDetailModal'));
+					if (modal) modal.hide();
 					
-					if (bdModalObj) {
-						bdModalObj.hide();
-					}
-
 					window.location.replace(CTX + "/borrow_list");
 				} else {
 					alert("Something went wrong: " + (data ? data.message : "no data"));
 				}
 			},
 			error: function(xhr) {
-				console.log("HTTP", xhr.status);
-				console.log("RAW", xhr.responseText);
+				console.error("HTTP", xhr.status, xhr.responseText);
 				alert("Failed to submit return request.");
 			}
 		});
 	}
-	</script>
-
+</script>
 </body>
 </html>
