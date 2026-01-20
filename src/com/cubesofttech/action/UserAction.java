@@ -711,7 +711,7 @@ public class UserAction extends ActionSupport {
 			 * request.setAttribute("test2", jobuser);
 			 */
 
-			List<Map<String, Object>> departmentList = departmentDAO.sequense();
+			List<Map<String, Object>> departmentList = departmentDAO.findAllList();
 
 			List<Map<String, Object>> positionList = positionDAO.sequense();
 
@@ -806,7 +806,8 @@ public class UserAction extends ActionSupport {
 	public String open() {
 		try {
 			
-			List<Map<String, Object>> departmentList = departmentDAO.sequense();
+			List<Map<String, Object>> departmentList = departmentDAO.findAllList();
+			log.debug("departmentList"+departmentList);
 			request.setAttribute("departmentList", departmentList);
 
 			List<Map<String, Object>> positionList = positionDAO.sequense();

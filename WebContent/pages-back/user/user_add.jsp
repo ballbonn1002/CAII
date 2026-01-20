@@ -73,8 +73,8 @@
 							</div>
 
 							<div class="card-body py-10">
-
-								<div class="d-flex flex-column align-items-center mb-16">
+								<div class="row mb-16">
+								<div class="d-flex flex-column align-items-center">
 									<div class="image-input image-input-outline"
 										data-kt-image-input="true"
 										style="background-image: url(${pageContext.request.contextPath}/assets/media/svg/avatars/blank.svg)">
@@ -103,9 +103,12 @@
 											class="ki-outline ki-cross fs-3"></i>
 										</span>
 									</div>
-									<div class="text-muted fs-7 mt-3">Allowed file types:
-										png, jpg, jpeg.</div>
+									
 								</div>
+								<div
+									class="form-text fs-7 text-muted fw-medium mt-6 mb-0  d-flex justify-content-center">Allowed
+									file types: png, jpg, jpeg.</div>
+							</div>
 
 								<div class="row g-8">
 									<div class="col-12 col-md-6">
@@ -257,7 +260,7 @@
 											data-control="select2" data-hide-search="true" required>
 											<option value="">Select</option>
 											<c:forEach var="department" items="${departmentList}">
-												<option value="${department.id}">${department.id} ${empty department.name ? '' : ' - '}${department.name}
+												<option value="${department.id}">${department.id} ${empty department.description ? '' : ' - '}${department.description}
 </option>
 											</c:forEach>
 										</select>
