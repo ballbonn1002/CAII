@@ -46,10 +46,12 @@
 }
 
 #id_sitejob+.select2-container .select2-selection__choice {
-	background-color: #009ef7 !important;
-	border-color: #009ef7 !important;
-	color: #fff !important;
+	background-color: #4b92fa !important; 
+    border-color: #0d6efd !important;
+    color: #fff !important;
+    font-size: 13px;
 }
+
 
 .toggle-password.d-none {
 	display: none !important;
@@ -363,7 +365,7 @@
 									<label class="required form-label">Role</label> 
 									<select
 										class="form-select" name="user.roleId" data-control="select2"
-										data-placeholder="Select role" data-tab="account" data-required="true">
+										data-placeholder="Select role" data-tab="account" data-required="true" data-label="Role">
 										<option></option>
 										<c:forEach var="role" items="${roleList}">
 											<option value="${role.id}"
@@ -377,12 +379,12 @@
 									<label class="required form-label">Gender</label>
 									<div class="d-flex align-items-center mt-2 gap-8">
 										<label class="form-check form-check-custom form-check-solid">
-											<input class="form-check-input" type="radio" data-tab="account"  data-required="true"
+											<input class="form-check-input" type="radio" data-tab="account"  data-required="true" data-label="Gender"
 											name="user.gender" value="M"
 											${selectUser.gender eq 'M' ? 'checked':''}> <span
 											class="form-check-label text-gray-800">Male</span>
 										</label> <label class="form-check form-check-custom form-check-solid">
-											<input class="form-check-input" type="radio" data-tab="account"  data-required="true"
+											<input class="form-check-input" type="radio" data-tab="account"  data-required="true" data-label="Gender"
 											name="user.gender" value="F"
 											${selectUser.gender eq 'F' ? 'checked':''}> <span
 											class="form-check-label text-gray-800">Female</span>
@@ -394,7 +396,7 @@
 									<div class="d-flex flex-column flex-md-row gap-4">
 										<div class="flex-shrink-0" style="width: 160px;">
 											<label class="form-label fw-semibold text-gray-800 required">คำนำหน้า</label>
-											<select class="form-select userinfo" name="user.titleNameTH" data-tab="account"  data-required="true"
+											<select class="form-select userinfo" name="user.titleNameTH" data-tab="account"  data-required="true" data-label="คำนำหน้า"
 												>
 												<option value="" disabled>Select</option>
 												<option value="นาย"
@@ -412,7 +414,7 @@
 											<label class="form-label fw-semibold text-gray-800 required">ชื่อ
 												- สกุล</label> <input type="text" class="form-control userinfo"
 												name="user.name" maxlength="190" value="${selectUser.name}"
-												placeholder="ชื่อ - สกุล" data-tab="account" data-required="true">
+												placeholder="ชื่อ - สกุล" data-tab="account" data-required="true" data-label="ชื่อ-สกุล" />
 											<div id="hintNameTh" class="text-danger fs-8 mt-1 d-none">Please
 												enter full name</div>
 										</div>
@@ -424,7 +426,7 @@
 										<div class="flex-shrink-0" style="width: 160px;">
 											<label class="form-label fw-semibold text-gray-800 required">Title
 												Name</label> <select class="form-select userinfo"
-												name="user.titleNameEN" data-tab="account"  data-required="true">
+												name="user.titleNameEN" data-tab="account"  data-required="true" data-label="Title Name">
 												<option value="" disabled>Select</option>
 												<option value="Mr."
 													${selectUser.titleNameEN == 'Mr.'  ? 'selected' : ''}>Mr.</option>
@@ -440,7 +442,7 @@
 										<div class="flex-grow-1">
 											<label class="form-label fw-semibold text-gray-800 required">Full
 												Name</label> <input type="text" class="form-control userinfo"
-												name="user.nameEN" maxlength="190"
+												name="user.nameEN" maxlength="190" data-label="Full Name"
 												value="${selectUser.nameEN}" placeholder="Name - Surname" data-tab="account" data-required="true"
 												>
 											<div id="hintNameEn" class="text-danger fs-8 mt-1 d-none">Please
@@ -451,7 +453,7 @@
 
 								<div class="col-md-6 fv-row">
 									<label class="form-label">Nickname TH</label> <input
-										type="text" class="form-control" name="user.nickName" data-tab="account"  
+										type="text" class="form-control" name="user.nickName" data-tab="account" 
 										value="${selectUser.nickName}" />
 								</div>
 								<div class="col-md-6 fv-row">
@@ -464,7 +466,7 @@
 									<label class="required form-label">Citizen ID</label> <input
 										type="text" class="form-control" id="user_citizenId"
 										name="user.citizenId" maxlength="17" inputmode="numeric" data-tab="account"  data-required="true"
-										oninput="formatCitizenId(this)"
+										oninput="formatCitizenId(this)" data-label="Citizen ID"
 										value="${selectUser.citizenId}" />
 
 									<!-- error message -->
@@ -474,13 +476,13 @@
 								</div>
 								<div class="col-md-6 fv-row">
 									<label class="form-label">Passport ID</label> <input
-										type="text" class="form-control" name="user.passportId" data-tab="account" 
+										type="text" class="form-control" name="user.passportId" data-tab="account"
 										maxlength="10" value="${selectUser.passportId}" />
 								</div>
 
 								<div class="col-md-6 fv-row">
 									<label class="required form-label">E-Mail</label> <input
-										type="email" class="form-control" name="user_email" data-tab="account"  data-required="true"
+										type="email" class="form-control" name="user_email" data-tab="account" data-required="true" data-label="E-Mail"
 										maxlength="50" value="${selectUser.email}"/>
 								</div>
 
@@ -498,7 +500,7 @@
 
 								<div class="col-md-6 fv-row">
 									<label class="required form-label">Phone Number</label> <input
-										type="text" class="form-control" name="user.phonenum" data-tab="account"  data-required="true"
+										type="text" class="form-control" name="user.phonenum" data-tab="account"  data-required="true" data-label="Phone Number"
 										oninput="formatPhone(this)" maxlength="20"
 										value="${selectUser.phonenum}"  />
 								</div>
@@ -541,7 +543,7 @@
 						</div>
 					</div>
 
-					<div class="card mb-10 d-none" id="employee-info">
+					<div class="card mb-10" id="employee-info">
 						<div class="card-header">
 							<h3 class="card-title fw-bold m-0">Employee Information</h3>
 						</div>
@@ -552,14 +554,14 @@
 								<div class="col-md-6 fv-row">
 									<label class="required form-label">Employee Code</label> <input
 										type="text" class="form-control" name="user.employeeId"
-										value="${selectUser.employeeId}" data-tab="employee" data-required="true" />
+										value="${selectUser.employeeId}" data-tab="employee" data-required="true" data-label="Employee Code"/>
 								</div>
 
 								<div class="col-md-6 fv-row">
 									<label class="required form-label">Employee Type</label> <select
 										class="form-select" name="user.employeeTypeId"
 										data-control="select2" data-placeholder="Employee type"
-										data-hide-search="true" data-tab="employee" data-required="true">
+										data-hide-search="true" data-tab="employee" data-required="true" data-label="Employee Type">
 
 										<option></option>
 
@@ -582,14 +584,14 @@
 									<label class="required form-label">Department</label> <select
 										class="form-select" name="department_id"
 										data-control="select2" data-placeholder="Department"
-										data-hide-search="true" data-tab="employee" data-required="true">
+										data-hide-search="true" data-tab="employee" data-required="true" data-label="Department">
 
 										<option></option>
 
 										<c:forEach var="department" items="${departmentList}">
 											<option value="${department.id}"
 												<c:if test="${selectUser.departmentId eq department.id}">selected</c:if>>
-												${department.id}</option>
+												${department.id} ${empty department.description ? '' : ' - '}${department.description}</option>
 										</c:forEach>
 
 									</select>
@@ -598,7 +600,7 @@
 								<div class="col-md-6 fv-row">
 									<label class="required form-label">Position</label> <select
 										class="form-select" name="position_id" data-control="select2"
-										data-placeholder="Position" data-hide-search="true" data-tab="employee" data-required="true">
+										data-placeholder="Position" data-hide-search="true" data-tab="employee" data-required="true" data-label="Position">
 
 										<option></option>
 
@@ -620,7 +622,7 @@
 											class="path5"></span><span class="path6"></span>
 										</i> <input type="text" name="startDate" id="startDate"
 											class="form-control ps-12" data-kt-date-picker="true"
-											placeholder="1 Jan 2025" data-tab="employee" data-required="true"
+											placeholder="1 Jan 2025" data-tab="employee" data-required="true" data-label="Start Working Date"
 											value="<fmt:formatDate value='${selectUser.startDate}' pattern='yyyy-MM-dd'/>"
 											autocomplete="off" />
 									</div>
@@ -646,7 +648,7 @@
 								<div class="col-md-6 fv-row">
 									<label class="required form-label">Manager</label> <select
 										class="form-select" name="user.managerId" id="managerId"
-										data-control="select2" data-placeholder="Manager" data-tab="employee" data-required="true">
+										data-control="select2" data-placeholder="Manager" data-tab="employee" data-required="true" data-label="Manager">
 										<option></option>
 										<c:forEach var="manager" items="${userList}">
 											<option value="${manager.id}"
@@ -659,19 +661,13 @@
 								<div class="col-md-6 fv-row">
 									<label class="required form-label">Job Site</label> <select
 										class="form-select" name="id_sitejob" id="id_sitejob" multiple
-										data-control="select2" data-placeholder="Job site" data-tab="employee" data-required="true">
+										data-control="select2" data-placeholder="Job site" data-tab="employee" data-required="true" data-label="Job Site">
 										<c:forEach var="jobsite" items="${test}">
-											<option value="${jobsite.id_sitejob}"
+											<option  value="${jobsite.id_sitejob}"
 												${jobsite.is_related == 1 ? 'selected':''}>
 												${jobsite.name_site}</option>
 										</c:forEach>
-										<%--  <c:forEach var="jobsite" items="${jobSite}">
-											    <option value="${jobsite['id_sitejob']}"
-											        <c:if test="${jobsite['is_related'] == 1}">selected</c:if>>
-											        ${jobsite['name_site']}
-											    </option>
-											</c:forEach> --%>
-
+								
 									</select> <input type="hidden" name="id_sitejob" id="id_sitejob_join" />
 								</div>
 
@@ -680,7 +676,7 @@
 									<div class="d-flex align-items-stretch gap-3">
 										<select class="form-select flex-fill" name="user.workDayStart"
 											data-control="select2" data-placeholder="Select an option"
-											data-hide-search="true" id="workDayStart" data-tab="employee" data-required="true">
+											data-hide-search="true" id="workDayStart" data-tab="employee" data-required="true" data-label="Working Day Start">
 											<option value="1"
 												${selectUser.workDayStart == 1 ? 'selected' : ''}>Mon</option>
 											<option value="2"
@@ -698,7 +694,7 @@
 										</select> <span class="d-flex align-items-center">to</span> <select
 											class="form-select flex-fill" name="user.workDayEnd"
 											data-control="select2" data-placeholder="Select an option"
-											data-hide-search="true" id="workDayEnd" data-tab="employee" data-required="true">
+											data-hide-search="true" id="workDayEnd" data-tab="employee" data-required="true" data-label="Working Day End">
 											<option value="1"
 												${selectUser.workDayEnd == 1 ? 'selected' : ''}>Mon</option>
 											<option value="2"
@@ -722,7 +718,7 @@
 									<div class="d-flex align-items-stretch gap-3">
 										<select class="form-select flex-fill" data-control="select2"
 											data-placeholder="Select an option" data-hide-search="true"
-											id="workTimeStart" name="user.workTimeStart" data-tab="employee" data-required="true">
+											id="workTimeStart" name="user.workTimeStart" data-tab="employee" data-required="true" data-label="Working Hour Start">
 											<option value="8:00"
 												${selectUser.workTimeStart == '8:00' ? 'selected' : ''}>8:00</option>
 											<option value="8:30"
@@ -732,7 +728,7 @@
 										</select> <span class="d-flex align-items-center text-muted">to</span>
 										<select class="form-select flex-fill" data-control="select2"
 											data-placeholder="Select an option" data-hide-search="true"
-											id="workTimeEnd" name="user.workTimeEnd" data-tab="employee" data-required="true">
+											id="workTimeEnd" name="user.workTimeEnd" data-tab="employee" data-required="true" data-label="Working Hour End">
 											<option value="17:00"
 												${selectUser.workTimeEnd == '17:00' ? 'selected' : ''}>17:00</option>
 											<option value="17:30"
@@ -751,19 +747,17 @@
 									<div class="mt-2">
 										<label class="form-check form-check-custom mb-6 mt-6">
 											<input class="form-check-input" type="radio"
-											name="user.workType" value="1" data-tab="employee" data-required="true"
+											name="user.workType" value="1" data-tab="employee" data-required="true" data-label="Default Working"
 											<c:if test="${empty selectUser.workType or selectUser.workType == '1'}">checked</c:if>>
 											<span class="form-check-label text-gray-800">On-Site</span>
 										</label> <label class="form-check form-check-custom mb-6 mt-6">
 											<input class="form-check-input" type="radio"
-											name="user.workType" value="2" data-tab="employee" data-required="true"
+											name="user.workType" value="2" data-tab="employee" data-required="true" data-label="Default Working"
 											<c:if test="${selectUser.workType == '2'}">checked</c:if>>
 											<span class="form-check-label text-gray-800">WFH</span>
 										</label>
 									</div>
 								</div>
-
-
 
 								<div class="col-md-6 fv-row">
 									<label class="required form-label">Number of On-Site
@@ -771,19 +765,19 @@
 									<div class="mt-2">
 										<label class="form-check form-check-custom mb-6 mt-6">
 											<input class="form-check-input" type="radio"
-											name="user.onsiteNum" value="3" data-tab="employee" data-required="true"
+											name="user.onsiteNum" value="3" data-tab="employee" data-required="true" data-label="Number of On-Site Days"
 											<c:if test="${empty selectUser.onsiteNum or selectUser.onsiteNum == '3'}">checked</c:if>>
 											<span class="form-check-label text-gray-800 fw-500"> 4
 												- 5 days (On-Site) </span>
 										</label> <label class="form-check form-check-custom mb-6 mt-6">
 											<input class="form-check-input" type="radio"
-											name="user.onsiteNum" value="2" data-tab="employee" data-required="true"
+											name="user.onsiteNum" value="2" data-tab="employee" data-required="true" data-label="Number of On-Site Days"
 											<c:if test="${selectUser.onsiteNum == '2'}">checked</c:if>>
 											<span class="form-check-label text-gray-800 fw-500"> 2
 												- 3 days (Hybrid) </span>
 										</label> <label class="form-check form-check-custom mb-6 mt-6">
 											<input class="form-check-input" type="radio"
-											name="user.onsiteNum" value="1" data-tab="employee" data-required="true"
+											name="user.onsiteNum" value="1" data-tab="employee" data-required="true" data-label="Number of On-Site Days"
 											<c:if test="${selectUser.onsiteNum == '1'}">checked</c:if>>
 											<span class="form-check-label text-gray-800 fw-500">
 												0.5 - 1 day (WFH) </span>
@@ -1102,7 +1096,7 @@
 								</div>
 								<div class="col-md-6 fv-row">
 									<label class="required form-label">Bank Number</label> <input
-										class="form-control" name="user.bankNum" data-tab="payment" data-required="true"
+										class="form-control" name="user.bankNum" data-tab="payment" data-required="true" data-label="Bank Number"
 										value="${selectUser.bankNum}" placeholder="Bank number"
 										>
 								</div>
@@ -1473,7 +1467,7 @@
     });
     </script>
 
-	<script>
+	<!-- <script>
     document.addEventListener("DOMContentLoaded", function () {
           const navLinks = document.querySelectorAll("#profileNav .nav-link[data-target]");
 
@@ -1524,7 +1518,7 @@
           });
         });
 
-    </script>
+    </script> -->
 
 	<script>
 
@@ -1627,69 +1621,49 @@
             $('html, body').animate({ scrollTop: $(target).offset().top - 120 }, 300);
         });
 
-        $('#btnSubmit').on('click', function(e) {
-            e.preventDefault(); 
+        $('#btnSubmit').on('click', function (e) {
+        	  e.preventDefault();
 
-            var form = document.querySelector('form[action="admin-perform-edit"]');
-            var firstErrorInput = null;
+        	  const activeSection = getActiveTabElement();
+        	  const errorFields = validateActiveTab(activeSection);
 
-            for (var i = 0; i < form.elements.length; i++) {
-                var el = form.elements[i];
-                if (el.hasAttribute('required') && (el.value === "" || el.value === null)) {
-                    firstErrorInput = el; break;
-                }
-                if ($(el).is('select') && el.hasAttribute('required')) {
-                     if($(el).val() === "" || $(el).val() === null || $(el).val().length === 0){
-                         firstErrorInput = el; break;
-                     }
-                }
-                if (el.willValidate && !el.checkValidity()) {
-                    firstErrorInput = el; break;
-                }
-            }
+        	  if (errorFields.length > 0) {
+        	    Swal.fire({
+        	      title: "Please complete the form!",
+        	      html: "Please fill in the following fields:<br><strong>"
+        	            + errorFields.join(", ") + "</strong>",
+        	      icon: "error",
+        	      confirmButtonText: "OK",
+        	      buttonsStyling: false,
+        	      customClass: { confirmButton: "btn btn-danger" }
+        	    });
+        	    return;
+        	  }
 
-            if (firstErrorInput) {
-                var parentCard = $(firstErrorInput).closest('.card[id]');
-                var targetTabId = parentCard.length ? '#' + parentCard.attr('id') : null;
+        	  Swal.fire({
+        	    title: "Are you sure?!",
+        	    text: "Do you want to save the changes?",
+        	    icon: "warning",
+        	    showCancelButton: true,
+        	    confirmButtonText: "Save",
+        	    cancelButtonText: "Close",
+        	    buttonsStyling: false,
+        	    customClass: {
+        	      confirmButton: "btn btn-success",
+        	      cancelButton: "btn btn-secondary"
+        	    }
+        	  }).then((result) => {
+        	    if (result.isConfirmed) {
+        	    	const citizenIdInput = document.getElementById("user_citizenId");
+		            if (citizenIdInput) {
+		                citizenIdInput.value = citizenIdInput.value.replace(/\D/g, '');
+		            }
+		            
+        	      document.querySelector('form[action="admin-perform-edit"]').submit();
+        	    }
+        	  });
+        	});
 
-                if (targetTabId) forceOpenTab(targetTabId);
-
-                setTimeout(function() {
-                    $('html, body').animate({ scrollTop: $(firstErrorInput).offset().top - 200 }, 200);
-                    if ($(firstErrorInput).hasClass('select2-hidden-accessible')) {
-                        $(firstErrorInput).select2('open'); 
-                    } else {
-                        $(firstErrorInput).focus();
-                    }
-                    try { firstErrorInput.reportValidity(); } catch(err){}
-                }, 300);
-
-            } else {
-                /* form.submit(); */
-            	Swal.fire({
-   		    	 title: "Are you sure?!",
-   		 	        text: "Do you want to save the changes?",
-   		 	        icon: "warning",
-   		 	        showCancelButton: true,
-   		 	        confirmButtonText: "Save",
-   		 	        cancelButtonText: "Close",
-   		 	        buttonsStyling: false,
-   		 	        customClass: {
-   		 	            confirmButton: "btn btn-success",
-   		 	            cancelButton: "btn btn-secondary"
-   		 	        }
-   		    }).then((result) => {
-   		        if (result.isConfirmed) {
-   		        	const citizenIdInput = document.getElementById("user_citizenId");
-   		            if (citizenIdInput) {
-   		                citizenIdInput.value = citizenIdInput.value.replace(/\D/g, '');
-   		            }
-   		        	
-   		        	form.submit();
-   		        }
-   		    });
-            }
-        });
 
        /*  $('#btnCancel').click(function() { window.location.href = 'user-list'; }); */
 
@@ -1801,39 +1775,43 @@ function confirmLeaveForm(redirectUrl){
 </script>
 
 <script>
-function validateActiveTab(activeTab) {
-	  let valid = true;
-	  const checkedGroup = new Set();
+	function getActiveTabElement() {
+		  const target = $('#profileNav .nav-link.active').data('target');
+		  return target ? document.querySelector(target) : null;
+		}
 
-	  document
-	    .querySelectorAll(`[data-tab="${activeTab}"][data-required="true"]`)
-	    .forEach(el => {
+	function validateActiveTab(activeSection) {
+	    const errorFields = [];
+	    const checkedGroup = new Set();
 
-	      if (el.type === 'radio' || el.type === 'checkbox') {
-	        if (checkedGroup.has(el.name)) return;
+	    if (!activeSection) return errorFields;
 
-	        const checked = document.querySelector(
-	          `[name="${el.name}"]:checked`
-	        );
-	        checkedGroup.add(el.name);
+	    activeSection.querySelectorAll('[data-required="true"]').forEach(el => {
 
-	        if (!checked) {
-	          valid = false;
-	          el.closest('.fv-row')?.classList.add('is-invalid');
-	        }
-	      } else {
-	        if (!el.value.trim()) {
-	          valid = false;
-	          el.classList.add('is-invalid');
+	        if (el.type === 'radio' || el.type === 'checkbox') {
+	            if (checkedGroup.has(el.name)) return;
+	            checkedGroup.add(el.name);
+
+	            const checked = activeSection.querySelector("input[name='" + el.name + "']:checked");
+
+	            if (!checked) {
+	                errorFields.push(el.dataset.label || el.name);
+	                el.closest('.fv-row')?.classList.add('is-invalid');
+	            } else {
+	                el.closest('.fv-row')?.classList.remove('is-invalid');
+	            }
 	        } else {
-	          el.classList.remove('is-invalid');
+	            if (!el.value || el.value.trim() === "" || el.value === "null") {
+	                errorFields.push(el.dataset.label || el.name);
+	                el.classList.add('is-invalid');
+	            } else {
+	                el.classList.remove('is-invalid');
+	            }
 	        }
-	      }
 	    });
 
-	  return valid;
+	    return errorFields;
 	}
-
 </script>
 
 	<script>
@@ -1845,7 +1823,6 @@ function validateActiveTab(activeTab) {
 		    
 			btn.addEventListener("click", function(){
 				const input =document.getElementById(this.dataset.eyeTarget);
-				/* if (input.disabled) return; */
 
 			      const eyeSlash = this.querySelector(".ki-eye-slash");
 			      const eye = this.querySelector(".ki-eye");
