@@ -747,25 +747,59 @@ public class UserAction extends ActionSupport {
 			request.setAttribute("leaveW", sum_w);
 			request.setAttribute("leaveH", sum_h);
 
-			request.setAttribute("borrow_history", borrowDAO.findHistoryByUser(selectUser.getId()));
-
-			List<Borrow> borrows = borrowDAO.findBorrowByUser(selectUser.getId());
+//			request.setAttribute("borrow_history", borrowDAO.findHistoryByUser(selectUser.getId()));
+//
+//			List<Borrow> borrows = borrowDAO.findBorrowByUser(selectUser.getId());
+//			
+//			log.info("borrows=" + borrows);
+//
+//			List<Equipment> equipments = new ArrayList<Equipment>();
+//			for (int i = 0; i < borrows.size(); i++) {
+//				String equipment_id = borrows.get(i).getEquipmentId();
+//				Equipment equipments2 = equipmentDAO.getById(Integer.parseInt(equipment_id));
+//				log.info("equipments2=" + equipments2);
+//				equipments.add(equipments2);
+//				log.info("equipments=" + equipments);
+//			}
+//
+//			request.setAttribute("borrows", new Gson().toJson(borrows));
+//			request.setAttribute("equipments", new Gson().toJson(equipments));
 			
-			log.info("borrows=" + borrows);
+			List<Map<String,Object>> borrow = borrowDAO.getBorrowListByUserId(selectUser.getId());
+
 			
+			if (borrow != null && !borrow.isEmpty()) {
+				SimpleDateFormat inputDate =
+				        new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
+				inputDate.setCalendar(new GregorianCalendar());
 
+				SimpleDateFormat outputDate =
+				        new SimpleDateFormat("dd MMM yyyy", Locale.ENGLISH);
+				outputDate.setCalendar(new GregorianCalendar());
 
-			List<Equipment> equipments = new ArrayList<Equipment>();
-			for (int i = 0; i < borrows.size(); i++) {
-				String equipment_id = borrows.get(i).getEquipmentId();
-				Equipment equipments2 = equipmentDAO.getById(Integer.parseInt(equipment_id));
-				log.info("equipments2=" + equipments2);
-				equipments.add(equipments2);
-				log.info("equipments=" + equipments);
+				
+				for(Map<String, Object> row: borrow) {
+					Object dateStartObj = row.get("time_create");
+					if(dateStartObj == null) {
+						continue;
+					}
+					 String dt = dateStartObj.toString();         
+					 String[] parts = dt.split(" ");
+					 
+					 String datePart = parts[0]; 
+					 String timePart = parts[1].split("\\.")[0];
+					 
+					 java.util.Date date = inputDate.parse(datePart);
+
+					 row.put("formatted_date", outputDate.format(date));
+					 row.put("formatted_time", timePart);
+				}
+				
+				request.setAttribute("borrowList", borrow);
+				log.debug("borrow"+borrow);
+			}else {
+				request.setAttribute("borrowList", borrow);
 			}
-
-			request.setAttribute("borrows", new Gson().toJson(borrows));
-			request.setAttribute("equipments", new Gson().toJson(equipments));
 			log.debug(selectUser.getPaymentRemark());
 			
 			String imgPath = null;

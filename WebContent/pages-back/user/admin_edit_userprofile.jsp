@@ -1219,12 +1219,91 @@
 					</div>
 				</form>
 
-				<div id="borrow-info">
-					<div class="portlet light bordered" id="borrow-info">
+				<div class="card mb-10" id="borrow-info">
+					<%-- <div class="portlet light bordered" id="borrow-info">
 						<div class="test">
 							<jsp:include page="/pages-back/borrow/bTable.jsp" flush="true"></jsp:include>
 						</div>
-					</div>
+					</div> --%>
+					
+					
+					
+					<div class="card-header">
+							<!--begin::Card title-->
+							<div class="card-title">
+								<h3 class="fw-semibold text-gray-900">Borrow List</h3>
+							</div>
+							<div class="card-toolbar">
+				           		 <a href="/borrow_add" class="btn btn-primary btn-md fw-medium">
+				                	<i class="ki-duotone ki-plus fs-4"> <span class="path1"></span> 
+								</i>Add New
+				            	</a>
+        					</div>
+						</div>
+					<div class="card-body p-10 opacity-80">
+							<div class="table-responsive ">
+								<table
+									class="table table-striped table-hover border-gray-300 table-row-bordered table-row-gray-200 ">
+									<thead class="border-bottom-1">
+										<tr class="fs-7 fw-bold text-gray-500">
+											<th class="px-3 min-w-150px">Date Create</th>
+											<th class="px-3 min-w-140px">Item No</th>
+											<th class="px-3 min-w-150px">Equipment</th>
+											<th class="px-3 min-w-130px">Location</th>
+											<th class="px-3 min-w-130px">Status</th>
+											<th class="px-3 min-w-130px">Action</th>
+										</tr>
+									</thead>
+
+									<tbody>
+									<c:if test="${empty borrowList}">
+										<tr>
+											<td colspan="6" class="text-center text-muted py-4">
+												Not found borrow list.
+											</td>
+										</tr>
+									</c:if>
+										<c:forEach var="item" items="${borrowList}">
+											<tr class="align-middle">
+												<td class="px-3 py-4 text-gray-900 fs-6 fw-normal">
+													${item.formatted_date}
+													<p class="text-gray-600 fs-6 fw-normal mb-0">${item.formatted_time}</p>
+												</td>
+												<td class="px-3 py-4 text-gray-900 fs-6 fw-normal">${item.item_no}</td>
+												<td class="px-3 py-4 text-gray-900 fs-6 fw-normal">${item.name}</td>
+												<td class="px-3 py-4 text-gray-900 fs-6 fw-normal">${item.location}</td>
+												<td class="px-3 py-4 ">
+												<c:if test="${item.status == 'R'}">
+													<span class="badge badge-lg bg-success text-white fw-semibold fs-8">Returned</span>
+												</c:if> 
+												<c:if test="${item.status == 'B'}">
+													<span class="badge badge-lg bg-warning text-white fw-semibold fs-8">Borrowing</span>
+												</c:if>
+												 <c:if test="${item.status == 'W'}">
+													<span class="badge badge-lg badge-secondary text-dark fw-semibold fs-8">Waiting</span>
+												</c:if>
+												<c:if test="${item.status == 'C'}">
+													<span class="badge badge-lg bg-dark text-white fw-semibold fs-8">Cancel</span>
+												</c:if> 
+												<c:if test="${empty item.status || item.status == '-'}">
+													<span class="badge badge-lg bg-light-secondary text-white fw-semibold fs-8">-</span>
+												</c:if>
+												</td>
+												<td class="px-3 py-4">
+													<a href="/borrow_edit?id=${item.borrow_id}" class="btn btn-lg btn-light-primary">
+									                	<i class="ki-duotone ki-pencil fs-4"> <span class="path1"></span> 
+									                	<span class="path2"></span> <span class="path2"></span> 
+														</i>
+									            	</a>
+				            					</td>
+											</tr>
+
+										</c:forEach>
+									</tbody>
+								</table>
+							</div>
+
+						</div>
 				</div>
 
 
