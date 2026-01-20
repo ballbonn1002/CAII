@@ -53,6 +53,7 @@
 .rotate-180 {
 	transform: rotate(180deg);
 }
+
 </style>
 
 </head>
@@ -401,7 +402,7 @@
 					<div class="mt-10">
 						<div class="text-primary fw-bold fs-5 mb-7">Approver</div>
 						<div class="text-gray-800 fs-7 mb-4">Specify a note when changing status (optional)</div>
-						<textarea id="bd_approver_note" class="form-control form-control-solid" rows="3" placeholder="Enter maintenance or repair notes..."></textarea>
+						<textarea id="bd_approver_note" class="form-control form-control" rows="4" placeholder="Enter maintenance or repair notes..."></textarea>
 					</div>
 				</div>
 
@@ -587,217 +588,275 @@
 	}
 
 	// ===== 5. Initialize DatePickers =====
-	function initializeDatePickers() {
-		if (typeof flatpickr === 'undefined') return;
-		
-		var config = {
-			enableTime: true,
-			time_24hr: true,
-			dateFormat: "d M Y , H:i"
-		};
-		
-		flatpickr("#start_date", config);
-		flatpickr("#end_date", config);
-	}
+	
+		function initializeDatePickers() {
+			if (typeof flatpickr === "undefined")
+				return;
 
-	// ===== 6. Render Equipment Card =====
-	function renderEquipmentCard() {
-		var eq = currentEquipment;
-		var typeInfo = getTypeInfo(eq.type);
-		
-		// Image
-		var imageHTML = eq.image 
-			? '<img src="' + eq.image + '" alt="' + eq.itemNo + '" class="border rounded-3 object-fit-cover w-100 h-100" />'
-			: '<i class="fa-solid fa-image fs-1 text-muted"></i>';
-		
-		// Basic Details
-		var details = '';
-		details += createDetailRow('Name:', eq.name);
-		details += createDetailRow('Type:', typeInfo.label + ' <i class="ki-duotone ' + typeInfo.icon + ' fs-4 text-gray-600"><span class="path1"></span><span class="path2"></span></i>');
-		details += createDetailRow('Serial No:', eq.serialNo);
-		details += createDetailRow('Amount:', formatNumber(eq.amount));
-		details += createDetailRow('Date of Purchase:', eq.purchaseFmt);
-		details += createDetailRow('Detail:', eq.detail);
-		
-		// More Details (สำหรับ Computer เท่านั้น)
-		var moreDetails = '';
-		if (eq.type && eq.type.toLowerCase() === 'c') {
-			moreDetails = '<div>' +
-				'<button type="button" class="btn btn-link p-0 w-100 text-primary fw-semibold d-flex justify-content-between align-items-center py-5 border-bottom border-gray-200" ' +
-				'data-collapse-target="#moreDetailCollapse" aria-expanded="false">' +
-				'<span>More Detail</span>' +
-				'<i class="ki-duotone ki-down fs-3 collapse-icon"><span class="path1"></span><span class="path2"></span></i>' +
-				'</button>' +
-				'<div class="collapse mt-3" id="moreDetailCollapse">' +
-				createDetailRow('Windows', eq.windows) +
-				createDetailRow('CPU', eq.process) +
-				createDetailRow('Ram', eq.ram) +
-				createDetailRow('Storage', eq.hdd) +
-				createDetailRow('Battery', eq.battery) +
-				createDetailRow('WIFI Address', eq.wifiaddress) +
-				createDetailRow('LAN Address', eq.lanaddress) +
-				createDetailRow('Display', eq.display) +
-				'</div></div>';
-		}
-		
-		// Build Card HTML
-		var cardHTML = 
-			'<div class="card-header border-0 pt-6">' +
-			'<div class="card-title fw-bold fs-4">Equipment Detail</div></div>' +
-			'<div class="card-body pt-0">' +
-			'<div class="mb-4 d-flex flex-column align-items-start">' +
-			'<div class="mb-3 d-flex justify-content-between align-items-center w-100">' +
-			'<span class="fw-bold fs-1 text-primary">' + (eq.itemNo || '-') + '</span>' +
-			getStatusBadge(eq.status) + '</div>' +
-			'<div class="symbol symbol-150px border rounded-3 bg-light d-flex align-items-center justify-content-center">' + imageHTML + '</div>' +
-			'</div>' + details + moreDetails + '</div>';
-		
-		$('#equipment-detail-card').html(cardHTML);
-	}
+			const DISPLAY_FORMAT = "d M Y , H:i";
+			const STORE_FORMAT = "d m Y , H:i";
 
-	// ===== 7. Setup Event Handlers =====
-	function setupEventHandlers() {
-		// Collapse Toggle
-		$(document).on('click', '[data-collapse-target]', function(e) {
-			e.preventDefault();
-			
-			var target = document.querySelector($(this).data('collapse-target'));
-			if (!target) return;
-			
-			var collapse = bootstrap.Collapse.getOrCreateInstance(target, { toggle: false });
-			var isOpen = target.classList.contains('show');
-			
-			isOpen ? collapse.hide() : collapse.show();
-			
-			$(this).attr('aria-expanded', !isOpen);
-			$(this).find('.collapse-icon').toggleClass('rotate-180', !isOpen);
-		});
-		
-		// Modal: Open Return Modal
-		$(document).on('click', '.btn-open-return-modal', function(e) {
-			e.preventDefault();
-			openReturnModal();
-		});
-		
-		// Modal: Submit Return Request
-		$('#bd_request_return').on('click', function(e) {
-			e.preventDefault();
-			submitReturnRequest();
-		});
-		
-		// Modal: Close
-		$('#borrowDetailModal').on('click', '[data-bs-dismiss="modal"]', function(e) {
-			e.preventDefault();
-			var modal = bootstrap.Modal.getInstance(document.getElementById('borrowDetailModal'));
-			if (modal) modal.hide();
-		});
-		
-		// Modal Collapse
-		$(document).on('click', '#bd_moreDetailToggle', function(e) {
-			e.preventDefault();
-			var collapse = bootstrap.Collapse.getInstance(document.getElementById('bd_moreDetailCollapse'));
-			if (collapse) collapse.toggle();
-		});
-		
-		$('#bd_moreDetailCollapse').on('shown.bs.collapse hidden.bs.collapse', function(e) {
-			var isOpen = e.type === 'shown';
-			$('#bd_moreDetailToggle').attr('aria-expanded', isOpen);
-			$('#bd_moreDetailIcon').toggleClass('rotate-180', isOpen);
-		});
-	}
+			const config = {
+				enableTime : true,
+				time_24hr : true,
 
-	// ===== Open Return Modal =====
-	function openReturnModal() {
-		var modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('borrowDetailModal'));
-		if (!modal) {
-			alert('Modal not found');
-			return;
-		}
-		
-		var borrowId = borrowWithUserList.length > 0 ? borrowWithUserList[0].borrow_id : '';
-		if (!borrowId) {
-			alert('Borrow ID not found.');
-			return;
-		}
-		
-		var eq = currentEquipment;
-		
-		// Set modal data
-		$('#borrowDetailModal').data('borrowId', String(borrowId).trim());
-		$('#bd_item_link').text('ID: ' + (eq.itemNo || '-'));
-		setText('bd_name', eq.name);
-		setText('bd_serial', eq.serialNo);
-		setText('bd_detail', eq.detail);
-		setText('bd_amount', eq.amount || '1');
-		setText('bd_purchase_date', eq.purchaseFmt || '-');
-		
-		// Status Badge
-		var $badge = $('#bd_status_badge');
-		$badge.removeClass().addClass('badge badge-lg rounded-pill px-4 fw-semibold bg-warning text-white').text('Borrowing');
-		
-		// More Details (Computer only)
-		var isComputer = String(eq.type || '').toLowerCase() === 'c';
-		$('#bd_moreDetailWrapper').toggle(isComputer);
-		
-		if (isComputer) {
-			setText('bd_windows', eq.windows);
-			setText('bd_ram', eq.ram);
-			setText('bd_storage', eq.hdd);
-			setText('bd_storage2', eq.hdd);
-			setText('bd_wifi', eq.wifiaddress);
-			setText('bd_lan', eq.lanaddress);
-			setText('bd_display', eq.display);
-			setText('bd_cpu', eq.process);
-			setText('bd_battery', eq.battery);
-		}
-		
-		// Reset
-		$('#bd_approver_note').val('');
-		var collapse = bootstrap.Collapse.getInstance(document.getElementById('bd_moreDetailCollapse'));
-		if (collapse) collapse.hide();
-		$('#bd_moreDetailToggle').attr('aria-expanded', 'false');
-		$('#bd_moreDetailIcon').removeClass('rotate-180');
-		
-		modal.show();
-	}
+				dateFormat : STORE_FORMAT,
 
-	// ===== Submit Return Request =====
-	function submitReturnRequest() {
-		var borrowId = ($('#borrowDetailModal').data('borrowId') || '').toString().trim();
-		var note = $('#bd_approver_note').val();
-		
-		if (!borrowId) {
-			alert('Borrow ID not found.');
-			return;
+				altInput : true,
+				altFormat : DISPLAY_FORMAT,
+
+				allowInput : true
+			};
+
+			flatpickr("#start_date", config);
+			flatpickr("#end_date", config);
 		}
-		
-		if (!confirm('Are you sure you want to request return for this item?')) {
-			return;
-		}
-		
-		$.ajax({
-			url: CTX + "/eBorrowReturn.action",
-			type: "POST",
-			dataType: "json",
-			data: { id: borrowId, note: note },
-			success: function(data) {
-				if (data && String(data.message).toLowerCase() === "success") {
-					alert("Return request submitted successfully!");
-					
-					var modal = bootstrap.Modal.getInstance(document.getElementById('borrowDetailModal'));
-					if (modal) modal.hide();
-					
-					window.location.replace(CTX + "/borrow_list");
-				} else {
-					alert("Something went wrong: " + (data ? data.message : "no data"));
-				}
-			},
-			error: function(xhr) {
-				console.error("HTTP", xhr.status, xhr.responseText);
-				alert("Failed to submit return request.");
+
+		function renderEquipmentCard() {
+			var eq = currentEquipment;
+			var typeInfo = getTypeInfo(eq.type);
+
+			// Image
+			var imageHTML = eq.image ? '<img src="' + eq.image + '" alt="' + eq.itemNo + '" class="border rounded-3 object-fit-cover w-100 h-100" />'
+					: '<i class="fa-solid fa-image fs-1 text-muted"></i>';
+
+			// Basic Details
+			var details = '';
+			details += createDetailRow('Name:', eq.name);
+			details += createDetailRow(
+					'Type:',
+					typeInfo.label
+							+ ' <i class="ki-duotone ' + typeInfo.icon + ' fs-4 text-gray-600"><span class="path1"></span><span class="path2"></span></i>');
+			details += createDetailRow('Serial No:', eq.serialNo);
+			details += createDetailRow('Amount:', formatNumber(eq.amount));
+			details += createDetailRow('Date of Purchase:', eq.purchaseFmt);
+			details += createDetailRow('Detail:', eq.detail);
+
+			// More Details (สำหรับ Computer เท่านั้น)
+			var moreDetails = '';
+			if (eq.type && eq.type.toLowerCase() === 'c') {
+				moreDetails = '<div>'
+						+ '<button type="button" class="btn btn-link p-0 w-100 text-primary fw-semibold d-flex justify-content-between align-items-center py-5 border-bottom border-gray-200" ' +
+				'data-collapse-target="#moreDetailCollapse" aria-expanded="false">'
+						+ '<span>More Detail</span>'
+						+ '<i class="ki-duotone ki-down fs-3 collapse-icon"><span class="path1"></span><span class="path2"></span></i>'
+						+ '</button>'
+						+ '<div class="collapse mt-3" id="moreDetailCollapse">'
+						+ createDetailRow('Windows', eq.windows)
+						+ createDetailRow('CPU', eq.process)
+						+ createDetailRow('Ram', eq.ram)
+						+ createDetailRow('Storage', eq.hdd)
+						+ createDetailRow('Battery', eq.battery)
+						+ createDetailRow('WIFI Address', eq.wifiaddress)
+						+ createDetailRow('LAN Address', eq.lanaddress)
+						+ createDetailRow('Display', eq.display)
+						+ '</div></div>';
 			}
-		});
-	}
-</script>
+
+			// Build Card HTML
+			var cardHTML = '<div class="card-header border-0 pt-6">'
+					+ '<div class="card-title fw-bold fs-4">Equipment Detail</div></div>'
+					+ '<div class="card-body pt-0">'
+					+ '<div class="mb-4 d-flex flex-column align-items-start">'
+					+ '<div class="mb-3 d-flex justify-content-between align-items-center w-100">'
+					+ '<span class="fw-bold fs-1 text-primary">'
+					+ (eq.itemNo || '-')
+					+ '</span>'
+					+ getStatusBadge(eq.status)
+					+ '</div>'
+					+ '<div class="symbol symbol-150px border rounded-3 bg-light d-flex align-items-center justify-content-center">'
+					+ imageHTML + '</div>' + '</div>' + details + moreDetails
+					+ '</div>';
+
+			$('#equipment-detail-card').html(cardHTML);
+		}
+
+		// ===== 7. Setup Event Handlers =====
+		function setupEventHandlers() {
+			// Collapse Toggle
+			$(document).on(
+					'click',
+					'[data-collapse-target]',
+					function(e) {
+						e.preventDefault();
+
+						var target = document.querySelector($(this).data(
+								'collapse-target'));
+						if (!target)
+							return;
+
+						var collapse = bootstrap.Collapse.getOrCreateInstance(
+								target, {
+									toggle : false
+								});
+						var isOpen = target.classList.contains('show');
+
+						isOpen ? collapse.hide() : collapse.show();
+
+						$(this).attr('aria-expanded', !isOpen);
+						$(this).find('.collapse-icon').toggleClass(
+								'rotate-180', !isOpen);
+					});
+
+			// Modal: Open Return Modal
+			$(document).on('click', '.btn-open-return-modal', function(e) {
+				e.preventDefault();
+				openReturnModal();
+			});
+
+			// Modal: Submit Return Request
+			$('#bd_request_return').on('click', function(e) {
+				e.preventDefault();
+				submitReturnRequest();
+			});
+
+			// Modal: Close
+			$('#borrowDetailModal').on(
+					'click',
+					'[data-bs-dismiss="modal"]',
+					function(e) {
+						e.preventDefault();
+						var modal = bootstrap.Modal.getInstance(document
+								.getElementById('borrowDetailModal'));
+						if (modal)
+							modal.hide();
+					});
+
+			// Modal Collapse - ใช้ getOrCreateInstance แทน getInstance
+			$(document).on('click', '#bd_moreDetailToggle', function(e) {
+			    e.preventDefault();
+			    
+			    var collapseEl = document.getElementById('bd_moreDetailCollapse');
+			    if (!collapseEl) return;
+			    
+			    var collapse = bootstrap.Collapse.getOrCreateInstance(collapseEl, {
+			        toggle: false
+			    });
+			    
+			    var isOpen = collapseEl.classList.contains('show');
+			    isOpen ? collapse.hide() : collapse.show();
+			    
+			    $('#bd_moreDetailToggle').attr('aria-expanded', !isOpen);
+			    $('#bd_moreDetailIcon').toggleClass('rotate-180', !isOpen);
+			});
+
+			$('#bd_moreDetailCollapse').on('shown.bs.collapse hidden.bs.collapse', function(e) {
+			    var isOpen = e.type === 'shown';
+			    $('#bd_moreDetailToggle').attr('aria-expanded', isOpen);
+			    $('#bd_moreDetailIcon').toggleClass('rotate-180', isOpen);
+			});
+		}
+
+		// ===== Open Return Modal =====
+		function openReturnModal() {
+			var modal = bootstrap.Modal.getOrCreateInstance(document
+					.getElementById('borrowDetailModal'));
+			if (!modal) {
+				alert('Modal not found');
+				return;
+			}
+
+			var borrowId = borrowWithUserList.length > 0 ? borrowWithUserList[0].borrow_id
+					: '';
+			if (!borrowId) {
+				alert('Borrow ID not found.');
+				return;
+			}
+
+			var eq = currentEquipment;
+
+			// Set modal data
+			$('#borrowDetailModal').data('borrowId', String(borrowId).trim());
+			$('#bd_item_link').text('ID: ' + (eq.itemNo || '-'));
+			setText('bd_name', eq.name);
+			setText('bd_serial', eq.serialNo);
+			setText('bd_detail', eq.detail);
+			setText('bd_amount', eq.amount || '1');
+			setText('bd_purchase_date', eq.purchaseFmt || '-');
+
+			// Status Badge
+			var $badge = $('#bd_status_badge');
+			$badge
+					.removeClass()
+					.addClass(
+							'badge badge-lg rounded-pill px-4 fw-semibold bg-warning text-white')
+					.text('Borrowing');
+
+			// More Details (Computer only)
+			var isComputer = String(eq.type || '').toLowerCase() === 'c';
+			$('#bd_moreDetailWrapper').toggle(isComputer);
+
+			if (isComputer) {
+				setText('bd_windows', eq.windows);
+				setText('bd_ram', eq.ram);
+				setText('bd_storage', eq.hdd);
+				setText('bd_storage2', eq.hdd);
+				setText('bd_wifi', eq.wifiaddress);
+				setText('bd_lan', eq.lanaddress);
+				setText('bd_display', eq.display);
+				setText('bd_cpu', eq.process);
+				setText('bd_battery', eq.battery);
+			}
+
+			// Reset
+			$('#bd_approver_note').val('');
+			var collapse = bootstrap.Collapse.getInstance(document
+					.getElementById('bd_moreDetailCollapse'));
+			if (collapse)
+				collapse.hide();
+			$('#bd_moreDetailToggle').attr('aria-expanded', 'false');
+			$('#bd_moreDetailIcon').removeClass('rotate-180');
+
+			modal.show();
+		}
+
+		// ===== Submit Return Request =====
+		function submitReturnRequest() {
+			var borrowId = ($('#borrowDetailModal').data('borrowId') || '')
+					.toString().trim();
+			var note = $('#bd_approver_note').val();
+
+			if (!borrowId) {
+				alert('Borrow ID not found.');
+				return;
+			}
+
+			if (!confirm('Are you sure you want to request return for this item?')) {
+				return;
+			}
+
+			$
+					.ajax({
+						url : CTX + "/eBorrowReturn.action",
+						type : "POST",
+						dataType : "json",
+						data : {
+							id : borrowId,
+							note : note
+						},
+						success : function(data) {
+							if (data
+									&& String(data.message).toLowerCase() === "success") {
+								alert("Return request submitted successfully!");
+
+								var modal = bootstrap.Modal
+										.getInstance(document
+												.getElementById('borrowDetailModal'));
+								if (modal)
+									modal.hide();
+
+								window.location.replace(CTX + "/borrow_list");
+							} else {
+								alert("Something went wrong: "
+										+ (data ? data.message : "no data"));
+							}
+						},
+						error : function(xhr) {
+							console.error("HTTP", xhr.status, xhr.responseText);
+							alert("Failed to submit return request.");
+						}
+					});
+		}
+	</script>
 </body>
 </html>

@@ -308,17 +308,16 @@ th.sort:hover {
 												class="table align-middle fs-6 mb-0 ca-eq-table">
 												<thead class="fs-7 text-gray-500 text-uppercase">
 													<tr class="fw-semibold">
-														<th class="min-w-60px sort" data-sort="number">ID</th>
-														<th class="min-w-120px sort" data-sort="text">ITEM NO</th>
-														<th class="min-w-90px text-center sort" data-sort="type">TYPE</th>
-														<th class="min-w-350px sort" data-sort="text">EQUIPMENT
+														<th class="min-w-60px">ID</th>
+														<th class="min-w-120px">ITEM NO</th>
+														<th class="min-w-90px text-center">TYPE</th>
+														<th style="width: 350px; max-width: 400px;">EQUIPMENT
 															/ DETAIL</th>
-														<th class="min-w-250px sort" data-sort="text">LOCATION</th>
-														<th class="min-w-250px sort" data-sort="status">STATUS</th>
-														<th class="min-w-200px text-end">ACTIONS</th>
+														<th class="min-w-150px">LOCATION</th>
+														<th class="min-w-210px">STATUS</th>
+														<th class="min-w-150px text-end">ACTIONS</th>
 													</tr>
 												</thead>
-
 												<tbody id="borrowTableBody" class="text-gray-700">
 													<!-- จะถูก render ด้วย JavaScript -->
 												</tbody>
@@ -668,7 +667,6 @@ th.sort:hover {
 	var users = ${userList != null ? userList : '[]'};
 	var dbTypeList = ${type != null ? type : '[]'};
 
-	console.log('Raw Data:', { equipments, borrows, users, dbTypeList });
 
 	// ฟังก์ชันสร้าง Map สำหรับ Equipment
 	function createEquipmentMap(equipments) {
@@ -801,7 +799,6 @@ th.sort:hover {
 	// ✅ เก็บไว้ใน global variable
 	window.borrowDataList = borrowList;
 
-	console.log('Processed borrowList:', borrowList);
 
 	// ✅ ฟังก์ชันแสดงผลตาราง - เก็บแค่ index
 	function renderBorrowTable(data) {
@@ -853,13 +850,13 @@ th.sort:hover {
 			// Actions
 			var actionsCell = $('<td>').addClass('text-end');
 			actionsCell.html(
-				'<a href="javascript:void(0);" class="btn btn-icon btn-sm btn-light-info mb-1 fs-3 btn-view-borrow" data-borrow-id="' + (row.borrow_id || '') + '">' +
-				'<i class="ki-duotone ki-document fs-1"><span class="path1"></span><span class="path2"></span></i></a> ' +
-				'<a href="${pageContext.request.contextPath}/borrow_edit?id=' + (row.borrow_id || '') + '" data-route="borrow_edit" class="btn btn-icon btn-sm btn-light-primary mb-1 fs-3">' +
-				'<i class="ki-duotone ki-pencil fs-1"><span class="path1"></span><span class="path2"></span></i></a> ' +
-				'<button type="button" class="btn btn-icon btn-sm btn-light-warning btn-borrow-detail mb-1 fs-3 me-3" title="Borrow Detail">' +
-				'<i class="ki-duotone ki-file-left fs-1"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span></i></button>'
-			);
+				    '<a href="javascript:void(0);" class="btn btn-icon btn-sm btn-light-info fs-3 btn-view-borrow" data-borrow-id="' + (row.borrow_id || '') + '">' +
+				    '<i class="ki-duotone ki-document fs-1"><span class="path1"></span><span class="path2"></span></i></a> ' +
+				    '<a href="${pageContext.request.contextPath}/borrow_edit?id=' + (row.borrow_id || '') + '" data-route="borrow_edit" class="btn btn-icon btn-sm btn-light-primary fs-3">' +
+				    '<i class="ki-duotone ki-pencil fs-1"><span class="path1"></span><span class="path2"></span></i></a> ' +
+				    '<button type="button" class="btn btn-icon btn-sm btn-light-warning btn-borrow-detail fs-3" title="Borrow Detail">' +
+				    '<i class="ki-duotone ki-file-left fs-1"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span></i></button>'
+				);
 			tr.append(actionsCell);
 			
 			tbody.append(tr);
@@ -1018,51 +1015,102 @@ th.sort:hover {
 		});
 
 		// ===== init DataTable =====
-		var table = $('#borrow_table').DataTable({
-			pageLength: 10,
-			lengthMenu: [10, 20, 50, 100],
-			ordering: false,
-			searching: true,
-			info: false,
-			pagingType: "simple_numbers",
-			dom: "<'row'<'col-12'tr>>" +
-				 "<'row mt-3'<'col-sm-6 d-flex align-items-center'l>" +
-				 "<'col-sm-6 d-flex justify-content-end'p>>",
-			language: {
-				lengthMenu: "_MENU_",
-				paginate: {
-					first: "«",
-					last: "»",
-					next: ">",
-					previous: "<"
-				},
-				zeroRecords: "ไม่พบข้อมูล"
-			}
-		});
-
-		table.on('draw', function() {
-			var count = table.rows({ filter: 'applied' }).count();
-			$('#itemsFound').text(count + ' Items Found');
-		});
-
-		table.draw();
-
-		// ===== Events =====
-		$keywordInput.on('input', function() {
-			table.draw();
-		});
-
-		$statusSelect.on('change', function() {
-			table.draw();
-		});
-
-		$typeSelect.on('change', function() {
-			table.draw();
-		});
-
-		$searchForm.on('submit', function(e) {
-			e.preventDefault();
-			table.draw();
+		$(function () {
+		  $('#dt-borrow-pseudo, #dt-borrow-inline-fix, #dt-borrow-inline-style').remove();
+		  
+		  const css = `
+		    #borrow_table.dataTable thead th {
+		      white-space: nowrap;
+		      position: relative;
+		      padding-right: 16px;
+		    }
+		    #borrow_table.dataTable thead th::before,
+		    #borrow_table.dataTable thead th::after {
+		      top: 50% !important;
+		      transform: translateY(-50%) !important;
+		    }
+		    
+		    #borrow_table.dataTable thead th.sorting::before,
+		    #borrow_table.dataTable thead th.sorting::after {
+		      display: none !important;
+		    }
+		  `;
+		  $('<style id="dt-borrow-inline-style">').text(css).appendTo('head');
+		
+		  const originalThHtml = $('#borrow_table thead th').map(function () {
+		    return $(this).html();
+		  }).get();
+		
+		  // สร้าง DataTable
+		  var table = $('#borrow_table').DataTable({
+		    pageLength: 10,
+		    lengthMenu: [10, 20, 50, 100],
+		    ordering: true,
+		    searching: true,
+		    info: false,
+		    pagingType: "simple_numbers",
+		    columnDefs: [
+		      { orderable: true, targets: [0, 1, 2, 3, 4, 5] },
+		      { orderable: false, targets: [6] } // ACTIONS column
+		    ],
+		    order: [], 
+		    headerCallback: function (thead) {
+		      $(thead).find('th').each(function (i) {
+		        if ($(this).find('.th-inline').length) return;
+		
+		        const html = originalThHtml[i] || $(this).html();
+		        $(this).empty().append(
+		          $('<span class="th-inline" style="display:inline-flex;align-items:center;gap:6px;white-space:nowrap;"/>')
+		            .append($('<span class="th-text"/>').html(html))
+		        );
+		      });
+		    },
+		    
+		    dom: "<'row'<'col-12'tr>>" +
+		         "<'row mt-3'<'col-sm-6 d-flex align-items-center'l>" +
+		         "<'col-sm-6 d-flex justify-content-end'p>>",
+		    
+		    language: {
+		      lengthMenu: "_MENU_",
+		      paginate: {
+		        first: "«",
+		        last: "»",
+		        next: ">",
+		        previous: "<"
+		      },
+		      zeroRecords: "ไม่พบข้อมูล"
+		    }
+		  });
+		
+		  // Update items count
+		  table.on('draw', function() {
+		    var count = table.rows({ filter: 'applied' }).count();
+		    $('#itemsFound').text(count + ' Items Found');
+		  });
+		
+		  table.draw();
+		
+		  // ===== Events =====
+		  $keywordInput.on('input', function() {
+		    table.draw();
+		  });
+		
+		  $statusSelect.on('change', function() {
+		    table.draw();
+		  });
+		
+		  $typeSelect.on('change', function() {
+		    table.draw();
+		  });
+		
+		  $searchForm.on('submit', function(e) {
+		    e.preventDefault();
+		    table.draw();
+		  });
+		
+		  // Adjust columns on window resize
+		  table.columns.adjust();
+		  $(window).on('resize', () => table.columns.adjust());
 		});
 
 		// ===== Helper Functions =====
@@ -1467,65 +1515,6 @@ th.sort:hover {
 			}
 
 			$(this).css('z-index', currentZIndex + 2);
-		});
-	});
-	</script>
-
-	<!-- Sort Script -->
-	<script>
-	document.addEventListener("DOMContentLoaded", function () {
-		const tbody = document.getElementById("borrowTableBody");
-		const headers = document.querySelectorAll("th.sort");
-		let sortDir = {};
-		
-		headers.forEach((th, colIndex) => {
-			th.addEventListener("click", () => {
-				const type = th.dataset.sort;
-				const dir = sortDir[colIndex] = !(sortDir[colIndex]);
-				const rows = Array.from(tbody.querySelectorAll("tr"));
-				
-				headers.forEach(header => {
-					header.classList.remove("sort-asc", "sort-desc");
-					const arrow = header.querySelector('.sort-arrow');
-					if (arrow) arrow.remove();
-				});
-				
-				th.classList.add(dir ? "sort-asc" : "sort-desc");
-				const arrow = document.createElement('span');
-				arrow.className = 'sort-arrow';
-				arrow.innerHTML = dir ? ' ▲' : ' ▼';
-				th.appendChild(arrow);
-				
-				rows.sort((a, b) => {
-					let A, B;
-					
-					switch (type) {
-						case "number":
-							A = parseInt(a.children[colIndex].textContent.trim(), 10) || 0;
-							B = parseInt(b.children[colIndex].textContent.trim(), 10) || 0;
-							return dir ? A - B : B - A;
-						
-						case "type":
-							A = a.querySelector("td[data-type]")?.dataset.type || "";
-							B = b.querySelector("td[data-type]")?.dataset.type || "";
-							A = A.toLowerCase() === "sl" ? "l" : A.toLowerCase();
-							B = B.toLowerCase() === "sl" ? "l" : B.toLowerCase();
-							return dir ? A.localeCompare(B) : B.localeCompare(A);
-						
-						case "status":
-							A = a.querySelector("td[data-status]")?.dataset.status || "";
-							B = b.querySelector("td[data-status]")?.dataset.status || "";
-							return dir ? A.localeCompare(B) : B.localeCompare(A);
-						
-						default:
-							A = a.children[colIndex].textContent.trim().toLowerCase();
-							B = b.children[colIndex].textContent.trim().toLowerCase();
-							return dir ? A.localeCompare(B, undefined, { numeric: true })
-									   : B.localeCompare(A, undefined, { numeric: true });
-					}
-				});
-				rows.forEach(r => tbody.appendChild(r));
-			});
 		});
 	});
 	</script>

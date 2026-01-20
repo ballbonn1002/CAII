@@ -846,15 +846,10 @@ public class BorrowingAction extends ActionSupport {
 	
 	public String newEquipBorrowList() {
 		try {
-			log.debug("Test BorrowList");
 			List<Borrow> borrows = borrowDAO.findAll_exceptStatus_A();
 			List<Equipment> equipments = equipmentDAO.getAll();
 			List<EquipmentType> type = equipmentTypeDAO.getall();
 			String userJSON = userDAO.userListJSON();
-			log.debug(borrows);
-			log.debug(equipments);
-			log.debug(type);
-			log.debug(userJSON);
 			
 			request.setAttribute("userList", userJSON);
 			request.setAttribute("borrows", new Gson().toJson(borrows));
