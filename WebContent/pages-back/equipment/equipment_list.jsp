@@ -102,14 +102,14 @@
                             </div>
 
                             <div class="table-responsive">
-                                <table id="eqTable" class="table table-striped align-middle fs-6 mb-0 ca-eq-table">
+                                <table id="eqTable" class="table align-middle fs-6 mb-0 ca-eq-table">
                                     <thead class="fs-7 text-gray-500 text-uppercase">
                                         <tr class="fw-semibold">
-                                            <th class="min-w-60px">ID</th>
-                                            <th class="min-w-120px">Item No</th>
-                                            <th class="min-w-90px text-center">Type</th>
-                                            <th style="width: 500px; max-width: 550px;">Equipment / Detail</th>
-                                            <th class="min-w-210px">Status</th>
+                                            <th class="min-w-60px text-nowrap">ID</th>
+                                            <th class="min-w-120px text-nowrap">Item No</th>
+                                            <th class="min-w-90px text-center text-nowrap">Type</th>
+                                            <th class="text-nowrap" style="width: 500px; max-width: 550px;">Equipment / Detail</th>
+                                            <th class="min-w-210px text-nowrap">Status</th>
                                             <th class="min-w-150px text-end">Actions</th>
                                         </tr>
                                     </thead>
@@ -408,6 +408,26 @@
 
     //  =============== MAIN SHOW DATA LOGIC =======================
     $(document).ready(function() {
+    	$('#dt-eq-inline-style').remove();
+    	const css = `
+		    #eqTable.dataTable thead th {
+		      white-space: nowrap;
+		      position: relative;
+		      padding-right: 16px;
+		    }
+		    #eqTable.dataTable thead th::before,
+		    #eqTable.dataTable thead th::after {
+		      top: 50% !important;
+		      transform: translateY(-50%) !important;
+		    }
+		    
+		    #eqTable.dataTable thead th.sorting::before,
+		    #eqTable.dataTable thead th.sorting::after {
+		      display: none !important;
+		    }
+		  `;
+        $('<style id="dt-eq-inline-style">').text(css).appendTo('head');
+    	
         // Set Filter
         $('#statusFilterContainer').html(statusFilterHtml);
         $('#typeFilterContainer').html(typeFilterHtml);
@@ -416,6 +436,7 @@
         var summaryContainer = $('#typeSummaryContainer');
         summaryContainer.empty();
         var activeTypes = new Set();
+        
         // Check Type ID
         if (equipments && equipments.length > 0) {
             equipments.forEach(function(item) {
@@ -448,7 +469,10 @@
                 }
             });
         }
-
+        
+        const originalThHtml = $('#eqTable thead th').map(function () {
+            return $(this).html();
+        }).get();
         // Set Data Table
         var table = $('#eqTable').DataTable({
             data: equipments,
@@ -457,6 +481,17 @@
             info: false,        
             ordering: true,
             autoWidth: false,
+            headerCallback: function (thead) {
+                $(thead).find('th').each(function (i) {
+                    if ($(this).find('.th-inline').length) return;
+                    const html = originalThHtml[i] || $(this).html();
+
+                    $(this).empty().append(
+                        $('<span class="th-inline" style="display:inline-flex;align-items:center;gap:6px;white-space:nowrap;"/>')
+                            .append($('<span class="th-text"/>').html(html))
+                    );
+                });
+            },
             columns: [
                 // Col 1: ID
                 {   
@@ -595,6 +630,12 @@
         $('#typeFilterContainer').on('change', '.filter-type', function() {
              updateFilter('#typeFilterContainer', 2); // Column Type
         });
+        
+        var $stContainer = $('#statusFilterContainer');
+        $stContainer.find('input[type="checkbox"]').prop('checked', false);
+        $stContainer.find('input[value="A"]').prop('checked', true);
+        $stContainer.find('input[value="B"]').prop('checked', true);
+        updateFilter('#statusFilterContainer', 4);
 
         // Select All / Deselect All ใน Dropdown
         $('.dropdown-menu .btn-primary').on('click', function(e) {
