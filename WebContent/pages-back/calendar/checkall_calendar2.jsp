@@ -529,13 +529,13 @@ var AppCalendar = function() {
 	// Helper: (Check-In/Out) get status class
 	function getStatusClass(status) {
     	switch(status) {
-        case 'On Time': 
+        case 'ONTIME': 
             return { className: 'bg-success border-success ' };
-        case 'Late':
-        case 'Early out':
-        case 'Unfinished Work': 
+        case 'LATE':
+        case 'EARLY_OUT':
+        case 'UNFINISHED_WORK': 
             return { className: 'bg-warning border-warning ' };
-        case 'Incomplete': 
+        case 'INCOMPLETE': 
             return { className: 'bg-dark border-dark ' };
         default: 
             return { className: 'bg-dark border-dark ' };
@@ -544,13 +544,12 @@ var AppCalendar = function() {
 
 	// Helper: (Check-In/Out) format event title
 	function getEventTitle(status, checkin, checkout, typein, typeout) {
-        if (status === 'Incomplete') {
+        if (status === 'INCOMPLETE') {
             return checkin.substring(11, 16) + "-";
         }
         
         var checkinTime = checkin ? checkin.substring(11, 16) : '--:--';
         var checkoutTime = checkout && checkout !== '' ? checkout.substring(0, 5) : '--:--';
-        
         return checkinTime + ' - ' + checkoutTime;
     }
 
@@ -575,9 +574,9 @@ var AppCalendar = function() {
     }
 
 	// Populate calendar checklist
+	/*
 	function populateCheckList(view) {
     	var events = calendar.getEvents();
-    	console.log(events);
     	var $tableBody = $('#calendarTableBody');
     	$tableBody.empty();
 
@@ -587,13 +586,10 @@ var AppCalendar = function() {
     	var start = moment(currentDate).startOf('month');
     	var end = moment(currentDate).endOf('month');
     	var today = moment();
-    	console.log(end);
-
 
     	for (var day = start.clone(); day.isBefore(end); day.add(1, 'days')) {
     		var dayStr = day.format('dd D MMM');
     		var dayName = day.format('dd');
-
     		var dayEvents = events.filter(function(ev) {
     			if (ev.extendedProps && ev.extendedProps.leave_type_id) {
                     var evStart = moment(ev.start);
@@ -616,7 +612,7 @@ var AppCalendar = function() {
             var todayNum = parseInt(today.format('YYYYMMDD'));
             
             if (dayEvents.length === 0 && dayNum <= todayNum) {
-                status = 'No Record';
+                status = 'NO_RECORD';
             } else if (dayEvents.length > 0) {
         	    // Check holiday first
         	    var holidayEvent = dayEvents.find(function(ev) {
@@ -725,7 +721,142 @@ var AppCalendar = function() {
         	$tableBody.append(rowHtml);
     	}
 	}
-    
+    */
+	
+function populateCheckList(view) {
+    var events = calendar.getEvents();
+    var $tableBody = $('#calendarTableBody');
+    $tableBody.empty();
+
+    var currentDate = calendar.getDate();
+    var start = moment(currentDate).startOf('month');
+    var end = moment(currentDate).endOf('month');
+    var today = moment();
+
+    for (var day = start.clone(); day.isBefore(end); day.add(1, 'days')) {
+        var dayStr = day.format('dd D MMM');
+        var dayName = day.format('dd');
+
+        var dayEvents = events.filter(function(ev) {
+            if (ev.extendedProps && ev.extendedProps.leave_type_id) {
+                var evStart = moment(ev.start);
+                var evEnd = ev.end ? moment(ev.end).subtract(1, 'days') : evStart;
+                return day.isSameOrAfter(evStart, 'day') && day.isSameOrBefore(evEnd, 'day');
+            } else {
+                return moment(ev.start).format('dd D MMM') === dayStr;
+            }
+        });
+
+        var dayNum = parseInt(day.format('YYYYMMDD'));
+        var todayNum = parseInt(today.format('YYYYMMDD'));
+        var iconClass = getDayIconClass(dayName);
+        var rowStyle = "";
+        
+        if (dayName === 'Sa' || dayName === 'Su') {
+            rowStyle = "bg-light";
+        }
+        var isHolidayEvent = dayEvents.some(function(ev) { 
+            return ev.classNames.includes('fc-event-secondary'); 
+        });
+        if (isHolidayEvent) {
+            rowStyle = "bg-light";
+        }
+
+        var workList = dayEvents.filter(function(ev) {
+            return ev.extendedProps && ev.extendedProps.eventType === 'work';
+        });
+
+        if (workList.length > 0) {
+            var combinedCheckinHtml = "";
+            var combinedCheckoutHtml = "";
+            
+            var mainProps = workList[0].extendedProps; 
+            var workingHourVal = mainProps.workinghour || '';
+            var statusVal = mainProps.status || '';
+
+            workList.forEach(function(workEvent, index) {
+                var props = workEvent.extendedProps;
+                
+                // --- Logic Check-in ---
+                var typeIn = Number(props.workTypeIn);
+                var iconIn = "";
+                if (typeIn === 1) iconIn = '<i class="ki-duotone ki-map text-primary fs-2 me-1 align-middle"><span class="path1"></span><span class="path2"></span><span class="path3"></span></i> ';
+                else if (typeIn === 2) iconIn = '<i class="ki-duotone ki-home-2 fs-2 text-teal me-1 align-middle"><span class="path1"></span><span class="path2"></span></i> ';
+                
+                var timeIn = props.checkin ? props.checkin.substring(11, 16) : ''; 
+                
+                var desIn = props.descriptionIn ? '<i class="ki-duotone ki-message-text-2 fs-2 text-gray-500 me-1 align-middle">'+
+                	'<span class="path1"></span><span class="path2"></span><span class="path3"></span></i><span class="fs-6 fw-400">' + props.descriptionIn + '</span>' : '';
+
+                if (timeIn) {
+                    var spacer = index > 0 ? '<div class="separator separator-dashed my-1"></div>' : ''; 
+                    combinedCheckinHtml += spacer + '<div>' + iconIn + timeIn + '<br/><small class="text-muted">' + desIn + '</small></div>';
+                }
+
+                // --- Logic Check-out ---
+                var typeOut = Number(props.workTypeOut);
+                var iconOut = "";
+                if (typeOut === 1) iconOut = '<i class="ki-duotone ki-map fs-2 text-primary me-1 align-middle"><span class="path1"></span><span class="path2"></span><span class="path3"></span></i> ';
+                else if (typeOut === 2) iconOut = '<i class="ki-duotone ki-home-2 fs-2 text-teal me-1 align-middle"><span class="path1"></span><span class="path2"></span></i> ';
+                
+                var timeOut = props.checkout ? props.checkout.substring(0, 5) : '';
+                var desOut = props.descriptionOut ? '<i class="ki-duotone ki-message-text-2 fs-2 text-gray-500 me-1 align-middle">'+
+                		'<span class="path1"></span><span class="path2"></span><span class="path3"></span></i><span class="fs-6 fw-400">' + props.descriptionIn + '</span>' : '';
+
+                if (timeOut) {
+                    var spacer = index > 0 ? '<div class="separator separator-dashed my-1"></div>' : '';
+                    combinedCheckoutHtml += spacer + '<div>' + iconOut + timeOut + '<br/><small class="text-muted">' + desOut + '</small></div>';
+                }
+            });
+
+            // Format Working Hours
+            var formattedWorkingHours = '';
+            if (workingHourVal && !isNaN(workingHourVal)) {
+                var hours = Math.floor(workingHourVal / 60);
+                var minutes = workingHourVal % 60;
+                formattedWorkingHours = ('0' + hours).slice(-2) + ':' + ('0' + minutes).slice(-2);
+            }
+
+            var statusClass = getWorkStatusHTML(statusVal);
+            
+            var rowHtml = '<tr class="' + rowStyle + '">';
+            rowHtml += '<td><span class="bullet bullet-vertical me-2 h-20px w-3px ' + iconClass + '" style="vertical-align: middle;"></span>' + dayStr + '</td>';
+            rowHtml += '<td>' + combinedCheckinHtml + '</td>';
+            rowHtml += '<td>' + combinedCheckoutHtml + '</td>';
+            rowHtml += '<td>' + formattedWorkingHours + '</td>';
+            rowHtml += '<td>' + statusClass + '</td>';
+            rowHtml += '</tr>';
+
+            $tableBody.append(rowHtml);
+
+        } 
+        else {
+            var status = '';
+            if (dayNum <= todayNum) {
+                var holidayEvent = dayEvents.find(function(ev) { return ev.classNames.includes('fc-event-secondary'); });
+                if (holidayEvent) {
+                    status = getHolidayStatusHTML(holidayEvent);
+                } else {
+                    var leaveEvent = dayEvents.find(function(ev) { return ev.extendedProps && ev.extendedProps.leave_type_id; });
+                    if (leaveEvent) {
+                        status = getLeaveStatusHTML(leaveEvent);
+                    } else {
+                        status = getWorkStatusHTML('NO_RECORD');
+                    }
+                }
+            }
+            
+            var rowHtml = '<tr class="' + rowStyle + '">';
+            rowHtml += '<td><span class="bullet bullet-vertical me-2 h-20px w-3px ' + iconClass + '" style="vertical-align: middle;"></span>' + dayStr + '</td>';
+            rowHtml += '<td></td><td></td><td></td>';
+            rowHtml += '<td>' + (status || '') + '</td>';
+            rowHtml += '</tr>';
+
+            $tableBody.append(rowHtml);
+        }
+    }
+}
+
 	// Calculate working days excluding weekends/holidays
 	function calculateWorkingDays(year, month, holidays) {
 	    // month = 0 (Jan) → 11 (Dec)
@@ -784,7 +915,7 @@ var AppCalendar = function() {
 	            var isHoliday = holidayEvents.some(hd => moment(hd.start).isSame(day, "day"));
 	            
 	            if (dow !== 0 && dow !== 6 && !isHoliday) {
-	                status = "No Record";
+	                status = "NO_RECORD";
 	                summary.noRecord++;
 	            }
 	            
@@ -817,15 +948,15 @@ var AppCalendar = function() {
 	            else if (dayEvents.some(ev => ev.extendedProps && ev.extendedProps.eventType === "work")) {
 	                var workEv = dayEvents.find(ev => ev.extendedProps.eventType === "work");
 	                switch (workEv.extendedProps.status) {
-	                case "On Time":
+	                case "ONTIME":
 	                    summary.onTime++;
 	                    break;
-	                case "Late":
-	                case "Early out":
-	                case "Unfinished Work":
+	                case "LATE":
+	                case "EARLY_OUT":
+	                case "UNFINISHED_WORK":
 	                    summary.lateEarlyUnfinished++;
 	                    break;
-	                case "Incomplete":
+	                case "INCOMPLETE":
 	                    summary.incomplete++;
 	                    break;
 	            	}
@@ -865,17 +996,17 @@ var AppCalendar = function() {
     
 	function getWorkStatusHTML(status) {
         switch(status) {
-        	case 'On Time': 
+        	case 'ONTIME': 
         	    return '<span class="badge badge-success fs-7 fw-semibold">On Time</span>';
-        	case 'Incomplete': 
+        	case 'INCOMPLETE': 
         	    return '<span class="badge badge-dark fs-7 fw-semibold">Incomplete</span>';
-        	case 'Unfinished Work': 
+        	case 'UNFINISHED_WORK': 
         	    return '<span class="badge badge-warning fs-7 fw-semibold">Unfinished Work</span>';
-        	case 'Late': 
+        	case 'LATE': 
         	    return '<span class="badge badge-warning fs-7 fw-semibold">Late</span>';
-        	case 'Early out': 
+        	case 'EARLY_OUT': 
         	    return '<span class="badge badge-warning fs-7 fw-semibold">Early out</span>';
-        	case 'No Record': 
+        	case 'NO_RECORD': 
         	    return '<span class="badge badge-danger fs-7 fw-semibold">No Record</span>';
         	default: 
         	    return status || '';
@@ -887,7 +1018,6 @@ var AppCalendar = function() {
         var statusLeave = '';
         var badgeColor = leaveTitle === 'ลาป่วย' ? 'badge badge-info' : 'badge badge-primary';
         var textColor = leaveTitle === 'ลาป่วย' ? 'text-info' : 'text-primary';
-        console.log('leaveEvent:', leaveEvent);
         
         statusLeave = '<span class="' + badgeColor + ' fs-7 fw-bold style="cursor: pointer;" onclick="leaveStatus('+ leaveEvent.id +')">' + leaveTitle ;
 
@@ -899,14 +1029,11 @@ var AppCalendar = function() {
         statusLeave += '</span>';
         
         // Check File Leave
-        console.log(leaveEvent.extendedProps);
-        console.log("Path:", "${pageContext.request.contextPath}");
         if (leaveEvent.extendedProps && leaveEvent.extendedProps.leave_file) {
             var fileUrl = "${pageContext.request.contextPath}" + leaveEvent.extendedProps.leave_file;
             statusLeave += "&nbsp;<a href='" + fileUrl + "' target='_blank' class='text-primary'>" +
             			"<i class='ki-duotone ki-document fs-2x text-primary align-middle'>" +
-                		"<i class='path1'></i>" +
-                		"<i class='path2'></i>" +
+                		"<i class='path1'></i><i class='path2'></i>" +
             			"</i> " + "</a>";
         }
         
