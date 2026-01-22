@@ -158,7 +158,7 @@
 											data-control="select2" data-hide-search="true" id="roleId">
 											<option value="">Select</option>
 											<c:forEach var="role" items="${roleList}">
-												<option value="${role.id}">${role.id}</option>
+												<option value="${role.id}">${role.id} ${empty role.name ? '' : ' - '}${role.name}</option>
 											</c:forEach>
 										</select>
 										<div id="hintRole" class="text-danger fs-8 mt-1 d-none">Please
@@ -260,8 +260,7 @@
 											data-control="select2" data-hide-search="true" required>
 											<option value="">Select</option>
 											<c:forEach var="department" items="${departmentList}">
-												<option value="${department.id}">${department.id} ${empty department.description ? '' : ' - '}${department.description}
-</option>
+												<option value="${department.id}">${department.id} ${empty department.description ? '' : ' - '}${department.description}</option>
 											</c:forEach>
 										</select>
 										<div id="hintDept" class="text-danger fs-8 mt-1 d-none">Please
