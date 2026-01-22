@@ -60,14 +60,15 @@
 											<a
 												href="leave_type_edit?leaveTypeId=<s:property value='leaveTypeId'/>"
 												class="btn btn-icon  btn-light-primary btn-sm"> <i
-												class="ki-duotone ki-pencil fs-3"> <span class="path1"></span>
+												class="ki-duotone ki-pencil fs-5"> <span class="path1"></span>
 													<span class="path2"></span>
 											</i>
 											</a>
 											<button class="btn btn-icon btn-light-danger btn-sm"
 												onclick="onDelete('<s:property value="leaveTypeId" />')">
-												<i class="ki-duotone ki-trash fs-3"> <span class="path1"></span>
-													<span class="path2"></span>
+												<i class="ki-duotone ki-trash fs-5"> <span class="path1"></span><span
+													class="path2"></span> <span class="path3"></span><span
+													class="path4"></span> <span class="path5"></span>
 												</i>
 											</button>
 										</div>
