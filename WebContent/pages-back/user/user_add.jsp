@@ -914,11 +914,14 @@ document.addEventListener('DOMContentLoaded', function () {
    
             
          } else {
-             Swal.fire(
-                 'Form Incomplete',
-                 'Please fill in all required fields.',
-                 'warning'
-             );
+        	 Swal.fire(
+                     title: "Please complete the form!",
+                     html:'Please fill in all required fields.',
+                     icon: "error",
+              	      confirmButtonText: "OK",
+              	      buttonsStyling: false,
+              	      customClass: { confirmButton: "btn btn-danger" }
+                    );
          }
      });
  }

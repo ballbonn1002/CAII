@@ -61,6 +61,8 @@
 #confirm_password.is-invalid {
     background-image: none !important;
 }
+
+
 </style>
 
 </head>
@@ -1234,7 +1236,7 @@
 								<h3 class="fw-semibold text-gray-900">Borrow List</h3>
 							</div>
 							<div class="card-toolbar">
-				           		 <a href="/borrow_add" class="btn btn-primary btn-md fw-medium">
+				           		 <a href="/borrow_add" class="btn btn-primary btn-md fw-medium" target="_blank">
 				                	<i class="ki-duotone ki-plus fs-4"> <span class="path1"></span> 
 								</i>Add New
 				            	</a>
@@ -1290,11 +1292,44 @@
 												</c:if>
 												</td>
 												<td class="px-3 py-4">
-													<a href="/borrow_edit?id=${item.borrow_id}" class="btn btn-lg btn-light-primary">
-									                	<i class="ki-duotone ki-pencil fs-4"> <span class="path1"></span> 
+												<c:if test="${item.status == 'R'}">
+													<a href="/equipment_edit?id=${item.equipment_id}" target="_blank" class="btn btn-icon btn-sm btn-light-info" onclick="this.blur()">
+									                	<i class="ki-duotone ki-document fs-2"> <span class="path1"></span> 
 									                	<span class="path2"></span> <span class="path2"></span> 
 														</i>
 									            	</a>
+												</c:if> 
+												
+												<c:if test="${item.status == 'B'}">
+													<a href="/borrow_edit?id=${item.borrow_id}" target="_blank" class="btn btn-icon btn-sm btn-light-info" onclick="this.blur()">
+									                	<i class="ki-duotone ki-document fs-2"> <span class="path1"></span> 
+									                	<span class="path2"></span> <span class="path2"></span> 
+														</i>
+									            	</a>
+												</c:if>
+												 <c:if test="${item.status == 'W'}">
+													<a href="/borrow_edit?id=${item.borrow_id}" target="_blank" class="btn btn-icon btn-sm btn-light-info" onclick="this.blur()">
+									                	<i class="ki-duotone ki-document fs-2"> <span class="path1"></span> 
+									                	<span class="path2"></span> <span class="path2"></span> 
+														</i>
+									            	</a>
+									            	
+												</c:if>
+												<c:if test="${item.status == 'C'}">
+													<a href="/equipment_edit?id=${item.equipment_id}" target="_blank" class="btn btn-icon btn-sm btn-light-info" onclick="this.blur()">
+									                	<i class="ki-duotone ki-document fs-2"> <span class="path1"></span> 
+									                	<span class="path2"></span> <span class="path2"></span> 
+														</i>
+									            	</a>
+												</c:if> 
+												<c:if test="${empty item.status || item.status == '-'}">
+													-
+												</c:if>
+											<%-- <a href="/borrow_edit?id=${item.borrow_id}" class="btn btn-lg btn-light-primary">
+									                	<i class="ki-duotone ki-pencil fs-4"> <span class="path1"></span> 
+									                	<span class="path2"></span> <span class="path2"></span> 
+														</i>
+									            	</a> --%>
 				            					</td>
 											</tr>
 
@@ -1368,7 +1403,6 @@
 			error.classList.remove("d-none");
 		}
 	}
-	
 	
 	function formatPhone(input){
 		input.value = input.value.replace(/[^0-9\-a-zA-Zก-๙\s]/g, '');
@@ -1832,25 +1866,25 @@
 
 
 	<script>
-function confirmLeaveForm(redirectUrl){
-    Swal.fire({
-        title: "Are you sure?!",
-        text: "Closing will discard any unsaved data.",
-        icon: "warning",
-        showCancelButton: true,
-        confirmButtonText: "Yes, discard it",
-        cancelButtonText: "Cancel",
-        buttonsStyling: false,
-        customClass: {
-            confirmButton: "btn btn-danger",
-            cancelButton: "btn btn-secondary"
-        }
-    }).then((result) => {
-        if (result.isConfirmed) {
-            window.location.href = redirectUrl;
-        }
-    });
-}
+	function confirmLeaveForm(redirectUrl){
+	    Swal.fire({
+	        title: "Are you sure?!",
+	        text: "Closing will discard any unsaved data.",
+	        icon: "warning",
+	        showCancelButton: true,
+	        confirmButtonText: "Yes, discard it",
+	        cancelButtonText: "Cancel",
+	        buttonsStyling: false,
+	        customClass: {
+	            confirmButton: "btn btn-danger",
+	            cancelButton: "btn btn-secondary"
+	        }
+	    }).then((result) => {
+	        if (result.isConfirmed) {
+	            window.location.href = redirectUrl;
+	        }
+	    });
+	}
 </script>
 
 <script>

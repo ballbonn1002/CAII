@@ -162,8 +162,8 @@
                             <div class="w-225px w-md-250px">
                                 <select id="sortSelect" class="form-select form-select-solid" data-control="select2" data-hide-search="true" data-placeholder="Sort by: Employee ID">
                                     <option value="Alluser">All User</option>
-                                    <option value="empid-asc">User ID: Lowest</option>
-                                    <option value="empid-desc">User ID: Highest</option>
+                                    <option value="empid-asc">Employee ID: Lowest</option>
+                                    <option value="empid-desc">Employee ID: Highest</option>
                                     <option value="name-asc">Name: A–Z</option>
                                     <option value="name-desc">Name: Z–A</option>
                                     <option value="site-asc">Job Site: A–Z</option>
@@ -186,7 +186,7 @@
                                     <thead>
                                             <tr class="text-start text-gray-500 fw-bold fs-7 text-uppercase gs-0">
                                                 <th class="text-start min-w-120px">#</th>
-                                                <th class="min-w-90px">User ID</th>
+                                                <th class="min-w-90px">Employee ID</th>
                                                 <th class="min-w-220px">Name</th>
                                                 
                                                 <th class="w-50px text-center p-0"></th> 
@@ -405,10 +405,12 @@
   var paginationSelector = '#tablePagination';
   var rowsPerPageSelector = '#rowsPerPage';
   var gridItemsPerPage = 12;   
-  var tableItemsPerPage = 20;
+  var tableItemsPerPage = 10;
   var currentPage = 1;
   var isGridView = false;
   var activeFilters  = { status: '', anniversaries: '', birthdays: '' };
+  var sortedCardCache = null;
+
 
 
   function $rowsAll(){ return $(tableSelector + ' tbody tr'); }
@@ -575,6 +577,8 @@
       if(!s) return '-';
       const e = eISO ? toISODateOnly(eISO) : new Date();
       if(!e) return '-';
+      if (s > e) return 'Waiting to start...';
+      
       let y = e.getFullYear() - s.getFullYear();
       let m = e.getMonth() - s.getMonth();
       let d = e.getDate() - s.getDate();
@@ -788,21 +792,31 @@
   }
 
   function showGridPage(page) {
-      annotateAnniversaries();
-      annotateBirthdays();
-      var $all = $gridCardsAll();
-      var $eligible = $cardsEligible();
-      var totalEligible = $eligible.length;
-      var totalPages = Math.max(1, Math.ceil(totalEligible / gridItemsPerPage));
-      currentPage = Math.min(Math.max(page, 1), totalPages);
-      var start = (currentPage - 1) * gridItemsPerPage;
-      var end   = start + gridItemsPerPage;
-      $all.hide(); 
-      $eligible.slice(start, end).show();
-      renderTablePagination(totalPages);
-      renderGridDurations();
-      updateShowingText(totalEligible, $all.length);
-  }
+	    annotateAnniversaries();
+	    annotateBirthdays();
+
+	    var $all = $gridCardsAll();
+	    var source = sortedCardCache ? sortedCardCache : $all.get();
+
+	    var eligible = $(source).filter(function() {
+	        return cardPassesFilters($(this));
+	    }).get();
+
+	    var totalEligible = eligible.length;
+	    var totalPages = Math.max(1, Math.ceil(totalEligible / gridItemsPerPage));
+	    currentPage = Math.min(Math.max(page, 1), totalPages);
+
+	    var start = (currentPage - 1) * gridItemsPerPage;
+	    var end = start + gridItemsPerPage;
+
+	    $all.addClass('d-none');
+	    $(eligible.slice(start, end)).removeClass('d-none');
+
+	    renderTablePagination(totalPages);
+	    renderGridDurations();
+	    updateShowingText(totalEligible, $all.length);
+	}
+
 
   function refreshCurrentView() {
       if (isGridView) showGridPage(1);
@@ -829,6 +843,7 @@
         $(this).attr('data-filtered', match ? '1' : '0');
       });
     }
+    sortedCardCache = null;
     refreshCurrentView();
   }
 
@@ -836,10 +851,20 @@
     $rowsAll().attr('data-filtered','1');
     $gridCardsAll().attr('data-filtered','1'); 
     activeFilters = { status:'', birthdays:'', anniversaries:'' };
+    sortedCardCache = null
+    sortedCache = null
     $('#statusSelect').val('3').trigger('change.select2');
     $('#birthdaysSelect').val('').trigger('change.select2');
     $('#anniversariesSelect').val('').trigger('change.select2');
-    refreshCurrentView(); 
+    
+    var currentSortMode = $('#sortSelect').val() || 'empid-asc';
+    if (isGridView) {
+        sortCards(currentSortMode);
+        showGridPage(1); 
+    } else {
+        sortRows(currentSortMode); 
+    }
+    /* refreshCurrentView();  */
   }
 
   function searchBySelectValue(user_id) {
@@ -935,9 +960,73 @@
       refreshCurrentView();
     }
     $(function(){
-      $('#sortSelect').on('change', function(){ sortRows(this.value); });
-      sortRows($('#sortSelect').val() || 'empid-asc');
+     /*  $('#sortSelect').on('change', function(){ sortRows(this.value); });
+      sortRows($('#sortSelect').val() || 'empid-asc'); */
+    	$('#sortSelect').on('change', function () {
+    		  var mode = this.value;
+
+    		  if (isGridView) {
+    		    sortCards(mode);   
+    		    showGridPage(1);   
+    		  } else {
+    		    sortRows(mode); 
+    		  }
+    		});
+
     });
+    
+    function sortCards(mode) {
+        var $container = $('#gridViewContainer');
+        var cards = $gridCardsAll().get();
+
+        function cmp(a, b) { return a < b ? -1 : (a > b ? 1 : 0); }
+
+        //แยกตัวเลขออกจาก string
+        function empIdKeyCard($c) {
+            var raw = ($c.find('.employee-id').text() || '').trim();
+            var numMatch = raw.match(/\d+/);
+            var num = numMatch ? parseInt(numMatch[0], 10) : -1;
+            return { raw: raw.toLowerCase(), num: num };
+        }
+
+        function nameKeyCard($c) {
+            var name = $c.find('.employee-info span:first').text().trim() || 
+                       $c.find('.fw-bold').first().text().trim();
+            return name.toLowerCase();
+        }
+
+        function siteKeyCard($c) {
+            return ($c.find('.badge').first().text().trim() || '').toLowerCase();
+        }
+
+        cards.sort(function(a, b) {
+            var $a = $(a), $b = $(b);
+            switch (mode) {
+                case 'empid-asc': {
+                    var ka = empIdKeyCard($a), kb = empIdKeyCard($b);
+                    return ka.num !== kb.num ? ka.num - kb.num : cmp(ka.raw, kb.raw);
+                }
+                case 'empid-desc': {
+                    var ka = empIdKeyCard($a), kb = empIdKeyCard($b);
+                    return ka.num !== kb.num ? kb.num - ka.num : cmp(kb.raw, ka.raw);
+                }
+                case 'name-asc':   return cmp(nameKeyCard($a), nameKeyCard($b));
+                case 'name-desc':  return cmp(nameKeyCard($b), nameKeyCard($a));
+                case 'site-asc':   return cmp(siteKeyCard($a), siteKeyCard($b));
+                case 'site-desc':  return cmp(siteKeyCard($b), siteKeyCard($a));
+                case 'period-asc': return periodDaysCard($a) - periodDaysCard($b);
+                case 'period-desc':return periodDaysCard($b) - periodDaysCard($a);
+                case 'startdate-asc':  return startMsCard($a) - startMsCard($b);
+                case 'startdate-desc': return startMsCard($b) - startMsCard($a);
+                case 'birth-young':    return birthMsCard($b) - birthMsCard($a);
+                case 'birth-old':      return birthMsCard($a) - birthMsCard($b);
+                default: return 0;
+            }
+        });
+
+        $.each(cards, function(i, card) { $container.append(card); });
+        sortedCardCache = cards;
+    }
   })();
 
 
