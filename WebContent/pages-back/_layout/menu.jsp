@@ -387,17 +387,20 @@ String targetURL = Constant.getWebContext2() + "/authorization?token=" + token;
 						</div>
 						<!--end:Menu item-->
 						<!--begin:Menu item-->
-						<!-- <div class="menu-item">
-						begin:Menu link
-						<a class="menu-link" href="#" data-route="#"> <span class="menu-icon">
-								<i class="ki-duotone ki-monitor-mobile fs-1"> <span
-									class="path1"></span> <span class="path2"></span>
-							</i>
-						</span> <span class="menu-title">Leave Type</span>
-						</a>
-						end:Menu link
-					</div> -->
+						<div class="menu-item">
+							<!--begin:Menu link-->
+							<a class="menu-link" href="leave_type_list"> <span
+								class="menu-icon"> <i
+									class="ki-duotone ki-monitor-mobile fs-1"> <span
+										class="path1"></span> <span class="path2"></span>
+								</i>
+							</span> <span class="menu-title">Leave Type</span>
+							</a>
+							<!--end:Menu link-->
+						</div>
 						<!--end:Menu item-->
+						
+						
 						<!--begin:Menu item-->
 						<div class="menu-item">
 							<!--begin:Menu link-->

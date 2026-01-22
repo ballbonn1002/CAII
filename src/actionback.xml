@@ -34,7 +34,7 @@
 			<result name="success" type="tiles">demoDashboard</result>
 			<result name="error">/index.jsp</result>
 		</action>
-				
+
 		<!-- Equipment List -->
 		<action name="equipment_list"
 			class="com.cubesofttech.action.EquipmentAction" method="table">
@@ -43,7 +43,7 @@
 			<result name="login" type="redirect">/index.jsp</result>
 		</action>
 		<!-- Equipment List -->
-		
+
 		<!-- Equipment Setting -->
 		<action name="equipment_setting"
 			class="com.cubesofttech.action.EquipmentAction" method="statusList">
@@ -51,106 +51,112 @@
 			<result name="error">/index.jsp</result>
 			<result name="login" type="redirect">/index.jsp</result>
 		</action>
-		<!-- Equipment Setting-->
-		
-		<action name="check_item_no" 
+		<!-- Equipment Setting -->
+
+		<action name="check_item_no"
 			class="com.cubesofttech.action.EquipmentAction" method="eCheckItemNo">
 		</action>
-		
-		<action name="checkStatusDuplicate" 
-			class="com.cubesofttech.action.EquipmentAction" method="checkStatusDuplicate">
-		</action>
-		
-		<action name="checkTypeDuplicate" 
-			class="com.cubesofttech.action.EquipmentAction" method="checkTypeDuplicate">
-		</action>
-		
-		<action name="checkEStatusRecord" 
-			class="com.cubesofttech.action.EquipmentAction" method="checkEStatusRecord">
+
+		<action name="checkStatusDuplicate"
+			class="com.cubesofttech.action.EquipmentAction"
+			method="checkStatusDuplicate">
 		</action>
 
-		<action name="TypeRecord" 
+		<action name="checkTypeDuplicate"
+			class="com.cubesofttech.action.EquipmentAction"
+			method="checkTypeDuplicate">
+		</action>
+
+		<action name="checkEStatusRecord"
+			class="com.cubesofttech.action.EquipmentAction"
+			method="checkEStatusRecord">
+		</action>
+
+		<action name="TypeRecord"
 			class="com.cubesofttech.action.EquipmentAction" method="TypeRecord">
 		</action>
-	
+
 		<!-- ========================== Equipment CRUD ============================== -->
-		<action name="equipment_add" 
+		<action name="equipment_add"
 			class="com.cubesofttech.action.EquipmentAction" method="eAdd">
-		    <result name="success" type="tiles">equipmentAdd</result>
-		    <result name="error">/index.jsp</result>
-		    <result name="login" type="redirect">/index.jsp</result>
+			<result name="success" type="tiles">equipmentAdd</result>
+			<result name="error">/index.jsp</result>
+			<result name="login" type="redirect">/index.jsp</result>
 		</action>
-		
-		<action name="equipment_save" 
+
+		<action name="equipment_save"
 			class="com.cubesofttech.action.EquipmentAction" method="newE">
-		    <result name="success" type="redirect">equipment_list</result>
-		    <result name="error">/index.jsp</result>
-		    <result name="login" type="redirect">/index.jsp</result>
+			<result name="success" type="redirect">equipment_list</result>
+			<result name="error">/index.jsp</result>
+			<result name="login" type="redirect">/index.jsp</result>
 		</action>
-		
-		<action name="equipment_edit" 
+
+		<action name="equipment_edit"
 			class="com.cubesofttech.action.EquipmentAction" method="eEdit">
-		    <result name="success" type="tiles">equipmentEdit</result>
-		    <result name="error">/index.jsp</result>
-		    <result name="login" type="redirect">/index.jsp</result>
+			<result name="success" type="tiles">equipmentEdit</result>
+			<result name="error">/index.jsp</result>
+			<result name="login" type="redirect">/index.jsp</result>
 		</action>
-		
-		<action name="equipment_update" 
+
+		<action name="equipment_update"
 			class="com.cubesofttech.action.EquipmentAction" method="updateE">
-		    <result name="success" type="redirect">equipment_list</result>
-		    <result name="error">/index.jsp</result>
-		    <result name="login" type="redirect">/index.jsp</result>
+			<result name="success" type="redirect">equipment_list</result>
+			<result name="error">/index.jsp</result>
+			<result name="login" type="redirect">/index.jsp</result>
 		</action>
-		
-		<action name="equipment_delete" 
+
+		<action name="equipment_delete"
 			class="com.cubesofttech.action.EquipmentAction" method="deleteE">
-		    <result name="success" type="redirect">equipment_list</result>
-		    <result name="error">/index.jsp</result>
-		    <result name="login" type="redirect">/index.jsp</result>
+			<result name="success" type="redirect">equipment_list</result>
+			<result name="error">/index.jsp</result>
+			<result name="login" type="redirect">/index.jsp</result>
 		</action>
-		
-		<action name="equipment_status_update" 
+
+		<action name="equipment_status_update"
 			class="com.cubesofttech.action.EquipmentAction" method="statusUpdate">
-		    <result name="success" type="redirect">equipment_setting</result>
-		    <result name="error">/index.jsp</result>
-		    <result name="login" type="redirect">/index.jsp</result>
+			<result name="success" type="redirect">equipment_setting</result>
+			<result name="error">/index.jsp</result>
+			<result name="login" type="redirect">/index.jsp</result>
 		</action>
-		
-		<action name="equipment_type_update" 
+
+		<action name="equipment_type_update"
 			class="com.cubesofttech.action.EquipmentAction" method="typeUpdate">
-		    <result name="success" type="redirect">equipment_setting?tab=type</result>
-		    <result name="error">/index.jsp</result>
-		    <result name="login" type="redirect">/index.jsp</result>
+			<result name="success" type="redirect">equipment_setting?tab=type
+			</result>
+			<result name="error">/index.jsp</result>
+			<result name="login" type="redirect">/index.jsp</result>
 		</action>
-		
+
 		<action name="equipment_status_save"
 			class="com.cubesofttech.action.EquipmentAction" method="statusSave">
 			<result name="success" type="redirect">equipment_setting</result>
 			<result name="error">/index.jsp</result>
 			<result name="login" type="redirect">/index.jsp</result>
 		</action>
-		
+
 		<action name="equipment_type_save"
 			class="com.cubesofttech.action.EquipmentAction" method="typeSave">
-			<result name="success" type="redirect">equipment_setting?tab=type</result>
+			<result name="success" type="redirect">equipment_setting?tab=type
+			</result>
 			<result name="error">/index.jsp</result>
 			<result name="login" type="redirect">/index.jsp</result>
 		</action>
-		
+
 		<action name="equipment_status_delete"
 			class="com.cubesofttech.action.EquipmentAction" method="statusDelete">
 			<result name="success" type="redirect">equipment_setting</result>
 			<result name="error">/index.jsp</result>
 			<result name="login" type="redirect">/index.jsp</result>
 		</action>
-		
+
 		<action name="equipment_type_delete"
 			class="com.cubesofttech.action.EquipmentAction" method="typeDelete">
-			<result name="success" type="redirect">equipment_setting?tab=type</result>
+			<result name="success" type="redirect">equipment_setting?tab=type
+			</result>
 			<result name="error">/index.jsp</result>
 			<result name="login" type="redirect">/index.jsp</result>
 		</action>
-		
+
 		<!-- Equipment Setting Status Edit -->
 		<action name="equipment_status_edit"
 			class="com.cubesofttech.action.EquipmentAction" method="statusEdit">
@@ -158,7 +164,7 @@
 			<result name="error">/index.jsp</result>
 			<result name="login" type="redirect">/index.jsp</result>
 		</action>
-		
+
 		<!-- Equipment Setting Type Edit -->
 		<action name="equipment_type_edit"
 			class="com.cubesofttech.action.EquipmentAction" method="typeEdit">
@@ -166,7 +172,7 @@
 			<result name="error">/index.jsp</result>
 			<result name="login" type="redirect">/index.jsp</result>
 		</action>
-		
+
 		<!-- Equipment Setting Status Add -->
 		<action name="equipment_status_add"
 			class="com.cubesofttech.action.EquipmentAction" method="statusAdd">
@@ -174,7 +180,7 @@
 			<result name="error">/index.jsp</result>
 			<result name="login" type="redirect">/index.jsp</result>
 		</action>
-		
+
 		<!-- Equipment Setting Type Add -->
 		<action name="equipment_type_add"
 			class="com.cubesofttech.action.EquipmentAction" method="typeAdd">
@@ -182,10 +188,11 @@
 			<result name="error">/index.jsp</result>
 			<result name="login" type="redirect">/index.jsp</result>
 		</action>
-		
+
 		<!-- Equipment Return -->
 		<action name="equipment_return"
-			class="com.cubesofttech.action.EquipmentAction" method="returnEquipment">
+			class="com.cubesofttech.action.EquipmentAction"
+			method="returnEquipment">
 			<result name="login" type="redirect">/index.jsp</result>
 		</action>
 		<!-- ========================== Equipment CRUD ============================== -->
@@ -336,10 +343,77 @@
 
 		<!-- MyLeave =========================================================================================================== -->
 
+
+
+		<!-- Leave Type =========================================================================================================== -->
+
+		<!-- Listing=========================================================================================================== -->
+		<action name="leave_type_list"
+			class="com.cubesofttech.action.LeaveTypeAction"
+			method="getAllLeaveType">
+			<result name="success" type="tiles">leave_type_list</result>
+			<result name="error">/index.jsp</result>
+		</action>
+		<!-- Listing =========================================================================================================== -->
+
+		<!-- Add =========================================================================================================== -->
+		<action name="leave_type_add"
+			class="com.cubesofttech.action.LeaveTypeAction" method="addLeaveType">
+			<result name="success" type="tiles">leave_type_add</result>
+			<result name="error">/index.jsp</result>
+		</action>
+		<!-- Add =========================================================================================================== -->
+
+		<!-- Save =========================================================================================================== -->
+		<action name="leave_type_save"
+			class="com.cubesofttech.action.LeaveTypeAction"
+			method="saveLeaveType">
+			<result name="success" type="redirectAction">
+				<param name="actionName">leave_type_list</param>
+			</result>
+			<result name="error">/index.jsp</result>
+		</action>
+		<!-- Save =========================================================================================================== -->
+
+		<!-- Edit =========================================================================================================== -->
+		<action name="leave_type_edit"
+			class="com.cubesofttech.action.LeaveTypeAction"
+			method="editLeaveType">
+			<result name="success" type="tiles">leave_type_edit</result>
+			<result name="error">/index.jsp</result>
+		</action>
+		<!-- Edit =========================================================================================================== -->
+
+		<!-- Update =========================================================================================================== -->
+		<action name="leave_type_update"
+			class="com.cubesofttech.action.LeaveTypeAction"
+			method="updateLeaveType">
+			<result name="success" type="redirectAction">
+				<param name="actionName">leave_type_list</param>
+			</result>
+			<result name="error">/index.jsp</result>
+		</action>
+		<!-- Update =========================================================================================================== -->
+
+		<!-- Delete =========================================================================================================== -->
+		<action name="leave_type_delete"
+			class="com.cubesofttech.action.LeaveTypeAction"
+			method="deleteLeaveType">
+			<result name="success" type="redirectAction">
+				<param name="actionName">leave_type_list</param>
+			</result>
+			<result name="error">/index.jsp</result>
+		</action>
+		<!-- Delete =========================================================================================================== -->
+
+		<!-- Leave Type =========================================================================================================== -->
+
+
 		<!-- Leave Approve ================================================================================================== -->
-		
-			<!-- Listing -->
-		<action name="new_leave_approved" class="com.cubesofttech.action.LeaveAction" method="New_list">
+
+		<!-- Listing -->
+		<action name="new_leave_approved"
+			class="com.cubesofttech.action.LeaveAction" method="New_list">
 			<result name="success" type="tiles">new_leave_approved</result>
 			<result name="error">/index.jsp</result>
 		</action>
@@ -400,44 +474,55 @@
 			<result name="success" type="tiles">role.edit</result>
 			<result name="error">/index.jsp</result>
 		</action>
-		
+
 		<!-- role setting editing page -->
-		<action name="role-edit-setting" class="com.cubesofttech.action.RoleAction" method="roleSettingEditingPage">
+		<action name="role-edit-setting"
+			class="com.cubesofttech.action.RoleAction"
+			method="roleSettingEditingPage">
 			<result name="success" type="tiles">role.edit.setting</result>
 			<result name="error">/index.jsp</result>
 		</action>
-		
+
 		<!-- role setting action update -->
-		<action name="role-perform-edit-setting-*" class="com.cubesofttech.action.RoleAction" method="performEditSetting">
+		<action name="role-perform-edit-setting-*"
+			class="com.cubesofttech.action.RoleAction"
+			method="performEditSetting">
 			<result name="success" type="redirectAction">role-edit-setting?roleIdSetting=${roleIdSetting}
 			</result>
 			<result name="error">/index.jsp</result>
 		</action>
 
 		<!-- เพิ่ม function add -->
-		<action name="role-add" class="com.cubesofttech.action.RoleAction" method="openEdit2">
+		<action name="role-add"
+			class="com.cubesofttech.action.RoleAction" method="openEdit2">
 			<result name="success" type="tiles">role.add</result>
 			<result name="error">/index.jsp</result>
 		</action>
 
 		<!-- role setting adding page -->
-		<action name="role-add-setting" class="com.cubesofttech.action.RoleAction" method="roleSettingAddingPage">
+		<action name="role-add-setting"
+			class="com.cubesofttech.action.RoleAction"
+			method="roleSettingAddingPage">
 			<result name="success" type="tiles">role.add</result>
 			<result name="error">/index.jsp</result>
 		</action>
 		<!-- role setting action save -->
-		<action name="role-perform-add-setting" class="com.cubesofttech.action.RoleAction" method="performAddSetting">
-			<result name="success" type="redirectAction">role-edit-setting?roleIdSetting=${roleIdSetting}</result>
+		<action name="role-perform-add-setting"
+			class="com.cubesofttech.action.RoleAction" method="performAddSetting">
+			<result name="success" type="redirectAction">role-edit-setting?roleIdSetting=${roleIdSetting}
+			</result>
 			<result name="error">/index.jsp</result>
 		</action>
 
-		<action name="role-list-setting" class="com.cubesofttech.action.RoleAction" method="listSetting">
+		<action name="role-list-setting"
+			class="com.cubesofttech.action.RoleAction" method="listSetting">
 			<result name="success" type="tiles">role.list.setting</result>
 			<result name="error">/index.jsp</result>
 		</action>
 
 		<!-- เพิ่ม function add -->
-		<action name="role-perform-add" class="com.cubesofttech.action.RoleAction" method="performAdd">
+		<action name="role-perform-add"
+			class="com.cubesofttech.action.RoleAction" method="performAdd">
 			<result name="success" type="redirectAction">role-edit?roleId=${roleId}
 			</result>
 			<result name="error">/index.jsp</result>
@@ -459,18 +544,21 @@
 		</action>
 
 		<!-- role setting delete -->
-		<action name="role-delete-setting" class="com.cubesofttech.action.RoleAction" method="deleteRoleSetting">
+		<action name="role-delete-setting"
+			class="com.cubesofttech.action.RoleAction" method="deleteRoleSetting">
 			<result name="success" type="chain">role-list-setting</result>
 			<result name="error">/index.jsp</result>
 		</action>
-		
+
 		<!-- Employee Profile Edit User Security -->
 		<action name="admin_update_password"
-			class="com.cubesofttech.action.UserAction" method="admin_update_password">
-			<result name="success" type="redirectAction">user-edit?userId=${userId}</result>
+			class="com.cubesofttech.action.UserAction"
+			method="admin_update_password">
+			<result name="success" type="redirectAction">user-edit?userId=${userId}
+			</result>
 			<result name="error">/index.jsp</result>
 		</action>
-		
+
 		<!-- Role Management ================================================================================================== -->
 
 		<action name="demo_table"
@@ -497,7 +585,8 @@
 		</action>
 		<action name="admin-perform-edit"
 			class="com.cubesofttech.action.UserAction" method="performEdit">
-			<result name="success" type="redirectAction">user-edit?userId=${userId}</result>
+			<result name="success" type="redirectAction">user-edit?userId=${userId}
+			</result>
 			<!-- <result name="success" type="tiles">admin_edit_userprofile</result> -->
 			<!-- <result name="input" type="tiles">admin_edit_userprofile</result> -->
 			<result name="error">/index.jsp</result>
@@ -572,8 +661,9 @@
 			<result name="error" type="tiles">/error.jsp</result>
 			<result name="input" type="tiles">holidayAdd</result>
 		</action>
-		
-		<action name="demo_add_holiday" class="com.cubesofttech.action.DemoAddHoliday">
+
+		<action name="demo_add_holiday"
+			class="com.cubesofttech.action.DemoAddHoliday">
 			<result name="success" type="tiles">demoHolidayAdd</result>
 		</action>
 
@@ -625,8 +715,9 @@
 			<result name="success" type="tiles">CheckAllCalendar</result>
 			<result name="error">/index.jsp</result>
 		</action>
-		<action name="checkAllCalendar2" 
-			class="com.cubesofttech.action.WorkHoursAction" method="CheckAllCalendar2">
+		<action name="checkAllCalendar2"
+			class="com.cubesofttech.action.WorkHoursAction"
+			method="CheckAllCalendar2">
 			<result name="success" type="tiles">CheckAllCalendar2</result>
 			<result name="error">/index.jsp</result>
 		</action>
@@ -931,8 +1022,7 @@
 			method="returnMyNewBorrow">
 		</action>
 		<action name="eBorrowLog"
-			class="com.cubesofttech.action.BorrowingAction"
-			method="eBorrowLog">
+			class="com.cubesofttech.action.BorrowingAction" method="eBorrowLog">
 		</action>
 	</package>
 

@@ -239,6 +239,33 @@
 
 	<!-- My Leave -->
 
+
+	<!-- Leave Type -->
+
+	<!-- Listing -->
+	<definition name="leave_type_list" extends="baseLayout">
+		<put-attribute name="title" value="Leave Type" />
+		<put-attribute name="body"
+			value="/pages-back/leave_type/leave_type_list.jsp" />
+	</definition>
+	<!-- Listing -->
+	<!-- Add -->
+	<definition name="leave_type_add" extends="baseLayout">
+		<put-attribute name="title" value="Add Leave Type" />
+		<put-attribute name="body"
+			value="/pages-back/leave_type/leave_type_form.jsp" />
+	</definition>
+	<!-- Edit -->
+	<!-- Add -->
+	<definition name="leave_type_edit" extends="baseLayout">
+		<put-attribute name="title" value="Add Leave Type" />
+		<put-attribute name="body"
+			value="/pages-back/leave_type/leave_type_form.jsp" />
+	</definition>
+	<!-- Edit -->
+
+	<!-- Leave Type -->
+
 	<!-- Leave Approve -->
 	<definition name="new_leave_approved" extends="baseLayout">
 		<put-attribute name="title" value="Leave approved" />

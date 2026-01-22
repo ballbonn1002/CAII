@@ -68,7 +68,6 @@
 									</i> </span> <input type="text" class="form-control py-4"
 										placeholder="1 Jan 2026" required="required" id="date_start" />
 								</div>
-
 							</div>
 							<div id="end-date" class="date-lg flex-fill">
 								<label for="end-date"
@@ -96,7 +95,6 @@
 							<textarea class="form-control px-3" rows="4"
 								placeholder="Optional details"></textarea>
 						</div>
-
 					</div>
 
 					<div class="card-footer d-flex justify-content-end  gap-3">
