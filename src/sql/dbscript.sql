@@ -44,9 +44,12 @@ ALTER TABLE `holiday` CHANGE `head` `head` VARCHAR(256) CHARACTER SET utf8 COLLA
 -- 7/01/2026 max(Intern): Modify 'description' column in 'job_site' table to support Thai characters --
 ALTER TABLE job_site MODIFY description VARCHAR(1024) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
+-- PROD 2026 JAN 08
+-- PROD 2026 JAN 16
+
 -- 16/01/2026 max(Intern): Add 'highlight' column to 'announcement' table --
 ALTER TABLE announcement ADD COLUMN highlight VARCHAR(1) DEFAULT NULL;
 
--- PROD 2026 JAN 08
--- PROD 2026 JAN 16
+-- PROD 2026 JAN 20
+
 

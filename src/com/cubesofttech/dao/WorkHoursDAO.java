@@ -210,9 +210,12 @@ public interface WorkHoursDAO {
 	 
 	 public List<WorkHours> findByUserYear(String userId, String year) throws Exception;
 	 
-	 public Map<LocalDate, Map<String, Object>> getCheckinsForYear(String userId, int year1, int year2) throws Exception;
-	 public Map<LocalDate, Map<String, Object>> getCheckoutsForYear(String userId, int year1, int year2) throws Exception;
-	 
+	 Map<LocalDate, Map<String, Object>> getCheckinsForYear(String userId, int year1, int year2) throws Exception;
+	 public Map<LocalDate, List<Map<String, Object>>> getCheckinsForYear2(String userId, int year1, int year2) throws Exception;
+
+	 Map<LocalDate, Map<String, Object>> getCheckoutsForYear(String userId, int year1, int year2) throws Exception;
+	 public Map<LocalDate, List<Map<String, Object>>> getCheckoutsForYear2(String userId, int year1, int year2) throws Exception;
+
 	 public Object[] findMinTimeByType(String userId, LocalDate workDate, String type);
 	 
 	 public Object[] findMaxTimeByType(String userId, LocalDate workDate, String type);

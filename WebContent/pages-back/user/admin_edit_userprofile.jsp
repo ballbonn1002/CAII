@@ -46,10 +46,12 @@
 }
 
 #id_sitejob+.select2-container .select2-selection__choice {
-	background-color: #009ef7 !important;
-	border-color: #009ef7 !important;
-	color: #fff !important;
+	background-color: #4b92fa !important; 
+    border-color: #0d6efd !important;
+    color: #fff !important;
+    font-size: 13px;
 }
+
 
 .toggle-password.d-none {
 	display: none !important;
@@ -119,32 +121,8 @@
 							<div class="d-flex flex-column flex-md-row align-items-start">
 
 								<div class="me-md-9 mb-md-0" style="width: 150px;">
-									<div
-										class="mb-4 mb-md-0 me-md-9 mb-md-0 w-150px h-150px mx-auto">
-										<%--  <c:choose>
-                                            <c:when test="${not empty selectUser.path}">
-                                                <img id="avatarPreview"
-                                                     src="${selectUser.path}"
-                                                     alt="${not empty selectUser.nameEN ? selectUser.nameEN : selectUser.name}"
-                                                     class="w-100 h-100 rounded"
-                                                     style="object-fit: cover;">
-                                            </c:when>
-                                            <c:otherwise>
-                                                <div id="avatarPreview"
-                                                     class="w-100 h-100 rounded d-flex align-items-center justify-content-center"
-                                                     style="background-color: #f3f6f9; font-size: 48px; color:#0d6efd;">
-                                                    <c:choose>
-                                                        <c:when test="${not empty selectUser.nameEN and fn:length(selectUser.nameEN) >= 1}">
-                                                            ${fn:toUpperCase(fn:substring(selectUser.nameEN, 0, 1))}
-                                                        </c:when>
-                                                        <c:when test="${not empty selectUser.name and fn:length(selectUser.name) >= 1}">
-                                                            ${fn:toUpperCase(fn:substring(selectUser.name, 0, 1))}
-                                                        </c:when>
-                                                        <c:otherwise>-</c:otherwise>
-                                                    </c:choose>
-                                                </div>
-                                            </c:otherwise>
-                                        </c:choose> --%>
+									<div class="mb-4 mb-md-0 me-md-9 mb-md-0 w-150px h-150px mx-auto">
+								
 										<c:choose>
 											<c:when test="${not empty editUserImgPath}">
 												<img id="avatarPreview"
@@ -178,28 +156,6 @@
 
 									<div
 										class="d-flex justify-content-between align-items-start mb-4">
-										<%-- <div>
-                                                <div class="d-flex align-items-center mb-2">
-                                                    <h2 class="fw-bold text-gray-900 mb-0 me-3">
-                                                        ${selectUser.id}
-                                                    </h2>
-
-                                                    <c:forEach var="jobsite" items="${test}">
-                                                        <c:if test="${jobsite.is_related == 1}">
-                                                            <span class="badge badge-primary fw-semibold me-2">
-                                                                ${jobsite.name_site}
-                                                            </span>
-                                                        </c:if>
-                                                    </c:forEach>
-                                                </div>
-
-                                                <div class="text-gray-700">
-                                                    <span class="me-2">${selectUser.employeeId}</span>
-                                                    <span class="me-2">${selectUser.nameEN}</span>
-                                                    <span class="me-2">${selectUser.name}</span>
-                                                </div>
-                                            </div> --%>
-
 										<div>
 											<div class="d-flex flex-column">
 												<div class="d-flex align-items-center gap-4 ">
@@ -224,160 +180,6 @@
 											${selectUser.enable eq '1' ? 'Active' : 'Inactive'} </span>
 									</div>
 
-									<%-- <div class="d-flex flex-wrap gap-3">
-                                        <c:choose>
-                                            <c:when test="${selectUser.workType == '1'}">
-                                                <c:set var="workTypeLabel" value="On-Site" />
-                                            </c:when>
-                                            <c:when test="${selectUser.workType == '2'}">
-                                                <c:set var="workTypeLabel" value="WFH" />
-                                            </c:when>
-                                            <c:otherwise>
-                                                <c:set var="workTypeLabel" value="-" />
-                                            </c:otherwise>
-                                        </c:choose>
-                                        
-                                        <c:choose>
-                                            <c:when test="${selectUser.onsiteNum == '3'}">
-                                                <c:set var="onsiteNumLabel" value="4-5 Day" />
-                                            </c:when>
-                                            <c:when test="${selectUser.onsiteNum == '2'}">
-                                                <c:set var="onsiteNumLabel" value="2-3 Day" />
-                                            </c:when>
-                                            <c:when test="${selectUser.onsiteNum == '1'}">
-                                                <c:set var="onsiteNumLabel" value="0.5-1 Day" />
-                                            </c:when>
-                                            <c:otherwise>
-                                                <c:set var="onsiteNumLabel" value="-" />
-                                            </c:otherwise>
-                                        </c:choose>
-                                        
-                                        <c:choose>
-                                            <c:when test="${selectUser.workDayStart == 1}">
-                                                <c:set var="workDayStartLabel" value="Mon" />
-                                            </c:when>
-                                            <c:when test="${selectUser.workDayStart == 2}">
-                                                <c:set var="workDayStartLabel" value="Tue" />
-                                            </c:when>
-                                            <c:when test="${selectUser.workDayStart == 3}">
-                                                <c:set var="workDayStartLabel" value="Wed" />
-                                            </c:when>
-                                            <c:when test="${selectUser.workDayStart == 4}">
-                                                <c:set var="workDayStartLabel" value="Thu" />
-                                            </c:when>
-                                            <c:when test="${selectUser.workDayStart == 5}">
-                                                <c:set var="workDayStartLabel" value="Fri" />
-                                            </c:when>
-                                            <c:when test="${selectUser.workDayStart == 6}">
-                                                <c:set var="workDayStartLabel" value="Sat" />
-                                            </c:when>
-                                            <c:when test="${selectUser.workDayStart == 7}">
-                                                <c:set var="workDayStartLabel" value="Sun" />
-                                            </c:when>
-                                            <c:otherwise>
-                                                <c:set var="workDayStartLabel" value="-" />
-                                            </c:otherwise>
-                                        </c:choose>
-                                        
-                                        <c:choose>
-                                            <c:when test="${selectUser.workDayEnd == 1}">
-                                                <c:set var="workDayEndLabel" value="Mon" />
-                                            </c:when>
-                                            <c:when test="${selectUser.workDayEnd == 2}">
-                                                <c:set var="workDayEndLabel" value="Tue" />
-                                            </c:when>
-                                            <c:when test="${selectUser.workDayEnd == 3}">
-                                                <c:set var="workDayEndLabel" value="Wed" />
-                                            </c:when>
-                                            <c:when test="${selectUser.workDayEnd == 4}">
-                                                <c:set var="workDayEndLabel" value="Thu" />
-                                            </c:when>
-                                            <c:when test="${selectUser.workDayEnd == 5}">
-                                                <c:set var="workDayEndLabel" value="Fri" />
-                                            </c:when>
-                                            <c:when test="${selectUser.workDayEnd == 6}">
-                                                <c:set var="workDayEndLabel" value="Sat" />
-                                            </c:when>
-                                            <c:when test="${selectUser.workDayEnd == 7}">
-                                                <c:set var="workDayEndLabel" value="Sun" />
-                                            </c:when>
-                                            <c:otherwise>
-                                                <c:set var="workDayEndLabel" value="-" />
-                                            </c:otherwise>
-                                        </c:choose>
-                                        
-                                        <div id="workDurationBlock" 
-										     class="border border-dashed rounded-3 px-4 py-2"
-										     data-start-date="<fmt:formatDate value='${selectUser.startDate}' pattern='yyyy-MM-dd'/>">
-										    
-										    <div class="fw-semibold text-gray-900" id="durationLabel">
-										        - 
-										    </div>
-										
-										    <div class="text-muted fs-8">
-										        <c:choose>
-										            <c:when test="${not empty selectUser.startDate}">
-										                <fmt:formatDate value="${selectUser.startDate}" pattern="dd MMM yyyy"/>
-										            </c:when>
-										            <c:otherwise>-</c:otherwise>
-										        </c:choose>
-										    </div>
-										</div>
-
-                                        <div class="border border-dashed rounded-3 px-4 py-2">
-                                            <div class="fw-semibold text-gray-900">
-                                                <c:choose>
-                                                <c:when test="${not empty selectUser.positionId}">
-                                                  ${selectUser.positionId}
-                                                </c:when>
-                                                <c:otherwise>-</c:otherwise>
-                                              </c:choose>
-                                            </div>
-                                            <div class="text-muted fs-8">
-                                                Position
-                                            </div>
-                                        </div>
-
-                                        <div class="border border-dashed rounded-3 px-4 py-2">
-                                            <div class="fw-semibold text-gray-900">
-                                                <c:choose>
-                                                <c:when test="${not empty selectUser.departmentId}">
-                                                  ${selectUser.departmentId}
-                                                </c:when>
-                                                <c:otherwise>-</c:otherwise>
-                                              </c:choose>
-                                            </div>
-                                            <div class="text-muted fs-8">
-                                                Department
-                                            </div>
-                                        </div>
-
-                                        <div class="border border-dashed rounded-3 px-4 py-2">
-                                            <div class="fw-semibold text-gray-900">
-                                                ${workTypeLabel}
-                                            </div>
-                                            <div class="text-muted fs-8">
-                                                ${onsiteNumLabel}
-                                            </div>
-                                        </div>
-
-                                        <div class="border border-dashed rounded-3 px-4 py-2">
-                                            <div class="fw-semibold text-gray-900">
-                                                ${workDayStartLabel} - ${workDayEndLabel}
-                                            </div>
-                                            <div class="text-muted fs-8">
-                                                <c:choose>
-                                                    <c:when test="${not empty selectUser.workTimeStart and not empty selectUser.workTimeEnd}">
-                                                        ${selectUser.workTimeStart} - ${selectUser.workTimeEnd}
-                                                    </c:when>
-                                                    <c:otherwise>
-                                                        9:00 - 18:00
-                                                    </c:otherwise>
-                                                </c:choose>
-                                            </div>
-                                        </div>
-
-                                        </div> --%>
 									<div class="d-flex flex-wrap gap-4">
 										<div
 											class="border border-gray-300 rounded-1 px-4 py-3 border-dashed ">
@@ -500,77 +302,18 @@
 							value="${selectUser.enable}" />
 
 						<div class="card-body pt-6">
-							<%-- <div class="d-flex justify-content-center mb-16">
-								    <div id="ktImageInput" 
-								         class="image-input image-input-outline"
-								         data-kt-image-input="true"
-								         style="background-image: url('${pageContext.request.contextPath}/assets/media/svg/avatars/blank.svg');">
-								
-								        <div id="imageInputWrapper" 
-								             class="image-input-wrapper w-150px h-150px d-flex align-items-center justify-content-center"
-								             style="
-								                <c:choose>
-								                    <c:when test='${not empty selectUser.path}'>
-								                        background-image: url(${selectUser.path});
-								                        background-size: cover;
-								                        background-position: center;
-								                    </c:when>
-								                    <c:otherwise>
-								                        background-color: #f3f6f9; 
-								                        background-image: none;
-								                    </c:otherwise>
-								                </c:choose>
-								             ">
-								             
-								             <c:if test="${empty selectUser.path}">
-								                 <span class="initials-text">
-								                    <c:choose>
-								                        <c:when test="${not empty selectUser.nameEN and fn:length(selectUser.nameEN) >= 1}">
-								                            ${fn:toUpperCase(fn:substring(selectUser.nameEN, 0, 1))}
-								                        </c:when>
-								                        <c:when test="${not empty selectUser.name and fn:length(selectUser.name) >= 1}">
-								                            ${fn:toUpperCase(fn:substring(selectUser.name, 0, 1))}
-								                        </c:when>
-								                        <c:otherwise>-</c:otherwise>
-								                    </c:choose>
-								                 </span>
-								             </c:if>
-								        </div>
-								
-								        <label id="changeBtn" class="btn btn-icon btn-circle btn-color-muted btn-active-color-primary w-30px h-30px bg-body shadow"
-								               data-kt-image-input-action="change" data-bs-toggle="tooltip" data-bs-dismiss="click"
-								               title="Change avatar">
-								            <i class="ki-duotone ki-pencil fs-6"><span class="path1"></span><span class="path2"></span></i>
-								            
-								            <input id="imageInputFile" type="file" name="fileUpload" accept=".png, .jpg, .jpeg" />
-								            
-								            <input id="avatarRemoveHidden" type="hidden" name="avatar_remove" value="false" />
-								        </label>
-								
-								        <span id="cancelBtn" class="btn btn-icon btn-circle btn-color-muted btn-active-color-primary w-30px h-30px bg-body shadow"
-								              data-kt-image-input-action="cancel" data-bs-toggle="tooltip" data-bs-dismiss="click"
-								              title="Cancel avatar">
-								            <i class="ki-outline ki-cross fs-3"></i>
-								        </span>
-								
-								        <span id="removeBtn" class="btn btn-icon btn-circle btn-color-muted btn-active-color-primary w-30px h-30px bg-body shadow"
-								              data-kt-image-input-action="remove" data-bs-toggle="tooltip" data-bs-dismiss="click"
-								              title="Remove avatar">
-								            <i class="ki-outline ki-cross fs-3"></i>
-								        </span>
-								    </div>
-								</div> --%>
+							
 							<div class="row mb-8">
 								<div class="col-12 d-flex justify-content-center ">
 									<div id="ktImageInput" class="image-input image-input-outline"
 										data-kt-image-input="true"
 										style="background-image: url('${pageContext.request.contextPath}/assets/media/svg/avatars/blank.svg');">
 
-										<div id="imageInputWrapper"
-											class="border border-2 border-white rounded image-input-wrapper w-150px h-150px d-flex align-items-center justify-content-center"
-											style="
+											<div id="imageInputWrapper"
+												class="border border-2 border-white rounded image-input-wrapper w-150px h-150px d-flex align-items-center justify-content-center"
+												style="
 								                <c:choose>
-								                    <c:when test='${not empty editUserImgPath}'>
+								                  <c:when test='${not empty editUserImgPath}'>
 								                        background-image: url(${editUserImgPath});
 								                        background-size: cover;
 								                        background-position: center;
@@ -583,21 +326,6 @@
 								                </c:choose>
 								             ">
 
-											<%-- <c:if test="${empty userImgPath}">
-												
-												 <span class="initials-text"> <c:choose>
-														<c:when
-																test="${not empty user.nameEN and fn:length(user.nameEN) >= 1}">
-								                            ${fn:toUpperCase(fn:substring(user.nameEN, 0, 1))}
-								                        </c:when>
-															<c:when
-																test="${not empty user.name and fn:length(user.name) >= 1}">
-								                            ${fn:toUpperCase(fn:substring(user.name, 0, 1))}
-								                        </c:when>
-															<c:otherwise>-</c:otherwise>
-														</c:choose>
-													</span> 
-												</c:if> --%>
 										</div>
 
 										<label id="changeBtn"
@@ -625,12 +353,6 @@
 											</span>
 										</c:if>
 
-										<!-- <span id="removeBtn"
-												class="btn btn-icon btn-circle btn-color-muted btn-active-color-primary w-30px h-30px bg-body shadow"
-												data-kt-image-input-action="remove" data-bs-toggle="tooltip"
-												data-bs-dismiss="click" title="Remove avatar"> <i
-												class="ki-outline ki-cross fs-3"></i>
-											</span> -->
 									</div>
 								</div>
 								<div
@@ -640,9 +362,10 @@
 							<div class="row g-9">
 
 								<div class="col-md-6 fv-row">
-									<label class="required form-label">Role</label> <select
+									<label class="required form-label">Role</label> 
+									<select
 										class="form-select" name="user.roleId" data-control="select2"
-										data-placeholder="Select role" required>
+										data-placeholder="Select role" data-tab="account" data-required="true" data-label="Role">
 										<option></option>
 										<c:forEach var="role" items="${roleList}">
 											<option value="${role.id}"
@@ -656,12 +379,12 @@
 									<label class="required form-label">Gender</label>
 									<div class="d-flex align-items-center mt-2 gap-8">
 										<label class="form-check form-check-custom form-check-solid">
-											<input class="form-check-input" type="radio"
+											<input class="form-check-input" type="radio" data-tab="account"  data-required="true" data-label="Gender"
 											name="user.gender" value="M"
 											${selectUser.gender eq 'M' ? 'checked':''}> <span
 											class="form-check-label text-gray-800">Male</span>
 										</label> <label class="form-check form-check-custom form-check-solid">
-											<input class="form-check-input" type="radio"
+											<input class="form-check-input" type="radio" data-tab="account"  data-required="true" data-label="Gender"
 											name="user.gender" value="F"
 											${selectUser.gender eq 'F' ? 'checked':''}> <span
 											class="form-check-label text-gray-800">Female</span>
@@ -673,8 +396,8 @@
 									<div class="d-flex flex-column flex-md-row gap-4">
 										<div class="flex-shrink-0" style="width: 160px;">
 											<label class="form-label fw-semibold text-gray-800 required">คำนำหน้า</label>
-											<select class="form-select userinfo" name="user.titleNameTH"
-												required>
+											<select class="form-select userinfo" name="user.titleNameTH" data-tab="account"  data-required="true" data-label="คำนำหน้า"
+												>
 												<option value="" disabled>Select</option>
 												<option value="นาย"
 													${selectUser.titleNameTH == 'นาย' ? 'selected' : ''}>นาย</option>
@@ -691,7 +414,7 @@
 											<label class="form-label fw-semibold text-gray-800 required">ชื่อ
 												- สกุล</label> <input type="text" class="form-control userinfo"
 												name="user.name" maxlength="190" value="${selectUser.name}"
-												placeholder="ชื่อ - สกุล" required>
+												placeholder="ชื่อ - สกุล" data-tab="account" data-required="true" data-label="ชื่อ-สกุล" />
 											<div id="hintNameTh" class="text-danger fs-8 mt-1 d-none">Please
 												enter full name</div>
 										</div>
@@ -703,7 +426,7 @@
 										<div class="flex-shrink-0" style="width: 160px;">
 											<label class="form-label fw-semibold text-gray-800 required">Title
 												Name</label> <select class="form-select userinfo"
-												name="user.titleNameEN" required>
+												name="user.titleNameEN" data-tab="account"  data-required="true" data-label="Title Name">
 												<option value="" disabled>Select</option>
 												<option value="Mr."
 													${selectUser.titleNameEN == 'Mr.'  ? 'selected' : ''}>Mr.</option>
@@ -719,9 +442,9 @@
 										<div class="flex-grow-1">
 											<label class="form-label fw-semibold text-gray-800 required">Full
 												Name</label> <input type="text" class="form-control userinfo"
-												name="user.nameEN" maxlength="190"
-												value="${selectUser.nameEN}" placeholder="Name - Surname"
-												required>
+												name="user.nameEN" maxlength="190" data-label="Full Name"
+												value="${selectUser.nameEN}" placeholder="Name - Surname" data-tab="account" data-required="true"
+												>
 											<div id="hintNameEn" class="text-danger fs-8 mt-1 d-none">Please
 												enter name</div>
 										</div>
@@ -730,21 +453,21 @@
 
 								<div class="col-md-6 fv-row">
 									<label class="form-label">Nickname TH</label> <input
-										type="text" class="form-control" name="user.nickName"
+										type="text" class="form-control" name="user.nickName" data-tab="account" 
 										value="${selectUser.nickName}" />
 								</div>
 								<div class="col-md-6 fv-row">
 									<label class="form-label">Nickname EN</label> <input
-										type="text" class="form-control" name="user.nickNameEN"
+										type="text" class="form-control" name="user.nickNameEN" data-tab="account" 
 										value="${selectUser.nickNameEN}" />
 								</div>
 
 								<div class="col-md-6 fv-row">
 									<label class="required form-label">Citizen ID</label> <input
 										type="text" class="form-control" id="user_citizenId"
-										name="user.citizenId" maxlength="17" inputmode="numeric"
-										required oninput="formatCitizenId(this)"
-										value="${selectUser.citizenId}" required />
+										name="user.citizenId" maxlength="17" inputmode="numeric" data-tab="account"  data-required="true"
+										oninput="formatCitizenId(this)" data-label="Citizen ID"
+										value="${selectUser.citizenId}" />
 
 									<!-- error message -->
 									<span id="citizenIdError"
@@ -753,20 +476,20 @@
 								</div>
 								<div class="col-md-6 fv-row">
 									<label class="form-label">Passport ID</label> <input
-										type="text" class="form-control" name="user.passportId"
+										type="text" class="form-control" name="user.passportId" data-tab="account"
 										maxlength="10" value="${selectUser.passportId}" />
 								</div>
 
 								<div class="col-md-6 fv-row">
 									<label class="required form-label">E-Mail</label> <input
-										type="email" class="form-control" name="user_email"
-										maxlength="50" value="${selectUser.email}" required />
+										type="email" class="form-control" name="user_email" data-tab="account" data-required="true" data-label="E-Mail"
+										maxlength="50" value="${selectUser.email}"/>
 								</div>
 
 								<div class="col-md-6 fv-row">
 									<label class="form-label">Send Email</label>
 									<div class="form-check form-check-custom form-check-solid mt-2">
-										<input class="form-check-input" type="checkbox"
+										<input class="form-check-input" type="checkbox" data-tab="account" 
 											id="emailEnableSwitch"
 											${selectUser.emailEnable eq '1' ? 'checked':''} /> <label
 											class="form-check-label" for="emailEnableSwitch"> Yes
@@ -777,9 +500,9 @@
 
 								<div class="col-md-6 fv-row">
 									<label class="required form-label">Phone Number</label> <input
-										type="text" class="form-control" name="user.phonenum"
+										type="text" class="form-control" name="user.phonenum" data-tab="account"  data-required="true" data-label="Phone Number"
 										oninput="formatPhone(this)" maxlength="20"
-										value="${selectUser.phonenum}" required />
+										value="${selectUser.phonenum}"  />
 								</div>
 
 								<div class="col-md-6 fv-row">
@@ -792,7 +515,7 @@
 											class="path5"></span><span class="path6"></span>
 										</i> <input type="text" name="birthDate" id="birthDate"
 											class="form-control ps-12" data-kt-date-picker="true"
-											placeholder="1 Jan 1995"
+											placeholder="1 Jan 1995" data-tab="account"  
 											value="<fmt:formatDate value='${selectUser.birthDate}' pattern='yyyy-MM-dd'/>"
 											autocomplete="off" />
 									</div>
@@ -801,18 +524,18 @@
 
 								<div class="col-12 fv-row">
 									<label class="form-label">Address</label>
-									<textarea class="form-control" name="user.address" rows="4"
+									<textarea class="form-control" name="user.address" rows="4" data-tab="account" 
 										placeholder="Please add your address">${selectUser.address}</textarea>
 								</div>
 
 								<div class="col-md-6 fv-row">
 									<label class="form-label">Emergency Contact</label> <input
-										type="text" class="form-control" name="user.emergContact"
+										type="text" class="form-control" name="user.emergContact" data-tab="account" 
 										value="${selectUser.emergContact}" placeholder="Name" />
 								</div>
 								<div class="col-md-6 fv-row">
 									<label class="form-label">Emergency Phone Number</label> <input
-										type="text" class="form-control" name="user.emergPhone"
+										type="text" class="form-control" name="user.emergPhone" data-tab="account" 
 										maxlength="10" value="${selectUser.emergPhone}"
 										placeholder="Phone number" />
 								</div>
@@ -820,7 +543,7 @@
 						</div>
 					</div>
 
-					<div class="card mb-10 d-none" id="employee-info">
+					<div class="card mb-10" id="employee-info">
 						<div class="card-header">
 							<h3 class="card-title fw-bold m-0">Employee Information</h3>
 						</div>
@@ -831,14 +554,14 @@
 								<div class="col-md-6 fv-row">
 									<label class="required form-label">Employee Code</label> <input
 										type="text" class="form-control" name="user.employeeId"
-										value="${selectUser.employeeId}" required />
+										value="${selectUser.employeeId}" data-tab="employee" data-required="true" data-label="Employee Code"/>
 								</div>
 
 								<div class="col-md-6 fv-row">
 									<label class="required form-label">Employee Type</label> <select
 										class="form-select" name="user.employeeTypeId"
 										data-control="select2" data-placeholder="Employee type"
-										data-hide-search="true" required>
+										data-hide-search="true" data-tab="employee" data-required="true" data-label="Employee Type">
 
 										<option></option>
 
@@ -861,14 +584,14 @@
 									<label class="required form-label">Department</label> <select
 										class="form-select" name="department_id"
 										data-control="select2" data-placeholder="Department"
-										data-hide-search="true" required>
+										data-hide-search="true" data-tab="employee" data-required="true" data-label="Department">
 
 										<option></option>
 
 										<c:forEach var="department" items="${departmentList}">
 											<option value="${department.id}"
 												<c:if test="${selectUser.departmentId eq department.id}">selected</c:if>>
-												${department.id}</option>
+												${department.id} ${empty department.description ? '' : ' - '}${department.description}</option>
 										</c:forEach>
 
 									</select>
@@ -877,7 +600,7 @@
 								<div class="col-md-6 fv-row">
 									<label class="required form-label">Position</label> <select
 										class="form-select" name="position_id" data-control="select2"
-										data-placeholder="Position" data-hide-search="true" required>
+										data-placeholder="Position" data-hide-search="true" data-tab="employee" data-required="true" data-label="Position">
 
 										<option></option>
 
@@ -899,7 +622,7 @@
 											class="path5"></span><span class="path6"></span>
 										</i> <input type="text" name="startDate" id="startDate"
 											class="form-control ps-12" data-kt-date-picker="true"
-											placeholder="1 Jan 2025"
+											placeholder="1 Jan 2025" data-tab="employee" data-required="true" data-label="Start Working Date"
 											value="<fmt:formatDate value='${selectUser.startDate}' pattern='yyyy-MM-dd'/>"
 											autocomplete="off" />
 									</div>
@@ -915,7 +638,7 @@
 											class="path5"></span><span class="path6"></span>
 										</i> <input type="text" name="endDate" id="endDate"
 											class="form-control ps-12" data-kt-date-picker="true"
-											placeholder="1 Jan 2025"
+											placeholder="1 Jan 2025"  data-tab="employee" 
 											value="<fmt:formatDate value='${selectUser.endDate}' pattern='yyyy-MM-dd'/>"
 											autocomplete="off" />
 									</div>
@@ -925,7 +648,7 @@
 								<div class="col-md-6 fv-row">
 									<label class="required form-label">Manager</label> <select
 										class="form-select" name="user.managerId" id="managerId"
-										data-control="select2" data-placeholder="Manager" required>
+										data-control="select2" data-placeholder="Manager" data-tab="employee" data-required="true" data-label="Manager">
 										<option></option>
 										<c:forEach var="manager" items="${userList}">
 											<option value="${manager.id}"
@@ -938,19 +661,13 @@
 								<div class="col-md-6 fv-row">
 									<label class="required form-label">Job Site</label> <select
 										class="form-select" name="id_sitejob" id="id_sitejob" multiple
-										data-control="select2" data-placeholder="Job site" required>
+										data-control="select2" data-placeholder="Job site" data-tab="employee" data-required="true" data-label="Job Site">
 										<c:forEach var="jobsite" items="${test}">
-											<option value="${jobsite.id_sitejob}"
+											<option  value="${jobsite.id_sitejob}"
 												${jobsite.is_related == 1 ? 'selected':''}>
 												${jobsite.name_site}</option>
 										</c:forEach>
-										<%--  <c:forEach var="jobsite" items="${jobSite}">
-											    <option value="${jobsite['id_sitejob']}"
-											        <c:if test="${jobsite['is_related'] == 1}">selected</c:if>>
-											        ${jobsite['name_site']}
-											    </option>
-											</c:forEach> --%>
-
+								
 									</select> <input type="hidden" name="id_sitejob" id="id_sitejob_join" />
 								</div>
 
@@ -959,7 +676,7 @@
 									<div class="d-flex align-items-stretch gap-3">
 										<select class="form-select flex-fill" name="user.workDayStart"
 											data-control="select2" data-placeholder="Select an option"
-											data-hide-search="true" id="workDayStart">
+											data-hide-search="true" id="workDayStart" data-tab="employee" data-required="true" data-label="Working Day Start">
 											<option value="1"
 												${selectUser.workDayStart == 1 ? 'selected' : ''}>Mon</option>
 											<option value="2"
@@ -977,7 +694,7 @@
 										</select> <span class="d-flex align-items-center">to</span> <select
 											class="form-select flex-fill" name="user.workDayEnd"
 											data-control="select2" data-placeholder="Select an option"
-											data-hide-search="true" id="workDayEnd">
+											data-hide-search="true" id="workDayEnd" data-tab="employee" data-required="true" data-label="Working Day End">
 											<option value="1"
 												${selectUser.workDayEnd == 1 ? 'selected' : ''}>Mon</option>
 											<option value="2"
@@ -1001,7 +718,7 @@
 									<div class="d-flex align-items-stretch gap-3">
 										<select class="form-select flex-fill" data-control="select2"
 											data-placeholder="Select an option" data-hide-search="true"
-											id="workTimeStart" name="user.workTimeStart">
+											id="workTimeStart" name="user.workTimeStart" data-tab="employee" data-required="true" data-label="Working Hour Start">
 											<option value="8:00"
 												${selectUser.workTimeStart == '8:00' ? 'selected' : ''}>8:00</option>
 											<option value="8:30"
@@ -1011,7 +728,7 @@
 										</select> <span class="d-flex align-items-center text-muted">to</span>
 										<select class="form-select flex-fill" data-control="select2"
 											data-placeholder="Select an option" data-hide-search="true"
-											id="workTimeEnd" name="user.workTimeEnd">
+											id="workTimeEnd" name="user.workTimeEnd" data-tab="employee" data-required="true" data-label="Working Hour End">
 											<option value="17:00"
 												${selectUser.workTimeEnd == '17:00' ? 'selected' : ''}>17:00</option>
 											<option value="17:30"
@@ -1030,19 +747,17 @@
 									<div class="mt-2">
 										<label class="form-check form-check-custom mb-6 mt-6">
 											<input class="form-check-input" type="radio"
-											name="user.workType" value="1"
+											name="user.workType" value="1" data-tab="employee" data-required="true" data-label="Default Working"
 											<c:if test="${empty selectUser.workType or selectUser.workType == '1'}">checked</c:if>>
 											<span class="form-check-label text-gray-800">On-Site</span>
 										</label> <label class="form-check form-check-custom mb-6 mt-6">
 											<input class="form-check-input" type="radio"
-											name="user.workType" value="2"
+											name="user.workType" value="2" data-tab="employee" data-required="true" data-label="Default Working"
 											<c:if test="${selectUser.workType == '2'}">checked</c:if>>
 											<span class="form-check-label text-gray-800">WFH</span>
 										</label>
 									</div>
 								</div>
-
-
 
 								<div class="col-md-6 fv-row">
 									<label class="required form-label">Number of On-Site
@@ -1050,19 +765,19 @@
 									<div class="mt-2">
 										<label class="form-check form-check-custom mb-6 mt-6">
 											<input class="form-check-input" type="radio"
-											name="user.onsiteNum" value="3"
+											name="user.onsiteNum" value="3" data-tab="employee" data-required="true" data-label="Number of On-Site Days"
 											<c:if test="${empty selectUser.onsiteNum or selectUser.onsiteNum == '3'}">checked</c:if>>
 											<span class="form-check-label text-gray-800 fw-500"> 4
 												- 5 days (On-Site) </span>
 										</label> <label class="form-check form-check-custom mb-6 mt-6">
 											<input class="form-check-input" type="radio"
-											name="user.onsiteNum" value="2"
+											name="user.onsiteNum" value="2" data-tab="employee" data-required="true" data-label="Number of On-Site Days"
 											<c:if test="${selectUser.onsiteNum == '2'}">checked</c:if>>
 											<span class="form-check-label text-gray-800 fw-500"> 2
 												- 3 days (Hybrid) </span>
 										</label> <label class="form-check form-check-custom mb-6 mt-6">
 											<input class="form-check-input" type="radio"
-											name="user.onsiteNum" value="1"
+											name="user.onsiteNum" value="1" data-tab="employee" data-required="true" data-label="Number of On-Site Days"
 											<c:if test="${selectUser.onsiteNum == '1'}">checked</c:if>>
 											<span class="form-check-label text-gray-800 fw-500">
 												0.5 - 1 day (WFH) </span>
@@ -1077,7 +792,7 @@
 								<div class="col-md-4 fv-row">
 									<label class="form-label">ลาพักร้อน (วัน)</label> <input
 										type="text" class="form-control" name="user.leaveQuota1"
-										value="${selectUser.leaveQuota1}" maxlength="4"
+										value="${selectUser.leaveQuota1}" maxlength="4" data-tab="employee"  
 										onkeypress="return fun_AllowOnlyAmountAndDot(this.id);" />
 								</div>
 
@@ -1085,14 +800,14 @@
 									<label class="form-label">ลาพักร้อนที่เหลือจากปีที่แล้ว
 										(วัน)</label> <input type="text" class="form-control"
 										name="user.leaveQuota4" value="${selectUser.leaveQuota4}"
-										maxlength="4"
+										maxlength="4" data-tab="employee" 
 										onkeypress="return fun_AllowOnlyAmountAndDot(this.id);" />
 								</div>
 
 								<div class="col-md-4 fv-row">
 									<label class="form-label">ลาป่วย (วัน)</label> <input
 										type="text" class="form-control" name="user.leaveQuota3"
-										value="${selectUser.leaveQuota3}" maxlength="4"
+										value="${selectUser.leaveQuota3}" maxlength="4" data-tab="employee" 
 										onkeypress="return fun_AllowOnlyAmountAndDot(this.id);" />
 								</div>
 
@@ -1123,76 +838,76 @@
 											<td>1</td>
 											<td>High School</td>
 											<td><input class="form-control"
-												name="user.eduInstitute1"
+												name="user.eduInstitute1" data-tab="education"
 												value="${selectUser.eduInstitute1}"></td>
 											<td>
 												<div class="d-flex align-items-center gap-3">
 													<input class="form-control" type="number"
-														name="user.eduDurStart1"
+														name="user.eduDurStart1" data-tab="education"
 														value="${selectUser.eduDurStart1}"> <span
 														class="text-muted">~</span> <input class="form-control"
-														type="number" name="user.eduDurEnd1"
+														type="number" name="user.eduDurEnd1"  data-tab="education"
 														value="${selectUser.eduDurEnd1}">
 												</div>
 											</td>
-											<td><input class="form-control" name="user.eduDegree1"
+											<td><input class="form-control" name="user.eduDegree1" data-tab="education"
 												value="${selectUser.eduDegree1}"></td>
 										</tr>
 										<tr class="border-bottom border-gray-200">
 											<td>2</td>
 											<td>Technical/Commercial</td>
 											<td><input class="form-control"
-												name="user.eduInstitute2"
+												name="user.eduInstitute2" data-tab="education"
 												value="${selectUser.eduInstitute2}"></td>
 											<td>
 												<div class="d-flex align-items-center gap-3">
 													<input class="form-control" type="number"
-														name="user.eduDurStart2"
+														name="user.eduDurStart2" data-tab="education"
 														value="${selectUser.eduDurStart2}"> <span
 														class="text-muted">~</span> <input class="form-control"
-														type="number" name="user.eduDurEnd2"
+														type="number" name="user.eduDurEnd2" data-tab="education"
 														value="${selectUser.eduDurEnd2}">
 												</div>
 											</td>
-											<td><input class="form-control" name="user.eduDegree2"
+											<td><input class="form-control" name="user.eduDegree2" data-tab="education"
 												value="${selectUser.eduDegree2}"></td>
 										</tr>
 										<tr class="border-bottom border-gray-200">
 											<td>3</td>
 											<td>University</td>
 											<td><input class="form-control"
-												name="user.eduInstitute3"
+												name="user.eduInstitute3" data-tab="education"
 												value="${selectUser.eduInstitute3}"></td>
 											<td>
 												<div class="d-flex align-items-center gap-3">
 													<input class="form-control" type="number"
-														name="user.eduDurStart3"
+														name="user.eduDurStart3" data-tab="education"
 														value="${selectUser.eduDurStart3}"> <span
 														class="text-muted">~</span> <input class="form-control"
-														type="number" name="user.eduDurEnd3"
+														type="number" name="user.eduDurEnd3" data-tab="education"
 														value="${selectUser.eduDurEnd3}">
 												</div>
 											</td>
-											<td><input class="form-control" name="user.eduDegree3"
+											<td><input class="form-control" name="user.eduDegree3" data-tab="education"
 												value="${selectUser.eduDegree3}"></td>
 										</tr>
 										<tr class="border-bottom border-gray-200">
 											<td>4</td>
 											<td>Graduated School</td>
 											<td><input class="form-control"
-												name="user.eduInstitute4"
+												name="user.eduInstitute4" data-tab="education"
 												value="${selectUser.eduInstitute4}"></td>
 											<td>
 												<div class="d-flex align-items-center gap-3">
 													<input class="form-control" type="number"
-														name="user.eduDurStart4"
+														name="user.eduDurStart4" data-tab="education"
 														value="${selectUser.eduDurStart4}"> <span
 														class="text-muted">~</span> <input class="form-control"
-														type="number" name="user.eduDurEnd4"
+														type="number" name="user.eduDurEnd4" data-tab="education"
 														value="${selectUser.eduDurEnd4}">
 												</div>
 											</td>
-											<td><input class="form-control" name="user.eduDegree4"
+											<td><input class="form-control" name="user.eduDegree4" data-tab="education"
 												value="${selectUser.eduDegree4}"></td>
 										</tr>
 									</tbody>
@@ -1213,7 +928,7 @@
 										<div class="col-sm-6 mb-3 mt-3">
 											<label
 												class="form-check form-check-custom form-check-success ">
-												<input class="form-check-input" type="radio"
+												<input class="form-check-input" type="radio" data-tab="payment" 
 												name="user.incDa" value="1"
 												${selectUser.incDa == '1' ? 'checked':''}> <span
 												class="form-check-label text-gray-800
@@ -1224,7 +939,7 @@
 										<div class="col-sm-6 mb-3 mt-3">
 											<label
 												class="form-check form-check-custom form-check-success">
-												<input class="form-check-input" type="radio"
+												<input class="form-check-input" type="radio" data-tab="payment" 
 												name="user.incDa" value="2"
 												${selectUser.incDa == '2' ? 'checked':''}> <span
 												class="form-check-label text-gray-800">เงินเดือนรวมค่าเบี้ยขยันแล้ว</span>
@@ -1233,7 +948,7 @@
 										<div class="col-sm-6 mb-3 mt-3">
 											<label
 												class="form-check form-check-custom form-check-success">
-												<input class="form-check-input" type="radio"
+												<input class="form-check-input" type="radio" data-tab="payment" 
 												name="user.incDa" value="3"
 												${selectUser.incDa == '3' ? 'checked':''}> <span
 												class="form-check-label text-gray-800">เงินเดือนถึงเกณฑ์งดเบี้ยขยัน</span>
@@ -1242,7 +957,7 @@
 										<div class="col-sm-6 mb-3 mt-3">
 											<label
 												class="form-check form-check-custom form-check-primary">
-												<input class="form-check-input" type="radio"
+												<input class="form-check-input" type="radio" data-tab="payment" 
 												name="user.incDa" value="4"
 												${selectUser.incDa == '4' ? 'checked':''}> <span
 												class="form-check-label text-gray-800">ผ่านทดลองงานรับเบี้ยขยัน</span>
@@ -1250,7 +965,7 @@
 										</div>
 										<div class="col-sm-6 mb-3 mt-3">
 											<label class="form-check form-check-custom form-check-danger">
-												<input class="form-check-input" type="radio"
+												<input class="form-check-input" type="radio" data-tab="payment" 
 												name="user.incDa" value="0"
 												${selectUser.incDa == '0' ? 'checked':''}> <span
 												class="form-check-label text-gray-800">งดเบี้ยขยัน</span>
@@ -1268,7 +983,7 @@
 											<label
 												class="form-check form-check-custom form-check-success">
 												<input class="form-check-input" type="radio"
-												name="user.incNb" value="1"
+												name="user.incNb" value="1" data-tab="payment" 
 												${selectUser.incNb == '1' ? 'checked':''}> <span
 												class="form-check-label text-gray-800">มีสิทธิ์ได้ค่า
 													notebook</span>
@@ -1278,7 +993,7 @@
 											<label
 												class="form-check form-check-custom form-check-success">
 												<input class="form-check-input" type="radio"
-												name="user.incNb" value="2"
+												name="user.incNb" value="2" data-tab="payment" 
 												${selectUser.incNb == '2' ? 'checked':''}> <span
 												class="form-check-label text-gray-800">เงินเดือนรวมค่า
 													notebook แล้ว</span>
@@ -1287,7 +1002,7 @@
 										<div class="col-sm-6">
 											<label class="form-check form-check-custom form-check-danger">
 												<input class="form-check-input" type="radio"
-												name="user.incNb" value="0"
+												name="user.incNb" value="0" data-tab="payment" 
 												${selectUser.incNb == '0' ? 'checked':''}> <span
 												class="form-check-label text-gray-800">งดค่า notebook</span>
 											</label>
@@ -1297,7 +1012,7 @@
 
 								<div class="col-12 fv-row mb-4">
 									<label class="form-label">Payment Remark</label>
-									<textarea class="form-control" rows="3"
+									<textarea class="form-control" rows="3" data-tab="payment" 
 										name="user.paymentRemark" placeholder="Payment remark">${selectUser.paymentRemark}</textarea>
 								</div>
 
@@ -1305,32 +1020,32 @@
 
 								<div class="col-md-6">
 									<label class="form-check form-check-custom"> <input
-										class="form-check-input" type="checkbox" id="withHoldAuto"
+										class="form-check-input" type="checkbox" id="withHoldAuto" data-tab="payment" 
 										${selectUser.withHoldAuto == '1' ? 'checked':''}> <span
 										class="form-check-label text-gray-800">คำนวนภาษีหัก ณ
 											ที่จ่ายอัตโนมัติ</span>
-									</label> <input type="hidden" name="user.withHoldAuto"
+									</label> <input type="hidden" name="user.withHoldAuto" 
 										id="withHoldAutoHidden" value="${selectUser.withHoldAuto}" />
 								</div>
 								<div class="col-md-6">
 									<label class="form-check form-check-custom"> <input
-										class="form-check-input" type="checkbox" id="socialSecurity"
+										class="form-check-input" type="checkbox" id="socialSecurity" data-tab="payment" 
 										${selectUser.socialSecurity == 1 ? 'checked':''}> <span
 										class="form-check-label text-gray-800">มีสิทธิ์ประกันสังคม</span>
-									</label> <input type="hidden" name="user.socialSecurity"
+									</label> <input type="hidden" name="user.socialSecurity" 
 										id="socialSecurityHidden" value="${selectUser.socialSecurity}" />
 								</div>
 
 								<div class="col-md-6 fv-row">
 									<label class="form-label">Tax Default</label> <input
-										type="number" step="0.01" class="form-control" id="withHold"
+										type="number" step="0.01" class="form-control" id="withHold" data-tab="payment" 
 										name="user.withHold"
 										value="${selectUser.withHold != null ? selectUser.withHold : '0.00'}"
 										${selectUser.withHoldAuto == '1' ? 'disabled':''} />
 								</div>
 								<div class="col-md-6 fv-row">
-									<label class="form-label">Tax Deduction</label> <select
-										class="form-select" name="user.taxDec" data-control="select2">
+									<label class="form-label">Tax Deduction</label> <select 
+										class="form-select" name="user.taxDec" data-control="select2" data-tab="payment" >
 										<option value="0" ${selectUser.taxDec == '0' ? 'selected':''}>หัก
 											ณ ที่จ่าย</option>
 										<option value="1" ${selectUser.taxDec == '1' ? 'selected':''}>ออกให้ตลอดไป</option>
@@ -1341,12 +1056,12 @@
 									<label class="form-label d-block">Transfer Type</label>
 									<div class="d-flex align-items-center gap-10">
 										<label class="form-check form-check-custom"> <input
-											class="form-check-input" type="radio"
+											class="form-check-input" type="radio" data-tab="payment" 
 											name="user.transferType" value="1"
 											${selectUser.transferType != '0' ? 'checked':''}> <span
 											class="form-check-label text-gray-800">โอน</span>
 										</label> <label class="form-check form-check-custom"> <input
-											class="form-check-input" type="radio"
+											class="form-check-input" type="radio" data-tab="payment" 
 											name="user.transferType" value='0'
 											${selectUser.transferType == '0' ? 'checked':''}> <span
 											class="form-check-label text-gray-800">เงินสด</span>
@@ -1356,12 +1071,12 @@
 
 								<div class="col-md-6 fv-row">
 									<label class="form-label">Bank Name</label> <input
-										class="form-control" name="user.bank"
+										class="form-control" name="user.bank" data-tab="payment" 
 										value="${selectUser.bank}" placeholder="Bank name">
 								</div>
 								<div class="col-md-6 fv-row">
 									<label class="form-label">Bank Branch</label> <input
-										class="form-control" name="user.bankBranch"
+										class="form-control" name="user.bankBranch" data-tab="payment" 
 										value="${selectUser.bankBranch}" placeholder="Bank branch">
 								</div>
 
@@ -1369,11 +1084,11 @@
 									<label class="form-label d-block">Bank Type</label>
 									<div class="d-flex align-items-center gap-10">
 										<label class="form-check form-check-custom"> <input
-											class="form-check-input" type="radio" name="user.bankType"
+											class="form-check-input" type="radio" name="user.bankType" data-tab="payment" 
 											value="0" ${selectUser.bankType != '1' ? 'checked':''}>
 											<span class="form-check-label text-gray-800">บัญชีออมทรัพย์</span>
 										</label> <label class="form-check form-check-custom"> <input
-											class="form-check-input" type="radio" name="user.bankType"
+											class="form-check-input" type="radio" name="user.bankType" data-tab="payment" 
 											value="1" ${selectUser.bankType == '1' ? 'checked':''}>
 											<span class="form-check-label text-gray-800">บัญชีกระแสรายวัน</span>
 										</label>
@@ -1381,9 +1096,9 @@
 								</div>
 								<div class="col-md-6 fv-row">
 									<label class="required form-label">Bank Number</label> <input
-										class="form-control" name="user.bankNum"
+										class="form-control" name="user.bankNum" data-tab="payment" data-required="true" data-label="Bank Number"
 										value="${selectUser.bankNum}" placeholder="Bank number"
-										required>
+										>
 								</div>
 							</div>
 
@@ -1504,12 +1219,91 @@
 					</div>
 				</form>
 
-				<div id="borrow-info">
-					<div class="portlet light bordered" id="borrow-info">
+				<div class="card mb-10" id="borrow-info">
+					<%-- <div class="portlet light bordered" id="borrow-info">
 						<div class="test">
 							<jsp:include page="/pages-back/borrow/bTable.jsp" flush="true"></jsp:include>
 						</div>
-					</div>
+					</div> --%>
+					
+					
+					
+					<div class="card-header">
+							<!--begin::Card title-->
+							<div class="card-title">
+								<h3 class="fw-semibold text-gray-900">Borrow List</h3>
+							</div>
+							<div class="card-toolbar">
+				           		 <a href="/borrow_add" class="btn btn-primary btn-md fw-medium">
+				                	<i class="ki-duotone ki-plus fs-4"> <span class="path1"></span> 
+								</i>Add New
+				            	</a>
+        					</div>
+						</div>
+					<div class="card-body p-10 opacity-80">
+							<div class="table-responsive ">
+								<table
+									class="table table-striped table-hover border-gray-300 table-row-bordered table-row-gray-200 ">
+									<thead class="border-bottom-1">
+										<tr class="fs-7 fw-bold text-gray-500">
+											<th class="px-3 min-w-150px">Date Create</th>
+											<th class="px-3 min-w-140px">Item No</th>
+											<th class="px-3 min-w-150px">Equipment</th>
+											<th class="px-3 min-w-130px">Location</th>
+											<th class="px-3 min-w-130px">Status</th>
+											<th class="px-3 min-w-130px">Action</th>
+										</tr>
+									</thead>
+
+									<tbody>
+									<c:if test="${empty borrowList}">
+										<tr>
+											<td colspan="6" class="text-center text-muted py-4">
+												Not found borrow list.
+											</td>
+										</tr>
+									</c:if>
+										<c:forEach var="item" items="${borrowList}">
+											<tr class="align-middle">
+												<td class="px-3 py-4 text-gray-900 fs-6 fw-normal">
+													${item.formatted_date}
+													<p class="text-gray-600 fs-6 fw-normal mb-0">${item.formatted_time}</p>
+												</td>
+												<td class="px-3 py-4 text-gray-900 fs-6 fw-normal">${item.item_no}</td>
+												<td class="px-3 py-4 text-gray-900 fs-6 fw-normal">${item.name}</td>
+												<td class="px-3 py-4 text-gray-900 fs-6 fw-normal">${item.location}</td>
+												<td class="px-3 py-4 ">
+												<c:if test="${item.status == 'R'}">
+													<span class="badge badge-lg bg-success text-white fw-semibold fs-8">Returned</span>
+												</c:if> 
+												<c:if test="${item.status == 'B'}">
+													<span class="badge badge-lg bg-warning text-white fw-semibold fs-8">Borrowing</span>
+												</c:if>
+												 <c:if test="${item.status == 'W'}">
+													<span class="badge badge-lg badge-secondary text-dark fw-semibold fs-8">Waiting</span>
+												</c:if>
+												<c:if test="${item.status == 'C'}">
+													<span class="badge badge-lg bg-dark text-white fw-semibold fs-8">Cancel</span>
+												</c:if> 
+												<c:if test="${empty item.status || item.status == '-'}">
+													<span class="badge badge-lg bg-light-secondary text-white fw-semibold fs-8">-</span>
+												</c:if>
+												</td>
+												<td class="px-3 py-4">
+													<a href="/borrow_edit?id=${item.borrow_id}" class="btn btn-lg btn-light-primary">
+									                	<i class="ki-duotone ki-pencil fs-4"> <span class="path1"></span> 
+									                	<span class="path2"></span> <span class="path2"></span> 
+														</i>
+									            	</a>
+				            					</td>
+											</tr>
+
+										</c:forEach>
+									</tbody>
+								</table>
+							</div>
+
+						</div>
 				</div>
 
 
@@ -1752,7 +1546,7 @@
     });
     </script>
 
-	<script>
+	<!-- <script>
     document.addEventListener("DOMContentLoaded", function () {
           const navLinks = document.querySelectorAll("#profileNav .nav-link[data-target]");
 
@@ -1761,23 +1555,6 @@
           }
 
           const targets = Array.from(navLinks).map(link => link.getAttribute("data-target"));
-
-        /*   function toggleFormButtons(targetId) {
-            const hideOn = ["#security-info", "#borrow-info"];   
-            const shouldHide = hideOn.includes(targetId);
-
-            const btnCancel = document.getElementById("btnCancel");
-            const btnSubmit = document.getElementById("btnSubmit");
-
-            [btnCancel, btnSubmit].forEach(btn => {
-              if (!btn) return;
-              if (shouldHide) {
-                btn.classList.add("d-none");      
-              } else {
-                btn.classList.remove("d-none");   
-              }
-            });
-          } */
 
           function showSection(targetId) {
             targets.forEach(sel => {
@@ -1791,13 +1568,11 @@
                 card.classList.add("d-none");
               }
             });
-
             toggleFormButtons(targetId);
           }
 
-
           showSection("#account-info");
-
+          
           navLinks.forEach(link => link.classList.remove("active"));
           const defaultLink = document.querySelector('#profileNav .nav-link[data-target="#account-info"]');
           if (defaultLink) defaultLink.classList.add("active");
@@ -1822,7 +1597,7 @@
           });
         });
 
-    </script>
+    </script> -->
 
 	<script>
 
@@ -1925,69 +1700,49 @@
             $('html, body').animate({ scrollTop: $(target).offset().top - 120 }, 300);
         });
 
-        $('#btnSubmit').on('click', function(e) {
-            e.preventDefault(); 
+        $('#btnSubmit').on('click', function (e) {
+        	  e.preventDefault();
 
-            var form = document.querySelector('form[action="admin-perform-edit"]');
-            var firstErrorInput = null;
+        	  const activeSection = getActiveTabElement();
+        	  const errorFields = validateActiveTab(activeSection);
 
-            for (var i = 0; i < form.elements.length; i++) {
-                var el = form.elements[i];
-                if (el.hasAttribute('required') && (el.value === "" || el.value === null)) {
-                    firstErrorInput = el; break;
-                }
-                if ($(el).is('select') && el.hasAttribute('required')) {
-                     if($(el).val() === "" || $(el).val() === null || $(el).val().length === 0){
-                         firstErrorInput = el; break;
-                     }
-                }
-                if (el.willValidate && !el.checkValidity()) {
-                    firstErrorInput = el; break;
-                }
-            }
+        	  if (errorFields.length > 0) {
+        	    Swal.fire({
+        	      title: "Please complete the form!",
+        	      html: "Please fill in the following fields:<br><strong>"
+        	            + errorFields.join(", ") + "</strong>",
+        	      icon: "error",
+        	      confirmButtonText: "OK",
+        	      buttonsStyling: false,
+        	      customClass: { confirmButton: "btn btn-danger" }
+        	    });
+        	    return;
+        	  }
 
-            if (firstErrorInput) {
-                var parentCard = $(firstErrorInput).closest('.card[id]');
-                var targetTabId = parentCard.length ? '#' + parentCard.attr('id') : null;
+        	  Swal.fire({
+        	    title: "Are you sure?!",
+        	    text: "Do you want to save the changes?",
+        	    icon: "warning",
+        	    showCancelButton: true,
+        	    confirmButtonText: "Save",
+        	    cancelButtonText: "Close",
+        	    buttonsStyling: false,
+        	    customClass: {
+        	      confirmButton: "btn btn-success",
+        	      cancelButton: "btn btn-secondary"
+        	    }
+        	  }).then((result) => {
+        	    if (result.isConfirmed) {
+        	    	const citizenIdInput = document.getElementById("user_citizenId");
+		            if (citizenIdInput) {
+		                citizenIdInput.value = citizenIdInput.value.replace(/\D/g, '');
+		            }
+		            
+        	      document.querySelector('form[action="admin-perform-edit"]').submit();
+        	    }
+        	  });
+        	});
 
-                if (targetTabId) forceOpenTab(targetTabId);
-
-                setTimeout(function() {
-                    $('html, body').animate({ scrollTop: $(firstErrorInput).offset().top - 200 }, 200);
-                    if ($(firstErrorInput).hasClass('select2-hidden-accessible')) {
-                        $(firstErrorInput).select2('open'); 
-                    } else {
-                        $(firstErrorInput).focus();
-                    }
-                    try { firstErrorInput.reportValidity(); } catch(err){}
-                }, 300);
-
-            } else {
-                /* form.submit(); */
-            	Swal.fire({
-   		    	 title: "Are you sure?!",
-   		 	        text: "Do you want to save the changes?",
-   		 	        icon: "warning",
-   		 	        showCancelButton: true,
-   		 	        confirmButtonText: "Save",
-   		 	        cancelButtonText: "Close",
-   		 	        buttonsStyling: false,
-   		 	        customClass: {
-   		 	            confirmButton: "btn btn-success",
-   		 	            cancelButton: "btn btn-secondary"
-   		 	        }
-   		    }).then((result) => {
-   		        if (result.isConfirmed) {
-   		        	const citizenIdInput = document.getElementById("user_citizenId");
-   		            if (citizenIdInput) {
-   		                citizenIdInput.value = citizenIdInput.value.replace(/\D/g, '');
-   		            }
-   		        	
-   		        	form.submit();
-   		        }
-   		    });
-            }
-        });
 
        /*  $('#btnCancel').click(function() { window.location.href = 'user-list'; }); */
 
@@ -1995,7 +1750,7 @@
             var userId = $(this).data('user-id');
             if (!userId) return;
             Swal.fire({
-                title: 'ยืนยันการลบ?', text: "ข้อมูลจะถูกลบถาวร", icon: 'warning',
+                title: 'Are you sure?!', text: "This data will be permanently deleted.", icon: 'warning',
                 showCancelButton: true, confirmButtonText: 'Confirm'
             }).then((result) => {
                 if (result.isConfirmed) {
@@ -2078,7 +1833,6 @@
 
 	<script>
 function confirmLeaveForm(redirectUrl){
-	
     Swal.fire({
         title: "Are you sure?!",
         text: "Closing will discard any unsaved data.",
@@ -2099,6 +1853,46 @@ function confirmLeaveForm(redirectUrl){
 }
 </script>
 
+<script>
+	function getActiveTabElement() {
+		  const target = $('#profileNav .nav-link.active').data('target');
+		  return target ? document.querySelector(target) : null;
+		}
+
+	function validateActiveTab(activeSection) {
+	    const errorFields = [];
+	    const checkedGroup = new Set();
+
+	    if (!activeSection) return errorFields;
+
+	    activeSection.querySelectorAll('[data-required="true"]').forEach(el => {
+
+	        if (el.type === 'radio' || el.type === 'checkbox') {
+	            if (checkedGroup.has(el.name)) return;
+	            checkedGroup.add(el.name);
+
+	            const checked = activeSection.querySelector("input[name='" + el.name + "']:checked");
+
+	            if (!checked) {
+	                errorFields.push(el.dataset.label || el.name);
+	                el.closest('.fv-row')?.classList.add('is-invalid');
+	            } else {
+	                el.closest('.fv-row')?.classList.remove('is-invalid');
+	            }
+	        } else {
+	            if (!el.value || el.value.trim() === "" || el.value === "null") {
+	                errorFields.push(el.dataset.label || el.name);
+	                el.classList.add('is-invalid');
+	            } else {
+	                el.classList.remove('is-invalid');
+	            }
+	        }
+	    });
+
+	    return errorFields;
+	}
+</script>
+
 	<script>
 	function toggleEyeIcon(){
 		document.querySelectorAll(".toggle-password").forEach(btn =>{
@@ -2108,7 +1902,6 @@ function confirmLeaveForm(redirectUrl){
 		    
 			btn.addEventListener("click", function(){
 				const input =document.getElementById(this.dataset.eyeTarget);
-				/* if (input.disabled) return; */
 
 			      const eyeSlash = this.querySelector(".ki-eye-slash");
 			      const eye = this.querySelector(".ki-eye");
@@ -2176,8 +1969,6 @@ function confirmLeaveForm(redirectUrl){
 	    return true;
 	}
 
-
-	
 	function validatePassword() {
 	    var errorFields = [];
 	    var isValid = true;
@@ -2236,8 +2027,6 @@ function confirmLeaveForm(redirectUrl){
 	        }
 	    });
 	}
-	
-	 
 	
 	function setPwPattern(state){
 		 const pwPattern = document.getElementById("pwPattern");

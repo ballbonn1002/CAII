@@ -711,7 +711,7 @@ public class UserAction extends ActionSupport {
 			 * request.setAttribute("test2", jobuser);
 			 */
 
-			List<Map<String, Object>> departmentList = departmentDAO.sequense();
+			List<Map<String, Object>> departmentList = departmentDAO.findAllList();
 
 			List<Map<String, Object>> positionList = positionDAO.sequense();
 
@@ -747,25 +747,59 @@ public class UserAction extends ActionSupport {
 			request.setAttribute("leaveW", sum_w);
 			request.setAttribute("leaveH", sum_h);
 
-			request.setAttribute("borrow_history", borrowDAO.findHistoryByUser(selectUser.getId()));
-
-			List<Borrow> borrows = borrowDAO.findBorrowByUser(selectUser.getId());
+//			request.setAttribute("borrow_history", borrowDAO.findHistoryByUser(selectUser.getId()));
+//
+//			List<Borrow> borrows = borrowDAO.findBorrowByUser(selectUser.getId());
+//			
+//			log.info("borrows=" + borrows);
+//
+//			List<Equipment> equipments = new ArrayList<Equipment>();
+//			for (int i = 0; i < borrows.size(); i++) {
+//				String equipment_id = borrows.get(i).getEquipmentId();
+//				Equipment equipments2 = equipmentDAO.getById(Integer.parseInt(equipment_id));
+//				log.info("equipments2=" + equipments2);
+//				equipments.add(equipments2);
+//				log.info("equipments=" + equipments);
+//			}
+//
+//			request.setAttribute("borrows", new Gson().toJson(borrows));
+//			request.setAttribute("equipments", new Gson().toJson(equipments));
 			
-			log.info("borrows=" + borrows);
+			List<Map<String,Object>> borrow = borrowDAO.getBorrowListByUserId(selectUser.getId());
+
 			
+			if (borrow != null && !borrow.isEmpty()) {
+				SimpleDateFormat inputDate =
+				        new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
+				inputDate.setCalendar(new GregorianCalendar());
 
+				SimpleDateFormat outputDate =
+				        new SimpleDateFormat("dd MMM yyyy", Locale.ENGLISH);
+				outputDate.setCalendar(new GregorianCalendar());
 
-			List<Equipment> equipments = new ArrayList<Equipment>();
-			for (int i = 0; i < borrows.size(); i++) {
-				String equipment_id = borrows.get(i).getEquipmentId();
-				Equipment equipments2 = equipmentDAO.getById(Integer.parseInt(equipment_id));
-				log.info("equipments2=" + equipments2);
-				equipments.add(equipments2);
-				log.info("equipments=" + equipments);
+				
+				for(Map<String, Object> row: borrow) {
+					Object dateStartObj = row.get("time_create");
+					if(dateStartObj == null) {
+						continue;
+					}
+					 String dt = dateStartObj.toString();         
+					 String[] parts = dt.split(" ");
+					 
+					 String datePart = parts[0]; 
+					 String timePart = parts[1].split("\\.")[0];
+					 
+					 java.util.Date date = inputDate.parse(datePart);
+
+					 row.put("formatted_date", outputDate.format(date));
+					 row.put("formatted_time", timePart);
+				}
+				
+				request.setAttribute("borrowList", borrow);
+				log.debug("borrow"+borrow);
+			}else {
+				request.setAttribute("borrowList", borrow);
 			}
-
-			request.setAttribute("borrows", new Gson().toJson(borrows));
-			request.setAttribute("equipments", new Gson().toJson(equipments));
 			log.debug(selectUser.getPaymentRemark());
 			
 			String imgPath = null;
@@ -806,7 +840,8 @@ public class UserAction extends ActionSupport {
 	public String open() {
 		try {
 			
-			List<Map<String, Object>> departmentList = departmentDAO.sequense();
+			List<Map<String, Object>> departmentList = departmentDAO.findAllList();
+			log.debug("departmentList"+departmentList);
 			request.setAttribute("departmentList", departmentList);
 
 			List<Map<String, Object>> positionList = positionDAO.sequense();
@@ -1211,7 +1246,9 @@ public class UserAction extends ActionSupport {
 
 	public String performAdd() {
 		try {
-			System.out.println("perform add");
+			User ur = (User) request.getSession().getAttribute("onlineUser");
+			String logonUser = ur.getId();
+		
 			List<Map<String, Object>> departmentList = departmentDAO.sequense();
 			request.setAttribute("departmentList", departmentList);
 			List<Map<String, Object>> positionList = positionDAO.sequense();
@@ -1234,35 +1271,72 @@ public class UserAction extends ActionSupport {
 	        if (password.equalsIgnoreCase(user.getPassword())) { user.setPassword(password); }
 			else { user.setPassword(MD5.getInstance().hashData(password.getBytes())); }
 	        
-//			String email = request.getParameter("user.email");
-//			String emailpas = request.getParameter("user.emailPassword");
-//			String emailpass = MD5.getInstance().hashData(emailpas.getBytes());
-//			String phone = request.getParameter("user.phone_num");
-//			String nickname = request.getParameter("user.nickName");
-//			String nicknameEN = request.getParameter("user.nickNameEN");
-//			String titlenameTH = request.getParameter("user.titleNameTH");
-//			String titlenameEN = request.getParameter("user.titleNameEN");
-//			String emailhost = request.getParameter("user.emailHost");
-//			String gender = request.getParameter("user.gender");
-//			String role = request.getParameter("user.roleId");
-//			String address = request.getParameter("user.address");
-//			String department = request.getParameter("user.departmentId");
-//			String position = request.getParameter("user.positionId");
-//			String leaveQuota4 = request.getParameter("user.leaveQuota4");
-//			BigDecimal lastYearQuota = new BigDecimal(leaveQuota4);
 
 			user.setTimeCreate(DateUtil.getCurrentTime());
 			user.setTimeUpdate(DateUtil.getCurrentTime());
-			String bd = this.birthDate; 
-	        if (bd != null && !bd.equals("")) {
-	            Date birthDate = Convert.parseDate(bd);
-	            user.setBirthDate(birthDate);
-	        }
-	        String sd = this.startDate; 
-	        if (sd != null && !sd.equals("")) {
-	            Date startDate = Convert.parseDate(sd);
-	            user.setStartDate(startDate);
-	        }
+//			String bd = this.birthDate; 
+//	        if (bd != null && !bd.equals("")) {
+//	            Date birthDate = Convert.parseDate(bd);
+//	            user.setBirthDate(birthDate);
+//	        }
+//	        String sd = this.startDate; 
+//	        if (sd != null && !sd.equals("")) {
+//	            Date startDate = Convert.parseDate(sd);
+//	            user.setStartDate(startDate);
+//	        }
+	        
+	        if (fileUpload != null) {
+                int maxId = fileuploadDAO.getMaxId() + 1;
+                String fileServerPath = request.getServletContext().getRealPath("/");
+                String originalName = fileUploadFileName;
+                String fileName = originalName.substring(0,originalName.lastIndexOf("."));
+				String typeFile = originalName.substring(originalName.lastIndexOf("."));
+				
+				if(fileName.contains(" ")) {
+					fileName = fileName.trim().replaceAll(" ", "_");
+				}
+				
+				String newFileName = maxId + "_" + fileName + typeFile;
+				String serverFileName = "user_" + maxId + typeFile;
+				
+				long fileSize = fileUpload.length(); //byte
+                double sizeKB = fileSize / 1024.0;
+                double sizeMB = fileSize / (1024.0 * 1024.0);
+                String sizeText;
+                if (fileSize < 1024) {
+                    sizeText = fileSize + " B";
+                } else if (fileSize < 1024 * 1024) {
+                    sizeText = String.format("%.2f KB", sizeKB);
+                } else {
+                    sizeText = String.format("%.2f MB", sizeMB);
+                }
+
+                FileUtil.upload(fileUpload, fileServerPath + "upload/user/", serverFileName);
+				
+                FileUpload file = new FileUpload();
+                file.setFileId(maxId);
+                file.setUserId(user.getId());
+                file.setName(fileName);
+				file.setPage("user");
+				file.setPageId(null);
+				file.setUserId(logonUser);
+				file.setType(typeFile);
+				file.setSize(sizeText);
+				file.setAltName(null);
+				file.setUserCreate(logonUser);
+				file.setPath("/upload/user/" + newFileName);
+				file.setTimeCreate(DateUtil.getCurrentTime());
+                fileuploadDAO.save(file);
+
+                user.setPath("/upload/user/" + newFileName);
+
+            }
+
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
+			if (this.startDate != null && !this.startDate.isEmpty()) {
+				user.setStartDate(new java.sql.Date(sdf.parse(this.startDate).getTime()));
+			}
+			
 			user.setEnable("1");
 			user.setName(user.getName().trim());
 			user.setNameEN(user.getNameEN().trim());
@@ -1293,39 +1367,39 @@ public class UserAction extends ActionSupport {
 			
 			
 			
-			if (fileUpload != null) {
-	            int maxId = fileuploadDAO.getMaxId() + 1;
-	            ServletContext context = request.getServletContext();
-	            String fileServerPath = context.getRealPath("/");
-	            String newFileName = maxId + "_" + fileUploadFileName;
-
-	            // Upload
-	            FileUtil.upload(fileUpload, fileServerPath + "upload/user/", newFileName);
-
-	            // Save File Log
-	            FileUpload fileupload = new FileUpload();
-	            fileupload.setFileId(maxId);
-	            fileupload.setUserId(user.getId());
-	            fileupload.setUserCreate(user.getId());
-	            
-	            String name = fileUploadFileName;
-	            String type = "";
-	            int split = fileUploadFileName.lastIndexOf(".");
-	            if(split >= 0) {
-	                 name = fileUploadFileName.substring(0, split);
-	                 type = fileUploadFileName.substring(split);
-	            }
-	            fileupload.setName(name);
-	            fileupload.setType(type);
-	            fileupload.setSize(fileUploadSize);
-	            fileupload.setPath("/upload/user/" + newFileName);
-	            fileupload.setTimeCreate(DateUtil.getCurrentTime());
-	            fileuploadDAO.save(fileupload);
-
-	            // Update User Path
-	            user.setPath("/upload/user/" + newFileName);
-	            userDAO.update(user);
-	        }
+//			if (fileUpload != null) {
+//	            int maxId = fileuploadDAO.getMaxId() + 1;
+//	            ServletContext context = request.getServletContext();
+//	            String fileServerPath = context.getRealPath("/");
+//	            String newFileName = maxId + "_" + fileUploadFileName;
+//
+//	            // Upload
+//	            FileUtil.upload(fileUpload, fileServerPath + "upload/user/", newFileName);
+//
+//	            // Save File Log
+//	            FileUpload fileupload = new FileUpload();
+//	            fileupload.setFileId(maxId);
+//	            fileupload.setUserId(user.getId());
+//	            fileupload.setUserCreate(user.getId());
+//	            
+//	            String name = fileUploadFileName;
+//	            String type = "";
+//	            int split = fileUploadFileName.lastIndexOf(".");
+//	            if(split >= 0) {
+//	                 name = fileUploadFileName.substring(0, split);
+//	                 type = fileUploadFileName.substring(split);
+//	            }
+//	            fileupload.setName(name);
+//	            fileupload.setType(type);
+//	            fileupload.setSize(fileUploadSize);
+//	            fileupload.setPath("/upload/user/" + newFileName);
+//	            fileupload.setTimeCreate(DateUtil.getCurrentTime());
+//	            fileuploadDAO.save(fileupload);
+//
+//	            // Update User Path
+//	            user.setPath("/upload/user/" + newFileName);
+//	            userDAO.update(user);
+//	        }
 			
 			userId = user.getId();
 
