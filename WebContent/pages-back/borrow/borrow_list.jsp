@@ -198,9 +198,9 @@ th.sort:hover {
 											<!-- Status -->
 											<div class="col-md-3">
 												<label class="select-default">Status:</label> <select
-													name="status"
-													class="form-select form-select-solid border border-gray-300 rounded-3 px-4 py-2 gap-3 h-55px bg-body">
-													<option value="">All Status</option>
+													id="statusFilter" name="status"
+													class="form-select form-select-solid border border-gray-300 rounded-3 px-4 py-2 gap-3 h-55px bg-body"
+													multiple data-control="select2" data-placeholder="Select">
 													<option value="B">Borrowed</option>
 													<option value="W">Wait for Approve</option>
 												</select>
@@ -261,42 +261,36 @@ th.sort:hover {
 
 												<!-- รายการ Type -->
 												<div class="d-flex flex-wrap align-items-center gap-9">
-													<div class="d-flex align-items-center gap-4">
-														<i class="ki-duotone ki-laptop fs-4 text-gray-600"> <span
-															class="path1"></span><span class="path2"></span>
-														</i> <span class="text-gray-800">Computer</span>
+													<div class="d-inline-flex align-items-center me-10 mb-2">
+														<i class="ki-solid ki-laptop fs-4 fs-1 text-gray-500 me-3">
+														</i> <span class="fs-6 fw-normal text-gray-900">Computer</span>
 													</div>
 
-													<div class="d-flex align-items-center gap-4">
-														<i class="ki-duotone ki-keyboard fs-4 text-gray-600">
-															<span class="path1"></span><span class="path2"></span>
-														</i> <span class="text-gray-800">Instrument</span>
+													<div class="d-inline-flex align-items-center me-10 mb-2">
+														<i class="ki-solid ki-keyboard fs-1 text-gray-500 me-3">
+														</i> <span class="fs-6 fw-normal text-gray-900">Instrument</span>
 													</div>
 
-													<div class="d-flex align-items-center gap-4">
-														<i class="ki-duotone ki-verify fs-4 text-gray-600"> <span
-															class="path1"></span><span class="path2"></span>
-														</i> <span class="text-gray-800">Software License</span>
+													<div class="d-inline-flex align-items-center me-10 mb-2">
+														<i class="ki-solid ki-verify fs-1 text-gray-500 me-3">
+														</i> <span class="fs-6 fw-normal text-gray-900">Software
+															License</span>
 													</div>
 
-													<div class="d-flex align-items-center gap-4">
-														<i class="ki-duotone ki-phone fs-4 text-gray-600"> <span
-															class="path1"></span><span class="path2"></span>
-														</i> <span class="text-gray-800">Mobile</span>
+													<div class="d-inline-flex align-items-center me-10 mb-2">
+														<i class="ki-solid ki-phone fs-1 text-gray-500 me-3">
+														</i> <span class="fs-6 fw-normal text-gray-900">Mobile</span>
 													</div>
 
-													<div class="d-flex align-items-center gap-4">
-														<i class="ki-duotone ki-dots-square fs-4 text-gray-600">
-															<span class="path1"></span><span class="path2"></span> <span
-															class="path3"></span><span class="path4"></span>
-														</i> <span class="text-gray-800">Other</span>
+													<div class="d-inline-flex align-items-center me-10 mb-2">
+														<i class="ki-solid ki-dots-square fs-1 text-gray-500 me-3">
+														</i> <span class="fs-6 fw-normal text-gray-900">Other</span>
 													</div>
 
-													<div class="d-flex align-items-center gap-4">
-														<i class="ki-duotone ki-wifi-square fs-4 text-gray-600">
-															<span class="path1"></span><span class="path2"></span> <span
-															class="path3"></span><span class="path4"></span>
-														</i> <span class="text-gray-800">Pocket WIFI</span>
+													<div class="d-inline-flex align-items-center me-10 mb-2">
+														<i class="ki-solid ki-wifi-square fs-1 text-gray-500 me-3">
+														</i> <span class="fs-6 fw-normal text-gray-900">Pocket
+															WIFI</span>
 													</div>
 												</div>
 											</div>
@@ -382,10 +376,9 @@ th.sort:hover {
 
 						<div class="col-md-6 ps-md-10 mt-5 mt-md-0">
 							<div class="d-flex align-items-center mb-1 pb-4">
-								<i class="ki-duotone ki-laptop fs-2x text-gray-600 me-3"
-									id="m_type_icon"> <span class="path1"></span><span
-									class="path2"></span>
-								</i> <span class="fw-bold fs-5 text-gray-800 text-break" id="m_name"></span>
+								<i class="ki-solid ki-laptop fs-2x text-gray-600 me-3"
+									id="m_type_icon"> </i> <span
+									class="fw-bold fs-5 text-gray-800 text-break" id="m_name"></span>
 							</div>
 
 							<div class="fs-5 text-gray-700 fw-normal mt-1 pb-4 me-4">
@@ -554,10 +547,9 @@ th.sort:hover {
 
 						<div class="col-md-6 ps-md-10 mt-5 mt-md-0">
 							<div class="d-flex align-items-center mb-1 pb-4">
-								<i class="ki-duotone ki-laptop fs-2x text-gray-600 me-3"> <span
-									class="path1"></span><span class="path2"></span>
-								</i> <span class="fw-bold fs-5 text-gray-800 text-break"
-									id="bd_name"></span>
+								<i class="ki-solid ki-laptop fs-2x text-gray-600 me-3"
+									id="bd_type_icon"> </i> <span
+									class="fw-bold fs-5 text-gray-800 text-break" id="bd_name"></span>
 							</div>
 
 							<div class="fs-5 text-gray-700 fw-normal mt-1 pb-4 me-4">
@@ -586,27 +578,27 @@ th.sort:hover {
 							<div class="row fs-7 text-gray-700">
 								<div class="col-md-6 pe-md-10">
 									<div class="mb-3 pb-4">
-										<span class="fw-normal fs-5 text-gray-700 me-3">Windows</span>
+										<span class="fw-normal fs-5 text-gray-700 me-3">Windows:</span>
 										<span id="bd_windows"
 											class="ms-1 fw-normal fs-5 text-gray-800 text-break"></span>
 									</div>
 									<div class="mb-3 pb-4">
-										<span class="fw-normal fs-5 text-gray-700 me-3">Ram</span> <span
+										<span class="fw-normal fs-5 text-gray-700 me-3">Ram:</span> <span
 											id="bd_ram"
 											class="ms-1 fw-normal fs-5 text-gray-800 text-break"></span>
 									</div>
 									<div class="mb-3 pb-4">
-										<span class="fw-normal fs-5 text-gray-700 me-3">Storage</span>
+										<span class="fw-normal fs-5 text-gray-700 me-3">Storage:</span>
 										<span id="bd_storage"
 											class="ms-1 fw-normal fs-5 text-gray-800 text-break"></span>
 									</div>
 									<div class="mb-3 pb-4">
 										<span class="fw-normal fs-5 text-gray-700 me-3">WIFI
-											Address</span> <span id="bd_wifi"
+											Address:</span> <span id="bd_wifi"
 											class="ms-1 fw-normal fs-5 text-gray-800 text-break"></span>
 									</div>
 									<div class="mb-3 pb-4">
-										<span class="fw-normal fs-5 text-gray-700 me-3">Dispaly</span>
+										<span class="fw-normal fs-5 text-gray-700 me-3">Display:</span>
 										<span id="bd_display"
 											class="ms-1 fw-normal fs-5 text-gray-800 text-break"></span>
 									</div>
@@ -614,23 +606,23 @@ th.sort:hover {
 
 								<div class="col-md-6 ps-md-10">
 									<div class="mb-3 pb-4">
-										<span class="fw-normal fs-5 text-gray-700 me-3">CPU</span> <span
+										<span class="fw-normal fs-5 text-gray-700 me-3">CPU:</span> <span
 											id="bd_cpu"
 											class="ms-1 fw-normal fs-5 text-gray-800 text-break"></span>
 									</div>
 									<div class="mb-3 pb-4">
-										<span class="fw-normal fs-5 text-gray-700 me-3">Storage</span>
+										<span class="fw-normal fs-5 text-gray-700 me-3">Storage:</span>
 										<span id="bd_storage2"
 											class="ms-1 fw-normal fs-5 text-gray-800 text-break"></span>
 									</div>
 									<div class="mb-3 pb-4">
-										<span class="fw-normal fs-5 text-gray-700 me-3">Battery</span>
+										<span class="fw-normal fs-5 text-gray-700 me-3">Battery:</span>
 										<span id="bd_battery"
 											class="ms-1 fw-normal fs-5 text-gray-800 text-break"></span>
 									</div>
 									<div class="mb-3 pb-4">
 										<span class="fw-normal fs-5 text-gray-700 me-3">LAN
-											Address</span> <span id="bd_lan"
+											Address:</span> <span id="bd_lan"
 											class="ms-1 fw-normal fs-5 text-gray-800 text-break"></span>
 									</div>
 								</div>
@@ -814,7 +806,7 @@ th.sort:hover {
 				.attr('data-type', row.type || '');
 			
 			// ID
-			tr.append($('<td>').addClass('text-gray-900 fw-bold fs-6').text(row.borrow_id || ''));
+			tr.append($('<td>').addClass('text-gray-900 fw-bold fs-5').text(row.borrow_id || ''));
 			
 			// Item No
 			tr.append($('<td>').addClass('text-gray-900 fw-normal fs-5').text(row.item_no || ''));
@@ -827,15 +819,15 @@ th.sort:hover {
 			
 			// Equipment/Detail
 			var equipCell = $('<td>');
-			equipCell.append($('<div>').addClass('fw-semibold text-gray-900 mb-1').text(row.name || ''));
-			var detailDiv = $('<div>').addClass('d-flex align-items-center');
-			detailDiv.append('<span class="btn btn-icon btn-light-secondary btn-sm me-2"><i class="ki-duotone ki-message-text fs-4 text-gray-600"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span></i></span>');
-			detailDiv.append($('<div>').addClass('text-gray-500 fs-8').text(row.detail || ''));
+			equipCell.append($('<div>').addClass('fw-normal fs-5 text-gray-900').text(row.name || ''));
+			var detailDiv = $('<div>').addClass('d-flex align-items-center mt-1 fs-6 text-gray-700');
+			detailDiv.append('<i class="ki-duotone ki-message-text fs-4 me-3 text-gray-500"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span></i>');
+			detailDiv.append($('<div>').addClass('text-gray-500 fs-6').text(row.detail || ''));
 			equipCell.append(detailDiv);
 			tr.append(equipCell);
 			
 			// Location
-			tr.append($('<td>').addClass('fw-semibold').text(row.location || ''));
+			tr.append($('<td>').addClass('fw-semibold fs-5').text(row.location || ''));
 			
 			// Status
 			var statusCell = $('<td>').attr('data-status', row.statusborrow);
@@ -867,18 +859,18 @@ th.sort:hover {
 		var typeStr = (type || '').toLowerCase();
 		switch(typeStr) {
 			case 'c':
-				return '<i class="ki-duotone ki-laptop fs-1 text-gray-500"><span class="path1"></span><span class="path2"></span></i>';
+				return '<i class="ki-solid ki-laptop fs-1 text-gray-500"></i>';
 			case 'in':
-				return '<i class="ki-duotone ki-keyboard fs-1 text-gray-500"><span class="path1"></span><span class="path2"></span></i>';
+				return '<i class="ki-solid ki-keyboard fs-1 text-gray-500"></i>';
 			case 'l':
 			case 'sl':
-				return '<i class="ki-duotone ki-verify fs-1 text-gray-500"><span class="path1"></span><span class="path2"></span></i>';
+				return '<i class="ki-solid ki-verify fs-1 text-gray-500"></i>';
 			case 'mob':
-				return '<i class="ki-duotone ki-phone fs-1 text-gray-500"><span class="path1"></span><span class="path2"></span></i>';
+				return '<i class="ki-solid ki-phone fs-1 text-gray-500"></i>';
 			case 'p':
-				return '<i class="ki-duotone ki-wifi-square fs-1 text-gray-500"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span></i>';
+				return '<i class="ki-solid ki-wifi-square fs-1 text-gray-500"></i>';
 			default:
-				return '<i class="ki-duotone ki-dots-square fs-1 text-gray-500"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span></i>';
+				return '<i class="ki-solid ki-dots-square fs-1 text-gray-500"></i>';
 		}
 	}
 
@@ -891,6 +883,25 @@ th.sort:hover {
 				return '<span class="badge badge-light me-2" style="width: fit-content;">Wait for Approve</span>';
 			default:
 				return '<span class="badge badge-light me-2" style="width: fit-content;">-</span>';
+		}
+	}
+	
+	function getTypeIconClass(type) {
+		var typeStr = (type || '').toLowerCase();
+		switch(typeStr) {
+			case 'c':
+				return 'ki-solid ki-laptop';
+			case 'in':
+				return 'ki-solid ki-keyboard';
+			case 'l':
+			case 'sl':
+				return 'ki-solid ki-verify';
+			case 'mob':
+				return 'ki-solid ki-phone';
+			case 'p':
+				return 'ki-solid ki-wifi-square';
+			default:
+				return 'ki-solid ki-dots-square';
 		}
 	}
 
@@ -909,7 +920,6 @@ th.sort:hover {
 		const bdModalObj = bootstrap.Modal.getOrCreateInstance(bdModalEl);
 
 		const $keywordInput = $('#searchForm input[name="keyword"]');
-		const $statusSelect = $('#searchForm select[name="status"]');
 		const $typeSelect = $('#searchForm select[name="type"]');
 		const $searchForm = $('#searchForm');
 
@@ -923,22 +933,26 @@ th.sort:hover {
 		});
 
 		function formatStateWithCheckbox(state) {
-			if (!state.id) {
-				return state.text;
-			}
+		    if (!state.id) {
+		        return state.text;
+		    }
 
-			var isSelected = $typeSelect.val() && $typeSelect.val().includes(state.id);
-			
-			var $state = $(
-				'<div class="d-flex align-items-center w-100">' +
-					'<input type="checkbox" class="form-check-input me-2" ' + 
-					(isSelected ? 'checked' : '') + '> ' +
-					'<span>' + state.text + '</span>' +
-				'</div>'
-			);
-			
-			return $state;
+		    // ตรวจสอบว่า option นี้ถูกเลือกหรือไม่ (ใช้กับทั้ง type และ status)
+		    var $select = $(state.element).closest('select');
+		    var currentValues = $select.val() || [];
+		    var isSelected = currentValues.includes(state.id);
+		    
+		    var $state = $(
+		        '<div class="d-flex align-items-center w-100">' +
+		            '<input type="checkbox" class="form-check-input me-2" ' + 
+		            (isSelected ? 'checked' : '') + '> ' +
+		            '<span>' + state.text + '</span>' +
+		        '</div>'
+		    );
+		    
+		    return $state;
 		}
+		
 
 		$(document).on('mousedown', '.select2-results__option input[type="checkbox"]', function(e) {
 			e.stopPropagation();
@@ -982,36 +996,90 @@ th.sort:hover {
 
 		// ===== Custom filter =====
 		$.fn.dataTable.ext.search.push(function(settings, data, dataIndex) {
-			if (settings.nTable.id !== 'borrow_table') return true;
+		    if (settings.nTable.id !== 'borrow_table') return true;
 
-			var keyword = ($keywordInput.val() || '').trim().toLowerCase();
-			var statusFilter = ($statusSelect.val() || '').toUpperCase();
-			var typeFilterArray = $typeSelect.val() || [];
+		    var keyword = ($keywordInput.val() || '').trim().toLowerCase();
+		    var statusFilterArray = $statusSelect.val() || [];  // เปลี่ยนเป็น array
+		    var typeFilterArray = $typeSelect.val() || [];
 
-			var rowNode = settings.aoData[dataIndex].nTr;
-			var statusCode = (rowNode.dataset.status || '').toUpperCase();
-			var typeCode = (rowNode.dataset.type || '').toLowerCase();
+		    var rowNode = settings.aoData[dataIndex].nTr;
+		    var statusCode = (rowNode.dataset.status || '').toUpperCase();
+		    var typeCode = (rowNode.dataset.type || '').toLowerCase();
 
-			if (typeCode === 'sl') {
-				typeCode = 'l';
-			}
+		    if (typeCode === 'sl') {
+		        typeCode = 'l';
+		    }
 
-			if (statusFilter && statusCode !== statusFilter) {
-				return false;
-			}
+		    // เปลี่ยนการตรวจสอบ status เป็นแบบ array
+		    if (statusFilterArray.length > 0) {
+		        if (!statusFilterArray.includes(statusCode)) {
+		            return false;
+		        }
+		    }
 
-			if (typeFilterArray.length > 0) {
-				if (!typeFilterArray.includes(typeCode)) {
-					return false;
-				}
-			}
+		    if (typeFilterArray.length > 0) {
+		        if (!typeFilterArray.includes(typeCode)) {
+		            return false;
+		        }
+		    }
 
-			var rowText = (rowNode.textContent || '').toLowerCase();
-			if (keyword && rowText.indexOf(keyword) === -1) {
-				return false;
-			}
+		    var rowText = (rowNode.textContent || '').toLowerCase();
+		    if (keyword && rowText.indexOf(keyword) === -1) {
+		        return false;
+		    }
 
-			return true;
+		    return true;
+		});
+		
+		// ===== Initialize Select2 สำหรับ Status =====
+		const $statusSelect = $('#searchForm select[name="status"]');
+
+		$statusSelect.select2({
+		    placeholder: "Select",
+		    closeOnSelect: false,
+		    allowClear: true,
+		    width: '100%',
+		    templateResult: formatStateWithCheckbox
+		});
+
+		$(document).on('mousedown', '.select2-results__option input[type="checkbox"]', function(e) {
+		    e.stopPropagation();
+		});
+
+		$statusSelect.on('select2:select select2:unselect', function(e) {
+		    $statusSelect.select2('close');
+		    $statusSelect.select2('open');
+		});
+
+		$statusSelect.on('select2:open', function() {
+		    setTimeout(function() {
+		        if (!$('.status-select-buttons').length) {
+		            var buttonsHtml = 
+		                '<div class="status-select-buttons d-flex gap-2 p-3 border-top bg-white">' +
+		                    '<button type="button" class="btn btn-light flex-fill status-deselect-btn">Deselect All</button>' +
+		                    '<button type="button" class="btn btn-primary flex-fill status-select-btn">Select All</button>' +
+		                '</div>';
+		            
+		            $('.select2-dropdown').append(buttonsHtml);
+		            
+		            $('.status-deselect-btn').on('click', function(e) {
+		                e.preventDefault();
+		                e.stopPropagation();
+		                $statusSelect.val(null).trigger('change');
+		                $statusSelect.select2('close');
+		            });
+		            
+		            $('.status-select-btn').on('click', function(e) {
+		                e.preventDefault();
+		                e.stopPropagation();
+		                var allValues = $statusSelect.find('option').map(function() {
+		                    return $(this).val();
+		                }).get();
+		                $statusSelect.val(allValues).trigger('change');
+		                $statusSelect.select2('close');
+		            });
+		        }
+		    }, 10);
 		});
 
 		// ===== init DataTable =====
@@ -1171,7 +1239,7 @@ th.sort:hover {
 		// ✅ ฟังก์ชันสำหรับเติมข้อมูลใน Equipment Modal
 		function fillBorrowModal(item) {
 			if (!item) return;
-
+		
 			setText('m_item_link', 'ID: ' + (item.item_no || '-'));
 			setText('m_borrow_id', 'ID: ' + (item.borrow_id || '-'));
 			setText('m_borrower', item.name_en || item.borrower_name || '-');
@@ -1182,7 +1250,11 @@ th.sort:hover {
 			setText('m_borrow_date', formatDateRange(item.date_start, item.date_end));
 			setText('m_purchase_date', formatTime(item.time_create));
 			setText('m_name', item.name);
-
+		
+			// เปลี่ยนไอคอนตาม type
+			var typeIconClass = getTypeIconClass(item.type);
+			$('#m_type_icon').removeClass().addClass(typeIconClass + ' fs-2x text-gray-600 me-3');
+		
 			// Status badge
 			var $badge = $('#m_status_badge');
 			$badge.removeClass().addClass('badge badge-lg rounded-pill px-4 fw-semibold');
@@ -1197,7 +1269,7 @@ th.sort:hover {
 			} else {
 				$badge.addClass('bg-light text-muted').text('-');
 			}
-
+		
 			// More Detail
 			var type = String(item.type || '').toLowerCase();
 			if (type === 'c') {
@@ -1214,9 +1286,9 @@ th.sort:hover {
 			} else {
 				$('#moreDetailWrapper').hide();
 			}
-
+		
 			setBorrowModalButtons(status);
-
+		
 			// เก็บข้อมูลไว้ใช้ปุ่ม Edit/Cancel/Confirm
 			$('#borrowModal').data('currentItem', item);
 		}
@@ -1224,14 +1296,18 @@ th.sort:hover {
 		// ✅ ฟังก์ชันสำหรับเติมข้อมูลใน Borrow Detail Modal
 		function fillBorrowDetailModal(item) {
 			if (!item) return;
-
+		
 			setText('bd_item_link', 'ID: ' + (item.item_no || '-'));
 			setText('bd_name', item.name);
 			setText('bd_serial', item.serial_no);
 			setText('bd_detail', item.detail);
 			setText('bd_amount', formatAmount(item.amount));
 			setText('bd_purchase_date', formatTime(item.time_create));
-
+		
+			// เปลี่ยนไอคอนตาม type
+			var typeIconClass = getTypeIconClass(item.type);
+			$('#bd_type_icon').removeClass().addClass(typeIconClass + ' fs-2x text-gray-600 me-3');
+		
 			// Status
 			var $badge = $('#bd_status_badge');
 			$badge.removeClass().addClass('badge badge-lg rounded-pill px-4 fw-semibold');
@@ -1246,7 +1322,7 @@ th.sort:hover {
 			} else {
 				$badge.addClass('bg-light text-muted').text('-');
 			}
-
+		
 			// More Detail
 			var type = String(item.type || '').toLowerCase();
 			if (type === 'c') {
@@ -1263,7 +1339,7 @@ th.sort:hover {
 			} else {
 				$('#bd_moreDetailWrapper').hide();
 			}
-
+		
 			$('#borrowDetailModal').data('borrowId', item.borrow_id);
 			$('#bd_approver_note').val('');
 		}
