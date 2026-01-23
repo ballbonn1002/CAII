@@ -367,7 +367,7 @@
 
 							<c:forEach var="ann" items="${announcementList}">
 
-								<c:if test="${ann.highlight == '1'}">
+								<c:if test="${fn:trim(ann.highlight) eq '1'}">
 
 									<fmt:formatDate var="announcementDateStr"
 										value="${ann.announcement_date}" pattern="yyyy-MM-dd" />
@@ -457,7 +457,6 @@
 	</div>
 	<!--end::Content wrapper-->
 	<!--begin::Page loader-->
-	<div id="page-loader"></div>
 	<!--end::Page loader-->
 </div>
 <!--end:::Main-->
