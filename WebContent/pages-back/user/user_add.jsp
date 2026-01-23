@@ -56,7 +56,7 @@
 					class="app-container container-fluid">
 
 					<form action="user-perform-add" method="post" autocomplete="off"
-						id="userAddForm" enctype="multipart/form-data">
+						id="userAddForm" enctype="multipart/form-data" novalidate>
 						<div class="card border-2">
 							<div
 								class="card-header d-flex align-items-center justify-content-between py-4">
@@ -97,11 +97,11 @@
 											title="Cancel avatar"> <i
 											class="ki-outline ki-cross fs-3"></i>
 										</span> <span
-											class="btn btn-icon btn-circle btn-color-muted btn-active-color-primary w-30px h-30px bg-body shadow"
-											data-kt-image-input-action="remove" data-bs-toggle="tooltip"
-											title="Remove avatar"> <i
-											class="ki-outline ki-cross fs-3"></i>
+										  class="btn btn-icon btn-circle btn-color-muted btn-active-color-primary w-30px h-30px bg-body shadow d-none"
+										  data-kt-image-input-action="remove" title="Remove avatar" id="avatarRemoveBtn">
+										  <i class="ki-outline ki-cross fs-3"></i>
 										</span>
+
 									</div>
 									
 								</div>
@@ -116,7 +116,7 @@
 											ID</label>
 										<div class="position-relative">
 											<input id="userid" name="user.id" type="text"
-												class="form-control userinfo pe-12" placeholder="User ID" />
+												class="form-control userinfo pe-12" placeholder="User ID" required data-label="User ID" />
 
 											<div
 												class="position-absolute top-50 end-0 translate-middle-y me-3 d-none icon-wrapper"
@@ -148,13 +148,13 @@
 												class="path5"></span><span class="path6"></span>
 											</i> <input type="text" id="date_s" name="startDate"
 												class="form-control ps-12 userinfo" placeholder="1 Jan 2025"
-												autocomplete="off" required />
+												autocomplete="off" required data-label="Start Working Date" />
 										</div>
 									</div>
 
 									<div class="col-12 col-md-6">
 										<label for="roleId" class="form-label fw-semibold required">Role</label>
-										<select class="form-select userinfo" name="user.roleId"
+										<select class="form-select userinfo" name="user.roleId"  required data-label="Role"
 											data-control="select2" data-hide-search="true" id="roleId">
 											<option value="">Select</option>
 											<c:forEach var="role" items="${roleList}">
@@ -171,11 +171,11 @@
 												class="form-label fw-semibold text-gray-800 me-3 mb-2 required">Gender</label>
 											<div class="d-flex h-50 align-items-center gap-4">
 												<label class="form-check form-check-custom"> <input
-													class="form-check-input me-2" type="radio"
+													class="form-check-input me-2 userinfo" type="radio" required data-label="Gender"
 													name="user.gender" value="M" /> <span
 													class="form-check-label text-gray-800">Male</span>
 												</label> <label class="form-check form-check-custom m-0"> <input
-													class="form-check-input me-2" type="radio"
+													class="form-check-input me-2 userinfo" type="radio" required data-label="Gender"
 													name="user.gender" value="F" /> <span
 													class="form-check-label text-gray-800">Female</span>
 												</label>
@@ -189,8 +189,8 @@
 										<div class="flex-shrink-0" style="width: 160px;">
 											<label for="titleNameTH"
 												class="form-label fw-semibold text-gray-800 required">คำนำหน้า</label>
-											<select class="form-select userinfo" name="user.titleNameTH"
-												id="titleNameTH" data-control="select2"
+											<select class="form-select userinfo" name="user.titleNameTH" 
+												id="titleNameTH" data-control="select2" data-label="คำนำหน้า"
 												data-hide-search="true" required>
 												<option value="">Select</option>
 												<option value="นาย">นาย</option>
@@ -204,7 +204,7 @@
 											<label for="name"
 												class="form-label fw-semibold text-gray-800 required">ชื่อ
 												- สกุล</label> <input type="text" id="name" name="user.name"
-												class="form-control userinfo" maxlength="190"
+												class="form-control userinfo" maxlength="190" data-label="ชื่อ - สกุล"
 												placeholder="ชื่อ - สกุล" required />
 											<div id="hintNameTh" class="text-danger fs-8 mt-1 d-none">Please
 												enter full name</div>
@@ -217,7 +217,7 @@
 												<label for="titleNameEN"
 													class="form-label fw-semibold text-gray-800 required">Title
 													Name</label> <select class="form-select userinfo"
-													name="user.titleNameEN" id="titleNameEN"
+													name="user.titleNameEN" id="titleNameEN"  data-label="Title Name"
 													data-control="select2" data-hide-search="true" required>
 													<option value="">Select</option>
 													<option value="Mr.">Mr.</option>
@@ -231,7 +231,7 @@
 												<label for="nameEN"
 													class="form-label fw-semibold text-gray-800 required">Full
 													Name EN</label> <input type="text" id="nameEN" name="user.nameEN"
-													class="form-control userinfo" maxlength="190"
+													class="form-control userinfo" maxlength="190" data-label="Full Name"
 													placeholder="Name - Surname" required />
 												<div id="hintNameEn" class="text-danger fs-8 mt-1 d-none">Please
 													enter name</div>
@@ -243,20 +243,20 @@
 										<label for="nickName"
 											class="form-label fw-semibold text-gray-800">Nickname
 											TH</label> <input type="text" id="nickName" name="user.nickName"
-											class="form-control" maxlength="32"
+											class="form-control" maxlength="32" 
 											placeholder="ชื่อเล่น (ไทย)" />
 									</div>
 									<div class="col-12 col-md-6">
 										<label for="nickNameEN"
 											class="form-label fw-semibold text-gray-800">Nickname
 											EN</label> <input type="text" id="nickNameEN" name="user.nickNameEN"
-											class="form-control" maxlength="32"
+											class="form-control" maxlength="32" 
 											placeholder="Nickname (EN)" />
 									</div>
 
 									<div class="col-12 col-md-6">
 										<label class="form-label fw-semibold text-gray-800 required">Department</label>
-										<select class="form-select userinfo" name="user.departmentId"
+										<select class="form-select userinfo" name="user.departmentId" data-label="Department"
 											data-control="select2" data-hide-search="true" required>
 											<option value="">Select</option>
 											<c:forEach var="department" items="${departmentList}">
@@ -269,7 +269,7 @@
 
 									<div class="col-12 col-md-6">
 										<label class="form-label fw-semibold text-gray-800 required">Position</label>
-										<select class="form-select userinfo" name="user.positionId"
+										<select class="form-select userinfo" name="user.positionId" data-label="Position"
 											data-control="select2" data-hide-search="true" required>
 											<option value="">Select</option>
 											<option value="none">None</option>
@@ -283,7 +283,7 @@
 
 									<div class="col-12 col-md-6">
 										<label class="form-label fw-semibold text-gray-800 required">E-Mail</label>
-										<input type="email" name="user.email"
+										<input type="email" name="user.email"  data-label="E-Mail"
 											class="form-control userinfo" maxlength="50"
 											placeholder="name@example.com" required>
 										<div id="hintEmail" class="text-danger fs-8 mt-1 d-none">Please
@@ -293,7 +293,7 @@
 									<div class="col-12 col-md-6">
 										<label class="form-label fw-semibold text-gray-800 required">Phone
 											Number</label> <input type="text" name="user.phonenum" id="phone"
-											class="form-control userinfo" maxlength="10"
+											class="form-control userinfo" maxlength="10"  data-label="Phone Number"
 											pattern="[0-9]{10}" placeholder="0xxxxxxxxx" required>
 										<div id="hintPhone" class="text-danger fs-8 mt-1 d-none">Please
 											enter a phone number</div>
@@ -319,8 +319,8 @@
 									<div class="col-md-6 fv-row mb-6">
 										<label class="required form-label">Working Day</label>
 										<div class="d-flex align-items-stretch gap-3">
-											<select class="form-select flex-fill" data-control="select2"
-												data-hide-search="true" name="user.workDayStart"
+											<select class="form-select flex-fill userinfo" data-control="select2"
+												data-hide-search="true" name="user.workDayStart" required data-label="Work Day Start"
 												id="workDayStart">
 												<option value="1" selected>Mon</option>
 												<option value="2">Tue</option>
@@ -330,7 +330,7 @@
 												<option value="6">Sat</option>
 												<option value="7">Sun</option>
 											</select> <span class="d-flex align-items-center">to</span> <select
-												class="form-select flex-fill" data-control="select2"
+												class="form-select flex-fill userinfo" data-control="select2" required data-label="Work Day End"
 												data-hide-search="true" name="user.workDayEnd"
 												id="workDayEnd">
 												<option value="1">Mon</option>
@@ -347,15 +347,15 @@
 									<div class="col-md-6 fv-row mb-6">
 										<label class="required form-label">Working Hour</label>
 										<div class="d-flex align-items-stretch gap-3">
-											<select class="form-select flex-fill" data-control="select2"
-												data-hide-search="true" id="workTimeStart"
+											<select class="form-select flex-fill userinfo" data-control="select2"
+												data-hide-search="true" id="workTimeStart" required data-label="Working Hour Start"
 												name="user.workTimeStart">
 												<option value="8:00">8:00</option>
 												<option value="8:30">8:30</option>
 												<option value="9:00" selected>9:00</option>
 											</select> <span class="d-flex align-items-center text-muted">to</span>
-											<select class="form-select flex-fill" data-control="select2"
-												data-hide-search="true" id="workTimeEnd"
+											<select class="form-select flex-fill userinfo" data-control="select2"
+												data-hide-search="true" id="workTimeEnd" required data-label="Working Hour End"
 												name="user.workTimeEnd">
 												<option value="17:00">17:00</option>
 												<option value="17:30">17:30</option>
@@ -368,11 +368,11 @@
 										<label class="required form-label">Default Working</label>
 										<div class="mt-2">
 											<label class="form-check form-check-custom mb-6 mt-6">
-												<input class="form-check-input" type="radio"
+												<input class="form-check-input userinfo" type="radio" required data-label="Default Working"
 												name="user.workType" value="1" checked> <span
 												class="form-check-label text-gray-800">On-Site</span>
 											</label> <label class="form-check form-check-custom mb-6 mt-6">
-												<input class="form-check-input" type="radio"
+												<input class="form-check-input userinfo" type="radio" required data-label="Default Working"
 												name="user.workType" value="2"> <span
 												class="form-check-label text-gray-800">WFH</span>
 											</label>
@@ -384,17 +384,17 @@
 											Days</label>
 										<div class="mt-2">
 											<label class="form-check form-check-custom mb-6 mt-6">
-												<input class="form-check-input" type="radio"
+												<input class="form-check-input userinfo" type="radio" required data-label="Number of On-Site Days"
 												name="user.onsiteNum" value="3" checked> <span
 												class="form-check-label text-gray-800 fw-500">4 - 5
 													days (On-Site)</span>
 											</label> <label class="form-check form-check-custom mb-6 mt-6">
-												<input class="form-check-input" type="radio"
+												<input class="form-check-input userinfo" type="radio" required data-label="Number of On-Site Days"
 												name="user.onsiteNum" value="2"> <span
 												class="form-check-label text-gray-800 fw-500">2 - 3
 													days (Hybrid)</span>
 											</label> <label class="form-check form-check-custom mb-6 mt-6">
-												<input class="form-check-input" type="radio"
+												<input class="form-check-input userinfo" type="radio" required data-label="Number of On-Site Days"
 												name="user.onsiteNum" value="1"> <span
 												class="form-check-label text-gray-800 fw-500">0.5 - 1
 													day (WFH)</span>
@@ -416,7 +416,7 @@
 										<label class="required form-label">New Password</label>
 										<div class="position-relative">
 											<input type="password" class="form-control userinfo" name="password"
-												id="password" placeholder="New password"
+												id="password" placeholder="New password" required data-label="New Password"
 												autocomplete="new-password" oninput="validateNewPassword();"
 												minlength="6" /> <span
 												class="btn btn-sm btn-icon position-absolute top-50 end-0 translate-middle-y toggle-password"
@@ -442,7 +442,7 @@
 										<div class="position-relative">
 											<input type="password" class="form-control userinfo"
 												name="confirm_password" id="confirm_password"
-												placeholder="Confirm password"
+												placeholder="Confirm password" required data-label="Confirm New Password"
 												oninput="validateConfirmPassword()" minlength="6" /> 
 												<span
 												class="btn btn-sm btn-icon position-absolute top-50 end-0 translate-middle-y toggle-password "
@@ -468,13 +468,13 @@
 									must be at least 6 character.</p>
 							</div>
 						</div>
-
+<div class="text-end mt-10 d-flex justify-content-end gap-6">
+						<button type="button" class="btn btn-light" id="btnCancel">Cancel</button>
+						<button type="submit" class="btn btn-success" id="btnSubmit">Save</button>
+					</div>
 					</form>
 
-					<div class="text-end mt-10 d-flex justify-content-end gap-6">
-						<button type="button" class="btn btn-light" id="btnCancel">Cancel</button>
-						<button type="button" class="btn btn-success" id="btnSubmit">Save</button>
-					</div>
+					
 
 				</div>
 			</div>
@@ -487,6 +487,19 @@
 		src="${pageContext.request.contextPath}/assets/js/scripts.bundle.js"></script>
 
 	<script>
+	document.addEventListener('DOMContentLoaded', function () {
+		toggleEyeIcon();
+		
+		const removeBtn = document.querySelector('[data-kt-image-input-action="remove"]');
+	    const removeHidden = document.getElementById('avatarRemoveHidden');
+	    
+	    if (removeBtn) {
+	        removeBtn.addEventListener("click", function() {
+	            removeHidden.value = "true";
+	        });
+	    }
+	});
+	
 (function () {
     const $doc = $(document);
 
@@ -640,64 +653,104 @@
         markInvalid($(this), null, empty);
     });
 
+    
+
     $('#userAddForm').on('submit', function (e) {
+        e.preventDefault();
+
         let ok = true;
+        let errorFields = [];
 
-        /* [FIXED] ใช้ :input เพื่อไม่ให้เช็ค div ของ select2 */
-        $('.userinfo:input').each(function () {
+        $('.userinfo:input[required]:not(.flatpickr-input)').each(function () {
             const $el = $(this);
-            const val = $el.val();
 
+            const label =
+                $el.data('label') ||
+                $('label[for="' + $el.attr('id') + '"]').text().trim() ||
+                $el.closest('.col-12, .col-md-6, .fv-row')
+                   .find('label.form-label:first')
+                   .text().trim() ||
+                'Unknown field';
+
+            const val = $el.val();
             const empty = $el.is('select')
                 ? !val
                 : !String(val || '').trim();
 
             markInvalid($el, null, empty);
-            if (empty) ok = false;
+
+            if (empty) {
+                ok = false;
+                errorFields.push(label);
+            }
         });
+
 
         const genderOk = $('input[name="user.gender"]:checked').length > 0;
         $('#hintGender').toggleClass('d-none', genderOk);
-        if (!genderOk) ok = false;
+        if (!genderOk) {
+            ok = false;
+            errorFields.push('Gender');
+        }
 
         const $email = $('input[name="user.email"]');
-        const emailVal = $email.val().trim();
-        if (emailVal && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailVal)) {
+        if ($email.val() && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test($email.val())) {
             markInvalid($email, '#hintEmail', true);
             ok = false;
+            errorFields.push('Valid Email');
         }
 
         const $phone = $('#phone');
         if ($phone.val() && !/^\d{10}$/.test($phone.val())) {
             markInvalid($phone, '#hintPhone', true);
             ok = false;
+            errorFields.push('Phone Number');
         }
-        
+
         const pwOk = validateNewPassword();
         const cfOk = validateConfirmPassword();
-
         if (!pwOk || !cfOk) {
             ok = false;
+         
         }
 
         if (!ok) {
-            e.preventDefault();
-            Swal.fire(
-                'Please check the form',
-                'Some fields are missing or invalid.',
-                'warning'
-            );
+            Swal.fire({
+            	title: "Please complete the form!",
+	            html: "Please fill in the following fields:<br><strong>" + errorFields.join(", ") + "</strong>",
+	            icon: "error",
+	            confirmButtonText: "OK",
+                buttonsStyling: false,
+                customClass: { confirmButton: "btn btn-danger" }
+            });
 
             const $first = $('.is-invalid, .border-danger').first();
             if ($first.length) {
-                $('html, body').animate(
-                    { scrollTop: $first.offset().top - 100 },
-                    500
-                );
+                $('html, body').animate({
+                    scrollTop: $first.offset().top - 100
+                }, 500);
             }
+            return;
         }
-    });
 
+        Swal.fire({
+            title: "Are you sure?!",
+            text: "Do you want to save the changes?",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonText: "Save",
+            cancelButtonText: "Close",
+            buttonsStyling: false,
+            customClass: {
+                confirmButton: "btn btn-success",
+                cancelButton: "btn btn-secondary"
+            }
+        }).then((result) => {
+            if (result.isConfirmed) {
+                this.submit();
+            }
+        });
+    });
 
     /* $('#btnCancel').on('click', () => location.href = 'user-list'); */
     $('#btnCancel').on('click', function () {
@@ -734,7 +787,7 @@
 		    
 			btn.addEventListener("click", function(){
 				const input =document.getElementById(this.dataset.eyeTarget);
-				/* if (input.disabled) return; */
+				
 
 			      const eyeSlash = this.querySelector(".ki-eye-slash");
 			      const eye = this.querySelector(".ki-eye");
@@ -757,19 +810,23 @@
 	
 	
 	function validateNewPassword() {
+		const pwEl = document.getElementById("password");
 	    const password = document.getElementById("password").value.trim();
 	    const pattern = /^\S{6,}$/;
 	    
 	    if (password === "") {
-	        setPwPattern("normal");
+	    	pwEl.classList.add("is-invalid");
+	    	setPwPattern("error");
 	        return false;
 	    }
 
 	    if (!pattern.test(password)) {
+	    	pwEl.classList.add("is-invalid");
 	        setPwPattern("error");  
 	        return false;
 	    }
 
+	    pwEl.classList.remove("is-invalid");
 	    setPwPattern("normal");
 	    return true;
 	}
@@ -780,7 +837,7 @@
 	    const errorEl = document.getElementById("confirmNewPwError");
 
 	    if (confirmPassword.value.trim() === "") {
-	        confirmPassword.classList.remove("is-invalid");
+	    	confirmPassword.classList.add("is-invalid");
 	        errorEl.classList.add("d-none");
 	        return true;
 	    }
@@ -811,120 +868,7 @@
 	    }
 	}
 
-	
-	
-	
-document.addEventListener('DOMContentLoaded', function () {
-	toggleEyeIcon();
-	
- const passwordInput = document.getElementById('password');
- const confirmInput = document.getElementById('confirm_password');
- const msgElement = document.getElementById('passwordMatchMessage');
- const mainForm = document.getElementById('userAddForm');
- const btnSubmit = document.getElementById('btnSubmit');
 
- // 1. Real-time Password Matching Check
-/*  function checkPasswordMatch() {
-     const pass = passwordInput.value;
-     const conf = confirmInput.value;
-
-     if (pass === "" && conf === "") {
-         msgElement.innerHTML = "";
-         passwordInput.classList.remove('is-valid', 'is-invalid');
-         confirmInput.classList.remove('is-valid', 'is-invalid');
-         return;
-     }
-
-     if (pass === conf) {
-         msgElement.innerHTML = '<span class="text-success"><i class="ki-duotone ki-check-circle fs-6 text-success me-1"><span class="path1"></span><span class="path2"></span></i>Passwords match</span>';
-         confirmInput.classList.remove('is-invalid');
-         confirmInput.classList.add('is-valid');
-     } else {
-         msgElement.innerHTML = '<span class="text-danger">Passwords do not match</span>';
-         confirmInput.classList.remove('is-valid');
-         confirmInput.classList.add('is-invalid');
-     }
- }
-
- if (passwordInput && confirmInput) {
-     passwordInput.addEventListener('keyup', checkPasswordMatch);
-     confirmInput.addEventListener('keyup', checkPasswordMatch);
- } */
- validateNewPassword();
- validateConfirmPassword();
- 
-
- if (btnSubmit) {
-
-     const newBtn = btnSubmit.cloneNode(true);
-     btnSubmit.parentNode.replaceChild(newBtn, btnSubmit);
-     
-     newBtn.addEventListener('click', function (e) {
-         e.preventDefault(); 
-
-         let isValid = true;
-
-         if (!mainForm.checkValidity()) {
-             mainForm.reportValidity(); 
-             isValid = false;
-         }
-
-         $('.userinfo:input').each(function () {
-             const val = $(this).val();
-             const empty = $(this).is('select') ? !val : !String(val || '').trim();
-             if (empty && $(this).prop('required')) {
-                 isValid = false;
-             }
-         });
-
-       
-		/* const passVal = passwordInput.value;
-         const confVal = confirmInput.value;
-
-         if (passVal.length < 6) {
-             Swal.fire('Password too short', 'Password must be at least 8 characters.', 'warning');
-             return; // หยุดทำงาน
-         }
-
-         if (passVal !== confVal) {
-             Swal.fire('Password Mismatch', 'Please confirm your password correctly.', 'error');
-             return; 
-         } */
-
-         if (isValid) {
-             	e.preventDefault();
-             	Swal.fire({
-         	        title: "Are you sure?!",
-         	        text: "Do you want to save the changes?",
-         	        icon: "warning",
-         	        showCancelButton: true,
-         	        confirmButtonText: "Save",
-         	        cancelButtonText: "Close",
-         	        buttonsStyling: false,
-         	        customClass: {
-         	            confirmButton: "btn btn-success",
-         	            cancelButton: "btn btn-secondary"
-         	        }
-         	    }).then((result) => {
-         	        if (result.isConfirmed) {
-         	        	 mainForm.submit();
-         	        }
-         	    });
-   
-            
-         } else {
-        	 Swal.fire(
-                     title: "Please complete the form!",
-                     html:'Please fill in all required fields.',
-                     icon: "error",
-              	      confirmButtonText: "OK",
-              	      buttonsStyling: false,
-              	      customClass: { confirmButton: "btn btn-danger" }
-                    );
-         }
-     });
- }
-});
 </script>
 </body>
 </html>

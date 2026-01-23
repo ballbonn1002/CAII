@@ -455,14 +455,24 @@
   // 1. Anniversary Logic
   function applyAnnivData($el, startISO, today, isGrid) {
       const start = toDateYmd(startISO);
-      if (!start){
+      if (!start || start > today){
         $el.attr({'data-anniv-years':'','data-anniv-days':'','data-anniv-thismonth':'0','data-anniv-thisweek':'0'});
         if(isGrid) $el.attr('data-anniv-text', '');
         return;
       }
       const info = computeNextOccurrence(start, today);
       const years = info.nextDate.getFullYear() - start.getFullYear();
-
+      if (years <= 0) {
+    	  $el.attr({
+    	    'data-anniv-years':'0',
+    	    'data-anniv-days':'',
+    	    'data-anniv-thismonth':'0',
+    	    'data-anniv-thisweek':'0'
+    	  });
+    	  if (isGrid) $el.attr('data-anniv-text', '');
+    	  return;
+    	}
+      
       $el.attr({
         'data-anniv-years': years,
         'data-anniv-days' : info.daysLeft,
@@ -1179,8 +1189,5 @@
 })();
 </script>
 
-<script>
-	
-</script>
 </body>
 </html>
