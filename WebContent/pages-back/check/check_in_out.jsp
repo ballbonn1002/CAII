@@ -160,13 +160,6 @@
 											</div>
 										</div>
 									</div>
-									<div class="mb-4">
-										<label class=" fw-medium text-gray-800 required">
-											Reason</label>
-									</div>
-									<textarea name="reason" class="form-control form-control mb-10"
-										rows="4" style="resize: none;"
-										placeholder="Please provide a reason."></textarea>
 									<div class="d-flex">
 										<button id="submitBtn"
 											class="btn btn-lg btn-primary w-100 text-center fw-medium">Accept</button>
@@ -363,7 +356,7 @@
 								style="font-size: 32px;"> <span class="path1"></span> <span
 								class="path2"></span> <span class="path3"></span>
 							</i>
-							<h2 class="fw-bold text-danger mb-0">Announcement</h2>
+							<h2 class="fw-bold text-danger mb-0 ms-3">Announcement</h2>
 						</div>
 
 						<c:if test="${not empty announcementList}">
@@ -525,11 +518,10 @@ $("#submitBtn").click(function() {
 	const userId = "${logonUser}";
 	const workType = $("input[name='workType']:checked").val();
 	const checkType = $("input[name='checkType']:checked").val();
-	const reason = $("textarea[name='reason']").val();
 	const lat = $("input[name='latitude']").val();
 	const lng = $("input[name='longitude']").val();
-	console.log(userId + "/" + workType + "/" + checkType + "/" + reason);
-	saveCheckInOut(userId, workType, checkType, "normal", null, null, reason, lat, lng);
+	console.log(userId + "/" + workType + "/" + checkType);
+	saveCheckInOut(userId, workType, checkType, "normal", null, null, null, lat, lng);
 });
 
 function saveCheckInOut(userId, workType, checkType, mode, selectDate, selectTime, reason, lat, lng){
@@ -557,7 +549,7 @@ function saveCheckInOut(userId, workType, checkType, mode, selectDate, selectTim
 			"workType": workType,
 			"checkType": checkType,
 			"mode": mode,
-			"reason": reason,
+			"reason": "",
 			"latitude": lat,
 			"longitude": lng,
 	};

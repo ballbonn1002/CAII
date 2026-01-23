@@ -18,14 +18,13 @@
 }
 
 .flatpickr-wrapper {
-    display: block !important;
-    width: 100% !important;
+	display: block !important;
+	width: 100% !important;
 }
 
 .flatpickr-wrapper .flatpickr-input {
-    width: 100% !important;
+	width: 100% !important;
 }
-
 </style>
 
 <fmt:setLocale value="en_US" />
@@ -58,8 +57,8 @@
 								class="card-header pt-5 d-flex justify-content-between align-items-center">
 								<div class="card-title col-lg-12 col-md-12 col-sm-12 col-12">
 									<div class="d-flex flex-column w-100">
-										<span class="fw-medium text-gray-900 me-2 lh-1">
-											Work Hours</span>
+										<span class="fw-medium text-gray-900 me-2 lh-1"> Work
+											Hours</span>
 										<div class="d-flex align-items-center pt-2 gap-2">
 											<c:choose>
 												<c:when test="${not empty jobsiteList}">
@@ -86,7 +85,8 @@
 								<div class="px-13">
 									<div class="row mb-5 gx-10">
 										<div class="col-md-6 col-sm-6 col-6">
-											<label for="mdDate" class="required form-label fw-medium text-gray-800">Date</label>
+											<label for="mdDate"
+												class="required form-label fw-medium text-gray-800">Date</label>
 											<div class="position-relative">
 												<input class="form-control ps-15" id="mdDate"
 													placeholder="Select date" /> <i
@@ -98,7 +98,8 @@
 											</div>
 										</div>
 										<div class="col-md-6 col-sm-6 col-6">
-											<label for="mdTime" class="required form-label fw-medium text-gray-800">Time</label>
+											<label for="mdTime"
+												class="required form-label fw-medium text-gray-800">Time</label>
 											<div class="position-relative">
 												<input class="form-control ps-15" id="mdTime"
 													placeholder="Select time" /> <i
@@ -111,7 +112,7 @@
 											<div class="mdTime invalid-feedback" style="display: none;"></div>
 										</div>
 									</div>
-									
+
 									<!-- Check Type -->
 									<div class="row py-7 mb-5 gx-10">
 										<div class="col-6">
@@ -119,8 +120,8 @@
 												id="checkType1" value="1" checked="checked"> <label
 												for="checkType1"
 												class="btn bg-light w-100 h-150px btn-active-success d-flex flex-column justify-content-center align-items-center py-7">
-												<i class="ki-duotone ki-time fs-2hx mb-5"> <span class="path1"></span>
-													<span class="path2"></span>
+												<i class="ki-duotone ki-time fs-2hx mb-5"> <span
+													class="path1"></span> <span class="path2"></span>
 											</i> <span class="fs-2 fw-medium text-muted">Check-In</span>
 											</label>
 										</div>
@@ -128,8 +129,8 @@
 											<input type="radio" class="btn-check" name="mdCheckType"
 												id="checkType2" value="2"> <label for="checkType2"
 												class="btn bg-light w-100 h-150px btn-active-info d-flex flex-column justify-content-center align-items-center py-7">
-												<i class="ki-duotone ki-time fs-2hx mb-5"> <span class="path1"></span>
-													<span class="path2"></span>
+												<i class="ki-duotone ki-time fs-2hx mb-5"> <span
+													class="path1"></span> <span class="path2"></span>
 											</i> <span class="fs-2 fw-medium text-muted">Check-Out</span>
 											</label>
 										</div>
@@ -166,15 +167,21 @@
 											</div>
 										</div>
 									</div>
+									<div class="mb-4">
+										<label class=" fw-medium text-gray-800 required">
+											Reason</label>
+									</div>
+									<textarea name="reason" class="form-control mb-10" rows="4"
+										style="resize: none;" placeholder="Please provide a reason."></textarea>
 									<div class="d-flex gap-10">
-									<a href="check_in_out"
-										class="btn btn-lg btn-light fw-medium w-100 h-44px d-flex justify-content-center align-items-center">
-										Cancel </a>
+										<a href="check_in_out"
+											class="btn btn-lg btn-light fw-medium w-100 h-44px d-flex justify-content-center align-items-center">
+											Cancel </a>
 
-									<button id="mdSubmitBtn" type="button"
-										class="btn btn-lg fw-medium btn-success w-100 h-44px">
-										Submit</button>
-								</div>
+										<button id="mdSubmitBtn" type="button"
+											class="btn btn-lg fw-medium btn-success w-100 h-44px">
+											Submit</button>
+									</div>
 								</div>
 							</div>
 						</div>
@@ -344,6 +351,7 @@ $("#mdSubmitBtn").click(function() {
 	const checkType = $("input[name='mdCheckType']:checked").val();
 	const date = $("#mdDate").val();
 	const time = $("#mdTime").val();
+	const reason = $("textarea[name='reason']").val();
 	const lat = "";
 	const lng = "";
 	
@@ -378,9 +386,16 @@ $("#mdSubmitBtn").click(function() {
 	if(!workType){ $(".workType.invalid-feedback").show(); valid = false; } 
     else { $(".workType.invalid-feedback").hide(); }
 	
+	if(!reason || reason.trim() === ""){
+        $("textarea[name='reason']").addClass("is-invalid");
+        valid = false;
+    } else {
+        $("textarea[name='reason']").removeClass("is-invalid"); 
+    }
+	
 	if(!valid){ return; }
 	
-	saveCheckInOut(userId, workType, checkType, "retro", date, time, "", lat, lng);
+	saveCheckInOut(userId, workType, checkType, "retro", date, time, reason, lat, lng);
 });
 
 // Save Function
@@ -409,7 +424,7 @@ function saveCheckInOut(userId, workType, checkType, mode, selectDate, selectTim
 			"workType": workType,
 			"checkType": checkType,
 			"mode": mode,
-			"reason": "",
+			"reason": reason,
 			"latitude": lat,
 			"longitude": lng,
 	};

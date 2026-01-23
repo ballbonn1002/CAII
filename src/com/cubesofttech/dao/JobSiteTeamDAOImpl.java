@@ -104,6 +104,8 @@ public class JobSiteTeamDAOImpl implements JobSiteTeamDAO {
 				+ "ORDER BY js.name_site";
 
 		SQLQuery query = session.createSQLQuery(sql);
+		query.addScalar("id_sitejob");
+	    query.addScalar("name_site");
 		query.setParameter("userId", userId);
 		query.setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
 
