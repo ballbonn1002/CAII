@@ -587,7 +587,7 @@
       if(!s) return '-';
       const e = eISO ? toISODateOnly(eISO) : new Date();
       if(!e) return '-';
-      if (s > e) return 'Waiting to start...';
+      if (s > e) return 'Waiting to start.';
       
       let y = e.getFullYear() - s.getFullYear();
       let m = e.getMonth() - s.getMonth();
@@ -600,6 +600,34 @@
       if (!parts.length && d >= 0) parts.push(d + 'd');
       return parts.join(' ');
   }
+  
+  function birthdayAgeLabel(bISO){
+	  const b = toISODateOnly(bISO);
+	  if(!b) return '-';
+
+	  const today = new Date();
+	  let y = today.getFullYear() - b.getFullYear();
+	  let m = today.getMonth() - b.getMonth();
+	  let d = today.getDate() - b.getDate();
+
+	  if (d < 0) {
+	    m--;
+	    d += new Date(today.getFullYear(), today.getMonth(), 0).getDate();
+	  }
+	  if (m < 0) {
+	    y--;
+	    m += 12;
+	  }
+
+	  const parts = [];
+	  if (y > 0) parts.push(y + 'y');
+	  if (m > 0) parts.push(m + 'm');
+	  if (!parts.length) parts.push('0y');
+
+	  return parts.join(' ');
+	}
+
+  
   function renderPeriods() {
       // Table View Period rendering
       document.querySelectorAll('.period-text').forEach(function (el) {
@@ -654,8 +682,9 @@
       // 2. Birthday
       document.querySelectorAll('#gridViewContainer .birth-age').forEach(function (el) {
         const bISO = el.getAttribute('data-birth-date') || el.getAttribute('data-birth');
-        const label = periodLengthLabel(bISO, null);
-        el.textContent = label || '-';
+       /* 
+        const label = periodLengthLabel(bISO, null); */
+        el.textContent = birthdayAgeLabel(bISO);
 
         const $gridCard = $(el).closest('.grid-card');
         const isBday = ($gridCard.attr('data-bday-thismonth') === '1' || $gridCard.attr('data-bday-thisweek') === '1');
