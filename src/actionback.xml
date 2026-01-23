@@ -1031,6 +1031,19 @@
 		<action name="eBorrowLog"
 			class="com.cubesofttech.action.BorrowingAction" method="eBorrowLog">
 		</action>
+		
+		<!-- ========================== Work Log ============================== -->
+		<action name="work_log"
+			class="com.cubesofttech.action.WorkLogAction" method="open">
+			<result name="success" type="tiles">workLog</result>
+			<result name="error">/index.jsp</result>
+			<result name="login" type="redirect">/index.jsp</result>
+		</action>
+		<action name="work_log_json" 
+			class="com.cubesofttech.action.WorkLogAction" method="search">
+			<result name="login" type="redirect">/index.jsp</result>
+		</action>
+		
 	</package>
 
 </struts>

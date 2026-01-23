@@ -413,4 +413,12 @@
 		<put-attribute name="body"
 			value="/pages-back/borrow/borrow_add.jsp" />
 	</definition>
+    
+    <!-- Work Log -->
+    <definition name="workLog" extends="baseLayout">
+		<put-attribute name="title" value="Work Log" />
+		<put-attribute name="body"
+			value="/pages-back/work_log/work_log_list.jsp" />
+	</definition>
+    
 </tiles-definitions>
