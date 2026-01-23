@@ -237,6 +237,13 @@
 			class="com.cubesofttech.action.WorkHoursAction" method="savecheck">
 			<result name="error">/index.jsp</result>
 		</action>
+		
+		<!-- Retroactive -->
+		<action name="retroactive"
+			class="com.cubesofttech.action.WorkHoursAction" method="init">
+			<result name="success" type="tiles">retroactivePage</result>
+			<result name="error">/index.jsp</result>
+		</action>
 
 		<!-- MyLeave =========================================================================================================== -->
 
