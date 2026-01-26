@@ -722,10 +722,10 @@
 			<result name="success" type="tiles">CheckAllCalendar</result>
 			<result name="error">/index.jsp</result>
 		</action>
-		<action name="checkAllCalendar2"
+		<action name="NewCheckAllCalendar"
 			class="com.cubesofttech.action.WorkHoursAction"
 			method="CheckAllCalendar2">
-			<result name="success" type="tiles">CheckAllCalendar2</result>
+			<result name="success" type="tiles">NewCheckAllCalendar</result>
 			<result name="error">/index.jsp</result>
 		</action>
 		<action name="TestSearchAllinCalendar"

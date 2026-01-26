@@ -180,7 +180,7 @@
 								<div class="d-flex flex-column">
 									<a
 										class="btn btn-sm btn-icon btn-secondary w-40px h-40px d-flex"
-										href="checkAllCalendar2"> <i
+										href="NewCheckAllCalendar"> <i
 										class="ki-duotone ki-calendar-tick fs-1 text-muted"> <span
 											class="path1"></span><span class="path2"></span> <span
 											class="path3"></span><span class="path4"></span> <span
