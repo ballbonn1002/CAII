@@ -763,6 +763,15 @@
 		<action name="announcementAddPage">
 			<result type="tiles">AnnouncementAdd</result>
 		</action>
+		
+		<action name="announcementUpdate"
+			class="com.cubesofttech.action.AnnouncementAction" method="save">
+			<result name="success" type="redirectAction">
+				<param name="actionName">announcementRead</param>
+				<param name="id">${announcementId}</param>
+			</result>
+			<result name="error">/index.jsp</result>
+		</action>
 
 		<action name="announcementEdit"
 			class="com.cubesofttech.action.AnnouncementAction" method="edit">
