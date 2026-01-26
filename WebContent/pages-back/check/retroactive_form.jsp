@@ -171,8 +171,10 @@
 										<label class=" fw-medium text-gray-800 required">
 											Reason</label>
 									</div>
-									<textarea name="reason" class="form-control mb-10" rows="4"
+									<textarea id="mdReason" name="reason" class="form-control mb-10" rows="4"
 										style="resize: none;" placeholder="Please provide a reason."></textarea>
+									<div class="reason invalid-feedback font-weight-bold mb-10"
+										style="display: none;"></div>
 									<div class="d-flex gap-10">
 										<a href="check_in_out"
 											class="btn btn-lg btn-light fw-medium w-100 h-44px d-flex justify-content-center align-items-center">
@@ -351,7 +353,8 @@ $("#mdSubmitBtn").click(function() {
 	const checkType = $("input[name='mdCheckType']:checked").val();
 	const date = $("#mdDate").val();
 	const time = $("#mdTime").val();
-	const reason = $("textarea[name='reason']").val();
+	const reasonRaw = $("#mdReason").val();
+    const reason = reasonRaw ? reasonRaw.trim() : "";
 	const lat = "";
 	const lng = "";
 	
@@ -386,11 +389,22 @@ $("#mdSubmitBtn").click(function() {
 	if(!workType){ $(".workType.invalid-feedback").show(); valid = false; } 
     else { $(".workType.invalid-feedback").hide(); }
 	
-	if(!reason || reason.trim() === ""){
-        $("textarea[name='reason']").addClass("is-invalid");
+	const reasonEl = $("#mdReason");
+    const reasonErrorEl = $(".reason.invalid-feedback");
+	
+    if(!reason){
+        console.log("Empty or just spaces");
+        reasonErrorEl.text("Please provide a reason.").show();
+        reasonEl.addClass("is-invalid");
+        valid = false;
+    } else if(reason.length < 10){
+        console.log("Too short");
+        reasonErrorEl.text("Reason must be at least 10 characters long.").show();
+        reasonEl.addClass("is-invalid");
         valid = false;
     } else {
-        $("textarea[name='reason']").removeClass("is-invalid"); 
+    	reasonErrorEl.hide();
+    	reasonEl.removeClass("is-invalid");
     }
 	
 	if(!valid){ return; }
