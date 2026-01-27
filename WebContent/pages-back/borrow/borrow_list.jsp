@@ -407,27 +407,27 @@ th.sort:hover {
 							<div class="row fs-7 text-gray-700">
 								<div class="col-md-6 pe-md-10">
 									<div class="mb-3 pb-4">
-										<span class="fw-normal fs-5 text-gray-700 me-3">Windows</span>
+										<span class="fw-normal fs-5 text-gray-700 me-3">Windows:</span>
 										<span id="m_windows"
 											class="ms-1 fw-normal fs-5 text-gray-800 text-break"></span>
 									</div>
 									<div class="mb-3 pb-4">
-										<span class="fw-normal fs-5 text-gray-700 me-3">RAM</span> <span
+										<span class="fw-normal fs-5 text-gray-700 me-3">RAM:</span> <span
 											id="m_ram"
 											class="ms-1 fw-normal fs-5 text-gray-800 text-break"></span>
 									</div>
 									<div class="mb-3 pb-4">
-										<span class="fw-normal fs-5 text-gray-700 me-3">Storage</span>
+										<span class="fw-normal fs-5 text-gray-700 me-3">Storage:</span>
 										<span id="m_hdd"
 											class="ms-1 fw-normal fs-5 text-gray-800 text-break"></span>
 									</div>
 									<div class="mb-3 pb-4">
 										<span class="fw-normal fs-5 text-gray-700 me-3">WIFI
-											Address</span> <span id="m_wifi"
+											Address:</span> <span id="m_wifi"
 											class="ms-1 fw-normal fs-5 text-gray-800 text-break"></span>
 									</div>
 									<div class="mb-3 pb-4">
-										<span class="fw-normal fs-5 text-gray-700 me-3">Display</span>
+										<span class="fw-normal fs-5 text-gray-700 me-3">Display:</span>
 										<span id="m_display"
 											class="ms-1 fw-normal fs-5 text-gray-800 text-break"></span>
 									</div>
@@ -435,23 +435,23 @@ th.sort:hover {
 
 								<div class="col-md-6 ps-md-10">
 									<div class="mb-3 pb-4">
-										<span class="fw-normal fs-5 text-gray-700 me-3">CPU</span> <span
+										<span class="fw-normal fs-5 text-gray-700 me-3">CPU:</span> <span
 											id="m_process"
 											class="ms-1 fw-normal fs-5 text-gray-800 text-break"></span>
 									</div>
 									<div class="mb-3 pb-4">
-										<span class="fw-normal fs-5 text-gray-700 me-3">Storage</span>
+										<span class="fw-normal fs-5 text-gray-700 me-3">Storage:</span>
 										<span id="m_hddd"
 											class="ms-1 fw-normal fs-5 text-gray-800 text-break"></span>
 									</div>
 									<div class="mb-3 pb-4">
-										<span class="fw-normal fs-5 text-gray-700 me-3">Battery</span>
+										<span class="fw-normal fs-5 text-gray-700 me-3">Battery:</span>
 										<span id="m_battery"
 											class="ms-1 fw-normal fs-5 text-gray-800 text-break"></span>
 									</div>
 									<div class="mb-3 pb-4">
 										<span class="fw-normal fs-5 text-gray-700 me-3">LAN
-											Address</span> <span id="m_lan"
+											Address:</span> <span id="m_lan"
 											class="ms-1 fw-normal fs-5 text-gray-800 text-break"></span>
 									</div>
 								</div>

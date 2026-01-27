@@ -625,12 +625,12 @@
 
 		// Basic Details
 		var details = '';
-		details += createDetailRow('Name:', eq.name);
-		details += createDetailRow('Type:', typeInfo.label + ' <i class="ki-solid ' + typeInfo.icon + ' fs-1 text-gray-500"></i>');
-		details += createDetailRow('Serial No:', eq.serialNo);
-		details += createDetailRow('Amount:', formatNumber(eq.amount));
-		details += createDetailRow('Date of Purchase:', eq.purchaseFmt);
-		details += createDetailRow('Detail:', eq.detail);
+		details += createDetailRow('Name', eq.name);
+		details += createDetailRow('Type', typeInfo.label + ' <i class="ki-solid ' + typeInfo.icon + ' fs-1 text-gray-500"></i>');
+		details += createDetailRow('Serial No', eq.serialNo);
+		details += createDetailRow('Amount', formatNumber(eq.amount));
+		details += createDetailRow('Date of Purchase', eq.purchaseFmt);
+		details += createDetailRow('Detail', eq.detail);
 
 		// More Details (สำหรับ Computer เท่านั้น)
 		var moreDetails = '';
@@ -744,8 +744,8 @@
 					type: "POST",
 					dataType: "json",
 					data: {
-						id: borrowId,
-						note: remark
+						id: borrowId
+
 					},
 					success: function(data) {
 						if (data && String(data.message).toLowerCase() === "success") {
