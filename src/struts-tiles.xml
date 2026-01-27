@@ -122,19 +122,19 @@
 
 	<!-- User -->
 	<definition name="user.list" extends="baseLayout">
-		<put-attribute name="title" value="User Management" />
+		<put-attribute name="title" value="Employee Profile" />
 		<put-attribute name="body"
 			value="/pages-back/user/user_list.jsp" />
 	</definition>
 	<definition name="admin_edit_userprofile"
 		extends="baseLayout">
 		<put-attribute name="title"
-			value="Admin_Edit_Userprofile" />
+			value="Edit Employee Profile" />
 		<put-attribute name="body"
 			value="/pages-back/user/admin_edit_userprofile.jsp" />
 	</definition>
 	<definition name="user.add" extends="baseLayout">
-		<put-attribute name="title" value="User Add" />
+		<put-attribute name="title" value="Add Employee Profile" />
 		<put-attribute name="body"
 			value="/pages-back/user/user_add.jsp" />
 	</definition>
