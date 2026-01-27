@@ -431,14 +431,13 @@ String targetURL = Constant.getWebContext2() + "/authorization?token=" + token;
 					</perm:permission>
 
 					<!--begin:Menu Authority-->
+					<perm:permission object="role.view">
 					<div class="menu-item pt-5">
 						<div class="menu-content">
 							<span class="menu-heading fw-bold text-uppercase fs-7">Authority</span>
 						</div>
 					</div>
-
 					<!--Role Management-->
-					<perm:permission object="role.view">
 						<div class="menu-item">
 							<a class="menu-link" href="role-list" data-route="role-list">
 								<span class="menu-icon"> <i
@@ -456,13 +455,14 @@ String targetURL = Constant.getWebContext2() + "/authorization?token=" + token;
 					<!--end:Menu Authority-->
 
 					<!--begin:Menu item-->
+					<!-- 
 					<div class="menu-item pt-5">
-						<!--begin:Menu content-->
+						begin:Menu content
 						<div class="menu-content">
 							<span class="menu-heading fw-bold text-uppercase fs-7">CMS</span>
 						</div>
-						<!--end:Menu content-->
-					</div>
+						end:Menu content
+					</div> -->
 					<!--end:Menu item-->
 					<!--begin:Menu item-->
 					<!-- <div class="menu-item">
@@ -512,71 +512,72 @@ String targetURL = Constant.getWebContext2() + "/authorization?token=" + token;
 					</div>
 					<!--end:Menu item-->
 					<!--begin:Menu item-->
+					
 					<div class="menu-item pt-5">
 						<!--begin:Menu content-->
-						<div class="menu-content">
+						<!-- <div class="menu-content">
 							<span class="menu-heading fw-bold text-uppercase fs-7">Pages
 								(Demo)</span>
 						</div>
-						<!--end:Menu content-->
+						end:Menu content
 					</div>
-					<!--end:Menu item-->
-					<!--begin:Menu item-->
+					end:Menu item
+					begin:Menu item
 					<div data-kt-menu-trigger="click" class="menu-item menu-accordion">
-						<!--begin:Menu link-->
+						begin:Menu link
 						<span class="menu-link"> <span class="menu-icon"> <i
 								class="ki-outline ki-address-book fs-2"></i>
 						</span> <span class="menu-title">Demo</span> <span class="menu-arrow"></span>
 						</span>
-						<!--end:Menu link-->
-						<!--begin:Menu sub-->
+						end:Menu link
+						begin:Menu sub
 						<div class="menu-sub menu-sub-accordion">
 
-							<!--begin:Menu item-->
+							begin:Menu item
 							<div class="menu-item">
-								<!--begin:Menu link-->
+								begin:Menu link
 								<a class="menu-link" href="blank_template"
 									data-route="blank_template"> <span class="menu-icon">
 										<span class="bullet bullet-dot"></span>
 								</span> <span class="menu-title">Blank Template</span>
 								</a>
-								<!--end:Menu link-->
+								end:Menu link
 							</div>
-							<!--end:Menu item-->
-							<!--begin:Menu item-->
+							end:Menu item
+							begin:Menu item
 							<div class="menu-item">
-								<!--begin:Menu link-->
+								begin:Menu link
 								<a class="menu-link" href="demo_dashboard"
 									data-route="demo_dashboard"> <span class="menu-icon">
 										<span class="bullet bullet-dot"></span>
 								</span> <span class="menu-title">Dashboards</span>
 								</a>
-								<!--end:Menu link-->
+								end:Menu link
 							</div>
-							<!--end:Menu item-->
-							<!--begin:Menu item-->
+							end:Menu item
+							begin:Menu item
 							<div class="menu-item">
-								<!--begin:Menu link-->
+								begin:Menu link
 								<a class="menu-link" data-route="demo_table" href="demo_table">
 									<span class="menu-icon"> <span class="bullet bullet-dot"></span>
 								</span> <span class="menu-title">Table</span>
 								</a>
-								<!--end:Menu link-->
+								end:Menu link
 							</div>
-							<!--end:Menu item-->
-							<!--begin:Menu item-->
+							end:Menu item
+							begin:Menu item
 							<div class="menu-item">
-								<!--begin:Menu link-->
+								begin:Menu link
 								<a class="menu-link" href="demo_add_holiday"> <span
 									class="menu-icon"> <span class="bullet bullet-dot"></span>
 								</span> <span class="menu-title">Holiday Add</span>
 								</a>
-								<!--end:Menu link-->
+								end:Menu link
 							</div>
-							<!--end:Menu item-->
+							end:Menu item
 						</div>
-						<!--end:Menu sub-->
-					</div>
+						end:Menu sub
+					</div> -->
 					<!--end:Menu item-->
 				</div>
 				<!--end::Menu-->
