@@ -102,8 +102,7 @@
 							<div class="table-responsive">
 								<table
 								class="table table-striped table-hover align-middle table-row-bordered fs-6 gy-5"
-								id="kt_table"
-								style="min-width: 1200px;">
+								id="kt_table">
 									<thead>
 										<tr 
 											class="text-start text-gray-500 fw-bold fs-7 text-uppercase gs-0 border-bottom border-gray-200">

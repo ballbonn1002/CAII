@@ -34,9 +34,21 @@ public class LeaveTypeAction extends ActionSupport {
 		try {
 			leaveTypeList = leaveTypeDAO.findAll();
 			leaveTypeList.sort(Comparator.comparingInt(o -> {
-				if (o.getLeaveTypeId() == null)
-					return 0;
-				return Integer.parseInt(o.getLeaveTypeId());
+				String id = o.getLeaveTypeId();
+
+				if (id == null || id.isEmpty()) {
+					return Integer.MAX_VALUE;
+				}
+
+				char c = id.charAt(0);
+
+				// ถ้าเป็นตัวเลข 0-9 → ให้เรียงก่อน
+				if (Character.isDigit(c)) {
+					return c; 
+				}
+
+				// ถ้าเป็นตัวอักษร → ต่อหลังเลข
+				return 100 + Character.toUpperCase(c);
 			}));
 			return SUCCESS;
 		} catch (Exception e) {
@@ -74,7 +86,7 @@ public class LeaveTypeAction extends ActionSupport {
 
 	public String saveLeaveType() {
 		try {
-			
+
 			User user = (User) session.getAttribute("user");
 			Timestamp now = new Timestamp(System.currentTimeMillis());
 			leaveType.setUserCreate(user.getName());

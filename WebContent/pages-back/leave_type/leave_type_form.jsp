@@ -17,7 +17,7 @@
 <body>
 	<div class="app-main flex-column app-container container-xxl">
 		<div class="page-title py-3">
-			<h1 class="page-heading text-gray-700 fw-semibold">Leave Type</h1>
+			<h1 class="page-heading fw-bold text-gray-900 fs-3">Leave Type</h1>
 			<ul
 				class="list-unstyled d-inline-flex gap-2 text-muted fs-7 fw-medium">
 				<li class="">Home</li>
@@ -31,7 +31,7 @@
 		<div class="app-content">
 			<div class="card">
 				<div class="card-header pt-7 border-0">
-					<h3 class="fw-semibold text-gray-900">
+					<h3 class="fw-bold text-gray-900 fs-3">
 						<s:if test="leaveType.leaveTypeId == null">Add Leave Type</s:if>
 						<s:else>Edit Leave Type</s:else>
 					</h3>
@@ -46,7 +46,7 @@
 								class="required form-label text-gray-800 fw-medium">ID</label>
 							<s:if test="leaveType.leaveTypeId == null">
 								<s:textfield name="leaveType.leaveTypeId" id="leaveTypeId"
-									type="number" cssClass="form-control p-5"
+									type="text" maxlength="1" cssClass="form-control p-5"
 									placeholder="Leave type ID" />
 							</s:if>
 							<s:else>
@@ -61,14 +61,14 @@
 								class="required form-label text-gray-800 fw-medium">
 								Leave Type Name</label>
 							<s:textfield id="leaveTypeName" name="leaveType.leaveTypeName"
-								cssClass="form-control p-5" placeholder="Leave type name" />
+								cssClass="form-control p-5" placeholder="Leave type name" maxlength="32" onblur="this.value = this.value.trim()"  />
 						</div>
 						<div class="mb-7">
 							<label for="leave-type-description"
 								class="text-gray-800 fw-medium">Description</label>
 							<s:textarea id="leaveTypeDescription"
 								name="leaveType.description" cssClass="form-control px-4"
-								rows="4" placeholder="Optional details..." />
+								rows="4" placeholder="Optional details..." maxlength="255" onblur="this.value = this.value.trim()" />
 						</div>
 					</div>
 					<div class="card-footer d-flex justify-content-end gap-3">
@@ -82,14 +82,20 @@
 		</div>
 	</div>
 	<script type="text/javascript">
+	const inputLeaveTypeId = document.getElementById('leaveTypeId');
+	const validPattern = /^[a-zA-Z0-9\s]+$/;
+	inputLeaveTypeId.addEventListener('input', function () {
+		if(!validPattern.test(this.value))
+		  this.value = '';
+	});
+	
 		const onSubmit = ()=> {
-			
+			const leaveTypeId = document.getElementById('leaveTypeId').value;
 			const tempLeaveTypeId = document.getElementById('tempLeaveTypeId').value;
 			const form = document.getElementById('leaveTypeForm');
-			const leaveTypeId = document.getElementById('leaveTypeId').value
-			const leaveTypeName = document.getElementById('leaveTypeName').value.trim()
-			const leaveTypeDescription = document.getElementById('leaveTypeDescription').value.trim()
-			const validPattern = /^[a-zA-Z0-9ก-๙\s]+$/;
+			const leaveTypeName = document.getElementById('leaveTypeName').value
+			const leaveTypeDescription = document.getElementById('leaveTypeDescription').value
+	
 			
 			if(tempLeaveTypeId  === ""){
 				const leaveTypeList = [
@@ -112,19 +118,19 @@
 				}
 			}
 			
-			if (leaveTypeId >= 10 || leaveTypeId < 0 || leaveTypeId === ""){
+			if (leaveTypeId === ""){
 				 Swal.fire({
 			          title: 'Warning!',
-			          text: "ID must have positive number and less than 10.",
+			          text: "ID must not empty.",
 			          icon: 'warning'
 			    });
 				return false;
 			}
 			
-			if (!validPattern.test(leaveTypeName)) {
+			if (leaveTypeName === "") {
 				Swal.fire({
 					title: 'Warning!',
-					text: 'Leave type name must not contain special characters or empty.',
+					text: 'Leave type name must not empty.',
 					icon: 'warning'
 				});
 				return false;
