@@ -500,17 +500,28 @@ function syncServerTime() {
 }
 //Real-Time Clock Helper
 function updateClock() {
-	let currentServerTime = new Date(new Date().getTime() + serverTimeOffset);
-	let hours = currentServerTime.getHours().toString().padStart(2, '0');
-	let minutes = currentServerTime.getMinutes().toString().padStart(2, '0');
-	let seconds = currentServerTime.getSeconds().toString().padStart(2, '0');
-	
-	$("#clock").text(hours + ":" + minutes);
-	$("#clock-second").text(":" + seconds);
-	
-	let options = { day: '2-digit', month: 'short', year: 'numeric' };
-	let dateStr = currentServerTime.toLocaleDateString('en-GB', options).replace(/,/g, '');
-	$("#date").text(dateStr);
+    let currentServerTime = new Date(new Date().getTime() + serverTimeOffset);
+    
+    let hours = currentServerTime.getHours();
+    let minutes = currentServerTime.getMinutes();
+    
+    if (hours > 18 || (hours === 18 && minutes >= 30)) {
+        $("#clock").text("18:30");
+        $("#clock-second").text(":00");
+    } 
+    else {
+        
+        let showHours = hours.toString().padStart(2, '0');
+        let showMinutes = minutes.toString().padStart(2, '0');
+        let showSeconds = currentServerTime.getSeconds().toString().padStart(2, '0');
+        
+        $("#clock").text(showHours + ":" + showMinutes);
+        $("#clock-second").text(":" + showSeconds);
+    }
+    
+    let options = { day: '2-digit', month: 'short', year: 'numeric' };
+    let dateStr = currentServerTime.toLocaleDateString('en-GB', options).replace(/,/g, '');
+    $("#date").text(dateStr);
 }
 
 $("#submitBtn").click(function() {

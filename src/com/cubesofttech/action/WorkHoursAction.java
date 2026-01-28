@@ -184,11 +184,23 @@ public class WorkHoursAction extends ActionSupport {
 					result.put("time", checkTime);
 				}
 			} else {
-				ts = Timestamp.valueOf(now);
+				
+				LocalDateTime officialLdt = now;
+				
+				if ("2".equals(checkType)) {
+			        LocalDateTime cutOffTime = now.withHour(18).withMinute(30).withSecond(0).withNano(0);
+			        
+			        if (now.isAfter(cutOffTime)) {
+			            officialLdt = cutOffTime;
+			            log.info("Cut-off applied. Real: " + now + " -> Official: " + officialLdt);
+			        }
+			    }
+				
+				ts = Timestamp.valueOf(officialLdt);
+				timeString = officialLdt.format(timeFormat);
 				date = now.getDayOfMonth();
-				month = now.getMonthValue();
-				year = now.getYear();
-				timeString = now.format(timeFormat);
+			    month = now.getMonthValue();
+			    year = now.getYear();
 			}
 
 			log.debug(timeString);
@@ -208,8 +220,8 @@ public class WorkHoursAction extends ActionSupport {
 				wh.setTimeCreate(Timestamp.valueOf(now));
 				wh.setTimeUpdate(Timestamp.valueOf(now));
 			} else {
-				wh.setTimeCreate(ts);
-				wh.setTimeUpdate(ts);
+				wh.setTimeCreate(Timestamp.valueOf(now));
+				wh.setTimeUpdate(Timestamp.valueOf(now));
 			}
 			wh.setUserCreate(userId);
 			wh.setUserUpdate(userId);
@@ -222,7 +234,7 @@ public class WorkHoursAction extends ActionSupport {
 			if ("retro".equals(checkMode)) {
 				result.put("time", checkTime);
 			} else {
-				result.put("time", now.format(fmt));
+				result.put("time", timeString.substring(0, 5));
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
