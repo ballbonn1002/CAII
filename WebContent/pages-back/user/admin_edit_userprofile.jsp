@@ -80,7 +80,7 @@
 						<ul
 							class="breadcrumb breadcrumb-separatorless fw-semibold fs-7 my-0">
 							<li class="breadcrumb-item text-muted"><a
-								href="${pageContext.request.contextPath}/demo_dashboard"
+								href="${pageContext.request.contextPath}/user-list"
 								class="text-muted text-hover-primary">Admin Management </a></li>
 							<li class="breadcrumb-item"><span
 								class="bullet bg-gray-500 w-5px h-2px"></span></li>
@@ -203,14 +203,14 @@
 										<div
 											class="border border-gray-300 rounded-1 px-4 py-3 border-dashed ">
 											<div class="d-flex flex-column">
-												<p class="fs-5 fw-bold text-gray-800 mb-2">${selectUser.positionId}</p>
+												<p class="fs-5 fw-bold text-gray-800 mb-2">${empty selectUser.positionId ? 'NONE':selectUser.positionId}</p>
 												<p class="fs-6 fw-bold text-gray-500 mb-0">Position</p>
 											</div>
 										</div>
 										<div
 											class="border border-gray-300 rounded-1 px-4 py-3 border-dashed ">
 											<div class="d-flex flex-column">
-												<p class="fs-5 fw-bold text-gray-800 mb-2">${selectUser.departmentId}</p>
+												<p class="fs-5 fw-bold text-gray-800 mb-2">${empty selectUser.departmentId ? 'NONE':selectUser.departmentId}</p>
 												<p class="fs-6 fw-bold text-gray-500 mb-0">Department</p>
 											</div>
 										</div>

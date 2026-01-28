@@ -81,13 +81,13 @@
                                             <div class="flex-grow-1">
                                                 <select id="name2" class="form-select rounded-start-0 border-start-0 h-45px" data-control="select2" data-placeholder="All" data-allow-clear="true">
                                                     <option></option>
-                                                    <option value="All" selected>All</option>
+                                                   <option value="All">All</option> 
                                                     <optgroup label="Enable">
                                                         <c:forEach var="user" items="${cubesoftUser}">
                                                             <c:if test="${user.enable == 1 && user.flag_search == '1'}">
                                                                 <c:set var="displayText" value="${not empty user.employee_id ? user.employee_id : ''}" />
-                                                                <c:if test="${not empty user.name}"><c:set var="displayText" value="${displayText}${not empty displayText ? ' - ' : ''}${user.name}" /></c:if>
                                                                 <c:if test="${not empty user.name_en}"><c:set var="displayText" value="${displayText}${not empty displayText ? ' - ' : ''}${user.name_en}" /></c:if>
+                                                                <c:if test="${not empty user.name}"><c:set var="displayText" value="${displayText}${not empty displayText ? ' - ' : ''}${user.name}" /></c:if>                                                      
                                                                 <option value="<c:out value='${user.id != null ? fn:trim(user.id) : ""}'/>">${displayText}</option>
                                                             </c:if>
                                                         </c:forEach>
@@ -96,8 +96,8 @@
                                                         <c:forEach var="user" items="${cubesoftUser}">
                                                             <c:if test="${user.enable == 0 && user.flag_search == '1'}">
                                                                 <c:set var="displayText" value="${not empty user.employee_id ? user.employee_id : ''}" />
-                                                                <c:if test="${not empty user.name}"><c:set var="displayText" value="${displayText}${not empty displayText ? ' - ' : ''}${user.name}" /></c:if>
                                                                 <c:if test="${not empty user.name_en}"><c:set var="displayText" value="${displayText}${not empty displayText ? ' - ' : ''}${user.name_en}" /></c:if>
+                                                                <c:if test="${not empty user.name}"><c:set var="displayText" value="${displayText}${not empty displayText ? ' - ' : ''}${user.name}" /></c:if>
                                                                 <option value="<c:out value='${user.id != null ? fn:trim(user.id) : ""}'/>">${displayText}</option>
                                                             </c:if>
                                                         </c:forEach>
@@ -408,7 +408,7 @@
   var tableItemsPerPage = 10;
   var currentPage = 1;
   var isGridView = false;
-  var activeFilters  = { status: '', anniversaries: '', birthdays: '' };
+  var activeFilters  = { status: '1', anniversaries: '', birthdays: '' };
   var sortedCardCache = null;
 
 
@@ -889,12 +889,15 @@
   function showAllUsers(){
     $rowsAll().attr('data-filtered','1');
     $gridCardsAll().attr('data-filtered','1'); 
-    activeFilters = { status:'', birthdays:'', anniversaries:'' };
+    activeFilters = { status: '1', birthdays: '3', anniversaries: '3' };
     sortedCardCache = null
     sortedCache = null
-    $('#statusSelect').val('3').trigger('change.select2');
-    $('#birthdaysSelect').val('').trigger('change.select2');
-    $('#anniversariesSelect').val('').trigger('change.select2');
+    currentPage = 1;
+    $('#statusSelect').val('1').trigger('change.select2');
+    $('#birthdaysSelect').val('3').trigger('change.select2');
+    $('#anniversariesSelect').val('3').trigger('change.select2');
+    
+    $('#name2').val('All').trigger('change.select2');
     
     var currentSortMode = $('#sortSelect').val() || 'empid-asc';
     if (isGridView) {
@@ -907,7 +910,9 @@
   }
 
   function searchBySelectValue(user_id) {
-    if (!user_id || user_id === 'All') { showAllUsers(); return; }
+	  user_id = (user_id || '').trim();
+   /*  if (!user_id || user_id === 'All') { showAllUsers(); return; } */
+    if (!user_id) { showAllUsers(); return; }
     $.ajax({
       url: "search-User",
       type: "POST",
@@ -1003,7 +1008,8 @@
       sortRows($('#sortSelect').val() || 'empid-asc'); */
     	$('#sortSelect').on('change', function () {
     		  var mode = this.value;
-
+    		  currentPage = 1;
+    		  
     		  if (isGridView) {
     		    sortCards(mode);   
     		    showGridPage(1);   
@@ -1163,6 +1169,10 @@
     initSel($('#statusSelect'), true);
     initSel($('#birthdaysSelect'), true);
     initSel($('#anniversariesSelect'), true);
+    $('#statusSelect').val('1').trigger('change.select2'); 
+    $('#birthdaysSelect').val('3').trigger('change.select2'); 
+    $('#anniversariesSelect').val('3').trigger('change.select2'); 
+    activeFilters.status = '1';
 
     const $btn = $('#btnToggleFilters');
     const $fields = $('#filterFields');
@@ -1200,7 +1210,25 @@
       const user_id = ($(this).val() || '').toString().trim();
       searchBySelectValue(user_id);
     });
-    $("#name2").on("select2:clear", function(){ showAllUsers(); });
+    /* $("#name2").on("select2:clear", function(){ showAllUsers(); }); */
+    $("#name2").on("select2:select change", function (e) {
+	    const val = ($(this).val() || '').toString().trim();
+	
+	    if (val === '' || val === 'All') {
+	    	setTimeout(function () {
+	            showAllUsers();
+	            $el.select2('close'); 
+	          }, 0);
+
+	          return;
+	        }
+	
+	    searchBySelectValue(val);
+	  })
+	  .on("select2:clear", function () {
+	    showAllUsers();      
+  });
+
     
     window.addUser = function () { window.location.href = 'user-add'; };
   });

@@ -122,7 +122,7 @@
 
 	<!-- User -->
 	<definition name="user.list" extends="baseLayout">
-		<put-attribute name="title" value="Employee Profile" />
+		<put-attribute name="title" value="Admin Management" />
 		<put-attribute name="body"
 			value="/pages-back/user/user_list.jsp" />
 	</definition>

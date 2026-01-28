@@ -42,7 +42,9 @@
 								class="text-muted text-hover-primary">Home</a></li>
 							<li class="breadcrumb-item"><span
 								class="bullet bg-gray-500 w-5px h-2px"></span></li>
-							<li class="breadcrumb-item text-muted">Admin Management</li>
+							<li class="breadcrumb-item text-muted"><a
+								href="${pageContext.request.contextPath}/user-list"
+								class="text-muted text-hover-primary">Admin Management </a></li>
 							<li class="breadcrumb-item"><span
 								class="bullet bg-gray-500 w-5px h-2px"></span></li>
 							<li class="breadcrumb-item text-muted">Employee Profile</li>
