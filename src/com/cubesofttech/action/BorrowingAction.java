@@ -851,6 +851,7 @@ public class BorrowingAction extends ActionSupport {
 			List<EquipmentType> type = equipmentTypeDAO.getall();
 			String userJSON = userDAO.userListJSON();
 			
+			//comment
 			request.setAttribute("userList", userJSON);
 			request.setAttribute("borrows", new Gson().toJson(borrows));
 			request.setAttribute("equipments", new Gson().toJson(equipments));

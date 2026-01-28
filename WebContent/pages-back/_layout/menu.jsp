@@ -72,10 +72,8 @@ String targetURL = Constant.getWebContext2() + "/authorization?token=" + token;
 						</a>
 					</div>
 					<!--end:Menu item-->
-
 					<!--begin:Menu item-->
-					<div class="menu-item">
-						<!--begin:Menu link-->
+				<!-- 	<div class="menu-item">
 						<a class="menu-link" href="#" data-route="#"> <span
 							class="menu-icon"> <i
 								class="ki-duotone ki-element-11 fs-1"> <span class="path1"></span>
@@ -83,8 +81,7 @@ String targetURL = Constant.getWebContext2() + "/authorization?token=" + token;
 									class="path4"></span></i>
 						</span> <span class="menu-title">Dashboards</span>
 						</a>
-						<!--end:Menu link-->
-					</div>
+					</div> -->
 					<!--end:Menu item-->
 					<!--begin:Menu item-->
 					<div class="menu-item">
@@ -242,6 +239,20 @@ String targetURL = Constant.getWebContext2() + "/authorization?token=" + token;
 						end:Menu link
 					</div> -->
 					<!--end:Menu item-->
+                    
+                    <!--Work Log-->
+                    <perm:permission object="report.view">
+                        <div class="menu-item">
+                            <a class="menu-link" href="work_log"
+                                data-route="work_log"> <span class="menu-icon">
+                                    <i class="ki-duotone ki-time fs-1"> <span class="path1"></span>
+                                        <span class="path2"></span>
+                                </i>
+                            </span> <span class="menu-title"> Work Log </span>
+                            </a>
+                        </div>
+                    </perm:permission>
+                    <!--Work Log-->
 
 					<!--Leave Approve-->
 					<perm:permission object="leave.approve">

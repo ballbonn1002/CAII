@@ -47,6 +47,7 @@ public class Announcement implements Serializable {
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "file_id", referencedColumnName = "file_id", insertable = false, updatable = false)
     private FileUpload fileUpload;
+	@Column(name = "highlight")
 	private String highlight;
 	
 	public String getHighlight() {

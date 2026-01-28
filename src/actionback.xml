@@ -237,6 +237,13 @@
 			class="com.cubesofttech.action.WorkHoursAction" method="savecheck">
 			<result name="error">/index.jsp</result>
 		</action>
+		
+		<!-- Retroactive -->
+		<action name="retroactive"
+			class="com.cubesofttech.action.WorkHoursAction" method="init">
+			<result name="success" type="tiles">retroactivePage</result>
+			<result name="error">/index.jsp</result>
+		</action>
 
 		<!-- MyLeave =========================================================================================================== -->
 
@@ -715,10 +722,10 @@
 			<result name="success" type="tiles">CheckAllCalendar</result>
 			<result name="error">/index.jsp</result>
 		</action>
-		<action name="checkAllCalendar2"
+		<action name="NewCheckAllCalendar"
 			class="com.cubesofttech.action.WorkHoursAction"
 			method="CheckAllCalendar2">
-			<result name="success" type="tiles">CheckAllCalendar2</result>
+			<result name="success" type="tiles">NewCheckAllCalendar</result>
 			<result name="error">/index.jsp</result>
 		</action>
 		<action name="TestSearchAllinCalendar"
@@ -755,6 +762,15 @@
 		</action>
 		<action name="announcementAddPage">
 			<result type="tiles">AnnouncementAdd</result>
+		</action>
+		
+		<action name="announcementUpdate"
+			class="com.cubesofttech.action.AnnouncementAction" method="save">
+			<result name="success" type="redirectAction">
+				<param name="actionName">announcementRead</param>
+				<param name="id">${announcementId}</param>
+			</result>
+			<result name="error">/index.jsp</result>
 		</action>
 
 		<action name="announcementEdit"
@@ -1024,6 +1040,19 @@
 		<action name="eBorrowLog"
 			class="com.cubesofttech.action.BorrowingAction" method="eBorrowLog">
 		</action>
+		
+		<!-- ========================== Work Log ============================== -->
+		<action name="work_log"
+			class="com.cubesofttech.action.WorkLogAction" method="open">
+			<result name="success" type="tiles">workLog</result>
+			<result name="error">/index.jsp</result>
+			<result name="login" type="redirect">/index.jsp</result>
+		</action>
+		<action name="work_log_json" 
+			class="com.cubesofttech.action.WorkLogAction" method="search">
+			<result name="login" type="redirect">/index.jsp</result>
+		</action>
+		
 	</package>
 
 </struts>

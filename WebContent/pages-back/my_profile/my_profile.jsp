@@ -162,14 +162,14 @@
 										<div
 											class="border border-gray-300 rounded-1 px-4 py-3 border-dashed ">
 											<div class="d-flex flex-column">
-												<p class="fs-5 fw-bold text-gray-800 mb-2">${user.positionId}</p>
+												<p class="fs-5 fw-bold text-gray-800 mb-2">${empty user.positionId ? 'NONE':user.positionId}</p>
 												<p class="fs-6 fw-bold text-gray-500 mb-0">Position</p>
 											</div>
 										</div>
 										<div
 											class="border border-gray-300 rounded-1 px-4 py-3 border-dashed ">
 											<div class="d-flex flex-column">
-												<p class="fs-5 fw-bold text-gray-800 mb-2">${user.departmentId}</p>
+												<p class="fs-5 fw-bold text-gray-800 mb-2">${empty user.departmentId ? 'NONE':user.departmentId}</p>
 												<p class="fs-6 fw-bold text-gray-500 mb-0">Department</p>
 											</div>
 										</div>
@@ -203,7 +203,6 @@
 												<p class="fs-6 fw-bold text-gray-500 mb-0">${user.workTimeStart}
 													- ${user.workTimeEnd}</p>
 											</div>
-										</div>
 										<div
 											class="border border-gray-300 rounded-1 px-4 py-3 border-dashed ">
 											<div class="d-flex flex-column">
@@ -216,7 +215,7 @@
 										<div
 											class="border border-gray-300 rounded-1 px-4 py-3 border-dashed ">
 											<div class="d-flex flex-column">
-												<p class="fs-5 fw-bold text-gray-800 mb-2">${manager.managerNameEn}</p>
+												<p class="fs-5 fw-bold text-gray-800 mb-2">${empty manager.managerNameEn ? 'NONE':manager.managerNameEn}</p>
 												<p class="fs-6 fw-bold text-gray-500 mb-0">Manager</p>
 											</div>
 										</div>

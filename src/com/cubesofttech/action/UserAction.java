@@ -725,20 +725,25 @@ public class UserAction extends ActionSupport {
 			request.setAttribute("userList", userDAO.sequense());
 			
 			String workPeriod = "-";
-
-			LocalDate start = selectUser.getStartDate().toLocalDate();
-			LocalDate now = LocalDate.now();
-
-			Period p = Period.between(start, now);
-
-			if (p.getYears() == 0 && p.getMonths() == 0) {
-			    workPeriod = p.getDays() + "d";
-			} else if (p.getYears() == 0) {
-			    workPeriod = p.getMonths() + "m " + p.getDays() + "d";
-			} else {
-			    workPeriod = p.getYears() + "y " + p.getMonths() + "m";
+			if (selectUser.getStartDate() != null) {
+				LocalDate start = selectUser.getStartDate().toLocalDate();
+				LocalDate now = LocalDate.now();
+				Period p = Period.between(start, now);
+			    
+			    if (start.isAfter(now)) {
+			        workPeriod = "Waiting to start..."; 
+			    } else {
+			        
+			        if (p.getYears() == 0 && p.getMonths() == 0) {
+			            workPeriod = p.getDays() + "d";
+			        } else if (p.getYears() == 0) {
+			            workPeriod = p.getMonths() + "m " + p.getDays() + "d";
+			        } else {
+			            workPeriod = p.getYears() + "y " + p.getMonths() + "m";
+			        }
+			    }
 			}
-	       request.setAttribute("workPeriod", workPeriod);
+			request.setAttribute("workPeriod", workPeriod);
 
 			List<Map<String, Object>> leavwait = leaveDAO.listwaitperson(String.valueOf(userId));
 			List<Map<String, Object>> leavhis = leaveDAO.listoneperson(String.valueOf(userId));
@@ -895,50 +900,6 @@ public class UserAction extends ActionSupport {
 			List<JobSiteTeam> ListuserId = jobSiteTeamDAO.findAllByUserId(UserIdEdit);
 			log.debug("ListuserId size = " + (ListuserId == null ? "null" : ListuserId.size()));
 
-			//Clean Data and Change String To List
-//			List<String> selectedSiteIds = new ArrayList<>();
-//			if (siteJobId != null) {
-//				for (String s : siteJobId) {
-//					if (s != null && !s.trim().isEmpty()) {
-//						selectedSiteIds.add(s.trim());
-//					}
-//				}
-//			}
-//			log.debug("Selected siteJobId set = " + selectedSiteIds);
-//
-//			// Add newly selected links that don't exist yet
-//			if (!selectedSiteIds.isEmpty()) {
-//				for (String siteId : selectedSiteIds) {
-//					JobSiteTeam Add_jobuser = jobSiteTeamDAO.findByIdSiteJobAndUserId(siteId, UserIdEdit);
-//					if (Add_jobuser == null) {
-//						JobSiteTeam Jobuser = new JobSiteTeam();
-//						Jobuser.setUser_id(UserIdEdit);
-//						Jobuser.setId_sitejob(siteId);
-//						jobSiteTeamDAO.save(Jobuser);
-//						log.debug("Added siteJobId=" + siteId);
-//					} else {
-//						log.debug("Already exists siteJobId=" + siteId);
-//					}
-//				}
-//			}
-//			else {
-//
-//			    JobSiteTeam emptyLink = new JobSiteTeam();
-//			    emptyLink.setUser_id(UserIdEdit);
-//			    emptyLink.setId_sitejob("");
-//			    jobSiteTeamDAO.save(emptyLink);
-//			    log.debug("Added empty siteJobId for user=" + UserIdEdit);
-//			}
-//
-//			// Delete links that exist in DB but were not selected
-//
-//			for (JobSiteTeam link : ListuserId) {
-//				boolean stillSelected = selectedSiteIds.contains(link.getId_sitejob());
-//				if (!stillSelected) {
-//					jobSiteTeamDAO.delete(link);
-//					log.debug("Deleted siteJobId=" + link.getId_sitejob());
-//				}
-//			}
 			List<String> selectedSiteIds = new ArrayList<>();
 
 			if (siteJobId != null) {
@@ -1983,19 +1944,25 @@ public class UserAction extends ActionSupport {
 			request.setAttribute("jobSite", jobSite);
 
 			String workPeriod = "-";
-
-			LocalDate start = u.getStartDate().toLocalDate();
-			LocalDate now = LocalDate.now();
-
-			Period p = Period.between(start, now);
-
-			if (p.getYears() == 0 && p.getMonths() == 0) {
-			    workPeriod = p.getDays() + "d";
-			} else if (p.getYears() == 0) {
-			    workPeriod = p.getMonths() + "m " + p.getDays() + "d";
-			} else {
-			    workPeriod = p.getYears() + "y " + p.getMonths() + "m";
+			if (u.getStartDate() != null) {
+				LocalDate start = u.getStartDate().toLocalDate();
+				LocalDate now = LocalDate.now();
+				Period p = Period.between(start, now);
+			    
+			    if (start.isAfter(now)) {
+			        workPeriod = "Waiting to start..."; 
+			    } else {
+			        
+			        if (p.getYears() == 0 && p.getMonths() == 0) {
+			            workPeriod = p.getDays() + "d";
+			        } else if (p.getYears() == 0) {
+			            workPeriod = p.getMonths() + "m " + p.getDays() + "d";
+			        } else {
+			            workPeriod = p.getYears() + "y " + p.getMonths() + "m";
+			        }
+			    }
 			}
+			
 
 			
 	        List<Map<String,Object>> borrow = borrowDAO.getBorrowListByUserId(logonUser);

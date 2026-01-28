@@ -130,9 +130,8 @@
 									<!-- Status -->
 									<div class="mb-7">
 										<label class="required fw-medium mb-2 d-block">Status</label>
-										<select name="status"
-											class="form-select form-select text-muted" required>
-											<option value="">Select status</option>
+										<select id="status_select" name="status" class="form-select"
+											data-control="select2" required>
 											<option value="B">Borrowing</option>
 											<option value="W">Wait for approve</option>
 										</select>
@@ -159,8 +158,8 @@
 													class="ki-outline ki-calendar fs-3 position-absolute ms-4"></i>
 												<input type="text" id="start_date"
 													class="form-control form-control ps-12" name="date_from"
-													placeholder="Select Date" value="" autocomplete="off"
-													required />
+													placeholder="Select Date & Time" value=""
+													autocomplete="off" required />
 											</div>
 										</div>
 
@@ -247,65 +246,60 @@
 									<!-- ROWS -->
 									<div
 										class="d-flex justify-content-between align-items-center py-5 border-bottom border-gray-200">
-										<div class="text-gray-600">Name:</div>
-										<div class="fw-semibold text-gray-800 text-end text-break"
+										<div class="text-gray-600">Name</div>
+										<div class="fw-normal fs-6 text-gray-800 text-end text-break"
 											id="d_name"></div>
 									</div>
 
 									<div
 										class="d-flex justify-content-between align-items-center py-5 border-bottom border-gray-200">
-										<div class="text-gray-600">Type:</div>
+										<div class="text-gray-600">Type</div>
 										<div
-											class="fw-semibold text-gray-800 d-flex align-items-center justify-content-end text-end w-100">
-											<span id="d_typeText">-</span>
-											<span id="d_typeIcons"
-												class="d-inline-flex align-items-center ms-3"> 
-												<i id="ico_c" class="ki-duotone ki-laptop fs-4 text-gray-600 d-none">
-													<span class="path1"></span><span class="path2"></span>
-												</i> 
-												<i id="ico_in" class="ki-duotone ki-keyboard fs-4 text-gray-600 d-none">
-													<span class="path1"></span><span class="path2"></span>
-												</i> 
-												<i id="ico_sl" class="ki-duotone ki-verify fs-4 text-gray-600 d-none">
-													<span class="path1"></span><span class="path2"></span>
-												</i> 
-												<i id="ico_mob" class="ki-duotone ki-phone fs-4 text-gray-600 d-none">
-													<span class="path1"></span><span class="path2"></span>
-												</i> 
-												<i id="ico_p" class="ki-duotone ki-wifi-square fs-4 text-gray-600 d-none">
-													<span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span>
-												</i> 
-												<i id="ico_other" class="ki-duotone ki-dots-square fs-4 text-gray-600 d-none">
-													<span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span>
-												</i>
+											class="fw-normal fs-6 text-gray-800 d-flex align-items-center justify-content-end text-end w-100">
+											<span id="d_typeText">-</span> <span id="d_typeIcons"
+												class="d-inline-flex align-items-center ms-3"> <i
+												id="ico_c"
+												class="ki-solid ki-laptop fs-1 text-gray-600 d-none"> </i> <i
+												id="ico_in"
+												class="ki-solid ki-keyboard fs-1 text-gray-600 d-none">
+											</i> <i id="ico_sl"
+												class="ki-solid ki-verify fs-1 text-gray-600 d-none"> </i> <i
+												id="ico_mob"
+												class="ki-solid ki-phone fs-1 text-gray-600 d-none"> </i> <i
+												id="ico_p"
+												class="ki-solid ki-wifi-square fs-1 text-gray-600 d-none">
+											</i> <i id="ico_other"
+												class="ki-solid ki-dots-square fs-1 text-gray-600 d-none">
+											</i>
 											</span>
 										</div>
 									</div>
 
 									<div
 										class="d-flex justify-content-between align-items-center py-5 border-bottom border-gray-200">
-										<div class="text-gray-600">Serial No:</div>
-										<div class="fw-semibold text-gray-800 text-end text-break"
+										<div class="text-gray-600">Serial No</div>
+										<div class="fw-normal fs-6 text-gray-800 text-end text-break"
 											id="d_serial"></div>
 									</div>
 
 									<div
 										class="d-flex justify-content-between align-items-center py-5 border-bottom border-gray-200">
-										<div class="text-gray-600">Amount:</div>
-										<div class="fw-semibold text-gray-800 text-end" id="d_amount"></div>
+										<div class="text-gray-600">Amount</div>
+										<div class="fw-normal fs-6 text-gray-800 text-end"
+											id="d_amount"></div>
 									</div>
 
 									<div
 										class="d-flex justify-content-between align-items-center py-5 border-bottom border-gray-200">
-										<div class="text-gray-600">Date of Purchase:</div>
-										<div class="fw-semibold text-gray-800 text-end text-break"
+										<div class="text-gray-600">Date of Purchase</div>
+										<div class="fw-normal fs-6 text-gray-800 text-end text-break"
 											id="d_purchase"></div>
 									</div>
 
 									<div
 										class="d-flex justify-content-between align-items-center py-5 border-bottom border-gray-200">
-										<div class="text-gray-600">Detail:</div>
-										<div class="fw-semibold text-gray-800 text-end text-break"
+										<div class="text-gray-600">Detail</div>
+										<div class="fw-normal fs-6 text-gray-800 text-end text-break"
 											id="d_detail"></div>
 									</div>
 
@@ -324,56 +318,64 @@
 											<div
 												class="d-flex justify-content-between align-items-center py-5 border-bottom border-gray-200">
 												<div class="text-gray-600">Windows</div>
-												<div class="fw-semibold text-gray-800 text-end text-break"
+												<div
+													class="fw-normal fs-6 text-gray-800 text-end text-break"
 													id="d_windows">-</div>
 											</div>
 
 											<div
 												class="d-flex justify-content-between align-items-center py-5 border-bottom border-gray-200">
 												<div class="text-gray-600">CPU</div>
-												<div class="fw-semibold text-gray-800 text-end text-break"
+												<div
+													class="fw-normal fs-6 text-gray-800 text-end text-break"
 													id="d_cpu">-</div>
 											</div>
 
 											<div
 												class="d-flex justify-content-between align-items-center py-5 border-bottom border-gray-200">
 												<div class="text-gray-600">Ram</div>
-												<div class="fw-semibold text-gray-800 text-end text-break"
+												<div
+													class="fw-normal fs-6 text-gray-800 text-end text-break"
 													id="d_ram">-</div>
 											</div>
 
 											<div
 												class="d-flex justify-content-between align-items-center py-5 border-bottom border-gray-200">
 												<div class="text-gray-600">Storage</div>
-												<div class="fw-semibold text-gray-800 text-end text-break"
+												<div
+													class="fw-normal fs-6 text-gray-800 text-end text-break"
 													id="d_storage">-</div>
 											</div>
 
 											<div
 												class="d-flex justify-content-between align-items-center py-5 border-bottom border-gray-200">
 												<div class="text-gray-600">Battery</div>
-												<div class="fw-semibold text-gray-800 text-end text-break"
+												<div
+													class="fw-normal fs-6 text-gray-800 text-end text-break"
 													id="d_battery">-</div>
 											</div>
 
 											<div
 												class="d-flex justify-content-between align-items-center py-5 border-bottom border-gray-200">
 												<div class="text-gray-600">WIFI Address</div>
-												<div class="fw-semibold text-gray-800 text-end text-break"
+												<div
+													class="fw-normal fs-6 text-gray-800 text-end text-break"
 													id="d_wifi">-</div>
 											</div>
 
 											<div
 												class="d-flex justify-content-between align-items-center py-5 border-bottom border-gray-200">
 												<div class="text-gray-600">LAN Address</div>
-												<div class="fw-semibold text-gray-800 text-end text-break"
+												<div
+													class="fw-normal fs-6 text-gray-800 text-end text-break"
 													id="d_lan">-</div>
 											</div>
 
 											<div
 												class="d-flex justify-content-between align-items-center py-5 border-bottom border-gray-200">
 												<div class="text-gray-600">Display</div>
-												<div class="fw-semibold text-gray-800 text-end text-break"
+												<div
+													class="fw-normal fs-6 text-gray-800 text-end text-break"
 													id="d_display">-</div>
 											</div>
 										</div>
@@ -446,7 +448,7 @@ document.addEventListener("DOMContentLoaded", function () {
 		if (enableVal == 1 || enableVal == '1' || enableVal == true || enableVal == 'true') {
 			const opt = document.createElement('option');
 			opt.value = uid;
-			opt.textContent = emp + '-' + nameTH + '-' + nameEN + '-' + role;
+			opt.textContent = emp + ' - ' + nameEN + ' - ' + nameTH + ' - ' + role;
 			userSelect.appendChild(opt);
 		}
 	});
@@ -571,42 +573,43 @@ document.addEventListener("DOMContentLoaded", function () {
 
 	<!-- Flatpickr Date Picker -->
 	<script>
-document.addEventListener("DOMContentLoaded", function () {
-	if (typeof flatpickr === "undefined") {
-		console.error("flatpickr not loaded");
-		return;
-	}
-
-	const startEl = document.getElementById("start_date");
-	const endEl = document.getElementById("end_date");
-
-	const startPicker = flatpickr(startEl, {
-		enableTime: true,
-		time_24hr: true,
-		dateFormat: "d m Y , H : i",
-		altInput: true,
-		altFormat: "d M Y , H : i",
-		allowInput: true
-	});
-
-	const endPicker = flatpickr(endEl, {
-		enableTime: true,
-		time_24hr: true,
-		dateFormat: "d m Y , H : i",
-		altInput: true,
-		altFormat: "d M Y , H : i",
-		allowInput: true
-	});
-
-	startEl.addEventListener("change", function () {
-		const v = this.value || "";
-		endPicker.set("minDate", v || null);
-
-		if (v && endEl.value && endEl.value < v) {
-			endEl.value = v;
+	document.addEventListener("DOMContentLoaded", function () {
+		if (typeof flatpickr === "undefined") {
+			console.error("flatpickr not loaded");
+			return;
 		}
+
+		const startEl = document.getElementById("start_date");
+		const endEl = document.getElementById("end_date");
+
+		const startPicker = flatpickr(startEl, {
+			enableTime: true,
+			time_24hr: true,
+			dateFormat: "d m Y , H : i",
+			altInput: true,
+			altFormat: "d M Y , H : i",
+			allowInput: true,
+			defaultDate: new Date()  // เพิ่มบรรทัดนี้ - ตั้งค่าเริ่มต้นเป็นเวลาปัจจุบัน
+		});
+
+		const endPicker = flatpickr(endEl, {
+			enableTime: true,
+			time_24hr: true,
+			dateFormat: "d m Y , H : i",
+			altInput: true,
+			altFormat: "d M Y , H : i",
+			allowInput: true
+		});
+
+		startEl.addEventListener("change", function () {
+			const v = this.value || "";
+			endPicker.set("minDate", v || null);
+
+			if (v && endEl.value && endEl.value < v) {
+				endEl.value = v;
+			}
+		});
 	});
-});
 	</script>
 
 	<!-- Equipment Detail Card Update -->
@@ -1003,5 +1006,13 @@ document.addEventListener("DOMContentLoaded", function () {
 	onChange();
 });
 	</script>
+	<script>
+		document.addEventListener("DOMContentLoaded", function () {
+		  $("#status_select").select2({
+		    minimumResultsForSearch: Infinity,
+		    width: "100%"
+		  });
+		});
+</script>
 </body>
 </html>

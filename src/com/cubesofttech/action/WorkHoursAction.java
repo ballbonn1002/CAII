@@ -465,11 +465,8 @@ public class WorkHoursAction extends ActionSupport {
 			LocalDate endDate = startDate.withDayOfMonth(startDate.lengthOfMonth());
 
 			DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
-			Timestamp start_date_leave = DateUtil.dateToTimestamp(LocalDate.of(last2year, 1, 1).format(dateFormatter),
-					"00:00:00.0");
-			Timestamp end_date_leave = DateUtil.dateToTimestamp(LocalDate.of(currentYear, 12, 31).format(dateFormatter),
-					"23:59:59.0");
-
+			Timestamp start_date_leave = DateUtil.dateToTimestamp(LocalDate.of(last2year, 1, 1).format(dateFormatter), "00:00:00.0");
+			Timestamp end_date_leave = DateUtil.dateToTimestamp(LocalDate.of(currentYear, 12, 31).format(dateFormatter), "23:59:59.0");
 			List<Map<String, Object>> leavelist = leaveDAO.myLeavesList(userId, start_date_leave, end_date_leave);
 			request.setAttribute("leave", leavelist);
 
@@ -497,9 +494,7 @@ public class WorkHoursAction extends ActionSupport {
 					dailyStatus = (String) statusResult.get("status");
 
 					if (statusResult.containsKey("leave_desc")) {
-						log.debug(statusResult);
 						leaveDescription = (String) statusResult.get("leave_desc");
-						log.debug(leaveDescription);
 					}
 				} catch (Exception e) {
 					log.error("Error calculating status", e);
@@ -550,7 +545,7 @@ public class WorkHoursAction extends ActionSupport {
 					dayData.put("descriptionOut", "");
 					dayData.put("workTypeOut", "");
 
-					if (!leaveDescription.isEmpty()) {
+					if (leaveDescription != null && !leaveDescription.isEmpty()) {
 						dayData.put("descriptionIn", leaveDescription);
 						dayData.put("status", dailyStatus);
 					} else {
@@ -601,7 +596,6 @@ public class WorkHoursAction extends ActionSupport {
 					}
 				}
 			}
-			log.debug(workData);
 			ObjectMapper mapper = new ObjectMapper();
 			request.setAttribute("workList", workData);
 			request.setAttribute("stime", workStartTime);

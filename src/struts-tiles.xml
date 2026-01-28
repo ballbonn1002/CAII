@@ -122,19 +122,19 @@
 
 	<!-- User -->
 	<definition name="user.list" extends="baseLayout">
-		<put-attribute name="title" value="User Management" />
+		<put-attribute name="title" value="Admin Management" />
 		<put-attribute name="body"
 			value="/pages-back/user/user_list.jsp" />
 	</definition>
 	<definition name="admin_edit_userprofile"
 		extends="baseLayout">
 		<put-attribute name="title"
-			value="Admin_Edit_Userprofile" />
+			value="Edit Employee Profile" />
 		<put-attribute name="body"
 			value="/pages-back/user/admin_edit_userprofile.jsp" />
 	</definition>
 	<definition name="user.add" extends="baseLayout">
-		<put-attribute name="title" value="User Add" />
+		<put-attribute name="title" value="Add Employee Profile" />
 		<put-attribute name="body"
 			value="/pages-back/user/user_add.jsp" />
 	</definition>
@@ -150,10 +150,10 @@
 		<put-attribute name="body"
 			value="/pages-back/calendar/checkall_calendar.jsp" />
 	</definition>
-	<definition name="CheckAllCalendar2" extends="baseLayout">
+	<definition name="NewCheckAllCalendar" extends="baseLayout">
 		<put-attribute name="title" value="Check All Calendar" />
 		<put-attribute name="body"
-			value="/pages-back/calendar/checkall_calendar2.jsp" />
+			value="/pages-back/calendar/new_checkall_calendar.jsp" />
 	</definition>
 
 	<!-- HOLIDAY -->
@@ -186,6 +186,14 @@
 		<put-attribute name="title" value="Check-In/Check-Out" />
 		<put-attribute name="body"
 			value="/pages-back/check/check_in_out.jsp" />
+	</definition>
+	
+	<!-- Retroactive -->
+	<definition name="retroactivePage" extends="baseLayout">
+		<put-attribute name="title"
+			value="Retroactive" />
+		<put-attribute name="body"
+			value="/pages-back/check/retroactive_form.jsp" />
 	</definition>
 
 	<!-- My Leave -->
@@ -304,17 +312,17 @@
 
 	<!-- Announcement -->
 	<definition name="AnnouncementList" extends="baseLayout">
-		<put-attribute name="title" value="Annoucemnet List" />
+		<put-attribute name="title" value="Annoucement List" />
 		<put-attribute name="body"
 			value="/pages-back/announcement/announcement_list.jsp" />
 	</definition>
 	<definition name="AnnouncementRead" extends="baseLayout">
-		<put-attribute name="title" value="Annoucemnet Read" />
+		<put-attribute name="title" value="Annoucement Read" />
 		<put-attribute name="body"
 			value="/pages-back/announcement/announcement_read.jsp" />
 	</definition>
 	<definition name="AnnouncementAdd" extends="baseLayout">
-		<put-attribute name="title" value="Annoucemnet Add" />
+		<put-attribute name="title" value="Annoucement Add" />
 		<put-attribute name="body"
 			value="/pages-back/announcement/announcement_add.jsp" />
 	</definition>
@@ -405,4 +413,12 @@
 		<put-attribute name="body"
 			value="/pages-back/borrow/borrow_add.jsp" />
 	</definition>
+    
+    <!-- Work Log -->
+    <definition name="workLog" extends="baseLayout">
+		<put-attribute name="title" value="Work Log" />
+		<put-attribute name="body"
+			value="/pages-back/work_log/work_log_list.jsp" />
+	</definition>
+    
 </tiles-definitions>
