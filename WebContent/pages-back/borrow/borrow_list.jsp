@@ -180,17 +180,17 @@ th.sort:hover {
 							<form action="new_search_borrow" method="POST" id="searchForm">
 								<div
 									class="card card-flush bgi-no-repeat bgi-size-contain bgi-position-x-center border-0 mb-5 mb-xl-10">
-									<div class="card-body py-5 px-6">
-										<div class="row g-5 align-items-end">
+									<div class="card-body py-5 px-0">
+										<div class="row g-5 align-items-end mx-0">
 
 											<!-- Search -->
-											<div class="col-md-5">
+											<div class="col-md-6">
 												<div
-													class="d-flex align-items-center border border-gray-300 rounded-3 px-4 py-2 gap-3 h-55px bg-body">
+													class="d-flex align-items-center border border-gray-300 rounded-3 px-4 py-2 gap-3 h-55px bg-body w-100">
 													<i class="ki-duotone ki-magnifier fs-4 text-gray-500">
 														<span class="path1"></span> <span class="path2"></span>
 													</i> <input type="text" name="keyword"
-														class="form-control border-0 bg-transparent ps-0"
+														class="form-control border-0 bg-transparent ps-0 w-100"
 														placeholder="Search" />
 												</div>
 											</div>
@@ -199,7 +199,7 @@ th.sort:hover {
 											<div class="col-md-3">
 												<label class="select-default">Status:</label> <select
 													id="statusFilter" name="status"
-													class="form-select form-select-solid border border-gray-300 rounded-3 px-4 py-2 gap-3 h-55px bg-body"
+													class="form-select form-select-solid border border-gray-300 rounded-3 px-4 py-2 gap-3 h-55px bg-body w-100"
 													multiple data-control="select2" data-placeholder="Select">
 													<option value="B">Borrowed</option>
 													<option value="W">Wait for Approve</option>
@@ -210,7 +210,7 @@ th.sort:hover {
 											<div class="col-md-3">
 												<label class="select-default">Type:</label> <select
 													id="typeFilter" name="type"
-													class="form-select form-select-solid text-muted border border-gray-300 rounded-3 px-4 py-2 gap-3 h-55px bg-body"
+													class="form-select form-select-solid text-muted border border-gray-300 rounded-3 px-4 py-2 gap-3 h-55px bg-body w-100"
 													multiple data-control="select2" data-placeholder="Select">
 													<option value="c">Computer</option>
 													<option value="in">Instrument</option>
@@ -224,7 +224,6 @@ th.sort:hover {
 									</div>
 								</div>
 							</form>
-
 							<!-- items -->
 							<div
 								class="d-flex align-items-center justify-content-between mt-8 mb-6">
@@ -878,11 +877,11 @@ th.sort:hover {
 		var statusStr = (status || '').toUpperCase();
 		switch(statusStr) {
 			case 'B':
-				return '<span class="badge badge-primary me-2" style="width: fit-content;">Borrowed</span>';
+				return '<span class="badge badge-primary py-2 fs-7" style="width: fit-content;">Borrowed</span>';
 			case 'W':
-				return '<span class="badge badge-light me-2" style="width: fit-content;">Wait for Approve</span>';
+				return '<span class="badge badge-light py-2 fs-7" style="width: fit-content;">Wait for Approve</span>';
 			default:
-				return '<span class="badge badge-light me-2" style="width: fit-content;">-</span>';
+				return '<span class="badge badge-light py-2 fs-7" style="width: fit-content;">-</span>';
 		}
 	}
 	
@@ -1541,38 +1540,50 @@ th.sort:hover {
 
 		// ===== ปุ่ม Request for Return ใน modal Return =====
 		$('#bd_request_return').on('click', function(e) {
-			e.preventDefault();
+		    e.preventDefault();
 
-			const borrowId = $('#borrowDetailModal').data('borrowId') || '';
-			const note = $('#bd_approver_note').val();
+		    const borrowId = $('#borrowDetailModal').data('borrowId') || '';
+		    const note = $('#bd_approver_note').val();
 
-			if (!borrowId) {
-				alert('Borrow ID not found.');
-				return;
-			}
+		    if (!borrowId) {
+		        Swal.fire('Error!', 'Borrow ID not found.', 'error');
+		        return;
+		    }
 
-			if (!confirm('Are you sure you want to request return for this item?')) return;
-
-			$.ajax({
-				url: CTX + "/eBorrowReturn.action",
-				type: "POST",
-				dataType: "json",
-				data: { id: borrowId, note: note },
-				success: function(data) {
-					if (data && data.message === "success") {
-						alert("Return request submitted successfully!");
-						bdModalObj.hide();
-						window.location.href = CTX + "/borrow_list.action";
-					} else {
-						alert("Something went wrong: " + (data ? data.message : "no data"));
-					}
-				},
-				error: function(xhr) {
-					console.log("HTTP", xhr.status);
-					console.log("RAW", xhr.responseText);
-					alert("Failed to submit return request.");
-				}
-			});
+		    Swal.fire({
+		        title: 'Confirm Return',
+		        text: 'Are you sure you want to request return for this item?',
+		        icon: 'question',
+		        showCancelButton: true,
+		        confirmButtonText: 'Yes, Request Return',
+		        cancelButtonText: 'Cancel',
+		       	confirmButtonColor: '#ffc107',
+		        cancelButtonColor: '#6c757d'
+		    }).then((result) => {
+		        if (result.isConfirmed) {
+		            $.ajax({
+		                url: CTX + "/eBorrowReturn.action",
+		                type: "POST",
+		                dataType: "json",
+		                data: { id: borrowId, note: note },
+		                success: function(data) {
+		                    if (data && data.message === "success") {
+		                        Swal.fire('Success!', 'Return request submitted successfully!', 'success').then(() => {
+		                            bdModalObj.hide();
+		                            window.location.href = CTX + "/borrow_list.action";
+		                        });
+		                    } else {
+		                        Swal.fire('Error!', "Something went wrong: " + (data ? data.message : "no data"), 'error');
+		                    }
+		                },
+		                error: function(xhr) {
+		                    console.log("HTTP", xhr.status);
+		                    console.log("RAW", xhr.responseText);
+		                    Swal.fire('Error!', 'Failed to submit return request.', 'error');
+		                }
+		            });
+		        }
+		    });
 		});
 
 		// ===== แก้ไขปัญหาปุ่ม X และ Cancel =====

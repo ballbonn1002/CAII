@@ -651,32 +651,32 @@ document.addEventListener("DOMContentLoaded", function() {
 	}
 
 	function setImage(imgPath, altText) {
-		const wrap = document.getElementById("d_imgWrap");
-		if (!wrap) return;
+	    const wrap = document.getElementById("d_imgWrap");
+	    if (!wrap) return;
 
-		let src = (imgPath || "").trim();
+	    let src = imgPath || "";
+	    let alt = altText || "equipment";
+	    
+	    if (!src) {
+	        wrap.innerHTML = `
+	            <div class="symbol symbol-150px border rounded-3 bg-light d-flex align-items-center justify-content-center">
+	                <i class="fa-solid fa-image fs-1 text-muted"></i>
+	            </div>
+	        `;
+	        return;
+	    }
+		
+	    const container = document.createElement('div');
+	    container.className = 'symbol symbol-150px border rounded-3 bg-light d-flex align-items-center justify-content-center';
 
-		if (!src) {
-			wrap.innerHTML = `
-				<div class="symbol symbol-150px border rounded-3 bg-light d-flex align-items-center justify-content-center">
-					<i class="fa-solid fa-image fs-1 text-muted"></i>
-				</div>
-			`;
-			return;
-		}
+	    const img = document.createElement('img');
+	    img.src = src;
+	    img.alt = alt;
+	    img.className = 'border rounded-3 object-fit-cover w-100 h-100';
 
-		if (!src.startsWith("http")) {
-			if (!src.startsWith("/")) src = "/" + src;
-			src = CTX + src;
-		}
-
-		wrap.innerHTML = `
-			<div class="symbol symbol-150px">
-				<img src="${src}"
-					 alt="${altText || "equipment"}"
-					 class="border rounded-3 object-fit-cover w-100 h-100" />
-			</div>
-		`;
+	    container.appendChild(img);
+	    wrap.innerHTML = '';
+	    wrap.appendChild(container);
 	}
 
 	function setTypeUI(typeCode) {

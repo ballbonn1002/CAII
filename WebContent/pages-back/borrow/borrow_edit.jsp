@@ -92,7 +92,6 @@
 						<div class="col-xl-8">
 							<form action="${pageContext.request.contextPath}/eBorrowUpdate.action" method="post" class="card shadow-none"
 								style="height: fit-content;">
-								<input type="hidden" name="id" value="${sessionScope.bId}" />
 								<div class="card-header py-4" style="border-bottom: 1px solid #E4E6EF;">
 									<h3 class="card-title fw-bold mb-0">Borrow Equipment</h3>
 								</div>
@@ -102,8 +101,9 @@
 									<!-- Borrower -->
 									<div class="mb-7">
 										<label class="form-label required fw-medium">Borrower</label>
-										<select name="user" id="borrower-select" class="form-select form-select fw-medium text-muted" data-control="select2" data-placeholder="Select Borrower" disabled>
+										<select name="user_display" id="borrower-select" class="form-select form-select fw-medium text-muted" data-control="select2" data-placeholder="Select Borrower" disabled>
 										</select>
+										<input type="hidden" name="user" id="user-hidden" />
 									</div>
 
 									<!-- Status -->
@@ -512,27 +512,30 @@
 
 	// ===== 1. Initialize Borrower Select =====
 	function initializeBorrowerSelect() {
-		var $select = $('#borrower-select');
-		var borrowerId = getBorrowField('userBorrowid') || getBorrowField('user_borrowid');
-		
-		$select.empty();
-		
-		userList.forEach(function(user) {
-			var uid = user.id || user.user_id || user.USER_ID || '';
-			var empId = user.employee_id || user.employeeId || user.EMPLOYEE_ID || '';
-			var nameTh = user.name || user.fullname || user.USER_NAME || '';
-			var nameEn = user.name_en || user.nameEn || user.NAME_EN || '';
-			var role = user.role_id || user.roleId || user.role || '';
-			
-			var text = (empId || '-') + '  -  ' + (nameEn || '-') + '  -  ' + (nameTh || '-') + '  -  ' + (role || '-');
-			var isSelected = String(uid).toLowerCase().trim() === String(borrowerId).toLowerCase().trim();
-			
-			$select.append(new Option(text, uid, isSelected, isSelected));
-		});
-		
-		if ($.fn.select2 && $select.data('control') === 'select2') {
-			$select.select2();
-		}
+	    var $select = $('#borrower-select');
+	    var borrowerId = getBorrowField('userBorrowid') || getBorrowField('user_borrowid');
+	    
+	    $select.empty();
+	    
+	    userList.forEach(function(user) {
+	        var uid = user.id || user.user_id || user.USER_ID || '';
+	        var empId = user.employee_id || user.employeeId || user.EMPLOYEE_ID || '';
+	        var nameTh = user.name || user.fullname || user.USER_NAME || '';
+	        var nameEn = user.name_en || user.nameEn || user.NAME_EN || '';
+	        var role = user.role_id || user.roleId || user.role || '';
+	        
+	        var text = (empId || '-') + '  -  ' + (nameEn || '-') + '  -  ' + (nameTh || '-') + '  -  ' + (role || '-');
+	        var isSelected = String(uid).toLowerCase().trim() === String(borrowerId).toLowerCase().trim();
+	        
+	        $select.append(new Option(text, uid, isSelected, isSelected));
+	    });
+	    
+	    // ✅ เพิ่ม: Set hidden input value
+	    $('#user-hidden').val(borrowerId);
+	    
+	    if ($.fn.select2 && $select.data('control') === 'select2') {
+	        $select.select2();
+	    }
 	}
 
 	// ===== 2. Initialize Status Select =====
@@ -725,47 +728,56 @@
 
 		// ✅ เพิ่ม: Handle Form Submit - ตรวจสอบว่าเลือก Return หรือไม่
 		$('form[action*="eBorrowUpdate.action"]').on('submit', function(e) {
-			var selectedStatus = $('#status-select').val();
-			
-			// ถ้าเลือก Request for Return (R)
-			if (selectedStatus === 'R') {
-				e.preventDefault(); // ยกเลิกการ submit ปกติ
-				
-				var borrowId = '${sessionScope.bId}';
-				var remark = $('#remark-textarea').val();
-				
-				if (!confirm('Are you sure you want to request return for this item?')) {
-					return false;
-				}
-				
-				// ส่งไปที่ eBorrowReturn.action แทน
-				$.ajax({
-					url: CTX + "/eBorrowReturn.action",
-					type: "POST",
-					dataType: "json",
-					data: {
-						id: borrowId
+		    var selectedStatus = $('#status-select').val();
 
-					},
-					success: function(data) {
-						if (data && String(data.message).toLowerCase() === "success") {
-							alert("Return request submitted successfully!");
-							window.location.replace(CTX + "/borrow_list");
-						} else {
-							alert("Something went wrong: " + (data ? data.message : "no data"));
-						}
-					},
-					error: function(xhr) {
-						console.error("HTTP", xhr.status, xhr.responseText);
-						alert("Failed to submit return request.");
-					}
-				});
-				
-				return false;
-			}
-			
-			// ถ้าเลือก status อื่นๆ ให้ submit ตามปกติ
-			return true;
+		    // ถ้าเลือก Request for Return (R)
+		    if (selectedStatus === 'R') {
+		        e.preventDefault(); // ยกเลิกการ submit ปกติ
+
+		        var borrowId = '${sessionScope.bId}';
+		        var remark = $('#remark-textarea').val();
+
+		        Swal.fire({
+		            title: 'Confirm Return',
+		            text: 'Are you sure you want to request return for this item?',
+		            icon: 'question',
+		            showCancelButton: true,
+		            confirmButtonText: 'Yes, Request Return',
+		            cancelButtonText: 'Cancel',
+		            confirmButtonColor: '#ffc107', // สีเหลือง
+		            cancelButtonColor: '#6c757d'   // สีเทา
+		        }).then((result) => {
+		            if (result.isConfirmed) {
+		                // ส่งไปที่ eBorrowReturn.action แทน
+		                $.ajax({
+		                    url: CTX + "/eBorrowReturn.action",
+		                    type: "POST",
+		                    dataType: "json",
+		                    data: {
+		                        id: borrowId
+		                    },
+		                    success: function(data) {
+		                        if (data && String(data.message).toLowerCase() === "success") {
+		                            Swal.fire('Success!', 'Return request submitted successfully!', 'success').then(() => {
+		                                window.location.replace(CTX + "/borrow_list");
+		                            });
+		                        } else {
+		                            Swal.fire('Error!', "Something went wrong: " + (data ? data.message : "no data"), 'error');
+		                        }
+		                    },
+		                    error: function(xhr) {
+		                        console.error("HTTP", xhr.status, xhr.responseText);
+		                        Swal.fire('Error!', 'Failed to submit return request.', 'error');
+		                    }
+		                });
+		            }
+		        });
+
+		        return false;
+		    }
+
+		    // ถ้าเลือก status อื่นๆ ให้ submit ตามปกติ
+		    return true;
 		});
 	}
 
@@ -826,41 +838,51 @@
 
 	// ===== Submit Return Request =====
 	function submitReturnRequest() {
-		var borrowId = ($('#borrowDetailModal').data('borrowId') || '').toString().trim();
-		var note = $('#bd_approver_note').val();
-
-		if (!borrowId) {
-			alert('Borrow ID not found.');
-			return;
-		}
-
-		if (!confirm('Are you sure you want to request return for this item?')) {
-			return;
-		}
-
-		$.ajax({
-			url: CTX + "/eBorrowReturn.action",
-			type: "POST",
-			dataType: "json",
-			data: {
-				id: borrowId,
-				note: note
-			},
-			success: function(data) {
-				if (data && String(data.message).toLowerCase() === "success") {
-					alert("Return request submitted successfully!");
-					var modal = bootstrap.Modal.getInstance(document.getElementById('borrowDetailModal'));
-					if (modal) modal.hide();
-					window.location.replace(CTX + "/borrow_list");
-				} else {
-					alert("Something went wrong: " + (data ? data.message : "no data"));
-				}
-			},
-			error: function(xhr) {
-				console.error("HTTP", xhr.status, xhr.responseText);
-				alert("Failed to submit return request.");
-			}
-		});
+	    var borrowId = ($('#borrowDetailModal').data('borrowId') || '').toString().trim();
+	    var note = $('#bd_approver_note').val();
+	
+	    if (!borrowId) {
+	        Swal.fire('Error!', 'Borrow ID not found.', 'error');
+	        return;
+	    }
+	
+	    Swal.fire({
+	        title: 'Confirm Return',
+	        text: 'Are you sure you want to request return for this item?',
+	        icon: 'question',
+	        showCancelButton: true,
+	        confirmButtonText: 'Yes, Request Return',
+	        cancelButtonText: 'Cancel',
+	        confirmButtonColor: '#ffc107', // สีเหลือง
+	        cancelButtonColor: '#6c757d'   // สีเทา
+	    }).then((result) => {
+	        if (result.isConfirmed) {
+	            $.ajax({
+	                url: CTX + "/eBorrowReturn.action",
+	                type: "POST",
+	                dataType: "json",
+	                data: {
+	                    id: borrowId,
+	                    note: note
+	                },
+	                success: function(data) {
+	                    if (data && String(data.message).toLowerCase() === "success") {
+	                        Swal.fire('Success!', 'Return request submitted successfully!', 'success').then(() => {
+	                            var modal = bootstrap.Modal.getInstance(document.getElementById('borrowDetailModal'));
+	                            if (modal) modal.hide();
+	                            window.location.replace(CTX + "/borrow_list");
+	                        });
+	                    } else {
+	                        Swal.fire('Error!', "Something went wrong: " + (data ? data.message : "no data"), 'error');
+	                    }
+	                },
+	                error: function(xhr) {
+	                    console.error("HTTP", xhr.status, xhr.responseText);
+	                    Swal.fire('Error!', 'Failed to submit return request.', 'error');
+	                }
+	            });
+	        }
+	    });
 	}
 	</script>
 </body>
