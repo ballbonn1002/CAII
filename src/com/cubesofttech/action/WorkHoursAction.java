@@ -192,7 +192,7 @@ public class WorkHoursAction extends ActionSupport {
 			        
 			        if (now.isAfter(cutOffTime)) {
 			            officialLdt = cutOffTime;
-			            log.info("Cut-off applied. Real: " + now + " -> Official: " + officialLdt);
+			            log.info("Cut-off applied | User: " + userId + " | Real: " + now + " -> Official: " + officialLdt);
 			        }
 			    }
 				
