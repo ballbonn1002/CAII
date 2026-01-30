@@ -962,8 +962,8 @@ var AppCalendar = function() {
 	function getLeaveStatusHTML(leaveEvent) {
         var leaveTitle = leaveEvent.title;
         var statusLeave = '';
-        var badgeColor = leaveTitle === 'ลาป่วย' ? 'badge badge-info' : 'badge badge-primary';
-        var textColor = leaveTitle === 'ลาป่วย' ? 'text-info' : 'text-primary';
+        var badgeColor = leaveTitle.includes('ลาป่วย') ? 'badge badge-info' : 'badge badge-primary';
+        var textColor = leaveTitle.includes('ลาป่วย') ? 'text-info' : 'text-primary';
         
         statusLeave = '<span class="' + badgeColor + ' fs-7 fw-bold style="cursor: pointer;" onclick="leaveStatus('+ leaveEvent.id +')">' + leaveTitle ;
 
@@ -971,7 +971,6 @@ var AppCalendar = function() {
         	statusLeave += ' <i class="ki-duotone ki-watch fs-2 text-warning align-middle">' +
             '<i class="path1"></i>' + '<i class="path2"></i>' + '</i>';
         }
-        
         statusLeave += '</span>';
         
         // Check File Leave
@@ -982,7 +981,6 @@ var AppCalendar = function() {
                 		"<i class='path1'></i><i class='path2'></i>" +
             			"</i> " + "</a>";
         }
-        
         return statusLeave;
     }
 	
