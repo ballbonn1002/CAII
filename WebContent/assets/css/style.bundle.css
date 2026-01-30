@@ -12434,6 +12434,11 @@ fieldset:disabled .btn {
     word-break: break-word !important
 }
 
+.text-green {
+    --bs-text-opacity: 1;
+    color: rgba(var(--bs-green-rgb), var(--bs-text-opacity)) !important
+}
+
 .text-teal {
     --bs-text-opacity: 1;
     color: rgba(var(--bs-teal-rgb), var(--bs-text-opacity)) !important
@@ -12765,6 +12770,11 @@ fieldset:disabled .btn {
 .bg-yellow {
     --bs-bg-opacity: 1;
 	background-color:  rgba(var(--bs-yellow-rgb), var(--bs-bg-opacity)) !important
+}
+
+.bg-green {
+    --bs-bg-opacity: 1;
+    background-color: rgba(var(--bs-green-rgb), var(--bs-bg-opacity)) !important
 }
 
 .bg-teal {
