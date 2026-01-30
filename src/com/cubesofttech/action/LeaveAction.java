@@ -979,10 +979,10 @@ public class LeaveAction extends ActionSupport {
 				LeaveType leave = type_leave.get(i);
 				request.setAttribute("type_" + leave.getLeaveTypeId(), leave.getLeaveTypeName());
 			}
-			log.debug(userLogin);
+			//log.debug(userLogin);
 			List<Map<String, Object>> leavelist = null;
 
-			log.debug(type+"/"+leaveType);
+			//log.debug(type+"/"+leaveType);
 			leavelist = leaveDAO.findUserLeaveByTypeAndStatus(start_date, end_date, userLogin, type, leaveType);
 
 			String status = "1";
@@ -1057,7 +1057,7 @@ public class LeaveAction extends ActionSupport {
 			request.setAttribute("appr", type);
 
 			Date day = new Date();
-			log.debug(userLogin);
+			//log.debug(userLogin);
 
 			LocalDate localdate = day.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
 			Double quotaLastYear = null;
@@ -1070,7 +1070,7 @@ public class LeaveAction extends ActionSupport {
 				request.setAttribute("quotaLastYear", quotaLastYear);
 				request.setAttribute("quotaThisYear", quotaThisYear);
 				request.setAttribute("leave_6l", quotaLastYear - leave_6);
-				log.debug("quotaLastYear: " + quotaLastYear);
+				//log.debug("quotaLastYear: " + quotaLastYear);
 				BigDecimal quota_1 = ur.getLeaveQuota1(); // holiday leave quota
 				BigDecimal quota_2 = ur.getLeaveQuota2(); // business leave quota
 				BigDecimal quota_3 = ur.getLeaveQuota3(); // sick leave quota
@@ -1094,7 +1094,7 @@ public class LeaveAction extends ActionSupport {
 			Timestamp tnow = new Timestamp(day.getTime());
 			request.setAttribute("tnow", tnow);
 			request.setAttribute("tend", tend);
-			log.debug(type_leave);
+			//log.debug(type_leave);
 			request.setAttribute("leavetypelistChoice", type_leave);
 			request.setAttribute("leaveType", leaveType);
 			

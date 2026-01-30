@@ -202,78 +202,9 @@ public class WorkHoursService {
 
 		Map<String, Object> result = new HashMap<>();
 
-		// ================== Priority 1 : Leave  ==================
 		Timestamp start = Timestamp.valueOf(workDate.atStartOfDay());
 		Timestamp end = Timestamp.valueOf(workDate.atTime(23, 59, 59));
 
-		//List<Map<String, Object>> leaves = leaveDAO.findUserLeaveByTypeAndStatus(start, end, userId, null, null);
-
-	/*	if (leaves != null && !leaves.isEmpty()) {
-			Map<String, Object> leave = leaves.get(0);
-
-			Object statusObj = leave.get("leave_status_id");
-			String leaveStatusId = (statusObj != null) ? String.valueOf(statusObj).trim() : "";
-
-			Object typeObj = leave.get("leave_type_id");
-			String leaveTypeId = (typeObj != null) ? String.valueOf(typeObj).trim() : "";
-
-			String realStatus = "UNKNOWN";
-			String leaveNameTH = "ไม่ระบุ";
-
-			switch (leaveTypeId) {
-			case "1":
-				realStatus = "ANNUAL_LEAVE";
-				leaveNameTH = "ลาพักร้อน";
-				break;
-			case "2":
-				realStatus = "BUSINESS_LEAVE";
-				leaveNameTH = "ลากิจ";
-				break;
-			case "3":
-				realStatus = "SICK_LEAVE";
-				leaveNameTH = "ลาป่วย";
-				break;
-			case "4":
-				realStatus = "ABSENT";
-				leaveNameTH = "ขาดงาน";
-				break;
-			case "5":
-				realStatus = "WITHOUT_PAY";
-				leaveNameTH = "ลาโดยไม่รับค่าจ้าง";
-				break;
-			case "6":
-				realStatus = "ANNUAL_LEAVE_REMAINING";
-				leaveNameTH = "ลาพักร้อนที่เหลือจากปีก่อน";
-				break;
-			case "7":
-				realStatus = "OTHER_LEAVE";
-				leaveNameTH = "ลาอื่นๆ";
-				break;
-			case "9":
-				realStatus = "OTHERS";
-				leaveNameTH = "อื่นๆ";
-				break;
-			default:
-				realStatus = "UNKNOWN";
-				leaveNameTH = "ไม่ระบุ";
-				break;
-			}
-
-			if ("0".equals(leaveStatusId)) {
-				result.put("status", "WAITING");
-				result.put("leave_desc", leaveNameTH);
-				result.put("check_in", null);
-				result.put("check_out", null);
-				return result;
-
-			} else if ("1".equals(leaveStatusId)) {
-				result.put("status", realStatus);
-				result.put("leave_desc", leaveNameTH);
-				result.put("check_in", null);
-				result.put("check_out", null);
-				return result;
-			}
-		}*/
 		Object[] inData = workHoursDAO.findMinTimeByType(userId, workDate, "1");
 		Object[] outData = workHoursDAO.findMaxTimeByType(userId, workDate, "2");
 		Timestamp tsIn = null;
@@ -297,7 +228,7 @@ public class WorkHoursService {
 		
 		List<Map<String, Object>> leaves = leaveDAO.findUserLeaveByTypeAndStatus(start, end, userId, null, null);
 
-		// ================== Priority 2 : No Record & Incomplete  ==================
+		// ================== Priority 1 : No Record & Incomplete  ==================
 		if (tsIn == null && tsOut == null) {
 			result.put("status", "NO_RECORD");
 			result.put("check_in", null);
@@ -313,7 +244,7 @@ public class WorkHoursService {
 		
 		LocalTime inTime = truncate(tsIn);
 		LocalTime outTime = truncate(tsOut);
-		// ================== Priority 3 : Time Logic ==================
+		// ================== Priority 2 : Time Logic ==================
 		boolean late = false;
 		boolean earlyOut = false;
 		if (inTime != null) {
@@ -322,8 +253,6 @@ public class WorkHoursService {
 		if (outTime != null) {
 		    earlyOut = outTime.isBefore(CUT_OUT_NORMAL);
 		}
-		//boolean late = !inTime.isBefore(CUT_IN_LATE);
-		//boolean earlyOut = outTime.isBefore(CUT_OUT_NORMAL);
 		
 		String status;
 		if (late && earlyOut) {
@@ -339,6 +268,7 @@ public class WorkHoursService {
 		result.put("check_in", strIn);
 		result.put("check_out", strOut);
 		
+		// ================== Priority 3 : Leave  ==================
 		if (leaves != null && !leaves.isEmpty()) {
 			Map<String, Object> leave = leaves.get(0);
 			Object statusObj = leave.get("leave_status_id");
@@ -390,15 +320,11 @@ public class WorkHoursService {
 			if ("0".equals(leaveStatusId)) {
 				result.put("leave_status", "WAITING");
 				result.put("leave_desc", leaveNameTH);
-				//result.put("check_in", null);
-				//result.put("check_out", null);
 				return result;
 
 			} else if ("1".equals(leaveStatusId)) {
 				result.put("leave_status", realStatus);
 				result.put("leave_desc", leaveNameTH);
-				//result.put("check_in", null);
-				//result.put("check_out", null);
 				return result;
 			}
 			
@@ -406,7 +332,6 @@ public class WorkHoursService {
 			result.put("leave_status", null);
 			result.put("leave_desc", null);
 		}
-
 		return result;
 	}
 

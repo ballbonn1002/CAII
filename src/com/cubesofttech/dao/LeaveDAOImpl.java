@@ -1098,53 +1098,6 @@ public class LeaveDAOImpl implements LeaveDAO {
 //		return search;
 //	}
 
-//	@Override
-//	public List<Map<String, Object>> findUserByyear(String year) throws Exception {
-//		Session session = this.sessionFactory.getCurrentSession();
-//		List<Map<String, Object>> search = null;
-//		try {
-//			String sql = "SELECT leaves.user_id, user.name FROM leaves left join user on leaves.user_id = user.id "
-//					+ " WHERE  year(leaves.start_date)= '" + year + "' group by leaves.user_id  ";
-//			SQLQuery query = session.createSQLQuery(sql);
-//
-//			query.setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
-//			search = query.list();
-//		} catch (
-//
-//		Exception e) {
-//			e.printStackTrace();
-//		}
-//		return search;
-//
-//	}
-
-//	@Override
-//	public List<Map<String, Object>> ReportsByyear(int year, int type, String user) throws Exception {
-//		Session session = this.sessionFactory.getCurrentSession();
-//		List<Map<String, Object>> search = null;
-//		try {
-//			String sql = "SELECT COALESCE(sum(no_day),0) as sum FROM leaves "
-//					+ " left join  leave_type on leaves.leave_type_id = leave_type.leave_type_id  "
-//					+ " where  year(leaves.start_date)= '" + year + "' and leaves.user_id ='" + user
-//					+ "' and leaves.leave_type_id ='" + type + "' and month(leaves.start_date) = '1' ";
-//			for (int i = 2; i <= 12; i++) {
-//				sql += " UNION ALL " + " SELECT COALESCE(sum(no_day),0) as sum  FROM leaves "
-//						+ " left join  leave_type on leaves.leave_type_id = leave_type.leave_type_id "
-//						+ " where  year(leaves.start_date)= '" + year + "' and leaves.user_id ='" + user
-//						+ "' and leaves.leave_type_id ='" + type + "' and month(leaves.start_date) = '" + i + "' \n ";
-//			}
-//			SQLQuery query = session.createSQLQuery(sql);
-//
-//			query.setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
-//			search = query.list();
-//		} catch (
-//
-//		Exception e) {
-//			e.printStackTrace();
-//		}
-//		return search;
-//	}
-
 	public List<Map<String, Object>> ReportsByyear2(int year, String user) throws Exception {
 		Session session = this.sessionFactory.getCurrentSession();
 		List<Map<String, Object>> search = null;
@@ -1170,43 +1123,6 @@ public class LeaveDAOImpl implements LeaveDAO {
 		}
 		return search;
 	}
-
-//	@Override
-//	public List<Map<String, Object>> ReportsType(String year, String user, String month) throws Exception {
-//		Session session = this.sessionFactory.getCurrentSession();
-//		List<Map<String, Object>> search = null;
-//		try {
-//			String sql = "SELECT COALESCE(sum(no_day),0) as sum ,leave_type.leave_type_name as name FROM leaves "
-//					+ " left join  leave_type on leaves.leave_type_id = leave_type.leave_type_id  "
-//					+ " where  year(leaves.start_date)= '" + year + "' and leaves.user_id ='" + user
-//					+ "' and month(leaves.start_date) = '" + month + "'  " + " group by leaves.leave_type_id ";
-//			SQLQuery query = session.createSQLQuery(sql);
-//
-//			query.setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
-//			search = query.list();
-//		} catch (
-//
-//		Exception e) {
-//			e.printStackTrace();
-//		}
-//		return search;
-//
-//	}
-
-//	@Override
-//	public List<Map<String, Object>> findleaveAll() throws Exception {
-//		Session session = this.sessionFactory.getCurrentSession();
-//		List<Map<String, Object>> search = null;
-//		try {
-//			String sql = "SELECT * FROM leaves";
-//			SQLQuery query = session.createSQLQuery(sql);
-//			query.setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
-//			search = query.list();
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//		}
-//		return search;
-//	}
 
 	@Override
 	public Double LastYearQuota(String userId, int currentYear) throws Exception {
@@ -1251,62 +1167,6 @@ public class LeaveDAOImpl implements LeaveDAO {
 		return daysleft;
 	}
 
-//	@Override
-//	public List<Map<String, Object>> LastYearQuota2(String userId, int currentYear) throws Exception {
-//		Session session = this.sessionFactory.getCurrentSession();
-//		Criteria cr = session.createCriteria(Leaves.class);
-//		Criteria cr2 = session.createCriteria(User.class);
-//		List<Map<String, Object>> quota_list = new ArrayList<>();
-//		Map<String, Object> map1 = new HashMap<>();
-//
-//		int year = currentYear - 1;
-//		String year_s = "01-01-" + year;
-//		String year_e = "31-12-" + year;
-//		Timestamp start_date = DateUtil.dateFormat(year_s);
-//		Timestamp end_date = DateUtil.dateFormat(year_e);
-//		Double daysleft = 0.000;
-//
-//		User user = (User) cr2.add(Restrictions.eq("id", userId)).uniqueResult();
-//		Double quota1 = 0.0, quota2 = 0.0, quota3 = 0.0; // 1=holiday leave 2=business leave 3=sick leave
-//		if (user.getLeaveQuota1() != null) { // if have not value set
-//			quota1 = user.getLeaveQuota1().doubleValue();
-//		}
-//		if (user.getLeaveQuota2() != null) {
-//			quota2 = user.getLeaveQuota2().doubleValue();
-//		}
-//		if (user.getLeaveQuota3() != null) {
-//			quota3 = user.getLeaveQuota3().doubleValue();
-//		}
-//		// else quota=0
-//		try {
-//			daysleft = user.getLeaveQuota4().doubleValue();
-//		} catch (Exception e) {
-//			daysleft = 0.000;
-//		}
-//		map1.put("quota1", quota1);
-//		map1.put("quota2", quota2);
-//		map1.put("quota3", quota3);
-//		map1.put("daysleft", daysleft);
-//		quota_list.add(map1);
-//
-//		List daysoff = cr.add(Restrictions.eq("userId", userId)).add(Restrictions.gt("startDate", start_date))
-//				.add(Restrictions.lt("endDate", end_date)).list();
-//
-////        for (Iterator iterator = daysoff.iterator(); iterator.hasNext();){
-////            Leaves leave = (Leaves) iterator.next(); 
-////            Double noday = leave.getNoDay().doubleValue();
-////            if(leave.getLeaveTypeId().contains("1")
-////            		|| leave.getLeaveTypeId().contains("2")) {
-////            	daysleft -= noday;
-////            }
-////         }
-//
-//		System.out.println(daysleft);
-//		System.out.println("daysoff: " + daysoff);
-//		System.out.println("quota_list: " + quota_list);
-//		return quota_list;
-//	}
-
 	@Override
 	public Double ThisYearQuota(String userId) throws Exception {
 		Session session = this.sessionFactory.getCurrentSession();
@@ -1323,23 +1183,6 @@ public class LeaveDAOImpl implements LeaveDAO {
 
 		return quota; // calculate quota from database
 	}
-
-//	@Override
-//	public Double ThisYearQuota2(String userId) throws Exception {
-//		Session session = this.sessionFactory.getCurrentSession();
-//		Criteria cr = session.createCriteria(User.class);
-//		User user = (User) cr.add(Restrictions.eq("id", userId)).uniqueResult();
-//		Double quota1 = 0.0, quota2 = 0.0;
-//		if (user.getLeaveQuota1() != null) {
-//			quota1 = user.getLeaveQuota1().doubleValue();
-//		}
-//		if (user.getLeaveQuota2() != null) {
-//			quota2 = user.getLeaveQuota2().doubleValue();
-//		}
-//		Double quota = quota1 + quota2;
-//
-//		return quota; // calculate quota from database
-//	}
 
 	@Override
 	public List<Map<String, Object>> myLeavesList(String userId, Timestamp startDate, Timestamp endDate) {
