@@ -1,5 +1,6 @@
 package com.cubesofttech.dao;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -18,4 +19,4 @@ public interface AnnouncementDAO {
 	public void delete(Announcement announcement) throws Exception;
 	
 	public Integer getMaxId() throws Exception;
-}
+	public List<Announcement> search(String keyword, Date startDate, Date endDate) throws Exception;}

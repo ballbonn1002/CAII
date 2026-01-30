@@ -84,7 +84,7 @@
 							<div class="card-body d-flex flex-column">
 								<div class="px-13">
 									<div class="row mb-5 gx-10">
-										<div class="col-md-6 col-sm-6 col-6">
+										<div class="col-md-6 col-12 mb-3">
 											<label for="mdDate"
 												class="required form-label fw-medium text-gray-800">Date</label>
 											<div class="position-relative">
@@ -97,7 +97,7 @@
 												</i>
 											</div>
 										</div>
-										<div class="col-md-6 col-sm-6 col-6">
+										<div class="col-md-6 col-12">
 											<label for="mdTime"
 												class="required form-label fw-medium text-gray-800">Time</label>
 											<div class="position-relative">
@@ -519,6 +519,7 @@ const timePicker = flatpickr("#mdTime", {
     time_24hr: true,
     defaultDate: TODAY,
     static: true,
+    disableMobile: true,
     onOpen: function(selectedDates, dateStr, instance) {
         if (datePicker.isOpen) datePicker.close();
     },

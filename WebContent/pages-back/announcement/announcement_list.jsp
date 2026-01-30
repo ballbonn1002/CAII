@@ -8,31 +8,29 @@
 <style>
 .image-box {
 	width: 100%;
-	padding-top: 100%;
+	height: 250px;
 	position: relative;
-	border-radius: 10px;
+	border-radius: 10px 10px 0 0;
 	overflow: hidden;
-	margin-bottom: 20px;
 }
 
 .image-box img {
-	position: absolute;
-	top: 0;
-	left: 0;
 	width: 100%;
 	height: 100%;
-	object-fit: contain;
-	background-color: white;
+	object-fit: cover;
+	object-position: top;
+	display: block;
 }
 </style>
 <div class="app-main flex-column flex-row-fluid">
+	<fmt:setLocale value="en_US" />
 	<div class="d-flex flex-column flex-column-fluid">
 		<div class="app-toolbar py-5 py-lg-6">
 			<div class="app-container container-fluid d-flex flex-stack">
 				<div
 					class="page-title d-flex flex-column justify-content-center flex-wrap me-3">
 					<h1
-						class="page-heading d-flex text-gray-900 fw-bold fs-3 flex-column justify-content-center my-0">
+						class="page-heading d-flex text-gray-900 fw-semibold fs-3 flex-column justify-content-center my-0">
 						Announcement</h1>
 					<ul
 						class="breadcrumb breadcrumb-separatorless fw-semibold fs-7 my-0 pt-1">
@@ -125,12 +123,35 @@
 
 					<!--begin::Page title-->
 					<div
-						class="page-title d-flex flex-column justify-content-center flex-wrap me-3 ">
-						<!--begin::Title-->
-						<h1
-							class="page-heading d-flex text-gray-900 fw-bold fs-3 flex-column justify-content-center my-0">
-							${announcementList.size()} Items Found</h1>
-						<!--end::Title-->
+						class="page-title d-flex flex-column justify-content-center flex-wrap me-3">
+						<div class="d-flex align-items-baseline">
+							<h1 class="page-heading text-gray-900 fw-bold fs-3 my-0 me-2">
+								${announcementList.size()} Items Found</h1>
+
+							<c:set var="currentSort" value="${param.sortOrder}" />
+							<c:if test="${empty currentSort}">
+								<c:set var="currentSort" value="desc" />
+							</c:if>
+
+							<c:choose>
+								<c:when test="${currentSort == 'asc'}">
+									<c:set var="nextSort" value="desc" />
+									<c:set var="label" value="by Oldest" />
+									<c:set var="icon" value="ki-arrow-up" />
+								</c:when>
+								<c:otherwise>
+									<c:set var="nextSort" value="asc" />
+									<c:set var="label" value="by Recent Updates" />
+									<c:set var="icon" value="ki-arrow-down" />
+								</c:otherwise>
+							</c:choose>
+
+							<a href="javascript:;" onclick="toggleSort('${nextSort}')"
+								class="text-gray-500 fs-6 fw-bold d-flex align-items-center">
+								${label} <i class="ki-outline ${icon} fs-2 ms-1 text-gray-500">
+							</i>
+							</a>
+						</div>
 					</div>
 					<!--end::Page title-->
 					<!--begin::Actions-->
@@ -139,8 +160,8 @@
 
 							<!--begin::Primary button-->
 							<a href="announcementAddPage"
-								class="btn btn-sm fw-bold btn-success"> <i
-								class="ki-duotone ki-plus"> </i>Create
+								class="btn btn-success btn-flex h-40px border-0 fw-bold px-4 px-lg-6">
+								<i class="ki-duotone ki-plus fs-1"> </i>Create
 							</a>
 							<!--end::Primary button-->
 						</div>
@@ -150,7 +171,7 @@
 			</div>
 			<!-- Card -->
 			<div class="app-container pb-10">
-				<div class="row g-5 gx-xl-10">
+				<div class="row g-5 gx-xl-10" id="announcementListContainer">
 					<!-- วันที่ปัจจุบัน -->
 					<jsp:useBean id="now" class="java.util.Date" />
 					<fmt:formatDate value="${now}" pattern="yyyy-MM-dd" var="todayStr" />
@@ -175,10 +196,10 @@
 
 												<!-- Badge -->
 												<div
-													style="display: flex; justify-content: flex-end; gap: 6px; position: absolute; top: 10px; right: 10px; z-index: 2;">
+													style="display: flex; justify-content: flex-end; gap: 6px; position: absolute; top: 20px !important; right: 20px; z-index: 2;">
 													<c:if test="${ann.status == '0'}">
 														<span class="badge fw-semibold text-dark"
-															style="background-color: #FFC107;">Draft</span>
+															style="background-color: #FFC107; height: 26px;">Draft</span>
 													</c:if>
 													<c:if test="${ann.highlight == '1'}">
 														<span
@@ -191,33 +212,33 @@
 														</span>
 													</c:if>
 													<c:if test="${announcementDateStr > todayStr}">
-														<span class="badge fw-semibold text-white"
-															style="background-color: #F1C40F;">Pending</span>
+														<span class="badge fw-semibold text-white bg-warning"
+															style="height: 26px;">Pending</span>
 													</c:if>
 													<c:if
 														test="${ann.announcementId == islastest or ann.announcementId eq islastest}">
-														<span class="badge fw-semibold text-white"
-															style="background-color: #007BFF;">New</span>
+														<span class="badge fw-semibold bg-primary text-white bg-primary"
+														style="height: 26px;">New</span>
 													</c:if>
 												</div>
 
 												<!-- รูป -->
-												<div class="card-header p-0">
-													<div class="image-box">
-														<img alt="${ann.fileUpload.path}"
-															src="${ann.fileUpload.path}">
-													</div>
+												<div class="image-box">
+													<img alt="${ann.fileUpload.path}"
+														src="${ann.fileUpload.path}" class="w-100 h-100"
+														style="object-fit: cover; object-position: center;">
 												</div>
 
 												<!-- เนื้อหา -->
 												<div class="card-body">
-													<span class="fs-6 fw-bold">${ann.topic}</span><br>
+													<span class="fs-6 fw-bold text-gray-800 lh-base">${ann.topic}</span><br>
 
-													<div class="d-flex align-items-center gap-3 mt-2">
+													<div class="d-flex align-items-center gap-3 mt-4">
 														<!-- วันที่ -->
-														<span class="d-flex align-items-center fs-6 fw-medium">
-															<i class="ki-duotone ki-calendar-2 fs-2 me-1"> <span
-																class="path1"></span><span class="path2"></span><span
+														<span
+															class="d-flex align-items-center fs-6 fw-medium text-gray-800">
+															<i class="ki-duotone ki-calendar-2 text-muted fs-1 me-2">
+																<span class="path1"></span><span class="path2"></span><span
 																class="path3"></span> <span class="path4"></span><span
 																class="path5"></span>
 														</i> <fmt:formatDate value="${ann.announcement_date}"
@@ -225,11 +246,12 @@
 														</span>
 
 														<!-- จำนวนคนอ่าน -->
-														<span class="d-flex align-items-center fs-6 fw-medium">
-															<i class="ki-duotone ki-eye fs-2 me-1"> <span
+														<span
+															class="d-flex align-items-center fs-6 fw-medium text-gray-800 ms-1">
+															<i class="ki-duotone ki-eye fs-1 text-muted me-2"> <span
 																class="path1"></span><span class="path2"></span><span
 																class="path3"></span>
-														</i> ${empty ann.readcount ? 0 : ann.readcount}
+														</i> ${empty ann.readcount ? 0 : ann.readcount} Views
 														</span>
 													</div>
 												</div>
@@ -247,11 +269,11 @@
 
 											<!-- Badge -->
 											<div
-												style="display: flex; justify-content: flex-end; gap: 6px; position: absolute; top: 10px; right: 10px; z-index: 2;">
+												style="display: flex; justify-content: flex-end; gap: 6px; position: absolute; top: 20px !important; right: 20px; z-index: 2;">
 												<c:if
 													test="${ann.announcementId == islastest or ann.announcementId eq islastest}">
-													<span class="badge fw-semibold text-white"
-														style="background-color: #007BFF;">New</span>
+													<span class="badge fw-semibold text-white bg-primary"
+													style="height: 26px;">New</span>
 												</c:if>
 												<c:if test="${ann.highlight == '1'}">
 													<span
@@ -275,21 +297,23 @@
 
 											<!-- เนื้อหา -->
 											<div class="card-body">
-												<span class="fs-6 fw-bold">${ann.topic}</span><br>
+												<span class="fs-6 fw-bold text-gray-800 lh-base">${ann.topic}</span><br>
 
-												<div class="d-flex align-items-center gap-3 mt-2">
-													<span class="d-flex align-items-center fs-6 fw-medium">
-														<i class="ki-duotone ki-calendar-2 fs-2 me-1"> <span
-															class="path1"></span><span class="path2"></span><span
+												<div class="d-flex align-items-center gap-3 mt-4">
+													<span
+														class="d-flex align-items-center fs-6 fw-medium text-gray-800">
+														<i class="ki-duotone ki-calendar-2 text-muted fs-1 me-2">
+															<span class="path1"></span><span class="path2"></span><span
 															class="path3"></span> <span class="path4"></span><span
 															class="path5"></span>
 													</i> <fmt:formatDate value="${ann.announcement_date}"
 															pattern="dd MMM yyyy" />
-													</span> <span class="d-flex align-items-center fs-6 fw-medium">
-														<i class="ki-duotone ki-eye fs-2 me-1"> <span
+													</span> <span
+														class="d-flex align-items-center fs-6 fw-medium text-gray-800 ms-1">
+														<i class="ki-duotone ki-eye fs-1 text-muted me-2"> <span
 															class="path1"></span><span class="path2"></span><span
 															class="path3"></span>
-													</i> ${empty ann.readcount ? 0 : ann.readcount}
+													</i> ${empty ann.readcount ? 0 : ann.readcount} Views
 													</span>
 												</div>
 											</div>
@@ -305,41 +329,105 @@
 	</div>
 </div>
 <script>
-	var start = moment().subtract(29, "days");
-	var end = moment();
+    var isAdmin = false;
+    <perm:permission object="announcement.edit">
+        isAdmin = true;
+    </perm:permission>
 
-	function cb(start, end) {
-		$("#kt_daterangepicker_4")
-				.html(
-						start.format("DD MMM YYYY") + " - "
-								+ end.format("DD MMM YYYY"));
-	}
+    var start = moment().subtract(29, "days");
+    var end = moment();
 
-	$("#kt_daterangepicker_4")
-			.daterangepicker(
-					{
-						startDate : start,
-						endDate : end,
-						locale : {
-							format : 'DD MMM YYYY'
-						},
-						ranges : {
-							"Today" : [ moment(), moment() ],
-							"Yesterday" : [ moment().subtract(1, "days"),
-									moment().subtract(1, "days") ],
-							"Last 7 Days" : [ moment().subtract(6, "days"),
-									moment() ],
-							"Last 30 Days" : [ moment().subtract(29, "days"),
-									moment() ],
-							"This Month" : [ moment().startOf("month"),
-									moment().endOf("month") ],
-							"Last Month" : [
-									moment().subtract(1, "month").startOf(
-											"month"),
-									moment().subtract(1, "month")
-											.endOf("month") ]
-						}
-					}, cb);
+    function cb(start, end) {
+        $("#kt_daterangepicker_4").html(start.format("DD MMM YYYY") + " - " + end.format("DD MMM YYYY"));
+    }
 
-	cb(start, end);
+    $("#kt_daterangepicker_4").daterangepicker({
+        startDate: start,
+        endDate: end,
+        locale: { format: 'DD MMM YYYY' },
+        ranges: {
+           'Today': [moment(), moment()],
+           'Yesterday': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+           'Last 7 Days': [moment().subtract(6, 'days'), moment()],
+           'Last 30 Days': [moment().subtract(29, 'days'), moment()],
+           'This Month': [moment().startOf('month'), moment().endOf('month')],
+           'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
+        }
+    }, cb);
+
+    cb(start, end);
+    reloadList(); 
+
+    $("#kt_daterangepicker_4").on('apply.daterangepicker', function(ev, picker) {
+        reloadList(); 
+    });
+
+    function getEffectiveEndDate(pickerEndDate) {
+        if (isAdmin) {
+            return moment().add(30, 'days').format('YYYY-MM-DD');
+        }
+        return pickerEndDate.format('YYYY-MM-DD');
+    }
+
+
+    function reloadList() {
+        var keyword = $("#xxAnnouncement").val();
+        
+        var sortOrder = 'desc'; 
+        var btnOnclick = $("a[onclick^='toggleSort']").attr("onclick");
+        if (btnOnclick && btnOnclick.includes("'desc'")) {
+            sortOrder = 'asc'; 
+        }
+
+        var picker = $('#kt_daterangepicker_4').data('daterangepicker');
+        var startDate = picker.startDate.format('YYYY-MM-DD');
+        
+        var endDate = getEffectiveEndDate(picker.endDate);
+
+        var url = "announcementList?mode=ajax" 
+                + "&xxAnnouncement=" + encodeURIComponent(keyword)
+                + "&sortOrder=" + sortOrder
+                + "&startDate=" + startDate 
+                + "&endDate=" + endDate;
+
+        $("#announcementListContainer").load(url + " #announcementListContainer > *", function() {
+        });
+    }
+
+    var searchTimer;
+    $("#xxAnnouncement").on('keyup', function () {
+        clearTimeout(searchTimer);
+        searchTimer = setTimeout(function() {
+            reloadList();
+        }, 500);
+    });
+
+    function toggleSort(nextSortOrder) {
+        var keyword = $("#xxAnnouncement").val();
+        var picker = $('#kt_daterangepicker_4').data('daterangepicker');
+        
+        var endDate = getEffectiveEndDate(picker.endDate);
+        
+        var url = "announcementList?mode=ajax"
+                + "&sortOrder=" + nextSortOrder
+                + "&xxAnnouncement=" + encodeURIComponent(keyword)
+                + "&startDate=" + picker.startDate.format('YYYY-MM-DD')
+                + "&endDate=" + endDate; 
+
+        $("#announcementListContainer").load(url + " #announcementListContainer > *", function(response, status, xhr) {
+            if (status == "error") {
+                alert("Error: " + xhr.statusText);
+            }
+            
+            var nextOrderForBtn = (nextSortOrder === 'asc') ? 'desc' : 'asc';
+            var currentLabel = (nextSortOrder === 'asc') ? 'by Oldest' : 'by Recent Updates';
+            var currentIcon = (nextSortOrder === 'asc') ? 'ki-arrow-up' : 'ki-arrow-down';
+            
+            var btnHtml = currentLabel + ' <i class="ki-outline ' + currentIcon + ' fs-2 ms-1 text-gray-500"></i>';
+            
+            $("a[onclick^='toggleSort']")
+                .attr("onclick", "toggleSort('" + nextOrderForBtn + "')")
+                .html(btnHtml);
+        });
+    }
 </script>

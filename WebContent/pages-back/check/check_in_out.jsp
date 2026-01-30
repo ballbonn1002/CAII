@@ -5,7 +5,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
 
 <style>
-.btn-check:checked + label span {
+.btn-check:checked+label span {
 	color: #fff !important;
 }
 
@@ -59,8 +59,8 @@
 								class="card-header pt-5 d-flex justify-content-between align-items-center">
 								<div class="card-title col-lg-12 col-md-12 col-sm-12 col-12">
 									<div class="d-flex flex-column w-100">
-										<span class="fw-medium text-gray-900 me-2 lh-1">
-											Work Hours</span>
+										<span class="fw-medium text-gray-900 me-2 lh-1"> Work
+											Hours</span>
 										<div class="d-flex align-items-center pt-2 gap-2">
 											<c:choose>
 												<c:when test="${not empty jobsiteList}">
@@ -107,7 +107,7 @@
 									<!-- Date -->
 									<div id="date"
 										class="fs-2x fw-normal text-gray-900 text-center mb-5"></div>
-										
+
 									<!-- Check Type -->
 									<div class="row py-7 mb-5 gx-10">
 										<div class="col-6">
@@ -361,16 +361,16 @@
 
 						<c:if test="${not empty announcementList}">
 
-							<jsp:useBean id="nowDate" class="java.util.Date" />
-							<fmt:formatDate var="todayStr" value="${nowDate}"
+							<jsp:useBean id="nowDateForCheck" class="java.util.Date" />
+							<fmt:formatDate var="todayStr" value="${nowDateForCheck}"
 								pattern="yyyy-MM-dd" />
 
 							<c:forEach var="ann" items="${announcementList}">
+							
+								<fmt:formatDate var="annDateStr" value="${ann.announcement_date}" pattern="yyyy-MM-dd" />
 
-								<c:if test="${fn:trim(ann.highlight) eq '1'}">
+								<c:if test="${fn:trim(ann.highlight) eq '1' and ann.status ne '0' and annDateStr <= todayStr}">
 
-									<fmt:formatDate var="announcementDateStr"
-										value="${ann.announcement_date}" pattern="yyyy-MM-dd" />
 
 									<div
 										class="card hover-elevate-up shadow-sm parent-hover position-relative mb-10"
@@ -378,23 +378,11 @@
 										onclick="window.location.href='${pageContext.request.contextPath}/announcementRead?id=${ann.announcementId}'">
 
 										<div
-											style="display: flex; justify-content: flex-end; gap: 6px; position: absolute; top: 10px; right: 10px; z-index: 2;">
+											style="display: flex; justify-content: flex-end; gap: 6px; position: absolute; top: 20px !important; right: 20px; z-index: 2;">
 
-											<c:if test="${ann.status == '0'}">
-												<span class="badge fw-semibold text-dark"
-													style="background-color: #FFC107;">Draft</span>
-											</c:if>
+											<span class="badge fw-semibold text-white bg-primary"
+												style="height: 26px;">New</span>
 
-											<c:if test="${announcementDateStr > todayStr}">
-												<span class="badge fw-semibold text-white"
-													style="background-color: #F1C40F;">Pending</span>
-											</c:if>
-
-											<c:if
-												test="${not empty islastest and (ann.announcementId == islastest)}">
-												<span class="badge fw-semibold text-white h-25px mt-4 me-4"
-													style="background-color: #007BFF;">New</span>
-											</c:if>
 										</div>
 
 										<div class="card-header p-0 border-0 h-250px">

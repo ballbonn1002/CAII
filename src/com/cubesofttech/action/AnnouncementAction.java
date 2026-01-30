@@ -1,15 +1,21 @@
 package com.cubesofttech.action;
 
 import java.io.File;
+
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Collections;
+import java.util.Comparator;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
@@ -66,6 +72,15 @@ public class AnnouncementAction extends ActionSupport {
 	private String fileUploadSize;
 	private FileUpload file;
 	private FileUpload filenoteimg;
+	private String sortOrder;
+
+	public String getSortOrder() {
+		return sortOrder;
+	}
+
+	public void setSortOrder(String sortOrder) {
+		this.sortOrder = sortOrder;
+	}
 
 	public String getAnnouncementId() {
 		return announcementId;
@@ -196,19 +211,60 @@ public class AnnouncementAction extends ActionSupport {
 	}
 
 	public String AnnouncementList() {
-		try {
-			List<Announcement> announcementList = announcementDAO.findAll();
-			request.setAttribute("announcementList", announcementList);
-			int islastest = announcementDAO.getMaxId();
-			// request.setAttribute("announcementList", new
-			// Gson().toJson(announcementList));
-			request.setAttribute("islastest", islastest);
-			return SUCCESS;
-		} catch (Exception e) {
-			log.error("Error fetching announcement list", e);
-			e.printStackTrace();
-			return ERROR;
-		}
+	    try {
+	        String keyword = request.getParameter("xxAnnouncement");
+	        String startDateStr = request.getParameter("startDate");
+	        String endDateStr = request.getParameter("endDate");
+
+	        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
+	        Date startDate;
+	        Date endDate;
+
+	        if (startDateStr != null && !startDateStr.isEmpty() && endDateStr != null && !endDateStr.isEmpty()) {
+	            startDate = sdf.parse(startDateStr);
+	            endDate = sdf.parse(endDateStr);
+	        } else {
+	            Calendar cal = Calendar.getInstance();
+	            endDate = cal.getTime(); 
+	            
+	            cal.add(Calendar.DATE, -29); 
+	            startDate = cal.getTime();
+	        }
+
+	        List<Announcement> announcementList = announcementDAO.search(keyword, startDate, endDate);
+
+	        if (announcementList == null) {
+	            announcementList = new ArrayList<>();
+	        }
+
+	        Comparator<Announcement> sorter = Comparator.comparing(Announcement::getannouncement_date, Comparator.nullsLast(Comparator.naturalOrder()));
+	        sorter = sorter.thenComparing(Announcement::getTimeCreate, Comparator.nullsLast(Comparator.naturalOrder()));
+	        sorter = sorter.thenComparingInt(Announcement::getAnnouncementId);
+
+	        if ("asc".equalsIgnoreCase(sortOrder)) {
+	            announcementList.sort(sorter);
+	        } else {
+	            announcementList.sort(sorter.reversed());
+	        }
+
+	        request.setAttribute("announcementList", announcementList);
+
+	        int islastest = 0;
+	        if (!announcementList.isEmpty()) {
+	            if ("asc".equalsIgnoreCase(sortOrder)) {
+	                islastest = announcementList.get(announcementList.size() - 1).getAnnouncementId();
+	            } else {
+	                islastest = announcementList.get(0).getAnnouncementId();
+	            }
+	        }
+	        request.setAttribute("islastest", islastest);
+
+	        return SUCCESS;
+
+	    } catch (Exception e) {
+	        log.error("Error fetching announcement list", e);
+	        return ERROR;
+	    }
 	}
 
 	public String readcardannounce() {
@@ -412,29 +468,50 @@ public class AnnouncementAction extends ActionSupport {
 	}
 
 	public String edit() {
-		try {
-			String id = request.getParameter("id");
-			Announcement announcement = announcementDAO.findById(Integer.parseInt(id));
-			Integer file_id = Integer.parseInt(announcement.getFile_id());
-			FileUpload fileimg = fileuploadDAO.findById(file_id);
-			log.debug(fileimg);
+	    try {
+	        String idStr = request.getParameter("id");
+	        if (idStr == null || idStr.isEmpty()) {
+	            return ERROR;
+	        }
 
-			log.debug("Success" + announcement);
-			log.debug("Success Json" + new Gson().toJson(announcement));
+	        int id = Integer.parseInt(idStr);
+	        Announcement announcement = announcementDAO.findById(id);
 
-			fileUploadlist = announcementDAO.findByPageAndPageId("announcementFiles", String.valueOf(id));
-			log.debug("file : " + fileUploadlist);
-			request.setAttribute("announcementfile", new Gson().toJson(fileUploadlist));
-			request.setAttribute("announcementFiles", fileUploadlist);
+	        if (announcement == null) {
+	            log.error("Announcement not found for ID: " + id);
+	            return ERROR;
+	        }
 
-			request.setAttribute("announcement", announcement);
-			request.setAttribute("fileimg", fileimg);
-			return SUCCESS;
+	        FileUpload fileimg = null;
+	        String fileIdStr = announcement.getFile_id();
+	        
+	        if (fileIdStr != null && !fileIdStr.trim().isEmpty()) { 
+	            try {
+	                int fileId = Integer.parseInt(fileIdStr);
+	                fileimg = fileuploadDAO.findById(fileId);
+	            } catch (NumberFormatException e) {
+	                log.warn("Invalid file_id format for Announcement ID " + id + ": " + fileIdStr);
+	            }
+	        }
 
-		} catch (Exception e) {
-			log.error(e);
-			return ERROR;
-		}
+	        log.debug("Editing Announcement ID: " + id);
+	        fileUploadlist = announcementDAO.findByPageAndPageId("announcementFiles", idStr);
+	        
+	        request.setAttribute("announcementFiles", fileUploadlist);
+	        
+	        if (fileUploadlist != null) {
+	            request.setAttribute("announcementfile", new Gson().toJson(fileUploadlist));
+	        }
+
+	        request.setAttribute("announcement", announcement);
+	        request.setAttribute("fileimg", fileimg);
+	        
+	        return SUCCESS;
+
+	    } catch (Exception e) {
+	        log.error("Error in edit method", e);
+	        return ERROR;
+	    }
 	}
 
 	public String delete() {

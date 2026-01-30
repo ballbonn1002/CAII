@@ -9,12 +9,10 @@
 .announcement-detail img {
 	max-width: 100%;
 	height: auto;
-	border-radius: 8px;
-	display: block;
-	margin: 10px auto;
 }
 </style>
 <div class="app-main flex-column flex-row-fluid">
+	<fmt:setLocale value="en_US" />
 	<div class="d-flex flex-column flex-column-fluid">
 		<div class="app-toolbar align-items-stretch py-5 py-lg-6">
 			<div class="app-container container-fluid d-flex flex-stack">
@@ -65,16 +63,19 @@
 						<div class="card card-flush py-3">
 							<div class="card-header pt-5">
 								<h3 class="card-title align-items-start flex-column">
-									<span class="card-label fw-bold text-gray-900 d-flex align-items-center"><c:forEach
+									<span
+										class="card-label fw-semibold text-gray-900 align-items-center"><c:forEach
 											var="ann" items="${announcement}">
 											<c:if test="${ann['highlight'] == '1'}">
-							                    <span class="badge badge-light-danger me-3 justify-content-center align-items-center" style="width: 26px; height: 26px; padding: 0;">
-							                        <i class="ki-duotone ki-pin text-danger" style="font-size: 16px;">
-							                            <span class="path1"></span>
-							                            <span class="path2"></span>
-							                        </i>
-							                    </span>
-							                </c:if>
+												<span
+													class="badge badge-light-danger me-3 justify-content-center align-items-center"
+													style="width: 26px; height: 26px; padding: 0;"> <i
+													class="ki-duotone ki-pin text-danger"
+													style="font-size: 16px;"> <span class="path1"></span> <span
+														class="path2"></span>
+												</i>
+												</span>
+											</c:if>
 											${ann['topic']}
 										</c:forEach></span>
 								</h3>
@@ -83,16 +84,19 @@
 								<span class="card-label fw-medium fs-6 text-gray-800"><c:forEach
 										var="ann" items="${announcement}">
 										<div class="d-flex align-items-center gap-5 pb-5">
-											<span class="d-flex align-items-center"> <i
-												class="ki-duotone ki-calendar-2 fs-2 me-2"> <span
+											<span
+												class="d-flex align-items-center fw-medium text-gray-900">
+												<i class="ki-duotone ki-calendar-2 fs-1 me-2"> <span
 													class="path1"></span> <span class="path2"></span> <span
 													class="path3"></span> <span class="path4"></span> <span
 													class="path5"></span>
 											</i> <fmt:formatDate value="${ann['announcement_date']}"
 													pattern="dd MMM yyyy" />
-											</span> <span class="d-flex align-items-center"> <i
-												class="ki-duotone ki-eye fs-2 me-2"> <span class="path1"></span>
-													<span class="path2"></span> <span class="path3"></span>
+											</span> <span
+												class="d-flex align-items-center fw-medium text-gray-800">
+												<i class="ki-duotone ki-eye fs-1 me-2"> <span
+													class="path1"></span> <span class="path2"></span> <span
+													class="path3"></span>
 											</i> ${ann['readcount']} Views
 											</span>
 										</div>
@@ -114,24 +118,63 @@
 						<div class="card card-flush py-3">
 							<div class="card-header pt-5">
 								<h3 class="card-title align-items-start flex-column">
-									<span class="card-label fw-bold text-gray-900">Attach
+									<span class="card-label fw-semibold text-gray-900">Attach
 										Files</span>
 								</h3>
 							</div>
+
 							<div class="card-body pt-6">
 								<c:forEach var="ann" items="${announcement}">
 									<c:forEach var="file" items="${announcementFiles}">
 										<c:if test="${file['pageId'] == ann['announcement_id']}">
+
+											<c:set var="rawExt" value="" />
+											<c:forTokens items="${file['path']}" delims="." var="token">
+												<c:set var="rawExt" value="${token}" />
+											</c:forTokens>
+
+											<c:set var="fileExt" value=".${fn:toLowerCase(rawExt)}" />
+
+											<c:set var="fileIcon"
+												value="assets/media/svg/files/folder-document.svg" />
+
+											<c:choose>
+												<c:when test="${fileExt == '.pdf'}">
+													<c:set var="fileIcon"
+														value="assets/media/svg/files/pdf.svg" />
+												</c:when>
+												<c:when test="${fileExt == '.doc' or fileExt == '.docx'}">
+													<c:set var="fileIcon"
+														value="assets/media/svg/files/doc.svg" />
+												</c:when>
+												<c:otherwise>
+													<c:set var="fileIcon"
+														value="assets/media/svg/files/folder-document.svg" />
+												</c:otherwise>
+											</c:choose>
+
 											<div
 												class="d-flex align-items-center justify-content-center mb-2">
-												<a href="${file['path']}" target="_blank"
-													class="d-flex align-items-center justify-content-between w-100 fs-6 fw-medium text-gray-800 text-decoration-none hover:text-primary p-2 rounded">
-													<span>${file['name']}</span> <i
-													class="ki-duotone ki-file-down fs-2 text-primary"> <span
-														class="path1"></span> <span class="path2"></span>
-												</i>
-												</a>
+												<div
+													class="d-flex align-items-center justify-content-between w-100 p-2 rounded bg-hover-light">
+
+													<a href="${file['path']}" target="_blank"
+														class="d-flex align-items-center text-decoration-none text-gray-800 hover:text-primary"
+														style="flex-grow: 1;"> <img src="${fileIcon}"
+														class="w-25px h-25px me-3" alt="icon" /> <span
+														class="text-gray-800 fs-6 fw-medium"> ${file['name']} <span
+															class="ms-1">${fileExt}</span>
+													</span>
+													</a> <a href="${file['path']}" download="${file['name']}"
+														class="ms-3" title="Download"> <i
+														class="ki-duotone ki-file-down fs-1 text-primary"> <span
+															class="path1"></span> <span class="path2"></span>
+													</i>
+													</a>
+
+												</div>
 											</div>
+
 										</c:if>
 									</c:forEach>
 								</c:forEach>

@@ -1,6 +1,7 @@
 package com.cubesofttech.dao;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -130,5 +131,36 @@ public class AnnouncementDAOImpl implements AnnouncementDAO {
 		} else {
 			return new Integer(0);
 		}
+	}
+	
+	@Override
+	public List<Announcement> search(String keyword, Date startDate, Date endDate) throws Exception {
+	    Session session = this.sessionFactory.getCurrentSession();
+	    List<Announcement> announcementList = null;
+	    try {
+	        StringBuilder hql = new StringBuilder("SELECT a FROM Announcement a LEFT JOIN FETCH a.fileUpload WHERE 1=1 ");
+	        
+	        hql.append(" AND a.announcement_date BETWEEN :startDate AND :endDate ");
+
+	        if (keyword != null && !keyword.trim().isEmpty()) {
+	            hql.append(" AND lower(a.topic) LIKE :keyword ");
+	        }
+
+	        hql.append(" ORDER BY a.announcement_date DESC");
+
+	        Query query = session.createQuery(hql.toString());
+	        
+	        query.setParameter("startDate", startDate);
+	        query.setParameter("endDate", endDate);
+	        
+	        if (keyword != null && !keyword.trim().isEmpty()) {
+	            query.setParameter("keyword", "%" + keyword.toLowerCase() + "%");
+	        }
+
+	        announcementList = query.list();
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	    }
+	    return announcementList;
 	}
 }
