@@ -776,23 +776,20 @@ var AppCalendar = function() {
 
 				$tableBody.append(rowHtml);
 
-			} 
-			else {
+			} else {
 				var status = '';
-				if (dayNum <= todayNum) {
-					var holidayEvent = dayEvents.find(function(ev) { return ev.classNames.includes('fc-event-secondary'); });
-					if (holidayEvent) {
-						status = getHolidayStatusHTML(holidayEvent);
-					} else {
-						var leaveEvent = dayEvents.find(function(ev) { return ev.extendedProps && ev.extendedProps.leave_type_id; });
-						if (leaveEvent) {
-							status = getLeaveStatusHTML(leaveEvent);
-						} else {
-							status = getWorkStatusHTML('NO_RECORD');
-						}
+				var holidayEvent = dayEvents.find(function(ev) { return ev.classNames.includes('fc-event-secondary'); });
+				var leaveEvent = dayEvents.find(function(ev) { return ev.extendedProps && ev.extendedProps.leave_type_id; });
+				if (holidayEvent) {
+					status = getHolidayStatusHTML(holidayEvent);
+				} else if (leaveEvent) {
+					status = getLeaveStatusHTML(leaveEvent);
+				} else {
+					if (dayNum <= todayNum) {
+						status = getWorkStatusHTML('NO_RECORD');
 					}
 				}
-				
+
 				var rowHtml = '<tr class="' + rowStyle + '">';
 				rowHtml += '<td><span class="bullet bullet-vertical me-2 h-20px w-3px ' + iconClass + '" style="vertical-align: middle;"></span>' + dayStr + '</td>';
 				rowHtml += '<td></td><td></td><td></td>';
