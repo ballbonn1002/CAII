@@ -9,6 +9,8 @@ import org.hibernate.transform.AliasToEntityMapResultTransformer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import com.cubesofttech.model.WorkHours;
+
 @Repository
 public class WorkLogDAOImpl implements WorkLogDAO {
 
@@ -30,7 +32,7 @@ public class WorkLogDAOImpl implements WorkLogDAO {
             sql.append(" SELECT * FROM ( ");
             sql.append("   SELECT ");
             sql.append("     wh.work_hours_id, wh.work_hours_type, wh.work_hours_time_work, wh.time_create, ");
-            sql.append("     wh.work_type, wh.latitude, wh.longitude, wh.description, wh.ip_address, ");
+            sql.append("     wh.time_update, wh.work_type, wh.latitude, wh.longitude, wh.description, wh.ip_address, ");
             sql.append("     u.id as user_id, u.name, u.name_en, u.position_id, u.employee_id, u.role_id, ");
             sql.append("     j.id_sitejob, j.name_site, ");
 
@@ -60,7 +62,13 @@ public class WorkLogDAOImpl implements WorkLogDAO {
 
             sql.append(" ) t WHERE 1=1 ");
 
-            sql.append(" ORDER BY t.work_hours_time_work DESC ");
+            String sortting = (String) params.get("sortting");
+            if ("1".equals(sortting)) {
+                sql.append(" ORDER BY t.time_update ASC "); 
+                
+            } else {
+                sql.append(" ORDER BY t.time_update DESC "); 
+            }
 
             SQLQuery query = sessionFactory.getCurrentSession().createSQLQuery(sql.toString());
             query.setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
@@ -83,5 +91,16 @@ public class WorkLogDAOImpl implements WorkLogDAO {
             e.printStackTrace();
             throw e;
         }
+    }
+    
+    @Override
+    public WorkHours findById(Integer id) throws Exception {
+        return (WorkHours) sessionFactory.getCurrentSession().get(WorkHours.class, id);
+    }
+
+    @Override
+    public void update(WorkHours workHours) throws Exception {
+        sessionFactory.getCurrentSession().update(workHours);
+        sessionFactory.getCurrentSession().flush();
     }
 }

@@ -1052,6 +1052,14 @@
 			class="com.cubesofttech.action.WorkLogAction" method="search">
 			<result name="login" type="redirect">/index.jsp</result>
 		</action>
+		<action name="export_excel" 
+			class="com.cubesofttech.action.WorkLogAction" method="exportExcel">
+			<result name="login" type="redirect">/index.jsp</result>
+		</action>
+		<action name="save_work_log"
+			class="com.cubesofttech.action.WorkLogAction" method="saveWorkLog">
+			<result name="login" type="redirect">/index.jsp</result>
+		</action>
 		
 	</package>
 
