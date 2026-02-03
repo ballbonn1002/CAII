@@ -4,6 +4,13 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
 <%@ taglib uri="/WEB-INF/tlds/permission.tld" prefix="perm"%>
+<link
+	href="${pageContext.request.contextPath}/assets/plugins/global/plugins.bundle.css"
+	rel="stylesheet" type="text/css" />
+<script
+	src="${pageContext.request.contextPath}/assets/plugins/global/plugins.bundle.js"></script>
+<script
+	src="${pageContext.request.contextPath}/assets/plugins/custom/datatables/datatables.bundle.js"></script>
 <!DOCTYPE html>
 <style>
 .image-box {
@@ -61,7 +68,8 @@
 									<!--begin::Form-->
 									<form id="userCalendarForm"
 										class="d-none d-lg-block w-100 position-relative mb-5 mb-lg-0 me-5"
-										autocomplete="off" action="testt" method="post">
+										autocomplete="off" action="javascript:void(0);"
+										onsubmit="return false;">
 
 										<!--begin::Icon-->
 										<i
@@ -217,8 +225,9 @@
 													</c:if>
 													<c:if
 														test="${ann.announcementId == islastest or ann.announcementId eq islastest}">
-														<span class="badge fw-semibold bg-primary text-white bg-primary"
-														style="height: 26px;">New</span>
+														<span
+															class="badge fw-semibold bg-primary text-white bg-primary"
+															style="height: 26px;">New</span>
 													</c:if>
 												</div>
 
@@ -273,7 +282,7 @@
 												<c:if
 													test="${ann.announcementId == islastest or ann.announcementId eq islastest}">
 													<span class="badge fw-semibold text-white bg-primary"
-													style="height: 26px;">New</span>
+														style="height: 26px;">New</span>
 												</c:if>
 												<c:if test="${ann.highlight == '1'}">
 													<span
@@ -336,31 +345,12 @@
 
     var start = moment().subtract(29, "days");
     var end = moment();
+    var searchTimer;
 
+    
     function cb(start, end) {
         $("#kt_daterangepicker_4").html(start.format("DD MMM YYYY") + " - " + end.format("DD MMM YYYY"));
     }
-
-    $("#kt_daterangepicker_4").daterangepicker({
-        startDate: start,
-        endDate: end,
-        locale: { format: 'DD MMM YYYY' },
-        ranges: {
-           'Today': [moment(), moment()],
-           'Yesterday': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
-           'Last 7 Days': [moment().subtract(6, 'days'), moment()],
-           'Last 30 Days': [moment().subtract(29, 'days'), moment()],
-           'This Month': [moment().startOf('month'), moment().endOf('month')],
-           'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
-        }
-    }, cb);
-
-    cb(start, end);
-    reloadList(); 
-
-    $("#kt_daterangepicker_4").on('apply.daterangepicker', function(ev, picker) {
-        reloadList(); 
-    });
 
     function getEffectiveEndDate(pickerEndDate) {
         if (isAdmin) {
@@ -369,65 +359,95 @@
         return pickerEndDate.format('YYYY-MM-DD');
     }
 
-
     function reloadList() {
+        var contextPath = "${pageContext.request.contextPath}"; 
         var keyword = $("#xxAnnouncement").val();
-        
-        var sortOrder = 'desc'; 
-        var btnOnclick = $("a[onclick^='toggleSort']").attr("onclick");
-        if (btnOnclick && btnOnclick.includes("'desc'")) {
-            sortOrder = 'asc'; 
+
+        var sortOrder = 'desc';
+        var btnSort = $("a[onclick^='toggleSort']");
+        if(btnSort.length > 0) {
+            var btnOnclick = btnSort.attr("onclick");
+            if (btnOnclick && btnOnclick.includes("'desc'")) {
+                sortOrder = 'asc';
+            }
         }
 
         var picker = $('#kt_daterangepicker_4').data('daterangepicker');
+        if (!picker) return; 
+
         var startDate = picker.startDate.format('YYYY-MM-DD');
-        
         var endDate = getEffectiveEndDate(picker.endDate);
 
-        var url = "announcementList?mode=ajax" 
+        var url = contextPath + "/announcementList?mode=ajax"
                 + "&xxAnnouncement=" + encodeURIComponent(keyword)
-                + "&sortOrder=" + sortOrder
-                + "&startDate=" + startDate 
+                + "&sortOrder=" + sortOrder 
+                + "&startDate=" + startDate
                 + "&endDate=" + endDate;
 
         $("#announcementListContainer").load(url + " #announcementListContainer > *", function() {
         });
     }
 
-    var searchTimer;
-    $("#xxAnnouncement").on('keyup', function () {
-        clearTimeout(searchTimer);
-        searchTimer = setTimeout(function() {
-            reloadList();
-        }, 500);
-    });
-
     function toggleSort(nextSortOrder) {
+        var contextPath = "${pageContext.request.contextPath}";
         var keyword = $("#xxAnnouncement").val();
         var picker = $('#kt_daterangepicker_4').data('daterangepicker');
-        
         var endDate = getEffectiveEndDate(picker.endDate);
-        
-        var url = "announcementList?mode=ajax"
-                + "&sortOrder=" + nextSortOrder
-                + "&xxAnnouncement=" + encodeURIComponent(keyword)
-                + "&startDate=" + picker.startDate.format('YYYY-MM-DD')
-                + "&endDate=" + endDate; 
+
+        var url = contextPath + "/announcementList?mode=ajax" 
+                + "&sortOrder=" + nextSortOrder 
+                + "&xxAnnouncement=" + encodeURIComponent(keyword) 
+                + "&startDate=" + picker.startDate.format('YYYY-MM-DD') 
+                + "&endDate=" + endDate;
 
         $("#announcementListContainer").load(url + " #announcementListContainer > *", function(response, status, xhr) {
             if (status == "error") {
-                alert("Error: " + xhr.statusText);
+                console.error("Load Error:", xhr.statusText);
             }
-            
+
             var nextOrderForBtn = (nextSortOrder === 'asc') ? 'desc' : 'asc';
             var currentLabel = (nextSortOrder === 'asc') ? 'by Oldest' : 'by Recent Updates';
             var currentIcon = (nextSortOrder === 'asc') ? 'ki-arrow-up' : 'ki-arrow-down';
-            
+
             var btnHtml = currentLabel + ' <i class="ki-outline ' + currentIcon + ' fs-2 ms-1 text-gray-500"></i>';
-            
+
             $("a[onclick^='toggleSort']")
                 .attr("onclick", "toggleSort('" + nextOrderForBtn + "')")
                 .html(btnHtml);
         });
     }
+
+    $(document).ready(function() {
+        console.log("✅ DOM Ready: เริ่มต้นการทำงานของ Script");
+
+        // 3.1 เริ่มต้น DatePicker
+        $("#kt_daterangepicker_4").daterangepicker({
+            startDate : start,
+            endDate : end,
+            locale : { format : 'DD MMM YYYY' },
+            ranges : {
+                'Today' : [ moment(), moment() ],
+                'Yesterday' : [ moment().subtract(1, 'days'), moment().subtract(1, 'days') ],
+                'Last 7 Days' : [ moment().subtract(6, 'days'), moment() ],
+                'Last 30 Days' : [ moment().subtract(29, 'days'), moment() ],
+                'This Month' : [ moment().startOf('month'), moment().endOf('month') ],
+                'Last Month' : [ moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month') ]
+            }
+        }, cb);
+
+        cb(start, end);
+
+        $("#kt_daterangepicker_4").on('apply.daterangepicker', function(ev, picker) {
+            reloadList();
+        });
+
+        $("#xxAnnouncement").on('keyup', function() {
+            clearTimeout(searchTimer);
+            searchTimer = setTimeout(function() {
+                reloadList();
+            }, 500);
+        });
+
+        reloadList();
+    });
 </script>

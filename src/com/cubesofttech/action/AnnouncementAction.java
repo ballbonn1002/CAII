@@ -212,6 +212,10 @@ public class AnnouncementAction extends ActionSupport {
 
 	public String AnnouncementList() {
 	    try {
+	    	
+	    	request.setCharacterEncoding("UTF-8");
+	        response.setCharacterEncoding("UTF-8");
+	        
 	        String keyword = request.getParameter("xxAnnouncement");
 	        String startDateStr = request.getParameter("startDate");
 	        String endDateStr = request.getParameter("endDate");
@@ -221,8 +225,14 @@ public class AnnouncementAction extends ActionSupport {
 	        Date endDate;
 
 	        if (startDateStr != null && !startDateStr.isEmpty() && endDateStr != null && !endDateStr.isEmpty()) {
-	            startDate = sdf.parse(startDateStr);
-	            endDate = sdf.parse(endDateStr);
+	        	startDate = sdf.parse(startDateStr);
+	        	Date rawEndDate = sdf.parse(endDateStr);
+	            Calendar cal = Calendar.getInstance();
+	            cal.setTime(rawEndDate);
+	            cal.set(Calendar.HOUR_OF_DAY, 23);
+	            cal.set(Calendar.MINUTE, 59);
+	            cal.set(Calendar.SECOND, 59);
+	            endDate = cal.getTime();
 	        } else {
 	            Calendar cal = Calendar.getInstance();
 	            endDate = cal.getTime(); 
