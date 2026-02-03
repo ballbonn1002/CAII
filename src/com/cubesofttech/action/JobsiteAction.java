@@ -365,33 +365,35 @@ public class JobsiteAction extends ActionSupport {
 			if (user == null || user.getId() == null) {
 				return "login";
 			}
-			String userId = user.getId();
-
-			Timestamp now = DateUtil.getCurrentTime();
 
 			if (jobsite == null || jobsite.getId_sitejob() == null) {
-				addActionError("Jobsite ID is required for update");
+				addActionError("Jobsite ID is required");
 				return ERROR;
 			}
 
-			String activeParam = request.getParameter("is_active");
-			if ("1".equals(activeParam)) {
-				jobsite.setIs_active("1");
+			Jobsite dbJobsite = jobsiteDAO.findById(jobsite.getId_sitejob());
+
+			if (dbJobsite != null) {
+				dbJobsite.setName_site(jobsite.getName_site());
+				dbJobsite.setDescription(jobsite.getDescription());
+
+				String activeParam = request.getParameter("is_active");
+				dbJobsite.setIs_active("1".equals(activeParam) ? "1" : "0");
+
+				dbJobsite.setTime_update(DateUtil.getCurrentTime());
+				dbJobsite.setUser_update(user.getId());
+
+				jobsiteDAO.update(dbJobsite);
+
+				addActionMessage("Jobsite updated successfully!");
+				return SUCCESS;
 			} else {
-				jobsite.setIs_active("0");
+				addActionError("Jobsite not found");
+				return ERROR;
 			}
-
-			jobsite.setTime_update(now);
-			jobsite.setUser_update(userId);
-
-			jobsiteDAO.update(jobsite);
-			addActionMessage("Jobsite updated successfully!");
-
-			return SUCCESS;
 
 		} catch (Exception e) {
 			log.error("Error in JobsiteAction.updateJobsite()", e);
-			addActionError("Error updating jobsite: " + e.getMessage());
 			return ERROR;
 		}
 	}

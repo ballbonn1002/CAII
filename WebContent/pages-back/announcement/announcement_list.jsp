@@ -134,7 +134,7 @@
 						class="page-title d-flex flex-column justify-content-center flex-wrap me-3">
 						<div class="d-flex align-items-baseline">
 							<h1 class="page-heading text-gray-900 fw-bold fs-3 my-0 me-2">
-								${announcementList.size()} Items Found</h1>
+								<span id="itemCountDisplay">${announcementList.size()}</span> Items Found</h1>
 
 							<c:set var="currentSort" value="${param.sortOrder}" />
 							<c:if test="${empty currentSort}">
@@ -385,6 +385,8 @@
                 + "&endDate=" + endDate;
 
         $("#announcementListContainer").load(url + " #announcementListContainer > *", function() {
+        	var newCount = $("#announcementListContainer").children().length;
+        	$("#itemCountDisplay").text(newCount);
         });
     }
 
@@ -393,6 +395,8 @@
         var keyword = $("#xxAnnouncement").val();
         var picker = $('#kt_daterangepicker_4').data('daterangepicker');
         var endDate = getEffectiveEndDate(picker.endDate);
+        
+        var contextPath = "${pageContext.request.contextPath}";
 
         var url = contextPath + "/announcementList?mode=ajax" 
                 + "&sortOrder=" + nextSortOrder 
