@@ -45,24 +45,21 @@
 								data-kt-menu-placement="bottom-start">
 
 								<!--begin::Form-->
-								<form id="userCalendarForm"
+								<form id="userCalendarForm" 
 									class="d-none d-lg-block w-100 position-relative mb-5 mb-lg-0"
 									autocomplete="off" action="TestSearchAllinCalendar"
 									method="post" >
 									<!--begin::Icon-->
-									<i
-										class="ki-duotone ki-magnifier fs-2 fs-lg-1 text-gray-500 position-absolute top-50 translate-middle-y ms-5">
+									<i class="ki-duotone ki-magnifier fs-2 fs-lg-1 text-gray-500 position-absolute top-50 translate-middle-y ms-5">
 										<span class="path1"></span> <span class="path2"></span>
 									</i>
 									<!--end::Icon-->
-
 									<!--begin::Input-->
 									<input type="text" class="form-control form-solid ps-14"
 										name="usercalendar" id="userSearchInput"
 										placeholder="${user.employeeId} - ${user.name} - ${user.nameEN}"
-										data-kt-search-element="input" />
+										data-kt-search-element="input" disabled="true"/>
 									<!--end::Input-->
-
 								</form>
 								<!--end::Form-->
 
@@ -77,7 +74,6 @@
 											style="max-height: 400px; overflow-y: auto; overflow-x: hidden;">
 										</div>
 										<!--end::Results-->
-
 										<!--begin::Empty search-->
 										<div data-kt-search-element="empty" class="text-center d-none">
 											<span class="text-muted">No user found</span>
@@ -432,6 +428,10 @@ if(menuElement){
 document.addEventListener("DOMContentLoaded", function(){
     renderUsers(cubeUserData);
 });
+
+<perm:permission object="checklist.viewall">
+	document.getElementById('userSearchInput').disabled = false;
+</perm:permission>
 // ----------------- END Search -----------------
 </script>
 <script> // ----------- Calendar & Checklist -----------------
@@ -466,6 +466,7 @@ var AppCalendar = function() {
 	function buildCheckinEvents() {
         var events = [];
         var dailyData = {};
+        //console.log("${workList}");
         <c:forEach var="work" items="${workList}" varStatus="status">
             <c:if test="${work.mycheckins != null}">
             	var fullCheckin = '${work.mycheckins}';
@@ -493,8 +494,8 @@ var AppCalendar = function() {
                     checkout: fullCheckout,
                     workTypeIn: '${work.workTypeIn}',
                     workTypeOut: '${work.workTypeOut}',
-                    descriptionIn: '${work.descriptionIn}',
-                    descriptionOut: '${work.descriptionOut}',
+                    descriptionIn: '${work.descriptionIn}'.trim(),
+                    descriptionOut: '${work.descriptionOut}'.trim(),
                     status: '${work.status}'
             	});
             </c:if>
@@ -606,17 +607,17 @@ var AppCalendar = function() {
         var workTypeOut = "";
         
         if(typein == '1'){
-			workTypeIn = '<i class="ki-duotone ki-map fs-2 me-1 text-grey-400 align-middle">' +
+			workTypeIn = '<i class="ki-duotone ki-map fs-2 me-1 text-light align-middle">' +
 				'<span class="path1"></span><span class="path2"></span><span class="path3"></span></i>';
 		}else if(typein == '2'){
-			workTypeIn = '<i class="ki-duotone ki-home-2 fs-2 me-1 text-grey-400 align-middle">' +
+			workTypeIn = '<i class="ki-duotone ki-home-2 fs-2 me-1 text-light align-middle">' +
                 '<span class="path1"></span><span class="path2"></span></i> ' 
 		}
 		if(typeout == '1'){
-			workTypeOut = '<i class="ki-duotone ki-map fs-2 me-1 text-grey-400 align-middle">' +
+			workTypeOut = '<i class="ki-duotone ki-map fs-2 me-1 text-light align-middle">' +
 				'<span class="path1"></span><span class="path2"></span><span class="path3"></span></i>';
 		}else if(typeout == '2'){
-			workTypeOut = '<i class="ki-duotone ki-home-2 fs-2 me-1 text-grey-400 align-middle">' +
+			workTypeOut = '<i class="ki-duotone ki-home-2 fs-2 me-1 text-light align-middle">' +
                 '<span class="path1"></span><span class="path2"></span></i> ' 
 		}
 		
@@ -731,7 +732,6 @@ var AppCalendar = function() {
 						if (typeIn === 1) iconIn = '<i class="ki-duotone ki-map text-primary fs-2 me-1 align-middle"><span class="path1"></span><span class="path2"></span><span class="path3"></span></i> ';
 						else if (typeIn === 2) iconIn = '<i class="ki-duotone ki-home-2 fs-2 text-teal me-1 align-middle"><span class="path1"></span><span class="path2"></span></i> ';
 						var rawCheckin = item.checkin || '';
-						console.log(rawCheckin);
 						var timeIn = rawCheckin.length >= 16 ? rawCheckin.substring(11, 16) : '';
 						var desIn = item.descriptionIn ? '<i class="ki-duotone ki-message-text-2 fs-2 text-gray-500 me-1 align-middle">'+
 							'<span class="path1"></span><span class="path2"></span><span class="path3"></span></i><span class="fs-6 fw-400">' + item.descriptionIn.trim() + '</span>' : '';
@@ -747,10 +747,7 @@ var AppCalendar = function() {
 						if (typeOut === 1) iconOut = '<i class="ki-duotone ki-map fs-2 text-primary me-1 align-middle"><span class="path1"></span><span class="path2"></span><span class="path3"></span></i> ';
 						else if (typeOut === 2) iconOut = '<i class="ki-duotone ki-home-2 fs-2 text-teal me-1 align-middle"><span class="path1"></span><span class="path2"></span></i> ';
 						var rawCheckout = item.checkout || '';
-						console.log("rawCheckout "+rawCheckout);
-						console.log("rawCheckout length "+rawCheckout.length);
 						var timeOut = rawCheckout ? rawCheckout.substring(0, 5) : '';
-						console.log(timeOut);
 						//var timeOut = props.checkout ? props.checkout.substring(0, 5) : '';
 						var desOut = item.descriptionOut ? '<i class="ki-duotone ki-message-text-2 fs-2 text-gray-500 me-1 align-middle">'+
 								'<span class="path1"></span><span class="path2"></span><span class="path3"></span></i><span class="fs-6 fw-400">' + item.descriptionOut + '</span>' : '';

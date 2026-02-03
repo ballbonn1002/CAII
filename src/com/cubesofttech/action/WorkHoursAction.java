@@ -473,9 +473,9 @@ public class WorkHoursAction extends ActionSupport {
 			request.setAttribute("allholiday", allholiday);
 
 			// Leave Calendar
-			LocalDate startDate = LocalDate.of(currentYear, currentMonth, 1);
-			LocalDate endDate = startDate.withDayOfMonth(startDate.lengthOfMonth());
-
+			LocalDate startDate = LocalDate.of(currentYear, 1, 1);
+			LocalDate endDate = LocalDate.of(currentYear, 12, 31);
+			
 			DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
 			Timestamp start_date_leave = DateUtil.dateToTimestamp(LocalDate.of(last2year, 1, 1).format(dateFormatter), "00:00:00.0");
 			Timestamp end_date_leave = DateUtil.dateToTimestamp(LocalDate.of(currentYear, 12, 31).format(dateFormatter), "23:59:59.0");

@@ -7,6 +7,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.sql.Timestamp;
 import com.cubesofttech.dao.LeaveDAO;
+import com.cubesofttech.dao.UserDAO;
+
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.time.DayOfWeek;
@@ -27,6 +29,7 @@ import org.springframework.stereotype.Service;
 import com.cubesofttech.dao.HolidayDAO;
 import com.cubesofttech.dao.WorkHoursDAO;
 import com.cubesofttech.model.Holiday;
+import com.cubesofttech.model.User;
 import com.cubesofttech.system.Constant;
 
 @Service
@@ -41,9 +44,14 @@ public class WorkHoursService {
 
 	@Autowired
 	private LeaveDAO leaveDAO;
+	
+	@Autowired
+	private UserDAO userDAO;
 
 	Logger log = Logger.getLogger(getClass());
 	private static final Integer Interger = null;
+	private static LocalTime CUT_IN_LATE = null;
+	private static LocalTime CUT_OUT_NORMAL = null;
 
 	public LocalDate calculateAllowedWorkDate(LocalDate today) {
 		Objects.requireNonNull(today, "today must not be null");
@@ -156,7 +164,6 @@ public class WorkHoursService {
 			try {
 				usertype1 = workHoursDAO.usertype1(userId);
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			for (Map<String, Object> maps : usertype1) {
@@ -195,16 +202,24 @@ public class WorkHoursService {
 		return fulltime;
 	}
 
-	private static final LocalTime CUT_IN_LATE = LocalTime.of(9, 1);
-	private static final LocalTime CUT_OUT_NORMAL = LocalTime.of(18, 0);
-
 	public Map<String, Object> calculateDailyStatus(String userId, LocalDate workDate) throws Exception {
-
 		Map<String, Object> result = new HashMap<>();
-
 		Timestamp start = Timestamp.valueOf(workDate.atStartOfDay());
 		Timestamp end = Timestamp.valueOf(workDate.atTime(23, 59, 59));
-
+		User user = userDAO.findById(userId);
+		String userWorkTimeStart = user.getWorkTimeStart();
+		String userWorkTimeEnd = user.getWorkTimeEnd();
+		
+		String[] workTimeStartStr = userWorkTimeStart.split(":");
+		Integer hourTimeStart = Integer.parseInt(workTimeStartStr[0]);
+		Integer minuteTimeStart = Integer.parseInt(workTimeStartStr[1]);
+		String[] workTimeEndStr = userWorkTimeEnd.split(":");
+		Integer hourTimeEnd = Integer.parseInt(workTimeEndStr[0]);
+		Integer minuteTimeEnd = Integer.parseInt(workTimeEndStr[1]);
+		
+		CUT_IN_LATE = LocalTime.of(hourTimeStart, minuteTimeStart+1);
+		CUT_OUT_NORMAL = LocalTime.of(hourTimeEnd, minuteTimeEnd);
+		
 		Object[] inData = workHoursDAO.findMinTimeByType(userId, workDate, "1");
 		Object[] outData = workHoursDAO.findMaxTimeByType(userId, workDate, "2");
 		Timestamp tsIn = null;
@@ -247,23 +262,15 @@ public class WorkHoursService {
 		// ================== Priority 2 : Time Logic ==================
 		boolean late = false;
 		boolean earlyOut = false;
+		String status;
 		if (inTime != null) {
 		    late = !inTime.isBefore(CUT_IN_LATE);
 		}
 		if (outTime != null) {
 		    earlyOut = outTime.isBefore(CUT_OUT_NORMAL);
 		}
-		
-		String status;
-		if (late && earlyOut) {
-			status = "UNFINISHED_WORK";
-		} else if (late) {
-			status = "LATE";
-		} else if (earlyOut) {
-			status = "EARLY_OUT";
-		} else {
-			status = "ONTIME";
-		}
+
+		status = checkLateOrEarlyOut(late, earlyOut);
 		result.put("status", status);
 		result.put("check_in", strIn);
 		result.put("check_out", strOut);
@@ -271,52 +278,70 @@ public class WorkHoursService {
 		// ================== Priority 3 : Leave  ==================
 		if (leaves != null && !leaves.isEmpty()) {
 			Map<String, Object> leave = leaves.get(0);
+			log.debug(leave);
 			Object statusObj = leave.get("leave_status_id");
 			String leaveStatusId = (statusObj != null) ? String.valueOf(statusObj).trim() : "";
 			Object typeObj = leave.get("leave_type_id");
 			String leaveTypeId = (typeObj != null) ? String.valueOf(typeObj).trim() : "";
-
+			Object typeNameObj = leave.get("leave_type_name");
+			String leaveTypeName = (typeNameObj != null) ? String.valueOf(typeNameObj).trim() : "";
+			Object halfDayObj = leave.get("half_day");
+			String leavehalfDayId = (halfDayObj != null) ? String.valueOf(halfDayObj).trim() : "";
+			
 			String realStatus = "UNKNOWN";
 			String leaveNameTH = "ไม่ระบุ";
-			
 			switch (leaveTypeId) {
 			case "1":
 				realStatus = "ANNUAL_LEAVE";
-				leaveNameTH = "ลาพักร้อน";
 				break;
 			case "2":
 				realStatus = "BUSINESS_LEAVE";
-				leaveNameTH = "ลากิจ";
 				break;
 			case "3":
 				realStatus = "SICK_LEAVE";
-				leaveNameTH = "ลาป่วย";
 				break;
 			case "4":
 				realStatus = "ABSENT";
-				leaveNameTH = "ขาดงาน";
 				break;
 			case "5":
 				realStatus = "WITHOUT_PAY";
-				leaveNameTH = "ลาโดยไม่รับค่าจ้าง";
 				break;
 			case "6":
 				realStatus = "ANNUAL_LEAVE_REMAINING";
-				leaveNameTH = "ลาพักร้อนที่เหลือจากปีก่อน";
 				break;
 			case "7":
 				realStatus = "OTHER_LEAVE";
-				leaveNameTH = "ลาอื่นๆ";
 				break;
 			case "9":
 				realStatus = "OTHERS";
-				leaveNameTH = "อื่นๆ";
 				break;
 			default:
 				realStatus = "UNKNOWN";
 				leaveNameTH = "ไม่ระบุ";
 				break;
 			}
+			leaveNameTH  = leaveTypeName;
+			// 0 = full, 1 = morning_leave, 2 = afternoon_leave, 3 = select_time
+			if("1".equals(leavehalfDayId)) {
+				log.debug(leavehalfDayId);
+				if (inTime != null) {
+					late = !inTime.isBefore(LocalTime.parse("13:00"));
+				}
+				if (outTime != null) {
+				    earlyOut = outTime.isBefore(CUT_OUT_NORMAL);
+				}
+				status = checkLateOrEarlyOut(late, earlyOut);
+			} else if ("2".equals(leavehalfDayId)) {
+				log.debug(leavehalfDayId);
+				if (inTime != null) {
+					late = !inTime.isBefore(CUT_IN_LATE);
+				}
+				if (outTime != null) {
+				    earlyOut = outTime.isBefore(LocalTime.parse("12:00"));
+				}
+				status = checkLateOrEarlyOut(late, earlyOut);
+			}
+			result.put("status", status);
 			if ("0".equals(leaveStatusId)) {
 				result.put("leave_status", "WAITING");
 				result.put("leave_desc", leaveNameTH);
@@ -327,7 +352,6 @@ public class WorkHoursService {
 				result.put("leave_desc", leaveNameTH);
 				return result;
 			}
-			
 		} else {
 			result.put("leave_status", null);
 			result.put("leave_desc", null);
@@ -344,5 +368,20 @@ public class WorkHoursService {
 
 	private String toHHmm(Timestamp ts) {
 		return ts == null ? null : truncate(ts).toString();
+	}
+	
+	private String checkLateOrEarlyOut (boolean late, boolean earlyOut) {
+		String status;
+		if (late && earlyOut) {
+			status = "UNFINISHED_WORK";
+		} else if (late) {
+			status = "LATE";
+		} else if (earlyOut) {
+			status = "EARLY_OUT";
+		} else {
+			status = "ONTIME";
+		}
+		return status;
+		
 	}
 }
