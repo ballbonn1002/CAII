@@ -202,6 +202,7 @@
  											user.workDayEnd == 7 ? '- Sun' : ''}</p>
 												<p class="fs-6 fw-bold text-gray-500 mb-0">${user.workTimeStart}
 													- ${user.workTimeEnd}</p>
+												</div>
 											</div>
 										<div
 											class="border border-gray-300 rounded-1 px-4 py-3 border-dashed ">
