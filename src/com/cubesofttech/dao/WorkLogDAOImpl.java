@@ -32,7 +32,7 @@ public class WorkLogDAOImpl implements WorkLogDAO {
             sql.append(" SELECT * FROM ( ");
             sql.append("   SELECT ");
             sql.append("     wh.work_hours_id, wh.work_hours_type, wh.work_hours_time_work, wh.time_create, ");
-            sql.append("     wh.time_update, wh.work_type, wh.latitude, wh.longitude, wh.description, wh.ip_address, ");
+            sql.append("     wh.time_update, wh.work_type, wh.description, wh.ip_address, ");
             sql.append("     u.id as user_id, u.name, u.name_en, u.position_id, u.employee_id, u.role_id, ");
             sql.append("     j.id_sitejob, j.name_site, ");
 
@@ -42,7 +42,7 @@ public class WorkLogDAOImpl implements WorkLogDAO {
             // WORK DURATION
             sql.append("   FROM work_hours wh ");
             sql.append("   LEFT JOIN user u ON wh.user_create = u.id ");
-            sql.append("   LEFT JOIN job_site j ON u.id_sitejob = j.id_sitejob ");
+            sql.append("   LEFT JOIN job_site j ON j.id_sitejob = u.id_sitejob ");
             sql.append("   WHERE 1=1 ");
 
             if (startDate != null && endDate != null && !startDate.isEmpty() && !endDate.isEmpty()) {
@@ -51,8 +51,13 @@ public class WorkLogDAOImpl implements WorkLogDAO {
             }
 
             if (siteId != null && !siteId.isEmpty()) {
-                // All Site
-                sql.append("     AND u.id_sitejob = :siteId ");
+                // Filter site 
+                sql.append("     AND EXISTS ( ");
+                sql.append("         SELECT 1 ");
+                sql.append("         FROM job_site_team jst ");
+                sql.append("         WHERE jst.user_id = wh.user_create ");
+                sql.append("           AND jst.id_sitejob = :siteId ");
+                sql.append("     ) ");
             }
 
             if (searchText != null && !searchText.isEmpty()) {
@@ -64,10 +69,10 @@ public class WorkLogDAOImpl implements WorkLogDAO {
 
             String sortting = (String) params.get("sortting");
             if ("1".equals(sortting)) {
-                sql.append(" ORDER BY t.time_update ASC "); 
+                sql.append(" ORDER BY t.work_hours_time_work ASC "); 
                 
             } else {
-                sql.append(" ORDER BY t.time_update DESC "); 
+                sql.append(" ORDER BY t.work_hours_time_work DESC "); 
             }
 
             SQLQuery query = sessionFactory.getCurrentSession().createSQLQuery(sql.toString());

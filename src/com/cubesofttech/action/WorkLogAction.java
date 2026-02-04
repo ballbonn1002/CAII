@@ -50,6 +50,9 @@ public class WorkLogAction extends ActionSupport {
     HttpServletResponse response = ServletActionContext.getResponse();
     
     private User onlineUser = (User) request.getSession().getAttribute("onlineUser");
+    
+    private static final String SESSION_WORKLOG_LIST = "CACHED_WORKLOG_LIST";
+    private static final String SESSION_WORKLOG_PARAMS = "CACHED_WORKLOG_PARAMS";
 
     @Autowired
     private WorkLogDAO workLogDAO;
@@ -111,14 +114,17 @@ public class WorkLogAction extends ActionSupport {
 
             Map<String, Object> params = new HashMap<>();
             params.put("searchText", searchText);
-            params.put("status", ""); 
-            params.put("siteId", ""); 
-            params.put("sortting", ""); 
+            params.put("status", status);
+            params.put("siteId", siteId);
+            params.put("sortting", sortting);
             params.put("startDate", startDate);
             params.put("endDate", endDate);
 
             // Import Data
             List<Map<String, Object>> workLogList = workLogDAO.search(params);
+            
+            request.getSession().setAttribute(SESSION_WORKLOG_PARAMS, new HashMap<>(params));
+            request.getSession().setAttribute(SESSION_WORKLOG_LIST, workLogList);
             
             if (workLogList != null) {
                 SimpleDateFormat dateKeyFmt = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
@@ -254,7 +260,8 @@ public class WorkLogAction extends ActionSupport {
                 }
             }
             
-            request.getSession().setAttribute("CACHED_WORKLOG_LIST", workLogList);
+            request.getSession().setAttribute(SESSION_WORKLOG_LIST, workLogList);
+
             
             Map<String, Integer> summary = calculateSummary(workLogList);
 
@@ -295,52 +302,62 @@ public class WorkLogAction extends ActionSupport {
     @SuppressWarnings("unchecked")
     public String exportExcel() {
         try {
-        	if (onlineUser == null) {
-				return "login";
-			}
-            String searchText = request.getParameter("searchText");
-            String status = request.getParameter("status"); 
-            String siteId = request.getParameter("siteId");
-            String startDate = request.getParameter("startDate");
-            String endDate = request.getParameter("endDate");
-            String sortting = request.getParameter("sortting");
-            
-            // Import to Cache
-            List<Map<String, Object>> list = (List<Map<String, Object>>) request.getSession().getAttribute("CACHED_WORKLOG_LIST");
-            boolean isCached = (list != null && !list.isEmpty());
+            if (onlineUser == null) return "login";
 
-            // If none Cache get to DB 
+            String searchText = request.getParameter("searchText");
+            String status     = request.getParameter("status");
+            String siteId     = request.getParameter("siteId");
+            String startDate  = request.getParameter("startDate");
+            String endDate    = request.getParameter("endDate");
+            String sortting   = request.getParameter("sortting");
+
+            // fallback session
+            Map<String, Object> cachedParams =
+                    (Map<String, Object>) request.getSession().getAttribute(SESSION_WORKLOG_PARAMS);
+
+            if (cachedParams != null) {
+                if (isEmpty(siteId))    siteId    = toStr(cachedParams.get("siteId"));
+                if (isEmpty(status))    status    = toStr(cachedParams.get("status"));
+                if (isEmpty(startDate)) startDate = toStr(cachedParams.get("startDate"));
+                if (isEmpty(endDate))   endDate   = toStr(cachedParams.get("endDate"));
+                if (isEmpty(sortting))  sortting  = toStr(cachedParams.get("sortting"));
+                if (isEmpty(searchText))searchText= toStr(cachedParams.get("searchText"));
+            }
+
+            List<Map<String, Object>> list =
+                    (List<Map<String, Object>>) request.getSession().getAttribute(SESSION_WORKLOG_LIST);
+
+            boolean isCached = (list != null);
+
             if (!isCached) {
                 Map<String, Object> params = new HashMap<>();
                 params.put("searchText", searchText);
-                params.put("status", "");
-                params.put("siteId", ""); 
+                params.put("status", status);
+                params.put("siteId", siteId);
                 params.put("startDate", startDate);
                 params.put("endDate", endDate);
-                params.put("sortting", sortting); 
-                
+                params.put("sortting", sortting);
+
                 list = workLogDAO.search(params);
+
+                request.getSession().setAttribute(SESSION_WORKLOG_PARAMS, new HashMap<>(params));
+                request.getSession().setAttribute(SESSION_WORKLOG_LIST, list);
             }
             
+            final String sorttingFinal = sortting;
             if (list != null) {
                 Collections.sort(list, new Comparator<Map<String, Object>>() {
                     @Override
                     public int compare(Map<String, Object> o1, Map<String, Object> o2) {
                         try {
-                            Date d1 = (Date) o1.get("time_update");
-                            Date d2 = (Date) o2.get("time_update");
-                            
+                            Date d1 = (Date) o1.get("work_hours_time_work");
+                            Date d2 = (Date) o2.get("work_hours_time_work");
                             if (d1 == null && d2 == null) return 0;
                             if (d1 == null) return 1;
                             if (d2 == null) return -1;
-                            
-                            if ("2".equals(sortting)) {
-                                // DESC
-                                return d2.compareTo(d1);
-                            } else {
-                                // ASC 
-                                return d1.compareTo(d2); 
-                            }
+
+                            if ("2".equals(sorttingFinal)) return d2.compareTo(d1); // DESC
+                            return d1.compareTo(d2); // ASC
                         } catch (Exception e) {
                             return 0;
                         }
@@ -446,11 +463,6 @@ public class WorkLogAction extends ActionSupport {
                         // Status
                         if (status != null && !status.isEmpty()) {
                             if (!status.equalsIgnoreCase(rowStatus)) continue; 
-                        }
-                        // Site
-                        if (siteId != null && !siteId.isEmpty()) {
-                            String rowSiteId = (row.get("id_sitejob") != null) ? row.get("id_sitejob").toString() : "";
-                            if (!siteId.equals(rowSiteId)) continue;
                         }
 
                         // -- Update data --
@@ -600,6 +612,9 @@ public class WorkLogAction extends ActionSupport {
             return ERROR;
         }
     }
+    
+    private boolean isEmpty(String s) { return s == null || s.trim().isEmpty(); }
+    private String toStr(Object v) { return v == null ? "" : String.valueOf(v); }
     
     public String saveWorkLog() {
         try {

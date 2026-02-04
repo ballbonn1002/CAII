@@ -290,8 +290,8 @@
                         </div>
     
                         <div class="d-flex flex-column mb-8">
-                            <label class="form-label fw-semibold mb-2 required">Reason</label>
-                            <textarea class="form-control" rows="3" name="description" id="edit_description" placeholder="Please provide a reason." required></textarea>
+                            <label class="form-label fw-semibold mb-2">Reason</label>
+                            <textarea class="form-control" rows="3" name="description" id="edit_description" placeholder="Please provide a reason."></textarea>
                         </div>
     
                         <div class="text-center">
@@ -337,14 +337,27 @@
                 if (!isInit) loadData(); 
             });
 
-            $('select[name="status"], select[name="siteId"], select[name="sortting"]').on('change', function() {
-                renderLocalData(); 
+            $('select[name="siteId"]').on('change', function () {
+                loadData();
+            });
+
+            $('select[name="status"], select[name="sortting"]').on('change', function () {
+                renderLocalData();
             });
             
             $('#exportExcelBtn').click(function(e) {
                 e.preventDefault();
-                var formData = $('#filterForm').serialize();
-                var url = "${pageContext.request.contextPath}/export_excel.action?" + formData;
+
+                var params = {
+                    searchText: $('select[name="searchText"]').val() || '',
+                    sortting:  $('select[name="sortting"]').val() || '',
+                    status:    $('select[name="status"]').val() || '',
+                    siteId:    $('select[name="siteId"]').val() || '',
+                    startDate: $('input[name="startDate"]').val() || '',
+                    endDate:   $('input[name="endDate"]').val() || ''
+                };
+
+                var url = "${pageContext.request.contextPath}/export_excel.action?" + $.param(params);
                 window.open(url, '_blank');
             });
 
@@ -508,15 +521,12 @@
             var itemStatus = (item.status || '').toLowerCase();
             if (statusFilter && itemStatus !== statusFilter) return false;
             
-            var itemSite = String(item.id_sitejob || '');
-            if (siteFilter && itemSite !== siteFilter) return false;
-            
             return true;
         });
 
         displayWorkLogs.sort(function(a, b) {
-            var timeA = a.time_update ? new Date(a.time_update).getTime() : 0;
-            var timeB = b.time_update ? new Date(b.time_update).getTime() : 0;
+            var timeA = a.work_hours_time_work ? new Date(a.work_hours_time_work).getTime() : 0;
+            var timeB = b.work_hours_time_work ? new Date(b.work_hours_time_work).getTime() : 0;
             
             if (sortFilter === '2') { 
                 return timeB - timeA;
@@ -678,16 +688,6 @@
  	// --- SAVE EDIT ---
     function saveEditWorkLog() {
         var reason = $('#edit_description').val().trim();
-        if (!reason) {
-            Swal.fire({
-                text: "Please provide a reason.",
-                icon: "warning",
-                buttonsStyling: false,
-                confirmButtonText: "OK",
-                customClass: { confirmButton: "btn btn-primary" }
-            });
-            return; 
-        }
 
         // Show Loading State 
         var btn = document.getElementById('btn_submit_edit');
