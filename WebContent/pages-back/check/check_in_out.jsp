@@ -42,6 +42,22 @@
 					</ul>
 				</div>
 				<!--end::Page title-->
+
+				<!--begin::Retroactively-->
+				<div class="d-flex flex-column">
+					<a href="retroactive"
+						class="btn btn-sm btn-flex btn-secondary min-h-45px min-w-45px min-w-md-170px px-0 px-md-10 py-4 justify-content-center align-items-center">
+
+						<i class="ki-duotone ki-calendar-edit text-muted fs-1 p-0 m-0">
+							<span class="path1"></span> <span class="path2"></span> <span
+							class="path3"></span>
+					</i> <span
+						class="fw-medium fs-6 text-inverse-secondary d-none d-md-inline ms-md-2">ลงเวลาย้อนหลัง
+							คลิก</span>
+					</a>
+				</div>
+				<!--end::Retroactively-->
+
 			</div>
 		</div>
 		<!--end::Toolbar-->
@@ -59,37 +75,33 @@
 								class="card-header pt-5 d-flex justify-content-between align-items-center">
 								<div class="card-title col-lg-12 col-md-12 col-sm-12 col-12">
 									<div class="d-flex flex-column w-100">
-										<span class="fw-medium text-gray-900 me-2 lh-1"> Work
-											Hours</span>
-										<div class="d-flex align-items-center pt-2 gap-2">
-											<c:choose>
-												<c:when test="${not empty jobsiteList}">
-													<c:forEach var="site" items="${jobsiteList}">
+
+										<div class="d-flex align-items-center mb-1">
+
+											<span
+												class="fw-medium text-gray-900 me-4 d-flex align-items-center">
+												Work Hours </span> <span
+												class="text-primary pe-2 fw-bold fs-5 d-flex align-items-center">
+												${user.workTimeStart} - ${user.workTimeEnd} </span>
+
+											<div class="ms-auto d-flex gap-2 align-items-center">
+												<c:choose>
+													<c:when test="${not empty jobsiteList}">
+														<c:forEach var="site" items="${jobsiteList}">
+															<span
+																class="text-white fw-semibold fs-7 bg-primary px-2 py-1 rounded">
+																<c:out value="${site['name_site']}" />
+															</span>
+														</c:forEach>
+													</c:when>
+													<c:otherwise>
 														<span
 															class="text-white fw-semibold fs-7 bg-primary px-2 py-1 rounded">
-															<c:out value="${site['name_site']}" />
-														</span>
-													</c:forEach>
-												</c:when>
-												<c:otherwise>
-													<span
-														class="text-white fw-semibold fs-7 bg-primary px-2 py-1 rounded">
-														None </span>
-												</c:otherwise>
-											</c:choose>
-											<span class="text-gray-700 pe-2 fw-semibold fs-7">
-												${user.workTimeStart} - ${user.workTimeEnd} </span>
+															None </span>
+													</c:otherwise>
+												</c:choose>
+											</div>
 										</div>
-									</div>
-									<div class="d-flex flex-column">
-										<a href="retroactive"
-											class="btn btn-sm btn-icon btn-flex btn-secondary min-h-45px min-w-170px">
-
-											<i class="ki-duotone ki-calendar-edit text-muted fs-1"> <span
-												class="path1"></span> <span class="path2"></span> <span
-												class="path3"></span>
-										</i> <span class="fw-medium fs-6 text-inverse-secondary ps-2">Retroactively</span>
-										</a>
 									</div>
 								</div>
 							</div>
@@ -366,10 +378,12 @@
 								pattern="yyyy-MM-dd" />
 
 							<c:forEach var="ann" items="${announcementList}">
-							
-								<fmt:formatDate var="annDateStr" value="${ann.announcement_date}" pattern="yyyy-MM-dd" />
 
-								<c:if test="${fn:trim(ann.highlight) eq '1' and ann.status ne '0' and annDateStr <= todayStr}">
+								<fmt:formatDate var="annDateStr"
+									value="${ann.announcement_date}" pattern="yyyy-MM-dd" />
+
+								<c:if
+									test="${fn:trim(ann.highlight) eq '1' and ann.status ne '0' and annDateStr <= todayStr}">
 
 
 									<div
@@ -391,13 +405,12 @@
 													test="${not empty ann.fileUpload and not empty ann.fileUpload.path}">
 
 													<img src="${ann.fileUpload.path}" alt="${ann.topic}"
-														class="w-100 h-100 rounded-top d-block"
-														style="object-fit: cover;">
-
+														class="image-box w-100 h-100 rounded-top d-block"
+														style="object-fit: cover; object-position: top;">
 												</c:when>
 												<c:otherwise>
 													<div
-														class="d-flex align-items-center justify-content-center bg-light w-100 h-200px rounded-top">
+														class="d-flex align-items-center justify-content-center bg-light w-100 h-250px rounded-top">
 														<span class="text-gray-400 fs-7">No Image</span>
 													</div>
 												</c:otherwise>
@@ -448,6 +461,138 @@
 	<!--end::Page loader-->
 </div>
 <!--end:::Main-->
+<!--begin:::Modal-->
+<div class="modal fade" id="announcementModal" data-bs-backdrop="static"
+	data-bs-keyboard="false" tabindex="-1" aria-hidden="true">
+	<div class="modal-dialog modal-dialog-centered modal-lg">
+		<div class="modal-content shadow-lg">
+
+			<div class="modal-header border-0 my-2">
+				<h5
+					class="modal-title text-primary fw-bold d-flex align-items-center">
+					<i class="ki-duotone ki-notification-on fs-1 me-2 text-danger"><span
+						class="path1"></span><span class="path2"></span><span
+						class="path3"></span><span class="path4"></span><span
+						class="path5"></span></i> ประกาศข่าวสาร
+				</h5>
+				<div class="btn btn-icon btn-sm btn-active-light-danger ms-2"
+					data-bs-dismiss="modal" aria-label="Close">
+					<i class="ki-duotone ki-cross fs-1 text-danger"> <span
+						class="path1"></span><span class="path2"></span>
+					</i>
+				</div>
+			</div>
+
+			<div class="modal-body pt-5">
+				<div id="announcementCarousel" class="carousel slide"
+					data-bs-ride="false">
+
+					<div class="carousel-indicators" style="bottom: -20px;">
+						<c:set var="idx" value="0" />
+						<c:forEach var="ann" items="${announcementList}">
+							<fmt:formatDate var="annDateStr" value="${ann.announcement_date}"
+								pattern="yyyy-MM-dd" />
+							<c:if
+								test="${fn:trim(ann.highlight) eq '1' and ann.status ne '0' and annDateStr <= todayStr}">
+								<button type="button" data-bs-target="#announcementCarousel"
+									data-bs-slide-to="${idx}"
+									class="${idx == 0 ? 'active' : ''} bg-primary"
+									aria-current="${idx == 0 ? 'true' : 'false'}"></button>
+								<c:set var="idx" value="${idx + 1}" />
+							</c:if>
+						</c:forEach>
+					</div>
+
+					<div class="carousel-inner pb-5">
+						<c:set var="first" value="true" />
+						<c:forEach var="ann" items="${announcementList}">
+							<fmt:formatDate var="annDateStr" value="${ann.announcement_date}"
+								pattern="yyyy-MM-dd" />
+
+							<c:if
+								test="${fn:trim(ann.highlight) eq '1' and ann.status ne '0' and annDateStr <= todayStr}">
+								<div class="carousel-item ${first ? 'active' : ''}">
+									<div class="text-center px-4">
+
+										<div
+											class="mb-5 position-relative overflow-hidden rounded-3 shadow-sm border"
+											style="height: 300px;">
+											<c:choose>
+												<c:when
+													test="${not empty ann.fileUpload and not empty ann.fileUpload.path}">
+													<img src="${ann.fileUpload.path}" class="w-100 h-100"
+														style="object-fit: cover; object-position: cover;">
+												</c:when>
+												<c:otherwise>
+													<div
+														class="w-100 h-100 d-flex align-items-center justify-content-center bg-light text-muted">
+														<i class="ki-duotone ki-picture fs-3x"><span
+															class="path1"></span><span class="path2"></span></i>
+													</div>
+												</c:otherwise>
+											</c:choose>
+										</div>
+
+										<h3 class="fw-bolder text-gray-900 mb-2">${ann.topic}</h3>
+
+										<p
+											class="text-muted fs-6 mb-4 d-flex align-items-center justify-content-center">
+
+											<i class="ki-duotone ki-calendar-2 me-2 text-primary fs-2">
+												<span class="path1"></span><span class="path2"></span>
+											</i>
+
+											<fmt:formatDate value="${ann.announcement_date}"
+												pattern="dd MMM yyyy" />
+										</p>
+
+										<a href="announcementRead?id=${ann.announcementId}"
+											class="btn btn-outline btn-outline-dashed btn-outline-primary btn-active-light-primary">
+											อ่านรายละเอียดเพิ่มเติม <i
+											class="ki-duotone ki-arrow-right ms-2"><span
+												class="path1"></span><span class="path2"></span></i>
+										</a>
+
+									</div>
+								</div>
+								<c:set var="first" value="false" />
+							</c:if>
+						</c:forEach>
+					</div>
+
+					<button class="carousel-control-prev" type="button"
+						data-bs-target="#announcementCarousel" data-bs-slide="prev"
+						style="width: 15%; opacity: 1; height: 300px;">
+						<span
+							class="btn btn-icon btn-light-primary shadow-sm rounded-circle"
+							style="width: 45px; height: 45px;"> <i
+							class="ki-duotone ki-left fs-1"><span class="path1"></span><span
+								class="path2"></span></i>
+						</span>
+					</button>
+
+					<button class="carousel-control-next" type="button"
+						data-bs-target="#announcementCarousel" data-bs-slide="next"
+						style="width: 15%; opacity: 1; height: 300px;">
+						<span
+							class="btn btn-icon btn-light-primary shadow-sm rounded-circle"
+							style="width: 45px; height: 45px;"> <i
+							class="ki-duotone ki-right fs-1"><span class="path1"></span><span
+								class="path2"></span></i>
+						</span>
+					</button>
+				</div>
+			</div>
+
+			<div class="modal-footer border-0 pt-0">
+				<button type="button" class="btn btn-primary w-100 py-3 fw-bold"
+					id="btnAcknowledge">รับทราบ</button>
+			</div>
+
+		</div>
+	</div>
+</div>
+<!--end:::Modal-->
 <script>
 let serverTimeOffset = 0;
 
@@ -474,6 +619,26 @@ $(document).ready(function() {
 	setInterval(updateClock, 1000);
 	
 });
+
+// Modal Announcement
+function showAnnouncements() {
+    const modalElement = document.getElementById('announcementModal');
+    
+    if (modalElement && $(modalElement).find('.carousel-item').length > 0) {
+        const annModal = new bootstrap.Modal(modalElement);
+        annModal.show();
+
+        $("#btnAcknowledge").off("click").on("click", function() {
+            annModal.hide();
+            console.log("Announcement acknowledged.");
+        });
+    } else {
+        console.log("No highlighted announcements to show.");
+    }
+}
+
+setTimeout(showAnnouncements, 1500);
+
 // Real-Time Clock
 function syncServerTime() {
 	fetch("https://timeapi.io/api/Time/current/zone?timeZone=Asia/Bangkok")

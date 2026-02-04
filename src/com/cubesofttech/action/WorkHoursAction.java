@@ -145,6 +145,40 @@ public class WorkHoursAction extends ActionSupport {
 			String checkMode = request.getParameter("mode");
 			log.debug(userId + "/" + checkType + "/" + workType);
 
+			if ("2".equals(checkType) && !"retro".equals(checkMode)) {
+				List<Map<String, Object>> lastCheckinList = workHoursDAO.lastcheckin(userId);
+				boolean isCheckedInToday = false;
+
+				if (lastCheckinList != null && !lastCheckinList.isEmpty()) {
+					Timestamp lastTime = (Timestamp) lastCheckinList.get(0).get("work_hours_time_work");
+
+					if (lastTime != null) {
+						LocalDate lastDate = lastTime.toLocalDateTime().toLocalDate();
+						LocalDate today = LocalDate.now(ZoneId.of("Asia/Bangkok"));
+
+						if (lastDate.equals(today)) {
+							isCheckedInToday = true;
+						}
+					}
+				}
+
+				if (!isCheckedInToday) {
+					result.put("status", "error");
+					result.put("message", "ไม่สามารถ Check-out ได้ เนื่องจากคุณยังไม่ได้ Check-in วันนี้");
+
+					try {
+						ObjectMapper mapper = new ObjectMapper();
+						response.setContentType("application/json;charset=UTF-8");
+						response.getWriter().write(mapper.writeValueAsString(result));
+						response.getWriter().flush();
+						response.getWriter().close();
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+					return null;
+				}
+			}
+
 			String desRaw = null;
 			String des = null;
 			desRaw = request.getParameter("reason");
@@ -184,23 +218,24 @@ public class WorkHoursAction extends ActionSupport {
 					result.put("time", checkTime);
 				}
 			} else {
-				
+
 				LocalDateTime officialLdt = now;
-				
+
 				if ("2".equals(checkType)) {
-			        LocalDateTime cutOffTime = now.withHour(18).withMinute(30).withSecond(0).withNano(0);
-			        
-			        if (now.isAfter(cutOffTime)) {
-			            officialLdt = cutOffTime;
-			            log.info("Cut-off applied | User: " + userId + " | Real: " + now + " -> Official: " + officialLdt);
-			        }
-			    }
-				
+					LocalDateTime cutOffTime = now.withHour(18).withMinute(30).withSecond(0).withNano(0);
+
+					if (now.isAfter(cutOffTime)) {
+						officialLdt = cutOffTime;
+						log.info("Cut-off applied | User: " + userId + " | Real: " + now + " -> Official: "
+								+ officialLdt);
+					}
+				}
+
 				ts = Timestamp.valueOf(officialLdt);
 				timeString = officialLdt.format(timeFormat);
 				date = now.getDayOfMonth();
-			    month = now.getMonthValue();
-			    year = now.getYear();
+				month = now.getMonthValue();
+				year = now.getYear();
 			}
 
 			log.debug(timeString);
@@ -475,10 +510,12 @@ public class WorkHoursAction extends ActionSupport {
 			// Leave Calendar
 			LocalDate startDate = LocalDate.of(currentYear, 1, 1);
 			LocalDate endDate = LocalDate.of(currentYear, 12, 31);
-			
+
 			DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
-			Timestamp start_date_leave = DateUtil.dateToTimestamp(LocalDate.of(last2year, 1, 1).format(dateFormatter), "00:00:00.0");
-			Timestamp end_date_leave = DateUtil.dateToTimestamp(LocalDate.of(currentYear, 12, 31).format(dateFormatter), "23:59:59.0");
+			Timestamp start_date_leave = DateUtil.dateToTimestamp(LocalDate.of(last2year, 1, 1).format(dateFormatter),
+					"00:00:00.0");
+			Timestamp end_date_leave = DateUtil.dateToTimestamp(LocalDate.of(currentYear, 12, 31).format(dateFormatter),
+					"23:59:59.0");
 			List<Map<String, Object>> leavelist = leaveDAO.myLeavesList(userId, start_date_leave, end_date_leave);
 			request.setAttribute("leave", leavelist);
 

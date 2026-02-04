@@ -57,30 +57,48 @@
 								class="card-header pt-5 d-flex justify-content-between align-items-center">
 								<div class="card-title col-lg-12 col-md-12 col-sm-12 col-12">
 									<div class="d-flex flex-column w-100">
-										<span class="fw-medium text-gray-900 me-2 lh-1"> Work
-											Hours</span>
-										<div class="d-flex align-items-center pt-2 gap-2">
-											<c:choose>
-												<c:when test="${not empty jobsiteList}">
-													<c:forEach var="site" items="${jobsiteList}">
-														<span
-															class="text-white fw-semibold fs-7 bg-primary rounded px-2 py-1">
-															<c:out value="${site['name_site']}" />
-														</span>
-													</c:forEach>
-												</c:when>
-												<c:otherwise>
-													<span
-														class="text-white fw-semibold fs-7 bg-primary rounded px-2 py-1">
-														None </span>
-												</c:otherwise>
-											</c:choose>
-											<span class="text-gray-700 pe-2 fw-semibold fs-7">
+
+										<div class="d-flex align-items-center mb-1">
+
+											<span
+												class="fw-medium text-gray-900 me-4 d-flex align-items-center">
+												Work Hours </span> <span
+												class="text-primary pe-2 fw-bold fs-5 d-flex align-items-center">
 												${user.workTimeStart} - ${user.workTimeEnd} </span>
+
+											<div class="ms-auto d-flex gap-2 align-items-center">
+												<c:choose>
+													<c:when test="${not empty jobsiteList}">
+														<c:forEach var="site" items="${jobsiteList}">
+															<span
+																class="text-white fw-semibold fs-7 bg-primary px-2 py-1 rounded">
+																<c:out value="${site['name_site']}" />
+															</span>
+														</c:forEach>
+													</c:when>
+													<c:otherwise>
+														<span
+															class="text-white fw-semibold fs-7 bg-primary px-2 py-1 rounded">
+															None </span>
+													</c:otherwise>
+												</c:choose>
+											</div>
 										</div>
 									</div>
 								</div>
 							</div>
+
+							<div
+								class="d-flex flex-column align-items-center text-center my-8">
+
+								<h1 class="fw-semibold text-gray-900 mb-4"> Retroactively Work Hours </h1>
+
+								<span class="fw-medium text-muted fs-5 mb-4"> Can be retroactive for 1 business day (Excluding holidays) </span> 
+									
+								<span class="fw-medium text-muted fs-5"> สามารถย้อนหลังได้ 1 วันทำการ (ไม่นับรวมวันหยุด) </span>
+
+							</div>
+
 							<div class="card-body d-flex flex-column">
 								<div class="px-13">
 									<div class="row mb-5 gx-10">
@@ -171,8 +189,9 @@
 										<label class=" fw-medium text-gray-800 required">
 											Reason</label>
 									</div>
-									<textarea id="mdReason" name="reason" class="form-control mb-10" rows="4"
-										style="resize: none;" placeholder="Please provide a reason."></textarea>
+									<textarea id="mdReason" name="reason"
+										class="form-control mb-10" rows="4" style="resize: none;"
+										placeholder="Please provide a reason."></textarea>
 									<div class="reason invalid-feedback font-weight-bold mb-10"
 										style="display: none;"></div>
 									<div class="d-flex gap-10">
