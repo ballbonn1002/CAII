@@ -147,8 +147,8 @@ public class WorkLogAction extends ActionSupport {
                             String userStartStr = (row.get("work_time_start") != null) ? row.get("work_time_start").toString().trim() : "09:00:00";
                             if (userStartStr.indexOf(":") == 1) userStartStr = "0" + userStartStr;
                             
-                            LocalTime userStartTime = LocalTime.parse(userStartStr);
-                            LocalTime scanTime = new java.sql.Time(workTime.getTime()).toLocalTime();
+                            LocalTime userStartTime = LocalTime.parse(userStartStr).withSecond(0).withNano(0);
+                            LocalTime scanTime = new java.sql.Time(workTime.getTime()).toLocalTime().withSecond(0).withNano(0);
 
                             // if Late set key (Format: USERID_DATE)
                             if (scanTime.isAfter(userStartTime)) {
@@ -177,9 +177,9 @@ public class WorkLogAction extends ActionSupport {
                         if (userStartStr.indexOf(":") == 1) userStartStr = "0" + userStartStr;
                         if (userEndStr.indexOf(":") == 1) userEndStr = "0" + userEndStr;
 
-                        LocalTime userStartTime = LocalTime.parse(userStartStr);
-                        LocalTime userEndTime = LocalTime.parse(userEndStr);
-                        LocalTime scanTime = new java.sql.Time(workTime.getTime()).toLocalTime();
+                        LocalTime userStartTime = LocalTime.parse(userStartStr).withSecond(0).withNano(0);
+                        LocalTime userEndTime = LocalTime.parse(userEndStr).withSecond(0).withNano(0);
+                        LocalTime scanTime = new java.sql.Time(workTime.getTime()).toLocalTime().withSecond(0).withNano(0);
 
                         String rowStatus = ""; 
                         
@@ -387,8 +387,8 @@ public class WorkLogAction extends ActionSupport {
                             String userStartStr = (row.get("work_time_start") != null) ? row.get("work_time_start").toString().trim() : "09:00:00";
                             if (userStartStr.indexOf(":") == 1) userStartStr = "0" + userStartStr;
                             
-                            LocalTime userStartTime = LocalTime.parse(userStartStr);
-                            LocalTime scanTime = new java.sql.Time(workTime.getTime()).toLocalTime();
+                            LocalTime userStartTime = LocalTime.parse(userStartStr).withSecond(0).withNano(0);
+                            LocalTime scanTime = new java.sql.Time(workTime.getTime()).toLocalTime().withSecond(0).withNano(0);
     
                             if (scanTime.isAfter(userStartTime)) {
                                 String key = userId + "_" + dateKeyFmt.format(workTime);
@@ -425,9 +425,9 @@ public class WorkLogAction extends ActionSupport {
                             if (userStartStr.indexOf(":") == 1) userStartStr = "0" + userStartStr;
                             if (userEndStr.indexOf(":") == 1) userEndStr = "0" + userEndStr;
 
-                            LocalTime userStartTime = LocalTime.parse(userStartStr);
-                            LocalTime userEndTime = LocalTime.parse(userEndStr);
-                            LocalTime scanTime = new java.sql.Time(workTime.getTime()).toLocalTime();
+                            LocalTime userStartTime = LocalTime.parse(userStartStr).withSecond(0).withNano(0);
+                            LocalTime userEndTime = LocalTime.parse(userEndStr).withSecond(0).withNano(0);
+                            LocalTime scanTime = new java.sql.Time(workTime.getTime()).toLocalTime().withSecond(0).withNano(0);
 
                             if ("1".equals(type)) { 
                                 rowStatus = (scanTime.isAfter(userStartTime)) ? "Late" : "Ontime";
