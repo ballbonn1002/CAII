@@ -128,11 +128,17 @@ public class JobsiteAction extends ActionSupport {
 	// ------------------------ EDIT ------------------------
 	public String editJobsite() {
 		try {
+			log.info("=== START editJobsite ===");
+
 			String idParam = trimOrNull(request.getParameter("id_sitejob"));
 			if (idParam == null)
 				idParam = trimOrNull(request.getParameter("id"));
 			if (idParam == null)
 				idParam = trimOrNull(request.getParameter("ID"));
+
+			log.info("Params -> id_sitejob: " + request.getParameter("id_sitejob") + ", id: "
+					+ request.getParameter("id") + ", ID: " + request.getParameter("ID"));
+			log.info("Action Property id_sitejob: " + id_sitejob);
 
 			Integer jobsiteId = null;
 			if (idParam != null) {
@@ -147,22 +153,36 @@ public class JobsiteAction extends ActionSupport {
 				jobsiteId = id_sitejob;
 			}
 
+			log.info("Final jobsiteId to find: " + jobsiteId);
+
 			if (jobsiteId != null && jobsiteId > 0) {
 				jobsite = jobsiteDAO.findById(jobsiteId);
 
 				if (jobsite == null) {
+					log.info("!!! Jobsite NOT FOUND in DB !!!");
 					jobsite = new Jobsite();
 					jobsite.setIs_active("1");
 					addActionError("Jobsite not found with ID: " + jobsiteId);
+				} else {
+					log.info("Jobsite Found: " + jobsite.getName_site());
 				}
 			} else {
+				log.info("Jobsite ID is null or 0, creating new object.");
 				jobsite = new Jobsite();
 				jobsite.setIs_active("1");
 				addActionError("Invalid jobsite ID");
 			}
 
 			userList = userDAO.findAll();
-			teamList = jobSiteTeamDAO.findByJobsite(jobsiteId);
+			log.info("User List loaded size: " + (userList != null ? userList.size() : "null"));
+
+			if (jobsiteId != null) {
+				teamList = jobSiteTeamDAO.findByJobsite(jobsiteId);
+				log.info("Team List loaded size: " + (teamList != null ? teamList.size() : "null"));
+			} else {
+				log.info("Skipping Team List load (ID is null)");
+				teamList = new ArrayList<>();
+			}
 
 			try {
 				User onlineUser = (User) request.getSession().getAttribute("onlineUser");
@@ -197,16 +217,19 @@ public class JobsiteAction extends ActionSupport {
 				String cubeUserJson = mapper.writeValueAsString(jsonUserList);
 				request.setAttribute("cubeUserJson", cubeUserJson);
 
+				log.info("JSON preparation done.");
+
 			} catch (Exception e) {
 				log.error("Error generating JSON for editJobsite", e);
 				request.setAttribute("cubeUserJson", "[]");
 				request.setAttribute("teamUserIds", "");
 			}
 
+			log.info("=== END editJobsite (SUCCESS) ===");
 			return SUCCESS;
 
 		} catch (Exception e) {
-			log.error("Error in JobsiteAction.editJobsite()", e);
+			log.error("!!! CRITICAL ERROR in editJobsite !!!", e);
 
 			if (jobsite == null) {
 				jobsite = new Jobsite();
@@ -220,39 +243,48 @@ public class JobsiteAction extends ActionSupport {
 
 	// ------------------------ SAVE JOBSITE ------------------------
 	public String saveJobsite() {
-		try {
-			User user = (User) request.getSession().getAttribute("onlineUser");
-			if (user == null || user.getId() == null) {
-				return "login";
-			}
-			String userId = user.getId();
+	    try {
+	        User user = (User) request.getSession().getAttribute("onlineUser");
+	        if (user == null || user.getId() == null) {
+	            return "login";
+	        }
+	        String userId = user.getId();
+	        Timestamp now = DateUtil.getCurrentTime();
 
-			Timestamp now = DateUtil.getCurrentTime();
+	        if (jobsite == null) {
+	            addActionError("Jobsite data is required");
+	            return ERROR;
+	        }
 
-			if (jobsite == null) {
-				addActionError("Jobsite data is required");
-				return ERROR;
-			}
+	        if (jobsite.getName_site() != null) {
+	            jobsite.setName_site(jobsite.getName_site().trim());
+	        }
+	        if (jobsite.getDescription() != null) {
+	            jobsite.setDescription(jobsite.getDescription().trim());
+	        }
 
-			String activeParam = request.getParameter("is_active");
-			jobsite.setIs_active("1".equals(activeParam) ? "1" : "0");
+	        if (jobsite.getName_site() == null || jobsite.getName_site().isEmpty()) {
+	            addActionError("Job Site Name cannot be empty or just spaces.");
+	            return ERROR;
+	        }
 
-			jobsite.setTime_create(now);
-			jobsite.setUser_create(userId);
+	        String activeParam = request.getParameter("is_active");
+	        jobsite.setIs_active("1".equals(activeParam) ? "1" : "0");
 
-			jobsiteDAO.save(jobsite);
+	        jobsite.setTime_create(now);
+	        jobsite.setUser_create(userId);
 
-			request.setAttribute("id_sitejob", jobsite.getId_sitejob());
+	        jobsiteDAO.save(jobsite);
 
-			addActionMessage("Jobsite created successfully!");
+	        addActionMessage("Jobsite created successfully!");
 
-			return "created";
+	        return SUCCESS;  
 
-		} catch (Exception e) {
-			log.error("Error in saveJobsite()", e);
-			addActionError("Error saving jobsite: " + e.getMessage());
-			return ERROR;
-		}
+	    } catch (Exception e) {
+	        log.error("Error in saveJobsite()", e);
+	        addActionError("Error saving jobsite: " + e.getMessage());
+	        return ERROR;
+	    }
 	}
 
 	// ------------------------ DELETE JOB SITE ------------------------
@@ -360,42 +392,53 @@ public class JobsiteAction extends ActionSupport {
 
 	// ------------------------ UPDATE ------------------------
 	public String updateJobsite() {
-		try {
-			User user = (User) request.getSession().getAttribute("onlineUser");
-			if (user == null || user.getId() == null) {
-				return "login";
-			}
+	    try {
+	        User user = (User) request.getSession().getAttribute("onlineUser");
+	        if (user == null || user.getId() == null) {
+	            return "login";
+	        }
 
-			if (jobsite == null || jobsite.getId_sitejob() == null) {
-				addActionError("Jobsite ID is required");
-				return ERROR;
-			}
+	        if (jobsite == null || jobsite.getId_sitejob() == null) {
+	            addActionError("Jobsite ID is required");
+	            return ERROR;
+	        }
 
-			Jobsite dbJobsite = jobsiteDAO.findById(jobsite.getId_sitejob());
+	        Jobsite dbJobsite = jobsiteDAO.findById(jobsite.getId_sitejob());
 
-			if (dbJobsite != null) {
-				dbJobsite.setName_site(jobsite.getName_site());
-				dbJobsite.setDescription(jobsite.getDescription());
+	        if (dbJobsite != null) {
+	            String newName = jobsite.getName_site();
+	            String newDesc = jobsite.getDescription();
+	            
+	            if (newName != null) newName = newName.trim();
+	            if (newDesc != null) newDesc = newDesc.trim();
 
-				String activeParam = request.getParameter("is_active");
-				dbJobsite.setIs_active("1".equals(activeParam) ? "1" : "0");
+	            if (newName == null || newName.isEmpty()) {
+	                addActionError("Job Site Name cannot be empty.");
+	                return ERROR;
+	            }
 
-				dbJobsite.setTime_update(DateUtil.getCurrentTime());
-				dbJobsite.setUser_update(user.getId());
+	            dbJobsite.setName_site(newName);
+	            dbJobsite.setDescription(newDesc);
 
-				jobsiteDAO.update(dbJobsite);
+	            String activeParam = request.getParameter("is_active");
+	            dbJobsite.setIs_active("1".equals(activeParam) ? "1" : "0");
 
-				addActionMessage("Jobsite updated successfully!");
-				return SUCCESS;
-			} else {
-				addActionError("Jobsite not found");
-				return ERROR;
-			}
+	            dbJobsite.setTime_update(DateUtil.getCurrentTime());
+	            dbJobsite.setUser_update(user.getId());
 
-		} catch (Exception e) {
-			log.error("Error in JobsiteAction.updateJobsite()", e);
-			return ERROR;
-		}
+	            jobsiteDAO.update(dbJobsite);
+
+	            addActionMessage("Jobsite updated successfully!");
+	            return SUCCESS;
+	        } else {
+	            addActionError("Jobsite not found");
+	            return ERROR;
+	        }
+
+	    } catch (Exception e) {
+	        log.error("Error in JobsiteAction.updateJobsite()", e);
+	        return ERROR;
+	    }
 	}
 
 	// ------------------------ UPDATE STATUS ------------------------

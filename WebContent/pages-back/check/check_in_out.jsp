@@ -467,7 +467,7 @@
 	<div class="modal-dialog modal-dialog-centered modal-lg">
 		<div class="modal-content shadow-lg">
 
-			<div class="modal-header border-0 my-2">
+			<div class="modal-header border-0">
 				<h5
 					class="modal-title text-primary fw-bold d-flex align-items-center">
 					<i class="ki-duotone ki-notification-on fs-1 me-2 text-danger"><span

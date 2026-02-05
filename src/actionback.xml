@@ -929,7 +929,7 @@
 
 		<action name="saveJobsite"
 			class="com.cubesofttech.action.JobsiteAction" method="saveJobsite">
-			<result name="created" type="redirectAction">
+			<result name="success" type="redirectAction">
 				<param name="actionName">editJobsite</param>
 				<param name="id_sitejob">${jobsite.id_sitejob}</param>
 			</result>

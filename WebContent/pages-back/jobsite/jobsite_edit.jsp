@@ -382,7 +382,7 @@ to {
 	            empId: "${u.employeeId}",
 	            nameEN: "${u.nameEN}", 
 	            nameTH: "${u.name}",
-	            inTeam: ${fn:contains(teamUserIds, ',' += u.id += ',')},
+	            inTeam: ${fn:contains(teamUserIds, ','.concat(u.id).concat(','))},
 	            isLoginUser: "${u.id}" === "${logonUser}"
 	        },
 	        </c:forEach>
