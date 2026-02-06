@@ -115,6 +115,19 @@
 						</div>
 					</div>
 					<div class="col-md-12 col-lg-5 col-xl-5 col-xxl-4 mb-md-5 mb-xl-10">
+						<div class="card card-flush mb-5">
+							<div class="card-body p-0">
+								<c:forEach var="ann" items="${announcement}">
+									<div class="w-100 rounded"
+										style="height: 336px; 
+            							background-image: url('${pageContext.request.contextPath}${empty ann.path ? '/assets/media/svg/avatars/blank.svg' : ann.path}'); 
+            							background-size: cover; 
+            							background-position: top;
+            							background-repeat: no-repeat;">
+									</div>
+								</c:forEach>
+							</div>
+						</div>
 						<div class="card card-flush py-3">
 							<div class="card-header pt-5">
 								<h3 class="card-title align-items-start flex-column">
@@ -162,8 +175,8 @@
 														class="d-flex align-items-center text-decoration-none text-gray-800 hover:text-primary"
 														style="flex-grow: 1;"> <img src="${fileIcon}"
 														class="w-25px h-25px me-3" alt="icon" /> <span
-														class="text-gray-800 fs-6 fw-medium"> ${file['name']} <span
-															class="ms-1">${fileExt}</span>
+														class="text-gray-800 fs-6 fw-medium">
+															${file['name']} <span class="ms-1">${fileExt}</span>
 													</span>
 													</a> <a href="${file['path']}" download="${file['name']}"
 														class="ms-3" title="Download"> <i

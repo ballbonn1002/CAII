@@ -145,7 +145,7 @@ public class JobSiteTeamDAOImpl implements JobSiteTeamDAO {
 				+ "  jt.user_id          AS user_id, " + "  u.employee_id       AS employee_id, "
 				+ "  u.name_en           AS name_en, " + "  u.name              AS name, "
 				+ "  u.work_time_start   AS work_time_start, " + "  u.work_time_end     AS work_time_end "
-				+ "FROM job_site_team jt " + "LEFT JOIN user u ON u.id = jt.user_id "
+				+ "FROM job_site_team jt " + "JOIN user u ON u.id = jt.user_id "
 				+ "WHERE jt.id_sitejob = :id_sitejob " + "ORDER BY jt.job_site_team_id ASC";
 
 		SQLQuery query = session.createSQLQuery(sql);

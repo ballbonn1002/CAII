@@ -105,8 +105,8 @@
 								<div class="card-body pt-10">
 									<div class="mb-5">
 										<label class="form-label required form-label">Topic</label> <input
-											type="text" class="form-control fw-medium text-gray-700" placeholder="Enter topic"
-											name="topic" id="topic">
+											type="text" class="form-control fw-medium text-gray-700"
+											placeholder="Enter topic" name="topic" id="topic">
 									</div>
 									<div class="mb-10">
 										<label class="form-label required form-label">Announcement
@@ -150,9 +150,9 @@
 										<!--begin::Image preview wrapper-->
 										<c:if test="${not empty announcement}">
 											<div class="image-input-wrapper w-250px h-250px"
-												style="background-image: url(${empty announcement.fileUpload.path 
-         											? '/assets/media/svg/avatars/blank.svg' 
-         											: announcement.fileUpload.path})">
+												style="background-image: url('${pageContext.request.contextPath}${not empty announcement.fileUpload.path ? announcement.fileUpload.path : '/assets/media/svg/avatars/blank.svg'}'); 
+            									background-size: cover; 
+            									background-position: top;">
 											</div>
 
 										</c:if>
