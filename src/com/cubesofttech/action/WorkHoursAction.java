@@ -492,6 +492,9 @@ public class WorkHoursAction extends ActionSupport {
 		}
 
 		User onlineUser = (User) request.getSession().getAttribute("onlineUser");
+		if (onlineUser == null) {
+			return LOGIN;
+		}
 		String userId = (userCalendar != null && !userCalendar.isEmpty()) ? userCalendar : onlineUser.getId();
 
 		request.setAttribute("logonUser", userId);
@@ -521,17 +524,22 @@ public class WorkHoursAction extends ActionSupport {
 
 			// Check in - Check out Calendar
 			User userWorkTime = userDAO.findById(userId);
+			if (userWorkTime == null) {
+				return ERROR; 
+			}
 			String workStartTime = userWorkTime.getWorkTimeStart();
 			String workEndTime = userWorkTime.getWorkTimeEnd();
 
 			// Get check-in / check-out data
-			Map<LocalDate, List<Map<String, Object>>> checkinMap = workHoursDAO.getCheckinsForYear2(userId, last2year,
-					currentYear);
+			Map<LocalDate, List<Map<String, Object>>> checkinMap = workHoursDAO.getCheckinsForYear2(
+				userId, last2year, currentYear);
 			Map<LocalDate, List<Map<String, Object>>> checkoutMap = workHoursDAO.getCheckoutsForYear2(userId, last2year,
 					currentYear);
 
-			List<Map<String, Object>> workData = new ArrayList<>();
+			if (checkinMap == null) checkinMap = new HashMap<>();
+			if (checkoutMap == null) checkoutMap = new HashMap<>();
 
+			List<Map<String, Object>> workData = new ArrayList<>();
 			for (LocalDate date = startDate; !date.isAfter(endDate); date = date.plusDays(1)) {
 				List<Map<String, Object>> dailyIns = checkinMap.getOrDefault(date, new ArrayList<>());
 				List<Map<String, Object>> dailyOuts = checkoutMap.getOrDefault(date, new ArrayList<>());
@@ -540,11 +548,15 @@ public class WorkHoursAction extends ActionSupport {
 				String leaveDescription = "";
 				try {
 					Map<String, Object> statusResult = workHoursService.calculateDailyStatus(userId, date);
-					dailyStatus = (String) statusResult.get("status");
-
-					if (statusResult.containsKey("leave_desc")) {
-						leaveDescription = (String) statusResult.get("leave_desc");
+					if (statusResult != null) {
+						dailyStatus = (String) statusResult.get("status");
+						if (statusResult.containsKey("leave_desc")) {
+							leaveDescription = (String) statusResult.get("leave_desc");
+						}
 					}
+					
+
+					
 				} catch (Exception e) {
 					log.error("Error calculating status", e);
 				}
