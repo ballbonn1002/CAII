@@ -360,7 +360,6 @@
 			</div>
 		</div>
 	</div>
-	<div id="page-loader"></div>
 </div>
 
 <script>
@@ -500,9 +499,10 @@ function saveCheckInOut(userId, workType, checkType, mode, selectDate, selectTim
 	    		}, 2000);
 	      	} else {
 	      		$("#page-loader").remove();
+	      		toastr.options.timeOut = "5000";
+	      		toastr.options.extendedTimeOut = "5000";
 	      		toastr.error(res.message || "Failed to record your attendance. Please try again.");
 	      	}
-	      $("#retroModal").modal("hide");
 	    },
 	    error: function (xhr, status, error) {
 	    	$("#page-loader").remove();

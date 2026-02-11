@@ -145,26 +145,39 @@ public class WorkHoursAction extends ActionSupport {
 			String checkMode = request.getParameter("mode");
 			log.debug(userId + "/" + checkType + "/" + workType);
 
-			if ("2".equals(checkType) && !"retro".equals(checkMode)) {
+			if ("2".equals(checkType)) {
+
+				LocalDate targetDate = LocalDate.now(ZoneId.of("Asia/Bangkok"));
+				if ("retro".equals(checkMode) && checkDate != null && !checkDate.isEmpty()) {
+					try {
+						targetDate = LocalDate.parse(checkDate);
+					} catch (Exception e) {
+						log.error("Invalid date format", e);
+					}
+				}
+
 				List<Map<String, Object>> lastCheckinList = workHoursDAO.lastcheckin(userId);
-				boolean isCheckedInToday = false;
+				boolean isCheckedIn = false;
 
 				if (lastCheckinList != null && !lastCheckinList.isEmpty()) {
-					Timestamp lastTime = (Timestamp) lastCheckinList.get(0).get("work_hours_time_work");
-
-					if (lastTime != null) {
-						LocalDate lastDate = lastTime.toLocalDateTime().toLocalDate();
-						LocalDate today = LocalDate.now(ZoneId.of("Asia/Bangkok"));
-
-						if (lastDate.equals(today)) {
-							isCheckedInToday = true;
+					for (Map<String, Object> item : lastCheckinList) {
+						Timestamp t = (Timestamp) item.get("work_hours_time_work");
+						if (t != null && t.toLocalDateTime().toLocalDate().equals(targetDate)) {
+							isCheckedIn = true;
+							break;
 						}
 					}
 				}
 
-				if (!isCheckedInToday) {
+				if (!isCheckedIn) {
 					result.put("status", "error");
-					result.put("message", "ไม่สามารถ Check-out ได้ เนื่องจากคุณยังไม่ได้ Check-in วันนี้");
+					
+					if ("retro".equals(checkMode)) {
+						result.put("message",
+								"ไม่สามารถ Check-out ย้อนหลังได้ เนื่องจากไม่พบเวลา Check-in ของวันที่ " + targetDate);
+					} else {
+						result.put("message", "ไม่สามารถ Check-out ได้ เนื่องจากคุณยังไม่ได้ Check-in วันนี้");
+					}
 
 					try {
 						ObjectMapper mapper = new ObjectMapper();
@@ -525,19 +538,21 @@ public class WorkHoursAction extends ActionSupport {
 			// Check in - Check out Calendar
 			User userWorkTime = userDAO.findById(userId);
 			if (userWorkTime == null) {
-				return ERROR; 
+				return ERROR;
 			}
 			String workStartTime = userWorkTime.getWorkTimeStart();
 			String workEndTime = userWorkTime.getWorkTimeEnd();
 
 			// Get check-in / check-out data
-			Map<LocalDate, List<Map<String, Object>>> checkinMap = workHoursDAO.getCheckinsForYear2(
-				userId, last2year, currentYear);
+			Map<LocalDate, List<Map<String, Object>>> checkinMap = workHoursDAO.getCheckinsForYear2(userId, last2year,
+					currentYear);
 			Map<LocalDate, List<Map<String, Object>>> checkoutMap = workHoursDAO.getCheckoutsForYear2(userId, last2year,
 					currentYear);
 
-			if (checkinMap == null) checkinMap = new HashMap<>();
-			if (checkoutMap == null) checkoutMap = new HashMap<>();
+			if (checkinMap == null)
+				checkinMap = new HashMap<>();
+			if (checkoutMap == null)
+				checkoutMap = new HashMap<>();
 
 			List<Map<String, Object>> workData = new ArrayList<>();
 			for (LocalDate date = startDate; !date.isAfter(endDate); date = date.plusDays(1)) {
@@ -554,9 +569,7 @@ public class WorkHoursAction extends ActionSupport {
 							leaveDescription = (String) statusResult.get("leave_desc");
 						}
 					}
-					
 
-					
 				} catch (Exception e) {
 					log.error("Error calculating status", e);
 				}

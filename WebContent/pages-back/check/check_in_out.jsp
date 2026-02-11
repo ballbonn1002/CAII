@@ -503,7 +503,7 @@
 						</c:forEach>
 					</div>
 
-					<div class="carousel-inner pb-5">
+					<div class="carousel-inner">
 						<c:set var="first" value="true" />
 						<c:forEach var="ann" items="${announcementList}">
 							<fmt:formatDate var="annDateStr" value="${ann.announcement_date}"
@@ -514,18 +514,17 @@
 								<div class="carousel-item ${first ? 'active' : ''}">
 									<div class="text-center px-4">
 
-										<div
-											class="mb-5 position-relative overflow-hidden rounded-3 shadow-sm border"
-											style="height: 300px;">
+										<div class="mb-5 position-relative overflow-hidden rounded-3">
 											<c:choose>
 												<c:when
 													test="${not empty ann.fileUpload and not empty ann.fileUpload.path}">
-													<img src="${ann.fileUpload.path}" class="w-100 h-100"
-														style="object-fit: cover; object-position: cover;">
+													<img src="${ann.fileUpload.path}" class="mw-100 h-auto rounded-3"
+														style="max-height: 55vh; object-fit: contain;">
 												</c:when>
 												<c:otherwise>
 													<div
-														class="w-100 h-100 d-flex align-items-center justify-content-center bg-light text-muted">
+														class="w-100 d-flex align-items-center justify-content-center bg-light text-muted rounded-3"
+														style="min-height: 300px;">
 														<i class="ki-duotone ki-picture fs-3x"><span
 															class="path1"></span><span class="path2"></span></i>
 													</div>
@@ -562,7 +561,7 @@
 
 					<button class="carousel-control-prev" type="button"
 						data-bs-target="#announcementCarousel" data-bs-slide="prev"
-						style="width: 15%; opacity: 1; height: 300px;">
+						style="width: 15%; opacity: 1; position: absolute; top: 50%; transform: translateY(-50%); z-index: 5;">
 						<span
 							class="btn btn-icon btn-light-primary shadow-sm rounded-circle"
 							style="width: 45px; height: 45px;"> <i
@@ -573,7 +572,7 @@
 
 					<button class="carousel-control-next" type="button"
 						data-bs-target="#announcementCarousel" data-bs-slide="next"
-						style="width: 15%; opacity: 1; height: 300px;">
+						style="width: 15%; opacity: 1; position: absolute; top: 50%; transform: translateY(-50%); z-index: 5;">
 						<span
 							class="btn btn-icon btn-light-primary shadow-sm rounded-circle"
 							style="width: 45px; height: 45px;"> <i
@@ -623,10 +622,19 @@ $(document).ready(function() {
 // Modal Announcement
 function showAnnouncements() {
     const modalElement = document.getElementById('announcementModal');
-    
+
     if (modalElement && $(modalElement).find('.carousel-item').length > 0) {
         const annModal = new bootstrap.Modal(modalElement);
         annModal.show();
+
+        const carouselItems = $(modalElement).find('.carousel-item');
+        if (carouselItems.length === 1) {
+            $(modalElement).find('.carousel-control-prev, .carousel-control-next').hide();
+            $(modalElement).find('.carousel-indicators').hide();
+        } else {
+            $(modalElement).find('.carousel-control-prev, .carousel-control-next').show();
+            $(modalElement).find('.carousel-indicators').show();
+        }
 
         $("#btnAcknowledge").off("click").on("click", function() {
             annModal.hide();
@@ -750,6 +758,8 @@ function saveCheckInOut(userId, workType, checkType, mode, selectDate, selectTim
 	    		}, 2000);
 	      	} else {
 	      		$("#page-loader").remove();
+	      		toastr.options.timeOut = "5000";
+	      		toastr.options.extendedTimeOut = "5000";
 	      		toastr.error(res.message || "Failed to record your attendance. Please try again.");
 	      	}
 	      $("#retroModal").modal("hide");
