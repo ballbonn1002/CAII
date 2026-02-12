@@ -963,8 +963,10 @@ public class UserAction extends ActionSupport {
 				file.setSize(sizeText);
 				file.setAltName(null);
 				file.setUserCreate(logonUser);
+				file.setUserUpdate(logonUser);
 				file.setPath("/upload/user/" + newFileName);
 				file.setTimeCreate(DateUtil.getCurrentTime());
+				file.setTimeUpdate(DateUtil.getCurrentTime());
 				fileuploadDAO.save(file);
 
 				u.setPath("/upload/user/" + newFileName);
@@ -1271,8 +1273,10 @@ public class UserAction extends ActionSupport {
 				file.setSize(sizeText);
 				file.setAltName(null);
 				file.setUserCreate(logonUser);
+				file.setUserUpdate(logonUser);
 				file.setPath("/upload/user/" + newFileName);
 				file.setTimeCreate(DateUtil.getCurrentTime());
+				file.setTimeUpdate(DateUtil.getCurrentTime());
 				fileuploadDAO.save(file);
 
 				user.setPath("/upload/user/" + newFileName);
@@ -2057,8 +2061,10 @@ public class UserAction extends ActionSupport {
 					file.setSize(sizeText);
 					file.setAltName(null);
 					file.setUserCreate(logonUser);
+					file.setUserUpdate(logonUser);
 					file.setPath("/upload/user/" + newFileName);
 					file.setTimeCreate(DateUtil.getCurrentTime());
+					file.setTimeUpdate(DateUtil.getCurrentTime());
 					fileuploadDAO.save(file);
 
 					u.setPath("/upload/user/" + newFileName);
