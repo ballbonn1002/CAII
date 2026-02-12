@@ -19,7 +19,7 @@ String targetURL = Constant.getWebContext2() + "/authorization?token=" + token;
 	<!--begin::Logo-->
 	<div class="app-sidebar-logo px-6" id="kt_app_sidebar_logo">
 		<!--begin::Logo image-->
-		<a href="index.html"> <img alt="Logo"
+		<a href="check_in_out"> <img alt="Logo"
 			src="assets/media/logos/Logo2.png"
 			class="h-50px app-sidebar-logo-default theme-light-show" /> <img
 			alt="Logo" src="assets/media/logos/logo2-w.png"
@@ -211,6 +211,7 @@ String targetURL = Constant.getWebContext2() + "/authorization?token=" + token;
 						<!--end:Menu content-->
 					</div>
 					<!--end:Menu item-->
+					<perm:permission object="user.view">
 					<!--begin:Menu item-->
 					<div class="menu-item">
 						<!--begin:Menu link-->
@@ -227,6 +228,7 @@ String targetURL = Constant.getWebContext2() + "/authorization?token=" + token;
 						<!--end:Menu link-->
 					</div>
 					<!--end:Menu item-->
+					</perm:permission>
 					<!--begin:Menu item-->
 					<!-- <div class="menu-item">
 						begin:Menu link
@@ -298,7 +300,7 @@ String targetURL = Constant.getWebContext2() + "/authorization?token=" + token;
 						end:Menu link
 					</div> -->
 					<!--end:Menu item-->
-
+					<perm:permission object="equipmentlist.view">
 					<!--begin:Menu item-->
 					<div class="menu-item pt-5">
 						<!--begin:Menu content-->
@@ -309,7 +311,6 @@ String targetURL = Constant.getWebContext2() + "/authorization?token=" + token;
 					</div>
 					<!--end:Menu item-->
 					<!--begin:Menu item-->
-					<perm:permission object="equipmentlist.view">
 						<div class="menu-item">
 							<!--begin:Menu link-->
 							<a class="menu-link" href="equipment_list"
