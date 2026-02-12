@@ -483,25 +483,9 @@
 				</div>
 			</div>
 
-			<div class="modal-body pt-5">
+			<div class="modal-body py-2">
 				<div id="announcementCarousel" class="carousel slide"
 					data-bs-ride="false">
-
-					<div class="carousel-indicators" style="bottom: -20px;">
-						<c:set var="idx" value="0" />
-						<c:forEach var="ann" items="${announcementList}">
-							<fmt:formatDate var="annDateStr" value="${ann.announcement_date}"
-								pattern="yyyy-MM-dd" />
-							<c:if
-								test="${fn:trim(ann.highlight) eq '1' and ann.status ne '0' and annDateStr <= todayStr}">
-								<button type="button" data-bs-target="#announcementCarousel"
-									data-bs-slide-to="${idx}"
-									class="${idx == 0 ? 'active' : ''} bg-primary"
-									aria-current="${idx == 0 ? 'true' : 'false'}"></button>
-								<c:set var="idx" value="${idx + 1}" />
-							</c:if>
-						</c:forEach>
-					</div>
 
 					<div class="carousel-inner">
 						<c:set var="first" value="true" />
@@ -555,6 +539,22 @@
 									</div>
 								</div>
 								<c:set var="first" value="false" />
+							</c:if>
+						</c:forEach>
+					</div>
+					
+					<div class="carousel-indicators position-relative d-flex justify-content-center m-0 mt-2">
+						<c:set var="idx" value="0" />
+						<c:forEach var="ann" items="${announcementList}">
+							<fmt:formatDate var="annDateStr" value="${ann.announcement_date}"
+								pattern="yyyy-MM-dd" />
+							<c:if
+								test="${fn:trim(ann.highlight) eq '1' and ann.status ne '0' and annDateStr <= todayStr}">
+								<button type="button" data-bs-target="#announcementCarousel"
+									data-bs-slide-to="${idx}"
+									class="${idx == 0 ? 'active' : ''} bg-primary w-10px h-10px rounded-circle mx-1"
+									aria-current="${idx == 0 ? 'true' : 'false'}"></button>
+								<c:set var="idx" value="${idx + 1}" />
 							</c:if>
 						</c:forEach>
 					</div>

@@ -136,7 +136,7 @@ public class JobsiteDAOImpl implements JobsiteDAO {
 			String sql = "SELECT js.id_sitejob, js.name_site, " + "       js.description, js.is_active, "
 					+ "       COUNT(u.id) AS team_amount " + 
 					"FROM job_site js " + "LEFT JOIN job_site_team jst ON js.id_sitejob = jst.id_sitejob "
-					+ "LEFT JOIN user u ON jst.user_id = u.id " + 
+					+ "LEFT JOIN user u ON jst.user_id = u.id AND u.enable = '1' " + 
 					"GROUP BY js.id_sitejob, js.name_site, " + "         js.description, js.is_active "
 					+ "ORDER BY js.id_sitejob";
 
