@@ -502,7 +502,7 @@
 											<c:choose>
 												<c:when
 													test="${not empty ann.fileUpload and not empty ann.fileUpload.path}">
-													<img src="${ann.fileUpload.path}" class="mw-100 h-auto rounded-3"
+													<img src="${ann.fileUpload.path}" class="mw-100 h-auto rounded-3 shadow-sm border"
 														style="max-height: 55vh; object-fit: contain;">
 												</c:when>
 												<c:otherwise>
