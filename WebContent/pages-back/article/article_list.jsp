@@ -430,7 +430,7 @@
 	        }
 	    }).then((result) => {
 	        if (result.isConfirmed) {
-	            window.location.href = redirectUrl;
+	            window.location.href = url;
 	        }
 	    });
 	    return false;

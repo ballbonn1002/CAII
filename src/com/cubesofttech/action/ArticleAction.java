@@ -839,7 +839,8 @@ public class ArticleAction extends ActionSupport {
 				pageUriDAO.deleteByModelId(id);
 				//delete file
 				if (article.getFileId() != null) {
-					FileUpload file = fileuploadDAO.findById(article.getFileId());
+					Integer fileId = Integer.parseInt(article.getFileId());
+				    FileUpload file = fileuploadDAO.findById(fileId);
 					if (file != null) {
 						fileuploadDAO.delete(file);
 					}
