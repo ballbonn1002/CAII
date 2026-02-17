@@ -492,6 +492,28 @@ String targetURL = Constant.getWebContext2() + "/authorization?token=" + token;
 						end:Menu link
 					</div> -->
 					<!--end:Menu item-->
+                    
+                    <!--begin:Menu item-->
+                    <div class="menu-item pt-5">
+                        <!--begin:Menu content-->
+                        <div class="menu-content">
+                            <span class="menu-heading fw-bold text-uppercase fs-7">Report</span>
+                        </div>
+                        <!--end:Menu content-->
+                    </div>
+                    <!--Report-->
+                    <perm:permission object="report.view">
+                        <div class="menu-item">
+                            <a class="menu-link" href="report"
+                                data-route="report"> <span class="menu-icon">
+                                    <i class="ki-duotone ki-chart-pie-3 fs-1"> <span class="path1"></span><span class="path2"></span><span class="path3"></span>
+                                        <span class="path2"></span>
+                                </i>
+                            </span> <span class="menu-title">Report</span>
+                            </a>
+                        </div>
+                    </perm:permission>
+                    <!--Report-->
 
 					<!--begin:Menu item-->
 					<div class="menu-item pt-5">

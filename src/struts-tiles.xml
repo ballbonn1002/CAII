@@ -420,5 +420,12 @@
 		<put-attribute name="body"
 			value="/pages-back/work_log/work_log_list.jsp" />
 	</definition>
+	
+	<!-- Report -->
+    <definition name="report" extends="baseLayout">
+		<put-attribute name="title" value="Report" />
+		<put-attribute name="body" 
+			value="/pages-back/report/summary_working_day.jsp" />
+	</definition>
     
 </tiles-definitions>

@@ -1061,6 +1061,23 @@
 			<result name="login" type="redirect">/index.jsp</result>
 		</action>
 		
+		<!-- ========================== Report ============================== -->
+		<action name="report"
+			class="com.cubesofttech.action.ReportAction" method="open">
+			<result name="success" type="tiles">report</result>
+			<result name="error">/index.jsp</result>
+			<result name="login" type="redirect">/index.jsp</result>
+		</action>
+		<action name="report_listWorking" 
+			class="com.cubesofttech.action.ReportAction" method="listWorking">
+			<result name="success" type="tiles">report</result>
+			<result name="error">/index.jsp</result>
+			<result name="login" type="redirect">/index.jsp</result>
+		</action>
+		<action name="summaryWorkingDayData" 
+				class="com.cubesofttech.action.ReportAction" method="workingDayData">
+		</action>
+		
 	</package>
 
 </struts>
