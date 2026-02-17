@@ -428,4 +428,28 @@
 			value="/pages-back/report/summary_working_day.jsp" />
 	</definition>
     
+	<!-- Article -->
+	<definition name="article_feed" extends="baseLayout">
+		<put-attribute name="title" value="Article Feed" />
+		<put-attribute name="body"
+			value="/pages-back/article/article_list.jsp" />
+	</definition>
+	
+	<definition name="article_add" extends="baseLayout">
+		<put-attribute name="title" value="Add Article" />
+		<put-attribute name="body"
+			value="/pages-back/article/article_add.jsp" />
+	</definition>
+	
+	<definition name="article_edit" extends="baseLayout">
+		<put-attribute name="title" value="Edit Article" />
+		<put-attribute name="body"
+			value="/pages-back/article/article_edit.jsp" />
+	</definition>
+	
+	<definition name="article_preview" extends="baseLayout">
+		<put-attribute name="title" value="Preview Article" />
+		<put-attribute name="body"
+			value="/pages-back/article/article_preview.jsp" />
+	</definition>
 </tiles-definitions>

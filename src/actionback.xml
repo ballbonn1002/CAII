@@ -1078,6 +1078,52 @@
 				class="com.cubesofttech.action.ReportAction" method="workingDayData">
 		</action>
 		
+		<!-- Article -->
+		<action name="article_feed"
+			class="com.cubesofttech.action.ArticleAction" method="article_feed">
+			<result name="success" type="tiles">article_feed</result>
+			<result name="error">/index.jsp</result>
+		</action>
+		
+		<action name="article_add"
+			class="com.cubesofttech.action.ArticleAction" method="article_add">
+			<result name="success" type="tiles">article_add</result>
+			<result name="error">/index.jsp</result>
+		</action>
+		
+		<action name="article_edit"
+			class="com.cubesofttech.action.ArticleAction" method="article_edit">
+			<result name="success" type="tiles">article_edit</result>
+			<result name="error">/index.jsp</result>
+		</action>
+		
+		<action name="article_preview"
+			class="com.cubesofttech.action.ArticleAction" method="article_preview">
+			<result name="success" type="tiles">article_preview</result>
+			<result name="error">/index.jsp</result>
+		</action>
+		
+		<action name="article_perform_add"
+			class="com.cubesofttech.action.ArticleAction" method="article_perform_add">
+			<result name="success" type="redirectAction">article_feed</result>
+			<result name="preview" type="redirectAction">article_preview?articleId=${articleId}</result>
+			<result name="error">/index.jsp</result>
+			<result name="input">/article_add.jsp</result>
+		</action>
+		
+		<action name="article_perform_update"
+			class="com.cubesofttech.action.ArticleAction" method="article_perform_update">
+			<result name="success" type="redirectAction">article_feed</result>
+			<result name="preview" type="redirectAction">article_preview?articleId=${articleId}</result>
+			<result name="error" type="tiles">/index.jsp</result>
+		</action>
+		
+		<action name="article_perform_delete"
+			class="com.cubesofttech.action.ArticleAction" method="article_perform_delete">
+			<result name="success" type="redirectAction">article_feed</result>
+			<result name="error" type="tiles">/index.jsp</result>
+		</action>
+		
 	</package>
 
 </struts>

@@ -466,9 +466,8 @@ String targetURL = Constant.getWebContext2() + "/authorization?token=" + token;
 					</div>
 					<!--end:Menu item-->
 					<!--begin:Menu item-->
-					<!-- <div class="menu-item">
-						begin:Menu link
-						<a class="menu-link" href="#" data-route="#">
+					<div class="menu-item">
+						<a class="menu-link" href="/article_feed" data-route="#">
 							<span class="menu-icon"> <i
 								class="ki-duotone ki-book-open fs-1"> <span class="path1"></span>
 									<span class="path2"></span> <span class="path3"></span> <span
@@ -476,8 +475,8 @@ String targetURL = Constant.getWebContext2() + "/authorization?token=" + token;
 							</i>
 						</span> <span class="menu-title">Article</span>
 						</a>
-						end:Menu link
-					</div> -->
+					</div> 
+
 					<!--end:Menu item-->
 					<!--begin:Menu item-->
 					<!-- <div class="menu-item">

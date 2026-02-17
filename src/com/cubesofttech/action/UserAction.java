@@ -6,8 +6,11 @@ import java.math.BigDecimal;
 import java.sql.Date;
 import java.sql.Timestamp;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.Period;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -33,6 +36,11 @@ import org.apache.struts2.ServletActionContext;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cubesofttech.dao.WorkHoursDAO;
+import com.cubesofttech.dao.ArticleDAO;
+import com.cubesofttech.dao.ArticleImageDAO;
+import com.cubesofttech.dao.ArticleRelatedDAO;
+import com.cubesofttech.dao.ArticleTagDAO;
+import com.cubesofttech.dao.ArticleTypeDAO;
 import com.cubesofttech.dao.BorrowDAO;
 import com.cubesofttech.dao.DepartmentDAO;
 import com.cubesofttech.dao.EquipmentDAO;
@@ -45,7 +53,12 @@ import com.cubesofttech.dao.LeaveUserDAO;
 import com.cubesofttech.dao.NewsDAO;
 import com.cubesofttech.dao.PositionDAO;
 import com.cubesofttech.dao.RoleDAO;
+import com.cubesofttech.dao.TagDAO;
 import com.cubesofttech.dao.UserDAO;
+import com.cubesofttech.model.Article;
+import com.cubesofttech.model.ArticleRelated;
+import com.cubesofttech.model.ArticleTag;
+import com.cubesofttech.model.ArticleType;
 import com.cubesofttech.model.Borrow;
 import com.cubesofttech.model.Department;
 import com.cubesofttech.model.Equipment;
@@ -54,6 +67,7 @@ import com.cubesofttech.model.JobSiteTeam;
 import com.cubesofttech.model.LeaveType;
 import com.cubesofttech.model.Leaves;
 import com.cubesofttech.model.Role;
+import com.cubesofttech.model.Tag;
 import com.cubesofttech.model.User;
 import com.cubesofttech.util.Convert;
 import com.cubesofttech.util.DateUtil;
@@ -643,7 +657,7 @@ public class UserAction extends ActionSupport {
 
 			Gson gson = new GsonBuilder().create();
 			String responseJSON = gson.toJson(u);
-			log.debug(responseJSON);
+//			log.debug(responseJSON);
 
 			request.setAttribute("json", responseJSON);
 
@@ -675,7 +689,7 @@ public class UserAction extends ActionSupport {
 
 			Gson gson = new GsonBuilder().create();
 			String responseJSON = gson.toJson(u);
-			log.debug(responseJSON);
+//			log.debug(responseJSON);
 
 			request.setAttribute("json", responseJSON);
 
@@ -694,7 +708,7 @@ public class UserAction extends ActionSupport {
 
 //			JobSiteTeam user = JobSiteTeamDAO.findAllByUserId(userId);
 			String id = request.getParameter("userId");
-			log.debug(id);
+//			log.debug(id);
 			List<Map<String, Object>> jobsiteList = jobsiteDAO.findJobsiteUser(id);
 			request.setAttribute("test", jobsiteList);
 			List<Map<String, Object>> jobSite = jobsiteDAO.getJobSiteByUserId(id);
@@ -790,11 +804,11 @@ public class UserAction extends ActionSupport {
 				}
 
 				request.setAttribute("borrowList", borrow);
-				log.debug("borrow" + borrow);
+//				log.debug("borrow" + borrow);
 			} else {
 				request.setAttribute("borrowList", borrow);
 			}
-			log.debug(selectUser.getPaymentRemark());
+//			log.debug(selectUser.getPaymentRemark());
 
 			String imgPath = null;
 			if (selectUser.getPath() != null && selectUser.getPath().contains("_")) {
@@ -834,7 +848,7 @@ public class UserAction extends ActionSupport {
 		try {
 
 			List<Map<String, Object>> departmentList = departmentDAO.findAllList();
-			log.debug("departmentList" + departmentList);
+//			log.debug("departmentList" + departmentList);
 			request.setAttribute("departmentList", departmentList);
 
 			List<Map<String, Object>> positionList = positionDAO.sequense();
@@ -863,7 +877,7 @@ public class UserAction extends ActionSupport {
 		try {
 			User ur = (User) request.getSession().getAttribute("onlineUser");
 			String logonUser = ur.getId();
-			log.info(logonUser);
+//			log.info(logonUser);
 
 //			User u = userDAO.findById(user.getId());
 //			String UserIdEdit = user.getId();
@@ -875,17 +889,17 @@ public class UserAction extends ActionSupport {
 			String UserIdEdit = user.getId().trim();
 			User u = userDAO.findById(UserIdEdit);
 
-			log.debug(id_sitejob);
+//			log.debug(id_sitejob);
 			/* String[] siteJobId = id_sitejob.split(","); */
 			String rawSiteJob = (id_sitejob == null) ? "" : id_sitejob.trim();
 
 			String[] siteJobId = rawSiteJob.isEmpty() ? new String[0] : rawSiteJob.split(",");
 
-			log.debug("siteJobId array = " + Arrays.toString(siteJobId));
-
-			log.debug("effectiveUserId = " + UserIdEdit);
+//			log.debug("siteJobId array = " + Arrays.toString(siteJobId));
+//
+//			log.debug("effectiveUserId = " + UserIdEdit);
 			List<JobSiteTeam> ListuserId = jobSiteTeamDAO.findAllByUserId(UserIdEdit);
-			log.debug("ListuserId size = " + (ListuserId == null ? "null" : ListuserId.size()));
+//			log.debug("ListuserId size = " + (ListuserId == null ? "null" : ListuserId.size()));
 
 			List<String> selectedSiteIds = new ArrayList<>();
 
@@ -897,7 +911,7 @@ public class UserAction extends ActionSupport {
 				}
 			}
 
-			log.debug("Selected siteJobId set = " + selectedSiteIds);
+//			log.debug("Selected siteJobId set = " + selectedSiteIds);
 
 			// เพิ่มsiteใหม่ที่ยังไม่มีในDB
 			for (String siteId : selectedSiteIds) {
@@ -909,7 +923,7 @@ public class UserAction extends ActionSupport {
 					jobSiteTeam.setId_sitejob(siteId);
 					jobSiteTeamDAO.save(jobSiteTeam);
 
-					log.debug("Added siteJobId=" + siteId);
+//					log.debug("Added siteJobId=" + siteId);
 				}
 			}
 
@@ -917,7 +931,7 @@ public class UserAction extends ActionSupport {
 			for (JobSiteTeam link : ListuserId) {
 				if (!selectedSiteIds.contains(link.getId_sitejob())) {
 					jobSiteTeamDAO.delete(link);
-					log.debug("Deleted siteJobId=" + link.getId_sitejob());
+//					log.debug("Deleted siteJobId=" + link.getId_sitejob());
 				}
 			}
 
@@ -979,7 +993,7 @@ public class UserAction extends ActionSupport {
 			u.setEmail(user_email);
 			u.setManagerId(user.getManagerId());
 			u.setId_sitejob(user.getId_sitejob());
-			log.debug(u.getId_sitejob());
+//			log.debug(u.getId_sitejob());
 			u.setAddress(user.getAddress());
 			u.setTimeUpdate(DateUtil.getCurrentTime());
 
@@ -1005,10 +1019,10 @@ public class UserAction extends ActionSupport {
 				u.setPositionId(position_id);
 
 			if (page.equals("1")) {
-				log.debug("user edit");
+//				log.debug("user edit");
 				u.setEmailHost(user.getEmailHost());
 			} else if (page.equals("2")) {
-				log.debug("admin edit");
+//				log.debug("admin edit");
 				u.setEnable(user.getEnable());
 				u.setEmailEnable(user.getEmailEnable());
 				u.setEmployeeId(user.getEmployeeId());
@@ -1019,8 +1033,8 @@ public class UserAction extends ActionSupport {
 
 				u.setWorkType(user.getWorkType());
 				u.setOnsiteNum(user.getOnsiteNum());
-				log.debug("Work Type: " + u.getWorkType());
-				log.debug("Onsite_num: " + u.getOnsiteNum());
+//				log.debug("Work Type: " + u.getWorkType());
+//				log.debug("Onsite_num: " + u.getOnsiteNum());
 
 				u.setEduInstitute1(user.getEduInstitute1());
 				u.setEduInstitute2(user.getEduInstitute2());
@@ -1122,9 +1136,9 @@ public class UserAction extends ActionSupport {
 			request.setAttribute("leaveW", leavwait.size());
 			request.setAttribute("leaveH", leavhis.size());
 
-			log.debug("Request user id = " + user.getId());
-			log.debug("UserIdEdit = " + UserIdEdit);
-			log.debug("siteJobId = " + Arrays.toString(siteJobId));
+//			log.debug("Request user id = " + user.getId());
+//			log.debug("UserIdEdit = " + UserIdEdit);
+//			log.debug("siteJobId = " + Arrays.toString(siteJobId));
 
 			return SUCCESS;
 		} catch (Exception e) {
@@ -1139,8 +1153,8 @@ public class UserAction extends ActionSupport {
 			String targetUserId = request.getParameter("user_id");
 			String newPw = request.getParameter("password");
 
-			log.debug("user_id:" + targetUserId);
-			log.debug("password:" + newPw);
+//			log.debug("user_id:" + targetUserId);
+//			log.debug("password:" + newPw);
 
 			if (targetUserId != null)
 				targetUserId = targetUserId.trim();
@@ -1368,7 +1382,7 @@ public class UserAction extends ActionSupport {
 			log.info(logonUser);
 
 			User u = userDAO.findById(user_id);
-			log.debug(user_id + " aaa");
+//			log.debug(user_id + " aaa");
 
 			u.setGender(user_gender);
 			u.setTitleNameTH(user_titleNameTH);
@@ -1641,7 +1655,7 @@ public class UserAction extends ActionSupport {
 		try {
 			String id = request.getParameter("id");
 			user = userDAO.findById(id);
-			log.debug(user);
+//			log.debug(user);
 			user.setFlagSearch("0");
 			userDAO.update(user);
 			return SUCCESS;
@@ -1673,7 +1687,7 @@ public class UserAction extends ActionSupport {
 
 			User user = new User();
 			user = userDAO.findById(id);
-			log.debug(user);
+//			log.debug(user);
 			userDAO.delete(user);
 			List<User> userList = userDAO.findAll();
 			request.setAttribute(User, userList);
@@ -2179,5 +2193,4 @@ public class UserAction extends ActionSupport {
 			return ERROR;
 		}
 	}
-
 }
