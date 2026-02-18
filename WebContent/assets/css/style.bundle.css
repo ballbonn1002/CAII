@@ -34684,6 +34684,7 @@ fieldset:disabled .btn {
     --bs-warning-inverse: #ffffff;
     --bs-danger-inverse: #ffffff;
     --bs-dark-inverse: #ffffff;
+    --bs-green-inverse: #ffffff;
     --bs-cyan-inverse: #ffffff;
     --bs-primary-clarity: rgba(27, 132, 255, 0.2);
     --bs-secondary-clarity: rgba(249, 249, 249, 0.2);
@@ -55471,6 +55472,11 @@ code:not([class*=language-]).code-dark {
         border: 1px solid var(--bs-cyan);
         background-color: transparent;
         color: var(--bs-cyan)
+}
+
+.badge-green {
+    color: var(--bs-green-inverse);
+    background-color: var(--bs-green);
 }
 
 .indicator-progress {

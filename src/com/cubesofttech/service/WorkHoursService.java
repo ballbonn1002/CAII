@@ -15,6 +15,7 @@ import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -36,6 +37,7 @@ import com.cubesofttech.system.Constant;
 public class WorkHoursService {
 	@Autowired
 	private WorkHoursDAO workHoursDAO;
+	
 	@Autowired
 	private HolidayDAO holidayDAO;
 
@@ -47,6 +49,9 @@ public class WorkHoursService {
 	
 	@Autowired
 	private UserDAO userDAO;
+	
+	@Autowired
+	private LeaveService leaveService;
 
 	Logger log = Logger.getLogger(getClass());
 	private static final Integer Interger = null;
@@ -201,164 +206,164 @@ public class WorkHoursService {
 		}
 		return fulltime;
 	}
-
+	
 	public Map<String, Object> calculateDailyStatus(String userId, LocalDate workDate) throws Exception {
-		Map<String, Object> result = new HashMap<>();
-		Timestamp start = Timestamp.valueOf(workDate.atStartOfDay());
-		Timestamp end = Timestamp.valueOf(workDate.atTime(23, 59, 59));
 		User user = userDAO.findById(userId);
-		String userWorkTimeStart = user.getWorkTimeStart();
-		String userWorkTimeEnd = user.getWorkTimeEnd();
+	    if (user == null) {
+	        return new HashMap<>();
+	    }
+	    String userWorkTimeStart = user.getWorkTimeStart();
+	    String userWorkTimeEnd = user.getWorkTimeEnd();
+	    if (userWorkTimeStart == null) userWorkTimeStart = "09:00";
+	    if (userWorkTimeEnd == null) userWorkTimeEnd = "18:00";
+	    
+	    if (userWorkTimeStart.indexOf(':') == 1) { userWorkTimeStart = "0" + userWorkTimeStart; } // เปลี่ยน 9:00 -> 09:00
+	    if (userWorkTimeStart.length() > 5) { userWorkTimeStart = userWorkTimeStart.substring(0, 5); }
+	    
+	    if (userWorkTimeEnd.indexOf(':') == 1) { userWorkTimeEnd = "0" + userWorkTimeEnd; }
+	    if (userWorkTimeEnd.length() > 5) { userWorkTimeEnd = userWorkTimeEnd.substring(0, 5); }
+	    
+	    LocalTime workStartTime = LocalTime.parse(userWorkTimeStart);
+	    LocalTime workEndTime = LocalTime.parse(userWorkTimeEnd);
 		
-		String[] workTimeStartStr = userWorkTimeStart.split(":");
-		Integer hourTimeStart = Integer.parseInt(workTimeStartStr[0]);
-		Integer minuteTimeStart = Integer.parseInt(workTimeStartStr[1]);
-		String[] workTimeEndStr = userWorkTimeEnd.split(":");
-		Integer hourTimeEnd = Integer.parseInt(workTimeEndStr[0]);
-		Integer minuteTimeEnd = Integer.parseInt(workTimeEndStr[1]);
+	    Object[] inData = workHoursDAO.findMinTimeByType(userId, workDate, "1");
+	    Object[] outData = workHoursDAO.findMaxTimeByType(userId, workDate, "2");
+	    
+	    List<Map<String, Object>> dailyIns = new ArrayList<>();
+	    if (inData != null && inData.length > 0 && inData[0] != null) {
+	        Map<String, Object> map = new HashMap<>();
+	        map.put("checkinTs", inData[0]);
+	        map.put("workTypeIn", inData[1]);
+	        dailyIns.add(map);
+	    }
+	    
+	    List<Map<String, Object>> dailyOuts = new ArrayList<>();
+	    if (outData != null && outData.length > 0 && outData[0] != null) {
+	        Map<String, Object> map = new HashMap<>();
+	        map.put("checkoutTs", outData[0]);
+	        map.put("workTypeOut", outData[1]);
+	        dailyOuts.add(map);
+	    }
+	    
+	    Timestamp start = Timestamp.valueOf(workDate.atStartOfDay());
+	    Timestamp end = Timestamp.valueOf(workDate.atTime(23, 59, 59));
+	    List<Map<String, Object>> leaves = leaveDAO.findUserLeaveByTypeAndStatus(start, end, userId, null, null);
+	    
+	    Map<String, Object> leaveData = null;
+	    if (leaves != null && !leaves.isEmpty()) {
+	        leaveData = leaves.get(0);
+	    }
+	    
+	    return determineDailyStatus(
+	            workDate, dailyIns, dailyOuts, 
+	            leaveData,  workStartTime, workEndTime
+	    );
+	    
+	}
+	
+	public Map<String, Object> determineDailyStatus(
+		LocalDate workDate, 
+		List<Map<String, Object>> dailyIns, 
+		List<Map<String, Object>> dailyOuts, 
+		Map<String, Object> leaveData, 
+		LocalTime workStartTime, LocalTime workEndTime) {
 		
-		CUT_IN_LATE = LocalTime.of(hourTimeStart, minuteTimeStart+1);
-		CUT_OUT_NORMAL = LocalTime.of(hourTimeEnd, minuteTimeEnd);
-		
-		Object[] inData = workHoursDAO.findMinTimeByType(userId, workDate, "1");
-		Object[] outData = workHoursDAO.findMaxTimeByType(userId, workDate, "2");
-		Timestamp tsIn = null;
-		String checkInType = null;
-		if (inData != null) {
-			tsIn = (Timestamp) inData[0];
-			checkInType = (inData[1] != null) ? String.valueOf(inData[1]) : null;
-		}
-		Timestamp tsOut = null;
-		String checkOutType = null;
-		
-		if (outData != null) {
-			tsOut = (Timestamp) outData[0];
-			checkOutType = (outData[1] != null) ? String.valueOf(outData[1]) : null;
-		}
-		result.put("check_in_type", checkInType);
-		result.put("check_out_type", checkOutType);
-		
-		String strIn = toHHmm(tsIn);
-		String strOut = toHHmm(tsOut);
-		
-		List<Map<String, Object>> leaves = leaveDAO.findUserLeaveByTypeAndStatus(start, end, userId, null, null);
+		Map<String, Object> result = new HashMap<>();
+		LocalTime cutInLate = workStartTime.plusMinutes(1); 
+        LocalTime cutOutNormal = workEndTime;
+        
+        Timestamp tsIn = null;
+        String checkInType = "";
+        if (dailyIns != null && !dailyIns.isEmpty()) {
+        	for (Map<String, Object> row : dailyIns) {
+                Timestamp ts = (Timestamp) row.get("checkinTs");
+                if (ts != null) {
+                    if (tsIn == null || ts.before(tsIn)) {
+                        tsIn = ts;
+                        checkInType = String.valueOf(row.getOrDefault("workTypeIn", ""));
+                    }
+                }
+            }
+        }
+        
+        Timestamp tsOut = null;
+        String checkOutType = "";
+        if (dailyOuts != null && !dailyOuts.isEmpty()) {
+            for (Map<String, Object> row : dailyOuts) {
+                Timestamp ts = (Timestamp) row.get("checkoutTs");
+                if (ts != null) {
+                    if (tsOut == null || ts.after(tsOut)) {
+                        tsOut = ts;
+                        checkOutType = String.valueOf(row.getOrDefault("workTypeOut", ""));
+                    }
+                }
+            }
+        }
+        
+        result.put("check_in_type", checkInType);
+        result.put("check_out_type", checkOutType);
+        result.put("check_in", toHHmm(tsIn));
+        result.put("check_out", toHHmm(tsOut));
+        
+        String status = "NO_RECORD"; 
+        boolean late = false;
+        boolean earlyOut = false;
+        LocalTime inTime = (tsIn != null) ? tsIn.toLocalDateTime().toLocalTime() : null;
+        LocalTime outTime = (tsOut != null) ? tsOut.toLocalDateTime().toLocalTime() : null;
+        
+        if (tsIn == null && tsOut == null) {
+            status = "NO_RECORD";
+        } else if (tsIn == null || tsOut == null) {
+            status = "INCOMPLETE";
+        } else {
+            late = !inTime.isBefore(cutInLate);
+            earlyOut = outTime.isBefore(cutOutNormal);
+            status = checkLateOrEarlyOut(late, earlyOut);
+        }
+        
+        if (leaveData != null && !leaveData.isEmpty()) {
+            String leaveStatusId = String.valueOf(leaveData.getOrDefault("leave_status_id", ""));
+            String leaveTypeId = String.valueOf(leaveData.getOrDefault("leave_type_id", ""));
+            String leaveTypeName = String.valueOf(leaveData.getOrDefault("leave_type_name", "ไม่ระบุ"));
+            String halfDay = String.valueOf(leaveData.getOrDefault("half_day", ""));
 
-		// ================== Priority 1 : No Record & Incomplete  ==================
-		if (tsIn == null && tsOut == null) {
-			result.put("status", "NO_RECORD");
-			result.put("check_in", null);
-			result.put("check_out", null);
-			return result;
-		}
-		if (tsIn == null || tsOut == null) {
-			result.put("status", "INCOMPLETE");
-			result.put("check_in", strIn);
-			result.put("check_out", strOut);
-			return result;
-		}
-		
-		LocalTime inTime = truncate(tsIn);
-		LocalTime outTime = truncate(tsOut);
-		// ================== Priority 2 : Time Logic ==================
-		boolean late = false;
-		boolean earlyOut = false;
-		String status;
-		if (inTime != null) {
-		    late = !inTime.isBefore(CUT_IN_LATE);
-		}
-		if (outTime != null) {
-		    earlyOut = outTime.isBefore(CUT_OUT_NORMAL);
-		}
-
-		status = checkLateOrEarlyOut(late, earlyOut);
-		result.put("status", status);
-		result.put("check_in", strIn);
-		result.put("check_out", strOut);
-		
-		// ================== Priority 3 : Leave  ==================
-		if (leaves != null && !leaves.isEmpty()) {
-			Map<String, Object> leave = leaves.get(0);
-			log.debug(leave);
-			Object statusObj = leave.get("leave_status_id");
-			String leaveStatusId = (statusObj != null) ? String.valueOf(statusObj).trim() : "";
-			Object typeObj = leave.get("leave_type_id");
-			String leaveTypeId = (typeObj != null) ? String.valueOf(typeObj).trim() : "";
-			Object typeNameObj = leave.get("leave_type_name");
-			String leaveTypeName = (typeNameObj != null) ? String.valueOf(typeNameObj).trim() : "";
-			Object halfDayObj = leave.get("half_day");
-			String leavehalfDayId = (halfDayObj != null) ? String.valueOf(halfDayObj).trim() : "";
-			
-			String realStatus = "UNKNOWN";
-			String leaveNameTH = "ไม่ระบุ";
-			switch (leaveTypeId) {
-			case "1":
-				realStatus = "ANNUAL_LEAVE";
-				break;
-			case "2":
-				realStatus = "BUSINESS_LEAVE";
-				break;
-			case "3":
-				realStatus = "SICK_LEAVE";
-				break;
-			case "4":
-				realStatus = "ABSENT";
-				break;
-			case "5":
-				realStatus = "WITHOUT_PAY";
-				break;
-			case "6":
-				realStatus = "ANNUAL_LEAVE_REMAINING";
-				break;
-			case "7":
-				realStatus = "OTHER_LEAVE";
-				break;
-			case "9":
-				realStatus = "OTHERS";
-				break;
-			default:
-				realStatus = "UNKNOWN";
-				leaveNameTH = "ไม่ระบุ";
-				break;
-			}
-			leaveNameTH  = leaveTypeName;
-			// 0 = full, 1 = morning_leave, 2 = afternoon_leave, 3 = select_time
-			if("1".equals(leavehalfDayId)) {
-				log.debug(leavehalfDayId);
-				if (inTime != null) {
-					late = !inTime.isBefore(LocalTime.parse("13:00"));
-				}
-				if (outTime != null) {
-				    earlyOut = outTime.isBefore(CUT_OUT_NORMAL);
-				}
-				status = checkLateOrEarlyOut(late, earlyOut);
-			} else if ("2".equals(leavehalfDayId)) {
-				log.debug(leavehalfDayId);
-				if (inTime != null) {
-					late = !inTime.isBefore(CUT_IN_LATE);
-				}
-				if (outTime != null) {
-				    earlyOut = outTime.isBefore(LocalTime.parse("12:00"));
-				}
-				status = checkLateOrEarlyOut(late, earlyOut);
-			}
-			result.put("status", status);
-			if ("0".equals(leaveStatusId)) {
-				result.put("leave_status", "WAITING");
-				result.put("leave_desc", leaveNameTH);
-				return result;
-
-			} else if ("1".equals(leaveStatusId)) {
-				result.put("leave_status", realStatus);
-				result.put("leave_desc", leaveNameTH);
-				return result;
-			}
-		} else {
-			result.put("leave_status", null);
-			result.put("leave_desc", null);
-		}
+            if ("1".equals(halfDay)) { 
+                if (inTime != null) late = !inTime.isBefore(LocalTime.parse("13:00"));
+                if (outTime != null) earlyOut = outTime.isBefore(cutOutNormal);
+                
+                if (!"INCOMPLETE".equals(status) && !"NO_RECORD".equals(status)) {
+                    status = checkLateOrEarlyOut(late, earlyOut);
+                }
+            } else if ("2".equals(halfDay)) { 
+                if (inTime != null) late = !inTime.isBefore(cutInLate);
+                if (outTime != null) earlyOut = outTime.isBefore(LocalTime.parse("12:00"));
+                
+                if (!"INCOMPLETE".equals(status) && !"NO_RECORD".equals(status)) {
+                    status = checkLateOrEarlyOut(late, earlyOut);
+                }
+            }
+            result.put("status", status);
+            
+            if ("0".equals(leaveStatusId)) {
+                result.put("leave_status", "WAITING");
+                result.put("leave_desc", leaveTypeName);
+            } else if ("1".equals(leaveStatusId)) {
+                result.put("leave_status", leaveService.mapLeaveTypeToStatus(leaveTypeId));
+                result.put("leave_desc", leaveTypeName);
+            } else {
+                result.put("leave_status", null);
+                result.put("leave_desc", null);
+            }
+            
+        } else {
+            result.put("status", status);
+            result.put("leave_status", null);
+            result.put("leave_desc", null);
+        }
+        
 		return result;
 	}
-
+	
 	private LocalTime truncate(Timestamp ts) {
 		if (ts == null) {
 	        return null;

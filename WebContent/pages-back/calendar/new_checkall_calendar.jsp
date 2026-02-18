@@ -14,11 +14,9 @@
 			<div class="app-container container-fluid d-flex flex-stack">
 				<div
 					class="page-title d-flex flex-column justify-content-center flex-wrap me-3">
-					<h1
-						class="page-heading d-flex text-gray-900 fw-bold flex-column justify-content-center my-0">
+					<h1 class="page-heading d-flex text-gray-900 fw-bold flex-column justify-content-center my-0">
 						Calendar and Check List</h1>
-					<ul
-						class="breadcrumb breadcrumb-separatorless fw-semibold fs-7 my-0 pt-1">
+					<ul class="breadcrumb breadcrumb-separatorless fw-semibold fs-7 my-0 pt-1">
 						<li class="breadcrumb-item text-muted"><a
 							href="demo_dashboard" class="text-muted text-hover-primary">Home</a>
 						</li>
@@ -30,23 +28,21 @@
 		<!-- Content -->
 		<div class="app-content flex-column-fluid">
 			<div class="app-container container-fluid">
-
 				<!-- Form without submit button -->
 				<div class="d-flex flex-row">
 					<div class="card flex-row-fluid mb-5">
 						<div class="card-header" style="border-bottom: none;">
 							<!--begin::Main wrapper-->
 							<div id="kt_docs_search_handler_responsive"
-								class="d-flex align-items-center w-100"
+								class="d-flex align-items-center mt-5 w-100"
 								data-kt-search-keypress="true" data-kt-search-min-length="1"
 								data-kt-search-enter="enter" data-kt-search-layout="menu"
-								data-kt-search-responsive="lg" data-kt-menu-trigger="auto"
-								data-kt-menu-permanent="true"
+								data-kt-menu-trigger="auto" data-kt-menu-permanent="true"
 								data-kt-menu-placement="bottom-start">
 
 								<!--begin::Form-->
 								<form id="userCalendarForm" 
-									class="d-none d-lg-block w-100 position-relative mb-5 mb-lg-0"
+									class="w-100 position-relative mb-5 mb-lg-0"
 									autocomplete="off" action="TestSearchAllinCalendar"
 									method="post" >
 									<!--begin::Icon-->
@@ -117,14 +113,14 @@
 						<div class="card-body" id="kt_docs_fullcalendar_populated">
 						</div>
 						<div class="card-footer d-flex flex-row flex-wrap">
-							<div class="badge badge-secondary me-7 fw-semibold">Holiday</div>
-							<div class="badge badge-success me-7 fw-semibold">On time</div>
-							<div class="badge badge-warning me-7 fw-semibold">Late</div>
-							<div class="badge badge-warning me-7 fw-semibold">Early Out</div>
-							<div class="badge badge-warning me-7 fw-semibold">Unfinished Work</div>
-							<div class="badge badge-dark me-7 fw-semibold">Incomplete</div>
-							<div class="badge badge-primary me-7 fw-semibold">Leave</div>
-							<div class="badge badge-info me-7 fw-semibold">Sick Leave</div>
+							<div class="badge badge-secondary fw-semibold me-7 mb-md-0 mb-5">Holiday</div>
+							<div class="badge badge-success fw-semibold me-7 mb-md-0 mb-5">On time</div>
+							<div class="badge badge-warning fw-semibold me-7 mb-md-0 mb-5">Late</div>
+							<div class="badge badge-warning fw-semibold me-7 mb-md-0 mb-5">Early Out</div>
+							<div class="badge badge-warning fw-semibold me-7 mb-md-0 mb-5">Unfinished Work</div>
+							<div class="badge badge-dark fw-semibold me-7 mb-md-0 mb-5">Incomplete</div>
+							<div class="badge badge-primary fw-semibold me-7 mb-md-0 mb-5">Leave</div>
+							<div class="badge badge-info fw-semibold me-7 mb-md-0 mb-5">Sick Leave</div>
 						</div>
 					</div>
 				</div>
@@ -137,47 +133,39 @@
 						</div>
 						<div class="card-body">
 							<div class="row align-items-center mt-10 mx-5 fs-6 fw-bold">
-								<div class="col-lg-3 col-md-4 mb-10 d-flex align-items-center">
-									<span class="fs-2 text-green" id="summaryWorkingDay"></span><span
-										class="bullet bullet-vertical bg-green fs-6 mx-2 h-15px w-2px"></span><span
-										class="text-green">Working Day</span>
+								<div class="col-lg-3 col-md-4 col-6 mb-10 d-flex align-items-center">
+									<span class="fs-2hx me-2 text-green" id="summaryWorkingDay"></span>
+									<span class="badge badge-green fs-7">Working Day</span>
 								</div>
-								<div class="col-lg-3 col-md-4 mb-10 d-flex align-items-center">
-									<span class="fs-2 text-success" id="summaryOnTime"></span><span
-										class="bullet bullet-vertical bg-success fs-6 mx-2 h-15px w-2px"></span><span
-										class="text-gray-600">On Time</span>
+								<div class="col-lg-3 col-md-4 col-6 mb-10 d-flex align-items-center">
+									<span class="fs-2hx me-2 text-success" id="summaryOnTime"></span>
+									<span class="badge badge-success fs-7">On Time</span>
 								</div>
-								<div class="col-lg-3 col-md-4 mb-10 d-flex align-items-center">
-									<span class="fs-2 text-primary" id="summaryLeave"></span><span
-										class="bullet bullet-vertical bg-primary fs-6 mx-2 h-15px w-2px"></span><span
-										class="text-gray-600">Leave</span>
+								<div class="col-lg-3 col-md-4 col-6 mb-10 d-flex align-items-center">
+									<span class="fs-2hx me-2 text-primary" id="summaryLeave"></span>
+									<span class="badge badge-primary fs-7">Leave</span>
 								</div>
-								<div class="col-lg-3 col-md-4 mb-10 d-flex align-items-center">
-									<span class="fs-2 text-info" id="summarySickLeave"></span><span
-										class="bullet bullet-vertical bg-info fs-6 mx-2 h-15px w-2px"></span><span
-										class="text-gray-600">Sick Leave</span>
+								<div class="col-lg-3 col-md-4 col-6 mb-10 d-flex align-items-center">
+									<span class="fs-2hx me-2 text-info" id="summarySickLeave"></span>
+									<span class="badge badge-info fs-7">Sick Leave</span>
 								</div>
-								<div class="col-lg-3 col-md-4 mb-10 d-flex align-items-center">
-									<span class="fs-2 text-gray-600" id="summaryHoliday"></span><span
-										class="bullet bullet-vertical bg-gray-600 fs-6 mx-2 h-15px w-2px"></span><span
-										class="text-gray-600">Holiday</span>
+								<div class="col-lg-3 col-md-4 col-6 mb-10 d-flex align-items-center">
+									<span class="fs-2hx me-2 text-gray-600" id="summaryHoliday"></span>
+									<span class="badge badge-light fs-7">Holiday</span>
 								</div>
-								<div class="col-lg-3 col-md-4 mb-10 d-flex align-items-center">
-									<span class="fs-2 text-warning" id="summaryLateEarly"></span><span
-										class="bullet bullet-vertical bg-warning fs-6 mx-2 h-15px w-2px"></span><span
-										class="text-gray-600">Late / Early Out /<br>
+								<div class="col-lg-3 col-md-4 col-6 mb-10 d-flex align-items-center">
+									<span class="fs-2hx me-2 text-warning" id="summaryLateEarly"></span>
+									<span class="badge badge-warning fs-7">Late / Early Out /<br>
 										Unfinished Work
 									</span>
 								</div>
-								<div class="col-lg-3 col-md-4 mb-10 d-flex align-items-center">
-									<span class="fs-2 text-dark" id="summaryIncomplete"></span><span
-										class="bullet bullet-vertical bg-dark fs-6 mx-2 h-15px w-2px"></span><span
-										class="text-gray-600">Incomplete</span>
+								<div class="col-lg-3 col-md-4 col-6 mb-10 d-flex align-items-center">
+									<span class="fs-2hx me-2 text-dark" id="summaryIncomplete"></span>
+									<span class="badge badge-dark fs-7">Incomplete</span>
 								</div>
-								<div class="col-lg-3 col-md-4 mb-10 d-flex align-items-center">
-									<span class="fs-2 text-danger" id="summaryNoRecord"></span><span
-										class="bullet bullet-vertical bg-danger fs-6 mx-2 h-15px w-2px"></span><span
-										class="text-gray-600">No Record</span>
+								<div class="col-lg-3 col-md-4 col-6 mb-10 d-flex align-items-center">
+									<span class="fs-2hx me-2 text-danger" id="summaryNoRecord"></span>
+									<span class="badge badge-danger fs-7">No Record</span>
 								</div>
 							</div>
 						</div>
@@ -189,10 +177,10 @@
 					<div class="card flex-row-fluid mb-5">
 						<div class="card-header pt-10" style="border-bottom: none;">
 							<div class="row align-items-center w-100">
-								<div class="col-lg-6">
+								<div class="col-lg-6 col-md-6 col-6">
 									<h2 class="card-title mb-0">Check List</h2>
 								</div>
-								<div class="col-lg-6 text-end">
+								<div class="col-lg-6 col-md-6 col-6 text-end">
 									<h3 id="calendarTitle" class="fw-bold text-primary mb-0"></h3>
 								</div>
 							</div>
@@ -783,7 +771,9 @@ var AppCalendar = function() {
 					status = getLeaveStatusHTML(leaveEvent);
 				} else {
 					if (dayNum <= todayNum) {
-						status = getWorkStatusHTML('NO_RECORD');
+						if (dayName !== 'Sa' && dayName !== 'Su') {
+							status = getWorkStatusHTML('NO_RECORD');
+						}
 					}
 				}
 
