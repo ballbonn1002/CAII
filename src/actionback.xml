@@ -1105,7 +1105,7 @@
 		
 		<action name="article_perform_add"
 			class="com.cubesofttech.action.ArticleAction" method="article_perform_add">
-			<result name="success" type="redirectAction">article_feed</result>
+			<result name="success" type="redirectAction">article_edit?articleId=${articleId}</result>
 			<result name="preview" type="redirectAction">article_preview?articleId=${articleId}</result>
 			<result name="error">/index.jsp</result>
 			<result name="input">/article_add.jsp</result>

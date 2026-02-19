@@ -13,6 +13,8 @@ import com.cubesofttech.model.Tag;
 public interface TagDAO {
 
 	List<Tag> findAll() throws Exception;
+
+	Tag findById(Integer id) throws Exception;
 	
 }
       

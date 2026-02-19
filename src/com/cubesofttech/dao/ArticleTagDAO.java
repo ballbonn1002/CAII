@@ -13,15 +13,13 @@ public interface ArticleTagDAO {
 
 	List<ArticleTag> findAll() throws Exception;
 
-	List<ArticleTag> findTagIdByArticleId(String articleId) throws Exception;
+	List<Integer> findTagIdByArticleId(String articleId) throws Exception;
 
 	void save(ArticleTag ArticleTag) throws Exception;
 
 	void deleteByArticleId(String articleId);
 
 	void update(ArticleTag ArticleTag) throws Exception;
-
-
 
 	
 }

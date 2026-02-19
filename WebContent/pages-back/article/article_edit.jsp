@@ -25,31 +25,174 @@
 	src="assets/plugins/custom/ckeditor/ckeditor-decoupled.bundle.js"></script>
 <script src="assets/plugins/custom/ckeditor/ckeditor-document.bundle.js"></script>
 
+<!--Summernote-->
+<link href="https://cdn.jsdelivr.net/npm/summernote@0.9.0/dist/summernote-lite.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/summernote@0.9.0/dist/summernote-lite.min.js"></script>
+
 <style>
-#kt_docs_ckeditor_document {
+
+
+#summernote,#kt_docs_ckeditor_document  {
 	width: 100%;
 	margin-left: auto;
 	margin-right: auto;
 }
 
-#kt_docs_ckeditor_document {
+#summernote,#kt_docs_ckeditor_document  {
 	border: 1px solid #d1d5db;
 	border-radius: 6px;
 	overflow: hidden;
-	min-height: 300px;
+	min-height: 500px;
 	padding: 12px;
 }
 
-.editor-fullscreen {
-	position: fixed !important;
-	top: 0;
-	left: 0;
-	width: 100vw !important;
-	height: 100vh !important;
-	z-index: 9999;
-	background: white;
-	padding: 20px;
-	overflow: auto;
+/* UI Summernot */
+.note-editor {
+  border: 1px solid #d1d5db !important;
+  border-radius: 10px !important;
+  overflow: hidden;
+  transition: all 0.2s ease;
+  background: #fff;
+}
+
+.note-editor:focus-within {
+  border-color: #3b82f6 !important;
+  box-shadow: 0 0 0 3px rgba(59,130,246,.15);
+}
+
+/*toolbar */
+.note-toolbar {
+  background: #f9fafb !important;
+  border-bottom: 1px solid #e5e7eb !important;
+  padding: 8px;
+}
+
+/*toolbar buttons */
+ .note-btn {
+  border-radius: 6px !important;
+  transition: all .15s ease;
+  margin-right: 8px;
+} 
+
+.note-btn:hover {
+  background: #e5e7eb !important;
+} 
+
+/* Quote */
+.note-editable blockquote {
+    border-left: 5px solid #f1416c !important; 
+    padding: 15px 20px !important;
+    margin: 20px 0 !important;
+    color: #3f4254 !important;
+}
+
+/* Code */
+.note-editable pre {
+    background-color: #f1f1f2 !important; 
+    border: 1px solid #e1e3ea !important;
+    border-radius: 8px !important;
+    padding: 15px !important;
+    margin: 20px 0 !important;
+    font-size: 13px !important;
+    color: #181c32 !important;
+    line-height: 1.5 !important;
+    overflow-x: auto !important;
+}
+
+/* edit area */
+.note-editing-area {
+  background: #ffffff;
+}
+
+.note-editable {
+  min-height: 300px;
+  padding: 20px;
+  font-size: 14px;
+  line-height: 1.7;
+  color: #111827;
+  font-family: system-ui, sans-serif;
+}
+
+.note-placeholder {
+  color: #9ca3af !important;
+}
+
+.note-editable::-webkit-scrollbar {
+  width: 8px;
+}
+
+.note-editable::-webkit-scrollbar-thumb {
+  background: #cbd5f5;
+  border-radius: 6px;
+}
+
+/* fullscreen mode */
+.note-editor.note-frame.fullscreen {
+  background: white;
+  padding: 15px;
+}
+
+.note-editable h1 { font-size: 30px; margin: 16px 0; }
+.note-editable h2 { font-size: 24px; margin: 14px 0; }
+.note-editable h3 { font-size: 20px; margin: 12px 0; }
+
+.note-btn.dropdown-toggle::after {
+  display: none !important;
+} 
+
+.note-toolbar .note-btn {
+  margin-right: 0 !important;
+}
+
+.note-toolbar .note-btn-group {
+  margin-right: 10px !important;
+}
+
+/* ปุ่มใน group ชิดกัน */
+.note-toolbar .note-btn-group .note-btn {
+  border-radius: 6px !important;
+}
+
+.note-modal .note-modal-footer {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: flex-end !important;
+    padding: 1rem !important;
+    height: auto !important;
+    min-height: 60px !important;
+    
+}
+
+.note-modal .note-modal-footer .note-btn {
+    float: none !important;
+    margin: 0 10px !important;
+    position: static !important;
+   
+}
+
+.note-modal-content {
+    border: none !important;
+    border-radius: 12px !important;
+    box-shadow: 0 15px 50px rgba(0,0,0,0.2) !important;
+    overflow: hidden !important;
+}
+
+.note-modal-header {
+    border-bottom: 1px solid #eee !important;
+    padding: 15px 20px !important;
+}
+
+.note-modal-title {
+    font-size: 1.2rem !important;
+    font-weight: 600 !important;
+    color: #111827 !important;
+}
+
+.note-dropdown-menu{
+	width: 350px !important;
+}
+.note-palette{
+	margin: 2px 0;
 }
 </style>
 </head>
@@ -131,11 +274,15 @@
 											</select>
 										</div>
 										<div class="col-12  mt-5">
-											<label class="required fw-medium text-gray-800 mb-2">Tag</label>
+											<label class="fw-medium text-gray-800 mb-2">Tag</label>
 											<select name="article_tag" id="article_tag"
 												class="form-select text-gray-700" data-control="select2"
 												data-close-on-select="false" data-placeholder="Select Tag"
 												data-allow-clear="true" multiple="multiple">
+												<c:if test="${empty tagList}">
+												    <option disabled>Select Tag</option>
+												</c:if>
+
 												<c:forEach var="tagItems" items="${tagList}">
 												    <c:set var="isSelected" value="false" />
 												
@@ -155,12 +302,15 @@
 											</select>
 										</div>
 										<div class="col-12 mt-5">
-											<label class="required fw-medium text-gray-800 mb-2">Related
+											<label class="fw-medium text-gray-800 mb-2">Related
 												Article</label> <select name="article_related"
 												class="form-select text-gray-700" id="article_related"
 												data-control="select2" data-close-on-select="false"
 												data-placeholder="Select Related Article"
 												data-allow-clear="true" multiple="multiple">
+												<c:if test="${empty articleList}">
+												    <option disabled>Select Related Article</option>
+												</c:if>
 											<c:forEach var="articleItems" items="${articleList}">
 											    <c:set var="isSelected" value="false" />
 											
@@ -184,21 +334,6 @@
 											<input type="text" class="form-control text-gray-700" disabled
 												placeholder="Author" name="user_create"
 												id="user_create" value="${userCreate.id} ${not empty userCreate.name ? '- ' : ''}${userCreate.name}" />
-											<%-- <select name="user_create"
-											        class="form-select text-gray-700"
-											        id="user_create"
-											        data-control="select2">
-											
-											        <c:forEach var="userItems" items="${userList}">
-											            <option value="${userItems.id}"
-											                <c:if test="${userItems.id eq article.userCreate}">
-											                    selected
-											                </c:if>>
-											                ${userItems.departmentId} ${not empty userItems.name ? '- ' : ''}${userItems.name}
-											            </option>
-											        </c:forEach>
-											
-											    </select> --%>
 										</div>
 										<div class="row col-12 ">
 											<div class="col-12 col-md-6 mt-5">
@@ -268,23 +403,7 @@
 												        background-color:#f5f5f5;
 											         ">
 											    </div>
-												<%-- <div id="imageInputWrapper"
-													class="border border-2 border-white rounded image-input-wrapper w-300px h-300px d-flex align-items-center justify-content-center"
-													style="
-								                <c:choose>
-								                    <c:when test='${not empty fileImgPath}'>
-								                        background-image: url(${fileImgPath});
-								                        background-size: cover;
-								                        background-position: center;
-								                    </c:when>
-								                   <c:otherwise>
-											            background-image: url('${pageContext.request.contextPath}/assets/media/svg/avatars/blank.svg');
-											            background-size: cover;
-											            background-position: center;
-											        </c:otherwise>
-								                </c:choose> 
-								             ">
-												</div> --%>
+												
 
 												<label id="changeBtn"
 													class="btn btn-icon btn-circle btn-color-muted btn-active-color-primary w-30px h-30px bg-body shadow"
@@ -340,18 +459,16 @@
 							<div
 								class="card-header d-flex align-items-center justify-content-between">
 								<h3 class="fw-semibold text-gray-900 mb-0">Content Detail</h3>
-
+							<button type="button" id="switchBtn"
+									onclick="switchEditor()"
+									class="btn btn-lg btn-light fw-medium text-light-inverse p-3">Switch CKEditor
+								</button>
 							</div>
 
 							<div class="card-body ckeditor-wrapper">
-								<div id="kt_docs_ckeditor_document_toolbar">
-									<!-- <button type="button" id="fullscreenBtn"
-										    class="btn btn-sm btn-light">
-										    Fullscreen
-										</button> -->
-								</div>
-								<div id="kt_docs_ckeditor_document">
-								</div>
+								<div id="summernote"> </div>
+								 <div id="kt_docs_ckeditor_document_toolbar"></div>
+								<div id="kt_docs_ckeditor_document"></div> 
 							</div>
 							<input type="hidden" name="detail" id="detailInput" value="${fn:escapeXml(article.detail)}">
 						</div>
@@ -395,8 +512,14 @@
 										<label class="required fw-medium text-gray-800 mb-2">Page URL</label>
 										<input type="text" 
 												class="form-control text-gray-700"
-												placeholder="Page URL" id="pageUriId" name="pageUriId" value="${pageUri.pageUriId}" />
+												placeholder="Page URL" id="pageUriId" name="pageUriId" value="${empty pageUri.pageUriId ? '' :pageUri.pageUriId}" />
 														
+									</div>
+									<div class="col-12 mt-5">
+										<label class="required fw-medium text-gray-800 mb-2">Title</label>
+										<input type="text" 
+												class="form-control text-gray-700" maxlength="100"
+												placeholder="Title" id="pageUriTitle" name="pageUriTitle" value="${empty pageUri.pageUriTitle ? '' :pageUri.pageUriTitle}"/>				
 									</div>
 									<div class="col-12 mt-5">
 										<label class="required fw-medium text-gray-800 mb-2">Meta</label>
@@ -404,10 +527,9 @@
 												placeholder="Meta" rows="3">${empty pageUri.meta ? '' : pageUri.meta}</textarea>		
 									</div>
 									<div class="col-12 mt-5">
-											<label class="required fw-medium text-gray-800 mb-2">Description</label>
+											<label class="fw-medium text-gray-800 mb-2">Description</label>
 											<textarea class="form-control text-gray-700" id="pageUriDescription" name="pageUriDescription"
 												placeholder="Description" rows="3">${empty pageUri.pageUriDescription ? '' : pageUri.pageUriDescription}</textarea>
-
 									</div>
 								</div>
 							</div>
@@ -432,36 +554,197 @@
 			</div>
 		</div>
 	</div>
+	
+<script type="text/javascript">
+function initSummernote(content) {
+
+    $('#summernote').summernote({
+        placeholder: '',
+        tabsize: 2,
+        codeviewFilter: false,
+        codeviewIframeFilter: false,
+        leTags: [
+    	    { title: 'Normal', tag: 'p' },
+    	    { title: 'Heading 1', tag: 'h1' },
+    	    { title: 'Heading 2', tag: 'h2' },
+    	    { title: 'Heading 3', tag: 'h3' },
+    	    { title: 'Quote', tag: 'blockquote' },
+    	    { title: 'Code', tag: 'pre' }
+    	  ],
+    	  toolbar: [
+    	    // style
+    	    ['style', ['style']],
+
+    	    // font
+    	    ['font', [
+    	      'bold', 'italic',  'underline', 'strikethrough',
+    	      'superscript', 'subscript', 'clear'
+    	    ]],
+
+    	    // font size/name/color
+    	    ['fontname', ['fontname']],
+    	    ['fontsize', ['fontsize']],
+    	    ['color', ['color']],
+
+    	    // paragraph
+    	    ['para', [ 'ul', 'ol', 'paragraph', 'height'  ]],
+
+    	    // insert
+    	    ['insert', [ 'link', 'picture', 'video', 'table', 'hr' ]],
+
+    	    // misc/view
+    	    ['view', [ 'undo', 'redo', 'fullscreen', 'codeview', 'help' ]]
+    	  ]
+    });
+
+    $('#summernote').summernote('code', content);
+}
+</script>
+<script>
+	var currentEditor = "summernote";
+	
+	function switchEditor() {
+		
+		if (currentEditor === "summernote" && !editorInstance) {
+	        alert("Editor still loading...");
+	        return;
+	    }
 
 
+	    var content = "";
+
+	    if(currentEditor === "summernote") {
+
+	        content = $('#summernote').summernote('code');
+
+	        $('#summernote').summernote('destroy');
+	        document.getElementById("summernote").style.display = "none";
+
+	        document.getElementById("kt_docs_ckeditor_document").style.display = "block";
+	        document.getElementById("kt_docs_ckeditor_document_toolbar").style.display = "block";
+
+	        editorInstance.setData(content);
+
+	        currentEditor = "ck";
+
+	    } else {
+
+	        content = editorInstance.getData();
+	     	//ซ่อนCK
+	        document.getElementById("kt_docs_ckeditor_document").style.display = "none";
+	        document.getElementById("kt_docs_ckeditor_document_toolbar").style.display = "none";
+
+	        //ปิดsummernote
+	        $('#summernote').summernote('destroy');
+
+	        //แสดง+init ใหม่
+	        document.getElementById("summernote").style.display = "block";
+	        initSummernote(content);
+
+	        currentEditor = "summernote";
+	    }
+	    
+	    document.getElementById("switchBtn").textContent =
+	        currentEditor === "summernote"
+	            ? "Switch CKEditor"
+	            : "Switch Summernote";
+	    
+	    console.log("editor:", currentEditor);
+	}
+	</script>	
 	<script>
+	var editorInstance;
+	
+	document.getElementById("switchBtn").disabled = true;
+	
 	DecoupledEditor
     .create(document.querySelector('#kt_docs_ckeditor_document'))
     .then(editor => {
     	editorInstance = editor;
+    	document.getElementById("switchBtn").disabled = false;
+    	
+    	document.getElementById("kt_docs_ckeditor_document").style.display = "none";
+    	document.getElementById("kt_docs_ckeditor_document_toolbar").style.display = "none";
         const toolbarContainer = document.querySelector( '#kt_docs_ckeditor_document_toolbar' );
 
         toolbarContainer.appendChild( editor.ui.view.toolbar.element );
         
-        const savedContent =
-            document.getElementById("detailInput").value;
+        const savedContent = document.getElementById("detailInput").value;
         editor.setData(savedContent);
     })
     .catch(error => {
         console.error(error);
+    }); 
+	
+    document.addEventListener("DOMContentLoaded", function () {
+    $('#summernote').summernote({
+	      placeholder: '',
+	      tabsize: 2,
+	      codeviewFilter: false,
+	      codeviewIframeFilter: false,
+	      leTags: [
+	    	    { title: 'Normal', tag: 'p' },
+	    	    { title: 'Heading 1', tag: 'h1' },
+	    	    { title: 'Heading 2', tag: 'h2' },
+	    	    { title: 'Heading 3', tag: 'h3' },
+	    	    { title: 'Quote', tag: 'blockquote' },
+	    	    { title: 'Code', tag: 'pre' }
+	    	  ],
+
+	    	  toolbar: [
+
+	    	    // style
+	    	    ['style', ['style']],
+
+	    	    // font
+	    	    ['font', [
+	    	      'bold',
+	    	      'italic',
+	    	      'underline',
+	    	      'strikethrough',
+	    	      'superscript',
+	    	      'subscript',
+	    	      'clear'
+	    	    ]],
+
+	    	    // font size/name/color
+	    	    ['fontname', ['fontname']],
+	    	    ['fontsize', ['fontsize']],
+	    	    ['color', ['color']],
+
+	    	    // paragraph
+	    	    ['para', [
+	    	      'ul',
+	    	      'ol',
+	    	      'paragraph',
+	    	      'height'
+	    	    ]],
+
+	    	    // insert
+	    	    ['insert', [
+	    	      'link',
+	    	      'picture',
+	    	      'video',
+	    	      'table',
+	    	      'hr'
+	    	    ]],
+
+	    	    // misc/view
+	    	    ['view', [
+	    	      'undo',
+	    	      'redo',
+	    	      'fullscreen',
+	    	      'codeview',
+	    	      'help'
+	    	    ]]
+	    	  ]
+	    });
+    const savedContent = document.getElementById("detailInput").value;
+
+    $('#summernote').summernote('code', savedContent);
+
     });
 	
-	/* document.getElementById("fullscreenBtn").addEventListener("click", function () {
-	    const editorContainer = document.querySelector(".ckeditor-wrapper");
-
-	    editorContainer.classList.toggle("editor-fullscreen");
-
-	    if (editorContainer.classList.contains("editor-fullscreen")) {
-	        this.innerText = "Exit Fullscreen";
-	    } else {
-	        this.innerText = "Fullscreen";
-	    }
-	}); */
 		</script>
 
 	<script>
@@ -505,7 +788,7 @@
 			document.addEventListener("DOMContentLoaded", function () {		
 			    const imageInput = document.getElementById("imageInputFile");
 			    
-			    const wrapper = document.getElementById("imageInputWrapper");
+			    /*  const wrapper = document.getElementById("imageInputWrapper");
 
 			    // ดึง background-image
 			    let bg = wrapper.style.backgroundImage;
@@ -525,9 +808,9 @@
 			    };
 
 			    img.src = url;
-
+ */
 			    
-			    imageInput.addEventListener("change", function(e) {
+			    /* imageInput.addEventListener("change", function(e) {
 				    const file = e.target.files[0];
 				    if (!file) return;
 
@@ -542,7 +825,7 @@
 
 				    img.src = URL.createObjectURL(file);
 				});
-			
+			 */
 			
 			    imageInput.addEventListener("change", function () {
 			
@@ -621,13 +904,21 @@
 	}
 	
 	function submitForm(){
-		const content = editorInstance.getData();
+		/* const content = $('#summernote').summernote('code'); */
+		var content = "";
+
+		if(currentEditor === "summernote") {
+		    content = $('#summernote').summernote('code');
+		} else {
+		    content = editorInstance.getData();
+		}
+		
 	    document.getElementById("detailInput").value = content;
 		var errorFields = [];
 		
 		const form = document.getElementById("formAddArticle");
 	    
-		  ["article_title", "publication_date", "publication_time","meta","pageUriDescription"]
+		  ["article_title", "publication_date", "publication_time","meta","pageUriDescription","pageUriTitle"]
 		  .forEach(id => {
 		      const element = document.getElementById(id);
 		      if (element && element.value) {
@@ -637,28 +928,28 @@
 		  
 		  const articleTitle  = document.getElementById("article_title").value
 		  const articleType = document.getElementById("article_type").value
-		  const articleTag = $("#article_tag").val();
-		  const articleRelated = $("#article_related").val();
+		 /*  const articleTag = $("#article_tag").val();
+		  const articleRelated = $("#article_related").val(); */
 		  const userCreate = document.getElementById("user_create").value
 		  const publicDate = document.getElementById("publication_date").value
 		  const publicTime  = document.getElementById("publication_time").value
 		  const contentText = content.replace(/<[^>]*>/g, "").trim();
 		  const imageFile = document.getElementById("imageInputFile");
 		  const meta = document.getElementById("meta").value
-		  const pageUriDescription  = document.getElementById("pageUriDescription").value
+		  const pageUriTitle  = document.getElementById("pageUriTitle").value
 		  
 		  if(!articleTitle) errorFields.push("Title")
 		  if(!articleType) errorFields.push("Type")
-		  if (!articleTag || articleTag.length === 0)
+		  /* if (!articleTag || articleTag.length === 0)
 		    errorFields.push("Tag");
 
 		  if (!articleRelated || articleRelated.length === 0)
-		      errorFields.push("Related");
+		      errorFields.push("Related"); */
 		  
 		  if(!userCreate) errorFields.push("Author")
 		  if(!publicDate) errorFields.push("Publication Date")
 		  if(!meta) errorFields.push("Meta")
-		  if(!pageUriDescription) errorFields.push("Description")
+		  if(!pageUriTitle) errorFields.push("Title")
 		  if(!publicTime) errorFields.push("Publication Time")
 		  
 		 /*  if (!imageFile.files || imageFile.files.length === 0) {
@@ -713,8 +1004,7 @@
 		  return false;
 	}
 	
-		function confirmLeaveForm(redirectUrl){
-				
+		function confirmLeaveForm(redirectUrl){ 
 			    Swal.fire({
 			        title: "Are you sure?!",
 			        text: "Closing will discard any unsaved data.",

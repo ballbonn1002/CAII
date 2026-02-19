@@ -141,6 +141,7 @@ public class ArticleAction extends ActionSupport {
 	private String pageUriId;
 	private String meta;
 	private String pageUriDescription;
+	private String pageUriTitle;
 
 	public Integer getArticleId() {
 		return articleId;
@@ -352,6 +353,14 @@ public class ArticleAction extends ActionSupport {
 		this.pageUriDescription = pageUriDescription;
 	}
 
+	public String getPageUriTitle() {
+		return pageUriTitle;
+	}
+
+	public void setPageUriTitle(String pageUriTitle) {
+		this.pageUriTitle = pageUriTitle;
+	}
+
 	public String article_feed() {
 		try {
 			String startStr = request.getParameter("startDate");
@@ -543,7 +552,7 @@ public class ArticleAction extends ActionSupport {
 			uri.setForwardTo(forward);
 			uri.setModel("article");
 			uri.setModelId(articleIdStr);
-			uri.setPageUriTitle(article_title);
+			
 			uri.setPageUriDescription(null);
 			uri.setMeta(null);
 			uri.setUserCreate(logonUser);
@@ -567,7 +576,6 @@ public class ArticleAction extends ActionSupport {
 	
 	public String article_preview() {
 		try {
-//			log.debug("Preview articleId = " + articleId);
 			if (articleId == null) {
 			    log.error("articleId is null!");
 			    return ERROR;
@@ -576,10 +584,42 @@ public class ArticleAction extends ActionSupport {
 			Article article = articleDAO.findById(articleId);
 			List<Tag> tagList = tagDAO.findAll();
 			List<ArticleType> articleTypeList = articleTypeDAO.findAll();
-			List<ArticleTag> selectedTagId = articleTagDAO.findTagIdByArticleId(String.valueOf(articleId));
+			List<Integer> tagIds = articleTagDAO.findTagIdByArticleId(String.valueOf(articleId));
 			List<ArticleRelated> selectedRelatedId = articleRelatedDAO.findRelatedIdByArticleId(String.valueOf(articleId));
 			List<User> userList = userDAO.findAll();
 			List<Article> articleList = articleDAO.findAll();
+
+			log.debug("tagIds = "+ tagIds);
+			
+			List<Tag> selectedTagName = new ArrayList<>();
+			if (tagIds != null) {
+			    for (Integer id : tagIds) {
+			        Tag tag = tagDAO.findById(id);
+			        if (tag != null) {
+			            selectedTagName.add(tag);
+			            log.debug("tagName = "+ selectedTagName);
+			        }
+			        
+			        
+			    }
+			}
+			
+
+//			if (selectedTagId != null) {
+//			    for (ArticleTag at : selectedTagId) {
+//			        Tag tag = tagDAO.findById(at.getTagId());
+//			        if (tag != null) {
+//			            selectedTagName.add(tag);
+//			        }
+//			    }
+//			}
+			//List<ArticleTag> selectedTagName = articleTagDAO.findTagNameBySelectedTagId(Integer.parseInt(selectedTagId));
+//			if(selectedTagId !=null) {
+//				for(ArticleTag selectedTag : selectedTagId) {
+//					
+//				}
+//			}
+			
 //			User userCreate = userDAO.findById(article.getUserCreate());
 			
 			Integer typeArticle = article.getArticleTypeId();
@@ -589,7 +629,7 @@ public class ArticleAction extends ActionSupport {
 			String publicTime = time_post.toLocalTime().toString();
 			
 			PageUri pageUri = pageUriDAO.findById(String.valueOf(articleId));
-	//		log.debug("pageUri = "+ pageUri);
+
 			
 			String imgPath = null;
 			String imgAlt = null;
@@ -604,7 +644,7 @@ public class ArticleAction extends ActionSupport {
 			request.setAttribute("article", article);
 			request.setAttribute("tagList", tagList);
 			request.setAttribute("articleTypeList", articleTypeList);
-			request.setAttribute("selectedTagId", selectedTagId);
+			request.setAttribute("selectedTagName", selectedTagName);
 			request.setAttribute("selectedRelatedId", selectedRelatedId);
 			request.setAttribute("articleList", articleList);
 //			request.setAttribute("userCreate", userCreate);
@@ -618,6 +658,7 @@ public class ArticleAction extends ActionSupport {
 			
 			request.setAttribute("typeArticle", typeArticle);
 			request.setAttribute("pageUri", pageUri);
+			log.debug("title pageUri" + pageUri);
 			
 			return SUCCESS;
 		} catch (Exception e) {
@@ -632,7 +673,7 @@ public class ArticleAction extends ActionSupport {
 			Article article = articleDAO.findById(articleId);
 			List<Tag> tagList = tagDAO.findAll();
 			List<ArticleType> articleTypeList = articleTypeDAO.findAll();
-			List<ArticleTag> selectedTagId = articleTagDAO.findTagIdByArticleId(String.valueOf(articleId));
+			List<Integer> selectedTagId = articleTagDAO.findTagIdByArticleId(String.valueOf(articleId));
 			List<ArticleRelated> selectedRelatedId = articleRelatedDAO.findRelatedIdByArticleId(String.valueOf(articleId));
 //			List<User> userList = userDAO.findAll();
 			List<Article> articleList = articleDAO.findAll();
@@ -700,7 +741,7 @@ public class ArticleAction extends ActionSupport {
 			User onlineUser = (User) request.getSession().getAttribute("onlineUser");
 			String logonUser = onlineUser.getId();
 			String fileIdStr = null;
-			log.debug("articleId = " + articleId);
+//			log.debug("articleId = " + articleId);
 			Article article = articleDAO.findById(articleId);
 			// Update article
 			article.setTopic(article_title);
@@ -807,6 +848,27 @@ public class ArticleAction extends ActionSupport {
 			// Update page_uri
 			PageUri uri = pageUriDAO.findById(String.valueOf(articleId));		
 			if (uri != null) {
+				String articleIdStr = String.valueOf(articleId);
+			    String forward;
+			    String newPageUriId;
+
+			    if (article_type == 1) {
+			        forward = "/news_detail?articleId=" + articleIdStr;
+			        newPageUriId = "/news/" + articleIdStr;
+
+			    } else if (article_type == 2) {
+			        forward = "/blog_detail?articleId=" + articleIdStr;
+			        newPageUriId = "/blog/" + articleIdStr;
+
+			    } else {
+			        forward = "/news_detail?articleId=" + articleIdStr;
+			        newPageUriId = "/news/" + articleIdStr;
+			    }
+
+			    uri.setForwardTo(forward);
+			    uri.setPageUriId(newPageUriId);
+			    
+				uri.setPageUriTitle(pageUriTitle);
 			    uri.setPageUriId(pageUriId);
 			    uri.setPageUriDescription(pageUriDescription);
 			    uri.setMeta(meta);
@@ -857,5 +919,6 @@ public class ArticleAction extends ActionSupport {
 			return ERROR;
 		}
 	}
+	
 
 }

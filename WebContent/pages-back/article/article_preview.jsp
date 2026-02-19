@@ -21,9 +21,13 @@
 <script src="assets/plugins/global/plugins.bundle.js"></script>
 
 <!--CKEditor-->
-<script
-	src="assets/plugins/custom/ckeditor/ckeditor-decoupled.bundle.js"></script>
+<script src="assets/plugins/custom/ckeditor/ckeditor-decoupled.bundle.js"></script>
 <script src="assets/plugins/custom/ckeditor/ckeditor-document.bundle.js"></script>
+
+<!--Summernote-->
+<link href="https://cdn.jsdelivr.net/npm/summernote@0.9.0/dist/summernote-lite.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/summernote@0.9.0/dist/summernote-lite.min.js"></script>
+
 
 
 
@@ -40,6 +44,29 @@
 	object-fit: cover;
 	display: block;
 }
+
+/* Quote */
+.ck-content blockquote {
+    border-left: 5px solid #f1416c !important; 
+    padding: 15px 20px !important;
+    margin: 20px 0 !important;
+    font-style: italic !important;
+    color: #3f4254 !important;
+}
+
+/*Code */
+.ck-content pre {
+    background-color: #f1f1f2 !important; 
+    border: 1px solid #e1e3ea !important;
+    border-radius: 8px !important;
+    padding: 15px !important;
+    margin: 20px 0 !important;
+    font-size: 13px !important;
+    color: #181c32 !important;
+    line-height: 1.5 !important;
+    overflow-x: auto !important;
+}
+
 </style>
 </head>
 <body class="app-default">
@@ -78,12 +105,19 @@
 						</div>
 						<div class="card-body d-flex flex-column">
 							<div class="card p-10">
-								<span class="fs-5 fw-normal text-danger text-uppercase">Artificial
-									Intelligence</span>
+							<!-- <span class="fs-5 fw-normal text-danger text-uppercase">Artificial Intelligence</span> -->
+								<c:if test="${not empty selectedTagName}">
+								<div class="d-flex align-items-center gap-4 ">
+								 <c:forEach var="tag" items="${selectedTagName}">
+									<span
+										class="d-flex badge badge-lg badge-light-danger fw-semibold fs-7">
+										${tag.tagName} </span>
+								</c:forEach> 
+								</div>
+								</c:if>
 								<h1 class="fw-bold text-danger my-6">${empty article.topic ? '' : article.topic}</h1>
 								<div class="row align-items-center justify-content-between">
 
-									<!-- LEFT SIDE -->
 									<div class="col-auto">
 										<div class="d-flex align-items-center gap-4 flex-wrap">
 
@@ -110,38 +144,48 @@
 										</div>
 									</div>
 
-									<!-- RIGHT SIDE -->
 									<div class="col-auto">
-										<div class="d-flex align-items-center gap-2">
-											<span>Shares : </span> <a
-												href="https://www.facebook.com/sharer/sharer.php?u=http://www.cubesofttech.com${pageUri.pageUriId }"
-												target="_blank"> 
-												<img alt="logo facebook"
-												src="/upload/articleshares/logo_facebook.png"></a>
-												
-												<a
-												href="https://twitter.com/share?url=http://www.cubesofttech.com${pageUri.pageUriId }"
-												target="_blank"> 
-												<img alt="logo x"
-												src="/upload/articleshares/logo_x.png"></a>
-												
-												<a
-												href="https://mail.google.com/mail/?view=cm&fs=1&tf=1&to=email@gmail.com&body=http://www.cubesofttech.com${pageUri.pageUriId}"
-												target="_blank"> 
-												<img alt="logo google-gmail"
-												src="/upload/articleshares/logo_google-gmail.png"></a>
-												
-												<a
-												href="https://linkedin.com/shareArticle?url=http://www.cubesofttech.com${pageUri.pageUriId }"
-												target="_blank"> 
-												<img alt="logo linkedin"
-												src="/upload/articleshares/logo_linkedin.png"></a>
+										<div class="d-flex align-items-center gap-3">
+											<span>Shares : </span> <a href="#" target="_blank"> <img
+												alt="logo facebook" class="h-25px"
+												src="${pageContext.request.contextPath}/assets/media/svg/social-logos/facebook.svg"></a>
+
+											<a href="#" target="_blank"> <img alt="logo x"
+												class="h-25px"
+												src="${pageContext.request.contextPath}/assets/media/svg/social-logos/logo_x.png"></a>
+
+											<a href="#" target="_blank"> <img alt="logo gmail"
+												class="h-25px"
+												src="${pageContext.request.contextPath}/assets/media/svg/social-logos/gmail.png"></a>
+
+											<a href="#" target="_blank"> <img alt="logo linkedin"
+												class="h-25px"
+												src="${pageContext.request.contextPath}/assets/media/svg/social-logos/linkedin.svg"></a>
 										</div>
 									</div>
 
 								</div>
 							</div>
 							<div class="ck-content py-14">${article.detail}</div>
+							<div class="my-5">
+										<div class="d-flex align-items-center gap-3">
+											<span>Shares : </span> <a href="#" target="_blank"> <img
+												alt="logo facebook" class="h-25px"
+												src="${pageContext.request.contextPath}/assets/media/svg/social-logos/facebook.svg"></a>
+
+											<a href="#" target="_blank"> <img alt="logo x"
+												class="h-25px"
+												src="${pageContext.request.contextPath}/assets/media/svg/social-logos/logo_x.png"></a>
+
+											<a href="#" target="_blank"> <img alt="logo gmail"
+												class="h-25px"
+												src="${pageContext.request.contextPath}/assets/media/svg/social-logos/gmail.png"></a>
+
+											<a href="#" target="_blank"> <img alt="logo linkedin"
+												class="h-25px"
+												src="${pageContext.request.contextPath}/assets/media/svg/social-logos/linkedin.svg"></a>
+										</div>
+							</div>
 						</div>
 					</div>
 

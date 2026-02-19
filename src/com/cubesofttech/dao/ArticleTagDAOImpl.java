@@ -50,15 +50,22 @@ public class ArticleTagDAOImpl implements ArticleTagDAO {
 	}
 	
 	@Override
-	public List<ArticleTag> findTagIdByArticleId(String articleId) throws Exception {
+	public List<Integer> findTagIdByArticleId(String articleId) throws Exception {
 	    Session session = sessionFactory.getCurrentSession();
 
 	    String sql = "SELECT tag_id FROM article_tag WHERE article_id = :articleId";
 
-	    SQLQuery query = session.createSQLQuery(sql);
-	    query.setParameter("articleId", articleId);
+	    List<?> raw = session.createSQLQuery(sql)
+	            .setParameter("articleId", articleId)
+	            .list();
 
-	    return query.list();
+	    List<Integer> result = new ArrayList<>();
+
+	    for (Object obj : raw) {
+	        result.add(Integer.valueOf(obj.toString()));
+	    }
+
+	    return result;
 	}
 	
 	@Override
@@ -81,4 +88,6 @@ public class ArticleTagDAOImpl implements ArticleTagDAO {
 		session.flush();
 		// session.close();
 	}
+	
+	
 }

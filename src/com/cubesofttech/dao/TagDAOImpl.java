@@ -15,7 +15,8 @@ import org.hibernate.transform.AliasToEntityMapResultTransformer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-
+import com.cubesofttech.model.Article;
+import com.cubesofttech.model.ArticleTag;
 import com.cubesofttech.model.Tag;
 
 @Repository
@@ -38,4 +39,35 @@ public class TagDAOImpl implements TagDAO {
 		return tagList;
 	}
 	
+	@Override
+	public Tag findById(Integer id) throws Exception {
+	    Session session = sessionFactory.getCurrentSession();
+
+	    String sql = "SELECT * FROM tag WHERE tag_id = :id";
+
+	    SQLQuery query = session.createSQLQuery(sql);
+	    query.setParameter("id", id);
+
+	    return (Tag) session.createSQLQuery(sql)
+	            .addEntity(Tag.class)
+	            .setParameter("id", id)
+	            .uniqueResult();
+	}
+	
+	
+//	@Override
+//	public Tag findById(Integer id) throws Exception {
+//		Session session = sessionFactory.getCurrentSession();
+//		Article article = null;
+//		try {
+//			article = (Tag) session.get(Article.class, id);
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//		} finally {
+//			// session.close();
+//		}
+//		return article;
+//		
+//
+//	}
 }
