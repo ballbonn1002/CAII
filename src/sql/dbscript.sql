@@ -50,6 +50,7 @@ ALTER TABLE job_site MODIFY description VARCHAR(1024) CHARACTER SET utf8mb4 COLL
 -- 16/01/2026 max(Intern): Add 'highlight' column to 'announcement' table --
 ALTER TABLE announcement ADD COLUMN highlight VARCHAR(1) DEFAULT NULL;
 
--- PROD 2026 FEB 17
+-- PROD 2026 FEB 19
+
 
 
