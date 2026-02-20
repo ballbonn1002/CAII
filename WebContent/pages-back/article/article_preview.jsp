@@ -207,6 +207,28 @@
 	</div>
 
 	<script>
+	function renderPreviewContent(html) {
+	    if (!html) return '';
+	    //หาเนื้อหาใน <style>
+	    return html.replace(/<style[^>]*>([\s\S]*?)<\/style>/gi, function(match, cssContent) {
+	        //เติม Class .ck-content นำหน้าทุก Selector e.g. h1 {...} จะกลายเป็น .ck-content h1 {...}
+	        const scopedCss = cssContent.replace(/(^|[\s,{}])([a-zA-Z0-9\._\-#\*\[\]\:]+)(?=[^{}]*\{)/g, function(selectorMatch, p1, p2) {
+	            // ถ้า selector คือ body เปลี่ยนเป็น .ck-content
+	            if (p2.trim() === 'body') return p1 + ' .ck-content';
+	            return p1 + ' .ck-content ' + p2;
+	        });
+	        
+	        return '<style>' + scopedCss + '</style>';
+	    });
+	}
+
+	//โหลดหน้า Preview เสร็จ เรียกใช้ renderPreviewContent
+	document.addEventListener("DOMContentLoaded", function() {
+	    const detailContainer = document.querySelector('.ck-content');
+	    const rawContent = detailContainer.innerHTML;
+	    detailContainer.innerHTML = renderPreviewContent(rawContent);
+	});
+	
 function confirmLeaveForm(redirectUrl){
 	
     Swal.fire({

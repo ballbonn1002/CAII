@@ -556,11 +556,27 @@
 	</div>
 	
 <script type="text/javascript">
-function initSummernote(content) {
+/* แปลง <style> เป็น <x-style> */
+function changeStyles(html){
+	if(!html) return '';
+	return html.replace(/<style/gi, '<x-style style="display: none;"')
+    .replace(/<\/style>/gi, '</x-style>');
+}
+/* แปลงกลับเป็น <style> */
+function unChangeStyles(html) {
+    if (!html) return '';
+    return html.replace(/<x-style[^>]*>/gi, '<style>')
+               .replace(/<\/x-style>/gi, '</style>');
+}
 
+function initSummernote(content) {
     $('#summernote').summernote({
         placeholder: '',
         tabsize: 2,
+       iframe: true, 
+        iframeAttributes: {
+            class: 'summernote-iframe'
+        }, 
         codeviewFilter: false,
         codeviewIframeFilter: false,
         leTags: [
@@ -594,10 +610,40 @@ function initSummernote(content) {
 
     	    // misc/view
     	    ['view', [ 'undo', 'redo', 'fullscreen', 'codeview', 'help' ]]
-    	  ]
+    	  ],
+    	  callbacks: {
+    		    onInit: function () {
+    		        const $editor = $(this);
+    		        // user กดดู HTML code จะเปลี่ยน <x-style> กลับเป็น <style>
+    		        $editor.next().on('click', '.btn-codeview', function () {
+    		            setTimeout(() => {
+    		                const codable = $editor.next().find('.note-codable');
+
+    		                if (codable.length) {
+    		                    // user view จะแสดง <style>
+    		                    codable.val(
+    		                        unChangeStyles(codable.val())
+    		                    );
+    		                }
+    		            }, 0);
+
+    		        });
+    		    }, //ออกจาก code view
+    		    onBlurCodeview: function () {
+    		        const $editor = $(this);
+    		        const codable = $editor.next().find('.note-codable');
+
+    		        if (codable.length) {
+    		            // แปลง<style> เป็น <x-style> โหลด HTML กลับเข้า editor
+    		            const safe = changeStyles(codable.val());
+    		            $editor.summernote('code', safe);
+    		        }
+    		    }
+    		}
     });
 
-    $('#summernote').summernote('code', content);
+    /* $('#summernote').summernote('code', content); */
+    $('#summernote').summernote('code', changeStyles(content));
 }
 </script>
 <script>
@@ -680,6 +726,10 @@ function initSummernote(content) {
     $('#summernote').summernote({
 	      placeholder: '',
 	      tabsize: 2,
+	      iframe: true, 
+	        iframeAttributes: {
+	            class: 'summernote-iframe'
+	        }, 
 	      codeviewFilter: false,
 	      codeviewIframeFilter: false,
 	      leTags: [
@@ -689,62 +739,68 @@ function initSummernote(content) {
 	    	    { title: 'Heading 3', tag: 'h3' },
 	    	    { title: 'Quote', tag: 'blockquote' },
 	    	    { title: 'Code', tag: 'pre' }
-	    	  ],
+	    	    ],
+	      	  toolbar: [
+	      	    // style
+	      	    ['style', ['style']],
 
-	    	  toolbar: [
+	      	    // font
+	      	    ['font', [
+	      	      'bold', 'italic',  'underline', 'strikethrough',
+	      	      'superscript', 'subscript', 'clear'
+	      	    ]],
 
-	    	    // style
-	    	    ['style', ['style']],
+	      	    // font size/name/color
+	      	    ['fontname', ['fontname']],
+	      	    ['fontsize', ['fontsize']],
+	      	    ['color', ['color']],
 
-	    	    // font
-	    	    ['font', [
-	    	      'bold',
-	    	      'italic',
-	    	      'underline',
-	    	      'strikethrough',
-	    	      'superscript',
-	    	      'subscript',
-	    	      'clear'
-	    	    ]],
+	      	    // paragraph
+	      	    ['para', [ 'ul', 'ol', 'paragraph', 'height'  ]],
 
-	    	    // font size/name/color
-	    	    ['fontname', ['fontname']],
-	    	    ['fontsize', ['fontsize']],
-	    	    ['color', ['color']],
+	      	    // insert
+	      	    ['insert', [ 'link', 'picture', 'video', 'table', 'hr' ]],
 
-	    	    // paragraph
-	    	    ['para', [
-	    	      'ul',
-	    	      'ol',
-	    	      'paragraph',
-	    	      'height'
-	    	    ]],
+	      	    // misc/view
+	      	    ['view', [ 'undo', 'redo', 'fullscreen', 'codeview', 'help' ]]
+	      	  ],
+	      	callbacks: {
+    		    onInit: function () {
+    		        const $editor = $(this);
+    		        // user กดดู HTML code จะเปลี่ยน <x-style> กลับเป็น <style>
+    		        $editor.next().on('click', '.btn-codeview', function () {
+    		            setTimeout(() => {
+    		                const codable = $editor.next().find('.note-codable');
 
-	    	    // insert
-	    	    ['insert', [
-	    	      'link',
-	    	      'picture',
-	    	      'video',
-	    	      'table',
-	    	      'hr'
-	    	    ]],
+    		                if (codable.length) {
+    		                    // user view จะแสดง <style>
+    		                    codable.val(
+    		                        unChangeStyles(codable.val())
+    		                    );
+    		                }
+    		            }, 0);
 
-	    	    // misc/view
-	    	    ['view', [
-	    	      'undo',
-	    	      'redo',
-	    	      'fullscreen',
-	    	      'codeview',
-	    	      'help'
-	    	    ]]
-	    	  ]
+    		        });
+    		    }, //ออกจาก code view
+    		    onBlurCodeview: function () {
+    		        const $editor = $(this);
+    		        const codable = $editor.next().find('.note-codable');
+
+    		        if (codable.length) {
+    		            // แปลง<style> เป็น <x-style> โหลด HTML กลับเข้า editor
+    		            const safe = changeStyles(codable.val());
+    		            $editor.summernote('code', safe);
+    		        }
+    		    }
+    		}
 	    });
     const savedContent = document.getElementById("detailInput").value;
 
-    $('#summernote').summernote('code', savedContent);
-
+    $('#summernote').summernote('code', changeStyles(savedContent));
+	    if(editorInstance) {
+	        editorInstance.setData(changeStyles(savedContent));
+	    }
     });
-	
 		</script>
 
 	<script>
@@ -913,7 +969,11 @@ function initSummernote(content) {
 		    content = editorInstance.getData();
 		}
 		
-	    document.getElementById("detailInput").value = content;
+	    /* document.getElementById("detailInput").value = content; */
+	    // แปลงกลับเป็นแท็ก style ปกติก่อน Save
+	    const finalContent = unChangeStyles(content);
+	    document.getElementById("detailInput").value = finalContent;
+	    
 		var errorFields = [];
 		
 		const form = document.getElementById("formAddArticle");
