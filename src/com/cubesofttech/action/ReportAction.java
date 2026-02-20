@@ -121,15 +121,41 @@ public class ReportAction extends ActionSupport {
 
             String userId = nvl(request.getParameter("userId"), onlineUser.getId());
             int year = Integer.parseInt(nvl(request.getParameter("year"), String.valueOf(Year.now().getValue())));
-            int month = Integer.parseInt(nvl(request.getParameter("month"), "0")); // 0=All, 1..12
 
-            AttendanceResult attData = buildAttendanceData(userId, year);
-            Summary summary = buildSummary(attData.statusMap, year, month);
+            String monthParam = nvl(request.getParameter("month"), "0");
+            List<Integer> selectedMonths = new ArrayList<>();
+
+            if ("0".equals(monthParam) || monthParam.isEmpty()) {
+                for (int i = 1; i <= 12; i++) {
+                    selectedMonths.add(i);
+                }
+            } else {
+                String[] parts = monthParam.split(",");
+                for (String p : parts) {
+                    try {
+                        selectedMonths.add(Integer.parseInt(p.trim()));
+                    } catch (NumberFormatException e) {
+                        log.warn("Invalid month format ignored: " + p);
+                    }
+                }
+            }
+            
+            User user = userDAO.findById(userId);
+            LocalDate empStartDate = null;
+            LocalDate empEndDate = null;
+            // fillter date working
+            if (user != null) {
+                if (user.getStartDate() != null) empStartDate = toLocalDate(user.getStartDate());
+                if (user.getEndDate() != null) empEndDate = toLocalDate(user.getEndDate());
+            }
+
+            AttendanceResult attData = buildAttendanceData(userId, year, empStartDate, empEndDate );
+            Summary summary = buildSummary(attData.statusMap, year, selectedMonths, empStartDate, empEndDate);
 
             response.setContentType("application/json;charset=UTF-8");
             PrintWriter out = response.getWriter();
             
-            out.print(toJson(attData.statusMap, attData.detailsMap, summary));
+            out.print(toJson(attData.statusMap, attData.detailsMap, attData.workTypeMap, summary));
             out.flush();
 
             return NONE;
@@ -141,7 +167,7 @@ public class ReportAction extends ActionSupport {
     }
 
     // ====== Build Attendance Data ======
-    private AttendanceResult buildAttendanceData(String userId, int year) throws Exception {
+    private AttendanceResult buildAttendanceData(String userId, int year, LocalDate empStartDate, LocalDate empEndDate) throws Exception {
         AttendanceResult result = new AttendanceResult();
 
         // WorkLog (year)
@@ -186,15 +212,20 @@ public class ReportAction extends ActionSupport {
                 LocalDate date = LocalDate.of(year, m, day);
                 String key = m + "_" + day;
                 
-                if (date.isAfter(today)) {
-                    continue; 
-                }
-
-                // data to statusMap and detailsMap 
                 if (holidayDays.contains(date)) {
                     result.statusMap.put(key, "Holiday");
                     continue;
                 }
+                
+                // fillter date working
+                if (empStartDate != null && date.isBefore(empStartDate)) {
+                    continue;
+                }
+                if (empEndDate != null && date.isAfter(empEndDate)) {
+                    continue;
+                }
+
+                // data to statusMap and detailsMap 
                 if (sickDays.containsKey(date)) {
                     result.statusMap.put(key, "Sick");
                     result.detailsMap.put(key, sickDays.get(date));
@@ -204,6 +235,10 @@ public class ReportAction extends ActionSupport {
                     result.statusMap.put(key, "Leave");
                     result.detailsMap.put(key, leaveDays.get(date));
                     continue;
+                }
+                
+                if (date.isAfter(today)) {
+                    continue; 
                 }
 
                 // Data time working
@@ -215,13 +250,16 @@ public class ReportAction extends ActionSupport {
                     }
                     continue;
                 }
+                
+                Map<String, Object> anyRow = anyRowPerDay.getOrDefault(date, Collections.emptyMap());
+	             String workType = str(anyRow.get("work_type"));
+	             result.workTypeMap.put(key, workType != null ? workType : "null");
 
                 if (logs.size() == 1) {
                     result.statusMap.put(key, "Incomplete");
                     continue;
                 }
 
-                Map<String, Object> anyRow = anyRowPerDay.getOrDefault(date, Collections.emptyMap());
                 LocalTime start = parseUserTime(anyRow.get("work_time_start"));
                 if(start!=null) start = start.withSecond(0).withNano(0);
                 
@@ -251,20 +289,23 @@ public class ReportAction extends ActionSupport {
     }
 
     // ====== Build Summary ======
-    private Summary buildSummary(Map<String, String> attendanceMap, int year, int month) {
+    private Summary buildSummary(Map<String, String> attendanceMap, int year, List<Integer> selectedMonths, LocalDate empStartDate, LocalDate empEndDate) {
         Summary s = new Summary();
         LocalDate today = LocalDate.now();
 
-        int startM = (month <= 0 ? 1 : month);
-        int endM = (month <= 0 ? 12 : month);
+        for (int m : selectedMonths) {
+            if (m < 1 || m > 12) continue;
 
-        for (int m = startM; m <= endM; m++) {
             int dim = YearMonth.of(year, m).lengthOfMonth();
             for (int d = 1; d <= dim; d++) {
                 
                 LocalDate date = LocalDate.of(year, m, d);
                 
-                if (date.isAfter(today)) {
+                // fillter date working
+                if (empStartDate != null && date.isBefore(empStartDate)) {
+                    continue;
+                }
+                if (empEndDate != null && date.isAfter(empEndDate)) {
                     continue;
                 }
 
@@ -273,11 +314,12 @@ public class ReportAction extends ActionSupport {
                 
                 boolean weekend = (date.getDayOfWeek() == DayOfWeek.SATURDAY || date.getDayOfWeek() == DayOfWeek.SUNDAY);
 
-                // Working Day: no weekend and Holiday
-                if (!weekend && !"Holiday".equals(st)) {
-                    s.workingDay++;
+                if (!date.isAfter(today)) {
+                    if (!weekend && !"Holiday".equals(st)) {
+                        s.workingDay++;
+                    }
                 }
-
+                
                 if ("Ontime".equals(st)) s.ontime++;
                 else if ("Leave".equals(st)) s.leave++;
                 else if ("Sick".equals(st)) s.sickLeave++;
@@ -292,6 +334,7 @@ public class ReportAction extends ActionSupport {
         return s;
     }
 
+      
     // ====== DAO loaders ======
     private static class LeaveDays {
         Map<LocalDate, String> leaveDays = new HashMap<>();
@@ -459,7 +502,7 @@ public class ReportAction extends ActionSupport {
         return LocalDate.parse(s);
     }
 
-    private static String toJson(Map<String, String> attendanceMap, Map<String, String> detailsMap, Summary summary) {
+    private static String toJson(Map<String, String> attendanceMap, Map<String, String> detailsMap, Map<String, String> workTypeMap, Summary summary) {
         StringBuilder sb = new StringBuilder();
         sb.append("{");
         sb.append("\"summary\":").append(summary.toJson()).append(",");
@@ -484,6 +527,15 @@ public class ReportAction extends ActionSupport {
             String safeDetail = e.getValue() != null ? e.getValue().replace("\"", "\\\"") : "";
             sb.append("\"").append(e.getKey()).append("\":\"").append(safeDetail).append("\"");
         }
+        sb.append("},");
+        
+        sb.append("\"workTypeMap\":{");
+        boolean firstType = true;
+        for (Map.Entry<String, String> e : workTypeMap.entrySet()) {
+            if (!firstType) sb.append(",");
+            firstType = false;
+            sb.append("\"").append(e.getKey()).append("\":\"").append(e.getValue()).append("\"");
+        }
         sb.append("}");
 
         sb.append("}");
@@ -493,6 +545,7 @@ public class ReportAction extends ActionSupport {
     static class AttendanceResult {
         public Map<String, String> statusMap = new HashMap<>();
         public Map<String, String> detailsMap = new HashMap<>();
+        public Map<String, String> workTypeMap = new HashMap<>();
     }
 
     // ====== DTOs ======

@@ -29,7 +29,13 @@
     }
     
     .position-relative .select2-container .select2-selection--single .select2-selection__rendered {
-        padding-left: 32px !important;
+        padding-left: 10px !important;
+    }
+    
+    #summaryTable th:not(:first-child), 
+    #summaryTable td:not(:first-child) {
+        min-width: 80px; 
+        max-width: 150px;
     }
 </style>
 
@@ -63,83 +69,74 @@
                 <form action="#" method="post" id="filterForm">
                     <div class="card card-flush shadow-sm mb-5">
                         <div class="card-body py-5">
-                            <div class="row g-5">
-                                <div class="col-md-9">
-                                    <!-- search user -->
-                                    <div class="col-md-14">
-                                        <div class="input-group flex-nowrap">
-                                            <span class="input-group-text bg-transparent border-end-0 h-45px"> 
-                                                <i class="ki-duotone ki-magnifier fs-3"><span class="path1"></span><span class="path2"></span></i>
-                                            </span>
-                                            <div class="flex-grow-1">
-                                                <select name="searchText" id="userSelect" class="form-select rounded-start-0 border-start-0 h-45px"
-                                                    data-control="select2">
-                                                        <c:forEach var="u" items="${userList}">
-                                                            <c:set var="label" value="" />
-                                                            <c:if test="${not empty u.employee_id}">
-                                                                <c:set var="label" value="${u.employee_id}" />
-                                                            </c:if>
-                                                            <c:if test="${not empty u.name_en}">
-                                                                <c:if test="${not empty label}">
-                                                                    <c:set var="label" value="${label} - " />
-                                                                </c:if>
-                                                                <c:set var="label" value="${label}${u.name_en}" />
-                                                            </c:if>
-                                                            <c:if test="${not empty u.name}">
-                                                                <c:if test="${not empty label}">
-                                                                    <c:set var="label" value="${label} - " />
-                                                                </c:if>
-                                                                <c:set var="label" value="${label}${u.name}" />
-                                                            </c:if>
-                                                            <c:if test="${not empty u.role_id}">
-                                                                <c:if test="${not empty label}">
-                                                                    <c:set var="label" value="${label} - " />
-                                                                </c:if>
-                                                                <c:set var="label" value="${label}${u.role_id}" />
-                                                            </c:if>
-
-                                                            <option value="${u.id}" 
-                                                                    data-name-en="${u.name_en}" 
-                                                                    data-name-th="${u.name}" 
-                                                                    ${u.id eq defaultUserId ? 'selected' : ''}>${label}
-                                                            </option>
-
-                                                        </c:forEach>
-                                                </select>
-                                            </div>
+                            
+                            <div class="row mb-5">
+                                <div class="col-12">
+                                    <div class="input-group flex-nowrap border rounded h-45px overflow-hidden">
+                                        <span class="input-group-text bg-transparent border-0 pe-1"> 
+                                            <i class="ki-duotone ki-magnifier fs-3"><span class="path1"></span><span class="path2"></span></i>
+                                        </span>
+                                        <div class="flex-grow-1">
+                                            <select name="searchText" id="userSelect" class="form-select border-0 h-45px"  data-control="select2">
+                                                <c:forEach var="u" items="${userList}">
+                                                    <c:set var="label" value="" />
+                                                    <c:if test="${not empty u.employee_id}">
+                                                        <c:set var="label" value="${u.employee_id}" />
+                                                    </c:if>
+                                                    <c:if test="${not empty u.name_en}">
+                                                        <c:if test="${not empty label}"><c:set var="label" value="${label} - " /></c:if>
+                                                        <c:set var="label" value="${label}${u.name_en}" />
+                                                    </c:if>
+                                                    <c:if test="${not empty u.name}">
+                                                        <c:if test="${not empty label}"><c:set var="label" value="${label} - " /></c:if>
+                                                        <c:set var="label" value="${label}${u.name}" />
+                                                    </c:if>
+                                                    <c:if test="${not empty u.role_id}">
+                                                        <c:if test="${not empty label}"><c:set var="label" value="${label} - IT " /></c:if>
+                                                    </c:if>
+                                                    <option value="${u.id}" data-name-en="${u.name_en}" data-name-th="${u.name}" ${u.id eq defaultUserId ? 'selected' : ''}>${label}</option>
+                                                </c:forEach>
+                                            </select>
                                         </div>
                                     </div>
-                                    <!-- search user end -->
                                 </div>
-                                
+                            </div>
+                
+                            <div class="row g-5">
                                 <div class="col-md-3">
+                                    <label class="form-label fs-7 fw-semibold text-gray-800 mb-1">Year</label>
                                     <div class="w-100 position-relative">
                                         <i class="ki-duotone ki-calendar-8 fs-3 position-absolute top-50 translate-middle-y ms-4" style="z-index: 10; pointer-events: none;">
                                             <span class="path1"></span><span class="path2"></span><span class="path3"></span>
                                             <span class="path4"></span><span class="path5"></span><span class="path6"></span>
                                         </i>
-                                        <select id="yearPicker" name="year" class="form-select form-control h-45px" data-control="select2" data-hide-search="true"></select>
+                                        <select id="yearPicker" name="year" class="form-select ps-12 h-45px" data-control="select2" data-hide-search="true"></select>
                                     </div>
                                 </div>
-
+                                
+                                <div class="col-md-9">
+                                    <label class="form-label fs-7 fw-semibold text-gray-800 mb-1">Month</label>
+                                    <div class="dropdown w-100">
+                                        <button class="form-select text-start h-45px d-flex align-items-center justify-content-between text-gray-700" type="button" id="monthDropdownBtn" data-bs-toggle="dropdown" aria-expanded="false" data-bs-auto-close="outside">
+                                            <span id="monthDropdownBtnText"></span>
+                                        </button>
+                                        <ul class="dropdown-menu shadow-sm border-gray-200 pt-2 pb-0 px-0" aria-labelledby="monthDropdownBtn" id="monthCheckboxList" style="max-height: 300px; overflow-y: auto; width: 410px;">
+                                            </ul>
+                                    </div>
+                                </div>
                             </div>
+                
                         </div>
                     </div>
                 </form>
 
                 <%-- Summary Working Day card --%>
-                <div class="card card-flush h-auto mb-5 mb-xl-10">
+                <div class="card card-flush h-auto mb-5">
                     <div class="card-header pt-2 mb-2">
                         <span class="text-gray-800 fw-medium pt-5">Summary Working Day</span>
-                        <div class="col-md-2">
-                            <div class="d-flex flex-column pt-2">
-                                <select name="month" id="monthSelect" class="form-select" data-control="select2" data-hide-search="true">
-                                </select>
-                            </div>
-                        </div>
                     </div>
 
-                    <div class="card-body">
+                    <div class="card-body pt-0">
                         <!-- Summery -->
                         <div class="row align-items-center mt-0 mx-5 fs-6 fw-bold">
                             <div class="col-lg-3 col-md-4 mb-10 d-flex align-items-center">
@@ -191,18 +188,23 @@
 
                 <!-- Summary Table -->
                 <div class="card card-flush h-auto mb-5 mb-xl-10 shadow-sm">
-                    <div class="card-header pt-5">
+                    <div class="card-header py-5">
                         <h3 class="card-title align-items-start flex-column">
                             <span class="card-label fw-bold text-gray-900 fs-3">Summary</span>
                         </h3>
+                        <div class="d-flex flex-wrap align-items-center gap-2">
+                            <span class="badge badge-white text-success border border-gray-200 fs-7 py-4 px-5"><i class="ki-solid ki-check-circle text-success fs-3 me-2"></i> On-Site</span>
+                            <span class="badge badge-light-success fs-7 py-4 px-5"><i class="ki-solid ki-check-circle text-success fs-3 me-2"></i> WFH</span>
+                        </div>
+                        
                     </div>
 
                     <div class="card-body pt-2">
                         <div class="table-responsive">
-                            <table id="summaryTable" class="table table-bordered table-row-dashed align-middle gs-0 gy-3 text-center border-gray-200">
+                            <table id="summaryTable" class="table table-bordered table-row-dashed align-middle gs-0 gy-3 text-center border-gray-200 w-100">
                                 <thead>
                                     <tr class="fw-bold fs-7 text-gray-300">
-                                        <th class="min-w-30px text-gray-500">#</th>
+                                        <th class="min-w-30px text-gray-500" style="width: 6%; white-space: nowrap;">#</th>
                                         <th class="min-w-40px text-gray-500">Jan</th>
                                         <th class="min-w-40px text-gray-500">Feb</th>
                                         <th class="min-w-40px text-gray-500">Mar</th>
@@ -233,7 +235,7 @@
                                 
                                 <tfoot>
                                     <tr class="fw-bold fs-7 text-gray-300">
-                                        <th class="min-w-30px text-gray-500">#</th>
+                                        <th class="min-w-30px text-gray-500" style="width: 6%; white-space: nowrap;">#</th>
                                         <th class="min-w-40px text-gray-500">Jan</th>
                                         <th class="min-w-40px text-gray-500">Feb</th>
                                         <th class="min-w-40px text-gray-500">Mar</th>
@@ -251,6 +253,17 @@
                                 
                             </table>
                         </div>
+                        
+                        <div id="emptyStateMessage" class="d-none flex-column flex-center text-center py-15">
+                            <i class="ki-duotone ki-calendar-remove fs-5x text-gray-400 mb-5">
+                                <span class="path1"></span><span class="path2"></span>
+                                <span class="path3"></span><span class="path4"></span>
+                                <span class="path5"></span><span class="path6"></span>
+                            </i>
+                            <div class="fs-3 fw-bold text-gray-600 mb-2">Please select a month</div>
+                            <div class="fs-6 fw-semibold text-gray-400">Select one or more months from the filter to view the summary.</div>
+                        </div>
+                        
                     </div>
                 </div>
 
@@ -289,23 +302,73 @@
 	    return day === 0 || day === 6;
 	  }
 
-	  function ensureMonthOptions() {
-	    $month.empty();
-	    // All
-	    $month.append(new Option("All", "0", false, true));
-	    // Jan-Dec
-	    for (let i = 1; i <= 12; i++) {
-	      $month.append(new Option(monthLabels[i], String(i), false, false));
-	    }
-	    $month.trigger("change.select2");
-	  }
+	  const monthShortLabels = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
-	  function initYearPickerDefault() {
-	    if (!$year.val()) {
-	      const now = new Date();
-	      $year.val(String(now.getFullYear()));
-	    }
-	  }
+	  function initMonthDropdown() {
+		    const $dropdownList = $('#monthCheckboxList');
+		    $dropdownList.empty();
+		    
+		    // Checkbox
+		    for (let i = 0; i < 12; i++) {
+		        const monthValue = i + 1;
+		        const html = '<li class="px-4 py-2">' +
+		            '<div class="form-check form-check-custom form-check-solid">' +
+		            '<input class="form-check-input month-checkbox" type="checkbox" value="' + monthValue + '" id="month_' + monthValue + '" checked>' +
+		            '<label class="form-check-label text-gray-800 w-100 cursor-pointer ms-2" for="month_' + monthValue + '">' +
+		            monthLabels[i + 1] +
+		            '</label>' +
+		            '</div>' +
+		            '</li>';
+		        $dropdownList.append(html);
+		    }
+
+		    // btn Select All & Deselect All 
+		    const buttonsHtml = '<li class="p-2 border-top text-center bg-white" style="position: sticky; bottom: 0; z-index: 10;">' + 
+		        '<button type="button" class="btn btn-sm btn-light fs-6 me-2 deselect-all-btn">Deselect All</button>' +
+		        '<button type="button" class="btn btn-sm btn-primary fs-6 select-all-btn">Select All</button>' +
+		        '</li>';
+		    $dropdownList.append(buttonsHtml);
+
+		    // Event  Select All
+		    $('.select-all-btn').on('click', function(e) {
+		        e.stopPropagation();
+		        $('.month-checkbox').prop('checked', true); 
+		        updateMonthButtonText();
+		        fetchAndRender();
+		    });
+
+		    // Event  Deselect All
+		    $('.deselect-all-btn').on('click', function(e) {
+		        e.stopPropagation();
+		        $('.month-checkbox').prop('checked', false); 
+		        updateMonthButtonText();
+		        fetchAndRender();
+		    });
+
+		    // Event Checkbox
+		    $('.month-checkbox').on('change', function() {
+		        updateMonthButtonText();
+		        fetchAndRender();
+		    });
+
+		    updateMonthButtonText();
+		}
+
+	  function updateMonthButtonText() {
+		    const checkedBoxes = $('.month-checkbox:checked');
+		    let text = "Select Month";
+
+		    if (checkedBoxes.length > 0) {
+		        const selectedShortNames = [];
+		        checkedBoxes.each(function() {
+		            const val = parseInt($(this).val());
+		            selectedShortNames.push(monthShortLabels[val - 1]);
+		        });
+		        text = selectedShortNames.join(', '); 
+		    }
+
+		    $('#monthDropdownBtnText').text(text);
+		}
 
 	  function setSummaryNumbers(s) {
 	    $("#summaryWorkingDay").text(s.workingDay ?? 0);
@@ -363,7 +426,7 @@
 	  }
 
 	  // PaintCells + Popover
-	  function paintCells(year, monthFilter, attendanceMap, detailsMap) {
+	  function paintCells(year, selectedMonthsArray, attendanceMap, detailsMap, workTypeMap) {
 	      var y = Number(year);
 
 	      try {
@@ -391,14 +454,15 @@
 	          if (weekend) {
 	              td.classList.add("bg-gray-100");
 	          }
-	          if (monthFilter && monthFilter !== 0 && m !== monthFilter) {
+	          if (selectedMonthsArray.length > 0 && selectedMonthsArray.length < 12 && !selectedMonthsArray.includes(m)) {
 	              return;
 	          }
 	          
 	          var key = m + "_" + d;
 	          var statusRaw = attendanceMap[key];
 	          var status = String(statusRaw || "").trim();
-	          var detail = detailsMap ? detailsMap[key] : ""; 
+	          var detail = detailsMap ? detailsMap[key] : "";
+	          var workType = workTypeMap ? workTypeMap[key] : "";
 
 	          if (weekend && (status === "NoRecord" || status === "")) {
 	              td.innerHTML = "";
@@ -406,6 +470,11 @@
 	          }
 
 	          td.innerHTML = iconHtml(status, detail);
+	          
+	          if (workType === "2" && status !== "Incomplete") {
+	              td.classList.add("bg-light-success"); // WFH
+	          } 
+  
 	      });
 
 	      // Initialize Popover
@@ -436,17 +505,57 @@
 	  function fetchAndRender() {
 		    const userId = $user.val()
 		    const year = String($year.val()).trim();
-		    const month = $month.val() || "0";
+		    const selectedMonths = [];
+		    $('.month-checkbox:checked').each(function() {
+		        selectedMonths.push(parseInt($(this).val()));
+		    });
+
+		    const $tableContainer = $('#summaryTable').closest('.table-responsive');
+		    const $emptyState = $('#emptyStateMessage');
+
+		    if (selectedMonths.length === 0) {
+		        $tableContainer.addClass('d-none');
+		        $emptyState.removeClass('d-none').addClass('d-flex');
+		        setSummaryNumbers({}); 
+		        return; 
+		    } else {
+		        $tableContainer.removeClass('d-none');
+		        $emptyState.addClass('d-none').removeClass('d-flex');
+		    }
+		    
+		    const $table = $('#summaryTable');
+
+		    if (selectedMonths.length > 0 && selectedMonths.length <= 1) {
+		        $table.removeClass('w-100').addClass('w-auto');
+		    } else {
+		        $table.removeClass('w-auto').addClass('w-100');
+		    }
+
+		    let monthParam = selectedMonths.join(',');
+		    if (selectedMonths.length === 12) {
+		        monthParam = "0";
+		    }
 
 		    $.ajax({
 		        url: "${pageContext.request.contextPath}/summaryWorkingDayData",
 		        method: "POST",
 		        dataType: "json",
-		        data: { userId, year, month },
+		        data: { userId: userId, year: year, month: monthParam }, 
 		        success: function (res) {
 		            setSummaryNumbers(res.summary || {});
-		            // Get detailsMap value from Backend
-		            paintCells(Number(year), Number(month), res.attendanceMap || {}, res.detailsMap || {});
+		            
+		            paintCells(Number(year), selectedMonths, res.attendanceMap || {}, res.detailsMap || {}, res.workTypeMap || {});
+		            
+		            for (let m = 1; m <= 12; m++) {
+		                const nth = m + 1;
+		                const $col = $('#summaryTable thead th:nth-child(' + nth + '), #summaryTable tbody td:nth-child(' + nth + '), #summaryTable tfoot th:nth-child(' + nth + ')');
+
+		                if (selectedMonths.includes(m)) {
+		                    $col.show();
+		                } else {
+		                    $col.hide();
+		                }
+		            }
 		        },
 		        error: function (xhr) {
 		            console.error("load error", xhr.status, xhr.responseText);
@@ -455,7 +564,7 @@
 		}
 
 	  function init() {
-	    ensureMonthOptions();
+		  initMonthDropdown();
 	    
 	    // init select2
 	    if ($user.attr("data-control") === "select2") { $user.select2(); }
@@ -479,12 +588,55 @@
         }
 
 	    $user.on("change", fetchAndRender);
-	    $month.on("change", fetchAndRender);
 	    $yearSelect.on("change", fetchAndRender);
 	    
-	    // Download PDF
+	 // Download PDF
 	    $("#exportPdfBtn").on("click", function(e) {
 	        e.preventDefault();
+
+            const year = $("#yearPicker").val();
+            const yVal = parseInt(year, 10);
+            let dateRangeStr = "";
+
+            const selectedMonthsPdf = [];
+            $('.month-checkbox:checked').each(function() {
+                selectedMonthsPdf.push(parseInt($(this).val()));
+            });
+
+            if (selectedMonthsPdf.length === 12) {
+                dateRangeStr = "01-Jan-" + yVal + " to 31-Dec-" + yVal;
+            } else if (selectedMonthsPdf.length > 0) {
+                let segments = [];
+                let start = selectedMonthsPdf[0];
+                let prev = start;
+
+                for (let i = 1; i < selectedMonthsPdf.length; i++) {
+                    if (selectedMonthsPdf[i] === prev + 1) {
+                        prev = selectedMonthsPdf[i];
+                    } else {
+                        segments.push({ start: start, end: prev });
+                        start = selectedMonthsPdf[i];
+                        prev = start;
+                    }
+                }
+                segments.push({ start: start, end: prev });
+
+                if (segments.length === 1) {
+                    const sMonth = segments[0].start;
+                    const eMonth = segments[0].end;
+                    const lastDay = new Date(yVal, eMonth, 0).getDate(); 
+                    dateRangeStr = "01-" + monthShortLabels[sMonth - 1] + "-" + yVal + " to " + lastDay + "-" + monthShortLabels[eMonth - 1] + "-" + yVal;
+                } else {
+                    const parts = segments.map(seg => {
+                        if (seg.start === seg.end) {
+                            return monthShortLabels[seg.start - 1]; 
+                        } else {
+                            return monthShortLabels[seg.start - 1] + "-" + monthShortLabels[seg.end - 1];
+                        }
+                    });
+                    dateRangeStr = parts.join(', ') + " " + yVal;
+                }
+            }
 
 	        // Data
 	        const element = document.getElementById("kt_app_content_container");
@@ -492,7 +644,6 @@
 	        let nameEn = $("#userSelect option:selected").attr("data-name-en") || "";
 	        let nameTh = $("#userSelect option:selected").attr("data-name-th") || "";
 	        const userName = nameEn.replace(/_/g, ' ').trim() + "  -  " + nameTh.replace(/_/g, ' ').trim();
-	        const year = $("#yearPicker").val();
 	        const fileName = "Summary_Working_Day " + nameTh.replace(/\s+/g, ' ') + "_" + year + ".pdf";
 
 	        const $btn = $(this);
@@ -513,8 +664,8 @@
 	            cloneContainer.style.width = '1400px';
 	            const clone = element.cloneNode(true);
 	            clone.id = "pdf_clone_container";
-	            
-	            // Hide filterForm
+                
+	            // Hide filterForm inside clone
 	            const filterForm = clone.querySelector('#filterForm');
 	            if (filterForm) filterForm.style.display = 'none';
 
@@ -568,7 +719,7 @@
 	            cloneContainer.appendChild(clone);
 	            element.parentNode.appendChild(cloneContainer);
 	            
-	            // Snapshot clone screen
+	         // Snapshot clone screen
 	            html2canvas(clone, {
 	                scale: 2,
 	                useCORS: true,
@@ -597,7 +748,7 @@
 	                }
 
 	                pdf.setTextColor(60, 60, 60);
-	                pdf.setFontSize(16); 
+	                pdf.setFontSize(16);
 	                pdf.setFont(undefined, 'bold');
 	                pdf.text("Report Summary Working Day", 10, 14);
 					
@@ -615,36 +766,27 @@
 	                    ctx.fillStyle = "#3c3c3c";
 	                    ctx.textBaseline = "top";
 	                    ctx.fillText(text, 0, 5);
-	                    
 	                    return {
 	                        url: canvas.toDataURL('image/png'), 
 	                        w: canvas.width * 0.075,            
-	                        h: canvas.height * 0.075            
+	                        h: canvas.height * 0.075       
 	                    };
 	                };
 
 	                // set Name user: [en] - [th]
 	                const nameImg = drawThaiText(" User :  " + userName);
 	                pdf.addImage(nameImg.url, 'PNG', 9, 21, nameImg.w, nameImg.h);
-					// date
-	                const mVal = parseInt($("#monthSelect").val(), 10) || 0;
-	                const yVal = parseInt(year, 10);
-	                const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-	                let dateRangeStr = "";
-	                
-	                if (mVal === 0) {
-	                    dateRangeStr = "01-Jan-" + yVal + " to 31-Dec-" + yVal;
-	                } else {
-	                    const lastDay = new Date(yVal, mVal, 0).getDate();
-	                    const mName = monthNames[mVal - 1];
-	                    const today = new Date();
-	                    if(today.getFullYear() === yVal && (today.getMonth() + 1) === mVal) {
-	                        const currentDay = String(today.getDate()).padStart(2, '0');
-	                        dateRangeStr = "01-" + mName + "-" + yVal + " to " + currentDay + "-" + mName + "-" + yVal;
-	                    } else {
-	                        dateRangeStr = "01-" + mName + "-" + yVal + " to " + lastDay + "-" + mName + "-" + yVal;
-	                    }
-	                }
+					// set date
+	                pdf.setFontSize(10);
+	                pdf.setFont(undefined, 'normal');
+	                pdf.text("date :   " + dateRangeStr, pageWidth - 10, 25, { align: 'right' });
+					
+	                pdf.setFillColor(cubeRed.r, cubeRed.g, cubeRed.b);
+	                pdf.rect(0, 30, pageWidth, 4, 'F');
+
+                    pdf.setFontSize(10);
+                    pdf.setFont(undefined, 'normal');
+                    pdf.text("date :   " + dateRangeStr, pageWidth - 10, 25, { align: 'right' });
 
 	                pdf.setFontSize(10);
 	                pdf.setFont(undefined, 'normal');
