@@ -454,20 +454,20 @@
 	</definition>
 	
 	<!-- Overtime Request -->
-	<definition name="overtimeRequestList" extends="baseLayout">
+	<definition name="overtime_request_list" extends="baseLayout">
 		<put-attribute name="title" value="Overtime Request" />
 		<put-attribute name="body"
 			value="/pages-back/overtime_request/overtime_request_list.jsp" />
 	</definition>
 
-	<definition name="overtimeRequestAdd" extends="baseLayout">
+	<definition name="overtime_request_add" extends="baseLayout">
 		<put-attribute name="title"
 			value="Create Overtime Request" />
 		<put-attribute name="body"
 			value="/pages-back/overtime_request/overtime_request_add.jsp" />
 	</definition>
 
-	<definition name="overtimeRequestEdit" extends="baseLayout">
+	<definition name="overtime_request_edit" extends="baseLayout">
 		<put-attribute name="title"
 			value="Edit Overtime Request" />
 		<put-attribute name="body"

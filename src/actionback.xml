@@ -1134,7 +1134,7 @@
 		<!-- Overtime Request -->
 		<action name="overtime_request_list"
 			class="com.cubesofttech.action.OvertimeAction" method="list">
-			<result name="success" type="tiles">overtimeRequestList</result>
+			<result name="success" type="tiles">overtime_request_list</result>
 			<result name="login">/index.jsp</result>
 			<result name="error">/index.jsp</result>
 		</action>
@@ -1148,7 +1148,7 @@
 
 		<action name="overtime_request_add"
 			class="com.cubesofttech.action.OvertimeAction" method="add">
-			<result name="success" type="tiles">overtimeRequestAdd</result>
+			<result name="success" type="tiles">overtime_request_add</result>
 		</action>
 
 		<action name="overtime_request_delete"
@@ -1165,10 +1165,10 @@
 
 		<action name="overtime_request_edit"
 			class="com.cubesofttech.action.OvertimeAction" method="edit">
-			<result name="success" type="tiles">overtimeRequestEdit</result>
+			<result name="success" type="tiles">overtime_request_edit</result>
 			<result name="error">/index.jsp</result>
 		</action>
-
+		
 	</package>
 
 </struts>
