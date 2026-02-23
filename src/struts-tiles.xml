@@ -452,4 +452,26 @@
 		<put-attribute name="body"
 			value="/pages-back/article/article_preview.jsp" />
 	</definition>
+	
+	<!-- Overtime Request -->
+	<definition name="overtimeRequestList" extends="baseLayout">
+		<put-attribute name="title" value="Overtime Request" />
+		<put-attribute name="body"
+			value="/pages-back/overtime_request/overtime_request_list.jsp" />
+	</definition>
+
+	<definition name="overtimeRequestAdd" extends="baseLayout">
+		<put-attribute name="title"
+			value="Create Overtime Request" />
+		<put-attribute name="body"
+			value="/pages-back/overtime_request/overtime_request_add.jsp" />
+	</definition>
+
+	<definition name="overtimeRequestEdit" extends="baseLayout">
+		<put-attribute name="title"
+			value="Edit Overtime Request" />
+		<put-attribute name="body"
+			value="/pages-back/overtime_request/overtime_request_edit.jsp" />
+	</definition>
+	
 </tiles-definitions>

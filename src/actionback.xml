@@ -237,7 +237,7 @@
 			class="com.cubesofttech.action.WorkHoursAction" method="savecheck">
 			<result name="error">/index.jsp</result>
 		</action>
-		
+
 		<!-- Retroactive -->
 		<action name="retroactive"
 			class="com.cubesofttech.action.WorkHoursAction" method="init">
@@ -763,7 +763,7 @@
 		<action name="announcementAddPage">
 			<result type="tiles">AnnouncementAdd</result>
 		</action>
-		
+
 		<action name="announcementUpdate"
 			class="com.cubesofttech.action.AnnouncementAction" method="save">
 			<result name="success" type="redirectAction">
@@ -1040,7 +1040,7 @@
 		<action name="eBorrowLog"
 			class="com.cubesofttech.action.BorrowingAction" method="eBorrowLog">
 		</action>
-		
+
 		<!-- ========================== Work Log ============================== -->
 		<action name="work_log"
 			class="com.cubesofttech.action.WorkLogAction" method="open">
@@ -1048,11 +1048,11 @@
 			<result name="error">/index.jsp</result>
 			<result name="login" type="redirect">/index.jsp</result>
 		</action>
-		<action name="work_log_json" 
+		<action name="work_log_json"
 			class="com.cubesofttech.action.WorkLogAction" method="search">
 			<result name="login" type="redirect">/index.jsp</result>
 		</action>
-		<action name="export_excel" 
+		<action name="export_excel"
 			class="com.cubesofttech.action.WorkLogAction" method="exportExcel">
 			<result name="login" type="redirect">/index.jsp</result>
 		</action>
@@ -1060,7 +1060,7 @@
 			class="com.cubesofttech.action.WorkLogAction" method="saveWorkLog">
 			<result name="login" type="redirect">/index.jsp</result>
 		</action>
-		
+
 		<!-- ========================== Report ============================== -->
 		<action name="report"
 			class="com.cubesofttech.action.ReportAction" method="open">
@@ -1068,62 +1068,107 @@
 			<result name="error">/index.jsp</result>
 			<result name="login" type="redirect">/index.jsp</result>
 		</action>
-		<action name="report_listWorking" 
+		<action name="report_listWorking"
 			class="com.cubesofttech.action.ReportAction" method="listWorking">
 			<result name="success" type="tiles">report</result>
 			<result name="error">/index.jsp</result>
 			<result name="login" type="redirect">/index.jsp</result>
 		</action>
-		<action name="summaryWorkingDayData" 
-				class="com.cubesofttech.action.ReportAction" method="workingDayData">
+		<action name="summaryWorkingDayData"
+			class="com.cubesofttech.action.ReportAction" method="workingDayData">
 		</action>
-		
+
 		<!-- Article -->
 		<action name="article_feed"
 			class="com.cubesofttech.action.ArticleAction" method="article_feed">
 			<result name="success" type="tiles">article_feed</result>
 			<result name="error">/index.jsp</result>
 		</action>
-		
+
 		<action name="article_add"
 			class="com.cubesofttech.action.ArticleAction" method="article_add">
 			<result name="success" type="tiles">article_add</result>
 			<result name="error">/index.jsp</result>
 		</action>
-		
+
 		<action name="article_edit"
 			class="com.cubesofttech.action.ArticleAction" method="article_edit">
 			<result name="success" type="tiles">article_edit</result>
 			<result name="error">/index.jsp</result>
 		</action>
-		
+
 		<action name="article_preview"
-			class="com.cubesofttech.action.ArticleAction" method="article_preview">
+			class="com.cubesofttech.action.ArticleAction"
+			method="article_preview">
 			<result name="success" type="tiles">article_preview</result>
 			<result name="error">/index.jsp</result>
 		</action>
-		
+
 		<action name="article_perform_add"
-			class="com.cubesofttech.action.ArticleAction" method="article_perform_add">
-			<result name="success" type="redirectAction">article_edit?articleId=${articleId}</result>
-			<result name="preview" type="redirectAction">article_preview?articleId=${articleId}</result>
+			class="com.cubesofttech.action.ArticleAction"
+			method="article_perform_add">
+			<result name="success" type="redirectAction">article_edit?articleId=${articleId}
+			</result>
+			<result name="preview" type="redirectAction">article_preview?articleId=${articleId}
+			</result>
 			<result name="error">/index.jsp</result>
 			<result name="input">/article_add.jsp</result>
 		</action>
-		
+
 		<action name="article_perform_update"
-			class="com.cubesofttech.action.ArticleAction" method="article_perform_update">
+			class="com.cubesofttech.action.ArticleAction"
+			method="article_perform_update">
 			<result name="success" type="redirectAction">article_feed</result>
-			<result name="preview" type="redirectAction">article_preview?articleId=${articleId}</result>
+			<result name="preview" type="redirectAction">article_preview?articleId=${articleId}
+			</result>
 			<result name="error" type="tiles">/index.jsp</result>
 		</action>
-		
+
 		<action name="article_perform_delete"
-			class="com.cubesofttech.action.ArticleAction" method="article_perform_delete">
+			class="com.cubesofttech.action.ArticleAction"
+			method="article_perform_delete">
 			<result name="success" type="redirectAction">article_feed</result>
 			<result name="error" type="tiles">/index.jsp</result>
 		</action>
-		
+
+		<!-- Overtime Request -->
+		<action name="overtime_request_list"
+			class="com.cubesofttech.action.OvertimeAction" method="list">
+			<result name="success" type="tiles">overtimeRequestList</result>
+			<result name="login">/index.jsp</result>
+			<result name="error">/index.jsp</result>
+		</action>
+
+		<action name="save_overtime"
+			class="com.cubesofttech.action.OvertimeAction" method="save">
+			<result name="success" type="redirectAction">overtime_request_list</result>
+			<result name="error">/index.jsp</result>
+			<result name="login" type="redirect">/index.jsp</result>
+		</action>
+
+		<action name="overtime_request_add"
+			class="com.cubesofttech.action.OvertimeAction" method="add">
+			<result name="success" type="tiles">overtimeRequestAdd</result>
+		</action>
+
+		<action name="overtime_request_delete"
+			class="com.cubesofttech.action.OvertimeAction" method="delete">
+			<result name="success" type="redirect">overtime_request_list</result>
+			<result name="error">/index.jsp</result>
+		</action>
+
+		<action name="overtime_request_update"
+			class="com.cubesofttech.action.OvertimeAction" method="save">
+			<result name="success" type="redirectAction">overtime_request_list</result>
+			<result name="error">/index.jsp</result>
+		</action>
+
+		<action name="overtime_request_edit"
+			class="com.cubesofttech.action.OvertimeAction" method="edit">
+			<result name="success" type="tiles">overtimeRequestEdit</result>
+			<result name="error">/index.jsp</result>
+		</action>
+
 	</package>
 
 </struts>

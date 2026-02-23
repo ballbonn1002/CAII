@@ -174,6 +174,22 @@ String targetURL = Constant.getWebContext2() + "/authorization?token=" + token;
 						</i>
 						</a>
 					</div>
+					
+					<!-- Overtime Request -->
+					<div class="menu-item">
+						<a class="menu-link" href="overtime_request_list?userId=${onlineUser.id}"
+							data-route="overtime_request_list"> <span class="menu-icon"> <i
+								class="ki-duotone ki-timer fs-1"> <span class="path1"></span>
+									<span class="path2"></span> <span class="path3"></span>
+							</i>
+						</span> <span class="menu-title">Overtime Request</span> <i
+							class="ki-duotone ki-check-circle fs-3 text-success"> <span
+								class="path1"></span><span class="path2"></span>
+						</i>
+						</a>
+					</div>
+					<!-- Overtime Request -->
+					
 					<!--end:Menu item-->
 					<!--begin:Menu item-->
 					<!-- <div class="menu-item">

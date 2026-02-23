@@ -52,5 +52,41 @@ ALTER TABLE announcement ADD COLUMN highlight VARCHAR(1) DEFAULT NULL;
 
 -- PROD 2026 FEB 19
 
+-- 23/02/2026 max(Intern): create 'overtime_status' table --
+CREATE TABLE `overtime_status` (
+  `status` VARCHAR(2) NOT NULL,
+  `description` VARCHAR(100) NOT NULL,
+  `color` VARCHAR(50) DEFAULT NULL,
+  PRIMARY KEY (`status`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- 23/02/2026 max(Intern): insert initial status data (W, A, C, R) --
+INSERT INTO `overtime_status` (status, description, color) VALUES ('W', 'Wait for approve', 'warning');
+INSERT INTO `overtime_status` (status, description, color) VALUES ('A', 'Approved', 'success');
+INSERT INTO `overtime_status` (status, description, color) VALUES ('C', 'Cancelled', 'dark');
+INSERT INTO `overtime_status` (status, description, color) VALUES ('R', 'Rejected', 'danger');
+
+-- 23/02/2026 max(Intern): create 'overtime' table with updated description and user fields --
+CREATE TABLE `overtime` (
+  `ot_id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `ot_date` DATE NOT NULL,
+  `start_time` DATETIME DEFAULT NULL, 
+  `end_time` DATETIME DEFAULT NULL,
+  `req_hours` DECIMAL(5,2) DEFAULT '0.00',
+   `appr_hours` DECIMAL(5,2) DEFAULT '0.00',
+  `type_of_ot` DECIMAL(3,1) DEFAULT NULL,
+  `description` VARCHAR(1024) DEFAULT NULL,
+  `description_appr` VARCHAR(1024) DEFAULT NULL,
+  `status` VARCHAR(2) NOT NULL,
+  `user_id` VARCHAR(45) DEFAULT NULL,
+  `appr_user_id` VARCHAR(45) DEFAULT NULL,
+  `approved_at` TIMESTAMP NULL DEFAULT NULL,
+  `user_create` VARCHAR(45) NOT NULL,
+  `time_create` TIMESTAMP NULL DEFAULT NULL,
+  `user_update` VARCHAR(45) DEFAULT NULL,
+  `time_update` TIMESTAMP NULL DEFAULT NULL,
+  PRIMARY KEY (`ot_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 
 
