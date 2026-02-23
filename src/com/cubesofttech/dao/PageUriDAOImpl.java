@@ -53,13 +53,12 @@ public class PageUriDAOImpl implements PageUriDAO {
 		// session.close();
 	}
 
-
 	@Override
-	public PageUri findById(String modeId) throws Exception {
+	public PageUri findBymodelId(String modelId) throws Exception {
 		Session session = sessionFactory.getCurrentSession();
 		PageUri pageUri = null;
 		try {
-			pageUri = (PageUri) session.get(PageUri.class, modeId);
+			pageUri = (PageUri) session.get(PageUri.class, modelId);
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
@@ -71,13 +70,34 @@ public class PageUriDAOImpl implements PageUriDAO {
 	}
 	
 	@Override
-	public void deleteByModelId(String articleId) {
+	public PageUri findByModelAndModelId(String model, String modelId) throws Exception {
+		Session session = sessionFactory.getCurrentSession();
+		PageUri pageUri = null;
+		try {
+	        String sql = "FROM PageUri WHERE model = :model AND modelId = :modelId";
+
+	        pageUri = (PageUri) session.createQuery(sql)
+	                .setParameter("model", model)
+	                .setParameter("modelId", modelId)
+	                .uniqueResult();
+
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	    }
+		return pageUri;
+		
+
+	}
+	
+	@Override
+	public void deleteByModelAndModelId(String model, String articleId) {
 
 		Session session = sessionFactory.getCurrentSession();
 
 		session.createSQLQuery(
-			"DELETE FROM page_uri WHERE model_id = :id"
+			"DELETE FROM page_uri WHERE model = :model AND model_id = :id"
 		)
+		.setParameter("model", model)
 		.setParameter("id", articleId)
 		.executeUpdate();
 	}

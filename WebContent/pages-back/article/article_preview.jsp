@@ -20,10 +20,6 @@
 	type="text/css" />
 <script src="assets/plugins/global/plugins.bundle.js"></script>
 
-<!--CKEditor-->
-<script src="assets/plugins/custom/ckeditor/ckeditor-decoupled.bundle.js"></script>
-<script src="assets/plugins/custom/ckeditor/ckeditor-document.bundle.js"></script>
-
 <!--Summernote-->
 <link href="https://cdn.jsdelivr.net/npm/summernote@0.9.0/dist/summernote-lite.min.css" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/summernote@0.9.0/dist/summernote-lite.min.js"></script>
@@ -168,7 +164,7 @@
 							</div>
 							<div class="ck-content py-14">${article.detail}</div>
 							<div class="my-5">
-										<div class="d-flex align-items-center gap-3">
+								<div class="d-flex align-items-center gap-3">
 											<span>Shares : </span> <a href="#" target="_blank"> <img
 												alt="logo facebook" class="h-25px"
 												src="${pageContext.request.contextPath}/assets/media/svg/social-logos/facebook.svg"></a>
@@ -184,7 +180,7 @@
 											<a href="#" target="_blank"> <img alt="logo linkedin"
 												class="h-25px"
 												src="${pageContext.request.contextPath}/assets/media/svg/social-logos/linkedin.svg"></a>
-										</div>
+								</div>
 							</div>
 						</div>
 					</div>

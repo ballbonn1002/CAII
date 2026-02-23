@@ -363,6 +363,10 @@ public class ArticleAction extends ActionSupport {
 
 	public String article_feed() {
 		try {
+			User onlineUser = (User) request.getSession().getAttribute("onlineUser");
+			if (onlineUser== null) {
+			    return ERROR;
+			}
 			String startStr = request.getParameter("startDate");
 			String endStr = request.getParameter("endDate");
 
@@ -401,6 +405,9 @@ public class ArticleAction extends ActionSupport {
 	public String article_add() {
 		try {
 			User onlineUser = (User) request.getSession().getAttribute("onlineUser");
+			if (onlineUser== null) {
+			    return ERROR;
+			}
 			String logonUser = onlineUser.getId();
 			
 			List<Tag> tagList = tagDAO.findAll();
@@ -425,8 +432,10 @@ public class ArticleAction extends ActionSupport {
 
 	public String article_perform_add() {
 		try {
-			
 			User onlineUser = (User) request.getSession().getAttribute("onlineUser");
+			if (onlineUser== null) {
+			    return ERROR;
+			}
 			String logonUser = onlineUser.getId();
 			String fileIdStr = null;
 			
@@ -576,8 +585,8 @@ public class ArticleAction extends ActionSupport {
 	
 	public String article_preview() {
 		try {
-			if (articleId == null) {
-			    log.error("articleId is null!");
+			User onlineUser = (User) request.getSession().getAttribute("onlineUser");
+			if (articleId == null || onlineUser== null) {
 			    return ERROR;
 			}
 			
@@ -628,7 +637,7 @@ public class ArticleAction extends ActionSupport {
 			Date publicDate = Timestamp.valueOf(time_post);
 			String publicTime = time_post.toLocalTime().toString();
 			
-			PageUri pageUri = pageUriDAO.findById(String.valueOf(articleId));
+			PageUri pageUri = pageUriDAO.findByModelAndModelId("article", String.valueOf(articleId));
 
 			
 			String imgPath = null;
@@ -670,6 +679,10 @@ public class ArticleAction extends ActionSupport {
 
 	public String article_edit() {
 		try {
+			User onlineUser = (User) request.getSession().getAttribute("onlineUser");
+			if (onlineUser== null) {
+			    return ERROR;
+			}
 			Article article = articleDAO.findById(articleId);
 			List<Tag> tagList = tagDAO.findAll();
 			List<ArticleType> articleTypeList = articleTypeDAO.findAll();
@@ -689,8 +702,7 @@ public class ArticleAction extends ActionSupport {
 //			log.debug("time_post "+ time_post);
 //			log.debug("publicDate "+ publicDate);
 //			log.debug("publicTime "+ publicTime);
-			
-			PageUri pageUri = pageUriDAO.findById(String.valueOf(articleId));
+			PageUri pageUri = pageUriDAO.findByModelAndModelId("article", String.valueOf(articleId));
 //			log.debug("forwardTo = " + pageUri.getForwardTo());
 //			log.debug("model = " + pageUri.getModel());
 //			log.debug("modelId = " + pageUri.getModelId());
@@ -737,8 +749,10 @@ public class ArticleAction extends ActionSupport {
 	
 	public String article_perform_update() {
 		try {
-			
 			User onlineUser = (User) request.getSession().getAttribute("onlineUser");
+			if (onlineUser== null) {
+			    return ERROR;
+			}
 			String logonUser = onlineUser.getId();
 			String fileIdStr = null;
 //			log.debug("articleId = " + articleId);
@@ -846,7 +860,7 @@ public class ArticleAction extends ActionSupport {
 			}
 			
 			// Update page_uri
-			PageUri uri = pageUriDAO.findById(String.valueOf(articleId));		
+			PageUri uri = pageUriDAO.findByModelAndModelId("article", String.valueOf(articleId));
 			if (uri != null) {
 				String articleIdStr = String.valueOf(articleId);
 			    String forward;
@@ -890,7 +904,11 @@ public class ArticleAction extends ActionSupport {
 	
 	public String article_perform_delete() {
 		try {
+			User onlineUser = (User) request.getSession().getAttribute("onlineUser");
 			Article article = articleDAO.findById(articleId);
+			if (onlineUser== null || article == null) {
+			    return ERROR;
+			}
 
 			if (article != null) {
 				//delete article_tag
@@ -898,7 +916,7 @@ public class ArticleAction extends ActionSupport {
 
 				articleTagDAO.deleteByArticleId(id);
 				articleRelatedDAO.deleteByArticleId(id);
-				pageUriDAO.deleteByModelId(id);
+				pageUriDAO.deleteByModelAndModelId("article",id);
 				//delete file
 				if (article.getFileId() != null) {
 					Integer fileId = Integer.parseInt(article.getFileId());

@@ -20,11 +20,6 @@
 	type="text/css" />
 <script src="assets/plugins/global/plugins.bundle.js"></script>
 
-<!--CKEditor-->
-<script
-	src="assets/plugins/custom/ckeditor/ckeditor-decoupled.bundle.js"></script>
-<script src="assets/plugins/custom/ckeditor/ckeditor-document.bundle.js"></script>
-
 <!--Summernote-->
 <link href="https://cdn.jsdelivr.net/npm/summernote@0.9.0/dist/summernote-lite.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/summernote@0.9.0/dist/summernote-lite.min.js"></script>
@@ -32,13 +27,13 @@
 <style>
 
 
-#summernote,#kt_docs_ckeditor_document  {
+#summernote {
 	width: 100%;
 	margin-left: auto;
 	margin-right: auto;
 }
 
-#summernote,#kt_docs_ckeditor_document  {
+#summernote {
 	border: 1px solid #d1d5db;
 	border-radius: 6px;
 	overflow: hidden;
@@ -459,16 +454,11 @@
 							<div
 								class="card-header d-flex align-items-center justify-content-between">
 								<h3 class="fw-semibold text-gray-900 mb-0">Content Detail</h3>
-							<button type="button" id="switchBtn"
-									onclick="switchEditor()"
-									class="btn btn-lg btn-light fw-medium text-light-inverse p-3">Switch CKEditor
-								</button>
 							</div>
 
 							<div class="card-body ckeditor-wrapper">
 								<div id="summernote"> </div>
-								 <div id="kt_docs_ckeditor_document_toolbar"></div>
-								<div id="kt_docs_ckeditor_document"></div> 
+								
 							</div>
 							<input type="hidden" name="detail" id="detailInput" value="${fn:escapeXml(article.detail)}">
 						</div>
@@ -533,8 +523,6 @@
 									</div>
 								</div>
 							</div>
-							
-						
 
 						<div class="d-flex justify-content-end border-0">
 							<button type="button" id="cancelFormBtn"
@@ -646,81 +634,9 @@ function initSummernote(content) {
     $('#summernote').summernote('code', changeStyles(content));
 }
 </script>
-<script>
-	var currentEditor = "summernote";
-	
-	function switchEditor() {
-		
-		if (currentEditor === "summernote" && !editorInstance) {
-	        alert("Editor still loading...");
-	        return;
-	    }
 
-
-	    var content = "";
-
-	    if(currentEditor === "summernote") {
-
-	        content = $('#summernote').summernote('code');
-
-	        $('#summernote').summernote('destroy');
-	        document.getElementById("summernote").style.display = "none";
-
-	        document.getElementById("kt_docs_ckeditor_document").style.display = "block";
-	        document.getElementById("kt_docs_ckeditor_document_toolbar").style.display = "block";
-
-	        editorInstance.setData(content);
-
-	        currentEditor = "ck";
-
-	    } else {
-
-	        content = editorInstance.getData();
-	     	//ซ่อนCK
-	        document.getElementById("kt_docs_ckeditor_document").style.display = "none";
-	        document.getElementById("kt_docs_ckeditor_document_toolbar").style.display = "none";
-
-	        //ปิดsummernote
-	        $('#summernote').summernote('destroy');
-
-	        //แสดง+init ใหม่
-	        document.getElementById("summernote").style.display = "block";
-	        initSummernote(content);
-
-	        currentEditor = "summernote";
-	    }
-	    
-	    document.getElementById("switchBtn").textContent =
-	        currentEditor === "summernote"
-	            ? "Switch CKEditor"
-	            : "Switch Summernote";
-	    
-	    console.log("editor:", currentEditor);
-	}
-	</script>	
 	<script>
 	var editorInstance;
-	
-	document.getElementById("switchBtn").disabled = true;
-	
-	DecoupledEditor
-    .create(document.querySelector('#kt_docs_ckeditor_document'))
-    .then(editor => {
-    	editorInstance = editor;
-    	document.getElementById("switchBtn").disabled = false;
-    	
-    	document.getElementById("kt_docs_ckeditor_document").style.display = "none";
-    	document.getElementById("kt_docs_ckeditor_document_toolbar").style.display = "none";
-        const toolbarContainer = document.querySelector( '#kt_docs_ckeditor_document_toolbar' );
-
-        toolbarContainer.appendChild( editor.ui.view.toolbar.element );
-        
-        const savedContent = document.getElementById("detailInput").value;
-        editor.setData(savedContent);
-    })
-    .catch(error => {
-        console.error(error);
-    }); 
 	
     document.addEventListener("DOMContentLoaded", function () {
     $('#summernote').summernote({
@@ -843,45 +759,6 @@ function initSummernote(content) {
 	<script>
 			document.addEventListener("DOMContentLoaded", function () {		
 			    const imageInput = document.getElementById("imageInputFile");
-			    
-			    /*  const wrapper = document.getElementById("imageInputWrapper");
-
-			    // ดึง background-image
-			    let bg = wrapper.style.backgroundImage;
-
-			    if (!bg || bg.includes("blank.svg")) return;
-
-			    // แปลง url("...") → URL จริง
-			    const url = bg.replace(/^url\(["']?/, "").replace(/["']?\)$/, "");
-
-			    const img = new Image();
-
-			    img.onload = function () {
-			        const ratio = img.height / img.width;
-
-			        wrapper.style.width = "300px";
-			        wrapper.style.height = (300 * ratio) + "px";
-			    };
-
-			    img.src = url;
- */
-			    
-			    /* imageInput.addEventListener("change", function(e) {
-				    const file = e.target.files[0];
-				    if (!file) return;
-
-				    const img = new Image();
-				    const wrapper = document.getElementById("imageInputWrapper");
-
-				    img.onload = function() {
-				        const ratio = img.height / img.width;
-
-				        wrapper.style.height = (300 * ratio) + "px";
-				    };
-
-				    img.src = URL.createObjectURL(file);
-				});
-			 */
 			
 			    imageInput.addEventListener("change", function () {
 			
@@ -960,15 +837,7 @@ function initSummernote(content) {
 	}
 	
 	function submitForm(){
-		/* const content = $('#summernote').summernote('code'); */
-		var content = "";
-
-		if(currentEditor === "summernote") {
-		    content = $('#summernote').summernote('code');
-		} else {
-		    content = editorInstance.getData();
-		}
-		
+		const content = $('#summernote').summernote('code');
 	    /* document.getElementById("detailInput").value = content; */
 	    // แปลงกลับเป็นแท็ก style ปกติก่อน Save
 	    const finalContent = unChangeStyles(content);
@@ -1031,6 +900,12 @@ function initSummernote(content) {
 		  if(!contentText) errorFields.push("Content Detail")
 		  
 		  if (errorFields.length > 0) {
+			  window.scrollTo({
+			        top: 0,
+			        behavior: "smooth"
+			    });
+			  document.activeElement.blur();
+			  
 			  Swal.fire({
 		    		title: "Please complete the form!",
 		    		html: "Please fill in the following fields:<br><strong>" + errorFields.join(", ") + "</strong>",
