@@ -44,8 +44,7 @@ public class OvertimeDAOImpl implements OvertimeDAO {
 		Session session = this.sessionFactory.getCurrentSession();
 
 		String sql = " SELECT ot.*, s.description AS description, s.color " + " FROM overtime ot "
-				+ " LEFT JOIN overtime_status s ON ot.status = s.status "
-				+ " ORDER BY ot.ot_id ASC ";
+				+ " LEFT JOIN overtime_status s ON ot.status = s.status " + " ORDER BY ot.ot_id ASC ";
 
 		SQLQuery query = session.createSQLQuery(sql);
 		query.setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
