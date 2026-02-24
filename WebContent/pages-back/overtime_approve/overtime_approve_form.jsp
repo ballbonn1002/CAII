@@ -338,7 +338,7 @@
 							if (rawReqHours && parseFloat(rawReqHours) > 0) {
 								var initialCalc = calculateOTCondition(rawReqHours);
 
-								$("#appr_hours_hidden").val(initialCalc); /
+								$("#appr_hours_hidden").val(initialCalc);
 
 								var initialTimeStr = decimalToTimeStr(initialCalc);
 								fpInstance.setDate(initialTimeStr, false);
