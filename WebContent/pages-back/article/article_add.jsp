@@ -564,8 +564,6 @@
 			
 			            errorMsg.textContent = "Image must be smaller than 5MB.";
 			            this.value = "";
-			
-			
 			        } else {
 			            errorMsg.textContent = "";
 			        }
