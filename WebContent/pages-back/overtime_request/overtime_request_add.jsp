@@ -148,12 +148,14 @@
 							<div class="row mb-8">
 								<div class="col-12">
 									<label class="form-label fw-bold text-gray-700 required">Actual
-										(hr)</label>
+										(Hr)</label>
 									<div class="position-relative">
 										<i
 											class="ki-duotone ki-time fs-2 position-absolute top-50 start-0 translate-middle-y ms-4">
 											<span class="path1"></span><span class="path2"></span>
-										</i> <input type="text" name="req_hours" id="req_hours"
+										</i> <input type="hidden" name="req_hours" id="req_hours_hidden" />
+
+										<input type="text" id="req_hours_display"
 											class="form-control form-control-lg ps-15 h-55px fw-bold text-gray-800 bg-light"
 											readonly />
 									</div>
@@ -249,7 +251,8 @@
                     }
                 } 
                 else if (end.isBefore(start)) {
-                    document.getElementById('req_hours').value = "0.00";
+                	document.getElementById('req_hours_hidden').value = "0.00";
+                    document.getElementById('req_hours_display').value = "0:00";
                     return;
                 }
 
@@ -258,9 +261,11 @@
                 const hours = Math.floor(duration.asHours());
                 const minutes = duration.minutes();
 
-                const formatted = hours + '.' + String(minutes).padStart(2, '0');
+                const decimalFormatted = hours + '.' + String(minutes).padStart(2, '0');
+                const timeFormatted = hours + ':' + String(minutes).padStart(2, '0');
                 
-                document.getElementById('req_hours').value = formatted;
+                document.getElementById('req_hours_hidden').value = decimalFormatted;
+                document.getElementById('req_hours_display').value = timeFormatted;
             }
         }
         calculateActual();

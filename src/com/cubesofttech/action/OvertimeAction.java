@@ -31,7 +31,7 @@ public class OvertimeAction extends ActionSupport {
 	private UserDAO userDAO;
 
 	private List<Map<String, Object>> overtimeList;
-	private List<Map<String, Object>> userList;
+	private List<User> userList;
 	private Overtime overtime;
 	private String statusId;
 
@@ -200,6 +200,115 @@ public class OvertimeAction extends ActionSupport {
 		return SUCCESS;
 	}
 
+	public String overtimeApprove() {
+		try {
+			HttpServletRequest request = ServletActionContext.getRequest();
+			String userId = request.getParameter("userId");
+			String dateRange = request.getParameter("dateRange");
+
+			userList = userDAO.findAll();
+			overtimeList = overtimeDAO.findByCriteria(userId, null, dateRange);
+
+			return SUCCESS;
+		} catch (Exception e) {
+			log.error("Error in OvertimeAction.overtimeApprove()", e); 
+			return ERROR;
+		}
+	}
+
+	public String update_approve() {
+		try {
+			HttpServletRequest request = ServletActionContext.getRequest();
+			Integer otId = Integer.parseInt(request.getParameter("ot_id"));
+
+			Overtime ot = overtimeDAO.findById(otId);
+
+			if (ot != null) {
+				User user = (User) request.getSession().getAttribute("onlineUser");
+				Timestamp now = new Timestamp(System.currentTimeMillis());
+
+				ot.setStatus(request.getParameter("status"));
+				ot.setAppr_hours(new BigDecimal(request.getParameter("appr_hours")));
+
+				String typeOfOt = request.getParameter("type_of_ot");
+				if (typeOfOt != null && !typeOfOt.isEmpty()) {
+					ot.setType_of_ot(new BigDecimal(typeOfOt));
+				}
+
+				String descAppr = request.getParameter("description_appr");
+				if (descAppr != null) {
+					ot.setDescription_appr(descAppr.trim());
+				}
+
+				ot.setAppr_user_id(user.getId());
+				ot.setApproved_at(now);
+
+				ot.setUser_update(user.getId());
+				ot.setTime_update(now);
+
+				overtimeDAO.update(ot);
+			}
+
+			return SUCCESS;
+		} catch (Exception e) {
+			log.error("Error in update_approve: " + e.getMessage());
+			return ERROR;
+		}
+	}
+
+	public String overtimeApproveForm() {
+		try {
+			HttpServletRequest request = ServletActionContext.getRequest();
+			String otId = request.getParameter("ot_id");
+
+			if (otId != null && !otId.isEmpty()) {
+				overtime = overtimeDAO.findById(Integer.parseInt(otId));
+
+				if (overtime != null && overtime.getUser_create() != null) {
+					User reqUser = userDAO.findById(overtime.getUser_create());
+
+					if (reqUser != null) {
+						String displayName = "";
+						if (reqUser.getEmployeeId() != null && !reqUser.getEmployeeId().isEmpty()) {
+							displayName += reqUser.getEmployeeId();
+						}
+						if (reqUser.getNameEN() != null && !reqUser.getNameEN().isEmpty()) {
+							if (!displayName.isEmpty())
+								displayName += " - ";
+							displayName += reqUser.getNameEN();
+						}
+						if (reqUser.getName() != null && !reqUser.getName().isEmpty()) {
+							if (!displayName.isEmpty())
+								displayName += " - ";
+							displayName += reqUser.getName();
+						}
+						if (reqUser.getRoleId() != null && !reqUser.getRoleId().isEmpty()) {
+							if (!displayName.isEmpty())
+								displayName += " - ";
+							displayName += reqUser.getRoleId();
+						}
+						request.setAttribute("displayName", displayName);
+					}
+
+					List<Map<String, Object>> statusList = overtimeDAO.findOvertimeStatusAll(); 
+																			
+					for (Map<String, Object> s : statusList) {
+						if (s.get("status").equals(overtime.getStatus())) {
+							request.setAttribute("status_name", (String) s.get("description"));
+							request.setAttribute("status_color", (String) s.get("color"));
+							break;
+						}
+					}
+				}
+			}
+
+			return SUCCESS;
+		} catch (Exception e) {
+			log.error("Error in OvertimeAction.overtimeApproveForm()", e);
+			return ERROR;
+		}
+	}
+
 	// --- Getters and Setters ---
 
 	public OvertimeDAO getOvertimeDAO() {
@@ -226,11 +335,11 @@ public class OvertimeAction extends ActionSupport {
 		this.overtimeList = overtimeList;
 	}
 
-	public List<Map<String, Object>> getUserList() {
+	public List<User> getUserList() {
 		return userList;
 	}
 
-	public void setUserList(List<Map<String, Object>> userList) {
+	public void setUserList(List<User> userList) {
 		this.userList = userList;
 	}
 

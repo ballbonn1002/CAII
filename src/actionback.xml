@@ -1168,7 +1168,30 @@
 			<result name="success" type="tiles">overtime_request_edit</result>
 			<result name="error">/index.jsp</result>
 		</action>
-		
+
+		<!-- Overtime Approve -->
+		<action name="overtime_approve"
+			class="com.cubesofttech.action.OvertimeAction"
+			method="overtimeApprove">
+			<result name="success" type="tiles">overtime_approve</result>
+			<result name="login">/index.jsp</result>
+			<result name="error">/index.jsp</result>
+		</action>
+
+		<action name="overtime_approve_form"
+			class="com.cubesofttech.action.OvertimeAction"
+			method="overtimeApproveForm">
+			<result name="success" type="tiles">overtime_approve_form</result>
+			<result name="error">/index.jsp</result>
+		</action>
+
+		<action name="overtime_approve_update"
+			class="com.cubesofttech.action.OvertimeAction"
+			method="update_approve">
+			<result name="success" type="redirectAction">overtime_approve</result>
+			<result name="error">/index.jsp</result>
+		</action>
+
 	</package>
 
 </struts>

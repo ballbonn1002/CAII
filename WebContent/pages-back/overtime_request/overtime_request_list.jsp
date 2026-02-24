@@ -184,7 +184,7 @@
 											<td>
 												<div class="d-flex flex-column align-items-start">
 													<span
-														class="badge badge-lg badge-light-${ot.status_color} fs-7 fw-bold h-25px">
+														class="badge badge-lg badge-light-${ot.status_color} fw-bold px-4 py-3">
 														${ot.status_name} </span>
 
 													<c:if test="${not empty ot.description_appr}">
