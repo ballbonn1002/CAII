@@ -206,18 +206,19 @@
 								</div>
 								<div class="col-md-6">
 									<label class="form-label fw-medium text-gray-800 required">Type
-										of OT (เรท)</label> <select name="type_of_ot" id="type_of_ot"
+										of OT</label> <select name="type_of_ot" id="type_of_ot"
 										class="form-select form-select-lg" data-control="select2"
+										data-hide-search="true"
 										${overtime.status ne 'W' ? 'disabled' : ''}>
 										<option value="1.5"
 											${overtime.type_of_ot eq 1.5 ? 'selected' : ''}>1.5
-											X (ล่วงเวลาในวันปกติ)</option>
+											X</option>
 										<option value="1.0"
 											${overtime.type_of_ot eq 1.0 ? 'selected' : ''}>1.0
-											X (ทำงานวันหยุด ไม่เกิน 8 ชม.)</option>
+											X</option>
 										<option value="3.0"
 											${overtime.type_of_ot eq 3.0 ? 'selected' : ''}>3.0
-											X (ล่วงเวลาวันหยุด หลัง 8 ชม.)</option>
+											X</option>
 									</select>
 								</div>
 							</div>
@@ -262,12 +263,12 @@
 							var minsStr = mins < 10 ? "0" + mins : mins;
 							return hrsStr + ":" + minsStr;
 						}
-						
+
 						// DATE & WEEKEND CHECK
 						var startDateTimeStr = '<fmt:formatDate value="${overtime.start_time}" pattern="yyyy-MM-dd" />';
 						var otDate = moment(startDateTimeStr, "YYYY-MM-DD");
 						var isWeekend = (otDate.day() === 0 || otDate.day() === 6);
-						
+
 						// CALCULATION LOGIC
 						function calculateOTCondition(decimalHours) {
 							var finalHours = parseFloat(decimalHours);
@@ -281,7 +282,7 @@
 								}
 							}
 
-							var recommendedRate = "1.5"; 
+							var recommendedRate = "1.5";
 							var calculatedApprHours = finalHours;
 
 							if (isWeekend) {
