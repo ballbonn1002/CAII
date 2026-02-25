@@ -43,7 +43,7 @@
 								<!--begin::Form-->
 								<form id="userCalendarForm" 
 									class="w-100 position-relative mb-5 mb-lg-0"
-									autocomplete="off" action="TestSearchAllinCalendar"
+									autocomplete="off" action="SearchAllinCalendar"
 									method="post" >
 									<!--begin::Icon-->
 									<i class="ki-duotone ki-magnifier fs-2 fs-lg-1 text-gray-500 position-absolute top-50 translate-middle-y ms-5">
@@ -454,7 +454,6 @@ var AppCalendar = function() {
 	function buildCheckinEvents() {
         var events = [];
         var dailyData = {};
-        //console.log("${workList}");
         <c:forEach var="work" items="${workList}" varStatus="status">
             <c:if test="${work.mycheckins != null}">
             	var fullCheckin = '${work.mycheckins}';
@@ -864,7 +863,7 @@ var AppCalendar = function() {
 
 	                        // คำนวณจำนวนวัน leave
 	                        var leaveDays = evEnd.diff(evStart, 'days') + 1; // +1 เพราะ diff คืนค่าเป็นจำนวนวันเต็มระหว่างวันที่
-	                        if (ev.title === "ลาป่วย") {
+	                        if (ev.title.includes("ลาป่วย")) {
 	                            status = "Sick Leave";
 	                            summary.sickLeave += leaveDays;
 	                        } else {
@@ -893,7 +892,6 @@ var AppCalendar = function() {
 	            }
 	        }
 	    }
-
 	    // Update value
 	    document.querySelector("#summaryWorkingDay").textContent = summary.workingDay;
 	    document.querySelector("#summaryOnTime").textContent = summary.onTime;
@@ -992,7 +990,7 @@ var AppCalendar = function() {
                 initialDate: noTime.format('YYYY-MM-DD'),
 
 				nowIndicator: true,
-                editable: true,
+                editable: false,
                 dayMaxEvents: true,
                 navLinks: true,
                 
@@ -1066,7 +1064,6 @@ var AppCalendar = function() {
 // --------------------- Leave Modal ------------------------
 function leaveStatus(id) {
 	$("#leavemodal").modal("show"); 
-	console.log(id);
 
 	$.ajax({
 		url : "new_modalLeaveStatus",
