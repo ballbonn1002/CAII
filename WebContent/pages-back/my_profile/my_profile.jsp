@@ -54,6 +54,14 @@
 .toggle-password.d-none {
   display: none !important;
 }
+
+#imgPreview,
+#displayMode img {
+    max-height: 100px;
+    width: auto;
+    object-fit: contain;
+}
+
 </style>
 
 </head>
@@ -391,8 +399,8 @@
 						<form id="formUpdateOverview" action="update_my_profile"
 							method="POST" class="form" autocomplete="off" enctype="multipart/form-data">
 							<div class="card-body px-10 py-9">
-
 								<div class="row mb-8">
+								  <div id="errorMsgProfile" class="text-center text-danger mb-3"></div>
 									<div class="col-12 d-flex justify-content-center ">
 										<div id="ktImageInput" class="image-input image-input-outline"
 											data-kt-image-input="true"
@@ -414,22 +422,6 @@
 											        </c:otherwise>
 								                </c:choose>
 								             ">
-
-												<%-- <c:if test="${empty userImgPath}">
-												
-												 <span class="initials-text"> <c:choose>
-														<c:when
-																test="${not empty user.nameEN and fn:length(user.nameEN) >= 1}">
-								                            ${fn:toUpperCase(fn:substring(user.nameEN, 0, 1))}
-								                        </c:when>
-															<c:when
-																test="${not empty user.name and fn:length(user.name) >= 1}">
-								                            ${fn:toUpperCase(fn:substring(user.name, 0, 1))}
-								                        </c:when>
-															<c:otherwise>-</c:otherwise>
-														</c:choose>
-													</span> 
-												</c:if> --%>
 											</div>
 
 											<label id="changeBtn"
@@ -660,7 +652,8 @@
 
 					</div>
 
-					<div class="card mb-10" id="security-info">
+					<div class="" id="security-info">
+						<div class="card mb-10">
 						<div class="card-header">
 							<!--begin::Card title-->
 							<div class="card-title">
@@ -683,7 +676,73 @@
 
 							</div>
 						</div>
-					</div>
+						</div>
+						
+						<div class="card mb-10">
+						    <div class="card-header">
+						        <div class="card-title">
+						            <h3 class="fw-semibold text-gray-900">Signature</h3>
+						        </div>
+						    </div>
+						
+						    <form id="signatureForm" method="post" action="update_signature" enctype="multipart/form-data">
+						        <div class="card-body px-9 py-8">
+						            <div class="d-flex align-items-center justify-content-between">
+						                <div id="signatureContainer">
+						                <div id="errorMsg" class="text-start text-danger mb-3"></div>
+						                    <c:choose>
+						                        <c:when test="${not empty imgPathSignature}">
+						                            <div id="displayMode">
+						                                <img src="${imgPathSignature}"  class="" />
+						                                 <p id="signatureFileName" class="text-gray-700 fs-5 fw-normal mt-2">
+							                        ${signatureFileName}
+							                    </p>
+						                            </div>
+						                        </c:when>
+						                        
+						                        <c:otherwise>
+						                            <div id="emptyMode" class="d-flex align-items-center gap-4">
+						                                <i class="ki-duotone ki-picture fs-2"><span class="path1"></span><span class="path2"></span></i>
+						                                <span class="fs-6 text-muted fw-medium">Allowed file types: png, jpg, jpeg.</span>
+						                            </div>
+						                        </c:otherwise>
+						                    </c:choose>
+						
+						                    <div id="previewMode" class="d-none">
+						                        <div class="symbol symbol-100px position-relative">
+						                            <img id="imgPreview" src="" alt="Preview"  class="rounded border" />
+						                            <label class="btn btn-icon btn-circle btn-color-muted btn-active-color-primary w-25px h-25px bg-body shadow position-absolute translate-middle top-0 start-100" 
+						                                   data-bs-toggle="tooltip" title="Change">
+						                                <i class="ki-duotone ki-pencil fs-7"><span class="path1"></span><span class="path2"></span></i>
+						                                <input type="file" id="signatureInputFile" name="fileUpload" accept=".png, .jpg, .jpeg" class="d-none" />
+						                            </label>
+						                            <span id="btnCancelPreview" class="btn btn-icon btn-circle btn-color-muted btn-active-color-primary w-25px h-25px bg-body shadow position-absolute translate-middle top-100 start-100" 
+						                                  data-bs-toggle="tooltip" title="Cancel">
+						                                <i class="ki-outline ki-cross fs-4"></i>
+						                            </span>
+						                        </div>
+						                        	<div id="fileNameDisplay" class="text-gray-700 fs-5 fw-normal mt-4"></div>
+						                    </div>
+						                </div>
+						
+						                <div class="d-flex gap-2 align-items-center">
+						                 	<c:if test="${not empty imgPathSignature}">
+								                <a href="signature_perform_delete?userId=${user.id}" onclick="return confirmDelete(this.href);"
+													class="btn btn-icon btn-light-danger btn-sm" title="Delete">
+													<i class="ki-duotone ki-trash fs-2"><span
+														class="path1"></span><span class="path2"></span><span
+														class="path3"></span><span class="path4"></span><span
+														class="path5"></span></i>
+												</a>
+											</c:if>
+						                    <button type="button" id="mainActionBtn" class="btn btn-light">Upload</button>
+						                </div>
+						            </div>
+						        </div>
+						    </form>
+						</div> 
+					</div> 
+									
 
 					<div class="card mb-10" id="reset_password">
 						<!--begin::Card header-->
@@ -809,7 +868,6 @@
 						</form>
 					</div>
 
-
 					<div class="card mb-10" id="borrow-info">
 						<!--begin::Card header-->
 						<div class="card-header">
@@ -883,8 +941,7 @@
 				</div>
 			
 		</div>
-
-
+		
 <script>
 	document.addEventListener("DOMContentLoaded", function () {
 		 toggleEyeIcon();
@@ -932,7 +989,7 @@
     } else {
       const buttonNavMap = {
     		"#edit_overview": "#account-info",
-    		"#reset_password": "#security-info"
+    		"#reset_password": "#security-info",
     	};
     	navTarget = trigger.classList.contains("nav-link")
     		? target
@@ -950,13 +1007,43 @@
 
 <script>
 	document.addEventListener("DOMContentLoaded", function() {
+		const fileInput = document.getElementById("imageInputFile");  
 	    const removeBtn = document.querySelector('[data-kt-image-input-action="remove"]');
 	    const removeHidden = document.getElementById('avatarRemoveHidden');
+	    const errorMsgProfile = document.getElementById("errorMsgProfile");
+	    
+	    const clearError = () => {
+	        if (errorMsgProfile) errorMsgProfile.textContent = "";
+	    };
+	   
+	    fileInput.addEventListener("change", function () { 	
+	        const file = this.files[0];
+	        const maxSize = 2 * 1024 * 1024;
+	        
+	        if (!file) return;
+
+	        if (file.size > maxSize) {
+	        	errorMsgProfile.textContent = "Image must be smaller than 2MB.";
+	            this.value = "";
+	            return;
+	        } 
+	        
+	        if (removeHidden) removeHidden.value = "false";
+	        clearError();
+	       
+	    });
 	    
 	    if (removeBtn) {
 	        removeBtn.addEventListener("click", function() {
-	            removeHidden.value = "true";
+	        	if (removeHidden) removeHidden.value = "true";	        	
+	        	fileInput.value = "";
+	        	clearError();
 	        });
+	    }
+	    
+	    const cancelBtn = document.querySelector('[data-kt-image-input-action="cancel"]');
+	    if (cancelBtn) {
+	        cancelBtn.addEventListener("click", clearError);
 	    }
 	});
 </script>
@@ -1007,7 +1094,6 @@
 		}
 	}
 	
-	
 	function formatPhone(input){
 		input.value = input.value.replace(/[^0-9\-a-zA-Zก-๙\s]/g, '');
 	}
@@ -1016,6 +1102,14 @@
 	<script>
 	function submitForm(){
 		  var errorFields = [];
+		  const errorMsgProfile = document.getElementById("errorMsgProfile");
+		  if (errorMsgProfile && errorMsgProfile.textContent.trim() !== "") {
+			  window.scrollTo({
+			        top: 0,
+			        behavior: "smooth"
+			    });
+			  return false; 
+		  }
 		  
 		  [ "user_titleNameTH", "user_name",  "user_nickName", "user_titleNameEN","user_fullNameEN", "user_nickNameEN", "user_gender","user_birthDate",
 			  "user_citizenId", "user_passportId",  "user_email", "user_phonenum", "user_address", "user_emergContact", "user_emergPhone"
@@ -1422,6 +1516,111 @@ function confirmLeaveForm(redirectUrl){
 }
 </script>
 
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const fileInput = document.getElementById("signatureInputFile");
+    const mainBtn = document.getElementById("mainActionBtn");
+    const btnCancel = document.getElementById("btnCancelPreview");
+    
+    const displayMode = document.getElementById("displayMode");
+    const emptyMode = document.getElementById("emptyMode");
+    const previewMode = document.getElementById("previewMode");
+    const imgPreview = document.getElementById("imgPreview");
+    const fileNameDisplay = document.getElementById("fileNameDisplay");
+
+    mainBtn.addEventListener("click", function () {
+        if (mainBtn.innerText === "Upload") {
+            fileInput.click();
+        } else {
+        	Swal.fire({
+		    	 title: "Are you sure?!",
+		 	        text: "Do you want to save the changes?",
+		 	        icon: "warning",
+		 	        showCancelButton: true,
+		 	        confirmButtonText: "Save",
+		 	        cancelButtonText: "Close",
+		 	        buttonsStyling: false,
+		 	        customClass: {
+		 	            confirmButton: "btn btn-success",
+		 	            cancelButton: "btn btn-secondary"
+		 	        }
+		    }).then((result) => {
+		    	if (result.isConfirmed) document.getElementById("signatureForm").submit();
+		    });
+        }
+    });
+
+    fileInput.addEventListener("change", function () { 	
+        const file = this.files[0];
+        const maxSize = 2 * 1024 * 1024;
+        const errorMsg = document.getElementById("errorMsg");
+
+        if (!file) return;
+
+        if (file.size > maxSize) {
+
+            errorMsg.textContent = "Image must be smaller than 2MB.";
+            this.value = "";
+            return;
+        } else {
+            errorMsg.textContent = "";
+  
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                imgPreview.src = e.target.result;
+                fileNameDisplay.innerText = file.name;
+
+                if (displayMode) displayMode.classList.add("d-none");
+                if (emptyMode) emptyMode.classList.add("d-none");
+                previewMode.classList.remove("d-none");
+
+                mainBtn.innerText = "Save";
+                mainBtn.classList.replace("btn-light", "btn-success");
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+
+    btnCancel.addEventListener("click", function () {
+        fileInput.value = ""; 
+        previewMode.classList.add("d-none");
+
+        if (displayMode) {
+            displayMode.classList.remove("d-none");
+        } else 
+        	if (emptyMode) {
+            emptyMode.classList.remove("d-none");
+        }
+
+        mainBtn.innerText = "Upload";
+        mainBtn.classList.replace("btn-success", "btn-light");
+    });
+});
+</script>
+
+<script>
+	function confirmDelete(url){
+		
+	    Swal.fire({
+	        title: "Are you sure?!",
+	        text: "Are you sure you want to delete this signature?",
+	        icon: "warning",
+	        showCancelButton: true,
+	        confirmButtonText: "Yes, delete it!",
+	        cancelButtonText: "Cancel",
+	        buttonsStyling: false,
+	        customClass: {
+	            confirmButton: "btn btn-danger",
+	            cancelButton: "btn btn-secondary"
+	        }
+	    }).then((result) => {
+	        if (result.isConfirmed) {
+	            window.location.href = url;
+	        }
+	    });
+	    return false;
+	}
+	</script>
 
 </body>
 </html>

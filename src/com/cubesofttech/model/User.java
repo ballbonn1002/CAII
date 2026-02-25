@@ -3,6 +3,8 @@ package com.cubesofttech.model;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.sql.Date;
+import java.sql.Timestamp;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -16,8 +18,7 @@ import javax.persistence.Table;
 @NamedQueries({
     @NamedQuery(name = "User.findAll", query = "SELECT t FROM User t")})
 public class User implements Serializable {
-    
-    /** Creates a new instance of User */
+	/** Creates a new instance of User */
     public User() {
     }
     public User(
@@ -95,6 +96,7 @@ public class User implements Serializable {
             , String citizenId
             , String passportId
             , String paymentRemark
+            , String pathSignature
             
         ) {
         this.id = id;	
@@ -171,6 +173,7 @@ public class User implements Serializable {
         this.citizenId = citizenId;
         this.passportId = passportId;
         this.paymentRemark = paymentRemark;
+        this.pathSignature = pathSignature;
     }
     
     @Id
@@ -333,6 +336,8 @@ public class User implements Serializable {
     private String incNb;
     @Column(name = "payment_remark")
     private String paymentRemark;
+    @Column(name = "path_signature")
+    private String pathSignature;
 
 
     public Integer getId_sitejob() {
@@ -822,34 +827,42 @@ public class User implements Serializable {
 		this.paymentRemark = paymentRemark;
 	}
 	
+	public String getPathSignature() {
+		return pathSignature;
+	}
+	public void setPathSignature(String pathSignature) {
+		this.pathSignature = pathSignature;
+	}
+	
+	@Override
 	public String toString() {
-        return super.toString() + "id=[" + id + "]\n" + "roleId=[" + roleId + "]\n" + "departmentId=[" + departmentId + "]\n" 
-        						+ "managerId=[" + managerId + "]\n" + "positionId=[" + positionId + "]\n" 
-        						+ "employeeId=[" + employeeId + "]\n" + "name=[" + name + "]\n" + "nickName=[" + nickName + "]\n" 
-        						+ "password=[" + password + "]\n" + "email=[" + email + "]\n" + "emailPassword=[" + emailPassword + "]\n" 
-        						+ "emailEnable=[" + emailEnable + "]\n" + "birthDate=[" + birthDate + "]\n" + "address=[" + address + "]\n" 
-        						+ "startDate=[" + startDate + "]\n" + "endDate=[" + endDate + "]\n" + "workDayStart=[" + workDayStart + "]\n" 
-        						+ "workDayEnd=[" + workDayEnd + "]\n" + "workTimeStart=[" + workTimeStart + "]\n" + "workTimeEnd=[" + workTimeEnd + "]\n" 
-        						+ "latestSalary=[" + latestSalary + "]\n" + "eduInstitute1=[" + eduInstitute1 + "]\n" + "eduInstitute2=[" + eduInstitute2 + "]\n" 
-        						+ "eduInstitute3=[" + eduInstitute3 + "]\n" + "eduInstitute4=[" + eduInstitute4 + "]\n" + "eduDurStart1=[" + eduDurStart1 + "]\n" 
-        						+ "eduDurStart2=[" + eduDurStart2 + "]\n" + "eduDurStart3=[" + eduDurStart3 + "]\n" + "eduDurStart4=[" + eduDurStart4 + "]\n" 
-        						+ "eduDurEnd1=[" + eduDurEnd1 + "]\n" + "eduDurEnd2=[" + eduDurEnd2 + "]\n" + "eduDurEnd3=[" + eduDurEnd3 + "]\n" 
-        						+ "eduDurEnd4=[" + eduDurEnd4 + "]\n" + "eduDegree1=[" + eduDegree1 + "]\n" + "eduDegree2=[" + eduDegree2 + "]\n" 
-        						+ "eduDegree3=[" + eduDegree3 + "]\n" + "eduDegree4=[" + eduDegree4 + "]\n" + "enable=[" + enable + "]\n" 
-        						+ "leaveQuota1=[" + leaveQuota1 + "]\n" + "leaveQuota2=[" + leaveQuota2 + "]\n" + "leaveQuota3=[" + leaveQuota3 + "]\n" 
-        						+ "timeCreate=[" + timeCreate + "]\n" + "timeUpdate=[" + timeUpdate + "]\n" + "emailHost=[" + emailHost + "]\n" 
-        						+ "passwordUpdate=[" + passwordUpdate + "]\n" + "loginFailed=[" + loginFailed + "]\n" + "lastLoginFailedTime=[" + lastLoginFailedTime + "]\n" 
-        						+ "path=[" + path + "]\n"+ "facebookid=[" + facebookid + "]\n"+ "line_id=[" + line_id + "]\n" + "phonenum=[" + phonenum + "]\n"
-        						+ "titleNameTH=[" + titleNameTH + "]\n" + "titleNameEN=[" + titleNameEN + "]\n" + "nameEN=[" + nameEN + "]\n" + "nickNameEN=[" + nickNameEN + "]\n"
-        						+ "emergContact=[" + emergContact + "]\n" + "emergPhone=[" + emergPhone + "]\n" + "employeeTypeId=[" + employeeTypeId + "]\n"
-        						+ "socialSecurity=[" + socialSecurity + "]\n" + "withHold=[" + withHold + "]\n" + "withHoldAuto=[" + withHoldAuto + "]\n"
-        						+ "taxDec=[" + taxDec + "]\n" + "transferType=[" + transferType + "]\n" + "bank=[" + bank + "]\n" + "bankType=[" + bankType + "]\n"
-        						+ "bankNum=[" + bankNum + "]\n" + "bankBranch=[" + bankBranch + "]\n" + "citizenId=[" + citizenId + "]\n" + "passportId=[" + passportId + "]\n"
-        						+ "incDa=[" + incDa + "]\n" + "incNb=[" + incNb + "]\n" + "paymentRemark=[" + paymentRemark + "]\n"
-        						
-        						;
-        			            
-    }
+		return "User [id=" + id + ", roleId=" + roleId + ", departmentId=" + departmentId + ", managerId=" + managerId
+				+ ", positionId=" + positionId + ", employeeId=" + employeeId + ", name=" + name + ", nickName="
+				+ nickName + ", password=" + password + ", email=" + email + ", emailPassword=" + emailPassword
+				+ ", emailEnable=" + emailEnable + ", birthDate=" + birthDate + ", flagSearch=" + flagSearch
+				+ ", address=" + address + ", startDate=" + startDate + ", endDate=" + endDate + ", workDayStart="
+				+ workDayStart + ", workDayEnd=" + workDayEnd + ", workTimeStart=" + workTimeStart + ", workTimeEnd="
+				+ workTimeEnd + ", workType=" + workType + ", onsiteNum=" + onsiteNum + ", latestSalary=" + latestSalary
+				+ ", eduInstitute1=" + eduInstitute1 + ", eduInstitute2=" + eduInstitute2 + ", eduInstitute3="
+				+ eduInstitute3 + ", eduInstitute4=" + eduInstitute4 + ", eduDurStart1=" + eduDurStart1
+				+ ", eduDurStart2=" + eduDurStart2 + ", eduDurStart3=" + eduDurStart3 + ", eduDurStart4=" + eduDurStart4
+				+ ", eduDurEnd1=" + eduDurEnd1 + ", eduDurEnd2=" + eduDurEnd2 + ", eduDurEnd3=" + eduDurEnd3
+				+ ", eduDurEnd4=" + eduDurEnd4 + ", eduDegree1=" + eduDegree1 + ", eduDegree2=" + eduDegree2
+				+ ", eduDegree3=" + eduDegree3 + ", eduDegree4=" + eduDegree4 + ", enable=" + enable + ", leaveQuota1="
+				+ leaveQuota1 + ", leaveQuota2=" + leaveQuota2 + ", leaveQuota3=" + leaveQuota3 + ", leaveQuota4="
+				+ leaveQuota4 + ", timeCreate=" + timeCreate + ", timeUpdate=" + timeUpdate + ", emailHost=" + emailHost
+				+ ", passwordUpdate=" + passwordUpdate + ", loginFailed=" + loginFailed + ", lastLoginFailedTime="
+				+ lastLoginFailedTime + ", path=" + path + ", facebookid=" + facebookid + ", line_id=" + line_id
+				+ ", phonenum=" + phonenum + ", gender=" + gender + ", username=" + username + ", id_sitejob="
+				+ id_sitejob + ", titleNameTH=" + titleNameTH + ", titleNameEN=" + titleNameEN + ", nameEN=" + nameEN
+				+ ", nickNameEN=" + nickNameEN + ", emergContact=" + emergContact + ", emergPhone=" + emergPhone
+				+ ", employeeTypeId=" + employeeTypeId + ", socialSecurity=" + socialSecurity + ", withHold=" + withHold
+				+ ", withHoldAuto=" + withHoldAuto + ", taxDec=" + taxDec + ", transferType=" + transferType + ", bank="
+				+ bank + ", bankType=" + bankType + ", bankNum=" + bankNum + ", bankBranch=" + bankBranch
+				+ ", citizenId=" + citizenId + ", passportId=" + passportId + ", incDa=" + incDa + ", incNb=" + incNb
+				+ ", paymentRemark=" + paymentRemark + ", pathSignature=" + pathSignature + "]";
+	}
+	
 
     public boolean equals(Object obj) {
         if (this == obj) {
@@ -1137,6 +1150,10 @@ public class User implements Serializable {
         }
         if(!(that.getPaymentRemark() == null ? this.getPaymentRemark() == null
         		: that.getPaymentRemark().equals(this.getPaymentRemark()))) {
+        	return false;	
+        }
+        if(!(that.getPathSignature() == null ? this.getPathSignature() == null
+        		: that.getPathSignature().equals(this.getPathSignature()))) {
         	return false;	
         }
         	

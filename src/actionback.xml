@@ -920,6 +920,19 @@
 			method="validate_current_password">
 			<result name="none" type="httpheader" />
 		</action>
+		
+		<action name="update_signature"
+			class="com.cubesofttech.action.UserAction" method="update_signature">
+			<result name="success" type="redirectAction">my_profile</result>
+			<result name="error">/index.jsp</result>
+		</action>
+		
+		<action name="signature_perform_delete"
+			class="com.cubesofttech.action.UserAction"
+			method="signature_perform_delete">
+			<result name="success" type="redirectAction">my_profile</result>
+			<result name="error" type="tiles">/index.jsp</result>
+		</action>
 
 		<!-- JOB SITE -->
 		<action name="jobsite_list"

@@ -1362,12 +1362,12 @@
 	    
 	    fileInput.addEventListener("change", function () { 	
 	        const file = this.files[0];
-	        const maxSize = 5 * 1024 * 1024;
+	        const maxSize = 2 * 1024 * 1024;
 	        
 	        if (!file) return;
 
 	        if (file.size > maxSize) {
-	        	errorMsgProfile.textContent = "Image must be smaller than 5MB.";
+	        	errorMsgProfile.textContent = "Image must be smaller than 2MB.";
 	            this.value = "";
 	            return;
 	        } 

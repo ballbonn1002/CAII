@@ -428,8 +428,6 @@ public class ArticleAction extends ActionSupport {
 		}
 	}
 
-	
-
 	public String article_perform_add() {
 		try {
 			User onlineUser = (User) request.getSession().getAttribute("onlineUser");
@@ -612,24 +610,6 @@ public class ArticleAction extends ActionSupport {
 			        
 			    }
 			}
-			
-
-//			if (selectedTagId != null) {
-//			    for (ArticleTag at : selectedTagId) {
-//			        Tag tag = tagDAO.findById(at.getTagId());
-//			        if (tag != null) {
-//			            selectedTagName.add(tag);
-//			        }
-//			    }
-//			}
-			//List<ArticleTag> selectedTagName = articleTagDAO.findTagNameBySelectedTagId(Integer.parseInt(selectedTagId));
-//			if(selectedTagId !=null) {
-//				for(ArticleTag selectedTag : selectedTagId) {
-//					
-//				}
-//			}
-			
-//			User userCreate = userDAO.findById(article.getUserCreate());
 			
 			Integer typeArticle = article.getArticleTypeId();
 			
