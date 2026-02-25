@@ -172,10 +172,10 @@
 											<td class="text-center px-0 text-gray-900 fw-bold fs-7">${vs.count}</td>
 
 											<td class="text-gray-900 fw-normal fs-6"><fmt:formatDate
-													value="${ot.end_time}" pattern="d MMM yyyy, H:mm" /></td>
+													value="${ot.start_time}" pattern="d MMM yyyy, H:mm" /></td>
 
 											<td class="text-gray-900 fw-normal fs-6"><fmt:formatDate
-													value="${ot.start_time}" pattern="d MMM yyyy, H:mm" /></td>
+													value="${ot.end_time}" pattern="d MMM yyyy, H:mm" /></td>
 
 											<td><span
 												class="badge badge-lg badge-light-${ot.status_color} fw-bold fs-7 h-25px">
