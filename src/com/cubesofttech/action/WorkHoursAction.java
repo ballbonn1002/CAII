@@ -663,7 +663,7 @@ public class WorkHoursAction extends ActionSupport {
 							}
 							dayData.put("checkouttime", tStr);
 							dayData.put("descriptionOut", outData.getOrDefault("descriptionOut", "").toString());
-							dayData.put("workTypeOut", outData.getOrDefault("workTypeOut", "").toString());
+							dayData.put("workTypeOut", outData.getOrDefault("workTypeOut", ""));
 						} else {
 							dayData.put("checkouttime", "");
 							dayData.put("descriptionOut", "");
