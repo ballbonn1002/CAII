@@ -12,7 +12,6 @@ import javax.persistence.NamedQuery;
 import javax.persistence.Table;
  @Entity
 @Table(name = "article")
-@NamedQueries({ @NamedQuery(name = "Article.findAll", query = "SELECT t FROM Article t") })
 public class Article implements Serializable{
 
 	/** Creates a new instance of Article */
@@ -37,7 +36,8 @@ public class Article implements Serializable{
 					String fileId,
 					String userCreate,
 					String title,
-					String meta_desc
+					String meta_desc,
+					String articleTagId
 			) {
 		this.articleId = articleId;
 		this.pageId = pageId;
@@ -54,7 +54,7 @@ public class Article implements Serializable{
 		this.timeUpdate = timeUpdate;
 		this.userUpdate = userUpdate;
 		this.fileId = fileId;
-		this.status = status;
+		this.articleTagId = articleTagId;
 		this.userCreate = userCreate;
 		this.title = title;
 		this.meta_desc = meta_desc;
@@ -69,6 +69,9 @@ public class Article implements Serializable{
 	
 	@Column(name = "article_type_id")
 	private Integer articleTypeId;
+	
+	@Column(name = "article_tag_id")
+	private String articleTagId;
 	
 	@Column(name = "topic")
 	private String topic;
@@ -145,6 +148,15 @@ public class Article implements Serializable{
 
 	public void setArticleTypeId(Integer articleTypeId) {
 		this.articleTypeId = articleTypeId;
+	}
+	
+
+	public String getArticleTagId() {
+		return articleTagId;
+	}
+
+	public void setArticleTagId(String articleTagId) {
+		this.articleTagId = articleTagId;
 	}
 
 	public String getTopic() {
@@ -258,4 +270,7 @@ public class Article implements Serializable{
 	public void setTimeUpdate(java.sql.Timestamp timeUpdate) {
 		this.timeUpdate = timeUpdate;
 	}
+	
+	
+	
 }

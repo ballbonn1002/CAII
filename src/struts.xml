@@ -5,6 +5,8 @@
 <struts>
 
 	<constant name="request_locale" value="th_TH" />
+	<!-- 5MB -->
+	<constant name="struts.multipart.maxSize" value="5242880"/> 
 	<package name="default" extends="struts-default">
 		<interceptors>
 			<interceptor name="json"

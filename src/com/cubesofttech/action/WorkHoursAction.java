@@ -528,41 +528,56 @@ public class WorkHoursAction extends ActionSupport {
 			LocalDate endDate = LocalDate.of(currentYear, 12, 31);
 
 			DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
-			Timestamp start_date_leave = DateUtil.dateToTimestamp(LocalDate.of(last2year, 1, 1).format(dateFormatter),
-					"00:00:00.0");
-			Timestamp end_date_leave = DateUtil.dateToTimestamp(LocalDate.of(currentYear, 12, 31).format(dateFormatter),
-					"23:59:59.0");
+			Timestamp start_date_leave = DateUtil.dateToTimestamp(startDate.format(dateFormatter), "00:00:00.0");
+			Timestamp end_date_leave = DateUtil.dateToTimestamp(endDate.format(dateFormatter), "23:59:59.0");
+			
 			List<Map<String, Object>> leavelist = leaveDAO.myLeavesList(userId, start_date_leave, end_date_leave);
 			request.setAttribute("leave", leavelist);
-
-			// Check in - Check out Calendar
+			
+			Map<LocalDate, Map<String, Object>> leaveLookup = new HashMap<>();
+			if (leavelist != null) {
+	            for (Map<String, Object> l : leavelist) {
+	                Object dateObj = l.get("start_date");
+	                if (dateObj instanceof java.sql.Date) {
+	                    leaveLookup.put(((java.sql.Date) dateObj).toLocalDate(), l);
+	                } else if (dateObj instanceof Timestamp) {
+	                    leaveLookup.put(((Timestamp) dateObj).toLocalDateTime().toLocalDate(), l);
+	                }
+	            }
+	        }
+			
+			//---- Check in - Check out Calendar
 			User userWorkTime = userDAO.findById(userId);
-			if (userWorkTime == null) {
-				return ERROR;
-			}
+	        if (userWorkTime == null) return ERROR;
+	        
 			String workStartTime = userWorkTime.getWorkTimeStart();
 			String workEndTime = userWorkTime.getWorkTimeEnd();
+			if (workStartTime != null && workStartTime.indexOf(':') == 1) workStartTime = "0" + workStartTime;
+	        if (workEndTime != null && workEndTime.indexOf(':') == 1) workEndTime = "0" + workEndTime;
+			
+	        LocalTime userStart = (workStartTime != null) ? LocalTime.parse(workStartTime.substring(0, 5)) : LocalTime.of(9, 0);
+	        LocalTime userEnd = (workEndTime != null) ? LocalTime.parse(workEndTime.substring(0, 5)) : LocalTime.of(18, 0);
+	        
+	        // Get check-in / check-out data
+			Map<LocalDate, List<Map<String, Object>>> checkinMap = workHoursDAO.getCheckinsForYear2(userId,last2year,currentYear);
+			Map<LocalDate, List<Map<String, Object>>> checkoutMap = workHoursDAO.getCheckoutsForYear2(userId,last2year,currentYear);
 
-			// Get check-in / check-out data
-			Map<LocalDate, List<Map<String, Object>>> checkinMap = workHoursDAO.getCheckinsForYear2(userId, last2year,
-					currentYear);
-			Map<LocalDate, List<Map<String, Object>>> checkoutMap = workHoursDAO.getCheckoutsForYear2(userId, last2year,
-					currentYear);
-
-			if (checkinMap == null)
-				checkinMap = new HashMap<>();
-			if (checkoutMap == null)
-				checkoutMap = new HashMap<>();
+			if (checkinMap == null) checkinMap = new HashMap<>();
+	        if (checkoutMap == null) checkoutMap = new HashMap<>();
 
 			List<Map<String, Object>> workData = new ArrayList<>();
+			DateTimeFormatter timeFmt = DateTimeFormatter.ofPattern("HH:mm");
+			
 			for (LocalDate date = startDate; !date.isAfter(endDate); date = date.plusDays(1)) {
 				List<Map<String, Object>> dailyIns = checkinMap.getOrDefault(date, new ArrayList<>());
 				List<Map<String, Object>> dailyOuts = checkoutMap.getOrDefault(date, new ArrayList<>());
-
-				String dailyStatus = null;
+				Map<String, Object> dailyLeave = leaveLookup.get(date);
+				
+				String dailyStatus = "";
 				String leaveDescription = "";
+				String dailyTotalHours = "";
 				try {
-					Map<String, Object> statusResult = workHoursService.calculateDailyStatus(userId, date);
+					Map<String, Object> statusResult = workHoursService.determineDailyStatus(date, dailyIns, dailyOuts, dailyLeave, userStart, userEnd);
 					if (statusResult != null) {
 						dailyStatus = (String) statusResult.get("status");
 						if (statusResult.containsKey("leave_desc")) {
@@ -573,39 +588,36 @@ public class WorkHoursAction extends ActionSupport {
 				} catch (Exception e) {
 					log.error("Error calculating status", e);
 				}
-
-				String dailyTotalHours = "";
-				String latestOutTimeStr = null;
-
+				
+				Timestamp minIn = null;
+	            Timestamp maxOut = null;
+	            				
+				if (!dailyIns.isEmpty()) {
+	                for (Map<String, Object> in : dailyIns) {
+	                    Timestamp ts = (Timestamp) in.get("checkinTs");
+	                    if (ts != null && (minIn == null || ts.before(minIn))) minIn = ts;
+	                }
+	            }
+				
 				if (!dailyOuts.isEmpty()) {
-					Timestamp maxOut = null;
-					for (Map<String, Object> out : dailyOuts) {
-						Timestamp ts = (Timestamp) out.get("checkoutTs");
-						if (ts != null && (maxOut == null || ts.after(maxOut))) {
-							maxOut = ts;
-						}
-					}
-					if (maxOut != null) {
-						latestOutTimeStr = maxOut.toLocalDateTime().toLocalTime().toString();
-						if (latestOutTimeStr.length() > 5)
-							latestOutTimeStr = latestOutTimeStr.substring(0, 5);
-					}
-				}
-
-				if (latestOutTimeStr != null) {
-					try {
-						int totalMinutes = workHoursService.calculateWorkingHours(userId, "2", date.getDayOfMonth(),
-								date.getMonthValue(), date.getYear(), latestOutTimeStr);
-
-						if (totalMinutes > 0) {
-							int hrs = (totalMinutes / 60) - 1;
-							int mins = totalMinutes % 60;
-							dailyTotalHours = String.format("%02d:%02d", hrs, mins);
-						}
-					} catch (Exception e) {
-						log.error("Error calculating hours", e);
-					}
-				}
+	                for (Map<String, Object> out : dailyOuts) {
+	                    Timestamp ts = (Timestamp) out.get("checkoutTs");
+	                    if (ts != null && (maxOut == null || ts.after(maxOut))) maxOut = ts;
+	                }
+	            }
+				
+				if (minIn != null && maxOut != null) {
+	                long diffMinutes = java.time.Duration.between(minIn.toLocalDateTime(), maxOut.toLocalDateTime()).toMinutes();
+	                
+	                long hrs = diffMinutes / 60;
+	                long mins = diffMinutes % 60;
+	                
+	                if (hrs >= 1) hrs = hrs - 1; 
+	                
+	                if (diffMinutes > 0) {
+	                     dailyTotalHours = String.format("%02d:%02d", hrs, mins);
+	                }
+	            }
 
 				int maxRows = Math.max(dailyIns.size(), dailyOuts.size());
 
@@ -618,42 +630,36 @@ public class WorkHoursAction extends ActionSupport {
 					dayData.put("workinghours", "");
 					dayData.put("descriptionOut", "");
 					dayData.put("workTypeOut", "");
-
-					if (leaveDescription != null && !leaveDescription.isEmpty()) {
-						dayData.put("descriptionIn", leaveDescription);
-						dayData.put("status", dailyStatus);
-					} else {
-						dayData.put("descriptionIn", "");
-						dayData.put("status", dailyStatus);
-					}
+					dayData.put("descriptionIn", (leaveDescription != null) ? leaveDescription : "");
+					dayData.put("status", dailyStatus);
 					workData.add(dayData);
 				} else {
 					for (int i = 0; i < maxRows; i++) {
 						Map<String, Object> dayData = new HashMap<>();
 						dayData.put("DATE(work_hours_time_work)", date.toString());
-
+						
+						// Check-in Data
 						if (i < dailyIns.size()) {
 							Map<String, Object> inData = dailyIns.get(i);
-							dayData.put("mycheckin", inData.get("checkinTs"));
-							dayData.put("mycheckins",
-									((Timestamp) inData.get("checkinTs")).toLocalDateTime().toString());
-							dayData.put("descriptionIn", inData.getOrDefault("descriptionIn", "").toString());
-							dayData.put("workTypeIn", inData.getOrDefault("workTypeIn", "").toString());
+							Timestamp inTs = (Timestamp) inData.get("checkinTs");
+							dayData.put("mycheckin", inTs);
+							dayData.put("mycheckins", (inTs != null) ? inTs.toLocalDateTime().toString() : null);
+	                        dayData.put("descriptionIn", inData.getOrDefault("descriptionIn", "").toString());
+	                        dayData.put("workTypeIn", inData.getOrDefault("workTypeIn", ""));
 						} else {
 							dayData.put("mycheckin", null);
 							dayData.put("mycheckins", null);
 							dayData.put("descriptionIn", "");
 							dayData.put("workTypeIn", "");
 						}
-
+						
+						// Check-out Data
 						if (i < dailyOuts.size()) {
 							Map<String, Object> outData = dailyOuts.get(i);
-							Timestamp ts = (Timestamp) outData.get("checkoutTs");
+							Timestamp outTs = (Timestamp) outData.get("checkoutTs");
 							String tStr = "";
-							if (ts != null) {
-								tStr = ts.toLocalDateTime().toLocalTime().toString();
-								if (tStr.length() > 5)
-									tStr = tStr.substring(0, 5);
+							if (outTs != null) {
+								tStr = outTs.toLocalDateTime().format(timeFmt);
 							}
 							dayData.put("checkouttime", tStr);
 							dayData.put("descriptionOut", outData.getOrDefault("descriptionOut", "").toString());

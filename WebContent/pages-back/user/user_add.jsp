@@ -76,6 +76,7 @@
 
 							<div class="card-body py-10">
 								<div class="row mb-16">
+								<div id="errorMsgProfile" class="text-center text-danger mb-3"></div>
 								<div class="d-flex flex-column align-items-center">
 									<div class="image-input image-input-outline"
 										data-kt-image-input="true"
@@ -90,8 +91,9 @@
 											data-kt-image-input-action="change" data-bs-toggle="tooltip"
 											title="Change avatar"> <i
 											class="ki-duotone ki-pencil fs-6"><span class="path1"></span><span
-												class="path2"></span></i> <input type="file" name="fileUpload"
-											accept=".png, .jpg, .jpeg" /> <input type="hidden"
+												class="path2"></span></i> 
+												<input type="file" name="fileUpload" id="imageInputFile"
+											accept=".png, .jpg, .jpeg" /> <input type="hidden" id="avatarRemoveHidden"
 											name="avatar_remove" />
 										</label> <span
 											class="btn btn-icon btn-circle btn-color-muted btn-active-color-primary w-30px h-30px bg-body shadow"
@@ -491,14 +493,41 @@
 	<script>
 	document.addEventListener('DOMContentLoaded', function () {
 		toggleEyeIcon();
-		
+		const fileInput = document.getElementById("imageInputFile");  
+		const errorMsgProfile = document.getElementById("errorMsgProfile");
 		const removeBtn = document.querySelector('[data-kt-image-input-action="remove"]');
 	    const removeHidden = document.getElementById('avatarRemoveHidden');
+	    const clearError = () => {
+	        if (errorMsgProfile) errorMsgProfile.textContent = "";
+	    };
+	    
+	    fileInput.addEventListener("change", function () { 	
+	        const file = this.files[0];
+	        const maxSize = 5 * 1024 * 1024;
+	        
+	        if (!file) return;
+
+	        if (file.size > maxSize) {
+	        	errorMsgProfile.textContent = "Image must be smaller than 5MB.";
+	            this.value = "";
+	            return;
+	        } 
+	        
+	        if (removeHidden) removeHidden.value = "false";
+	        clearError();
+	       
+	    });
 	    
 	    if (removeBtn) {
 	        removeBtn.addEventListener("click", function() {
 	            removeHidden.value = "true";
+	            fileInput.value = "";
+	        	clearError();
 	        });
+	    }
+	    const cancelBtn = document.querySelector('[data-kt-image-input-action="cancel"]');
+	    if (cancelBtn) {
+	        cancelBtn.addEventListener("click", clearError);
 	    }
 	});
 	
@@ -662,6 +691,15 @@
 
         let ok = true;
         let errorFields = [];
+        
+        const errorMsgProfile = document.getElementById("errorMsgProfile");
+		  if (errorMsgProfile && errorMsgProfile.textContent.trim() !== "") {
+			  window.scrollTo({
+			        top: 0,
+			        behavior: "smooth"
+			    });
+			  return false; 
+		  }
 
         $('.userinfo:input[required]:not(.flatpickr-input)').each(function () {
             const $el = $(this);

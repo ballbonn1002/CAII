@@ -306,6 +306,7 @@
 						<div class="card-body pt-6">
 							
 							<div class="row mb-8">
+							<div id="errorMsgProfile" class="text-center text-danger mb-3"></div>
 								<div class="col-12 d-flex justify-content-center ">
 									<div id="ktImageInput" class="image-input image-input-outline"
 										data-kt-image-input="true"
@@ -1350,14 +1351,42 @@
 	<script>
 	document.addEventListener("DOMContentLoaded", function() {
 		toggleEyeIcon();
-		
+		const fileInput = document.getElementById("imageInputFile");  
+		const errorMsgProfile = document.getElementById("errorMsgProfile");
 	    const removeBtn = document.querySelector('[data-kt-image-input-action="remove"]');
 	    const removeHidden = document.getElementById('avatarRemoveHidden');
+	    
+	    const clearError = () => {
+	        if (errorMsgProfile) errorMsgProfile.textContent = "";
+	    };
+	    
+	    fileInput.addEventListener("change", function () { 	
+	        const file = this.files[0];
+	        const maxSize = 5 * 1024 * 1024;
+	        
+	        if (!file) return;
+
+	        if (file.size > maxSize) {
+	        	errorMsgProfile.textContent = "Image must be smaller than 5MB.";
+	            this.value = "";
+	            return;
+	        } 
+	        
+	        if (removeHidden) removeHidden.value = "false";
+	        clearError();
+	       
+	    });
 	    
 	    if (removeBtn) {
 	        removeBtn.addEventListener("click", function() {
 	            removeHidden.value = "true";
+	            fileInput.value = "";
+	        	clearError();
 	        });
+	    }
+	    const cancelBtn = document.querySelector('[data-kt-image-input-action="cancel"]');
+	    if (cancelBtn) {
+	        cancelBtn.addEventListener("click", clearError);
 	    }
 	    
 	    flatpickr('[data-kt-date-picker="true"]', {
@@ -1740,6 +1769,15 @@
         	  const activeSection = getActiveTabElement();
         	  const errorFields = validateActiveTab(activeSection);
 
+        	  const errorMsgProfile = document.getElementById("errorMsgProfile");
+    		  if (errorMsgProfile && errorMsgProfile.textContent.trim() !== "") {
+    			  window.scrollTo({
+    			        top: 0,
+    			        behavior: "smooth"
+    			    });
+    			  return false; 
+    		  }
+    		  
         	  if (errorFields.length > 0) {
         	    Swal.fire({
         	      title: "Please complete the form!",
@@ -1790,7 +1828,7 @@
                 if (result.isConfirmed) {
                     $.post('${pageContext.request.contextPath}/user-delete.action', { id: userId })
                      .done(function() { Swal.fire('Deleted!', '', 'success').then(() => window.location.href = 'user-list'); })
-                     .fail(function() { Swal.fire('Error', 'ไม่สามารถลบได้ (อาจมี Time Attendance)', 'error'); });
+                     .fail(function() { Swal.fire('Error', 'ไม่สามารถลบได้ เนื่องจากมีการลง Check-In หรือ Check-Out ในระบบแล้ว', 'error'); });
                 }
             });
         });
