@@ -536,10 +536,16 @@
 		</action>
 
 		<!-- เพิ่ม function add -->
-		<action name="role-perform-edit-*"
+		<action name="role-perform-edit"
 			class="com.cubesofttech.action.RoleAction" method="performEdit">
 			<result name="success" type="redirectAction">role-edit?roleId=${roleId}
 			</result>
+			<result name="error">/index.jsp</result>
+		</action>
+		
+		<action name="role-perform-status-update"
+			class="com.cubesofttech.action.RoleAction" method="performEditStatusUpdate">
+			<result name="success">/pages-back/common/json.jsp</result>
 			<result name="error">/index.jsp</result>
 		</action>
 
