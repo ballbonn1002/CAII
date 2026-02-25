@@ -249,7 +249,7 @@
 
 		<!-- Listing -->
 		<action name="new_myleave_list"
-			class="com.cubesofttech.action.LeaveAction" method="New_list">
+			class="com.cubesofttech.action.LeaveAction" method="New_myleave">
 			<result name="success" type="tiles">new_myleave_list</result>
 			<result name="error">/index.jsp</result>
 		</action>
@@ -728,16 +728,16 @@
 			<result name="success" type="tiles">CheckAllCalendar</result>
 			<result name="error">/index.jsp</result>
 		</action>
-		<action name="NewCheckAllCalendar"
+		<action name="Calendar_Checklist"
 			class="com.cubesofttech.action.WorkHoursAction"
 			method="CheckAllCalendar2">
 			<result name="success" type="tiles">NewCheckAllCalendar</result>
 			<result name="error">/index.jsp</result>
 		</action>
-		<action name="TestSearchAllinCalendar"
+		<action name="SearchAllinCalendar"
 			class="com.cubesofttech.action.WorkHoursAction"
-			method="CheckAllCalendar">
-			<result name="success" type="tiles">CheckAllCalendar</result>
+			method="CheckAllCalendar2">
+			<result name="success" type="tiles">NewCheckAllCalendar</result>
 			<result name="error">/index.jsp</result>
 		</action>
 		<action name="new_modalLeaveStatus"

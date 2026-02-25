@@ -122,7 +122,7 @@ String targetURL = Constant.getWebContext2() + "/authorization?token=" + token;
 					<!--end:Menu item-->
 					<!--begin:Menu item-->
 					<div class="menu-item">
-						<a class="menu-link" href="NewCheckAllCalendar"
+						<a class="menu-link" href="Calendar_Checklist"
 							data-route="checkAllCalendar"> <span class="menu-icon">
 								<i class="ki-duotone ki-calendar fs-1"> <span class="path1"></span>
 									<span class="path2"></span></i>
