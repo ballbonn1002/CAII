@@ -94,4 +94,23 @@ CREATE TABLE `overtime` (
 -- 25/02/2026 june(Intern): add 'path_signature' column to 'user' table --
 ALTER TABLE user ADD COLUMN path_signature VARCHAR(1024) DEFAULT NULL;
 
+-- 26/02/2026 jang(Intern): create 'expense_detail' table --
+CREATE TABLE expense_detail (
+  `expense_detail_id` bigint(20) NOT NULL,
+  `expense_id` bigint(20) NOT NULL,
+  `go_by` bigint(1) NOT NULL,
+  `total` decimal(10,2) DEFAULT NULL,
+  `description` varchar(255) DEFAULT NULL,
+  `user_create` varchar(32) DEFAULT NULL,
+  `user_update` varchar(32) DEFAULT NULL,
+  `time_create` timestamp NULL DEFAULT NULL,
+  `time_update` timestamp NULL DEFAULT NULL,
+  `kilometers` decimal(10,2) DEFAULT NULL
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
+-- 26/02/2026 jang(Intern): add 'requested_by','requested_at','received_by','received_at' column to 'expense_group' table --
+ALTER TABLE `expense_group`
+  ADD COLUMN `requested_by` VARCHAR(32) NULL AFTER paid_year,
+  ADD COLUMN `requested_at`    DATETIME    NULL AFTER requested_by,
+  ADD COLUMN `received_by`  VARCHAR(32) NULL AFTER requested_at,
+  ADD COLUMN `received_at`     DATETIME    NULL AFTER received_by;
