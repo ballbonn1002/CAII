@@ -201,7 +201,7 @@
 											class="form-control form-control-lg ps-15 h-55px fw-bold text-gray-800 ${overtime.status ne 'W' ? 'bg-light' : 'cursor-pointer'}"
 											value="${fn:replace(overtime.appr_hours, '.', ':')}"
 											placeholder="Select time"
-											${overtime.status ne 'W' ? 'readonly' : ''} />
+											${overtime.status ne 'W' ? 'disabled' : ''} />
 									</div>
 								</div>
 								<div class="col-md-6">
@@ -259,51 +259,30 @@
 						function decimalToTimeStr(decimalValue) {
 							var hrs = Math.floor(decimalValue);
 							var mins = Math.round((decimalValue - hrs) * 60);
-							var hrsStr = hrs < 10 ? "0" + hrs : hrs;
+							var hrsStr = hrs < 10 ? hrs : hrs;
 							var minsStr = mins < 10 ? "0" + mins : mins;
 							return hrsStr + ":" + minsStr;
 						}
 
-						// DATE & WEEKEND CHECK
+						// CALCULATION LOGIC
 						var startDateTimeStr = '<fmt:formatDate value="${overtime.start_time}" pattern="yyyy-MM-dd" />';
 						var otDate = moment(startDateTimeStr, "YYYY-MM-DD");
 						var isWeekend = (otDate.day() === 0 || otDate.day() === 6);
 
-						// CALCULATION LOGIC
 						function calculateOTCondition(decimalHours) {
 							var finalHours = parseFloat(decimalHours);
 
-							var breakHours = Math.floor(finalHours / 6.0);
-							if (breakHours > 0) {
-								finalHours = finalHours - breakHours;
-								if (typeof toastr !== 'undefined') {
-									toastr.info("ระบบหักเวลาพักอัตโนมัติ "
-											+ breakHours + " ชั่วโมง");
-								}
-							}
-
-							var recommendedRate = "1.5";
 							var calculatedApprHours = finalHours;
 
-							if (isWeekend) {
-								if (finalHours <= 8.0) {
-									recommendedRate = "1.0";
-									calculatedApprHours = finalHours;
-								} else {
-									var over8Hours = finalHours - 8.0;
-									calculatedApprHours = 8.0 + (over8Hours * 3.0);
-									recommendedRate = "1.0";
+							var recommendedRate = "1.5"; 
 
-									if (typeof toastr !== 'undefined') {
-										toastr.success("แปลงชั่วโมง OT เป็น "
-												+ calculatedApprHours
-												+ " ชม. (เรท 1.0)");
-									}
-								}
+							if (isWeekend) {
+								recommendedRate = "1.0";
 							}
 
 							$("#type_of_ot").val(recommendedRate).trigger(
 									'change.select2');
+
 							return calculatedApprHours;
 						}
 
@@ -356,14 +335,6 @@
 
 	function submitWithStatus(status) {
 		document.getElementById('approveStatus').value = status;
-
-		if (status === 'R') {
-			document.getElementById('appr_hours_hidden').value = "0.00";
-
-			document.getElementById('type_of_ot').value = "";
-		}
-		// ----------------------------------------
-
 		document.getElementById('approveForm').submit();
 	}
 </script>

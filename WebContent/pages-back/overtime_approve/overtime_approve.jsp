@@ -164,7 +164,7 @@
 															var="otTypeDisplay" />
 														<span
 															class="badge badge-lg badge-primary fw-bold fs-7 h-25px ms-2">
-															${otTypeDisplay} X </span>
+															${otTypeDisplay}X </span>
 													</c:if>
 												</div>
 											</td>

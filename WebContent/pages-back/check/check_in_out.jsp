@@ -363,19 +363,13 @@
 						</div>
 
 						<!--begin::Announcement-->
-						<div class="d-flex align-items-center mb-6">
-							<i class="ki-duotone ki-information text-danger"
-								style="font-size: 32px;"> <span class="path1"></span> <span
-								class="path2"></span> <span class="path3"></span>
-							</i>
-							<h2 class="fw-bold text-danger mb-0 ms-3">Announcement</h2>
-						</div>
-
 						<c:if test="${not empty announcementList}">
 
 							<jsp:useBean id="nowDateForCheck" class="java.util.Date" />
 							<fmt:formatDate var="todayStr" value="${nowDateForCheck}"
 								pattern="yyyy-MM-dd" />
+
+							<c:set var="headerShown" value="false" />
 
 							<c:forEach var="ann" items="${announcementList}">
 
@@ -385,6 +379,16 @@
 								<c:if
 									test="${fn:trim(ann.highlight) eq '1' and ann.status ne '0' and annDateStr <= todayStr}">
 
+									<c:if test="${not headerShown}">
+										<div class="d-flex align-items-center mb-6">
+											<i class="ki-duotone ki-information text-danger"
+												style="font-size: 32px;"> <span class="path1"></span> <span
+												class="path2"></span> <span class="path3"></span>
+											</i>
+											<h2 class="fw-bold text-danger mb-0 ms-3">Announcement</h2>
+										</div>
+										<c:set var="headerShown" value="true" />
+									</c:if>
 
 									<div
 										class="card hover-elevate-up shadow-sm parent-hover position-relative mb-10"
@@ -393,17 +397,14 @@
 
 										<div
 											style="display: flex; justify-content: flex-end; gap: 6px; position: absolute; top: 20px !important; right: 20px; z-index: 2;">
-
 											<span class="badge fw-semibold text-white bg-primary"
 												style="height: 26px;">New</span>
-
 										</div>
 
 										<div class="card-header p-0 border-0 h-250px">
 											<c:choose>
 												<c:when
 													test="${not empty ann.fileUpload and not empty ann.fileUpload.path}">
-
 													<img src="${ann.fileUpload.path}" alt="${ann.topic}"
 														class="image-box w-100 h-100 rounded-top d-block"
 														style="object-fit: cover; object-position: top;">
@@ -419,9 +420,7 @@
 										<div
 											class="card-body p-9 d-flex flex-column justify-content-center"
 											style="min-height: 140px;">
-
-											<div class="fs-6 fw-bold text-gray-800 mb-5 lh-bases">
-												${ann.topic}</div>
+											<div class="fs-6 fw-bold text-gray-800 mb-5 lh-bases">${ann.topic}</div>
 
 											<div class="d-flex align-items-center gap-4">
 												<span
@@ -442,7 +441,6 @@
 											</div>
 										</div>
 									</div>
-									<!--end::Announcement-->
 
 								</c:if>
 							</c:forEach>
@@ -502,7 +500,8 @@
 											<c:choose>
 												<c:when
 													test="${not empty ann.fileUpload and not empty ann.fileUpload.path}">
-													<img src="${ann.fileUpload.path}" class="mw-100 h-auto rounded-3 shadow-sm border"
+													<img src="${ann.fileUpload.path}"
+														class="mw-100 h-auto rounded-3 shadow-sm border"
 														style="max-height: 55vh; object-fit: contain;">
 												</c:when>
 												<c:otherwise>
@@ -542,8 +541,9 @@
 							</c:if>
 						</c:forEach>
 					</div>
-					
-					<div class="carousel-indicators position-relative d-flex justify-content-center m-0 mt-2">
+
+					<div
+						class="carousel-indicators position-relative d-flex justify-content-center m-0 mt-2">
 						<c:set var="idx" value="0" />
 						<c:forEach var="ann" items="${announcementList}">
 							<fmt:formatDate var="annDateStr" value="${ann.announcement_date}"
