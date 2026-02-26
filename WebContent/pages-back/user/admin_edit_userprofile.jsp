@@ -1073,9 +1073,128 @@
 								</div>
 
 								<div class="col-md-6 fv-row">
-									<label class="form-label">Bank Name</label> <input
+									<label class="form-label">Bank Name</label> <%-- <input
 										class="form-control" name="user.bank" data-tab="payment" 
-										value="${selectUser.bank}" placeholder="Bank name">
+										value="${selectUser.bank}" placeholder="Bank name"> --%>
+										<select class="form-select" data-control="select2" 
+										        name="user.bank" data-tab="payment">
+										
+										    <option value="ธนาคารกสิกรไทย"
+										        ${empty selectUser.bank || selectUser.bank == 'ธนาคารกสิกรไทย' ? 'selected' : ''}>
+										        ธนาคารกสิกรไทย
+										    </option>
+										
+										    <option value="ธนาคารกรุงเทพ"
+										        ${selectUser.bank == 'ธนาคารกรุงเทพ' ? 'selected' : ''}>
+										        ธนาคารกรุงเทพ
+										    </option>
+										
+										    <option value="ธนาคารกรุงไทย"
+										        ${selectUser.bank == 'ธนาคารกรุงไทย' ? 'selected' : ''}>
+										        ธนาคารกรุงไทย
+										    </option>
+										
+										    <option value="ธนาคารไทยพาณิชย์"
+										        ${selectUser.bank == 'ธนาคารไทยพาณิชย์' ? 'selected' : ''}>
+										        ธนาคารไทยพาณิชย์
+										    </option>
+										
+										    <option value="ธนาคารทหารไทยธนชาต"
+										        ${selectUser.bank == 'ธนาคารทหารไทยธนชาต' ? 'selected' : ''}>
+										        ธนาคารทหารไทยธนชาต
+										    </option>
+										
+										    <option value="ธนาคารกรุงศรีอยุธยา"
+										        ${selectUser.bank == 'ธนาคารกรุงศรีอยุธยา' ? 'selected' : ''}>
+										        ธนาคารกรุงศรีอยุธยา
+										    </option>
+										
+										    <option value="ธนาคารเกียรตินาคินภัทร"
+										        ${selectUser.bank == 'ธนาคารเกียรตินาคินภัทร' ? 'selected' : ''}>
+										        ธนาคารเกียรตินาคินภัทร
+										    </option>
+										
+										    <option value="ธนาคารซีไอเอ็มบีไทย"
+										        ${selectUser.bank == 'ธนาคารซีไอเอ็มบีไทย' ? 'selected' : ''}>
+										        ธนาคารซีไอเอ็มบีไทย
+										    </option>
+										
+										    <option value="ธนาคารทิสโก้"
+										        ${selectUser.bank == 'ธนาคารทิสโก้' ? 'selected' : ''}>
+										        ธนาคารทิสโก้
+										    </option>
+										
+										    <option value="ธนาคารยูโอบี"
+										        ${selectUser.bank == 'ธนาคารยูโอบี' ? 'selected' : ''}>
+										        ธนาคารยูโอบี
+										    </option>
+										
+										    <option value="ธนาคารสแตนดาร์ดชาร์เตอร์ด (ไทย)"
+										        ${selectUser.bank == 'ธนาคารสแตนดาร์ดชาร์เตอร์ด (ไทย)' ? 'selected' : ''}>
+										        ธนาคารสแตนดาร์ดชาร์เตอร์ด (ไทย)
+										    </option>
+										
+										    <option value="ธนาคารไทยเครดิต"
+										        ${selectUser.bank == 'ธนาคารไทยเครดิต' ? 'selected' : ''}>
+										        ธนาคารไทยเครดิต
+										    </option>
+										
+										    <option value="ธนาคารแลนด์ แอนด์ เฮาส์"
+										        ${selectUser.bank == 'ธนาคารแลนด์ แอนด์ เฮาส์' ? 'selected' : ''}>
+										        ธนาคารแลนด์ แอนด์ เฮาส์
+										    </option>
+										
+										    <option value="ธนาคารไอซีบีซี (ไทย)"
+										        ${selectUser.bank == 'ธนาคารไอซีบีซี (ไทย)' ? 'selected' : ''}>
+										        ธนาคารไอซีบีซี (ไทย)
+										    </option>
+										
+										    <option value="ธนาคารพัฒนาวิสาหกิจขนาดกลางและขนาดย่อมแห่งประเทศไทย"
+										        ${selectUser.bank == 'ธนาคารพัฒนาวิสาหกิจขนาดกลางและขนาดย่อมแห่งประเทศไทย' ? 'selected' : ''}>
+										        ธนาคารพัฒนาวิสาหกิจขนาดกลางและขนาดย่อมแห่งประเทศไทย
+										    </option>
+										
+										    <option value="ธนาคารเพื่อการเกษตรและสหกรณ์การเกษตร"
+										        ${selectUser.bank == 'ธนาคารเพื่อการเกษตรและสหกรณ์การเกษตร' ? 'selected' : ''}>
+										        ธนาคารเพื่อการเกษตรและสหกรณ์การเกษตร
+										    </option>
+										
+										    <option value="ธนาคารเพื่อการส่งออกและนำเข้าแห่งประเทศไทย"
+										        ${selectUser.bank == 'ธนาคารเพื่อการส่งออกและนำเข้าแห่งประเทศไทย' ? 'selected' : ''}>
+										        ธนาคารเพื่อการส่งออกและนำเข้าแห่งประเทศไทย
+										    </option>
+										
+										    <option value="ธนาคารออมสิน"
+										        ${selectUser.bank == 'ธนาคารออมสิน' ? 'selected' : ''}>
+										        ธนาคารออมสิน
+										    </option>
+										
+										    <option value="ธนาคารอาคารสงเคราะห์"
+										        ${selectUser.bank == 'ธนาคารอาคารสงเคราะห์' ? 'selected' : ''}>
+										        ธนาคารอาคารสงเคราะห์
+										    </option>
+										
+										    <option value="ธนาคารอิสลามแห่งประเทศไทย"
+										        ${selectUser.bank == 'ธนาคารอิสลามแห่งประเทศไทย' ? 'selected' : ''}>
+										        ธนาคารอิสลามแห่งประเทศไทย
+										    </option>
+										
+										    <option value="ธนาคารแห่งประเทศจีน"
+										        ${selectUser.bank == 'ธนาคารแห่งประเทศจีน' ? 'selected' : ''}>
+										        ธนาคารแห่งประเทศจีน
+										    </option>
+										
+										    <option value="ธนาคารซูมิโตโม มิตซุย ทรัสต์ (ไทย)"
+										        ${selectUser.bank == 'ธนาคารซูมิโตโม มิตซุย ทรัสต์ (ไทย)' ? 'selected' : ''}>
+										        ธนาคารซูมิโตโม มิตซุย ทรัสต์ (ไทย)
+										    </option>
+										
+										    <option value="ธนาคารฮ่องกงและเซี้ยงไฮ้แบงกิ้งคอร์ปอเรชั่น จำกัด"
+										        ${selectUser.bank == 'ธนาคารฮ่องกงและเซี้ยงไฮ้แบงกิ้งคอร์ปอเรชั่น จำกัด' ? 'selected' : ''}>
+										        ธนาคารฮ่องกงและเซี้ยงไฮ้แบงกิ้งคอร์ปอเรชั่น จำกัด
+										    </option>
+										
+										</select>
 								</div>
 								<div class="col-md-6 fv-row">
 									<label class="form-label">Bank Branch</label> <input

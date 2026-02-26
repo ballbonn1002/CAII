@@ -5,12 +5,27 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
 <%@ taglib uri="/WEB-INF/tlds/permission.tld" prefix="perm"%>
 <!DOCTYPE html>
-<style>
-.announcement-detail img {
-	max-width: 100%;
-	height: auto;
-}
-</style>
+<html>
+<head>
+<link rel="stylesheet"
+	href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
+
+<script src="https://cdn.jsdelivr.net/npm/moment@2.29.4/moment.min.js"></script>
+<script
+	src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+
+<link href="assets/plugins/global/plugins.bundle.css" rel="stylesheet"
+	type="text/css" />
+<script src="assets/plugins/global/plugins.bundle.js"></script>
+
+<!--CKEditor-->
+<script src="assets/plugins/custom/ckeditor/ckeditor-decoupled.bundle.js"></script>
+<script src="assets/plugins/custom/ckeditor/ckeditor-document.bundle.js"></script>
+
+
+
+</head>
+<body>
 <div class="app-main flex-column flex-row-fluid">
 	<fmt:setLocale value="en_US" />
 	<div class="d-flex flex-column flex-column-fluid">
@@ -107,10 +122,13 @@
 										</div> --%>
 										<!-- Detail -->
 										<div
-											class="card mb-3 border-0 shadow-none text-gray-700 announcement-detail">
-											<c:out value="${ann['detail']}" escapeXml="false" />
+											class="ck-content card mb-3 border-0 shadow-none text-gray-700 announcement-detail">
+											<c:out value="${ann.detail}" escapeXml="false" />
 										</div>
+										
+										
 									</c:forEach></span>
+									<%-- <div class="ck-content py-14">${announcement.detail}</div> --%>
 							</div>
 						</div>
 					</div>
@@ -202,3 +220,5 @@
 		</div>
 	</div>
 </div>
+</body>
+</html>

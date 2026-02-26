@@ -555,14 +555,14 @@
 			    imageInput.addEventListener("change", function () {
 			
 			        const file = this.files[0];
-			        const maxSize = 5 * 1024 * 1024;
+			        const maxSize = 2 * 1024 * 1024;
 			        const errorMsg = document.getElementById("errorMsg");
 			
 			        if (!file) return;
 			
 			        if (file.size > maxSize) {
 			
-			            errorMsg.textContent = "Image must be smaller than 5MB.";
+			            errorMsg.textContent = "Image must be smaller than 2MB.";
 			            this.value = "";
 			        } else {
 			            errorMsg.textContent = "";
