@@ -487,5 +487,27 @@
 		<put-attribute name="body"
 			value="/pages-back/overtime_approve/overtime_approve_form.jsp" />
 	</definition>
+	
+	<!-- My Travel -->
+    <definition name="myTravel" extends="baseLayout">
+        <put-attribute name="title" value="My Travel" />
+        <put-attribute name="body"
+            value="/pages-back/my_travel/my_travel_list.jsp" />
+    </definition>
+    <definition name="myTravelA" extends="baseLayout">
+        <put-attribute name="title" value="My Travel Add" />
+        <put-attribute name="body"
+            value="/pages-back/my_travel/my_travel_add.jsp" />
+    </definition>
+    <definition name="myTravelE" extends="baseLayout">
+        <put-attribute name="title" value="My Travel Edit" />
+        <put-attribute name="body"
+            value="/pages-back/my_travel/my_travel_edit.jsp" />
+    </definition>
+    <definition name="myTravelSR" extends="baseLayout">
+        <put-attribute name="title" value="Submit Request" />
+        <put-attribute name="body"
+            value="/pages-back/my_travel/my_travel_submit.jsp" />
+    </definition>
 
 </tiles-definitions>

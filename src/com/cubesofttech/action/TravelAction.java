@@ -1,0 +1,1047 @@
+package com.cubesofttech.action;
+
+import java.io.PrintWriter;
+import java.math.BigDecimal;
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
+import java.util.*;
+
+import javax.servlet.ServletContext;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.log4j.Logger;
+import org.apache.struts2.ServletActionContext;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import com.cubesofttech.dao.ExpTravelTypeDAO;
+import com.cubesofttech.dao.ExpenseDAO;
+import com.cubesofttech.dao.ExpenseDetailDAO;
+import com.cubesofttech.dao.ExpenseGroupDAO;
+import com.cubesofttech.dao.FileUploadDAO;
+import com.cubesofttech.dao.UserDAO;
+
+import com.cubesofttech.model.ExpTravelType;
+import com.cubesofttech.model.Expense;
+import com.cubesofttech.model.ExpenseDetail;
+import com.cubesofttech.model.ExpenseGroup;
+import com.cubesofttech.model.FileUpload;
+import com.cubesofttech.model.User;
+
+import com.cubesofttech.util.DateUtil;
+import com.cubesofttech.util.FileUtil;
+import com.google.gson.Gson;
+import com.opensymphony.xwork2.ActionSupport;
+
+public class TravelAction extends ActionSupport {
+
+	private static final long serialVersionUID = 1L;
+	Logger log = Logger.getLogger(getClass());
+
+	@Autowired
+	private ExpenseDAO expenseDAO;
+	@Autowired
+	private ExpenseDetailDAO expenseDetailDAO;
+	@Autowired
+	private ExpenseGroupDAO expenseGroupDAO;
+	@Autowired
+	private UserDAO userDAO;
+	@Autowired
+	private ExpTravelTypeDAO expTravelTypeDAO;
+	@Autowired
+	private FileUploadDAO fileuploadDAO;
+
+	private java.io.File[] files;
+	private String[] filesFileName;
+	private String[] filesContentType;
+	private String filesUploadFileName;
+	private String fileUploadId;
+
+	public java.io.File[] getFiles() {
+		return files;
+	}
+
+	public void setFiles(java.io.File[] v) {
+		this.files = v;
+	}
+
+	public String[] getFilesFileName() {
+		return filesFileName;
+	}
+
+	public void setFilesFileName(String[] v) {
+		this.filesFileName = v;
+	}
+
+	public String[] getFilesContentType() {
+		return filesContentType;
+	}
+
+	public void setFilesContentType(String[] v) {
+		this.filesContentType = v;
+	}
+
+	public String getFilesUploadFileName() {
+		return filesUploadFileName;
+	}
+
+	public void setFilesUploadFileName(String v) {
+		this.filesUploadFileName = v;
+	}
+
+	public String getFileUploadId() {
+		return fileUploadId;
+	}
+
+	public void setFileUploadId(String v) {
+		this.fileUploadId = v;
+	}
+
+	// ===================== หน้า add form =====================
+	public String travelA() {
+		HttpServletRequest request = ServletActionContext.getRequest();
+		try {
+			User onlineUser = (User) request.getSession().getAttribute("onlineUser");
+			if (onlineUser == null)
+				return ERROR;
+
+			String userJSON = userDAO.userListJSON();
+			List<Map<String, Object>> userListObj = new Gson().fromJson(userJSON,
+					new com.google.gson.reflect.TypeToken<List<Map<String, Object>>>() {
+					}.getType());
+
+			List<ExpTravelType> exptr = expTravelTypeDAO.findAll();
+			request.setAttribute("userListObj", userListObj);
+			request.setAttribute("expTravelTypeList", exptr);
+			return SUCCESS;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ERROR;
+		}
+	}
+
+	// ===================== LIST =====================
+	public String myTravelList() {
+		HttpServletRequest request = ServletActionContext.getRequest();
+		try {
+			User onlineUser = (User) request.getSession().getAttribute("onlineUser");
+			if (onlineUser == null)
+				return ERROR;
+
+			String userJSON = userDAO.userListJSON();
+			List<Map<String, Object>> userListObj = new Gson().fromJson(userJSON,
+					new com.google.gson.reflect.TypeToken<List<Map<String, Object>>>() {
+					}.getType());
+
+			String status = request.getParameter("status");
+			if (status == null || status.trim().isEmpty())
+				status = "Draft";
+
+			String userId = onlineUser.getId();
+
+			// ── Date range ──────────────────────────────────────────────────────
+			String dateRange = request.getParameter("dateRange");
+			java.sql.Date dateFrom = null, dateTo = null;
+			if (dateRange != null && !dateRange.trim().isEmpty()) {
+				String[] parts = dateRange.trim().split("\\s+to\\s+");
+				if (parts.length == 2) {
+					try {
+						if (!parts[0].trim().isEmpty())
+							dateFrom = java.sql.Date.valueOf(parts[0].trim());
+					} catch (Exception ignored) {
+					}
+					try {
+						if (!parts[1].trim().isEmpty())
+							dateTo = java.sql.Date.valueOf(parts[1].trim());
+					} catch (Exception ignored) {
+					}
+				}
+			}
+
+			// ── Page size ───────────────────────────────────────────────────────
+			int pageSize = 25;
+			String ps = request.getParameter("pageSize");
+			if (ps != null && ps.trim().matches("\\d+")) {
+				int v = Integer.parseInt(ps.trim());
+				if (v == 50 || v == 100)
+					pageSize = v;
+			}
+
+			// ── Current page ────────────────────────────────────────────────────
+			int currentPage = 1;
+			String pg = request.getParameter("page");
+			if (pg != null && pg.trim().matches("\\d+")) {
+				currentPage = Integer.parseInt(pg.trim());
+				if (currentPage < 1)
+					currentPage = 1;
+			}
+
+			int total;
+			List<Map<String, Object>> list;
+
+			if ("Draft".equals(status)) {
+				total = expenseDAO.countMyTravelDraftNoGroup(userId, dateFrom, dateTo);
+
+				int totalPages = Math.max(1, (int) Math.ceil(total / (double) pageSize));
+				if (currentPage > totalPages)
+					currentPage = totalPages;
+				int offset = (currentPage - 1) * pageSize;
+				int fromIdx = total == 0 ? 0 : offset + 1;
+				int toIdx = Math.min(offset + pageSize, total);
+
+				list = expenseDAO.findMyTravelDraftNoGroup(userId, dateFrom, dateTo, offset, pageSize);
+				enrichRows(list);
+
+				setAttrs(request, userListObj, userJSON, status, list, currentPage, pageSize, total, totalPages,
+						fromIdx, toIdx);
+				request.setAttribute("viewMode", "expense");
+
+			} else {
+				total = expenseGroupDAO.countMyGroupsByStatus(status, userId, dateFrom, dateTo);
+
+				int totalPages = Math.max(1, (int) Math.ceil(total / (double) pageSize));
+				if (currentPage > totalPages)
+					currentPage = totalPages;
+				int offset = (currentPage - 1) * pageSize;
+				int fromIdx = total == 0 ? 0 : offset + 1;
+				int toIdx = Math.min(offset + pageSize, total);
+
+				list = expenseGroupDAO.findMyGroupsByStatus(status, userId, dateFrom, dateTo, offset, pageSize);
+
+				setAttrs(request, userListObj, userJSON, status, list, currentPage, pageSize, total, totalPages,
+						fromIdx, toIdx);
+				request.setAttribute("viewMode", "group");
+			}
+
+			return SUCCESS;
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ERROR;
+		}
+	}
+
+	public String travelDelete() {
+		HttpServletRequest request = ServletActionContext.getRequest();
+		HttpServletResponse response = ServletActionContext.getResponse();
+		try {
+			User onlineUser = (User) request.getSession().getAttribute("onlineUser");
+			if (onlineUser == null) {
+				writeJson("{\"success\":false,\"message\":\"Session expired\"}", response);
+				return null;
+			}
+
+			String idStr = request.getParameter("id");
+			if (idStr == null || !idStr.trim().matches("\\d+")) {
+				writeJson("{\"success\":false,\"message\":\"Invalid ID\"}", response);
+				return null;
+			}
+
+			Long expenseId = Long.parseLong(idStr.trim());
+			Expense exp = expenseDAO.findById(expenseId);
+
+			if (exp == null) {
+				writeJson("{\"success\":false,\"message\":\"Expense not found\"}", response);
+				return null;
+			}
+
+			// ✅ ป้องกัน: ลบได้เฉพาะ Draft (group_id = 0) และเป็นของ user คนนี้
+			if (exp.getExpenseGroupId() != null && exp.getExpenseGroupId() > 0) {
+				writeJson("{\"success\":false,\"message\":\"Cannot delete submitted expense\"}", response);
+				return null;
+			}
+
+			if (!onlineUser.getId().equals(exp.getUserId())) {
+				writeJson("{\"success\":false,\"message\":\"Permission denied\"}", response);
+				return null;
+			}
+
+			// ── ลบ ExpenseDetail ────────────────────────────────────────────────
+			expenseDetailDAO.deleteByExpenseId(expenseId);
+
+			// ── ลบไฟล์แนบ (ถ้ามี) ─────────────────────────────────────────────
+			List<FileUpload> attachedFiles = fileuploadDAO.findByPageAndPageId("travelFiles",
+					String.valueOf(expenseId));
+			if (attachedFiles != null) {
+				String serverRoot = ServletActionContext.getServletContext().getRealPath("/");
+				for (FileUpload fu : attachedFiles) {
+					try {
+						java.io.File phys = new java.io.File(serverRoot + fu.getPath());
+						if (phys.exists())
+							phys.delete();
+					} catch (Exception ignoreFile) {
+					}
+					fileuploadDAO.delete(fu);
+				}
+			}
+
+			// ── ลบ Expense ─────────────────────────────────────────────────────
+			expenseDAO.delete(exp);
+
+			writeJson("{\"success\":true}", response);
+			return null;
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			try {
+				writeJson("{\"success\":false,\"message\":\"" + e.getMessage() + "\"}", response);
+			} catch (Exception ignore) {
+			}
+			return null;
+		}
+	}
+
+	private void enrichRows(List<Map<String, Object>> list) throws Exception {
+		for (Map<String, Object> row : list) {
+			Object expId = row.get("expense_id");
+			if (expId == null)
+				continue;
+			Long expenseId = Long.parseLong(expId.toString());
+
+			Expense exp = expenseDAO.findById(expenseId);
+			if (exp != null) {
+				row.put("user_id", exp.getUserId());
+				row.put("from_location", exp.getFromLocation());
+				row.put("to_location", exp.getToLocation());
+				row.put("description", exp.getDescription());
+				row.put("dt_start", exp.getDtStart() != null ? new java.util.Date(exp.getDtStart().getTime()) : null);
+				row.put("dt_end", exp.getDtEnd() != null ? new java.util.Date(exp.getDtEnd().getTime()) : null);
+				row.put("time_create",
+						exp.getTimeCreate() != null ? new java.util.Date(exp.getTimeCreate().getTime()) : null);
+			}
+
+			List<ExpenseDetail> details = expenseDetailDAO.findByExpenseId(expenseId);
+			List<Map<String, Object>> detailMaps = new ArrayList<>();
+			for (ExpenseDetail det : details) {
+				Map<String, Object> d = new HashMap<>();
+				String typeName = "-";
+				if (det.getGoBy() != null && det.getGoBy() > 0) {
+					ExpTravelType ett = expTravelTypeDAO.findById(det.getGoBy());
+					if (ett != null)
+						typeName = ett.getName();
+				}
+				d.put("travel_type_name", typeName);
+				d.put("description", det.getDescription());
+				d.put("total", det.getTotal());
+				detailMaps.add(d);
+			}
+			row.put("details", detailMaps);
+		}
+	}
+
+	private void setAttrs(HttpServletRequest request, List<Map<String, Object>> userListObj, String userJSON,
+			String status, List<Map<String, Object>> list, int currentPage, int pageSize, int total, int totalPages,
+			int fromIndex, int toIndex) {
+		request.setAttribute("userListObj", userListObj);
+		request.setAttribute("userList", userJSON);
+		request.setAttribute("statusActive", status);
+		request.setAttribute("travelListObj", list);
+		request.setAttribute("currentPage", currentPage);
+		request.setAttribute("pageSize", pageSize);
+		request.setAttribute("total", total);
+		request.setAttribute("totalPages", totalPages);
+		request.setAttribute("fromIndex", fromIndex);
+		request.setAttribute("toIndex", toIndex);
+	}
+
+	// ===================== MODAL JSON =====================
+	public String travelExpenseModalJSON() {
+		HttpServletRequest request = ServletActionContext.getRequest();
+		HttpServletResponse response = ServletActionContext.getResponse();
+		try {
+			User onlineUser = (User) request.getSession().getAttribute("onlineUser");
+			if (onlineUser == null) {
+				writeJson("{\"expense\":null,\"group\":null}", response);
+				return null;
+			}
+
+			String id = request.getParameter("id");
+			if (id == null || id.trim().isEmpty() || !id.trim().matches("\\d+")) {
+				writeJson("{\"expense\":null,\"group\":null}", response);
+				return null;
+			}
+
+			Map<String, Object> data = expenseDAO.getTravelExpenseModalData(Long.parseLong(id.trim()));
+			writeJson(new Gson().toJson(data), response);
+			return null;
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			try {
+				writeJson("{\"expense\":null,\"group\":null}", response);
+			} catch (Exception ignore) {
+			}
+			return null;
+		}
+	}
+
+	// ===================== SAVE =====================
+	public String travelSave() {
+		HttpServletRequest request = ServletActionContext.getRequest();
+		try {
+			User onlineUser = (User) request.getSession().getAttribute("onlineUser");
+			if (onlineUser == null)
+				return ERROR;
+
+			String departureDate = request.getParameter("departureDate");
+			String userId = request.getParameter("userId");
+			String beginning = request.getParameter("beginning");
+			String beginTime = request.getParameter("beginTime");
+			String destination = request.getParameter("destination");
+			String destTime = request.getParameter("destTime");
+			String purposeText = request.getParameter("purposeOfJourney");
+
+			String[] goByArr = request.getParameterValues("detailGoBy");
+			String[] totalArr = request.getParameterValues("detailTotal");
+			String[] descArr = request.getParameterValues("detailDescription");
+			String[] kmArr = request.getParameterValues("detailKilometers");
+
+			Timestamp now = DateUtil.getCurrentTime();
+			Timestamp dtStart = combineDateTime(departureDate, beginTime);
+			Timestamp dtEnd = combineDateTime(departureDate, destTime);
+
+			if (dtStart != null && dtEnd != null && dtEnd.before(dtStart)) {
+				Calendar cal = Calendar.getInstance();
+				cal.setTimeInMillis(dtEnd.getTime());
+				cal.add(Calendar.DAY_OF_MONTH, 1);
+				dtEnd = new Timestamp(cal.getTimeInMillis());
+			}
+
+			BigDecimal amount = BigDecimal.ZERO;
+			if (totalArr != null) {
+				for (String t : totalArr) {
+					if (t == null || t.trim().isEmpty())
+						continue;
+					try {
+						amount = amount.add(new BigDecimal(t.trim()));
+					} catch (Exception ignore) {
+					}
+				}
+			}
+
+			Long dtBy = 0L;
+			if (goByArr != null && goByArr.length > 0) {
+				String last = goByArr[goByArr.length - 1];
+				if (last != null && last.trim().matches("\\d+"))
+					dtBy = Long.parseLong(last.trim());
+			}
+
+			Long newExpenseId = expenseDAO.getMaxId() + 1;
+
+			Expense e = new Expense();
+			e.setExpenseId(newExpenseId);
+			e.setExpenseGroupId(0L);
+			e.setExpTypeId("T");
+			e.setDtStart(dtStart);
+			e.setDtEnd(dtEnd);
+			e.setDtBy(dtBy);
+			e.setUserId(userId);
+			e.setFromLocation(beginning);
+			e.setToLocation(destination);
+			e.setFromLat(null);
+			e.setFromLon(null);
+			e.setToLat(null);
+			e.setToLon(null);
+			e.setAmount(amount);
+			e.setDescription(purposeText);
+			e.setUserCreate(onlineUser.getId());
+			e.setUserUpdate(onlineUser.getId());
+			e.setTimeCreate(now);
+			e.setTimeUpdate(now);
+			expenseDAO.save(e);
+
+			// Save details
+			if (goByArr != null && totalArr != null) {
+				Long maxDetailId = expenseDetailDAO.getMaxId();
+				long nextDetailId = (maxDetailId == null ? 0L : maxDetailId) + 1;
+				int n = Math.min(goByArr.length, totalArr.length);
+
+				for (int i = 0; i < n; i++) {
+					String goBy = goByArr[i];
+					String total = totalArr[i];
+					String desc = (descArr != null && i < descArr.length) ? descArr[i] : null;
+
+					if ((goBy == null || goBy.trim().isEmpty()) && (total == null || total.trim().isEmpty())
+							&& (desc == null || desc.trim().isEmpty()))
+						continue;
+
+					ExpenseDetail d = new ExpenseDetail();
+					d.setExpenseDetailId(nextDetailId++);
+					d.setExpenseId(newExpenseId);
+
+					Long goById = 0L;
+					if (goBy != null && goBy.trim().matches("\\d+"))
+						goById = Long.parseLong(goBy.trim());
+					d.setGoBy(goById);
+
+					BigDecimal bd = BigDecimal.ZERO;
+					try {
+						if (total != null && !total.trim().isEmpty())
+							bd = new BigDecimal(total.trim());
+					} catch (Exception ignore) {
+					}
+					d.setTotal(bd);
+
+					BigDecimal km = BigDecimal.ZERO;
+					try {
+						String ks = (kmArr != null && i < kmArr.length) ? kmArr[i] : null;
+						if (ks != null && !ks.trim().isEmpty())
+							km = new BigDecimal(ks.trim());
+					} catch (Exception ignore) {
+					}
+					d.setKilometers(km);
+
+					d.setDescription(desc);
+					d.setUserCreate(onlineUser.getId());
+					d.setUserUpdate(onlineUser.getId());
+					d.setTimeCreate(now);
+					d.setTimeUpdate(now);
+					expenseDetailDAO.save(d);
+				}
+			}
+
+			saveAttachedFiles(files, filesFileName, filesUploadFileName, "travelFiles", String.valueOf(newExpenseId),
+					onlineUser.getId(), now);
+
+			return SUCCESS;
+
+		} catch (Exception ex) {
+			ex.printStackTrace();
+			return ERROR;
+		}
+	}
+
+	// ===================== EDIT =====================
+	public String travelEdit() {
+		HttpServletRequest request = ServletActionContext.getRequest();
+		try {
+			User onlineUser = (User) request.getSession().getAttribute("onlineUser");
+			if (onlineUser == null)
+				return ERROR;
+
+			String id = request.getParameter("id");
+			if (id == null || id.trim().isEmpty() || !id.trim().matches("\\d+"))
+				return ERROR;
+
+			Long expenseId = Long.parseLong(id.trim());
+			Expense expense = expenseDAO.findById(expenseId);
+			if (expense == null)
+				return ERROR;
+
+			List<ExpenseDetail> detailList = expenseDetailDAO.findByExpenseId(expenseId);
+			List<FileUpload> travelFiles = fileuploadDAO.findByPageAndPageId("travelFiles", id);
+
+			String userJSON = userDAO.userListJSON();
+			List<Map<String, Object>> userListObj = new Gson().fromJson(userJSON,
+					new com.google.gson.reflect.TypeToken<List<Map<String, Object>>>() {
+					}.getType());
+			List<ExpTravelType> exptr = expTravelTypeDAO.findAll();
+
+			Gson gson = new Gson();
+			request.setAttribute("travelFiles", travelFiles);
+			request.setAttribute("expenseObj", expense);
+			request.setAttribute("detailList", detailList);
+			request.setAttribute("userListObj", userListObj);
+			request.setAttribute("expTravelTypeList", exptr);
+			request.setAttribute("expenseJSON", gson.toJson(expense));
+			request.setAttribute("detailListJSON", gson.toJson(detailList));
+			request.setAttribute("userList", userJSON);
+			request.setAttribute("expTravelTypeListJSON", gson.toJson(exptr));
+
+			request.getSession().setAttribute("expenseId", String.valueOf(expenseId));
+			return SUCCESS;
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ERROR;
+		}
+	}
+
+	// ===================== UPDATE =====================
+	public String travelUpdate() {
+		HttpServletRequest request = ServletActionContext.getRequest();
+		try {
+			User onlineUser = (User) request.getSession().getAttribute("onlineUser");
+			if (onlineUser == null)
+				return ERROR;
+
+			String expIdStr = request.getParameter("expenseId");
+			if (expIdStr == null || !expIdStr.trim().matches("\\d+"))
+				return ERROR;
+			Long expenseId = Long.parseLong(expIdStr.trim());
+
+			Expense old = expenseDAO.findById(expenseId);
+			if (old == null)
+				return ERROR;
+
+			Timestamp now = DateUtil.getCurrentTime();
+
+			String departureDate = request.getParameter("departureDate");
+			String beginning = request.getParameter("beginning");
+			String beginTime = request.getParameter("beginTime");
+			String destination = request.getParameter("destination");
+			String destTime = request.getParameter("destTime");
+			String purposeText = request.getParameter("purposeOfJourney");
+
+			String[] goByArr = request.getParameterValues("detailGoBy");
+			String[] totalArr = request.getParameterValues("detailTotal");
+			String[] descArr = request.getParameterValues("detailDescription");
+			String[] kmArr = request.getParameterValues("detailKilometers");
+
+			Timestamp dtStart = combineDateTime(departureDate, beginTime);
+			Timestamp dtEnd = combineDateTime(departureDate, destTime);
+
+			if (dtStart != null && dtEnd != null && dtEnd.before(dtStart)) {
+				Calendar cal = Calendar.getInstance();
+				cal.setTimeInMillis(dtEnd.getTime());
+				cal.add(Calendar.DAY_OF_MONTH, 1);
+				dtEnd = new Timestamp(cal.getTimeInMillis());
+			}
+
+			BigDecimal newAmount = BigDecimal.ZERO;
+			if (totalArr != null) {
+				for (String t : totalArr) {
+					if (t == null || t.trim().isEmpty())
+						continue;
+					try {
+						newAmount = newAmount.add(new BigDecimal(t.trim()));
+					} catch (Exception ignore) {
+					}
+				}
+			}
+
+			Long dtBy = 0L;
+			if (goByArr != null && goByArr.length > 0) {
+				String last = goByArr[goByArr.length - 1];
+				if (last != null && last.trim().matches("\\d+"))
+					dtBy = Long.parseLong(last.trim());
+			}
+
+			// ✅ ถ้า expense ผูกกับ group จริง (group_id > 0) ให้อัปเดต total amount ของ
+			// group ด้วย
+			Long oldGroupId = old.getExpenseGroupId();
+			BigDecimal oldAmount = (old.getAmount() == null ? BigDecimal.ZERO : old.getAmount());
+
+			old.setDtStart(dtStart);
+			old.setDtEnd(dtEnd);
+			old.setDtBy(dtBy);
+			old.setFromLocation(beginning);
+			old.setToLocation(destination);
+			old.setAmount(newAmount);
+			old.setDescription(purposeText);
+			old.setUserUpdate(onlineUser.getId());
+			old.setTimeUpdate(now);
+			expenseDAO.update(old);
+
+			if (oldGroupId != null && oldGroupId > 0) {
+				ExpenseGroup g = expenseGroupDAO.findById(oldGroupId);
+				if (g != null) {
+					BigDecimal gt = (g.getTotalAmount() == null ? BigDecimal.ZERO : g.getTotalAmount());
+					gt = gt.subtract(oldAmount).add(newAmount);
+					if (gt.compareTo(BigDecimal.ZERO) < 0)
+						gt = BigDecimal.ZERO;
+					g.setTotalAmount(gt);
+					g.setUserUpdate(onlineUser.getId());
+					g.setTimeUpdate(now);
+					expenseGroupDAO.update(g);
+				}
+			}
+
+			expenseDetailDAO.deleteByExpenseId(expenseId);
+
+			if (goByArr != null && totalArr != null) {
+				Long maxDetailId = expenseDetailDAO.getMaxId();
+				long nextId = (maxDetailId == null ? 0L : maxDetailId) + 1;
+				int n = Math.min(goByArr.length, totalArr.length);
+
+				for (int i = 0; i < n; i++) {
+					String goBy = goByArr[i];
+					String total = totalArr[i];
+					String desc = (descArr != null && i < descArr.length) ? descArr[i] : null;
+
+					if ((goBy == null || goBy.trim().isEmpty()) && (total == null || total.trim().isEmpty())
+							&& (desc == null || desc.trim().isEmpty()))
+						continue;
+
+					ExpenseDetail d = new ExpenseDetail();
+					d.setExpenseDetailId(nextId++);
+					d.setExpenseId(expenseId);
+
+					Long goById = 0L;
+					if (goBy != null && goBy.trim().matches("\\d+"))
+						goById = Long.parseLong(goBy.trim());
+					d.setGoBy(goById);
+
+					BigDecimal bd = BigDecimal.ZERO;
+					try {
+						if (total != null && !total.trim().isEmpty())
+							bd = new BigDecimal(total.trim());
+					} catch (Exception ignore) {
+					}
+					d.setTotal(bd);
+
+					BigDecimal km = BigDecimal.ZERO;
+					try {
+						String ks = (kmArr != null && i < kmArr.length) ? kmArr[i] : null;
+						if (ks != null && !ks.trim().isEmpty())
+							km = new BigDecimal(ks.trim());
+					} catch (Exception ignore) {
+					}
+					d.setKilometers(km);
+
+					d.setDescription(desc);
+					d.setUserCreate(onlineUser.getId());
+					d.setUserUpdate(onlineUser.getId());
+					d.setTimeCreate(now);
+					d.setTimeUpdate(now);
+					expenseDetailDAO.save(d);
+				}
+			}
+
+			// ลบไฟล์ที่ mark ว่าจะลบ
+			if (fileUploadId != null && !fileUploadId.trim().isEmpty() && !fileUploadId.trim().equals("[]")) {
+				try {
+					String[] fileIds = new Gson().fromJson(fileUploadId.trim(), String[].class);
+					if (fileIds != null) {
+						for (String fid : fileIds) {
+							if (fid == null || fid.trim().isEmpty())
+								continue;
+							try {
+								FileUpload fu = fileuploadDAO.findById(Integer.parseInt(fid.trim()));
+								if (fu != null) {
+									try {
+										java.io.File phys = new java.io.File(
+												ServletActionContext.getServletContext().getRealPath(fu.getPath()));
+										if (phys.exists())
+											phys.delete();
+									} catch (Exception ignoreFile) {
+									}
+									fileuploadDAO.delete(fu);
+								}
+							} catch (NumberFormatException ignore) {
+							}
+						}
+					}
+				} catch (Exception parseEx) {
+					log.error("Failed to parse fileUploadId: " + fileUploadId, parseEx);
+				}
+			}
+
+			saveAttachedFiles(files, filesFileName, filesUploadFileName, "travelFiles", String.valueOf(expenseId),
+					onlineUser.getId(), now);
+
+			return SUCCESS;
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ERROR;
+		}
+	}
+
+	// ===================== Submit Preview =====================
+	public String submitTravelPreview() {
+		HttpServletRequest request = ServletActionContext.getRequest();
+		try {
+			User onlineUser = (User) request.getSession().getAttribute("onlineUser");
+			if (onlineUser == null)
+				return ERROR;
+
+			String[] ids = request.getParameterValues("ids");
+			List<Long> expenseIds = new ArrayList<>();
+			if (ids != null) {
+				for (String s : ids) {
+					if (s != null) {
+						String t = s.trim();
+						if (!t.isEmpty() && t.matches("\\d+"))
+							expenseIds.add(Long.parseLong(t));
+					}
+				}
+			}
+			if (expenseIds.isEmpty())
+				return "redirect_back";
+
+			List<Map<String, Object>> expenseListObj = new ArrayList<>();
+			BigDecimal grandTotal = BigDecimal.ZERO;
+
+			for (Long expenseId : expenseIds) {
+				Expense exp = expenseDAO.findById(expenseId);
+				if (exp == null)
+					continue;
+
+				Map<String, Object> expMap = new HashMap<>();
+				expMap.put("expense_id", exp.getExpenseId());
+				expMap.put("expense_group_id", exp.getExpenseGroupId());
+				expMap.put("dt_start",
+						exp.getDtStart() != null ? new java.util.Date(exp.getDtStart().getTime()) : null);
+				expMap.put("dt_end", exp.getDtEnd() != null ? new java.util.Date(exp.getDtEnd().getTime()) : null);
+				expMap.put("from_location", exp.getFromLocation());
+				expMap.put("to_location", exp.getToLocation());
+				expMap.put("description", exp.getDescription());
+				expMap.put("amount", exp.getAmount());
+				expMap.put("time_create",
+						exp.getTimeCreate() != null ? new java.util.Date(exp.getTimeCreate().getTime()) : null);
+
+				// ── Details ──────────────────────────────────────────
+				List<ExpenseDetail> details = expenseDetailDAO.findByExpenseId(expenseId);
+				List<Map<String, Object>> detailMaps = new ArrayList<>();
+				if (details != null) {
+					for (ExpenseDetail det : details) {
+						Map<String, Object> d = new HashMap<>();
+						String typeName = "-";
+						if (det.getGoBy() != null && det.getGoBy() > 0) {
+							ExpTravelType ett = expTravelTypeDAO.findById(det.getGoBy());
+							if (ett != null && ett.getName() != null)
+								typeName = ett.getName();
+						}
+						d.put("travel_type_name", typeName);
+						d.put("description", det.getDescription());
+						d.put("total", det.getTotal());
+						detailMaps.add(d);
+					}
+				}
+				expMap.put("details", detailMaps);
+
+				// ── Attached files ───────────────────────────────────
+				List<FileUpload> fileList = fileuploadDAO.findByPageAndPageId("travelFiles", String.valueOf(expenseId));
+				expMap.put("files", fileList != null ? fileList : new ArrayList<>());
+
+				if (exp.getAmount() != null)
+					grandTotal = grandTotal.add(exp.getAmount());
+				expenseListObj.add(expMap);
+			}
+
+			// ── User ─────────────────────────────────────────────────
+			User userObj = userDAO.findById(onlineUser.getId());
+
+			request.setAttribute("expenseListObj", expenseListObj);
+			request.setAttribute("userObj", userObj);
+			request.setAttribute("grandTotal", grandTotal);
+			request.setAttribute("selectedIds", ids != null ? Arrays.asList(ids) : java.util.Collections.emptyList());
+
+			if (userObj != null && userObj.getPathSignature() != null && userObj.getPathSignature().contains("_")) {
+				try {
+					String originalFileName = new java.io.File(userObj.getPathSignature()).getName();
+					String fileIdStr = originalFileName.substring(0, originalFileName.indexOf("_"));
+					String typeFile = originalFileName.substring(originalFileName.lastIndexOf("."));
+
+					String imgPathSignature = "/upload/user/user_signature_" + fileIdStr + typeFile;
+
+					java.io.File f = new java.io.File(request.getServletContext().getRealPath("/") + imgPathSignature);
+
+					if (f.exists()) {
+						request.setAttribute("signaturePath", imgPathSignature);
+					}
+
+				} catch (Exception ignore) {
+				}
+			}
+
+			return SUCCESS;
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ERROR;
+		}
+	}
+
+	public String submitTravelRequest() {
+		HttpServletRequest request = ServletActionContext.getRequest();
+		try {
+			User onlineUser = (User) request.getSession().getAttribute("onlineUser");
+			if (onlineUser == null)
+				return ERROR;
+
+			// ── 1. รับ expense ids ──────────────────────────────────
+			String[] ids = request.getParameterValues("ids");
+			List<Long> expenseIds = new ArrayList<>();
+			if (ids != null) {
+				for (String s : ids) {
+					if (s != null && !s.trim().isEmpty() && s.trim().matches("\\d+"))
+						expenseIds.add(Long.parseLong(s.trim()));
+				}
+			}
+			if (expenseIds.isEmpty())
+				return "redirect_back";
+
+			Timestamp now = DateUtil.getCurrentTime();
+
+			// ── 2. โหลด Expense + คำนวณ grandTotal ─────────────────
+			BigDecimal grandTotal = BigDecimal.ZERO;
+			List<Expense> expenseList = new ArrayList<>();
+			for (Long expId : expenseIds) {
+				Expense exp = expenseDAO.findById(expId);
+				if (exp == null)
+					continue;
+				expenseList.add(exp);
+				if (exp.getAmount() != null)
+					grandTotal = grandTotal.add(exp.getAmount());
+			}
+			if (expenseList.isEmpty())
+				return "redirect_back";
+
+			// ── 3. สร้าง ExpenseGroup ใหม่ ──────────────────────────
+			Long newGroupId = expenseGroupDAO.getMaxId() + 1;
+
+			ExpenseGroup group = new ExpenseGroup();
+			group.setExpenseGroupId(newGroupId);
+			group.setExpTypeId("T");
+			group.setTotalAmount(grandTotal);
+			group.setStatusId("W");
+			group.setUserId(onlineUser.getId());
+
+			group.setRequestedBy(onlineUser.getId());
+			group.setRequestedAt(now);
+
+			group.setReceivedBy(onlineUser.getId());
+			group.setReceivedAt(now);
+
+			group.setUserCreate(onlineUser.getId());
+			group.setUserUpdate(onlineUser.getId());
+			group.setTimeCreate(now);
+			group.setTimeUpdate(now);
+			expenseGroupDAO.save(group);
+
+			// ── 4. ผูก Expense ทุกตัวเข้า group ใหม่ ────────────────
+			for (Expense exp : expenseList) {
+				exp.setExpenseGroupId(newGroupId);
+				exp.setUserUpdate(onlineUser.getId());
+				exp.setTimeUpdate(now);
+				expenseDAO.update(exp);
+			}
+
+			// ── 5. บันทึก Signature ใหม่ (ถ้ามี upload) ─────────────
+			if (files != null && files.length > 0 && filesFileName != null && filesFileName.length > 0) {
+				try {
+					String sigOrigName = filesFileName[0];
+					long sigSize = files[0].length();
+					int newFileId = fileuploadDAO.getMaxId() + 1;
+
+					int dotIdx = sigOrigName.lastIndexOf('.');
+					String nameOnly = dotIdx > 0 ? sigOrigName.substring(0, dotIdx) : sigOrigName;
+					String ext = dotIdx > 0 ? sigOrigName.substring(dotIdx) : "";
+
+					String serverFileName = "user_signature_" + newFileId + ext;
+					String newFileName = newFileId + "_" + nameOnly + ext;
+					String savePath = "/upload/user/" + newFileName;
+
+					String serverRoot = ServletActionContext.getServletContext().getRealPath("/");
+					FileUtil.upload(files[0], serverRoot + "upload/user/", serverFileName);
+					// ── บันทึก FileUpload record ──────────────────────────────────
+					FileUpload fu = new FileUpload();
+					fu.setFileId(newFileId);
+					fu.setName(nameOnly);
+					fu.setType(ext);
+					fu.setPath(savePath);
+					fu.setSize(formatFileSize(sigSize));
+					fu.setPage("user_signature");
+					fu.setPageId(null);
+					fu.setUserId(onlineUser.getId());
+					fu.setUserCreate(onlineUser.getId());
+					fu.setUserUpdate(onlineUser.getId());
+					fu.setTimeCreate(now);
+					fu.setTimeUpdate(now);
+					fileuploadDAO.save(fu);
+
+					// ── อัปเดต path_signature ใน User ────────────────────────────
+					User u = userDAO.findById(onlineUser.getId());
+					if (u != null) {
+						u.setPathSignature(savePath);
+						u.setTimeUpdate(now);
+						userDAO.update(u);
+
+						onlineUser.setPathSignature(savePath);
+						request.getSession().setAttribute("onlineUser", onlineUser);
+					}
+
+				} catch (Exception sigEx) {
+					log.error("Error saving signature file", sigEx);
+				}
+			}
+
+			return SUCCESS;
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ERROR;
+		}
+	}
+
+	// ===================== Helpers =====================
+	private void saveAttachedFiles(java.io.File[] files, String[] filesFileName, String filesUploadFileName,
+			String page, String pageId, String userId, Timestamp now) {
+		if (files == null || files.length == 0)
+			return;
+		if (filesUploadFileName == null || filesUploadFileName.trim().isEmpty())
+			return;
+		try {
+			String[] fileNames = new Gson().fromJson(filesUploadFileName, String[].class);
+			if (fileNames == null)
+				return;
+			ServletContext ctx = ServletActionContext.getServletContext();
+			String serverPath = ctx.getRealPath("/");
+
+			for (int i = 0; i < files.length; i++) {
+				if (i >= fileNames.length)
+					continue;
+				int maxFileId = fileuploadDAO.getMaxId() + 1;
+				String fileName = fileNames[i];
+				long fileSize = files[i].length();
+				int dotIdx = fileName.lastIndexOf('.');
+				String nameOnly = dotIdx > 0 ? fileName.substring(0, dotIdx) : fileName;
+				String ext = dotIdx > 0 ? fileName.substring(dotIdx) : "";
+				String saveName = maxFileId + "_" + fileName;
+				String savePath = "/upload/user/" + saveName;
+
+				FileUtil.upload(files[i], serverPath + "upload/user/", saveName);
+
+				FileUpload fu = new FileUpload();
+				fu.setFileId(maxFileId);
+				fu.setName(nameOnly);
+				fu.setType(ext);
+				fu.setPath(savePath);
+				fu.setSize(formatFileSize(fileSize));
+				fu.setPage(page);
+				fu.setPageId(pageId);
+				fu.setUserId(userId);
+				fu.setUserCreate(userId);
+				fu.setUserUpdate(userId);
+				fu.setTimeCreate(now);
+				fileuploadDAO.save(fu);
+			}
+		} catch (Exception e) {
+			log.error("Error saving travel files", e);
+		}
+	}
+
+	private String formatFileSize(long size) {
+		String[] units = { "Bytes", "KB", "MB", "GB", "TB" };
+		int idx = 0;
+		double s = size;
+		while (s > 900 && idx < units.length - 1) {
+			s /= 1024;
+			idx++;
+		}
+		return String.format("%.2f %s", s, units[idx]);
+	}
+
+	private void writeJson(String json, HttpServletResponse response) throws Exception {
+		response.setContentType("application/json;charset=UTF-8");
+		PrintWriter out = response.getWriter();
+		out.println(json);
+		out.flush();
+	}
+
+	private Timestamp combineDateTime(String date, String time) {
+		try {
+			if (date == null || date.trim().isEmpty())
+				return null;
+			if (time == null || time.trim().isEmpty())
+				time = "00:00";
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.ENGLISH);
+			sdf.setLenient(false);
+			return new Timestamp(sdf.parse(date.trim() + " " + time.trim() + ":00").getTime());
+		} catch (Exception e) {
+			return null;
+		}
+	}
+}
