@@ -73,7 +73,10 @@
 		<!-- <script src="assets/js/custom/utilities/modals/users-search.js"></script> -->
 		<!--end::Custom Javascript-->
 		<!--end::Javascript-->
-
+		<link href="assets/plugins/global/plugins.bundle.css" rel="stylesheet" type="text/css"/>
+<script src="assets/plugins/global/plugins.bundle.js"></script>
+<link href="https://cdn.jsdelivr.net/npm/summernote@0.9.0/dist/summernote-bs4.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/summernote@0.9.0/dist/summernote-bs4.min.js"></script>
 	</head>
 	<body class="app-default">
 
@@ -147,19 +150,23 @@
 												<div class="d-flex align-items-center">
 													<div class="symbol symbol-50px me-4">
 														<span class="symbol-label bg-light-success">
-														<i class="ki-duotone ki-airplane fs-2x text-success">
-														<span class="path1"></span>
-														<span class="path2"></span>
-														</i>
+															<i class="ki-duotone ki-airplane fs-2x text-success">
+																<span class="path1"></span><span class="path2"></span>
+															</i>
 														</span>
 													</div>
 													<div class="d-flex flex-column">
-														<span class="fs-2 fw-bold text-dark">
-															<fmt:formatNumber type="number" pattern="#.##" value="${leave_1}"/>/<fmt:formatNumber type="number" pattern="#.##" value="${quota_1-3}"/>
-														</span>
-														<span class="text-muted fs-5">
-														${type_1}
-														</span>
+														<div class="d-flex align-items-center">
+															<span class="fs-2 fw-bold text-dark">
+																<fmt:formatNumber type="number" pattern="#.##" value="${leave_1}"/>/<fmt:formatNumber type="number" pattern="#.##" value="${quota_1-3}"/>
+															</span>
+															<c:if test="${LeaveWAnumT1.doubleValue() > 0}">
+																<span class="badge badge-sm badge-warning ms-1">
+																	<fmt:formatNumber type="number" pattern="#.##" value="${LeaveWAnumT1}"/>
+																</span>
+															</c:if>							
+														</div>
+														<span class="text-muted fs-5">${type_1}</span>
 													</div>
 												</div>
 											</div>
@@ -180,12 +187,17 @@
 														</span>
 													</div>
 													<div class="d-flex flex-column">
-														<span class="fs-2 fw-bold text-dark">
-															<fmt:formatNumber type="number" pattern="#.##" value="${leave_2}"/>/<fmt:formatNumber type="number" pattern="#.##" value="3"/><!-- fix hard code 3 day -->
-														</span>
-														<span class="text-muted fs-5">
-														${type_2}
-														</span>
+														<div class="d-flex align-items-center">
+															<span class="fs-2 fw-bold text-dark">
+																<fmt:formatNumber type="number" pattern="#.##" value="${leave_2}"/>/<fmt:formatNumber type="number" pattern="#.##" value="3"/><!-- fix hard code 3 day -->
+															</span>
+															<c:if test="${LeaveWAnumT2.doubleValue() > 0}">
+																<span class="badge badge-sm badge-warning ms-1">
+																	<fmt:formatNumber type="number" pattern="#.##" value="${LeaveWAnumT2}"/>
+																</span>
+															</c:if>
+														</div>
+														<span class="text-muted fs-5">${type_2}</span>
 													</div>
 												</div>
 											</div>
@@ -196,22 +208,25 @@
 													<div class="symbol symbol-50px me-4">
 														<span class="symbol-label bg-light-warning">
 														<i class="ki-duotone ki-timer fs-2x text-warning">
-														<span class="path1"></span>
-														<span class="path2"></span>
-														<span class="path3"></span>
+															<span class="path1"></span><span class="path2"></span><span class="path3"></span>
 														</i>
 														</span>
 													</div>
 													<div class="d-flex flex-column">
-														<span class="fs-2 fw-bold text-dark">
-															<fmt:formatNumber type="number" pattern="#.##" value="${leave_6}"/>
-															<c:if test="${quota_4 != null || quota_4 != 0.0 || quota_4 != ''} ">
-															/<fmt:formatNumber type="number" pattern="#" value="${quota_4}"/>
+														<div class="d-flex align-items-center">
+															<span class="fs-2 fw-bold text-dark">
+																<fmt:formatNumber type="number" pattern="#.##" value="${leave_6}"/>
+																<c:if test="${quota_4.doubleValue() > 0}">
+																	/<fmt:formatNumber type="number" pattern="#.##" value="${quota_4}"/>
+																</c:if>
+															</span>
+															<c:if test="${LeaveWAnumT6.doubleValue() > 0}">
+																<span class="badge badge-sm badge-warning ms-1">
+																	<fmt:formatNumber type="number" pattern="#.##" value="${LeaveWAnumT6}"/>
+																</span>
 															</c:if>
-														</span>
-														<span class="text-muted fs-5">
-														${type_6}
-														</span>
+														</div>
+														<span class="text-muted fs-5">${type_6}</span>
 													</div>
 												</div>
 											</div>
@@ -221,22 +236,26 @@
 												<div class="d-flex align-items-center">
 													<div class="symbol symbol-50px me-4">
 														<span class="symbol-label bg-light-info">
-														<i class="ki-duotone ki-pulse fs-2x text-info">
-														<span class="path1"></span>
-														<span class="path2"></span>
-														</i>
+															<i class="ki-duotone ki-pulse fs-2x text-info">
+																<span class="path1"></span><span class="path2"></span>
+															</i>
 														</span>
 													</div>
 													<div class="d-flex flex-column">
-														<span class="fs-2 fw-bold text-dark">
-															<fmt:formatNumber type="number" pattern="#.##" value="${leave_3}"/>
-															<c:if test="${quota_3 != null || quota_3 != 0.0 || quota_3 != ''} ">
-															/<fmt:formatNumber type="number" pattern="#" value="${quota_3}"/>
+														<div class="d-flex align-items-center">
+															<span class="fs-2 fw-bold text-dark">
+																<fmt:formatNumber type="number" pattern="#.##" value="${leave_3}"/>
+																<c:if test="${quota_3 != null || quota_3 != 0.0 || quota_3 != ''}">
+																	/<fmt:formatNumber type="number" pattern="#" value="${quota_3}"/>
+																</c:if>
+															</span>
+															<c:if test="${LeaveWAnumT3.doubleValue() > 0}">
+																<span class="badge badge-sm badge-warning ms-1">
+																	<fmt:formatNumber type="number" pattern="#.##" value="${LeaveWAnumT3}"/>
+																</span>
 															</c:if>
-														</span>
-														<span class="text-muted fs-5">
-														${type_3}
-														</span>
+														</div>
+														<span class="text-muted fs-5">${type_3}</span>
 													</div>
 												</div>
 											</div>
@@ -247,22 +266,27 @@
 													<div class="symbol symbol-50px me-4">
 														<span class="symbol-label bg-light-danger">
 														<i class="ki-duotone ki-calendar-remove fs-2x text-danger">
-														<span class="path1"></span>
-														<span class="path2"></span>
-														<span class="path3"></span>
-														<span class="path4"></span>
-														<span class="path5"></span>
-														<span class="path6"></span>
+															<span class="path1"></span>
+															<span class="path2"></span>
+															<span class="path3"></span>
+															<span class="path4"></span>
+															<span class="path5"></span>
+															<span class="path6"></span>
 														</i>
 														</span>
 													</div>
 													<div class="d-flex flex-column">
-														<span class="fs-2 fw-bold text-dark">
-															<fmt:formatNumber type="number" pattern="#.##" value="${leave_4}"/>
-														</span>
-														<span class="text-muted fs-5">
-														${type_4}
-														</span>
+														<div class="d-flex align-items-center">
+															<span class="fs-2 fw-bold text-dark">
+																<fmt:formatNumber type="number" pattern="#.##" value="${leave_4}"/>
+															</span>
+															<c:if test="${LeaveWAnumT4.doubleValue() > 0}">
+																<span class="badge badge-sm badge-warning ms-1">
+																		<fmt:formatNumber type="number" pattern="#.##" value="${LeaveWAnumT4}"/>
+																</span>
+															</c:if>
+														</div>
+														<span class="text-muted fs-5">${type_4}</span>
 													</div>
 												</div>
 											</div>
@@ -280,12 +304,17 @@
 														</span>
 													</div>
 													<div class="d-flex flex-column">
-														<span class="fs-2 fw-bold text-dark">
-															<fmt:formatNumber type="number" pattern="#.##" value="${leave_5}"/>
-														</span>
-														<span class="text-muted fs-5">
-														${type_5}
-														</span>
+														<div class="d-flex align-items-center">
+															<span class="fs-2 fw-bold text-dark">
+																<fmt:formatNumber type="number" pattern="#.##" value="${leave_5}"/>
+															</span>
+															<c:if test="${LeaveWAnumT5.doubleValue() > 0}">
+																<span class="badge badge-sm badge-warning ms-1">
+																		<fmt:formatNumber type="number" pattern="#.##" value="${LeaveWAnumT5}"/>
+																</span>
+															</c:if>
+														</div>
+														<span class="text-muted fs-5">${type_5}</span>
 													</div>
 												</div>
 											</div>
@@ -295,19 +324,24 @@
 												<div class="d-flex align-items-center">
 													<div class="symbol symbol-50px me-4">
 														<span class="symbol-label" style="background-color: #4B5675;">
-														<i class="ki-duotone ki-abstract-12 fs-2x" style="color: #FFFFFF;">
-														<span class="path1"></span>
-														<span class="path2"></span>
-														</i>
+															<i class="ki-duotone ki-abstract-12 fs-2x" style="color: #FFFFFF;">
+																<span class="path1"></span>
+																<span class="path2"></span>
+															</i>
 														</span>
 													</div>
 													<div class="d-flex flex-column">
-														<span class="fs-2 fw-bold text-dark">
-															<fmt:formatNumber type="number" pattern="#.##" value="${leave_7}"/>
-														</span>
-														<span class="text-muted fs-5">
-														${type_7}
-														</span>
+														<div class="d-flex align-items-center">
+															<span class="fs-2 fw-bold text-dark">
+																<fmt:formatNumber type="number" pattern="#.##" value="${leave_7}"/>
+															</span>
+															<c:if test="${LeaveWAnumT7.doubleValue() > 0}">
+																<span class="badge badge-sm badge-warning ms-1">
+																		<fmt:formatNumber type="number" pattern="#.##" value="${LeaveWAnumT7}"/>
+																</span>
+															</c:if>
+														</div>
+														<span class="text-muted fs-5">${type_7}</span>
 													</div>
 												</div>
 											</div>
@@ -383,7 +417,9 @@
 
 											<!-- Type of leave -->
 											<div class="mb-14">
-												<label class="form-label fw-semibold fs-5">Type of leave</label>
+												<div class="col-12 mb-5">
+													<label class="form-label fw-semibold fs-5">Type of leave</label>
+												</div>
 												<div id="leaveTypes" class="row g-6 fs-4">
 													<!-- Loop Leave Type Javascript -->
 												</div>
@@ -394,8 +430,6 @@
 												<div class="row g-6">
 
 													<!--Date range & half-day -->
-													<!-- <div class="row mb-10"> -->
-
 													<!-- Date Range -->
 													<div class="row mb-10">
 
@@ -403,7 +437,7 @@
 
 															<div class="row align-items-end">
 																<!-- Start Date -->
-																<div class="col-md-6">
+																<div class="col-md-6 mb-5 mb-md-0">
 																	<label class="form-label fw-semibold fs-5">Start Date <span class="text-danger">*</span></label>
 																	<div class="input-group date date-picker input-daterange" data-provide="datepicker" data-date-format="dd M yyyy">
 																		<input type="text" class="form-control" id="date_from" name="from" autocomplete="off" required>
@@ -412,7 +446,7 @@
 																</div>
 
 																<!-- End Date -->
-																<div class="col-md-6">
+																<div class="col-md-6 mb-5 mb-md-0">
 																	<label class="form-label fw-semibold fs-5">End Date <span class="text-danger">*</span></label>
 																	<div class="input-group date date-picker input-daterange" data-provide="datepicker" data-date-format="dd M yyyy">
 																		<input type="text" class="form-control" id="date_to" name="to" autocomplete="off" required>
@@ -440,7 +474,7 @@
 
 													<div class="row mb-10">
 														<!-- Start Time -->
-														<div class="col-md-6">
+														<div class="col-md-6 mb-5 mb-md-0">
 															<label class="form-label fw-semibold fs-5">Start Time <span class="text-danger">*</span></label>
 															<div class="input-group">
 																<input type="text" class="form-control timepicker timepicker-24 checkHours" id="time_from" name="time_from" autocomplete="off" required disabled>
@@ -449,7 +483,7 @@
 														</div>
 
 														<!-- End Time -->
-														<div class="col-md-6">
+														<div class="col-md-6 mb-5 mb-md-0">
 															<label class="form-label fw-semibold fs-5">End Time <span class="text-danger">*</span></label>
 															<div class="input-group">
 																<input type="text" class="form-control timepicker timepicker-24 checkHours" id="time_to" name="time_to" autocomplete="off" required disabled>
@@ -461,7 +495,7 @@
 
 													<div class="row mb-10">
 														<!-- Start Time -->
-														<div class="col-md-6">
+														<div class="col-md-6 mb-5 mb-md-0">
 															<label class="form-label fw-semibold fs-5">Day</label>
 															<div class="input-group">
 																<input type="text" class="form-control timepicker timepicker-24 checkHours" id="amount" name="amount" min="1" max="1000" maxlength="3" disabled>
@@ -470,7 +504,7 @@
 														</div>
 
 														<!-- End Time -->
-														<div class="col-md-6">
+														<div class="col-md-6 mb-5 mb-md-0">
 															<label class="form-label fw-semibold fs-5">Hours</label>
 															<div class="input-group">
 																<input type="text" class="form-control timepicker timepicker-24 checkHours" id="amount_sub" name="amount_sub" value="0" min="1" max="1000" maxlength="3" onchange="check()" disabled>
@@ -693,13 +727,13 @@ $(function () {
 		if (leaveTypes[i].id == '1' || leaveTypes[i].id == '2' || leaveTypes[i].id == '3' || leaveTypes[i].id == '6') {
 			if (leaveTypes[i].id == '6') {
 				if (leaveCheck[i] == '1') {
-					let radio =	'<div class="col-12 col-sm-6 col-md-3" id="label_lt_6"><div class="form-check form-check-custom form-check-solid mb-3">'
+					let radio =	'<div class="col-6 col-sm-6 col-md-3" id="label_lt_6"><div class="form-check form-check-custom form-check-solid mb-3">'
 					+'<input class="form-check-input me-3" type="radio" name="leaveType" id="lt_'+leaveTypes[i].id+'" value="'+leaveTypes[i].id+'" disabled required>'+leaveTypes[i].name
 					+'</div></div>'
 					+'<input type="hidden" class="hide" name="leaveType_hidden" id="lt_hidden">';
 					$('#leaveTypes').addClass('row g-6').append(radio);
 				} else {
-					let radio =	'<div class="col-12 col-sm-6 col-md-3" id="label_lt_6"><div class="form-check form-check-custom form-check-solid mb-3">'
+					let radio =	'<div class="col-6 col-sm-6 col-md-3" id="label_lt_6"><div class="form-check form-check-custom form-check-solid mb-3">'
 						+'<input class="form-check-input me-3" type="radio" name="leaveType" id="lt_'+leaveTypes[i].id+'" value="'+leaveTypes[i].id+'" required>'+leaveTypes[i].name
 						+'</div></div>'
 						+'<input type="hidden" class="hide" name="leaveType_hidden" id="lt_hidden">';
@@ -707,13 +741,13 @@ $(function () {
 				}
 			} else {
 				if (leaveCheck[i] == '1') {
-					let radio =	'<div class="col-12 col-sm-6 col-md-3"><div class="form-check form-check-custom form-check-solid mb-3">'
+					let radio =	'<div class="col-6 col-sm-6 col-md-3"><div class="form-check form-check-custom form-check-solid mb-3">'
 						+'<input class="form-check-input me-3" type="radio" name="leaveType" id="lt_'+leaveTypes[i].id+'" value="'+leaveTypes[i].id+'" disabled required>'+leaveTypes[i].name
 						+'</div></div>'
 						+'<input type="hidden" class="hide" name="leaveType_hidden" id="lt_hidden">';
 					$('#leaveTypes').addClass('row g-6').append(radio);
 				} else {
-					let radio =	'<div class="col-12 col-sm-6 col-md-3"><div class="form-check form-check-custom form-check-solid mb-3">'
+					let radio =	'<div class="col-6 col-sm-6 col-md-3"><div class="form-check form-check-custom form-check-solid mb-3">'
 						+'<input class="form-check-input me-3" type="radio" name="leaveType" id="lt_'+leaveTypes[i].id+'" value="'+leaveTypes[i].id+'" required>'+leaveTypes[i].name
 						+'</div></div>'
 						+'<input type="hidden" class="hide" name="leaveType_hidden" id="lt_hidden">';
@@ -724,7 +758,7 @@ $(function () {
 			// Leave w/o pay can be created by user who has 'leave.approve'
 			<perm:permission object="leave.approve">
 
-				let radio =	'<div class="col-12 col-sm-6 col-md-3"><div class="form-check form-check-custom form-check-solid mb-3">'
+				let radio =	'<div class="col-6 col-sm-6 col-md-3"><div class="form-check form-check-custom form-check-solid mb-3">'
 					+'<input class="form-check-input me-3" type="radio" name="leaveType" id="lt_'+leaveTypes[i].id+'" value="'+leaveTypes[i].id+'" required>'+leaveTypes[i].name
 					+'</div></div>'
 					+'<input type="hidden" class="hide" name="leaveType_hidden" id="lt_hidden">';
@@ -732,7 +766,7 @@ $(function () {
 
 			</perm:permission>
 		} else if (leaveTypes[i].id != '9') {
-			let radio =	'<div class="col-12 col-sm-6 col-md-3"><div class="form-check form-check-custom form-check-solid mb-3">'
+			let radio =	'<div class="col-6 col-sm-6 col-md-3"><div class="form-check form-check-custom form-check-solid mb-3">'
 				+'<input class="form-check-input me-3" type="radio" name="leaveType" id="lt_'+leaveTypes[i].id+'" value="'+leaveTypes[i].id+'" required>'+leaveTypes[i].name
 				+'</div></div>'
 				+'<input type="hidden" class="hide" name="leaveType_hidden" id="lt_hidden">';
@@ -746,7 +780,6 @@ $(function () {
 	let month = d.getMonth(); // 0 = Jan
 	//month = 0;//for test display "ลาพักร้อนที่เหลือจากปีก่อน"
 	//month = 10;//for test hide "ลาพักร้อนที่เหลือจากปีก่อน"
-	debugger;
 
 	const leave6Container = $('#label_lt_6'); //ลาพักร้อนที่เหลือจากปีก่อน
 	if (leave6Container.length) { // validate #label_lt_6
@@ -1149,7 +1182,7 @@ $(() => {
 
 	// begin checkbox ลาปีหน้า ==============================================================
 	// display hide checkbox ลาปีหน้า
-	debugger;
+	//debugger;
 	const currentMonth = new Date().getMonth(); // JavaScript: 0 = ม.ค. ถึง 11 = ธ.ค.
 	//const currentMonth = 0 //for test display "ลาพักร้อนที่เหลือจากปีก่อน"
 	//const currentMonth = 1 //for test hide "ลาพักร้อนที่เหลือจากปีก่อน"
@@ -1191,7 +1224,7 @@ $(() => {
 	$('#date_from, #date_to').closest('.date-picker').removeClass('date-picker'); */
 
 	function updateDatePickerRange(isNextYear) {
-		debugger;
+		//debugger;
 		var currentYear = new Date().getFullYear();
 		var targetYear = isNextYear ? (currentYear + 1) : currentYear;
 
@@ -1246,7 +1279,7 @@ $(() => {
 	//updateDatePickerRange(false);
 
 	$('#nextYearLeave').on('change', function () {
-		debugger;
+		//debugger;
 		var isNextYear = $(this).is(':checked');
 		updateDatePickerRange(isNextYear);
 		const leave6Container = $('#label_lt_6');

@@ -8,48 +8,36 @@
 
 <!--begin::Main-->
 <div class="app-main flex-column flex-row-fluid">
-
-	<!--begin::Content wrapper-->
 	<div class="d-flex flex-column flex-column-fluid">
-
-		<!--begin::Toolbar-->
 		<div id="kt_app_toolbar" class="app-toolbar py-3 py-lg-6">
-			<!--begin::Toolbar container-->
 			<div id="kt_app_toolbar_container" class="app-container container-fluid d-flex flex-stack">
 				<!--begin::Page title-->
 				<div class="page-title d-flex flex-column justify-content-center flex-wrap me-3">
-					<!--begin::Title-->
 					<h1 class="page-heading d-flex text-gray-900 fw-bold fs-3 flex-column justify-content-center my-0">My Leave</h1>
-					<!--end::Title-->
-					<!--begin::Breadcrumb-->
 					<ul class="breadcrumb breadcrumb-separatorless fw-semibold fs-7 my-0 pt-1">
 						<li class="breadcrumb-item text-muted"><a href="demo_dashboard" class="text-muted text-hover-primary">Home</a></li>
 						<li class="breadcrumb-item"><span class="bullet bg-gray-500 w-5px h-2px"></span></li>
 						<li class="breadcrumb-item text-muted">My Leave</li>
 					</ul>
-					<!--end::Breadcrumb-->
 				</div>
 				<!--end::Page title-->
 			</div>
-			<!--end::Toolbar container-->
 		</div>
-		<!--end::Toolbar-->
 
 		<!--begin::Content-->
 		<div id="kt_app_content" class="app-content flex-column-fluid">
-
 			<!--begin::Content container-->
 			<div id="kt_app_content_container" class="app-container container-fluid">
-
 				<!-- DDL -->
 				<div class="d-flex flex-row">
 					<div class="flex-row-fluid mb-5">
+						<!--begin::Filter-->
 						<form action="new_searchfromto" method="POST" id="searchForm">
 							<div class="card card-flush bgi-no-repeat bgi-size-contain bgi-position-x-center border-0 mb-5 mb-xl-10">
 								<div class="card-body">
 									<div class="row g-5">
 										<!-- Leave Type -->
-										<div class="col-md-4">
+										<div class="col-12 col-xs-4 col-md-4">
 											<div class="mb-5">
 												<select class="form-select" data-placeholder="All Leave Type" name="type" onchange="this.form.submit()">
 													<option value="allType" <c:if test="${leaveType == 'allType'}"><c:out value="selected=selected"/></c:if>>All Leave Type</option>
@@ -63,11 +51,9 @@
 												</select>
 											</div>
 										</div>
-
 										<!-- Status -->
-										<div class="col-md-4">
+										<div class="col-12 col-xs-4 col-md-4">
 											<div class="mb-5">
-												<!-- <label class="form-label">Status</label> -->
 												<select class="form-select" data-placeholder="All Status" name="appr" id="appr" onchange="this.form.submit()">
 													<option value="4" id="All1"
 														<c:if test="${ appr == 4 }">
@@ -75,8 +61,7 @@
 														</c:if>>All Status</option>
 													<option value="0" <c:if test="${ appr == 0 }">
 															<c:out value="selected=selected"/>
-														</c:if>>Waiting
-														for approve</option>
+														</c:if>>Waiting for approve</option>
 													<option value="1" <c:if test="${ appr == 1 }">
 															<c:out value="selected=selected"/>
 														</c:if>>Approve
@@ -92,9 +77,8 @@
 												</select>
 											</div>
 										</div>
-
 										<!-- Date Range -->
-										<div class="col-md-4">
+										<div class="col-12 col-xs-4 col-md-4">
 											<div class="mb-5">
 												<!-- <label class="form-label">Date Range</label> -->
 												<input id="kt_daterangepicker" class="form-control" placeholder="Pick date range" autocomplete="off"/>
@@ -106,6 +90,7 @@
 								</div>
 							</div>
 						</form>
+						<!--end::Filter-->
 					</div>
 				</div>
 				<!-- DDL -->
@@ -116,31 +101,34 @@
 						<div class="card card-flush bgi-no-repeat bgi-size-contain bgi-position-x-center border-0 mb-5 mb-xl-10">
 							<div class="card-body">
 								<div class="row g-5">
-
 									<!-- ลาพักร้อน -->
-									<div class="col-6 col-md-4 col-xl-3">
+									<div class="col-6 col-xs-4 col-sm-4 col-md-4 col-xl-3">
 										<div class="d-flex align-items-center">
 											<div class="symbol symbol-50px me-4">
 												<span class="symbol-label bg-light-success">
 													<i class="ki-duotone ki-airplane fs-2x text-success">
-														<span class="path1"></span>
-														<span class="path2"></span>
+														<span class="path1"></span><span class="path2"></span>
 													</i>
 												</span>
 											</div>
 											<div class="d-flex flex-column">
-												<span class="fs-2 fw-bold text-dark">
-													<fmt:formatNumber type="number" pattern="#.##" value="${leave_1}"/>/<fmt:formatNumber type="number" pattern="#.##" value="${quota_1-3}"/>
-												</span>
-												<span class="text-muted fs-5">
-												${type_1}
-												</span>
-											</div>
+												<div class="d-flex align-items-center">
+													<span class="fs-2 fw-bold text-dark">
+														<fmt:formatNumber type="number" pattern="#.##" value="${leave_1}"/>/<fmt:formatNumber type="number" pattern="#.##" value="${quota_1-3}"/>
+													</span>
+													<c:if test="${LeaveWAnumT1.doubleValue() > 0}">
+														<span class="badge badge-sm badge-warning ms-1">
+															<fmt:formatNumber type="number" pattern="#.##" value="${LeaveWAnumT1}"/>
+														</span>
+													</c:if>
+												</div>
+												<span class="text-muted fs-5">${type_1}</span>
+											</div>	
 										</div>
 									</div>
 
 									<!-- ลากิจ -->
-									<div class="col-6 col-md-4 col-xl-3">
+									<div class="col-6 col-xs-4 col-sm-4 col-md-4 col-xl-3">
 										<div class="d-flex align-items-center">
 											<div class="symbol symbol-50px me-4">
 												<span class="symbol-label bg-light-primary">
@@ -155,18 +143,23 @@
 												</span>
 											</div>
 											<div class="d-flex flex-column">
-												<span class="fs-2 fw-bold text-dark">
-													<fmt:formatNumber type="number" pattern="#.##" value="${leave_2}"/>/<fmt:formatNumber type="number" pattern="#.##" value="3"/><!-- fix hard code 3 day -->
-												</span>
-												<span class="text-muted fs-5">
-												${type_2}
-												</span>
+												<div class="d-flex align-items-center">
+													<span class="fs-2 fw-bold text-dark">
+														<fmt:formatNumber type="number" pattern="#.##" value="${leave_2}"/>/<fmt:formatNumber type="number" pattern="#.##" value="3"/><!-- fix hard code 3 day -->
+													</span>
+													<c:if test="${LeaveWAnumT2.doubleValue() > 0}">
+														<span class="badge badge-sm badge-warning ms-1">
+																<fmt:formatNumber type="number" pattern="#.##" value="${LeaveWAnumT2}"/>
+														</span>
+													</c:if>
+												</div>
+												<span class="text-muted fs-5">${type_2}</span>
 											</div>
 										</div>
 									</div>
 
 									<!-- ลาพักร้อนที่เหลือ -->
-									<div class="col-6 col-md-4 col-xl-3">
+									<div class="col-6 col-xs-4 col-sm-4 col-md-4 col-xl-3">
 										<div class="d-flex align-items-center">
 											<div class="symbol symbol-50px me-4">
 												<span class="symbol-label bg-light-warning">
@@ -178,21 +171,26 @@
 												</span>
 											</div>
 											<div class="d-flex flex-column">
-												<span class="fs-2 fw-bold text-dark">
-													<fmt:formatNumber type="number" pattern="#.##" value="${leave_6}"/>
-													<c:if test="${quota_4 != null || quota_4 != 0.0 || quota_4 != ''} ">
-														/<fmt:formatNumber type="number" pattern="#" value="${quota_4}"/>
+												<div class="d-flex align-items-center">
+													<span class="fs-2 fw-bold text-dark">
+														<fmt:formatNumber type="number" pattern="#.##" value="${leave_6}"/>
+														<c:if test="${quotaLastYear.doubleValue() > 0}">
+															/<fmt:formatNumber type="number" pattern="#.##" value="${quotaLastYear}"/>
+														</c:if>
+													</span>
+													<c:if test="${LeaveWAnumT6.doubleValue() > 0}">
+														<span class="badge badge-sm badge-warning ms-1">
+															<fmt:formatNumber type="number" pattern="#.##" value="${LeaveWAnumT6}"/>
+														</span>
 													</c:if>
-												</span>
-												<span class="text-muted fs-5">
-												${type_6}
-												</span>
+												</div>
+												<span class="text-muted fs-5">${type_6}</span>
 											</div>
 										</div>
 									</div>
 
 									<!-- ลาป่วย -->
-									<div class="col-6 col-md-4 col-xl-3">
+									<div class="col-6 col-xs-4 col-sm-4 col-md-4 col-xl-3">
 										<div class="d-flex align-items-center">
 											<div class="symbol symbol-50px me-4">
 												<span class="symbol-label bg-light-info">
@@ -203,21 +201,26 @@
 												</span>
 											</div>
 											<div class="d-flex flex-column">
-												<span class="fs-2 fw-bold text-dark">
-													<fmt:formatNumber type="number" pattern="#.##" value="${leave_3}"/>
-													<c:if test="${quota_3 != null || quota_3 != 0.0 || quota_3 != ''} ">
-														/<fmt:formatNumber type="number" pattern="#" value="${quota_3}"/>
+												<div class="d-flex align-items-center">
+													<span class="fs-2 fw-bold text-dark">
+														<fmt:formatNumber type="number" pattern="#.##" value="${leave_3}"/>
+														<c:if test="${quota_3 != null || quota_3 != 0.0 || quota_3 != ''}">
+															/<fmt:formatNumber type="number" pattern="#" value="${quota_3}"/>
+														</c:if>
+													</span>
+													<c:if test="${LeaveWAnumT3.doubleValue() > 0}">
+														<span class="badge badge-sm badge-warning ms-1">
+															<fmt:formatNumber type="number" pattern="#.##" value="${LeaveWAnumT3}"/>
+														</span>
 													</c:if>
-												</span>
-												<span class="text-muted fs-5">
-												${type_3}
-												</span>
+												</div>
+												<span class="text-muted fs-5">${type_3}</span>
 											</div>
 										</div>
 									</div>
 
 									<!-- ขาดงาน -->
-									<div class="col-6 col-md-4 col-xl-3">
+									<div class="col-6 col-xs-4 col-sm-4 col-md-4 col-xl-3">
 										<div class="d-flex align-items-center">
 											<div class="symbol symbol-50px me-4">
 												<span class="symbol-label bg-light-danger">
@@ -232,18 +235,23 @@
 												</span>
 											</div>
 											<div class="d-flex flex-column">
-												<span class="fs-2 fw-bold text-dark">
-													<fmt:formatNumber type="number" pattern="#.##" value="${leave_4}"/>
-												</span>
-												<span class="text-muted fs-5">
-													${type_4}
-												</span>
+												<div class="d-flex align-items-center">
+													<span class="fs-2 fw-bold text-dark">
+														<fmt:formatNumber type="number" pattern="#.##" value="${leave_4}"/>
+													</span>
+													<c:if test="${LeaveWAnumT4.doubleValue() > 0}">
+														<span class="badge badge-sm badge-warning ms-1">
+																<fmt:formatNumber type="number" pattern="#.##" value="${LeaveWAnumT4}"/>
+														</span>
+													</c:if>
+												</div>
+												<span class="text-muted fs-5">${type_4}</span>
 											</div>
 										</div>
 									</div>
 
 									<!-- ลาโดยไม่รับค่าจ้าง -->
-									<div class="col-6 col-md-4 col-xl-3">
+									<div class="col-6 col-xs-4 col-sm-4 col-md-4 col-xl-3">
 										<div class="d-flex align-items-center">
 											<div class="symbol symbol-50px me-4">
 												<span class="symbol-label bg-light-dark">
@@ -255,18 +263,23 @@
 												</span>
 											</div>
 											<div class="d-flex flex-column">
-												<span class="fs-2 fw-bold text-dark">
-													<fmt:formatNumber type="number" pattern="#.##" value="${leave_5}"/>
-												</span>
-												<span class="text-muted fs-5">
-													${type_5}
-												</span>
+												<div class="d-flex align-items-center">
+													<span class="fs-2 fw-bold text-dark">
+														<fmt:formatNumber type="number" pattern="#.##" value="${leave_5}"/>
+													</span>
+													<c:if test="${LeaveWAnumT5.doubleValue() > 0}">
+														<span class="badge badge-sm badge-warning ms-1">
+																<fmt:formatNumber type="number" pattern="#.##" value="${LeaveWAnumT5}"/>
+														</span>
+													</c:if>
+												</div>
+												<span class="text-muted fs-5">${type_5}</span>
 											</div>
 										</div>
 									</div>
 
 									<!-- ลาอื่น ๆ -->
-									<div class="col-6 col-md-4 col-xl-3">
+									<div class="col-6 col-xs-4 col-sm-4 col-md-4 col-xl-3">
 										<div class="d-flex align-items-center">
 											<div class="symbol symbol-50px me-4">
 												<span class="symbol-label" style="background-color: #4B5675;">
@@ -277,12 +290,17 @@
 												</span>
 											</div>
 											<div class="d-flex flex-column">
-												<span class="fs-2 fw-bold text-dark">
-													<fmt:formatNumber type="number" pattern="#.##" value="${leave_7}"/>
-												</span>
-												<span class="text-muted fs-5">
-												${type_7}
-												</span>
+												<div class="d-flex align-items-center">
+													<span class="fs-2 fw-bold text-dark">
+														<fmt:formatNumber type="number" pattern="#.##" value="${leave_7}"/>
+													</span>
+													<c:if test="${LeaveWAnumT7.doubleValue() > 0}">
+														<span class="badge badge-sm badge-warning ms-1">
+																<fmt:formatNumber type="number" pattern="#.##" value="${LeaveWAnumT7}"/>
+														</span>
+													</c:if>
+												</div>
+												<span class="text-muted fs-5">${type_7}</span>
 											</div>
 										</div>
 									</div>
@@ -326,13 +344,10 @@
 
 								<!--begin::Header -->
 								<div class="card-header fs-4">
-
 									<!-- ID , Title -->
 									<div class="d-flex align-items-center mb-2 gap-2">
 										<span class="fw-bold me-2 text-primary">#${leave.leave_id}</span>
-
 											<c:if test="${leave.leave_type_id.toString() == '1'}">
-											
 												<div class="symbol symbol-35px me-4">
 													<span class="symbol-label bg-light-success">
 														<i class="ki-duotone ki-airplane fs-2x text-success">
@@ -342,7 +357,7 @@
 													</span>
 												</div>
 												
-												<span class="badge badge-light-success fs-2">${leave.leave_type_name}</span>
+												<span class="badge badge-light-success fs-4">${leave.leave_type_name}</span>
 
 											</c:if>
 											<c:if test="${leave.leave_type_id.toString() == '2'}">
@@ -358,12 +373,9 @@
 														</i>												
 													</span>
 												</div>
-												
-												<span class="badge badge-light-primary fs-2">${leave.leave_type_name}</span>
-												
+												<span class="badge badge-light-primary fs-4">${leave.leave_type_name}</span>
 											</c:if>
 											<c:if test="${leave.leave_type_id.toString() == '3'}">
-											
 												<div class="symbol symbol-35px me-4">
 													<span class="symbol-label bg-light-info">
 														<i class="ki-duotone ki-pulse fs-2x text-info">
@@ -372,12 +384,9 @@
 														</i>
 													</span>
 												</div>
-												
-												<span class="badge badge-light-info fs-2">${leave.leave_type_name}</span>
-												
+												<span class="badge badge-light-info fs-4">${leave.leave_type_name}</span>
 											</c:if>
 											<c:if test="${leave.leave_type_id.toString() == '4'}">
-											
 												<div class="symbol symbol-35px me-4">
 													<span class="symbol-label bg-light-danger">
 														<i class="ki-duotone ki-calendar-remove fs-2x text-danger">
@@ -390,12 +399,9 @@
 														</i>												
 													</span>
 												</div>
-												
-												<span class="badge badge-light-danger fs-2">${leave.leave_type_name}</span>
-												
+												<span class="badge badge-light-danger fs-4">${leave.leave_type_name}</span>
 											</c:if>
 											<c:if test="${leave.leave_type_id.toString() == '5'}">
-											
 												<div class="symbol symbol-35px me-4">
 													<span class="symbol-label bg-light-dark">
 														<i class="ki-duotone ki-brifecase-cros fs-2x text-dark">
@@ -405,12 +411,9 @@
 														</i>												
 													</span>
 												</div>
-												
-												<span class="badge badge-light-dark fs-2">${leave.leave_type_name}</span>
-												
+												<span class="badge badge-light-dark fs-4">${leave.leave_type_name}</span>
 											</c:if>
 											<c:if test="${leave.leave_type_id.toString() == '6'}">
-											
 												<div class="symbol symbol-35px me-4">
 													<span class="symbol-label bg-light-warning">
 														<i class="ki-duotone ki-timer fs-2x text-warning">
@@ -420,12 +423,9 @@
 														</i>
 													</span>
 												</div>
-												
-												<span class="badge badge-light-warning fs-2">${leave.leave_type_name}</span>
-												
+												<span class="badge badge-light-warning fs-4">${leave.leave_type_name}</span>
 											</c:if>
 											<c:if test="${leave.leave_type_id.toString() == '7'}">
-											
 												<div class="symbol symbol-35px me-4">
 													<span class="symbol-label" style="background-color: #4B5675;">
 														<i class="ki-duotone ki-abstract-12 fs-2x" style="color: #FFFFFF;">
@@ -434,18 +434,13 @@
 														</i>
 													</span>
 												</div>
-												
-												<span class="badge badge-light-dark fs-2">${leave.leave_type_name}</span>
-												
+												<span class="badge badge-light-dark fs-4">${leave.leave_type_name}</span>
 											</c:if>
-
-										<%-- <span class="fw-semibold" style="font-weight: 1000 !important;">${leave.leave_type_name}</span> --%>
 									</div>
 
 									<!-- Btn Info, Edit, Delete -->
 									<div class="card-toolbar">
 										<div class="d-inline-flex align-items-center justify-content-end gap-2">
-
 											<!-- Btn Info -->
 											<a href="javascript:void(0)" class="btn btn-icon btn-sm btn-light-info" onclick="leaveStatus(${leave.leave_id})">
 												<i class="ki-duotone ki-document fs-5">
@@ -453,7 +448,6 @@
 													<span class="path2"></span>
 												</i>
 											</a>
-
 											<!-- Btn Edit, Delete -->
 											<c:choose>
 												<c:when test="${leave.leave_status_id.toString() == 0}">
@@ -489,23 +483,18 @@
 															<span class="path5"></span>
 														</i>
 													</a>
-
 												</c:when>
 											</c:choose>
-
 										</div>
 									</div>
-
 								</div>
 								<!--end::Header -->
 
 								<!--begin::Footer -->
 								<div class="card-header fs-5">
-
 									<div class="d-flex align-items-center mb-2">
 										<div class="d-flex flex-wrap align-items-center gap-3">
-											<div class="fw-bold text-dark">${leave.name}</div>
-
+											<div class="fw-bold fs-6 text-dark">${leave.name}</div>
 											<div class="d-flex align-items-center">
 												<i class="ki-duotone ki-calendar-2 fs-5">
 													<span class="path1"></span>
@@ -514,7 +503,7 @@
 													<span class="path4"></span>
 													<span class="path5"></span>
 												</i>
-												<fmt:formatDate value="${leave.start_date}" type="date" pattern="d MMM yyyy"></fmt:formatDate> - <fmt:formatDate value="${leave.end_date}" type="date" pattern="d MMM yyyy"></fmt:formatDate>
+												<span class="fs-6"><fmt:formatDate value="${leave.start_date}" type="date" pattern="d MMM yyyy"></fmt:formatDate> - <fmt:formatDate value="${leave.end_date}" type="date" pattern="d MMM yyyy"></fmt:formatDate></span>
 												<span class="badge badge-light-primary badge-lg ms-2">
 												<fmt:formatNumber type="number" pattern="#.###" value="${leave.no_day}"/> day
 												</span>
@@ -590,16 +579,13 @@
 		<!--end::Content-->
 
 	</div>
-	<!--end::Content wrapper-->
-
 </div>
 <!--end:::Main-->
 
 <!--begin::Modal - Leave Detail-->
 <div class="modal fade" id="leaveDetailModal" tabindex="-1" aria-hidden="true">
-	<div class="modal-dialog">
+	<div class="modal-dialog modal-lg">
 		<div class="modal-content">
-
 			<!--begin::Header-->
 			<div class="modal-header">
 				<h2 class="modal-title">Leave</h2>
@@ -611,7 +597,6 @@
 
 			<!--begin::Body-->
 			<div class="modal-body">
-
 				<!-- Leaver Info -->
 				<div class="row gx-5 gy-4">
 					<!-- Left -->
@@ -619,7 +604,7 @@
 						<div class="d-flex align-items-center mb-3 fs-5">
 							<a href="#" class="fw-bold text-primary me-5">#<span id="leaveid"></span></a>
 							<span class="fw-semibold text-dark me-5" id="leavetype"></span>
-							<span class="badge badge-light-primary fs-7 fw-semibold" id="noday"></span>
+							<span class="badge badge-light-primary fw-semibold" id="noday"></span>
 						</div>
 
 						<div class="d-flex align-items-center text-gray-700 mb-2 fs-6">
@@ -647,13 +632,18 @@
 
 					<!-- Right -->
 					<div class="col-md-6">
-						<div class="fw-semibold text-dark mb-2 fs-5" id="userid"></div>
+						
+						<div class="fw-semibold text-dark mb-2 fs-5">
+							<i class="ki-duotone ki-user-square">
+								<span class="path1"></span><span class="path2"></span><span class="path3"></span>
+							</i>
+							<span id="userid"></span>
+						</div>
 
 						<div class="d-flex align-items-center text-gray-700 mb-2 fs-6">
 							<i class="ki-duotone ki-time me-2">
-								 <span class="path1"></span>
-								 <span class="path2"></span>
-							</i>
+								 <span class="path1"></span><span class="path2"></span>
+							</i> 
 							<span id="stime"></span> - <span id="etime"></span>
 						</div>
 
@@ -664,7 +654,6 @@
 							</i>
 							<a id="file" href="#" target="_blank" class="text-primary text-hover-underline"></a>
 						</div>
-
 						<div>
 							Request date: <span id="timecreate"></span>
 						</div>
@@ -672,9 +661,7 @@
 					</div>
 				</div>
 				<!-- Leaver Info -->
-
 				<hr style="border-top: 1px dashed #ced4da; opacity: 1;" class="my-5">
-
 				<!-- Approver Info -->
 				<div class="row gx-5 gy-4">
 					<div id="status_panel" class="mt-5" style="display: none;">

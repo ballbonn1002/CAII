@@ -8,6 +8,7 @@ import org.hibernate.HibernateException;
 import org.hibernate.SQLQuery;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.criterion.Order;
 import org.hibernate.transform.AliasToEntityMapResultTransformer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -35,7 +36,9 @@ public class LeaveTypeDAOImpl implements LeaveTypeDAO {
 		Session session = this.sessionFactory.getCurrentSession();
 		List<LeaveType> leavetypeList = null;
 		try {
-			leavetypeList = session.createCriteria(LeaveType.class).list();
+			leavetypeList = session.createCriteria(LeaveType.class)
+					.addOrder(Order.asc("leaveTypeId"))
+					.list();
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {

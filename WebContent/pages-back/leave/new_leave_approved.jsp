@@ -514,7 +514,7 @@
 													</a>
 												</c:when>
 												<c:when test="${leave.leave_status_id.toString() != 0}">
-													<a data-note="btn edit" class="btn btn-icon btn-sm btn-light-secondary disabled">
+													<a data-note="btn edit" class="btn btn-icon btn-sm btn-light-secondary">
 														<i class="ki-duotone ki-pencil fs-5">
 															<span class="path1"></span>
 															<span class="path2"></span>
