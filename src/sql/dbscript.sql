@@ -114,3 +114,5 @@ ALTER TABLE `expense_group`
   ADD COLUMN `requested_at`    DATETIME    NULL AFTER requested_by,
   ADD COLUMN `received_by`  VARCHAR(32) NULL AFTER requested_at,
   ADD COLUMN `received_at`     DATETIME    NULL AFTER received_by;
+  
+  
