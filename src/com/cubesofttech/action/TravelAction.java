@@ -138,6 +138,7 @@ public class TravelAction extends ActionSupport {
 				status = "Draft";
 
 			String userId = onlineUser.getId();
+			//Comment
 
 			// ── Date range ──────────────────────────────────────────────────────
 			String dateRange = request.getParameter("dateRange");
