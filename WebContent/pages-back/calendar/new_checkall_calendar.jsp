@@ -184,6 +184,24 @@
 									<h3 id="calendarTitle" class="fw-bold text-primary mb-0"></h3>
 								</div>
 							</div>
+							<div class="row align-items-center w-100">
+								<div class="col-md-12 col-12 text-end">
+									<div class="mt-3">
+										<i class="ki-duotone ki-map text-primary fs-4">
+											<span class="path1"></span>
+											<span class="path2"></span>
+											<span class="path3"></span>
+										</i>
+										<span class="fs-6 me-5">On Site</span>
+										<i class="ki-duotone ki-home-2 text-teal fs-4">
+											<span class="path1"></span>
+											<span class="path2"></span>
+										</i>
+										<span class="fs-6">WFH</span>
+									</div>
+									
+								</div>
+							</div>
 						</div>
 						<div class="card-body">
 							<div class="table-responsive">
