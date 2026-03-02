@@ -511,7 +511,7 @@
         });
     }
     
-    /* function confirmDelete(id) {
+   function confirmDelete(id) {
         event.preventDefault();
 
         Swal.fire({
@@ -531,7 +531,7 @@
                 window.location.href = 'announcementDelete?id=' + id;
             }
         });
-    } */
+    }
 </script>
 
 <script>
