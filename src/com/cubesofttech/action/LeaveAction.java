@@ -1304,6 +1304,12 @@ public class LeaveAction extends ActionSupport {
 			request.setAttribute("LeaveWAnumT7", LeaveWAnumT7);
 			request.setAttribute("LeaveWAnumT9", LeaveWAnumT9);
 			
+			List<LeaveType> type_leave = leavetypeDAO.findAll();
+			for (int i = 0; i < type_leave.size(); i++) {
+				LeaveType leave = type_leave.get(i);
+				request.setAttribute("type_" + leave.getLeaveTypeId(), leave.getLeaveTypeName());
+			}
+			
 			String leaveTypeJSON = leavetypeDAO.getForDisplayJSON();
 			String holidayJSON = holidayDAO.getallOnlyDateJSON();
 			String userListJSON = userDAO.userListJSON();
@@ -1329,7 +1335,7 @@ public class LeaveAction extends ActionSupport {
 	public String NewLeaveEdit() {
 		try {
 			String id = request.getParameter("id");
-			Leaves  leave = leaveDAO.findByLeaveId(Integer.parseInt(id));
+			Leaves leave = leaveDAO.findByLeaveId(Integer.parseInt(id));
 			User user = new User();
 			String userLogin = null;
 			user = (User) request.getSession().getAttribute("onlineUser");
@@ -1435,6 +1441,12 @@ public class LeaveAction extends ActionSupport {
 			if(leave.getLeaveFile() != null) {
 				FileUpload fileLeave = fileuploadDAO.findById(Integer.parseInt(leave.getLeaveFile()));
 				request.setAttribute("fileLeave", new Gson().toJson(fileLeave));
+			}
+			
+			List<LeaveType> type_leave = leavetypeDAO.findAll();
+			for (int i = 0; i < type_leave.size(); i++) {
+				LeaveType leavetype = type_leave.get(i);
+				request.setAttribute("type_" + leavetype.getLeaveTypeId(), leavetype.getLeaveTypeName());
 			}
 			
 			String leaveTypeJSON = leavetypeDAO.getForDisplayJSON();
