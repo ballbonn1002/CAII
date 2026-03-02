@@ -516,8 +516,8 @@ public class LeaveDAOImpl implements LeaveDAO {
 	            + "FROM leaves LEFT JOIN leave_type ON leave_type.leave_type_id = leaves.leave_type_id LEFT JOIN user ON leaves.user_id = user.id "
 	            + "WHERE leaves.start_date BETWEEN :startDate AND :endDate ");
 
-//	        sql.append("ORDER BY leaves.leave_status_id ASC, leaves.start_date DESC");
-	        sql.append("ORDER BY leaves.start_date DESC, leaves.leave_status_id ASC");
+	        sql.append("ORDER BY leaves.leave_status_id ASC, leaves.start_date DESC");
+//	        sql.append("ORDER BY leaves.start_date DESC, leaves.leave_status_id ASC");
 
 	        SQLQuery query = session.createSQLQuery(sql.toString());
 	        query.setParameter("startDate", startDate);
@@ -1696,8 +1696,8 @@ public class LeaveDAOImpl implements LeaveDAO {
 	            + "AND (user.manager_id = :manager OR leaves.appr_user_id = :manager) "
 	        );
 
-//	        sql.append("ORDER BY leaves.leave_status_id ASC, leaves.start_date DESC");
-	        sql.append("ORDER BY leaves.start_date DESC, leaves.leave_status_id ASC");
+	        sql.append("ORDER BY leaves.leave_status_id ASC, leaves.start_date DESC");
+//	        sql.append("ORDER BY leaves.start_date DESC, leaves.leave_status_id ASC");
 
 	        SQLQuery query = session.createSQLQuery(sql.toString());
 	        query.setParameter("startDate", startDate);
