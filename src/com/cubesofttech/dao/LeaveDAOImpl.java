@@ -1733,8 +1733,8 @@ public class LeaveDAOImpl implements LeaveDAO {
 			if(leaveType != null && !leaveType.isEmpty() && !leaveType.equals("allType")) {
 				sql.append("AND leaves.leave_type_id = :leaveType ");
 			}
-//			sql.append("ORDER BY leaves.leave_status_id ASC, leaves.start_date DESC; ");
-			sql.append("ORDER BY leaves.start_date DESC, leaves.leave_status_id ASC; ");
+			sql.append("ORDER BY leaves.leave_status_id ASC, leaves.start_date DESC; ");
+//			sql.append("ORDER BY leaves.start_date DESC, leaves.leave_status_id ASC; ");
 			
 			SQLQuery query = session.createSQLQuery(sql.toString());
 			query.setParameter("startDate", startDate);
