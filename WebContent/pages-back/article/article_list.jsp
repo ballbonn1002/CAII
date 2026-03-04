@@ -178,7 +178,7 @@
 					<!-- <div class="fs-7 fw-medium text-muted mb-4">Showing 18 of 100
 						items</div> -->
 
-					<div id="tableViewContainer" class="card table-responsive">
+					<div id="tableViewContainer" class="card">
 						<div class="card-header border-0 px-9 pt-7 d-flex align-items-center justify-content-between">
 							
 							<div class="card-title">
@@ -189,8 +189,7 @@
 								href="/article_add"><i class="ki-outline ki-plus fs-3 me-1"></i>Create</a>
 							
 						</div>
-							<div class="card-body">
-										
+							<div class="card-body table-responsive">
 								<table id="myTable"
 									class="table align-middle table-striped table-row-dashed table-hover fs-6 gy-5 gx-5 gs-5 mb-0 dataTable text-start">
 									<thead>
@@ -270,6 +269,7 @@
 										</c:forEach>
 									</tbody>
 								</table>
+								</div>
 							</div>
 						</div>
 					</div>
@@ -289,6 +289,7 @@
 				ordering : true,
 				searching : true,
 				autoWidth : false,
+				info: false, 
 				columnDefs : [ {
 						orderable : false,
 						targets : [ 5 ]
@@ -305,12 +306,7 @@
 											'<span class="th-wrapper" style="display:inline-flex; align-items:center; white-space:nowrap; pointer-events:none;"></span>');
 									}
 								});
-					},
-					dom : "t"				
-						+ "<'row mt-5'"
-						+ "<'col-sm-12 col-md-5 d-flex align-items-center justify-content-center justify-content-md-start'l>"
-						+ "<'col-sm-12 col-md-7 d-flex align-items-center justify-content-center justify-content-md-end'p>"
-						+ ">"
+					}
 			});
 							
 			//search
