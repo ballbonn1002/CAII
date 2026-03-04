@@ -153,8 +153,9 @@ public class WorkHoursAction extends ActionSupport {
 					} catch (Exception e) {
 						log.error("Invalid date format", e);
 					}
+				} else {	// normal
+					checkDate = targetDate.toString();
 				}
-
 				List<Map<String, Object>> targetDateCheckIn = workHoursDAO.getCheckinByDate(userId, checkDate);
 				boolean isCheckedIn = false;
 				if (targetDateCheckIn != null && !targetDateCheckIn.isEmpty()) {
