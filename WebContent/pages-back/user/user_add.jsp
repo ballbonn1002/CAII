@@ -33,7 +33,7 @@
 					<div
 						class="page-title d-flex flex-column justify-content-center flex-wrap me-3">
 						<h1
-							class="page-heading d-flex fw-bold fs-3 flex-column justify-content-center my-0">
+							class="page-heading d-flex text-gray-700 fw-semibold flex-column justify-content-center my-0">
 							Add Employee Profile</h1>
 						<ul
 							class="breadcrumb breadcrumb-separatorless fw-semibold fs-7 my-0 pt-1">
@@ -62,8 +62,8 @@
 						<div class="card border-2">
 							<div
 								class="card-header d-flex align-items-center justify-content-between py-4">
-								<h1 class="card-title fs-5 fw-bold text-gray-900 mb-0">Account
-									Info</h1>
+								<h3 class="card-title fw-semibold text-gray-900 mb-0">Account
+									Info</h3>
 								<div
 									class="d-flex align-items-center gap-2 fw-semibold text-gray-900">
 									<span>Active</span> <label
@@ -316,7 +316,7 @@
 
 						<div class="card mb-10 mt-12 border-2">
 							<div class="card-header">
-								<h3 class="card-title fw-bold m-0">Setting For Working</h3>
+								<h3 class="card-title fw-semibold text-gray-900 m-0">Setting For Working</h3>
 							</div>
 							<div class="card-body pt-6">
 								<div class="row g-8">
@@ -412,7 +412,7 @@
 
 						<div class="card mb-10 mt-12 border-2" id="securityInfoCard">
 							<div class="card-header">
-								<h3 class="card-title fw-bold m-0">Security</h3>
+								<h3 class="card-title fw-semibold text-gray-900 m-0">Security</h3>
 							</div>
 							<div class="card-body pt-6">
 								<div class="row g-9">

@@ -596,7 +596,7 @@ public class ArticleAction extends ActionSupport {
 			List<User> userList = userDAO.findAll();
 			List<Article> articleList = articleDAO.findAll();
 
-			log.debug("tagIds = "+ tagIds);
+//			log.debug("tagIds = "+ tagIds);
 			
 			List<Tag> selectedTagName = new ArrayList<>();
 			if (tagIds != null) {
@@ -604,7 +604,7 @@ public class ArticleAction extends ActionSupport {
 			        Tag tag = tagDAO.findById(id);
 			        if (tag != null) {
 			            selectedTagName.add(tag);
-			            log.debug("tagName = "+ selectedTagName);
+//			            log.debug("tagName = "+ selectedTagName);
 			        }
 			        
 			        
@@ -647,7 +647,7 @@ public class ArticleAction extends ActionSupport {
 			
 			request.setAttribute("typeArticle", typeArticle);
 			request.setAttribute("pageUri", pageUri);
-			log.debug("title pageUri" + pageUri);
+//			log.debug("title pageUri" + pageUri);
 			
 			return SUCCESS;
 		} catch (Exception e) {
@@ -672,7 +672,7 @@ public class ArticleAction extends ActionSupport {
 			List<Article> articleList = articleDAO.findAll();
 			
 			User userCreate = userDAO.findById(article.getUserCreate());
-			log.debug("userCreate ="+ userCreate);
+//			log.debug("userCreate ="+ userCreate);
 			Integer typeArticle = article.getArticleTypeId();
 //			log.debug("typeArticle = "+typeArticle);
 			LocalDateTime time_post = article.getTimePost().toLocalDateTime();

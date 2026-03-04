@@ -74,7 +74,7 @@
 				<div
 					class="page-title d-flex align-items-center justify-content-between w-100 me-3 mb-6">
 					<div class="d-flex flex-column flex-wrap gap-2 gap-lg-3">
-						<h1 class="page-heading d-flex text-gray-900 fw-bold fs-3 my-0">
+						<h1 class="page-heading d-flex text-gray-700 fw-semibold my-0">
 							Edit User</h1>
 
 						<ul
@@ -282,7 +282,7 @@
 					<div class="card mb-10" id="account-info">
 						<div
 							class="card-header d-flex align-items-center justify-content-between">
-							<h3 class="card-title fw-bold m-0">Account Information</h3>
+							<h3 class="card-title fw-semibold text-gray-900 m-0">Account Information</h3>
 
 							<div class="d-flex align-items-center gap-3">
 								<span id="userActiveText"
@@ -548,7 +548,7 @@
 
 					<div class="card mb-10" id="employee-info">
 						<div class="card-header">
-							<h3 class="card-title fw-bold m-0">Employee Information</h3>
+							<h3 class="card-title fw-semibold text-gray-900 m-0">Employee Information</h3>
 						</div>
 
 						<div class="card-body pt-6">
@@ -820,7 +820,7 @@
 
 					<div class="card mb-10" id="education-info">
 						<div class="card-header">
-							<h3 class="card-title fw-bold m-0">Education</h3>
+							<h3 class="card-title fw-semibold text-gray-900 m-0">Education</h3>
 						</div>
 						<div class="card-body pt-6">
 							<div class="table-responsive">
@@ -921,7 +921,7 @@
 
 					<div class="card mb-10" id="payment-info">
 						<div class="card-header">
-							<h3 class="card-title fw-bold m-0">Payment Information</h3>
+							<h3 class="card-title fw-semibold text-gray-900 m-0">Payment Information</h3>
 						</div>
 						<div class="card-body pt-6">
 							<div class="row g-9">
@@ -1243,7 +1243,7 @@
 
 						<div class="card mb-10">
 							<div class="card-header">
-								<h3 class="card-title fw-bold m-0">Security</h3>
+								<h3 class="card-title fw-semibold text-gray-900 m-0">Security</h3>
 							</div>
 							<div class="card-body pt-6">
 								<div class="row g-9">
@@ -1263,7 +1263,7 @@
 
 						<div class="card mb-10 d-none" id="resetPasswordCard">
 							<div class="card-header">
-								<h3 class="card-title fw-bold m-0">Security</h3>
+								<h3 class="card-title fw-semibold text-gray-900 m-0">Security</h3>
 							</div>
 							<div class="card-body px-10 py-9">
 								<div class="row mb-8">
