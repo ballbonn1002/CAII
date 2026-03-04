@@ -223,5 +223,6 @@ public interface WorkHoursDAO {
 	 // get all column by using userid, lastyear, currentyears
 	 public List<Map<String, Object>> getCheckListFromLastAndCurrentYear(String userId, int lastyear, int currentYear) throws Exception;
 	 
+	 public List<Map<String, Object>> getCheckinByDate (String userId, String date) throws Exception;
 
 }

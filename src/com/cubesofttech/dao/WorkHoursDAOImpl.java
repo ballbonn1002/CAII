@@ -2710,4 +2710,22 @@ public class WorkHoursDAOImpl implements WorkHoursDAO {
 		return checkList;
 	}
 
+	@Override
+	public List<Map<String, Object>> getCheckinByDate(String userId, String date) throws Exception {
+		Session session = this.sessionFactory.getCurrentSession();
+		List<Map<String, Object>> checkin = null;
+		try {
+			String sql = "SELECT work_hours_time_work, work_type FROM work_hours  "
+					+ "WHERE user_create =:userId AND DATE(work_hours_time_work) =:date AND work_hours_type = 1";
+			SQLQuery query = session.createSQLQuery(sql);
+			query.setParameter("userId", userId);
+			query.setParameter("date", date);
+			query.setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
+			checkin = query.list();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return checkin;
+	}
+
 }
