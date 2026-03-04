@@ -732,7 +732,7 @@ var AppCalendar = function() {
 					
 					dataList.forEach(function(item, itemIndex) {
 						// --- Logic Check-in ---
-						var typeIn = Number(props.workTypeIn);
+						var typeIn = Number(item.workTypeIn);
 						var iconIn = "";
 						if (typeIn === 1) iconIn = '<i class="ki-duotone ki-map text-primary fs-2 me-1 align-middle"><span class="path1"></span><span class="path2"></span><span class="path3"></span></i> ';
 						else if (typeIn === 2) iconIn = '<i class="ki-duotone ki-home-2 fs-2 text-teal me-1 align-middle"><span class="path1"></span><span class="path2"></span></i> ';
@@ -747,7 +747,7 @@ var AppCalendar = function() {
 						}
 
 						// --- Logic Check-out ---
-						var typeOut = Number(props.workTypeOut);
+						var typeOut = Number(item.workTypeOut);
 						var iconOut = "";
 						if (typeOut === 1) iconOut = '<i class="ki-duotone ki-map fs-2 text-primary me-1 align-middle"><span class="path1"></span><span class="path2"></span><span class="path3"></span></i> ';
 						else if (typeOut === 2) iconOut = '<i class="ki-duotone ki-home-2 fs-2 text-teal me-1 align-middle"><span class="path1"></span><span class="path2"></span></i> ';
