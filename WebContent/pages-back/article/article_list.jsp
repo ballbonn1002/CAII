@@ -172,11 +172,7 @@
 
 							</div>
 						</div>
-					</div>
-
-
-					<!-- <div class="fs-7 fw-medium text-muted mb-4">Showing 18 of 100
-						items</div> -->
+					</div>			
 
 					<div id="tableViewContainer" class="card">
 						<div class="card-header border-0 px-9 pt-7 d-flex align-items-center justify-content-between">
@@ -236,13 +232,7 @@
 																class="badge badge-lg badge-success text-white fw-semibold fs-8">Active</span>
 														</c:otherwise>
 													</c:choose>
-												<%-- <c:if test="${article.status == 1}">
-														<span
-															class="badge badge-lg badge-success text-white fw-semibold fs-8">Active</span>
-													</c:if> <c:if test="${empty article.status or article.status == 0}">
-														<span
-															class="badge badge-lg badge-secondary text-inverse fw-semibold fs-8">Draft</span>
-													</c:if> --%>
+												
 													</td>
 												<td>
 													<div class="d-flex justify-content-end align-items-center gap-2">
@@ -273,12 +263,10 @@
 							</div>
 						</div>
 					</div>
-
-
 				</div>
 			
 		</div>
-	</div>
+	
 
 	<script type="text/javascript">
 	
@@ -368,10 +356,6 @@
 
 		        return tableDate.isSameOrAfter(min) && tableDate.isSameOrBefore(max);
 		    });
-
-		    /* $('#dateFilterTop').on('apply.daterangepicker', function () {
-		        table.draw();
-		    }); */
 			
 	});
 		
