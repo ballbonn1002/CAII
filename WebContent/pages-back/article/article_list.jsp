@@ -187,7 +187,7 @@
 						</div>
 							<div class="card-body table-responsive">
 								<table id="myTable"
-									class="table align-middle table-striped table-row-dashed table-hover fs-6 gy-5 gx-5 gs-5 mb-0 dataTable text-start">
+									class="table table-striped table-row-dashed table-hover fs-6 gy-5 gx-5 gs-5 mb-0 dataTable text-start">
 									<thead>
 										<tr
 											class="text-gray-500 fw-bold fs-7 text-uppercase gs-0">
@@ -217,7 +217,7 @@
 												<td class="fs-6 fw-normal text-gray-900">${article.type_name}</td>
 
 
-												<td>
+												<td class="align-middle">
 													<c:choose>
 														<c:when test="${empty article.status or article.status == 0}">
 															<span
@@ -234,8 +234,8 @@
 													</c:choose>
 												
 													</td>
-												<td>
-													<div class="d-flex justify-content-end align-items-center gap-2">
+												<td class="align-middle">
+													<div class="d-flex justify-content-end align-items-center gap-2 ">
 														<a href="article_preview?articleId=${article.article_id}"
 															class="btn btn-icon btn-light-info btn-sm me-2"
 															title="View"> <i class="ki-duotone ki-eye fs-2"><span
