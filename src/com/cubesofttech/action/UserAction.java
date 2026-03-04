@@ -66,6 +66,7 @@ import com.cubesofttech.model.FileUpload;
 import com.cubesofttech.model.JobSiteTeam;
 import com.cubesofttech.model.LeaveType;
 import com.cubesofttech.model.Leaves;
+import com.cubesofttech.model.Position;
 import com.cubesofttech.model.Role;
 import com.cubesofttech.model.Tag;
 import com.cubesofttech.model.User;
@@ -622,9 +623,11 @@ public class UserAction extends ActionSupport {
 					onsite_num = "4-5 day";
 				}
 				map.put("onsite_num", onsite_num);
-
+				Object posObj = map.get("name_position");
+				String positionName = posObj != null ? posObj.toString() : "";
+				map.put("position_name", positionName);
 			}
-
+			
 			/*
 			 * String cubesoftUsersJson = new Gson().toJson(cubesoftUsers);
 			 * request.setAttribute("cubesoftUsersJson", cubesoftUsersJson);

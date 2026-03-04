@@ -19,5 +19,11 @@ public interface PageUriDAO {
 	PageUri findBymodelId(String modelId) throws Exception;
 
 	void deleteByModelAndModelId(String model, String articleId);
+
+	PageUri findByPageUri(String pageUriId) throws Exception;
+
+	void deleteByPageUrlIdAndForwardTo(String pageUrlId, String forwardTo);
+
+	
 	
 }

@@ -510,4 +510,23 @@
             value="/pages-back/my_travel/my_travel_submit.jsp" />
     </definition>
 
+	<!-- Page URI -->
+	<definition name="page_uri_list" extends="baseLayout">
+		<put-attribute name="title" value="Page URI List" />
+		<put-attribute name="body"
+			value="/pages-back/page_uri/page_uri_list.jsp" />
+	</definition>
+
+	<definition name="page_uri_add" extends="baseLayout">
+		<put-attribute name="title" value="Add Page URI" />
+		<put-attribute name="body"
+			value="/pages-back/page_uri/page_uri_add.jsp" />
+	</definition>
+
+	<definition name="page_uri_edit" extends="baseLayout">
+		<put-attribute name="title" value="Edit Page URI" />
+		<put-attribute name="body"
+			value="/pages-back/page_uri/page_uri_edit.jsp" />
+	</definition>
+
 </tiles-definitions>

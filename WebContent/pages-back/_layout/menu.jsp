@@ -509,6 +509,20 @@ String targetURL = Constant.getWebContext2() + "/authorization?token=" + token;
 					</div>
 
 					<!--end:Menu item-->
+					
+					<!--begin:Menu item-->
+					<div class="menu-item">
+						<a class="menu-link" href="/page_uri_list" data-route="#"> <span
+							class="menu-icon"> <i class="ki-duotone ki-setting-2 fs-1">
+							 <span class="path1"></span>
+							 <span class="path2"></span>
+							</i>
+						</span> <span class="menu-title">Page URL</span>
+						</a>
+					</div>
+
+					<!--end:Menu item-->
+					
 					<!--begin:Menu item-->
 					<!-- <div class="menu-item">
 						begin:Menu link

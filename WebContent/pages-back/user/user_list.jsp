@@ -239,7 +239,7 @@
                                                         </div>
                                                     </td>
 
-                                                    <td class="text-gray-800">${not empty user.position_id ? user.position_id : '-'}</td>
+                                                    <td class="text-gray-800">${not empty user.name_position ? user.name_position : '-'}</td>
                                                     
                                                     <td class="text-gray-800">
                                                         <span class="period-text" data-start="<fmt:formatDate value='${user.start_date}' pattern='yyyy-MM-dd'/>" data-end="<fmt:formatDate value='${user.end_date}' pattern='yyyy-MM-dd'/>">-</span>
@@ -404,8 +404,8 @@
   var tableSelector = '#myTable';
   var paginationSelector = '#tablePagination';
   var rowsPerPageSelector = '#rowsPerPage';
-  var gridItemsPerPage = 12;   
-  var tableItemsPerPage = 10;
+  var gridItemsPerPage = 50;   
+  var tableItemsPerPage = 100;
   var currentPage = 1;
   var isGridView = false;
   var activeFilters  = { status: '1', anniversaries: '', birthdays: '' };

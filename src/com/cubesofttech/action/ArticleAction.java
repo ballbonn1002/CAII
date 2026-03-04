@@ -683,6 +683,38 @@ public class ArticleAction extends ActionSupport {
 //			log.debug("publicDate "+ publicDate);
 //			log.debug("publicTime "+ publicTime);
 			PageUri pageUri = pageUriDAO.findByModelAndModelId("article", String.valueOf(articleId));
+			if (pageUri == null) {
+
+			    String articleIdStr = String.valueOf(article.getArticleId());
+			    String forward;
+			    String pageUriId;
+
+			    if (typeArticle == 1) {
+			        forward = "/news_detail?articleId=" + articleIdStr;
+			        pageUriId = "/news/" + articleIdStr;
+			    } else if (typeArticle == 2) {
+			        forward = "/blog_detail?articleId=" + articleIdStr;
+			        pageUriId = "/blog/" + articleIdStr;
+			    } else {
+			        forward = "/news_detail?articleId=" + articleIdStr;
+			        pageUriId = "/news/" + articleIdStr;
+			    }
+
+			    pageUri = new PageUri();
+			    pageUri.setPageUriId(pageUriId);
+			    pageUri.setForwardTo(forward);
+			    pageUri.setModel("article");
+			    pageUri.setModelId(articleIdStr);
+
+			    pageUri.setPageUriDescription(null);
+			    pageUri.setMeta(null);
+			    pageUri.setUserCreate(onlineUser.getId()); 
+			    pageUri.setUserUpdate(onlineUser.getId());
+			    pageUri.setTimeCreate(DateUtil.getCurrentTime());
+			    pageUri.setTimeUpdate(DateUtil.getCurrentTime());
+
+			    pageUriDAO.save(pageUri);
+			}
 //			log.debug("forwardTo = " + pageUri.getForwardTo());
 //			log.debug("model = " + pageUri.getModel());
 //			log.debug("modelId = " + pageUri.getModelId());

@@ -1260,6 +1260,48 @@
 		<action name="travel_delete"
 			class="com.cubesofttech.action.TravelAction" method="travelDelete">
 		</action>
+		
+		<!-- Page URI -->
+		<action name="page_uri_list"
+			class="com.cubesofttech.action.PageUriAction" method="page_uri_list">
+			<result name="success" type="tiles">page_uri_list</result>
+			<result name="error">/index.jsp</result>
+		</action>
+
+		<action name="page_uri_add"
+			class="com.cubesofttech.action.PageUriAction" method="page_uri_add">
+			<result name="success" type="tiles">page_uri_add</result>
+			<result name="error">/index.jsp</result>
+		</action>
+
+		<action name="page_uri_edit"
+			class="com.cubesofttech.action.PageUriAction" method="page_uri_edit">
+			<result name="success" type="tiles">page_uri_edit</result>
+			<result name="error">/index.jsp</result>
+		</action>
+
+		<action name="page_uri_perform_add"
+			class="com.cubesofttech.action.PageUriAction"
+			method="page_uri_perform_add">
+			<result name="success" type="redirectAction">page_uri_list
+			</result>
+			<result name="error">/index.jsp</result>
+		</action>
+
+		<action name="page_uri_perform_update"
+			class="com.cubesofttech.action.PageUriAction"
+			method="page_uri_perform_update">
+			<result name="success" type="redirectAction">page_uri_list</result>
+			
+			<result name="error" type="tiles">/index.jsp</result>
+		</action>
+
+		<action name="page_uri_perform_delete"
+			class="com.cubesofttech.action.PageUriAction"
+			method="page_uri_perform_delete">
+			<result name="success" type="redirectAction">page_uri_list</result>
+			<result name="error" type="tiles">/index.jsp</result>
+		</action>
 
 	</package>
 

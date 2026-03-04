@@ -22,7 +22,32 @@
 <script src="assets/plugins/custom/ckeditor/ckeditor-decoupled.bundle.js"></script>
 <script src="assets/plugins/custom/ckeditor/ckeditor-document.bundle.js"></script>
 
+<style>
+<style>
+.announcement-detail {
+    word-break: break-word;
+    overflow-wrap: break-word;
+}
 
+.announcement-detail img {
+    max-width: 100% !important;
+    height: auto !important;
+}
+
+.announcement-detail table {
+    width: 100% !important;
+    display: block;
+    overflow-x: auto;
+}
+
+.announcement-detail iframe {
+    max-width: 100% !important;
+}
+
+.announcement-detail * {
+    max-width: 100%;
+}
+</style>
 
 </head>
 <body>
@@ -115,11 +140,7 @@
 											</i> ${ann['readcount']} Views
 											</span>
 										</div>
-										<%-- <!-- Picture -->
-										<div class="d-flex align-items-center pb-5">
-											<img src="${ann['path']}" alt="img" class="img-fluid rounded"
-												style="max-width: 100%; height: auto;">
-										</div> --%>
+										
 										<!-- Detail -->
 										<div
 											class="ck-content card mb-3 border-0 shadow-none text-gray-700 announcement-detail">
@@ -128,7 +149,7 @@
 										
 										
 									</c:forEach></span>
-									<%-- <div class="ck-content py-14">${announcement.detail}</div> --%>
+							
 							</div>
 						</div>
 					</div>
@@ -146,6 +167,16 @@
 								</c:forEach>
 							</div>
 						</div>
+						<c:set var="hasFile" value="false" />
+
+							<c:forEach var="ann" items="${announcement}">
+							    <c:forEach var="file" items="${announcementFiles}">
+							        <c:if test="${file['pageId'] == ann['announcement_id']}">
+							            <c:set var="hasFile" value="true" />
+							        </c:if>
+							    </c:forEach>
+							</c:forEach>
+						<c:if test="${hasFile}">
 						<div class="card card-flush py-3">
 							<div class="card-header pt-5">
 								<h3 class="card-title align-items-start flex-column">
@@ -210,7 +241,7 @@
 									</c:forEach>
 								</c:forEach>
 							</div>
-						</div>
+						</div></c:if>
 					</div>
 				</div>
 				<div class="text-end">
