@@ -143,10 +143,9 @@ public class WorkHoursAction extends ActionSupport {
 			String checkType = request.getParameter("checkType");
 			String workType = request.getParameter("workType");
 			String checkMode = request.getParameter("mode");
-			log.debug(userId + "/" + checkType + "/" + workType);
+			log.debug(checkType + "/" + workType+"/"+checkDate+ "/"+userId);
 
 			if ("2".equals(checkType)) {
-
 				LocalDate targetDate = LocalDate.now(ZoneId.of("Asia/Bangkok"));
 				if ("retro".equals(checkMode) && checkDate != null && !checkDate.isEmpty()) {
 					try {
@@ -156,25 +155,17 @@ public class WorkHoursAction extends ActionSupport {
 					}
 				}
 
-				List<Map<String, Object>> lastCheckinList = workHoursDAO.lastcheckin(userId);
+				List<Map<String, Object>> targetDateCheckIn = workHoursDAO.getCheckinByDate(userId, checkDate);
 				boolean isCheckedIn = false;
-
-				if (lastCheckinList != null && !lastCheckinList.isEmpty()) {
-					for (Map<String, Object> item : lastCheckinList) {
-						Timestamp t = (Timestamp) item.get("work_hours_time_work");
-						if (t != null && t.toLocalDateTime().toLocalDate().equals(targetDate)) {
-							isCheckedIn = true;
-							break;
-						}
-					}
+				if (targetDateCheckIn != null && !targetDateCheckIn.isEmpty()) {
+				    isCheckedIn = true;
+				    log.debug("Found Check-in for date: " + targetDate);
 				}
 
 				if (!isCheckedIn) {
 					result.put("status", "error");
-					
 					if ("retro".equals(checkMode)) {
-						result.put("message",
-								"ไม่สามารถ Check-out ย้อนหลังได้ เนื่องจากไม่พบเวลา Check-in ของวันที่ " + targetDate);
+						result.put("message", "ไม่สามารถ Check-out ย้อนหลังได้ เนื่องจากไม่พบเวลา Check-in ของวันที่ " + targetDate);
 					} else {
 						result.put("message", "ไม่สามารถ Check-out ได้ เนื่องจากคุณยังไม่ได้ Check-in วันนี้");
 					}
