@@ -292,24 +292,25 @@
 <script>
     <!-- CKEditor -->
 	var editorInstance;
-	
 	DecoupledEditor
-    .create(document.querySelector('#kt_docs_ckeditor_document'))
-    .then(editor => {
-    	editorInstance = editor;
-        const toolbarContainer = document.querySelector( '#kt_docs_ckeditor_document_toolbar' );
+	.create(document.querySelector('#kt_docs_ckeditor_document'), {
+		 ckfinder: { uploadUrl: 'uploadImageFromCkeditor' },
+	     mediaEmbed: { previewsInData: true }
+	})
+	.then(editor => {
+	    editorInstance = editor;
 
-        toolbarContainer.appendChild( editor.ui.view.toolbar.element );
-        // ถ้าเป็น Edit จะมี hidden
-        var hidden = document.getElementById("detailHidden");
-        if (hidden && hidden.value) {
-            editor.setData(hidden.value);
-        }
-        
-    })
-    .catch(error => {
-        console.error(error);
-    });
+	    const toolbarContainer = document.querySelector('#kt_docs_ckeditor_document_toolbar');
+	    toolbarContainer.appendChild(editor.ui.view.toolbar.element);
+
+	    var hidden = document.getElementById("detailHidden");
+	    if (hidden && hidden.value) {
+	        editor.setData(hidden.value);
+	    }
+	})
+	.catch(error => {
+	    console.error(error);
+	});
     /* let editorInstance;
     ClassicEditor
     .create(document.querySelector('#kt_docs_ckeditor_classic'),{

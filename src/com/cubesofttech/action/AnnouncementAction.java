@@ -576,7 +576,15 @@ public class AnnouncementAction extends ActionSupport {
 				if (!dir.exists())
 					dir.mkdirs();
 
-				String newFileName = System.currentTimeMillis() + "_" + fileName;
+				String extension = fileName.substring(fileName.lastIndexOf(".")).toLowerCase();
+				String baseName = fileName.substring(0, fileName.lastIndexOf("."));
+
+				baseName = baseName.replaceAll("[^a-zA-Z0-9]", "_");
+
+				if(baseName.length() > 30){
+				    baseName = baseName.substring(0,30);
+				}
+				String newFileName = System.currentTimeMillis() + "_" + baseName + extension;
 				File destFile = new File(dir, newFileName);
 				FileUtils.copyFile(file, destFile);
 
