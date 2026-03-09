@@ -2738,7 +2738,7 @@ public class WorkHoursDAOImpl implements WorkHoursDAO {
 	                 "WHERE user_create = :user " +
 	                 "AND work_hours_type = 1 " +
 	                 "AND DATE(work_hours_time_work) = CURDATE() " +
-	                 "ORDER BY work_hours_time_work DESC LIMIT 1";
+	                 "ORDER BY time_create DESC LIMIT 1";
 
 	    SQLQuery query = session.createSQLQuery(sql);
 	    query.setParameter("user", user);
@@ -2757,7 +2757,7 @@ public class WorkHoursDAOImpl implements WorkHoursDAO {
 	                 "WHERE user_create = :user " +
 	                 "AND work_hours_type = 1 " +
 	                 "AND DATE(work_hours_time_work) < CURDATE() " +
-	                 "ORDER BY work_hours_time_work DESC LIMIT 1";
+	                 "ORDER BY time_create DESC LIMIT 1";
 
 	    SQLQuery query = session.createSQLQuery(sql);
 	    query.setParameter("user", user);
@@ -2776,7 +2776,7 @@ public class WorkHoursDAOImpl implements WorkHoursDAO {
 	                 "WHERE user_create = :user " +
 	                 "AND work_hours_type = 2 " +
 	                 "AND DATE(work_hours_time_work) = CURDATE() " +
-	                 "ORDER BY work_hours_time_work DESC LIMIT 1";
+	                 "ORDER BY time_create DESC LIMIT 1";
 
 	    SQLQuery query = session.createSQLQuery(sql);
 	    query.setParameter("user", user);
@@ -2795,7 +2795,7 @@ public class WorkHoursDAOImpl implements WorkHoursDAO {
 	                 "WHERE user_create = :user " +
 	                 "AND work_hours_type = 2 " +
 	                 "AND DATE(work_hours_time_work) < CURDATE() " +
-	                 "ORDER BY work_hours_time_work DESC LIMIT 1";
+	                 "ORDER BY time_create DESC LIMIT 1";
 
 	    SQLQuery query = session.createSQLQuery(sql);
 	    query.setParameter("user", user);
