@@ -1107,6 +1107,7 @@ public class UserAction extends ActionSupport {
 			if (onlineUser != null && onlineUser.getId().equals(u.getId())) {
 
 				onlineUser.setPath(u.getPath());
+				onlineUser.setWorkType(u.getWorkType());
 
 				String imgPathForSession = null;
 				if (u.getPath() != null && u.getPath().contains("_")) {
