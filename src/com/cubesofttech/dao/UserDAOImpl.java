@@ -258,7 +258,20 @@ public class UserDAOImpl implements UserDAO {
 		Session session = this.sessionFactory.getCurrentSession();
 		List<Map<String, Object>> user = null;
 		try {
-			String sql = "SELECT user.id,user.name,user.path,user.employee_id,user.name_en,user.flag_search,user.role_id,user.birth_date,user.department_id,user.email,user.enable ,CONCAT(user.id), user.position_id,user.start_date,user.end_date,job_site.name_site,user.work_type,user.onsite_num, position.name AS name_position FROM user LEFT JOIN job_site ON user.id_sitejob = job_site.id_sitejob LEFT JOIN position ON user.position_id = position.position_id WHERE flag_search = 1 ORDER BY employee_id ASC";
+//			String sql = "SELECT user.id,user.name,user.path,user.employee_id,user.name_en,user.flag_search,user.role_id,user.birth_date,user.department_id,user.email,user.enable ,CONCAT(user.id), user.position_id,user.start_date,user.end_date,job_site.name_site,user.work_type,user.onsite_num, position.name AS name_position FROM user LEFT JOIN job_site ON user.id_sitejob = job_site.id_sitejob LEFT JOIN position ON user.position_id = position.position_id WHERE flag_search = 1 ORDER BY employee_id ASC";
+			String sql = "SELECT user.id,user.name,user.path,user.employee_id,user.name_en,user.flag_search,user.role_id,user.birth_date,user.department_id,user.email,user.enable ,CONCAT(user.id), user.position_id,user.start_date,user.end_date,job_site.name_site,user.work_type,user.onsite_num, position.name AS name_position "
+			        + "FROM user "
+			        + "LEFT JOIN job_site ON user.id_sitejob = job_site.id_sitejob "
+			        + "LEFT JOIN position ON user.position_id = position.position_id "
+			        + "WHERE flag_search = 1 "
+			        + "ORDER BY "
+			        + "CASE "
+			        + "WHEN employee_id IS NOT NULL AND employee_id != '' THEN 0 "
+			        + "WHEN name_en IS NOT NULL AND name_en != '' THEN 1 "
+			        + "ELSE 2 END, "
+			        + "employee_id ASC, "
+			        + "name_en ASC, "
+			        + "name ASC";
 			SQLQuery query = session.createSQLQuery(sql);
 			query.setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
 			user = query.list();

@@ -12,5 +12,9 @@ import com.cubesofttech.model.ArticleType;
 public interface ArticleImageDAO {
 
 	List<ArticleImage> findAll() throws Exception;
+	void save(ArticleImage ArticleImage) throws Exception;
+	public Integer getMaxId() throws Exception;
+	void deleteByPath(String path);
+
 	
 }

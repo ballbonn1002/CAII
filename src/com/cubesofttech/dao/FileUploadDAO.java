@@ -34,6 +34,8 @@ public interface FileUploadDAO {
 	public void deletepageandpageid(String page, String PageId) throws Exception;
 	
 	public List<FileUpload> findBypageandpageid(String page, String PageId) throws Exception;
+
+	void deleteByPathAtc(String path);
     
 	
 }

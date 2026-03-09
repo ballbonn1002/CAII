@@ -461,6 +461,7 @@
 							</div>
 
 							<div class="card-body ckeditor-wrapper">
+							<div id="editorError" class="text-danger mb-2 text-center"></div>
 								<div id="summernote"> </div>
 								
 							</div>
@@ -631,6 +632,7 @@ function initSummernote(content) {
     		            $editor.summernote('code', safe);
     		        }
     		    }
+    		    
     		}
     });
 
@@ -711,7 +713,15 @@ function initSummernote(content) {
     		            const safe = changeStyles(codable.val());
     		            $editor.summernote('code', safe);
     		        }
-    		    }
+    		    }, 
+    		    onImageUpload : function(files) {
+					for (var i = files.length - 1; i >= 0; i--) {
+						sendFile(files[i], this);
+					}
+				},
+				onMediaDelete : function(target) {
+					deleteFile(target[0].src);
+				}
     		}
 	    });
     const savedContent = document.getElementById("detailInput").value;
@@ -721,7 +731,52 @@ function initSummernote(content) {
 	        editorInstance.setData(changeStyles(savedContent));
 	    }
     });
-		</script>
+    
+    function sendFile(file, el) {
+    	const errorBox = document.getElementById("editorError");
+
+	    if(file.size > 2 * 1024 * 1024){
+	    	 errorBox.textContent = "Image must be smaller than 2MB. Please select a new image.";
+	        return;
+	    }
+
+	    errorBox.textContent = "";
+
+		var form_data = new FormData();
+
+		form_data.append('articleImageFile', file);
+		form_data.append('articleImageFileFileName', file.name);
+		form_data.append('articleImageFileContentType', file.type);
+		
+		$.ajax({
+			data : form_data,
+			type : "POST",
+			url : 'addImgFormEditor',
+			cache : false,
+			contentType : false,
+			processData : false,
+			success : function(url) {
+				$('#summernote').summernote('editor.insertImage', url);
+				console.log("Succesful uploaded " + url);
+			},
+			error : function(data) {
+				console.log("Error upload");
+			}
+		});
+	}
+
+	function deleteFile(src) {
+		$.ajax({
+			data : "srcDelete=" + src,
+			type : "POST",
+			url : "DeleteImgFormEditor",
+			cache : false,
+			success : function(response) {
+			}
+		});
+	}
+	
+</script>
 
 	<script>
 		document.addEventListener("DOMContentLoaded", function () {
@@ -847,6 +902,9 @@ function initSummernote(content) {
 	    const finalContent = unChangeStyles(content);
 	    document.getElementById("detailInput").value = finalContent;
 	    
+	    const errorBox = document.getElementById("editorError");
+	    const editorError = errorBox.textContent.trim();
+	    
 		var errorFields = [];
 		
 		const form = document.getElementById("formAddArticle");
@@ -922,6 +980,14 @@ function initSummernote(content) {
 			    })
 				return false;
 		    } 
+		  
+		  if(editorError){
+		    	errorBox.scrollIntoView({
+		            behavior: "smooth",
+		            block: "center"
+		        });
+			  return false; 
+		    }
 		  
 		  Swal.fire({
 		    	 title: "Are you sure?!",
