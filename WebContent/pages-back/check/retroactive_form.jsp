@@ -162,7 +162,7 @@
 										<div class="col-md-4 col-sm-12 col-12 py-2 mb-3">
 											<div
 												class="form-check form-check-custom form-check-primary form-check-solid form-check-md">
-												<input name="workType" class="form-check-input me-2"
+												<input name="mdWorkType" class="form-check-input me-2"
 													id="workType1" type="radio" value="1"
 													<c:if test="${user.workType == 1}">checked</c:if>>
 												<i class="ki-duotone ki-map fs-1 ms-1 text-primary"> <span
@@ -175,7 +175,7 @@
 										<div class="col-md-4 col-sm-12 col-12 py-2 mb-3">
 											<div
 												class="form-check form-check-custom form-check-primary form-check-solid form-check-md">
-												<input name="workType" class="form-check-input pe-2 me-2"
+												<input name="mdWorkType" class="form-check-input pe-2 me-2"
 													id="workType2" type="radio" value="2"
 													<c:if test="${user.workType == 2}">checked</c:if>>
 												<i class="ki-duotone ki-home-2 fs-1 ms-1 text-success">
@@ -188,7 +188,7 @@
 										<div class="col-md-4 col-sm-12 col-12 py-2">
 											<div
 												class="form-check form-check-custom form-check-primary form-check-solid form-check-md">
-												<input name="workType" class="form-check-input pe-2 me-2"
+												<input name="mdWorkType" class="form-check-input pe-2 me-2"
 													id="workType3" type="radio" value="3"
 													<c:if test="${user.workType == 3}">checked</c:if>>
 												<i class="ki-duotone ki-cube-2 fs-1 ms-1 text-danger">
