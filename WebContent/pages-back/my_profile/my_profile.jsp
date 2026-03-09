@@ -184,7 +184,7 @@
 										<div
 											class="border border-gray-300 rounded-1 px-4 py-3 border-dashed ">
 											<div class="d-flex flex-column">
-												<p class="fs-5 fw-bold text-gray-800 mb-2">${user.workType == 1 ? 'On-site' : 'WFH'}</p>
+												<p class="fs-5 fw-bold text-gray-800 mb-2">${user.workType == 1 ? 'On-site' : (user.workType == 2 ? 'WFH' : 'Head Office')}</p>
 												<p class="fs-6 fw-bold text-gray-500 mb-0">
 													${user.onsiteNum == 3 ? '4–5 Day' :
           							          user.onsiteNum == 2 ? '2–3 Day' :

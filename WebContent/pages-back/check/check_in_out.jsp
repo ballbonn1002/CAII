@@ -145,8 +145,8 @@
 										<label class="fw-bold text-gray-800 required"> Your
 											Work Location</label>
 									</div>
-									<div class="d-flex align-items-center mb-5">
-										<div class="col-md-6 col-sm-6 col-6 py-2 me-6 mb-3">
+									<div class="row align-items-center mb-5">
+										<div class="col-md-4 col-sm-12 col-12 py-2 mb-3">
 											<div
 												class="form-check form-check-custom form-check-primary form-check-solid form-check-md">
 												<input name="workType" class="form-check-input me-2"
@@ -159,7 +159,7 @@
 													class="form-check-label fs-6 fw-normal text-gray-800">On-Site</label>
 											</div>
 										</div>
-										<div class="col-md-6 col-sm-6 col-6 py-2 me-6 mb-3">
+										<div class="col-md-4 col-sm-12 col-12 py-2 mb-3">
 											<div
 												class="form-check form-check-custom form-check-primary form-check-solid form-check-md">
 												<input name="workType" class="form-check-input pe-2 me-2"
@@ -171,6 +171,19 @@
 													class="form-check-label fs-6 fw-normal text-gray-800">WFH</label>
 											</div>
 										</div>
+										
+										<div class="col-md-4 col-sm-12 col-12 py-2">
+											<div
+												class="form-check form-check-custom form-check-primary form-check-solid form-check-md">
+												<input name="workType" class="form-check-input pe-2 me-2"
+													id="workType3" type="radio" value="3"
+													<c:if test="${user.workType == 3}">checked</c:if>>
+												<i class="ki-duotone ki-cube-2 fs-1 ms-1 text-danger">
+													<span class="path1"></span> <span class="path2"></span><span class="path3"></span>
+												</i> <label for="workType3"
+													class="form-check-label fs-6 fw-normal text-gray-800">Head Office</label>
+											</div>
+										</div>
 									</div>
 									<div class="d-flex">
 										<button id="submitBtn"
@@ -180,8 +193,7 @@
 							</div>
 							<!--end::Card body-->
 						</div>
-
-						<!-- begin:Last Update -->
+						
 						<div class="card card-flush h-auto mb-5 mb-xl-10">
 							<div class="card-header pt-5 mb-2">
 								<div class="card-title d-flex flex-column">
@@ -202,72 +214,180 @@
 							</div>
 							<div class="card-body pt-2 pb-4 flex-wrap">
 								<div class="tab-content mb-2 px-0">
-									<div class="tab-pane fade show active"
+									<div class="tab-pane fade show active "
 										id="kt_timeline_widget_3_tab_content_4">
-										<div class="d-flex align-items-center mb-10">
-											<span data-kt-element="bullet"
-												class="bullet bullet-vertical d-flex align-items-center bg-success min-h-25px mh-300 me-4 rounded-0"></span>
-											<div class="flex-grow-1 me-5">
-												<div class=" col-lg-12 text-gray-900">
-													<c:if
-														test="${not empty lastcheckin[0].work_hours_time_work || lastcheckin[0].work_hours_time_work != null}">
-														<span class="fs-2 me-4 fw-medium"><fmt:formatDate
-																value="${lastcheckin[0].work_hours_time_work}"
-																pattern="HH:mm" /></span>
-														<span class="fs-6 ms-4 fw-medium"><fmt:formatDate
-																value="${lastcheckin[0].work_hours_time_work}"
-																pattern="dd MMM yyyy" /></span>
-													</c:if>
-													<c:if
-														test="${empty lastcheckin[0].work_hours_time_work || lastcheckin[0].work_hours_time_work == null}">
-														<span class="fs-4 me-4">No Data</span>
-													</c:if>
-												</div>
-											</div>
-											<c:if test="${lastcheckin[0].work_type.toString() eq '1'}">
-												<i class="ki-duotone ki-map fs-1 text-primary"> <span
-													class="path1"></span><span class="path2"></span><span
-													class="path3"></span>
-												</i>
-											</c:if>
-											<c:if test="${lastcheckin[0].work_type.toString() eq '2'}">
-												<i class="ki-duotone ki-home-2 fs-1 text-success"> <span
-													class="path1"></span> <span class="path2"></span>
-												</i>
-											</c:if>
-										</div>
-										<div class="d-flex align-items-center mb-4">
-											<span data-kt-element="bullet"
-												class="bullet bullet-vertical d-flex align-items-center bg-info min-h-25px mh-100 me-4 rounded-0"></span>
-											<div class="flex-grow-1 me-5">
-												<div class=" col-lg-12 text-gray-900">
-													<c:if
-														test="${not empty lastcheckout[0].work_hours_time_work || lastcheckout[0].work_hours_time_work != null}">
-														<span class="fs-2 me-4 fw-medium"><fmt:formatDate
-																value="${lastcheckout[0].work_hours_time_work}"
-																pattern="HH:mm" /></span>
-														<span class="fs-6 ms-4 fw-medium"><fmt:formatDate
-																value="${lastcheckout[0].work_hours_time_work}"
-																pattern="dd MMM yyyy" /></span>
-													</c:if>
-													<c:if
-														test="${empty lastcheckout[0].work_hours_time_work || lastcheckout[0].work_hours_time_work == null}">
-														<span class="fs-4 me-4">No Data</span>
-													</c:if>
-												</div>
-											</div>
-											<c:if test="${lastcheckout[0].work_type.toString() eq '1'}">
-												<i class="ki-duotone ki-map fs-1 text-primary ms-auto">
-													<span class="path1"></span> <span class="path2"></span> <span
-													class="path3"></span>
-												</i>
-											</c:if>
-											<c:if test="${lastcheckout[0].work_type.toString() eq '2'}">
-												<i class="ki-duotone ki-home-2 fs-1 text-success ms-auto">
-													<span class="path1"></span> <span class="path2"></span>
-												</i>
-											</c:if>
-										</div>
+										<div class="d-flex flex-column flex-md-row pb-8 mb-8 border-bottom">
+									    <span class="fs-4 fw-medium text-gray-900 min-w-80px mb-4 mb-md-0">
+									        Today
+									    </span>
+									
+									    <!-- IN -->
+									    <div class="d-flex align-items-center me-md-8 mb-4 mb-md-0">
+									        <span class="bullet bullet-vertical bg-success min-h-25px me-4 rounded-0"></span>
+									
+									        <div class="d-flex align-items-center flex-wrap text-gray-900">
+									            <span class="fs-6 me-4 fw-bold text-success">IN</span>
+									
+									            <c:if test="${not empty todaycheckin[0].work_hours_time_work}">
+									                <span class="fs-2 me-4 fw-medium">
+									                    <fmt:formatDate value="${todaycheckin[0].work_hours_time_work}" pattern="HH:mm"/>
+									                </span>
+									
+									                <span class="fs-6 me-4 fw-medium">
+									                    <fmt:formatDate value="${todaycheckin[0].work_hours_time_work}" pattern="dd MMM yyyy"/>
+									                </span>
+									            </c:if>
+									
+									            <c:if test="${empty todaycheckin[0].work_hours_time_work}">
+									                <span class="fs-4 me-4">No Data</span>
+									            </c:if>
+									
+									            <span class="ms-3">
+									                <c:if test="${todaycheckin[0].work_type.toString() eq '1'}">
+									                    <i class="ki-duotone ki-map fs-1 text-primary"><span
+																class="path1"></span><span class="path2"></span><span
+																class="path3"></span></i>
+									                </c:if>
+									                <c:if test="${todaycheckin[0].work_type.toString() eq '2'}">
+									                    <i class="ki-duotone ki-home-2 fs-1 text-success"><span
+																class="path1"></span><span class="path2"></span></i>
+									                </c:if>
+									                <c:if test="${todaycheckin[0].work_type.toString() eq '3'}">
+									                    <i class="ki-duotone ki-cube-2 fs-1 text-danger"><span
+																class="path1"></span><span class="path2"></span><span
+																class="path3"></span></i>
+									                </c:if>
+									            </span>
+									        </div>
+									    </div>
+									
+									    <!-- OUT -->
+									    <div class="d-flex align-items-center ms-md-8">
+									        <span class="bullet bullet-vertical bg-info min-h-25px me-4 rounded-0"></span>
+									
+									        <div class="d-flex align-items-center flex-wrap text-gray-900">
+									            <span class="fs-6 me-4 fw-bold text-info">OUT</span>
+									
+									            <c:if test="${not empty todaycheckout[0].work_hours_time_work}">
+									                <span class="fs-2 me-4 fw-medium">
+									                    <fmt:formatDate value="${todaycheckout[0].work_hours_time_work}" pattern="HH:mm"/>
+									                </span>
+									
+									                <span class="fs-6 me-4 fw-medium">
+									                    <fmt:formatDate value="${todaycheckout[0].work_hours_time_work}" pattern="dd MMM yyyy"/>
+									                </span>
+									            </c:if>
+									
+									            <c:if test="${empty todaycheckout[0].work_hours_time_work}">
+									                <span class="fs-4 me-4">No Data</span>
+									            </c:if>
+									
+									            <span class="ms-3">
+									                <c:if test="${todaycheckout[0].work_type.toString() eq '1'}">
+									                    <i class="ki-duotone ki-map fs-1 text-primary"><span
+																class="path1"></span><span class="path2"></span><span
+																class="path3"></span></i>
+									                </c:if>
+									                <c:if test="${todaycheckout[0].work_type.toString() eq '2'}">
+									                    <i class="ki-duotone ki-home-2 fs-1 text-success"><span
+																class="path1"></span><span class="path2"></span> </i>
+									                </c:if>
+									                <c:if test="${todaycheckout[0].work_type.toString() eq '3'}">
+									                    <i class="ki-duotone ki-cube-2 fs-1 text-danger"><span
+																class="path1"></span><span class="path2"></span><span
+																class="path3"></span></i>
+									                </c:if>
+									            </span>
+									        </div>
+									    </div>
+									
+									</div>
+									<div class="d-flex flex-column flex-md-row mb-6">
+									    <span class="fs-4 fw-medium text-gray-900 min-w-80px mb-4 mb-md-0">
+									        Lastday
+									    </span>
+									
+									    <!-- IN -->
+									    <div class="d-flex align-items-center me-md-8 mb-4 mb-md-0 ">
+									        <span class="bullet bullet-vertical bg-success min-h-25px me-4 rounded-0"></span>
+									
+									        <div class="d-flex align-items-center flex-wrap text-gray-900">
+									            <span class="fs-6 me-4 fw-bold text-success">IN</span>
+									
+									            <c:if test="${not empty lastcheckin[0].work_hours_time_work}">
+									                <span class="fs-2 me-4 fw-medium">
+									                    <fmt:formatDate value="${lastcheckin[0].work_hours_time_work}" pattern="HH:mm"/>
+									                </span>
+									
+									                <span class="fs-6 me-4 fw-medium">
+									                    <fmt:formatDate value="${lastcheckin[0].work_hours_time_work}" pattern="dd MMM yyyy"/>
+									                </span>
+									            </c:if>
+									
+									            <c:if test="${empty lastcheckin[0].work_hours_time_work}">
+									                <span class="fs-4 me-4">No Data</span>
+									            </c:if>
+									
+									            <span class="ms-3">
+									                <c:if test="${lastcheckin[0].work_type.toString() eq '1'}">
+									                    <i class="ki-duotone ki-map fs-1 text-primary"><span
+																class="path1"></span><span class="path2"></span><span
+																class="path3"></span></i>
+									                </c:if>
+									                <c:if test="${lastcheckin[0].work_type.toString() eq '2'}">
+									                    <i class="ki-duotone ki-home-2 fs-1 text-success"><span
+																class="path1"></span><span class="path2"></span></i>
+									                </c:if>
+									                <c:if test="${lastcheckin[0].work_type.toString() eq '3'}">
+									                    <i class="ki-duotone ki-cube-2 fs-1 text-danger"><span
+																class="path1"></span><span class="path2"></span><span
+																class="path3"></span></i>
+									                </c:if>
+									            </span>
+									        </div>
+									    </div>
+									
+									    <!-- OUT -->
+									    <div class="d-flex align-items-center ms-md-8">
+									        <span class="bullet bullet-vertical bg-info min-h-25px me-4 rounded-0"></span>
+									
+									        <div class="d-flex align-items-center flex-wrap text-gray-900 ">
+									            <span class="fs-6 me-4 fw-bold text-info">OUT</span>
+									
+									            <c:if test="${not empty lastcheckout[0].work_hours_time_work}">
+									                <span class="fs-2 me-4 fw-medium">
+									                    <fmt:formatDate value="${lastcheckout[0].work_hours_time_work}" pattern="HH:mm"/>
+									                </span>
+									
+									                <span class="fs-6 me-4 fw-medium">
+									                    <fmt:formatDate value="${lastcheckout[0].work_hours_time_work}" pattern="dd MMM yyyy"/>
+									                </span>
+									            </c:if>
+									
+									            <c:if test="${empty lastcheckout[0].work_hours_time_work}">
+									                <span class="fs-4 me-4">No Data</span>
+									            </c:if>
+									
+									            <span class="ms-3">
+									                <c:if test="${lastcheckout[0].work_type.toString() eq '1'}">
+									                    <i class="ki-duotone ki-map fs-1 text-primary"><span
+																class="path1"></span><span class="path2"></span><span
+																class="path3"></span></i>
+									                </c:if>
+									                <c:if test="${lastcheckout[0].work_type.toString() eq '2'}">
+									                    <i class="ki-duotone ki-home-2 fs-1 text-success"><span
+																class="path1"></span><span class="path2"></span></i>
+									                </c:if>
+									                <c:if test="${lastcheckout[0].work_type.toString() eq '3'}">
+									                    <i class="ki-duotone ki-cube-2 fs-1 text-danger"><span
+																class="path1"></span><span class="path2"></span><span
+																class="path3"></span></i>
+									                </c:if>
+									            </span>
+									        </div>
+									    </div>
+									
+									</div>
 
 									</div>
 								</div>

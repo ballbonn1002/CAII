@@ -92,10 +92,15 @@ public class WorkHoursAction extends ActionSupport {
 			LocalDate currentDate = LocalDate.now();
 			request.setAttribute("currentDate", currentDate);
 
-			List<Map<String, Object>> lastcheckin = workHoursDAO.lastcheckin(logonUser);
-			List<Map<String, Object>> lastcheckout = workHoursDAO.lastcheckout(logonUser);
-			request.setAttribute("lastcheckin", lastcheckin);
-			request.setAttribute("lastcheckout", lastcheckout);
+			List<Map<String, Object>> getTodayCheckIn = workHoursDAO.getTodayCheckIn(logonUser);
+			List<Map<String, Object>> getTodayCheckOut = workHoursDAO.getTodayCheckOut(logonUser);
+			List<Map<String, Object>> getLastdayCheckIn = workHoursDAO.getLastdayCheckIn(logonUser);
+			List<Map<String, Object>> getLastdayCheckOut = workHoursDAO.getLastdayCheckOut(logonUser);
+
+			request.setAttribute("todaycheckin", getTodayCheckIn);
+			request.setAttribute("todaycheckout", getTodayCheckOut);
+			request.setAttribute("lastcheckin", getLastdayCheckIn);
+			request.setAttribute("lastcheckout", getLastdayCheckOut);
 
 			List<Holiday> holidayList = null;
 			holidayList = holidayDAO.findAllInMonth();

@@ -380,6 +380,12 @@
 												name="user.workType" value="2"> <span
 												class="form-check-label text-gray-800">WFH</span>
 											</label>
+											<label class="form-check form-check-custom mb-6 mt-6">
+												<input class="form-check-input userinfo" type="radio" required data-label="Default Working"
+												name="user.workType" value="3"> <span
+												class="form-check-label text-gray-800">Head Office</span>
+											</label>
+											
 										</div>
 									</div>
 

@@ -86,7 +86,7 @@
 
 						<div class="card-body d-flex flex-row flex-wrap pt-0">
 							<div class="d-flex align-items-center me-5">
-								<span class="badge badge-primary">${user.workType == 1 ? 'On-site' : 'WFH'}</span>
+								<span class="badge badge-primary">${user.workType == 1 ? 'On-site' : (user.workType == 2 ? 'WFH' : 'Head Office')}</span>
 							</div>
 							<div class="d-flex align-items-center me-5">
 								Working Time : <span class="ms-2 text-primary">${user.workTimeStart}

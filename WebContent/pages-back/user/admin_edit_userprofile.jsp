@@ -217,7 +217,7 @@
 										<div
 											class="border border-gray-300 rounded-1 px-4 py-3 border-dashed ">
 											<div class="d-flex flex-column">
-												<p class="fs-5 fw-bold text-gray-800 mb-2">${selectUser.workType == 1 ? 'On-site' : 'WFH'}</p>
+												<p class="fs-5 fw-bold text-gray-800 mb-2">${selectUser.workType == 1 ? 'On-site' : (selectUser.workType == 2 ? 'WFH' : 'Head Office')}</p>
 												<p class="fs-6 fw-bold text-gray-500 mb-0">
 													${selectUser.onsiteNum == 3 ? '4–5 Day' :
           							          selectUser.onsiteNum == 2 ? '2–3 Day' :
@@ -758,6 +758,12 @@
 											name="user.workType" value="2" data-tab="employee" data-required="true" data-label="Default Working"
 											<c:if test="${selectUser.workType == '2'}">checked</c:if>>
 											<span class="form-check-label text-gray-800">WFH</span>
+										</label>
+										<label class="form-check form-check-custom mb-6 mt-6">
+											<input class="form-check-input" type="radio"
+											name="user.workType" value="3" data-tab="employee" data-required="true" data-label="Default Working"
+											<c:if test="${empty selectUser.workType or selectUser.workType == '3'}">checked</c:if>>
+											<span class="form-check-label text-gray-800">Head Office</span>
 										</label>
 									</div>
 								</div>
