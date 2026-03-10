@@ -197,7 +197,13 @@
 											<span class="path1"></span>
 											<span class="path2"></span>
 										</i>
-										<span class="fs-6">WFH</span>
+										<span class="fs-6 me-5">WFH</span>
+										<i class="ki-duotone ki-cube-2 text-danger fs-4">
+											<span class="path1"></span>
+											<span class="path2"></span>
+											<span class="path3"></span>
+										</i>
+										<span class="fs-6">Head Office</span>
 									</div>
 									
 								</div>
@@ -617,6 +623,9 @@ var AppCalendar = function() {
 		}else if(typein == '2'){
 			workTypeIn = '<i class="ki-duotone ki-home-2 fs-2 me-1 text-light align-middle">' +
                 '<span class="path1"></span><span class="path2"></span></i> ' 
+        }else if(typein == '3'){
+			workTypeIn = '<i class="ki-duotone ki-cube-2 fs-2 me-1 text-light align-middle">' +
+                '<span class="path1"></span><span class="path2"></span><span class="path3"></span></i> ' 
 		}
 		if(typeout == '1'){
 			workTypeOut = '<i class="ki-duotone ki-map fs-2 me-1 text-light align-middle">' +
@@ -624,6 +633,9 @@ var AppCalendar = function() {
 		}else if(typeout == '2'){
 			workTypeOut = '<i class="ki-duotone ki-home-2 fs-2 me-1 text-light align-middle">' +
                 '<span class="path1"></span><span class="path2"></span></i> ' 
+		}else if(typeout == '3'){
+			workTypeOut = '<i class="ki-duotone ki-cube-2 fs-2 me-1 text-light align-middle">' +
+            '<span class="path1"></span><span class="path2"></span><span class="path3"></span></i> ' 
 		}
 		
 		if (status === 'INCOMPLETE') {
@@ -736,6 +748,7 @@ var AppCalendar = function() {
 						var iconIn = "";
 						if (typeIn === 1) iconIn = '<i class="ki-duotone ki-map text-primary fs-2 me-1 align-middle"><span class="path1"></span><span class="path2"></span><span class="path3"></span></i> ';
 						else if (typeIn === 2) iconIn = '<i class="ki-duotone ki-home-2 fs-2 text-teal me-1 align-middle"><span class="path1"></span><span class="path2"></span></i> ';
+						else if (typeIn === 3) iconIn = '<i class="ki-duotone ki-cube-2 fs-2 text-danger me-1 align-middle"><span class="path1"></span><span class="path2"></span><span class="path3"></span></i> ';
 						var rawCheckin = item.checkin || '';
 						var timeIn = rawCheckin.length >= 16 ? rawCheckin.substring(11, 16) : '';
 						var desIn = item.descriptionIn ? '<i class="ki-duotone ki-message-text-2 fs-2 text-gray-500 me-1 align-middle">'+
@@ -751,6 +764,7 @@ var AppCalendar = function() {
 						var iconOut = "";
 						if (typeOut === 1) iconOut = '<i class="ki-duotone ki-map fs-2 text-primary me-1 align-middle"><span class="path1"></span><span class="path2"></span><span class="path3"></span></i> ';
 						else if (typeOut === 2) iconOut = '<i class="ki-duotone ki-home-2 fs-2 text-teal me-1 align-middle"><span class="path1"></span><span class="path2"></span></i> ';
+						else if (typeOut === 3) iconOut = '<i class="ki-duotone ki-cube-2 fs-2 text-danger me-1 align-middle"><span class="path1"></span><span class="path2"></span><span class="path3"></span></i> ';
 						var rawCheckout = item.checkout || '';
 						var timeOut = rawCheckout ? rawCheckout.substring(0, 5) : '';
 						//var timeOut = props.checkout ? props.checkout.substring(0, 5) : '';
