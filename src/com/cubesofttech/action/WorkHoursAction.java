@@ -111,9 +111,10 @@ public class WorkHoursAction extends ActionSupport {
 			while (true) {
 			    boolean isHoliday = false;
 			    if (holidayList != null) {
-			        for (Holiday h : holidayList) {
-			            LocalDate start = h.getStart_date().toLocalDate();
-			            LocalDate end = h.getEnd_date().toLocalDate();
+			    	for (Object obj : holidayList) {
+			    	    Map row = (Map) obj;
+			    	    LocalDate start = ((java.sql.Date) row.get("start_date")).toLocalDate();
+			    	    LocalDate end = ((java.sql.Date) row.get("end_date")).toLocalDate();
 
 			            if ((lastWorkDate.isEqual(start) || lastWorkDate.isAfter(start)) &&
 			                (lastWorkDate.isEqual(end) || lastWorkDate.isBefore(end)) ) 
