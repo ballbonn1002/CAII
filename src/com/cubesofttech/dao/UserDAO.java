@@ -121,6 +121,8 @@ public interface UserDAO {
 	//public void update_my_profile(User u);
     
     String findEmployeeIdByName(String nameEn, String nameTh) throws Exception;
+
+	List<Map<String, Object>> sequense2() throws Exception;
 	
 	
 }

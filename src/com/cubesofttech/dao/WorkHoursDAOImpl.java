@@ -2738,26 +2738,7 @@ public class WorkHoursDAOImpl implements WorkHoursDAO {
 	                 "WHERE user_create = :user " +
 	                 "AND work_hours_type = 1 " +
 	                 "AND DATE(work_hours_time_work) = CURDATE() " +
-	                 "ORDER BY time_create DESC LIMIT 1";
-
-	    SQLQuery query = session.createSQLQuery(sql);
-	    query.setParameter("user", user);
-	    query.setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
-
-	    return query.list();
-	}
-	
-	@Override
-	public List<Map<String, Object>> getLastdayCheckIn(String user) throws Exception {
-
-	    Session session = this.sessionFactory.getCurrentSession();
-
-	    String sql = "SELECT work_hours_time_work, work_type " +
-	                 "FROM work_hours " +
-	                 "WHERE user_create = :user " +
-	                 "AND work_hours_type = 1 " +
-	                 "AND DATE(work_hours_time_work) < CURDATE() " +
-	                 "ORDER BY time_create DESC LIMIT 1";
+	                 "ORDER BY work_hours_time_work ASC LIMIT 1";
 
 	    SQLQuery query = session.createSQLQuery(sql);
 	    query.setParameter("user", user);
@@ -2776,7 +2757,32 @@ public class WorkHoursDAOImpl implements WorkHoursDAO {
 	                 "WHERE user_create = :user " +
 	                 "AND work_hours_type = 2 " +
 	                 "AND DATE(work_hours_time_work) = CURDATE() " +
-	                 "ORDER BY time_create DESC LIMIT 1";
+	                 "ORDER BY work_hours_time_work DESC LIMIT 1";
+
+	    SQLQuery query = session.createSQLQuery(sql);
+	    query.setParameter("user", user);
+	    query.setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
+
+	    return query.list();
+	}
+	
+	@Override
+	public List<Map<String, Object>> getLastdayCheckIn(String user) throws Exception {
+
+	    Session session = this.sessionFactory.getCurrentSession();
+
+	    String sql = "SELECT work_hours_time_work, work_type " +
+	             "FROM work_hours " +
+	             "WHERE user_create = :user " +
+	             "AND work_hours_type = 1 " +
+	             "AND DATE(work_hours_time_work) = (" +
+	                 "SELECT MAX(DATE(work_hours_time_work)) " +
+	                 "FROM work_hours " +
+	                 "WHERE user_create = :user " +
+	                 "AND work_hours_type = 1 " +
+	                 "AND DATE(work_hours_time_work) = DATE_SUB(CURDATE(), INTERVAL 1 DAY) " +
+	             ") " +
+	             "ORDER BY work_hours_time_work ASC LIMIT 1";
 
 	    SQLQuery query = session.createSQLQuery(sql);
 	    query.setParameter("user", user);
@@ -2791,11 +2797,17 @@ public class WorkHoursDAOImpl implements WorkHoursDAO {
 	    Session session = this.sessionFactory.getCurrentSession();
 
 	    String sql = "SELECT work_hours_time_work, work_type " +
+	             "FROM work_hours " +
+	             "WHERE user_create = :user " +
+	             "AND work_hours_type = 2 " +
+	             "AND DATE(work_hours_time_work) = (" +
+	                 "SELECT MAX(DATE(work_hours_time_work)) " +
 	                 "FROM work_hours " +
 	                 "WHERE user_create = :user " +
 	                 "AND work_hours_type = 2 " +
-	                 "AND DATE(work_hours_time_work) < CURDATE() " +
-	                 "ORDER BY time_create DESC LIMIT 1";
+	                 "AND DATE(work_hours_time_work) = DATE_SUB(CURDATE(), INTERVAL 1 DAY) " +
+	             ") " +
+	             "ORDER BY work_hours_time_work DESC LIMIT 1";
 
 	    SQLQuery query = session.createSQLQuery(sql);
 	    query.setParameter("user", user);

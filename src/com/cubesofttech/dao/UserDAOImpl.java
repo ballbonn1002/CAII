@@ -237,6 +237,23 @@ public class UserDAOImpl implements UserDAO {
 	}
 
 	@Override
+	public List<Map<String, Object>> sequense2() throws Exception {
+		Session session = this.sessionFactory.getCurrentSession();
+		List<Map<String, Object>> user = null;
+		try {
+			String sql = " SELECT id,enable, CONCAT(department_id,' - ',id) AS roleuser,  department_id, manager_id, name ,employee_id , name_en "
+					+ " FROM user WHERE flag_search = 1 ORDER BY CASE WHEN employee_id IS NOT NULL AND employee_id != '' THEN 0 WHEN name_en IS NOT NULL AND name_en != '' THEN 1 "
+					+ "ELSE 2 END, employee_id ASC, name_en ASC, name ASC";
+			SQLQuery query = session.createSQLQuery(sql);
+			query.setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
+			user = query.list();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return user;
+	}
+	
+	@Override
 	public List<Map<String, Object>> sequense_userinteam(String manager) throws Exception {
 		Session session = this.sessionFactory.getCurrentSession();
 		List<Map<String, Object>> user = null;

@@ -1063,19 +1063,43 @@ $(() => {
 		let name_en = userList[i].name_en;
 		let employee_id = userList[i].employee_id;
 		let status = userList[i].enable;
+		var userList = ${userList};
+		
+		userList.sort(function(a, b){
 
+		    if(a.employee_id && b.employee_id){
+		        let empCompare = a.employee_id.localeCompare(b.employee_id);
+		        if(empCompare !== 0) return empCompare;
+		    }
+
+		    if(a.employee_id) return -1;
+		    if(b.employee_id) return 1;
+
+		    if(a.name_en && b.name_en){
+		        let nameEnCompare = a.name_en.localeCompare(b.name_en);
+		        if(nameEnCompare !== 0) return nameEnCompare;
+		    }
+
+		    if(a.name_en) return -1;
+		    if(b.name_en) return 1;
+
+		    return (a.name || "").localeCompare(b.name || "");
+		});
+		
 		let displayText = '';
 
 		if (employee_id) {
 			displayText += employee_id;
 		}
-		if (name) {
-			if (displayText) displayText += ' - ';
-			displayText += name;
-		}
+		
 		if (name_en) {
 			if (displayText) displayText += ' - ';
 			displayText += name_en;
+		}
+		
+		if (name) {
+			if (displayText) displayText += ' - ';
+			displayText += name;
 		}
 
 		let option = '<option value="' + id + '">' + displayText + '</option>';

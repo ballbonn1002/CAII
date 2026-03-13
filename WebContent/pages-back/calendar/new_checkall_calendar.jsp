@@ -53,7 +53,7 @@
 									<!--begin::Input-->
 									<input type="text" class="form-control form-solid ps-14"
 										name="usercalendar" id="userSearchInput"
-										placeholder="${user.employeeId} - ${user.name} - ${user.nameEN}"
+										placeholder="${user.employeeId} - ${user.nameEN} - ${user.name} "
 										data-kt-search-element="input" disabled="true"/>
 									<!--end::Input-->
 								</form>
@@ -187,15 +187,14 @@
 							<div class="row align-items-center w-100">
 								<div class="col-md-12 col-12 text-end">
 									<div class="mt-3">
-										<i class="ki-duotone ki-map text-primary fs-4">
+										<i class="ki-duotone ki-delivery-door text-primary fs-4">
 											<span class="path1"></span>
 											<span class="path2"></span>
 											<span class="path3"></span>
+											<span class="path4"></span>
 										</i>
 										<span class="fs-6 me-5">On Site</span>
-										<i class="ki-duotone ki-home-2 text-teal fs-4">
-											<span class="path1"></span>
-											<span class="path2"></span>
+										<i class="ki-duotone ki-home text-teal fs-4">
 										</i>
 										<span class="fs-6 me-5">WFH</span>
 										<i class="ki-duotone ki-cube-2 text-danger fs-4">
@@ -359,48 +358,73 @@ var searchObject = new KTSearch(element);
 
 // Function to render user list
 function renderUsers(userList) {
-    resultsElement.innerHTML = "";
-    emptyElement.classList.add("d-none");
-    resultsElement.classList.remove("d-none");
 
- 	// Separate current user from others
-    let currentUser = [];
-    let otherUsers = [];
+    resultsElement.innerHTML = "";
+
+    let enableUsers = [];
+    let disableUsers = [];
 
     userList.forEach(function(user){
-        if(user.id == logonUser){
-            currentUser.push(user);
-        } else {
-            otherUsers.push(user);
+        if(user.enable == 1){
+            enableUsers.push(user);
+        }else{
+            disableUsers.push(user);
         }
     });
 
-    let finalList = currentUser.concat(otherUsers);
+    function createGroup(title, users){
 
-    finalList.forEach(function(user, index){
-        var displayText = (user.employee_id ? user.employee_id + " - " : "")
-            + (user.name ? user.name : "")
-            + (user.name_en ? " - " + user.name_en : "");
-
-        var item = document.createElement("div");
-        item.classList.add("menu-item", "px-3", "py-2", "cursor-pointer");
-        item.textContent = displayText;
-
-     	// Highlight current user
-        if(user.id == logonUser){
-            item.style.backgroundColor = "#eef6ff";
-        }
-
-     	// Click to fill input and submit form
-        item.addEventListener("click", function(e){
-            e.preventDefault();
-            e.stopPropagation();
-            document.querySelector("#userSearchInput").value = user.id;
-            document.querySelector("#userCalendarForm").submit();
+        if(users.length === 0) return;
+        
+        users.sort(function(a,b){
+            if(a.id == logonUser) return -1;
+            if(b.id == logonUser) return 1;
+            return 0;
         });
+        
+        var groupTitle = document.createElement("div");
+        groupTitle.classList.add("menu-content","pb-2","px-3","fs-5","fw-semibold","text-gray-800");
+        if(title === "Disable"){
+            groupTitle.classList.add("mt-4");
+        }
+        groupTitle.textContent = title;
 
-        resultsElement.appendChild(item);
-    });
+        resultsElement.appendChild(groupTitle);
+
+        users.forEach(function(user){
+
+        	var parts = [];
+
+        	if(user.employee_id) parts.push(user.employee_id);
+        	if(user.name_en) parts.push(user.name_en);
+        	if(user.name) parts.push(user.name);
+
+        	var displayText = parts.join(" - ");
+
+            var item = document.createElement("div");
+            item.classList.add("menu-item","px-3","py-2","cursor-pointer");
+
+            item.textContent = displayText;
+
+            // highlight คนที่เลือก
+            if(user.id == logonUser){
+                item.style.backgroundColor = "#eef6ff";
+               /*  item.style.fontWeight = "bold"; */
+            }
+
+            item.addEventListener("click", function(e){
+                e.preventDefault();
+                document.querySelector("#userSearchInput").value = user.id;
+                document.querySelector("#userCalendarForm").submit();
+            });
+
+            resultsElement.appendChild(item);
+
+        });
+    }
+
+    createGroup("Enable", enableUsers);
+    createGroup("Disable", disableUsers);
 }
 
 // Handle search process
@@ -573,7 +597,7 @@ var AppCalendar = function() {
 					case '0': halfDay = 'เต็มวัน'; break;
 					case '1': halfDay = 'ช่วงเช้า'; break;
 					case '2': halfDay = 'ช่วงบ่าย'; break;
-					case '3': halfDay = '้ลือกช่วงเวลา'; break;
+					case '3': halfDay = 'เลือกช่วงเวลา'; break;
 				}
 				var title = '${leave.leave_type_name}' + " : " + halfDay;
 
@@ -618,21 +642,21 @@ var AppCalendar = function() {
         var workTypeOut = "";
         
         if(typein == '1'){
-			workTypeIn = '<i class="ki-duotone ki-map fs-2 me-1 text-light align-middle">' +
-				'<span class="path1"></span><span class="path2"></span><span class="path3"></span></i>';
+			workTypeIn = '<i class="ki-duotone ki-delivery-door fs-2 me-1 text-light align-middle">' +
+				'<span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span></i>';
 		}else if(typein == '2'){
-			workTypeIn = '<i class="ki-duotone ki-home-2 fs-2 me-1 text-light align-middle">' +
-                '<span class="path1"></span><span class="path2"></span></i> ' 
+			workTypeIn = '<i class="ki-duotone ki-home fs-2 me-1 text-light align-middle">' +
+                '</i> ' 
         }else if(typein == '3'){
 			workTypeIn = '<i class="ki-duotone ki-cube-2 fs-2 me-1 text-light align-middle">' +
                 '<span class="path1"></span><span class="path2"></span><span class="path3"></span></i> ' 
 		}
 		if(typeout == '1'){
-			workTypeOut = '<i class="ki-duotone ki-map fs-2 me-1 text-light align-middle">' +
-				'<span class="path1"></span><span class="path2"></span><span class="path3"></span></i>';
+			workTypeOut = '<i class="ki-duotone ki-delivery-door fs-2 me-1 text-light align-middle">' +
+				'<span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span></i>';
 		}else if(typeout == '2'){
-			workTypeOut = '<i class="ki-duotone ki-home-2 fs-2 me-1 text-light align-middle">' +
-                '<span class="path1"></span><span class="path2"></span></i> ' 
+			workTypeOut = '<i class="ki-duotone ki-home fs-2 me-1 text-light align-middle">' +
+                '</i> ' 
 		}else if(typeout == '3'){
 			workTypeOut = '<i class="ki-duotone ki-cube-2 fs-2 me-1 text-light align-middle">' +
             '<span class="path1"></span><span class="path2"></span><span class="path3"></span></i> ' 
@@ -746,8 +770,8 @@ var AppCalendar = function() {
 						// --- Logic Check-in ---
 						var typeIn = Number(item.workTypeIn);
 						var iconIn = "";
-						if (typeIn === 1) iconIn = '<i class="ki-duotone ki-map text-primary fs-2 me-1 align-middle"><span class="path1"></span><span class="path2"></span><span class="path3"></span></i> ';
-						else if (typeIn === 2) iconIn = '<i class="ki-duotone ki-home-2 fs-2 text-teal me-1 align-middle"><span class="path1"></span><span class="path2"></span></i> ';
+						if (typeIn === 1) iconIn = '<i class="ki-duotone ki-delivery-door text-primary fs-2 me-1 align-middle"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span></i> ';
+						else if (typeIn === 2) iconIn = '<i class="ki-duotone ki-home fs-2 text-teal me-1 align-middle"></i> ';
 						else if (typeIn === 3) iconIn = '<i class="ki-duotone ki-cube-2 fs-2 text-danger me-1 align-middle"><span class="path1"></span><span class="path2"></span><span class="path3"></span></i> ';
 						var rawCheckin = item.checkin || '';
 						var timeIn = rawCheckin.length >= 16 ? rawCheckin.substring(11, 16) : '';
@@ -762,8 +786,8 @@ var AppCalendar = function() {
 						// --- Logic Check-out ---
 						var typeOut = Number(item.workTypeOut);
 						var iconOut = "";
-						if (typeOut === 1) iconOut = '<i class="ki-duotone ki-map fs-2 text-primary me-1 align-middle"><span class="path1"></span><span class="path2"></span><span class="path3"></span></i> ';
-						else if (typeOut === 2) iconOut = '<i class="ki-duotone ki-home-2 fs-2 text-teal me-1 align-middle"><span class="path1"></span><span class="path2"></span></i> ';
+						if (typeOut === 1) iconOut = '<i class="ki-duotone ki-delivery-door fs-2 text-primary me-1 align-middle"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span></i> ';
+						else if (typeOut === 2) iconOut = '<i class="ki-duotone ki-home fs-2 text-teal me-1 align-middle"></i> ';
 						else if (typeOut === 3) iconOut = '<i class="ki-duotone ki-cube-2 fs-2 text-danger me-1 align-middle"><span class="path1"></span><span class="path2"></span><span class="path3"></span></i> ';
 						var rawCheckout = item.checkout || '';
 						var timeOut = rawCheckout ? rawCheckout.substring(0, 5) : '';

@@ -12,6 +12,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
@@ -1586,7 +1587,7 @@ public class LeaveAction extends ActionSupport {
 			String newDateFrom;
 			String newDateTo;
 
-			SimpleDateFormat sdf = new SimpleDateFormat(OLD_FORMAT);
+			SimpleDateFormat sdf = new SimpleDateFormat(OLD_FORMAT, Locale.ENGLISH);
 			Date date_from = sdf.parse(from);
 			Date date_to = sdf.parse(to);
 			sdf.applyPattern(NEW_FORMAT);
@@ -1726,7 +1727,7 @@ public class LeaveAction extends ActionSupport {
 	        String newDateFrom;
 	        String newDateTo;
 
-	        SimpleDateFormat sdf = new SimpleDateFormat(OLD_FORMAT);
+	        SimpleDateFormat sdf = new SimpleDateFormat(OLD_FORMAT, Locale.ENGLISH);
 	        Date date_from = sdf.parse(from);
 	        Date date_to = sdf.parse(to);
 	        sdf.applyPattern(NEW_FORMAT);
@@ -2045,7 +2046,7 @@ public class LeaveAction extends ActionSupport {
 			String responseJSON = "";
 			List<Map<String, Object>> list = null;
 			if (value.equals("All")) {
-				list = userDAO.sequense();
+				list = userDAO.Query_Userlist();
 				responseJSON = gson.toJson(list);
 			} else {
 				list = userDAO.sequense_userinteam(userLogin);

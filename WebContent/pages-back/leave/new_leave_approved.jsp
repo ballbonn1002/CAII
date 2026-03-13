@@ -793,7 +793,7 @@
 </div>
 <!--end::Modal - Leave Detail-->
 
-<<script>
+<script>
 $(document).ready(function(){
 	var userSelect =  '${userSelect}';
 	var userSelect2 =  '${userSelect2}';
@@ -844,6 +844,7 @@ $(document).ready(function(){
 
 function CreateListUsers(value, user_login, userSelect2) {
 	const select = document.getElementById('name2');
+
 	$.ajax({
 		url: "CreateListUsers",
 		method: "POST",
@@ -853,38 +854,51 @@ function CreateListUsers(value, user_login, userSelect2) {
 			"user_login": user_login
 		},
 		success: function(data) {
+
 			var obj = JSON.parse(data);
-			console.log(obj);
+
 			let option = '<option></option>';
-			
+			let enableGroup = '<optgroup label="Enable">';
+			let disableGroup = '<optgroup label="Disable">';
+
 			for (var i = 0; i < obj.length; i++) {
+
 				var string1 = obj[i].id ? obj[i].id.toLowerCase() : "";
-				if (userSelect2 != null) {
-					var string2 = userSelect2.toLowerCase();
-				}
-				var txt = null;
-				if (string1 === string2) {
-					txt = "selected";
-				}
-				
+				var string2 = userSelect2 ? userSelect2.toLowerCase() : "";
+				var txt = (string1 === string2) ? "selected" : "";
+
 				var employeeId = obj[i].employee_id ? obj[i].employee_id : "";
 				var name = obj[i].name ? obj[i].name : "";
 				var nameEn = obj[i].name_en ? obj[i].name_en : "";
-				
+
 				var displayText = '';
+
 				if (employeeId) {
 					displayText += employeeId;
 				}
-				if (name) {
-					displayText += (displayText ? ' - ' : '') + name;
-				}
+
 				if (nameEn) {
 					displayText += (displayText ? ' - ' : '') + nameEn;
 				}
-				
-				option += '<option value="'+obj[i].id+'" id="'+obj[i].id+'" '+txt+'>'+displayText+'</option>';
+
+				if (name) {
+					displayText += (displayText ? ' - ' : '') + name;
+				}
+
+				var optionHtml = '<option value="'+obj[i].id+'" '+txt+'>'+displayText+'</option>';
+
+				//แยก enable/disable
+				if (obj[i].enable == 1) {
+					enableGroup += optionHtml;
+				} else {
+					disableGroup += optionHtml;
+				}
 			}
-			select.innerHTML = option;
+
+			enableGroup += '</optgroup>';
+			disableGroup += '</optgroup>';
+
+			select.innerHTML = option + enableGroup + disableGroup;
 		}
 	});
 }

@@ -2083,4 +2083,37 @@ public class LeaveDAOImpl implements LeaveDAO {
 		return leavelist;
 	}
 	
+	@Override
+	public List<Map<String, Object>> findLeaveByUserAndDate(String userId, String date) throws Exception {
+
+	    Session session = this.sessionFactory.getCurrentSession();
+	    List<Map<String, Object>> result = null;
+
+	    try {
+
+	        String sql = "SELECT l.leave_id, l.leave_type_id, lt.leave_type_name, l.half_day, l.start_date, l.end_date, l.description, l.leave_status_id " +
+	                     "FROM leaves l " +
+	                     "LEFT JOIN leave_type lt ON l.leave_type_id = lt.leave_type_id " +
+	                     "WHERE l.user_id = :userId " +
+	                     "AND DATE(:date) BETWEEN DATE(l.start_date) AND DATE(l.end_date) " +
+	                     "AND l.leave_status_id IN ('0','1') "+
+	                     "ORDER BY l.time_create DESC " +
+	                     "LIMIT 1";;
+
+	        SQLQuery query = session.createSQLQuery(sql);
+
+	        query.setParameter("userId", userId);
+	        query.setParameter("date", date);
+
+	        query.setResultTransformer(org.hibernate.transform.Transformers.ALIAS_TO_ENTITY_MAP);
+
+	        result = query.list();
+
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	    }
+
+	    return result;
+	}
+	
 }

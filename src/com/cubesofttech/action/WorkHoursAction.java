@@ -1,7 +1,7 @@
 package com.cubesofttech.action;
 
 import java.sql.Timestamp;
-
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -105,7 +105,43 @@ public class WorkHoursAction extends ActionSupport {
 			List<Holiday> holidayList = null;
 			holidayList = holidayDAO.findAllInMonth();
 			request.setAttribute("holidayList", holidayList);
+			
+			LocalDate lastWorkDate = currentDate.minusDays(1);
 
+			while (true) {
+			    boolean isHoliday = false;
+			    if (holidayList != null) {
+			        for (Holiday h : holidayList) {
+			            LocalDate start = h.getStart_date().toLocalDate();
+			            LocalDate end = h.getEnd_date().toLocalDate();
+
+			            if ((lastWorkDate.isEqual(start) || lastWorkDate.isAfter(start)) &&
+			                (lastWorkDate.isEqual(end) || lastWorkDate.isBefore(end)) ) 
+			            {
+			                isHoliday = true;
+			                break;
+			            }
+			        }
+			    }
+
+			    if (lastWorkDate.getDayOfWeek() != DayOfWeek.SATURDAY 
+			    	&& lastWorkDate.getDayOfWeek() != DayOfWeek.SUNDAY && !isHoliday) {
+			        break;
+			    }
+
+			    lastWorkDate = lastWorkDate.minusDays(1);
+			}
+
+			String lastWorkDayName = lastWorkDate.getDayOfWeek().getDisplayName(java.time.format.TextStyle.SHORT, java.util.Locale.ENGLISH);
+			request.setAttribute("lastWorkDayName", lastWorkDayName);
+			
+			List<Map<String, Object>> leaveToday = leaveDAO.findLeaveByUserAndDate(logonUser, currentDate.toString());
+			log.debug("leaveToday "+ leaveToday);
+			request.setAttribute("leaveToday", leaveToday);
+			List<Map<String, Object>> leaveLastday = leaveDAO.findLeaveByUserAndDate(logonUser, lastWorkDate.toString());
+			log.debug("leaveLastday "+ leaveLastday);
+			request.setAttribute("leaveLastday", leaveLastday);
+			
 			try {
 				List<Announcement> announcementList = announcementDAO.findAll();
 				request.setAttribute("announcementList", announcementList);
@@ -684,7 +720,7 @@ public class WorkHoursAction extends ActionSupport {
 			request.setAttribute("currentYear", today.getYear());
 			request.setAttribute("lastYear", today.getYear() - 1);
 
-			List<Map<String, Object>> cubeUser = userDAO.sequense();
+			List<Map<String, Object>> cubeUser = userDAO.sequense2();
 			request.setAttribute("cubeUser", cubeUser);
 			request.setAttribute("cubeUserJson", mapper.writeValueAsString(cubeUser));
 
