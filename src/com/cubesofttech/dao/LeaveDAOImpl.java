@@ -511,7 +511,7 @@ public class LeaveDAOImpl implements LeaveDAO {
 	    List<Map<String, Object>> search = null;
 	    try {
 	        StringBuilder sql = new StringBuilder(
-	            "SELECT leaves.leave_id, leaves.user_id, user.name, leaves.leave_status_id, leave_type.leave_type_name, leaves.half_day, leaves.start_date, "
+	            "SELECT leaves.leave_id, leaves.user_id, user.name, leaves.leave_status_id, leaves.leave_type_id, leave_type.leave_type_name, leaves.half_day, leaves.start_date, "
 	            + "leaves.start_time, leaves.end_time, leaves.end_date, leaves.no_day ,user.path, leaves.time_create, leaves.description "
 	            + "FROM leaves LEFT JOIN leave_type ON leave_type.leave_type_id = leaves.leave_type_id LEFT JOIN user ON leaves.user_id = user.id "
 	            + "WHERE leaves.start_date BETWEEN :startDate AND :endDate ");
@@ -1687,7 +1687,7 @@ public class LeaveDAOImpl implements LeaveDAO {
 	    List<Map<String, Object>> leavelist = null;
 	    try {
 	        StringBuilder sql = new StringBuilder(
-	            "SELECT leaves.leave_id, leaves.user_id, user.name, leaves.leave_status_id, leave_type.leave_type_name, "
+	            "SELECT leaves.leave_id, leaves.user_id, user.name, leaves.leave_status_id, leaves.leave_type_id, leave_type.leave_type_name, "
 	            + "leaves.half_day, leaves.start_date, leaves.start_time, leaves.end_time, leaves.end_date, leaves.no_day, "
 	            + "leaves.appr_user_id, user.path, leaves.time_create, leaves.description "
 	            + "FROM leaves LEFT JOIN leave_type ON leave_type.leave_type_id = leaves.leave_type_id "
@@ -1719,7 +1719,7 @@ public class LeaveDAOImpl implements LeaveDAO {
 		List<Map<String, Object>> leavelist = null;
 		try {
 			StringBuilder sql = new StringBuilder(
-					"SELECT leaves.leave_id, leaves.user_id, user.name, leaves.leave_status_id, leave_type.leave_type_name, leaves.half_day, "
+					"SELECT leaves.leave_id, leaves.user_id, user.name, leaves.leave_status_id, leaves.leave_type_id, leave_type.leave_type_name, leaves.half_day, "
 					+ "leaves.start_date, leaves.start_time, leaves.end_time, leaves.end_date, leaves.no_day , file.path, leaves.time_create, "
 					+ "leaves.description FROM leaves LEFT JOIN leave_type ON leave_type.leave_type_id = leaves.leave_type_id "
 					+ "LEFT JOIN user ON leaves.user_id = user.id LEFT JOIN file ON leaves.leave_file = file.file_id "

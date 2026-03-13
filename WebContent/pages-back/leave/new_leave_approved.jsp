@@ -167,15 +167,17 @@
 												</span>
 											</div>
 											<div class="d-flex flex-column">
-												<span class="fs-2 fw-bold text-dark">
-													<fmt:formatNumber type="number" pattern="#.##" value="${LeavenumT1}"/>
-												</span>
-												<span class="text-muted fs-7">
-												${type_1}
-												</span>
-												<span class="text-muted fs-7">
-												WA: <fmt:formatNumber type="number" pattern="#.###" value="${LeaveWAnumT1}"/>d
-												</span>
+												<div class="d-flex align-items-center">
+													<span class="fs-2 fw-bold text-dark">
+														<fmt:formatNumber type="number" pattern="#.##" value="${LeavenumT1}"/>
+													</span>
+													<c:if test="${LeaveWAnumT1.doubleValue() > 0}">
+														<span class="badge badge-sm badge-warning ms-1">
+															<fmt:formatNumber type="number" pattern="#.##" value="${LeaveWAnumT1}"/>
+														</span>
+													</c:if>
+												</div>
+												<span class="text-muted fs-5">${type_1}</span>
 											</div>
 										</div>
 									</div>
@@ -196,15 +198,17 @@
 												</span>
 											</div>
 											<div class="d-flex flex-column">
-												<span class="fs-2 fw-bold text-dark">
-													<fmt:formatNumber type="number" pattern="#.##" value="${LeavenumT2}"/>
-												</span>
-												<span class="text-muted fs-7">
-												${type_2}
-												</span>
-												<span class="text-muted fs-7">
-												WA: <fmt:formatNumber type="number" pattern="#.###" value="${LeaveWAnumT2}"/>d
-												</span>
+												<div class="d-flex align-items-center">
+													<span class="fs-2 fw-bold text-dark">
+														<fmt:formatNumber type="number" pattern="#.##" value="${LeavenumT2}"/>
+													</span>
+													<c:if test="${LeaveWAnumT2.doubleValue() > 0}">
+														<span class="badge badge-sm badge-warning ms-1">
+																<fmt:formatNumber type="number" pattern="#.##" value="${LeaveWAnumT2}"/>
+														</span>
+													</c:if>
+												</div>
+												<span class="text-muted fs-5">${type_2}</span>
 											</div>
 										</div>
 									</div>
@@ -222,18 +226,17 @@
 												</span>
 											</div>
 											<div class="d-flex flex-column">
-												<span class="fs-2 fw-bold text-dark">
-													<fmt:formatNumber type="number" pattern="#.##" value="${LeavenumT6}"/>
-													<c:if test="${quota_4 != null || quota_4 != 0.0 || quota_4 != ''} ">
-														/<fmt:formatNumber type="number" pattern="#" value="${quota_4}"/>
+												<div class="d-flex align-items-center">
+													<span class="fs-2 fw-bold text-dark">
+														<fmt:formatNumber type="number" pattern="#.##" value="${LeavenumT6}"/>
+													</span>
+													<c:if test="${LeaveWAnumT6.doubleValue() > 0}">
+														<span class="badge badge-sm badge-warning ms-1">
+															<fmt:formatNumber type="number" pattern="#.##" value="${LeaveWAnumT6}"/>
+														</span>
 													</c:if>
-												</span>
-												<span class="text-muted fs-7">
-												${type_6}
-												</span>
-												<span class="text-muted fs-7">
-												WA: <fmt:formatNumber type="number" pattern="#.###" value="${LeaveWAnumT6}"/>d
-												</span>
+												</div>
+												<span class="text-muted fs-5">${type_6}</span>
 											</div>
 										</div>
 									</div>
@@ -250,18 +253,17 @@
 												</span>
 											</div>
 											<div class="d-flex flex-column">
-												<span class="fs-2 fw-bold text-dark">
-													<fmt:formatNumber type="number" pattern="#.##" value="${LeavenumT3}"/>
-													<c:if test="${quota_3 != null || quota_3 != 0.0 || quota_3 != ''} ">
-														/<fmt:formatNumber type="number" pattern="#" value="${quota_3}"/>
+												<div class="d-flex align-items-center">
+													<span class="fs-2 fw-bold text-dark">
+														<fmt:formatNumber type="number" pattern="#.##" value="${LeavenumT3}"/>
+													</span>
+													<c:if test="${LeaveWAnumT3.doubleValue() > 0}">
+														<span class="badge badge-sm badge-warning ms-1">
+															<fmt:formatNumber type="number" pattern="#.##" value="${LeaveWAnumT3}"/>
+														</span>
 													</c:if>
-												</span>
-												<span class="text-muted fs-7">
-												${type_3}
-												</span>
-												<span class="text-muted fs-7">
-												WA: <fmt:formatNumber type="number" pattern="#.###" value="${LeaveWAnumT3}"/>d
-												</span>
+												</div>
+												<span class="text-muted fs-5">${type_3}</span>
 											</div>
 										</div>
 									</div>
@@ -282,15 +284,17 @@
 												</span>
 											</div>
 											<div class="d-flex flex-column">
-												<span class="fs-2 fw-bold text-dark">
-													<fmt:formatNumber type="number" pattern="#.##" value="${LeavenumT4}"/>
-												</span>
-												<span class="text-muted fs-7">
-													${type_4}
-												</span>
-												<span class="text-muted fs-7">
-												WA: <fmt:formatNumber type="number" pattern="#.###" value="${LeaveWAnumT4}"/>d
-												</span>
+												<div class="d-flex align-items-center">
+													<span class="fs-2 fw-bold text-dark">
+														<fmt:formatNumber type="number" pattern="#.##" value="${LeavenumT4}"/>
+													</span>
+													<c:if test="${LeaveWAnumT4.doubleValue() > 0}">
+														<span class="badge badge-sm badge-warning ms-1">
+																<fmt:formatNumber type="number" pattern="#.##" value="${LeaveWAnumT4}"/>
+														</span>
+													</c:if>
+												</div>
+												<span class="text-muted fs-5">${type_4}</span>
 											</div>
 										</div>
 									</div>
@@ -308,15 +312,17 @@
 												</span>
 											</div>
 											<div class="d-flex flex-column">
-												<span class="fs-2 fw-bold text-dark">
-													<fmt:formatNumber type="number" pattern="#.##" value="${LeavenumT5}"/>
-												</span>
-												<span class="text-muted fs-7">
-													${type_5}
-												</span>
-												<span class="text-muted fs-7">
-												WA: <fmt:formatNumber type="number" pattern="#.###" value="${LeaveWAnumT5}"/>d
-												</span>
+												<div class="d-flex align-items-center">
+													<span class="fs-2 fw-bold text-dark">
+														<fmt:formatNumber type="number" pattern="#.##" value="${LeavenumT5}"/>
+													</span>
+													<c:if test="${LeaveWAnumT5.doubleValue() > 0}">
+														<span class="badge badge-sm badge-warning ms-1">
+																<fmt:formatNumber type="number" pattern="#.##" value="${LeaveWAnumT5}"/>
+														</span>
+													</c:if>
+												</div>
+												<span class="text-muted fs-5">${type_5}</span>
 											</div>
 										</div>
 									</div>
@@ -333,15 +339,17 @@
 												</span>
 											</div>
 											<div class="d-flex flex-column">
-												<span class="fs-2 fw-bold text-dark">
-													<fmt:formatNumber type="number" pattern="#.##" value="${LeavenumT7}"/>
-												</span>
-												<span class="text-muted fs-7">
-												${type_7}
-												</span>
-												<span class="text-muted fs-7">
-												WA: <fmt:formatNumber type="number" pattern="#.###" value="${LeaveWAnumT7}"/>d
-												</span>
+												<div class="d-flex align-items-center">
+													<span class="fs-2 fw-bold text-dark">
+														<fmt:formatNumber type="number" pattern="#.##" value="${LeavenumT7}"/>
+													</span>
+													<c:if test="${LeaveWAnumT7.doubleValue() > 0}">
+														<span class="badge badge-sm badge-warning ms-1">
+																<fmt:formatNumber type="number" pattern="#.##" value="${LeaveWAnumT7}"/>
+														</span>
+													</c:if>
+												</div>
+												<span class="text-muted fs-5">${type_7}</span>
 											</div>
 										</div>
 									</div>
@@ -372,14 +380,6 @@
 						</a>
 					</div>
 					<!--end::Btn Create-->
-					<!--begin::Btn Export Excel-->
-					<!-- <div class="d-flex flex-wrap my-1">
-						<a href="javascript:void(0)" class="btn btn-success btn-lg" onclick="add()">
-							<i class="ki-duotone ki-plus"></i>
-							Export to Excel
-						</a>
-					</div> -->
-					<!--end::Btn Export Excel-->
 				</div>
 				<!-- Recent Update -->
 
@@ -390,10 +390,8 @@
 						<c:forEach var="leave" items="${leaveList}" varStatus="status">
 							<!--begin::Leave Each 1-->
 							<div class="card shadow-sm mb-5 mb-xl-10">
-
 								<!--begin::Header -->
 								<div class="card-header fs-4">
-
 									<!-- ID , Title -->
 									<div class="d-flex align-items-center mb-2 gap-2">
 										<span class="fw-bold me-2 text-primary">#${leave.leave_id}</span>
@@ -407,6 +405,7 @@
 														</i>
 													</span>
 												</div>
+												<span class="badge badge-light-success fs-4">${leave.leave_type_name}</span>
 											</c:if>
 											<c:if test="${leave.leave_type_id.toString() == '2'}">
 												<div class="symbol symbol-35px me-4">
@@ -421,6 +420,7 @@
 														</i>												
 													</span>
 												</div>
+												<span class="badge badge-light-primary fs-4">${leave.leave_type_name}</span>
 											</c:if>
 											<c:if test="${leave.leave_type_id.toString() == '3'}">
 												<div class="symbol symbol-35px me-4">
@@ -431,6 +431,7 @@
 														</i>
 													</span>
 												</div>
+												<span class="badge badge-light-info fs-4">${leave.leave_type_name}</span>
 											</c:if>
 											<c:if test="${leave.leave_type_id.toString() == '4'}">
 												<div class="symbol symbol-35px me-4">
@@ -445,6 +446,7 @@
 														</i>												
 													</span>
 												</div>
+												<span class="badge badge-light-danger fs-4">${leave.leave_type_name}</span>
 											</c:if>
 											<c:if test="${leave.leave_type_id.toString() == '5'}">
 												<div class="symbol symbol-35px me-4">
@@ -456,6 +458,7 @@
 														</i>												
 													</span>
 												</div>
+												<span class="badge badge-light-dark fs-4">${leave.leave_type_name}</span>
 											</c:if>
 											<c:if test="${leave.leave_type_id.toString() == '6'}">
 												<div class="symbol symbol-35px me-4">
@@ -467,6 +470,7 @@
 														</i>
 													</span>
 												</div>
+												<span class="badge badge-light-warning fs-4">${leave.leave_type_name}</span>
 											</c:if>
 											<c:if test="${leave.leave_type_id.toString() == '7'}">
 												<div class="symbol symbol-35px me-4">
@@ -477,15 +481,14 @@
 														</i>
 													</span>
 												</div>
+												<span class="badge badge-light-dark fs-4">${leave.leave_type_name}</span>
 											</c:if>
-
-										<span class="fw-semibold" style="font-weight: 1000 !important;">${leave.leave_type_name}</span>
+										<%-- <span class="fw-semibold" style="font-weight: 1000 !important;">${leave.leave_type_name}</span> --%>
 									</div>
 
 									<!-- Btn Info, Edit, Delete -->
 									<div class="card-toolbar">
 										<div class="d-inline-flex align-items-center justify-content-end gap-2">
-
 											<!-- Btn Info -->
 											<a href="javascript:void(0)" class="btn btn-icon btn-sm btn-light-info" onclick="leaveStatus(${leave.leave_id})">
 												<i class="ki-duotone ki-document fs-5">
@@ -514,7 +517,7 @@
 													</a>
 												</c:when>
 												<c:when test="${leave.leave_status_id.toString() != 0}">
-													<a data-note="btn edit" class="btn btn-icon btn-sm btn-light-secondary">
+													<a data-note="btn edit" href="NewLeaveEdit?id=${leave.leave_id}&la=1" title="Edit" class="btn btn-icon btn-sm btn-light-primary">
 														<i class="ki-duotone ki-pencil fs-5">
 															<span class="path1"></span>
 															<span class="path2"></span>
@@ -637,7 +640,7 @@
 
 <!--begin::Modal - Leave Detail-->
 <div class="modal fade" id="leaveDetailModal" tabindex="-1" aria-hidden="true">
-	<div class="modal-dialog">
+	<div class="modal-dialog modal-lg">
 		<div class="modal-content">
 
 			<!--begin::Header-->

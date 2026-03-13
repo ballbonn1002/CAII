@@ -245,9 +245,6 @@
 														<div class="d-flex align-items-center">
 															<span class="fs-2 fw-bold text-dark">
 																<fmt:formatNumber type="number" pattern="#.##" value="${leave_3}"/>
-																<c:if test="${quota_3 != null || quota_3 != 0.0 || quota_3 != ''}">
-																	/<fmt:formatNumber type="number" pattern="#" value="${quota_3}"/>
-																</c:if>
 															</span>
 															<c:if test="${LeaveWAnumT3.doubleValue() > 0}">
 																<span class="badge badge-sm badge-warning ms-1">
