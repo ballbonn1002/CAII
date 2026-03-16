@@ -92,16 +92,6 @@ public class WorkHoursAction extends ActionSupport {
 			LocalDate currentDate = LocalDate.now();
 			request.setAttribute("currentDate", currentDate);
 
-			List<Map<String, Object>> getTodayCheckIn = workHoursDAO.getTodayCheckIn(logonUser);
-			List<Map<String, Object>> getTodayCheckOut = workHoursDAO.getTodayCheckOut(logonUser);
-			List<Map<String, Object>> getLastdayCheckIn = workHoursDAO.getLastdayCheckIn(logonUser);
-			List<Map<String, Object>> getLastdayCheckOut = workHoursDAO.getLastdayCheckOut(logonUser);
-
-			request.setAttribute("todaycheckin", getTodayCheckIn);
-			request.setAttribute("todaycheckout", getTodayCheckOut);
-			request.setAttribute("lastcheckin", getLastdayCheckIn);
-			request.setAttribute("lastcheckout", getLastdayCheckOut);
-
 			List<Holiday> holidayList = null;
 			holidayList = holidayDAO.findAllInMonth();
 			request.setAttribute("holidayList", holidayList);
@@ -137,11 +127,19 @@ public class WorkHoursAction extends ActionSupport {
 			request.setAttribute("lastWorkDayName", lastWorkDayName);
 			
 			List<Map<String, Object>> leaveToday = leaveDAO.findLeaveByUserAndDate(logonUser, currentDate.toString());
-			log.debug("leaveToday "+ leaveToday);
 			request.setAttribute("leaveToday", leaveToday);
 			List<Map<String, Object>> leaveLastday = leaveDAO.findLeaveByUserAndDate(logonUser, lastWorkDate.toString());
-			log.debug("leaveLastday "+ leaveLastday);
 			request.setAttribute("leaveLastday", leaveLastday);
+			
+			List<Map<String, Object>> getTodayCheckIn = workHoursDAO.getTodayCheckIn(logonUser);
+			List<Map<String, Object>> getTodayCheckOut = workHoursDAO.getTodayCheckOut(logonUser);
+			List<Map<String, Object>> getLastdayCheckIn = workHoursDAO.getLastdayCheckIn(logonUser, lastWorkDate);
+			List<Map<String, Object>> getLastdayCheckOut = workHoursDAO.getLastdayCheckOut(logonUser, lastWorkDate);
+
+			request.setAttribute("todaycheckin", getTodayCheckIn);
+			request.setAttribute("todaycheckout", getTodayCheckOut);
+			request.setAttribute("lastcheckin", getLastdayCheckIn);
+			request.setAttribute("lastcheckout", getLastdayCheckOut);
 			
 			try {
 				List<Announcement> announcementList = announcementDAO.findAll();
