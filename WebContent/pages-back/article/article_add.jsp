@@ -445,63 +445,30 @@
 	      tabsize: 2,
 	      codeviewFilter: false,
 	      codeviewIframeFilter: false,
-	     
-	      leTags: [
-	    	    { title: 'Normal', tag: 'p' },
-	    	    { title: 'Heading 1', tag: 'h1' },
-	    	    { title: 'Heading 2', tag: 'h2' },
-	    	    { title: 'Heading 3', tag: 'h3' },
-	    	    { title: 'Quote', tag: 'blockquote' },
-	    	    { title: 'Code', tag: 'pre' }
-	    	  ],
-	
-	    	  toolbar: [
-	
-	    	    // style
-	    	    ['style', ['style']],
-	
-	    	    // font
-	    	    ['font', [
-	    	      'bold',
-	    	      'italic',
-	    	      'underline',
-	    	      'strikethrough',
-	    	      'superscript',
-	    	      'subscript',
-	    	      'clear'
-	    	    ]],
-	
-	    	    // font size/name/color
-	    	    ['fontname', ['fontname']],
-	    	    ['fontsize', ['fontsize']],
-	    	    ['color', ['color']],
-	
-	    	    // paragraph
-	    	    ['para', [
-	    	      'ul',
-	    	      'ol',
-	    	      'paragraph',
-	    	      'height'
-	    	    ]],
-	
-	    	    // insert
-	    	    ['insert', [
-	    	      'link',
-	    	      'picture',
-	    	      'video',
-	    	      'table',
-	    	      'hr'
-	    	    ]],
-	
-	    	    // misc/view
-	    	    ['view', [
-	    	      'undo',
-	    	      'redo',
-	    	      'fullscreen',
-	    	      'codeview',
-	    	      'help'
-	    	    ]]
-	    	  ],
+	      toolbar: [
+      	    // style
+      	    ['style', ['style']],
+
+      	    // font
+      	    ['font', [
+      	      'bold', 'italic',  'underline', 'strikethrough',
+      	      'superscript', 'subscript', 'clear'
+      	    ]],
+
+      	    // font size/name/color
+      	    ['fontname', ['fontname']],
+      	    ['fontsize', ['fontsize']],
+      	    ['color', ['color']],
+
+      	    // paragraph
+      	    ['para', [ 'ul', 'ol', 'paragraph', 'height'  ]],
+
+      	    // insert
+      	    ['insert', [ 'link', 'picture', 'video', 'table', 'hr' ]],
+
+      	    // misc/view
+      	    ['view', [ 'undo', 'redo', 'fullscreen', 'codeview', 'help' ]]
+      	  ],
 	    	  callbacks : {
 					onImageUpload : function(files) {
 						for (var i = files.length - 1; i >= 0; i--) {
@@ -682,8 +649,6 @@
 		  
 		  const articleTitle  = document.getElementById("article_title").value
 		  const articleType = document.getElementById("article_type").value
-		  /* const articleTag = $("#article_tag").val();
-		  const articleRelated = $("#article_related").val(); */
 		  const userCreate = document.getElementById("user_create").value
 		  const publicDate = document.getElementById("publication_date").value
 		  const publicTime  = document.getElementById("publication_time").value
@@ -691,13 +656,7 @@
 		  const imageFile = document.getElementById("imageInputFile");
 		  
 		  if(!articleTitle) errorFields.push("Title")
-		  if(!articleType) errorFields.push("Type")
-		/*   if (!articleTag || articleTag.length === 0)
-		    errorFields.push("Tag");
-
-		  if (!articleRelated || articleRelated.length === 0)
-		      errorFields.push("Related"); */
-		  
+		  if(!articleType) errorFields.push("Type")		  
 		  if(!userCreate) errorFields.push("Author")
 		  if(!publicDate) errorFields.push("Publication Date")
 		  if(!publicTime) errorFields.push("Publication Time")

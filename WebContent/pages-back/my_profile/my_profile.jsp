@@ -903,12 +903,12 @@
 										<c:forEach var="item" items="${borrowList}">
 											<tr class="align-middle">
 												<td class="px-3 py-4 text-gray-900 fs-6 fw-normal">
-													${item.formatted_date}
-													<p class="text-gray-600 fs-6 fw-normal mb-0">${item.formatted_time}</p>
+													${empty item.formatted_date ? '-' : item.formatted_date}
+													<p class="text-gray-600 fs-6 fw-normal mb-0">${empty item.formatted_time ? ' ' : item.formatted_time}</p>
 												</td>
-												<td class="px-3 py-4 text-gray-900 fs-6 fw-normal">${item.item_no}</td>
-												<td class="px-3 py-4 text-gray-900 fs-6 fw-normal">${item.name}</td>
-												<td class="px-3 py-4 text-gray-900 fs-6 fw-normal">${item.location}</td>
+												<td class="px-3 py-4 text-gray-900 fs-6 fw-normal">${empty item.item_no ? '-' : item.item_no}</td>
+												<td class="px-3 py-4 text-gray-900 fs-6 fw-normal">${empty item.name ? '-' : item.name}</td>
+												<td class="px-3 py-4 text-gray-900 fs-6 fw-normal">${ empty item.location ? '-' : item.location}</td>
 												<td class="px-3 py-4 ">
 												<c:if test="${item.status == 'R'}">
 													<span class="badge badge-lg bg-success text-white fw-semibold fs-8">Returned</span>
