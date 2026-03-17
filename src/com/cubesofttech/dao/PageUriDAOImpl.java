@@ -37,7 +37,9 @@ public class PageUriDAOImpl implements PageUriDAO {
 		Session session = sessionFactory.getCurrentSession();
 		List<PageUri> pageUri = null;
 		try {
-			pageUri = session.createCriteria(PageUri.class).list();
+			pageUri = session.createCriteria(PageUri.class)
+	                .addOrder(org.hibernate.criterion.Order.desc("timeCreate"))
+	                .list();
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
@@ -45,6 +47,7 @@ public class PageUriDAOImpl implements PageUriDAO {
 		}
 		return pageUri;
 	}
+	
 	@Override
 	public void save(PageUri PageUri) throws Exception {
 		Session session = this.sessionFactory.getCurrentSession();
@@ -111,6 +114,28 @@ public class PageUriDAOImpl implements PageUriDAO {
 		// session.close();
 	}
 	
+	@Override
+	public PageUri findByPageUri(String pageUriId) throws Exception {
+	    Session session = sessionFactory.getCurrentSession();
 
+	    String hql = "FROM PageUri WHERE pageUriId = :pageUriId";
 
+	    return (PageUri) session.createQuery(hql)
+	            .setParameter("pageUriId", pageUriId)
+	            .uniqueResult();
+	}
+
+	@Override
+	public void deleteByPageUrlIdAndForwardTo(String pageUrlId, String forwardTo) {
+
+		Session session = sessionFactory.getCurrentSession();
+
+		session.createSQLQuery(
+			"DELETE FROM page_uri WHERE page_uri_id = :pageUrlId AND forward_to = :forwardTo"
+		)
+		.setParameter("pageUrlId", pageUrlId)
+		.setParameter("forwardTo", forwardTo)
+		.executeUpdate();
+	}
+	
 }

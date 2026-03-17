@@ -35,10 +35,12 @@
 }
 
 .banner-img {
-	width: 100%;
-	height: 540px;
-	object-fit: cover;
+	max-width: 100%;
+	max-height: 400px;
+	height: auto;
 	display: block;
+	margin: auto;
+	object-fit: contain;
 }
 
 /* Quote */
@@ -74,18 +76,22 @@
 					<div
 						class="page-title d-flex flex-column justify-content-center flex-wrap me-3">
 						<h1
-							class="page-heading d-flex text-gray-900 fw-semibold flex-column justify-content-center my-0">
+							class="page-heading d-flex text-gray-700 fw-semibold flex-column justify-content-center my-0">
 							Preview Article</h1>
 
 						<ul
 							class="breadcrumb breadcrumb-separatorless fw-semibold fs-7 my-0 pt-1">
 							<li class="breadcrumb-item text-muted"><a
-								href="${pageContext.request.contextPath}/article-feed"
+								href="${pageContext.request.contextPath}/demo_dashboard"
+								class="text-muted text-hover-primary">Home</a></li>
+							<li class="breadcrumb-item"><span
+								class="bullet bg-gray-500 w-5px h-2px"></span></li>
+							<li class="breadcrumb-item text-muted"><a
 								class="text-muted text-hover-primary">CMS</a></li>
 							<li class="breadcrumb-item"><span
 								class="bullet bg-gray-500 w-5px h-2px"></span></li>
 							<li class="breadcrumb-item text-muted"><a
-								href="demo_dashboard" class="text-muted text-hover-primary">Article</a></li>
+								href="/article_feed" class="text-muted text-hover-primary">Article</a></li>
 						</ul>
 					</div>
 				</div>
@@ -202,29 +208,7 @@
 		</div>
 	</div>
 
-	<script>
-	function renderPreviewContent(html) {
-	    if (!html) return '';
-	    //หาเนื้อหาใน <style>
-	    return html.replace(/<style[^>]*>([\s\S]*?)<\/style>/gi, function(match, cssContent) {
-	        //เติม Class .ck-content นำหน้าทุก Selector e.g. h1 {...} จะกลายเป็น .ck-content h1 {...}
-	        const scopedCss = cssContent.replace(/(^|[\s,{}])([a-zA-Z0-9\._\-#\*\[\]\:]+)(?=[^{}]*\{)/g, function(selectorMatch, p1, p2) {
-	            // ถ้า selector คือ body เปลี่ยนเป็น .ck-content
-	            if (p2.trim() === 'body') return p1 + ' .ck-content';
-	            return p1 + ' .ck-content ' + p2;
-	        });
-	        
-	        return '<style>' + scopedCss + '</style>';
-	    });
-	}
-
-	//โหลดหน้า Preview เสร็จ เรียกใช้ renderPreviewContent
-	document.addEventListener("DOMContentLoaded", function() {
-	    const detailContainer = document.querySelector('.ck-content');
-	    const rawContent = detailContainer.innerHTML;
-	    detailContainer.innerHTML = renderPreviewContent(rawContent);
-	});
-	
+<script>
 function confirmLeaveForm(redirectUrl){
 	
     Swal.fire({

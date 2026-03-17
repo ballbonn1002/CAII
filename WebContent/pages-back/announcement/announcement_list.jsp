@@ -56,7 +56,7 @@
 						<div
 							class="card-header d-flex align-items-center justify-content-between"
 							style="border-bottom: none;">
-							<div class="col-md-9">
+							<div class="col-12 col-md-9">
 								<div id="kt_docs_search_handler_responsive"
 									class="d-flex align-items-center w-100"
 									data-kt-search-keypress="true" data-kt-search-min-length="1"
@@ -81,7 +81,7 @@
 										<!--begin::Input-->
 										<input type="text" class="form-control form-solid ps-14"
 											name="xxAnnouncement" id="xxAnnouncement"
-											placeholder="search" data-kt-search-element="input" />
+											placeholder="Search" data-kt-search-element="input" />
 										<!--end::Input-->
 
 									</form>

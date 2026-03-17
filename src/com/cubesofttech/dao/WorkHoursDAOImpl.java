@@ -1,5 +1,6 @@
 package com.cubesofttech.dao;
 
+import java.util.Date;
 import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -2517,7 +2518,7 @@ public class WorkHoursDAOImpl implements WorkHoursDAO {
 					data.put("checkinTs", ts);
 					data.put("descriptionIn", description);
 					data.put("workTypeIn", worktype);
-					
+
 					checkinMap.put(ts.toLocalDateTime().toLocalDate(), data);
 				}
 			}
@@ -2526,6 +2527,7 @@ public class WorkHoursDAOImpl implements WorkHoursDAO {
 		}
 		return checkinMap;
 	}
+
 	public Map<LocalDate, List<Map<String, Object>>> getCheckinsForYear2(String userId, int year1, int year2)
 			throws Exception {
 		Session session = this.sessionFactory.getCurrentSession();
@@ -2553,13 +2555,13 @@ public class WorkHoursDAOImpl implements WorkHoursDAO {
 					data.put("checkinTs", ts);
 					data.put("descriptionIn", description);
 					data.put("workTypeIn", worktype);
-					
-					//checkinMap.put(ts.toLocalDateTime().toLocalDate(), data);
+
+					// checkinMap.put(ts.toLocalDateTime().toLocalDate(), data);
 
 					LocalDate dateKey = ts.toLocalDateTime().toLocalDate();
 					if (!checkinMap.containsKey(dateKey)) {
-	                    checkinMap.put(dateKey, new ArrayList<>());
-	                }
+						checkinMap.put(dateKey, new ArrayList<>());
+					}
 					checkinMap.get(dateKey).add(data);
 				}
 			}
@@ -2568,7 +2570,7 @@ public class WorkHoursDAOImpl implements WorkHoursDAO {
 		}
 		return checkinMap;
 	}
-	
+
 	public Map<LocalDate, Map<String, Object>> getCheckoutsForYear(String userId, int year1, int year2)
 			throws Exception {
 		Session session = this.sessionFactory.getCurrentSession();
@@ -2636,12 +2638,12 @@ public class WorkHoursDAOImpl implements WorkHoursDAO {
 					data.put("descriptionOut", descriptions);
 					data.put("workTypeOut", worktype);
 
-					//checkoutMap.put(checkoutTs.toLocalDateTime().toLocalDate(), data);
-					
+					// checkoutMap.put(checkoutTs.toLocalDateTime().toLocalDate(), data);
+
 					LocalDate dateKey = checkoutTs.toLocalDateTime().toLocalDate();
 					if (!checkoutMap.containsKey(dateKey)) {
-	                    checkoutMap.put(dateKey, new ArrayList<>());
-	                }
+						checkoutMap.put(dateKey, new ArrayList<>());
+					}
 					checkoutMap.get(dateKey).add(data);
 				}
 			}
@@ -2655,16 +2657,13 @@ public class WorkHoursDAOImpl implements WorkHoursDAO {
 	public Object[] findMinTimeByType(String userId, LocalDate workDate, String type) {
 		Session session = this.sessionFactory.getCurrentSession();
 
-		String sql = "SELECT work_hours_time_work, work_type " + 
-					 "FROM work_hours " + 
-					 "WHERE user_create = :userId " + 
-					 "AND work_hours_type = :type " + 
-					 "AND DATE(work_hours_time_work) = :workDate " + 
-					 "ORDER BY work_hours_time_work ASC LIMIT 1";
+		String sql = "SELECT work_hours_time_work, work_type " + "FROM work_hours " + "WHERE user_create = :userId "
+				+ "AND work_hours_type = :type " + "AND DATE(work_hours_time_work) = :workDate "
+				+ "ORDER BY work_hours_time_work ASC LIMIT 1";
 
 		SQLQuery query = session.createSQLQuery(sql);
 		query.setParameter("userId", userId);
-		query.setParameter("type", type); 
+		query.setParameter("type", type);
 		query.setParameter("workDate", workDate.toString());
 
 		return (Object[]) query.uniqueResult();
@@ -2674,12 +2673,9 @@ public class WorkHoursDAOImpl implements WorkHoursDAO {
 	public Object[] findMaxTimeByType(String userId, LocalDate workDate, String type) {
 		Session session = this.sessionFactory.getCurrentSession();
 
-		String sql = "SELECT work_hours_time_work, work_type " + 
-					 "FROM work_hours " + 
-					 "WHERE user_create = :userId " + 
-					 "AND work_hours_type = :type " + 
-					 "AND DATE(work_hours_time_work) = :workDate " + 
-					 "ORDER BY work_hours_time_work DESC LIMIT 1";
+		String sql = "SELECT work_hours_time_work, work_type " + "FROM work_hours " + "WHERE user_create = :userId "
+				+ "AND work_hours_type = :type " + "AND DATE(work_hours_time_work) = :workDate "
+				+ "ORDER BY work_hours_time_work DESC LIMIT 1";
 
 		SQLQuery query = session.createSQLQuery(sql);
 		query.setParameter("userId", userId);
@@ -2708,6 +2704,134 @@ public class WorkHoursDAOImpl implements WorkHoursDAO {
 			e.printStackTrace();
 		}
 		return checkList;
+	}
+
+	@Override
+	public List<Map<String, Object>> getCheckinByDate(String userId, String date) throws Exception {
+		Session session = this.sessionFactory.getCurrentSession();
+		List<Map<String, Object>> checkin = null;
+		try {
+			String sql = "SELECT work_hours_time_work, work_type FROM work_hours  "
+					+ "WHERE user_create =:userId AND DATE(work_hours_time_work) =:date AND work_hours_type = 1";
+			SQLQuery query = session.createSQLQuery(sql);
+			query.setParameter("userId", userId);
+			query.setParameter("date", date);
+			query.setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
+			checkin = query.list();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return checkin;
+	}
+	
+	@Override
+	public List<Map<String, Object>> getTodayCheckIn(String user) throws Exception {
+
+	    Session session = this.sessionFactory.getCurrentSession();
+
+	    String sql = "SELECT work_hours_time_work, work_type " +
+	                 "FROM work_hours " +
+	                 "WHERE user_create = :user " +
+	                 "AND work_hours_type = 1 " +
+	                 "AND DATE(work_hours_time_work) = CURDATE() " +
+	                 "ORDER BY work_hours_time_work ASC LIMIT 1";
+
+	    SQLQuery query = session.createSQLQuery(sql);
+	    query.setParameter("user", user);
+	    query.setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
+
+	    return query.list();
+	}
+	
+	@Override
+	public List<Map<String, Object>> getTodayCheckOut(String user) throws Exception {
+
+	    Session session = this.sessionFactory.getCurrentSession();
+
+	    String sql = "SELECT work_hours_time_work, work_type " +
+	                 "FROM work_hours " +
+	                 "WHERE user_create = :user " +
+	                 "AND work_hours_type = 2 " +
+	                 "AND DATE(work_hours_time_work) = CURDATE() " +
+	                 "ORDER BY work_hours_time_work DESC LIMIT 1";
+
+	    SQLQuery query = session.createSQLQuery(sql);
+	    query.setParameter("user", user);
+	    query.setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
+
+	    return query.list();
+	}
+	
+	@Override
+	public List<Map<String, Object>> getLastdayCheckIn(String user, LocalDate lastWorkDate) throws Exception {
+
+	    Session session = this.sessionFactory.getCurrentSession();
+
+	    String sql = "SELECT work_hours_time_work, work_type " +
+	                 "FROM work_hours " +
+	                 "WHERE user_create = :user " +
+	                 "AND work_hours_type = 1 " +
+	                 "AND DATE(work_hours_time_work) = :workDate " +
+	                 "ORDER BY work_hours_time_work ASC LIMIT 1";
+
+	    SQLQuery query = session.createSQLQuery(sql);
+	    query.setParameter("user", user);
+	    query.setParameter("workDate", lastWorkDate.toString());
+	    query.setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
+
+	    return query.list();
+	}
+	
+	
+	@Override
+	public List<Map<String, Object>> getLastdayCheckOut(String user, LocalDate lastWorkDate) throws Exception {
+
+	    Session session = this.sessionFactory.getCurrentSession();
+
+	    String sql = "SELECT work_hours_time_work, work_type " +
+	                 "FROM work_hours " +
+	                 "WHERE user_create = :user " +
+	                 "AND work_hours_type = 2 " +
+	                 "AND DATE(work_hours_time_work) = :workDate " +
+	                 "ORDER BY work_hours_time_work DESC LIMIT 1";
+
+	    SQLQuery query = session.createSQLQuery(sql);
+	    query.setParameter("user", user);
+	    query.setParameter("workDate", lastWorkDate.toString());
+	    query.setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
+
+	    return query.list();
+	}
+
+	@Override
+	public List<Map<String, Object>> getWorkHourDaily(String userId, Date date) throws Exception {
+
+	    Session session = this.sessionFactory.getCurrentSession();
+	    List<Map<String, Object>> workHourList = null;
+
+	    try {
+
+	        String sql = "SELECT * FROM work_hours WHERE DATE(work_hours_time_work) = :date";
+
+	        if (!"all".equals(userId)) {
+	            sql += " AND user_create = :userId";
+	        }
+
+	        SQLQuery query = session.createSQLQuery(sql);
+	        query.setParameter("date", date);
+
+	        if (!"all".equals(userId)) {
+				query.setParameter("userId", userId);
+	        }
+
+	        query.setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
+	        workHourList = query.list();
+
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	    }
+
+	    return workHourList;
 	}
 
 }

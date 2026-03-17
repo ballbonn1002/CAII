@@ -201,6 +201,28 @@ public class LeaveDAOImpl implements LeaveDAO {
 	}
 
 	@Override
+	public List<Leaves> findLeaveByUserId(String userId) throws Exception {
+		Session session = this.sessionFactory.getCurrentSession();
+		List<Leaves> modalLeaveList = null;
+		try {
+//			String sql = "SELECT leaves.leave_id, leaves.leave_type_id, leaves.leave_status_id, leaves.half_day, leaves.user_id, user.name, leaves.appr_user_id, "
+//					+ "leaves.description, leaves.reason, leaves.start_time, leaves.end_time, leaves.start_date, leaves.end_date, leaves.no_day, "
+//					+ "leaves.leave_file, leaves.user_create, leaves.user_update, leaves.time_create, leaves.time_update, file.name AS file_name, file.type "
+//					+ "FROM leaves LEFT JOIN file ON leaves.leave_file = file.file_id "
+//					+ "LEFT JOIN user ON leaves.user_id = user.id WHERE leave_id = " + leaveId;
+			String sql = "SELECT * from leaves where user_id = :userId";
+			SQLQuery query = session.createSQLQuery(sql);
+			query.setParameter("userId", userId);
+			query.addEntity(Leaves.class);
+			modalLeaveList = query.list();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return modalLeaveList;
+
+	}
+
+	@Override
 	public void update(Leaves leaves) throws Exception {
 		Session session = this.sessionFactory.getCurrentSession();
 		session.clear();
@@ -276,8 +298,8 @@ public class LeaveDAOImpl implements LeaveDAO {
 					+ " leaves.half_day, leaves.no_day, leaves.reason, leaves.user_update, \n"
 					+ " leaves.start_date, leaves.time_create, leaves.leave_status_id, leaves.user_id, \n"
 					+ " leaves.appr_user_id, leaves.description, leaves.leave_file, \n"
-					+ " leave_type.leave_type_name, \n" + " user.id, user.name, user.employee_id , user.name_en \n" + " FROM leaves \n"
-					+ " LEFT JOIN leave_type ON leaves.leave_type_id = leave_type.leave_type_id \n"
+					+ " leave_type.leave_type_name, \n" + " user.id, user.name, user.employee_id , user.name_en \n"
+					+ " FROM leaves \n" + " LEFT JOIN leave_type ON leaves.leave_type_id = leave_type.leave_type_id \n"
 					+ "  LEFT JOIN user ON user.id = leaves.user_id  \n"
 					// + "WHERE leaves.user_id is not null\n"
 					+ " GROUP BY leaves.leave_id \n" + " ORDER BY leaves.leave_id DESC \n" + " LIMIT 20 \n";
@@ -511,23 +533,23 @@ public class LeaveDAOImpl implements LeaveDAO {
 	    List<Map<String, Object>> search = null;
 	    try {
 	        StringBuilder sql = new StringBuilder(
-	            "SELECT leaves.leave_id, leaves.user_id, user.name, leaves.leave_status_id, leave_type.leave_type_name, leaves.half_day, leaves.start_date, "
+	            "SELECT leaves.leave_id, leaves.user_id, user.name, leaves.leave_status_id, leaves.leave_type_id, leave_type.leave_type_name, leaves.half_day, leaves.start_date, "
 	            + "leaves.start_time, leaves.end_time, leaves.end_date, leaves.no_day ,user.path, leaves.time_create, leaves.description "
 	            + "FROM leaves LEFT JOIN leave_type ON leave_type.leave_type_id = leaves.leave_type_id LEFT JOIN user ON leaves.user_id = user.id "
 	            + "WHERE leaves.start_date BETWEEN :startDate AND :endDate ");
 
-//	        sql.append("ORDER BY leaves.leave_status_id ASC, leaves.start_date DESC");
-	        sql.append("ORDER BY leaves.start_date DESC, leaves.leave_status_id ASC");
+	        sql.append("ORDER BY leaves.leave_status_id ASC, leaves.start_date DESC");
+//	        sql.append("ORDER BY leaves.start_date DESC, leaves.leave_status_id ASC");
 
-	        SQLQuery query = session.createSQLQuery(sql.toString());
-	        query.setParameter("startDate", startDate);
-	        query.setParameter("endDate", endDate);
-	        query.setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
-	        search = query.list();
-	    } catch (Exception e) {
-	        e.printStackTrace();
-	    }
-	    return search;
+			SQLQuery query = session.createSQLQuery(sql.toString());
+			query.setParameter("startDate", startDate);
+			query.setParameter("endDate", endDate);
+			query.setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
+			search = query.list();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return search;
 	}
 
 	// this is override method use for search leave by type and all user
@@ -761,33 +783,28 @@ public class LeaveDAOImpl implements LeaveDAO {
 	}
 
 	// use for search unapprove by type
-	/*public List<Map<String, Object>> searchtable3(Timestamp startDate, Timestamp endDate, String userId, String type)
-			throws Exception {
-		Session session = this.sessionFactory.getCurrentSession();
-		List<Map<String, Object>> search = null;
-		try {
-			String sql = "SELECT leaves.description, leaves.leave_id,leaves.time_create,leaves.user_id,leaves.start_date, "
-					+ " user.path, leaves.end_date, leaves.no_day ,leaves.leave_status_id,leave_type.leave_type_name,leaves.leave_type_id "
-					+ " FROM leaves " + " LEFT JOIN leave_type ON leave_type.leave_type_id = leaves.leave_type_id "
-					+ " LEFT JOIN user ON leaves.user_id = user.id "
-					+ " WHERE user_id = :userId AND leaves.start_date BETWEEN :startDate AND :endDate AND leaves.leave_type_id = :type "
-					+ " ORDER BY start_date DESC ";
-			SQLQuery query = session.createSQLQuery(sql);
-			query.setParameter("startDate", startDate);
-			query.setParameter("endDate", endDate);
-			query.setParameter("userId", userId);
-			query.setParameter("type", type);
-
-			query.setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
-			search = query.list();
-		} catch (
-
-		Exception e) {
-			e.printStackTrace();
-		}
-		return search;
-	}
-	*/
+	/*
+	 * public List<Map<String, Object>> searchtable3(Timestamp startDate, Timestamp
+	 * endDate, String userId, String type) throws Exception { Session session =
+	 * this.sessionFactory.getCurrentSession(); List<Map<String, Object>> search =
+	 * null; try { String sql =
+	 * "SELECT leaves.description, leaves.leave_id,leaves.time_create,leaves.user_id,leaves.start_date, "
+	 * +
+	 * " user.path, leaves.end_date, leaves.no_day ,leaves.leave_status_id,leave_type.leave_type_name,leaves.leave_type_id "
+	 * + " FROM leaves " +
+	 * " LEFT JOIN leave_type ON leave_type.leave_type_id = leaves.leave_type_id " +
+	 * " LEFT JOIN user ON leaves.user_id = user.id " +
+	 * " WHERE user_id = :userId AND leaves.start_date BETWEEN :startDate AND :endDate AND leaves.leave_type_id = :type "
+	 * + " ORDER BY start_date DESC "; SQLQuery query = session.createSQLQuery(sql);
+	 * query.setParameter("startDate", startDate); query.setParameter("endDate",
+	 * endDate); query.setParameter("userId", userId); query.setParameter("type",
+	 * type);
+	 * 
+	 * query.setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
+	 * search = query.list(); } catch (
+	 * 
+	 * Exception e) { e.printStackTrace(); } return search; }
+	 */
 	@Override
 	public List<Map<String, Object>> searchtable3(String userId) throws Exception {
 		Session session = this.sessionFactory.getCurrentSession();
@@ -1193,19 +1210,12 @@ public class LeaveDAOImpl implements LeaveDAO {
 //				.add(Restrictions.lt("endDate", endDate)).addOrder(Order.desc("leaveId")).list();
 		Session session = this.sessionFactory.getCurrentSession();
 		List<Map<String, Object>> searchbydate = null;
-		String sql = "SELECT leaves.*, " +
-	             "leave_type.leave_type_name, " +
-	             "user.name, " +
-	             "file.path AS file_path " +
-	             "FROM leaves " +
-	             "LEFT JOIN leave_type ON leaves.leave_type_id = leave_type.leave_type_id " +
-	             "LEFT JOIN user ON leaves.user_id = user.id " +
-	             "LEFT JOIN file ON leaves.leave_file = file.file_id " +
-	             "WHERE leaves.user_id = '" + userId + "' " +
-	             "AND leaves.start_date >= '" + startDate + "' " +
-	             "AND leaves.start_date <= '" + endDate + "' " +
-	             "ORDER BY leaves.time_create DESC";
-		//System.out.println(sql);
+		String sql = "SELECT leaves.*, " + "leave_type.leave_type_name, " + "user.name, " + "file.path AS file_path "
+				+ "FROM leaves " + "LEFT JOIN leave_type ON leaves.leave_type_id = leave_type.leave_type_id "
+				+ "LEFT JOIN user ON leaves.user_id = user.id " + "LEFT JOIN file ON leaves.leave_file = file.file_id "
+				+ "WHERE leaves.user_id = '" + userId + "' " + "AND leaves.start_date >= '" + startDate + "' "
+				+ "AND leaves.start_date <= '" + endDate + "' " + "ORDER BY leaves.time_create DESC";
+		// System.out.println(sql);
 		SQLQuery query = session.createSQLQuery(sql);
 		query.setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
 		searchbydate = query.list();
@@ -1213,7 +1223,8 @@ public class LeaveDAOImpl implements LeaveDAO {
 	}
 
 	@Override
-	public List<Map<String, Object>> myLeavesList(String userId, Timestamp startDate, Timestamp endDate, String status) {
+	public List<Map<String, Object>> myLeavesList(String userId, Timestamp startDate, Timestamp endDate,
+			String status) {
 		Session session = this.sessionFactory.getCurrentSession();
 		Criteria cr = session.createCriteria(Leaves.class);
 
@@ -1687,7 +1698,7 @@ public class LeaveDAOImpl implements LeaveDAO {
 	    List<Map<String, Object>> leavelist = null;
 	    try {
 	        StringBuilder sql = new StringBuilder(
-	            "SELECT leaves.leave_id, leaves.user_id, user.name, leaves.leave_status_id, leave_type.leave_type_name, "
+	            "SELECT leaves.leave_id, leaves.user_id, user.name, leaves.leave_status_id, leaves.leave_type_id, leave_type.leave_type_name, "
 	            + "leaves.half_day, leaves.start_date, leaves.start_time, leaves.end_time, leaves.end_date, leaves.no_day, "
 	            + "leaves.appr_user_id, user.path, leaves.time_create, leaves.description "
 	            + "FROM leaves LEFT JOIN leave_type ON leave_type.leave_type_id = leaves.leave_type_id "
@@ -1696,20 +1707,20 @@ public class LeaveDAOImpl implements LeaveDAO {
 	            + "AND (user.manager_id = :manager OR leaves.appr_user_id = :manager) "
 	        );
 
-//	        sql.append("ORDER BY leaves.leave_status_id ASC, leaves.start_date DESC");
-	        sql.append("ORDER BY leaves.start_date DESC, leaves.leave_status_id ASC");
+	        sql.append("ORDER BY leaves.leave_status_id ASC, leaves.start_date DESC");
+//	        sql.append("ORDER BY leaves.start_date DESC, leaves.leave_status_id ASC");
 
-	        SQLQuery query = session.createSQLQuery(sql.toString());
-	        query.setParameter("startDate", startDate);
-	        query.setParameter("endDate", endDate);
-	        query.setParameter("manager", manager);
-	        query.setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
-	        
-	        leavelist = query.list();
-	    } catch (Exception e) {
-	        e.printStackTrace();
-	    }
-	    return leavelist;
+			SQLQuery query = session.createSQLQuery(sql.toString());
+			query.setParameter("startDate", startDate);
+			query.setParameter("endDate", endDate);
+			query.setParameter("manager", manager);
+			query.setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
+
+			leavelist = query.list();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return leavelist;
 	}
 
 	@Override
@@ -1719,7 +1730,7 @@ public class LeaveDAOImpl implements LeaveDAO {
 		List<Map<String, Object>> leavelist = null;
 		try {
 			StringBuilder sql = new StringBuilder(
-					"SELECT leaves.leave_id, leaves.user_id, user.name, leaves.leave_status_id, leave_type.leave_type_name, leaves.half_day, "
+					"SELECT leaves.leave_id, leaves.user_id, user.name, leaves.leave_status_id, leaves.leave_type_id, leave_type.leave_type_name, leaves.half_day, "
 					+ "leaves.start_date, leaves.start_time, leaves.end_time, leaves.end_date, leaves.no_day , file.path, leaves.time_create, "
 					+ "leaves.description FROM leaves LEFT JOIN leave_type ON leave_type.leave_type_id = leaves.leave_type_id "
 					+ "LEFT JOIN user ON leaves.user_id = user.id LEFT JOIN file ON leaves.leave_file = file.file_id "
@@ -1727,26 +1738,26 @@ public class LeaveDAOImpl implements LeaveDAO {
 			if(manager != null && !manager.isEmpty()) {
 				sql.append("AND leaves.appr_user_id = :manager ");
 			}
-			if(status != null && !status.isEmpty() && !status.equals("4")) {
+			if (status != null && !status.isEmpty() && !status.equals("4")) {
 				sql.append("AND leaves.leave_status_id = :status ");
 			}
-			if(leaveType != null && !leaveType.isEmpty() && !leaveType.equals("allType")) {
+			if (leaveType != null && !leaveType.isEmpty() && !leaveType.equals("allType")) {
 				sql.append("AND leaves.leave_type_id = :leaveType ");
 			}
-//			sql.append("ORDER BY leaves.leave_status_id ASC, leaves.start_date DESC; ");
-			sql.append("ORDER BY leaves.start_date DESC, leaves.leave_status_id ASC; ");
+			sql.append("ORDER BY leaves.leave_status_id ASC, leaves.start_date DESC; ");
+//			sql.append("ORDER BY leaves.start_date DESC, leaves.leave_status_id ASC; ");
 			
 			SQLQuery query = session.createSQLQuery(sql.toString());
 			query.setParameter("startDate", startDate);
 			query.setParameter("endDate", endDate);
-			
-			if(manager != null && !manager.isEmpty()) {
+
+			if (manager != null && !manager.isEmpty()) {
 				query.setParameter("manager", manager);
 			}
-			if(status != null && !status.isEmpty() && !status.equals("4")) {
+			if (status != null && !status.isEmpty() && !status.equals("4")) {
 				query.setParameter("status", status);
 			}
-			if(leaveType != null && !leaveType.isEmpty() && !leaveType.equals("allType")) {
+			if (leaveType != null && !leaveType.isEmpty() && !leaveType.equals("allType")) {
 				query.setParameter("leaveType", leaveType);
 			}
 			query.setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
@@ -1976,56 +1987,44 @@ public class LeaveDAOImpl implements LeaveDAO {
 //		return workingTime;
 //	}
 
-	public List<Map<String, Object>> getLeaveListByDateAndIdSiteJob(String dateStart, String dateEnd, String idSiteJob) throws Exception {
+	public List<Map<String, Object>> getLeaveListByDateAndIdSiteJob(String dateStart, String dateEnd, String idSiteJob)
+			throws Exception {
 		Session session = this.sessionFactory.getCurrentSession();
 		List<Map<String, Object>> list = null;
 		try {
-			String sql = "SELECT\n" +
-					"	distinct lv.leave_id,\n" +
-					"	lv.user_id AS id,\n" +
-					"	u.employee_id,\n" +
-					"	u.name,\n" +
-					" 	CASE\n" +
-					" 	    WHEN u.employee_id is not null && u.employee_id != '' && u.name_en is not null && u.name_en != ''\n" +
-					" 	    	&& u.name is not null && u.name != ''\n" +
-					" 	    	THEN concat(u.employee_id, ' - ', u.name_en, ' - ', u.name)\n" +
-					" 	    WHEN u.employee_id is not null && u.employee_id != ''\n" +
-					" 	    	&& ( u.name_en is null || u.name_en = '' )\n" +
-					" 	    	&& ( u.name is null || u.name = '' )\n" +
-					" 	    	THEN u.employee_id\n" +
-					" 	    WHEN u.employee_id is not null && u.employee_id != ''\n" +
-					" 	    	&& u.name_en is not null && u.name_en != ''\n" +
-					" 	    	&& ( u.name is null || u.name = '' )\n" +
-					" 	    	THEN concat(u.employee_id, ' - ', u.name_en)\n" +
-					" 	    WHEN u.employee_id is not null && u.employee_id != ''\n" +
-					" 	    	&& ( u.name_en is null || u.name_en = '' )\n" +
-					" 	    	&& u.name is not null && u.name != ''\n" +
-					" 	    	THEN concat(u.employee_id, ' - ', u.name)\n" +
-					" 	    WHEN ( u.employee_id is null || u.employee_id = '' )\n" +
-					" 	    	&& u.name_en is not null && u.name_en != ''\n" +
-					" 	    	&& ( u.name is null || u.name = '' )\n" +
-					" 	    	THEN u.name_en\n" +
-					" 	    WHEN ( u.employee_id is null || u.employee_id = '' )\n" +
-					" 	    	&& u.name_en is not null && u.name_en != ''\n" +
-					" 	    	&& u.name is not null && u.name != ''\n" +
-					" 	    	THEN concat(u.name_en, ' - ', u.name)\n" +
-					" 	    WHEN ( u.employee_id is null || u.employee_id = '' )\n" +
-					" 	    	&& ( u.name_en is null || u.name_en = '' )\n" +
-					" 	    	&& u.name is not null && u.name != ''\n" +
-					" 	    	THEN u.name\n" +
-					" 	    ELSE u.id\n" +
-					" 	END AS name_display,\n" +
-					"	lv.leave_type_id,\n" +
-					"	lt.leave_type_name\n" +
-					"FROM leaves lv\n" +
-					"INNER JOIN leave_type lt ON lv.leave_type_id = lt.leave_type_id\n" +
-					"INNER JOIN job_site_team jst ON lv.user_id = jst.user_id\n" +
-					"INNER JOIN user u ON lv.user_id = u.id\n" +
-					"WHERE lv.start_date >= :dateStart\n" +
-					"AND lv.start_date < :dateEnd\n" +
-					"AND lv.user_id in (\n" +
-					"	select jst.user_id from job_site_team jst where jst.id_sitejob = :idSiteJob\n" +
-					")";
+			String sql = "SELECT\n" + "	distinct lv.leave_id,\n" + "	lv.user_id AS id,\n" + "	u.employee_id,\n"
+					+ "	u.name,\n" + " 	CASE\n"
+					+ " 	    WHEN u.employee_id is not null && u.employee_id != '' && u.name_en is not null && u.name_en != ''\n"
+					+ " 	    	&& u.name is not null && u.name != ''\n"
+					+ " 	    	THEN concat(u.employee_id, ' - ', u.name_en, ' - ', u.name)\n"
+					+ " 	    WHEN u.employee_id is not null && u.employee_id != ''\n"
+					+ " 	    	&& ( u.name_en is null || u.name_en = '' )\n"
+					+ " 	    	&& ( u.name is null || u.name = '' )\n" + " 	    	THEN u.employee_id\n"
+					+ " 	    WHEN u.employee_id is not null && u.employee_id != ''\n"
+					+ " 	    	&& u.name_en is not null && u.name_en != ''\n"
+					+ " 	    	&& ( u.name is null || u.name = '' )\n"
+					+ " 	    	THEN concat(u.employee_id, ' - ', u.name_en)\n"
+					+ " 	    WHEN u.employee_id is not null && u.employee_id != ''\n"
+					+ " 	    	&& ( u.name_en is null || u.name_en = '' )\n"
+					+ " 	    	&& u.name is not null && u.name != ''\n"
+					+ " 	    	THEN concat(u.employee_id, ' - ', u.name)\n"
+					+ " 	    WHEN ( u.employee_id is null || u.employee_id = '' )\n"
+					+ " 	    	&& u.name_en is not null && u.name_en != ''\n"
+					+ " 	    	&& ( u.name is null || u.name = '' )\n" + " 	    	THEN u.name_en\n"
+					+ " 	    WHEN ( u.employee_id is null || u.employee_id = '' )\n"
+					+ " 	    	&& u.name_en is not null && u.name_en != ''\n"
+					+ " 	    	&& u.name is not null && u.name != ''\n"
+					+ " 	    	THEN concat(u.name_en, ' - ', u.name)\n"
+					+ " 	    WHEN ( u.employee_id is null || u.employee_id = '' )\n"
+					+ " 	    	&& ( u.name_en is null || u.name_en = '' )\n"
+					+ " 	    	&& u.name is not null && u.name != ''\n" + " 	    	THEN u.name\n"
+					+ " 	    ELSE u.id\n" + " 	END AS name_display,\n" + "	lv.leave_type_id,\n"
+					+ "	lt.leave_type_name\n" + "FROM leaves lv\n"
+					+ "INNER JOIN leave_type lt ON lv.leave_type_id = lt.leave_type_id\n"
+					+ "INNER JOIN job_site_team jst ON lv.user_id = jst.user_id\n"
+					+ "INNER JOIN user u ON lv.user_id = u.id\n" + "WHERE lv.start_date >= :dateStart\n"
+					+ "AND lv.start_date < :dateEnd\n" + "AND lv.user_id in (\n"
+					+ "	select jst.user_id from job_site_team jst where jst.id_sitejob = :idSiteJob\n" + ")";
 			SQLQuery query = session.createSQLQuery(sql);
 			query.setParameter("dateStart", dateStart);
 			query.setParameter("dateEnd", dateEnd);
@@ -2039,7 +2038,8 @@ public class LeaveDAOImpl implements LeaveDAO {
 	}
 
 	@Override
-	public List<Map<String, Object>> findUserLeaveByTypeAndStatus(Timestamp startDate, Timestamp endDate, String userId, String status, String type) throws Exception {
+	public List<Map<String, Object>> findUserLeaveByTypeAndStatus(Timestamp startDate, Timestamp endDate, String userId,
+			String status, String type) throws Exception {
 		Session session = this.sessionFactory.getCurrentSession();
 		List<Map<String, Object>> leavelist = null;
 		try {
@@ -2048,31 +2048,29 @@ public class LeaveDAOImpl implements LeaveDAO {
 							+ "leaves.start_date, leaves.end_date, leaves.start_time, leaves.end_time, leaves.description, leaves.time_create, file.path "
 							+ "FROM leaves LEFT JOIN leave_type ON leave_type.leave_type_id = leaves.leave_type_id "
 							+ "LEFT JOIN user ON leaves.user_id = user.id "
-							+ "LEFT JOIN file ON leaves.leave_file = file.file_id "
-							+ "WHERE leaves.user_id = :userId "
-							+ "AND (leaves.start_date <= :endDate AND leaves.end_date >= :startDate) " 
-					);
-			
-			if(status != null && !status.isEmpty() && !status.equals("4")) {
+							+ "LEFT JOIN file ON leaves.leave_file = file.file_id " + "WHERE leaves.user_id = :userId "
+							+ "AND (leaves.start_date <= :endDate AND leaves.end_date >= :startDate) ");
+
+			if (status != null && !status.isEmpty() && !status.equals("4")) {
 				sql.append("AND leaves.leave_status_id = :status ");
 			}
-			
-			if(type != null && !type.isEmpty() && !type.equals("allType")) {
+
+			if (type != null && !type.isEmpty() && !type.equals("allType")) {
 				sql.append("AND leaves.leave_type_id = :leaveType ");
 			}
 
-	        sql.append("ORDER BY leaves.start_date DESC, leaves.leave_status_id ASC");
+			sql.append("ORDER BY leaves.start_date DESC, leaves.leave_status_id ASC");
 
 			SQLQuery query = session.createSQLQuery(sql.toString());
 			query.setParameter("startDate", startDate);
 			query.setParameter("endDate", endDate);
 			query.setParameter("userId", userId);
-			
-			if(status != null && !status.isEmpty() && !status.equals("4")) {
+
+			if (status != null && !status.isEmpty() && !status.equals("4")) {
 				query.setParameter("status", status);
 			}
-			
-			if(type != null && !type.isEmpty() && !type.equals("allType")) {
+
+			if (type != null && !type.isEmpty() && !type.equals("allType")) {
 				query.setParameter("leaveType", type);
 			}
 			query.setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
@@ -2081,6 +2079,39 @@ public class LeaveDAOImpl implements LeaveDAO {
 			e.printStackTrace();
 		}
 		return leavelist;
+	}
+	
+	@Override
+	public List<Map<String, Object>> findLeaveByUserAndDate(String userId, String date) throws Exception {
+
+	    Session session = this.sessionFactory.getCurrentSession();
+	    List<Map<String, Object>> result = null;
+
+	    try {
+
+	        String sql = "SELECT l.leave_id, l.leave_type_id, lt.leave_type_name, l.half_day, l.start_date, l.end_date, l.description, l.leave_status_id " +
+	                     "FROM leaves l " +
+	                     "LEFT JOIN leave_type lt ON l.leave_type_id = lt.leave_type_id " +
+	                     "WHERE l.user_id = :userId " +
+	                     "AND DATE(:date) BETWEEN DATE(l.start_date) AND DATE(l.end_date) " +
+	                     "AND l.leave_status_id IN ('0','1') "+
+	                     "ORDER BY l.time_create DESC " +
+	                     "LIMIT 1";;
+
+	        SQLQuery query = session.createSQLQuery(sql);
+
+	        query.setParameter("userId", userId);
+	        query.setParameter("date", date);
+
+	        query.setResultTransformer(org.hibernate.transform.Transformers.ALIAS_TO_ENTITY_MAP);
+
+	        result = query.list();
+
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	    }
+
+	    return result;
 	}
 	
 }

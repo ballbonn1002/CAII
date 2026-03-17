@@ -249,7 +249,7 @@
 
 		<!-- Listing -->
 		<action name="new_myleave_list"
-			class="com.cubesofttech.action.LeaveAction" method="New_list">
+			class="com.cubesofttech.action.LeaveAction" method="New_myleave">
 			<result name="success" type="tiles">new_myleave_list</result>
 			<result name="error">/index.jsp</result>
 		</action>
@@ -350,7 +350,84 @@
 
 		<!-- MyLeave =========================================================================================================== -->
 
+		<!-- Time Sheet =========================================================================================================== -->
 
+		<!-- Listing=========================================================================================================== -->
+		<action name="timeSheet"
+			class="com.cubesofttech.action.TimeSheetAction"
+			method="timeSheetList">
+			<result name="success" type="tiles">time_sheet_list</result>
+			<result name="error">/index.jsp</result>
+		</action>
+		<!-- Listing=========================================================================================================== -->
+
+		<!-- Search =========================================================================================================== -->
+		<action name="timeSheetSearch"
+			class="com.cubesofttech.action.TimeSheetAction"
+			method="timeSheetSearch">
+			<result name="success" type="tiles">time_sheet_list</result>
+			<result name="error">/index.jsp</result>
+		</action>
+		<!-- Search =========================================================================================================== -->
+
+		<!-- Add =========================================================================================================== -->
+		<action name="addTimeSheet"
+			class="com.cubesofttech.action.TimeSheetAction" method="addTimeSheet">
+			<result name="success" type="tiles">time_sheet_add</result>
+			<result name="error">/index.jsp</result>
+		</action>
+		<!-- Add =========================================================================================================== -->
+
+		<!-- Save =========================================================================================================== -->
+		<action name="saveTimeSheet"
+			class="com.cubesofttech.action.TimeSheetAction"
+			method="saveTimeSheet">
+			<result name="success" type="redirectAction">
+				<param name="actionName">timeSheet</param>
+			</result>
+			<result name="error">/index.jsp</result>
+		</action>
+		<!-- Save =========================================================================================================== -->
+
+		<!-- Delete =========================================================================================================== -->
+		<action name="deleteTimeSheet"
+			class="com.cubesofttech.action.TimeSheetAction"
+			method="deleteTimeSheet">
+			<result name="success" type="redirectAction">
+				<param name="actionName">timeSheet</param>
+			</result>
+			<result name="error">/index.jsp</result>
+		</action>
+		<!-- Delete =========================================================================================================== -->
+
+		<!-- Update =========================================================================================================== -->
+		<action name="updateTimeSheet"
+			class="com.cubesofttech.action.TimeSheetAction"
+			method="updateTimeSheet">
+			<result type="json">
+				<param name="root">newTimeSheetMap</param>
+			</result>
+		</action>
+		<!-- Update =========================================================================================================== -->
+
+		<!-- List Function =========================================================================================================== -->
+		<action name="getFunctionOfProject"
+			class="com.cubesofttech.action.TimeSheetAction" method="getFunction">
+			<result type="json">
+				<param name="root">projectFunctions</param>
+			</result>
+		</action>
+		<!-- List Function =========================================================================================================== -->
+
+		<!-- Export =========================================================================================================== -->
+		<action name="timeSheetExport"
+			class="com.cubesofttech.action.TimeSheetAction"
+			method="exportTimeSheet">
+			<result name="none" />
+		</action>
+		<!-- Export =========================================================================================================== -->
+
+		<!-- Time Sheet =========================================================================================================== -->
 
 		<!-- Leave Type =========================================================================================================== -->
 
@@ -470,6 +547,27 @@
 
 		<!-- Leave Approve ================================================================================================== -->
 
+		<!-- Daily Monitor ================================================================================================== -->
+
+		<!-- List ================================================================================================== -->
+		<action name="dailyMonitor"
+			class="com.cubesofttech.action.DailyMonitorAction"
+			method="dailyMonitorList">
+			<result name="success" type="tiles">daily_monitor</result>
+			<result name="error">/index.jsp</result>
+		</action>
+		<!-- List ================================================================================================== -->
+		<!-- Search ================================================================================================== -->
+		<action name="dailyMonitorSearch"
+			class="com.cubesofttech.action.DailyMonitorAction"
+			method="dailyMonitorSearch">
+			<result name="success" type="tiles">daily_monitor</result>
+			<result name="error">/index.jsp</result>
+		</action>
+		<!-- Search ================================================================================================== -->
+
+		<!-- Daily Monitor ================================================================================================== -->
+
 		<!-- Role Management ================================================================================================== -->
 		<action name="role-list"
 			class="com.cubesofttech.action.RoleAction" method="list">
@@ -502,9 +600,10 @@
 			</result>
 			<result name="error">/index.jsp</result>
 		</action>
-		
+
 		<action name="role-perform-status-update"
-			class="com.cubesofttech.action.RoleAction" method="performEditStatusUpdate">
+			class="com.cubesofttech.action.RoleAction"
+			method="performEditStatusUpdate">
 			<result name="success">/pages-back/common/json.jsp</result>
 			<result name="error">/index.jsp</result>
 		</action>
@@ -731,16 +830,16 @@
 			<result name="success" type="tiles">CheckAllCalendar</result>
 			<result name="error">/index.jsp</result>
 		</action>
-		<action name="NewCheckAllCalendar"
+		<action name="Calendar_Checklist"
 			class="com.cubesofttech.action.WorkHoursAction"
 			method="CheckAllCalendar2">
 			<result name="success" type="tiles">NewCheckAllCalendar</result>
 			<result name="error">/index.jsp</result>
 		</action>
-		<action name="TestSearchAllinCalendar"
+		<action name="SearchAllinCalendar"
 			class="com.cubesofttech.action.WorkHoursAction"
-			method="CheckAllCalendar">
-			<result name="success" type="tiles">CheckAllCalendar</result>
+			method="CheckAllCalendar2">
+			<result name="success" type="tiles">NewCheckAllCalendar</result>
 			<result name="error">/index.jsp</result>
 		</action>
 		<action name="new_modalLeaveStatus"
@@ -922,6 +1021,19 @@
 			class="com.cubesofttech.action.UserAction"
 			method="validate_current_password">
 			<result name="none" type="httpheader" />
+		</action>
+
+		<action name="update_signature"
+			class="com.cubesofttech.action.UserAction" method="update_signature">
+			<result name="success" type="redirectAction">my_profile</result>
+			<result name="error">/index.jsp</result>
+		</action>
+
+		<action name="signature_perform_delete"
+			class="com.cubesofttech.action.UserAction"
+			method="signature_perform_delete">
+			<result name="success" type="redirectAction">my_profile</result>
+			<result name="error" type="tiles">/index.jsp</result>
 		</action>
 
 		<!-- JOB SITE -->
@@ -1139,68 +1251,7 @@
 			<result name="success" type="redirectAction">article_feed</result>
 			<result name="error" type="tiles">/index.jsp</result>
 		</action>
-
-		<!-- Overtime Request -->
-		<action name="overtime_request_list"
-			class="com.cubesofttech.action.OvertimeAction" method="list">
-			<result name="success" type="tiles">overtime_request_list</result>
-			<result name="login">/index.jsp</result>
-			<result name="error">/index.jsp</result>
-		</action>
-
-		<action name="save_overtime"
-			class="com.cubesofttech.action.OvertimeAction" method="save">
-			<result name="success" type="redirectAction">overtime_request_list</result>
-			<result name="error">/index.jsp</result>
-			<result name="login" type="redirect">/index.jsp</result>
-		</action>
-
-		<action name="overtime_request_add"
-			class="com.cubesofttech.action.OvertimeAction" method="add">
-			<result name="success" type="tiles">overtime_request_add</result>
-		</action>
-
-		<action name="overtime_request_delete"
-			class="com.cubesofttech.action.OvertimeAction" method="delete">
-			<result name="success" type="redirect">overtime_request_list</result>
-			<result name="error">/index.jsp</result>
-		</action>
-
-		<action name="overtime_request_update"
-			class="com.cubesofttech.action.OvertimeAction" method="save">
-			<result name="success" type="redirectAction">overtime_request_list</result>
-			<result name="error">/index.jsp</result>
-		</action>
-
-		<action name="overtime_request_edit"
-			class="com.cubesofttech.action.OvertimeAction" method="edit">
-			<result name="success" type="tiles">overtime_request_edit</result>
-			<result name="error">/index.jsp</result>
-		</action>
-
-		<!-- Overtime Approve -->
-		<action name="overtime_approve"
-			class="com.cubesofttech.action.OvertimeAction"
-			method="overtimeApprove">
-			<result name="success" type="tiles">overtime_approve</result>
-			<result name="login">/index.jsp</result>
-			<result name="error">/index.jsp</result>
-		</action>
-
-		<action name="overtime_approve_form"
-			class="com.cubesofttech.action.OvertimeAction"
-			method="overtimeApproveForm">
-			<result name="success" type="tiles">overtime_approve_form</result>
-			<result name="error">/index.jsp</result>
-		</action>
-
-		<action name="overtime_approve_update"
-			class="com.cubesofttech.action.OvertimeAction"
-			method="update_approve">
-			<result name="success" type="redirectAction">overtime_approve</result>
-			<result name="error">/index.jsp</result>
-		</action>
-
+		
 	</package>
 
 </struts>

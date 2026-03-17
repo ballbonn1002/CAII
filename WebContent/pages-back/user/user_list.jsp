@@ -39,7 +39,7 @@
             <div id="kt_app_toolbar" class="app-toolbar py-2 py-lg-3">
                 <div id="kt_app_toolbar_container" class="app-container container-fluid d-flex flex-stack align-items-center justify-content-between">
                     <div class="page-title d-flex flex-column justify-content-center">
-                        <h1 class="page-heading d-flex text-gray-900 fw-bold fs-3 my-0">Employee Profile</h1>
+                        <h1 class="page-heading d-flex text-gray-700 fw-semibold my-0">Employee Profile</h1>
                         <ul class="breadcrumb breadcrumb-separatorless fw-semibold fs-7 my-0 pt-1">
                             <li class="breadcrumb-item text-muted"><a href="${pageContext.request.contextPath}/demo_dashboard" class="text-muted text-hover-primary">Home</a></li>
                             <li class="breadcrumb-item"><span class="bullet bg-gray-500 w-5px h-2px"></span></li>
@@ -84,24 +84,98 @@
                                                    <option value="All">All</option> 
                                                     <optgroup label="Enable">
                                                         <c:forEach var="user" items="${cubesoftUser}">
-                                                            <c:if test="${user.enable == 1 && user.flag_search == '1'}">
+                                                           <%--  <c:if test="${user.enable == 1 && user.flag_search == '1' && not empty user.employee_id }">
                                                                 <c:set var="displayText" value="${not empty user.employee_id ? user.employee_id : ''}" />
                                                                 <c:if test="${not empty user.name_en}"><c:set var="displayText" value="${displayText}${not empty displayText ? ' - ' : ''}${user.name_en}" /></c:if>
                                                                 <c:if test="${not empty user.name}"><c:set var="displayText" value="${displayText}${not empty displayText ? ' - ' : ''}${user.name}" /></c:if>                                                      
                                                                 <option value="<c:out value='${user.id != null ? fn:trim(user.id) : ""}'/>">${displayText}</option>
-                                                            </c:if>
+                                                            </c:if> --%>
+                                                            <c:if test="${user.enable == 1 && user.flag_search == '1'}">
+														
+														        <c:set var="displayText" value="" />
+														        <!-- ถ้ามี employee_id -->
+														        <c:if test="${not empty user.employee_id}">
+														            <c:set var="displayText" value="${user.employee_id}" />
+														        </c:if>
+														        <!-- name_en -->
+														        <c:if test="${not empty user.name_en}">
+														            <c:set var="displayText" value="${displayText}${not empty displayText ? ' - ' : ''}${user.name_en}" />
+														        </c:if>
+														        <!-- name -->
+														        <c:if test="${not empty user.name}">
+														            <c:set var="displayText" value="${displayText}${not empty displayText ? ' - ' : ''}${user.name}" />
+														        </c:if>
+														
+														        <option value="${fn:trim(user.id)}">${displayText}</option>
+														
+														    </c:if>
                                                         </c:forEach>
+                                                        <%-- <c:forEach var="user" items="${cubesoftUser}">
+														    <c:if test="${user.enable == 1 && user.flag_search == '1' && empty user.employee_id}">
+														        <c:set var="displayText" value="${not empty user.name_en ? user.name_en : user.name}" />
+														        <c:if test="${not empty user.name_en && not empty user.name}">
+														           	<c:set var="displayText" value="${user.name_en} - ${user.name}" />
+														        </c:if>
+														
+														        <option value="${fn:trim(user.id)}">${displayText}</option>
+														    </c:if>
+														</c:forEach> --%>
                                                     </optgroup>
                                                     <optgroup label="Disable">
+														<c:forEach var="user" items="${cubesoftUser}">
+														    
+														    <c:if test="${user.enable == 0 && user.flag_search == '1'}">
+														
+														        <c:set var="displayText" value="" />
+														        <!-- ถ้ามี employee_id -->
+														        <c:if test="${not empty user.employee_id}">
+														            <c:set var="displayText" value="${user.employee_id}" />
+														        </c:if>
+														        <!-- name_en -->
+														        <c:if test="${not empty user.name_en}">
+														            <c:set var="displayText" value="${displayText}${not empty displayText ? ' - ' : ''}${user.name_en}" />
+														        </c:if>
+														        <!-- name -->
+														        <c:if test="${not empty user.name}">
+														            <c:set var="displayText" value="${displayText}${not empty displayText ? ' - ' : ''}${user.name}" />
+														        </c:if>
+														
+														        <option value="${fn:trim(user.id)}">${displayText}</option>
+														
+														    </c:if>
+														
+														</c:forEach>
+													</optgroup>
+                                                    <%-- <optgroup label="Disable">
                                                         <c:forEach var="user" items="${cubesoftUser}">
-                                                            <c:if test="${user.enable == 0 && user.flag_search == '1'}">
+                                                            <c:if test="${user.enable == 0 && user.flag_search == '1' && not empty user.employee_id }">
                                                                 <c:set var="displayText" value="${not empty user.employee_id ? user.employee_id : ''}" />
                                                                 <c:if test="${not empty user.name_en}"><c:set var="displayText" value="${displayText}${not empty displayText ? ' - ' : ''}${user.name_en}" /></c:if>
                                                                 <c:if test="${not empty user.name}"><c:set var="displayText" value="${displayText}${not empty displayText ? ' - ' : ''}${user.name}" /></c:if>
                                                                 <option value="<c:out value='${user.id != null ? fn:trim(user.id) : ""}'/>">${displayText}</option>
                                                             </c:if>
                                                         </c:forEach>
-                                                    </optgroup>
+                                                        <c:forEach var="user" items="${cubesoftUser}">
+														    <c:if test="${user.enable == 0 && user.flag_search == '1' && empty user.employee_id && not empty user.name_en}">
+														        <option value="${fn:trim(user.id)}">${user.name_en}</option>
+														    </c:if>
+														</c:forEach>
+														<c:forEach var="user" items="${cubesoftUser}">
+														    <c:if test="${user.enable == 0 && user.flag_search == '1' && empty user.employee_id && empty user.name_en}">
+														        <option value="${fn:trim(user.id)}">${user.name}</option>
+														    </c:if>
+														</c:forEach>
+                                                        <c:forEach var="user" items="${cubesoftUser}">
+														    <c:if test="${user.enable == 0 && user.flag_search == '1' && empty user.employee_id}">
+														        <c:set var="displayText" value="${not empty user.name_en ? user.name_en : user.name}" />
+														        <c:if test="${not empty user.name_en && not empty user.name}">
+														           	<c:set var="displayText" value="${user.name_en} - ${user.name}" />
+														        </c:if>
+														
+														        <option value="${fn:trim(user.id)}">${displayText}</option>
+														    </c:if>
+														</c:forEach>
+                                                    </optgroup> --%>
                                                 </select>
                                             </div>
                                         </div>
@@ -185,17 +259,15 @@
                                 <table id="myTable" class="table table-striped table-row-dashed align-middle table-hover fs-6 gy-5 gx-5 gs-5 mb-0 border-bottom-0">
                                     <thead>
                                             <tr class="text-start text-gray-500 fw-bold fs-7 text-uppercase gs-0">
-                                                <th class="text-start min-w-120px">#</th>
-                                                <th class="min-w-90px">Employee ID</th>
-                                                <th class="min-w-220px">Name</th>
-                                                
+                                                <th class="text-start" style="min-width:50px;">#</th>
+                                                <th style="min-width:120px;">Employee ID</th>
+                                                <th style="min-width:230px;">Name</th>
                                                 <th class="w-50px text-center p-0"></th> 
-                                                
-                                                <th class="min-w-160px">Job Site</th>
-                                                <th class="min-w-120px">Position</th>
-                                                <th class="min-w-120px">Period</th>
-                                                <th class="text-end min-w-90px">Active</th>
-                                                <th class="text-end min-w-120px">Actions</th>
+                                                <th class="min-w-100px" >Job Site</th>
+                                                <th style="min-width:120px;">Position</th>
+                                                <th style="min-width:120px;">Period</th>
+                                                <th class="text-end min-w-100px">Active</th>
+                                                <th class="text-end min-w-100px">Actions</th>
                                             </tr>
                                     </thead>
                                     <tbody>
@@ -239,7 +311,7 @@
                                                         </div>
                                                     </td>
 
-                                                    <td class="text-gray-800">${not empty user.position_id ? user.position_id : '-'}</td>
+                                                    <td class="text-gray-800">${not empty user.name_position ? user.name_position : '-'}</td>
                                                     
                                                     <td class="text-gray-800">
                                                         <span class="period-text" data-start="<fmt:formatDate value='${user.start_date}' pattern='yyyy-MM-dd'/>" data-end="<fmt:formatDate value='${user.end_date}' pattern='yyyy-MM-dd'/>">-</span>
@@ -386,10 +458,10 @@
 
                     <div class="card-footer d-flex align-items-center gap-3 px-5 py-3 border-0 bg-transparent pt-0 mt-4">
                         <select id="rowsPerPage" class="form-select form-select-sm w-75px">
-                            <option value="10" selected>10</option>
+                            <option value="10">10</option>
                             <option value="20">20</option>
                             <option value="50">50</option>
-                            <option value="100">100</option>
+                            <option value="100" selected>100</option>
                         </select>
                         <div id="tablePagination" class="ms-auto"></div>
                     </div>
@@ -404,8 +476,8 @@
   var tableSelector = '#myTable';
   var paginationSelector = '#tablePagination';
   var rowsPerPageSelector = '#rowsPerPage';
-  var gridItemsPerPage = 12;   
-  var tableItemsPerPage = 10;
+  var gridItemsPerPage = 50;   
+  var tableItemsPerPage = 100;
   var currentPage = 1;
   var isGridView = false;
   var activeFilters  = { status: '1', anniversaries: '', birthdays: '' };

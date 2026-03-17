@@ -225,5 +225,18 @@ public class FileUploadDAOImpl implements FileUploadDAO {
 		}
 		return fileList;
 	}
+	
+	@Override
+	public void deleteByPathAtc(String path) {
+
+		Session session = sessionFactory.getCurrentSession();
+
+		session.createSQLQuery(
+			"DELETE FROM file WHERE path = :path"
+		)
+		.setParameter("path", path)
+		.executeUpdate();
+	}
+	
 
 }

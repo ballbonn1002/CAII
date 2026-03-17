@@ -1,55 +1,26 @@
 package com.cubesofttech.action;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.InputStream;
 import java.io.PrintWriter;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
-import java.text.DateFormat;
-import java.text.DecimalFormat;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
-import java.time.Year;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
-import java.time.temporal.TemporalAccessor;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Set;
-
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.apache.log4j.Logger;
-import org.apache.poi.ss.usermodel.BorderStyle;
-import org.apache.poi.ss.usermodel.FillPatternType;
-import org.apache.poi.ss.usermodel.HorizontalAlignment;
-import org.apache.poi.ss.usermodel.IndexedColors;
-import org.apache.poi.xssf.usermodel.XSSFCell;
-import org.apache.poi.xssf.usermodel.XSSFCellStyle;
-import org.apache.poi.xssf.usermodel.XSSFColor;
-import org.apache.poi.xssf.usermodel.XSSFFont;
-import org.apache.poi.xssf.usermodel.XSSFRow;
-import org.apache.poi.xssf.usermodel.XSSFSheet;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.apache.struts2.ServletActionContext;
-import org.apache.struts2.convention.annotation.Action;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,26 +29,19 @@ import com.cubesofttech.dao.HolidayDAO;
 import com.cubesofttech.dao.LeaveDAO;
 import com.cubesofttech.dao.RoleAuthorizedObjectDAO;
 import com.cubesofttech.dao.UserDAO;
-import com.cubesofttech.model.Holiday;
 import com.cubesofttech.model.Leaves;
 import com.cubesofttech.dao.FileUploadDAO;
 import com.cubesofttech.dao.LeaveTypeDAO;
 import com.cubesofttech.dao.LeaveUserDAO;
-//import com.cubesofttech.dao.TimesheetDAO;
-//import com.cubesofttech.mail.EmailService;
-//import com.cubesofttech.model.Department;
 import com.cubesofttech.model.FileUpload;
 import com.cubesofttech.model.LeaveType;
-//import com.cubesofttech.model.ProjectFunction;
 import com.cubesofttech.model.Role;
 import com.cubesofttech.model.RoleAuthorizedObject;
 import com.cubesofttech.model.User;
 import com.cubesofttech.util.DateUtil;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.cubesofttech.util.FileUtil;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.ibm.icu.util.RangeValueIterator.Element;
 import com.opensymphony.xwork2.ActionSupport;
 
 public class LeaveAction extends ActionSupport {
@@ -483,7 +447,6 @@ public class LeaveAction extends ActionSupport {
 		try {
 			User ur = (User) request.getSession().getAttribute("onlineUser");
 			String userLogin = ur.getId();
-			HttpSession session = request.getSession();
 			String listbyuser = request.getParameter("Id");
 			log.debug(listbyuser);
 			if (userLogin != listbyuser) {
@@ -510,9 +473,14 @@ public class LeaveAction extends ActionSupport {
 			LocalDate localdate = day.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
 			Double LastYear = leaveDAO.LastYearQuota(userLogin, localdate.getYear());
 			request.setAttribute("LastYear", LastYear);
+			
 			Timestamp start_date = DateUtil.dateToTimestamp("01-01-" + DateUtil.getYear(), "00:00");
 			Timestamp end_date = DateUtil.dateToTimestamp("31-12-" + DateUtil.getYear(), "00:00");
-
+			Date startdate = new Date(start_date.getTime());
+			Date enddate = new Date(end_date.getTime());
+			request.setAttribute("startdate", startdate);
+			request.setAttribute("enddate", enddate);
+			
 			List<Map<String, Object>> userleave = null;
 			if (role_authorized != null) {
 				userleave = leaveDAO.findUserAllLeave(start_date, end_date);
@@ -615,11 +583,6 @@ public class LeaveAction extends ActionSupport {
 				}
 			}
 
-			request.setAttribute("start_date", start_date);
-
-			//log.debug(start_date + " userleave " + end_date);
-			//log.debug("*****************************");
-
 			request.setAttribute("LeavenumT1", LeavenumT1);
 			request.setAttribute("LeaveWAnumT1", LeaveWAnumT1);
 			request.setAttribute("LeavenumT2", LeavenumT2);
@@ -654,7 +617,6 @@ public class LeaveAction extends ActionSupport {
 			request.setAttribute("type_6", type_leave.get(5).getLeaveTypeName());
 			request.setAttribute("type_7", type_leave.get(6).getLeaveTypeName());
 			request.setAttribute("type_9", type_leave.get(7).getLeaveTypeName());
-			New_myleave();
 
 			//Summary Leave - For Add Leave Page
 			request.getSession().setAttribute("type_1", type_leave.get(0).getLeaveTypeName());
@@ -684,11 +646,12 @@ public class LeaveAction extends ActionSupport {
 			log.debug(userSelect+"/"+userSelect2);
 			log.debug(leaveStatus);
 			log.debug(leaveType);
+			log.debug(startdate);
+			log.debug(enddate);
 
 			User ur = (User) request.getSession().getAttribute("onlineUser");
 			String userLogin = ur.getId();
 			request.setAttribute("logonUser", userLogin);
-			
 			log.debug(userLogin);
 
 			String user_role = ur.getRoleId();
@@ -742,7 +705,6 @@ public class LeaveAction extends ActionSupport {
 			}
 			request.setAttribute("leaveList", leaveList);
 			
-			log.debug(request.getAttribute("leaveList"));
 			log.debug(leaveStatus);
 			log.debug(startdate + "/" + enddate);
 			log.debug(userSelect + "/" + userSelect2);
@@ -942,7 +904,6 @@ public class LeaveAction extends ActionSupport {
 			String userLogin = null;
 			String type = request.getParameter("appr");
 			String leaveType = request.getParameter("type");
-			log.debug(type);
 			ur = (User) request.getSession().getAttribute("onlineUser");
 			userLogin = ur.getId();
 
@@ -968,8 +929,6 @@ public class LeaveAction extends ActionSupport {
 			Date enddate = new Date(end_date.getTime());
 			request.setAttribute("startdate", startdate);
 			request.setAttribute("enddate", enddate);
-			log.debug(enddate);
-			log.debug(end_date);
 			if (userLogin != listbyuser) {
 				listbyuser = userLogin;
 			}
@@ -981,40 +940,26 @@ public class LeaveAction extends ActionSupport {
 			}
 			//log.debug(userLogin);
 			List<Map<String, Object>> leavelist = null;
-
-			//log.debug(type+"/"+leaveType);
 			leavelist = leaveDAO.findUserLeaveByTypeAndStatus(start_date, end_date, userLogin, type, leaveType);
-
-			String status = "1";
-			List LeaveID = leaveDAO.findLeaveId(userLogin, start_date, end_date, status);
-
 			request.setAttribute("leavelist", leavelist);
+			
+			List LeaveID = leaveDAO.findLeaveId(userLogin, start_date, end_date, "1");
+
 			Double leave_1 = 0.000, leave_2 = 0.000, leave_3 = 0.000, leave_4 = 0.000, leave_5 = 0.000, leave_6 = 0.000,
 					leave_7 = 0.000, leave_9 = 0.000;
-//
-//			for (Iterator iterator = leavelist.iterator(); iterator.hasNext();) {
-//				Leaves leave = (Leaves) iterator.next();
-//			}
-			int x = 0;
 
+			int x = 0;
 			while (x <= LeaveID.size() - 1) {
-				log.debug("inLoopWhile");
 				String a[] = LeaveID.get(x).toString().split("[={}]");
-				log.debug("Split Success");
 				for (int b = 0; b <= a.length - 1; b++) {
 					log.debug("a[" + b + "]= " + a[b]);
 				}
 				int id = 0;
 				for (int b = 0; b <= a.length - 1; b++) {
-					log.debug("inLoopFor");
 					if (tryParseInt(a[b])) {
-						log.debug("inIf");
 						id = Integer.parseInt(a[b]);
-						log.debug("This is Array No: " + b + " =" + a[b]);
 						Leaves leaveDashboard = leaveDAO.findByLeaveId(id);
-						log.debug("Ref Success");
 						Double noday = leaveDashboard.getNoDay().doubleValue();
-						log.debug("This NoDay : " + noday);
 						if (leaveDashboard.getLeaveTypeId().contains("1")) {
 							leave_1 = leave_1 + noday;
 						}
@@ -1040,7 +985,6 @@ public class LeaveAction extends ActionSupport {
 							leave_9 = leave_9 + noday;
 						}
 					}
-
 				}
 				x++;
 			}
@@ -1052,25 +996,94 @@ public class LeaveAction extends ActionSupport {
 			request.setAttribute("leave_6", leave_6);
 			request.setAttribute("leave_7", leave_7);
 			request.setAttribute("leave_9", leave_9);
+			
+			BigDecimal LeaveWAnumT1 = new BigDecimal(0);
+			BigDecimal LeaveWAnumT2 = new BigDecimal(0);
+			BigDecimal LeaveWAnumT3 = new BigDecimal(0);
+			BigDecimal LeaveWAnumT4 = new BigDecimal(0);
+			BigDecimal LeaveWAnumT5 = new BigDecimal(0);
+			BigDecimal LeaveWAnumT6 = new BigDecimal(0);
+			BigDecimal LeaveWAnumT7 = new BigDecimal(0);
+			BigDecimal LeaveWAnumT9 = new BigDecimal(0);
+			log.debug(start_date);
+			log.debug(end_date);
+			log.debug(userLogin);
+			List<Map<String, Object>> userleave = null;
+			
+			//userleave = leaveDAO.findLeaveInTeamByManager(start_date, end_date, userLogin);
+			log.debug(status);
+			userleave = leaveDAO.findUserLeaveByTypeAndStatus(start_date, end_date, userLogin, status, type);
+			for (int i = 0; i < userleave.size(); i++) {
+				Character type1 = (Character) userleave.get(i).get(TYPELEAVE);
+				BigDecimal num = (BigDecimal) userleave.get(i).get(NODAY);
+				Character status1 = (Character) userleave.get(i).get(STATUS);
+
+				switch (status1) {
+				case '0':
+					switch (type1) {
+					case '1':
+						LeaveWAnumT1 = num.add(LeaveWAnumT1);
+						break;
+					case '2':
+						LeaveWAnumT2 = num.add(LeaveWAnumT2);
+						break;
+					case '3':
+						LeaveWAnumT3 = num.add(LeaveWAnumT3);
+						break;
+					case '4':
+						LeaveWAnumT4 = num.add(LeaveWAnumT4);
+						break;
+					case '5':
+						LeaveWAnumT5 = num.add(LeaveWAnumT5);
+						break;
+					case '6':
+						LeaveWAnumT6 = num.add(LeaveWAnumT6);
+						break;
+					case '7':
+						LeaveWAnumT7 = num.add(LeaveWAnumT7);
+						break;
+					case '9':
+						LeaveWAnumT9 = num.add(LeaveWAnumT9);
+						break;
+					}					
+				default:
+					break;
+				}
+			}
+			
+			request.setAttribute("LeaveWAnumT1", LeaveWAnumT1);
+			request.setAttribute("LeaveWAnumT2", LeaveWAnumT2);
+			request.setAttribute("LeaveWAnumT3", LeaveWAnumT3);
+			request.setAttribute("LeaveWAnumT4", LeaveWAnumT4);
+			request.setAttribute("LeaveWAnumT5", LeaveWAnumT5);
+			request.setAttribute("LeaveWAnumT6", LeaveWAnumT6);
+			request.setAttribute("LeaveWAnumT7", LeaveWAnumT7);
+			request.setAttribute("LeaveWAnumT9", LeaveWAnumT9);
+			
+			//Summary Leave - For Add Leave Page
+			request.getSession().setAttribute("LeaveWAnumT1", LeaveWAnumT1);
+			request.getSession().setAttribute("LeaveWAnumT2", LeaveWAnumT2);
+			request.getSession().setAttribute("LeaveWAnumT3", LeaveWAnumT3);
+			request.getSession().setAttribute("LeaveWAnumT4", LeaveWAnumT4);
+			request.getSession().setAttribute("LeaveWAnumT5", LeaveWAnumT5);
+			request.getSession().setAttribute("LeaveWAnumT6", LeaveWAnumT6);
+			request.getSession().setAttribute("LeaveWAnumT7", LeaveWAnumT7);
+			request.getSession().setAttribute("LeaveWAnumT9", LeaveWAnumT9);
+
 			request.setAttribute("usertest", userLogin);
 			request.setAttribute("userS", userLogin);
 			request.setAttribute("appr", type);
 
 			Date day = new Date();
-			//log.debug(userLogin);
-
 			LocalDate localdate = day.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
 			Double quotaLastYear = null;
 			Double quotaThisYear = null;
 			if (!"All".equals(userLogin) || !"All2".equals(userLogin)) {
 				quotaLastYear = leaveDAO.LastYearQuota(userLogin, localdate.getYear());
-				// List<Map<String, Object>> quotaLastYear = leaveDAO.LastYearQuota2(userLogin,
-				// localdate.getYear());
 				quotaThisYear = leaveDAO.ThisYearQuota(userLogin);
 				request.setAttribute("quotaLastYear", quotaLastYear);
 				request.setAttribute("quotaThisYear", quotaThisYear);
 				request.setAttribute("leave_6l", quotaLastYear - leave_6);
-				//log.debug("quotaLastYear: " + quotaLastYear);
 				BigDecimal quota_1 = ur.getLeaveQuota1(); // holiday leave quota
 				BigDecimal quota_2 = ur.getLeaveQuota2(); // business leave quota
 				BigDecimal quota_3 = ur.getLeaveQuota3(); // sick leave quota
@@ -1108,8 +1121,9 @@ public class LeaveAction extends ActionSupport {
 			request.getSession().setAttribute("leave_7", leave_7);
 			
 			return SUCCESS;
-		} catch (Exception e) {
+		} catch (Throwable e) {
 			e.printStackTrace();
+			log.error("Found error: ", e);
 			return ERROR;
 		}
 	}
@@ -1148,39 +1162,24 @@ public class LeaveAction extends ActionSupport {
 				start_date = DateUtil.dateFormatEdit(start);
 				end_date = DateUtil.dateFormatEdit(end);
 			}
-			log.debug(start_date);
-			log.debug(end_date);
 
-			String status = "1";
-			// List<Map<String, Object>> leaveListDashboard =
-			// leaveDAO.myLeavesList(userLogin, start_date, end_date, status);
-			List LeaveID = leaveDAO.findLeaveId(userLogin, start_date, end_date, status);
+			//String status = "1";
+			List LeaveID = leaveDAO.findLeaveId(userLogin, start_date, end_date, "1");
 
 			Double leave_1 = 0.000, leave_2 = 0.000, leave_3 = 0.000, leave_5 = 0.000, leave_6 = 0.000;
-//
-//			for (Iterator iterator = leavelist.iterator(); iterator.hasNext();) {
-//				Leaves leave = (Leaves) iterator.next();
-//			}
-			int x = 0;
 
+			int x = 0;
 			while (x <= LeaveID.size() - 1) {
-				log.debug("inLoopWhile");
 				String a[] = LeaveID.get(x).toString().split("[={}]");
-				log.debug("Split Success");
 				for (int b = 0; b <= a.length - 1; b++) {
-					log.debug("a[" + b + "]= " + a[b]);
+					//log.debug("a[" + b + "]= " + a[b]);
 				}
 				int id = 0;
 				for (int b = 0; b <= a.length - 1; b++) {
-					log.debug("inLoopFor");
 					if (tryParseInt(a[b])) {
-						log.debug("inIf");
 						id = Integer.parseInt(a[b]);
-						log.debug("This is Array No: " + b + " =" + a[b]);
 						Leaves leaveDashboard = leaveDAO.findByLeaveId(id);
-						log.debug("Ref Success");
 						Double noday = leaveDashboard.getNoDay().doubleValue();
-						log.debug("This NoDay : " + noday);
 						if (leaveDashboard.getLeaveTypeId().contains("1")) {
 							leave_1 = leave_1 + noday;
 						}
@@ -1197,7 +1196,6 @@ public class LeaveAction extends ActionSupport {
 							leave_6 = leave_6 + noday;
 						}
 					}
-
 				}
 				x++;
 			}
@@ -1210,12 +1208,7 @@ public class LeaveAction extends ActionSupport {
 					request.setAttribute("leave1Check", leave1Check);
 				}
 			}
-			/*
-			 * if(ur.getLeaveQuota2() != null) { if(ur.getLeaveQuota2().doubleValue() <=
-			 * leave_2) { String leave2Check = "1"; request.setAttribute("leave2Check",
-			 * leave2Check); } else { String leave2Check = "0";
-			 * request.setAttribute("leave2Check", leave2Check); } }
-			 */
+
 			if (3 <= leave_2) {
 				String leave2Check = "1";
 				request.setAttribute("leave2Check", leave2Check);
@@ -1249,9 +1242,71 @@ public class LeaveAction extends ActionSupport {
 					request.setAttribute("leave6Check", leave6Check);
 				}
 			}
+			BigDecimal LeaveWAnumT1 = new BigDecimal(0);
+			BigDecimal LeaveWAnumT2 = new BigDecimal(0);
+			BigDecimal LeaveWAnumT3 = new BigDecimal(0);
+			BigDecimal LeaveWAnumT4 = new BigDecimal(0);
+			BigDecimal LeaveWAnumT5 = new BigDecimal(0);
+			BigDecimal LeaveWAnumT6 = new BigDecimal(0);
+			BigDecimal LeaveWAnumT7 = new BigDecimal(0);
+			BigDecimal LeaveWAnumT9 = new BigDecimal(0);
+			
+			List<Map<String, Object>> userleave = null;
+			userleave = leaveDAO.findUserLeaveByTypeAndStatus(start_date, end_date, userLogin, start, "");
+			for (int i = 0; i < userleave.size(); i++) {
+				Character type = (Character) userleave.get(i).get(TYPELEAVE);
+				BigDecimal num = (BigDecimal) userleave.get(i).get(NODAY);
+				Character status = (Character) userleave.get(i).get(STATUS);
 
-			log.debug("Set Check Quota Success!!");
-			/**/
+				switch (status) {
+				case '0':
+					switch (type) {
+					case '1':
+						LeaveWAnumT1 = num.add(LeaveWAnumT1);
+						break;
+					case '2':
+						LeaveWAnumT2 = num.add(LeaveWAnumT2);
+						break;
+					case '3':
+						LeaveWAnumT3 = num.add(LeaveWAnumT3);
+						break;
+					case '4':
+						LeaveWAnumT4 = num.add(LeaveWAnumT4);
+						break;
+					case '5':
+						LeaveWAnumT5 = num.add(LeaveWAnumT5);
+						break;
+					case '6':
+						LeaveWAnumT6 = num.add(LeaveWAnumT6);
+						break;
+					case '7':
+						LeaveWAnumT7 = num.add(LeaveWAnumT7);
+						break;
+					case '9':
+						LeaveWAnumT9 = num.add(LeaveWAnumT9);
+						break;
+					}
+					break;
+				default:
+					break;
+				}
+			}
+			log.debug(LeaveWAnumT3);
+			request.setAttribute("LeaveWAnumT1", LeaveWAnumT1);
+			request.setAttribute("LeaveWAnumT2", LeaveWAnumT2);
+			request.setAttribute("LeaveWAnumT3", LeaveWAnumT3);
+			request.setAttribute("LeaveWAnumT4", LeaveWAnumT4);
+			request.setAttribute("LeaveWAnumT5", LeaveWAnumT5);
+			request.setAttribute("LeaveWAnumT6", LeaveWAnumT6);
+			request.setAttribute("LeaveWAnumT7", LeaveWAnumT7);
+			request.setAttribute("LeaveWAnumT9", LeaveWAnumT9);
+			
+			List<LeaveType> type_leave = leavetypeDAO.findAll();
+			for (int i = 0; i < type_leave.size(); i++) {
+				LeaveType leave = type_leave.get(i);
+				request.setAttribute("type_" + leave.getLeaveTypeId(), leave.getLeaveTypeName());
+			}
+			
 			String leaveTypeJSON = leavetypeDAO.getForDisplayJSON();
 			String holidayJSON = holidayDAO.getallOnlyDateJSON();
 			String userListJSON = userDAO.userListJSON();
@@ -1267,7 +1322,6 @@ public class LeaveAction extends ActionSupport {
 			request.setAttribute("holiday", holidayJSON);
 			request.setAttribute("action", "Add");
 			
-			log.debug("Set request Success!!");
 			return SUCCESS;
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -1278,7 +1332,7 @@ public class LeaveAction extends ActionSupport {
 	public String NewLeaveEdit() {
 		try {
 			String id = request.getParameter("id");
-			Leaves  leave = leaveDAO.findByLeaveId(Integer.parseInt(id));
+			Leaves leave = leaveDAO.findByLeaveId(Integer.parseInt(id));
 			User user = new User();
 			String userLogin = null;
 			user = (User) request.getSession().getAttribute("onlineUser");
@@ -1286,6 +1340,7 @@ public class LeaveAction extends ActionSupport {
 			log.debug(userLogin);
 			String userId = leave.getUserId();	
 			log.debug(userId);
+			User user2 = userDAO.findById(userId);
 			
 			DateTimeFormatter dateTimeFormat = DateTimeFormatter.ofPattern("01-01-yyyy");
 			LocalDate localDate = LocalDate.now();
@@ -1304,10 +1359,9 @@ public class LeaveAction extends ActionSupport {
 			}
 			String status = "1";
 			List LeaveID = leaveDAO.findLeaveId(userId, start_date, end_date, status);
-
 			Double leave_1 = 0.000, leave_2 = 0.000, leave_3 = 0.000, leave_4 = 0.000, leave_5 = 0.000, leave_6 = 0.000, leave_7 = 0.000, leave_9 = 0.000;
-			int x = 0;
 			
+			int x = 0;
 			while (x <= LeaveID.size() - 1 ) {
 				String a[] = LeaveID.get(x).toString().split("[={}]");
 				for (int b = 0; b <= a.length - 1; b++) {
@@ -1338,14 +1392,23 @@ public class LeaveAction extends ActionSupport {
 				}
 				x++;
 			}
-			if (user.getLeaveQuota1() != null) {
-				if (user.getLeaveQuota1().doubleValue() - leave_2 <= leave_1) {
+			
+			request.setAttribute("leave_1", leave_1);
+			request.setAttribute("leave_2", leave_2);
+			request.setAttribute("leave_3", leave_3);
+			request.setAttribute("leave_4", leave_4);
+			request.setAttribute("leave_5", leave_5);
+			request.setAttribute("leave_6", leave_6);
+			
+			if (user2.getLeaveQuota1() != null) {
+				if (user2.getLeaveQuota1().doubleValue() - leave_2 <= leave_1) {
 					String leave1Check = "1";
 					request.setAttribute("leave1Check", leave1Check);
 				} else {
 					String leave1Check = "0";
 					request.setAttribute("leave1Check", leave1Check);
 				}
+				request.setAttribute("quota_1", user2.getLeaveQuota1());
 			}
 			if (3 <= leave_2) {
 				String leave2Check = "1";
@@ -1354,8 +1417,8 @@ public class LeaveAction extends ActionSupport {
 				String leave2Check = "0";
 				request.setAttribute("leave2Check", leave2Check);
 			}
-			if (user.getLeaveQuota3() != null) {
-				if (user.getLeaveQuota3().doubleValue() <= leave_3) {
+			if (user2.getLeaveQuota3() != null) {
+				if (user2.getLeaveQuota3().doubleValue() <= leave_3) {
 					String leave3Check = "1";
 					request.setAttribute("leave3Check", leave3Check);
 				} else {
@@ -1371,19 +1434,82 @@ public class LeaveAction extends ActionSupport {
 					request.setAttribute("leave3Check", leave3Check);
 				}
 			}
-			if (user.getLeaveQuota4() != null) {						
-				log.debug(user.getLeaveQuota4());
-				if (user.getLeaveQuota4().doubleValue() < leave_6) {	
+			if (user2.getLeaveQuota4() != null) {						
+				log.debug(user2.getLeaveQuota4());
+				if (user2.getLeaveQuota4().doubleValue() < leave_6) {	
 					String leave6Check = "1";							
 					request.setAttribute("leave6Check", leave6Check);
 				} else {
 					String leave6Check = "0";
 					request.setAttribute("leave6Check", leave6Check);
 				}
+				request.setAttribute("quota_4", user2.getLeaveQuota4());
 			}
+			
+			BigDecimal LeaveWAnumT1 = new BigDecimal(0);
+			BigDecimal LeaveWAnumT2 = new BigDecimal(0);
+			BigDecimal LeaveWAnumT3 = new BigDecimal(0);
+			BigDecimal LeaveWAnumT4 = new BigDecimal(0);
+			BigDecimal LeaveWAnumT5 = new BigDecimal(0);
+			BigDecimal LeaveWAnumT6 = new BigDecimal(0);
+			BigDecimal LeaveWAnumT7 = new BigDecimal(0);
+			BigDecimal LeaveWAnumT9 = new BigDecimal(0);
+			
+			List<Map<String, Object>> userleave = leaveDAO.findUserLeaveByTypeAndStatus(start_date, end_date, userId, status, "");
+			for (int i = 0; i < userleave.size(); i++) {
+				Character type = (Character) userleave.get(i).get(TYPELEAVE);
+				BigDecimal num = (BigDecimal) userleave.get(i).get(NODAY);
+				Character status1 = (Character) userleave.get(i).get(STATUS);
+				switch (status1) {
+				case '0':
+					switch (type) {
+					case '1':
+						LeaveWAnumT1 = num.add(LeaveWAnumT1);
+						break;
+					case '2':
+						LeaveWAnumT2 = num.add(LeaveWAnumT2);
+						break;
+					case '3':
+						LeaveWAnumT3 = num.add(LeaveWAnumT3);
+						break;
+					case '4':
+						LeaveWAnumT4 = num.add(LeaveWAnumT4);
+						break;
+					case '5':
+						LeaveWAnumT5 = num.add(LeaveWAnumT5);
+						break;
+					case '6':
+						LeaveWAnumT6 = num.add(LeaveWAnumT6);
+						break;
+					case '7':
+						LeaveWAnumT7 = num.add(LeaveWAnumT7);
+						break;
+					case '9':
+						LeaveWAnumT9 = num.add(LeaveWAnumT9);
+						break;
+					}
+				default:
+					break;
+				}
+			}
+			request.setAttribute("LeaveWAnumT1", LeaveWAnumT1);
+			request.setAttribute("LeaveWAnumT2", LeaveWAnumT2);
+			request.setAttribute("LeaveWAnumT3", LeaveWAnumT3);
+			request.setAttribute("LeaveWAnumT4", LeaveWAnumT4);
+			request.setAttribute("LeaveWAnumT5", LeaveWAnumT5);
+			request.setAttribute("LeaveWAnumT6", LeaveWAnumT6);
+			request.setAttribute("LeaveWAnumT7", LeaveWAnumT7);
+			request.setAttribute("LeaveWAnumT9", LeaveWAnumT9);
+			
 			if(leave.getLeaveFile() != null) {
 				FileUpload fileLeave = fileuploadDAO.findById(Integer.parseInt(leave.getLeaveFile()));
 				request.setAttribute("fileLeave", new Gson().toJson(fileLeave));
+			}
+			
+			List<LeaveType> type_leave = leavetypeDAO.findAll();
+			for (int i = 0; i < type_leave.size(); i++) {
+				LeaveType leavetype = type_leave.get(i);
+				request.setAttribute("type_" + leavetype.getLeaveTypeId(), leavetype.getLeaveTypeName());
 			}
 			
 			String leaveTypeJSON = leavetypeDAO.getForDisplayJSON();
@@ -1393,6 +1519,7 @@ public class LeaveAction extends ActionSupport {
 			Double qThisYear = quotaThisYear - (leave_1 + leave_2);
 			
 			request.setAttribute("quotaThisYear", qThisYear.intValue());
+			request.setAttribute("quotaLastYear", "");
 			request.setAttribute("userList", userListJSON);
 			request.setAttribute("leaveType", leaveTypeJSON);
 			request.setAttribute("holiday", holidayJSON);
@@ -1460,7 +1587,7 @@ public class LeaveAction extends ActionSupport {
 			String newDateFrom;
 			String newDateTo;
 
-			SimpleDateFormat sdf = new SimpleDateFormat(OLD_FORMAT);
+			SimpleDateFormat sdf = new SimpleDateFormat(OLD_FORMAT, Locale.ENGLISH);
 			Date date_from = sdf.parse(from);
 			Date date_to = sdf.parse(to);
 			sdf.applyPattern(NEW_FORMAT);
@@ -1494,11 +1621,6 @@ public class LeaveAction extends ActionSupport {
 				FileUtil.upload(fileUpload, fileServerPath + "upload/user/", serverFileName);
 
 				log.debug("File Upload Path = " + fileServerPath + "upload/user/" + serverFileName);
-
-//				int l = fileUploadFileName.length();
-//				int split = fileUploadFileName.lastIndexOf('.');
-//				String name = fileUploadFileName.substring(0, split);
-//				String type = (String) fileUploadFileName.subSequence(split, l);
 
 				fileupload.setFileId(maxId);
 				fileupload.setUserId(user);
@@ -1605,7 +1727,7 @@ public class LeaveAction extends ActionSupport {
 	        String newDateFrom;
 	        String newDateTo;
 
-	        SimpleDateFormat sdf = new SimpleDateFormat(OLD_FORMAT);
+	        SimpleDateFormat sdf = new SimpleDateFormat(OLD_FORMAT, Locale.ENGLISH);
 	        Date date_from = sdf.parse(from);
 	        Date date_to = sdf.parse(to);
 	        sdf.applyPattern(NEW_FORMAT);
@@ -1736,7 +1858,6 @@ public class LeaveAction extends ActionSupport {
 	        return ERROR;
 	    }
 	}
-
 
 	public String preview_File() {
 		try {
@@ -1925,7 +2046,7 @@ public class LeaveAction extends ActionSupport {
 			String responseJSON = "";
 			List<Map<String, Object>> list = null;
 			if (value.equals("All")) {
-				list = userDAO.sequense();
+				list = userDAO.Query_Userlist();
 				responseJSON = gson.toJson(list);
 			} else {
 				list = userDAO.sequense_userinteam(userLogin);
@@ -1965,10 +2086,10 @@ public class LeaveAction extends ActionSupport {
 				employeeId = ( map.get("employeeId") != null ) ? map.get("employeeId").toString() : "";
 				String managerNameTh = ( map.get("managerNameTh") != null ) ? map.get("managerNameTh").toString() : "";
 				String managerNameEn = ( map.get("managerNameEn") != null ) ? map.get("managerNameEn").toString() : "";
-				log.info("managerId = " + managerId);
+			/*	log.info("managerId = " + managerId);
 				log.info("employeeId = " + employeeId);
 				log.info("managerNameTh = " + managerNameTh);
-				log.info("managerNameEn = " + managerNameEn);
+				log.info("managerNameEn = " + managerNameEn);*/
 				
 				String result = "";
 				

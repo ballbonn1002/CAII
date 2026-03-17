@@ -202,8 +202,7 @@ public class TimesheetDAOImpl implements TimesheetDAO {
 	}
 
 	@Override
-	public List<Map<String, Object>> timesheetSearch_forCalendar(String userId, String from, String to)
-			throws Exception {
+	public List<Map<String, Object>> timesheetSearch_forCalendar(String userId, Date from, Date to) throws Exception {
 		Session session = this.sessionFactory.getCurrentSession();
 		List<Map<String, Object>> expSearch = null;
 		try {
@@ -214,7 +213,7 @@ public class TimesheetDAOImpl implements TimesheetDAO {
 				query.setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
 				expSearch = query.list();
 			} else if (from != null && to != null) {
-				String sql = "SELECT * FROM timesheet WHERE user_create =  :userId  AND time_create BETWEEN :from  and :to   ";
+				String sql = "SELECT * FROM timesheet WHERE user_create = :userId AND time_check_in BETWEEN :from and :to";
 				SQLQuery query = session.createSQLQuery(sql);
 				query.setParameter("userId", userId);
 				query.setParameter("from", from);
@@ -237,7 +236,7 @@ public class TimesheetDAOImpl implements TimesheetDAO {
 	@Override
 	public Integer getMaxId() throws Exception {
 		Session session = this.sessionFactory.getCurrentSession();
-		//List<Timesheet> list = null;
+		// List<Timesheet> list = null;
 		Integer maxId = 0;
 
 		try {
@@ -268,7 +267,7 @@ public class TimesheetDAOImpl implements TimesheetDAO {
 
 	@Override
 	public List<Timesheet> findTimesheetById(int id) throws Exception {
-		Session session = this.sessionFactory.getCurrentSession();		
+		Session session = this.sessionFactory.getCurrentSession();
 		List<Timesheet> modalOTList = null;
 		try {
 			String sql = "SELECT * FROM timesheet WHERE id = " + id;
@@ -276,14 +275,14 @@ public class TimesheetDAOImpl implements TimesheetDAO {
 
 			query.setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
 			modalOTList = query.list();
-			
+
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		return modalOTList;
-		
+
 	}
-	
+
 	@Override
 	public List<Map<String, Object>> searchTimesheetByUserCreate(String userId) throws Exception {
 		Session session = this.sessionFactory.getCurrentSession();
@@ -362,7 +361,7 @@ public class TimesheetDAOImpl implements TimesheetDAO {
 		}
 		return timesheetlist;
 	}
-	
+
 	@Override
 	public List<Map<String, Object>> listtimesheet1(String userid, java.sql.Timestamp Datenow,
 			java.sql.Timestamp DateBefore, String month, String year) throws Exception {
@@ -739,15 +738,15 @@ public class TimesheetDAOImpl implements TimesheetDAO {
 
 		return userWorkCheckOut;
 	}
-	
+
 	@Override
 	public List<Map<String, Object>> findcurrent(String user, String month, String year) {
 		Session session = this.sessionFactory.getCurrentSession();
 		List<Map<String, Object>> userWork = null;
 		try {
-			String sql = "SELECT *  FROM `work_hours` WHERE `work_hours_time_work` BETWEEN '"+year+"-"+month+"-01 00:00:00.000000' AND CURDATE()"
-					+ " AND work_hours_type=1 AND user_create= '"+user+"'";
-					
+			String sql = "SELECT *  FROM `work_hours` WHERE `work_hours_time_work` BETWEEN '" + year + "-" + month
+					+ "-01 00:00:00.000000' AND CURDATE()" + " AND work_hours_type=1 AND user_create= '" + user + "'";
+
 			SQLQuery query = session.createSQLQuery(sql);
 
 			query.setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
@@ -758,15 +757,14 @@ public class TimesheetDAOImpl implements TimesheetDAO {
 
 		return userWork;
 	}
-	
+
 	@Override
 	public List<Map<String, Object>> getdate(String month, String year) {
 		Session session = this.sessionFactory.getCurrentSession();
 		List<Map<String, Object>> userWork = null;
 		try {
-			String sql = "SELECT LAST_DAY('"+year+"-"+month+"-01') - curdate() AS currentdata";
+			String sql = "SELECT LAST_DAY('" + year + "-" + month + "-01') - curdate() AS currentdata";
 
-					
 			SQLQuery query = session.createSQLQuery(sql);
 
 			query.setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
@@ -777,7 +775,7 @@ public class TimesheetDAOImpl implements TimesheetDAO {
 
 		return userWork;
 	}
-	
+
 	@Override
 	public List<Map<String, Object>> wherename(String name) {
 		Session session = this.sessionFactory.getCurrentSession();
@@ -785,7 +783,6 @@ public class TimesheetDAOImpl implements TimesheetDAO {
 		try {
 			String sql = "SELECT id FROM user WHERE name =:name AND flag_search='1'";
 
-					
 			SQLQuery query = session.createSQLQuery(sql);
 			query.setParameter("name", name);
 			query.setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
@@ -796,6 +793,7 @@ public class TimesheetDAOImpl implements TimesheetDAO {
 
 		return userWork;
 	}
+
 	@Override
 	public List<Map<String, Object>> whereproject(String name) {
 		Session session = this.sessionFactory.getCurrentSession();
@@ -803,7 +801,6 @@ public class TimesheetDAOImpl implements TimesheetDAO {
 		try {
 			String sql = "SELECT project_id FROM project WHERE project_name =:name";
 
-					
 			SQLQuery query = session.createSQLQuery(sql);
 			query.setParameter("name", name);
 			query.setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
@@ -814,6 +811,7 @@ public class TimesheetDAOImpl implements TimesheetDAO {
 
 		return userWork;
 	}
+
 	@Override
 	public List<Map<String, Object>> wherefile() {
 		Session session = this.sessionFactory.getCurrentSession();
@@ -821,7 +819,6 @@ public class TimesheetDAOImpl implements TimesheetDAO {
 		try {
 			String sql = "SELECT * FROM file WHERE type= '.xlsx'";
 
-					
 			SQLQuery query = session.createSQLQuery(sql);
 			query.setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
 			userWork = query.list();
@@ -831,14 +828,14 @@ public class TimesheetDAOImpl implements TimesheetDAO {
 
 		return userWork;
 	}
-	
+
 	@Override
-	public List<Map<String, Object>> whereworkhour(String year,String month,String day,String name) {
+	public List<Map<String, Object>> whereworkhour(String year, String month, String day, String name) {
 		Session session = this.sessionFactory.getCurrentSession();
 		List<Map<String, Object>> userWork = null;
 		try {
 			String sql = "SELECT * FROM work_hours WHERE YEAR(work_hours_time_work) =:year AND MONTH(work_hours_time_work)=:month AND DAY(work_hours_time_work)=:day AND user_create =:name";
-				
+
 			SQLQuery query = session.createSQLQuery(sql);
 			query.setParameter("year", year);
 			query.setParameter("month", month);
@@ -852,7 +849,7 @@ public class TimesheetDAOImpl implements TimesheetDAO {
 
 		return userWork;
 	}
-	
+
 	@Override
 	public List<Map<String, Object>> wherefunction(String name) {
 		Session session = this.sessionFactory.getCurrentSession();
@@ -860,7 +857,6 @@ public class TimesheetDAOImpl implements TimesheetDAO {
 		try {
 			String sql = "SELECT function_id FROM project_function WHERE function_name =:name";
 
-					
 			SQLQuery query = session.createSQLQuery(sql);
 			query.setParameter("name", name);
 			query.setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
@@ -871,7 +867,7 @@ public class TimesheetDAOImpl implements TimesheetDAO {
 
 		return userWork;
 	}
-	
+
 	@Override
 	public List<Map<String, Object>> searchbymonth(String userid, String month, String year) throws Exception {
 		Session session = this.sessionFactory.getCurrentSession();
@@ -893,7 +889,7 @@ public class TimesheetDAOImpl implements TimesheetDAO {
 		}
 		return searchmonth;
 	}
-	
+
 	@Override
 	public List<Timesheet> findByProjectId(Integer project_id) throws Exception {
 		Session session = this.sessionFactory.getCurrentSession();
@@ -908,5 +904,26 @@ public class TimesheetDAOImpl implements TimesheetDAO {
 		}
 		return timesheet;
 	}
-	
+
+	@Override
+	public List<Map<String, Object>> searchTimesheetByUserCreateAndDate(String userId, Date startOfMonth,
+			Date endOfMonth) {
+		Session session = this.sessionFactory.getCurrentSession();
+		List<Map<String, Object>> expSearch = null;
+		try {
+			String sql = "SELECT * FROM timesheet WHERE user_create = :userId AND time_check_in BETWEEN :startOfMonth AND :endOfMonth";
+			SQLQuery query = session.createSQLQuery(sql);
+			query.setParameter("userId", userId);
+			query.setParameter("startOfMonth", startOfMonth);
+			query.setParameter("endOfMonth", endOfMonth);
+			query.setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
+			expSearch = query.list();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+		return expSearch;
+	}
+
 }

@@ -89,8 +89,31 @@ CREATE TABLE `overtime` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
--- PROD 2026 FEB 23
+-- PROD 2026 FEB 25
 
+-- 26/02/2026 jang(Intern): create 'expense_detail' table --
+CREATE TABLE expense_detail (
+  `expense_detail_id` bigint(20) NOT NULL,
+  `expense_id` bigint(20) NOT NULL,
+  `go_by` bigint(1) NOT NULL,
+  `total` decimal(10,2) DEFAULT NULL,
+  `description` varchar(255) DEFAULT NULL,
+  `user_create` varchar(32) DEFAULT NULL,
+  `user_update` varchar(32) DEFAULT NULL,
+  `time_create` timestamp NULL DEFAULT NULL,
+  `time_update` timestamp NULL DEFAULT NULL,
+  `kilometers` decimal(10,2) DEFAULT NULL
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
+-- 26/02/2026 jang(Intern): add 'requested_by','requested_at','received_by','received_at' column to 'expense_group' table --
+ALTER TABLE `expense_group`
+  ADD COLUMN `requested_by` VARCHAR(32) NULL AFTER paid_year,
+  ADD COLUMN `requested_at`    DATETIME    NULL AFTER requested_by,
+  ADD COLUMN `received_by`  VARCHAR(32) NULL AFTER requested_at,
+  ADD COLUMN `received_at`     DATETIME    NULL AFTER received_by;
+  
+  -- PROD 2026 MAR 17
+  
 -- 17/03/2026 Eric: ALTER TABLE authorized_object and SET active
 ALTER TABLE `authorized_object` ADD `active` VARCHAR(1) NULL AFTER `description`;
 UPDATE `authorized_object` SET active = "1";
@@ -100,3 +123,9 @@ INSERT INTO `authorized_object` (`authorized_object_id`, `name`, `description`, 
 VALUES ('worklog.view', 'worklog.view', 'สามารถดู work log ได้', '1', '2026-03-12 09:15:03', '2026-03-12 09:15:03', '2');
 INSERT INTO `authorized_object` (`authorized_object_id`, `name`, `description`, `active`, `time_create`, `time_update`, `authorized_object_group_id`) 
 VALUES ('worklog.edit', 'worklog.edit', 'สามารถแก้ไข work log ได้', '1', '2026-03-12 09:15:03', '2026-03-12 09:15:03', '2');
+-- 25/02/2026 june(Intern): add 'path_signature' column to 'user' table --
+ALTER TABLE user ADD COLUMN path_signature VARCHAR(1024) DEFAULT NULL;
+  
+  
+  
+  
