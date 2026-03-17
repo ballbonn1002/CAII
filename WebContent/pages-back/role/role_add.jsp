@@ -133,38 +133,31 @@
 										</div>
 									</div> --%>
 									
+									<div class="card-header">
+										<div class="card-title">
+											<span class="me-3">${group.description}</span><a href="#">#${group.authorizedObjectGroupId != null ? group.authorizedObjectGroupId : '-'}</a>
+										</div>
+									</div>
 									<div class="card-body pt-0">
 										<div class="table-responsive">
 											<table class="table align-middle table-row-dashed fs-6 gy-5">
 											
 												<thead>
 													<tr>
-														<th>id : ${group.authorizedObjectGroupId != null ? group.authorizedObjectGroupId : '-'}</th>
-														<th class="fw-bold fs-3">${group.description}</th>
-														<th></th>
-														<th class="text-end">
-														</th>
+														<!-- <th>id : ${group.authorizedObjectGroupId != null ? group.authorizedObjectGroupId : '-'}</th> -->
+														<th style="width: 10%;" class="text-muted">ACTIVE</th>
+														<th style="width: 30%;" class="text-muted">ID</th>
+														<th style="width: 30%;" class="text-muted">NAME</th>
+														<th style="width: 30%;" class="text-muted">DESCRIPTION</th>
 													</tr>
 												</thead>											
 												<tbody>
 
 													<c:forEach var="obj" items="${group.objects}" varStatus="loop">
+													<c:if test="${obj.active eq 1}">
 														<tr class="fs-5">
-															<td class="min-w-200px">${obj.authorizedObjectId}</td>
-
-															<td>
-																<label class="form-check-label cursor-pointer" for="checkbox_${group.authorizedObjectGroupId}_${loop.count}">
-																	${obj.name}
-																</label>
-															</td>
-															<td>
-																<label class="form-check-label cursor-pointer" for="checkbox_${group.authorizedObjectGroupId}_${loop.count}">
-																	${obj.description}
-																</label>
-															</td>
-
-															<td class="text-end">
-																<div class="form-check form-check-custom form-check-solid justify-content-end">
+															<td style="padding:16.25px 9.75px 16.25px 9.75px;">
+																<div class="form-check form-check-custom form-check-solid">
 
 
 																	<c:set var="isChecked" value="" />
@@ -177,7 +170,20 @@
 																	<input class="form-check-input" type="checkbox" name="authId" id="checkbox_${group.authorizedObjectGroupId}_${loop.count}" value="${obj.authorizedObjectId}" ${isChecked} />
 																</div>
 															</td>
+															<td>${obj.authorizedObjectId}</td>
+
+															<td>
+																<label class="cursor-pointer" for="checkbox_${group.authorizedObjectGroupId}_${loop.count}">
+																	${obj.name}
+																</label>
+															</td>
+															<td>
+																<label class="cursor-pointer" for="checkbox_${group.authorizedObjectGroupId}_${loop.count}">
+																	${obj.description}
+																</label>
+															</td>
 														</tr>
+													</c:if>
 													</c:forEach>
 
 													<c:if test="${empty group.objects}">

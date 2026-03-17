@@ -17,6 +17,10 @@ public interface RoleAuthorizedObjectDAO {
 //	public void delete(RoleAuthorizedObject roleAuthorizaedObject) throws Exception;
 //
 	int deleteByRoleId(String roleId) throws Exception;
+	
+	public int deleteByRoleIdAndObjId(String roleId, String objId) throws Exception;
+	
+	public int deleteByObjId(String objId) throws Exception;
 
 	public List<RoleAuthorizedObject> findLeaveViewAllByRoleId(String roleId) throws Exception;
 

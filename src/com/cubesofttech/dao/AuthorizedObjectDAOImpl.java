@@ -18,13 +18,13 @@ public class AuthorizedObjectDAOImpl implements AuthorizedObjectDAO{
     private SessionFactory sessionFactory;
     
  
-//    @Override
-//    public void save(AuthorizedObject AuthorizedObject) throws Exception{
-//        Session session = this.sessionFactory.getCurrentSession();
-//        session.save(AuthorizedObject);
-//        session.flush();
-//        //session.close();
-//    }
+    @Override
+    public void save(AuthorizedObject AuthorizedObject) throws Exception{
+        Session session = this.sessionFactory.getCurrentSession();
+        session.save(AuthorizedObject);
+        session.flush();
+        //session.close();
+    }
 
     @Override
     public List<AuthorizedObject> findAll() throws Exception {
@@ -43,15 +43,15 @@ public class AuthorizedObjectDAOImpl implements AuthorizedObjectDAO{
         return authorizedObjectList;
     }
 
-//    @Override
-//    public void update(AuthorizedObject authorizedObject) throws Exception {
-//        Session session = this.sessionFactory.getCurrentSession();
-//        session.clear();
-//        session.update(authorizedObject);
-//        session.flush();
-//        //session.close();
-//    }
-//
+    @Override
+    public void update(AuthorizedObject authorizedObject) throws Exception {
+        Session session = this.sessionFactory.getCurrentSession();
+        session.clear();
+        session.update(authorizedObject);
+        session.flush();
+        //session.close();
+    }
+
 //    @Override
 //    public void delete(AuthorizedObject authorizedObject) throws Exception {
 //        Session session = this.sessionFactory.getCurrentSession();
@@ -59,19 +59,19 @@ public class AuthorizedObjectDAOImpl implements AuthorizedObjectDAO{
 //        session.flush();
 //        //session.close();
 //    }
-//
-//    @Override
-//    public AuthorizedObject findById(String id) throws Exception {
-//        Session session = this.sessionFactory.getCurrentSession();
-//        AuthorizedObject ao = null;
-//        try {
-//        	ao = (AuthorizedObject) session.get(AuthorizedObject.class, id);
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }finally{
-//            //session.close();
-//        }        
-//        return ao;
-//    }
+
+    @Override
+    public AuthorizedObject findById(String id) throws Exception {
+        Session session = this.sessionFactory.getCurrentSession();
+        AuthorizedObject ao = null;
+        try {
+        	ao = (AuthorizedObject) session.get(AuthorizedObject.class, id);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }finally{
+            //session.close();
+        }        
+        return ao;
+    }
     
 }

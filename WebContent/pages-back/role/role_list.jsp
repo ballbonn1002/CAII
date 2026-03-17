@@ -103,14 +103,14 @@
 					<!--Table Listing-->
 					<div class="card-body pt-0">
 						<div class="table-responsive">
-							<table class="table table-striped table-hover table-row-bordered fs-6 gy-5" id="kt_table" style="min-width: 1200px;">
+							<table class="table table-striped table-hover table-row-bordered fs-6 gy-5" id="kt_table" >
 								<thead>
 									<tr class="text-start text-gray-500 fw-bold fs-7 text-uppercase gs-0 border-bottom border-gray-200">
-										<th style="width: 120px; padding-left: 40px;" class="text-start">#</th>
-										<th style="width: 350px; text-align: left;">Role ID</th>
-										<th style="width: 350px; text-align: left;">Role Name</th>
-										<th style="width: 250px; text-align: left;">Description</th>
-										<th style="width: 120px;" class="text-end pe-5">Actions</th>
+										<th style="width: 10%; padding-left: 40px;" class="text-start">#</th>
+										<th style="width: 20%; text-align: left;">Role ID</th>
+										<th style="width: 25%; text-align: left;">Role Name</th>
+										<th style="width: 25%; text-align: left;">Description</th>
+										<th style="width: 20%;" class="text-end pe-5">Actions</th>
 									</tr>
 								</thead>
 								<tbody class="fw-semibold text-gray-600">
@@ -179,7 +179,7 @@
 <!--Modal-->
 <div class="modal fade" tabindex="-1" id="modal_delete_role">
 	<div class="modal-dialog">
-		<form id="deleteRoleForm" action="role-delete" method="get" class="modal-content">
+		<form id="deleteRoleForm" action="role-delete" method="POST" class="modal-content">
 			<div class="modal-body py-15 px-lg-17">
 				<div class="mb-10 text-center">
 					<i class="ki-duotone ki-information text-danger" style="font-size: 200px">

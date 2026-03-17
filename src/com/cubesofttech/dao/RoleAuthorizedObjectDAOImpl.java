@@ -102,6 +102,44 @@ public class RoleAuthorizedObjectDAOImpl implements RoleAuthorizedObjectDAO{
         }
 		return updated;
     }
+    
+    @Override
+    public int deleteByRoleIdAndObjId(String roleId, String objId) throws Exception {
+    	Session session = this.sessionFactory.getCurrentSession();
+    	int updated = 0;
+        List<Role> list = null;
+        try {
+        	Query deleteQuery = session.createSQLQuery(
+        		    "delete from role_authorized_object "
+        		    + "where role_id = '" + roleId + "' AND authorized_object_id = '" + objId + "'");
+        		updated = deleteQuery.executeUpdate();
+        } catch (Exception e) {
+        	e.printStackTrace();
+
+        } finally {
+
+        }
+		return updated;
+    }
+    
+    @Override
+    public int deleteByObjId(String objId) throws Exception {
+    	Session session = this.sessionFactory.getCurrentSession();
+    	int updated = 0;
+        List<Role> list = null;
+        try {
+        	Query deleteQuery = session.createSQLQuery(
+        		    "delete from role_authorized_object "
+        		    + "where authorized_object_id = '" + objId + "'");
+        		updated = deleteQuery.executeUpdate();
+        } catch (Exception e) {
+        	e.printStackTrace();
+
+        } finally {
+
+        }
+		return updated;
+    }
 
 	@Override
 	public List<RoleAuthorizedObject> findLeaveViewAllByRoleId(String roleId) throws Exception {

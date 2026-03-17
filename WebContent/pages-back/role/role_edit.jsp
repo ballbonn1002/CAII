@@ -2,7 +2,18 @@
 <%@ page trimDirectiveWhitespaces="true"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
+<style>
+input:read-only {
+  color: var(--bs-gray-500);
+  background-color: var(--bs-gray-200);
+  border-color: var(--bs-gray-300);
+  opacity: 1;
+}
 
+.no-click {
+  pointer-events: none;
+}
+</style>
 <!--begin::Main-->
 <div class="app-main flex-column flex-row-fluid">
 
@@ -57,7 +68,7 @@
 											<label for="roleId" class="form-label fw-semibold">Role ID <span class="text-danger">*</span>
 											</label>
 											<div class="form-icon-left">
-												<input type="text" class="form-control" placeholder="Role ID" maxlength="32" name="role.id" value="${role.id}" required>
+												<input type="text" class="form-control no-click" placeholder="Role ID" maxlength="32" name="role.id" value="${role.id}" readonly required>
 												<input type="hidden" name="roleId" value="${role.id}" required>
 											</div>
 										</div>
@@ -100,6 +111,7 @@
 						</div>
 						<!--end::Content container-->
 					</div>
+				</form>
 					<!--end::Content-->
 					<!--end::Content wrapper-->
 
@@ -133,40 +145,30 @@
 										</div>
 									</div> --%>
 									
+									<div class="card-header">
+										<div class="card-title">
+											<span class="me-3">${group.description}</span><a href="#">#${group.authorizedObjectGroupId != null ? group.authorizedObjectGroupId : '-'}</a>
+										</div>
+									</div>
 									<div class="card-body pt-0">
 										<div class="table-responsive">
 											<table class="table align-middle table-row-dashed fs-6 gy-5">
-											
 												<thead>
 													<tr>
-														<th>id : ${group.authorizedObjectGroupId != null ? group.authorizedObjectGroupId : '-'}</th>
-														<th class="fw-bold fs-3">${group.description}</th>
-														<th></th>
-														<th class="text-end">
-														</th>
+														<!-- <th>id : ${group.authorizedObjectGroupId != null ? group.authorizedObjectGroupId : '-'}</th> -->
+														<th style="width: 10%;" class="text-muted">ACTIVE</th>
+														<th style="width: 30%;" class="text-muted">ID</th>
+														<th style="width: 30%;" class="text-muted">NAME</th>
+														<th style="width: 30%;" class="text-muted">DESCRIPTION</th>
 													</tr>
 												</thead>											
 												<tbody>
 
 													<c:forEach var="obj" items="${group.objects}" varStatus="loop">
+													<c:if test="${obj.active eq 1}">
 														<tr class="fs-5">
-															<td class="min-w-200px">${obj.authorizedObjectId}</td>
-
-															<td>
-																<label class="form-check-label cursor-pointer" for="checkbox_${group.authorizedObjectGroupId}_${loop.count}">
-																	${obj.name}
-																</label>
-															</td>
-															<td>
-																<label class="form-check-label cursor-pointer" for="checkbox_${group.authorizedObjectGroupId}_${loop.count}">
-																	${obj.description}
-																</label>
-															</td>
-
-															<td class="text-end">
-																<div class="form-check form-check-custom form-check-solid justify-content-end">
-
-
+															<td style="padding:16.25px 9.75px 16.25px 9.75px;">
+																<div class="form-check form-check-custom form-check-solid">
 																	<c:set var="isChecked" value="" />
 																	<c:forEach var="rao" items="${raoList}">
 																		<c:if test="${obj.authorizedObjectId eq rao.authorizedObjectId}">
@@ -174,10 +176,23 @@
 																		</c:if>
 																	</c:forEach>
 
-																	<input class="form-check-input" type="checkbox" name="authId" id="checkbox_${group.authorizedObjectGroupId}_${loop.count}" value="${obj.authorizedObjectId}" ${isChecked} />
+																	<input class="form-check-input" type="checkbox" name="authId" onclick="performStatus('${role.id}','${obj.authorizedObjectId}','${group.authorizedObjectGroupId}_${loop.count}')"
+																	id="checkbox_${group.authorizedObjectGroupId}_${loop.count}" value="${obj.authorizedObjectId}" ${isChecked} />
 																</div>
 															</td>
+															<td>${obj.authorizedObjectId}</td>
+															<td>
+																<label class="cursor-pointer" for="checkbox_${group.authorizedObjectGroupId}_${loop.count}">
+																	${obj.name}
+																</label>
+															</td>
+															<td>
+																<label class="cursor-pointer" for="checkbox_${group.authorizedObjectGroupId}_${loop.count}">
+																	${obj.description}
+																</label>
+															</td>
 														</tr>
+													</c:if>
 													</c:forEach>
 
 													<c:if test="${empty group.objects}">
@@ -196,7 +211,7 @@
 						</div>
 					</div>
 
-				</form>
+				
 			</div>
 		</div>
 	</div>
@@ -216,4 +231,60 @@
             });
         }
     });
+    
+    function performStatus(role_id, obj_id, id) {
+        var status;
+        if($('#checkbox_'+id).is(':checked')){
+        	status = "1";
+        } else {
+        	status = "0";
+        }
+        
+        $.ajax({
+			url : "role-perform-status-update",
+			type : "POST",
+			data : {
+				"role_id" : role_id,
+				"obj_id" : obj_id,
+				"status" : status,
+			},
+			success : function(data) {
+				console.log(data);
+				const Toast = Swal.mixin({
+					toast: true,
+					position: 'top-end',
+					showConfirmButton: false,
+					timer: 3000,
+					timerProgressBar: true,
+					didOpen: (toast) => {
+						toast.onmouseenter = Swal.stopTimer;
+						toast.onmouseleave = Swal.resumeTimer;
+					}
+				});
+				Toast.fire({
+					icon: 'success',
+					title: 'Status updated successfully'
+				});
+			},
+			error : function(xhr, status, error) {
+				console.error("Error updating address:", error);
+				const Toast = Swal.mixin({
+					toast: true,
+					position: 'top-end',
+					showConfirmButton: false,
+					timer: 3000,
+					timerProgressBar: true,
+					didOpen: (toast) => {
+						toast.onmouseenter = Swal.stopTimer;
+						toast.onmouseleave = Swal.resumeTimer;
+					}
+				});
+				Toast.fire({
+					icon: 'error',
+					title: 'Update failed'
+				});
+			}
+		});
+    }
+
 </script>

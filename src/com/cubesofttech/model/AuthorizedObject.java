@@ -40,7 +40,9 @@ public class AuthorizedObject implements Serializable {
     @Column(name = "name")
     private String name;	
     @Column(name = "description")
-    private String description;	
+    private String description;
+    @Column(name = "active")
+    private String active;
     @Column(name = "time_create")
     private java.sql.Timestamp timeCreate;	
     @Column(name = "time_update")
@@ -68,7 +70,13 @@ public class AuthorizedObject implements Serializable {
     public void setDescription(String description) {
         this.description = description;
     }
-    public java.sql.Timestamp getTimeCreate() {
+    public String getActive() {
+		return active;
+	}
+	public void setActive(String active) {
+		this.active = active;
+	}
+	public java.sql.Timestamp getTimeCreate() {
         return this.timeCreate;
     }		
     public void setTimeCreate(java.sql.Timestamp timeCreate) {
@@ -90,7 +98,7 @@ public class AuthorizedObject implements Serializable {
 
     
     public String toString() {
-        return super.toString() + "authorizedObjectId=[" + authorizedObjectId + "]\n" + "name=[" + name + "]\n" + "description=[" + description + "]\n" + "timeCreate=[" + timeCreate + "]\n" + "timeUpdate=[" + timeUpdate + "]\n" + "authorizedObjectGroupId=[" + authorizedObjectGroupId + "]\n";
+        return super.toString() + "authorizedObjectId=[" + authorizedObjectId + "]\n" + "name=[" + name + "]\n" + "description=[" + description + "]\n" + "active=[" + active + "]\n" + "timeCreate=[" + timeCreate + "]\n" + "timeUpdate=[" + timeUpdate + "]\n" + "authorizedObjectGroupId=[" + authorizedObjectGroupId + "]\n";
     }
 
     public boolean equals(Object obj) {

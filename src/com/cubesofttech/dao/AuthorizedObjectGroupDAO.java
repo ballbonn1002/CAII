@@ -11,6 +11,8 @@ public interface AuthorizedObjectGroupDAO {
 	
     public AuthorizedObjectGroup findById(Integer authorizedObjectGroupId) throws Exception;
     
+    public List<AuthorizedObjectGroup> findByName(String name) throws Exception;
+    
     public void update(AuthorizedObjectGroup authorizedObjectGroup) throws Exception;
     
     public void delete(AuthorizedObjectGroup authorizedObjectGroup) throws Exception;

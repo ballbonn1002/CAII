@@ -47,6 +47,24 @@ public class AuthorizedObjectGroupDAOImpl implements AuthorizedObjectGroupDAO {
     }
     
     @Override
+	public List<AuthorizedObjectGroup> findByName(String name) throws Exception {
+		Session session = this.sessionFactory.getCurrentSession();
+		List<AuthorizedObjectGroup> groupList = null;
+		try {
+			String sql = "SELECT * FROM authorized_object_group WHERE name='" + name + "'";
+			SQLQuery query = session.createSQLQuery(sql);
+			query.setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
+			groupList = query.list();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			// session.close();
+		}
+		return groupList;
+	}
+    
+    @Override
     public void update(AuthorizedObjectGroup authorizedObjectGroup) throws Exception {
         Session session = this.sessionFactory.getCurrentSession();
         session.clear();
@@ -86,13 +104,13 @@ public class AuthorizedObjectGroupDAOImpl implements AuthorizedObjectGroupDAO {
 		List<AuthorizedObjectGroup> finalResult = new ArrayList<>();
 
 		try {
-			String sql = "(SELECT g.authorized_object_group_id, g.description AS group_description, "
-					+ " o.authorized_object_id, o.name AS object_name, o.description AS object_description "
+			String sql = "(SELECT g.authorized_object_group_id, g.name AS group_name, g.description AS group_description, "
+					+ " o.authorized_object_id, o.name AS object_name, o.description AS object_description, o.active AS object_active "
 					+ " FROM authorized_object_group g "
 					+ " LEFT JOIN authorized_object o ON g.authorized_object_group_id = o.authorized_object_group_id) "
 					+ " UNION ALL "
-					+ " (SELECT NULL AS authorized_object_group_id, 'รายการที่ไม่ได้จัดกลุ่ม' AS group_description, "
-					+ " o.authorized_object_id, o.name AS object_name, o.description AS object_description "
+					+ " (SELECT NULL AS authorized_object_group_id, 'รายการที่ไม่ได้จัดกลุ่ม' AS group_name, 'รายการที่ไม่ได้จัดกลุ่ม' AS group_description, "
+					+ " o.authorized_object_id, o.name AS object_name, o.description AS object_description, o.active AS object_active "
 					+ " FROM authorized_object o "
 					+ " WHERE o.authorized_object_group_id NOT IN (SELECT authorized_object_group_id FROM authorized_object_group) "
 					+ " OR o.authorized_object_group_id IS NULL) "
@@ -114,6 +132,7 @@ public class AuthorizedObjectGroupDAOImpl implements AuthorizedObjectGroupDAO {
 					gId = ((Number) gIdRaw).intValue();
 				}
 
+				String gName = (String) row.get("group_name");
 				String gDesc = (String) row.get("group_description");
 
 				Integer mapKey = (gId == null) ? -999 : gId;
@@ -122,6 +141,7 @@ public class AuthorizedObjectGroupDAOImpl implements AuthorizedObjectGroupDAO {
 				if (group == null) {
 					group = new AuthorizedObjectGroup();
 					group.setAuthorizedObjectGroupId(gId);
+					group.setName(gName);
 					group.setDescription(gDesc);
 					groupMap.put(mapKey, group);
 				}
@@ -132,6 +152,7 @@ public class AuthorizedObjectGroupDAOImpl implements AuthorizedObjectGroupDAO {
 					obj.setAuthorizedObjectId(objId);
 					obj.setName((String) row.get("object_name"));
 					obj.setDescription((String) row.get("object_description"));
+					obj.setActive((String) row.get("object_active"));
 
 					group.addObject(obj);
 				}

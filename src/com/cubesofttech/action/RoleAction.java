@@ -1,9 +1,8 @@
 package com.cubesofttech.action;
 
-import java.util.ArrayList;
+import java.io.PrintWriter;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -22,16 +21,16 @@ import com.cubesofttech.dao.RoleAuthorizedObjectDAO;
 import com.cubesofttech.dao.RoleDAO;
 import com.cubesofttech.dao.UserDAO;
 import com.cubesofttech.dao.UserRoleDAO;
-import com.cubesofttech.model.AuthorizedGroupView;
 import com.cubesofttech.model.AuthorizedObject;
 import com.cubesofttech.model.AuthorizedObjectGroup;
-import com.cubesofttech.model.Position;
 import com.cubesofttech.model.Role;
 import com.cubesofttech.model.RoleAuthorizedObject;
 import com.cubesofttech.model.User;
 import com.cubesofttech.model.UserRole;
 import com.cubesofttech.service.RoleService;
 import com.cubesofttech.util.DateUtil;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.opensymphony.xwork2.ActionSupport;
 
 public class RoleAction extends ActionSupport {
@@ -63,13 +62,7 @@ public class RoleAction extends ActionSupport {
 
 	private Role role;
 
-	private AuthorizedObjectGroup authorizedObjectGroup;
-
-	private User user;
-
 	private String roleId;
-
-	private Integer authorizedObjectGroupId;
 	
 	@Autowired
 	public RoleService roleService;
@@ -138,18 +131,6 @@ public class RoleAction extends ActionSupport {
 			return ERROR;
 		}
 	}
-
-	public String roleSettingEditingPage() {
-		try {
-			authorizedObjectGroup = authorizedObjectGroupDAO.findById(authorizedObjectGroupId);
-			request.setAttribute("roleSetting", authorizedObjectGroup);
-			
-			return SUCCESS;
-		} catch (Exception e) {
-			log.error(e.getMessage());
-			return ERROR;
-		}
-	}
 	
 	public String openEdit2() {
 	    try {
@@ -167,9 +148,21 @@ public class RoleAction extends ActionSupport {
 	        return ERROR;
 	    }
 	}
-
-	public String roleSettingAddingPage() {
+	
+	public String listSetting() {
 		try {
+			//request.setAttribute("role", role);
+			
+			List<AuthorizedObjectGroup> authorizedHierarchy = authorizedObjectGroupDAO.getAuthorizedHierarchy();
+			
+			request.setAttribute("aoList", authorizedHierarchy);
+			
+			List<AuthorizedObjectGroup> aogList = authorizedObjectGroupDAO.findAll();
+			
+			request.setAttribute("aogList", aogList);
+			
+			//request.setAttribute("raoList", roleAuthorizedObjectDAO.findByRoleId(roleId));
+			
 			return SUCCESS;
 		} catch (Exception e) {
 			log.error(e);
@@ -177,16 +170,47 @@ public class RoleAction extends ActionSupport {
 		}
 	}
 	
-	public String listSetting() {
+	public String findAuthGroupId() {
 		try {
-			request.setAttribute("role", role);
+			String authGroupId = request.getParameter("value");
+			log.debug(authGroupId);
 			
-			List<AuthorizedObjectGroup> authorizedHierarchy = authorizedObjectGroupDAO.getAuthorizedHierarchy();
+			AuthorizedObjectGroup find = authorizedObjectGroupDAO.findById(Integer.parseInt(authGroupId));
+			String x = "1";
+			if (find != null) {
+				x = "0";
+			}
+			Gson gson = new GsonBuilder().setPrettyPrinting().create();
+			String json = gson.toJson(x);
+			request.setAttribute("json", json);
+			return SUCCESS;
+		} catch (Exception e) {
+			log.error(e);
+			return ERROR;
+		}
+	}
+	
+	public String findAuthGroupName() {
+		try {
+			String authGroupName = request.getParameter("value");
+			log.debug(authGroupName);
 			
-			request.setAttribute("aoList", authorizedHierarchy);
-			
-			request.setAttribute("raoList", roleAuthorizedObjectDAO.findByRoleId(roleId));
-			
+			Map<String, String> obj = new HashMap<>();
+			List<AuthorizedObjectGroup> find = authorizedObjectGroupDAO.findByName(authGroupName);
+			String s = find.toString();
+			if (s.equals("[]")) {
+				String x = "0";
+				obj.put("flag", x);
+			} else {
+				String a = "1";
+				obj.put("flag", a);
+			}
+			Gson gson = new GsonBuilder().create();
+			String jsonObjStr = gson.toJson(obj);
+			PrintWriter out = response.getWriter();
+			out.print(jsonObjStr);
+			out.flush();
+			out.close();
 			return SUCCESS;
 		} catch (Exception e) {
 			log.error(e);
@@ -196,30 +220,43 @@ public class RoleAction extends ActionSupport {
 	
 	public String performEdit() {
 		try {
+			log.debug(role);
 			Role r = roleDAO.findById(role.getId());
 			r.setName(role.getName());
 			r.setDescription(role.getDescription());
 			r.setTimeUpdate(DateUtil.getCurrentTime());
 			roleDAO.update(r);
-
-			roleAuthorizedObjectDAO.deleteByRoleId(r.getId());
-
-			String[] authIds = request.getParameterValues("authId");
-			if (authIds != null) {
-				log.debug(authIds.length);
-				for (int i = 0; i < authIds.length; i++) {
-					RoleAuthorizedObject ro = new RoleAuthorizedObject();
-					ro.setRoleId(r.getId());
-					ro.setAuthorizedObjectId(authIds[i]);
-					ro.setTimeCreate(DateUtil.getCurrentTime());
-					ro.setTimeUpdate(DateUtil.getCurrentTime());
-					roleAuthorizedObjectDAO.save(ro);
-				}
-			} else {
-				return SUCCESS;
-			}
+			
 			return SUCCESS;
 
+		} catch (Exception e) {
+			log.error(e);
+			return ERROR;
+		}
+	}
+	
+	public String performEditStatusUpdate() {
+		try {
+			String role_id = request.getParameter("role_id");
+			String obj_id = request.getParameter("obj_id");
+			String status = request.getParameter("status");
+			
+			if(status.equals("1")) {
+				RoleAuthorizedObject ro = new RoleAuthorizedObject();
+				ro.setRoleId(role_id);
+				ro.setAuthorizedObjectId(obj_id);
+				ro.setTimeCreate(DateUtil.getCurrentTime());
+				ro.setTimeUpdate(DateUtil.getCurrentTime());
+				roleAuthorizedObjectDAO.save(ro);
+			} else if(status.equals("0")) {
+				roleAuthorizedObjectDAO.deleteByRoleIdAndObjId(role_id, obj_id);
+			}
+			
+			Gson gson = new GsonBuilder().setPrettyPrinting().create();
+			String json = gson.toJson("success");
+			request.setAttribute("json", json);
+			
+			return SUCCESS;
 		} catch (Exception e) {
 			log.error(e);
 			return ERROR;
@@ -228,9 +265,11 @@ public class RoleAction extends ActionSupport {
 
 	public String performEditSetting() {
 		try {
-			AuthorizedObjectGroup r = authorizedObjectGroupDAO.findById(authorizedObjectGroup.getAuthorizedObjectGroupId());
-			r.setName(authorizedObjectGroup.getName());
-			r.setDescription(authorizedObjectGroup.getDescription());
+			String groupId = request.getParameter("hiddenEditGroupId");
+			String name = request.getParameter("editAuthGroupName");
+			log.debug(groupId);
+			AuthorizedObjectGroup r = authorizedObjectGroupDAO.findById(Integer.parseInt(groupId));
+			r.setName(name);
 			r.setTimeUpdate(DateUtil.getCurrentTime());
 			authorizedObjectGroupDAO.update(r);
 			
@@ -242,9 +281,40 @@ public class RoleAction extends ActionSupport {
 		}
 	}
 	
+	public String performEditStatusUpdateSetting() {
+		try {
+			log.debug("test");
+			String obj_id = request.getParameter("obj_id");
+			String status = request.getParameter("status");
+			
+			if(status.equals("1")) {
+				AuthorizedObject ao = authorizedObjectDAO.findById(obj_id);
+				ao.setActive(status);
+				authorizedObjectDAO.update(ao);
+				
+			} else if(status.equals("0")) {
+				AuthorizedObject ao = authorizedObjectDAO.findById(obj_id);
+				ao.setActive(status);
+				authorizedObjectDAO.update(ao);
+				
+				roleAuthorizedObjectDAO.deleteByObjId(obj_id);
+			}
+			
+			Gson gson = new GsonBuilder().setPrettyPrinting().create();
+			String json = gson.toJson("success");
+			request.setAttribute("json", json);
+			
+			return SUCCESS;
+		} catch (Exception e) {
+			log.error(e);
+			return ERROR;
+		}
+	}
+	
 	public String performAdd() {
 		try {
 
+			log.debug(role);
 			role.setTimeCreate(DateUtil.getCurrentTime());
 			role.setTimeUpdate(DateUtil.getCurrentTime());
 			roleDAO.save(role);
@@ -272,10 +342,23 @@ public class RoleAction extends ActionSupport {
 
 	public String performAddSetting() {
 		try {
+			User ur = (User) request.getSession().getAttribute("onlineUser");
+			String logonUser = ur.getId();
+			log.debug(logonUser);
 			
-			authorizedObjectGroup.setTimeCreate(DateUtil.getCurrentTime());
-			authorizedObjectGroup.setTimeUpdate(DateUtil.getCurrentTime());
-			authorizedObjectGroupDAO.save(authorizedObjectGroup);
+			String authGroupId = request.getParameter("authGroupId");
+			String authGroupName = request.getParameter("authGroupName");
+			log.debug(authGroupId);
+			log.debug(authGroupName);
+			
+			AuthorizedObjectGroup auth = new AuthorizedObjectGroup();
+			auth.setAuthorizedObjectGroupId(Integer.parseInt(authGroupId));
+			auth.setName(authGroupName);
+			auth.setUserCreate(logonUser);
+			auth.setUserUpdate(logonUser);
+			auth.setTimeCreate(DateUtil.getCurrentTime());
+			auth.setTimeUpdate(DateUtil.getCurrentTime());
+			authorizedObjectGroupDAO.save(auth);
 
 			return SUCCESS;
 		} catch (Exception e) {
@@ -295,7 +378,7 @@ public class RoleAction extends ActionSupport {
 			request.setAttribute(Role, roleList);
 			return SUCCESS;
 		} catch (Exception e) {
-
+			log.error(e);
 			return ERROR;
 		}
 	}
@@ -315,7 +398,28 @@ public class RoleAction extends ActionSupport {
 			
 			return SUCCESS;
 		} catch (Exception e) {
+			log.error(e);
+			return ERROR;
+		}
+	}
+	
+	public String editAuth() {
+		try {
+			String groupId = request.getParameter("editGroupId");
+			String id = request.getParameter("hiddenEditAuthId");
+			String name = request.getParameter("editAuthName");
+			String desc = request.getParameter("editAuthDesc");
 			
+			AuthorizedObject ao = authorizedObjectDAO.findById(id);
+			ao.setAuthorizedObjectGroupId(Integer.parseInt(groupId));
+			ao.setName(name);
+			ao.setDescription(desc);
+			ao.setTimeUpdate(DateUtil.getCurrentTime());
+			authorizedObjectDAO.update(ao);
+			
+			return SUCCESS;
+		} catch (Exception e) {
+			log.error(e);
 			return ERROR;
 		}
 	}
