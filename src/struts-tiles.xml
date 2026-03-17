@@ -187,11 +187,10 @@
 		<put-attribute name="body"
 			value="/pages-back/check/check_in_out.jsp" />
 	</definition>
-	
+
 	<!-- Retroactive -->
 	<definition name="retroactivePage" extends="baseLayout">
-		<put-attribute name="title"
-			value="Retroactive" />
+		<put-attribute name="title" value="Retroactive" />
 		<put-attribute name="body"
 			value="/pages-back/check/retroactive_form.jsp" />
 	</definition>
@@ -247,6 +246,25 @@
 
 	<!-- My Leave -->
 
+	<!-- Time Sheet -->
+
+	<!-- Listing -->
+	<definition name="time_sheet_list" extends="baseLayout">
+		<put-attribute name="title" value="Time Sheet" />
+		<put-attribute name="body"
+			value="/pages-back/time_sheet/time_sheet_list.jsp" />
+	</definition>
+	<!-- Listing -->
+
+	<!-- Add -->
+	<definition name="time_sheet_add" extends="baseLayout">
+		<put-attribute name="title" value="Add Time Sheet" />
+		<put-attribute name="body"
+			value="/pages-back/time_sheet/time_sheet_form.jsp" />
+	</definition>
+	<!-- Add -->
+
+	<!-- Time Sheet -->
 
 	<!-- Leave Type -->
 
@@ -286,6 +304,14 @@
 			value="/pages-back/leave/my_leave_list.jsp" />
 	</definition>
 	<!-- Leave Approve -->
+
+	<!-- Daily Monitor -->
+	<definition name="daily_monitor" extends="baseLayout">
+		<put-attribute name="title" value="Daily Monitor" />
+		<put-attribute name="body"
+			value="/pages-back/daily_monitor/daily_monitor_list.jsp" />
+	</definition>
+	<!-- Daily Monitor -->
 
 	<!-- Role Management -->
 	<definition name="role.list" extends="baseLayout">
@@ -413,40 +439,40 @@
 		<put-attribute name="body"
 			value="/pages-back/borrow/borrow_add.jsp" />
 	</definition>
-    
-    <!-- Work Log -->
-    <definition name="workLog" extends="baseLayout">
+
+	<!-- Work Log -->
+	<definition name="workLog" extends="baseLayout">
 		<put-attribute name="title" value="Work Log" />
 		<put-attribute name="body"
 			value="/pages-back/work_log/work_log_list.jsp" />
 	</definition>
-	
+
 	<!-- Report -->
-    <definition name="report" extends="baseLayout">
+	<definition name="report" extends="baseLayout">
 		<put-attribute name="title" value="Report" />
-		<put-attribute name="body" 
+		<put-attribute name="body"
 			value="/pages-back/report/summary_working_day.jsp" />
 	</definition>
-    
+
 	<!-- Article -->
 	<definition name="article_feed" extends="baseLayout">
 		<put-attribute name="title" value="Article Feed" />
 		<put-attribute name="body"
 			value="/pages-back/article/article_list.jsp" />
 	</definition>
-	
+
 	<definition name="article_add" extends="baseLayout">
 		<put-attribute name="title" value="Add Article" />
 		<put-attribute name="body"
 			value="/pages-back/article/article_add.jsp" />
 	</definition>
-	
+
 	<definition name="article_edit" extends="baseLayout">
 		<put-attribute name="title" value="Edit Article" />
 		<put-attribute name="body"
 			value="/pages-back/article/article_edit.jsp" />
 	</definition>
-	
+
 	<definition name="article_preview" extends="baseLayout">
 		<put-attribute name="title" value="Preview Article" />
 		<put-attribute name="body"

@@ -237,7 +237,7 @@
 			class="com.cubesofttech.action.WorkHoursAction" method="savecheck">
 			<result name="error">/index.jsp</result>
 		</action>
-		
+
 		<!-- Retroactive -->
 		<action name="retroactive"
 			class="com.cubesofttech.action.WorkHoursAction" method="init">
@@ -350,7 +350,84 @@
 
 		<!-- MyLeave =========================================================================================================== -->
 
+		<!-- Time Sheet =========================================================================================================== -->
 
+		<!-- Listing=========================================================================================================== -->
+		<action name="timeSheet"
+			class="com.cubesofttech.action.TimeSheetAction"
+			method="timeSheetList">
+			<result name="success" type="tiles">time_sheet_list</result>
+			<result name="error">/index.jsp</result>
+		</action>
+		<!-- Listing=========================================================================================================== -->
+
+		<!-- Search =========================================================================================================== -->
+		<action name="timeSheetSearch"
+			class="com.cubesofttech.action.TimeSheetAction"
+			method="timeSheetSearch">
+			<result name="success" type="tiles">time_sheet_list</result>
+			<result name="error">/index.jsp</result>
+		</action>
+		<!-- Search =========================================================================================================== -->
+
+		<!-- Add =========================================================================================================== -->
+		<action name="addTimeSheet"
+			class="com.cubesofttech.action.TimeSheetAction" method="addTimeSheet">
+			<result name="success" type="tiles">time_sheet_add</result>
+			<result name="error">/index.jsp</result>
+		</action>
+		<!-- Add =========================================================================================================== -->
+
+		<!-- Save =========================================================================================================== -->
+		<action name="saveTimeSheet"
+			class="com.cubesofttech.action.TimeSheetAction"
+			method="saveTimeSheet">
+			<result name="success" type="redirectAction">
+				<param name="actionName">timeSheet</param>
+			</result>
+			<result name="error">/index.jsp</result>
+		</action>
+		<!-- Save =========================================================================================================== -->
+
+		<!-- Delete =========================================================================================================== -->
+		<action name="deleteTimeSheet"
+			class="com.cubesofttech.action.TimeSheetAction"
+			method="deleteTimeSheet">
+			<result name="success" type="redirectAction">
+				<param name="actionName">timeSheet</param>
+			</result>
+			<result name="error">/index.jsp</result>
+		</action>
+		<!-- Delete =========================================================================================================== -->
+
+		<!-- Update =========================================================================================================== -->
+		<action name="updateTimeSheet"
+			class="com.cubesofttech.action.TimeSheetAction"
+			method="updateTimeSheet">
+			<result type="json">
+				<param name="root">newTimeSheetMap</param>
+			</result>
+		</action>
+		<!-- Update =========================================================================================================== -->
+
+		<!-- List Function =========================================================================================================== -->
+		<action name="getFunctionOfProject"
+			class="com.cubesofttech.action.TimeSheetAction" method="getFunction">
+			<result type="json">
+				<param name="root">projectFunctions</param>
+			</result>
+		</action>
+		<!-- List Function =========================================================================================================== -->
+
+		<!-- Export =========================================================================================================== -->
+		<action name="timeSheetExport"
+			class="com.cubesofttech.action.TimeSheetAction"
+			method="exportTimeSheet">
+			<result name="none" />
+		</action>
+		<!-- Export =========================================================================================================== -->
+
+		<!-- Time Sheet =========================================================================================================== -->
 
 		<!-- Leave Type =========================================================================================================== -->
 
@@ -469,6 +546,27 @@
 		<!-- Btn Approve : Modal -->
 
 		<!-- Leave Approve ================================================================================================== -->
+
+		<!-- Daily Monitor ================================================================================================== -->
+
+		<!-- List ================================================================================================== -->
+		<action name="dailyMonitor"
+			class="com.cubesofttech.action.DailyMonitorAction"
+			method="dailyMonitorList">
+			<result name="success" type="tiles">daily_monitor</result>
+			<result name="error">/index.jsp</result>
+		</action>
+		<!-- List ================================================================================================== -->
+		<!-- Search ================================================================================================== -->
+		<action name="dailyMonitorSearch"
+			class="com.cubesofttech.action.DailyMonitorAction"
+			method="dailyMonitorSearch">
+			<result name="success" type="tiles">daily_monitor</result>
+			<result name="error">/index.jsp</result>
+		</action>
+		<!-- Search ================================================================================================== -->
+
+		<!-- Daily Monitor ================================================================================================== -->
 
 		<!-- Role Management ================================================================================================== -->
 		<action name="role-list"
@@ -763,7 +861,7 @@
 		<action name="announcementAddPage">
 			<result type="tiles">AnnouncementAdd</result>
 		</action>
-		
+
 		<action name="announcementUpdate"
 			class="com.cubesofttech.action.AnnouncementAction" method="save">
 			<result name="success" type="redirectAction">
@@ -1040,7 +1138,7 @@
 		<action name="eBorrowLog"
 			class="com.cubesofttech.action.BorrowingAction" method="eBorrowLog">
 		</action>
-		
+
 		<!-- ========================== Work Log ============================== -->
 		<action name="work_log"
 			class="com.cubesofttech.action.WorkLogAction" method="open">
@@ -1048,11 +1146,11 @@
 			<result name="error">/index.jsp</result>
 			<result name="login" type="redirect">/index.jsp</result>
 		</action>
-		<action name="work_log_json" 
+		<action name="work_log_json"
 			class="com.cubesofttech.action.WorkLogAction" method="search">
 			<result name="login" type="redirect">/index.jsp</result>
 		</action>
-		<action name="export_excel" 
+		<action name="export_excel"
 			class="com.cubesofttech.action.WorkLogAction" method="exportExcel">
 			<result name="login" type="redirect">/index.jsp</result>
 		</action>
@@ -1060,7 +1158,7 @@
 			class="com.cubesofttech.action.WorkLogAction" method="saveWorkLog">
 			<result name="login" type="redirect">/index.jsp</result>
 		</action>
-		
+
 		<!-- ========================== Report ============================== -->
 		<action name="report"
 			class="com.cubesofttech.action.ReportAction" method="open">
@@ -1068,62 +1166,69 @@
 			<result name="error">/index.jsp</result>
 			<result name="login" type="redirect">/index.jsp</result>
 		</action>
-		<action name="report_listWorking" 
+		<action name="report_listWorking"
 			class="com.cubesofttech.action.ReportAction" method="listWorking">
 			<result name="success" type="tiles">report</result>
 			<result name="error">/index.jsp</result>
 			<result name="login" type="redirect">/index.jsp</result>
 		</action>
-		<action name="summaryWorkingDayData" 
-				class="com.cubesofttech.action.ReportAction" method="workingDayData">
+		<action name="summaryWorkingDayData"
+			class="com.cubesofttech.action.ReportAction" method="workingDayData">
 		</action>
-		
+
 		<!-- Article -->
 		<action name="article_feed"
 			class="com.cubesofttech.action.ArticleAction" method="article_feed">
 			<result name="success" type="tiles">article_feed</result>
 			<result name="error">/index.jsp</result>
 		</action>
-		
+
 		<action name="article_add"
 			class="com.cubesofttech.action.ArticleAction" method="article_add">
 			<result name="success" type="tiles">article_add</result>
 			<result name="error">/index.jsp</result>
 		</action>
-		
+
 		<action name="article_edit"
 			class="com.cubesofttech.action.ArticleAction" method="article_edit">
 			<result name="success" type="tiles">article_edit</result>
 			<result name="error">/index.jsp</result>
 		</action>
-		
+
 		<action name="article_preview"
-			class="com.cubesofttech.action.ArticleAction" method="article_preview">
+			class="com.cubesofttech.action.ArticleAction"
+			method="article_preview">
 			<result name="success" type="tiles">article_preview</result>
 			<result name="error">/index.jsp</result>
 		</action>
-		
+
 		<action name="article_perform_add"
-			class="com.cubesofttech.action.ArticleAction" method="article_perform_add">
-			<result name="success" type="redirectAction">article_edit?articleId=${articleId}</result>
-			<result name="preview" type="redirectAction">article_preview?articleId=${articleId}</result>
+			class="com.cubesofttech.action.ArticleAction"
+			method="article_perform_add">
+			<result name="success" type="redirectAction">article_edit?articleId=${articleId}
+			</result>
+			<result name="preview" type="redirectAction">article_preview?articleId=${articleId}
+			</result>
 			<result name="error">/index.jsp</result>
 			<result name="input">/article_add.jsp</result>
 		</action>
-		
+
 		<action name="article_perform_update"
-			class="com.cubesofttech.action.ArticleAction" method="article_perform_update">
+			class="com.cubesofttech.action.ArticleAction"
+			method="article_perform_update">
 			<result name="success" type="redirectAction">article_feed</result>
-			<result name="preview" type="redirectAction">article_preview?articleId=${articleId}</result>
+			<result name="preview" type="redirectAction">article_preview?articleId=${articleId}
+			</result>
 			<result name="error" type="tiles">/index.jsp</result>
 		</action>
-		
+
 		<action name="article_perform_delete"
-			class="com.cubesofttech.action.ArticleAction" method="article_perform_delete">
+			class="com.cubesofttech.action.ArticleAction"
+			method="article_perform_delete">
 			<result name="success" type="redirectAction">article_feed</result>
 			<result name="error" type="tiles">/index.jsp</result>
 		</action>
-		
+
 	</package>
 
 </struts>
