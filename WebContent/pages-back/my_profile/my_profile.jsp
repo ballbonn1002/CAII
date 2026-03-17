@@ -327,7 +327,6 @@
 								<div class="col-12 col-md-6 col-lg-6">
 									<p class="fs-5 text-muted fw-medium mb-0">Phone Number</p>
 									<p class="fs-5 text-gray-800 fw-semibold">
-									<%-- ${empty user.phonenum ? '-' : user.phonenum } --%>
 									<c:choose>
 										<c:when test="${empty user.phonenum}">
 										-
@@ -572,7 +571,6 @@
 											value="${user.citizenId}" maxlength="17" inputmode="numeric" required
 											oninput="formatCitizenId(this)"
 											/>
-											<!-- oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0,13)" /> -->
 											
 											<!-- error message -->
 										<span id="citizenIdError"
@@ -602,8 +600,7 @@
 										<input type="text"
 										    class="form-control text-gray-700" name="user_phonenum"   id="user_phonenum"
 										    value="${user.phonenum}"  required oninput="formatPhone(this)" maxlength="20"/>
-										   <!--  pattern="[0-9]{10}" maxlength="10"
-										    inputmode="numeric" oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0,10)" /> -->
+										 
 									</div>
 								</div>
 								<div class="row mb-0 mb-lg-5">
@@ -1050,7 +1047,6 @@
 
 <script>
 	document.addEventListener("DOMContentLoaded", function() {
-		/* $("#user_birthDate").flatpickr(); */
 		flatpickr("#user_birthDate", {
         dateFormat: "Y-m-d",  
         altInput: true,
@@ -1127,11 +1123,8 @@
 		  const nameEN = document.getElementById("user_fullNameEN").value
 		  const nickNameEN = document.getElementById("user_nickNameEN").value
 		  const birthDate = document.getElementById("user_birthDate").value
-		  /* const citizenId = document.getElementById("user_citizenId").value */
 		  const passportId = document.getElementById("user_passportId").value
 		  const email = document.getElementById("user_email").value
-		  /* const phonenumRaw = document.getElementById("user_phonenum").value
-		  const phonenum = phonenumRaw.replace(/\D/g, ''); */
 		  const address = document.getElementById("user_address").value
 		  const emergContact = document.getElementById("user_emergContact").value
 		  const emergPhone = document.getElementById("user_emergPhone").value
@@ -1173,10 +1166,8 @@
 
 		  if(!titleNameTH) errorFields.push("คำนำหน้า")
 		  if(!name) errorFields.push("ชื่อ สกุล")
-		  /* if(!nickName) errorFields.push("Nickname TH") */
 		  if(!titleNameEN) errorFields.push("Title Name")
 		  if(!nameEN) errorFields.push("Full Name EN")
-		  /* if(!nickNameEN) errorFields.push("Nickname EN") */
 		  if(!gender) errorFields.push("Gender")
 		  if(!birthDate) errorFields.push("Birth Date")
 		  if (!citizenId) {
@@ -1192,14 +1183,7 @@
 		  if(!phonenum){
 			  errorFields.push("Phone Number")
 		  }
-		  /* else if(phonenum.length !== 10){
-			  errorFields.push("Phone Number (must be 10 digits)");
-		  } */
-		  /* if(emergPhone && emergPhone.length !== 10) {
-			    errorFields.push("Emergency Phone (must be 10 digits)");
-			} */
-		  //console.log({titleNameTH, name, nickName, titleNameEN, nameEN, nickNameEN, gender, birthDate, citizenId, email, phonenum});
-				  
+		  
 		  if (errorFields.length > 0) {
 			  Swal.fire({
 		    		title: "Please complete the form!",
@@ -1412,14 +1396,12 @@
 	        return false;
 	    }
 
-	    //เช็คความถูกรหัสเดิมว่ายัง error มั้ย
 	    if (!isCurrentPwValid) {
 	        showError("currentPw", "currentPwError");
 	        isValid = false;
 	    }
 
 	    if (!newPwInput.disabled) {
-	        //เรียกfunc ให้update สถานะล่าสุด
 	        const isPwPatternOk = validateNewPassword(); 
 	        const isConfirmOk = validateConfirmPassword();
 

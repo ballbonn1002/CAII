@@ -440,10 +440,7 @@
 											</i>
 											</span>
 										</div>
-										<!-- <input
-											type="password" class="form-control" name="password"
-											id="newPassword" placeholder="Enter password"
-											autocomplete="new-password" required /> -->
+										
 									</div>
 
 									<div class="col-md-6 fv-row">
@@ -466,12 +463,10 @@
 											</i>
 											</span>
 										</div>
-										<!--  <input type="password" class="form-control"
-											id="confirmPassword" placeholder="Confirm password" required /> -->
+										
 										<span id="confirmNewPwError"
 											class="text-danger fs-7 fw-medium d-none mt-2 mb-0">
 											The password is incorrect. Please enter it again.</span>
-										<!-- <div id="passwordMatchMessage" class="mt-2 fw-semibold fs-7"></div> -->
 									</div>
 								</div>
 								<p id="pwPattern" class="fs-6 fw-normal text-muted mt-4 mb-0">Password
@@ -818,8 +813,6 @@
         }
     });
 });
-
-    /* $('#btnSubmit').on('click', () => $('#userAddForm').submit()); */
 
 })();
 </script>

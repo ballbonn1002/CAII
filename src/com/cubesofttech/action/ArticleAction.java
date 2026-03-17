@@ -464,7 +464,6 @@ public class ArticleAction extends ActionSupport {
 			List<ArticleType> articleTypeList = articleTypeDAO.findAll();
 			List<Article> articleList = articleDAO.findAll();
 			User user= userDAO.findById(logonUser);
-//			log.debug("loginnnn = "+ user);
 
 			request.setAttribute("tagList", tagList);
 			request.setAttribute("articleTypeList", articleTypeList);
@@ -618,7 +617,6 @@ public class ArticleAction extends ActionSupport {
 			uri.setTimeUpdate(DateUtil.getCurrentTime());
 			
 			pageUriDAO.save(uri);
-//			log.debug("submitType = "+submitType);
 			
 			if ("preview".equals(submitType)) {
 			    return "preview";
@@ -645,8 +643,6 @@ public class ArticleAction extends ActionSupport {
 			List<ArticleRelated> selectedRelatedId = articleRelatedDAO.findRelatedIdByArticleId(String.valueOf(articleId));
 			List<User> userList = userDAO.findAll();
 			List<Article> articleList = articleDAO.findAll();
-
-//			log.debug("tagIds = "+ tagIds);
 			
 			List<Tag> selectedTagName = new ArrayList<>();
 			if (tagIds != null) {
@@ -654,7 +650,6 @@ public class ArticleAction extends ActionSupport {
 			        Tag tag = tagDAO.findById(id);
 			        if (tag != null) {
 			            selectedTagName.add(tag);
-//			            log.debug("tagName = "+ selectedTagName);
 			        }
 			        
 			        
@@ -686,7 +681,6 @@ public class ArticleAction extends ActionSupport {
 			request.setAttribute("selectedTagName", selectedTagName);
 			request.setAttribute("selectedRelatedId", selectedRelatedId);
 			request.setAttribute("articleList", articleList);
-//			request.setAttribute("userCreate", userCreate);
 			request.setAttribute("userList", userList);
 
 			request.setAttribute("publicDate", publicDate);
@@ -697,7 +691,6 @@ public class ArticleAction extends ActionSupport {
 			
 			request.setAttribute("typeArticle", typeArticle);
 			request.setAttribute("pageUri", pageUri);
-//			log.debug("title pageUri" + pageUri);
 			
 			return SUCCESS;
 		} catch (Exception e) {
@@ -718,20 +711,14 @@ public class ArticleAction extends ActionSupport {
 			List<ArticleType> articleTypeList = articleTypeDAO.findAll();
 			List<Integer> selectedTagId = articleTagDAO.findTagIdByArticleId(String.valueOf(articleId));
 			List<ArticleRelated> selectedRelatedId = articleRelatedDAO.findRelatedIdByArticleId(String.valueOf(articleId));
-//			List<User> userList = userDAO.findAll();
 			List<Article> articleList = articleDAO.findAll();
 			
 			User userCreate = userDAO.findById(article.getUserCreate());
-//			log.debug("userCreate ="+ userCreate);
 			Integer typeArticle = article.getArticleTypeId();
-//			log.debug("typeArticle = "+typeArticle);
 			LocalDateTime time_post = article.getTimePost().toLocalDateTime();
 			String publicDate = time_post.toLocalDate().toString();
 			String publicTime = time_post.toLocalTime().toString();
 
-//			log.debug("time_post "+ time_post);
-//			log.debug("publicDate "+ publicDate);
-//			log.debug("publicTime "+ publicTime);
 			PageUri pageUri = pageUriDAO.findByModelAndModelId("article", String.valueOf(articleId));
 			if (pageUri == null) {
 
@@ -765,12 +752,6 @@ public class ArticleAction extends ActionSupport {
 
 			    pageUriDAO.save(pageUri);
 			}
-//			log.debug("forwardTo = " + pageUri.getForwardTo());
-//			log.debug("model = " + pageUri.getModel());
-//			log.debug("modelId = " + pageUri.getModelId());
-//			log.debug("pageUriId = " + pageUri.getPageUriId());
-//			log.debug("meta = " + pageUri.getMeta());
-//			log.debug("description = " + pageUri.getPageUriDescription());
 			
 			String imgPath = null;
 			String imgAlt = null;
@@ -782,7 +763,6 @@ public class ArticleAction extends ActionSupport {
 			        imgAlt = file.getAltName();
 			    }
 			}
-//			log.debug("imgPath ===="+imgPath);
 			request.setAttribute("article", article);
 			request.setAttribute("tagList", tagList);
 			request.setAttribute("articleTypeList", articleTypeList);
@@ -790,7 +770,6 @@ public class ArticleAction extends ActionSupport {
 			request.setAttribute("selectedRelatedId", selectedRelatedId);
 			request.setAttribute("articleList", articleList);
 			request.setAttribute("userCreate", userCreate);
-//			request.setAttribute("userList", userList);
 
 			request.setAttribute("publicDate", publicDate);
 			request.setAttribute("publicTime", publicTime);
@@ -817,18 +796,13 @@ public class ArticleAction extends ActionSupport {
 			}
 			String logonUser = onlineUser.getId();
 			String fileIdStr = null;
-//			log.debug("articleId = " + articleId);
 			Article article = articleDAO.findById(articleId);
 			// Update article
 			article.setTopic(article_title);
 			article.setDetail(detail);
 			article.setStatus(article_status);
-//			article.setFileId(fileIdStr);
 			article.setArticleTypeId(article_type);
-//			article.setUserId(logonUser);
-//			article.setUserCreate(logonUser);
 			article.setUserUpdate(logonUser);
-//			article.setTimeCreate(DateUtil.getCurrentTime());
 			article.setTimeUpdate(DateUtil.getCurrentTime());
 
 			String dateStr = publication_date.trim();
@@ -988,7 +962,6 @@ public class ArticleAction extends ActionSupport {
 					}
 				}
 				
-				// delete images in editor
 				// delete images in editor
 				String content = article.getDetail();
 
@@ -1154,230 +1127,5 @@ public class ArticleAction extends ActionSupport {
 	    }
 	}
 
-	
-//	public void addImgFormEditor() {
-//		User onlineUser = (User) request.getSession().getAttribute("onlineUser");
-//		String logonUser = onlineUser.getId();
-//		try {
-//
-//			ServletContext context;
-//			String fileServerPath;
-//			String locationFile = "";
-//
-//			int imgMaxId = articleImageDAO.getMaxId() + 1;
-//			
-//			if (articleImageFile != null) {
-//				context = request.getServletContext();
-//				fileServerPath = context.getRealPath("/");
-//
-//				FileUtil.upload(articleImageFile, fileServerPath + "upload/article/", imgMaxId + "_atc_" + fileUploadFileName);
-//
-//				locationFile = constant.getWebPath() + "/upload/article/" + imgMaxId + "_atc_" + fileUploadFileName;
-//				
-//
-//				String fileBaseName = FilenameUtils.getBaseName(fileUploadFileName); 
-//				long fileSize = articleImageFile.length(); // byte
-//				double sizeKB = fileSize / 1024.0;
-//				double sizeMB = fileSize / (1024.0 * 1024.0);
-//				String sizeText;
-//				if (fileSize < 1024) {
-//					sizeText = fileSize + " B";
-//				} else if (fileSize < 1024 * 1024) {
-//					sizeText = String.format("%.2f KB", sizeKB);
-//				} else {
-//					sizeText = String.format("%.2f MB", sizeMB);
-//				}
-//				String filePath = constant.getWebPath() + "/upload/article/" + imgMaxId + "_atc_" + fileUploadFileName; 
-//				
-//				ArticleImage articleImage = new ArticleImage();
-//				 articleImage.setAtcImgId(imgMaxId);
-//		         articleImage.setAtcImgUserId(logonUser);
-//		         articleImage.setAtcImgName(imgMaxId + "_article_" + imgMaxId);
-//		         articleImage.setAtcImgType(articleImageFileContentType);
-//		         articleImage.setAtcImgSize(sizeText);
-//		         articleImage.setAtcImgPath(filePath);
-//		         articleImage.setAtcImgTimeUpload(DateUtil.getCurrentTime());
-//
-//				articleImageDAO.save(articleImage);
-//
-//				// insert to file table
-//				FileUpload fileUpload = new FileUpload();
-//				int maxId = fileuploadDAO.getMaxId() + 1;
-//				fileUpload.setFileId(maxId);
-//				fileUpload.setUserId(logonUser);
-//				fileUpload.setUserCreate(logonUser);
-//				fileUpload.setName(imgMaxId + "_article_" + fileBaseName);
-//				fileUpload.setSize(sizeText);
-//				fileUpload.setPath(filePath);
-//				fileUpload.setType(articleImageFileContentType);
-//				fileUpload.setUserUpdate(logonUser);
-//				fileUpload.setTimeCreate(DateUtil.getCurrentTime());
-//				fileUpload.setTimeUpdate(DateUtil.getCurrentTime());
-//
-//				fileuploadDAO.save(fileUpload);
-//			}
-//
-//			response.getWriter().write(locationFile);
-//
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//		}
-//
-//	}
-	
-//	public void addImgFormEditor() {
-//		User onlineUser = (User) request.getSession().getAttribute("onlineUser");
-//		String logonUser = onlineUser.getId();
-//
-//	    try {
-//	        String locationFile = "";
-//	        int imgMaxId = articleImageDAO.getMaxId() + 1;
-//
-//	        String originalName = articleImageFileFileName;
-//            String fileServerPath = request.getServletContext().getRealPath("/");
-//
-//            if (originalName == null) {
-//                log.error("fileUploadFileName is null");
-//                return;
-//            }
-//
-//            String fileName = originalName.substring(0, originalName.lastIndexOf("."));
-//            String typeFile = originalName.substring(originalName.lastIndexOf("."));
-//
-//			if (fileName.contains(" ")) {
-//				fileName = fileName.trim().replaceAll(" ", "_");
-//			}
-//
-//			String newFileName = imgMaxId + "_atc_" + imgMaxId + typeFile;
-//			String serverFileName = "article_" + imgMaxId + typeFile;
-//
-//			long fileSize = articleImageFile.length(); // byte
-//			double sizeKB = fileSize / 1024.0;
-//			double sizeMB = fileSize / (1024.0 * 1024.0);
-//			String sizeText;
-//			if (fileSize < 1024) {
-//				sizeText = fileSize + " B";
-//			} else if (fileSize < 1024 * 1024) {
-//				sizeText = String.format("%.2f KB", sizeKB);
-//			} else {
-//				sizeText = String.format("%.2f MB", sizeMB);
-//			}
-//
-////			FileUtil.upload(fileUpload, fileServerPath + "upload/user/", serverFileName);
-//			String filePath = constant.getWebPath() + "/upload/article/" + newFileName;
-//	       
-//			// ===== LOG FILE INFO =====
-//	        log.debug("========== Upload Image Debug ==========");
-//	        log.debug("User ID : " + logonUser);
-//	        log.debug("imgMaxId : " + imgMaxId);
-//	        log.debug("Original Name : " + originalName);
-//	        log.debug("File Name : " + fileName);
-//	        log.debug("File Type : " + typeFile);
-//	        log.debug("New File Name : " + newFileName);
-//	        log.debug("Server File Name : " + serverFileName);
-//	        log.debug("File Size Byte : " + fileSize);
-//	        log.debug("File Size Text : " + sizeText);
-//	        log.debug("File Path : " + filePath);
-//	        log.debug("Server Path : " + fileServerPath);
-//
-//	        if (articleImageFile != null) {
-//	            // file name
-//	            String fileNameAtc = imgMaxId + "_article_" + fileUploadFileName;
-//
-//	            // upload file to server
-//	            FileUtil.upload(articleImageFile,fileServerPath + "upload/article/", newFileName);
-//
-//	            // path สำหรับแสดงบนเว็บ
-//	            locationFile = constant.getWebPath() + "/upload/article/" + newFileName;
-//
-//	            // save article image
-//	            ArticleImage articleImage = new ArticleImage();
-//	            articleImage.setAtcImgId(imgMaxId);
-//	            articleImage.setAtcImgUserId(logonUser);
-//	            articleImage.setAtcImgName(imgMaxId + "_article_" + imgMaxId);
-//	            articleImage.setAtcImgType(typeFile);
-//	            articleImage.setAtcImgSize(sizeText);
-//	            articleImage.setAtcImgPath(filePath);
-//	            articleImage.setAtcImgTimeUpload(DateUtil.getCurrentTime());
-//	           
-//
-//	            articleImageDAO.save(articleImage);
-//
-//	            // ======================
-//	            // save file upload log
-//	            // ======================
-//	            int maxFileId = fileuploadDAO.getMaxId() + 1;
-////
-////	            FileUpload fileUpload = new FileUpload();
-////	            fileUpload.setFileId(maxFileId);
-////	            fileUpload.setUserId(logonUser);
-////	            fileUpload.setUserCreate(logonUser);
-////	            fileUpload.setName(imgMaxId + "_article_" + fileBaseName);
-////	            fileUpload.setSize(sizeText);
-////	            fileUpload.setPath(filePath);
-////	            fileUpload.setType("." + fileType);
-////	            fileUpload.setUserUpdate(logonUser);
-////	            fileUpload.setTimeCreate(DateUtil.getCurrentTime());
-////	            fileUpload.setTimeUpdate(DateUtil.getCurrentTime());
-////
-////	            fileuploadDAO.save(fileUpload);
-//	            FileUpload file = new FileUpload();
-//				file.setFileId(maxFileId);
-//				file.setUserId(logonUser);
-//				file.setName(imgMaxId+"_article_"+fileName);
-//				file.setPage("article");
-//				file.setPageId(null);
-//				file.setType(typeFile);
-//				file.setSize(sizeText);
-//				file.setAltName(null);
-//				file.setUserCreate(logonUser);
-//				file.setUserUpdate(logonUser);
-//				file.setAltName(cover_alt);
-//				file.setPath(filePath);
-//				file.setTimeCreate(DateUtil.getCurrentTime());
-//				file.setTimeUpdate(DateUtil.getCurrentTime());
-//				
-//				 log.debug("Saving FileUpload...");
-//		            log.debug("fileId : " + maxFileId);
-//		            log.debug("userId : " + logonUser);
-//		            log.debug("name : " + "_article_" + fileName);
-//		            log.debug("page : article");
-//		            log.debug("type : " + typeFile);
-//		            log.debug("size : " + sizeText);
-//		            log.debug("path : " + "/upload/user/" + newFileName);
-//		            
-//				fileuploadDAO.save(file);
-//	        }
-//
-//	        // return URL ให้ summernote
-//	        response.getWriter().write(locationFile);
-//
-//	    } catch (Exception e) {
-//	        e.printStackTrace();
-//	    }
-//	}
-
-//	public void DeleteImg() {
-//		if (srcDelete != null) {
-//			try {
-//				File fileImage = new File(srcDelete);
-//
-//				ServletContext context = request.getServletContext();
-//				String fileServerPath = context.getRealPath("/");
-//
-//				Path path = Paths.get(fileServerPath + "upload/article/" + fileImage.getName());
-//				Files.delete(path);
-//
-//				log.debug("Delete File " + path.toString());
-//				articleImageDAO.deleteByPath(constant.getWebPath() + "/upload/article/" + fileImage.getName());
-//				fileuploadDAO.deleteByPath(constant.getWebPath() + "/upload/article/" + fileImage.getName());
-//
-//			} catch (Exception e) {
-//				e.printStackTrace();
-//			}
-//		}
-//
-//	}
-	
 
 }

@@ -107,7 +107,6 @@
 						</div>
 						<div class="card-body d-flex flex-column">
 							<div class="card p-10">
-							<!-- <span class="fs-5 fw-normal text-danger text-uppercase">Artificial Intelligence</span> -->
 								<c:if test="${not empty selectedTagName}">
 								<div class="d-flex align-items-center gap-4 ">
 								 <c:forEach var="tag" items="${selectedTagName}">

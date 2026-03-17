@@ -130,53 +130,10 @@
 									type="text" class="form-control form-solid ps-14"
 									id="tableSearch" placeholder="Search">
 							</div>
-							<%-- <div class="filter-divider border-bottom my-6 mt-8 "></div>
-							<!-- Filter -->
-							<div id="filterFields" class="filter-fields">
-								<div class="row g-3">
-									<div class="col-12 col-md-4">
-										<label for="statusSelect" class="form-label mb-1">Status:</label>
-										<select id="statusFilter" class="form-select" name="articleStatus" data-control="select2"
-											data-placeholder="All Status">
-											<option value="ALL">All Status</option>
-											<option value="Active">Active</option>
-											<option value="Draft">Draft</option>
-											<option value="Pending">Pending</option>
-										</select>
-									</div>
-									<div class="col-12 col-md-4">
-										<label for="birthdaysSelect" class="form-label mb-1">Type:</label>
-										<select id="typeFilter" class="form-select" name="articleType" data-control="select2"
-											data-placeholder="All Type" >
-											<option value="ALL">All Type</option>
-											<c:forEach var="item" items="${articleTypeList}">
-												<option value="${item.name}">${item.name}</option>
-											</c:forEach>
-
-										</select>
-									</div>
-									<!-- Date Range -->
-									<div class="col-12 col-md-4">
-										<div class="mb-5">
-											<label for="publicDate" class="form-label mb-1">Public
-												Date:</label>
-												 <input class="form-control" placeholder="Public Date" id="dateFilterTop"/> 
-												<form id="dateFilterForm" method="post" action="article_feed">
-												    <input type="hidden" name="startDate" id="startDateInput">
-												    <input type="hidden" name="endDate" id="endDateInput">
-												</form>
-												
-										</div>
-									</div>
-								</div>
-
-							</div> --%>
+							
 						</div>
 					</div>
 
-
-					<!-- <div class="fs-7 fw-medium text-muted mb-4">Showing 18 of 100
-						items</div> -->
 
 					<div id="tableViewContainer" class="card table-responsive">
 						<div class="card-header border-0 px-9 pt-7 d-flex align-items-center justify-content-between">
@@ -216,12 +173,8 @@
 												<td class="fs-6 fw-normal text-gray-900">${empty pageUrl.meta ? '-' :pageUrl.meta}</td>
 												<td>
 													<div class="d-flex justify-content-end align-items-center gap-2">
-														<%-- <a href="article_preview?articleId=${pageUrl.pageUriId}"
-															class="btn btn-icon btn-light-info btn-sm me-2"
-															title="View"> <i class="ki-duotone ki-eye fs-2"><span
-																class="path1"></span><span class="path2"></span><span
-																class="path3"></span></i>
-														</a> --%> <a href="page_uri_edit?pageUriId=${pageUrl.pageUriId}"
+														
+														<a href="page_uri_edit?pageUriId=${pageUrl.pageUriId}"
 															class="btn btn-icon btn-light-primary btn-sm me-2"
 															title="Edit"> <i class="ki-duotone ki-pencil fs-2"><span
 																class="path1"></span><span class="path2"></span></i>

@@ -62,7 +62,6 @@ public class ArticleDAOImpl implements ArticleDAO {
 					+ "FROM article a JOIN article_type at ON a.article_type_id = at.article_type_id ORDER BY a.time_create DESC;";
 
 			SQLQuery query = session.createSQLQuery(sql);
-//			query.setParameter("articleTypeId", articleTypeId);
 			query.setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
 			articleList = query.list();
 		} catch (Exception e) {

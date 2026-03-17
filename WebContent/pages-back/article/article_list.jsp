@@ -208,10 +208,7 @@
 
 													<fmt:formatDate value="${article.time_post}"
 														pattern="dd MMM yyyy" />
-														<%-- <br> <span> <fmt:formatDate
-															value="${article.time_update}" pattern="HH:mm" />
-												</span>  --%>
-
+														
 												</td>
 												<td class="fs-6 fw-normal text-gray-900">${article.topic}</td>
 												<td class="fs-6 fw-normal text-gray-900">${article.type_name}</td>
