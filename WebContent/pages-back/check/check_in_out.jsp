@@ -953,7 +953,8 @@
 </div>
 <!--end:::Main-->
 <!--begin:::Modal-->
-<div class="modal fade" id="announcementModal" data-bs-backdrop="static"
+<!-- popup announcement -->
+<%-- <div class="modal fade" id="announcementModal" data-bs-backdrop="static"
 	data-bs-keyboard="false" tabindex="-1" aria-hidden="true">
 	<div class="modal-dialog modal-dialog-centered modal-lg">
 		<div class="modal-content shadow-lg">
@@ -1083,7 +1084,7 @@
 
 		</div>
 	</div>
-</div>
+</div> --%>
 <!--end:::Modal-->
 <script>
 let serverTimeOffset = 0;
@@ -1113,7 +1114,7 @@ $(document).ready(function() {
 });
 
 // Modal Announcement
-function showAnnouncements() {
+/* function showAnnouncements() {
     const modalElement = document.getElementById('announcementModal');
 
     if (modalElement && $(modalElement).find('.carousel-item').length > 0) {
@@ -1139,7 +1140,7 @@ function showAnnouncements() {
 }
 
 setTimeout(showAnnouncements, 1500);
-
+ */
 // Real-Time Clock
 function syncServerTime() {
 	fetch("https://timeapi.io/api/Time/current/zone?timeZone=Asia/Bangkok")
