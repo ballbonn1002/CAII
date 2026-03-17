@@ -91,4 +91,12 @@ CREATE TABLE `overtime` (
 
 -- PROD 2026 FEB 23
 
+-- 17/03/2026 Eric: ALTER TABLE authorized_object and SET active
+ALTER TABLE `authorized_object` ADD `active` VARCHAR(1) NULL AFTER `description`;
+UPDATE `authorized_object` SET active = "1";
 
+-- 17/03/2026 Eric: script add new authorized_object_id for work_log
+INSERT INTO `authorized_object` (`authorized_object_id`, `name`, `description`, `active`, `time_create`, `time_update`, `authorized_object_group_id`) 
+VALUES ('worklog.view', 'worklog.view', 'สามารถดู work log ได้', '1', '2026-03-12 09:15:03', '2026-03-12 09:15:03', '2');
+INSERT INTO `authorized_object` (`authorized_object_id`, `name`, `description`, `active`, `time_create`, `time_update`, `authorized_object_group_id`) 
+VALUES ('worklog.edit', 'worklog.edit', 'สามารถแก้ไข work log ได้', '1', '2026-03-12 09:15:03', '2026-03-12 09:15:03', '2');

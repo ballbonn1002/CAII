@@ -476,57 +476,17 @@
 			<result name="success" type="tiles">role.list</result>
 			<result name="error">/index.jsp</result>
 		</action>
-		<action name="role-edit"
-			class="com.cubesofttech.action.RoleAction" method="openEdit">
-			<result name="success" type="tiles">role.edit</result>
-			<result name="error">/index.jsp</result>
-		</action>
-
-		<!-- role setting editing page -->
-		<action name="role-edit-setting"
-			class="com.cubesofttech.action.RoleAction"
-			method="roleSettingEditingPage">
-			<result name="success" type="tiles">role.edit.setting</result>
-			<result name="error">/index.jsp</result>
-		</action>
-
-		<!-- role setting action update -->
-		<action name="role-perform-edit-setting-*"
-			class="com.cubesofttech.action.RoleAction"
-			method="performEditSetting">
-			<result name="success" type="redirectAction">role-edit-setting?roleIdSetting=${roleIdSetting}
-			</result>
-			<result name="error">/index.jsp</result>
-		</action>
-
-		<!-- เพิ่ม function add -->
 		<action name="role-add"
 			class="com.cubesofttech.action.RoleAction" method="openEdit2">
 			<result name="success" type="tiles">role.add</result>
 			<result name="error">/index.jsp</result>
 		</action>
-
-		<!-- role setting adding page -->
-		<action name="role-add-setting"
-			class="com.cubesofttech.action.RoleAction"
-			method="roleSettingAddingPage">
-			<result name="success" type="tiles">role.add</result>
+		<action name="role-edit"
+			class="com.cubesofttech.action.RoleAction" method="openEdit">
+			<result name="success" type="tiles">role.edit</result>
 			<result name="error">/index.jsp</result>
 		</action>
-		<!-- role setting action save -->
-		<action name="role-perform-add-setting"
-			class="com.cubesofttech.action.RoleAction" method="performAddSetting">
-			<result name="success" type="redirectAction">role-edit-setting?roleIdSetting=${roleIdSetting}
-			</result>
-			<result name="error">/index.jsp</result>
-		</action>
-
-		<action name="role-list-setting"
-			class="com.cubesofttech.action.RoleAction" method="listSetting">
-			<result name="success" type="tiles">role.list.setting</result>
-			<result name="error">/index.jsp</result>
-		</action>
-
+		
 		<!-- เพิ่ม function add -->
 		<action name="role-perform-add"
 			class="com.cubesofttech.action.RoleAction" method="performAdd">
@@ -535,7 +495,7 @@
 			<result name="error">/index.jsp</result>
 		</action>
 
-		<!-- เพิ่ม function add -->
+		<!-- เพิ่ม function edit -->
 		<action name="role-perform-edit"
 			class="com.cubesofttech.action.RoleAction" method="performEdit">
 			<result name="success" type="redirectAction">role-edit?roleId=${roleId}
@@ -556,10 +516,53 @@
 			<result name="error">/index.jsp</result>
 		</action>
 
+		<action name="role-list-setting"
+			class="com.cubesofttech.action.RoleAction" method="listSetting">
+			<result name="success" type="tiles">role.list.setting</result>
+			<result name="error">/index.jsp</result>
+		</action>
+		<action name="findAuthGroupId"
+			class="com.cubesofttech.action.RoleAction" method="findAuthGroupId">
+			<result name="success">/pages-back/common/json.jsp</result>
+			<result name="error">/index.jsp</result>
+		</action>
+		<action name="findAuthGroupName"
+			class="com.cubesofttech.action.RoleAction" method="findAuthGroupName">
+			<result name="success">/pages-back/common/json.jsp</result>
+			<result name="error">/index.jsp</result>
+		</action>
+		<action name="role-perform-status-update-setting"
+			class="com.cubesofttech.action.RoleAction" method="performEditStatusUpdateSetting">
+			<result name="success">/pages-back/common/json.jsp</result>
+			<result name="error">/index.jsp</result>
+		</action>
+		
+		<!-- role setting action save -->
+		<action name="role-perform-add-setting"
+			class="com.cubesofttech.action.RoleAction" method="performAddSetting">
+			<result name="success" type="redirectAction">role-list-setting
+			</result>
+			<result name="error">/index.jsp</result>
+		</action>
+
+		<!-- role setting action update -->
+		<action name="role-perform-edit-setting"
+			class="com.cubesofttech.action.RoleAction" method="performEditSetting">
+			<result name="success" type="redirectAction">role-list-setting
+			</result>
+			<result name="error">/index.jsp</result>
+		</action>
+
 		<!-- role setting delete -->
 		<action name="role-delete-setting"
 			class="com.cubesofttech.action.RoleAction" method="deleteRoleSetting">
-			<result name="success" type="chain">role-list-setting</result>
+			<result name="success" type="redirectAction">role-list-setting</result>
+			<result name="error">/index.jsp</result>
+		</action>
+		
+		<!-- role edit object -->
+		<action name="role-edit-auth" class="com.cubesofttech.action.RoleAction" method="editAuth">
+			<result name="success" type="redirectAction">role-list-setting</result>
 			<result name="error">/index.jsp</result>
 		</action>
 
