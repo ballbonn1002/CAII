@@ -23,7 +23,7 @@ public interface TimesheetDAO {
 	public List<Map<String, Object>> searchTimesheet( String user,String date) throws Exception;
 	public List<Map<String, Object>> searchTimesheetByUserCreate( String userId) throws Exception;
 	public List<Map<String, Object>> searchTimesheetByTimeUpdate( String userId) throws Exception;
-	public List<Map<String, Object>> timesheetSearch_forCalendar(String userId, String from, String to) throws Exception;
+	public List<Map<String, Object>> timesheetSearch_forCalendar(String userId,  Date from, Date to) throws Exception;
 	public List<Timesheet> findAll_calendar() throws Exception;
 	//public List<Map<String, Object>> checkholiday() throws Exception ;
 	List<Map<String, Object>> findHoliday() throws Exception;
@@ -55,5 +55,7 @@ public interface TimesheetDAO {
 	public List<Map<String, Object>> searchbymonth(String userid, String month, String year) throws Exception;
 
 	List<Timesheet> findByProjectId(Integer project_id) throws Exception;
+	public List<Map<String, Object>> searchTimesheetByUserCreateAndDate(String userId,Date startOfMonth,
+			Date endOfMonth);
 }
    
