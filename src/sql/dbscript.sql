@@ -115,7 +115,7 @@ ALTER TABLE `expense_group`
   ADD COLUMN `received_by`  VARCHAR(32) NULL AFTER requested_at,
   ADD COLUMN `received_at`     DATETIME    NULL AFTER received_by;
   
-  -- PROD 2026 FEB 28
+  -- PROD 2026 MAR 17
   
   
   
