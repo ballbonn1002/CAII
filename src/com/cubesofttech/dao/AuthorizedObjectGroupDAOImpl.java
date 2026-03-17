@@ -115,7 +115,7 @@ public class AuthorizedObjectGroupDAOImpl implements AuthorizedObjectGroupDAO {
 					+ " WHERE o.authorized_object_group_id NOT IN (SELECT authorized_object_group_id FROM authorized_object_group) "
 					+ " OR o.authorized_object_group_id IS NULL) "
 					+ " ORDER BY CASE WHEN authorized_object_group_id IS NULL THEN 1 ELSE 0 END, "
-					+ " authorized_object_group_id, object_description ";
+					+ " authorized_object_group_id, authorized_object_id ";
 
 			SQLQuery query = session.createSQLQuery(sql);
 
