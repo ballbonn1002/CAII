@@ -225,4 +225,12 @@ public interface WorkHoursDAO {
 	 
 	 public List<Map<String, Object>> getCheckinByDate (String userId, String date) throws Exception;
 
+	 List<Map<String, Object>> getTodayCheckIn(String user) throws Exception;
+	 
+	 List<Map<String, Object>> getTodayCheckOut(String user) throws Exception;
+	 
+	 List<Map<String, Object>> getLastdayCheckIn(String user, LocalDate lastWorkDate) throws Exception;
+
+	 List<Map<String, Object>> getLastdayCheckOut(String user, LocalDate lastWorkDate) throws Exception;
+
 }

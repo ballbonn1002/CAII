@@ -1150,6 +1150,20 @@
 			<result name="success" type="redirectAction">article_feed</result>
 			<result name="error" type="tiles">/index.jsp</result>
 		</action>
+		
+		<action name="addImgFormEditor"
+			class="com.cubesofttech.action.ArticleAction"
+			method="addImgFormEditor">
+			<result name="success" type="json" />
+			<result name="error" type="tiles">/index.jsp</result>
+		</action>
+		
+		<action name="DeleteImgFormEditor"
+			class="com.cubesofttech.action.ArticleAction"
+			method="DeleteImgFormEditor">
+			<result name="success" type="json" />
+			<result name="error" type="json" />
+		</action>
 
 		<!-- Overtime Request -->
 		<action name="overtime_request_list"

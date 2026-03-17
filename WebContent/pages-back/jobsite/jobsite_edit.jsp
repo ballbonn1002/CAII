@@ -409,15 +409,22 @@ to {
 	    ];
 	
 	    userList.sort(function(a, b) {
-	        if (a.isLoginUser && !b.isLoginUser) return -1;
-	        if (!a.isLoginUser && b.isLoginUser) return 1;
-	        
+	        var empA = (a.empId || "").trim();
+	        var empB = (b.empId || "").trim();
+
+	        if(empA && empB){
+	            return empA.localeCompare(empB);
+	        }
+	        if(empA && !empB){
+	            return -1;
+	        }
+	        if(!empA && empB){
+	            return 1;
+	        }
+
 	        var nameA = (a.nameEN || "").toUpperCase();
 	        var nameB = (b.nameEN || "").toUpperCase();
-	        
-	        if (nameA === "" && nameB !== "") return 1;
-	        if (nameA !== "" && nameB === "") return -1;
-	        
+
 	        return nameA.localeCompare(nameB);
 	    });
 	

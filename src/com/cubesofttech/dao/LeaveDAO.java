@@ -176,4 +176,6 @@ public interface LeaveDAO {
 //	public List<Map<String, Object>> getLeaveInMonth(String userId, String selectedYear, String selectedMonth) throws Exception;
 //	public List<Map<String, Object>> getDataWorkingTimeInMonth(String userId, String selectedYear, String selectedMonth) throws Exception;
 
+	List<Map<String, Object>> findLeaveByUserAndDate(String userId, String date) throws Exception;
+
 }

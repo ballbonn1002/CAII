@@ -184,7 +184,7 @@
 										<div
 											class="border border-gray-300 rounded-1 px-4 py-3 border-dashed ">
 											<div class="d-flex flex-column">
-												<p class="fs-5 fw-bold text-gray-800 mb-2">${user.workType == 1 ? 'On-site' : 'WFH'}</p>
+												<p class="fs-5 fw-bold text-gray-800 mb-2">${user.workType == 1 ? 'On-site' : (user.workType == 2 ? 'WFH' : 'Head Office')}</p>
 												<p class="fs-6 fw-bold text-gray-500 mb-0">
 													${user.onsiteNum == 3 ? '4–5 Day' :
           							          user.onsiteNum == 2 ? '2–3 Day' :
@@ -903,12 +903,12 @@
 										<c:forEach var="item" items="${borrowList}">
 											<tr class="align-middle">
 												<td class="px-3 py-4 text-gray-900 fs-6 fw-normal">
-													${item.formatted_date}
-													<p class="text-gray-600 fs-6 fw-normal mb-0">${item.formatted_time}</p>
+													${empty item.formatted_date ? '-' : item.formatted_date}
+													<p class="text-gray-600 fs-6 fw-normal mb-0">${empty item.formatted_time ? ' ' : item.formatted_time}</p>
 												</td>
-												<td class="px-3 py-4 text-gray-900 fs-6 fw-normal">${item.item_no}</td>
-												<td class="px-3 py-4 text-gray-900 fs-6 fw-normal">${item.name}</td>
-												<td class="px-3 py-4 text-gray-900 fs-6 fw-normal">${item.location}</td>
+												<td class="px-3 py-4 text-gray-900 fs-6 fw-normal">${empty item.item_no ? '-' : item.item_no}</td>
+												<td class="px-3 py-4 text-gray-900 fs-6 fw-normal">${empty item.name ? '-' : item.name}</td>
+												<td class="px-3 py-4 text-gray-900 fs-6 fw-normal">${ empty item.location ? '-' : item.location}</td>
 												<td class="px-3 py-4 ">
 												<c:if test="${item.status == 'R'}">
 													<span class="badge badge-lg bg-success text-white fw-semibold fs-8">Returned</span>

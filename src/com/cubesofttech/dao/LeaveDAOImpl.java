@@ -511,7 +511,7 @@ public class LeaveDAOImpl implements LeaveDAO {
 	    List<Map<String, Object>> search = null;
 	    try {
 	        StringBuilder sql = new StringBuilder(
-	            "SELECT leaves.leave_id, leaves.user_id, user.name, leaves.leave_status_id, leave_type.leave_type_name, leaves.half_day, leaves.start_date, "
+	            "SELECT leaves.leave_id, leaves.user_id, user.name, leaves.leave_status_id, leaves.leave_type_id, leave_type.leave_type_name, leaves.half_day, leaves.start_date, "
 	            + "leaves.start_time, leaves.end_time, leaves.end_date, leaves.no_day ,user.path, leaves.time_create, leaves.description "
 	            + "FROM leaves LEFT JOIN leave_type ON leave_type.leave_type_id = leaves.leave_type_id LEFT JOIN user ON leaves.user_id = user.id "
 	            + "WHERE leaves.start_date BETWEEN :startDate AND :endDate ");
@@ -1687,7 +1687,7 @@ public class LeaveDAOImpl implements LeaveDAO {
 	    List<Map<String, Object>> leavelist = null;
 	    try {
 	        StringBuilder sql = new StringBuilder(
-	            "SELECT leaves.leave_id, leaves.user_id, user.name, leaves.leave_status_id, leave_type.leave_type_name, "
+	            "SELECT leaves.leave_id, leaves.user_id, user.name, leaves.leave_status_id, leaves.leave_type_id, leave_type.leave_type_name, "
 	            + "leaves.half_day, leaves.start_date, leaves.start_time, leaves.end_time, leaves.end_date, leaves.no_day, "
 	            + "leaves.appr_user_id, user.path, leaves.time_create, leaves.description "
 	            + "FROM leaves LEFT JOIN leave_type ON leave_type.leave_type_id = leaves.leave_type_id "
@@ -1719,7 +1719,7 @@ public class LeaveDAOImpl implements LeaveDAO {
 		List<Map<String, Object>> leavelist = null;
 		try {
 			StringBuilder sql = new StringBuilder(
-					"SELECT leaves.leave_id, leaves.user_id, user.name, leaves.leave_status_id, leave_type.leave_type_name, leaves.half_day, "
+					"SELECT leaves.leave_id, leaves.user_id, user.name, leaves.leave_status_id, leaves.leave_type_id, leave_type.leave_type_name, leaves.half_day, "
 					+ "leaves.start_date, leaves.start_time, leaves.end_time, leaves.end_date, leaves.no_day , file.path, leaves.time_create, "
 					+ "leaves.description FROM leaves LEFT JOIN leave_type ON leave_type.leave_type_id = leaves.leave_type_id "
 					+ "LEFT JOIN user ON leaves.user_id = user.id LEFT JOIN file ON leaves.leave_file = file.file_id "
@@ -2081,6 +2081,39 @@ public class LeaveDAOImpl implements LeaveDAO {
 			e.printStackTrace();
 		}
 		return leavelist;
+	}
+	
+	@Override
+	public List<Map<String, Object>> findLeaveByUserAndDate(String userId, String date) throws Exception {
+
+	    Session session = this.sessionFactory.getCurrentSession();
+	    List<Map<String, Object>> result = null;
+
+	    try {
+
+	        String sql = "SELECT l.leave_id, l.leave_type_id, lt.leave_type_name, l.half_day, l.start_date, l.end_date, l.description, l.leave_status_id " +
+	                     "FROM leaves l " +
+	                     "LEFT JOIN leave_type lt ON l.leave_type_id = lt.leave_type_id " +
+	                     "WHERE l.user_id = :userId " +
+	                     "AND DATE(:date) BETWEEN DATE(l.start_date) AND DATE(l.end_date) " +
+	                     "AND l.leave_status_id IN ('0','1') "+
+	                     "ORDER BY l.time_create DESC " +
+	                     "LIMIT 1";;
+
+	        SQLQuery query = session.createSQLQuery(sql);
+
+	        query.setParameter("userId", userId);
+	        query.setParameter("date", date);
+
+	        query.setResultTransformer(org.hibernate.transform.Transformers.ALIAS_TO_ENTITY_MAP);
+
+	        result = query.list();
+
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	    }
+
+	    return result;
 	}
 	
 }
