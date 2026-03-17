@@ -173,6 +173,7 @@
                         <div class="d-flex flex-wrap align-items-center gap-2">
                             <span class="badge badge-secondary fs-7 py-2"><i class="ki-duotone ki-map fs-2 me-1 text-primary"><span class="path1"></span><span class="path2"></span><span class="path3"></span></i> On-Site</span>
                             <span class="badge badge-secondary fs-7 py-2"><i class="ki-duotone ki-home-2 fs-2 me-1 text-success"><span class="path1"></span><span class="path2"></span></i> WFH</span>
+                            <span class="badge badge-secondary fs-7 py-2"><i class="ki-duotone ki-cube-2 fs-2 me-1 text-danger"><span class="path1"></span><span class="path2"></span><span class="path3"></span></i> Head Office</span>
                             <span class="badge badge-success fw-bold fs-7 py-2">Ontime</span>
                             <span class="badge badge-primary fw-bold fs-7 py-2">Finished Work</span>
                             <span class="badge badge-warning fw-bold fs-7 py-2">Late</span>
@@ -194,6 +195,7 @@
                                             <th style="width: 150px; max-width: 150px;">Type</th>
                                             <th style="width: 300px; max-width: 300px;">Date - Time</th>
                                             <th class="min-w-100px">Time stamp / IP</th>
+                                            <!-- <th class="text-center min-w-60px">GPS</th> -->
                                             <th class="min-w-100px">Status</th>
                                             <th class="text-end min-w-70px pe-4">Action</th>
                                         </tr>
@@ -272,18 +274,25 @@
                         <div class="d-flex flex-column mb-8 fv-row">
                             <label class="d-flex align-items-center form-label fw-semibold mb-2 required">Location</label>
                             <div class="row g-9" data-kt-buttons="true" data-kt-buttons-target="[data-kt-button='true']">
-                                <div class="col-6">
+                                <div class="col-4">
                                     <span class="form-check form-check-custom form-check-primary form-check-solid form-check-md">
                                         <input class="form-check-input" type="radio" name="location" value="1" />
                                         <i class="ki-duotone ki-map fs-1 ms-2 text-primary"> <span class="path1"></span> <span class="path2"></span> <span class="path3"></span></i>
                                         <label for="workType1" class="form-check-label fs-6 fw-normal text-gray-800">On-Site</label>
                                     </span>                                            
                                 </div>
-                                <div class="col-6">
+                                <div class="col-4">
                                     <span class="form-check form-check-custom form-check-primary form-check-solid form-check-md">
                                         <input class="form-check-input" type="radio" name="location" value="2" />
                                         <i class="ki-duotone ki-home-2 fs-1 ms-2 text-success"><span class="path1"></span> <span class="path2"></span></i>
                                         <label for="workType2" class="form-check-label fs-6 fw-normal text-gray-800">WFH</label>
+                                    </span>
+                                </div>
+                                <div class="col-4">
+                                    <span class="form-check form-check-custom form-check-primary form-check-solid form-check-md">
+                                        <input class="form-check-input" type="radio" name="location" value="3" />
+                                        <i class="ki-duotone ki-cube-2 fs-1 ms-2 text-danger"><span class="path1"></span><span class="path2"></span><span class="path3"></span></i>
+                                        <label for="workType2" class="form-check-label fs-6 fw-normal text-gray-800">Head Office</label>
                                     </span>
                                 </div>
                             </div>
@@ -305,6 +314,21 @@
                 </div>
             </div>
         </div>
+    </div>
+    
+    <div class="modal bg-body fade" tabindex="-1" id="showMapModal">
+    	<div class="modal-dialog modal-fullscreen">
+	    	<div class="modal-content shadow-none">
+	    		<div class="modal-header">
+	    			<h5 class="modal-title">Work Location</h5>
+	    			<!--begin::Close-->
+	                <div class="btn btn-icon btn-sm btn-active-light-primary ms-2" data-bs-dismiss="modal" aria-label="Close">
+	                    <i class="ki-duotone ki-cross fs-2x"><span class="path1"></span><span class="path2"></span></i>
+	                </div>
+	                <!--end::Close-->
+	    		</div>
+	    	</div>
+    	</div>
     </div>
 </perm:permission>
 
@@ -579,13 +603,24 @@
             var workType = String(item.work_type || '').trim();
             if (workType === '1') locationIcon = '<i class="ki-duotone ki-map fs-1 text-primary ms-5" title="On-Site"><span class="path1"></span><span class="path2"></span><span class="path3"></span></i>';
             else if (workType === '2') locationIcon = '<i class="ki-duotone ki-home-2 fs-1 text-success ms-5" title="WFH"><span class="path1"></span><span class="path2"></span></i>';
-            
+            else if (workType === '3') locationIcon = '<i class="ki-duotone ki-cube-2 fs-1 text-danger ms-5" title="Head Office"><span class="path1"></span><span class="path2"></span><span class="path3"></span></i>'
             var descriptionHtml = item.description ? 
                 '<div class="d-flex align-items-center mt-1 ms-4"><i class="ki-solid ki-message-text-2 fs-4 text-gray-400 fw-normal me-2"></i><span class="fw-normal text-gray-700 fs-6">' + item.description + '</span></div>' : '';
 
             var createTimeStr = item.time_update ? formatDate(item.time_update) + ', ' + formatTime(item.time_update) : '';
             var ipAddress = item.ip_address || '';
-
+            var latitude = item.latitude || '';
+            var longitude = item.longitude || '';
+            //console.log(latitude);
+            //console.log(longitude);
+            
+            var gpsButtonHtml = '';
+            if (latitude && longitude) {
+                gpsButtonHtml = '<a href="javascript:void(0)" onclick="showGPS(\'' + latitude + '\', \'' + longitude + '\')">' +
+                '<i class="ki-duotone ki-geolocation-home text-danger fs-1 mx-2" data-bs-toggle="modal">' +
+                '<span class="path1"></span><span class="path2"></span></i></a>';
+			}
+            
             html += '<tr>' +
                     '<td class="ps-4"><div class="d-flex flex-column">' +
                         '<span class="text-gray-800 fw-normal mb-1 fs-6">' + (item.name_en || '') + '</span>' +
@@ -605,6 +640,9 @@
                         '<span class="text-gray-800 fw-normal fs-6 d-block">' + createTimeStr + '</span>' +
                         '<span class="fw-normal text-gray-600 fs-6">' + ipAddress + '</span>' +
                     '</td>' +
+                    /* '<td class="text-center">'+
+                    	gpsButtonHtml +
+                    '</td>' + */
                     '<td><div class="d-flex flex-column align-items-start">' + statusBadge + '</div></td>' +
                     '<td class="text-end pe-4">' +
                         '<a href="javascript:void(0)" onclick="openEditModal(' + i + ')" class="btn btn-icon btn-light-primary btn-sm">' +
@@ -684,7 +722,14 @@
         
         $('#editWorkLogModal').modal('show');
     }
-
+	
+    // --- SHOW GPS ---
+    function showGPS(la, lo) {
+    	console.log(la);
+    	console.log(lo);
+    	$('#showMapModal').modal('show');
+    }
+    
  	// --- SAVE EDIT ---
     function saveEditWorkLog() {
         var reason = $('#edit_description').val().trim();

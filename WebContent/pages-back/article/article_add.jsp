@@ -20,23 +20,19 @@
 	type="text/css" />
 <script src="assets/plugins/global/plugins.bundle.js"></script>
 
-<!--CKEditor-->
-<script src="assets/plugins/custom/ckeditor/ckeditor-decoupled.bundle.js"></script>
-<script src="assets/plugins/custom/ckeditor/ckeditor-document.bundle.js"></script>
-
 <!--Summernote-->
 <link href="https://cdn.jsdelivr.net/npm/summernote@0.9.0/dist/summernote-lite.min.css" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/summernote@0.9.0/dist/summernote-lite.min.js"></script>
 
 <style>
 
-#summernote,#kt_docs_ckeditor_document  {
+#summernote  {
 	width: 100%;
 	margin-left: auto;
 	margin-right: auto;
 }
 
-#summernote,#kt_docs_ckeditor_document  {
+#summernote {
 	border: 1px solid #d1d5db;
 	border-radius: 6px;
 	overflow: hidden;
@@ -204,18 +200,22 @@
 					<div
 						class="page-title d-flex flex-column justify-content-center flex-wrap me-3">
 						<h1
-							class="page-heading d-flex text-gray-900 fw-semibold flex-column justify-content-center my-0">
+							class="page-heading d-flex text-gray-700 fw-semibold flex-column justify-content-center my-0">
 							New Article</h1>
 
 						<ul
 							class="breadcrumb breadcrumb-separatorless fw-semibold fs-7 my-0 pt-1">
 							<li class="breadcrumb-item text-muted"><a
-								href="${pageContext.request.contextPath}/article-feed"
+								href="${pageContext.request.contextPath}/demo_dashboard"
+								class="text-muted text-hover-primary">Home</a></li>
+							<li class="breadcrumb-item"><span
+								class="bullet bg-gray-500 w-5px h-2px"></span></li>
+							<li class="breadcrumb-item text-muted"><a
 								class="text-muted text-hover-primary">CMS</a></li>
 							<li class="breadcrumb-item"><span
 								class="bullet bg-gray-500 w-5px h-2px"></span></li>
 							<li class="breadcrumb-item text-muted"><a
-								href="demo_dashboard" class="text-muted text-hover-primary">Article</a></li>
+								href="/article_feed" class="text-muted text-hover-primary">Article</a></li>
 						</ul>
 					</div>
 				</div>
@@ -405,16 +405,13 @@
 							<div
 								class="card-header d-flex align-items-center justify-content-between">
 								<h3 class="fw-semibold text-gray-900 mb-0">Content Detail</h3>
-								<button type="button" id="switchBtn"
-									onclick="switchEditor()"
-									class="btn btn-lg btn-light fw-medium text-light-inverse p-3">Switch CKEditor
-								</button>
+								
 							</div>
 
 							<div class="card-body ckeditor-wrapper">
+								<div id="editorError" class="text-danger mb-2 text-center"></div>
 								<div id="summernote"> </div>
-								 <div id="kt_docs_ckeditor_document_toolbar"></div>
-								<div id="kt_docs_ckeditor_document"></div> 
+								 
 							</div>
 							<input type="hidden" name="detail" id="detailInput">
 						</div>
@@ -437,142 +434,98 @@
 		</div>
 	</div>
 
-	<script>
-	var currentEditor = "summernote";
 	
-	function switchEditor() {
-		
-		if (currentEditor === "summernote" && !editorInstance) {
-	        alert("Editor still loading...");
-	        return;
-	    }
-
-
-	    var content = "";
-
-	    if(currentEditor === "summernote") {
-
-	        content = $('#summernote').summernote('code');
-
-	        $('#summernote').summernote('destroy');
-	        document.getElementById("summernote").style.display = "none";
-
-	        document.getElementById("kt_docs_ckeditor_document").style.display = "block";
-	        document.getElementById("kt_docs_ckeditor_document_toolbar").style.display = "block";
-
-	        editorInstance.setData(content);
-
-	        currentEditor = "ck";
-
-	    } else {
-
-	        content = editorInstance.getData();
-
-	        document.getElementById("summernote").style.display = "block";
-	        initSummernote(content);
-	       /*  $('#summernote').summernote();
-	        $('#summernote').summernote('code', content); */
-
-	        document.getElementById("kt_docs_ckeditor_document").style.display = "none";
-	        document.getElementById("kt_docs_ckeditor_document_toolbar").style.display = "none";
-
-	        currentEditor = "summernote";
-	    }
-	    
-	    document.getElementById("switchBtn").textContent =
-	        currentEditor === "summernote"
-	            ? "Switch CKEditor"
-	            : "Switch Summernote";
-	}
-	</script>	
 
 	<script>
 	var editorInstance;
-	
-	document.getElementById("switchBtn").disabled = true;
-	
-	DecoupledEditor
-    .create(document.querySelector('#kt_docs_ckeditor_document'))
-    .then(editor => {
-    	editorInstance = editor;
-    	
-    	document.getElementById("switchBtn").disabled = false;
-    	
-    	document.getElementById("kt_docs_ckeditor_document").style.display = "none";
-    	document.getElementById("kt_docs_ckeditor_document_toolbar").style.display = "none";
-        const toolbarContainer = document.querySelector( '#kt_docs_ckeditor_document_toolbar' );
 
-        toolbarContainer.appendChild( editor.ui.view.toolbar.element );
-    })
-    .catch(error => {
-        console.error(error);
-    });
 	function initSummernote(content="") {
 	    $('#summernote').summernote({
 	      placeholder: '',
 	      tabsize: 2,
 	      codeviewFilter: false,
 	      codeviewIframeFilter: false,
-	      leTags: [
-	    	    { title: 'Normal', tag: 'p' },
-	    	    { title: 'Heading 1', tag: 'h1' },
-	    	    { title: 'Heading 2', tag: 'h2' },
-	    	    { title: 'Heading 3', tag: 'h3' },
-	    	    { title: 'Quote', tag: 'blockquote' },
-	    	    { title: 'Code', tag: 'pre' }
-	    	  ],
-	
-	    	  toolbar: [
-	
-	    	    // style
-	    	    ['style', ['style']],
-	
-	    	    // font
-	    	    ['font', [
-	    	      'bold',
-	    	      'italic',
-	    	      'underline',
-	    	      'strikethrough',
-	    	      'superscript',
-	    	      'subscript',
-	    	      'clear'
-	    	    ]],
-	
-	    	    // font size/name/color
-	    	    ['fontname', ['fontname']],
-	    	    ['fontsize', ['fontsize']],
-	    	    ['color', ['color']],
-	
-	    	    // paragraph
-	    	    ['para', [
-	    	      'ul',
-	    	      'ol',
-	    	      'paragraph',
-	    	      'height'
-	    	    ]],
-	
-	    	    // insert
-	    	    ['insert', [
-	    	      'link',
-	    	      'picture',
-	    	      'video',
-	    	      'table',
-	    	      'hr'
-	    	    ]],
-	
-	    	    // misc/view
-	    	    ['view', [
-	    	      'undo',
-	    	      'redo',
-	    	      'fullscreen',
-	    	      'codeview',
-	    	      'help'
-	    	    ]]
-	    	  ]
+	      toolbar: [
+      	    // style
+      	    ['style', ['style']],
+
+      	    // font
+      	    ['font', [
+      	      'bold', 'italic',  'underline', 'strikethrough',
+      	      'superscript', 'subscript', 'clear'
+      	    ]],
+
+      	    // font size/name/color
+      	    ['fontname', ['fontname']],
+      	    ['fontsize', ['fontsize']],
+      	    ['color', ['color']],
+
+      	    // paragraph
+      	    ['para', [ 'ul', 'ol', 'paragraph', 'height'  ]],
+
+      	    // insert
+      	    ['insert', [ 'link', 'picture', 'video', 'table', 'hr' ]],
+
+      	    // misc/view
+      	    ['view', [ 'undo', 'redo', 'fullscreen', 'codeview', 'help' ]]
+      	  ],
+	    	  callbacks : {
+					onImageUpload : function(files) {
+						for (var i = files.length - 1; i >= 0; i--) {
+							sendFile(files[i], this);
+						}
+					},
+					onMediaDelete : function(target) {
+						deleteFile(target[0].src);
+					}
+				}
 	    });
 	    $('#summernote').summernote('code', content);
 	}
 	
+	function sendFile(file, el) {
+		const errorBox = document.getElementById("editorError");
+
+	    if(file.size > 2 * 1024 * 1024){
+	        errorBox.textContent = "Image must be smaller than 2MB. Please select a new image.";
+	        return false;
+	    }
+
+	    errorBox.textContent = "";
+	    
+		var form_data = new FormData();
+		
+		form_data.append('articleImageFile', file);
+		form_data.append('articleImageFileFileName', file.name);
+		form_data.append('articleImageFileContentType', file.type);
+		
+		$.ajax({
+			data : form_data,
+			type : "POST",
+			url : 'addImgFormEditor',
+			cache : false,
+			contentType : false,
+			processData : false,
+			success : function(url) {
+				$('#summernote').summernote('editor.insertImage', url);
+				console.log("Succesful uploaded " + url);
+			},
+			error : function(data) {
+				console.log("Error upload");
+			}
+		});
+	}
+
+	function deleteFile(src) {
+		$.ajax({
+			data : "srcDelete=" + src,
+			type : "POST",
+			url : "DeleteImgFormEditor",
+			cache : false,
+			success : function(response) {
+			}
+		});
+	}
 	
 		</script>
 	
@@ -624,37 +577,19 @@
 			<script>
 			document.addEventListener("DOMContentLoaded", function () {
 			    const imageInput = document.getElementById("imageInputFile");
-			    
-			    /* imageInput.addEventListener("change", function(e) {
-				    const file = e.target.files[0];
-				    if (!file) return;
-
-				    const img = new Image();
-				    const wrapper = document.getElementById("imageInputWrapper");
-
-				    img.onload = function() {
-				        const ratio = img.height / img.width;
-
-				        wrapper.style.height = (300 * ratio) + "px";
-				    };
-
-				    img.src = URL.createObjectURL(file);
-				}); */
 			
 			    imageInput.addEventListener("change", function () {
 			
 			        const file = this.files[0];
-			        const maxSize = 5 * 1024 * 1024;
+			        const maxSize = 2 * 1024 * 1024;
 			        const errorMsg = document.getElementById("errorMsg");
 			
 			        if (!file) return;
 			
 			        if (file.size > maxSize) {
 			
-			            errorMsg.textContent = "Image must be smaller than 5MB.";
+			            errorMsg.textContent = "Image must be smaller than 2MB.";
 			            this.value = "";
-			
-			
 			        } else {
 			            errorMsg.textContent = "";
 			        }
@@ -694,15 +629,11 @@
 	}
 	
 	function submitForm(){
-		/* const content = $('#summernote').summernote('code'); */
-		var content = "";
-
-		if(currentEditor === "summernote") {
-		    content = $('#summernote').summernote('code');
-		} else {
-		    content = editorInstance.getData();
-		}
-		
+		const content = $('#summernote').summernote('code');
+	
+		const errorBox = document.getElementById("editorError");
+	    const editorError = errorBox.textContent.trim();
+	    
 	    document.getElementById("detailInput").value = content;
 		var errorFields = [];
 		
@@ -718,8 +649,6 @@
 		  
 		  const articleTitle  = document.getElementById("article_title").value
 		  const articleType = document.getElementById("article_type").value
-		  /* const articleTag = $("#article_tag").val();
-		  const articleRelated = $("#article_related").val(); */
 		  const userCreate = document.getElementById("user_create").value
 		  const publicDate = document.getElementById("publication_date").value
 		  const publicTime  = document.getElementById("publication_time").value
@@ -727,13 +656,7 @@
 		  const imageFile = document.getElementById("imageInputFile");
 		  
 		  if(!articleTitle) errorFields.push("Title")
-		  if(!articleType) errorFields.push("Type")
-		/*   if (!articleTag || articleTag.length === 0)
-		    errorFields.push("Tag");
-
-		  if (!articleRelated || articleRelated.length === 0)
-		      errorFields.push("Related"); */
-		  
+		  if(!articleType) errorFields.push("Type")		  
 		  if(!userCreate) errorFields.push("Author")
 		  if(!publicDate) errorFields.push("Publication Date")
 		  if(!publicTime) errorFields.push("Publication Time")
@@ -746,6 +669,13 @@
 		  if(!contentText) errorFields.push("Content Detail")
 		  
 		  if (errorFields.length > 0) {
+			  window.scrollTo({
+			        top: 0,
+			        behavior: "smooth"
+			    });
+			  
+			  document.activeElement.blur();
+			  
 			  Swal.fire({
 		    		title: "Please complete the form!",
 		    		html: "Please fill in the following fields:<br><strong>" + errorFields.join(", ") + "</strong>",
@@ -758,6 +688,14 @@
 			    })
 				return false;
 		    } 
+		  
+		  if(editorError){
+		    	errorBox.scrollIntoView({
+		            behavior: "smooth",
+		            block: "center"
+		        });
+			  return false; 
+		    }
 		  
 		  Swal.fire({
 		    	 title: "Are you sure?!",
@@ -780,7 +718,6 @@
 	}
 	
 		function confirmLeaveForm(redirectUrl){
-				
 			    Swal.fire({
 			        title: "Are you sure?!",
 			        text: "Closing will discard any unsaved data.",
@@ -799,6 +736,8 @@
 			        }
 			    });
 			}
+		
+		
 	</script>
 
 </body>

@@ -478,4 +478,82 @@
 		<put-attribute name="body"
 			value="/pages-back/article/article_preview.jsp" />
 	</definition>
+
+	<!-- Overtime Request -->
+	<definition name="overtime_request_list"
+		extends="baseLayout">
+		<put-attribute name="title" value="Overtime Request" />
+		<put-attribute name="body"
+			value="/pages-back/overtime_request/overtime_request_list.jsp" />
+	</definition>
+
+	<definition name="overtime_request_add" extends="baseLayout">
+		<put-attribute name="title"
+			value="Create Overtime Request" />
+		<put-attribute name="body"
+			value="/pages-back/overtime_request/overtime_request_add.jsp" />
+	</definition>
+
+	<definition name="overtime_request_edit"
+		extends="baseLayout">
+		<put-attribute name="title"
+			value="Edit Overtime Request" />
+		<put-attribute name="body"
+			value="/pages-back/overtime_request/overtime_request_edit.jsp" />
+	</definition>
+
+	<!-- Overtime Approve -->
+	<definition name="overtime_approve" extends="baseLayout">
+		<put-attribute name="title" value="Overtime Approve" />
+		<put-attribute name="body"
+			value="/pages-back/overtime_approve/overtime_approve.jsp" />
+	</definition>
+	
+	<definition name="overtime_approve_form" extends="baseLayout">
+		<put-attribute name="title" value="Overtime Approve From" />
+		<put-attribute name="body"
+			value="/pages-back/overtime_approve/overtime_approve_form.jsp" />
+	</definition>
+	
+	<!-- My Travel -->
+    <definition name="myTravel" extends="baseLayout">
+        <put-attribute name="title" value="My Travel" />
+        <put-attribute name="body"
+            value="/pages-back/my_travel/my_travel_list.jsp" />
+    </definition>
+    <definition name="myTravelA" extends="baseLayout">
+        <put-attribute name="title" value="My Travel Add" />
+        <put-attribute name="body"
+            value="/pages-back/my_travel/my_travel_add.jsp" />
+    </definition>
+    <definition name="myTravelE" extends="baseLayout">
+        <put-attribute name="title" value="My Travel Edit" />
+        <put-attribute name="body"
+            value="/pages-back/my_travel/my_travel_edit.jsp" />
+    </definition>
+    <definition name="myTravelSR" extends="baseLayout">
+        <put-attribute name="title" value="Submit Request" />
+        <put-attribute name="body"
+            value="/pages-back/my_travel/my_travel_submit.jsp" />
+    </definition>
+
+	<!-- Page URI -->
+	<definition name="page_uri_list" extends="baseLayout">
+		<put-attribute name="title" value="Page URI List" />
+		<put-attribute name="body"
+			value="/pages-back/page_uri/page_uri_list.jsp" />
+	</definition>
+
+	<definition name="page_uri_add" extends="baseLayout">
+		<put-attribute name="title" value="Add Page URI" />
+		<put-attribute name="body"
+			value="/pages-back/page_uri/page_uri_add.jsp" />
+	</definition>
+
+	<definition name="page_uri_edit" extends="baseLayout">
+		<put-attribute name="title" value="Edit Page URI" />
+		<put-attribute name="body"
+			value="/pages-back/page_uri/page_uri_edit.jsp" />
+	</definition>
+
 </tiles-definitions>

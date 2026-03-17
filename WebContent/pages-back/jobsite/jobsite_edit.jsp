@@ -28,39 +28,37 @@
 
 /* Light Mode */
 #kt_table_team.table.table-striped>tbody>tr:nth-of-type(odd)>* {
-    background-color: #FBFBFB !important;
-    box-shadow: none !important;
+	background-color: #FBFBFB !important;
+	box-shadow: none !important;
 }
 
-#kt_table_team.table-hover tbody tr:hover>*,
-#kt_table_team.table-hover tbody tr:hover>td,
-#kt_table_team.table-hover tbody tr:hover>th,
-#kt_table_team.table.table-hover>tbody>tr:hover>*,
-#kt_table_team.dataTable>tbody>tr:hover>* {
-    background-color: #F9F9F9 !important;
-    box-shadow: none !important;
-    transition: background-color .15s ease-in-out;
+#kt_table_team.table-hover tbody tr:hover>*, #kt_table_team.table-hover tbody tr:hover>td,
+	#kt_table_team.table-hover tbody tr:hover>th, #kt_table_team.table.table-hover>tbody>tr:hover>*,
+	#kt_table_team.dataTable>tbody>tr:hover>* {
+	background-color: #F9F9F9 !important;
+	box-shadow: none !important;
+	transition: background-color .15s ease-in-out;
 }
 
 /* Dark Mode */
-[data-bs-theme="dark"] #kt_table_team.table.table-striped>tbody>tr:nth-of-type(odd)>* {
-    background-color: #191B20 !important;
-    box-shadow: none !important;
+[data-bs-theme="dark"] #kt_table_team.table.table-striped>tbody>tr:nth-of-type(odd)>*
+	{
+	background-color: #191B20 !important;
+	box-shadow: none !important;
 }
 
-[data-bs-theme="dark"] #kt_table_team.table.table-striped>tbody>tr:nth-of-type(even)>* {
-    background-color: #15171C !important;
-    box-shadow: none !important;
+[data-bs-theme="dark"] #kt_table_team.table.table-striped>tbody>tr:nth-of-type(even)>*
+	{
+	background-color: #15171C !important;
+	box-shadow: none !important;
 }
 
-[data-bs-theme="dark"] #kt_table_team.table-hover tbody tr:hover>*,
-[data-bs-theme="dark"] #kt_table_team.table-hover tbody tr:hover>td,
-[data-bs-theme="dark"] #kt_table_team.table-hover tbody tr:hover>th,
-[data-bs-theme="dark"] #kt_table_team.table.table-hover>tbody>tr:hover>*,
-[data-bs-theme="dark"] #kt_table_team.dataTable>tbody>tr:hover>* {
-    background-color: #1B1C22 !important;
-    box-shadow: none !important;
-    transition: background-color .15s ease-in-out;
+[data-bs-theme="dark"] #kt_table_team.table-hover tbody tr:hover>*, [data-bs-theme="dark"] #kt_table_team.table-hover tbody tr:hover>td,
+	[data-bs-theme="dark"] #kt_table_team.table-hover tbody tr:hover>th, [data-bs-theme="dark"] #kt_table_team.table.table-hover>tbody>tr:hover>*,
+	[data-bs-theme="dark"] #kt_table_team.dataTable>tbody>tr:hover>* {
+	background-color: #1B1C22 !important;
+	box-shadow: none !important;
+	transition: background-color .15s ease-in-out;
 }
 
 /* --- Footer Animation --- */
@@ -86,10 +84,9 @@ to {
 
 /* --- Color in select2 --- */
 #select2-employeeSelect-container {
-    color: var(--bs-gray-900) !important;
-    font-weight: 400;
+	color: var(--bs-gray-900) !important;
+	font-weight: 400;
 }
-
 </style>
 
 </head>
@@ -301,6 +298,11 @@ to {
 													</select>
 												</div>
 											</div>
+											<div id="employeeErrorMsg"
+												class="text-danger fs-6 fw-medium mt-2"
+												style="display: none;">
+												 กรุณาเลือกพนักงานก่อนทำการบันทึก
+											</div>
 										</div>
 
 										<div class="modal-footer justify-content-end">
@@ -325,13 +327,29 @@ to {
 	    function saveEmployee() {
 	        const select = document.getElementById('employeeSelect');
 	        const selectedVal = select.value;
+	        const errorMsg = document.getElementById('employeeErrorMsg');
+	
 	        if (!selectedVal) {
-	            alert('กรุณาเลือกพนักงานก่อน');
+	            errorMsg.style.display = 'block';
 	            return;
 	        }
+	
+	        errorMsg.style.display = 'none';
 	        document.getElementById('userIdInput').value = selectedVal;
 	        document.getElementById('employeeForm').submit();
 	    }
+	
+	    $(document).ready(function() {
+	        $('#employeeSelect').on('change', function() {
+	            if ($(this).val()) {
+	                document.getElementById('employeeErrorMsg').style.display = 'none';
+	            }
+	        });
+	        
+	        $('#employeeModal').on('hidden.bs.modal', function () {
+	            document.getElementById('employeeErrorMsg').style.display = 'none';
+	        });
+	    });
 	</script>
 
 	<script>
@@ -371,12 +389,13 @@ to {
             });
         });
 	</script>
-	
+
 	<!-- Sort Employee -->
 	<script>
 	$(document).ready(function () {
 	    var userList = [
 	        <c:forEach var="u" items="${userList}">
+	        <c:if test="${u.enable eq '1'}">
 	        {
 	            id: "${u.id}",
 	            empId: "${u.employeeId}",
@@ -385,19 +404,27 @@ to {
 	            inTeam: ${fn:contains(teamUserIds, ','.concat(u.id).concat(','))},
 	            isLoginUser: "${u.id}" === "${logonUser}"
 	        },
+	        </c:if>
 	        </c:forEach>
 	    ];
 	
 	    userList.sort(function(a, b) {
-	        if (a.isLoginUser && !b.isLoginUser) return -1;
-	        if (!a.isLoginUser && b.isLoginUser) return 1;
-	        
+	        var empA = (a.empId || "").trim();
+	        var empB = (b.empId || "").trim();
+
+	        if(empA && empB){
+	            return empA.localeCompare(empB);
+	        }
+	        if(empA && !empB){
+	            return -1;
+	        }
+	        if(!empA && empB){
+	            return 1;
+	        }
+
 	        var nameA = (a.nameEN || "").toUpperCase();
 	        var nameB = (b.nameEN || "").toUpperCase();
-	        
-	        if (nameA === "" && nameB !== "") return 1;
-	        if (nameA !== "" && nameB === "") return -1;
-	        
+
 	        return nameA.localeCompare(nameB);
 	    });
 	

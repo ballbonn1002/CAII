@@ -14,6 +14,7 @@ import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -115,7 +116,7 @@ public class JobsiteAction extends ActionSupport {
 		try {
 			jobsite = new Jobsite();
 			jobsite.setIs_active("1");
-			userList = userDAO.findAll();
+			userList = getActiveUsers();
 			return SUCCESS;
 		} catch (Exception e) {
 			log.error("Error in JobsiteAction.addJobsite()", e);
@@ -173,7 +174,7 @@ public class JobsiteAction extends ActionSupport {
 				addActionError("Invalid jobsite ID");
 			}
 
-			userList = userDAO.findAll();
+			userList = getActiveUsers();
 			log.info("User List loaded size: " + (userList != null ? userList.size() : "null"));
 
 			if (jobsiteId != null) {
@@ -243,48 +244,48 @@ public class JobsiteAction extends ActionSupport {
 
 	// ------------------------ SAVE JOBSITE ------------------------
 	public String saveJobsite() {
-	    try {
-	        User user = (User) request.getSession().getAttribute("onlineUser");
-	        if (user == null || user.getId() == null) {
-	            return "login";
-	        }
-	        String userId = user.getId();
-	        Timestamp now = DateUtil.getCurrentTime();
+		try {
+			User user = (User) request.getSession().getAttribute("onlineUser");
+			if (user == null || user.getId() == null) {
+				return "login";
+			}
+			String userId = user.getId();
+			Timestamp now = DateUtil.getCurrentTime();
 
-	        if (jobsite == null) {
-	            addActionError("Jobsite data is required");
-	            return ERROR;
-	        }
+			if (jobsite == null) {
+				addActionError("Jobsite data is required");
+				return ERROR;
+			}
 
-	        if (jobsite.getName_site() != null) {
-	            jobsite.setName_site(jobsite.getName_site().trim());
-	        }
-	        if (jobsite.getDescription() != null) {
-	            jobsite.setDescription(jobsite.getDescription().trim());
-	        }
+			if (jobsite.getName_site() != null) {
+				jobsite.setName_site(jobsite.getName_site().trim());
+			}
+			if (jobsite.getDescription() != null) {
+				jobsite.setDescription(jobsite.getDescription().trim());
+			}
 
-	        if (jobsite.getName_site() == null || jobsite.getName_site().isEmpty()) {
-	            addActionError("Job Site Name cannot be empty or just spaces.");
-	            return ERROR;
-	        }
+			if (jobsite.getName_site() == null || jobsite.getName_site().isEmpty()) {
+				addActionError("Job Site Name cannot be empty or just spaces.");
+				return ERROR;
+			}
 
-	        String activeParam = request.getParameter("is_active");
-	        jobsite.setIs_active("1".equals(activeParam) ? "1" : "0");
+			String activeParam = request.getParameter("is_active");
+			jobsite.setIs_active("1".equals(activeParam) ? "1" : "0");
 
-	        jobsite.setTime_create(now);
-	        jobsite.setUser_create(userId);
+			jobsite.setTime_create(now);
+			jobsite.setUser_create(userId);
 
-	        jobsiteDAO.save(jobsite);
+			jobsiteDAO.save(jobsite);
 
-	        addActionMessage("Jobsite created successfully!");
+			addActionMessage("Jobsite created successfully!");
 
-	        return SUCCESS;  
+			return SUCCESS;
 
-	    } catch (Exception e) {
-	        log.error("Error in saveJobsite()", e);
-	        addActionError("Error saving jobsite: " + e.getMessage());
-	        return ERROR;
-	    }
+		} catch (Exception e) {
+			log.error("Error in saveJobsite()", e);
+			addActionError("Error saving jobsite: " + e.getMessage());
+			return ERROR;
+		}
 	}
 
 	// ------------------------ DELETE JOB SITE ------------------------
@@ -335,7 +336,7 @@ public class JobsiteAction extends ActionSupport {
 
 				Integer jobId = Integer.parseInt(idSitejobParam);
 				jobsite = jobsiteDAO.findById(jobId);
-				userList = userDAO.findAll();
+				userList = getActiveUsers();
 				teamList = jobSiteTeamDAO.findByJobsite(jobId);
 				return SUCCESS;
 			}
@@ -347,7 +348,7 @@ public class JobsiteAction extends ActionSupport {
 
 			Integer jobId = Integer.parseInt(idSitejobParam);
 			jobsite = jobsiteDAO.findById(jobId);
-			userList = userDAO.findAll();
+			userList = getActiveUsers();
 			teamList = jobSiteTeamDAO.findByJobsite(jobId);
 
 			return SUCCESS;
@@ -378,7 +379,7 @@ public class JobsiteAction extends ActionSupport {
 			}
 
 			jobsite = jobsiteDAO.findById(jobId);
-			userList = userDAO.findAll();
+			userList = getActiveUsers();
 			teamList = jobSiteTeamDAO.findByJobsite(jobId);
 
 			return SUCCESS;
@@ -392,53 +393,55 @@ public class JobsiteAction extends ActionSupport {
 
 	// ------------------------ UPDATE ------------------------
 	public String updateJobsite() {
-	    try {
-	        User user = (User) request.getSession().getAttribute("onlineUser");
-	        if (user == null || user.getId() == null) {
-	            return "login";
-	        }
+		try {
+			User user = (User) request.getSession().getAttribute("onlineUser");
+			if (user == null || user.getId() == null) {
+				return "login";
+			}
 
-	        if (jobsite == null || jobsite.getId_sitejob() == null) {
-	            addActionError("Jobsite ID is required");
-	            return ERROR;
-	        }
+			if (jobsite == null || jobsite.getId_sitejob() == null) {
+				addActionError("Jobsite ID is required");
+				return ERROR;
+			}
 
-	        Jobsite dbJobsite = jobsiteDAO.findById(jobsite.getId_sitejob());
+			Jobsite dbJobsite = jobsiteDAO.findById(jobsite.getId_sitejob());
 
-	        if (dbJobsite != null) {
-	            String newName = jobsite.getName_site();
-	            String newDesc = jobsite.getDescription();
-	            
-	            if (newName != null) newName = newName.trim();
-	            if (newDesc != null) newDesc = newDesc.trim();
+			if (dbJobsite != null) {
+				String newName = jobsite.getName_site();
+				String newDesc = jobsite.getDescription();
 
-	            if (newName == null || newName.isEmpty()) {
-	                addActionError("Job Site Name cannot be empty.");
-	                return ERROR;
-	            }
+				if (newName != null)
+					newName = newName.trim();
+				if (newDesc != null)
+					newDesc = newDesc.trim();
 
-	            dbJobsite.setName_site(newName);
-	            dbJobsite.setDescription(newDesc);
+				if (newName == null || newName.isEmpty()) {
+					addActionError("Job Site Name cannot be empty.");
+					return ERROR;
+				}
 
-	            String activeParam = request.getParameter("is_active");
-	            dbJobsite.setIs_active("1".equals(activeParam) ? "1" : "0");
+				dbJobsite.setName_site(newName);
+				dbJobsite.setDescription(newDesc);
 
-	            dbJobsite.setTime_update(DateUtil.getCurrentTime());
-	            dbJobsite.setUser_update(user.getId());
+				String activeParam = request.getParameter("is_active");
+				dbJobsite.setIs_active("1".equals(activeParam) ? "1" : "0");
 
-	            jobsiteDAO.update(dbJobsite);
+				dbJobsite.setTime_update(DateUtil.getCurrentTime());
+				dbJobsite.setUser_update(user.getId());
 
-	            addActionMessage("Jobsite updated successfully!");
-	            return SUCCESS;
-	        } else {
-	            addActionError("Jobsite not found");
-	            return ERROR;
-	        }
+				jobsiteDAO.update(dbJobsite);
 
-	    } catch (Exception e) {
-	        log.error("Error in JobsiteAction.updateJobsite()", e);
-	        return ERROR;
-	    }
+				addActionMessage("Jobsite updated successfully!");
+				return SUCCESS;
+			} else {
+				addActionError("Jobsite not found");
+				return ERROR;
+			}
+
+		} catch (Exception e) {
+			log.error("Error in JobsiteAction.updateJobsite()", e);
+			return ERROR;
+		}
 	}
 
 	// ------------------------ UPDATE STATUS ------------------------
@@ -560,6 +563,15 @@ public class JobsiteAction extends ActionSupport {
 			e.printStackTrace();
 			return ERROR;
 		}
+	}
+	
+	// User (enable = 1)
+	private List<User> getActiveUsers() throws Exception{
+		List<User> allUsers = userDAO.findAll();
+		if (allUsers == null) {
+			return new ArrayList<>();
+		}
+		return allUsers.stream().filter(u -> "1".equals(u.getEnable())).collect(Collectors.toList());
 	}
 
 	// Getters and Setters

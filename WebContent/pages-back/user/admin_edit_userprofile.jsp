@@ -74,7 +74,7 @@
 				<div
 					class="page-title d-flex align-items-center justify-content-between w-100 me-3 mb-6">
 					<div class="d-flex flex-column flex-wrap gap-2 gap-lg-3">
-						<h1 class="page-heading d-flex text-gray-900 fw-bold fs-3 my-0">
+						<h1 class="page-heading d-flex text-gray-700 fw-semibold my-0">
 							Edit User</h1>
 
 						<ul
@@ -217,7 +217,7 @@
 										<div
 											class="border border-gray-300 rounded-1 px-4 py-3 border-dashed ">
 											<div class="d-flex flex-column">
-												<p class="fs-5 fw-bold text-gray-800 mb-2">${selectUser.workType == 1 ? 'On-site' : 'WFH'}</p>
+												<p class="fs-5 fw-bold text-gray-800 mb-2">${selectUser.workType == 1 ? 'On-site' : (selectUser.workType == 2 ? 'WFH' : 'Head Office')}</p>
 												<p class="fs-6 fw-bold text-gray-500 mb-0">
 													${selectUser.onsiteNum == 3 ? '4–5 Day' :
           							          selectUser.onsiteNum == 2 ? '2–3 Day' :
@@ -282,7 +282,7 @@
 					<div class="card mb-10" id="account-info">
 						<div
 							class="card-header d-flex align-items-center justify-content-between">
-							<h3 class="card-title fw-bold m-0">Account Information</h3>
+							<h3 class="card-title fw-semibold text-gray-900 m-0">Account Information</h3>
 
 							<div class="d-flex align-items-center gap-3">
 								<span id="userActiveText"
@@ -306,6 +306,7 @@
 						<div class="card-body pt-6">
 							
 							<div class="row mb-8">
+							<div id="errorMsgProfile" class="text-center text-danger mb-3"></div>
 								<div class="col-12 d-flex justify-content-center ">
 									<div id="ktImageInput" class="image-input image-input-outline"
 										data-kt-image-input="true"
@@ -547,7 +548,7 @@
 
 					<div class="card mb-10" id="employee-info">
 						<div class="card-header">
-							<h3 class="card-title fw-bold m-0">Employee Information</h3>
+							<h3 class="card-title fw-semibold text-gray-900 m-0">Employee Information</h3>
 						</div>
 
 						<div class="card-body pt-6">
@@ -758,6 +759,12 @@
 											<c:if test="${selectUser.workType == '2'}">checked</c:if>>
 											<span class="form-check-label text-gray-800">WFH</span>
 										</label>
+										<label class="form-check form-check-custom mb-6 mt-6">
+											<input class="form-check-input" type="radio"
+											name="user.workType" value="3" data-tab="employee" data-required="true" data-label="Default Working"
+											<c:if test="${empty selectUser.workType or selectUser.workType == '3'}">checked</c:if>>
+											<span class="form-check-label text-gray-800">Head Office</span>
+										</label>
 									</div>
 								</div>
 
@@ -819,7 +826,7 @@
 
 					<div class="card mb-10" id="education-info">
 						<div class="card-header">
-							<h3 class="card-title fw-bold m-0">Education</h3>
+							<h3 class="card-title fw-semibold text-gray-900 m-0">Education</h3>
 						</div>
 						<div class="card-body pt-6">
 							<div class="table-responsive">
@@ -920,7 +927,7 @@
 
 					<div class="card mb-10" id="payment-info">
 						<div class="card-header">
-							<h3 class="card-title fw-bold m-0">Payment Information</h3>
+							<h3 class="card-title fw-semibold text-gray-900 m-0">Payment Information</h3>
 						</div>
 						<div class="card-body pt-6">
 							<div class="row g-9">
@@ -1072,9 +1079,128 @@
 								</div>
 
 								<div class="col-md-6 fv-row">
-									<label class="form-label">Bank Name</label> <input
+									<label class="form-label">Bank Name</label> <%-- <input
 										class="form-control" name="user.bank" data-tab="payment" 
-										value="${selectUser.bank}" placeholder="Bank name">
+										value="${selectUser.bank}" placeholder="Bank name"> --%>
+										<select class="form-select" data-control="select2" 
+										        name="user.bank" data-tab="payment">
+										
+										    <option value="ธนาคารกสิกรไทย"
+										        ${empty selectUser.bank || selectUser.bank == 'ธนาคารกสิกรไทย' ? 'selected' : ''}>
+										        ธนาคารกสิกรไทย
+										    </option>
+										
+										    <option value="ธนาคารกรุงเทพ"
+										        ${selectUser.bank == 'ธนาคารกรุงเทพ' ? 'selected' : ''}>
+										        ธนาคารกรุงเทพ
+										    </option>
+										
+										    <option value="ธนาคารกรุงไทย"
+										        ${selectUser.bank == 'ธนาคารกรุงไทย' ? 'selected' : ''}>
+										        ธนาคารกรุงไทย
+										    </option>
+										
+										    <option value="ธนาคารไทยพาณิชย์"
+										        ${selectUser.bank == 'ธนาคารไทยพาณิชย์' ? 'selected' : ''}>
+										        ธนาคารไทยพาณิชย์
+										    </option>
+										
+										    <option value="ธนาคารทหารไทยธนชาต"
+										        ${selectUser.bank == 'ธนาคารทหารไทยธนชาต' ? 'selected' : ''}>
+										        ธนาคารทหารไทยธนชาต
+										    </option>
+										
+										    <option value="ธนาคารกรุงศรีอยุธยา"
+										        ${selectUser.bank == 'ธนาคารกรุงศรีอยุธยา' ? 'selected' : ''}>
+										        ธนาคารกรุงศรีอยุธยา
+										    </option>
+										
+										    <option value="ธนาคารเกียรตินาคินภัทร"
+										        ${selectUser.bank == 'ธนาคารเกียรตินาคินภัทร' ? 'selected' : ''}>
+										        ธนาคารเกียรตินาคินภัทร
+										    </option>
+										
+										    <option value="ธนาคารซีไอเอ็มบีไทย"
+										        ${selectUser.bank == 'ธนาคารซีไอเอ็มบีไทย' ? 'selected' : ''}>
+										        ธนาคารซีไอเอ็มบีไทย
+										    </option>
+										
+										    <option value="ธนาคารทิสโก้"
+										        ${selectUser.bank == 'ธนาคารทิสโก้' ? 'selected' : ''}>
+										        ธนาคารทิสโก้
+										    </option>
+										
+										    <option value="ธนาคารยูโอบี"
+										        ${selectUser.bank == 'ธนาคารยูโอบี' ? 'selected' : ''}>
+										        ธนาคารยูโอบี
+										    </option>
+										
+										    <option value="ธนาคารสแตนดาร์ดชาร์เตอร์ด (ไทย)"
+										        ${selectUser.bank == 'ธนาคารสแตนดาร์ดชาร์เตอร์ด (ไทย)' ? 'selected' : ''}>
+										        ธนาคารสแตนดาร์ดชาร์เตอร์ด (ไทย)
+										    </option>
+										
+										    <option value="ธนาคารไทยเครดิต"
+										        ${selectUser.bank == 'ธนาคารไทยเครดิต' ? 'selected' : ''}>
+										        ธนาคารไทยเครดิต
+										    </option>
+										
+										    <option value="ธนาคารแลนด์ แอนด์ เฮาส์"
+										        ${selectUser.bank == 'ธนาคารแลนด์ แอนด์ เฮาส์' ? 'selected' : ''}>
+										        ธนาคารแลนด์ แอนด์ เฮาส์
+										    </option>
+										
+										    <option value="ธนาคารไอซีบีซี (ไทย)"
+										        ${selectUser.bank == 'ธนาคารไอซีบีซี (ไทย)' ? 'selected' : ''}>
+										        ธนาคารไอซีบีซี (ไทย)
+										    </option>
+										
+										    <option value="ธนาคารพัฒนาวิสาหกิจขนาดกลางและขนาดย่อมแห่งประเทศไทย"
+										        ${selectUser.bank == 'ธนาคารพัฒนาวิสาหกิจขนาดกลางและขนาดย่อมแห่งประเทศไทย' ? 'selected' : ''}>
+										        ธนาคารพัฒนาวิสาหกิจขนาดกลางและขนาดย่อมแห่งประเทศไทย
+										    </option>
+										
+										    <option value="ธนาคารเพื่อการเกษตรและสหกรณ์การเกษตร"
+										        ${selectUser.bank == 'ธนาคารเพื่อการเกษตรและสหกรณ์การเกษตร' ? 'selected' : ''}>
+										        ธนาคารเพื่อการเกษตรและสหกรณ์การเกษตร
+										    </option>
+										
+										    <option value="ธนาคารเพื่อการส่งออกและนำเข้าแห่งประเทศไทย"
+										        ${selectUser.bank == 'ธนาคารเพื่อการส่งออกและนำเข้าแห่งประเทศไทย' ? 'selected' : ''}>
+										        ธนาคารเพื่อการส่งออกและนำเข้าแห่งประเทศไทย
+										    </option>
+										
+										    <option value="ธนาคารออมสิน"
+										        ${selectUser.bank == 'ธนาคารออมสิน' ? 'selected' : ''}>
+										        ธนาคารออมสิน
+										    </option>
+										
+										    <option value="ธนาคารอาคารสงเคราะห์"
+										        ${selectUser.bank == 'ธนาคารอาคารสงเคราะห์' ? 'selected' : ''}>
+										        ธนาคารอาคารสงเคราะห์
+										    </option>
+										
+										    <option value="ธนาคารอิสลามแห่งประเทศไทย"
+										        ${selectUser.bank == 'ธนาคารอิสลามแห่งประเทศไทย' ? 'selected' : ''}>
+										        ธนาคารอิสลามแห่งประเทศไทย
+										    </option>
+										
+										    <option value="ธนาคารแห่งประเทศจีน"
+										        ${selectUser.bank == 'ธนาคารแห่งประเทศจีน' ? 'selected' : ''}>
+										        ธนาคารแห่งประเทศจีน
+										    </option>
+										
+										    <option value="ธนาคารซูมิโตโม มิตซุย ทรัสต์ (ไทย)"
+										        ${selectUser.bank == 'ธนาคารซูมิโตโม มิตซุย ทรัสต์ (ไทย)' ? 'selected' : ''}>
+										        ธนาคารซูมิโตโม มิตซุย ทรัสต์ (ไทย)
+										    </option>
+										
+										    <option value="ธนาคารฮ่องกงและเซี้ยงไฮ้แบงกิ้งคอร์ปอเรชั่น จำกัด"
+										        ${selectUser.bank == 'ธนาคารฮ่องกงและเซี้ยงไฮ้แบงกิ้งคอร์ปอเรชั่น จำกัด' ? 'selected' : ''}>
+										        ธนาคารฮ่องกงและเซี้ยงไฮ้แบงกิ้งคอร์ปอเรชั่น จำกัด
+										    </option>
+										
+										</select>
 								</div>
 								<div class="col-md-6 fv-row">
 									<label class="form-label">Bank Branch</label> <input
@@ -1123,7 +1249,7 @@
 
 						<div class="card mb-10">
 							<div class="card-header">
-								<h3 class="card-title fw-bold m-0">Security</h3>
+								<h3 class="card-title fw-semibold text-gray-900 m-0">Security</h3>
 							</div>
 							<div class="card-body pt-6">
 								<div class="row g-9">
@@ -1143,7 +1269,7 @@
 
 						<div class="card mb-10 d-none" id="resetPasswordCard">
 							<div class="card-header">
-								<h3 class="card-title fw-bold m-0">Security</h3>
+								<h3 class="card-title fw-semibold text-gray-900 m-0">Security</h3>
 							</div>
 							<div class="card-body px-10 py-9">
 								<div class="row mb-8">
@@ -1350,14 +1476,42 @@
 	<script>
 	document.addEventListener("DOMContentLoaded", function() {
 		toggleEyeIcon();
-		
+		const fileInput = document.getElementById("imageInputFile");  
+		const errorMsgProfile = document.getElementById("errorMsgProfile");
 	    const removeBtn = document.querySelector('[data-kt-image-input-action="remove"]');
 	    const removeHidden = document.getElementById('avatarRemoveHidden');
+	    
+	    const clearError = () => {
+	        if (errorMsgProfile) errorMsgProfile.textContent = "";
+	    };
+	    
+	    fileInput.addEventListener("change", function () { 	
+	        const file = this.files[0];
+	        const maxSize = 2 * 1024 * 1024;
+	        
+	        if (!file) return;
+
+	        if (file.size > maxSize) {
+	        	errorMsgProfile.textContent = "Image must be smaller than 2MB.";
+	            this.value = "";
+	            return;
+	        } 
+	        
+	        if (removeHidden) removeHidden.value = "false";
+	        clearError();
+	       
+	    });
 	    
 	    if (removeBtn) {
 	        removeBtn.addEventListener("click", function() {
 	            removeHidden.value = "true";
+	            fileInput.value = "";
+	        	clearError();
 	        });
+	    }
+	    const cancelBtn = document.querySelector('[data-kt-image-input-action="cancel"]');
+	    if (cancelBtn) {
+	        cancelBtn.addEventListener("click", clearError);
 	    }
 	    
 	    flatpickr('[data-kt-date-picker="true"]', {
@@ -1740,6 +1894,15 @@
         	  const activeSection = getActiveTabElement();
         	  const errorFields = validateActiveTab(activeSection);
 
+        	  const errorMsgProfile = document.getElementById("errorMsgProfile");
+    		  if (errorMsgProfile && errorMsgProfile.textContent.trim() !== "") {
+    			  window.scrollTo({
+    			        top: 0,
+    			        behavior: "smooth"
+    			    });
+    			  return false; 
+    		  }
+    		  
         	  if (errorFields.length > 0) {
         	    Swal.fire({
         	      title: "Please complete the form!",
@@ -1790,7 +1953,7 @@
                 if (result.isConfirmed) {
                     $.post('${pageContext.request.contextPath}/user-delete.action', { id: userId })
                      .done(function() { Swal.fire('Deleted!', '', 'success').then(() => window.location.href = 'user-list'); })
-                     .fail(function() { Swal.fire('Error', 'ไม่สามารถลบได้ (อาจมี Time Attendance)', 'error'); });
+                     .fail(function() { Swal.fire('Error', 'ไม่สามารถลบได้ เนื่องจากมีการลง Check-In หรือ Check-Out ในระบบแล้ว', 'error'); });
                 }
             });
         });

@@ -33,7 +33,7 @@
 					<div
 						class="page-title d-flex flex-column justify-content-center flex-wrap me-3">
 						<h1
-							class="page-heading d-flex fw-bold fs-3 flex-column justify-content-center my-0">
+							class="page-heading d-flex text-gray-700 fw-semibold flex-column justify-content-center my-0">
 							Add Employee Profile</h1>
 						<ul
 							class="breadcrumb breadcrumb-separatorless fw-semibold fs-7 my-0 pt-1">
@@ -62,8 +62,8 @@
 						<div class="card border-2">
 							<div
 								class="card-header d-flex align-items-center justify-content-between py-4">
-								<h1 class="card-title fs-5 fw-bold text-gray-900 mb-0">Account
-									Info</h1>
+								<h3 class="card-title fw-semibold text-gray-900 mb-0">Account
+									Info</h3>
 								<div
 									class="d-flex align-items-center gap-2 fw-semibold text-gray-900">
 									<span>Active</span> <label
@@ -76,6 +76,7 @@
 
 							<div class="card-body py-10">
 								<div class="row mb-16">
+								<div id="errorMsgProfile" class="text-center text-danger mb-3"></div>
 								<div class="d-flex flex-column align-items-center">
 									<div class="image-input image-input-outline"
 										data-kt-image-input="true"
@@ -90,8 +91,9 @@
 											data-kt-image-input-action="change" data-bs-toggle="tooltip"
 											title="Change avatar"> <i
 											class="ki-duotone ki-pencil fs-6"><span class="path1"></span><span
-												class="path2"></span></i> <input type="file" name="fileUpload"
-											accept=".png, .jpg, .jpeg" /> <input type="hidden"
+												class="path2"></span></i> 
+												<input type="file" name="fileUpload" id="imageInputFile"
+											accept=".png, .jpg, .jpeg" /> <input type="hidden" id="avatarRemoveHidden"
 											name="avatar_remove" />
 										</label> <span
 											class="btn btn-icon btn-circle btn-color-muted btn-active-color-primary w-30px h-30px bg-body shadow"
@@ -314,7 +316,7 @@
 
 						<div class="card mb-10 mt-12 border-2">
 							<div class="card-header">
-								<h3 class="card-title fw-bold m-0">Setting For Working</h3>
+								<h3 class="card-title fw-semibold text-gray-900 m-0">Setting For Working</h3>
 							</div>
 							<div class="card-body pt-6">
 								<div class="row g-8">
@@ -378,6 +380,12 @@
 												name="user.workType" value="2"> <span
 												class="form-check-label text-gray-800">WFH</span>
 											</label>
+											<label class="form-check form-check-custom mb-6 mt-6">
+												<input class="form-check-input userinfo" type="radio" required data-label="Default Working"
+												name="user.workType" value="3"> <span
+												class="form-check-label text-gray-800">Head Office</span>
+											</label>
+											
 										</div>
 									</div>
 
@@ -410,7 +418,7 @@
 
 						<div class="card mb-10 mt-12 border-2" id="securityInfoCard">
 							<div class="card-header">
-								<h3 class="card-title fw-bold m-0">Security</h3>
+								<h3 class="card-title fw-semibold text-gray-900 m-0">Security</h3>
 							</div>
 							<div class="card-body pt-6">
 								<div class="row g-9">
@@ -491,14 +499,41 @@
 	<script>
 	document.addEventListener('DOMContentLoaded', function () {
 		toggleEyeIcon();
-		
+		const fileInput = document.getElementById("imageInputFile");  
+		const errorMsgProfile = document.getElementById("errorMsgProfile");
 		const removeBtn = document.querySelector('[data-kt-image-input-action="remove"]');
 	    const removeHidden = document.getElementById('avatarRemoveHidden');
+	    const clearError = () => {
+	        if (errorMsgProfile) errorMsgProfile.textContent = "";
+	    };
+	    
+	    fileInput.addEventListener("change", function () { 	
+	        const file = this.files[0];
+	        const maxSize = 2 * 1024 * 1024;
+	        
+	        if (!file) return;
+
+	        if (file.size > maxSize) {
+	        	errorMsgProfile.textContent = "Image must be smaller than 2MB.";
+	            this.value = "";
+	            return;
+	        } 
+	        
+	        if (removeHidden) removeHidden.value = "false";
+	        clearError();
+	       
+	    });
 	    
 	    if (removeBtn) {
 	        removeBtn.addEventListener("click", function() {
 	            removeHidden.value = "true";
+	            fileInput.value = "";
+	        	clearError();
 	        });
+	    }
+	    const cancelBtn = document.querySelector('[data-kt-image-input-action="cancel"]');
+	    if (cancelBtn) {
+	        cancelBtn.addEventListener("click", clearError);
 	    }
 	});
 	
@@ -662,6 +697,15 @@
 
         let ok = true;
         let errorFields = [];
+        
+        const errorMsgProfile = document.getElementById("errorMsgProfile");
+		  if (errorMsgProfile && errorMsgProfile.textContent.trim() !== "") {
+			  window.scrollTo({
+			        top: 0,
+			        behavior: "smooth"
+			    });
+			  return false; 
+		  }
 
         $('.userinfo:input[required]:not(.flatpickr-input)').each(function () {
             const $el = $(this);

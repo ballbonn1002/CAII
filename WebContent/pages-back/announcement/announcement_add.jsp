@@ -9,7 +9,13 @@
 <link href="assets/plugins/global/plugins.bundle.css" rel="stylesheet"
 	type="text/css" />
 <script src="assets/plugins/global/plugins.bundle.js"></script>
-<script src="assets/plugins/custom/ckeditor/ckeditor-classic.bundle.js"></script>
+
+
+<!--CKEditor-->
+<script src="assets/plugins/custom/ckeditor/ckeditor-decoupled.bundle.js"></script>
+<script src="assets/plugins/custom/ckeditor/ckeditor-document.bundle.js"></script>
+
+<!-- <script src="assets/plugins/custom/ckeditor/ckeditor-classic.bundle.js"></script> -->
 
 <!DOCTYPE html>
 <!--begin::Image input placeholder-->
@@ -20,6 +26,19 @@
 
 [data-bs-theme="dark"] .image-input-placeholder {
 	background-image: url('svg/avatars/blank-dark.svg');
+}
+#kt_docs_ckeditor_document  {
+	width: 100%;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+#kt_docs_ckeditor_document  {
+	border: 1px solid #d1d5db;
+	border-radius: 6px;
+	overflow: hidden;
+	min-height: 500px;
+	padding: 12px;
 }
 </style>
 <!--end::Image input placeholder-->
@@ -59,15 +78,17 @@
 							</ul>
 						</div>
 					</div>
+					<c:if test="${not empty announcement}">
 					<a
 						class="btn btn-danger btn-flex h-40px border-0 fw-bold px-4 px-lg-6"
 						href="javascript:;"
 						onclick="confirmDelete('${announcement.announcementId}')"> <i
-						class="ki-duotone ki-trash fs-2"> <span class="path1"></span>
+						class="ki-duotone ki-trash fs-2 me-2"> <span class="path1"></span>
 							<span class="path2"></span> <span class="path3"></span> <span
 							class="path4"></span> <span class="path5"></span>
-					</i>&nbsp; Delete
+					</i> Delete
 					</a>
+					</c:if>
 				</div>
 			</div>
 		</div>
@@ -75,6 +96,13 @@
 			<div class="app-container container-fluid">
 				<form autocomplete="off" action="announcementAdd" method="POST"
 					id="formid" class="horizontal-form" enctype="multipart/form-data">
+					<c:if test="${not empty announcement}">
+					    <input type="hidden"
+					           id="detailHidden"
+					           value="<c:out value='${announcement.detail}' escapeXml='true'/>">
+					</c:if>
+					
+					<input type="hidden" name="detail" id="detailInput">
 					<div class="row g-5 gx-xl-10">
 						<div
 							class="col-md-12 col-lg-7 col-xl-7 col-xxl-8 mb-md-5 mb-xl-10">
@@ -122,17 +150,21 @@
 													class="path3"></span> <span class="path4"></span> <span
 													class="path5"></span> <span class="path6"></span>
 											</i>
-											</span> <input id="kt_td_picker_basic_input" type="text"
+											</span> <input id="kt_td_picker_basic_input" type="text" placeholder="1 Jan 2026"
 												name="anndate" class="form-control fw-medium text-gray-700"
 												data-td-target="#kt_td_picker_basic" />
 										</div>
 									</div>
-									<div class="mb-5">
-										<textarea id="kt_docs_ckeditor_classic" name="detail"></textarea>
+									<div class="mb-5 ckeditor-wrapper">
+									<div id="editor">
+										<div id="kt_docs_ckeditor_document_toolbar"></div>
+										<div id="kt_docs_ckeditor_document"></div>
+										<!-- <textarea id="kt_docs_ckeditor_classic" name="detail"></textarea> -->
 									</div>
 								</div>
 							</div>
 						</div>
+							</div>
 						<div
 							class="col-md-12 col-lg-5 col-xl-5 col-xxl-4 mb-md-5 mb-xl-10">
 							<div class="card card-flush py-3 mb-5 mb-xl-10">
@@ -142,6 +174,7 @@
 									<span class="fw-semibold fs-6 text-danger">Not shown in
 										details</span>
 								</div>
+								<div id="errorMsg" class="text-center text-danger"></div>
 								<div class="card-body pt-6 text-center">
 									<!--begin::Image input-->
 									<div class="image-input image-input-outline"
@@ -169,7 +202,7 @@
 											data-kt-image-input-action="change" data-bs-toggle="tooltip"
 											data-bs-dismiss="click" title="Change avatar"> <i
 											class="ki-duotone ki-pencil fs-6"><span class="path1"></span><span
-												class="path2"></span></i> <!--begin::Inputs--> <input
+												class="path2"></span></i> <!--begin::Inputs--> <input id="imageInputFile"
 											type="file" name="fileUpload" accept=".png, .jpg, .jpeg" />
 											<input type="hidden" name="avatar_remove" /> <!--end::Inputs-->
 										</label>
@@ -258,7 +291,27 @@
 </div>
 <script>
     <!-- CKEditor -->
-    let editorInstance;
+	var editorInstance;
+	DecoupledEditor
+	.create(document.querySelector('#kt_docs_ckeditor_document'), {
+		 ckfinder: { uploadUrl: 'uploadImageFromCkeditor' },
+	     mediaEmbed: { previewsInData: true }
+	})
+	.then(editor => {
+	    editorInstance = editor;
+
+	    const toolbarContainer = document.querySelector('#kt_docs_ckeditor_document_toolbar');
+	    toolbarContainer.appendChild(editor.ui.view.toolbar.element);
+
+	    var hidden = document.getElementById("detailHidden");
+	    if (hidden && hidden.value) {
+	        editor.setData(hidden.value);
+	    }
+	})
+	.catch(error => {
+	    console.error(error);
+	});
+    /* let editorInstance;
     ClassicEditor
     .create(document.querySelector('#kt_docs_ckeditor_classic'),{
         ckfinder: { uploadUrl: 'uploadImageFromCkeditor' },
@@ -270,7 +323,7 @@
             editor.setData(`<c:out value='${announcement.detail}' escapeXml='false'/>`);
         </c:if>
     })
-    .catch(error => { console.error(error); });
+    .catch(error => { console.error(error); }); */
 
 
     <!-- File Upload -->
@@ -362,7 +415,17 @@
 
         var topic = document.querySelector("input[name='topic']").value.trim();
         var annDate = document.querySelector("input[name='anndate']").value.trim();
-        var detail = editorInstance.getData().trim();
+        /* var detail = editorInstance.getData().trim(); */
+        const detail = editorInstance.getData();
+	    document.getElementById("detailInput").value = detail;
+	    const errorMsg = document.getElementById("errorMsg");
+		  if (errorMsg && errorMsg.textContent.trim() !== "") {
+			  window.scrollTo({
+			        top: 0,
+			        behavior: "smooth"
+			    });
+			  return false; 
+		  }
 
         var errorFields = [];
         if (!topic) {
@@ -381,8 +444,9 @@
 
         if (errorFields.length > 0) {
             Swal.fire({
-                title: "โปรดกรอกข้อมูลให้ครบถ้วน",
-                html: "Please fill in: <strong>" + errorFields.join(", ") + "</strong>",
+                title: "Please complete the form!",
+                html: "Please fill in the following fields:<br><strong>"
+    	            + errorFields.join(", ") + "</strong>",
                 icon: "error",
                 confirmButtonColor: "#d33",
                 confirmButtonText: "OK",
@@ -448,7 +512,7 @@
         });
     }
     
-    function confirmDelete(id) {
+   function confirmDelete(id) {
         event.preventDefault();
 
         Swal.fire({
@@ -484,6 +548,27 @@ document.addEventListener('DOMContentLoaded', function() {
         const dateObj = new Date(dateStr);
         picker.dates.setValue(tempusDominus.DateTime.convert(dateObj));
     </c:if>
+    
+    
+    const imageInput = document.getElementById("imageInputFile");
+	
+    imageInput.addEventListener("change", function () {
+
+        const file = this.files[0];
+        const maxSize = 2 * 1024 * 1024;
+        const errorMsg = document.getElementById("errorMsg");
+
+        if (!file) return;
+
+        if (file.size > maxSize) {
+
+            errorMsg.textContent = "Image must be smaller than 2MB.";
+            this.value = "";
+        } else {
+            errorMsg.textContent = "";
+        }
+
+    });
 });
 </script>
 

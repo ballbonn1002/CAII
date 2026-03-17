@@ -36,7 +36,7 @@ public class PageUri implements Serializable{
 		this.userUpdate = userUpdate;
 		this.timeUpdate = timeUpdate;
 	}
-
+	@Id
 	@Column(name = "page_uri_id")
 	private String pageUriId;
 	
@@ -46,7 +46,6 @@ public class PageUri implements Serializable{
 	@Column(name = "model")
 	private String model;
 	
-	@Id
 	@Column(name = "model_id")
 	private String modelId;
 	

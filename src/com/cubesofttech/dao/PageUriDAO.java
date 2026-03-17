@@ -12,10 +12,18 @@ public interface PageUriDAO {
 
 	void save(PageUri PageUri) throws Exception;
 
-	PageUri findById(String modeId) throws Exception;
-
-	void deleteByModelId(String articleId);
-
 	void update(PageUri PageUri) throws Exception;
+
+	PageUri findByModelAndModelId(String model, String modelId) throws Exception;
+
+	PageUri findBymodelId(String modelId) throws Exception;
+
+	void deleteByModelAndModelId(String model, String articleId);
+
+	PageUri findByPageUri(String pageUriId) throws Exception;
+
+	void deleteByPageUrlIdAndForwardTo(String pageUrlId, String forwardTo);
+
+	
 	
 }

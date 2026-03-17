@@ -529,17 +529,17 @@ public class LeaveDAOImpl implements LeaveDAO {
 
 	// this is override method use for search all leave type and all user
 	public List<Map<String, Object>> searchtableAll(Timestamp startDate, Timestamp endDate) throws Exception {
-		Session session = this.sessionFactory.getCurrentSession();
-		List<Map<String, Object>> search = null;
-		try {
-			StringBuilder sql = new StringBuilder(
-					"SELECT leaves.leave_id, leaves.user_id, user.name, leaves.leave_status_id, leave_type.leave_type_name, leaves.half_day, leaves.start_date, "
-							+ "leaves.start_time, leaves.end_time, leaves.end_date, leaves.no_day ,user.path, leaves.time_create, leaves.description "
-							+ "FROM leaves LEFT JOIN leave_type ON leave_type.leave_type_id = leaves.leave_type_id LEFT JOIN user ON leaves.user_id = user.id "
-							+ "WHERE leaves.start_date BETWEEN :startDate AND :endDate ");
+	    Session session = this.sessionFactory.getCurrentSession();
+	    List<Map<String, Object>> search = null;
+	    try {
+	        StringBuilder sql = new StringBuilder(
+	            "SELECT leaves.leave_id, leaves.user_id, user.name, leaves.leave_status_id, leaves.leave_type_id, leave_type.leave_type_name, leaves.half_day, leaves.start_date, "
+	            + "leaves.start_time, leaves.end_time, leaves.end_date, leaves.no_day ,user.path, leaves.time_create, leaves.description "
+	            + "FROM leaves LEFT JOIN leave_type ON leave_type.leave_type_id = leaves.leave_type_id LEFT JOIN user ON leaves.user_id = user.id "
+	            + "WHERE leaves.start_date BETWEEN :startDate AND :endDate ");
 
-//	        sql.append("ORDER BY leaves.leave_status_id ASC, leaves.start_date DESC");
-			sql.append("ORDER BY leaves.start_date DESC, leaves.leave_status_id ASC");
+	        sql.append("ORDER BY leaves.leave_status_id ASC, leaves.start_date DESC");
+//	        sql.append("ORDER BY leaves.start_date DESC, leaves.leave_status_id ASC");
 
 			SQLQuery query = session.createSQLQuery(sql.toString());
 			query.setParameter("startDate", startDate);
@@ -1693,22 +1693,22 @@ public class LeaveDAOImpl implements LeaveDAO {
 	}
 
 	@Override
-	public List<Map<String, Object>> findLeaveInTeamByManager(Timestamp startDate, Timestamp endDate, String manager)
-			throws Exception {
-		Session session = this.sessionFactory.getCurrentSession();
-		List<Map<String, Object>> leavelist = null;
-		try {
-			StringBuilder sql = new StringBuilder(
-					"SELECT leaves.leave_id, leaves.user_id, user.name, leaves.leave_status_id, leave_type.leave_type_name, "
-							+ "leaves.half_day, leaves.start_date, leaves.start_time, leaves.end_time, leaves.end_date, leaves.no_day, "
-							+ "leaves.appr_user_id, user.path, leaves.time_create, leaves.description "
-							+ "FROM leaves LEFT JOIN leave_type ON leave_type.leave_type_id = leaves.leave_type_id "
-							+ "LEFT JOIN user ON leaves.user_id = user.id "
-							+ "WHERE leaves.start_date BETWEEN :startDate AND :endDate "
-							+ "AND (user.manager_id = :manager OR leaves.appr_user_id = :manager) ");
+	public List<Map<String, Object>> findLeaveInTeamByManager(Timestamp startDate, Timestamp endDate, String manager) throws Exception {
+	    Session session = this.sessionFactory.getCurrentSession();
+	    List<Map<String, Object>> leavelist = null;
+	    try {
+	        StringBuilder sql = new StringBuilder(
+	            "SELECT leaves.leave_id, leaves.user_id, user.name, leaves.leave_status_id, leaves.leave_type_id, leave_type.leave_type_name, "
+	            + "leaves.half_day, leaves.start_date, leaves.start_time, leaves.end_time, leaves.end_date, leaves.no_day, "
+	            + "leaves.appr_user_id, user.path, leaves.time_create, leaves.description "
+	            + "FROM leaves LEFT JOIN leave_type ON leave_type.leave_type_id = leaves.leave_type_id "
+	            + "LEFT JOIN user ON leaves.user_id = user.id "
+	            + "WHERE leaves.start_date BETWEEN :startDate AND :endDate "
+	            + "AND (user.manager_id = :manager OR leaves.appr_user_id = :manager) "
+	        );
 
-//	        sql.append("ORDER BY leaves.leave_status_id ASC, leaves.start_date DESC");
-			sql.append("ORDER BY leaves.start_date DESC, leaves.leave_status_id ASC");
+	        sql.append("ORDER BY leaves.leave_status_id ASC, leaves.start_date DESC");
+//	        sql.append("ORDER BY leaves.start_date DESC, leaves.leave_status_id ASC");
 
 			SQLQuery query = session.createSQLQuery(sql.toString());
 			query.setParameter("startDate", startDate);
@@ -1730,12 +1730,12 @@ public class LeaveDAOImpl implements LeaveDAO {
 		List<Map<String, Object>> leavelist = null;
 		try {
 			StringBuilder sql = new StringBuilder(
-					"SELECT leaves.leave_id, leaves.user_id, user.name, leaves.leave_status_id, leave_type.leave_type_name, leaves.half_day, "
-							+ "leaves.start_date, leaves.start_time, leaves.end_time, leaves.end_date, leaves.no_day , file.path, leaves.time_create, "
-							+ "leaves.description FROM leaves LEFT JOIN leave_type ON leave_type.leave_type_id = leaves.leave_type_id "
-							+ "LEFT JOIN user ON leaves.user_id = user.id LEFT JOIN file ON leaves.leave_file = file.file_id "
-							+ "WHERE leaves.start_date BETWEEN :startDate AND :endDate ");
-			if (manager != null && !manager.isEmpty()) {
+					"SELECT leaves.leave_id, leaves.user_id, user.name, leaves.leave_status_id, leaves.leave_type_id, leave_type.leave_type_name, leaves.half_day, "
+					+ "leaves.start_date, leaves.start_time, leaves.end_time, leaves.end_date, leaves.no_day , file.path, leaves.time_create, "
+					+ "leaves.description FROM leaves LEFT JOIN leave_type ON leave_type.leave_type_id = leaves.leave_type_id "
+					+ "LEFT JOIN user ON leaves.user_id = user.id LEFT JOIN file ON leaves.leave_file = file.file_id "
+					+ "WHERE leaves.start_date BETWEEN :startDate AND :endDate ");
+			if(manager != null && !manager.isEmpty()) {
 				sql.append("AND leaves.appr_user_id = :manager ");
 			}
 			if (status != null && !status.isEmpty() && !status.equals("4")) {
@@ -1744,9 +1744,9 @@ public class LeaveDAOImpl implements LeaveDAO {
 			if (leaveType != null && !leaveType.isEmpty() && !leaveType.equals("allType")) {
 				sql.append("AND leaves.leave_type_id = :leaveType ");
 			}
-//			sql.append("ORDER BY leaves.leave_status_id ASC, leaves.start_date DESC; ");
-			sql.append("ORDER BY leaves.start_date DESC, leaves.leave_status_id ASC; ");
-
+			sql.append("ORDER BY leaves.leave_status_id ASC, leaves.start_date DESC; ");
+//			sql.append("ORDER BY leaves.start_date DESC, leaves.leave_status_id ASC; ");
+			
 			SQLQuery query = session.createSQLQuery(sql.toString());
 			query.setParameter("startDate", startDate);
 			query.setParameter("endDate", endDate);
@@ -2080,5 +2080,38 @@ public class LeaveDAOImpl implements LeaveDAO {
 		}
 		return leavelist;
 	}
+	
+	@Override
+	public List<Map<String, Object>> findLeaveByUserAndDate(String userId, String date) throws Exception {
 
+	    Session session = this.sessionFactory.getCurrentSession();
+	    List<Map<String, Object>> result = null;
+
+	    try {
+
+	        String sql = "SELECT l.leave_id, l.leave_type_id, lt.leave_type_name, l.half_day, l.start_date, l.end_date, l.description, l.leave_status_id " +
+	                     "FROM leaves l " +
+	                     "LEFT JOIN leave_type lt ON l.leave_type_id = lt.leave_type_id " +
+	                     "WHERE l.user_id = :userId " +
+	                     "AND DATE(:date) BETWEEN DATE(l.start_date) AND DATE(l.end_date) " +
+	                     "AND l.leave_status_id IN ('0','1') "+
+	                     "ORDER BY l.time_create DESC " +
+	                     "LIMIT 1";;
+
+	        SQLQuery query = session.createSQLQuery(sql);
+
+	        query.setParameter("userId", userId);
+	        query.setParameter("date", date);
+
+	        query.setResultTransformer(org.hibernate.transform.Transformers.ALIAS_TO_ENTITY_MAP);
+
+	        result = query.list();
+
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	    }
+
+	    return result;
+	}
+	
 }

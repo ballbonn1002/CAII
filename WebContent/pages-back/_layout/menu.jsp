@@ -122,7 +122,7 @@ String targetURL = Constant.getWebContext2() + "/authorization?token=" + token;
 					<!--end:Menu item-->
 					<!--begin:Menu item-->
 					<div class="menu-item">
-						<a class="menu-link" href="NewCheckAllCalendar"
+						<a class="menu-link" href="Calendar_Checklist"
 							data-route="checkAllCalendar"> <span class="menu-icon">
 								<i class="ki-duotone ki-calendar fs-1"> <span class="path1"></span>
 									<span class="path2"></span></i>
@@ -185,6 +185,23 @@ String targetURL = Constant.getWebContext2() + "/authorization?token=" + token;
 						</i>
 						</a>
 					</div>
+
+					<!-- Overtime Request -->
+					<div class="menu-item">
+						<a class="menu-link"
+							href="overtime_request_list?userId=${onlineUser.id}"
+							data-route="overtime_request_list"> <span class="menu-icon">
+								<i class="ki-duotone ki-timer fs-1"> <span class="path1"></span>
+									<span class="path2"></span> <span class="path3"></span>
+							</i>
+						</span> <span class="menu-title">Overtime Request</span> <i
+							class="ki-duotone ki-check-circle fs-3 text-success"> <span
+								class="path1"></span><span class="path2"></span>
+						</i>
+						</a>
+					</div>
+					<!-- Overtime Request -->
+
 					<!--end:Menu item-->
 					<!--begin:Menu item-->
 					<!-- <div class="menu-item">
@@ -198,9 +215,8 @@ String targetURL = Constant.getWebContext2() + "/authorization?token=" + token;
 					</div> -->
 					<!--end:Menu item-->
 					<!--begin:Menu item-->
-					<!-- <div class="menu-item">
-						begin:Menu link
-						<a class="menu-link" href="#" data-route="#"> <span class="menu-icon">
+					<div class="menu-item">
+						<a class="menu-link" href="my_travel" data-route="my_travel"> <span class="menu-icon">
 								<i class="ki-duotone ki-delivery-time fs-1"> <span
 									class="path1"></span> <span class="path2"></span> <span
 									class="path3"></span> <span class="path4"></span> <span
@@ -208,8 +224,7 @@ String targetURL = Constant.getWebContext2() + "/authorization?token=" + token;
 							</i>
 						</span> <span class="menu-title">My Travel</span>
 						</a>
-						end:Menu link
-					</div> -->
+					</div>
 					<!--end:Menu item-->
 
 					<!--begin:Menu item-->
@@ -282,6 +297,24 @@ String targetURL = Constant.getWebContext2() + "/authorization?token=" + token;
 						</div>
 					</perm:permission>
 					<!--Leave Approve-->
+					
+					<!-- Overtime Approve -->
+					<perm:permission object="leave.approve">
+					<div class="menu-item">
+						<a class="menu-link"
+							href="overtime_approve"
+							data-route="overtime_approve"> <span class="menu-icon">
+								<i class="ki-duotone ki-timer fs-1"> <span class="path1"></span>
+									<span class="path2"></span> <span class="path3"></span>
+							</i>
+						</span> <span class="menu-title">Overtime Approve</span> <i
+							class="ki-duotone ki-check-circle fs-3 text-success"> <span
+								class="path1"></span><span class="path2"></span>
+						</i>
+						</a>
+					</div>
+					</perm:permission>
+					<!-- Overtime Approve -->
 
 					<!--begin:Menu item-->
 					<div class="menu-item">
@@ -501,6 +534,20 @@ String targetURL = Constant.getWebContext2() + "/authorization?token=" + token;
 					</div>
 
 					<!--end:Menu item-->
+					
+					<!--begin:Menu item-->
+					<div class="menu-item">
+						<a class="menu-link" href="/page_uri_list" data-route="#"> <span
+							class="menu-icon"> <i class="ki-duotone ki-setting-2 fs-1">
+							 <span class="path1"></span>
+							 <span class="path2"></span>
+							</i>
+						</span> <span class="menu-title">Page URL</span>
+						</a>
+					</div>
+
+					<!--end:Menu item-->
+					
 					<!--begin:Menu item-->
 					<!-- <div class="menu-item">
 						begin:Menu link

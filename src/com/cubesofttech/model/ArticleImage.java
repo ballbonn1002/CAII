@@ -12,6 +12,11 @@ import javax.persistence.Table;
 @Table(name = "article_image")
 public class ArticleImage implements Serializable{
 
+	public ArticleImage() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
+
 	public ArticleImage(Integer atcImgId, String atcImgUserId, String atcImgName, String atcImgType, String atcImgSize,
 			String atcImgPath, Timestamp atcImgTimeUpload) {
 		super();
@@ -29,7 +34,7 @@ public class ArticleImage implements Serializable{
 	@Column(name = "atc_img_id")
 	private Integer atcImgId;
 	
-	@Column(name = "atc_img_user_id")
+	@Column(name = "atc_user_id")
 	private String atcImgUserId;
 	
 	@Column(name = "atc_img_name")

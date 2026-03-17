@@ -486,6 +486,7 @@ public class WorkLogAction extends ActionSupport {
             // -- Excel --
             Workbook workbook = new XSSFWorkbook();
             
+            
             // Style Header and Title
             CellStyle titleStyle = workbook.createCellStyle();
             titleStyle.setAlignment(HorizontalAlignment.CENTER);

@@ -249,7 +249,7 @@
 
 		<!-- Listing -->
 		<action name="new_myleave_list"
-			class="com.cubesofttech.action.LeaveAction" method="New_list">
+			class="com.cubesofttech.action.LeaveAction" method="New_myleave">
 			<result name="success" type="tiles">new_myleave_list</result>
 			<result name="error">/index.jsp</result>
 		</action>
@@ -634,10 +634,17 @@
 		</action>
 
 		<!-- เพิ่ม function add -->
-		<action name="role-perform-edit-*"
+		<action name="role-perform-edit"
 			class="com.cubesofttech.action.RoleAction" method="performEdit">
 			<result name="success" type="redirectAction">role-edit?roleId=${roleId}
 			</result>
+			<result name="error">/index.jsp</result>
+		</action>
+
+		<action name="role-perform-status-update"
+			class="com.cubesofttech.action.RoleAction"
+			method="performEditStatusUpdate">
+			<result name="success">/pages-back/common/json.jsp</result>
 			<result name="error">/index.jsp</result>
 		</action>
 
@@ -820,16 +827,16 @@
 			<result name="success" type="tiles">CheckAllCalendar</result>
 			<result name="error">/index.jsp</result>
 		</action>
-		<action name="NewCheckAllCalendar"
+		<action name="Calendar_Checklist"
 			class="com.cubesofttech.action.WorkHoursAction"
 			method="CheckAllCalendar2">
 			<result name="success" type="tiles">NewCheckAllCalendar</result>
 			<result name="error">/index.jsp</result>
 		</action>
-		<action name="TestSearchAllinCalendar"
+		<action name="SearchAllinCalendar"
 			class="com.cubesofttech.action.WorkHoursAction"
-			method="CheckAllCalendar">
-			<result name="success" type="tiles">CheckAllCalendar</result>
+			method="CheckAllCalendar2">
+			<result name="success" type="tiles">NewCheckAllCalendar</result>
 			<result name="error">/index.jsp</result>
 		</action>
 		<action name="new_modalLeaveStatus"
@@ -1011,6 +1018,19 @@
 			class="com.cubesofttech.action.UserAction"
 			method="validate_current_password">
 			<result name="none" type="httpheader" />
+		</action>
+
+		<action name="update_signature"
+			class="com.cubesofttech.action.UserAction" method="update_signature">
+			<result name="success" type="redirectAction">my_profile</result>
+			<result name="error">/index.jsp</result>
+		</action>
+
+		<action name="signature_perform_delete"
+			class="com.cubesofttech.action.UserAction"
+			method="signature_perform_delete">
+			<result name="success" type="redirectAction">my_profile</result>
+			<result name="error" type="tiles">/index.jsp</result>
 		</action>
 
 		<!-- JOB SITE -->
@@ -1228,7 +1248,7 @@
 			<result name="success" type="redirectAction">article_feed</result>
 			<result name="error" type="tiles">/index.jsp</result>
 		</action>
-
+		
 	</package>
 
 </struts>

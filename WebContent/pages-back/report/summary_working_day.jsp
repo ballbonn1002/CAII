@@ -92,7 +92,8 @@
                                                         <c:set var="label" value="${label}${u.name}" />
                                                     </c:if>
                                                     <c:if test="${not empty u.role_id}">
-                                                        <c:if test="${not empty label}"><c:set var="label" value="${label} - IT " /></c:if>
+                                                        <c:if test="${not empty label}"><c:set var="label" value="${label} - " /></c:if>
+                                                        <c:set var="label" value="${label}${u.role_id}" />
                                                     </c:if>
                                                     <option value="${u.id}" data-name-en="${u.name_en}" data-name-th="${u.name}" ${u.id eq defaultUserId ? 'selected' : ''}>${label}</option>
                                                 </c:forEach>
