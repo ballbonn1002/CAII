@@ -127,6 +127,7 @@ VALUES ('worklog.edit', 'worklog.edit', 'สามารถแก้ไข work 
 ALTER TABLE user ADD COLUMN path_signature VARCHAR(1024) DEFAULT NULL;
   
 # PROD 17 MAR 2026
-  
-  
+
+-- 17/03/2026 Koy : add 'daily monitor' permission   
+INSERT INTO `authorized_object` (`authorized_object_id`, `name`, `description`, `time_create`, `time_update`, `authorized_object_group_id`) VALUES ('dailymonitor.view', 'dailymonitor.view', 'สามารถดูรายการ daily monitor ได้', '2026-03-17 00:00:00', '2026-03-17 00:00:00', '2')  
   
