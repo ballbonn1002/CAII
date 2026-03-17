@@ -126,6 +126,7 @@ VALUES ('worklog.edit', 'worklog.edit', 'สามารถแก้ไข work 
 -- 25/02/2026 june(Intern): add 'path_signature' column to 'user' table --
 ALTER TABLE user ADD COLUMN path_signature VARCHAR(1024) DEFAULT NULL;
   
+# PROD 17 MAR 2026
   
   
   
