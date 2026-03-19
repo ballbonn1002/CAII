@@ -74,7 +74,9 @@
 										<!-- Select Employee -->
 										<div class="col-md-10">
 											<div class="mb-5">
-												<select class="form-select" id="name2" name="name2" onchange="this.form.submit()"></select>
+												<select class="form-select" id="name2" name="name2" onchange="this.form.submit()" value="${userSelect2}">
+													
+												</select>
 											</div>
 										</div>
 										<!-- Select Employee -->
@@ -169,7 +171,7 @@
 											<div class="d-flex flex-column">
 												<div class="d-flex align-items-center">
 													<span class="fs-2 fw-bold text-dark">
-														<fmt:formatNumber type="number" pattern="#.##" value="${LeavenumT1}"/>
+														<fmt:formatNumber type="number" pattern="#.##" value="${LeavenumT1}"/><c:if test="${userSelect2 != null}">/<fmt:formatNumber type="number" pattern="#.##" value="${quota_1 - 3}"/></c:if>
 													</span>
 													<c:if test="${LeaveWAnumT1.doubleValue() > 0}">
 														<span class="badge badge-sm badge-warning ms-1">
@@ -200,7 +202,7 @@
 											<div class="d-flex flex-column">
 												<div class="d-flex align-items-center">
 													<span class="fs-2 fw-bold text-dark">
-														<fmt:formatNumber type="number" pattern="#.##" value="${LeavenumT2}"/>
+														<fmt:formatNumber type="number" pattern="#.##" value="${LeavenumT2}"/><c:if test="${userSelect2 != null}">/<fmt:formatNumber type="number" pattern="#.##" value="3"/></c:if>
 													</span>
 													<c:if test="${LeaveWAnumT2.doubleValue() > 0}">
 														<span class="badge badge-sm badge-warning ms-1">
@@ -228,7 +230,7 @@
 											<div class="d-flex flex-column">
 												<div class="d-flex align-items-center">
 													<span class="fs-2 fw-bold text-dark">
-														<fmt:formatNumber type="number" pattern="#.##" value="${LeavenumT6}"/>
+														<fmt:formatNumber type="number" pattern="#.##" value="${LeavenumT6}"/><c:if test="${userSelect2 != null}">/<fmt:formatNumber type="number" pattern="#.##" value="${quota_4}"/></c:if>
 													</span>
 													<c:if test="${LeaveWAnumT6.doubleValue() > 0}">
 														<span class="badge badge-sm badge-warning ms-1">
@@ -773,6 +775,7 @@
 						<h5 class="text-primary sbold" id="status_title_action" style="margin-bottom:20px;"></h5>
 						<div><span>Reason <span class="text-danger">*</span></span></div>
 						<textarea class="form-control" rows="3" id="appr_reason"></textarea>
+						<div class="reason invalid-feedback" style="display: none;"></div>
 					</div>
 					
 				</div>
@@ -1175,31 +1178,56 @@ function changStatus(id) {
 
 function sentData(id, value) {
 	console.log("sentdata: " + id);
-	var appr_reason = $("#appr_reason").val();
-	console.log(appr_reason);
-	console.log(value);
+	var $apprReason = $("#appr_reason");
+	var apprReasonTxt = $("#appr_reason").val().trim();
+	var apprReasonEl = $(".invalid-feedback");
+	let valid = true;
 
-	if (value == 2 && (appr_reason.length == 0)) {
-		$("#appr_reason").attr("required", "true");
-		return false;
-	} else {
-		$("#btn_reject").attr("type", "submit");
-		$.ajax({
-				url: "Leave_inListUpdateStatus",
-				type: "POST",
-				data: {
-					"leave_id": id,
-					"status": value,
-					"reason": appr_reason
-				}
-			})
-			.done(function () {
-				console.log("sentData done");
-				location.reload();
-			});
+	if (value == 2) {
+		if(!apprReasonTxt){
+			console.log("Empty or just spaces");
+			apprReasonEl.text("Please provide a reason.").show();
+			$apprReason.addClass("is-invalid");
+			return false;
+		} else if(apprReasonTxt.length < 10){
+			console.log("Too short");
+			apprReasonEl.text("Reason must be at least 10 characters long.").show();
+			$apprReason.addClass("is-invalid");
+			return false;
+		} else {
+			apprReasonEl.hide();
+			$apprReason.removeClass("is-invalid");
+		}
 	}
+	var loadingEl = $("<div>").attr("id", "page-loader")
+		.css({
+            "position": "fixed",
+            "top": "0", "left": "0",
+            "width": "100%", "height": "100%",
+            "background-color": "rgba(0, 0, 0, 0.5)",
+            "z-index": "9999",
+            "display": "flex",
+            "align-items": "center",
+            "justify-content": "center",
+            "flex-direction": "column",
+            "backdrop-filter": "blur(2px)"
+        })
+        .html('<div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;"></div>'
+        	+'<span class="text-white fs-4 fw-bold mt-3">Processing...</span>');
+	$("body").append(loadingEl);
+		
+	$.ajax({
+		url: "Leave_inListUpdateStatus",
+		type: "POST",
+		data: {
+			"leave_id": id,
+			"status": value,
+			"reason": apprReasonTxt
+		}
+	}).done(function () {
+		location.reload();
+	});
 }
-
 </script>
 
 
