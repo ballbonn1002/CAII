@@ -116,3 +116,37 @@
 </body>
 <!--end::Body-->
 </html>
+
+<script>
+<% int sessionTimeoutSeconds = request.getSession().getMaxInactiveInterval(); %>
+const timeoutDuration = (<%= sessionTimeoutSeconds %> * 1000) - 2000;
+let sessionTimer;
+
+function showSessionAlert() {
+    Swal.fire({
+        title: 'Session Timeout',
+        text: 'คุณไม่ได้ใช้งานระบบเป็นเวลานาน   กรุณาโหลดหน้าเว็บใหม่อีกครั้ง',
+        icon: 'warning',
+        confirmButtonText: 'OK',
+        allowOutsideClick: false,
+        allowEscapeKey: false
+    }).then((result) => {
+        if (result.isConfirmed) {
+            window.location.reload(); 
+        }
+    });
+}
+
+function resetTimer() {
+    clearTimeout(sessionTimer);
+    sessionTimer = setTimeout(showSessionAlert, timeoutDuration);
+}
+
+window.onload = resetTimer;
+
+document.onmousemove = resetTimer;
+document.onkeypress = resetTimer;
+document.onclick = resetTimer;
+document.onscroll = resetTimer;
+
+</script>
