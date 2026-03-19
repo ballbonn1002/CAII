@@ -22,15 +22,6 @@
 		<!--begin::Fonts(mandatory for all pages)-->
 		<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inter:300,400,500,600,700" />
 		<!--end::Fonts-->
-		<!--begin::Vendor Stylesheets(used for this page only)-->
-
-		<!-- Keenicons (ใช้กับ .ki-*) -->
-		<!-- <link rel="stylesheet" href="assets/vendors/keenicons/styles.bundle.css" /> -->
-		<!-- Keenicons (ใช้กับ .ki-*) -->
-
-		<link href="assets/plugins/custom/fullcalendar/fullcalendar.bundle.css" rel="stylesheet" type="text/css" />
-		<link href="assets/plugins/custom/datatables/datatables.bundle.css" rel="stylesheet" type="text/css" />
-		<!--end::Vendor Stylesheets-->
 
 		<!--begin::Global Stylesheets Bundle(mandatory for all pages)-->
 		<link href="assets/plugins/global/plugins.bundle.css" rel="stylesheet" type="text/css" />
@@ -48,21 +39,7 @@
 		<script src="assets/plugins/global/plugins.bundle.js"></script>
 		<script src="assets/js/scripts.bundle.js"></script>
 		<!--end::Global Javascript Bundle-->
-		<!--begin::Vendors Javascript(used for this page only)-->
-		<!-- <script src="assets/plugins/custom/fullcalendar/fullcalendar.bundle.js"></script> -->
-		<script src="https://cdn.amcharts.com/lib/5/index.js"></script>
-		<script src="https://cdn.amcharts.com/lib/5/xy.js"></script>
-		<script src="https://cdn.amcharts.com/lib/5/percent.js"></script>
-		<script src="https://cdn.amcharts.com/lib/5/radar.js"></script>
-		<script src="https://cdn.amcharts.com/lib/5/themes/Animated.js"></script>
-		<script src="https://cdn.amcharts.com/lib/5/map.js"></script>
-		<script src="https://cdn.amcharts.com/lib/5/geodata/worldLow.js"></script>
-		<script src="https://cdn.amcharts.com/lib/5/geodata/continentsLow.js"></script>
-		<script src="https://cdn.amcharts.com/lib/5/geodata/usaLow.js"></script>
-		<script src="https://cdn.amcharts.com/lib/5/geodata/worldTimeZonesLow.js"></script>
-		<script src="https://cdn.amcharts.com/lib/5/geodata/worldTimeZoneAreasLow.js"></script>
-		<script src="assets/plugins/custom/datatables/datatables.bundle.js"></script>
-		<!--end::Vendors Javascript-->
+
 		<!--begin::Custom Javascript(used for this page only)-->
 		<script src="assets/js/widgets.bundle.js"></script>
 		<script src="assets/js/custom/widgets.js"></script>
@@ -85,28 +62,6 @@
 			//var action = '${action}'; can still be used
 			//String action = (String) request.getAttribute("action");
 		%>
-
-		<!--begin::Theme mode setup on page load-->
-		<script>
-			var defaultThemeMode = "light"; 
-			var themeMode; 
-			if ( document.documentElement ) {
-				if ( document.documentElement.hasAttribute("data-bs-theme-mode")) { 
-					themeMode = document.documentElement.getAttribute("data-bs-theme-mode"); 
-				} else { 
-					if ( localStorage.getItem("data-bs-theme") !== null ) { 
-						themeMode = localStorage.getItem("data-bs-theme"); 
-					} else { 
-						themeMode = defaultThemeMode; 
-					} 
-				} 
-				if (themeMode === "system") { 
-					themeMode = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light"; 
-				} 
-				document.documentElement.setAttribute("data-bs-theme", themeMode); 
-			}
-		</script>
-		<!--end::Theme mode setup on page load-->
 
 		<!--begin::Main-->
 		<div class="app-main flex-column flex-row-fluid">
@@ -586,7 +541,7 @@
 													<!--Buttons -->
 													<div class="d-flex justify-content-end gap-3">
 														<button type="button" class="btn btn-light" onclick="window.history.go(-1); return false;">Cancel</button>
-														<button type="button" class="btn btn-success" onclick="beforeSubmit();">Submit</button>
+														<button type="button" class="btn btn-success" id="submitBtn" onclick="beforeSubmit();">Submit</button>
 													</div>
 
 												</div>
@@ -616,8 +571,10 @@
 //var action = '${action}';
 var action = '${empty action ? "" : action}';
 console.log("action = " + action);
+
 $(document).ready(function () {
 	$('#halfDay').on('change', function () {
+		if (action == 'Edit' && $('#status_hidden').val() != '0') return;
 		if (this.value == 3) {
 			document.getElementById('time_from').disabled = false;
 			document.getElementById('time_to').disabled = false;
@@ -818,47 +775,6 @@ $(function () {
 </c:if>
 
 <script>
-		/* $("#kt_daterangepicker").daterangepicker({
-			startDate : moment().startOf("year"),
-			endDate : moment().endOf("year"),
-			locale : {
-				format : "DD MMM YYYY"
-			}
-		}); */
-		
-		/* 	$(document).ready(function () {
-			// กำหนดค่าเริ่มต้น
-			//var start = moment("<fmt:formatDate value='${startdate}' pattern='dd-MM-yyyy'/>", "DD-MM-YYYY");
-			//var end = moment("<fmt:formatDate value='${enddate}' pattern='dd-MM-yyyy'/>", "DD-MM-YYYY");
-		
-			// สร้าง Date Range Picker
-			$("#kt_daterangepicker").daterangepicker({
-		        //startDate: start,
-		        //endDate: end,
-				locale: {
-					format: "DD MMM YYYY"
-		        },
-		        showDropdowns: true,     //มี dropdown เดือน/ปี
-		        linkedCalendars: false,  //เดือนซ้าย-ขวาอิสระ ไม่ fix
-		        alwaysShowCalendars: true,
-		        opens: 'center'
-			}, function (start, end) {
-				//อัปเดต hidden input ทุกครั้งที่เลือกช่วงวันใหม่
-				$("#startdate").val(start.format("DD-MM-YYYY"));
-				$("#enddate").val(end.format("DD-MM-YYYY"));
-		
-				//auto-submit form
-				$("#searchForm").submit();
-			});
-		
-			// ตั้งค่าเริ่มต้นตอนโหลด
-			//$("#startdate").val(start.format("DD-MM-YYYY"));
-			//$("#enddate").val(end.format("DD-MM-YYYY"));
-		});
-		*/	
-</script>
-
-<script>
 $(() => {
 	var userList = ${userList};
 	var action = '${action}';
@@ -867,13 +783,13 @@ $(() => {
 	const queryString = window.location.search;
 	const urlParams = new URLSearchParams(queryString);
 	const la = urlParams.get('la');
-	console.log(la);
 	if (action == 'Edit') {
 		var leave = ${leave};
 		var fileLeave = ${fileLeave};
 		user = leave.userId;
 		manager = leave.apprUserId;
 		department = leave.leaveStatusId.toString();
+
 		if (la == '1') {
 			$('form').attr('action','new_LeaveEdit_Do_LA');
 			<perm:permission object="leave.approve">
@@ -881,6 +797,12 @@ $(() => {
 			</perm:permission>
 		} else {
 			$('form').attr('action', 'new_LeaveEdit_Do');
+		}
+		
+		if (leave.leaveStatusId.toString() != '0') {
+		    $('input[name="leaveType"]').prop('disabled', true);
+			$('#status, #date_from, #date_to, #halfDay, #description, #myFile, #removeFileBtn, #approver, #submitBtn').prop('disabled', true);
+		    $('input[name="leaveType"]').closest('.form-check').css('pointer-events', 'none').css('opacity', '0.6');
 		}
 
 	} else {
@@ -1182,7 +1104,6 @@ $(() => {
 	/* End Leave Edit init */
 
 	const qThisYear = '${quotaThisYear}';
-	console.log(qThisYear);
 	/* beforeSubmit = function(){
 		var spinner = $('#loader');
 		var form = $('#formid');
@@ -1335,10 +1256,10 @@ $(() => {
 				if (currentMonth > 2) {
 					leave6Container.hide();
 					$('#lt_6').prop('checked', false);
-					console.log("Leave ID 6: HIDE (Reverted to month check > 2)");
+					//console.log("Leave ID 6: HIDE (Reverted to month check > 2)");
 				} else {
 					leave6Container.show();
-					console.log("Leave ID 6: SHOW (Month <= 2, keeping shown)");
+					//console.log("Leave ID 6: SHOW (Month <= 2, keeping shown)");
 				}
 			}
 		}
@@ -1351,13 +1272,13 @@ $(() => {
 });
 
 function userOnChange() {
-	console.log("[userOnChange]");
+	//console.log("[userOnChange]");
 
 	var empId = $('#user').find(":selected").text().split(" ")[0];
-	console.log("[userOnChange] empId = " + empId);
+	//console.log("[userOnChange] empId = " + empId);
 
 	var userId = $('#user').val();
-	console.log("[userOnChange] userId  = " + userId);
+	//console.log("[userOnChange] userId  = " + userId);
 
 	$.ajax({
 		url: "getManagerIdAndManagerName",
@@ -1367,7 +1288,7 @@ function userOnChange() {
 			"userId": userId
 		},
 		success: function (data) {
-			console.log(data);
+			//console.log(data);
 			var dataObj = JSON.parse(data);
 			$("#approver option[value != 'admin']").remove();
 			$('#approver').append(dataObj.option)
@@ -1383,15 +1304,13 @@ function userOnChange() {
 			"userId": userId
 		},
 		success: function (data) {
-			console.log(data);
+			//console.log(data);
 			const responseData = JSON.parse(data);
-
 			const leaveStatus = responseData.leaveCheckStatus;
 
 			for (const leaveTypeId in leaveStatus) {
 
 				if (leaveStatus.hasOwnProperty(leaveTypeId)) {
-
 					const isQuotaFull = leaveStatus[leaveTypeId];
 
 					const elementId = "lt_" + leaveTypeId; //ref id leaveType Radio
@@ -1401,10 +1320,10 @@ function userOnChange() {
 
 					if (targetElement) {
 						if (isQuotaFull === true) {
-							console.log("Quota full for leaveTypeId : " + leaveTypeId);
+							//console.log("Quota full for leaveTypeId : " + leaveTypeId);
 							targetElement.disabled = true;
 						} else {
-							console.log("Quota available for leaveTypeId : " + leaveTypeId);
+							//console.log("Quota available for leaveTypeId : " + leaveTypeId);
 							targetElement.disabled = false;
 						}
 					} else {
@@ -1608,7 +1527,7 @@ document.addEventListener("DOMContentLoaded", function () {
 	});
 
 	/*
-	  // ⚙️ บังคับ End ≥ Start
+	  // บังคับ End ≥ Start
 	  startPicker.subscribe(tempusDominus.Namespace.events.change, (e) => {
 	    if (e.date) {
 	      // ปรับ minDate ของ End
@@ -1624,7 +1543,7 @@ document.addEventListener("DOMContentLoaded", function () {
 	    }
 	  });
 	
-	  // ⚙️ บังคับ Start ≤ End
+	  // บังคับ Start ≤ End
 	  endPicker.subscribe(tempusDominus.Namespace.events.change, (e) => {
 	    if (e.date) {
 	      // ปรับ maxDate ของ Start
@@ -1680,6 +1599,7 @@ function renderSingleFilePreview(fileName, fileUrl, isExisting = false, fileId =
 	// Right Group (Delete Button)
 	const removeBtn = document.createElement('span');
 	removeBtn.className = 'btn btn-icon btn-sm btn-light-danger cursor-pointer';
+	removeBtn.id = 'removeFileBtn';
 
 	// Event Handler
 	removeBtn.onclick = function () {
