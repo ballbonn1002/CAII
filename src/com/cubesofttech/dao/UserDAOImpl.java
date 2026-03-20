@@ -634,7 +634,6 @@ public class UserDAOImpl implements UserDAO {
 		List<Map<String, Object>> rows = query.list();
 		return (rows != null && !rows.isEmpty()) ? rows.get(0) : null;
 	}
-
 	
 	@Override
 	public String findEmployeeIdByName(String nameEn, String nameTh) throws Exception {
@@ -657,6 +656,21 @@ public class UserDAOImpl implements UserDAO {
 	    }
 
 	    return null;
+	}
+
+	@Override
+	public List<Map<String, Object>> findUserLeaveQuota(String userId) throws Exception {
+		Session session = sessionFactory.getCurrentSession();
+		List<Map<String, Object>> userQuota = null;
+		try {
+			String sql = "SELECT leave_quota_1, leave_quota_2, leave_quota_3, leave_quota_lastyear FROM `user` WHERE id =:userId ";
+			SQLQuery query = session.createSQLQuery(sql);
+			query.setParameter("userId", userId);
+			query.setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return userQuota;
 	}
 
 

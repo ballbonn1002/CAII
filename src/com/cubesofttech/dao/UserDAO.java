@@ -62,5 +62,5 @@ public interface UserDAO {
 
 	List<Map<String, Object>> sequense2() throws Exception;
 	
-	
+	public List<Map<String, Object>> findUserLeaveQuota(String userId) throws Exception;
 }
