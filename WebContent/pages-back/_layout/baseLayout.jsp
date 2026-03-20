@@ -125,7 +125,7 @@ let sessionTimer;
 function showSessionAlert() {
     Swal.fire({
         title: 'Session Timeout',
-        text: 'คุณไม่ได้ใช้งานระบบเป็นเวลานาน   กรุณาโหลดหน้าเว็บใหม่อีกครั้ง',
+        html: 'คุณไม่ได้ใช้งานระบบเป็นเวลานาน<br>กรุณาโหลดหน้าเว็บใหม่อีกครั้ง',
         icon: 'warning',
         confirmButtonText: 'OK',
         allowOutsideClick: false,

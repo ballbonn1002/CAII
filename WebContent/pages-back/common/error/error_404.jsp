@@ -58,7 +58,7 @@
 							<!--end::Illustration-->
 							<!--begin::Link-->
 							<div class="mb-0">
-								<a href="index.html" class="btn btn-sm btn-primary">Return Home</a>
+								<a href="check_in_out" class="btn btn-sm btn-primary">Return Home</a>
 							</div>
 							<!--end::Link-->
 						</div>
