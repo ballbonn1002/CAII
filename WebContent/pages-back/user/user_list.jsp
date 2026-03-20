@@ -47,18 +47,6 @@
                         </ul>
                     </div>
                     <div class="d-flex align-items-center gap-2 ms-auto">
-                    <!-- 
-                        <a href="userAllReport" class="btn btn-light-primary btn-sm px-3 py-2">
-						    <i class="ki-duotone ki-printer fs-3 me-1">
-						        <span class="path1"></span>
-						        <span class="path2"></span>
-						        <span class="path3"></span>
-						        <span class="path4"></span>
-						        <span class="path5"></span>
-						    </i>
-						    Print
-						</a>
-					-->
                         <button type="button" class="btn btn-success btn-sm px-3 py-2" onclick="addUser()">
                             <i class="ki-outline ki-plus fs-3 me-1"></i>Create
                         </button>
@@ -84,12 +72,6 @@
                                                    <option value="All">All</option> 
                                                     <optgroup label="Enable">
                                                         <c:forEach var="user" items="${cubesoftUser}">
-                                                           <%--  <c:if test="${user.enable == 1 && user.flag_search == '1' && not empty user.employee_id }">
-                                                                <c:set var="displayText" value="${not empty user.employee_id ? user.employee_id : ''}" />
-                                                                <c:if test="${not empty user.name_en}"><c:set var="displayText" value="${displayText}${not empty displayText ? ' - ' : ''}${user.name_en}" /></c:if>
-                                                                <c:if test="${not empty user.name}"><c:set var="displayText" value="${displayText}${not empty displayText ? ' - ' : ''}${user.name}" /></c:if>                                                      
-                                                                <option value="<c:out value='${user.id != null ? fn:trim(user.id) : ""}'/>">${displayText}</option>
-                                                            </c:if> --%>
                                                             <c:if test="${user.enable == 1 && user.flag_search == '1'}">
 														
 														        <c:set var="displayText" value="" />
@@ -110,22 +92,12 @@
 														
 														    </c:if>
                                                         </c:forEach>
-                                                        <%-- <c:forEach var="user" items="${cubesoftUser}">
-														    <c:if test="${user.enable == 1 && user.flag_search == '1' && empty user.employee_id}">
-														        <c:set var="displayText" value="${not empty user.name_en ? user.name_en : user.name}" />
-														        <c:if test="${not empty user.name_en && not empty user.name}">
-														           	<c:set var="displayText" value="${user.name_en} - ${user.name}" />
-														        </c:if>
-														
-														        <option value="${fn:trim(user.id)}">${displayText}</option>
-														    </c:if>
-														</c:forEach> --%>
+                                                        
                                                     </optgroup>
                                                     <optgroup label="Disable">
 														<c:forEach var="user" items="${cubesoftUser}">
 														    
 														    <c:if test="${user.enable == 0 && user.flag_search == '1'}">
-														
 														        <c:set var="displayText" value="" />
 														        <!-- ถ้ามี employee_id -->
 														        <c:if test="${not empty user.employee_id}">
@@ -146,36 +118,6 @@
 														
 														</c:forEach>
 													</optgroup>
-                                                    <%-- <optgroup label="Disable">
-                                                        <c:forEach var="user" items="${cubesoftUser}">
-                                                            <c:if test="${user.enable == 0 && user.flag_search == '1' && not empty user.employee_id }">
-                                                                <c:set var="displayText" value="${not empty user.employee_id ? user.employee_id : ''}" />
-                                                                <c:if test="${not empty user.name_en}"><c:set var="displayText" value="${displayText}${not empty displayText ? ' - ' : ''}${user.name_en}" /></c:if>
-                                                                <c:if test="${not empty user.name}"><c:set var="displayText" value="${displayText}${not empty displayText ? ' - ' : ''}${user.name}" /></c:if>
-                                                                <option value="<c:out value='${user.id != null ? fn:trim(user.id) : ""}'/>">${displayText}</option>
-                                                            </c:if>
-                                                        </c:forEach>
-                                                        <c:forEach var="user" items="${cubesoftUser}">
-														    <c:if test="${user.enable == 0 && user.flag_search == '1' && empty user.employee_id && not empty user.name_en}">
-														        <option value="${fn:trim(user.id)}">${user.name_en}</option>
-														    </c:if>
-														</c:forEach>
-														<c:forEach var="user" items="${cubesoftUser}">
-														    <c:if test="${user.enable == 0 && user.flag_search == '1' && empty user.employee_id && empty user.name_en}">
-														        <option value="${fn:trim(user.id)}">${user.name}</option>
-														    </c:if>
-														</c:forEach>
-                                                        <c:forEach var="user" items="${cubesoftUser}">
-														    <c:if test="${user.enable == 0 && user.flag_search == '1' && empty user.employee_id}">
-														        <c:set var="displayText" value="${not empty user.name_en ? user.name_en : user.name}" />
-														        <c:if test="${not empty user.name_en && not empty user.name}">
-														           	<c:set var="displayText" value="${user.name_en} - ${user.name}" />
-														        </c:if>
-														
-														        <option value="${fn:trim(user.id)}">${displayText}</option>
-														    </c:if>
-														</c:forEach>
-                                                    </optgroup> --%>
                                                 </select>
                                             </div>
                                         </div>
@@ -364,20 +306,7 @@
 					                                        </span>
 					                                    </c:otherwise>
 					                                </c:choose>
-					                                <%-- <c:choose>
-													    <c:when test="${not empty user.userImgPath}">
-													    <div class="symbol-label">
-													        <img src="${pageContext.request.contextPath}${user.userImgPath}"
-													             class="w-100 h-100 rounded-circle" style="object-fit: cover;">
-													             </div>
-													    </c:when>
-													    <c:otherwise>
-													        <span class="symbol-label bg-light-primary text-primary fw-bold d-flex align-items-center justify-content-center">
-													            ${fn:toUpperCase(fn:substring(user.nameEN,0,1))}
-													        </div>
-													    </c:otherwise>
-													</c:choose> --%>
-																		                                
+					                                	                                
 					                            </div>
 					                            <div class="employee-info mb-4">
 					                                <span style="font-weight: 500;">${not empty user.name_en ? user.name_en : '-'}</span><br/>
@@ -754,8 +683,7 @@
       // 2. Birthday
       document.querySelectorAll('#gridViewContainer .birth-age').forEach(function (el) {
         const bISO = el.getAttribute('data-birth-date') || el.getAttribute('data-birth');
-       /* 
-        const label = periodLengthLabel(bISO, null); */
+      
         el.textContent = birthdayAgeLabel(bISO);
 
         const $gridCard = $(el).closest('.grid-card');
@@ -840,7 +768,6 @@
  	var count = badges.length ? total : totalAll;
     
     var base = 'Employee (' + count + ')';
-    /* var base = 'Employee (' + totalAll + ')'; */
     var desc = badges.length ? '<span class="fs-6 text-muted fw-normal ms-2"> • Filtered by: ' + badges.join(', ') + '</span>' : '';
     $('#dt_showing').html('<h3 class="fw-bold text-gray-900 m-0 d-flex align-items-center">' + base + desc + '</h3>');
     $('#dt_showing').removeClass('fs-7 text-dark'); 
@@ -978,12 +905,10 @@
     } else {
         sortRows(currentSortMode); 
     }
-    /* refreshCurrentView();  */
   }
 
   function searchBySelectValue(user_id) {
 	  user_id = (user_id || '').trim();
-   /*  if (!user_id || user_id === 'All') { showAllUsers(); return; } */
     if (!user_id) { showAllUsers(); return; }
     $.ajax({
       url: "search-User",
@@ -1076,8 +1001,7 @@
       refreshCurrentView();
     }
     $(function(){
-     /*  $('#sortSelect').on('change', function(){ sortRows(this.value); });
-      sortRows($('#sortSelect').val() || 'empid-asc'); */
+     
     	$('#sortSelect').on('change', function () {
     		  var mode = this.value;
     		  currentPage = 1;
@@ -1282,7 +1206,6 @@
       const user_id = ($(this).val() || '').toString().trim();
       searchBySelectValue(user_id);
     });
-    /* $("#name2").on("select2:clear", function(){ showAllUsers(); }); */
     $("#name2").on("select2:select change", function (e) {
 	    const val = ($(this).val() || '').toString().trim();
 	

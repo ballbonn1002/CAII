@@ -661,7 +661,6 @@ public class UserAction extends ActionSupport {
 	public String updateUserStatus() {
 		try {
 
-			// String enable = request.getParameter("enable");
 			String userid = request.getParameter("userid");
 			User u = userDAO.findById(userid);
 			// toggle
@@ -678,7 +677,6 @@ public class UserAction extends ActionSupport {
 
 			Gson gson = new GsonBuilder().create();
 			String responseJSON = gson.toJson(u);
-//			log.debug(responseJSON);
 
 			request.setAttribute("json", responseJSON);
 
@@ -694,7 +692,6 @@ public class UserAction extends ActionSupport {
 	public String updateUserStatustest() {
 		try {
 
-			// String enable = request.getParameter("enable");
 			String userid = request.getParameter("userid");
 			User u = userDAO.findById(userid);
 			// toggle
@@ -710,7 +707,6 @@ public class UserAction extends ActionSupport {
 
 			Gson gson = new GsonBuilder().create();
 			String responseJSON = gson.toJson(u);
-//			log.debug(responseJSON);
 
 			request.setAttribute("json", responseJSON);
 
@@ -726,18 +722,13 @@ public class UserAction extends ActionSupport {
 	public String openEdit() {
 		try {
 			User selectUser = userDAO.findById(userId);
-
-//			JobSiteTeam user = JobSiteTeamDAO.findAllByUserId(userId);
 			String id = request.getParameter("userId");
-//			log.debug(id);
+
 			List<Map<String, Object>> jobsiteList = jobsiteDAO.findJobsiteUser(id);
 			request.setAttribute("test", jobsiteList);
 			List<Map<String, Object>> jobSite = jobsiteDAO.getJobSiteByUserId(id);
 			request.setAttribute("jobSite", jobSite);
-			/*
-			 * List<Map<String, Object>> jobuser = jobsiteDAO.findJobsiteUser(UserIdEdit);
-			 * request.setAttribute("test2", jobuser);
-			 */
+			
 
 			List<Map<String, Object>> departmentList = departmentDAO.findAllList();
 
@@ -780,24 +771,6 @@ public class UserAction extends ActionSupport {
 			request.setAttribute("leaveW", sum_w);
 			request.setAttribute("leaveH", sum_h);
 
-//			request.setAttribute("borrow_history", borrowDAO.findHistoryByUser(selectUser.getId()));
-//
-//			List<Borrow> borrows = borrowDAO.findBorrowByUser(selectUser.getId());
-//			
-//			log.info("borrows=" + borrows);
-//
-//			List<Equipment> equipments = new ArrayList<Equipment>();
-//			for (int i = 0; i < borrows.size(); i++) {
-//				String equipment_id = borrows.get(i).getEquipmentId();
-//				Equipment equipments2 = equipmentDAO.getById(Integer.parseInt(equipment_id));
-//				log.info("equipments2=" + equipments2);
-//				equipments.add(equipments2);
-//				log.info("equipments=" + equipments);
-//			}
-//
-//			request.setAttribute("borrows", new Gson().toJson(borrows));
-//			request.setAttribute("equipments", new Gson().toJson(equipments));
-
 			List<Map<String, Object>> borrow = borrowDAO.getBorrowListByUserId(selectUser.getId());
 
 			if (borrow != null && !borrow.isEmpty()) {
@@ -825,11 +798,10 @@ public class UserAction extends ActionSupport {
 				}
 
 				request.setAttribute("borrowList", borrow);
-//				log.debug("borrow" + borrow);
 			} else {
 				request.setAttribute("borrowList", borrow);
 			}
-//			log.debug(selectUser.getPaymentRemark());
+
 
 			String imgPath = null;
 			if (selectUser.getPath() != null && selectUser.getPath().contains("_")) {
@@ -869,7 +841,7 @@ public class UserAction extends ActionSupport {
 		try {
 
 			List<Map<String, Object>> departmentList = departmentDAO.findAllList();
-//			log.debug("departmentList" + departmentList);
+
 			request.setAttribute("departmentList", departmentList);
 
 			List<Map<String, Object>> positionList = positionDAO.sequense();
@@ -898,10 +870,7 @@ public class UserAction extends ActionSupport {
 		try {
 			User ur = (User) request.getSession().getAttribute("onlineUser");
 			String logonUser = ur.getId();
-//			log.info(logonUser);
 
-//			User u = userDAO.findById(user.getId());
-//			String UserIdEdit = user.getId();
 			if (user == null || user.getId() == null || user.getId().trim().isEmpty()) {
 				log.error("User id is null from request");
 				return ERROR;
@@ -910,17 +879,10 @@ public class UserAction extends ActionSupport {
 			String UserIdEdit = user.getId().trim();
 			User u = userDAO.findById(UserIdEdit);
 
-//			log.debug(id_sitejob);
-			/* String[] siteJobId = id_sitejob.split(","); */
 			String rawSiteJob = (id_sitejob == null) ? "" : id_sitejob.trim();
 
 			String[] siteJobId = rawSiteJob.isEmpty() ? new String[0] : rawSiteJob.split(",");
-
-//			log.debug("siteJobId array = " + Arrays.toString(siteJobId));
-//
-//			log.debug("effectiveUserId = " + UserIdEdit);
 			List<JobSiteTeam> ListuserId = jobSiteTeamDAO.findAllByUserId(UserIdEdit);
-//			log.debug("ListuserId size = " + (ListuserId == null ? "null" : ListuserId.size()));
 
 			List<String> selectedSiteIds = new ArrayList<>();
 
@@ -932,8 +894,6 @@ public class UserAction extends ActionSupport {
 				}
 			}
 
-//			log.debug("Selected siteJobId set = " + selectedSiteIds);
-
 			// เพิ่มsiteใหม่ที่ยังไม่มีในDB
 			for (String siteId : selectedSiteIds) {
 				JobSiteTeam existing = jobSiteTeamDAO.findByIdSiteJobAndUserId(siteId, UserIdEdit);
@@ -943,8 +903,6 @@ public class UserAction extends ActionSupport {
 					jobSiteTeam.setUser_id(UserIdEdit);
 					jobSiteTeam.setId_sitejob(siteId);
 					jobSiteTeamDAO.save(jobSiteTeam);
-
-//					log.debug("Added siteJobId=" + siteId);
 				}
 			}
 
@@ -952,7 +910,6 @@ public class UserAction extends ActionSupport {
 			for (JobSiteTeam link : ListuserId) {
 				if (!selectedSiteIds.contains(link.getId_sitejob())) {
 					jobSiteTeamDAO.delete(link);
-//					log.debug("Deleted siteJobId=" + link.getId_sitejob());
 				}
 			}
 
@@ -1014,7 +971,6 @@ public class UserAction extends ActionSupport {
 			u.setEmail(user_email);
 			u.setManagerId(user.getManagerId());
 			u.setId_sitejob(user.getId_sitejob());
-//			log.debug(u.getId_sitejob());
 			u.setAddress(user.getAddress());
 			u.setTimeUpdate(DateUtil.getCurrentTime());
 
@@ -1040,10 +996,8 @@ public class UserAction extends ActionSupport {
 				u.setPositionId(position_id);
 
 			if (page.equals("1")) {
-//				log.debug("user edit");
 				u.setEmailHost(user.getEmailHost());
 			} else if (page.equals("2")) {
-//				log.debug("admin edit");
 				u.setEnable(user.getEnable());
 				u.setEmailEnable(user.getEmailEnable());
 				u.setEmployeeId(user.getEmployeeId());
@@ -1054,9 +1008,6 @@ public class UserAction extends ActionSupport {
 
 				u.setWorkType(user.getWorkType());
 				u.setOnsiteNum(user.getOnsiteNum());
-//				log.debug("Work Type: " + u.getWorkType());
-//				log.debug("Onsite_num: " + u.getOnsiteNum());
-
 				u.setEduInstitute1(user.getEduInstitute1());
 				u.setEduInstitute2(user.getEduInstitute2());
 				u.setEduInstitute3(user.getEduInstitute3());
@@ -1158,10 +1109,6 @@ public class UserAction extends ActionSupport {
 			request.setAttribute("leaveW", leavwait.size());
 			request.setAttribute("leaveH", leavhis.size());
 
-//			log.debug("Request user id = " + user.getId());
-//			log.debug("UserIdEdit = " + UserIdEdit);
-//			log.debug("siteJobId = " + Arrays.toString(siteJobId));
-
 			return SUCCESS;
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -1174,9 +1121,6 @@ public class UserAction extends ActionSupport {
 		try {
 			String targetUserId = request.getParameter("user_id");
 			String newPw = request.getParameter("password");
-
-//			log.debug("user_id:" + targetUserId);
-//			log.debug("password:" + newPw);
 
 			if (targetUserId != null)
 				targetUserId = targetUserId.trim();
@@ -1259,16 +1203,6 @@ public class UserAction extends ActionSupport {
 
 			user.setTimeCreate(DateUtil.getCurrentTime());
 			user.setTimeUpdate(DateUtil.getCurrentTime());
-//			String bd = this.birthDate; 
-//	        if (bd != null && !bd.equals("")) {
-//	            Date birthDate = Convert.parseDate(bd);
-//	            user.setBirthDate(birthDate);
-//	        }
-//	        String sd = this.startDate; 
-//	        if (sd != null && !sd.equals("")) {
-//	            Date startDate = Convert.parseDate(sd);
-//	            user.setStartDate(startDate);
-//	        }
 
 			if (fileUpload != null) {
 				int maxId = fileuploadDAO.getMaxId() + 1;
@@ -1328,22 +1262,17 @@ public class UserAction extends ActionSupport {
 			user.setName(user.getName().trim());
 			user.setNameEN(user.getNameEN().trim());
 			user.setEmail(email);
-//			user.setEmailPassword(emailpass);
 			user.setPhonenum(phone);
 			user.setNickName(nickname);
 			user.setNickNameEN(nicknameEN);
 			user.setTitleNameTH(titlenameTH);
 			user.setTitleNameEN(titlenameEN);
-//			user.setEmailHost(emailhost);
 			user.setGender(gender);
 			user.setRoleId(role);
 			user.setAddress(address);
 			user.setDepartmentId(department);
 			user.setPositionId(position);
 			user.setFlagSearch("1");
-//			user.setLeaveQuota4(lastYearQuota);
-//			user.setWorkTimeStart("9:00");
-//			user.setWorkTimeEnd("18:00");
 			user.setSocialSecurity("0");
 			user.setWithHoldAuto("0");
 			user.setBankType("");
@@ -1352,39 +1281,6 @@ public class UserAction extends ActionSupport {
 
 			userDAO.save(user);
 
-//			if (fileUpload != null) {
-//	            int maxId = fileuploadDAO.getMaxId() + 1;
-//	            ServletContext context = request.getServletContext();
-//	            String fileServerPath = context.getRealPath("/");
-//	            String newFileName = maxId + "_" + fileUploadFileName;
-//
-//	            // Upload
-//	            FileUtil.upload(fileUpload, fileServerPath + "upload/user/", newFileName);
-//
-//	            // Save File Log
-//	            FileUpload fileupload = new FileUpload();
-//	            fileupload.setFileId(maxId);
-//	            fileupload.setUserId(user.getId());
-//	            fileupload.setUserCreate(user.getId());
-//	            
-//	            String name = fileUploadFileName;
-//	            String type = "";
-//	            int split = fileUploadFileName.lastIndexOf(".");
-//	            if(split >= 0) {
-//	                 name = fileUploadFileName.substring(0, split);
-//	                 type = fileUploadFileName.substring(split);
-//	            }
-//	            fileupload.setName(name);
-//	            fileupload.setType(type);
-//	            fileupload.setSize(fileUploadSize);
-//	            fileupload.setPath("/upload/user/" + newFileName);
-//	            fileupload.setTimeCreate(DateUtil.getCurrentTime());
-//	            fileuploadDAO.save(fileupload);
-//
-//	            // Update User Path
-//	            user.setPath("/upload/user/" + newFileName);
-//	            userDAO.update(user);
-//	        }
 
 			userId = user.getId();
 
@@ -1404,11 +1300,9 @@ public class UserAction extends ActionSupport {
 			log.info(logonUser);
 
 			User u = userDAO.findById(user_id);
-//			log.debug(user_id + " aaa");
-
 			u.setGender(user_gender);
 			u.setTitleNameTH(user_titleNameTH);
-			u.setName(user_name);/* fullnameTH */
+			u.setName(user_name);
 			u.setTitleNameEN(user_titleNameEN);
 			u.setNameEN(user_fullNameEN);
 			u.setNickName(user_nickNameTH);
@@ -1435,7 +1329,7 @@ public class UserAction extends ActionSupport {
 					int maxId = fileuploadDAO.getMaxId() + 1;
 					ServletContext context = request.getServletContext();
 					String fileServerPath = context.getRealPath("/");
-					// long size = fileUpload.getUsableSpace();
+					
 					fileupload.setSize(fileUploadSize);
 					String fileName = fileUploadFileName;
 					fileupload.setPath("/upload/user/" + maxId + "_" + fileName);
@@ -1464,7 +1358,7 @@ public class UserAction extends ActionSupport {
 					int maxId = fileuploadDAO.getMaxId();
 					ServletContext context = request.getServletContext();
 					String fileServerPath = context.getRealPath("/");
-					// long size = fileUpload.getUsableSpace();
+					
 					fileupload.setSize(fileUploadSize);
 					String fileName = fileUploadFileName;
 					fileupload.setPath("/upload/user/" + maxId + "_" + fileName);
@@ -1564,32 +1458,6 @@ public class UserAction extends ActionSupport {
 				timeS = tF + TimeStratWork;
 				request.setAttribute("TimeStratWork", timeS);
 			}
-
-//			String tF = "0", tE = "0", timeS = null, timeE = null;
-//			// 0:00 08:00 09:00 9:00 8:00
-//			if (TimeStratWork.equals("8:00")) {
-//				timeS = tF + TimeStratWork;
-//				request.setAttribute("TimeStratWork", timeS);
-//			} else if (TimeStratWork.equals("08:00")) {
-//				timeS = TimeStratWork;
-//				request.setAttribute("TimeStratWork", timeS);
-//			} else if (TimeStratWork.equals("9:00")) {
-//				timeS = tF + TimeStratWork;
-//				request.setAttribute("TimeStratWork", timeS);
-//			} else if (TimeStratWork.equals("09:00")) {
-//				timeS = TimeStratWork;
-//				request.setAttribute("TimeStratWork", timeS);
-//			} else if (TimeStratWork.equals("8:30")) {
-//				timeS = tF + TimeStratWork;
-//				request.setAttribute("TimeStratWork", timeS);
-//			} else if (TimeStratWork.equals("08:30")) {
-//				timeS = TimeStratWork;
-//				request.setAttribute("TimeStratWork", timeS);
-//			} else {
-//
-//				request.setAttribute("TimeStratWork", "*");
-//			}
-//
 			if (TimeEndWork.equals("0:00") || TimeEndWork.equals("00:00")) {
 				request.setAttribute("TimeEndWork", "*");
 			} else {
@@ -1624,9 +1492,6 @@ public class UserAction extends ActionSupport {
 			out.print(jsonObjStr);
 			out.flush();
 			out.close();
-			// Gson gson = new GsonBuilder().setDateFormat("dd/MM/yyyy
-			// HH:mm:ss").create();
-			// String jsonObjStr = gson.toJson(mapObj);
 		}
 
 		catch (Exception e) {
@@ -1641,8 +1506,6 @@ public class UserAction extends ActionSupport {
 			String userid = request.getParameter("userid");
 			String facebookid = request.getParameter("id");
 			User u = userDAO.findById(userid);
-			// log.debug(userid + " aa");
-			// log.debug(facebookid + "st");
 
 			u.setFacebookid(facebookid);
 			userDAO.update(u);
@@ -1677,7 +1540,6 @@ public class UserAction extends ActionSupport {
 		try {
 			String id = request.getParameter("id");
 			user = userDAO.findById(id);
-//			log.debug(user);
 			user.setFlagSearch("0");
 			userDAO.update(user);
 			return SUCCESS;
@@ -1709,7 +1571,6 @@ public class UserAction extends ActionSupport {
 
 			User user = new User();
 			user = userDAO.findById(id);
-//			log.debug(user);
 			userDAO.delete(user);
 			List<User> userList = userDAO.findAll();
 			request.setAttribute(User, userList);
@@ -1829,7 +1690,6 @@ public class UserAction extends ActionSupport {
 
 			List<Map<String, Object>> bd = userDAO.test_birthdaysummary();
 			request.setAttribute("bd", bd);
-			log.info("bd=" + bd);
 
 			return SUCCESS;
 		} catch (Exception e) {
@@ -1842,7 +1702,6 @@ public class UserAction extends ActionSupport {
 		try {
 			List<Map<String, Object>> cubesoftUsers = userDAO.Query_Userlist2();
 			request.setAttribute("cubesoftUsers", cubesoftUsers);
-			// request.setAttribute("userList", userDAO.findAll());
 			return SUCCESS;
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -1856,13 +1715,11 @@ public class UserAction extends ActionSupport {
 			String gender = request.getParameter("gender");
 			String[] setgender = gender.split("/");
 			boolean result = false;
-			/* System.out.println("setgender : " + setgender[1]); */
 			if (setgender[1].equals("M") || setgender[1].equals("F")) {
 				List<Map<String, Object>> user = userDAO.getGender(setgender);
 				request.setAttribute("datauser", user);
 				log.info(user);
 				if (user.isEmpty() == false) {
-					/* System.out.println(user.isEmpty()); */
 					List<Map<String, Object>> xxx = userDAO.updateGender(setgender);
 				}
 			}
@@ -1882,7 +1739,6 @@ public class UserAction extends ActionSupport {
 
 			List<Map<String, Object>> cubesoftUsers = jobsiteDAO.findAll2();
 			request.setAttribute("cubesoftUsers", cubesoftUsers);
-			// request.setAttribute("userList", userDAO.findAll());
 			return SUCCESS;
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -1894,9 +1750,6 @@ public class UserAction extends ActionSupport {
 		try {
 			String userlist = request.getParameter("userid");
 			String namesite = request.getParameter("namesite");
-//			System.out.println(userlist);
-//			System.out.println(namesite);
-//			System.out.println("------------------");
 
 			String[] userarrey = userlist.split(",");
 
@@ -2063,7 +1916,6 @@ public class UserAction extends ActionSupport {
 
 			request.setAttribute("workPeriod", workPeriod);
 			request.setAttribute("user", u);
-//			log.debug("user == "+ u);
 			request.setAttribute("userImgPath", imgPath);
 			request.setAttribute("imgPathSignature", imgPathSignature);
 			request.setAttribute("signatureFileName", signatureFileName);
@@ -2201,10 +2053,7 @@ public class UserAction extends ActionSupport {
 				User u = userDAO.findById(onlineUser.getId());
 				String inputHash = MD5.getInstance().hashData(currentPw.getBytes());
 				isValid = inputHash.equals(u.getPassword());
-//	            System.out.println("--------------- " );
-//	            System.out.println("Input Hash: " + inputHash);
-//		        System.out.println("DB Hash   : " + u.getPassword());
-//		        System.out.println("Is valid  : " + isValid);
+
 			}
 
 			result.put("valid", isValid);
@@ -2321,7 +2170,6 @@ public class UserAction extends ActionSupport {
 			String logonUser = ur.getId();
 			User user = userDAO.findById(String.valueOf(logonUser));
 			
-			log.debug("user====== " + user);
 			if (user== null ) {
 			    return ERROR;
 			} else {
@@ -2330,15 +2178,6 @@ public class UserAction extends ActionSupport {
 					try {
 						String originalFileName = new File(user.getPathSignature()).getName();
 						String fileIdStr = originalFileName.substring(0, originalFileName.indexOf("_"));
-//						String typeFile = originalFileName.substring(originalFileName.lastIndexOf("."));
-
-//						imgPathForSession = "/upload/user/user_signature_" + fileIdStr + typeFile;
-
-//						String server = request.getServletContext().getRealPath("/");
-//						File f = new File(server + imgPathForSession);
-//						if (!f.exists()) {
-//							imgPathForSession = null;
-//						}
 			
 						if (fileIdStr != null) {
 							//delete file
@@ -2351,7 +2190,6 @@ public class UserAction extends ActionSupport {
 			
 						}
 			
-						
 					} catch (Exception e) {
 						imgPathForSession = null;
 					}
@@ -2365,27 +2203,7 @@ public class UserAction extends ActionSupport {
 			return ERROR;
 		}
 	}
-	
-//	public String signature_perform_delete() {
-//		try {
-//			User ur = (User) request.getSession().getAttribute("onlineUser");
-//			if (ur == null ) {
-//			    return ERROR;
-//			}
-//			String logonUser = ur.getId();
-//			User user = userDAO.findById(String.valueOf(logonUser));
-//			
-//			log.debug("user====== " + user);
-//			
-//			user.setPathSignature(null);
-//			userDAO.update(user);
-//			
-//			return SUCCESS;
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//			return ERROR;
-//		}
-//	}
+
 	
 	
 }

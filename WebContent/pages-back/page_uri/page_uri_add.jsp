@@ -143,7 +143,6 @@
   margin-right: 10px !important;
 }
 
-/* ปุ่มใน group ชิดกัน */
 .note-toolbar .note-btn-group .note-btn {
   border-radius: 6px !important;
 }
@@ -248,15 +247,7 @@
 								</div>
 									
 								<div class="row col-12 mt-5">
-											<%-- <div class="col-12 col-md-4 mt-5 mt-md-0">
-												<label class="fw-medium text-gray-800 mb-2">Forward to</label>
-												
-												<input type="text"
-														class="form-control text-gray-700"
-														placeholder="Forward to" name="forward_to"
-														id="forward_to" value="${pageUri.forwardTo}" />
-														
-											</div> --%>
+											
 											<div class="col-12 col-md-6 mt-5 mt-md-0">
 												<label class="fw-medium text-gray-800 mb-2">Model</label>
 												<input type="text" class="form-control text-gray-700"

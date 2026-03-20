@@ -557,13 +557,7 @@ public class LeaveDAOImpl implements LeaveDAO {
 			throws Exception {
 		Session session = this.sessionFactory.getCurrentSession();
 		List<Map<String, Object>> search = null;
-
-		System.out.println(startDate);
-		System.out.println(endDate);
-		System.out.println(userId);
-		System.out.println(type);
 		try {
-
 			String sql = "SELECT leaves.description,leaves.leave_id,leaves.time_create,leaves.user_id,leaves.start_date, "
 					+ " leaves.end_date, leaves.no_day ,leaves.leave_status_id,leave_type.leave_type_name , user.path "
 					+ " FROM leaves LEFT JOIN leave_type ON leave_type.leave_type_id = leaves.leave_type_id "
@@ -576,9 +570,7 @@ public class LeaveDAOImpl implements LeaveDAO {
 			query.setParameter("type", type);
 			query.setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
 			search = query.list();
-		} catch (
-
-		Exception e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		return search;
@@ -1180,7 +1172,6 @@ public class LeaveDAOImpl implements LeaveDAO {
 //            	daysleft -= noday;
 //            }
 //         }
-		System.out.println(daysleft);
 		return daysleft;
 	}
 
@@ -1215,7 +1206,6 @@ public class LeaveDAOImpl implements LeaveDAO {
 				+ "LEFT JOIN user ON leaves.user_id = user.id " + "LEFT JOIN file ON leaves.leave_file = file.file_id "
 				+ "WHERE leaves.user_id = '" + userId + "' " + "AND leaves.start_date >= '" + startDate + "' "
 				+ "AND leaves.start_date <= '" + endDate + "' " + "ORDER BY leaves.time_create DESC";
-		// System.out.println(sql);
 		SQLQuery query = session.createSQLQuery(sql);
 		query.setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
 		searchbydate = query.list();
@@ -1234,7 +1224,6 @@ public class LeaveDAOImpl implements LeaveDAO {
 		List<Map<String, Object>> searchbydate = null;
 		String sql = "SELECT * FROM leaves WHERE user_id ='" + userId + "' AND start_date>='" + startDate
 				+ "' AND start_date<='" + endDate + "' AND leave_status_id = '" + status + "'";
-		System.out.println(sql);
 		SQLQuery query = session.createSQLQuery(sql);
 		query.setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
 		searchbydate = query.list();

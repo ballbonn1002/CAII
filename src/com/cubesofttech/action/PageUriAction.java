@@ -200,31 +200,6 @@ public class PageUriAction extends ActionSupport {
 		}
 	}
 
-//	public String page_uri_add() {
-//		try {
-//			User onlineUser = (User) request.getSession().getAttribute("onlineUser");
-//			if (onlineUser== null) {
-//			    return ERROR;
-//			}
-//			String logonUser = onlineUser.getId();
-//			
-////			List<Tag> tagList = tagDAO.findAll();
-////			List<ArticleType> articleTypeList = articleTypeDAO.findAll();
-////			List<Article> articleList = articleDAO.findAll();
-////			User user= userDAO.findById(logonUser);
-//////			log.debug("loginnnn = "+ user);
-////
-////			request.setAttribute("tagList", tagList);
-////			request.setAttribute("articleTypeList", articleTypeList);
-////			request.setAttribute("articleList", articleList);
-////			request.setAttribute("user", user);
-//
-//			return SUCCESS;
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//			return ERROR;
-//		}
-//	}
 
 	public String page_uri_add() {
 		try {
@@ -290,38 +265,6 @@ public class PageUriAction extends ActionSupport {
 			return ERROR;
 		}
 	}
-	
-//	public String page_uri_perform_update() {
-//		try {
-//			User onlineUser = (User) request.getSession().getAttribute("onlineUser");
-//			if (onlineUser== null) {
-//			    return ERROR;
-//			}
-//			String logonUser = onlineUser.getId();
-//
-//			// Update page_uri
-//			PageUri uri = pageUriDAO.findByPageUri(pageUriId);
-//			if (uri != null) {
-//				uri.setPageUriId(pageUriId);
-//			    uri.setForwardTo(forwardTo);
-//			    uri.setModel(model);
-//			    uri.setModelId(modelId);
-//				uri.setPageUriTitle(pageUriTitle);
-//			    uri.setMeta(meta);
-//			    uri.setPageUriDescription(pageUriDescription);
-//			    uri.setUserUpdate(logonUser);
-//			    uri.setTimeUpdate(DateUtil.getCurrentTime());
-//
-//			    pageUriDAO.update(uri);
-//			}
-//			
-//			
-//			return SUCCESS;
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//			return ERROR;
-//		}
-//	}
 	
 	public String page_uri_perform_update() {
 	    try {

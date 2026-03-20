@@ -88,7 +88,7 @@ public class WorkHoursAction extends ActionSupport {
 			User ur = (User) request.getSession().getAttribute("onlineUser");
 			String logonUser = ur.getId();
 			request.setAttribute("logonUser", logonUser);
-
+			log.info("logonUser : " + logonUser);
 			LocalDate currentDate = LocalDate.now();
 			request.setAttribute("currentDate", currentDate);
 
@@ -97,7 +97,6 @@ public class WorkHoursAction extends ActionSupport {
 			request.setAttribute("holidayList", holidayList);
 			
 			LocalDate lastWorkDate = currentDate.minusDays(1);
-
 			while (true) {
 			    boolean isHoliday = false;
 			    if (holidayList != null) {
@@ -119,7 +118,6 @@ public class WorkHoursAction extends ActionSupport {
 			    	&& lastWorkDate.getDayOfWeek() != DayOfWeek.SUNDAY && !isHoliday) {
 			        break;
 			    }
-
 			    lastWorkDate = lastWorkDate.minusDays(1);
 			}
 
@@ -153,8 +151,7 @@ public class WorkHoursAction extends ActionSupport {
 
 					request.setAttribute("jobsite", myJobsite);
 					request.setAttribute("jobsiteList", userSites);
-					log.debug("Found jobsite: " + myJobsite);
-					log.debug("Announcement loaded: " + (announcementList != null ? announcementList.size() : 0));
+					log.info("Found jobsite: " + myJobsite);
 				} else {
 					log.warn("User " + logonUser + " has no site in JobSiteTeam");
 					request.setAttribute("jobsite", null);

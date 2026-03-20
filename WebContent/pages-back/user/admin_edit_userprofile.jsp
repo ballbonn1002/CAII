@@ -1079,12 +1079,9 @@
 								</div>
 
 								<div class="col-md-6 fv-row">
-									<label class="form-label">Bank Name</label> <%-- <input
-										class="form-control" name="user.bank" data-tab="payment" 
-										value="${selectUser.bank}" placeholder="Bank name"> --%>
+									<label class="form-label">Bank Name</label>
 										<select class="form-select" data-control="select2" 
 										        name="user.bank" data-tab="payment">
-										
 										    <option value="ธนาคารกสิกรไทย"
 										        ${empty selectUser.bank || selectUser.bank == 'ธนาคารกสิกรไทย' ? 'selected' : ''}>
 										        ธนาคารกสิกรไทย
@@ -1348,13 +1345,6 @@
 				</form>
 
 				<div class="card mb-10" id="borrow-info">
-					<%-- <div class="portlet light bordered" id="borrow-info">
-						<div class="test">
-							<jsp:include page="/pages-back/borrow/bTable.jsp" flush="true"></jsp:include>
-						</div>
-					</div> --%>
-					
-					
 					
 					<div class="card-header">
 							<!--begin::Card title-->
@@ -1395,11 +1385,11 @@
 											<tr class="align-middle">
 												<td class="px-3 py-4 text-gray-900 fs-6 fw-normal">
 													${item.formatted_date}
-													<p class="text-gray-600 fs-6 fw-normal mb-0">${item.formatted_time}</p>
+													<p class="text-gray-600 fs-6 fw-normal mb-0">${empty item.formatted_time ? ' ' : item.formatted_time}</p>
 												</td>
-												<td class="px-3 py-4 text-gray-900 fs-6 fw-normal">${item.item_no}</td>
-												<td class="px-3 py-4 text-gray-900 fs-6 fw-normal">${item.name}</td>
-												<td class="px-3 py-4 text-gray-900 fs-6 fw-normal">${item.location}</td>
+												<td class="px-3 py-4 text-gray-900 fs-6 fw-normal">${empty item.item_no ? '-' : item.item_no}</td>
+												<td class="px-3 py-4 text-gray-900 fs-6 fw-normal">${empty item.name ? '-' : item.name}</td>
+												<td class="px-3 py-4 text-gray-900 fs-6 fw-normal">${empty item.location ? '-' : item.location}</td>
 												<td class="px-3 py-4 ">
 												<c:if test="${item.status == 'R'}">
 													<span class="badge badge-lg bg-success text-white fw-semibold fs-8">Returned</span>
@@ -1451,11 +1441,7 @@
 												<c:if test="${empty item.status || item.status == '-'}">
 													-
 												</c:if>
-											<%-- <a href="/borrow_edit?id=${item.borrow_id}" class="btn btn-lg btn-light-primary">
-									                	<i class="ki-duotone ki-pencil fs-4"> <span class="path1"></span> 
-									                	<span class="path2"></span> <span class="path2"></span> 
-														</i>
-									            	</a> --%>
+											
 				            					</td>
 											</tr>
 
@@ -1585,22 +1571,6 @@
       return $span;
     }
 
-/*     (function () {
-      if (typeof flatpickr !== 'function') {
-        console.warn('flatpickr not found');
-        return;
-      }
-
-      $('[data-kt-date-picker="true"]').each(function () {
-        flatpickr(this, {
-          dateFormat: 'd-m-Y',
-          altInput: true,
-          altFormat: 'j M Y',
-          allowInput: true
-        });
-      });
-    })(); */
-
 
     (function(){
       const sw = document.getElementById('emailEnableSwitch');
@@ -1677,7 +1647,7 @@
       $form.on('submit', function(){
         const vals = $sel.val() || [];
         $hid.val(vals.join(','));
-        /* $sel.attr('name', 'id_sitejob_client_only'); */
+       
       });
     })();
 
@@ -1733,59 +1703,6 @@
       });
     });
     </script>
-
-	<!-- <script>
-    document.addEventListener("DOMContentLoaded", function () {
-          const navLinks = document.querySelectorAll("#profileNav .nav-link[data-target]");
-
-          if (!navLinks.length) {
-            return;
-          }
-
-          const targets = Array.from(navLinks).map(link => link.getAttribute("data-target"));
-
-          function showSection(targetId) {
-            targets.forEach(sel => {
-              const card = document.querySelector(sel);
-              if (!card) return;
-
-              if (sel === targetId) {
-                card.classList.remove("d-none");
-                card.style.display = "";
-              } else {
-                card.classList.add("d-none");
-              }
-            });
-            toggleFormButtons(targetId);
-          }
-
-          showSection("#account-info");
-          
-          navLinks.forEach(link => link.classList.remove("active"));
-          const defaultLink = document.querySelector('#profileNav .nav-link[data-target="#account-info"]');
-          if (defaultLink) defaultLink.classList.add("active");
-
-          navLinks.forEach(link => {
-            link.addEventListener("click", function (e) {
-              e.preventDefault();
-
-              navLinks.forEach(l => l.classList.remove("active"));
-              this.classList.add("active");
-
-              const target = this.getAttribute("data-target");
-              if (target) {
-                showSection(target);
-
-                const card = document.querySelector(target);
-                if (card) {
-                  card.scrollIntoView({ behavior: "smooth", block: "start" });
-                }
-              }
-            });
-          });
-        });
-
-    </script> -->
 
 	<script>
 
@@ -1844,11 +1761,6 @@
 
     $(document).ready(function() {
         
-       /*  if (typeof flatpickr === 'function') {
-            $('[data-kt-date-picker="true"]').each(function() {
-                flatpickr(this, { dateFormat: 'd-m-Y', altInput: true, altFormat: 'j M Y', allowInput: true });
-            });
-        } */
         $('[data-control="select2"]').each(function() {
             if ($(this).hasClass('select2-hidden-accessible')) return;
             $(this).select2({ width: '100%', minimumResultsForSearch: 5 });
@@ -1940,9 +1852,6 @@
         	  });
         	});
 
-
-       /*  $('#btnCancel').click(function() { window.location.href = 'user-list'; }); */
-
         $('#btnDelete').click(function() {
             var userId = $(this).data('user-id');
             if (!userId) return;
@@ -1995,18 +1904,6 @@
                 }
             });
         });
-
-        /* $('#password, #confirm_password').keyup(function() {
-            var p = $('#password').val(), c = $('#confirm_password').val();
-            if(p == "" && c == "") { $('#passwordMessage').html(''); return; }
-            $('#passwordMessage').html(p == c ? '<span class="text-success">ตรงกัน</span>' : '<span class="text-danger">ไม่ตรงกัน</span>');
-        });
-        $('#btnPasswordUpdate').click(function() {
-           var p = $('#password').val(), c = $('#confirm_password').val();
-            if(p === "" || c === "") { alert('กรุณากรอกรหัสผ่าน'); return; }
-            if(p !== c) { alert('รหัสผ่านไม่ตรงกัน'); return; }
-            $('form[action="admin-perform-edit"]').submit(); 
-        }); */
 
         var getUrlParameter = function getUrlParameter(sParam) {
             var sPageURL = window.location.search.substring(1),
