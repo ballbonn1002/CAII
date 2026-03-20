@@ -79,7 +79,7 @@ public class WorkLogAction extends ActionSupport {
             // Default Date
             LocalDate today = LocalDate.now();
             DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("dd-MM-yyyy");
-            request.setAttribute("defaultStartDate", today.with(TemporalAdjusters.firstDayOfMonth()).format(dateFormat));
+            request.setAttribute("defaultStartDate", today.format(dateFormat));
             request.setAttribute("defaultEndDate", today.format(dateFormat));
 
             return SUCCESS;
