@@ -165,10 +165,11 @@ String targetURL = Constant.getWebContext2() + "/authorization?token=" + token;
 
 					<div class="menu-item">
 						<a class="menu-link" href="timeSheet" data-route="time_sheet"><span
-							class="menu-icon "> <i class="ki-duotone ki-calendar-8 fs-2">
-									<span class="path1"></span> <span class="path2"></span> <span
-									class="path3"></span> <span class="path4"></span> <span
-									class="path5"></span> <span class="path6"></span>
+							class="menu-icon "> <i
+								class="ki-duotone ki-calendar-8 fs-2"> <span class="path1"></span>
+									<span class="path2"></span> <span class="path3"></span> <span
+									class="path4"></span> <span class="path5"></span> <span
+									class="path6"></span>
 							</i>
 						</span> <span class="menu-title">TimeSheet</span> <i
 							class="ki-duotone ki-check-circle fs-3 text-success"> <span
@@ -322,17 +323,19 @@ String targetURL = Constant.getWebContext2() + "/authorization?token=" + token;
 					<!-- Overtime Approve -->
 
 					<!--begin:Menu item-->
-					<div class="menu-item">
-						<a class="menu-link" href="dailyMonitor" data-route="dailyMonitor">
-							<span class="menu-icon"> <i
-								class="ki-duotone ki-calendar-tick fs-1"> <span
-									class="path1"></span> <span class="path2"></span> <span
-									class="path3"></span> <span class="path4"></span> <span
-									class="path5"></span> <span class="path6"></span>
-							</i>
-						</span> <span class="menu-title"> Daily Monitor </span>
-						</a>
-					</div>
+					<perm:permission object="dailymonitor.view">
+						<div class="menu-item">
+							<a class="menu-link" href="dailyMonitor"
+								data-route="dailyMonitor"> <span class="menu-icon"> <i
+									class="ki-duotone ki-calendar-tick fs-1"> <span
+										class="path1"></span> <span class="path2"></span> <span
+										class="path3"></span> <span class="path4"></span> <span
+										class="path5"></span> <span class="path6"></span>
+								</i>
+							</span> <span class="menu-title"> Daily Monitor </span>
+							</a>
+						</div>
+					</perm:permission>
 					<!--end:Menu item-->
 
 					<!--begin:Menu item-->
