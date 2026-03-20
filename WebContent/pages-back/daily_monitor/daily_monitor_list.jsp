@@ -27,6 +27,14 @@
 	src="${pageContext.request.contextPath}/assets/plugins/global/plugins.bundle.js"></script>
 
 
+<!-- Data Table -->
+<link
+	href="${pageContext.request.contextPath}/assets/plugins/custom/datatables/datatables.bundle.css"
+	rel="stylesheet" type="text/css" />
+<script
+	src="${pageContext.request.contextPath}/assets/plugins/custom/datatables/datatables.bundle.js"></script>
+
+
 <style type="text/css">
 .ps-12 {
 	padding-left: 3rem !important;
@@ -83,26 +91,26 @@
 								<label class="form-label">Status</label> <select
 									class="form-select" id="statusSelect" name="statusSelect">
 									<option value="all">All Status</option>
-									<option value="ONTIME"
-										${'ONTIME' == statusSelected ? 'selected' : ''}>On
+									<option value="OnTime"
+										${'Ontime' == statusSelected ? 'selected' : ''}>On
 										Time</option>
-									<option value="LATE"
-										${'LATE' == statusSelected ? 'selected' : ''}>Late</option>
-									<option value="EARLY_OUT"
-										${'EARLY_OUT' == statusSelected ? 'selected' : ''}>Early
+									<option value="Late"
+										${'Late' == statusSelected ? 'selected' : ''}>Late</option>
+									<option value="Early Out"
+										${'Early Out' == statusSelected ? 'selected' : ''}>Early
 										Out</option>
-									<option value="UNFINISHIED_WORK"
-										${'UNFINISHIED_WORK' == statusSelected ? 'selected' : ''}>Unfinished
+									<option value="Unfinished Work"
+										${'Unfinished Work' == statusSelected ? 'selected' : ''}>Unfinished
 										Work</option>
-									<option value="LEAVE"
-										${'LEAVE' == statusSelected ? 'selected' : ''}>Leave</option>
-									<option value="INCOMPLETE"
-										${'INCOMPLETE' == statusSelected ? 'selected' : ''}>Incomplete</option>
-									<option value="SICK_LEAVE"
-										${'SICK_LEAVE' == statusSelected ? 'selected' : ''}>Sick
+									<option value="Leave"
+										${'Leave' == statusSelected ? 'selected' : ''}>Leave</option>
+									<option value="Incomplete"
+										${'Incomplete' == statusSelected ? 'selected' : ''}>Incomplete</option>
+									<option value="ลาป่วย"
+										${'ลาป่วย' == statusSelected ? 'selected' : ''}>Sick
 										Leave</option>
-									<option value="NO_RECORD"
-										${'NO_RECORD' == statusSelected ? 'selected' : ''}>No
+									<option value="Absent/Error"
+										${'Absent/Error' == statusSelected ? 'selected' : ''}>No
 										Record</option>
 								</select>
 							</div>
@@ -131,12 +139,12 @@
 											<c:when test="${not empty idUserSelected}">
 												<option value="${u.id}"
 													${u.id == idUserSelected ? 'selected' : ''}>
-													${u.employeeId} - ${u.nameEN} - ${u.name} -
-													${u.departmentId}</option>
+													${u.employee_id} - ${u.name_en} - ${u.name} -
+													${u.department_id}</option>
 											</c:when>
 											<c:otherwise>
-												<option value="${u.id}">${u.employeeId}-
-													${u.nameEN} - ${u.name} - ${u.departmentId}</option>
+												<option value="${u.id}">${u.employee_id}-
+													${u.name_en} - ${u.name} - ${u.department_id}</option>
 											</c:otherwise>
 										</c:choose>
 									</c:forEach>
@@ -153,12 +161,7 @@
 				</div>
 				<div class="card-body pb-0">
 					<div class="card-header align-items-start mb-5 py-7 border">
-						<div class="d-flex align-items-center gap-10">
-							<span class="fs-2hx">${userList.size()}</span> <span
-								class="badge text-white" style="background: #198754">All
-								Employee</span>
-						</div>
-						<div class="d-flex gap-10">
+						<div class="w-100 d-flex gap-10">
 							<div class="w-100 d-flex flex-column gap-10">
 								<div class="d-flex align-items-center gap-10">
 									<span class="fs-2hx">${total_ontime}</span> <span
@@ -197,11 +200,13 @@
 							</div>
 						</div>
 					</div>
-					<div class="card-header px-0 align-items-center">
-						<h1 class="fw-bold text-primary">
-							<fmt:formatDate value="${searchDate}" pattern="dd MMMM yyyy" />
-						</h1>
-						<div class="d-flex gap-15">
+					<div class="card-header px-0 pb-5 align-items-center">
+						<h3 class="fw-bold m-0">${dailyWorkUser.size()}
+							Items Found <span class="fs-6" style="color: #99A1B7">by
+								All Employee ↓</span>
+						</h3>
+
+						<div class="d-flex gap-10">
 							<div class="d-flex align-items-center gap-3">
 								<i class="ki-duotone ki-delivery-door fs-2"
 									style="color: #1B84FF"> <span class="path1"></span> <span
@@ -218,17 +223,21 @@
 									class="path3"></span>
 								</i><span>Head Office</span>
 							</div>
+							<h1 class="fw-bold text-primary m-0">
+								<fmt:formatDate value="${searchDate}" pattern="dd MMMM yyyy" />
+							</h1>
 						</div>
 					</div>
 				</div>
 				<div class="table-responsive">
-					<table class="table fs-6 gy-5">
+					<table class="table fs-6 gy-5" id="table">
 						<thead class="text-gray-500 fw-bold fs-7 ">
 							<tr class="text-start border-bottom">
-								<th class="text-center" style="width: 60px">#</th>
+								<th class="text-center">#</th>
 								<th>EM ID</th>
 								<th>NAME</th>
 								<th>JOB SITE</th>
+								<th>POSITION</th>
 								<th>CHECK-IN</th>
 								<th>CHECK-OUT</th>
 								<th>WORKING (HRS)</th>
@@ -237,148 +246,161 @@
 						</thead>
 						<tbody>
 							<c:choose>
-								<c:when test="${not empty userList}">
-									<c:forEach var="u" items="${userList}" varStatus="loop">
-										<c:set var="w" value="${workHoursMap[u.id]}" />
-										<c:set var="j" value="${jobSiteMap[u.id]}" />
-										<c:set var="s" value="${dailyStatusMap[u.id]}" />
-										<c:set var="leaveId" value="${leaveMap[u.id]}" />
+								<c:when test="${not empty dailyWorkUser}">
+									<c:forEach var="u" items="${dailyWorkUser}" varStatus="loop">
+										<c:set var="w"
+											value="${workHoursMap[fn:toLowerCase(u.userId)]}" />
+										<c:set var="jobSiteList" value="${jobSiteMap[u.userId]}" />
 										<tr
 											class="border-bottom fs-6 fw-normal align-middle text-start">
 											<td class="text-center">${loop.index + 1}</td>
-											<td>${u.employeeId}</td>
+											<td>${u.empId}</td>
 											<td>
 												<div class="d-flex flex-column">
-													<span>${u.nameEN}</span> <span style="color: #78829D">${u.name}</span>
+													<span>${u.nameEn}</span> <span style="color: #78829D">${u.name}</span>
 												</div>
 											</td>
 											<td>
-												<div class="d-flex flex-column">
-													<span style="color: #78829D">${u.departmentId}</span><span
-														class="badge bg-primary text-white"
-														style="width: fit-content;">${j.name_site}</span>
+												<div class="d-flex flex-column gap-2">
+													<c:forEach var="j" items="${jobSiteList}">
+														<span class="badge bg-primary text-white"
+															style="width: fit-content;">${j.name_site}</span>
+													</c:forEach>
 												</div>
 											</td>
+											<td><span style="color: #78829D">${u.position}</span></td>
 											<td class="fw-bold">
-												<div class="d-flex flex-column gap-3">
-													<div class="d-flex gap-5">
-														<c:if test="${not empty s}">
-															<c:choose>
-																<c:when test="${w['1'].work_type == 1}">
-																	<i class="ki-duotone ki-delivery-door fs-2"
-																		style="color: #1B84FF"> <span class="path1"></span>
-																		<span class="path2"></span> <span class="path3"></span>
-																		<span class="path4"></span>
-																	</i>
-																</c:when>
-																<c:when test="${w['1'].work_type == 2}">
-																	<i class="ki-duotone ki-home fs-2"
-																		style="color: #20C997"></i>
-																</c:when>
-																<c:when test="${w['1'].work_type == 3}">
-																	<i class="ki-duotone ki-cube-2 fs-2"
-																		style="color: #DC3545"> <span class="path1"></span>
-																		<span class="path2"></span> <span class="path3"></span>
-																	</i>
-																</c:when>
-															</c:choose>
-														</c:if>
-														<span>${s.check_in}</span>
-													</div>
-													<c:if test="${not empty w['1'].description }">
-														<span class="d-flex gap-3 align-items-start fw-normal">
-															<i class="ki-duotone ki-message-text-2 fs-2"> <span
-																class="path1"></span> <span class="path2"></span> <span
-																class="path3"></span>
-														</i> ${w['1'].description}
-														</span>
-													</c:if>
+												<div class="d-flex flex-column gap-2">
+													<c:forEach var="work" items="${w['1']}">
+														<div class="d-flex flex-column gap-2">
+															<div class="d-flex gap-5">
+																<c:choose>
+																	<c:when test="${fn:trim(work.work_type) eq '1'}">
+																		<i class="ki-duotone ki-delivery-door fs-2"
+																			style="color: #1B84FF"> <span class="path1"></span>
+																			<span class="path2"></span> <span class="path3"></span>
+																			<span class="path4"></span>
+																		</i>
+																	</c:when>
+																	<c:when test="${fn:trim(work.work_type) eq '2'}">
+																		<i class="ki-duotone ki-home fs-2"
+																			style="color: #20C997"></i>
+																	</c:when>
+																	<c:when test="${fn:trim(work.work_type) eq '3'}">
+																		<i class="ki-duotone ki-cube-2 fs-2"
+																			style="color: #DC3545"> <span class="path1"></span>
+																			<span class="path2"></span> <span class="path3"></span>
+																		</i>
+																	</c:when>
+																</c:choose>
+																<fmt:formatDate value="${work.work_hours_time_work}"
+																	pattern="HH:mm" />
+															</div>
+															<c:if test="${not empty work.description}">
+																<span class="d-flex gap-3 align-items-start fw-normal">
+																	<i class="ki-duotone ki-message-text-2 fs-2"> <span
+																		class="path1"></span> <span class="path2"></span> <span
+																		class="path3"></span>
+																</i> ${work.description}
+																</span>
+															</c:if>
+														</div>
+													</c:forEach>
 												</div>
 											</td>
 
 											<td class="fw-bold">
-												<div class="d-flex flex-column gap-3">
-													<div class="d-flex gap-3">
-														<c:if test="${not empty s}">
-															<c:choose>
-																<c:when test="${w['2'].work_type == 1}">
-																	<i class="ki-duotone ki-delivery-door fs-2"
-																		style="color: #1B84FF"> <span class="path1"></span>
-																		<span class="path2"></span> <span class="path3"></span>
-																		<span class="path4"></span>
-																	</i>
-																</c:when>
-																<c:when test="${w['2'].work_type == 2}">
-																	<i class="ki-duotone ki-home fs-2"
-																		style="color: #20C997"></i>
-																</c:when>
-																<c:when test="${w['2'].work_type == 3}">
-																	<i class="ki-duotone ki-cube-2 fs-2"
-																		style="color: #DC3545"> <span class="path1"></span>
-																		<span class="path2"></span> <span class="path3"></span>
-																	</i>
-																</c:when>
-															</c:choose>
-														</c:if>
-														<span>${s.check_out}</span>
-													</div>
-
-													<c:if test="${not empty w['2'].description }">
-														<span class="d-flex gap-3 align-items-start fw-normal">
-															<i class="ki-duotone ki-message-text-2 fs-2"> <span
-																class="path1"></span> <span class="path2"></span> <span
-																class="path3"></span>
-														</i> ${w['2'].description}
-														</span>
-													</c:if>
+												<div class="d-flex flex-column gap-2">
+													<c:forEach var="work" items="${w['2']}">
+														<div class="d-flex flex-column gap-2">
+															<div class="d-flex gap-5">
+																<c:choose>
+																	<c:when test="${fn:trim(work.work_type) eq '1'}">
+																		<i class="ki-duotone ki-delivery-door fs-2"
+																			style="color: #1B84FF"> <span class="path1"></span>
+																			<span class="path2"></span> <span class="path3"></span>
+																			<span class="path4"></span>
+																		</i>
+																	</c:when>
+																	<c:when test="${fn:trim(work.work_type) eq '2'}">
+																		<i class="ki-duotone ki-home fs-2"
+																			style="color: #20C997"></i>
+																	</c:when>
+																	<c:when test="${fn:trim(work.work_type) eq '3'}">
+																		<i class="ki-duotone ki-cube-2 fs-2"
+																			style="color: #DC3545"> <span class="path1"></span>
+																			<span class="path2"></span> <span class="path3"></span>
+																		</i>
+																	</c:when>
+																</c:choose>
+																<fmt:formatDate value="${work.work_hours_time_work}"
+																	pattern="HH:mm" />
+															</div>
+															<c:if test="${not empty work.description}">
+																<span class="d-flex gap-3 align-items-start fw-normal">
+																	<i class="ki-duotone ki-message-text-2 fs-2"> <span
+																		class="path1"></span> <span class="path2"></span> <span
+																		class="path3"></span>
+																</i> ${work.description}
+																</span>
+															</c:if>
+														</div>
+													</c:forEach>
 												</div>
 											</td>
-											<td class="fw-bold">${s.workinghours_format}</td>
+											<td class="fw-bold">${u.workingHours}</td>
 
 											<td>
-												<div class="d-flex flex-column gap-5">
-
-													<c:if test="${s.status == 'ONTIME'}">
+												<div class="d-flex flex-column gap-2">
+													<c:if test="${u.status == 'OnTime'}">
 														<span class="badge bg-success text-white"
 															style="width: fit-content;">Ontime</span>
 													</c:if>
-													<c:if test="${s.status  == 'LATE'}">
+													<c:if test="${u.status  == 'Late'}">
 														<span class="badge bg-warning  text-white"
 															style="width: fit-content;">Late</span>
 													</c:if>
-													<c:if test="${s.status  == 'EARLY_OUT'}">
+													<c:if test="${u.status  == 'Early Out'}">
 														<span class="badge  bg-warning  text-white"
 															style="width: fit-content;">Early Out</span>
 													</c:if>
-													<c:if test="${s.status  == 'UNFINISHED_WORK'}">
+													<c:if test="${u.status  == 'Unfinished Work'}">
 														<span class="badge  bg-warning  text-white"
 															style="width: fit-content;">Unfinished Work</span>
 													</c:if>
-													<c:if test="${s.status  == 'INCOMPLETE'}">
+													<c:if test="${u.status  == 'Incomplete'}">
 														<span class="badge bg-dark text-white"
 															style="width: fit-content;">Incomplete</span>
 													</c:if>
-													<c:if test="${s.status  == 'NO_RECORD'}">
+													<c:if
+														test="${u.status  == 'Absent/Error' && empty u.leaveType }">
 														<span class="badge bg-danger text-white"
 															style="width: fit-content;">No Record</span>
 													</c:if>
-													<c:if test="${s.leave_status  == 'SICK_LEAVE'}">
+													<c:if test="${u.leaveType  == 'ลาป่วย'}">
 														<div class="d-flex gap-2">
 															<span class="badge text-white"
-																style="background: #6F42C1">Sick Leave</span> <i
-																class="ki-duotone ki-document fs-2 leave-doc"
-																data-leaveid="${leaveId}" style="color: #1B84FF"> <span
-																class="path1"></span> <span class="path2"></span>
+																style="background: #6F42C1">Sick Leave <c:if
+																	test="${fn:trim(u.leaveStatus) eq '0' }">
+																	<i class="fa fa-hourglass-end ps-1"></i>
+																</c:if></span> <i class="ki-duotone ki-document fs-2 leave-doc"
+																data-leaveid="${u.leaveId}" style="color: #1B84FF">
+																<span class="path1"></span> <span class="path2"></span>
 															</i>
 														</div>
 													</c:if>
 													<c:if
-														test="${s.leave_status  == 'BUSINESS_LEAVE' || s.leave_status  == 'ANNUAL_LEAVE' || s.leave_status  == 'ANNUAL_LEAVE_REMAINING'}">
+														test="${u.leaveType  == 'ลากิจ' || u.leaveType == 'ลาพักร้อน' || u.leaveType == 'ลาพักร้อนที่เหลือจากปีก่อน'}">
 														<div class="d-flex gap-2">
-															<span class="badge bg-primary text-white">Leave</span> <i
-																class="ki-duotone ki-document fs-2 leave-doc"
-																data-leaveid="${leaveId}" style="color: #1B84FF"> <span
-																class="path1"></span> <span class="path2"></span>
+
+															<span class="badge bg-primary text-white">Leave <c:if
+																	test="${fn:trim(u.leaveStatus)  eq '0' }">
+																	<i class="fa fa-hourglass-end ps-1"></i>
+																</c:if>
+
+															</span> <i class="ki-duotone ki-document fs-2 leave-doc"
+																data-leaveid="${u.leaveId}" style="color: #1B84FF">
+																<span class="path1"></span> <span class="path2"></span>
 															</i>
 														</div>
 													</c:if>
@@ -522,7 +544,48 @@
 				allowInput : true
 			});
 
-			// --------------------- Leave Modal ------------------------
+			$('#table thead').on('click', 'th', function() {
+				let isActive = $(this).hasClass('d-flex');
+
+				$('#table thead th').removeClass('d-flex');
+
+				if (!isActive) {
+					$(this).addClass('d-flex');
+				}
+			});
+			
+			// --------------------- Data table ---------------	---------
+			const table = $('#table').DataTable({
+				scrollCollapse : true,
+				autoWidth : false,
+				responsive : true,
+
+				searching : false,
+				info : false,
+				paging : false,
+
+				columnDefs : [ {
+					orderable : true,
+					targets : "_all"
+				} ],
+
+				order : []
+			});
+			
+			table.on('order.dt', function () {
+			    let order = table.order();
+
+			    $('#table thead th').removeClass('d-flex');
+
+			    if (order.length > 0) {
+			        let colIndex = order[0][0];
+			        $('#table thead th').eq(colIndex).addClass('d-flex');
+			    }
+			});
+			
+			// --------------------- Data table ---------------	---------
+
+			// --------------------- Leave Modal ---------------	---------
 
 			$('.leave-doc')
 					.on(

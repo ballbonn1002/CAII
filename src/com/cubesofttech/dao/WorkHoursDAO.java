@@ -285,19 +285,23 @@ public interface WorkHoursDAO {
 
 	public Object[] findMaxTimeByType(String userId, LocalDate workDate, String type);
 
-	 // get all column by using userid, lastyear, currentyears
-	 public List<Map<String, Object>> getCheckListFromLastAndCurrentYear(String userId, int lastyear, int currentYear) throws Exception;
-	 
-	 public List<Map<String, Object>> getCheckinByDate (String userId, String date) throws Exception;
+	// get all column by using userid, lastyear, currentyears
+	public List<Map<String, Object>> getCheckListFromLastAndCurrentYear(String userId, int lastyear, int currentYear)
+			throws Exception;
 
-	 List<Map<String, Object>> getTodayCheckIn(String user) throws Exception;
-	 
-	 List<Map<String, Object>> getTodayCheckOut(String user) throws Exception;
-	 
-	 List<Map<String, Object>> getLastdayCheckIn(String user, LocalDate lastWorkDate) throws Exception;
+	public List<Map<String, Object>> getCheckinByDate(String userId, String date) throws Exception;
 
-	 List<Map<String, Object>> getLastdayCheckOut(String user, LocalDate lastWorkDate) throws Exception;
+	List<Map<String, Object>> getTodayCheckIn(String user) throws Exception;
 
-	 public List<Map<String, Object>> getWorkHourDaily(String userId, Date date) throws Exception;
+	List<Map<String, Object>> getTodayCheckOut(String user) throws Exception;
+
+	List<Map<String, Object>> getLastdayCheckIn(String user, LocalDate lastWorkDate) throws Exception;
+
+	List<Map<String, Object>> getLastdayCheckOut(String user, LocalDate lastWorkDate) throws Exception;
+
+	public List<Map<String, Object>> getWorkHourDailyUserActive(String userId, String jobSiteId, Date date)
+			throws Exception;
+
+	List<Map<String, Object>> findForDailyReport(String userId, String jobSiteId, String selectDate) throws Exception;
 
 }

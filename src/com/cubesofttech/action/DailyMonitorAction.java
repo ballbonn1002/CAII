@@ -1,11 +1,7 @@
 package com.cubesofttech.action;
 
-import java.sql.Timestamp;
-import java.time.Duration;
 import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -22,11 +18,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cubesofttech.dao.JobSiteTeamDAO;
 import com.cubesofttech.dao.JobsiteDAO;
-import com.cubesofttech.dao.LeaveDAO;
 import com.cubesofttech.dao.UserDAO;
 import com.cubesofttech.dao.WorkHoursDAO;
 import com.cubesofttech.model.User;
-import com.cubesofttech.service.WorkHoursService;
 import com.opensymphony.xwork2.ActionSupport;
 
 public class DailyMonitorAction extends ActionSupport {
@@ -44,67 +38,30 @@ public class DailyMonitorAction extends ActionSupport {
 	private JobsiteDAO jobsiteDAO;
 
 	@Autowired
-	private WorkHoursDAO workHoursDAO;
-
-	@Autowired
-	private WorkHoursService workHoursService;
-
-	@Autowired
 	private JobSiteTeamDAO jobSiteTeamDAO;
 
 	@Autowired
-	private LeaveDAO leaveDAO;
+	private WorkHoursDAO workHoursDAO;
 
 	public String dailyMonitorList() {
 
 		try {
-
-			// ===== User =====
-			List<User> userList = userDAO.findAll();
-
-			List<User> userEnable = userList.stream().filter(user -> "1".equals(user.getEnable()))
-					.sorted(Comparator.comparing(User::getEmployeeId)).collect(Collectors.toList());
+			User ur = (User) request.getSession().getAttribute("onlineUser");
+			List<Map<String, Object>> userEnable = userDAO.findUserActive();
 
 			request.setAttribute("userEnable", userEnable);
-			request.setAttribute("userList", userEnable);
 
-			// ===== Jobsite =====
 			List<Map<String, Object>> jobsites = jobsiteDAO.findAll();
-			Map<String, Object> jobSiteMap = new HashMap<>();
-
 			request.setAttribute("jobSiteList", jobsites);
-
-			for (User user : userEnable) {
-
-				List<Map<String, Object>> jobSiteList = jobSiteTeamDAO.findSiteByUserId(user.getId());
-
-				if (!jobSiteList.isEmpty()) {
-					jobSiteMap.put(user.getId(), jobSiteList.get(0));
-				}
-
-			}
 
 			// ===== Date =====
 			LocalDate localDate = LocalDate.now();
+
 			Date today = java.sql.Date.valueOf(localDate);
-			Timestamp startDate = Timestamp.valueOf(localDate.atStartOfDay());
-			Timestamp endDate = Timestamp.valueOf(localDate.atTime(23, 59, 59));
 
-			request.setAttribute("searchDate", today);
+			String selectDate = localDate.toString();
 
-			// ===== WorkHours =====
-			List<Map<String, Object>> workHours = workHoursDAO.getWorkHourDaily("all", today);
-			Map<String, Map<String, Map<String, Object>>> workHoursMap = new HashMap<>();
-			Map<String, Map<String, Object>> statusCache = new HashMap<>();
-			Map<String, Map<String, Object>> dailyStatusMap = new HashMap<>();
-
-			for (Map<String, Object> work : workHours) {
-
-				String userId = work.get("user_create").toString();
-				String type = work.get("work_hours_type").toString();
-
-				workHoursMap.computeIfAbsent(userId, k -> new HashMap<>()).put(type, work);
-			}
+			List<Map<String, Object>> dailyReportList = workHoursDAO.findForDailyReport("all", "all", selectDate);
 
 			int totalOntime = 0;
 			int totalLate = 0;
@@ -115,59 +72,53 @@ public class DailyMonitorAction extends ActionSupport {
 			int totalIncomplete = 0;
 			int totalNoRecord = 0;
 
-			Map<String, Integer> leaveMap = new HashMap<>();
+			Map<String, List<Map<String, Object>>> jobSiteMap = new HashMap<>();
 
-			for (User user : userEnable) {
+			for (Map<String, Object> daily : dailyReportList) {
 
-				String userId = user.getId();
+				String userId = (String) daily.get("userId");
+				String status = (String) daily.get("status");
+				String leaveType = (String) daily.get("leaveType");
 
-				Map<String, Object> status = statusCache.computeIfAbsent(userId, id -> {
-					try {
-						return workHoursService.calculateDailyStatus(id, localDate);
-					} catch (Exception e) {
-						e.printStackTrace();
-						return new HashMap<>();
-					}
-				});
+				List<Map<String, Object>> jobSite = jobSiteTeamDAO.findSiteByUserId(userId);
 
-				log.debug(status);
+				jobSiteMap.put(userId, jobSite);
 
-				String statusType = (String) status.get("status");
-				String leaveStatusType = (String) status.get("leave_status");
-
-				if ("ONTIME".equals(statusType)) {
+				if ("OnTime".equals(status)) {
 					totalOntime++;
-				} else if ("LATE".equals(statusType)) {
+				} else if ("Late".equals(status)) {
 					totalLate++;
-				} else if ("EARLY_OUT".equals(statusType)) {
+				} else if ("Early Out".equals(status)) {
 					totalEarlyOut++;
-				} else if ("UNFINISHED_WORK".equals(statusType)) {
+				} else if ("Unfinished Work".equals(status)) {
 					totalUnfinishedWork++;
-				} else if ("INCOMPLETE".equals(statusType)) {
+				} else if ("Incomplete".equals(status)) {
 					totalIncomplete++;
-				} else if ("NO_RECORD".equals(statusType)) {
+				} else if ("Absent/Error".equals(status)) {
 					totalNoRecord++;
 				}
 
-				if ("SICK_LEAVE".equals(leaveStatusType)) {
+				if ("ลาป่วย".equals(leaveType)) {
 					totalSickLeave++;
-					List<Map<String, Object>> leaveList = leaveDAO.myLeavesList(userId, startDate, endDate);
-					if (!leaveList.isEmpty()) {
-						Integer leaveId = Integer.parseInt(leaveList.get(0).get("leave_id").toString());
-						leaveMap.put(userId, leaveId);
+					if ("Absent/Error".equals(status)) {
+						totalNoRecord--;
 					}
-				} else if ("BUSINESS_LEAVE".equals(leaveStatusType)) {
+
+				} else if ("ลากิจ".equals(leaveType) || "ลาพักร้อน".equals(leaveType)
+						|| "ลาพักร้อนที่เหลือจากปีก่อน".equals(leaveType)) {
 					totalLeave++;
-					List<Map<String, Object>> leaveList = leaveDAO.myLeavesList(userId, startDate, endDate);
-					if (!leaveList.isEmpty()) {
-						Integer leaveId = Integer.parseInt(leaveList.get(0).get("leave_id").toString());
-						leaveMap.put(userId, leaveId);
+
+					if ("Absent/Error".equals(status)) {
+						totalNoRecord--;
 					}
 				}
 
-				dailyStatusMap.put(userId, status);
 			}
-			request.setAttribute("leaveMap", leaveMap);
+
+			request.setAttribute("jobSiteMap", jobSiteMap);
+
+			request.setAttribute("dailyWorkUser", dailyReportList);
+			request.setAttribute("searchDate", today);
 
 			request.setAttribute("total_ontime", totalOntime);
 			request.setAttribute("total_late", totalLate);
@@ -178,30 +129,20 @@ public class DailyMonitorAction extends ActionSupport {
 			request.setAttribute("total_sick_leave", totalSickLeave);
 			request.setAttribute("total_no_record", totalNoRecord);
 
-			// ===== Calculate working hour =====
-			for (Map.Entry<String, Map<String, Object>> entry : dailyStatusMap.entrySet()) {
+			// ===== WorkHours =====
+			List<Map<String, Object>> workHours = workHoursDAO.getWorkHourDailyUserActive("all", "all", today);
+			Map<String, Map<String, List<Map<String, Object>>>> workHoursMap = new HashMap<>();
 
-				Map<String, Object> status = entry.getValue();
+			for (Map<String, Object> work : workHours) {
 
-				String checkInStr = (String) status.get("check_in");
-				String checkOutStr = (String) status.get("check_out");
+				String userId = work.get("user_create").toString().toLowerCase().trim();
+				String type = work.get("work_hours_type").toString();
 
-				if (checkInStr != null && checkOutStr != null) {
+				workHoursMap.computeIfAbsent(userId, k -> new HashMap<>()).computeIfAbsent(type, k -> new ArrayList<>())
+						.add(work);
 
-					LocalTime checkIn = LocalTime.parse(checkInStr);
-					LocalTime checkOut = LocalTime.parse(checkOutStr);
-
-					long minutes = Duration.between(checkIn, checkOut).toMinutes();
-
-					long h = minutes / 60;
-					long m = minutes % 60;
-
-					status.put("workinghours_format", String.format("%02d:%02d", h, m));
-				}
 			}
 
-			request.setAttribute("jobSiteMap", jobSiteMap);
-			request.setAttribute("dailyStatusMap", dailyStatusMap);
 			request.setAttribute("workHoursMap", workHoursMap);
 
 		} catch (Exception e) {
@@ -214,6 +155,7 @@ public class DailyMonitorAction extends ActionSupport {
 
 	public String dailyMonitorSearch() {
 		try {
+			User ur = (User) request.getSession().getAttribute("onlineUser");
 
 			String searchDate = request.getParameter("searchDate");
 			String jobSiteId = request.getParameter("jobSiteSelect");
@@ -224,10 +166,7 @@ public class DailyMonitorAction extends ActionSupport {
 			request.setAttribute("statusSelected", statusSelect);
 
 			// ===== User =====
-			List<User> userList = userDAO.findAll();
-
-			List<User> userEnable = userList.stream().filter(user -> "1".equals(user.getEnable()))
-					.sorted(Comparator.comparing(User::getEmployeeId)).collect(Collectors.toList());
+			List<Map<String, Object>> userEnable = userDAO.findUserActive();
 
 			request.setAttribute("userEnable", userEnable);
 
@@ -237,61 +176,35 @@ public class DailyMonitorAction extends ActionSupport {
 			List<Map<String, Object>> jobsites = jobsiteDAO.findAll();
 			request.setAttribute("jobSiteList", jobsites);
 
-			Map<String, Object> jobSiteMap = new HashMap<>();
-			List<User> filteredUsers = new ArrayList<>();
-
-			request.setAttribute("jobSiteList", jobsites);
-
-			if ("all".equals(jobSiteId)) {
-				filteredUsers = userEnable;
-			} else {
-
-				for (User user : userEnable) {
-
-					List<Map<String, Object>> jobSiteList = jobSiteTeamDAO.findSiteByUserId(user.getId());
-
-					if (!jobSiteList.isEmpty()) {
-
-						Map<String, Object> site = jobSiteList.get(0);
-
-						if (site.get("id_sitejob").toString().equals(jobSiteId)) {
-							filteredUsers.add(user);
-						}
-
-						jobSiteMap.put(user.getId(), site);
-					}
-				}
-			}
-
-			List<User> finalUsers;
-
-			if ("all".equals(userIdSelect)) {
-				finalUsers = filteredUsers;
-			} else {
-				finalUsers = filteredUsers.stream().filter(u -> u.getId().equals(userIdSelect))
-						.collect(Collectors.toList());
-			}
-
 			// ===== Date =====
 			LocalDate localDate = LocalDate.parse(searchDate); // yyyy-MM-dd
 			Date date = java.sql.Date.valueOf(localDate);
-			Timestamp startDate = Timestamp.valueOf(localDate.atStartOfDay());
-			Timestamp endDate = Timestamp.valueOf(localDate.atTime(23, 59, 59));
+			String selectDate = localDate.toString();
 
 			request.setAttribute("searchDate", date);
 
-			// ===== WorkHours =====
-			List<Map<String, Object>> workHours = workHoursDAO.getWorkHourDaily(userIdSelect, date);
-			Map<String, Map<String, Map<String, Object>>> workHoursMap = new HashMap<>();
-			Map<String, Map<String, Object>> statusCache = new HashMap<>();
-			Map<String, Map<String, Object>> dailyStatusMap = new HashMap<>();
+			List<Map<String, Object>> dailyReportList = workHoursDAO.findForDailyReport(userIdSelect, jobSiteId,
+					selectDate);
 
-			for (Map<String, Object> work : workHours) {
+			if (!"all".equals(statusSelect)) {
+				if ("Leave".equals(statusSelect)) {
 
-				String userId = work.get("user_create").toString();
-				String type = work.get("work_hours_type").toString();
+					dailyReportList = dailyReportList.stream()
+							.filter(d -> "ลากิจ".equals(d.get("leaveType")) || "ลาพักร้อน".equals(d.get("leaveType"))
+									|| "ลาพักร้อนที่เหลือจากปีก่อน".equals(d.get("leaveType")))
+							.collect(Collectors.toList());
 
-				workHoursMap.computeIfAbsent(userId, k -> new HashMap<>()).put(type, work);
+				} else if ("ลาป่วย".equals(statusSelect)) {
+					dailyReportList = dailyReportList.stream().filter(d -> statusSelect.equals(d.get("leaveType")))
+							.collect(Collectors.toList());
+				} else if ("Absent/Error".equals(statusSelect)) {
+					dailyReportList = dailyReportList.stream()
+							.filter(d -> statusSelect.equals(d.get("status")) && d.get("leaveType") == null)
+							.collect(Collectors.toList());
+				} else {
+					dailyReportList = dailyReportList.stream().filter(d -> statusSelect.equals(d.get("status")))
+							.collect(Collectors.toList());
+				}
 			}
 
 			int totalOntime = 0;
@@ -303,79 +216,64 @@ public class DailyMonitorAction extends ActionSupport {
 			int totalIncomplete = 0;
 			int totalNoRecord = 0;
 
-			// ===== loop user =====
-			List<User> resultUsers = new ArrayList<>();
-			Map<String, Integer> leaveMap = new HashMap<>();
+			Map<String, List<Map<String, Object>>> jobSiteMap = new HashMap<>();
 
-			for (User user : finalUsers) {
+			for (Map<String, Object> daily : dailyReportList) {
 
-				String userId = user.getId();
+				String userId = (String) daily.get("userId");
+				String status = (String) daily.get("status");
+				String leaveType = (String) daily.get("leaveType");
 
-				Map<String, Object> status = statusCache.computeIfAbsent(userId, id -> {
-					try {
-						return workHoursService.calculateDailyStatus(id, localDate);
-					} catch (Exception e) {
-						e.printStackTrace();
-						return new HashMap<>();
-					}
-				});
+				List<Map<String, Object>> jobSite = jobSiteTeamDAO.findSiteByUserId(userId);
 
-				String statusType = (String) status.get("status");
-				String leaveStatusType = (String) status.get("leave_status");
+				jobSiteMap.put(userId, jobSite);
 
-
-				// ===== filter status =====
-				if (!"all".equals(statusSelect)) {
-					if ("LEAVE".equals(statusSelect)) {
-
-						// กรองเฉพาะคนที่เป็น leave ทุกประเภท
-						if (!"BUSINESS_LEAVE".equals(leaveStatusType) && !"ANNUAL_LEAVE".equals(leaveStatusType)
-								&& !"ANNUAL_LEAVE_REMAINING".equals(leaveStatusType)) {
-							continue;
-						}
-
-					} else if (!statusSelect.equals(statusType) && !statusSelect.equals(leaveStatusType)) {
-						continue;
-					}
-				}
-
-				if ("ONTIME".equals(statusType)) {
+				if ("OnTime".equals(status)) {
 					totalOntime++;
-				} else if ("LATE".equals(statusType)) {
+				} else if ("Late".equals(status)) {
 					totalLate++;
-				} else if ("EARLY_OUT".equals(statusType)) {
+				} else if ("Early Out".equals(status)) {
 					totalEarlyOut++;
-				} else if ("UNFINISHED_WORK".equals(statusType)) {
+				} else if ("Unfinished Work".equals(status)) {
 					totalUnfinishedWork++;
-				} else if ("INCOMPLETE".equals(statusType)) {
+				} else if ("Incomplete".equals(status)) {
 					totalIncomplete++;
-				} else if ("NO_RECORD".equals(statusType)) {
+				} else if ("Absent/Error".equals(status)) {
 					totalNoRecord++;
 				}
 
-				if ("SICK_LEAVE".equals(leaveStatusType)) {
+				if ("ลาป่วย".equals(leaveType)) {
 					totalSickLeave++;
-					List<Map<String, Object>> leaveList = leaveDAO.myLeavesList(userId, startDate, endDate);
-					if (!leaveList.isEmpty()) {
-						Integer leaveId = Integer.parseInt(leaveList.get(0).get("leave_id").toString());
-						leaveMap.put(userId, leaveId);
+					if ("Absent/Error".equals(status)) {
+						totalNoRecord--;
 					}
 
-				} else if ("BUSINESS_LEAVE".equals(leaveStatusType) || "ANNUAL_LEAVE".equals(leaveStatusType)
-						|| "ANNUAL_LEAVE_REMAINING".equals(leaveStatusType)) {
+				} else if ("ลากิจ".equals(leaveType) || "ลาพักร้อน".equals(leaveType)
+						|| "ลาพักร้อนที่เหลือจากปีก่อน".equals(leaveType)) {
 					totalLeave++;
-					List<Map<String, Object>> leaveList = leaveDAO.myLeavesList(userId, startDate, endDate);
-					if (!leaveList.isEmpty()) {
-						Integer leaveId = Integer.parseInt(leaveList.get(0).get("leave_id").toString());
-						leaveMap.put(userId, leaveId);
+
+					if ("Absent/Error".equals(status)) {
+						totalNoRecord--;
 					}
 				}
 
-				dailyStatusMap.put(userId, status);
-				resultUsers.add(user);
 			}
+			request.setAttribute("jobSiteMap", jobSiteMap);
+			request.setAttribute("dailyWorkUser", dailyReportList);
 
-			request.setAttribute("leaveMap", leaveMap);
+			// ===== WorkHours =====
+			List<Map<String, Object>> workHours = workHoursDAO.getWorkHourDailyUserActive(userIdSelect, jobSiteId,
+					date);
+			Map<String, Map<String, List<Map<String, Object>>>> workHoursMap = new HashMap<>();
+
+			for (Map<String, Object> work : workHours) {
+
+				String userId = work.get("user_create").toString().toLowerCase().trim();
+				String type = work.get("work_hours_type").toString();
+
+				workHoursMap.computeIfAbsent(userId, k -> new HashMap<>()).computeIfAbsent(type, k -> new ArrayList<>())
+						.add(work);
+			}
 
 			request.setAttribute("total_ontime", totalOntime);
 			request.setAttribute("total_late", totalLate);
@@ -386,32 +284,6 @@ public class DailyMonitorAction extends ActionSupport {
 			request.setAttribute("total_sick_leave", totalSickLeave);
 			request.setAttribute("total_no_record", totalNoRecord);
 
-			// ===== Calculate working hour =====
-			for (Map.Entry<String, Map<String, Object>> entry : dailyStatusMap.entrySet()) {
-
-				Map<String, Object> status = entry.getValue();
-
-				String checkInStr = (String) status.get("check_in");
-				String checkOutStr = (String) status.get("check_out");
-
-				if (checkInStr != null && checkOutStr != null) {
-
-					LocalTime checkIn = LocalTime.parse(checkInStr);
-					LocalTime checkOut = LocalTime.parse(checkOutStr);
-
-					long minutes = Duration.between(checkIn, checkOut).toMinutes();
-
-					long h = minutes / 60;
-					long m = minutes % 60;
-
-					status.put("workinghours_format", String.format("%02d:%02d", h, m));
-				}
-			}
-
-			request.setAttribute("userList", resultUsers);
-
-			request.setAttribute("jobSiteMap", jobSiteMap);
-			request.setAttribute("dailyStatusMap", dailyStatusMap);
 			request.setAttribute("workHoursMap", workHoursMap);
 
 		} catch (Exception e) {

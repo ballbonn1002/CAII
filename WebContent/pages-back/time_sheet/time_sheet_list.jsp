@@ -3,6 +3,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
+<%@ taglib uri="/WEB-INF/tlds/permission.tld" prefix="perm"%>
 
 <!DOCTYPE html>
 <html>
@@ -267,20 +268,23 @@
 																	<a href="addTimeSheet?date=${d.date}"
 																		class="btn btn-icon btn-light-primary btn-sm"><i
 																		class="bi bi-plus fs-1"></i> </a>
-																	<button class="btn btn-icon  btn-light-primary btn-sm"
-																		onclick="onChangeToEditMode(${ts.id}, '<fmt:formatDate value="${parsedDate}" pattern="yyyy-MM-dd"/>')">
-																		<i class="ki-duotone ki-pencil fs-5"> <span
-																			class="path1"></span> <span class="path2"></span>
-																		</i>
-																	</button>
-																	<button class="btn btn-icon btn-light-danger btn-sm"
-																		onclick="onDelete(${ts.id})">
-																		<i class="ki-duotone ki-trash fs-5"> <span
-																			class="path1"></span><span class="path2"></span> <span
-																			class="path3"></span><span class="path4"></span> <span
-																			class="path5"></span>
-																		</i>
-																	</button>
+																	<perm:permission object="timesheet.edit">
+																		<button class="btn btn-icon  btn-light-primary btn-sm"
+																			onclick="onChangeToEditMode(${ts.id}, '<fmt:formatDate value="${parsedDate}" pattern="yyyy-MM-dd"/>')">
+																			<i class="ki-duotone ki-pencil fs-5"> <span
+																				class="path1"></span> <span class="path2"></span>
+																			</i>
+																		</button>
+																		<button class="btn btn-icon btn-light-danger btn-sm"
+																			onclick="onDelete(${ts.id})">
+																			<i class="ki-duotone ki-trash fs-5"> <span
+																				class="path1"></span><span class="path2"></span> <span
+																				class="path3"></span><span class="path4"></span> <span
+																				class="path5"></span>
+																			</i>
+																		</button>
+																	</perm:permission>
+
 
 																</div></td>
 														</c:when>

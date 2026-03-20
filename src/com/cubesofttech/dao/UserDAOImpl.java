@@ -252,7 +252,7 @@ public class UserDAOImpl implements UserDAO {
 		}
 		return user;
 	}
-	
+
 	@Override
 	public List<Map<String, Object>> sequense_userinteam(String manager) throws Exception {
 		Session session = this.sessionFactory.getCurrentSession();
@@ -277,18 +277,11 @@ public class UserDAOImpl implements UserDAO {
 		try {
 //			String sql = "SELECT user.id,user.name,user.path,user.employee_id,user.name_en,user.flag_search,user.role_id,user.birth_date,user.department_id,user.email,user.enable ,CONCAT(user.id), user.position_id,user.start_date,user.end_date,job_site.name_site,user.work_type,user.onsite_num, position.name AS name_position FROM user LEFT JOIN job_site ON user.id_sitejob = job_site.id_sitejob LEFT JOIN position ON user.position_id = position.position_id WHERE flag_search = 1 ORDER BY employee_id ASC";
 			String sql = "SELECT user.id,user.name,user.path,user.employee_id,user.name_en,user.flag_search,user.role_id,user.birth_date,user.department_id,user.email,user.enable ,CONCAT(user.id), user.position_id,user.start_date,user.end_date,job_site.name_site,user.work_type,user.onsite_num, position.name AS name_position "
-			        + "FROM user "
-			        + "LEFT JOIN job_site ON user.id_sitejob = job_site.id_sitejob "
-			        + "LEFT JOIN position ON user.position_id = position.position_id "
-			        + "WHERE flag_search = 1 "
-			        + "ORDER BY "
-			        + "CASE "
-			        + "WHEN employee_id IS NOT NULL AND employee_id != '' THEN 0 "
-			        + "WHEN name_en IS NOT NULL AND name_en != '' THEN 1 "
-			        + "ELSE 2 END, "
-			        + "employee_id ASC, "
-			        + "name_en ASC, "
-			        + "name ASC";
+					+ "FROM user " + "LEFT JOIN job_site ON user.id_sitejob = job_site.id_sitejob "
+					+ "LEFT JOIN position ON user.position_id = position.position_id " + "WHERE flag_search = 1 "
+					+ "ORDER BY " + "CASE " + "WHEN employee_id IS NOT NULL AND employee_id != '' THEN 0 "
+					+ "WHEN name_en IS NOT NULL AND name_en != '' THEN 1 " + "ELSE 2 END, " + "employee_id ASC, "
+					+ "name_en ASC, " + "name ASC";
 			SQLQuery query = session.createSQLQuery(sql);
 			query.setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
 			user = query.list();
@@ -1084,7 +1077,6 @@ public class UserDAOImpl implements UserDAO {
 		return (rows != null && !rows.isEmpty()) ? rows.get(0) : null;
 	}
 
-	
 //	@Override
 //	public void update_my_profile(User u) {
 //		 Session session = this.sessionFactory.getCurrentSession();
@@ -1140,29 +1132,47 @@ public class UserDAOImpl implements UserDAO {
 //		 }
 //		 
 //	}
-	
+
 	@Override
 	public String findEmployeeIdByName(String nameEn, String nameTh) throws Exception {
-	    Session session = sessionFactory.getCurrentSession();
+		Session session = sessionFactory.getCurrentSession();
 
-	    if (nameEn != null && !nameEn.isEmpty()) {
-	        String sqlEn = "SELECT employee_id FROM user WHERE name_en = :nameEn LIMIT 1";
-	        SQLQuery q1 = session.createSQLQuery(sqlEn);
-	        q1.setParameter("nameEn", nameEn);
-	        Object r1 = q1.uniqueResult();
-	        if (r1 != null) return r1.toString();
-	    }
+		if (nameEn != null && !nameEn.isEmpty()) {
+			String sqlEn = "SELECT employee_id FROM user WHERE name_en = :nameEn LIMIT 1";
+			SQLQuery q1 = session.createSQLQuery(sqlEn);
+			q1.setParameter("nameEn", nameEn);
+			Object r1 = q1.uniqueResult();
+			if (r1 != null)
+				return r1.toString();
+		}
 
-	    if (nameTh != null && !nameTh.isEmpty()) {
-	        String sqlTh = "SELECT employee_id FROM user WHERE name = :nameTh LIMIT 1";
-	        SQLQuery q2 = session.createSQLQuery(sqlTh);
-	        q2.setParameter("nameTh", nameTh);
-	        Object r2 = q2.uniqueResult();
-	        if (r2 != null) return r2.toString();
-	    }
+		if (nameTh != null && !nameTh.isEmpty()) {
+			String sqlTh = "SELECT employee_id FROM user WHERE name = :nameTh LIMIT 1";
+			SQLQuery q2 = session.createSQLQuery(sqlTh);
+			q2.setParameter("nameTh", nameTh);
+			Object r2 = q2.uniqueResult();
+			if (r2 != null)
+				return r2.toString();
+		}
 
-	    return null;
+		return null;
 	}
 
+	@Override
+	public List<Map<String, Object>> findUserActive() throws Exception {
+		Session session = this.sessionFactory.getCurrentSession();
+		List<Map<String, Object>> userActive = null;
+
+		try {
+			String sql = "select u.id, u.name, u.name_en, u.position_id, u.employee_id,u.department_id "
+					+ "from user u where u.enable = '1' order by u.employee_id asc";
+			SQLQuery query = session.createSQLQuery(sql);
+			query.setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
+			userActive = query.list();
+		} catch (HibernateException e) {
+			e.printStackTrace();
+		}
+		return userActive;
+	}
 
 }
