@@ -654,21 +654,6 @@ public class UserDAOImpl implements UserDAO {
 	}
 
 	@Override
-	public List<Map<String, Object>> findUserLeaveQuota(String userId) throws Exception {
-		Session session = sessionFactory.getCurrentSession();
-		List<Map<String, Object>> userQuota = null;
-		try {
-			String sql = "SELECT leave_quota_1, leave_quota_2, leave_quota_3, leave_quota_lastyear FROM `user` WHERE id =:userId ";
-			SQLQuery query = session.createSQLQuery(sql);
-			query.setParameter("userId", userId);
-			query.setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return userQuota;
-	}
-
-	@Override
 	public List<Map<String, Object>> findUserActive() throws Exception {
 		Session session = this.sessionFactory.getCurrentSession();
 		List<Map<String, Object>> userActive = null;

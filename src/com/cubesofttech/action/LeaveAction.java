@@ -715,13 +715,8 @@ public class LeaveAction extends ActionSupport {
 				userleave = leaveDAO.findUserLeave(userSelect2, start_date, end_date);
 				Double LastYear = leaveDAO.LastYearQuota(userSelect2, localdate.getYear());
 				request.setAttribute("LastYear", LastYear);
-				User userQuota = (User) userDAO.findUserLeaveQuota(userSelect2);
 				// Double ThisYear = leaveDAO.ThisYearQuota(userSelect2);
 				// request.setAttribute("ThisYear", ThisYear);
-				quota_1 = userQuota.getLeaveQuota1();
-				quota_2 = userQuota.getLeaveQuota2();
-				quota_3 = userQuota.getLeaveQuota3();
-				quota_4 = userQuota.getLeaveQuota4();
 			} else if ("All2".equals(userSelect) && userSelect2.equals("")) {
 				userleave = leaveDAO.findUserAllLeaveInTeam(start_date, end_date, userLogin);
 			} else {
