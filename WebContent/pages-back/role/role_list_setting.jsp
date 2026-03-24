@@ -124,6 +124,7 @@
 														<tr class="fs-5">
 															<td style="width: 10%;padding:16.25px 9.75px;">
 																<div class="form-check form-check-custom form-check-solid">
+																	<c:set var="isChecked" value=""/>
 																	<c:if test="${obj.active eq 1}">
 																		<c:set var="isChecked" value="checked" />
 																	</c:if>
