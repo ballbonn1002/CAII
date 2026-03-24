@@ -135,7 +135,7 @@
 									
 									<div class="card-header">
 										<div class="card-title">
-											<span class="me-3">${group.description}</span><a href="#">#${group.authorizedObjectGroupId != null ? group.authorizedObjectGroupId : '-'}</a>
+											<span class="me-3">${group.name}</span><a href="#">#${group.authorizedObjectGroupId != null ? group.authorizedObjectGroupId : '-'}</a>
 										</div>
 									</div>
 									<div class="card-body pt-0">
