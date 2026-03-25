@@ -500,86 +500,93 @@ var AppCalendar = function() {
 
 	// Check-in/Check-out Events  
 	function buildCheckinEvents() {
-        var events = [];
-        var dailyData = {};
-        <c:forEach var="work" items="${workList}" varStatus="status">
-            <c:if test="${work.mycheckins != null}">
-            	var fullCheckin = '${work.mycheckins}';
-            	var fullCheckout = '${work.checkouttime}';
-            	var dateKey = fullCheckin.substring(0, 10);
-            	if (!dailyData[dateKey]) {
-                    dailyData[dateKey] = {
-                    	checkin: [],
-                    	checkout: [],
-                    	allRecords: [],
-                    	status: '${work.status}',
-                        workTypeIn: '${work.workTypeIn}',
-                        workTypeOut: '${work.workTypeOut}',
-                        descriptionIn: '${work.descriptionIn}',
-                        descriptionOut: '${work.descriptionOut}',
-                        workinghours: '${work.workinghours}'
-                    };
-                }
-            	dailyData[dateKey].checkin.push(fullCheckin);
-            	if (fullCheckout && fullCheckout.trim() !== '') {
-                    dailyData[dateKey].checkout.push(fullCheckout);
-                }
-            	dailyData[dateKey].allRecords.push({
-            		checkin: fullCheckin,
-                    checkout: fullCheckout,
-                    workTypeIn: '${work.workTypeIn}',
-                    workTypeOut: '${work.workTypeOut}',
-                    descriptionIn: '${work.descriptionIn}'.trim(),
-                    descriptionOut: '${work.descriptionOut}'.trim(),
-                    status: '${work.status}'
-            	});
-            </c:if>
-        </c:forEach>
-        
-        for (var dateStr in dailyData) {
-        	var dayData = dailyData[dateStr];
-        	dayData.checkin.sort();
-        	var minCheckin = dayData.checkin[0];
-        	var maxCheckout = "";
-        	if (dayData.checkout.length > 0) {
-                dayData.checkout.sort();
-                maxCheckout = dayData.checkout[dayData.checkout.length - 1]; // get the last one
-            }
-        	
-        	var status = dayData.status;
-            var workTypeIn = dayData.workTypeIn;
-            var workTypeOut = dayData.workTypeOut;
-            var descriptionIn = dayData.descriptionIn;
-            var descriptionOut = dayData.descriptionOut;
-            var workinghours = dayData.workinghours;
+	    var events = [];
+	    var dailyData = {}; 
 
-            var title = getEventTitle(status, minCheckin, maxCheckout, workTypeIn, workTypeOut);
-            var description = getEventDescription(minCheckin, maxCheckout, status, workinghours, workTypeIn, workTypeOut);
-            var statusClass = getStatusClass(status);
-            events.push({
-            	id: 'work_'+status.index,
-            	title: title,
-            	start: dateStr,
-                end: moment(dateStr).add(1, 'days').format("YYYY-MM-DD"),
-                description: description,
-            	allDay: true,
-            	eventType: 'work',
-            	status: status,
-            	checkin: minCheckin,
-                checkout: maxCheckout,
-                workinghour: workinghours,
-                descriptionIn: descriptionIn,
-                descriptionOut: descriptionOut,
-                workTypeIn: workTypeIn,
-                workTypeOut: workTypeOut,
-                className: statusClass.className,
-                extendedProps: {
-                    checkinList: dayData.allRecords
-                }
-            });
-        }
-        return events;
-    }
+	    <c:forEach var="work" items="${workList}" varStatus="status">
+	        var dateKey = '${work["DATE(work_hours_time_work)"]}';
+	
+	        if (dateKey && dateKey !== '') {
+	            if (!dailyData[dateKey]) {
+	                dailyData[dateKey] = {
+	                    checkins: [],
+	                    checkouts: [],
+	                    allRecords: [], 
+	                    status: '${work.status}',
+	                    workinghours: '${work.workinghours}',
+	                    workTypeIn: '${work.workTypeIn}',
+	                    workTypeOut: '${work.workTypeOut}'
+	                };
+	            }
+	
+	            var fullCheckin = '${work.mycheckins}';
+	            var fullCheckout = '${work.checkouttime}';
+	
+	            if (fullCheckin && fullCheckin.trim() !== '' && fullCheckin !== 'null') {
+	                dailyData[dateKey].checkins.push(fullCheckin);
+	            }
+	            if (fullCheckout && fullCheckout.trim() !== '' && fullCheckout !== 'null') {
+	                dailyData[dateKey].checkouts.push(fullCheckout);
+	            }
+	
+	            if ((fullCheckin && fullCheckin !== 'null') || (fullCheckout && fullCheckout !== 'null')) {
+	                dailyData[dateKey].allRecords.push({
+	                    checkin: fullCheckin !== 'null' ? fullCheckin : '',
+	                    checkout: fullCheckout !== 'null' ? fullCheckout : '',
+	                    workTypeIn: '${work.workTypeIn}' !== 'null' ? '${work.workTypeIn}' : '',
+	                    workTypeOut: '${work.workTypeOut}' !== 'null' ? '${work.workTypeOut}' : '',
+	                    descriptionIn: '${work.descriptionIn}' !== 'null' ? '${work.descriptionIn}' : '',
+	                    descriptionOut: '${work.descriptionOut}' !== 'null' ? '${work.descriptionOut}' : ''
+	                });
+	            }
+	        }
+	    </c:forEach>
+
+	    var dates = Object.keys(dailyData);
+	    for (var i = 0; i < dates.length; i++) {
+	        var dateStr = dates[i];
+	        var dayData = dailyData[dateStr];
+	
+	        if (dayData.checkins.length === 0 && dayData.checkouts.length === 0) {
+	            continue; 
+	        }
+	
+	        var minCheckin = "";
+	        if (dayData.checkins && dayData.checkins.length > 0) {
+	            dayData.checkins.sort(); 
+	            minCheckin = dayData.checkins[0]; 
+	        }
+	        var maxCheckout = "";
+	        if (dayData.checkouts && dayData.checkouts.length > 0) {
+	            dayData.checkouts.sort(); 
+	            maxCheckout = dayData.checkouts[dayData.checkouts.length - 1]; 
+	        }
+	
+	        var title = getEventTitle(dayData.status, minCheckin, maxCheckout, dayData.workTypeIn, dayData.workTypeOut);
+	        var statusClass = getStatusClass(dayData.status);
+	
+	        events.push({
+	            id: 'work_' + dateStr,
+	            title: title,
+	            start: dateStr,
+	            end: moment(dateStr).add(1, 'days').format("YYYY-MM-DD"),
+	            allDay: true,
+	            eventType: 'work',
+	            checkin: minCheckin,
+	            checkout: maxCheckout,
+	            status: dayData.status,
+	            className: statusClass.className,
+	            extendedProps: {
+	                checkinList: dayData.allRecords, 
+	                workinghour: dayData.workinghours,
+	                status: dayData.status
+	            }
+	        });
+	    }
+	
+	    return events;
+	}
+	
 	// Leave Events
 	function buildLeaveEvents() {
         var events = [];
@@ -661,10 +668,11 @@ var AppCalendar = function() {
 			workTypeOut = '<i class="ki-duotone ki-cube-2 fs-2 me-1 text-light align-middle">' +
             '<span class="path1"></span><span class="path2"></span><span class="path3"></span></i> ' 
 		}
-		
-		if (status === 'INCOMPLETE') {
-            return workTypeIn + ' ' + checkin.substring(11, 16) + " -";
-        }
+
+        if (status === 'INCOMPLETE') {
+	        var incTime = (checkin && checkin !== '' && checkin !== 'null') ? checkin.substring(11, 16) : '--:--';
+	        return incTime + " -";
+	    }
         
         var checkinTime = checkin ? checkin.substring(11, 16) : '--:--';
         var checkoutTime = checkout && checkout !== '' ? checkout.substring(0, 5) : '--:--';
@@ -711,14 +719,15 @@ var AppCalendar = function() {
 			var dayName = day.format('dd');
 
 			var dayEvents = events.filter(function(ev) {
-				if (ev.extendedProps && ev.extendedProps.leave_type_id && ev.extendedProps.checkinList && event.extendedProps.checkinList.length > 0) {
-					var evStart = moment(ev.start);
-					var evEnd = ev.end ? moment(ev.end).subtract(1, 'days') : evStart;
-					return day.isSameOrAfter(evStart, 'day') && day.isSameOrBefore(evEnd, 'day');
-				} else {
-					return moment(ev.start).format('dd D MMM') === dayStr;
-				}
-			});
+                if (ev.extendedProps && ev.extendedProps.leave_type_id) {
+                    var evStart = moment(ev.start);
+                    var evEnd = ev.end ? moment(ev.end).subtract(1, 'days') : evStart.clone();
+                    return day.isSameOrAfter(evStart, 'day') && day.isSameOrBefore(evEnd, 'day');
+                } 
+                else {
+                    return moment(ev.start).format('dd D MMM') === dayStr;
+                }
+            });
 
 			var dayNum = parseInt(day.format('YYYYMMDD'));
 			var todayNum = parseInt(today.format('YYYYMMDD'));
@@ -779,7 +788,7 @@ var AppCalendar = function() {
 							'<span class="path1"></span><span class="path2"></span><span class="path3"></span></i><span class="fs-6 fw-400">' + item.descriptionIn.trim() + '</span>' : '';
 
 						if (timeIn) {
-							var spacer = index > 0 ? '<div class="separator separator-dashed my-1"></div>' : ''; 
+							var spacer = itemIndex > 0 ? '<div class="separator separator-dashed my-1"></div>' : ''; 
 							combinedCheckinHtml += spacer + '<div>' + iconIn + timeIn + '<br/><small class="text-muted">' + desIn + '</small></div>';
 						}
 
@@ -796,7 +805,7 @@ var AppCalendar = function() {
 								'<span class="path1"></span><span class="path2"></span><span class="path3"></span></i><span class="fs-6 fw-400">' + item.descriptionOut + '</span>' : '';
 
 						if (timeOut) {
-							var spacer = index > 0 ? '<div class="separator separator-dashed my-1"></div>' : '';
+							var spacer = itemIndex > 0 ? '<div class="separator separator-dashed my-1"></div>' : '';
 							combinedCheckoutHtml += spacer + '<div>' + iconOut + timeOut + '<br/><small class="text-muted">' + desOut + '</small></div>';
 						}
 					});
