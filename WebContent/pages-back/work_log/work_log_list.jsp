@@ -171,8 +171,8 @@
                         </h3>
                        
                         <div class="d-flex flex-wrap align-items-center gap-2">
-                            <span class="badge badge-secondary fs-7 py-2"><i class="ki-duotone ki-map fs-2 me-1 text-primary"><span class="path1"></span><span class="path2"></span><span class="path3"></span></i> On-Site</span>
-                            <span class="badge badge-secondary fs-7 py-2"><i class="ki-duotone ki-home-2 fs-2 me-1 text-success"><span class="path1"></span><span class="path2"></span></i> WFH</span>
+                            <span class="badge badge-secondary fs-7 py-2"><i class="ki-duotone ki-delivery-door fs-2 me-1 text-primary"><span class="path1"></span><span class="path2"></span><span class="path3"></span></i> On-Site</span>
+                            <span class="badge badge-secondary fs-7 py-2"><i class="ki-duotone ki-home fs-2 me-1 text-success"><span class="path1"></span><span class="path2"></span></i> WFH</span>
                             <span class="badge badge-secondary fs-7 py-2"><i class="ki-duotone ki-cube-2 fs-2 me-1 text-danger"><span class="path1"></span><span class="path2"></span><span class="path3"></span></i> Head Office</span>
                             <span class="badge badge-success fw-bold fs-7 py-2">Ontime</span>
                             <span class="badge badge-primary fw-bold fs-7 py-2">Finished Work</span>
@@ -277,14 +277,14 @@
                                 <div class="col-4">
                                     <span class="form-check form-check-custom form-check-primary form-check-solid form-check-md">
                                         <input class="form-check-input" type="radio" name="location" value="1" />
-                                        <i class="ki-duotone ki-map fs-1 ms-2 text-primary"> <span class="path1"></span> <span class="path2"></span> <span class="path3"></span></i>
+                                        <i class="ki-duotone ki-delivery-door fs-1 ms-2 text-primary"> <span class="path1"></span> <span class="path2"></span> <span class="path3"></span></i>
                                         <label for="workType1" class="form-check-label fs-6 fw-normal text-gray-800">On-Site</label>
                                     </span>                                            
                                 </div>
                                 <div class="col-4">
                                     <span class="form-check form-check-custom form-check-primary form-check-solid form-check-md">
                                         <input class="form-check-input" type="radio" name="location" value="2" />
-                                        <i class="ki-duotone ki-home-2 fs-1 ms-2 text-success"><span class="path1"></span> <span class="path2"></span></i>
+                                        <i class="ki-duotone ki-home fs-1 ms-2 text-success"><span class="path1"></span> <span class="path2"></span></i>
                                         <label for="workType2" class="form-check-label fs-6 fw-normal text-gray-800">WFH</label>
                                     </span>
                                 </div>
@@ -601,8 +601,8 @@
             
             var locationIcon = '';
             var workType = String(item.work_type || '').trim();
-            if (workType === '1') locationIcon = '<i class="ki-duotone ki-map fs-1 text-primary ms-5" title="On-Site"><span class="path1"></span><span class="path2"></span><span class="path3"></span></i>';
-            else if (workType === '2') locationIcon = '<i class="ki-duotone ki-home-2 fs-1 text-success ms-5" title="WFH"><span class="path1"></span><span class="path2"></span></i>';
+            if (workType === '1') locationIcon = '<i class="ki-duotone ki-delivery-door fs-1 text-primary ms-5" title="On-Site"><span class="path1"></span><span class="path2"></span><span class="path3"></span></i>';
+            else if (workType === '2') locationIcon = '<i class="ki-duotone ki-home fs-1 text-success ms-5" title="WFH"><span class="path1"></span><span class="path2"></span></i>';
             else if (workType === '3') locationIcon = '<i class="ki-duotone ki-cube-2 fs-1 text-danger ms-5" title="Head Office"><span class="path1"></span><span class="path2"></span><span class="path3"></span></i>'
             var descriptionHtml = item.description ? 
                 '<div class="d-flex align-items-center mt-1 ms-4"><i class="ki-solid ki-message-text-2 fs-4 text-gray-400 fw-normal me-2"></i><span class="fw-normal text-gray-700 fs-6">' + item.description + '</span></div>' : '';
