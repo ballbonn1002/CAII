@@ -38,7 +38,7 @@
 		<!--end::Sidebar mobile toggle-->
 		<!--begin::Mobile logo-->
 		<div class="d-flex align-items-center flex-grow-1 flex-lg-grow-0">
-			<a href="index.html" class="d-lg-none"> <img alt="Logo"
+			<a href="check_in_out" class="d-lg-none"> <img alt="Logo"
 				src="assets/media/logos/cube-small-ico.ico" class="h-50px" />
 			</a>
 		</div>
