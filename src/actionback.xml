@@ -557,6 +557,7 @@
 			<result name="error">/index.jsp</result>
 		</action>
 		<!-- List ================================================================================================== -->
+
 		<!-- Search ================================================================================================== -->
 		<action name="dailyMonitorSearch"
 			class="com.cubesofttech.action.DailyMonitorAction"
@@ -565,6 +566,25 @@
 			<result name="error">/index.jsp</result>
 		</action>
 		<!-- Search ================================================================================================== -->
+
+		<!-- Excel ================================================================================================== -->
+		<action name="exportDailyMonitor"
+			class="com.cubesofttech.action.DailyMonitorAction"
+			method="exportExcelDailyMonitor">
+
+			<result name="success" type="stream">
+				<param name="contentType">
+					application/vnd.openxmlformats-officedocument.spreadsheetml.sheet
+				</param>
+				<param name="inputName">inputStream</param>
+				<param name="contentDisposition">
+					attachment;filename="daily_monitor.xlsx"
+				</param>
+				<param name="bufferSize">1024</param>
+			</result>
+			<result name="error">/index.jsp</result>
+		</action>
+		<!-- Excel ================================================================================================== -->
 
 		<!-- Daily Monitor ================================================================================================== -->
 
@@ -584,7 +604,7 @@
 			<result name="success" type="tiles">role.edit</result>
 			<result name="error">/index.jsp</result>
 		</action>
-		
+
 		<!-- เพิ่ม function add -->
 		<action name="role-perform-add"
 			class="com.cubesofttech.action.RoleAction" method="performAdd">
@@ -631,11 +651,12 @@
 			<result name="error">/index.jsp</result>
 		</action>
 		<action name="role-perform-status-update-setting"
-			class="com.cubesofttech.action.RoleAction" method="performEditStatusUpdateSetting">
+			class="com.cubesofttech.action.RoleAction"
+			method="performEditStatusUpdateSetting">
 			<result name="success">/pages-back/common/json.jsp</result>
 			<result name="error">/index.jsp</result>
 		</action>
-		
+
 		<!-- role setting action save -->
 		<action name="role-perform-add-setting"
 			class="com.cubesofttech.action.RoleAction" method="performAddSetting">
@@ -646,7 +667,8 @@
 
 		<!-- role setting action update -->
 		<action name="role-perform-edit-setting"
-			class="com.cubesofttech.action.RoleAction" method="performEditSetting">
+			class="com.cubesofttech.action.RoleAction"
+			method="performEditSetting">
 			<result name="success" type="redirectAction">role-list-setting
 			</result>
 			<result name="error">/index.jsp</result>
@@ -658,9 +680,10 @@
 			<result name="success" type="redirectAction">role-list-setting</result>
 			<result name="error">/index.jsp</result>
 		</action>
-		
+
 		<!-- role edit object -->
-		<action name="role-edit-auth" class="com.cubesofttech.action.RoleAction" method="editAuth">
+		<action name="role-edit-auth"
+			class="com.cubesofttech.action.RoleAction" method="editAuth">
 			<result name="success" type="redirectAction">role-list-setting</result>
 			<result name="error">/index.jsp</result>
 		</action>
@@ -1251,7 +1274,7 @@
 			<result name="success" type="redirectAction">article_feed</result>
 			<result name="error" type="tiles">/index.jsp</result>
 		</action>
-		
+
 	</package>
 
 </struts>

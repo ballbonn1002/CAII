@@ -2964,7 +2964,7 @@ public class WorkHoursDAOImpl implements WorkHoursDAO {
 					.append("GROUP_CONCAT(DISTINCT j.name_site SEPARATOR ', ') AS site, ")
 
 					.append("u.enable, u.work_time_start AS startTime, u.work_time_end AS endTime, ")
-					.append("l.leave_id AS leaveId, l.leave_status_id AS leaveStatus, ")
+					.append("l.leave_id AS leaveId, l.leave_status_id AS leaveStatus, l.half_day AS halfDay, ")
 
 					// ===== time =====
 					.append("DATE_FORMAT(MIN(CASE WHEN wh.work_hours_type = 1 THEN wh.work_hours_time_work END), '%H:%i:%s') AS timeIn, ")
@@ -3001,7 +3001,7 @@ public class WorkHoursDAOImpl implements WorkHoursDAO {
 					.append("OR MAX(CASE WHEN wh.work_hours_type = 2 THEN wh.work_hours_time_work END) IS NULL ")
 					.append("THEN 'Incomplete' ")
 
-					// มาสาย 
+					// มาสาย
 					.append("WHEN TIME(MIN(CASE WHEN wh.work_hours_type = 1 THEN wh.work_hours_time_work END)) > u.work_time_start ")
 					.append("THEN 'Late' ")
 
