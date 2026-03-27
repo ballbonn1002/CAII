@@ -588,6 +588,97 @@
 
 		<!-- Daily Monitor ================================================================================================== -->
 
+		<!-- Overtime Request ================================================================================================== -->
+
+		<!-- List ================================================================================================== -->
+		<action name="overtime_request_list"
+			class="com.cubesofttech.action.OvertimeAction" method="list">
+			<result name="success" type="tiles">overtime_request_list</result>
+			<result name="error">/index.jsp</result>
+		</action>
+		<!-- List ================================================================================================== -->
+
+		<!-- Add ================================================================================================== -->
+		<action name="overtime_request_add"
+			class="com.cubesofttech.action.OvertimeAction" method="add">
+			<result name="success" type="tiles">overtime_request_add</result>
+			<result name="error">/index.jsp</result>
+		</action>
+		<!-- Add ================================================================================================== -->
+
+		<!-- Edit ================================================================================================== -->
+		<action name="overtime_request_edit"
+			class="com.cubesofttech.action.OvertimeAction" method="edit">
+			<result name="success" type="tiles">overtime_request_edit</result>
+			<result name="error">/index.jsp</result>
+		</action>
+		<!-- Edit ================================================================================================== -->
+
+		<!-- Save ================================================================================================== -->
+		<action name="save_overtime"
+			class="com.cubesofttech.action.OvertimeAction" method="save">
+			<result name="success" type="redirectAction">
+				<param name="actionName">overtime_request_list</param>
+			</result>
+			<result name="error">/index.jsp</result>
+		</action>
+		<!-- Save ================================================================================================== -->
+
+		<!-- Update ================================================================================================== -->
+		<action name="overtime_request_update"
+			class="com.cubesofttech.action.OvertimeAction" method="save">
+			<result name="success" type="redirectAction">
+				<param name="actionName">overtime_request_list</param>
+			</result>
+			<result name="error">/index.jsp</result>
+		</action>
+		<!-- Update ================================================================================================== -->
+
+		<!-- Delete ================================================================================================== -->
+		<action name="overtime_request_delete"
+			class="com.cubesofttech.action.OvertimeAction" method="delete">
+			<result name="success" type="redirectAction">
+				<param name="actionName">overtime_request_list</param>
+			</result>
+			<result name="error">/index.jsp</result>
+		</action>
+		<!-- Delete ================================================================================================== -->
+
+		<!-- Overtime Request ================================================================================================== -->
+
+		<!-- Overtime Approve ================================================================================================== -->
+
+		<!-- List ================================================================================================== -->
+		<action name="overtime_approve"
+			class="com.cubesofttech.action.OvertimeAction"
+			method="overtimeApprove">
+			<result name="success" type="tiles">overtime_approve</result>
+			<result name="error">/index.jsp</result>
+		</action>
+		<!-- List ================================================================================================== -->
+
+		<!-- Form ================================================================================================== -->
+		<action name="overtime_approve_form"
+			class="com.cubesofttech.action.OvertimeAction"
+			method="overtimeApproveForm">
+			<result name="success" type="tiles">overtime_approve_form</result>
+			<result name="error">/index.jsp</result>
+		</action>
+		<!-- Form ================================================================================================== -->
+
+		<!-- Update ================================================================================================== -->
+		<action name="overtime_approve_update"
+			class="com.cubesofttech.action.OvertimeAction"
+			method="update_approve">
+			<result name="success" type="redirectAction">
+				<param name="actionName">overtime_approve</param>
+			</result>
+			<result name="error">/index.jsp</result>
+		</action>
+		<!-- Update ================================================================================================== -->
+
+		<!-- Overtime Approve ================================================================================================== -->
+
 		<!-- Role Management ================================================================================================== -->
 		<action name="role-list"
 			class="com.cubesofttech.action.RoleAction" method="list">
