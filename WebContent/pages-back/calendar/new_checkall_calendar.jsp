@@ -874,7 +874,7 @@ var AppCalendar = function() {
 	}
     
 	// Calculate summary
-	function calculateSummary() {
+function calculateSummary() {
 		var events = calendar.getEvents();
 	    var view = calendar.view;
 	    var year = moment(view.currentStart).year();
@@ -893,14 +893,20 @@ var AppCalendar = function() {
 	        noRecord: 0
 	    };
 
-	    var view = calendar.view;
 	    var start = moment(view.currentStart);
 	    var end = moment(view.currentEnd);
 	    var today = moment();
 
 	    for (var day = start.clone(); day.isBefore(end); day.add(1, 'days')) {
+            
 	        var dayEvents = events.filter(function(ev) {
-	            return moment(ev.start).isSame(day, 'day');
+                if (ev.extendedProps && ev.extendedProps.leave_type_id) {
+                    var evStart = moment(ev.start);
+                    var evEnd = ev.end ? moment(ev.end).subtract(1, 'days') : evStart.clone();
+                    return day.isSameOrAfter(evStart, 'day') && day.isSameOrBefore(evEnd, 'day');
+                } else {
+                    return moment(ev.start).isSame(day, 'day');
+                }
 	        });
 
 	        var status = "";
@@ -921,22 +927,14 @@ var AppCalendar = function() {
 	            }
 	            // leave
 	            else if (dayEvents.some(ev => ev.extendedProps && ev.extendedProps.leave_type_id)) {
-	            	dayEvents.forEach(ev => {
-	                    if (ev.extendedProps && ev.extendedProps.leave_type_id) {
-	                        var evStart = moment(ev.start);
-	                        var evEnd = ev.end ? moment(ev.end).subtract(1, 'days') : evStart; // ลด 1 วัน
-
-	                        // คำนวณจำนวนวัน leave
-	                        var leaveDays = evEnd.diff(evStart, 'days') + 1; // +1 เพราะ diff คืนค่าเป็นจำนวนวันเต็มระหว่างวันที่
-	                        if (ev.title.includes("ลาป่วย")) {
-	                            status = "Sick Leave";
-	                            summary.sickLeave += leaveDays;
-	                        } else {
-	                            status = "Leave";
-	                            summary.leave += leaveDays;
-	                        }
-	                    }
-	                });
+                    var leaveEv = dayEvents.find(ev => ev.extendedProps && ev.extendedProps.leave_type_id);
+                    if (leaveEv.title.includes("ลาป่วย")) {
+                        status = "Sick Leave";
+                        summary.sickLeave++;
+                    } else {
+                        status = "Leave";
+                        summary.leave++;
+                    }
 	            }
 	            // work
 	            else if (dayEvents.some(ev => ev.extendedProps && ev.extendedProps.eventType === "work")) {
@@ -957,6 +955,7 @@ var AppCalendar = function() {
 	            }
 	        }
 	    }
+        
 	    // Update value
 	    document.querySelector("#summaryWorkingDay").textContent = summary.workingDay;
 	    document.querySelector("#summaryOnTime").textContent = summary.onTime;
