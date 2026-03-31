@@ -397,9 +397,9 @@
 									<!-- ID , Title -->
 									<div class="d-flex align-items-center mb-2 gap-2">
 										<span class="fw-bold me-2 text-primary">#${leave.leave_id}</span>
-
+											<!-- ลาพักร้อน -->
 											<c:if test="${leave.leave_type_id.toString() == '1'}">
-												<div class="symbol symbol-35px me-4">
+												<div class="symbol symbol-md-35px symbol-30px me-4">
 													<span class="symbol-label bg-light-success">
 														<i class="ki-duotone ki-airplane fs-2x text-success">
 															<span class="path1"></span>
@@ -409,8 +409,9 @@
 												</div>
 												<span class="badge badge-light-success fs-4">${leave.leave_type_name}</span>
 											</c:if>
+											<!-- ลากิจ -->
 											<c:if test="${leave.leave_type_id.toString() == '2'}">
-												<div class="symbol symbol-35px me-4">
+												<div class="symbol symbol-md-35px symbol-30px me-4">
 													<span class="symbol-label bg-light-primary">
 														<i class="ki-duotone ki-car-2 fs-2x text-primary">
 															<span class="path1"></span>
@@ -424,8 +425,9 @@
 												</div>
 												<span class="badge badge-light-primary fs-4">${leave.leave_type_name}</span>
 											</c:if>
+											<!-- ลาป่วย -->
 											<c:if test="${leave.leave_type_id.toString() == '3'}">
-												<div class="symbol symbol-35px me-4">
+												<div class="symbol symbol-md-35px symbol-30px me-4">
 													<span class="symbol-label bg-light-info">
 														<i class="ki-duotone ki-pulse fs-2x text-info">
 															<span class="path1"></span>
@@ -435,8 +437,9 @@
 												</div>
 												<span class="badge badge-light-info fs-4">${leave.leave_type_name}</span>
 											</c:if>
+											<!-- ขาดงาน -->
 											<c:if test="${leave.leave_type_id.toString() == '4'}">
-												<div class="symbol symbol-35px me-4">
+												<div class="symbol symbol-md-35px symbol-30px me-4">
 													<span class="symbol-label bg-light-danger">
 														<i class="ki-duotone ki-calendar-remove fs-2x text-danger">
 															<span class="path1"></span>
@@ -450,8 +453,9 @@
 												</div>
 												<span class="badge badge-light-danger fs-4">${leave.leave_type_name}</span>
 											</c:if>
+											<!-- ลาโดยไม่รับค่าจ้าง -->
 											<c:if test="${leave.leave_type_id.toString() == '5'}">
-												<div class="symbol symbol-35px me-4">
+												<div class="symbol symbol-md-35px symbol-30px me-4">
 													<span class="symbol-label bg-light-dark">
 														<i class="ki-duotone ki-brifecase-cros fs-2x text-dark">
 															<span class="path1"></span>
@@ -462,8 +466,9 @@
 												</div>
 												<span class="badge badge-light-dark fs-4">${leave.leave_type_name}</span>
 											</c:if>
+											<!-- ลาพักร้อนที่เหลือจากปีก่อน -->
 											<c:if test="${leave.leave_type_id.toString() == '6'}">
-												<div class="symbol symbol-35px me-4">
+												<div class="symbol symbol-md-35px symbol-30px me-4">
 													<span class="symbol-label bg-light-warning">
 														<i class="ki-duotone ki-timer fs-2x text-warning">
 															<span class="path1"></span>
@@ -474,8 +479,21 @@
 												</div>
 												<span class="badge badge-light-warning fs-4">${leave.leave_type_name}</span>
 											</c:if>
+											<!-- ลาอื่นๆ -->
 											<c:if test="${leave.leave_type_id.toString() == '7'}">
-												<div class="symbol symbol-35px me-4">
+												<div class="symbol symbol-md-35px symbol-30px me-4">
+													<span class="symbol-label" style="background-color: #4B5675;">
+														<i class="ki-duotone ki-abstract-12 fs-2x" style="color: #FFFFFF;">
+															<span class="path1"></span>
+															<span class="path2"></span>
+														</i>
+													</span>
+												</div>
+												<span class="badge badge-light-dark fs-4">${leave.leave_type_name}</span>
+											</c:if>
+											<!-- ลาโดยไม่รับค่าจ้าง -->
+											<c:if test="${leave.leave_type_id.toString() == '9'}">
+												<div class="symbol symbol-md-35px symbol-30px me-4">
 													<span class="symbol-label" style="background-color: #4B5675;">
 														<i class="ki-duotone ki-abstract-12 fs-2x" style="color: #FFFFFF;">
 															<span class="path1"></span>
@@ -581,7 +599,6 @@
 													<c:if test="${leave.half_day.toString() == 3}"><span>ช่วงเวลา</span></c:if>
 												</c:if>
 											</div>
-
 											<div class="d-flex align-items-center">
 												<i class="ki-duotone ki-time fs-5">
 													<span class="path1"></span>
@@ -590,18 +607,16 @@
 													<span class="path4"></span>
 													<span class="path5"></span>
 												</i>
-												${leave.start_time} - ${leave.end_time}
+												 ${leave.start_time} - ${leave.end_time}
 											</div>
 										</div>
 									</div>
 
 									<div class="card-toolbar">
 										<div class="d-inline-flex align-items-center justify-content-end gap-2">
-
 											<span class="text-muted fs-7">
 												Request Date: <fmt:formatDate value="${leave.time_create}" type="date" pattern="d MMM yyyy" />
 											</span>
-
 											<c:if test="${leave.leave_status_id.toString() == '0'}">
 												<span class="badge badge-light-warning badge-lg ms-2">Wait for approve</span>
 											</c:if>
@@ -644,7 +659,6 @@
 <div class="modal fade" id="leaveDetailModal" tabindex="-1" aria-hidden="true">
 	<div class="modal-dialog modal-lg">
 		<div class="modal-content">
-
 			<!--begin::Header-->
 			<div class="modal-header">
 				<h2 class="modal-title">Leave</h2>
@@ -703,7 +717,7 @@
 						</div>
 
 						<div class="d-flex align-items-center text-gray-700 mb-2 fs-6">
-							<i class="ki-duotone ki-document me-2">
+							<i class="ki-duotone ki-document me-2" id="mdFileIcon">
 								 <span class="path1"></span>
 								 <span class="path2"></span>
 							</i>
@@ -1030,8 +1044,11 @@ function leaveStatus(id) {
 			$('#stime').html(obj.start_time);
 			$('#etime').html(obj.end_time);
 			$('#desc').html(obj.description);
-			$('#file').html(obj.leave_file_name + obj.leave_file_type).attr('href', 'preview_File?id=' + obj.leave_file_id).attr('target', '_blank');
-
+			if(obj.leave_file_name == null){
+				$('#file').html("-");
+			}else{
+				$('#file').html(obj.leave_file_name + obj.leave_file_type).attr('href', 'preview_File?id=' + obj.leave_file_id).attr('target', '_blank');
+			}
 			// leave type name
 			if (obj.leave_type_id == 1) {
 				$('#leavetype').html("ลาพักร้อน");

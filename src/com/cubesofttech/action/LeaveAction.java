@@ -4,11 +4,13 @@ import java.io.File;
 import java.io.InputStream;
 import java.io.PrintWriter;
 import java.math.BigDecimal;
+import java.nio.file.Files;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.util.Base64;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -1159,7 +1161,6 @@ public class LeaveAction extends ActionSupport {
 
 			//String status = "1";
 			List LeaveID = leaveDAO.findLeaveId(userLogin, start_date, end_date, "1");
-
 			Double leave_1 = 0.000, leave_2 = 0.000, leave_3 = 0.000, leave_4 = 0.000, leave_5 = 0.000, leave_6 = 0.000, leave_7 = 0.000, leave_9 = 0.000;
 			int x = 0;
 			while (x <= LeaveID.size() - 1) {
@@ -1320,6 +1321,7 @@ public class LeaveAction extends ActionSupport {
 			String userListJSON = userDAO.userListJSON();
 			Double quotaThisYear = leaveDAO.ThisYearQuota(userLogin);
 			log.debug("quota of this year : " + quotaThisYear);
+			request.setAttribute("quota_4", quotaThisYear);
 			Double qThisYear = quotaThisYear - (leave_1 + leave_2);
 			request.setAttribute("quotaThisYear", qThisYear.intValue());
 
@@ -1882,8 +1884,34 @@ public class LeaveAction extends ActionSupport {
 			String id = request.getParameter("id");
 			log.debug(id);
 			FileUpload fileUpload = fileuploadDAO.findById(Integer.parseInt(id));
-			request.setAttribute("pathImage", fileUpload.getPath());
-			return SUCCESS;
+			String realPath = request.getSession().getServletContext().getRealPath(fileUpload.getPath());
+			File imgFile = new File(realPath);
+			if (imgFile.exists()) {
+				byte[] fileContent = Files.readAllBytes(imgFile.toPath());
+				String base64Encoded = Base64.getEncoder().encodeToString(fileContent);
+				String mimeType = Files.probeContentType(imgFile.toPath());
+	            if (mimeType == null) {
+	                mimeType = "image/png"; //default value
+	            }
+	            String htmlResponse = "<!DOCTYPE html>"
+	                    + "<html><head><title>Preview Image</title>"
+	                    + "<style>"
+	                    + "  body { background-color: #f3f4f6; margin: 0; display: flex; justify-content: center; align-items: center; min-height: 100vh; }"
+	                    + "  img { max-width: 95%; max-height: 95vh; object-fit: contain; box-shadow: 0 4px 8px rgba(0,0,0,0.2); background: #fff; }"
+	                    + "</style>"
+	                    + "</head><body>"
+	                    + "<img src=\"data:" + mimeType + ";base64," + base64Encoded + "\" alt=\"Preview\">"
+	                    + "</body></html>";
+	            response.setContentType("text/html; charset=UTF-8");
+	            PrintWriter out = response.getWriter();
+	            out.print(htmlResponse);
+	            out.flush();
+	            out.close();
+	            return null;
+			} else {
+				return ERROR;
+			}
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 			return ERROR;
@@ -1998,7 +2026,7 @@ public class LeaveAction extends ActionSupport {
 			out.flush();
 			out.close();
 
-			return SUCCESS;
+			return null;
 
 		} catch (Exception e) {
 			e.printStackTrace();
