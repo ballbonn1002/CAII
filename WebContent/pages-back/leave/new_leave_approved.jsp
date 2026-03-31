@@ -74,7 +74,7 @@
 										<!-- Select Employee -->
 										<div class="col-md-10">
 											<div class="mb-5">
-												<select class="form-select" id="name2" name="name2" onchange="this.form.submit()" value="${userSelect2}">
+												<select class="form-select" id="name2" name="name2" onchange="this.form.submit()">
 													
 												</select>
 											</div>
@@ -861,7 +861,6 @@ $(document).ready(function(){
 
 function CreateListUsers(value, user_login, userSelect2) {
 	const select = document.getElementById('name2');
-
 	$.ajax({
 		url: "CreateListUsers",
 		method: "POST",
@@ -871,9 +870,7 @@ function CreateListUsers(value, user_login, userSelect2) {
 			"user_login": user_login
 		},
 		success: function(data) {
-
 			var obj = JSON.parse(data);
-
 			let option = '<option></option>';
 			let enableGroup = '<optgroup label="Enable">';
 			let disableGroup = '<optgroup label="Disable">';
@@ -889,19 +886,15 @@ function CreateListUsers(value, user_login, userSelect2) {
 				var nameEn = obj[i].name_en ? obj[i].name_en : "";
 
 				var displayText = '';
-
 				if (employeeId) {
 					displayText += employeeId;
 				}
-
 				if (nameEn) {
 					displayText += (displayText ? ' - ' : '') + nameEn;
 				}
-
 				if (name) {
 					displayText += (displayText ? ' - ' : '') + name;
 				}
-
 				var optionHtml = '<option value="'+obj[i].id+'" '+txt+'>'+displayText+'</option>';
 
 				//แยก enable/disable
@@ -914,8 +907,22 @@ function CreateListUsers(value, user_login, userSelect2) {
 
 			enableGroup += '</optgroup>';
 			disableGroup += '</optgroup>';
-
 			select.innerHTML = option + enableGroup + disableGroup;
+			
+			var selectElem = $('#name2');
+		    var originalOnChange = selectElem.attr('onchange');
+		    selectElem.removeAttr('onchange');
+		    selectElem.html(option + enableGroup + disableGroup);
+
+		    if (userSelect2) {
+		        selectElem.val(userSelect2);
+		    }
+
+		    selectElem.trigger('change');
+		    
+		    if (originalOnChange) {
+		        selectElem.attr('onchange', originalOnChange);
+		    }
 		}
 	});
 }
