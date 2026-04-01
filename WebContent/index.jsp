@@ -94,12 +94,12 @@
 								
 								<!--end::Input group=-->
 								<!--begin::Wrapper-->
-								<div class="d-flex flex-stack flex-wrap gap-3 fs-base fw-semibold mb-8">
+								<!-- <div class="d-flex flex-stack flex-wrap gap-3 fs-base fw-semibold mb-8">
 									<div></div>
-									<!--begin::Link-->
+									begin::Link
 									<a href="forget_password" class="link-primary">Forgot Password ?</a>
-									<!--end::Link-->
-								</div>
+									end::Link
+								</div> -->
 								<!--end::Wrapper-->
 								<!--begin::Submit button-->
 								<div class="d-grid mb-10">
