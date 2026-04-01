@@ -132,7 +132,8 @@ function showSessionAlert() {
         allowEscapeKey: false
     }).then((result) => {
         if (result.isConfirmed) {
-            window.location.reload(); 
+            //window.location.reload(); 
+        	window.location.href = 'index.jsp';
         }
     });
 }
