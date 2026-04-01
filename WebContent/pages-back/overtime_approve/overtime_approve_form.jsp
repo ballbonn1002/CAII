@@ -274,7 +274,7 @@
 
 							var calculatedApprHours = finalHours;
 
-							var recommendedRate = "1.5"; 
+							var recommendedRate = "1.5";
 
 							if (isWeekend) {
 								recommendedRate = "1.0";
@@ -334,7 +334,20 @@
 					});
 
 	function submitWithStatus(status) {
-		document.getElementById('approveStatus').value = status;
-		document.getElementById('approveForm').submit();
+
+		let desc = document.querySelector('textarea[name="description_appr"]').value
+				.trim();
+
+		if (!desc && status != 'A') {
+			Swal.fire({
+				text : "Please type the description.",
+				icon : "warning",
+
+			});
+		} else {
+			document.getElementById('approveStatus').value = status;
+			document.getElementById('approveForm').submit();
+		}
+
 	}
 </script>

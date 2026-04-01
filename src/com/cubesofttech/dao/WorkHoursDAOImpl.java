@@ -2844,88 +2844,110 @@ public class WorkHoursDAOImpl implements WorkHoursDAO {
 		return workHourList;
 	}
 
-// have site filed
-
 //	@Override
-//	public List<Map<String, Object>> findForDailyReport(String userId, String jobSiteId, String selectDate)
-//			throws Exception {
+//	public List<Map<String, Object>> findForDailyReport(String userId, String jobSiteId, String statusSelect,
+//			String selectDate) throws Exception {
 //
 //		Session session = this.sessionFactory.getCurrentSession();
-//		List<Map<String, Object>> list = null;
+//		List<Map<String, Object>> list = new ArrayList<>();
 //
 //		try {
 //			StringBuilder sql = new StringBuilder();
 //
+//			sql.append("SELECT * FROM ( ");
+//
 //			sql.append("SELECT DATE(:selectDate) AS date, ").append(
 //					"u.employee_id AS empId, u.id AS userId, u.name AS name, u.name_en AS nameEn, u.nick_name AS nickname, ")
 //					.append("u.position_id AS position, ")
-//
-//					// ⭐ รวม site ไม่ให้ซ้ำ
 //					.append("GROUP_CONCAT(DISTINCT j.name_site SEPARATOR ', ') AS site, ")
+//					.append("u.enable, u.work_time_start AS startTime, u.work_time_end AS endTime, ")
+//					.append("l.leave_id AS leaveId, l.leave_status_id AS leaveStatus, l.half_day AS halfDay, ")
 //
-//					.append("u.enable, u.work_time_start AS startTime, u.work_time_end AS endTime, l.leave_id AS leaveId, l.leave_status_id AS leaveStatus, ")
+//					// ===== TIME =====
+//					.append("DATE_FORMAT(MIN(CASE WHEN wh.work_hours_type = 1 THEN wh.work_hours_time_work END), '%H:%i:%s') AS timeIn, ")
+//					.append("DATE_FORMAT(MAX(CASE WHEN wh.work_hours_type = 2 THEN wh.work_hours_time_work END), '%H:%i:%s') AS timeOut, ")
 //
-//					// ===== time in/out =====
-//					.append("DATE_FORMAT(COALESCE(TIME(MIN(CASE WHEN wh.work_hours_type = 1 THEN wh.work_hours_time_work END))), '%H:%i:%s') AS timeIn, ")
-//					.append("DATE_FORMAT(COALESCE(TIME(MAX(CASE WHEN wh.work_hours_type = 2 THEN wh.work_hours_time_work END))), '%H:%i:%s') AS timeOut, ")
+//					// ===== WORKING HOURS =====
+//					.append("CASE ")
+//					.append("WHEN MIN(CASE WHEN wh.work_hours_type = 1 THEN wh.work_hours_time_work END) IS NOT NULL ")
+//					.append("AND MAX(CASE WHEN wh.work_hours_type = 2 THEN wh.work_hours_time_work END) IS NOT NULL ")
+//					.append("THEN DATE_FORMAT(TIMEDIFF( ")
+//					.append("MAX(CASE WHEN wh.work_hours_type = 2 THEN wh.work_hours_time_work END), ")
+//					.append("MIN(CASE WHEN wh.work_hours_type = 1 THEN wh.work_hours_time_work END) ")
+//					.append("), '%H:%i') ELSE NULL END AS workingHours, ")
 //
-//					// ===== stamp =====
-//					.append("DATE_FORMAT(COALESCE(MIN(CASE WHEN wh.work_hours_type = 1 THEN wh.time_create END)), '%Y-%m-%d %H:%i:%s') AS stampIn, ")
-//					.append("DATE_FORMAT(COALESCE(MAX(CASE WHEN wh.work_hours_type = 2 THEN wh.time_create END)), '%Y-%m-%d %H:%i:%s') AS stampOut, ")
-//
-//					// ===== leave =====
+//					// ===== LEAVE =====
 //					.append("MAX(CASE ")
 //					.append("WHEN l.start_date <= :selectDate AND l.end_date >= :selectDate AND l.leave_status_id IN (0,1) ")
 //					.append("THEN lt.leave_type_name ELSE NULL END) AS leaveType, ")
 //
-//					// ===== status =====
+//					// ===== STATUS =====
 //					.append("CASE ")
-//					.append("WHEN TIME(MIN(CASE WHEN wh.work_hours_type = 1 THEN wh.work_hours_time_work END)) IS NULL ")
-//					.append("OR TIME(MAX(CASE WHEN wh.work_hours_type = 2 THEN wh.work_hours_time_work END)) IS NULL ")
+//					.append("WHEN MIN(CASE WHEN wh.work_hours_type = 1 THEN wh.work_hours_time_work END) IS NULL ")
+//					.append("AND MAX(CASE WHEN wh.work_hours_type = 2 THEN wh.work_hours_time_work END) IS NULL ")
 //					.append("THEN 'Absent/Error' ")
-//
+//					.append("WHEN MIN(CASE WHEN wh.work_hours_type = 1 THEN wh.work_hours_time_work END) IS NULL ")
+//					.append("OR MAX(CASE WHEN wh.work_hours_type = 2 THEN wh.work_hours_time_work END) IS NULL ")
+//					.append("THEN 'Incomplete' ")
 //					.append("WHEN TIME(MIN(CASE WHEN wh.work_hours_type = 1 THEN wh.work_hours_time_work END)) > u.work_time_start ")
 //					.append("THEN 'Late' ")
-//
 //					.append("WHEN TIME(MAX(CASE WHEN wh.work_hours_type = 2 THEN wh.work_hours_time_work END)) < u.work_time_end ")
-//					.append("AND (TIME_TO_SEC(TIMEDIFF( ")
-//					.append("TIME(MAX(CASE WHEN wh.work_hours_type = 2 THEN wh.work_hours_time_work END)), ")
-//					.append("TIME(MIN(CASE WHEN wh.work_hours_type = 1 THEN wh.work_hours_time_work END)) )) / 60 < 540) ")
-//					.append("THEN 'Early Out' ")
+//					.append("THEN 'Early Out' ").append("WHEN (TIME_TO_SEC(TIMEDIFF( ")
+//					.append("MAX(CASE WHEN wh.work_hours_type = 2 THEN wh.work_hours_time_work END), ")
+//					.append("MIN(CASE WHEN wh.work_hours_type = 1 THEN wh.work_hours_time_work END) ")
+//					.append(")) / 60) < 480 ").append("THEN 'Unfinished Work' ").append("ELSE 'OnTime' END AS status ")
 //
-//					.append("ELSE 'OnTime' END AS status ")
-//
-//					// ===== FROM =====
 //					.append("FROM user u ").append("LEFT JOIN job_site_team jt ON u.id = jt.user_id ")
 //					.append("LEFT JOIN job_site j ON jt.id_sitejob = j.id_sitejob ")
-//					.append("LEFT JOIN work_hours wh ON u.id = wh.user_create AND DATE(wh.work_hours_time_work) = :selectDate ")
+//
+//					// 🔥 FIX PERFORMANCE (no DATE())
+//					.append("LEFT JOIN work_hours wh ON u.id = wh.user_create ")
+//					.append("AND wh.work_hours_time_work >= :startDate ")
+//					.append("AND wh.work_hours_time_work < :endDate ")
+//
 //					.append("LEFT JOIN position p ON u.position_id = p.position_id ")
-//					.append("LEFT JOIN leaves l ON u.id = l.user_id AND l.start_date <= :selectDate AND l.end_date >= :selectDate ")
+//					.append("LEFT JOIN leaves l ON u.id = l.user_id ")
+//					.append("AND l.start_date <= :selectDate AND l.end_date >= :selectDate ")
 //					.append("LEFT JOIN leave_type lt ON l.leave_type_id = lt.leave_type_id ")
 //
-//					// ===== WHERE =====
 //					.append("WHERE u.enable = 1 ");
 //
-//			// dynamic filter user
+//			// ===== FILTER USER =====
 //			if (userId != null && !"all".equalsIgnoreCase(userId)) {
 //				sql.append("AND u.id = :userId ");
 //			}
 //
-//			// dynamic filter site
+//			// ===== FILTER SITE =====
 //			if (jobSiteId != null && !"all".equalsIgnoreCase(jobSiteId)) {
 //				sql.append("AND jt.id_sitejob = :jobSiteId ");
 //			}
 //
-//			// ===== GROUP BY (❌ ไม่มี j.name_site แล้ว) =====
-//			sql.append("GROUP BY u.id, u.employee_id, u.name, u.name_en, u.nick_name, ")
-//					.append("u.position_id, u.work_time_start, u.work_time_end, l.leave_id ")
+//			sql.append("GROUP BY u.id ");
 //
-//					// ===== ORDER =====
-//					.append("ORDER BY u.employee_id ASC");
+//			sql.append(") t WHERE 1=1 ");
+//
+//			// ===== FILTER STATUS =====
+//			if (statusSelect != null && !"all".equals(statusSelect)) {
+//
+//				if ("Leave".equals(statusSelect)) {
+//					sql.append("AND t.leaveType IN ('ลากิจ','ลาพักร้อน','ลาพักร้อนที่เหลือจากปีก่อน') ");
+//				} else if ("ลาป่วย".equals(statusSelect)) {
+//					sql.append("AND t.leaveType = 'ลาป่วย' ");
+//				} else if ("Absent/Error".equals(statusSelect)) {
+//					sql.append("AND t.status = 'Absent/Error' AND t.leaveType IS NULL ");
+//				} else {
+//					sql.append("AND t.status = :statusSelect ");
+//				}
+//			}
+//
+//			sql.append("ORDER BY t.empId ASC ");
 //
 //			SQLQuery query = session.createSQLQuery(sql.toString());
 //
+//			// ===== PARAM =====
 //			query.setParameter("selectDate", selectDate);
+//			query.setParameter("startDate", selectDate + " 00:00:00");
+//			query.setParameter("endDate", selectDate + " 23:59:59");
 //
 //			if (userId != null && !"all".equalsIgnoreCase(userId)) {
 //				query.setParameter("userId", userId);
@@ -2933,6 +2955,12 @@ public class WorkHoursDAOImpl implements WorkHoursDAO {
 //
 //			if (jobSiteId != null && !"all".equalsIgnoreCase(jobSiteId)) {
 //				query.setParameter("jobSiteId", jobSiteId);
+//			}
+//
+//			if (statusSelect != null && !"all".equals(statusSelect) && !"Leave".equals(statusSelect)
+//					&& !"ลาป่วย".equals(statusSelect) && !"Absent/Error".equals(statusSelect)) {
+//
+//				query.setParameter("statusSelect", statusSelect);
 //			}
 //
 //			query.setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP);
@@ -3033,8 +3061,12 @@ public class WorkHoursDAOImpl implements WorkHoursDAO {
 				sql.append("AND u.id = :userId ");
 			}
 
-			if (jobSiteId != null && !"all".equalsIgnoreCase(jobSiteId)) {
+			if (jobSiteId != null && !"all".equalsIgnoreCase(jobSiteId) && !"no site".equalsIgnoreCase(jobSiteId)) {
 				sql.append("AND jt.id_sitejob = :jobSiteId ");
+			}
+
+			if (jobSiteId != null && "no site".equalsIgnoreCase(jobSiteId)) {
+				sql.append("AND jt.id_sitejob IS NULL ");
 			}
 
 			// ===== GROUP BY =====
@@ -3052,7 +3084,7 @@ public class WorkHoursDAOImpl implements WorkHoursDAO {
 				query.setParameter("userId", userId);
 			}
 
-			if (jobSiteId != null && !"all".equalsIgnoreCase(jobSiteId)) {
+			if (jobSiteId != null && !"all".equalsIgnoreCase(jobSiteId) && !"no site".equalsIgnoreCase(jobSiteId)) {
 				query.setParameter("jobSiteId", jobSiteId);
 			}
 

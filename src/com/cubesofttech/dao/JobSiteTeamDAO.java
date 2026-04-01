@@ -7,7 +7,7 @@ import com.cubesofttech.model.JobSiteTeam;
 
 public interface JobSiteTeamDAO {
 	public JobSiteTeam findById(Integer id) throws Exception;
-	
+
 	public JobSiteTeam findByIdSiteJobAndUserId(String idSiteJob, String userId) throws Exception;
 
 	public List<JobSiteTeam> findAllByUserId(String userId) throws Exception;
@@ -15,20 +15,22 @@ public interface JobSiteTeamDAO {
 	public void save(JobSiteTeam jobsite) throws Exception;
 
 	public void delete(JobSiteTeam jobsite) throws Exception;
-	
+
 	public void deleteByIdSiteJob(String idSiteJob) throws Exception;
-	
+
 	public List<JobSiteTeam> findAllJobsiteByJobsiteId(String jobsiteId) throws Exception;
-	
+
 	List<Map<String, Object>> findByJobsite(Integer id_sitejob) throws Exception;
-	
+
 	List<Map<String, Object>> findSiteByUserId(String userId) throws Exception;
-	
+
 	List<Map<String, Object>> findTeamByUserId(String userId) throws Exception;
-	
+
 	List<Map<String, Object>> findSitesAndMembersByUserId(String userId) throws Exception;
-	
-	List<Map<String, Object>> findSitesMembersWorkByUserAndDate(String loginUserId, String selectedDate) throws Exception;
-	
-	
+
+	List<Map<String, Object>> findSitesMembersWorkByUserAndDate(String loginUserId, String selectedDate)
+			throws Exception;
+
+	public List<Map<String, Object>> findAllSiteByUserIds() throws Exception;
+
 }

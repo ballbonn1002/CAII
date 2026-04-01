@@ -146,8 +146,7 @@ public class JobSiteTeamDAOImpl implements JobSiteTeamDAO {
 				+ "  u.name_en           AS name_en, " + "  u.name              AS name, "
 				+ "  u.work_time_start   AS work_time_start, " + "  u.work_time_end     AS work_time_end "
 				+ "FROM job_site_team jt " + "LEFT JOIN user u ON u.id = jt.user_id "
-				+ "WHERE jt.id_sitejob = :id_sitejob " + "  AND u.id IS NOT NULL "
-				+ "  AND u.enable = '1' "
+				+ "WHERE jt.id_sitejob = :id_sitejob " + "  AND u.id IS NOT NULL " + "  AND u.enable = '1' "
 				+ "ORDER BY jt.job_site_team_id ASC";
 
 		SQLQuery query = session.createSQLQuery(sql);
@@ -197,9 +196,8 @@ public class JobSiteTeamDAOImpl implements JobSiteTeamDAO {
 				+ "       ON js.id_sitejob = jt.id_sitejob " + "JOIN user u " + "       ON u.id = jt.user_id "
 				+ "LEFT JOIN work_hours wh " + "       ON wh.user_create = u.id "
 				+ "      AND DATE(wh.work_hours_time_work) = :selectedDate " + "WHERE jt_me.user_id = :loginUserId "
-				+ "  AND u.enable = '1' "
-				+ "  AND js.is_active = '1' "
-				+ "GROUP BY " + "    js.id_sitejob, js.name_site, " + "    u.id, u.employee_id, u.name_en, u.name "
+				+ "  AND u.enable = '1' " + "  AND js.is_active = '1' " + "GROUP BY "
+				+ "    js.id_sitejob, js.name_site, " + "    u.id, u.employee_id, u.name_en, u.name "
 				+ "ORDER BY js.id_sitejob ASC, jt.job_site_team_id ASC";
 
 		SQLQuery query = session.createSQLQuery(sql);
@@ -211,6 +209,31 @@ public class JobSiteTeamDAOImpl implements JobSiteTeamDAO {
 		List<Map<String, Object>> list = query.list();
 		return list;
 	}
-	
+
+	@Override
+	public List<Map<String, Object>> findAllSiteByUserIds() throws Exception {
+
+		Session session = this.sessionFactory.getCurrentSession();
+		List<Map<String, Object>> list = null;
+
+		try {
+			StringBuilder sql = new StringBuilder();
+
+			sql.append("SELECT ").append("jt.user_id AS user_id, ").append("j.id_sitejob AS site_id, ")
+					.append("j.name_site AS name_site ").append("FROM job_site_team jt ")
+					.append("JOIN job_site j ON jt.id_sitejob = j.id_sitejob ");
+
+			SQLQuery query = session.createSQLQuery(sql.toString());
+
+			query.setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
+
+			list = query.list();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		return list;
+	}
 
 }

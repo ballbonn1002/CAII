@@ -66,8 +66,8 @@
 			</div>
 			<a class="btn"
 				href="exportDailyMonitor?searchDate=${searchDate}&&jobSiteSelect=${idJobSiteSelected}&&statusSelect=${statusSelected}&&userSelect=${idUserSelected}"
-				style="background: #F9F9F9"><i class="bi bi-filetype-xml fs-2" style="color: #50BEE8"></i> 
-				Download Excel</a>
+				style="background: #F9F9F9"><i class="bi bi-filetype-xml fs-2"
+				style="color: #50BEE8"></i> Download Excel</a>
 		</div>
 		<div class="app-content">
 			<div class="card mb-5">
@@ -78,11 +78,12 @@
 							<div class="w-100">
 								<label class="form-label">Job Site</label> <select
 									class="form-select" id="jobSiteSelect" name="jobSiteSelect">
-									<option value="all">All</option>
+									<option value="all"
+										${idJobSiteSelected == 'all'? 'selected': ''}>All</option>
 									<c:forEach var="j" items="${jobSiteList}">
 										<c:choose>
 											<c:when
-												test="${not empty idJobSiteSelected && idJobSiteSelected != 'all'}">
+												test="${not empty idJobSiteSelected && idJobSiteSelected != 'all'&& idJobSiteSelected != 'no site'}">
 												<option value="${j.id_sitejob}"
 													${j.id_sitejob == idJobSiteSelected ? 'selected' : ''}>${j.name_site}</option>
 											</c:when>
@@ -91,6 +92,9 @@
 											</c:otherwise>
 										</c:choose>
 									</c:forEach>
+									<option value="no site"
+										${idJobSiteSelected == 'no site'? 'selected': ''}>No
+										Site</option>
 								</select>
 							</div>
 							<div class="w-100">

@@ -302,6 +302,7 @@ public interface WorkHoursDAO {
 	public List<Map<String, Object>> getWorkHourDailyUserActive(String userId, String jobSiteId, Date date)
 			throws Exception;
 
-	List<Map<String, Object>> findForDailyReport(String userId, String jobSiteId, String selectDate) throws Exception;
+	public List<Map<String, Object>> findForDailyReport(String userId, String jobSiteId, String selectDate)
+			throws Exception;
 
 }

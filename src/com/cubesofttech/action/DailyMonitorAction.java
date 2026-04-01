@@ -28,7 +28,6 @@ import com.cubesofttech.dao.JobSiteTeamDAO;
 import com.cubesofttech.dao.JobsiteDAO;
 import com.cubesofttech.dao.UserDAO;
 import com.cubesofttech.dao.WorkHoursDAO;
-import com.cubesofttech.model.User;
 import com.opensymphony.xwork2.ActionSupport;
 
 public class DailyMonitorAction extends ActionSupport {
@@ -60,7 +59,6 @@ public class DailyMonitorAction extends ActionSupport {
 	public String dailyMonitorList() {
 
 		try {
-			User ur = (User) request.getSession().getAttribute("onlineUser");
 
 			request.setAttribute("idUserSelected", "all");
 			request.setAttribute("idJobSiteSelected", "all");
@@ -93,50 +91,58 @@ public class DailyMonitorAction extends ActionSupport {
 			int totalIncomplete = 0;
 			int totalNoRecord = 0;
 
+			List<Map<String, Object>> jobSites = jobSiteTeamDAO.findAllSiteByUserIds();
+
 			Map<String, List<Map<String, Object>>> jobSiteMap = new HashMap<>();
 
-			for (Map<String, Object> daily : dailyReportList) {
+			for (Map<String, Object> row : jobSites) {
+				String userId = row.get("user_id").toString().toLowerCase().trim();
 
-				String userId = (String) daily.get("userId");
-				String status = (String) daily.get("status");
-				String leaveType = (String) daily.get("leaveType");
-
-				List<Map<String, Object>> jobSite = jobSiteTeamDAO.findSiteByUserId(userId);
-
-				jobSiteMap.put(userId, jobSite);
-
-				if ("OnTime".equals(status)) {
-					totalOntime++;
-				} else if ("Late".equals(status)) {
-					totalLate++;
-				} else if ("Early Out".equals(status)) {
-					totalEarlyOut++;
-				} else if ("Unfinished Work".equals(status)) {
-					totalUnfinishedWork++;
-				} else if ("Incomplete".equals(status)) {
-					totalIncomplete++;
-				} else if ("Absent/Error".equals(status)) {
-					totalNoRecord++;
-				}
-
-				if ("ลาป่วย".equals(leaveType)) {
-					totalSickLeave++;
-					if ("Absent/Error".equals(status)) {
-						totalNoRecord--;
-					}
-
-				} else if ("ลากิจ".equals(leaveType) || "ลาพักร้อน".equals(leaveType)
-						|| "ลาพักร้อนที่เหลือจากปีก่อน".equals(leaveType)) {
-					totalLeave++;
-
-					if ("Absent/Error".equals(status)) {
-						totalNoRecord--;
-					}
-				}
-
+				jobSiteMap.computeIfAbsent(userId, k -> new ArrayList<>()).add(row);
 			}
 
 			request.setAttribute("jobSiteMap", jobSiteMap);
+
+			for (Map<String, Object> daily : dailyReportList) {
+
+				String status = (String) daily.get("status");
+				String leaveType = (String) daily.get("leaveType");
+
+				boolean isLeave = leaveType != null;
+				boolean isSick = "ลาป่วย".equals(leaveType);
+
+				if (isSick) {
+					totalSickLeave++;
+					continue;
+				}
+
+				if (isLeave) {
+					totalLeave++;
+					continue;
+				}
+
+				switch (status) {
+				case "OnTime":
+					totalOntime++;
+					break;
+				case "Late":
+					totalLate++;
+					break;
+				case "Early Out":
+					totalEarlyOut++;
+					break;
+				case "Unfinished Work":
+					totalUnfinishedWork++;
+					break;
+				case "Incomplete":
+					totalIncomplete++;
+					break;
+				case "Absent/Error":
+					totalNoRecord++;
+					break;
+				}
+
+			}
 
 			request.setAttribute("dailyWorkUser", dailyReportList);
 
@@ -175,7 +181,6 @@ public class DailyMonitorAction extends ActionSupport {
 
 	public String dailyMonitorSearch() {
 		try {
-			User ur = (User) request.getSession().getAttribute("onlineUser");
 
 			String searchDate = request.getParameter("searchDate");
 			String jobSiteId = request.getParameter("jobSiteSelect");
@@ -236,49 +241,60 @@ public class DailyMonitorAction extends ActionSupport {
 			int totalIncomplete = 0;
 			int totalNoRecord = 0;
 
+			List<Map<String, Object>> jobSites = jobSiteTeamDAO.findAllSiteByUserIds();
+
 			Map<String, List<Map<String, Object>>> jobSiteMap = new HashMap<>();
+
+			for (Map<String, Object> row : jobSites) {
+				String userId = row.get("user_id").toString().toLowerCase().trim();
+
+				jobSiteMap.computeIfAbsent(userId, k -> new ArrayList<>()).add(row);
+			}
+
+			request.setAttribute("jobSiteMap", jobSiteMap);
 
 			for (Map<String, Object> daily : dailyReportList) {
 
-				String userId = (String) daily.get("userId");
 				String status = (String) daily.get("status");
 				String leaveType = (String) daily.get("leaveType");
 
-				List<Map<String, Object>> jobSite = jobSiteTeamDAO.findSiteByUserId(userId);
+				boolean isLeave = leaveType != null;
+				boolean isSick = "ลาป่วย".equals(leaveType);
 
-				jobSiteMap.put(userId, jobSite);
-
-				if ("OnTime".equals(status)) {
-					totalOntime++;
-				} else if ("Late".equals(status)) {
-					totalLate++;
-				} else if ("Early Out".equals(status)) {
-					totalEarlyOut++;
-				} else if ("Unfinished Work".equals(status)) {
-					totalUnfinishedWork++;
-				} else if ("Incomplete".equals(status)) {
-					totalIncomplete++;
-				} else if ("Absent/Error".equals(status)) {
-					totalNoRecord++;
+				if (isSick) {
+					totalSickLeave++;
+					continue;
 				}
 
-				if ("ลาป่วย".equals(leaveType)) {
-					totalSickLeave++;
-					if ("Absent/Error".equals(status)) {
-						totalNoRecord--;
-					}
-
-				} else if ("ลากิจ".equals(leaveType) || "ลาพักร้อน".equals(leaveType)
-						|| "ลาพักร้อนที่เหลือจากปีก่อน".equals(leaveType)) {
+				if (isLeave) {
 					totalLeave++;
+					continue;
+				}
 
-					if ("Absent/Error".equals(status)) {
-						totalNoRecord--;
-					}
+				switch (status) {
+				case "OnTime":
+					totalOntime++;
+					break;
+				case "Late":
+					totalLate++;
+					break;
+				case "Early Out":
+					totalEarlyOut++;
+					break;
+				case "Unfinished Work":
+					totalUnfinishedWork++;
+					break;
+				case "Incomplete":
+					totalIncomplete++;
+					break;
+				case "Absent/Error":
+					totalNoRecord++;
+					break;
 				}
 
 			}
-			request.setAttribute("jobSiteMap", jobSiteMap);
+
+			
 			request.setAttribute("dailyWorkUser", dailyReportList);
 
 			// ===== WorkHours =====
