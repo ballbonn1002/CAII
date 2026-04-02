@@ -1,8 +1,15 @@
 package com.cubesofttech.action;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
+import java.time.DayOfWeek;
+import java.time.Duration;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -211,7 +218,7 @@ public class OvertimeAction extends ActionSupport {
 
 			return SUCCESS;
 		} catch (Exception e) {
-			log.error("Error in OvertimeAction.overtimeApprove()", e); 
+			log.error("Error in OvertimeAction.overtimeApprove()", e);
 			return ERROR;
 		}
 	}
@@ -290,8 +297,8 @@ public class OvertimeAction extends ActionSupport {
 						request.setAttribute("displayName", displayName);
 					}
 
-					List<Map<String, Object>> statusList = overtimeDAO.findOvertimeStatusAll(); 
-																			
+					List<Map<String, Object>> statusList = overtimeDAO.findOvertimeStatusAll();
+
 					for (Map<String, Object> s : statusList) {
 						if (s.get("status").equals(overtime.getStatus())) {
 							request.setAttribute("status_name", (String) s.get("description"));
@@ -299,13 +306,45 @@ public class OvertimeAction extends ActionSupport {
 							break;
 						}
 					}
+
+					LocalDateTime start = overtime.getStart_time().toLocalDateTime();
+					LocalDateTime end = overtime.getEnd_time().toLocalDateTime();
+					BigDecimal type = calculateOTType(start, end);
+					overtime.setType_of_ot(type);
+
 				}
 			}
 
 			return SUCCESS;
 		} catch (Exception e) {
+			e.printStackTrace();
 			log.error("Error in OvertimeAction.overtimeApproveForm()", e);
 			return ERROR;
+		}
+	}
+
+	private BigDecimal calculateOTType(LocalDateTime start, LocalDateTime end) {
+
+		long totalMinutes = Duration.between(start, end).toMinutes();
+		BigDecimal totalHours = BigDecimal.valueOf(totalMinutes).divide(BigDecimal.valueOf(60), 2,
+				RoundingMode.HALF_UP);
+
+		// หักเวลาพัก (ทุก 6 ชม. หัก 1 ชม.)
+		int breakCount = totalHours.divide(BigDecimal.valueOf(6), 0, RoundingMode.DOWN).intValue();
+		BigDecimal actualHours = totalHours.subtract(BigDecimal.valueOf(breakCount));
+
+		DayOfWeek day = start.getDayOfWeek();
+		boolean isHoliday = (day == DayOfWeek.SATURDAY || day == DayOfWeek.SUNDAY);
+		if (!isHoliday) {
+			// normal day
+			return BigDecimal.valueOf(1.5);
+		} else {
+			// holiday
+			if (actualHours.compareTo(BigDecimal.valueOf(8)) <= 0) {
+				return BigDecimal.valueOf(1.0);
+			} else {
+				return BigDecimal.valueOf(3.0);
+			}
 		}
 	}
 

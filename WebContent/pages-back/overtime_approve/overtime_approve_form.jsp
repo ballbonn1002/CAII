@@ -206,18 +206,18 @@
 								</div>
 								<div class="col-md-6">
 									<label class="form-label fw-medium text-gray-800 required">Default
-										select</label> <select name="type_of_ot" id="type_of_ot"
+										select </label> <select name="type_of_ot" id="type_of_ot"
 										class="form-select form-select-lg" data-control="select2"
 										data-hide-search="true"
 										${overtime.status ne 'W' ? 'disabled' : ''}>
 										<option value="1.0"
-											${overtime.type_of_ot eq 1.0 ? 'selected' : ''}>1.0
+											${overtime.type_of_ot.toString() eq '1.0' ? 'selected' : ''}>1.0
 											X</option>
 										<option value="1.5"
-											${overtime.type_of_ot eq 1.5 ? 'selected' : ''}>1.5
+											${overtime.type_of_ot.toString() eq '1.5' ? 'selected' : ''}>1.5
 											X</option>
 										<option value="3.0"
-											${overtime.type_of_ot eq 3.0 ? 'selected' : ''}>3.0
+											${overtime.type_of_ot.toString() eq '3.0' ? 'selected' : ''}>3.0
 											X</option>
 									</select>
 								</div>
@@ -251,6 +251,8 @@
 	$(document)
 			.ready(
 					function() {
+						$('#type_of_ot').val('${overtime.type_of_ot}').trigger(
+								'change');
 						var rawReqHours = "${overtime.req_hours}";
 						var rawApprHours = "${overtime.appr_hours}";
 						var status = "${overtime.status}";
@@ -280,8 +282,10 @@
 								recommendedRate = "1.0";
 							}
 
-							$("#type_of_ot").val(recommendedRate).trigger(
-									'change.select2');
+							if (status === 'W' && !'${overtime.type_of_ot}') {
+								$("#type_of_ot").val(recommendedRate).trigger(
+										'change.select2');
+							}
 
 							return calculatedApprHours;
 						}
