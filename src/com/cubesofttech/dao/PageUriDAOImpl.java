@@ -77,7 +77,7 @@ public class PageUriDAOImpl implements PageUriDAO {
 		Session session = sessionFactory.getCurrentSession();
 		PageUri pageUri = null;
 		try {
-	        String sql = "FROM PageUri WHERE model = :model AND modelId = :modelId";
+	        String sql = "SELECT * FROM page_uri WHERE model = :model AND model_id = :modelId";
 
 	        pageUri = (PageUri) session.createQuery(sql)
 	                .setParameter("model", model)

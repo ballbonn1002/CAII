@@ -898,33 +898,12 @@ public class ArticleAction extends ActionSupport {
 			// Update page_uri
 			PageUri uri = pageUriDAO.findByModelAndModelId("article", String.valueOf(articleId));
 			if (uri != null) {
-				String articleIdStr = String.valueOf(articleId);
-			    String forward;
-			    String newPageUriId;
-
-			    if (article_type == 1) {
-			        forward = "/news_detail?articleId=" + articleIdStr;
-			        newPageUriId = "/news/" + articleIdStr;
-
-			    } else if (article_type == 2) {
-			        forward = "/blog_detail?articleId=" + articleIdStr;
-			        newPageUriId = "/blog/" + articleIdStr;
-
-			    } else {
-			        forward = "/news_detail?articleId=" + articleIdStr;
-			        newPageUriId = "/news/" + articleIdStr;
-			    }
-
-			    uri.setForwardTo(forward);
-			    uri.setPageUriId(newPageUriId);
-			    
-				uri.setPageUriTitle(pageUriTitle);
 			    uri.setPageUriId(pageUriId);
+				uri.setPageUriTitle(pageUriTitle);
 			    uri.setPageUriDescription(pageUriDescription);
 			    uri.setMeta(meta);
 			    uri.setUserUpdate(logonUser);
 			    uri.setTimeUpdate(DateUtil.getCurrentTime());
-
 			    pageUriDAO.update(uri);
 			}
 			
