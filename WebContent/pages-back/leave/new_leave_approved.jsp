@@ -158,7 +158,7 @@
 								<div class="row g-5">
 
 									<!-- ลาพักร้อน -->
-									<div class="col-6 col-md-4 col-xl-3">
+								<!--	<div class="col-6 col-md-4 col-xl-3">
 										<div class="d-flex align-items-center">
 											<div class="symbol symbol-50px me-4">
 												<span class="symbol-label bg-light-success">
@@ -182,7 +182,7 @@
 												<span class="text-muted fs-5">${type_1}</span>
 											</div>
 										</div>
-									</div>
+									</div>	-->
 
 									<!-- ลากิจ -->
 									<div class="col-6 col-md-4 col-xl-3">
@@ -202,15 +202,19 @@
 											<div class="d-flex flex-column">
 												<div class="d-flex align-items-center">
 													<span class="fs-2 fw-bold text-dark">
-														<fmt:formatNumber type="number" pattern="#.##" value="${LeavenumT2}"/><c:if test="${userSelect2 != null}">/<fmt:formatNumber type="number" pattern="#.##" value="3"/></c:if>
+														<fmt:formatNumber type="number" pattern="#.##" value="${LeavenumT1}"/>+<fmt:formatNumber type="number" pattern="#.##" value="${LeavenumT2}"/>
+														<c:if test="${userSelect2 != null}">/<fmt:formatNumber type="number" pattern="#.##" value="${quota_1+quota_2}"/></c:if>
+														<c:if test="${userSelect2 == null}"></c:if>
 													</span>
-													<c:if test="${LeaveWAnumT2.doubleValue() > 0}">
-														<span class="badge badge-sm badge-warning ms-1">
-																<fmt:formatNumber type="number" pattern="#.##" value="${LeaveWAnumT2}"/>
-														</span>
+													<c:set var="leaveWA1" value="${empty LeaveWAnumT1 ? 0 : LeaveWAnumT1}" />
+													<c:set var="leaveWA2" value="${empty LeaveWAnumT2 ? 0 : LeaveWAnumT2}" />
+													<c:if test="${(leaveWA1 + leaveWA2) > 0}">
+													    <span class="badge badge-sm badge-warning ms-1">
+													        <fmt:formatNumber type="number" pattern="#.##" value="${leaveWA1}" />+<fmt:formatNumber type="number" pattern="#.##" value="${leaveWA2}" />
+													    </span>
 													</c:if>
 												</div>
-												<span class="text-muted fs-5">${type_2}</span>
+												<span class="text-muted fs-5">${type_1}+${type_2}</span>
 											</div>
 										</div>
 									</div>
