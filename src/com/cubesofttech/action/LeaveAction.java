@@ -40,6 +40,7 @@ import com.cubesofttech.model.LeaveType;
 import com.cubesofttech.model.Role;
 import com.cubesofttech.model.RoleAuthorizedObject;
 import com.cubesofttech.model.User;
+import com.cubesofttech.service.LeaveService;
 import com.cubesofttech.util.DateUtil;
 import com.cubesofttech.util.FileUtil;
 import com.google.gson.Gson;
@@ -58,6 +59,9 @@ public class LeaveAction extends ActionSupport {
 	public static final String TYPELEAVE = "leave_type_id";
 	public static final String NODAY = "no_day";
 	public static final String STATUS = "leave_status_id";
+	
+	@Autowired
+	private LeaveService leaveService;
 	
 	@Autowired
 	private LeaveDAO leaveDAO;
@@ -646,9 +650,9 @@ public class LeaveAction extends ActionSupport {
 			String enddate = request.getParameter("enddate");
 			String leaveType = request.getParameter("type");
 			log.info("Searching : " + userSelect+"|"+userSelect2+"|"+leaveStatus+"|"+leaveType+"|"+startdate+"|"+enddate);
-
+			String userLogin = null;
 			User ur = (User) request.getSession().getAttribute("onlineUser");
-			String userLogin = ur.getId();
+			userLogin = ur.getId();
 			String user_role = ur.getRoleId();
 			request.setAttribute("logonUser", userLogin);
 			request.setAttribute("user_role", user_role);
@@ -706,7 +710,7 @@ public class LeaveAction extends ActionSupport {
 			log.debug(userSelect + "/" + userSelect2);
 			Date day = new Date();
 			LocalDate localdate = day.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-			List<Map<String, Object>> userleave = null;
+		/*	List<Map<String, Object>> userleave = null;
 			BigDecimal quota_1 = null;
 			BigDecimal quota_2 = null;
 			BigDecimal quota_3 = null;
@@ -737,8 +741,11 @@ public class LeaveAction extends ActionSupport {
 				quota_2 = userDAO.findById(userSelect2).getLeaveQuota2();
 				quota_3 = userDAO.findById(userSelect2).getLeaveQuota3();
 				quota_4 = userDAO.findById(userSelect2).getLeaveQuota4();
-			}
-			request.setAttribute("userleave", userleave);
+			}	*/
+			
+			Map<String, Object> summaryData = leaveService.getSummaryLeaveDashboard(userSelect, userSelect2, userLogin, leaveStatus, start_date, end_date, leaveType);
+			
+		/*	request.setAttribute("userleave", userleave);
 			request.setAttribute("quota_1", quota_1);
 			request.setAttribute("quota_2", quota_2);
 			request.setAttribute("quota_3", quota_3);
@@ -831,7 +838,7 @@ public class LeaveAction extends ActionSupport {
 
 				}
 			}
-
+	
 			request.setAttribute("LeavenumT1", LeavenumT1);
 			request.setAttribute("LeaveWAnumT1", LeaveWAnumT1);
 			request.setAttribute("LeavenumT2", LeavenumT2);
@@ -847,8 +854,12 @@ public class LeaveAction extends ActionSupport {
 			request.setAttribute("LeavenumT7", LeavenumT7);
 			request.setAttribute("LeaveWAnumT7", LeaveWAnumT7);
 			request.setAttribute("LeavenumT9", LeavenumT9);
-			request.setAttribute("LeaveWAnumT9", LeaveWAnumT9);
+			request.setAttribute("LeaveWAnumT9", LeaveWAnumT9);	*/
 
+			for (Map.Entry<String, Object> entry : summaryData.entrySet()) {
+		        request.setAttribute(entry.getKey(), entry.getValue());
+		    }
+			
 			request.setAttribute("flag_search", "1");
 			request.setAttribute("appr", leaveStatus);
 			request.setAttribute("userId", userSelect);
@@ -1342,6 +1353,7 @@ public class LeaveAction extends ActionSupport {
 	public String NewLeaveEdit() {
 		try {
 			String id = request.getParameter("id");
+			request.setAttribute("leaveId", id);
 			Leaves leave = leaveDAO.findByLeaveId(Integer.parseInt(id));
 			User user = new User();
 			String userLogin = null;
@@ -1938,65 +1950,29 @@ public class LeaveAction extends ActionSupport {
 			String endDate = jsonobj.getString("end_date");
 			String apprUserId = jsonobj.getString("appr_user_id");
 			BigDecimal noDay = jsonobj.getBigDecimal("no_day");
-			String description = jsonobj.getString("description");
-			String name = jsonobj.getString("name");
-
-			String reason = "";
-			try {
-				reason = jsonobj.getString("reason");
-			} catch (Exception e) {
-			}
-			String timeCreate = jsonobj.getString("time_create");
+			String description = jsonobj.optString("description");
+			String name = jsonobj.optString("name");
+			String employeeId = jsonobj.optString("employee_id");
+			String reason = jsonobj.optString("reason");
 
 			// -------- time --------
-			String startTime = "";
-			try {
-				startTime = jsonobj.getString("start_time");
-			} catch (Exception e) {
-			}
-			String endTime = "";
-			try {
-				endTime = jsonobj.getString("end_time");
-			} catch (Exception e) {
-			}
+			String startTime = jsonobj.optString("start_time");
+			String endTime = jsonobj.optString("end_time");
 
-			// -------- time update --------
-			String timeUpdate = "";
-			try {
-				timeUpdate = jsonobj.getString("time_update");
-			} catch (Exception e) {
-			}
+			// -------- time create/update --------
+			String timeCreate = jsonobj.optString("time_create");
+			String timeUpdate = jsonobj.optString("time_update");
 
-			String userCreate = "";
-			try {
-				userCreate = jsonobj.getString("user_create");
-			} catch (Exception e) {
-			}
-
-			String userUpdate = "";
-			try {
-				userUpdate = jsonobj.getString("user_update");
-			} catch (Exception e) {
-			}
+			String userCreate = jsonobj.optString("user_create");
+			String userUpdate = jsonobj.optString("user_update");
+			
+			String apprEmployeeId = jsonobj.optString("appr_employee_id");
+			String apprName = jsonobj.optString("appr_name");
 
 			// -------- leave file --------
-			String leaveFileId = "";
-			try {
-				leaveFileId = jsonobj.getString("leave_file");
-			} catch (Exception e) {
-			}
-
-			String leaveFileName = "";
-			try {
-				leaveFileName = jsonobj.getString("file_name");
-			} catch (Exception e) {
-			}
-
-			String leaveFileType = "";
-			try {
-				leaveFileType = jsonobj.getString("type");
-			} catch (Exception e) {
-			}
+			String leaveFileId = jsonobj.optString("leave_file");
+			String leaveFileName = jsonobj.optString("file_name");
+			String leaveFileType = jsonobj.optString("type");
 
 			PrintWriter out = response.getWriter();
 			JSONObject json = new JSONObject();
@@ -2013,11 +1989,14 @@ public class LeaveAction extends ActionSupport {
 			json.put("no_day", noDay);
 			json.put("description", description);
 			json.put("name", name);
+			json.put("employeeId", employeeId);
 			json.put("reason", reason);
 			json.put("time_create", timeCreate);
 			json.put("time_update", timeUpdate);
 			json.put("user_create", userCreate);
 			json.put("user_update", userUpdate);
+			json.put("apprEmployeeId", apprEmployeeId);
+			json.put("apprName", apprName);
 			json.put("leave_file_id", leaveFileId);
 			json.put("leave_file_name", leaveFileName);
 			json.put("leave_file_type", leaveFileType);

@@ -710,10 +710,19 @@
 
 					<!-- Right -->
 					<div class="col-md-6">
-						<div class="fw-semibold text-dark mb-2 fs-5" id="userid"></div>
+						<div class="fw-semibold text-dark mb-2 fs-5">
+							<i class="ki-duotone ki-user-square fs-2">
+								<span class="path1"></span>
+								<span class="path2"></span>
+								<span class="path3"></span>
+							</i>
+							<span class="employeeId" id=""></span>
+							<span class="username" id=""></span>
+							<span id="userid"></span>
+						</div>
 
 						<div class="d-flex align-items-center text-gray-700 mb-2 fs-6">
-							<i class="ki-duotone ki-time me-2">
+							<i class="ki-duotone ki-time me-2 fs-2">
 								 <span class="path1"></span>
 								 <span class="path2"></span>
 							</i>
@@ -721,7 +730,7 @@
 						</div>
 
 						<div class="d-flex align-items-center text-gray-700 mb-2 fs-6">
-							<i class="ki-duotone ki-document me-2" id="mdFileIcon">
+							<i class="ki-duotone ki-document fs-2 me-2" id="mdFileIcon">
 								 <span class="path1"></span>
 								 <span class="path2"></span>
 							</i>
@@ -729,7 +738,7 @@
 						</div>
 
 						<div>
-							Request date: <span id="timecreate"></span>
+							Request By: <span class="employeeId"></span><span class="username"></span> , <span id="timecreate"></span>
 						</div>
 
 					</div>
@@ -1051,7 +1060,9 @@ function leaveStatus(id) {
 			console.log(obj);
 
 			$('#leaveid').html(obj.leave_id);
-			$('#userid').html(obj.user_id);
+			//$('#userid').html(obj.user_id);
+			$('.employeeId').html(obj.employeeId + " ");
+			$('.username').html(obj.name);
 			$('#stime').html(obj.start_time);
 			$('#etime').html(obj.end_time);
 			$('#desc').html(obj.description);
