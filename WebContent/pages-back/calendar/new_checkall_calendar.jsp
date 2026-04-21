@@ -723,7 +723,12 @@ var AppCalendar = function() {
                     var evStart = moment(ev.start);
                     var evEnd = ev.end ? moment(ev.end).subtract(1, 'days') : evStart.clone();
                     return day.isSameOrAfter(evStart, 'day') && day.isSameOrBefore(evEnd, 'day');
-                } 
+                }
+                else if(ev.classNames && ev.classNames.includes('fc-event-secondary')){
+                	var evStart = moment(ev.start);
+                	var evEnd = ev.end ? moment(ev.end).subtract(1, 'days') : evStart.clone();
+                	return day.isSameOrAfter(evStart, 'day') && day.isSameOrBefore(evEnd, 'day');
+                }
                 else {
                     return moment(ev.start).format('dd D MMM') === dayStr;
                 }
