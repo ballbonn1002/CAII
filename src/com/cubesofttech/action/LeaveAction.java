@@ -1946,18 +1946,17 @@ public class LeaveAction extends ActionSupport {
 			String leaveTypeId = jsonobj.getString("leave_type_id");
 			String leaveStatusId = jsonobj.getString("leave_status_id");
 			String userId = jsonobj.getString("user_id");
+			String employeeId = jsonobj.optString("employee_id");
+			String name = jsonobj.optString("name_en");
 			String startDate = jsonobj.getString("start_date");
 			String endDate = jsonobj.getString("end_date");
+			String startTime = jsonobj.optString("start_time");
+			String endTime = jsonobj.optString("end_time");
 			String apprUserId = jsonobj.getString("appr_user_id");
 			BigDecimal noDay = jsonobj.getBigDecimal("no_day");
 			String description = jsonobj.optString("description");
-			String name = jsonobj.optString("name");
-			String employeeId = jsonobj.optString("employee_id");
+			
 			String reason = jsonobj.optString("reason");
-
-			// -------- time --------
-			String startTime = jsonobj.optString("start_time");
-			String endTime = jsonobj.optString("end_time");
 
 			// -------- time create/update --------
 			String timeCreate = jsonobj.optString("time_create");
@@ -1966,8 +1965,11 @@ public class LeaveAction extends ActionSupport {
 			String userCreate = jsonobj.optString("user_create");
 			String userUpdate = jsonobj.optString("user_update");
 			
-			String apprEmployeeId = jsonobj.optString("appr_employee_id");
-			String apprName = jsonobj.optString("appr_name");
+			String aprEmpId = jsonobj.optString("apr_emp_id");
+			String aprName = jsonobj.optString("apr_name");
+			
+			String ucEmpId = jsonobj.optString("uc_emp_id");
+			String ucName = jsonobj.optString("uc_name");
 
 			// -------- leave file --------
 			String leaveFileId = jsonobj.optString("leave_file");
@@ -1981,6 +1983,8 @@ public class LeaveAction extends ActionSupport {
 			json.put("leave_type_id", leaveTypeId);
 			json.put("leave_status_id", leaveStatusId);
 			json.put("user_id", userId);
+			json.put("employeeId", employeeId);
+			json.put("name", name);
 			json.put("start_date", startDate);
 			json.put("end_date", endDate);
 			json.put("start_time", startTime);
@@ -1988,15 +1992,15 @@ public class LeaveAction extends ActionSupport {
 			json.put("appr_user_id", apprUserId);
 			json.put("no_day", noDay);
 			json.put("description", description);
-			json.put("name", name);
-			json.put("employeeId", employeeId);
 			json.put("reason", reason);
 			json.put("time_create", timeCreate);
 			json.put("time_update", timeUpdate);
 			json.put("user_create", userCreate);
 			json.put("user_update", userUpdate);
-			json.put("apprEmployeeId", apprEmployeeId);
-			json.put("apprName", apprName);
+			json.put("aprEmpId", aprEmpId);
+			json.put("aprName", aprName);
+			json.put("ucEmpId", ucEmpId);
+			json.put("ucName", ucName);
 			json.put("leave_file_id", leaveFileId);
 			json.put("leave_file_name", leaveFileName);
 			json.put("leave_file_type", leaveFileType);
