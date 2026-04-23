@@ -617,6 +617,7 @@ var AppCalendar = function() {
                     backgroundColor: color.bg,
                     borderColor: color.border,
                     allDay: true,
+                    no_day : '${leave.no_day}',
                     status: '${leave.leave_status_id}',
                     leave_type_id: '${leave.leave_type_id}',
                     leave_file: '${leave.file_path}',
@@ -879,7 +880,8 @@ var AppCalendar = function() {
 	}
     
 	// Calculate summary
-function calculateSummary() {
+	
+	function calculateSummary() {
 		var events = calendar.getEvents();
 	    var view = calendar.view;
 	    var year = moment(view.currentStart).year();
@@ -901,9 +903,8 @@ function calculateSummary() {
 	    var start = moment(view.currentStart);
 	    var end = moment(view.currentEnd);
 	    var today = moment();
-
+		var processedLeaves = new Set();
 	    for (var day = start.clone(); day.isBefore(end); day.add(1, 'days')) {
-            
 	        var dayEvents = events.filter(function(ev) {
                 if (ev.extendedProps && ev.extendedProps.leave_type_id) {
                     var evStart = moment(ev.start);
@@ -933,12 +934,19 @@ function calculateSummary() {
 	            // leave
 	            else if (dayEvents.some(ev => ev.extendedProps && ev.extendedProps.leave_type_id)) {
                     var leaveEv = dayEvents.find(ev => ev.extendedProps && ev.extendedProps.leave_type_id);
-                    if (leaveEv.title.includes("ลาป่วย")) {
+                    var noDay = parseFloat(leaveEv.extendedProps.no_day) || 0;
+					if (leaveEv.title.includes("ลาป่วย")) {
                         status = "Sick Leave";
-                        summary.sickLeave++;
+						if(!processedLeaves.has(leaveEv)) {
+							summary.sickLeave += noDay;
+							processedLeaves.add(leaveEv);
+						}
                     } else {
                         status = "Leave";
-                        summary.leave++;
+						if(!processedLeaves.has(leaveEv)) {
+							summary.leave += noDay;
+							processedLeaves.add(leaveEv);
+						}
                     }
 	            }
 	            // work
@@ -1140,7 +1148,7 @@ function leaveStatus(id) {
  		data : "leaveId="+ id,
  		success : function(data) {
  			var obj = JSON.parse(data);
-			
+			console.log(obj);
 			$('#leaveid').html(obj.leave_id);
 			$('#userid').html(obj.name);
 			$('#stime').html(obj.start_time);
