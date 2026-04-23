@@ -183,13 +183,14 @@ public class LeaveDAOImpl implements LeaveDAO {
 		Session session = this.sessionFactory.getCurrentSession();
 		List<Leaves> modalLeaveList = null;
 		try {
-			String sql = "SELECT leaves.leave_id, leaves.leave_type_id, leaves.leave_status_id, leaves.half_day, leaves.user_id, user.name, leaves.appr_user_id, "
-					+ "leaves.description, leaves.reason, leaves.start_time, leaves.end_time, leaves.start_date, leaves.end_date, leaves.no_day, "
-					+ "leaves.leave_file, leaves.user_create, leaves.user_update, leaves.time_create, leaves.time_update, file.name AS file_name, file.type "
-					+ "FROM leaves LEFT JOIN file ON leaves.leave_file = file.file_id "
-					+ "LEFT JOIN user ON leaves.user_id = user.id WHERE leave_id = " + leaveId;
+			String sql = "SELECT leaves.leave_id, leaves.leave_type_id, leaves.leave_status_id, leaves.half_day, leaves.user_id, user.employee_id, "
+					+ "user.name_en, leaves.appr_user_id, leaves.description, leaves.reason, leaves.start_time, leaves.end_time, leaves.start_date, "
+					+ "leaves.end_date, leaves.no_day, leaves.leave_file, file.name AS file_name, file.type, leaves.user_create, leaves.user_update, "
+					+ "leaves.time_create, leaves.time_update, uc.employee_id AS uc_emp_id, uc.name_en AS uc_name, apr.employee_id AS apr_emp_id, apr.name_en AS apr_name "
+					+ "FROM leaves LEFT JOIN file ON leaves.leave_file = file.file_id LEFT JOIN user ON leaves.user_id = user.id "
+					+ "LEFT JOIN user uc ON leaves.user_create = uc.id LEFT JOIN user apr ON leaves.user_update = apr.id "
+					+ "WHERE leaves.leave_id = " + leaveId;
 			SQLQuery query = session.createSQLQuery(sql);
-
 			query.setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
 			modalLeaveList = query.list();
 
@@ -2048,7 +2049,7 @@ public class LeaveDAOImpl implements LeaveDAO {
 				sql.append("AND leaves.leave_type_id = :leaveType ");
 			}
 
-			sql.append("ORDER BY leaves.start_date DESC, leaves.leave_status_id ASC");
+			sql.append("ORDER BY leaves.leave_status_id ASC, leaves.start_date DESC ");
 
 			SQLQuery query = session.createSQLQuery(sql.toString());
 			query.setParameter("startDate", startDate);
@@ -2101,6 +2102,54 @@ public class LeaveDAOImpl implements LeaveDAO {
 	    }
 
 	    return result;
+	}
+
+	@Override
+	public List<Map<String, Object>> getSummaryLeave(String type, String userId, String manager, String status, Timestamp startDate,
+			Timestamp endDate, String leaveType) throws Exception {
+		Session session = this.sessionFactory.getCurrentSession();
+		List<Map<String, Object>> summaryLeave = null;
+		try {
+			StringBuilder sql = new StringBuilder("SELECT leaves.leave_id, leaves.user_id, user.name, leaves.leave_status_id, leaves.leave_type_id, leave_type.leave_type_name, leaves.half_day, "
+					+ "leaves.start_date, leaves.start_time, leaves.end_time, leaves.end_date, leaves.no_day , file.path, leaves.time_create, "
+					+ "leaves.description FROM leaves LEFT JOIN leave_type ON leave_type.leave_type_id = leaves.leave_type_id "
+					+ "LEFT JOIN user ON leaves.user_id = user.id LEFT JOIN file ON leaves.leave_file = file.file_id "
+					+ "WHERE leaves.start_date BETWEEN :startDate AND :endDate ");
+			if(userId != null && !userId.isEmpty()) {
+				sql.append("AND leaves.user_id = :userId ");
+			}
+			if(manager != null && !manager.isEmpty() && "All2".equals(type)) {
+				sql.append("AND leaves.appr_user_id = :manager ");
+			}
+			if (status != null && !status.isEmpty() && !status.equals("4")) {
+				sql.append("AND leaves.leave_status_id = :status ");
+			}
+			if (leaveType != null && !leaveType.isEmpty() && !leaveType.equals("allType")) {
+				sql.append("AND leaves.leave_type_id = :leaveType ");
+			}
+			sql.append("ORDER BY leaves.leave_status_id ASC, leaves.start_date DESC; ");
+			SQLQuery query = session.createSQLQuery(sql.toString());
+			query.setParameter("startDate", startDate);
+			query.setParameter("endDate", endDate);
+			if (userId != null && !userId.isEmpty()) {
+				query.setParameter("userId", userId);
+			}
+			if (manager != null && !manager.isEmpty() && "All2".equals(type)) {
+				query.setParameter("manager", manager);
+			}
+			if (status != null && !status.isEmpty() && !status.equals("4")) {
+				query.setParameter("status", status);
+			}
+			if (leaveType != null && !leaveType.isEmpty() && !leaveType.equals("allType")) {
+				query.setParameter("leaveType", leaveType);
+			}
+			System.out.println(query);
+			query.setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
+			summaryLeave = query.list();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return summaryLeave;
 	}
 	
 }

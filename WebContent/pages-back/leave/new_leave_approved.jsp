@@ -158,7 +158,7 @@
 								<div class="row g-5">
 
 									<!-- ลาพักร้อน -->
-									<div class="col-6 col-md-4 col-xl-3">
+								<!--	<div class="col-6 col-md-4 col-xl-3">
 										<div class="d-flex align-items-center">
 											<div class="symbol symbol-50px me-4">
 												<span class="symbol-label bg-light-success">
@@ -182,7 +182,7 @@
 												<span class="text-muted fs-5">${type_1}</span>
 											</div>
 										</div>
-									</div>
+									</div>	-->
 
 									<!-- ลากิจ -->
 									<div class="col-6 col-md-4 col-xl-3">
@@ -202,15 +202,19 @@
 											<div class="d-flex flex-column">
 												<div class="d-flex align-items-center">
 													<span class="fs-2 fw-bold text-dark">
-														<fmt:formatNumber type="number" pattern="#.##" value="${LeavenumT2}"/><c:if test="${userSelect2 != null}">/<fmt:formatNumber type="number" pattern="#.##" value="3"/></c:if>
+														<fmt:formatNumber type="number" pattern="#.##" value="${LeavenumT1}"/>+<fmt:formatNumber type="number" pattern="#.##" value="${LeavenumT2}"/>
+														<c:if test="${userSelect2 != null}">/<fmt:formatNumber type="number" pattern="#.##" value="${quota_1+quota_2}"/></c:if>
+														<c:if test="${userSelect2 == null}"></c:if>
 													</span>
-													<c:if test="${LeaveWAnumT2.doubleValue() > 0}">
-														<span class="badge badge-sm badge-warning ms-1">
-																<fmt:formatNumber type="number" pattern="#.##" value="${LeaveWAnumT2}"/>
-														</span>
+													<c:set var="leaveWA1" value="${empty LeaveWAnumT1 ? 0 : LeaveWAnumT1}" />
+													<c:set var="leaveWA2" value="${empty LeaveWAnumT2 ? 0 : LeaveWAnumT2}" />
+													<c:if test="${(leaveWA1 + leaveWA2) > 0}">
+													    <span class="badge badge-sm badge-warning ms-1">
+													        <fmt:formatNumber type="number" pattern="#.##" value="${leaveWA1}" />+<fmt:formatNumber type="number" pattern="#.##" value="${leaveWA2}" />
+													    </span>
 													</c:if>
 												</div>
-												<span class="text-muted fs-5">${type_2}</span>
+												<span class="text-muted fs-5">${type_1}+${type_2}</span>
 											</div>
 										</div>
 									</div>
@@ -706,10 +710,19 @@
 
 					<!-- Right -->
 					<div class="col-md-6">
-						<div class="fw-semibold text-dark mb-2 fs-5" id="userid"></div>
+						<div class="fw-semibold text-dark mb-2 fs-5">
+							<i class="ki-duotone ki-user-square fs-2">
+								<span class="path1"></span>
+								<span class="path2"></span>
+								<span class="path3"></span>
+							</i>
+							<span class="employeeId" id=""></span>
+							<span class="username" id=""></span>
+							<span id="userid"></span>
+						</div>
 
 						<div class="d-flex align-items-center text-gray-700 mb-2 fs-6">
-							<i class="ki-duotone ki-time me-2">
+							<i class="ki-duotone ki-time me-2 fs-2">
 								 <span class="path1"></span>
 								 <span class="path2"></span>
 							</i>
@@ -717,7 +730,7 @@
 						</div>
 
 						<div class="d-flex align-items-center text-gray-700 mb-2 fs-6">
-							<i class="ki-duotone ki-document me-2" id="mdFileIcon">
+							<i class="ki-duotone ki-document fs-2 me-2" id="mdFileIcon">
 								 <span class="path1"></span>
 								 <span class="path2"></span>
 							</i>
@@ -725,7 +738,7 @@
 						</div>
 
 						<div>
-							Request date: <span id="timecreate"></span>
+							Request By: <span class="employeeId"></span><span class="username"></span> , <span id="timecreate"></span>
 						</div>
 
 					</div>
@@ -1047,7 +1060,9 @@ function leaveStatus(id) {
 			console.log(obj);
 
 			$('#leaveid').html(obj.leave_id);
-			$('#userid').html(obj.user_id);
+			//$('#userid').html(obj.user_id);
+			$('.employeeId').html(obj.employeeId + " ");
+			$('.username').html(obj.name);
 			$('#stime').html(obj.start_time);
 			$('#etime').html(obj.end_time);
 			$('#desc').html(obj.description);
