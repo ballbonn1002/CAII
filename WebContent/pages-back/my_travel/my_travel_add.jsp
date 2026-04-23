@@ -81,7 +81,7 @@
 								class="breadcrumb breadcrumb-separatorless fw-semibold fs-7 my-0 pt-1">
 								<li class="breadcrumb-item text-muted">Home</li>
 								<li class="breadcrumb-item"><span
-									class="bullet bg-gray-400 w-5px h-2px mx-2"></span></li>
+									class="bullet bg-gray-400 w-5px h-2px"></span></li>
 								<li class="breadcrumb-item text-muted">Cube Management</li>
 							</ul>
 						</div>

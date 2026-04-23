@@ -9,7 +9,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>My Travel | CubeSoftTech</title>
+<title>Travel Approve | CubeSoftTech</title>
 
 <link
 	href="${pageContext.request.contextPath}/assets/plugins/global/plugins.bundle.css"
@@ -116,13 +116,13 @@
 							class="page-title d-flex flex-column justify-content-center flex-wrap me-3">
 							<h1
 								class="page-heading d-flex text-dark fw-bold fs-3 flex-column justify-content-center my-0">
-								My Travel</h1>
+								Travel Approve</h1>
 							<ul
 								class="breadcrumb breadcrumb-separatorless fw-semibold fs-7 my-0 pt-1">
 								<li class="breadcrumb-item text-muted">Home</li>
 								<li class="breadcrumb-item"><span
 									class="bullet bg-gray-400 w-5px h-2px "></span></li>
-								<li class="breadcrumb-item text-muted">Cube Management</li>
+								<li class="breadcrumb-item text-muted">Admin Management</li>
 							</ul>
 						</div>
 					</div>
@@ -135,35 +135,44 @@
 						<!-- Filter Bar -->
 						<div class="card mb-5 mb-xl-8">
 							<div class="card-body py-3">
-								<form id="filterForm" method="get" action="${ctx}/my_travel">
+								<form id="filterForm" method="get"
+									action="${ctx}/travel_approve">
 									<input type="hidden" name="status" value="${statusActiveSafe}" />
 									<input type="hidden" name="page" value="1" />
-									<div class="d-flex flex-stack gap-5">
+									<div class="d-flex flex-stack  gap-5">
 										<!-- LEFT: User selector -->
 										<div
-											class="w-100 d-flex align-items-center bg-gray-100 border border-gray-300 rounded px-4 ">
+											class="w-100 d-flex align-items-center border border-gray-300 rounded px-4">
 											<i class="ki-duotone ki-magnifier fs-2 me-3 text-muted">
 												<span class="path1"></span> <span class="path2"></span>
 											</i>
 											<div class="d-flex flex-column w-100">
 												<select id="filterUser" name="userId"
-													class="form-control bg-transparent border-0 shadow-none fw-medium text-gray-900"
-													data-control="select2" style="width: 100%;" disabled>
+													class="form-control border-0 shadow-none fw-medium text-gray-900"
+													data-control="select2" style="width: 100%;">
+													<option value="all">All</option>
 													<c:set var="onlineUser" value="${sessionScope.onlineUser}" />
 													<c:forEach var="u" items="${userListObj}">
-														<c:if test="${u['id'] == onlineUser.id}">
-															<c:set var="emp"
-																value="${not empty u['employee_id'] ? u['employee_id'] : ''}" />
-															<c:set var="nameEN"
-																value="${not empty u['name_en']     ? u['name_en']     : ''}" />
-															<c:set var="nameTH"
-																value="${not empty u['name']        ? u['name']        : ''}" />
-															<c:set var="dept"
-																value="${not empty u['department']  ? u['department']  : ''}" />
-															<option value="${onlineUser.id}" selected>
-																${emp}&nbsp;&nbsp;-&nbsp;&nbsp;${nameEN}&nbsp;&nbsp;-&nbsp;&nbsp;${nameTH}&nbsp;&nbsp;-&nbsp;&nbsp;${dept}
-															</option>
-														</c:if>
+														<c:set var="emp"
+															value="${not empty u['employee_id'] ? u['employee_id'] : ''}" />
+														<c:set var="nameEN"
+															value="${not empty u['name_en']     ? u['name_en']     : ''}" />
+														<c:set var="nameTH"
+															value="${not empty u['name']        ? u['name']        : ''}" />
+														<c:set var="dept"
+															value="${not empty u['department_id']  ? u['department_id']  : ''}" />
+														<c:choose>
+															<c:when test="${u['id'] == selectedUserId}">
+																<option value="${onlineUser.id}" selected>
+																	${emp}&nbsp;&nbsp;-&nbsp;&nbsp;${nameEN}&nbsp;&nbsp;-&nbsp;&nbsp;${nameTH}&nbsp;&nbsp;-&nbsp;&nbsp;${dept}
+																</option>
+															</c:when>
+															<c:otherwise>
+																<option value="${u['id']}">
+																	${emp}&nbsp;&nbsp;-&nbsp;&nbsp;${nameEN}&nbsp;&nbsp;-&nbsp;&nbsp;${nameTH}&nbsp;&nbsp;-&nbsp;&nbsp;${dept}
+																</option>
+															</c:otherwise>
+														</c:choose>
 													</c:forEach>
 												</select>
 											</div>
@@ -179,6 +188,7 @@
 												class="form-control border-start-0" name="dateRange"
 												placeholder="YYYY-MM-DD to YYYY-MM-DD" />
 										</div>
+
 									</div>
 								</form>
 							</div>
@@ -192,42 +202,28 @@
 								</div>
 
 								<div class="card-toolbar">
-									<%-- ✅ tab Draft ใช้ status=Draft --%>
-									<c:url var="tabDraft" value="/my_travel">
-										<c:param name="status" value="Draft" />
-										<c:param name="page" value="1" />
-										<c:if test="${not empty param.dateRange}">
-											<c:param name="dateRange" value="${param.dateRange}" />
-										</c:if>
-									</c:url>
-
-									<c:url var="tabW" value="/my_travel">
+									<c:url var="tabW" value="/travel_approove">
 										<c:param name="status" value="W" />
 										<c:param name="page" value="1" />
+
 										<c:if test="${not empty param.dateRange}">
 											<c:param name="dateRange" value="${param.dateRange}" />
 										</c:if>
 									</c:url>
 
-									<c:url var="tabC" value="/my_travel">
-										<c:param name="status" value="C" />
-										<c:param name="page" value="1" />
-										<c:if test="${not empty param.dateRange}">
-											<c:param name="dateRange" value="${param.dateRange}" />
-										</c:if>
-									</c:url>
-
-									<c:url var="tabA" value="/my_travel">
+									<c:url var="tabA" value="/travel_approove">
 										<c:param name="status" value="A" />
 										<c:param name="page" value="1" />
+
 										<c:if test="${not empty param.dateRange}">
 											<c:param name="dateRange" value="${param.dateRange}" />
 										</c:if>
 									</c:url>
 
-									<c:url var="tabR" value="/my_travel">
+									<c:url var="tabR" value="/travel_approove">
 										<c:param name="status" value="R" />
 										<c:param name="page" value="1" />
+
 										<c:if test="${not empty param.dateRange}">
 											<c:param name="dateRange" value="${param.dateRange}" />
 										</c:if>
@@ -235,19 +231,13 @@
 
 									<ul
 										class="nav nav-stretch nav-line-tabs nav-line-tabs-2x border-transparent fs-5 fw-bold">
-										<%-- ✅ Draft tab — ไม่มีสถานะ ดูจาก expense_group_id = 0 --%>
-										<li class="nav-item"><a
-											class="nav-link text-active-primary ${statusActiveSafe=='Draft' ? 'active' : ''}"
-											href="${tabDraft}" data-status="Draft">Draft</a></li>
+
 										<li class="nav-item"><a
 											class="nav-link text-active-primary ${statusActiveSafe=='W' ? 'active' : ''}"
 											href="${tabW}" data-status="W">Waiting</a></li>
 										<li class="nav-item"><a
-											class="nav-link text-active-primary ${statusActiveSafe=='C' ? 'active' : ''}"
-											href="${tabC}" data-status="C">Cancel</a></li>
-										<li class="nav-item"><a
 											class="nav-link text-active-primary ${statusActiveSafe=='A' ? 'active' : ''}"
-											href="${tabA}" data-status="A">Complete</a></li>
+											href="${tabA}" data-status="A">Approve</a></li>
 										<li class="nav-item"><a
 											class="nav-link text-active-primary ${statusActiveSafe=='R' ? 'active' : ''}"
 											href="${tabR}" data-status="R">Reject</a></li>
@@ -258,34 +248,6 @@
 							<div class="card-body pt-0">
 								<form id="submitForm" method="post"
 									action="${ctx}/submit_travelR">
-
-									<c:url var="createUrl" value="/my_travelA" />
-
-									<%-- ✅ Submit + Create button แสดงเฉพาะ tab Draft --%>
-									<div id="submitButtonContainer"
-										class="d-flex align-items-center justify-content-end flex-wrap gap-6 mt-6 mb-6 ${statusActiveSafe != 'Draft' ? 'd-none' : ''}">
-										<c:if test="${statusActiveSafe == 'Draft'}">
-											<span class="text-gray-400 fw-bold me-6"> <span
-												id="selectedCount">0</span> Selected
-											</span>
-
-											<div class="d-flex gap-4">
-												<button type="submit" class="btn btn-primary btn-sm px-4"
-													id="btn-submit-request">
-													<i class="ki-duotone ki-send fs-4 me-2"><span
-														class="path1"></span> <span class="path2"></span></i>Submit
-													Request
-												</button>
-
-												<a href="${createUrl}" class="btn btn-success btn-sm px-4"
-													data-route="my_travelA"> <i
-													class="ki-duotone ki-plus fs-4 me-2"> <span
-														class="path1"></span><span class="path2"></span>
-												</i> Create
-												</a>
-											</div>
-										</c:if>
-									</div>
 
 									<div class="table-responsive" style="position: relative;">
 										<div id="tableLoadingOverlay" class="table-loading-overlay">
@@ -332,63 +294,6 @@
 
 											<tbody class="text-gray-600 fw-semibold">
 												<c:choose>
-
-													<%-- ===== DRAFT view ===== --%>
-													<c:when test="${statusActiveSafe == 'Draft'}">
-														<c:forEach var="row" items="${travelListObj}">
-															<tr>
-																<td><input class="form-check-input row-checkbox"
-																	type="checkbox" name="ids" value="${row.expense_id}" />
-																</td>
-																<td><span class="text-gray-800 fw-bold">${row.expense_id}</span></td>
-																<td><c:choose>
-																		<c:when test="${not empty row.dt_start}">
-																			<fmt:formatDate value="${row.dt_start}"
-																				pattern="d MMM yyyy" />
-																		</c:when>
-																		<c:otherwise>-</c:otherwise>
-																	</c:choose></td>
-																<td>${not empty row.user_name ? row.user_name : '-'}</td>
-																<td class="text-gray-800 fw-bold"><fmt:formatNumber
-																		value="${row.amount}" pattern="#,##0.00" /></td>
-																<td class="text-center"><span
-																	class="badge badge-secondary fs-6 px-4 py-2">Draft</span>
-																</td>
-																<td class="text-end">
-																	<div class="d-flex justify-content-end gap-2">
-																		<button type="button"
-																			class="btn btn-icon btn-light-info btn-open-modal"
-																			data-expense-id="${row.expense_id}" title="View">
-																			<i class="ki-duotone ki-document fs-1"> <span
-																				class="path1"></span><span class="path2"></span>
-																			</i>
-																		</button>
-																		<a href="${ctx}/my_travelE?id=${row.expense_id}"
-																			class="btn btn-icon btn-light-primary" title="Edit">
-																			<i class="ki-duotone ki-pencil fs-1"> <span
-																				class="path1"></span><span class="path2"></span>
-																		</i>
-																		</a>
-																		<button type="button"
-																			class="btn btn-icon btn-light-danger btn-delete-expense"
-																			data-id="${row.expense_id}" title="Delete">
-																			<i class="ki-duotone ki-trash fs-1"> <span
-																				class="path1"></span><span class="path2"></span> <span
-																				class="path3"></span><span class="path4"></span>
-																			</i>
-																		</button>
-																	</div>
-																</td>
-															</tr>
-														</c:forEach>
-														<c:if test="${empty travelListObj}">
-															<tr>
-																<td colspan="7" class="text-center text-muted py-10">No
-																	data.</td>
-															</tr>
-														</c:if>
-													</c:when>
-
 													<c:when test="${statusActiveSafe == 'W'}">
 														<c:forEach var="row" items="${travelListObj}">
 															<tr>
@@ -412,7 +317,7 @@
 																<td class="text-end">
 																	<div class="d-flex justify-content-end gap-2">
 																		<a
-																			href="${ctx}/my_travel_group?expense_group_id=${row.expense_group_id}&&status=${statusActiveSafe}"
+																			href="${ctx}/travel_approve_preview?expense_group_id=${row.expense_group_id}&&status=${statusActiveSafe}"
 																			class="btn btn-icon btn-light-info" title="View">
 																			<i class="ki-duotone ki-document fs-1"> <span
 																				class="path1"></span><span class="path2"></span>
@@ -449,10 +354,7 @@
 																		value="${row.total_amount}" pattern="#,##0.00" /></td>
 																<td class="text-center"><c:choose>
 																		<c:when test="${row.status_id == 'A'}">
-																			<span class="badge badge-success fs-6 px-4 py-2">Completed</span>
-																		</c:when>
-																		<c:when test="${row.status_id == 'C'}">
-																			<span class="badge badge-danger fs-6 px-4 py-2">Canceled</span>
+																			<span class="badge badge-success fs-6 px-4 py-2">Approved</span>
 																		</c:when>
 																		<c:when test="${row.status_id == 'R'}">
 																			<span class="badge badge-danger fs-6 px-4 py-2">Rejected</span>
@@ -461,7 +363,7 @@
 																<td class="text-end">
 																	<div class="d-flex justify-content-end gap-2">
 																		<a
-																			href="${ctx}/my_travel_group?expense_group_id=${row.expense_group_id}&&status=${statusActiveSafe}"
+																			href="${ctx}/travel_approve_preview?expense_group_id=${row.expense_group_id}&&status=${statusActiveSafe}"
 																			class="btn btn-icon btn-light-info" title="View">
 																			<i class="ki-duotone ki-document fs-1"> <span
 																				class="path1"></span><span class="path2"></span>
@@ -726,7 +628,8 @@
 	        status: "${statusActiveSafe}",
 	        dateRange: "",
 	        page: 1,
-	        pageSize: 25
+	        pageSize: 25,
+	        userId: "all"
 	    }
 	};
 
@@ -767,6 +670,7 @@
 	    params.set('page', String(state.currentFilters.page));
 	    params.set('pageSize', String(state.currentFilters.pageSize));
 	    params.set('dateRange', dateRange);
+	    params.set('userId', state.currentFilters.userId || "all");
 
 	    return params;
 	}
@@ -789,13 +693,14 @@
 	        '<div class="text-muted fs-7 mt-2">' + (message || 'An error occurred') + '</div>' +
 	        '</td></tr>';
 	}
+	
 
 	async function loadTableData() {
 	    if (state.isLoading) return;
 	    const params = buildUrlParams();
 	    showLoading();
 	    try {
-	        const url = ctx + '/my_travel?' + params.toString();
+	        const url = ctx + '/travel_approve?' + params.toString();
 	        const response = await fetch(url, {
 	            headers: { 'X-Requested-With': 'XMLHttpRequest' }
 	        });
@@ -819,6 +724,13 @@
 	    updateSubmitArea(doc);
 	    updateActiveTab();
 	    resetCheckboxState();
+	    
+	 // ✅ re-init select2
+	    $('#filterUser').select2();
+
+	    // ✅ bind ใหม่
+	    bindUserFilter();
+	   
 	}
 
 	function updateTable(doc) {
@@ -872,7 +784,7 @@
 	}
 
 	function updateURL(params) {
-	    const newUrl = ctx + '/my_travel?' + params.toString();
+	    const newUrl = ctx + '/travel_approve?' + params.toString();
 	    history.pushState({ path: newUrl }, '', newUrl);
 	}
 
@@ -889,6 +801,24 @@
 	        });
 	    });
 	}
+	
+	function bindUserFilter() {
+	    const userSelect = $('#filterUser');
+	    if (!userSelect.length) return;
+
+	    userSelect.off('select2:select'); // กัน bind ซ้ำ
+
+	    userSelect.on('select2:select', function (e) {
+	        console.log("CHANGE TRIGGERED"); // ✅ จะขึ้นแน่นอน
+
+	        state.currentFilters.userId = this.value;
+	        state.currentFilters.page = 1;
+
+	        if (elements.pageInput) elements.pageInput.value = 1;
+
+	        loadTableData();
+	    });
+	}
 
 	function bindStatusTabs() {
 	    document.querySelectorAll('.nav-link[data-status]').forEach(tab => {
@@ -896,8 +826,18 @@
 	            e.preventDefault();
 	            state.currentFilters.status = this.getAttribute('data-status');
 	            state.currentFilters.page = 1;
+	            
+	            const userSelect = document.getElementById('filterUser');
+	            const selectedUser = userSelect ? userSelect.value : 'all';
+
+	            state.currentFilters.userId = selectedUser;
+	            
 	            if (elements.statusInput) elements.statusInput.value = state.currentFilters.status;
 	            if (elements.pageInput)   elements.pageInput.value   = 1;
+	            
+	      
+	            
+	            
 	            loadTableData();
 	        });
 	    });
@@ -1019,9 +959,8 @@
 
 	    const statusMap = {
 	        'W': { label: 'Waiting',  cls: 'badge-warning text-dark' },
-	        'C': { label: 'Cancel', cls: 'badge-danger'            },
-	        'A': { label: 'Complete', cls: 'badge-success'           },
-	        'R': { label: 'Reject', cls: 'badge-danger'            }
+	        'A': { label: 'Approved', cls: 'badge-success'           },
+	        'R': { label: 'Rejected', cls: 'badge-danger'            }
 	    };
 	    const sid   = txt('md-status-id');
 	    const badge = document.getElementById('m_statusBadge');
@@ -1065,78 +1004,6 @@
 	    });
 	}
 
-	// ✅ ============ Delete Expense (Draft only) ============
-	function initDeleteExpense() {
-	    document.addEventListener('click', function (e) {
-	        const btn = e.target.closest('.btn-delete-expense');
-	        if (!btn) return;
-
-	        const expenseId = btn.getAttribute('data-id');
-	        if (!expenseId) return;
-
-	        Swal.fire({
-	            title: 'ลบรายการนี้?',
-	            html: 'Expense <strong>#' + expenseId + '</strong> จะถูกลบถาวร',
-	            icon: 'warning',
-	            showCancelButton: true,
-	            confirmButtonText: 'ลบ',
-	            cancelButtonText: 'ยกเลิก',
-	            confirmButtonColor: '#F64E60',
-	            reverseButtons: true
-	        }).then(function (result) {
-	            if (!result.isConfirmed) return;
-
-	            // แสดง loading บน button ระหว่างรอ
-	            btn.disabled = true;
-	            btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span>';
-
-	            fetch(ctx + '/travel_delete?id=' + expenseId, {
-	                method: 'POST',
-	                headers: { 'X-Requested-With': 'XMLHttpRequest' }
-	            })
-	            .then(function (res) { return res.json(); })
-	            .then(function (data) {
-	                if (data.success) {
-	                    Swal.fire({
-	                        icon: 'success',
-	                        title: 'ลบแล้ว',
-	                        text: 'Expense #' + expenseId + ' ถูกลบเรียบร้อย',
-	                        timer: 1500,
-	                        showConfirmButton: false
-	                    }).then(function () {
-	                        loadTableData(); // โหลด table ใหม่ ไม่ reload หน้า
-	                    });
-	                } else {
-	                    // คืนค่า icon ให้ button
-	                    btn.disabled = false;
-	                    btn.innerHTML =
-	                        '<i class="ki-duotone ki-trash fs-1">' +
-	                        '<span class="path1"></span><span class="path2"></span>' +
-	                        '<span class="path3"></span><span class="path4"></span></i>';
-	                    Swal.fire({
-	                        icon: 'error',
-	                        title: 'ไม่สามารถลบได้',
-	                        text: data.message || 'เกิดข้อผิดพลาด'
-	                    });
-	                }
-	            })
-	            .catch(function (err) {
-	                console.error('Delete error:', err);
-	                btn.disabled = false;
-	                btn.innerHTML =
-	                    '<i class="ki-duotone ki-trash fs-1">' +
-	                    '<span class="path1"></span><span class="path2"></span>' +
-	                    '<span class="path3"></span><span class="path4"></span></i>';
-	                Swal.fire({
-	                    icon: 'error',
-	                    title: 'Network error',
-	                    text: 'กรุณาลองใหม่อีกครั้ง'
-	                });
-	            });
-	        });
-	    });
-	}
-
 	function initBrowserNavigation() {
 	    window.addEventListener('popstate', function (e) {
 	        if (e.state && e.state.path) location.reload();
@@ -1144,6 +1011,24 @@
 	}
 
 	document.addEventListener('DOMContentLoaded', function () {
+		
+	    const params = new URLSearchParams(window.location.search);
+
+	    // ถ้ายังไม่มี status → redirect พร้อม param
+	    if (!params.has('status')) {
+	        const currentYear = new Date().getFullYear();
+
+	        const defaultUrl = ctx + "/travel_approve"
+	            + "?status=W"
+	            + "&page=1"
+	            + "&pageSize=25"
+	            + "&dateRange=" + encodeURIComponent(currentYear + "-01-01 to " + currentYear + "-12-31")
+	            + "&userId=all";
+
+	        window.location.replace(defaultUrl);
+	        return;
+	    }
+		
 	    cacheElements();
 
 	    var currentYear = new Date().getFullYear();
@@ -1164,7 +1049,8 @@
 	            loadTableData();
 	        });
 	    }
-
+	    
+	    bindUserFilter();
 	    bindStatusTabs();
 	    bindDateRangeFilter();
 	    bindPaginationEvents();
