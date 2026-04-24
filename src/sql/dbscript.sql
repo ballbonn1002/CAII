@@ -131,4 +131,9 @@ ALTER TABLE user ADD COLUMN path_signature VARCHAR(1024) DEFAULT NULL;
 -- 17/03/2026 Koy : add 'daily monitor' permission   
 
 # PROD 8 APR 2026
+
+-- 24/04/2026 ochi(Intern): add 'description_appr / approved_at / appr_user_id' column to 'expense_group' table -- 
+ALTER TABLE expense_group ADD COLUMN description_appr VARCHAR(1024) DEFAULT NULL;
+ALTER TABLE expense_group ADD COLUMN approved_at timestamp DEFAULT NULL;
+ALTER TABLE expense_group ADD COLUMN appr_user_id varchar(45) DEFAULT NULL;
   
