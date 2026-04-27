@@ -136,4 +136,7 @@ ALTER TABLE user ADD COLUMN path_signature VARCHAR(1024) DEFAULT NULL;
 ALTER TABLE expense_group ADD COLUMN description_appr VARCHAR(1024) DEFAULT NULL;
 ALTER TABLE expense_group ADD COLUMN approved_at timestamp DEFAULT NULL;
 ALTER TABLE expense_group ADD COLUMN appr_user_id varchar(45) DEFAULT NULL;
+
+-- PROD 28 APR 2026
+
   
