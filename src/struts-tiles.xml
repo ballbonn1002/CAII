@@ -451,6 +451,13 @@
 	<definition name="report" extends="baseLayout">
 		<put-attribute name="title" value="Report" />
 		<put-attribute name="body"
+			value="/pages-back/report/report.jsp" />
+	</definition>
+
+	<!-- Summary Working Day -->
+	<definition name="summaryWorkingDay" extends="baseLayout">
+		<put-attribute name="title" value="Summary Working Day" />
+		<put-attribute name="body"
 			value="/pages-back/report/summary_working_day.jsp" />
 	</definition>
 

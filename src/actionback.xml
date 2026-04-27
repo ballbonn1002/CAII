@@ -1445,7 +1445,7 @@
 		</action>
 		<action name="report_listWorking"
 			class="com.cubesofttech.action.ReportAction" method="listWorking">
-			<result name="success" type="tiles">report</result>
+			<result name="success" type="tiles">summaryWorkingDay</result>
 			<result name="error">/index.jsp</result>
 			<result name="login" type="redirect">/index.jsp</result>
 		</action>
