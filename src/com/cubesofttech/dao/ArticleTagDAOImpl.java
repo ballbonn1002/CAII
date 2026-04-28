@@ -50,22 +50,38 @@ public class ArticleTagDAOImpl implements ArticleTagDAO {
 	}
 	
 	@Override
-	public List<Integer> findTagIdByArticleId(String articleId) throws Exception {
+	public List<ArticleTag> findTagIdByArticleId(String articleId) throws Exception {
 	    Session session = sessionFactory.getCurrentSession();
-
-	    String sql = "SELECT tag_id FROM article_tag WHERE article_id = :articleId";
-
-	    List<?> raw = session.createSQLQuery(sql)
-	            .setParameter("articleId", articleId)
-	            .list();
-
-	    List<Integer> result = new ArrayList<>();
-
-	    for (Object obj : raw) {
-	        result.add(Integer.valueOf(obj.toString()));
-	    }
-
-	    return result;
+	    List<ArticleTag> articleTagList = null;
+	    try {
+		    String sql = "SELECT article_tag.tag_id, tag.name FROM article_tag LEFT JOIN tag ON article_tag.tag_id = tag.tag_id WHERE article_tag.article_id = :articleId";
+	
+		    SQLQuery query = session.createSQLQuery(sql);
+		    query.setParameter("articleId", articleId);
+			query.setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
+			articleTagList = query.list();
+	    } catch (Exception e) {
+			e.printStackTrace();
+		}
+	    return articleTagList;
+	}
+	
+	@Override
+	public List<ArticleTag> checkExistArticleTag(String articleId, String tagId) throws Exception {
+		Session session = sessionFactory.getCurrentSession();
+	    List<ArticleTag> articleTagList = null;
+	    try {
+		    String sql = "SELECT * FROM article_tag WHERE article_id = :articleId AND tag_id = :tagId";
+	
+		    SQLQuery query = session.createSQLQuery(sql);
+		    query.setParameter("articleId", articleId);
+		    query.setParameter("tagId", tagId);
+			query.setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
+			articleTagList = query.list();
+	    } catch (Exception e) {
+			e.printStackTrace();
+		}
+	    return articleTagList;
 	}
 	
 	@Override
