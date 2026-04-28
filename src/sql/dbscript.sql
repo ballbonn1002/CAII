@@ -131,4 +131,3 @@ ALTER TABLE user ADD COLUMN path_signature VARCHAR(1024) DEFAULT NULL;
 -- 17/03/2026 Koy : add 'daily monitor' permission   
 
 # PROD 2 APR 2026
-  
