@@ -14,10 +14,8 @@
 
 <!--begin::Main-->
 <div class="app-main flex-column flex-row-fluid">
-
 	<!--begin::Content wrapper-->
 	<div class="d-flex flex-column flex-column-fluid">
-
 		<!--begin::Toolbar-->
 		<div id="kt_app_toolbar" class="app-toolbar py-3 py-lg-6">
 			<!--begin::Toolbar container-->
@@ -53,9 +51,7 @@
 						<form action="new_search_leave_approved" method="POST" id="searchForm">
 							<div class="card card-flush bgi-no-repeat bgi-size-contain bgi-position-x-center border-0 mb-5 mb-xl-10">
 								<div class="card-body">
-								
 									<div class="row g-5">
-
 										<!-- All Employee -->
 										<div class="col-md-2">
 											<div class="mb-5">
@@ -80,11 +76,9 @@
 											</div>
 										</div>
 										<!-- Select Employee -->
-
 									</div>
 									
 									<div class="row g-5">
-
 										<!-- Leave Type -->
 										<div class="col-md-4">
 											<div class="mb-5">
@@ -156,7 +150,6 @@
 						<div class="card card-flush bgi-no-repeat bgi-size-contain bgi-position-x-center border-0 mb-5 mb-xl-10">
 							<div class="card-body">
 								<div class="row g-5">
-
 									<!-- ลาพักร้อน -->
 								<!--	<div class="col-6 col-md-4 col-xl-3">
 										<div class="d-flex align-items-center">
@@ -377,15 +370,27 @@
 						</h3>
 					</div>
 					<!--end::Title-->
-
-					<!--begin::Btn Create-->
-					<div class="d-flex flex-wrap my-1">
-						<a href="javascript:void(0)" class="btn btn-success btn-lg" onclick="add()">
-							<i class="ki-duotone ki-plus"></i>
-							Create
-						</a>
+					<div class="d-flex align-items-center gap-3">
+						<!--begin::Btn Create-->
+						<div class="d-flex flex-wrap my-1">
+							<a href="javascript:void(0)" class="btn btn-success btn-lg" onclick="add()">
+								<i class="ki-duotone ki-plus fs-2"></i>
+								Create
+							</a>
+						</div>
+						<!--end::Btn Create-->
+						<!--begin::Btn export to excel-->
+						<div class="d-flex flex-wrap my-1">
+							<button type="button" class="btn btn-primary btn-lg" id="exportExcel" onclick="exportDataToExcel()">
+						        <i class="ki-duotone ki-file-right fs-2">
+									<span class="path1"></span>
+									<span class="path2"></span>
+								</i>
+						        &nbsp;Export to excel
+						    </button>
+						</div>
+						<!--end::Btn export to excel-->
 					</div>
-					<!--end::Btn Create-->
 				</div>
 				<!-- Recent Update -->
 
@@ -738,7 +743,7 @@
 						</div>
 
 						<div>
-							Request By: <span class="employeeId"></span><span class="username"></span> , <span id="timecreate"></span>
+							Request By: <span id="ucEmpId"></span> <span id="ucName"></span> , <span id="timecreate"></span>
 						</div>
 
 					</div>
@@ -1060,12 +1065,13 @@ function leaveStatus(id) {
 			console.log(obj);
 
 			$('#leaveid').html(obj.leave_id);
-			//$('#userid').html(obj.user_id);
 			$('.employeeId').html(obj.employeeId + " ");
 			$('.username').html(obj.name);
 			$('#stime').html(obj.start_time);
 			$('#etime').html(obj.end_time);
 			$('#desc').html(obj.description);
+			$('#ucEmpId').html(obj.ucEmpId);
+			$('#ucName').html(obj.ucName);
 			if(obj.leave_file_name == null){
 				$('#file').html("-");
 			}else{
@@ -1108,9 +1114,9 @@ function leaveStatus(id) {
 
 			$('#noday').html(obj.no_day + " Day");
 
-			var timecreate = (obj.time_create).split(",");
-			var tcreate = moment(timecreate[0]).format("D MMM YYYY");
-			$('#timecreate').html(tcreate);
+			//var timecreate = (obj.time_create).split(",");
+			//var tcreate = moment(timecreate[0]).format("D MMM YYYY");
+			$('#timecreate').html(obj.time_create.replace(",", " "));
 
 			$("#appr_reason").val("");
 
@@ -1129,7 +1135,6 @@ function leaveStatus(id) {
 				//CASE: Approved / Reject / Cancel
 
 				setModalViewMode(false);
-
 				$('#approver').html(obj.user_update);
 				$('#timeupdate').html(moment(obj.time_update).format("D MMM YYYY"));
 				$('#reason_s').html(obj.reason);
@@ -1273,5 +1278,23 @@ function sentData(id, value) {
 <script>
 	function add() {
 		document.location = "NewLeaveAdd?la=1";
+	}
+	
+	function exportDataToExcel() {
+		var name1 = document.getElementById("name1") ? document.getElementById("name1").value : "";
+		var name2 = document.getElementById("name2") ? document.getElementById("name2").value : "";
+		var appr = document.getElementById("leaveStatus") ? document.getElementById("leaveStatus").value : "";
+		var leaveType = document.getElementById("leaveType") ? document.getElementById("leaveType").value : "";
+		
+		var sd = document.getElementById("startdate") ? document.getElementById("startdate").value : "";
+		var ed = document.getElementById("enddate") ? document.getElementById("enddate").value : "";
+		
+		var exportUrl = "LeaveApproveExcelExport?name1=" + encodeURIComponent(name1) +
+						"&name2=" + encodeURIComponent(name2) +
+						"&startdate=" + encodeURIComponent(sd) +
+						"&enddate=" + encodeURIComponent(ed) +
+						"&appr=" + encodeURIComponent(appr) +
+						"&leaveType=" + encodeURIComponent(leaveType);
+		window.location.href = exportUrl;
 	}
 </script>
