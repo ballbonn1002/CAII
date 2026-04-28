@@ -282,9 +282,9 @@ String targetURL = Constant.getWebContext2() + "/authorization?token=" + token;
 								class="menu-icon"> <i class="ki-duotone ki-time fs-1">
 										<span class="path1"></span> <span class="path2"></span>
 								</i>
-							</span> <span class="menu-title"> Work Log </span>
-							<i class="ki-duotone ki-check-circle fs-3 text-success"> <span
-								class="path1"></span><span class="path2"></span>
+							</span> <span class="menu-title"> Work Log </span> <i
+								class="ki-duotone ki-check-circle fs-3 text-success"> <span
+									class="path1"></span><span class="path2"></span>
 							</i>
 							</a>
 						</div>
@@ -342,6 +342,20 @@ String targetURL = Constant.getWebContext2() + "/authorization?token=" + token;
 					<!--end:Menu item-->
 
 					<!--begin:Menu item-->
+					<div class="menu-item">
+						<a class="menu-link" href="travel_approve"
+							data-route="travel_approve"> <span class="menu-icon">
+								<i class="ki-duotone ki-delivery-time fs-1"> <span
+									class="path1"></span> <span class="path2"></span> <span
+									class="path3"></span> <span class="path4"></span> <span
+									class="path5"></span>
+							</i>
+						</span> <span class="menu-title">Travel Approve</span>
+						</a>
+					</div>
+					<!--end:Menu item-->
+
+					<!--begin:Menu item-->
 					<!-- <div class="menu-item">
 						begin:Menu link
 						<a class="menu-link" href="#" data-route="#">
@@ -386,9 +400,9 @@ String targetURL = Constant.getWebContext2() + "/authorization?token=" + token;
 									<i class="ki-duotone ki-monitor-mobile fs-1"> <span
 										class="path1"></span> <span class="path2"></span>
 								</i>
-							</span> <span class="menu-title">Equipment</span>
-							<i class="ki-duotone ki-check-circle fs-3 text-success"> <span
-								class="path1"></span><span class="path2"></span>
+							</span> <span class="menu-title">Equipment</span> <i
+								class="ki-duotone ki-check-circle fs-3 text-success"> <span
+									class="path1"></span><span class="path2"></span>
 							</i>
 							</a>
 							<!--end:Menu link-->
@@ -404,9 +418,9 @@ String targetURL = Constant.getWebContext2() + "/authorization?token=" + token;
 									class="ki-duotone ki-delivery-3 fs-1"> <span class="path1"></span>
 										<span class="path2"></span> <span class="path3"></span>
 								</i>
-							</span> <span class="menu-title">Borrow</span>
-							<i class="ki-duotone ki-check-circle fs-3 text-success"> <span
-								class="path1"></span><span class="path2"></span>
+							</span> <span class="menu-title">Borrow</span> <i
+								class="ki-duotone ki-check-circle fs-3 text-success"> <span
+									class="path1"></span><span class="path2"></span>
 							</i>
 							</a>
 							<!--end:Menu link-->
@@ -480,9 +494,9 @@ String targetURL = Constant.getWebContext2() + "/authorization?token=" + token;
 									class="ki-duotone ki-monitor-mobile fs-1"> <span
 										class="path1"></span> <span class="path2"></span>
 								</i>
-							</span> <span class="menu-title">Leave Type</span>
-							<i class="ki-duotone ki-check-circle fs-3 text-success"> <span
-								class="path1"></span><span class="path2"></span>
+							</span> <span class="menu-title">Leave Type</span> <i
+								class="ki-duotone ki-check-circle fs-3 text-success"> <span
+									class="path1"></span><span class="path2"></span>
 							</i>
 							</a>
 							<!--end:Menu link-->

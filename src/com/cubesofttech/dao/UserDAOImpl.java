@@ -669,5 +669,6 @@ public class UserDAOImpl implements UserDAO {
 		}
 		return userActive;
 	}
+	
 
 }

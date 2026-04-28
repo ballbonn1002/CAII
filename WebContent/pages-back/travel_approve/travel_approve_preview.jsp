@@ -9,7 +9,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Submit Request | CubeSoftTech</title>
+<title>Travel Approve| CubeSoftTech</title>
 
 <link
 	href="${pageContext.request.contextPath}/assets/plugins/global/plugins.bundle.css"
@@ -194,27 +194,18 @@
 						class="app-container container-fluid d-flex align-items-center justify-content-between">
 						<div
 							class="page-title d-flex flex-column justify-content-center flex-wrap me-3">
-
 							<h1
 								class="page-heading d-flex text-dark fw-bold fs-3 flex-column justify-content-center my-0">
-								${empty statusActiveSafe ? "Submit Request" : "Requesst travel expense form"}</h1>
+								Approve Expense</h1>
 							<ul
 								class="breadcrumb breadcrumb-separatorless fw-semibold fs-7 my-0 pt-1">
 								<li class="breadcrumb-item text-muted">Home</li>
 								<li class="breadcrumb-item"><span
 									class="bullet bg-gray-400 w-5px h-2px"></span></li>
-								<li class="breadcrumb-item text-muted">Cube Management</li>
+								<li class="breadcrumb-item text-muted">Admin Management</li>
 							</ul>
 						</div>
-
 						<c:choose>
-							<c:when test="${empty statusActiveSafe}">
-								<div class="total-badge">
-									Total
-									<fmt:formatNumber value="${grandTotal}" pattern="#,##0.00" />
-									บาท
-								</div>
-							</c:when>
 							<c:when test="${statusActiveSafe eq 'W'}">
 								<div class="btn btn-sm btn-light-warning border border-warning">Wait
 									for Approve</div>
@@ -228,10 +219,7 @@
 							<c:when test="${statusActiveSafe eq 'R'}">
 								<div class="btn btn-sm btn-light-danger border border-danger">Rejected</div>
 							</c:when>
-
-
 						</c:choose>
-
 					</div>
 				</div>
 
@@ -365,8 +353,8 @@
 													varStatus="ds">
 													<tr>
 														<td class="seq-col">${ds.index + 1}</td>
-														<td><span>${det['travel_type_name']}</span></td>
-														<td>${det['description']}</td>
+														<td><strong>${det['travel_type_name']}</strong></td>
+														<td class="text-muted">${det['description']}</td>
 														<td><fmt:formatNumber value="${det['total']}"
 																pattern="#,##0.00" /></td>
 													</tr>
@@ -385,7 +373,6 @@
 												</tr>
 											</table>
 										</div>
-
 									</c:forEach>
 
 									<c:if test="${empty expenseListObj}">
@@ -450,90 +437,51 @@
 										<div
 											class="receiver-box d-flex flex-column align-items-center gap-2"
 											id="receiverBox1">
-											<c:choose>
-												<c:when test="${empty statusActiveSafe}">
-													<span class="text-muted fs-7" id="receiverLabel1">คลิ๊ก
-														เพื่อยืนยันผู้ขอเบิกเงิน</span>
-													<div id="receiverPreview1"
-														style="min-height: 44px; display: flex; flex-direction: column; align-items: center;">
-													</div>
-													<button type="button" class="btn btn-primary btn-sm px-5"
-														id="receiverBtn1" onclick="confirmReceiver(1)">
-														ลงชื่อ ผู้ขอเบิก</button>
-												</c:when>
-												<c:otherwise>
-													<div id="receiverPreview1"
-														style="min-height: 44px; display: flex; flex-direction: column; align-items: center;">
-														<span class="text-dark fw-semibold fs-7">${requestBy}</span>
-														<span class="text-muted fs-8"><fmt:formatDate
-																value="${expense_group_create_date}"
-																pattern="d MMM yyyy, H:mm" /></span>
-													</div>
-												</c:otherwise>
-											</c:choose>
+											<div id="receiverPreview1"
+												style="min-height: 44px; display: flex; flex-direction: column; align-items: center;">
+												<span class="text-dark fw-semibold fs-7">${requestBy}</span>
+												<span class="text-muted fs-8"><fmt:formatDate
+														value="${expense_group_create_date}"
+														pattern="d MMM yyyy, H:mm" /></span>
+											</div>
 										</div>
 
 										<!-- RIGHT: Receiver 2 = ผู้รับเงิน -->
 										<div
 											class="receiver-box d-flex flex-column align-items-center gap-2"
 											id="receiverBox2">
-											<c:choose>
-												<c:when test="${empty statusActiveSafe}">
-													<span class="text-muted fs-7" id="receiverLabel2">คลิ๊ก
-														เพื่อยืนยันผู้รับเงิน</span>
-													<div id="receiverPreview2"
-														style="min-height: 44px; display: flex; flex-direction: column; align-items: center;">
-													</div>
-													<button type="button" class="btn btn-primary btn-sm px-5"
-														id="receiverBtn2" onclick="confirmReceiver(2)">
-														ลงชื่อ ผู้รับ</button>
-
-												</c:when>
-												<c:otherwise>
-													<div id="receiverPreview2"
-														style="min-height: 44px; display: flex; flex-direction: column; align-items: center;">
-														<span class="text-dark fw-semibold fs-7">${receiveBy}</span>
-														<span class="text-muted fs-8"><fmt:formatDate
-																value="${expense_group_create_date}"
-																pattern="d MMM yyyy, H:mm" /></span>
-													</div>
-												</c:otherwise>
-											</c:choose>
-
+											<div id="receiverPreview2"
+												style="min-height: 44px; display: flex; flex-direction: column; align-items: center;">
+												<span class="text-dark fw-semibold fs-7">${receiveBy}</span>
+												<span class="text-muted fs-8"><fmt:formatDate
+														value="${expense_group_create_date}"
+														pattern="d MMM yyyy, H:mm" /></span>
+											</div>
 										</div>
-
 									</div>
 								</div>
 							</div>
 
-							<c:if
-								test="${not empty statusActiveSafe && statusActiveSafe ne 'W' && statusActiveSafe ne 'C' }">
-								<div class="card card-flush mb-6">
-									<div class="card-body">
-										<label class="form-label fw-medium text-gray-800">Description</label>
-										<textarea name="description_appr"
-											class="form-control resize-none fw-medium text-gray-900 bg-light"
-											rows="3" readonly>${description_appr}</textarea>
-									</div>
+							<div class="card card-flush mb-6">
+								<div class="card-body">
+									<label class="form-label fw-medium text-gray-800">Description</label>
+									<textarea name="description_appr"
+										class="form-control resize-none fw-medium text-gray-900 ${statusActiveSafe ne 'W'  ? 'bg-light' : ''}"
+										rows="3" ${statusActiveSafe ne 'W' ? 'readonly' : ''}>${description_appr}</textarea>
 								</div>
-							</c:if>
+							</div>
 
 							<div class="d-flex justify-content-end gap-3 mb-10">
-								<a href="${ctx}/my_travel?status=Draft"
-									class="btn btn-light px-6">Close </a>
+								<a href="${ctx}/travel_approve" class="btn btn-light px-6">Close</a>
+								<c:if
+									test="${not empty statusActiveSafe  && statusActiveSafe == 'W'}">
 
-								<c:if test="${empty statusActiveSafe}">
-									<button type="submit" id="btnSubmit"
-										class="btn btn-primary px-6" disabled>
-										<i class="ki-duotone ki-send fs-4 me-2"> <span
-											class="path1"></span><span class="path2"></span>
-										</i> Submit Request
-									</button>
-								</c:if>
-								<c:if test="${statusActiveSafe == 'W'}">
-									<a
-										href="${ctx}/my_travel_group_cancel?expense_group_id=${expense_group_id}"
-										class="btn btn-danger px-6">Cancel</a>
+									<button type="submit"
+										formaction="${ctx}/travel_approve_reject?expense_group_id=${expense_group_id}"
+										class="btn btn-danger px-6">Reject</button>
+									<button type="submit"
+										formaction="${ctx}/travel_approve_approve?expense_group_id=${expense_group_id}"
+										class="btn btn-success px-6">Approve</button>
 								</c:if>
 							</div>
 						</form>
@@ -581,6 +529,7 @@
 		        reader.readAsDataURL(file);
 		    });
 		}
+		
 		
 		// ── Confirm Receiver ──────────────────────────────────────
 		function confirmReceiver(slot) {

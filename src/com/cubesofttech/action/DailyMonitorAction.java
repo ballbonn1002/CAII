@@ -78,6 +78,7 @@ public class DailyMonitorAction extends ActionSupport {
 
 			String selectDate = localDate.toString();
 
+
 			request.setAttribute("searchDate", today);
 
 			List<Map<String, Object>> dailyReportList = workHoursDAO.findForDailyReport("all", "all", selectDate);
@@ -294,7 +295,6 @@ public class DailyMonitorAction extends ActionSupport {
 
 			}
 
-			
 			request.setAttribute("dailyWorkUser", dailyReportList);
 
 			// ===== WorkHours =====

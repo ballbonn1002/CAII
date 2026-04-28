@@ -588,6 +588,146 @@
 
 		<!-- Daily Monitor ================================================================================================== -->
 
+		<!-- Travel Approve ================================================================================================== -->
+
+		<!-- List ================================================================================================== -->
+		<action name="travel_approve"
+			class="com.cubesofttech.action.TravelAction"
+			method="travelApproveList">
+			<result name="success" type="tiles">travel_approve</result>
+			<result name="error">/index.jsp</result>
+		</action>
+		<!-- List ================================================================================================== -->
+
+		<!-- Preview ================================================================================================== -->
+		<action name="travel_approve_preview"
+			class="com.cubesofttech.action.TravelAction"
+			method="travelApprovePreview">
+			<result name="success" type="tiles">travel_approve_preview</result>
+			<result name="error">/index.jsp</result>
+		</action>
+		<!-- Preview ================================================================================================== -->
+
+		<!-- Approve ================================================================================================== -->
+		<action name="travel_approve_approve"
+			class="com.cubesofttech.action.TravelAction"
+			method="travelApprove">
+			<result name="success" type="redirectAction">
+				<param name="actionName">travel_approve</param>
+			</result>
+			<result name="error">/index.jsp</result>
+		</action>
+		<!-- Approve ================================================================================================== -->
+		
+		<!-- Reject ================================================================================================== -->
+		<action name="travel_approve_reject"
+			class="com.cubesofttech.action.TravelAction"
+			method="travelReject">
+			<result name="success" type="redirectAction">
+				<param name="actionName">travel_approve</param>
+			</result>
+			<result name="error">/index.jsp</result>
+		</action>
+		<!-- Reject ================================================================================================== -->
+
+		<!-- Travel Approve ================================================================================================== -->
+
+		<!-- My Travel ================================================================================================== -->
+
+		<!-- List ================================================================================================== -->
+		<action name="my_travel"
+			class="com.cubesofttech.action.TravelAction" method="myTravelList">
+			<result name="success" type="tiles">myTravel</result>
+			<result name="error">/index.jsp</result>
+		</action>
+		<!-- List ================================================================================================== -->
+
+		<!-- Add ================================================================================================== -->
+		<action name="my_travelA"
+			class="com.cubesofttech.action.TravelAction" method="travelAdd">
+			<result name="success" type="tiles">myTravelA</result>
+			<result name="error">/index.jsp</result>
+		</action>
+		<!-- Add ================================================================================================== -->
+
+		<!-- Save ================================================================================================== -->
+		<action name="travel_save"
+			class="com.cubesofttech.action.TravelAction" method="travelSave">
+			<result name="success" type="redirectAction">
+				<param name="actionName">my_travel</param>
+			</result>
+			<result name="error">/index.jsp</result>
+		</action>
+		<!-- Save ================================================================================================== -->
+
+		<!-- Edit ================================================================================================== -->
+		<action name="my_travelE"
+			class="com.cubesofttech.action.TravelAction" method="travelEdit">
+			<result name="success" type="tiles">myTravelE</result>
+			<result name="error">/index.jsp</result>
+		</action>
+		<!-- Edit ================================================================================================== -->
+
+		<!-- Update ================================================================================================== -->
+		<action name="travel_update"
+			class="com.cubesofttech.action.TravelAction" method="travelUpdate">
+			<result name="success" type="redirectAction">
+				<param name="actionName">my_travel</param>
+			</result>
+			<result name="error">/index.jsp</result>
+		</action>
+		<!-- Update ================================================================================================== -->
+
+		<!-- Submit Preview ================================================================================================== -->
+		<action name="submit_travelR"
+			class="com.cubesofttech.action.TravelAction"
+			method="submitTravelPreview">
+			<result name="success" type="tiles">myTravelSR</result>
+			<result name="error">/index.jsp</result>
+		</action>
+		<!-- Submit Preview ================================================================================================== -->
+
+		<!-- Submit Request ================================================================================================== -->
+		<action name="travel_submit"
+			class="com.cubesofttech.action.TravelAction"
+			method="submitTravelRequest">
+			<result name="success" type="redirectAction">
+				<param name="actionName">my_travel</param>
+			</result>
+			<result name="error">/index.jsp</result>
+		</action>
+		<!-- Submit Request ================================================================================================== -->
+
+		<!-- Delete ================================================================================================== -->
+		<action name="travel_delete"
+			class="com.cubesofttech.action.TravelAction" method="travelDelete">
+			<result name="success" type="redirectAction">
+				<param name="actionName">my_travel</param>
+			</result>
+			<result name="error">/index.jsp</result>
+		</action>
+		<!-- Delete ================================================================================================== -->
+
+		<!-- Group ================================================================================================== -->
+		<action name="my_travel_group"
+			class="com.cubesofttech.action.TravelAction"
+			method="submitTravelPreview">
+			<result name="success" type="tiles">myTravelSR</result>
+			<result name="error">/index.jsp</result>
+		</action>
+
+		<action name="my_travel_group_cancel"
+			class="com.cubesofttech.action.TravelAction" method="travelCancel">
+			<result name="success" type="redirectAction">
+				<param name="actionName">my_travel</param>
+			</result>
+			<result name="error">/index.jsp</result>
+		</action>
+
+		<!-- Group ================================================================================================== -->
+
+		<!-- My Travel ================================================================================================== -->
+
 		<!-- Overtime Request ================================================================================================== -->
 
 		<!-- List ================================================================================================== -->
@@ -1305,7 +1445,7 @@
 		</action>
 		<action name="report_listWorking"
 			class="com.cubesofttech.action.ReportAction" method="listWorking">
-			<result name="success" type="tiles">report</result>
+			<result name="success" type="tiles">summaryWorkingDay</result>
 			<result name="error">/index.jsp</result>
 			<result name="login" type="redirect">/index.jsp</result>
 		</action>

@@ -828,6 +828,10 @@
 														<div class="text-grey fw-medium fs-6">
 															<fmt:formatDate value="${hld.start_date}"
 																pattern="E, dd MMM" />
+															<c:if test="${hld.start_date != hld.end_date}">
+																- <fmt:formatDate value="${hld.end_date}"
+																	pattern="E, dd MMM" />
+															</c:if>
 														</div>
 													</div>
 													<jsp:useBean id="now" class="java.util.Date" />

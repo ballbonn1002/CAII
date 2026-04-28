@@ -21,7 +21,8 @@ public class ExpenseGroup implements Serializable {
 
 	public ExpenseGroup(Long expenseGroupId, String expTypeId, BigDecimal totalAmount, String statusId, String userId,
 			Short paidMonth, Integer paidYear, String requestedBy, Timestamp requestedAt, String receivedBy,
-			Timestamp receivedAt, String userCreate, String userUpdate, Timestamp timeCreate, Timestamp timeUpdate) {
+			Timestamp receivedAt, String userCreate, String userUpdate, Timestamp timeCreate, Timestamp timeUpdate,
+			String description_appr, String appr_user_id, Timestamp approved_at) {
 		this.expenseGroupId = expenseGroupId;
 		this.expTypeId = expTypeId;
 		this.totalAmount = totalAmount;
@@ -37,6 +38,9 @@ public class ExpenseGroup implements Serializable {
 		this.userUpdate = userUpdate;
 		this.timeCreate = timeCreate;
 		this.timeUpdate = timeUpdate;
+		this.description_appr = description_appr;
+		this.appr_user_id = appr_user_id;
+		this.approved_at = approved_at;
 	}
 
 	@Id
@@ -85,6 +89,15 @@ public class ExpenseGroup implements Serializable {
 
 	@Column(name = "time_update")
 	private Timestamp timeUpdate;
+
+	@Column(name = "description_appr")
+	private String description_appr;
+
+	@Column(name = "appr_user_id")
+	private String appr_user_id;
+
+	@Column(name = "approved_at")
+	private Timestamp approved_at;
 
 	// ===== Getter / Setter =====
 
@@ -209,6 +222,30 @@ public class ExpenseGroup implements Serializable {
 		this.timeUpdate = timeUpdate;
 	}
 
+	public String getDescription_appr() {
+		return description_appr;
+	}
+
+	public void setDescription_appr(String description_appr) {
+		this.description_appr = description_appr;
+	}
+
+	public String getAppr_user_id() {
+		return appr_user_id;
+	}
+
+	public void setAppr_user_id(String appr_user_id) {
+		this.appr_user_id = appr_user_id;
+	}
+
+	public Timestamp getApproved_at() {
+		return approved_at;
+	}
+
+	public void setApproved_at(Timestamp approved_at) {
+		this.approved_at = approved_at;
+	}
+
 	// ===== toString =====
 
 	@Override
@@ -218,7 +255,9 @@ public class ExpenseGroup implements Serializable {
 				+ "paidMonth=[" + paidMonth + "]\n" + "paidYear=[" + paidYear + "]\n" + "requestedBy=[" + requestedBy
 				+ "]\n" + "requestedAt=[" + requestedAt + "]\n" + "receivedBy=[" + receivedBy + "]\n" + "receivedAt=["
 				+ receivedAt + "]\n" + "userCreate=[" + userCreate + "]\n" + "userUpdate=[" + userUpdate + "]\n"
-				+ "timeCreate=[" + timeCreate + "]\n" + "timeUpdate=[" + timeUpdate + "]\n";
+				+ "timeCreate=[" + timeCreate + "]\n" + "timeUpdate=[" + timeUpdate + "]\n" + "description_appr=["
+				+ description_appr + "]\n" + "appr_user_id=[" + appr_user_id + "]\n" + "approved_at=[" + approved_at
+				+ "]\n";
 	}
 
 	// ===== equals =====
@@ -264,6 +303,17 @@ public class ExpenseGroup implements Serializable {
 		if (!(that.getTimeCreate() == null ? this.timeCreate == null : that.getTimeCreate().equals(this.timeCreate)))
 			return false;
 		if (!(that.getTimeUpdate() == null ? this.timeUpdate == null : that.getTimeUpdate().equals(this.timeUpdate)))
+			return false;
+		if (!(that.getDescription_appr() == null ? this.description_appr == null
+				: that.getDescription_appr().equals(this.description_appr)))
+			return false;
+
+		if (!(that.getAppr_user_id() == null ? this.appr_user_id == null
+				: that.getAppr_user_id().equals(this.appr_user_id)))
+			return false;
+
+		if (!(that.getApproved_at() == null ? this.approved_at == null
+				: that.getApproved_at().equals(this.approved_at)))
 			return false;
 		return true;
 	}

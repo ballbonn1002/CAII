@@ -98,7 +98,7 @@ public class TravelAction extends ActionSupport {
 	}
 
 	// ===================== หน้า add form =====================
-	public String travelA() {
+	public String travelAdd() {
 		HttpServletRequest request = ServletActionContext.getRequest();
 		try {
 			User onlineUser = (User) request.getSession().getAttribute("onlineUser");
@@ -138,7 +138,7 @@ public class TravelAction extends ActionSupport {
 				status = "Draft";
 
 			String userId = onlineUser.getId();
-			//Comment
+			// Comment
 
 			// ── Date range ──────────────────────────────────────────────────────
 			String dateRange = request.getParameter("dateRange");
@@ -155,8 +155,19 @@ public class TravelAction extends ActionSupport {
 						if (!parts[1].trim().isEmpty())
 							dateTo = java.sql.Date.valueOf(parts[1].trim());
 					} catch (Exception ignored) {
+
 					}
+				} else if (parts.length == 1) {
+					dateFrom = java.sql.Date.valueOf(parts[0].trim());
+					dateTo = java.sql.Date.valueOf(parts[0].trim());
 				}
+			}
+
+			if (dateTo != null) {
+				Calendar cal = Calendar.getInstance();
+				cal.setTime(dateTo);
+				cal.add(Calendar.DATE, 1);
+				dateTo = new java.sql.Date(cal.getTimeInMillis());
 			}
 
 			// ── Page size ───────────────────────────────────────────────────────
@@ -195,22 +206,30 @@ public class TravelAction extends ActionSupport {
 
 				setAttrs(request, userListObj, userJSON, status, list, currentPage, pageSize, total, totalPages,
 						fromIdx, toIdx);
+
 				request.setAttribute("viewMode", "expense");
 
 			} else {
-				total = expenseGroupDAO.countMyGroupsByStatus(status, userId, dateFrom, dateTo);
+
+				int offset = (currentPage - 1) * pageSize;
+
+				Map<String, Object> daoResult = expenseGroupDAO.findMyGroupsAndCountByStatus(status, userId, dateFrom,
+						dateTo, offset, pageSize);
+
+				list = (List<Map<String, Object>>) daoResult.get("data");
+
+				total = (int) daoResult.get("total");
 
 				int totalPages = Math.max(1, (int) Math.ceil(total / (double) pageSize));
 				if (currentPage > totalPages)
 					currentPage = totalPages;
-				int offset = (currentPage - 1) * pageSize;
+
 				int fromIdx = total == 0 ? 0 : offset + 1;
 				int toIdx = Math.min(offset + pageSize, total);
 
-				list = expenseGroupDAO.findMyGroupsByStatus(status, userId, dateFrom, dateTo, offset, pageSize);
-
 				setAttrs(request, userListObj, userJSON, status, list, currentPage, pageSize, total, totalPages,
 						fromIdx, toIdx);
+
 				request.setAttribute("viewMode", "group");
 			}
 
@@ -739,6 +758,29 @@ public class TravelAction extends ActionSupport {
 		}
 	}
 
+	// ===================== Travel Cancel =====================
+	public String travelCancel() {
+		try {
+
+			HttpServletRequest request = ServletActionContext.getRequest();
+			String expenseGroupIdStr = request.getParameter("expense_group_id");
+
+			Long expenseGroupId = Long.parseLong(expenseGroupIdStr);
+			ExpenseGroup expense = expenseGroupDAO.findById(expenseGroupId);
+
+			Timestamp now = DateUtil.getCurrentTime();
+			expense.setStatusId("C");
+			expense.setTimeUpdate(now);
+
+			expenseGroupDAO.update(expense);
+
+			return SUCCESS;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ERROR;
+		}
+	}
+
 	// ===================== Submit Preview =====================
 	public String submitTravelPreview() {
 		HttpServletRequest request = ServletActionContext.getRequest();
@@ -748,6 +790,9 @@ public class TravelAction extends ActionSupport {
 				return ERROR;
 
 			String[] ids = request.getParameterValues("ids");
+			String expenseGroupIdStr = request.getParameter("expense_group_id");
+			String status = request.getParameter("status");
+
 			List<Long> expenseIds = new ArrayList<>();
 			if (ids != null) {
 				for (String s : ids) {
@@ -757,9 +802,28 @@ public class TravelAction extends ActionSupport {
 							expenseIds.add(Long.parseLong(t));
 					}
 				}
+			} else if (expenseGroupIdStr != null && !expenseGroupIdStr.isEmpty()) {
+				long expenseGroupId = Long.parseLong(expenseGroupIdStr);
+				List<Expense> expenseList = expenseDAO.findByGroupId(expenseGroupId);
+				ExpenseGroup expenseGroup = expenseGroupDAO.findById(expenseGroupId);
+				String userId = expenseGroup.getUserId();
+
+				if (userId != null && !userId.isEmpty()) {
+					User user = userDAO.findById(userId);
+					request.setAttribute("receiveBy", user.getNameEN());
+					request.setAttribute("requestBy", user.getNameEN());
+				}
+
+				for (Expense expense : expenseList) {
+					expenseIds.add(expense.getExpenseId());
+				}
+
+				request.setAttribute("description_appr", expenseGroup.getDescription_appr());
+				request.setAttribute("statusActiveSafe", status);
+				request.setAttribute("expense_group_id", expenseGroupIdStr);
+				request.setAttribute("expense_group_create_date", expenseGroup.getTimeCreate());
+
 			}
-			if (expenseIds.isEmpty())
-				return "redirect_back";
 
 			List<Map<String, Object>> expenseListObj = new ArrayList<>();
 			BigDecimal grandTotal = BigDecimal.ZERO;
@@ -1043,6 +1107,290 @@ public class TravelAction extends ActionSupport {
 			return new Timestamp(sdf.parse(date.trim() + " " + time.trim() + ":00").getTime());
 		} catch (Exception e) {
 			return null;
+		}
+	}
+
+	// ===================== Travel Approve =====================
+
+	public String travelApproveList() {
+		HttpServletRequest request = ServletActionContext.getRequest();
+		try {
+			User onlineUser = (User) request.getSession().getAttribute("onlineUser");
+			if (onlineUser == null)
+				return ERROR;
+
+			String userJSON = userDAO.userListJSON();
+
+			List<Map<String, Object>> userListObj = userDAO.findUserActive();
+
+			String status = request.getParameter("status");
+			String userId = request.getParameter("userId");
+
+			if (userId == null || userId.trim().isEmpty()) {
+				userId = "all";
+			}
+
+			if (status == null || status.trim().isEmpty()) {
+				status = "W";
+			}
+
+			// ── Date range ──────────────────────────────────────────────────────
+			String dateRange = request.getParameter("dateRange");
+			java.sql.Date dateFrom = null, dateTo = null;
+
+			if (dateRange != null && !dateRange.trim().isEmpty()) {
+				String[] parts = dateRange.trim().split("\\s+to\\s+");
+				if (parts.length == 2) {
+					try {
+						if (!parts[0].trim().isEmpty())
+							dateFrom = java.sql.Date.valueOf(parts[0].trim());
+					} catch (Exception ignored) {
+					}
+					try {
+						if (!parts[1].trim().isEmpty())
+							dateTo = java.sql.Date.valueOf(parts[1].trim());
+					} catch (Exception ignored) {
+					}
+				} else if (parts.length == 1) {
+					dateFrom = java.sql.Date.valueOf(parts[0].trim());
+					dateTo = java.sql.Date.valueOf(parts[0].trim());
+				}
+			}
+
+			if (dateTo != null) {
+				Calendar cal = Calendar.getInstance();
+				cal.setTime(dateTo);
+				cal.add(Calendar.DATE, 1);
+				dateTo = new java.sql.Date(cal.getTimeInMillis());
+			}
+
+			// ── Page size ───────────────────────────────────────────────────────
+			int pageSize = 25;
+			String ps = request.getParameter("pageSize");
+			if (ps != null && ps.trim().matches("\\d+")) {
+				int v = Integer.parseInt(ps.trim());
+				if (v == 50 || v == 100)
+					pageSize = v;
+			}
+
+			// ── Current page ────────────────────────────────────────────────────
+			int currentPage = 1;
+			String pg = request.getParameter("page");
+			if (pg != null && pg.trim().matches("\\d+")) {
+				currentPage = Integer.parseInt(pg.trim());
+				if (currentPage < 1)
+					currentPage = 1;
+			}
+
+			int offset = (currentPage - 1) * pageSize;
+
+			Map<String, Object> daoResult = expenseGroupDAO.findMyGroupsAndCountByStatus(status, userId, dateFrom,
+					dateTo, offset, pageSize);
+
+			List<Map<String, Object>> list = (List<Map<String, Object>>) daoResult.get("data");
+
+			int total = (int) daoResult.get("total");
+
+			int totalPages = Math.max(1, (int) Math.ceil(total / (double) pageSize));
+			if (currentPage > totalPages)
+				currentPage = totalPages;
+
+			int fromIdx = total == 0 ? 0 : offset + 1;
+			int toIdx = Math.min(offset + pageSize, total);
+
+			setAttrs(request, userListObj, userJSON, status, list, currentPage, pageSize, total, totalPages, fromIdx,
+					toIdx);
+
+			request.setAttribute("viewMode", "group");
+
+			return SUCCESS;
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ERROR;
+		}
+	}
+
+	// ===================== Travel Approve Preview =====================
+	public String travelApprovePreview() {
+		HttpServletRequest request = ServletActionContext.getRequest();
+		try {
+			User onlineUser = (User) request.getSession().getAttribute("onlineUser");
+			if (onlineUser == null)
+				return ERROR;
+
+			String[] ids = request.getParameterValues("ids");
+			String expenseGroupIdStr = request.getParameter("expense_group_id");
+			String status = request.getParameter("status");
+			String userId = null;
+
+			List<Long> expenseIds = new ArrayList<>();
+
+			if (expenseGroupIdStr != null && !expenseGroupIdStr.isEmpty()) {
+				long expenseGroupId = Long.parseLong(expenseGroupIdStr);
+				List<Expense> expenseList = expenseDAO.findByGroupId(expenseGroupId);
+				ExpenseGroup expenseGroup = expenseGroupDAO.findById(expenseGroupId);
+				userId = expenseGroup.getUserId();
+
+				if (userId != null && !userId.isEmpty()) {
+					User user = userDAO.findById(userId);
+					request.setAttribute("receiveBy", user.getNameEN());
+					request.setAttribute("requestBy", user.getNameEN());
+				}
+
+				request.setAttribute("expense_group_create_date", expenseGroup.getTimeCreate());
+				request.setAttribute("description_appr", expenseGroup.getDescription_appr());
+
+				for (Expense expense : expenseList) {
+					expenseIds.add(expense.getExpenseId());
+				}
+
+				request.setAttribute("statusActiveSafe", status);
+				request.setAttribute("expense_group_id", expenseGroupIdStr);
+			}
+
+			List<Map<String, Object>> expenseListObj = new ArrayList<>();
+			BigDecimal grandTotal = BigDecimal.ZERO;
+
+			for (Long expenseId : expenseIds) {
+				Expense exp = expenseDAO.findById(expenseId);
+				if (exp == null)
+					continue;
+
+				Map<String, Object> expMap = new HashMap<>();
+				expMap.put("expense_id", exp.getExpenseId());
+				expMap.put("expense_group_id", exp.getExpenseGroupId());
+				expMap.put("dt_start",
+						exp.getDtStart() != null ? new java.util.Date(exp.getDtStart().getTime()) : null);
+				expMap.put("dt_end", exp.getDtEnd() != null ? new java.util.Date(exp.getDtEnd().getTime()) : null);
+				expMap.put("from_location", exp.getFromLocation());
+				expMap.put("to_location", exp.getToLocation());
+				expMap.put("description", exp.getDescription());
+				expMap.put("amount", exp.getAmount());
+				expMap.put("time_create",
+						exp.getTimeCreate() != null ? new java.util.Date(exp.getTimeCreate().getTime()) : null);
+
+				// ── Details ──────────────────────────────────────────
+				List<ExpenseDetail> details = expenseDetailDAO.findByExpenseId(expenseId);
+				List<Map<String, Object>> detailMaps = new ArrayList<>();
+				if (details != null) {
+					for (ExpenseDetail det : details) {
+						Map<String, Object> d = new HashMap<>();
+						String typeName = "-";
+						if (det.getGoBy() != null && det.getGoBy() > 0) {
+							ExpTravelType ett = expTravelTypeDAO.findById(det.getGoBy());
+							if (ett != null && ett.getName() != null)
+								typeName = ett.getName();
+						}
+						d.put("travel_type_name", typeName);
+						d.put("description", det.getDescription());
+						d.put("total", det.getTotal());
+						detailMaps.add(d);
+					}
+				}
+				expMap.put("details", detailMaps);
+
+				// ── Attached files ───────────────────────────────────
+				List<FileUpload> fileList = fileuploadDAO.findByPageAndPageId("travelFiles", String.valueOf(expenseId));
+				expMap.put("files", fileList != null ? fileList : new ArrayList<>());
+
+				if (exp.getAmount() != null)
+					grandTotal = grandTotal.add(exp.getAmount());
+				expenseListObj.add(expMap);
+			}
+
+			// ── User ─────────────────────────────────────────────────
+			User userObj = userDAO.findById(userId);
+
+			request.setAttribute("expenseListObj", expenseListObj);
+			request.setAttribute("userObj", userObj);
+			request.setAttribute("grandTotal", grandTotal);
+			request.setAttribute("selectedIds", ids != null ? Arrays.asList(ids) : java.util.Collections.emptyList());
+
+			if (userObj != null && userObj.getPathSignature() != null && userObj.getPathSignature().contains("_")) {
+				try {
+					String originalFileName = new java.io.File(userObj.getPathSignature()).getName();
+					String fileIdStr = originalFileName.substring(0, originalFileName.indexOf("_"));
+					String typeFile = originalFileName.substring(originalFileName.lastIndexOf("."));
+
+					String imgPathSignature = "/upload/user/user_signature_" + fileIdStr + typeFile;
+
+					java.io.File f = new java.io.File(request.getServletContext().getRealPath("/") + imgPathSignature);
+
+					if (f.exists()) {
+						request.setAttribute("signaturePath", imgPathSignature);
+					}
+
+				} catch (Exception ignore) {
+				}
+			}
+
+			return SUCCESS;
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ERROR;
+		}
+	}
+
+	// ===================== Travel Approve =====================
+	public String travelApprove() {
+		try {
+
+			HttpServletRequest request = ServletActionContext.getRequest();
+			String expenseGroupIdStr = request.getParameter("expense_group_id");
+			String descriptionAppr = request.getParameter("description_appr");
+			log.debug(descriptionAppr);
+			User onlineUser = (User) request.getSession().getAttribute("onlineUser");
+			if (onlineUser == null)
+				return ERROR;
+
+			Long expenseGroupId = Long.parseLong(expenseGroupIdStr);
+			ExpenseGroup expense = expenseGroupDAO.findById(expenseGroupId);
+
+			Timestamp now = DateUtil.getCurrentTime();
+			expense.setStatusId("A");
+			expense.setAppr_user_id(onlineUser.getId());
+			expense.setApproved_at(now);
+			expense.setDescription_appr(descriptionAppr == null || descriptionAppr.isEmpty() ? null : descriptionAppr);
+			expense.setTimeUpdate(now);
+
+			expenseGroupDAO.update(expense);
+
+			return SUCCESS;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ERROR;
+		}
+	}
+
+	// ===================== Travel Reject =====================
+	public String travelReject() {
+		try {
+
+			HttpServletRequest request = ServletActionContext.getRequest();
+			String expenseGroupIdStr = request.getParameter("expense_group_id");
+			String descriptionAppr = request.getParameter("description_appr");
+			User onlineUser = (User) request.getSession().getAttribute("onlineUser");
+			if (onlineUser == null)
+				return ERROR;
+
+			Long expenseGroupId = Long.parseLong(expenseGroupIdStr);
+			ExpenseGroup expense = expenseGroupDAO.findById(expenseGroupId);
+
+			Timestamp now = DateUtil.getCurrentTime();
+			expense.setStatusId("R");
+			expense.setAppr_user_id(onlineUser.getId());
+			expense.setApproved_at(now);
+			expense.setDescription_appr(descriptionAppr == null || descriptionAppr.isEmpty() ? null : descriptionAppr);
+			expense.setTimeUpdate(now);
+
+			expenseGroupDAO.update(expense);
+
+			return SUCCESS;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ERROR;
 		}
 	}
 }

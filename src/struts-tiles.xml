@@ -451,6 +451,13 @@
 	<definition name="report" extends="baseLayout">
 		<put-attribute name="title" value="Report" />
 		<put-attribute name="body"
+			value="/pages-back/report/report.jsp" />
+	</definition>
+
+	<!-- Summary Working Day -->
+	<definition name="summaryWorkingDay" extends="baseLayout">
+		<put-attribute name="title" value="Summary Working Day" />
+		<put-attribute name="body"
 			value="/pages-back/report/summary_working_day.jsp" />
 	</definition>
 
@@ -508,34 +515,50 @@
 		<put-attribute name="body"
 			value="/pages-back/overtime_approve/overtime_approve.jsp" />
 	</definition>
-	
-	<definition name="overtime_approve_form" extends="baseLayout">
-		<put-attribute name="title" value="Overtime Approve From" />
+
+	<definition name="overtime_approve_form"
+		extends="baseLayout">
+		<put-attribute name="title"
+			value="Overtime Approve From" />
 		<put-attribute name="body"
 			value="/pages-back/overtime_approve/overtime_approve_form.jsp" />
 	</definition>
-	
+
 	<!-- My Travel -->
-    <definition name="myTravel" extends="baseLayout">
-        <put-attribute name="title" value="My Travel" />
-        <put-attribute name="body"
-            value="/pages-back/my_travel/my_travel_list.jsp" />
-    </definition>
-    <definition name="myTravelA" extends="baseLayout">
-        <put-attribute name="title" value="My Travel Add" />
-        <put-attribute name="body"
-            value="/pages-back/my_travel/my_travel_add.jsp" />
-    </definition>
-    <definition name="myTravelE" extends="baseLayout">
-        <put-attribute name="title" value="My Travel Edit" />
-        <put-attribute name="body"
-            value="/pages-back/my_travel/my_travel_edit.jsp" />
-    </definition>
-    <definition name="myTravelSR" extends="baseLayout">
-        <put-attribute name="title" value="Submit Request" />
-        <put-attribute name="body"
-            value="/pages-back/my_travel/my_travel_submit.jsp" />
-    </definition>
+	<definition name="myTravel" extends="baseLayout">
+		<put-attribute name="title" value="My Travel" />
+		<put-attribute name="body"
+			value="/pages-back/my_travel/my_travel_list.jsp" />
+	</definition>
+	<definition name="myTravelA" extends="baseLayout">
+		<put-attribute name="title" value="My Travel Add" />
+		<put-attribute name="body"
+			value="/pages-back/my_travel/my_travel_add.jsp" />
+	</definition>
+	<definition name="myTravelE" extends="baseLayout">
+		<put-attribute name="title" value="My Travel Edit" />
+		<put-attribute name="body"
+			value="/pages-back/my_travel/my_travel_edit.jsp" />
+	</definition>
+	<definition name="myTravelSR" extends="baseLayout">
+		<put-attribute name="title" value="Submit Request" />
+		<put-attribute name="body"
+			value="/pages-back/my_travel/my_travel_submit.jsp" />
+	</definition>
+
+	<!-- Travel Approve -->
+	<definition name="travel_approve" extends="baseLayout">
+		<put-attribute name="title" value="Travel Approve" />
+		<put-attribute name="body"
+			value="/pages-back/travel_approve/travel_approve_list.jsp" />
+	</definition>
+
+	<definition name="travel_approve_preview"
+		extends="baseLayout">
+		<put-attribute name="title" value="Travel Approve" />
+		<put-attribute name="body"
+			value="/pages-back/travel_approve/travel_approve_preview.jsp" />
+	</definition>
 
 	<!-- Page URI -->
 	<definition name="page_uri_list" extends="baseLayout">

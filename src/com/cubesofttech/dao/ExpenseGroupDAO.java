@@ -27,9 +27,12 @@ public interface ExpenseGroupDAO {
 	public ExpenseGroup findByUserMonthYearAndStatus(String userId, String expTypeId, Short month, Integer year,
 			String statusId) throws Exception;
 
-	public int countMyGroupsByStatus(String status, String userId, java.sql.Date dateFrom, java.sql.Date dateTo)
-			throws Exception;
-
-	public List<Map<String, Object>> findMyGroupsByStatus(String status, String userId, java.sql.Date dateFrom,
+//	public int countMyGroupsByStatus(String status, String userId, java.sql.Date dateFrom, java.sql.Date dateTo)
+//			throws Exception;
+//
+//	public List<Map<String, Object>> findMyGroupsByStatus(String status, String userId, java.sql.Date dateFrom,
+//			java.sql.Date dateTo, int offset, int pageSize) throws Exception;
+	
+	public Map<String, Object> findMyGroupsAndCountByStatus(String status, String userId, java.sql.Date dateFrom,
 			java.sql.Date dateTo, int offset, int pageSize) throws Exception;
 }

@@ -145,29 +145,23 @@
 													<c:set var="displayApprHours"
 														value="${fn:replace(formattedAppr, '.', ':')}" />
 
-													<%-- <c:choose>
+													<c:choose>
 														<c:when test="${ot.status_name eq 'Approved'}">
 															<span
 																class="badge badge-lg badge-light-${ot.status_color} fw-bold fs-7 h-25px">
 																${displayApprHours} </span>
+															<fmt:formatNumber value="${ot.type_of_ot}" pattern="#.#"
+																var="otTypeDisplay" />
+															<span
+																class="badge badge-lg badge-primary fw-bold fs-7 h-25px ms-2">
+																${otTypeDisplay}X </span>
 														</c:when>
 														<c:otherwise>
 															<span
 																class="badge badge-lg badge-light-primary fw-bold fs-7 h-25px">
 																${displayApprHours} </span>
 														</c:otherwise>
-													</c:choose> --%>
-													<span
-														class="badge badge-lg badge-light-${ot.status_color} fw-bold fs-7 h-25px">
-														${displayApprHours}</span>
-
-													<c:if test="${not empty ot.type_of_ot}">
-														<fmt:formatNumber value="${ot.type_of_ot}" pattern="#.#"
-															var="otTypeDisplay" />
-														<span
-															class="badge badge-lg badge-primary fw-bold fs-7 h-25px ms-2">
-															${otTypeDisplay}X </span>
-													</c:if>
+													</c:choose>
 												</div>
 											</td>
 
