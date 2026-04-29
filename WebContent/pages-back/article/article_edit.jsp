@@ -189,6 +189,38 @@
 .note-palette{
 	margin: 2px 0;
 }
+/* tagify */
+.tags-look .tagify__dropdown__item{
+    display: inline-block;
+    vertical-align: middle;
+    border-radius: 3px;
+    padding: .3em .5em;
+    border: 1px solid #CCC;
+    background: #F3F3F3;
+    margin: .2em;
+    font-size: .85em;
+    color: black;
+    transition: 0s;
+}
+
+.tags-look .tagify__dropdown__item--active{
+    border-color: black;
+}
+
+.tags-look .tagify__dropdown__item:hover{
+    background: lightyellow;
+    border-color: gold;
+}
+
+.tags-look .tagify__dropdown__item--hidden {
+    max-width: 0;
+    max-height: initial;
+    padding: .3em 0;
+    margin: .2em 0;
+    white-space: nowrap;
+    text-indent: -20px;
+    border: 0;
+}
 </style>
 </head>
 <body class="app-default">
@@ -272,33 +304,9 @@
 											    </c:forEach>
 											</select>
 										</div>
-										<div class="col-12  mt-5">
-											<label class="fw-medium text-gray-800 mb-2">Tag</label>
-											<select name="article_tag" id="article_tag"
-												class="form-select text-gray-700" data-control="select2"
-												data-close-on-select="false" data-placeholder="Select Tag"
-												data-allow-clear="true" multiple="multiple">
-												<c:if test="${empty tagList}">
-												    <option disabled>Select Tag</option>
-												</c:if>
-
-												<c:forEach var="tagItems" items="${tagList}">
-												    <c:set var="isSelected" value="false" />
-												
-												    <c:if test="${selectedTagId != null}">
-												        <c:forEach var="id" items="${selectedTagId}">
-												            <c:if test="${id == tagItems.tagId}">
-												                <c:set var="isSelected" value="true" />
-												            </c:if>
-												        </c:forEach>
-												    </c:if>
-												
-												    <option value="${tagItems.tagId}"
-												        <c:if test="${isSelected}">selected</c:if>>
-												        ${tagItems.tagName}
-												    </option>
-												</c:forEach>
-											</select>
+										<div class="col-12 mt-5">
+											<label class="fw-medium text-gray-800 mb-2">Tags</label>
+											<input class="form-control tagify--custom-dropdown" name="article_tag" id="article_tag" value="<c:forEach items="${selectedTagId}" var="itemSelected">${itemSelected.name},</c:forEach>"/>
 										</div>
 										<div class="col-12 mt-5">
 											<label class="fw-medium text-gray-800 mb-2">Related
@@ -483,7 +491,7 @@
 												<input type="text" disabled
 														class="form-control text-gray-700"
 														placeholder="Forward to" name="forward_to"
-														id="forward_to" value="${pageUri.forwardTo}" />
+														id="forward_to" value="${pageUri[0].forwardTo}" />
 														
 											</div>
 											<div class="col-12 col-md-4 mt-5 mt-md-0">
@@ -491,7 +499,7 @@
 												<input type="text" disabled
 														class="form-control text-gray-700"
 														placeholder="Model" name="model"
-														id="model" value="${pageUri.model}" />
+														id="model" value="${pageUri[0].model}" />
 												
 											</div>
 											
@@ -500,31 +508,31 @@
 												<input type="text" disabled
 														class="form-control text-gray-700"
 														placeholder="Model ID" name="model_id"
-														id="model_id" value="${pageUri.modelId}" />
+														id="model_id" value="${pageUri[0].modelId}" />
 											</div>
 										</div>
 									<div class="col-12 mt-5">
 										<label class="required fw-medium text-gray-800 mb-2">Page URL</label>
 										<input type="text" 
 												class="form-control text-gray-700"
-												placeholder="Page URL" id="pageUriId" name="pageUriId" value="${empty pageUri.pageUriId ? '' :pageUri.pageUriId}" />
+												placeholder="Page URL" id="pageUriId" name="pageUriId" value="${empty pageUri[0].pageUriId ? '' :pageUri[0].pageUriId}" />
 														
 									</div>
 									<div class="col-12 mt-5">
 										<label class="required fw-medium text-gray-800 mb-2">Title</label>
 										<input type="text" 
 												class="form-control text-gray-700" maxlength="100"
-												placeholder="Title" id="pageUriTitle" name="pageUriTitle" value="${empty pageUri.pageUriTitle ? '' :pageUri.pageUriTitle}"/>				
+												placeholder="Title" id="pageUriTitle" name="pageUriTitle" value="${empty pageUri[0].pageUriTitle ? '' :pageUri[0].pageUriTitle}"/>				
 									</div>
 									<div class="col-12 mt-5">
 										<label class="required fw-medium text-gray-800 mb-2">Meta</label>
 										<textarea class="form-control text-gray-700" id="meta" name="meta"
-												placeholder="Meta" rows="3">${empty pageUri.meta ? '' : pageUri.meta}</textarea>		
+												placeholder="Meta" rows="3">${empty pageUri[0].meta ? '' : pageUri[0].meta}</textarea>		
 									</div>
 									<div class="col-12 mt-5">
 											<label class="fw-medium text-gray-800 mb-2">Description</label>
 											<textarea class="form-control text-gray-700" id="pageUriDescription" name="pageUriDescription"
-												placeholder="Description" rows="3">${empty pageUri.pageUriDescription ? '' : pageUri.pageUriDescription}</textarea>
+												placeholder="Description" rows="3">${empty pageUri[0].pageUriDescription ? '' : pageUri[0].pageUriDescription}</textarea>
 									</div>
 								</div>
 							</div>
@@ -879,6 +887,19 @@
 			    });
 			}
 	</script>
-
+	<script>
+	var input = document.querySelector('input[name="article_tag"]'),
+	// init Tagify script on the above inputs
+	tagify = new Tagify(input, {
+	    whitelist: [<c:forEach items="${tagList}" var="item">'${item.tagName}',</c:forEach>],
+	    maxTags: 10,
+	    dropdown: {
+	        maxItems: 20,           // <- maximum allowed rendered suggestions
+	        classname: 'tags-look', // <- custom classname for this dropdown, so it could be targeted
+	        enabled: 0,             // <- show suggestions on focus
+	        closeOnSelect: false    // <- do not hide the suggestions dropdown once an item has been selected
+	    }
+	})
+	</script>
 </body>
 </html>

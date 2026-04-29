@@ -13,7 +13,9 @@ public interface ArticleTagDAO {
 
 	List<ArticleTag> findAll() throws Exception;
 
-	List<Integer> findTagIdByArticleId(String articleId) throws Exception;
+	List<ArticleTag> findTagIdByArticleId(String articleId) throws Exception;
+	
+	List<ArticleTag> checkExistArticleTag(String articleId, String tagId) throws Exception;
 
 	void save(ArticleTag ArticleTag) throws Exception;
 

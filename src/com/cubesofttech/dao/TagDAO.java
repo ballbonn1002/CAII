@@ -12,9 +12,14 @@ import com.cubesofttech.model.Tag;
 
 public interface TagDAO {
 
+	void save(Tag tag) throws Exception;
+	
 	List<Tag> findAll() throws Exception;
 
 	Tag findById(Integer id) throws Exception;
 	
+	Tag findByName(String name) throws Exception;
+	
+	Integer getMaxId() throws Exception;
 }
       

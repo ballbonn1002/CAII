@@ -42,6 +42,8 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
 import org.apache.struts2.ServletActionContext;
 import org.apache.struts2.dispatcher.multipart.MultiPartRequestWrapper;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cubesofttech.dao.WorkHoursDAO;
@@ -130,7 +132,7 @@ public class ArticleAction extends ActionSupport {
 	private Integer articleId;
 	private String cover_alt;
 	private Integer article_type;
-	private String[] article_tag;
+	private String article_tag;
 	private String[] article_related;
 	private String article_title;
 	private String user_create;
@@ -180,11 +182,11 @@ public class ArticleAction extends ActionSupport {
 		this.article_type = article_type;
 	}
 
-	public String[] getArticle_tag() {
+	public String getArticle_tag() {
 		return article_tag;
 	}
 
-	public void setArticle_tag(String[] article_tag) {
+	public void setArticle_tag(String article_tag) {
 		this.article_tag = article_tag;
 	}
 
@@ -566,14 +568,30 @@ public class ArticleAction extends ActionSupport {
 
 			// Save article_tag
 			if (article_tag != null) {
-			    for (String tagId : article_tag) {
+				log.debug(article_tag);
+				JSONArray jsonArray = new JSONArray(article_tag);
 
-			        ArticleTag at = new ArticleTag();
+		        for (int i = 0; i < jsonArray.length(); i++) {
+		            JSONObject obj = jsonArray.getJSONObject(i);
+		            String value = obj.getString("value");
+		            log.debug(value);
+		            
+		            Tag tag = tagDAO.findByName(value);
+		            ArticleTag at = new ArticleTag();
 			        at.setArticleId(String.valueOf(article.getArticleId()));
-			        at.setTagId(tagId);
-
-			        articleTagDAO.save(at);
-			    }
+		            if(tag == null) {
+		            	int tagMaxId = tagDAO.getMaxId()+1;
+				    	Tag t = new Tag();
+				    	t.setTagId(tagMaxId);
+				    	t.setTagName(value);
+				    	tagDAO.save(t);
+				    	
+				        at.setTagId(String.valueOf(t.getTagId()));
+		            }else {
+				        at.setTagId(String.valueOf(tag.getTagId()));
+		            }
+		            articleTagDAO.save(at);
+		        }
 			}
 
 			// Save article_related
@@ -639,12 +657,12 @@ public class ArticleAction extends ActionSupport {
 			Article article = articleDAO.findById(articleId);
 			List<Tag> tagList = tagDAO.findAll();
 			List<ArticleType> articleTypeList = articleTypeDAO.findAll();
-			List<Integer> tagIds = articleTagDAO.findTagIdByArticleId(String.valueOf(articleId));
+			List<ArticleTag> tagIds = articleTagDAO.findTagIdByArticleId(String.valueOf(articleId));
 			List<ArticleRelated> selectedRelatedId = articleRelatedDAO.findRelatedIdByArticleId(String.valueOf(articleId));
 			List<User> userList = userDAO.findAll();
 			List<Article> articleList = articleDAO.findAll();
 			
-			List<Tag> selectedTagName = new ArrayList<>();
+			/*List<Tag> selectedTagName = new ArrayList<>();
 			if (tagIds != null) {
 			    for (Integer id : tagIds) {
 			        Tag tag = tagDAO.findById(id);
@@ -654,7 +672,7 @@ public class ArticleAction extends ActionSupport {
 			        
 			        
 			    }
-			}
+			}*/
 			
 			Integer typeArticle = article.getArticleTypeId();
 			
@@ -662,7 +680,7 @@ public class ArticleAction extends ActionSupport {
 			Date publicDate = Timestamp.valueOf(time_post);
 			String publicTime = time_post.toLocalTime().toString();
 			
-			PageUri pageUri = pageUriDAO.findByModelAndModelId("article", String.valueOf(articleId));
+			List<PageUri> pageUri = pageUriDAO.findByModelAndModelId("article", String.valueOf(articleId));
 
 			
 			String imgPath = null;
@@ -678,7 +696,7 @@ public class ArticleAction extends ActionSupport {
 			request.setAttribute("article", article);
 			request.setAttribute("tagList", tagList);
 			request.setAttribute("articleTypeList", articleTypeList);
-			request.setAttribute("selectedTagName", selectedTagName);
+			//request.setAttribute("selectedTagName", selectedTagName);
 			request.setAttribute("selectedRelatedId", selectedRelatedId);
 			request.setAttribute("articleList", articleList);
 			request.setAttribute("userList", userList);
@@ -709,7 +727,7 @@ public class ArticleAction extends ActionSupport {
 			Article article = articleDAO.findById(articleId);
 			List<Tag> tagList = tagDAO.findAll();
 			List<ArticleType> articleTypeList = articleTypeDAO.findAll();
-			List<Integer> selectedTagId = articleTagDAO.findTagIdByArticleId(String.valueOf(articleId));
+			List<ArticleTag> selectedTagId = articleTagDAO.findTagIdByArticleId(String.valueOf(articleId));
 			List<ArticleRelated> selectedRelatedId = articleRelatedDAO.findRelatedIdByArticleId(String.valueOf(articleId));
 			List<Article> articleList = articleDAO.findAll();
 			
@@ -719,39 +737,7 @@ public class ArticleAction extends ActionSupport {
 			String publicDate = time_post.toLocalDate().toString();
 			String publicTime = time_post.toLocalTime().toString();
 
-			PageUri pageUri = pageUriDAO.findByModelAndModelId("article", String.valueOf(articleId));
-			if (pageUri == null) {
-
-			    String articleIdStr = String.valueOf(article.getArticleId());
-			    String forward;
-			    String pageUriId;
-
-			    if (typeArticle == 1) {
-			        forward = "/news_detail?articleId=" + articleIdStr;
-			        pageUriId = "/news/" + articleIdStr;
-			    } else if (typeArticle == 2) {
-			        forward = "/blog_detail?articleId=" + articleIdStr;
-			        pageUriId = "/blog/" + articleIdStr;
-			    } else {
-			        forward = "/news_detail?articleId=" + articleIdStr;
-			        pageUriId = "/news/" + articleIdStr;
-			    }
-
-			    pageUri = new PageUri();
-			    pageUri.setPageUriId(pageUriId);
-			    pageUri.setForwardTo(forward);
-			    pageUri.setModel("article");
-			    pageUri.setModelId(articleIdStr);
-
-			    pageUri.setPageUriDescription(null);
-			    pageUri.setMeta(null);
-			    pageUri.setUserCreate(onlineUser.getId()); 
-			    pageUri.setUserUpdate(onlineUser.getId());
-			    pageUri.setTimeCreate(DateUtil.getCurrentTime());
-			    pageUri.setTimeUpdate(DateUtil.getCurrentTime());
-
-			    pageUriDAO.save(pageUri);
-			}
+			List<PageUri> pageUri = pageUriDAO.findByModelAndModelId("article", String.valueOf(articleId));
 			
 			String imgPath = null;
 			String imgAlt = null;
@@ -872,21 +858,46 @@ public class ArticleAction extends ActionSupport {
 			this.articleId = article.getArticleId();
 
 			// Update article_tag
-			if (article_tag != null) {
-			    articleTagDAO.deleteByArticleId(String.valueOf(articleId));
+			articleTagDAO.deleteByArticleId(String.valueOf(articleId));
+			if (!article_tag.isEmpty()) {
+				JSONArray jsonArray = new JSONArray(article_tag);
 
-			    for (String tagId : article_tag) {
-			        ArticleTag at = new ArticleTag();
-			        at.setArticleId(String.valueOf(articleId));
-			        at.setTagId(tagId);
-			        articleTagDAO.save(at);
-			    }
+		        for (int i = 0; i < jsonArray.length(); i++) {
+		            JSONObject obj = jsonArray.getJSONObject(i);
+		            String value = obj.getString("value");
+		            log.debug(value);
+		            
+		            Tag tag = tagDAO.findByName(value);
+		            if(tag == null) {
+		            	int tagMaxId = tagDAO.getMaxId()+1;
+				    	Tag t = new Tag();
+				    	t.setTagId(tagMaxId);
+				    	t.setTagName(value);
+				    	tagDAO.save(t);
+				    	
+				    	ArticleTag at = new ArticleTag();
+				        at.setArticleId(String.valueOf(article.getArticleId()));
+				    	at.setTagId(String.valueOf(t.getTagId()));
+			            articleTagDAO.save(at);
+		            }else {
+		            	List<ArticleTag> atList = articleTagDAO.checkExistArticleTag(String.valueOf(article.getArticleId()), String.valueOf(tag.getTagId()));
+		            	log.debug(atList.isEmpty());
+		            	if(atList.isEmpty()) {
+		            		ArticleTag at = new ArticleTag();
+					        at.setArticleId(String.valueOf(article.getArticleId()));
+					    	at.setTagId(String.valueOf(tag.getTagId()));
+				            articleTagDAO.save(at);
+		            	}
+		            	
+		            	
+		            }
+		        }
 			}
 
 			// Update article_related
+			log.debug(article_related);
+			articleRelatedDAO.deleteByArticleId(String.valueOf(articleId));
 			if (article_related != null) {
-			    articleRelatedDAO.deleteByArticleId(String.valueOf(articleId));
-
 			    for (String rid : article_related) {
 			        ArticleRelated ar = new ArticleRelated();
 			        ar.setArticleId(String.valueOf(articleId));
@@ -896,15 +907,34 @@ public class ArticleAction extends ActionSupport {
 			}
 			
 			// Update page_uri
-			PageUri uri = pageUriDAO.findByModelAndModelId("article", String.valueOf(articleId));
-			if (uri != null) {
-			    uri.setPageUriId(pageUriId);
-				uri.setPageUriTitle(pageUriTitle);
-			    uri.setPageUriDescription(pageUriDescription);
-			    uri.setMeta(meta);
-			    uri.setUserUpdate(logonUser);
-			    uri.setTimeUpdate(DateUtil.getCurrentTime());
-			    pageUriDAO.update(uri);
+			PageUri pageURL = pageUriDAO.findByModelId("article", String.valueOf(articleId));
+			String forwardTo = pageURL.getForwardTo();
+			String uriModel = pageURL.getModel();
+			String uriModelId = pageURL.getModelId();
+			if (pageURL != null) {
+				try {
+					pageUriDAO.delete(pageURL);
+					log.debug("Deleted old PageUri: " + pageURL.getPageUriId());
+				} catch (Exception e) {
+					log.error("Failed to delete PageUri: " + pageURL.getPageUriId(), e);
+				}
+				PageUri temp = pageUriDAO.findById(pageUriId);
+				log.info("PageUri = " + temp);
+				if (temp == null) {
+					PageUri uri = new PageUri();
+				    uri.setPageUriId(pageUriId);
+				    uri.setForwardTo(forwardTo);
+				    uri.setModel(uriModel);
+				    uri.setModelId(uriModelId);
+					uri.setPageUriTitle(pageUriTitle);
+				    uri.setPageUriDescription(pageUriDescription);
+				    uri.setMeta(meta);
+				    uri.setUserCreate(logonUser);
+				    uri.setUserUpdate(logonUser);
+				    uri.setTimeCreate(DateUtil.getCurrentTime());
+				    uri.setTimeUpdate(DateUtil.getCurrentTime());
+				    pageUriDAO.save(uri);
+				}
 			}
 			
 			if ("preview".equals(submitType)) {

@@ -1,11 +1,15 @@
 package com.cubesofttech.action;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.InputStream;
 import java.io.PrintWriter;
 import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.sql.Timestamp;
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -22,6 +26,16 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.apache.log4j.Logger;
+import org.apache.poi.ss.usermodel.BorderStyle;
+import org.apache.poi.ss.usermodel.FillPatternType;
+import org.apache.poi.ss.usermodel.HorizontalAlignment;
+import org.apache.poi.xssf.usermodel.XSSFCell;
+import org.apache.poi.xssf.usermodel.XSSFCellStyle;
+import org.apache.poi.xssf.usermodel.XSSFColor;
+import org.apache.poi.xssf.usermodel.XSSFFont;
+import org.apache.poi.xssf.usermodel.XSSFRow;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.apache.struts2.ServletActionContext;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -86,7 +100,7 @@ public class LeaveAction extends ActionSupport {
 
 	List<Leaves> modalLeaveList;
 	private String roleId;
-
+	
 	private Leaves leave;
 
 	private int leaveId;
@@ -465,7 +479,16 @@ public class LeaveAction extends ActionSupport {
 			log.info(user_role);
 			request.setAttribute("user_role", user_role);
 			List<RoleAuthorizedObject> role_authorized = roleAuthorizedObjectDAO.findLeaveViewAllByRoleId(user_role);
-
+			
+			String userSelect = request.getParameter("name1");
+			String userSelect2 = request.getParameter("name2");
+			String leaveStatus = request.getParameter("appr");
+			String leaveType = request.getParameter("type");
+			
+			request.setAttribute("userSelect", userSelect);
+			request.setAttribute("userSelect2", userSelect2);
+			request.setAttribute("leaveStatus", leaveStatus);
+			request.setAttribute("leaveType", leaveType);
 			// User list in dropdown
 			List<Map<String, Object>> userseq = userDAO.sequense();
 			request.setAttribute("userseq", userseq);
@@ -2280,4 +2303,256 @@ public class LeaveAction extends ActionSupport {
 	    }
 	}
 	
+	public String LeaveApproveExcelExport() {
+		log.info("leave approve | export to excel...");
+		try {
+			String userSelect = request.getParameter("name1");
+			String userSelect2 = request.getParameter("name2");
+			String leaveStatus = request.getParameter("appr");
+			String leaveType = request.getParameter("leaveType");
+
+			User ur = (User) request.getSession().getAttribute("onlineUser");
+			String userLogin = ur.getId();
+			log.debug(userLogin);
+
+			String user_role = ur.getRoleId();
+			log.debug("user_role: " + user_role);
+			request.setAttribute("user_role", user_role);
+
+			DateTimeFormatter date1 = DateTimeFormatter.ofPattern("01-01-yyyy");
+			LocalDate localDate = LocalDate.now();
+			String s = "00:00:00.0";
+
+			String start = request.getParameter("startdate");
+			String end = request.getParameter("enddate");
+			Timestamp start_date;
+			Timestamp end_date;
+			List<Map<String, Object>> leaveList = null;
+
+			if (start == null && end == null) {
+				start_date = DateUtil.dateToTimestamp(date1.format(localDate), s);
+				end_date = DateUtil.changetoEndYear(date1.format(localDate));
+			} else {
+				start_date = DateUtil.dateFormatEdit(start);
+				end_date = DateUtil.dateFormatEdit(end);
+			}
+
+			if((!userSelect.isEmpty() || userSelect != null) && (userSelect2.isEmpty() || userSelect2 == null)) {
+				if (userSelect.equalsIgnoreCase("All")) { //if choose "All Employee"
+					request.setAttribute("role_authorized", "1");
+					userLogin = null;
+					leaveList = leaveDAO.findLeaveInTeamByManagerAndType(start_date, end_date, userLogin, leaveStatus, leaveType);
+
+				} else {	//if choose "All Manage"
+					request.setAttribute("role_authorized", "0");
+					leaveList = leaveDAO.findLeaveInTeamByManagerAndType(start_date, end_date, userLogin, leaveStatus, leaveType);
+				}
+
+			} else if((!userSelect.isEmpty() || userSelect != null) && (!userSelect2.isEmpty() || userSelect2 != null)) {
+				log.debug("1 user");
+				if (userSelect.equalsIgnoreCase("All")) {	//if choose "All Employee"
+					request.setAttribute("role_authorized", "1");
+					leaveList = leaveDAO.findUserLeaveByTypeAndStatus(start_date, end_date, userSelect2, leaveStatus, leaveType);
+				} else {	//if choose "All Manage"
+					request.setAttribute("role_authorized", "0");
+					leaveList = leaveDAO.findUserLeaveByTypeAndStatus(start_date, end_date, userSelect2, leaveStatus, leaveType);
+				}
+			}
+			request.setAttribute("leaveList", leaveList);
+
+			// Date now
+			localDate = LocalDate.now();
+			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd MMMM yyyy");
+			String formattedDateTime = localDate.format(formatter);
+
+			// First
+			ServletContext context = request.getServletContext();
+			String fileServerPath = context.getRealPath("/");
+			File myFile = new File(fileServerPath + "upload/template/report_leaveapprove.xlsx");
+			FileInputStream file = new FileInputStream(myFile);
+
+			// Second
+			XSSFWorkbook wb = new XSSFWorkbook(file);
+			XSSFSheet sheet = wb.getSheetAt(0);
+			XSSFRow row = sheet.getRow(6);
+			XSSFFont font = wb.createFont();
+			font.setFontHeightInPoints((short) 12);
+			font.setFontName("TH Sarabun PSK");
+			font.setBold(false);
+			font.setItalic(false);
+			XSSFCellStyle styleEven = wb.createCellStyle();
+			styleEven.setAlignment(HorizontalAlignment.CENTER);
+			styleEven.setFont(font);
+			styleEven.setBorderBottom(BorderStyle.THIN);
+			styleEven.setBorderLeft(BorderStyle.THIN);
+			styleEven.setBorderTop(BorderStyle.THIN);
+			styleEven.setBorderRight(BorderStyle.THIN);
+			styleEven.setFillForegroundColor(new XSSFColor(new java.awt.Color(242, 242, 242)));
+			styleEven.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+
+			XSSFCellStyle styleOdd = wb.createCellStyle();
+			styleOdd.setAlignment(HorizontalAlignment.CENTER);
+			styleOdd.setFont(font);
+			styleOdd.setBorderBottom(BorderStyle.THIN);
+			styleOdd.setBorderLeft(BorderStyle.THIN);
+			styleOdd.setBorderTop(BorderStyle.THIN);
+			styleOdd.setBorderRight(BorderStyle.THIN);
+			
+			XSSFCellStyle styleLeftEven = wb.createCellStyle();
+			styleLeftEven.setAlignment(HorizontalAlignment.LEFT);
+			styleLeftEven.setFont(font);
+			styleLeftEven.setBorderBottom(BorderStyle.THIN);
+			styleLeftEven.setBorderLeft(BorderStyle.THIN);
+			styleLeftEven.setBorderTop(BorderStyle.THIN);
+			styleLeftEven.setBorderRight(BorderStyle.THIN);
+			styleLeftEven.setFillForegroundColor(new XSSFColor(new java.awt.Color(242, 242, 242)));
+			styleLeftEven.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+			
+			XSSFCellStyle styleLeftOdd = wb.createCellStyle();
+			styleLeftEven.setAlignment(HorizontalAlignment.LEFT);
+			styleLeftOdd.setFont(font);
+			styleLeftOdd.setBorderBottom(BorderStyle.THIN);
+			styleLeftOdd.setBorderLeft(BorderStyle.THIN);
+			styleLeftOdd.setBorderTop(BorderStyle.THIN);
+			styleLeftOdd.setBorderRight(BorderStyle.THIN);
+			int rowIndex = 5;
+
+			XSSFCellStyle casual = wb.createCellStyle();
+			casual.setFont(font);
+
+			// Date Section
+			SimpleDateFormat inputFormat = new SimpleDateFormat("dd-MM-yyyy");
+			SimpleDateFormat outputFormat = new SimpleDateFormat("dd MMMM yyyy", Locale.ENGLISH);
+			Date date = inputFormat.parse(start);
+			String formatSDate = outputFormat.format(date);
+			date = inputFormat.parse(end);
+			String formatEDate = outputFormat.format(date);
+			String formatDatePick = formatSDate + " - " + formatEDate;
+
+			row = sheet.getRow(2);
+			XSSFCell cell = row.createCell(1);
+			cell.setCellValue(formatDatePick);
+			cell.setCellStyle(casual);
+			cell = row.createCell(4);
+			cell.setCellValue(formattedDateTime);
+			cell.setCellStyle(casual);
+
+			String name,leave_type_name,sd,ed,start_time,end_time,no_day,leave_status_id;
+			DecimalFormat decimalFormat = new DecimalFormat("0.0");
+			inputFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.S");
+			outputFormat = new SimpleDateFormat("dd-MM-yyyy");
+
+			// Data Section
+			for (Map<String, Object> data : leaveList) {
+				//set no
+				int no = rowIndex - 4;
+				//set name
+				name = data.get("name") == null ? null : data.get("name").toString();
+				//set leave_type
+				leave_type_name = data.get("leave_type_name") == null ? null : data.get("leave_type_name").toString();
+				//set startdate , enddate
+				sd = data.get("start_date") == null ? null : data.get("start_date").toString();
+				date = inputFormat.parse(sd);
+				formatSDate = outputFormat.format(date);
+				ed = data.get("end_date") == null ? null : data.get("end_date").toString();
+				date = inputFormat.parse(ed);
+				formatEDate = outputFormat.format(date);
+				//set time
+				start_time = data.get("start_time") == null ? null : data.get("start_time").toString();
+				end_time = data.get("end_time") == null ? null : data.get("end_time").toString();
+				//set no_day
+				no_day = decimalFormat.format(data.get("no_day") == null ? 0 : Double.parseDouble(data.get("no_day").toString()));
+				//set status
+				leave_status_id = data.get("leave_status_id") == null ? null : data.get("leave_status_id").toString();
+				if( leave_status_id.equals("0") ) { leave_status_id = "Wait for approve"; }
+				else if( leave_status_id.equals("1") ) { leave_status_id = "Approved"; }
+				else if( leave_status_id.equals("2") ) { leave_status_id = "Reject"; }
+				else { leave_status_id = "Cancel"; }
+				//set cell value
+				if (rowIndex % 2 == 0) {
+					row = sheet.createRow(rowIndex);
+					
+					cell = row.createCell(0);
+					cell.setCellValue(no);
+					cell.setCellStyle(styleEven);
+					
+					cell = row.createCell(1);
+					cell.setCellValue(name);
+					cell.setCellStyle(styleLeftEven);
+					
+					cell = row.createCell(2);
+					cell.setCellValue(leave_type_name);
+					cell.setCellStyle(styleEven);
+					
+					cell = row.createCell(3);
+					cell.setCellValue(formatSDate);
+					cell.setCellStyle(styleEven);
+	
+					cell = row.createCell(4);
+					cell.setCellValue(formatEDate);
+					cell.setCellStyle(styleEven);
+					
+					cell = row.createCell(5);
+					cell.setCellValue(start_time + "-" + end_time);
+					cell.setCellStyle(styleEven);
+					
+					cell = row.createCell(6);
+					cell.setCellValue(no_day);
+					cell.setCellStyle(styleEven);
+					
+					cell = row.createCell(7);
+					cell.setCellValue(leave_status_id);
+					cell.setCellStyle(styleLeftOdd);
+				} else {
+					row = sheet.createRow(rowIndex);
+
+					cell = row.createCell(0);
+					cell.setCellValue(no);
+					cell.setCellStyle(styleOdd);
+					
+					cell = row.createCell(1);
+					cell.setCellValue(name);
+					cell.setCellStyle(styleLeftOdd);
+					
+					cell = row.createCell(2);
+					cell.setCellValue(leave_type_name);
+					cell.setCellStyle(styleOdd);
+					
+					cell = row.createCell(3);
+					cell.setCellValue(formatSDate);
+					cell.setCellStyle(styleOdd);
+					
+					cell = row.createCell(4);
+					cell.setCellValue(formatEDate);
+					cell.setCellStyle(styleOdd);
+					
+					cell = row.createCell(5);
+					cell.setCellValue(start_time + "-" + end_time);
+					cell.setCellStyle(styleOdd);
+					
+					cell = row.createCell(6);
+					cell.setCellValue(no_day);
+					cell.setCellStyle(styleOdd);
+					
+					cell = row.createCell(7);
+					cell.setCellValue(leave_status_id);
+					cell.setCellStyle(styleLeftOdd);
+				}
+				rowIndex++;
+			}
+
+			// third step, save the file to a stream
+			ByteArrayOutputStream os = new ByteArrayOutputStream();
+			wb.write(os);
+			byte[] fileContent = os.toByteArray();
+			ByteArrayInputStream is = new ByteArrayInputStream(fileContent);
+
+			excelStream = is; // file stream
+			excelFileName = "report_leave.xlsx"; // set the download file name
+			return SUCCESS;
+		} catch (Exception e) {
+			log.error(e);
+			return ERROR;
+		}
+	}	
 }

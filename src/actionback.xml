@@ -1451,7 +1451,7 @@
 		</action>
 		<action name="report_listWorking"
 			class="com.cubesofttech.action.ReportAction" method="listWorking">
-			<result name="success" type="tiles">report</result>
+			<result name="success" type="tiles">summaryWorkingDay</result>
 			<result name="error">/index.jsp</result>
 			<result name="login" type="redirect">/index.jsp</result>
 		</action>
@@ -1512,6 +1512,18 @@
 			<result name="error" type="tiles">/index.jsp</result>
 		</action>
 
+		<!-- ========================== Export to Excel ============================== -->
+		<action name="LeaveApproveExcelExport" 
+			class="com.cubesofttech.action.LeaveAction" method="LeaveApproveExcelExport">
+			<result name="success" type="stream">
+				<param name="contentType">application/vnd.ms-excel</param>
+				<param name="inputName">excelStream</param>
+				<param name="contentDisposition">
+					attachment;filename=${excelFileName}
+				</param>
+				<param name="bufferSize">2048</param>
+			</result>
+		</action>
 	</package>
 
 </struts>

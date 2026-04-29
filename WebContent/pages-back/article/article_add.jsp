@@ -189,6 +189,38 @@
 .note-palette{
 	margin: 2px 0;
 }
+/* tagify */
+.tags-look .tagify__dropdown__item{
+    display: inline-block;
+    vertical-align: middle;
+    border-radius: 3px;
+    padding: .3em .5em;
+    border: 1px solid #CCC;
+    background: #F3F3F3;
+    margin: .2em;
+    font-size: .85em;
+    color: black;
+    transition: 0s;
+}
+
+.tags-look .tagify__dropdown__item--active{
+    border-color: black;
+}
+
+.tags-look .tagify__dropdown__item:hover{
+    background: lightyellow;
+    border-color: gold;
+}
+
+.tags-look .tagify__dropdown__item--hidden {
+    max-width: 0;
+    max-height: initial;
+    padding: .3em 0;
+    margin: .2em 0;
+    white-space: nowrap;
+    text-indent: -20px;
+    border: 0;
+}
 </style>
 </head>
 <body class="app-default">
@@ -267,16 +299,9 @@
 												</c:forEach>
 											</select>
 										</div>
-										<div class="col-12  mt-5">
-											<label class="fw-medium text-gray-800 mb-2">Tag</label>
-											<select name="article_tag" id="article_tag"
-												class="form-select text-gray-700" data-control="select2"
-												data-close-on-select="false" data-placeholder="Select Tag"
-												data-allow-clear="true" multiple="multiple">
-												<c:forEach var="tagItems" items="${tagList}">
-													<option value="${tagItems.tagId }">${tagItems.tagName}</option>
-												</c:forEach>
-											</select>
+										<div class="col-12 mt-5">
+											<label class="fw-medium text-gray-800 mb-2">Tags</label>
+											<input class="form-control tagify--custom-dropdown" name="article_tag" id="article_tag"/>
 										</div>
 										<div class="col-12 mt-5">
 											<label class="fw-medium text-gray-800 mb-2">Related
@@ -740,5 +765,19 @@
 		
 	</script>
 
+<script>
+var input = document.querySelector('input[name="article_tag"]'),
+// init Tagify script on the above inputs
+tagify = new Tagify(input, {
+    whitelist: [<c:forEach items="${tagList}" var="item">'${item.tagName}',</c:forEach>],
+    maxTags: 10,
+    dropdown: {
+        maxItems: 20,           // <- maximum allowed rendered suggestions
+        classname: 'tags-look', // <- custom classname for this dropdown, so it could be targeted
+        enabled: 0,             // <- show suggestions on focus
+        closeOnSelect: false    // <- do not hide the suggestions dropdown once an item has been selected
+    }
+})
+</script>
 </body>
 </html>

@@ -13,14 +13,16 @@ public interface PageUriDAO {
 	void save(PageUri PageUri) throws Exception;
 
 	void update(PageUri PageUri) throws Exception;
+	
+	void delete(PageUri PageUri) throws Exception;
 
-	PageUri findByModelAndModelId(String model, String modelId) throws Exception;
+	List<PageUri> findByModelAndModelId(String model, String modelId) throws Exception;
 
-	PageUri findBymodelId(String modelId) throws Exception;
+	PageUri findById(String page_uri_id) throws Exception;
+	
+	public PageUri findByModelId(String model, String modelId) throws Exception;
 
 	void deleteByModelAndModelId(String model, String articleId);
-
-	PageUri findByPageUri(String pageUriId) throws Exception;
 
 	void deleteByPageUrlIdAndForwardTo(String pageUrlId, String forwardTo);
 
