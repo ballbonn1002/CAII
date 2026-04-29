@@ -271,8 +271,16 @@
 											<div class="d-flex align-items-center px-3 py-3">
 												<i class="ki-duotone ki-calendar fs-1 me-3 text-muted">
 													<span class="path1"></span><span class="path2"></span>
-												</i> <span class="fw-medium text-gray-900 fs-6"> <fmt:formatDate
-														value="<%=new java.util.Date()%>" pattern="d MMM yyyy" />
+												</i> <span class="fw-medium text-gray-900 fs-6"> <c:choose>
+														<c:when test="${not empty expense_group_create_date}">
+															<fmt:formatDate value="${expense_group_create_date}"
+																pattern="d MMM yyyy, H:mm" />
+														</c:when>
+														<c:otherwise>
+															<fmt:formatDate value="<%=new java.util.Date()%>"
+																pattern="d MMM yyyy, H:mm" />
+														</c:otherwise>
+													</c:choose>
 												</span>
 											</div>
 										</div>
@@ -379,13 +387,15 @@
 										<div class="text-center text-muted py-10">No data.</div>
 									</c:if>
 								</div>
-								<div class="card-footer d-flex justify-content-between ">
-									<h3 class="m-0 fs-6 fw-medium">Total</h3>
-									<h3 class="m-0 fs-6 fw-medium">
-										<fmt:formatNumber value="${grandTotal}" pattern="#,##0.00" />
-										บาท
-									</h3>
-								</div>
+								<c:if test="${not empty expenseListObj}">
+									<div class="card-footer d-flex justify-content-between ">
+										<h3 class="m-0 fs-6 fw-medium">Total</h3>
+										<h3 class="m-0 fs-6 fw-medium">
+											<fmt:formatNumber value="${grandTotal}" pattern="#,##0.00" />
+											บาท
+										</h3>
+									</div>
+								</c:if>
 							</div>
 
 							<!-- ===== Signature ===== -->
@@ -428,7 +438,8 @@
 														jpeg</span>
 													<%-- ✅ name="files" ตรงกับ Struts2 field files[] ใน TravelAction --%>
 													<input type="file" id="sigFileInput" name="files"
-														accept=".png,.jpg,.jpeg" style="display: none;" />
+														accept=".png,.jpg,.jpeg" style="display: none;"
+														${not empty statusActiveSafe ? 'disabled' :'' } />
 												</c:otherwise>
 											</c:choose>
 										</div>
@@ -444,6 +455,9 @@
 														value="${expense_group_create_date}"
 														pattern="d MMM yyyy, H:mm" /></span>
 											</div>
+												<button type="button" class="btn btn-primary btn-sm px-5"
+														id="receiverBtn1" disabled="disabled">
+														ลงชื่อ ผู้ขอเบิก</button>
 										</div>
 
 										<!-- RIGHT: Receiver 2 = ผู้รับเงิน -->
@@ -457,6 +471,9 @@
 														value="${expense_group_create_date}"
 														pattern="d MMM yyyy, H:mm" /></span>
 											</div>
+												<button type="button" class="btn btn-primary btn-sm px-5"
+														id="receiverBtn1" disabled="disabled">
+														ลงชื่อ ผู้รับเงิน</button>
 										</div>
 									</div>
 								</div>

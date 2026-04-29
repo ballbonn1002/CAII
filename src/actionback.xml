@@ -610,19 +610,17 @@
 
 		<!-- Approve ================================================================================================== -->
 		<action name="travel_approve_approve"
-			class="com.cubesofttech.action.TravelAction"
-			method="travelApprove">
+			class="com.cubesofttech.action.TravelAction" method="travelApprove">
 			<result name="success" type="redirectAction">
 				<param name="actionName">travel_approve</param>
 			</result>
 			<result name="error">/index.jsp</result>
 		</action>
 		<!-- Approve ================================================================================================== -->
-		
+
 		<!-- Reject ================================================================================================== -->
 		<action name="travel_approve_reject"
-			class="com.cubesofttech.action.TravelAction"
-			method="travelReject">
+			class="com.cubesofttech.action.TravelAction" method="travelReject">
 			<result name="success" type="redirectAction">
 				<param name="actionName">travel_approve</param>
 			</result>
@@ -727,6 +725,14 @@
 		<!-- Group ================================================================================================== -->
 
 		<!-- My Travel ================================================================================================== -->
+
+		<!-- Download Expense PDF ================================================================================================== -->
+		<action name="travel_report"
+			class="com.cubesofttech.action.TravelAction"
+			method="expenseTravelReport">
+			<result name="error">/index.jsp</result>
+		</action>
+		<!-- Download Expense PDF ================================================================================================== -->
 
 		<!-- Overtime Request ================================================================================================== -->
 

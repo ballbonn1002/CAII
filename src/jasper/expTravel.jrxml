@@ -1,0 +1,543 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="report1" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="38512331-0b01-4dfe-895e-031b029c0bea">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<property name="ireport.callouts" value="##Tue Feb 25 02:34:00 ICT 2014"/>
+	<subDataset name="Table Dataset 1" uuid="16d18dc3-129c-484c-b3d9-299c27265b56"/>
+	<parameter name="logoPath" class="java.lang.Object" isForPrompting="false">
+		<parameterDescription><![CDATA[The letterhead image]]></parameterDescription>
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="expenseGroupId" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[select *, u.name as 'user_name', m.name as 'manager_name',  eg.time_create as 'eg_time_create'  from expense e
+left join expense_group eg on e.expense_group_id = eg.expense_group_id
+left join exp_travel_type ett on ett.exp_travel_type_id = e.dt_by
+left join user u on eg.user_id = u.id
+left join user m on u.manager_id = m.id
+where e.expense_group_id = $P{expenseGroupId}
+order by e.dt_start]]>
+	</queryString>
+	<field name="expense_id" class="java.lang.Long">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="expense_group_id" class="java.lang.Long">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="exp_type_id" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="dt_start" class="java.sql.Timestamp">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="dt_end" class="java.sql.Timestamp">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="dt_by" class="java.lang.Long">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="user_id" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="from_location" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="from_lat" class="java.math.BigDecimal">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="from_lon" class="java.math.BigDecimal">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="to_location" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="to_lat" class="java.math.BigDecimal">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="to_lon" class="java.math.BigDecimal">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="amount" class="java.math.BigDecimal">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="description" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="user_create" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="user_update" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="time_create" class="java.sql.Timestamp">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="time_update" class="java.sql.Timestamp">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="total_amount" class="java.math.BigDecimal">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="status_id" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="paid_month" class="java.lang.Integer">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="paid_year" class="java.lang.Integer">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="exp_travel_type_id" class="java.lang.Long">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="name" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="id" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="role_id" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="department_id" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="manager_id" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="position_id" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="employee_id" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="nick_name" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="password" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="email" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="email_password" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="email_enable" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="birth_date" class="java.sql.Date">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="address" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="start_date" class="java.sql.Date">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="end_date" class="java.sql.Date">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="work_day_start" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="work_day_end" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="work_time_start" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="work_time_end" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="latest_salary" class="java.math.BigDecimal">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="edu_institute_1" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="edu_institute_2" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="edu_institute_3" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="edu_institute_4" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="edu_dur_start_1" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="edu_dur_start_2" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="edu_dur_start_3" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="edu_dur_start_4" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="edu_dur_end_1" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="edu_dur_end_2" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="edu_dur_end_3" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="edu_dur_end_4" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="edu_degree_1" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="edu_degree_2" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="edu_degree_3" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="edu_degree_4" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="enable" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="leave_quota_1" class="java.math.BigDecimal">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="leave_quota_2" class="java.math.BigDecimal">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="leave_quota_3" class="java.math.BigDecimal">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="email_host" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="password_update" class="java.sql.Timestamp">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="login_failed" class="java.lang.Integer">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="last_login_failed_time" class="java.sql.Timestamp">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="user_name" class="java.lang.String"/>
+	<field name="manager_name" class="java.lang.String"/>
+	<field name="eg_time_create" class="java.sql.Timestamp"/>
+	<variable name="amount_1" class="java.math.BigDecimal" resetType="Column" calculation="Sum">
+		<variableExpression><![CDATA[$F{amount}]]></variableExpression>
+	</variable>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="99" splitType="Stretch">
+			<staticText>
+				<reportElement x="11" y="26" width="454" height="41" uuid="e62501cf-4958-4f7a-bb8b-fa7baa1a1f5d"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="SansSerif" size="22" isBold="true" pdfFontName="WareeSans.ttf" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+				</textElement>
+				<text><![CDATA[ใบเบิกค่าเดินทาง (Travel Allowance)]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="416" y="26" width="139" height="41" uuid="84c32435-20fc-4571-aed9-f0e8548c6d8e"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="24" pdfFontName="WareeSans.ttf" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["ID. #" + $P{expenseGroupId}.toString()]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="11" y="-58" width="95" height="20" uuid="349b3203-735f-4d3c-8815-de520176f05f"/>
+				<textElement verticalAlignment="Middle">
+					<font isBold="true" pdfFontName="WareeSans.ttf" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+				</textElement>
+				<text><![CDATA[ผู้ขอเบิก]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="96" y="67" width="231" height="30" uuid="129eddea-86c3-4563-9610-aa3a554fad00"/>
+				<textElement textAlignment="Justified" verticalAlignment="Middle">
+					<font size="12" pdfFontName="WareeSans.ttf" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{user_name}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="11" y="67" width="193" height="30" uuid="10f2b01d-d21a-4a9b-8b01-fdd1c97a9240"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="SansSerif" size="12" isBold="true" pdfFontName="WareeSans.ttf" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+				</textElement>
+				<text><![CDATA[ผู้ขอเบิก]]></text>
+			</staticText>
+			<image>
+				<reportElement x="420" y="-15" width="135" height="34" uuid="b6555020-345a-49ea-b2d7-c524dc5591d3"/>
+				<imageExpression><![CDATA[$P{logoPath}]]></imageExpression>
+			</image>
+			<line>
+				<reportElement x="0" y="19" width="555" height="1" forecolor="#CCCCCC" backcolor="#FFFFFF" uuid="b67c5714-9ec4-4b8e-9773-5a8b0b09b3c6"/>
+			</line>
+			<textField pattern="dd-MMM-yyyy HH:mm">
+				<reportElement x="416" y="67" width="139" height="30" uuid="9ad0c369-0728-419d-ac63-2d73721b191e"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="12" pdfFontName="WareeSans.ttf" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{eg_time_create}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="112" y="0" width="11" height="20" uuid="81ac9309-3221-40b5-a6a2-7e43679348bc"/>
+				<textElement markup="none">
+					<font pdfFontName="WareeSans.ttf" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[" ~ "]]></textFieldExpression>
+			</textField>
+		</band>
+	</title>
+	<pageHeader>
+		<band height="28" splitType="Stretch"/>
+	</pageHeader>
+	<columnHeader>
+		<band height="22" splitType="Stretch">
+			<staticText>
+				<reportElement x="1" y="2" width="74" height="20" uuid="5c9fe3d5-a825-48a8-aac3-0d2fe8a42cf5"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true" pdfFontName="WareeSans.ttf" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+				</textElement>
+				<text><![CDATA[Date]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="85" y="1" width="70" height="20" uuid="9472dc52-62d9-4ea9-968f-34620540d315"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true" pdfFontName="WareeSans.ttf" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+				</textElement>
+				<text><![CDATA[Time]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="481" y="2" width="62" height="20" uuid="06481db9-5647-4e17-8fa1-be640234e2de"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8" isBold="true" pdfFontName="WareeSans.ttf" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+				</textElement>
+				<text><![CDATA[AMOUNT]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="165" y="1" width="218" height="20" uuid="fb0189d2-5848-4f88-bd59-bd4824f2619b"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true" pdfFontName="WareeSans.ttf" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+				</textElement>
+				<text><![CDATA[From ~ To Location]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="285" y="1" width="110" height="20" uuid="14930276-8b15-41b2-8f15-cf71801d7fc2"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" pdfFontName="WareeSans.ttf" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+				</textElement>
+				<text><![CDATA[]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="395" y="2" width="86" height="20" uuid="de9b7fcd-5388-4cd3-a062-6d6288767c76"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8" isBold="true" pdfFontName="WareeSans.ttf" pdfEncoding="Identity-H"/>
+				</textElement>
+				<text><![CDATA[BY]]></text>
+			</staticText>
+			<line>
+				<reportElement x="0" y="1" width="555" height="1" uuid="2c4b7c0b-9502-4b41-9ee6-e1e3b2b40d9b"/>
+			</line>
+			<line>
+				<reportElement x="0" y="20" width="555" height="1" uuid="d7e1bf16-34ac-4a60-a6f2-43a2231afeb9"/>
+			</line>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="22" splitType="Stretch">
+			<textField pattern="dd-MMM-yyyy">
+				<reportElement x="1" y="0" width="74" height="20" uuid="6f617aa6-818c-4358-97e2-c911cb0576bc"/>
+				<textElement>
+					<font size="8" pdfFontName="WareeSans.ttf" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{dt_start}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.00">
+				<reportElement x="481" y="0" width="62" height="20" uuid="e186b54c-9e02-4ef9-9c09-b052b7e5de05"/>
+				<textElement textAlignment="Right">
+					<font size="8" pdfFontName="WareeSans.ttf" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{amount}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="HH:mm">
+				<reportElement x="123" y="0" width="32" height="20" uuid="61d4200f-53b3-4951-bc81-00e3cb9a6d16"/>
+				<textElement>
+					<font size="8" pdfFontName="WareeSans.ttf" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{dt_end}]]></textFieldExpression>
+			</textField>
+			<textField pattern="HH:mm">
+				<reportElement x="84" y="0" width="39" height="20" uuid="05a3dace-c467-48a9-83b3-ec2ef3576097"/>
+				<textElement>
+					<font size="8" pdfFontName="WareeSans.ttf" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{dt_start}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true">
+				<reportElement stretchType="RelativeToTallestObject" x="165" y="0" width="230" height="20" isPrintWhenDetailOverflows="true" uuid="8ed1d5b8-ccba-412d-b506-81632cd25f7c"/>
+				<textElement>
+					<font size="8" pdfFontName="WareeSans.ttf" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{from_location} + " ~ " + $F{to_location} + " \r" +$F{description}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="395" y="0" width="86" height="20" uuid="451453aa-04db-436a-808c-22742654dac6"/>
+				<textElement textAlignment="Center">
+					<font size="8" pdfFontName="WareeSans.ttf" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{name}]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement positionType="Float" x="0" y="20" width="555" height="1" uuid="9a95904a-1e92-495e-9e2d-82ec6ebe66bf"/>
+				<graphicElement>
+					<pen lineStyle="Dotted"/>
+				</graphicElement>
+			</line>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="115" y="0" width="10" height="20" uuid="5a063da3-8f10-4813-ad22-9c2249a500dc"/>
+				<textElement verticalAlignment="Top">
+					<font size="8" pdfFontName="WareeSans.ttf" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["~"]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<columnFooter>
+		<band height="110" splitType="Immediate">
+			<staticText>
+				<reportElement x="2" y="0" width="177" height="30" uuid="c94ca76f-7362-4994-9d99-55c154af39b8"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="12" isBold="true" pdfFontName="WareeSans.ttf" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+				</textElement>
+				<text><![CDATA[ผู้ขอเบิก]]></text>
+			</staticText>
+			<line>
+				<reportElement x="35" y="62" width="130" height="1" uuid="796eb869-0f36-4fef-8682-4244de72b35d"/>
+				<graphicElement>
+					<pen lineStyle="Dotted"/>
+				</graphicElement>
+			</line>
+			<textField>
+				<reportElement x="179" y="79" width="188" height="30" uuid="46abc68f-aa65-428d-b201-ddfe6221c435"/>
+				<textElement textAlignment="Center">
+					<font size="12" pdfFontName="WareeSans.ttf" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{manager_name}]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement x="383" y="63" width="158" height="1" uuid="33adb0ba-87b6-4905-9452-7be8876ad9a1"/>
+				<graphicElement>
+					<pen lineStyle="Dotted"/>
+				</graphicElement>
+			</line>
+			<textField>
+				<reportElement x="2" y="79" width="177" height="30" uuid="0e16c65e-2664-4129-85c6-c633c2d48d2a"/>
+				<textElement textAlignment="Center">
+					<font size="12" pdfFontName="WareeSans.ttf" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{user_name}]]></textFieldExpression>
+			</textField>
+			<rectangle>
+				<reportElement mode="Transparent" x="367" y="0" width="188" height="110" uuid="4326047f-fe5c-49e1-a56e-be9dea80785a"/>
+			</rectangle>
+			<rectangle>
+				<reportElement mode="Transparent" x="2" y="0" width="177" height="110" uuid="d736349d-c85c-4596-9a35-ffa035be23f9"/>
+			</rectangle>
+			<staticText>
+				<reportElement x="179" y="0" width="188" height="30" uuid="8c5950b9-4f30-404c-9398-ce862372304b"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="12" isBold="true" pdfFontName="WareeSans.ttf" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+				</textElement>
+				<text><![CDATA[ผู้อนุมัติ]]></text>
+			</staticText>
+			<rectangle>
+				<reportElement mode="Transparent" x="179" y="0" width="188" height="110" uuid="4bd55860-8ceb-4bc7-8bbd-0cbf3d5851f4"/>
+			</rectangle>
+			<line>
+				<reportElement x="192" y="62" width="158" height="1" uuid="5dee1624-fba6-4b28-a7c4-2b42562a97fd"/>
+				<graphicElement>
+					<pen lineStyle="Dotted"/>
+				</graphicElement>
+			</line>
+			<textField>
+				<reportElement x="367" y="80" width="188" height="30" uuid="c4982620-da74-42a2-bdda-937deea2bb92"/>
+				<textElement textAlignment="Center">
+					<font size="12" pdfFontName="WareeSans.ttf" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{user_name}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="367" y="0" width="177" height="30" uuid="3a75f363-95e5-4784-a6de-d0507575f689"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="12" isBold="true" pdfFontName="WareeSans.ttf" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+				</textElement>
+				<text><![CDATA[ผู้รับเงิน]]></text>
+			</staticText>
+		</band>
+	</columnFooter>
+	<pageFooter>
+		<band height="48" splitType="Stretch">
+			<staticText>
+				<reportElement x="0" y="0" width="555" height="39" uuid="f2eb3e7d-a21f-438d-80a1-94ae4871305d"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="8" isBold="true" pdfFontName="WareeSans.ttf" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+				</textElement>
+				<text><![CDATA[Cube SoftTech Co., Ltd.]]></text>
+			</staticText>
+			<textField pattern="dd-MMM-yyyy HH:mm">
+				<reportElement x="1" y="0" width="122" height="39" uuid="fbaf0963-8610-4249-af3b-cc19f47525bd"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" pdfFontName="WareeSans.ttf" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement x="0" y="10" width="555" height="1" forecolor="#CCCCCC" backcolor="#FFFFFF" uuid="eec1646a-9d32-402e-b191-d8a0b19c25c7"/>
+			</line>
+			<textField>
+				<reportElement x="441" y="11" width="80" height="20" uuid="259983d6-1d81-495b-bd31-5b58a38da079"/>
+				<textElement textAlignment="Right">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Page "+$V{PAGE_NUMBER}+" of"]]></textFieldExpression>
+			</textField>
+			<textField evaluationTime="Report">
+				<reportElement x="521" y="11" width="40" height="20" uuid="f3d6a1a8-4fac-4ec4-b09b-1f68f774c640"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[" " + $V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageFooter>
+	<summary>
+		<band height="40" splitType="Stretch">
+			<staticText>
+				<reportElement x="283" y="0" width="152" height="36" uuid="19b76863-b2c4-4048-89b8-87200f1815e1"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="14" isBold="true" pdfFontName="WareeSans.ttf" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+				</textElement>
+				<text><![CDATA[TOTAL EXPENSE]]></text>
+			</staticText>
+			<textField pattern="#,##0.00">
+				<reportElement x="435" y="0" width="106" height="35" forecolor="#0000CC" uuid="7eb28b58-759c-4844-bc1d-de86b1ea6ad2"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="14" isBold="true" pdfFontName="WareeSans.ttf" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{total_amount}]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement x="0" y="-2" width="555" height="1" uuid="277ba79b-b0a0-4d1f-8887-81035269488c"/>
+			</line>
+		</band>
+	</summary>
+</jasperReport>

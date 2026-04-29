@@ -1,11 +1,14 @@
 package com.cubesofttech.action;
 
+import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.PrintWriter;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
+import javax.imageio.ImageIO;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -30,12 +33,19 @@ import com.cubesofttech.model.User;
 
 import com.cubesofttech.util.DateUtil;
 import com.cubesofttech.util.FileUtil;
+import com.cubesofttech.util.ReportUtil;
 import com.google.gson.Gson;
 import com.opensymphony.xwork2.ActionSupport;
+
+import net.sf.jasperreports.engine.JasperCompileManager;
 
 public class TravelAction extends ActionSupport {
 
 	private static final long serialVersionUID = 1L;
+	public static final String LOGOPATH = "logoPath";
+	public static final String JASPERPATH = "/WEB-INF/classes/jasper";
+	public static final String IMAGEPATH = "/images";
+
 	Logger log = Logger.getLogger(getClass());
 
 	@Autowired
@@ -1388,6 +1398,52 @@ public class TravelAction extends ActionSupport {
 			expenseGroupDAO.update(expense);
 
 			return SUCCESS;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ERROR;
+		}
+	}
+
+	public String expenseTravelReport() {
+		try {
+
+			HttpServletRequest request = ServletActionContext.getRequest();
+			HttpServletResponse response = ServletActionContext.getResponse();
+			ServletContext context = request.getServletContext();
+
+			String expenseGroupIdStr = request.getParameter("expense_group_id");
+			String jasperPath = context.getRealPath(JASPERPATH);
+			String imagePath = context.getRealPath(IMAGEPATH);
+			
+			String basePath = context.getRealPath("");
+
+			Map<String, Object> reportParameter = new HashMap<>();
+
+			File logo = new File(imagePath + "/logo_cubesofttech.png");
+
+			BufferedImage image = ImageIO.read(logo);
+
+			reportParameter.put(LOGOPATH, image);
+			reportParameter.put("basePath", basePath);
+			reportParameter.put("expenseGroupId", expenseGroupIdStr);
+
+			ExpenseGroup expenseGroup = expenseGroupDAO.findById(Long.parseLong(expenseGroupIdStr));
+
+			// เช็คว่ามีตารางลูกไหม
+			if (expenseGroup.getRequestedBy() == null) {
+				ReportUtil.printReportToBrowsePdf(jasperPath, "/expTravel", "expTravel.pdf", reportParameter, request,
+						response);
+			} else {
+				String jrxml = jasperPath + "/expTravelNew.jrxml";
+				String jasper = jasperPath + "/expTravelNew.jasper";
+
+				JasperCompileManager.compileReportToFile(jrxml, jasper);
+				ReportUtil.printReportToBrowsePdf(jasperPath, "/expTravelNew", "expTravel.pdf", reportParameter,
+						request, response);
+
+			}
+
+			return null;
 		} catch (Exception e) {
 			e.printStackTrace();
 			return ERROR;
