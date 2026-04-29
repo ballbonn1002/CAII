@@ -143,5 +143,6 @@ ALTER TABLE expense_group ADD COLUMN appr_user_id varchar(45) DEFAULT NULL;
 DELETE FROM `tag`;
 DELETE FROM `article_tag`
 
--- PROD 28 APR 2026 #2
+-- PROD 29 APR 2026
+
 
