@@ -258,7 +258,7 @@
 							<span class="path2"></span>
 							<span class="path3"></span>
 						</i>
-						<span id="employeeId"></span> - <span id="userid"></span>
+						<span id="employeeId"></span><span id="username"></span>
 					</div>
 				</div>
 
@@ -319,7 +319,7 @@
 								<span class="path2"></span>
 							</i>
 							<!-- <span id="approveUser"></span> -->
-							<span id="aprEmpId"></span> - <span id="aprName"></span>
+							<span id="aprEmpId"></span> <span id="aprName"></span> - <span id="aprRole"></span>
 						</div>
 						<div class="col-md-6">
 							<i class="ki-duotone ki-calendar-2 fs-2 me-2"> <span
@@ -1158,7 +1158,8 @@ function leaveStatus(id) {
 			console.log(obj);
 			$('#leaveid').html(obj.leave_id);
 			$('#employeeId').html(obj.employeeId);
-			$('#userid').html(obj.name);
+			//$('#userid').html(obj.name);
+			$('#username').html(obj.name);
 			$('#ucEmpId').html(obj.ucEmpId);
 			$('#ucName').html(obj.ucName);
 			$('#stime').html(obj.start_time);
@@ -1213,8 +1214,9 @@ function leaveStatus(id) {
 				case '1':
 					$('#leavestatus').html("Approved").removeClass().addClass("badge badge-light-success");
 					/* $('#approveUser').html(obj.appr_user_id); */
-					$('#aprEmpId').html(obj.aprEmpId);
-					$('#aprName').html(obj.aprName);
+					$('#aprEmpId').html(obj.aprEmpId + " ");
+					$('#aprName').html(obj.aprName + " - ");
+					$('#aprRole').html(obj.aprRole);
 					$('#timeUpdate').html(obj.time_update);
 					//$('#detail').html(obj.dddd);
 			        $('#approveDetail').removeClass('d-none');

@@ -721,9 +721,7 @@
 								<span class="path2"></span>
 								<span class="path3"></span>
 							</i>
-							<span class="employeeId" id=""></span>
-							<span class="username" id=""></span>
-							<span id="userid"></span>
+							<span class="" id="employeeId"></span> <span class="" id="username"></span>
 						</div>
 
 						<div class="d-flex align-items-center text-gray-700 mb-2 fs-6">
@@ -756,19 +754,17 @@
 				<div class="row gx-5 gy-4">
 					<div id="status_panel" class="mt-5" style="display: none;">
 						<h3 class="text-primary fw-semibold mb-3" id="status_title"></h3>
-
 						<div class="row gx-5 gy-3 fs-6" id="approved_detail">
-
 							<!-- Left -->
 							<div class="col-md-6">
 								<!-- Approver -->
 								<div class="d-flex align-items-center text-gray-700 mb-2 fs-6">
-										<i class="ki-duotone ki-user-tick me-2">
-											<span class="path1"></span>
-											<span class="path2"></span>
-											<span class="path3"></span>
-										</i>
-										<span id="approver"></span>
+									<i class="ki-duotone ki-user-tick me-2">
+										<span class="path1"></span>
+										<span class="path2"></span>
+										<span class="path3"></span>
+									</i>
+									<span id="aprEmpId"></span><span id="aprName"></span><span id="aprRole"></span>
 								</div>
 								<!-- Approver -->
 
@@ -1065,8 +1061,8 @@ function leaveStatus(id) {
 			console.log(obj);
 
 			$('#leaveid').html(obj.leave_id);
-			$('.employeeId').html(obj.employeeId + " ");
-			$('.username').html(obj.name);
+			$('#employeeId').html(obj.employeeId + " ");
+			$('#username').html(obj.name);
 			$('#stime').html(obj.start_time);
 			$('#etime').html(obj.end_time);
 			$('#desc').html(obj.description);
@@ -1135,7 +1131,10 @@ function leaveStatus(id) {
 				//CASE: Approved / Reject / Cancel
 
 				setModalViewMode(false);
-				$('#approver').html(obj.user_update);
+				//$('#approver').html(obj.user_update);
+				$('#aprEmpId').html(obj.aprEmpId + " ");
+				$('#aprName').html(obj.aprName + " - ");
+				$('#aprRole').html(obj.aprRole);
 				$('#timeupdate').html(moment(obj.time_update).format("D MMM YYYY"));
 				$('#reason_s').html(obj.reason);
 
