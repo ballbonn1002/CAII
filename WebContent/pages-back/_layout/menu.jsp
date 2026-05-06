@@ -511,15 +511,15 @@ String targetURL = Constant.getWebContext2() + "/authorization?token=" + token;
 					<!--end:Menu item-->
 
 					<!--begin:Menu item-->
-					<div class="menu-item pt-5">
-						<!--begin:Menu content-->
-						<div class="menu-content">
-							<span class="menu-heading fw-bold text-uppercase fs-7">Report</span>
-						</div>
-						<!--end:Menu content-->
-					</div>
-					<!--Report-->
 					<perm:permission object="report.view">
+						<div class="menu-item pt-5">
+							<!--begin:Menu content-->
+							<div class="menu-content">
+								<span class="menu-heading fw-bold text-uppercase fs-7">Report</span>
+							</div>
+							<!--end:Menu content-->
+						</div>
+						<!--Report-->
 						<div class="menu-item">
 							<a class="menu-link" href="report" data-route="report"> <span
 								class="menu-icon"> <i
@@ -532,6 +532,28 @@ String targetURL = Constant.getWebContext2() + "/authorization?token=" + token;
 						</div>
 					</perm:permission>
 					<!--Report-->
+
+					<!--Help & Support-->
+					<perm:permission object="helpsupport.view">
+						<div class="menu-item pt-5">
+							<div class="menu-content">
+								<span class="menu-heading fw-bold text-uppercase fs-7">Help
+									& Support</span>
+							</div>
+						</div>
+						<div class="menu-item">
+							<a class="menu-link" href="help_support"
+								data-route="help_support"> <span class="menu-icon"> <i
+									class="ki-duotone ki-message-question fs-1"> <span
+										class="path1"></span><span class="path2"></span><span
+										class="path3"></span>
+								</i>
+							</span> <span class="menu-title">Help & Support</span>
+							</a>
+						</div>
+					</perm:permission>
+					<!--Help & Support-->
+
 
 					<!--begin:Menu item-->
 					<div class="menu-item pt-5">
@@ -631,17 +653,17 @@ String targetURL = Constant.getWebContext2() + "/authorization?token=" + token;
 <!--end::Sidebar-->
 
 <script type="text/javascript">
-	$(function(){
-	  var cur = (location.pathname.split('/').pop() || 'index')
-	              .replace(/\.(jsp|action|html|php)$/i,'');
-	  
-	  $('a.menu-link[data-route]').each(function(){
-	    var list = $(this).data('route').toString().split(',');
-	    if (list.some(s => new RegExp('^' + s.trim() + '$', 'i').test(cur))) {
-	      $(this).addClass('active')
-	             .closest('.menu-item, li').addClass('active')
-	             .parents('.menu-accordion,.menu-sub').addClass('show here');
-	    }
-	  });
-	});
-</script>
+					$(function () {
+						var cur = (location.pathname.split('/').pop() || 'index')
+							.replace(/\.(jsp|action|html|php)$/i, '');
+
+						$('a.menu-link[data-route]').each(function () {
+							var list = $(this).data('route').toString().split(',');
+							if (list.some(s => new RegExp('^' + s.trim() + '$', 'i').test(cur))) {
+								$(this).addClass('active')
+									.closest('.menu-item, li').addClass('active')
+									.parents('.menu-accordion,.menu-sub').addClass('show here');
+							}
+						});
+					});
+				</script>
