@@ -207,3 +207,6 @@ INSERT INTO authorized_object (authorized_object_id, name, description, active, 
 VALUES ('helpsupport.view', 'helpsupport.view', 'เมนู Help & Support', '1', '1');
 INSERT INTO authorized_object (authorized_object_id, name, description, active, authorized_object_group_id) 
 VALUES ('helpsupport.manage', 'helpsupport.manage', 'จัดการ Help & Support (Admin)', '1', '1');
+
+-- PROD 6 May 2026
+
