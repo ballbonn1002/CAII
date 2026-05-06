@@ -1,9 +1,12 @@
 package com.cubesofttech.util;
 
+import net.coobird.thumbnailator.Thumbnails;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 
 public class FileUtil {
 	
@@ -49,5 +52,15 @@ public class FileUtil {
 		result = String.format("%.2f ", size) + ending[i];
 		
 		return result;
+	}
+
+	public static byte[] resizeImage(InputStream inputStream, int maxWidth, int maxHeight) throws Exception {
+		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+		Thumbnails.of(inputStream)
+				.size(maxWidth, maxHeight)
+		        .outputQuality(0.8)  // Set image quality to 80%
+		        .toOutputStream(outputStream);
+		return outputStream.toByteArray();
+		
 	}
 }
