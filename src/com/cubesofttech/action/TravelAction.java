@@ -816,17 +816,20 @@ public class TravelAction extends ActionSupport {
 				long expenseGroupId = Long.parseLong(expenseGroupIdStr);
 				List<Expense> expenseList = expenseDAO.findByGroupId(expenseGroupId);
 				ExpenseGroup expenseGroup = expenseGroupDAO.findById(expenseGroupId);
-				String userId = expenseGroup.getUserId();
-
-				if (userId != null && !userId.isEmpty()) {
-					User user = userDAO.findById(userId);
-					request.setAttribute("receiveBy", user.getNameEN());
-					request.setAttribute("requestBy", user.getNameEN());
-				}
+				String userApprId = expenseGroup.getAppr_user_id();
 
 				for (Expense expense : expenseList) {
 					expenseIds.add(expense.getExpenseId());
 				}
+
+				if (userApprId != null && !userApprId.isEmpty()) {
+					User user = userDAO.findById(userApprId);
+					request.setAttribute("userAppr", user);
+					request.setAttribute("approved_at", expenseGroup.getApproved_at());
+				}
+
+				request.setAttribute("requestAt", expenseGroup.getRequestedAt());
+				request.setAttribute("receiveAt", expenseGroup.getReceivedAt());
 
 				request.setAttribute("description_appr", expenseGroup.getDescription_appr());
 				request.setAttribute("statusActiveSafe", status);
@@ -1241,12 +1244,16 @@ public class TravelAction extends ActionSupport {
 				List<Expense> expenseList = expenseDAO.findByGroupId(expenseGroupId);
 				ExpenseGroup expenseGroup = expenseGroupDAO.findById(expenseGroupId);
 				userId = expenseGroup.getUserId();
+				String userApprId = expenseGroup.getAppr_user_id();
 
-				if (userId != null && !userId.isEmpty()) {
-					User user = userDAO.findById(userId);
-					request.setAttribute("receiveBy", user.getNameEN());
-					request.setAttribute("requestBy", user.getNameEN());
+				if (userApprId != null && !userApprId.isEmpty()) {
+					User user = userDAO.findById(userApprId);
+					request.setAttribute("userAppr", user);
+					request.setAttribute("approved_at", expenseGroup.getApproved_at());
 				}
+
+				request.setAttribute("requestAt", expenseGroup.getRequestedAt());
+				request.setAttribute("receiveAt", expenseGroup.getReceivedAt());
 
 				request.setAttribute("expense_group_create_date", expenseGroup.getTimeCreate());
 				request.setAttribute("description_appr", expenseGroup.getDescription_appr());
@@ -1414,7 +1421,7 @@ public class TravelAction extends ActionSupport {
 			String expenseGroupIdStr = request.getParameter("expense_group_id");
 			String jasperPath = context.getRealPath(JASPERPATH);
 			String imagePath = context.getRealPath(IMAGEPATH);
-			
+
 			String basePath = context.getRealPath("");
 
 			Map<String, Object> reportParameter = new HashMap<>();
