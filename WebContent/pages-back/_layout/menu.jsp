@@ -262,34 +262,6 @@ String targetURL = Constant.getWebContext2() + "/authorization?token=" + token;
 						</div>
 						<!--end:Menu item-->
 					</perm:permission>
-					<!--begin:Menu item-->
-					<!-- <div class="menu-item">
-						begin:Menu link
-						<a class="menu-link" href="#" data-route="#"> <span class="menu-icon">
-								<i class="ki-duotone ki-watch fs-1"> <span class="path1"></span>
-									<span class="path2"></span>
-							</i>
-						</span> <span class="menu-title">Check In - Approve</span>
-						</a>
-						end:Menu link
-					</div> -->
-					<!--end:Menu item-->
-
-					<!--Work Log-->
-					<perm:permission object="report.view">
-						<div class="menu-item">
-							<a class="menu-link" href="work_log" data-route="work_log"> <span
-								class="menu-icon"> <i class="ki-duotone ki-time fs-1">
-										<span class="path1"></span> <span class="path2"></span>
-								</i>
-							</span> <span class="menu-title"> Work Log </span> <i
-								class="ki-duotone ki-check-circle fs-3 text-success"> <span
-									class="path1"></span><span class="path2"></span>
-							</i>
-							</a>
-						</div>
-					</perm:permission>
-					<!--Work Log-->
 
 					<!--Leave Approve-->
 					<perm:permission object="leave.approve">
@@ -326,22 +298,6 @@ String targetURL = Constant.getWebContext2() + "/authorization?token=" + token;
 					<!-- Overtime Approve -->
 
 					<!--begin:Menu item-->
-					<perm:permission object="dailymonitor.view">
-						<div class="menu-item">
-							<a class="menu-link" href="dailyMonitor"
-								data-route="dailyMonitor"> <span class="menu-icon"> <i
-									class="ki-duotone ki-calendar-tick fs-1"> <span
-										class="path1"></span> <span class="path2"></span> <span
-										class="path3"></span> <span class="path4"></span> <span
-										class="path5"></span> <span class="path6"></span>
-								</i>
-							</span> <span class="menu-title"> Daily Monitor </span>
-							</a>
-						</div>
-					</perm:permission>
-					<!--end:Menu item-->
-
-					<!--begin:Menu item-->
 					<div class="menu-item">
 						<a class="menu-link" href="travel_approve"
 							data-route="travel_approve"> <span class="menu-icon">
@@ -355,33 +311,6 @@ String targetURL = Constant.getWebContext2() + "/authorization?token=" + token;
 					</div>
 					<!--end:Menu item-->
 
-					<!--begin:Menu item-->
-					<!-- <div class="menu-item">
-						begin:Menu link
-						<a class="menu-link" href="#" data-route="#">
-							<span class="menu-icon"> <i
-								class="ki-duotone ki-timer fs-1"> <span class="path1"></span>
-									<span class="path2"></span> <span class="path3"></span>
-							</i>
-						</span> <span class="menu-title">OT Approve</span>
-						</a>
-						end:Menu link
-					</div> -->
-					<!--end:Menu item-->
-					<!--begin:Menu item-->
-					<!-- <div class="menu-item">
-						begin:Menu link
-						<a class="menu-link" href="#" data-route="#"> <span class="menu-icon">
-								<i class="ki-duotone ki-delivery-time fs-1"> <span
-									class="path1"></span> <span class="path2"></span> <span
-									class="path3"></span> <span class="path4"></span> <span
-									class="path5"></span>
-							</i>
-						</span> <span class="menu-title">Travel Approve</span>
-						</a>
-						end:Menu link
-					</div> -->
-					<!--end:Menu item-->
 					<perm:permission object="equipmentlist.view">
 						<!--begin:Menu item-->
 						<div class="menu-item pt-5">
@@ -579,20 +508,6 @@ String targetURL = Constant.getWebContext2() + "/authorization?token=" + token;
 						</a>
 					</div>
 
-					<!--end:Menu item-->
-
-					<!--begin:Menu item-->
-					<!-- <div class="menu-item">
-						begin:Menu link
-						<a class="menu-link" href="#" data-route="#">
-							<span class="menu-icon"> 
-							<i class="ki-duotone ki-user-square fs-1"> 
-								<span class="path1"></span><span class="path2"></span> <span class="path3"></span>
-							</i>
-						</span> <span class="menu-title">Careers</span>
-						</a>
-						end:Menu link
-					</div> -->
 					<!--end:Menu item-->
 
 					<!--begin:Menu item-->
