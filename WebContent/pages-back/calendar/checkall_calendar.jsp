@@ -266,7 +266,7 @@
 </div>
 
 <!-- Leave Modal -->
-<div class="modal fade" id="leavemodal" tabindex="-1">
+<%-- <div class="modal fade" id="leavemodal" tabindex="-1">
 	<div class="modal-dialog modal-lg">
 		<div class="modal-content">
 			<div class="modal-header">
@@ -373,7 +373,13 @@
 			</div>
 		</div>
 	</div>
-</div>
+</div> --%>
+
+<jsp:include page="/pages-back/common/leave_modal.jsp">
+	<jsp:param name="showApproverInfo" value="true"/>
+	<jsp:param name="showEditButton" value="true"/>
+</jsp:include>
+
 <script> // ----------- Search -----------------
 // Get JSON data from backend
 var cubeUserData = ${cubeUserJson};
