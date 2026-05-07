@@ -210,3 +210,15 @@ VALUES ('helpsupport.manage', 'helpsupport.manage', 'จัดการ Help & S
 
 -- PROD 6 May 2026
 
+-- 07/05/2026 boom(Intern): modify Help & Support table for Thai Language support -- 
+-- แปลง Character Set ของตาราง support_menu
+ALTER TABLE support_menu 
+CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- แปลง Character Set ของตาราง support
+ALTER TABLE support 
+CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- แปลง Character Set ของตาราง support_detail
+ALTER TABLE support_detail 
+CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;

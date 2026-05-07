@@ -154,15 +154,13 @@
                                                 </button>
                                             </s:if>
                                         </div>
-                                        <div class="d-flex align-items-center gap-4">
+                                        <div class="d-flex align-items-start gap-4">
                                             <i class="ki-duotone ki-messages fs-2x text-gray-400 mt-1"> <span
                                                     class="path1"></span><span class="path2"></span><span
                                                     class="path3"></span><span class="path4"></span><span
                                                     class="path5"></span>
                                             </i>
-                                            <div class="text-gray-800 fs-5 fw-normal">
-                                                <s:property value="message" />
-                                            </div>
+                                            <div class="text-gray-800 fs-5 fw-normal" style="white-space: pre-wrap;"><s:property value="message" /></div>
                                         </div>
 
                                         <s:set var="detailFiles" value="#request.detailFilesMap[supportDetailId]" />
@@ -282,7 +280,7 @@
                                 <div class="modal-header pb-0 border-0 justify-content-between">
                                     <h2 class="fw-bold fs-2 m-0 mt-2" id="adminReplyTitle">Admin
                                         Reply</h2>
-                                    <div class="btn btn-sm btn-icon btn-active-color-primary" data-bs-dismiss="modal">
+                                    <div class="btn btn-sm btn-icon btn-color-gray-500 btn-active-color-danger" data-bs-dismiss="modal">
                                         <i class="ki-duotone ki-cross fs-2x"><span class="path1"></span><span
                                                 class="path2"></span></i>
                                     </div>
@@ -339,8 +337,12 @@
                                 id="editTicketForm" onsubmit="return validateEditForm()">
                                 <input type="hidden" name="supportId" value="<s:property value='supportId'/>" />
 
-                                <div class="modal-header pb-0 border-0 justify-content-between">
-                                    <h2 class="fw-bold fs-2 m-0 mt-2">Edit Ticket</h2>
+                                <div class="modal-header pb-10 border-0 justify-content-between align-items-center">
+                                    <h2 class="fw-bold fs-2 m-0">Edit Ticket</h2>
+                                    <div class="btn btn-sm btn-icon btn-color-gray-500 btn-active-color-danger" data-bs-dismiss="modal">
+                                        <i class="ki-duotone ki-cross fs-2x"><span class="path1"></span><span
+                                                class="path2"></span></i>
+                                    </div>
                                 </div>
 
                                 <div class="modal-body scroll-y px-10 px-lg-15 pt-0 pb-15">
@@ -404,12 +406,7 @@
                                             <span>message</span>
                                         </label>
                                         <textarea class="form-control" rows="8" name="description" id="editDescription"
-                                            placeholder="Please describe your issue here..."><s:iterator
-								value="#request.supportDetails" status="stat">
-								<s:if test="#stat.last">
-									<s:property value="message" />
-								</s:if>
-							</s:iterator></textarea>
+                                            placeholder="Please describe your issue here..."><s:iterator value="#request.supportDetails" status="stat"><s:if test="#stat.last"><s:property value="message" /></s:if></s:iterator></textarea>
                                     </div>
 
                                     <s:if

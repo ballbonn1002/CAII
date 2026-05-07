@@ -4,13 +4,15 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="perm" uri="/WEB-INF/tlds/permission.tld"%>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 
 <fmt:setLocale value="en_US" />
 
 <style>
-/* ซ่อนลูกศรเรียงลำดับของ DataTables ในหัวตารางทั้งหมด */
-#kt_support_table thead th::before, #kt_support_table thead th::after {
-	display: none !important;
+/* แสดงลูกศรเรียงลำดับเฉพาะคอลัมน์ที่อนุญาต */
+#kt_support_table thead th.sorting::before, 
+#kt_support_table thead th.sorting::after {
+	opacity: 0.3 !important;
 }
 
 /* จัดแนวกล่อง dropdown เลือกจำนวน record */
@@ -74,32 +76,49 @@
 										<div class="flex-grow-1">
 											<select name="searchText" id="userSelect"
 												class="form-select rounded-start-0 border-start-0 h-45px"
-												data-control="select2" data-placeholder="Search">
-												<option value=""></option>
-												<c:forEach var="u" items="${userList}">
-													<c:set var="label" value="" />
-													<c:if test="${not empty u.employee_id}">
-														<c:set var="label" value="${u.employee_id} " />
-													</c:if>
-
-													<c:choose>
-														<c:when test="${not empty u.name_en}">
-															<c:set var="label" value="${label}${u.name_en}" />
-														</c:when>
-														<c:when test="${not empty u.name}">
-															<c:set var="label" value="${label}${u.name}" />
-														</c:when>
-													</c:choose>
-
-													<c:if test="${not empty u.department_id}">
-														<c:set var="label" value="${label} - ${u.department_id}" />
-													</c:if>
-
-													<option value="${u.id}"
-														${searchText eq u.id
-																		? 'selected' : '' }>${label}
-													</option>
-												</c:forEach>
+												data-control="select2" data-placeholder="Search" data-allow-clear="true">
+												<option></option>
+												<option value="">All</option>
+												<optgroup label="Enable">
+													<c:forEach var="user" items="${userList}">
+														<c:if test="${user.enable == 1 && user.flag_search == '1'}">
+															<c:set var="displayText" value="" />
+															<!-- ถ้ามี employee_id -->
+															<c:if test="${not empty user.employee_id}">
+																<c:set var="displayText" value="${user.employee_id}" />
+															</c:if>
+															<!-- name_en -->
+															<c:if test="${not empty user.name_en}">
+																<c:set var="displayText" value="${displayText}${not empty displayText ? ' - ' : ''}${user.name_en}" />
+															</c:if>
+															<!-- name -->
+															<c:if test="${not empty user.name}">
+																<c:set var="displayText" value="${displayText}${not empty displayText ? ' - ' : ''}${user.name}" />
+															</c:if>
+															<option value="${fn:trim(user.id)}" ${searchText eq fn:trim(user.id) ? 'selected' : '' }>${displayText}</option>
+														</c:if>
+													</c:forEach>
+												</optgroup>
+												<optgroup label="Disable">
+													<c:forEach var="user" items="${userList}">
+														<c:if test="${user.enable == 0 && user.flag_search == '1'}">
+															<c:set var="displayText" value="" />
+															<!-- ถ้ามี employee_id -->
+															<c:if test="${not empty user.employee_id}">
+																<c:set var="displayText" value="${user.employee_id}" />
+															</c:if>
+															<!-- name_en -->
+															<c:if test="${not empty user.name_en}">
+																<c:set var="displayText" value="${displayText}${not empty displayText ? ' - ' : ''}${user.name_en}" />
+															</c:if>
+															<!-- name -->
+															<c:if test="${not empty user.name}">
+																<c:set var="displayText" value="${displayText}${not empty displayText ? ' - ' : ''}${user.name}" />
+															</c:if>
+															<option value="${fn:trim(user.id)}" ${searchText eq fn:trim(user.id) ? 'selected' : '' }>${displayText}</option>
+														</c:if>
+													</c:forEach>
+												</optgroup>
 											</select>
 										</div>
 									</div>
@@ -132,7 +151,7 @@
 											class="form-select form-select-solid text-start bg-white border border-gray-300"
 											type="button" data-bs-toggle="dropdown" aria-expanded="false"
 											data-bs-auto-close="outside">
-											<span class="text-gray-700 fw-semibold">All Status</span>
+											<span id="statusLabel" class="text-gray-700 fw-semibold d-inline-block text-truncate" style="max-width: 150px;">All Status</span>
 										</button>
 										<div class="dropdown-menu p-5 shadow rounded"
 											style="min-width: 300px;">
@@ -201,7 +220,7 @@
 											class="form-select form-select-solid text-start bg-white border border-gray-300"
 											type="button" data-bs-toggle="dropdown" aria-expanded="false"
 											data-bs-auto-close="outside">
-											<span class="text-gray-700 fw-semibold">All Type</span>
+											<span id="categorizedLabel" class="text-gray-700 fw-semibold d-inline-block text-truncate" style="max-width: 150px;">All Type</span>
 										</button>
 										<div class="dropdown-menu p-5 shadow rounded"
 											style="min-width: 300px;">
@@ -259,7 +278,7 @@
 											class="form-select form-select-solid text-start bg-white border border-gray-300"
 											type="button" data-bs-toggle="dropdown" aria-expanded="false"
 											data-bs-auto-close="outside">
-											<span class="text-gray-700 fw-semibold">All Type</span>
+											<span id="menuLabel" class="text-gray-700 fw-semibold d-inline-block text-truncate" style="max-width: 150px;">All Menu</span>
 										</button>
 										<div class="dropdown-menu p-5 shadow rounded"
 											style="min-width: 300px;">
@@ -435,8 +454,11 @@
 															value="supportMenuId" />
 													</span>
 												</s:else></td>
-											<td class="text-gray-800 align-middle"><s:property
-													value="#request.messageMap[supportId]" /></td>
+											<td class="text-gray-800 align-middle">
+												<div class="text-truncate" style="max-width: 250px;" title="<s:property value='#request.messageMap[supportId]'/>">
+													<s:property value="#request.messageMap[supportId]" />
+												</div>
+											</td>
 
 											<s:set var="sortOrder" value="4" />
 											<s:if test="status == 'Pending' || status == 'New'">
@@ -449,7 +471,7 @@
 												<s:set var="sortOrder" value="3" />
 											</s:elseif>
 
-											<td class="align-middle" data-order="${sortOrder}"><s:if
+											<td class="align-middle" data-order="<s:property value='#sortOrder'/>"><s:if
 													test="status == 'Pending' || status == 'New'">
 													<span
 														class="badge badge-light-warning fw-bold fs-7 px-2 py-2">New</span>
@@ -525,15 +547,43 @@
 												"language": {
 													"lengthMenu": "_MENU_",
 												},
-												"order": [[5, 'asc'], [1, 'desc']], // เรียง Status (col 5) แล้วตามด้วย Request (col 1)
+												"order": [[5, 'asc']], // เริ่มต้นให้เรียงลำดับตาม Status (New -> In Progress -> ...) เป็นอันดับแรก
 												"columnDefs": [{
 													"orderable": false,
-													"targets": "_all" // ปิดปุ่มเรียงลำดับและซ่อนลูกศรทุกคอลัมน์
+													"targets": [6] // ปิดการเรียงลำดับเฉพาะคอลัมน์ ACTION (index 6)
 												}
 												],
 												"dom": "<'row'<'col-sm-12 table-responsive'tr>>"
 													+ "<'row align-items-center mt-5'<'col-sm-12 col-md-5 d-flex align-items-center justify-content-center justify-content-md-start gap-3'l><'col-sm-12 col-md-7 d-flex align-items-center justify-content-center justify-content-md-end'p>>"
 											});
+
+									// --- Filter Labels Update Logic ---
+									function updateLabel(checkboxClass, labelId, defaultText) {
+										var selected = [];
+										$(checkboxClass + ':checked').each(function () {
+											selected.push($(this).next('label').text().trim());
+										});
+										var labelText = selected.length > 0 ? selected.join(', ') : defaultText;
+										$(labelId).text(labelText).attr('title', labelText);
+									}
+
+									function updateAllLabels() {
+										updateLabel('.status-checkbox', '#statusLabel', 'All Status');
+										updateLabel('.categorized-checkbox', '#categorizedLabel', 'All Type');
+										updateLabel('.menu-checkbox', '#menuLabel', 'All Menu');
+									}
+
+									// Listen for changes
+									$('.status-checkbox, .categorized-checkbox, .menu-checkbox').on('change', updateAllLabels);
+
+									// Initial call on page load
+									updateAllLabels();
+
+									// Bind Select All / Deselect All to update labels too
+									$('.select-all-status, .deselect-all-status, .select-all-categorized, .deselect-all-categorized, .select-all-menu, .deselect-all-menu').on('click', function() {
+										setTimeout(updateAllLabels, 50); // Small delay to ensure prop('checked') is updated
+									});
+									// ----------------------------------
 
 									// Any basic UI initialization can go here if required by the template
 
@@ -567,47 +617,103 @@
 										$('.menu-checkbox').prop('checked', false);
 									});
 
-									// Date Range Picker (With built-in Apply/Clear buttons)
+									// Date Range Picker using flatpickr (Single Window Range)
 									var startVal = "${startDate}";
 									var endVal = "${endDate}";
-
-									// Configure daterangepicker
-									$("#supportRangePicker").daterangepicker({
-										autoUpdateInput: false,
-										showDropdowns: true,
-										locale: {
-											format: "DD MMM YYYY",
-											applyLabel: "Apply",
-											cancelLabel: "Clear"
-										}
-									});
-
-									// Handle Apply
-									$("#supportRangePicker").on('apply.daterangepicker', function (ev, picker) {
-										$(this).val(picker.startDate.format('DD MMM YYYY') + ' - ' + picker.endDate.format('DD MMM YYYY'));
-										$("#startDate").val(picker.startDate.format('DD-MM-YYYY'));
-										$("#endDate").val(picker.endDate.format('DD-MM-YYYY'));
-										$(this).closest('form').submit();
-									});
-
-									// Handle Clear
-									$("#supportRangePicker").on('cancel.daterangepicker', function (ev, picker) {
-										$(this).val('');
-										$("#startDate").val("");
-										$("#endDate").val("");
-										$(this).closest('form').submit();
-									});
-
-									// Initialize with default values if present
+									
+									var defaultDateArr = [];
 									if (startVal && endVal) {
 										var s = moment(startVal, "DD-MM-YYYY");
 										var e = moment(endVal, "DD-MM-YYYY");
 										if (s.isValid() && e.isValid()) {
-											$("#supportRangePicker").data('daterangepicker').setStartDate(s);
-											$("#supportRangePicker").data('daterangepicker').setEndDate(e);
-											$("#supportRangePicker").val(s.format('DD MMM YYYY') + ' - ' + e.format('DD MMM YYYY'));
+											defaultDateArr = [s.toDate(), e.toDate()];
 										}
 									}
+
+									flatpickr("#supportRangePicker", {
+										mode: "range",
+										dateFormat: "d M Y",
+										defaultDate: defaultDateArr,
+										onReady: function(selectedDates, dateStr, instance) {
+											var wrapper = instance.currentYearElement.parentNode;
+											var monthHeader = wrapper.parentNode;
+											
+											var select = document.createElement("select");
+											select.className = "flatpickr-monthDropdown-months";
+											select.style.width = "auto";
+											select.style.marginLeft = "5px";
+											select.style.display = "inline-block";
+											select.style.backgroundColor = "transparent";
+											select.style.border = "none";
+											select.style.cursor = "pointer";
+											
+											var currentYear = new Date().getFullYear();
+											for (var i = currentYear; i >= currentYear - 30; i--) {
+												var option = document.createElement("option");
+												option.value = i;
+												option.text = i;
+												select.appendChild(option);
+											}
+											
+											select.value = instance.currentYear;
+											
+											select.addEventListener("change", function(e) {
+												instance.changeYear(parseInt(e.target.value));
+											});
+											
+											wrapper.style.display = "none";
+											monthHeader.appendChild(select);
+											instance.yearSelectDropdown = select;
+
+											// Add Apply/Clear buttons
+											var btnContainer = document.createElement("div");
+											btnContainer.className = "d-flex justify-content-between px-4 py-3 border-top mt-2";
+											
+											var clearBtn = document.createElement("button");
+											clearBtn.type = "button";
+											clearBtn.className = "btn btn-sm btn-light fw-bold px-5";
+											clearBtn.innerHTML = "Clear";
+											
+											var applyBtn = document.createElement("button");
+											applyBtn.type = "button";
+											applyBtn.className = "btn btn-sm btn-primary fw-bold px-5";
+											applyBtn.innerHTML = "Apply";
+											
+											clearBtn.addEventListener("click", function(e) {
+												e.preventDefault();
+												instance.clear();
+												instance.close();
+											});
+											
+											applyBtn.addEventListener("click", function(e) {
+												e.preventDefault();
+												instance.close();
+											});
+											
+											btnContainer.appendChild(clearBtn);
+											btnContainer.appendChild(applyBtn);
+											
+											instance.calendarContainer.appendChild(btnContainer);
+										},
+										onYearChange: function(selectedDates, dateStr, instance) {
+											if (instance.yearSelectDropdown) {
+												instance.yearSelectDropdown.value = instance.currentYear;
+											}
+										},
+										onClose: function(selectedDates, dateStr, instance) {
+											if (selectedDates.length === 2) {
+												var s = moment(selectedDates[0]).format('DD-MM-YYYY');
+												var e = moment(selectedDates[1]).format('DD-MM-YYYY');
+												$("#startDate").val(s);
+												$("#endDate").val(e);
+												$("#supportRangePicker").closest('form').submit();
+											} else if (selectedDates.length === 0) {
+												$("#startDate").val("");
+												$("#endDate").val("");
+												$("#supportRangePicker").closest('form').submit();
+											}
+										}
+									});
 
 								});
 
