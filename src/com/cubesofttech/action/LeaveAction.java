@@ -1386,6 +1386,7 @@ public class LeaveAction extends ActionSupport {
 			String userId = leave.getUserId();	
 			log.debug(userId);
 			User user2 = userDAO.findById(userId);
+			log.debug(id);
 			
 			DateTimeFormatter dateTimeFormat = DateTimeFormatter.ofPattern("01-01-yyyy");
 			LocalDate localDate = LocalDate.now();
@@ -1579,6 +1580,7 @@ public class LeaveAction extends ActionSupport {
 			request.setAttribute("holiday", holidayJSON);
 			log.debug(new Gson().toJson(leave));
 			request.setAttribute("leave", new Gson().toJson(leave));
+			request.setAttribute("leaveInfo", new Gson().toJson(leaveDAO.findLeaveById2(Integer.parseInt(id))));
 			request.setAttribute("action", "Edit");
 			
 			return SUCCESS;
@@ -1667,25 +1669,34 @@ public class LeaveAction extends ActionSupport {
 				String serverFileName = maxId + type; // 101.jpg
 				String destFolder = fileServerPath + "upload/user/";
 				fileupload.setPath("/upload/user/" + serverFileName);
+				java.io.File directory = new java.io.File(destFolder);
+			    if (!directory.exists()) {
+			        directory.mkdirs(); 
+			    }
+			    
 				String ext = type.toLowerCase();
-				
 				if (ext.equals(".jpg") || ext.equals(".jpeg") || ext.equals(".png")) {
-					log.info("Original Image Size = " + fileUploadSize);
-					java.io.File directory = new java.io.File(destFolder);
-				    if (!directory.exists()) {
-				        directory.mkdirs(); 
-				    }
-					try (java.io.FileInputStream fis = new java.io.FileInputStream(fileUpload);
-						 java.io.FileOutputStream fos = new java.io.FileOutputStream(new java.io.File(destFolder, serverFileName))) {
-						byte[] resizedBytes = FileUtil.resizeImage(fis, 800, 800);
-						fos.write(resizedBytes);
-						fileupload.setSize(String.valueOf(resizedBytes.length));
-						log.info("Resized Image Size = " + resizedBytes.length);
+					log.info("Original image size = " + fileUploadSize);
+					
+					long limitSize = 500 * 1024;
+					if (fileUpload.length() > limitSize) {
+						try (java.io.FileInputStream fis = new java.io.FileInputStream(fileUpload);
+							java.io.FileOutputStream fos = new java.io.FileOutputStream(new java.io.File(destFolder, serverFileName))) {
+								log.info("Image size bigger than 500 KB");	
+								byte[] resizedBytes = FileUtil.resizeImage(fis, 800, 800);
+								fos.write(resizedBytes);
+								fileupload.setSize(String.valueOf(resizedBytes.length));
+								log.info("Resized image size = " + resizedBytes.length);
+						}
+					} else {
+						FileUtil.upload(fileUpload, destFolder, serverFileName);
+						fileupload.setSize(fileUploadSize);
 					}
+					
 				} else {
 					FileUtil.upload(fileUpload, destFolder, serverFileName);
 					fileupload.setSize(fileUploadSize); 
-					log.info("Normal fileUploadSize = " + fileUploadSize);
+					log.info("Normal file size = " + fileUploadSize);
 				}
 
 				fileupload.setFileId(maxId);
@@ -1929,8 +1940,8 @@ public class LeaveAction extends ActionSupport {
 	        leave.setStartTime(time_from);
 	        leave.setEndTime(time_to);
 	        leave.setNoDay(noDay);
-	        leave.setUserUpdate(onlineUser.getId());
-	        leave.setTimeUpdate(DateUtil.getCurrentTime());
+	        //leave.setUserUpdate(onlineUser.getId());
+	        //leave.setTimeUpdate(DateUtil.getCurrentTime());
 	        leaveDAO.update(leave);
 	        
 	        return SUCCESS;

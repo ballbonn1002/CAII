@@ -307,7 +307,7 @@
 												<!--DDL Status -->
 												<div class="d-flex justify-content-end">
 													<!-- Leave ID -->
-													<div class="d-flex align-items-center fw-bold fs-4 text-primary me-7">
+													<div class="d-flex align-items-center fw-bold fs-4 text-primary me-7" id="leaveidInfo">
 														#<span id="leaveId"></span>
 													</div>
 													<!-- Leave ID -->
@@ -499,10 +499,10 @@
 										</form>
 										<div class="py-9">
 											<div class="fs-6" id="requestInfo">
-												Request By : <span class="" id="uc"></span><span></span>
+												Request By : <span class="" id="ucEmpId"></span> <span id="ucName"></span> , <span id="timeCreate"></span>
 											</div>
 											<div class="fs-6" id="approveInfo">
-												Approved By : <span class="" id="aprEmpId"></span> <span class="" id="aprName"></span> , <span id=""></span>
+												Approved By : <span class="" id="aprEmpId"></span> <span class="" id="aprName"></span> - <span id="aprRole"></span> , <span id="timeUpdate"></span>
 												
 											</div>
 										</div>
@@ -513,7 +513,6 @@
 
 					</div>
 					<!--end::Content container-->
-
 				</div>
 				<!--end::Content-->
 
@@ -631,7 +630,6 @@ $(function () {
 	var leaveTypes;
 	leaveTypes = JSON.parse('${leaveType}');
 	let leaveCheck = [${leave1Check},${leave2Check},${leave3Check},'','',${leave6Check}];
-	console.log(leaveCheck);
 	for (let i = 0; i < leaveTypes.length; i++) {
 		if (leaveTypes[i].id == '1' || leaveTypes[i].id == '2' || leaveTypes[i].id == '3' || leaveTypes[i].id == '6') {
 			if (leaveTypes[i].id == '6') {
@@ -692,11 +690,9 @@ $(function () {
 	if (leave6Container.length) { // validate #label_lt_6
 		if (month <= 2) { // if Jan, Feb, Mar : display "ลาพักร้อนที่เหลือจากปีก่อน"
 			leave6Container.show();
-			console.log("Leave ID 6: SHOW (Month <= 2)");
 		} else {
 			leave6Container.hide();
 			$('#lt_6').prop('checked', false);
-			console.log("Leave ID 6: HIDE (Month > 2). Unchecked.");
 		}
 	}
 	// END NEW LOGIC: Always render leave ID 6 and control visibility by month/checkbox logic
@@ -739,6 +735,7 @@ $(() => {
 	if (action == 'Edit') {
 		var leave = ${leave};
 		var fileLeave = ${fileLeave};
+		var leaveInfo = JSON.parse('${leaveInfo}');
 		user = leave.userId;
 		manager = leave.apprUserId;
 		department = leave.leaveStatusId.toString();
@@ -752,16 +749,55 @@ $(() => {
 			$('form').attr('action', 'new_LeaveEdit_Do');
 		}
 		
+		var aprEmpId;
+		var aprName;
+        var apprUserId;
+        var aprRole;
+        var ucEmpId;
+        var ucName;
+        var timeCreate;
+        var timeUpdate;
+		if (leaveInfo && leaveInfo.length > 0) {
+			
+			aprEmpId = leaveInfo[0].apr_emp_id;
+			aprName = leaveInfo[0].apr_name;
+	        apprUserId = leaveInfo[0].appr_user_id;
+	        aprRole = leaveInfo[0].apr_role;
+	        ucEmpId = leaveInfo[0].uc_emp_id;
+	        ucName = leaveInfo[0].uc_name;
+	        timeCreate = moment(leaveInfo[0].time_create).format("DD MMM YYYY HH:mm");
+	        timeUpdate = moment(leaveInfo[0].time_update).format("DD MMM YYYY HH:mm");
+		}
 		if (leave.leaveStatusId.toString() != '0') {
 		    $('input[name="leaveType"]').prop('disabled', true);
 			$('#status, #date_from, #date_to, #halfDay, #description, #myFile, #removeFileBtn, #approver, #submitBtn').prop('disabled', true);
 		    $('input[name="leaveType"]').closest('.form-check').css('pointer-events', 'none').css('opacity', '0.6');
-		    
+			$('#leaveidInfo').show();
+			$('#requestInfo').show();
 		    $('#approveInfo').show();
+		    
+		    $('#aprEmpId').text(aprEmpId);
+	        $('#aprName').text(aprName);
+	        $('#aprRole').text(aprRole);
+	        $('#timeUpdate').text(timeUpdate);
+	        
+	        $('#ucEmpId').text(ucEmpId);
+	        $('#ucName').text(ucName);
+	        $('#timeCreate').text(timeCreate);
 		}
+		else if(leave.leaveStatusId.toString() == '0'){
+			$('#leaveidInfo').show();
+			$('#requestInfo').show();
+		    $('#approveInfo').hide();
+			
+			$('#ucEmpId').text(ucEmpId);
+	        $('#ucName').text(ucName);
+	        $('#timeCreate').text(timeCreate);
+		}
+		
 		$('#leaveId').text('${leaveId}');
 
-	} else {
+	} else {	//Add
 		user = "${onlineUser.id}";
 		manager = "${onlineUser.managerId}";
 		if (la == '1') {
@@ -769,7 +805,10 @@ $(() => {
 		} else {
 			$('form').attr('action', 'new_LeaveAdd_Do');
 		}
+		$('#leaveidInfo').hide();
+		$('#requestInfo').hide();
 		$('#approveInfo').hide();
+		
 		if (la == '1') {
 			<perm:permission object="leave.viewall">
 				document.getElementById('user').disabled = false;
@@ -971,7 +1010,6 @@ $(() => {
 	/* End Applicant/Approver List */
 
 	console.log(leave);
-	console.log(fileLeave);
 	/* Start Leave Edit init */
 	if (leave != null) {
 		$('#user_hidden').val(leave.userCreate);
@@ -1115,7 +1153,6 @@ $(() => {
 
 		} else {
 			userOnChange();
-			console.log("Current Year Leave: Re-checking quota for leave types.");
 
 			// if nextYearLeave = false : control visibility by month logic
 			if (leave6Container.length) {
@@ -1141,13 +1178,9 @@ $(() => {
 });
 
 function userOnChange() {
-	//console.log("[userOnChange]");
 
 	var empId = $('#user').find(":selected").text().split(" ")[0];
-	//console.log("[userOnChange] empId = " + empId);
-
 	var userId = $('#user').val();
-	console.log("[userOnChange] userId  = " + userId);
 
 	$.ajax({
 		url: "getManagerIdAndManagerName",
@@ -1473,11 +1506,16 @@ document.getElementById('myFile').addEventListener('change', function(e) {
     }
 
     if (!file.type.startsWith('image/')) {
-        console.log("ไม่ใช่รูปภาพ ข้ามการย่อขนาด");
         return;
     }
-
-    console.log("ขนาดไฟล์ก่อนย่อ: " + (file.size / 1024 / 1024).toFixed(2) + " MB");
+    
+    const limitSize = 500 * 1024;
+    if (file.size <= limitSize) {
+        console.log("ขนาดไฟล์เล็กอยู่แล้ว (" + (file.size / 1024).toFixed(2) + " KB) ข้ามการย่อขนาด");
+        return;
+    }
+    
+    console.log("Before resize: " + (file.size / 1024 / 1024).toFixed(2) + " MB");
 
     new Compressor(file, {
         quality: 0.8,
@@ -1490,7 +1528,7 @@ document.getElementById('myFile').addEventListener('change', function(e) {
                 lastModified: Date.now()
             });
 
-            console.log("ขนาดไฟล์หลังย่อ: " + (compressedFile.size / 1024 / 1024).toFixed(2) + " MB");
+            console.log("After resize: " + (compressedFile.size / 1024 / 1024).toFixed(2) + " MB");
 
             const dataTransfer = new DataTransfer();
             dataTransfer.items.add(compressedFile);
@@ -1499,7 +1537,7 @@ document.getElementById('myFile').addEventListener('change', function(e) {
             
         },
         error(err) {
-            console.error("เกิดข้อผิดพลาดในการย่อรูป: ", err.message);
+            console.error("Error resize: ", err.message);
         },
     });
 });
