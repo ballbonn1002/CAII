@@ -222,3 +222,9 @@ CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 -- แปลง Character Set ของตาราง support_detail
 ALTER TABLE support_detail 
 CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+
+-- 08/05/2026 boom(Intern): Modify 'announcement' table for viewer logs --
+ALTER TABLE announcement 
+ADD COLUMN viewer_logs LONGTEXT NULL,
+ADD COLUMN unique_readcount INT DEFAULT 0;
