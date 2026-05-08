@@ -393,9 +393,11 @@
                                                 <i class="ki-duotone ki-calendar-8 position-absolute ms-4 mb-1 fs-2"><span
                                                         class="path1"></span><span class="path2"></span><span
                                                         class="path3"></span><span class="path4"></span><span
-                                                        class="path5"></span><span class="path6"></span></i> <input
+                                                        class="path5"></span><span class="path6"></span></i> 
+                                                    <jsp:useBean id="nowDate" class="java.util.Date" />
+                                                    <input
                                                     class="form-control ps-12" name="issueDate" type="text"
-                                                    value="<s:date name='new java.util.Date()' format='dd MMM yyyy'/>"
+                                                    value="<fmt:formatDate value='${nowDate}' pattern='d MMM yyyy , HH:mm'/>"
                                                     readonly style="background-color: #f5f8fa; cursor: not-allowed;" />
                                             </div>
                                         </div>
