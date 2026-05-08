@@ -186,7 +186,8 @@ public class LeaveDAOImpl implements LeaveDAO {
 			String sql = "SELECT leaves.leave_id, leaves.leave_type_id, leaves.leave_status_id, leaves.half_day, leaves.user_id, user.employee_id, "
 					+ "user.name_en, leaves.appr_user_id, leaves.description, leaves.reason, leaves.start_time, leaves.end_time, leaves.start_date, "
 					+ "leaves.end_date, leaves.no_day, leaves.leave_file, file.name AS file_name, file.type, leaves.user_create, leaves.user_update, "
-					+ "leaves.time_create, leaves.time_update, uc.employee_id AS uc_emp_id, uc.name_en AS uc_name, apr.employee_id AS apr_emp_id, apr.name_en AS apr_name "
+					+ "leaves.time_create, leaves.time_update, uc.employee_id AS uc_emp_id, uc.name_en AS uc_name, "
+					+ "apr.employee_id AS apr_emp_id, apr.name_en AS apr_name, apr.role_id AS apr_role "
 					+ "FROM leaves LEFT JOIN file ON leaves.leave_file = file.file_id LEFT JOIN user ON leaves.user_id = user.id "
 					+ "LEFT JOIN user uc ON leaves.user_create = uc.id LEFT JOIN user apr ON leaves.user_update = apr.id "
 					+ "WHERE leaves.leave_id = " + leaveId;

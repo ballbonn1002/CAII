@@ -610,19 +610,17 @@
 
 		<!-- Approve ================================================================================================== -->
 		<action name="travel_approve_approve"
-			class="com.cubesofttech.action.TravelAction"
-			method="travelApprove">
+			class="com.cubesofttech.action.TravelAction" method="travelApprove">
 			<result name="success" type="redirectAction">
 				<param name="actionName">travel_approve</param>
 			</result>
 			<result name="error">/index.jsp</result>
 		</action>
 		<!-- Approve ================================================================================================== -->
-		
+
 		<!-- Reject ================================================================================================== -->
 		<action name="travel_approve_reject"
-			class="com.cubesofttech.action.TravelAction"
-			method="travelReject">
+			class="com.cubesofttech.action.TravelAction" method="travelReject">
 			<result name="success" type="redirectAction">
 				<param name="actionName">travel_approve</param>
 			</result>
@@ -727,6 +725,14 @@
 		<!-- Group ================================================================================================== -->
 
 		<!-- My Travel ================================================================================================== -->
+
+		<!-- Download Expense PDF ================================================================================================== -->
+		<action name="travel_report"
+			class="com.cubesofttech.action.TravelAction"
+			method="expenseTravelReport">
+			<result name="error">/index.jsp</result>
+		</action>
+		<!-- Download Expense PDF ================================================================================================== -->
 
 		<!-- Overtime Request ================================================================================================== -->
 
@@ -1556,6 +1562,49 @@
 				</param>
 				<param name="bufferSize">2048</param>
 			</result>
+		</action>
+
+			<!-- Help & Support -->
+		<action name="help_support"
+			class="com.cubesofttech.action.HelpSupportAction" method="list">
+			<result name="success" type="tiles">help_support</result>
+			<result name="error">/index.jsp</result>
+		</action>
+
+		<action name="help_support_add"
+			class="com.cubesofttech.action.HelpSupportAction" method="list">
+			<result name="success" type="tiles">help_support_add</result>
+			<result name="error">/index.jsp</result>
+		</action>
+
+		<action name="help_support_edit"
+			class="com.cubesofttech.action.HelpSupportAction" method="edit">
+			<result name="success" type="tiles">help_support_edit</result>
+			<result name="error">/index.jsp</result>
+		</action>
+
+		<action name="help_support_delete"
+			class="com.cubesofttech.action.HelpSupportAction" method="delete">
+			<result name="success" type="redirect">help_support</result>
+			<result name="error">/index.jsp</result>
+		</action>
+
+		<action name="help_support_save"
+			class="com.cubesofttech.action.HelpSupportAction" method="save">
+			<result name="success" type="redirect">help_support</result>
+			<result name="error">/index.jsp</result>
+		</action>
+
+		<action name="help_support_update"
+			class="com.cubesofttech.action.HelpSupportAction" method="update">
+			<result name="success" type="redirect">help_support_edit?supportId=${supportId}</result>
+			<result name="error">/index.jsp</result>
+		</action>
+
+		<action name="help_support_admin_reply"
+			class="com.cubesofttech.action.HelpSupportAction" method="adminReply">
+			<result name="success" type="redirect">help_support_edit?supportId=${supportId}</result>
+			<result name="error">/index.jsp</result>
 		</action>
 	</package>
 

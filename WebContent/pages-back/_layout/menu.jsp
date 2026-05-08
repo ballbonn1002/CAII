@@ -262,34 +262,6 @@ String targetURL = Constant.getWebContext2() + "/authorization?token=" + token;
 						</div>
 						<!--end:Menu item-->
 					</perm:permission>
-					<!--begin:Menu item-->
-					<!-- <div class="menu-item">
-						begin:Menu link
-						<a class="menu-link" href="#" data-route="#"> <span class="menu-icon">
-								<i class="ki-duotone ki-watch fs-1"> <span class="path1"></span>
-									<span class="path2"></span>
-							</i>
-						</span> <span class="menu-title">Check In - Approve</span>
-						</a>
-						end:Menu link
-					</div> -->
-					<!--end:Menu item-->
-
-					<!--Work Log-->
-					<perm:permission object="report.view">
-						<div class="menu-item">
-							<a class="menu-link" href="work_log" data-route="work_log"> <span
-								class="menu-icon"> <i class="ki-duotone ki-time fs-1">
-										<span class="path1"></span> <span class="path2"></span>
-								</i>
-							</span> <span class="menu-title"> Work Log </span> <i
-								class="ki-duotone ki-check-circle fs-3 text-success"> <span
-									class="path1"></span><span class="path2"></span>
-							</i>
-							</a>
-						</div>
-					</perm:permission>
-					<!--Work Log-->
 
 					<!--Leave Approve-->
 					<perm:permission object="leave.approve">
@@ -342,46 +314,21 @@ String targetURL = Constant.getWebContext2() + "/authorization?token=" + token;
 					<!--end:Menu item-->
 
 					<!--begin:Menu item-->
-					<div class="menu-item">
-						<a class="menu-link" href="travel_approve"
-							data-route="travel_approve"> <span class="menu-icon">
-								<i class="ki-duotone ki-delivery-time fs-1"> <span
-									class="path1"></span> <span class="path2"></span> <span
-									class="path3"></span> <span class="path4"></span> <span
-									class="path5"></span>
-							</i>
-						</span> <span class="menu-title">Travel Approve</span>
-						</a>
-					</div>
+					<perm:permission object="expense.approve"> 
+						<div class="menu-item">
+							<a class="menu-link" href="travel_approve"
+								data-route="travel_approve"> <span class="menu-icon">
+									<i class="ki-duotone ki-delivery-time fs-1"> <span
+										class="path1"></span> <span class="path2"></span> <span
+										class="path3"></span> <span class="path4"></span> <span
+										class="path5"></span>
+								</i>
+							</span> <span class="menu-title">Travel Approve</span>
+							</a>
+						</div>
+				</perm:permission> 
 					<!--end:Menu item-->
 
-					<!--begin:Menu item-->
-					<!-- <div class="menu-item">
-						begin:Menu link
-						<a class="menu-link" href="#" data-route="#">
-							<span class="menu-icon"> <i
-								class="ki-duotone ki-timer fs-1"> <span class="path1"></span>
-									<span class="path2"></span> <span class="path3"></span>
-							</i>
-						</span> <span class="menu-title">OT Approve</span>
-						</a>
-						end:Menu link
-					</div> -->
-					<!--end:Menu item-->
-					<!--begin:Menu item-->
-					<!-- <div class="menu-item">
-						begin:Menu link
-						<a class="menu-link" href="#" data-route="#"> <span class="menu-icon">
-								<i class="ki-duotone ki-delivery-time fs-1"> <span
-									class="path1"></span> <span class="path2"></span> <span
-									class="path3"></span> <span class="path4"></span> <span
-									class="path5"></span>
-							</i>
-						</span> <span class="menu-title">Travel Approve</span>
-						</a>
-						end:Menu link
-					</div> -->
-					<!--end:Menu item-->
 					<perm:permission object="equipmentlist.view">
 						<!--begin:Menu item-->
 						<div class="menu-item pt-5">
@@ -588,29 +535,15 @@ String targetURL = Constant.getWebContext2() + "/authorization?token=" + token;
 					<!--end:Menu item-->
 
 					<!--begin:Menu item-->
-					<!-- <div class="menu-item">
-						begin:Menu link
-						<a class="menu-link" href="#" data-route="#">
-							<span class="menu-icon"> 
-							<i class="ki-duotone ki-user-square fs-1"> 
-								<span class="path1"></span><span class="path2"></span> <span class="path3"></span>
-							</i>
-						</span> <span class="menu-title">Careers</span>
-						</a>
-						end:Menu link
-					</div> -->
-					<!--end:Menu item-->
-
-					<!--begin:Menu item-->
-					<div class="menu-item pt-5">
-						<!--begin:Menu content-->
-						<div class="menu-content">
-							<span class="menu-heading fw-bold text-uppercase fs-7">Report</span>
-						</div>
-						<!--end:Menu content-->
-					</div>
-					<!--Report-->
 					<perm:permission object="report.view">
+						<div class="menu-item pt-5">
+							<!--begin:Menu content-->
+							<div class="menu-content">
+								<span class="menu-heading fw-bold text-uppercase fs-7">Report</span>
+							</div>
+							<!--end:Menu content-->
+						</div>
+						<!--Report-->
 						<div class="menu-item">
 							<a class="menu-link" href="report" data-route="report"> <span
 								class="menu-icon"> <i
@@ -623,6 +556,28 @@ String targetURL = Constant.getWebContext2() + "/authorization?token=" + token;
 						</div>
 					</perm:permission>
 					<!--Report-->
+
+					<!--Help & Support-->
+					<perm:permission object="helpsupport.view">
+						<div class="menu-item pt-5">
+							<div class="menu-content">
+								<span class="menu-heading fw-bold text-uppercase fs-7">Help
+									& Support</span>
+							</div>
+						</div>
+						<div class="menu-item">
+							<a class="menu-link" href="help_support"
+								data-route="help_support"> <span class="menu-icon"> <i
+									class="ki-duotone ki-message-question fs-1"> <span
+										class="path1"></span><span class="path2"></span><span
+										class="path3"></span>
+								</i>
+							</span> <span class="menu-title">Help & Support</span>
+							</a>
+						</div>
+					</perm:permission>
+					<!--Help & Support-->
+
 
 					<!--begin:Menu item-->
 					<div class="menu-item pt-5">
@@ -722,17 +677,17 @@ String targetURL = Constant.getWebContext2() + "/authorization?token=" + token;
 <!--end::Sidebar-->
 
 <script type="text/javascript">
-	$(function(){
-	  var cur = (location.pathname.split('/').pop() || 'index')
-	              .replace(/\.(jsp|action|html|php)$/i,'');
-	  
-	  $('a.menu-link[data-route]').each(function(){
-	    var list = $(this).data('route').toString().split(',');
-	    if (list.some(s => new RegExp('^' + s.trim() + '$', 'i').test(cur))) {
-	      $(this).addClass('active')
-	             .closest('.menu-item, li').addClass('active')
-	             .parents('.menu-accordion,.menu-sub').addClass('show here');
-	    }
-	  });
-	});
-</script>
+					$(function () {
+						var cur = (location.pathname.split('/').pop() || 'index')
+							.replace(/\.(jsp|action|html|php)$/i, '');
+
+						$('a.menu-link[data-route]').each(function () {
+							var list = $(this).data('route').toString().split(',');
+							if (list.some(s => new RegExp('^' + s.trim() + '$', 'i').test(cur))) {
+								$(this).addClass('active')
+									.closest('.menu-item, li').addClass('active')
+									.parents('.menu-accordion,.menu-sub').addClass('show here');
+							}
+						});
+					});
+				</script>

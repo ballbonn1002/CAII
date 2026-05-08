@@ -60,5 +60,5 @@ public class ReportUtil {
 				log.info(ex.getMessage());
 			}
 		}
-	}
+	}	
 }

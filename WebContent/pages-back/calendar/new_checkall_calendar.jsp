@@ -253,7 +253,12 @@
 						</div>
 					</div>
 					<div class="col-md-6">
-						<span id="userid"></span>
+						<i class="ki-duotone ki-user-square fs-2">
+							<span class="path1"></span>
+							<span class="path2"></span>
+							<span class="path3"></span>
+						</i>
+						<span id="employeeId"></span><span id="username"></span>
 					</div>
 				</div>
 
@@ -298,7 +303,7 @@
 						<span id="leavestatus"></span>
 					</div>
 					<div class="col-md-6 fs-8 text-gray-500">
-						<span>Request Date: <span id="timecreate"></span></span>
+						<span>Request By : <span id="ucEmpId"></span> - <span id="ucName"></span> , <span id="timecreate"></span></span>
 					</div>
 				</div>
 
@@ -312,7 +317,9 @@
 						<div class="col-md-6">
 							<i class="ki-duotone ki-user fs-2 me-2"> <span class="path1"></span>
 								<span class="path2"></span>
-							</i><span id="approveUser"></span>
+							</i>
+							<!-- <span id="approveUser"></span> -->
+							<span id="aprEmpId"></span> <span id="aprName"></span> - <span id="aprRole"></span>
 						</div>
 						<div class="col-md-6">
 							<i class="ki-duotone ki-calendar-2 fs-2 me-2"> <span
@@ -1150,7 +1157,11 @@ function leaveStatus(id) {
  			var obj = JSON.parse(data);
 			console.log(obj);
 			$('#leaveid').html(obj.leave_id);
-			$('#userid').html(obj.name);
+			$('#employeeId').html(obj.employeeId);
+			//$('#userid').html(obj.name);
+			$('#username').html(obj.name);
+			$('#ucEmpId').html(obj.ucEmpId);
+			$('#ucName').html(obj.ucName);
 			$('#stime').html(obj.start_time);
 			$('#etime').html(obj.end_time);
 			$('#desc').html(obj.description);
@@ -1188,9 +1199,9 @@ function leaveStatus(id) {
 			
 			$('#noday').html(obj.no_day + " Day");
 			
-			var timecreate = (obj.time_create).split(",");
-			var tcreate = moment(timecreate[0]).format("D MMM YYYY");
-			$('#timecreate').html(tcreate);	
+			//var timecreate = (obj.time_create).split(",");
+			//var tcreate = moment(timecreate[0]).format("D MMM YYYY");
+			$('#timecreate').html(obj.time_create.replace(",", " "));	
 			
 			$('#approveDetail').addClass('d-none');
 			$('#approveText').html("");
@@ -1202,7 +1213,10 @@ function leaveStatus(id) {
 					break;
 				case '1':
 					$('#leavestatus').html("Approved").removeClass().addClass("badge badge-light-success");
-					$('#approveUser').html(obj.appr_user_id);
+					/* $('#approveUser').html(obj.appr_user_id); */
+					$('#aprEmpId').html(obj.aprEmpId + " ");
+					$('#aprName').html(obj.aprName + " - ");
+					$('#aprRole').html(obj.aprRole);
 					$('#timeUpdate').html(obj.time_update);
 					//$('#detail').html(obj.dddd);
 			        $('#approveDetail').removeClass('d-none');

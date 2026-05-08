@@ -577,14 +577,18 @@
 
     // --- TABEL FUNCTION ---
     function processBatch() {
-        if (currentIndex >= displayWorkLogs.length) return;
-
+       if (currentIndex >= displayWorkLogs.length) {
+            var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'));
+            popoverTriggerList.map(function (popoverTriggerEl) {
+                return new bootstrap.Popover(popoverTriggerEl);
+            });
+            return;
+        }
         var html = '';
         var end = Math.min(currentIndex + batchSize, displayWorkLogs.length);
 
         for (var i = currentIndex; i < end; i++) {
             var item = displayWorkLogs[i];
-            
             var thisMonth = getMonthName(item.work_hours_time_work);
             if (currentMonth !== thisMonth) {
                 html += '<tr class="bg-light-primary"><td colspan="9" class="ps-4 py-3 rounded">' +
@@ -609,6 +613,9 @@
 
             var createTimeStr = item.time_update ? formatDate(item.time_update) + ', ' + formatTime(item.time_update) : '';
             var ipAddress = item.ip_address || '';
+            if (ipAddress.includes(',')) {
+                ipAddress = ipAddress.split(',')[0].trim(); 
+            }
             var latitude = item.latitude || '';
             var longitude = item.longitude || '';
             //console.log(latitude);
@@ -636,7 +643,9 @@
                             '<span class="badge badge-light-primary fw-bold fs-6">' + timeStr + '</span>' +
                         '</div>' + descriptionHtml +
                     '</div></td>' +
-                    '<td>' +
+                    '<td tabindex="0" style="cursor: pointer; text-decoration: underline;" ' +
+                        'data-bs-toggle="popover" data-bs-trigger="hover" data-bs-placement="top"' +
+                        'data-bs-content="' + item.user_agent + '">' +
                         '<span class="text-gray-800 fw-normal fs-6 d-block">' + createTimeStr + '</span>' +
                         '<span class="fw-normal text-gray-600 fs-6">' + ipAddress + '</span>' +
                     '</td>' +

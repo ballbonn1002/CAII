@@ -598,4 +598,21 @@
 			value="/pages-back/page_uri/page_uri_edit.jsp" />
 	</definition>
 
+	<!-- Help & Support -->
+	<definition name="help_support" extends="baseLayout">
+		<put-attribute name="title" value="Help Support" />
+		<put-attribute name="body"
+			value="/pages-back/help_support/help_support.jsp" />
+	</definition>
+
+	<definition name="help_support_add" extends="baseLayout">
+		<put-attribute name="title" value="Help Support Create" />
+		<put-attribute name="body"
+			value="/pages-back/help_support/help_support_add.jsp" />
+	</definition>
+	<definition name="help_support_edit" extends="baseLayout">
+		<put-attribute name="title" value="Help Support Edit" />
+		<put-attribute name="body"
+			value="/pages-back/help_support/help_support_edit.jsp" />
+	</definition>
 </tiles-definitions>

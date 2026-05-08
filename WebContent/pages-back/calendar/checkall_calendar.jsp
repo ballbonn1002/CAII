@@ -266,7 +266,7 @@
 </div>
 
 <!-- Leave Modal -->
-<div class="modal fade" id="leavemodal" tabindex="-1">
+<%-- <div class="modal fade" id="leavemodal" tabindex="-1">
 	<div class="modal-dialog modal-lg">
 		<div class="modal-content">
 			<div class="modal-header">
@@ -373,7 +373,13 @@
 			</div>
 		</div>
 	</div>
-</div>
+</div> --%>
+
+<jsp:include page="/pages-back/common/leave_modal.jsp">
+	<jsp:param name="showApproverInfo" value="true"/>
+	<jsp:param name="showEditButton" value="true"/>
+</jsp:include>
+
 <script> // ----------- Search -----------------
 // Get JSON data from backend
 var cubeUserData = ${cubeUserJson};
@@ -1050,89 +1056,7 @@ var AppCalendar = function() {
 
 // --------------------- Leave Modal ------------------------
 // Leave Status Modal Function
-function leaveStatus(id) {
-	$("#leavemodal").modal("show"); 
-	console.log(id);
 
-	$.ajax({
-		url : "new_modalLeaveStatus",
-		method : "POST",
- 		data : "leaveId="+ id,
- 		success : function(data) {
- 			var obj = JSON.parse(data);
-			
-			$('#leaveid').html(obj.leave_id);
-			$('#userid').html(obj.name);
-			$('#stime').html(obj.start_time);
-			$('#etime').html(obj.end_time);
-			$('#desc').html(obj.description);
-			
-			if(obj.leave_file_id == null || obj.leave_file_id == ""){
-				$('#file').html("No file");
-			} else {
-				$('#file').html(obj.leave_file_name + obj.leave_file_type);
-				$('#file').attr('href', 'preview_File?id=' + obj.leave_file_id);
-				$('#file').attr('target', '_blank');
-			}
-			
-			$('#btn_edit_leave').attr({ href: 'NewLeaveEdit?id=' + obj.leave_id + '&la=1', target: '_blank' });
-			
-			// Set leave type
-			var leaveTypeMap = {
-				1: "ลาพักร้อน",
-				2: "ลากิจ", 
-				3: "ลาป่วย",
-				4: "ขาดงาน",
-				5: "ลาโดยไม่รับค่าจ้าง",
-				6: "ลาพักร้อนที่เหลือจากปีก่อน",
-				7: "ลาอื่นๆ",
-				9: "อื่นๆ"
-			};
-			$('#leavetype').html(leaveTypeMap[obj.leave_type_id] || "");
-			
-			var startdate = (obj.start_date).split(",");
-			var sdate = moment(startdate[0]).format("D MMM YYYY");
-			$('#sdate').html(sdate);
-			
-			var enddate = (obj.end_date).split(",");
-			var edate = moment(enddate[0]).format("D MMM YYYY");
-			$('#edate').html(edate);	
-			
-			$('#noday').html(obj.no_day + " Day");
-			
-			var timecreate = (obj.time_create).split(",");
-			var tcreate = moment(timecreate[0]).format("D MMM YYYY");
-			$('#timecreate').html(tcreate);	
-			
-			$('#approveDetail').addClass('d-none');
-			$('#approveText').html("");
-			
-			// Set status with new theme classes
-			switch(obj.leave_status_id) {
-				case '0':
-					$('#leavestatus').html("Wait for Approving").removeClass().addClass("badge badge-light-warning");
-					break;
-				case '1':
-					$('#leavestatus').html("Approved").removeClass().addClass("badge badge-light-success");
-					$('#approveUser').html(obj.appr_user_id);
-					$('#timeUpdate').html(obj.time_update);
-					//$('#detail').html(obj.dddd);
-			        $('#approveDetail').removeClass('d-none');
-					break;
-				case '2':
-					$('#leavestatus').html("Reject").removeClass().addClass("badge badge-light-danger");
-					$('#approveUser').html(obj.appr_user_id);
-					$('#timeUpdate').html(obj.time_update);
-					//$('#detail').html(obj.dddd);
-			        $('#approveDetail').removeClass('d-none');
-					break;
-				case '3':
-					$('#leavestatus').html("Cancel").removeClass().addClass("badge badge-light-secondary");
-					break;
-			}
- 		}
-	});
-}
 // --------------------- End of Leave Modal -----------------------
 
 // --------------------- Initialize when document is ready ------------------------

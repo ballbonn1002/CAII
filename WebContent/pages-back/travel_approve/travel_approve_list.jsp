@@ -303,7 +303,10 @@
 																			<fmt:formatDate value="${row.requested_at}"
 																				pattern="d MMM yyyy" />
 																		</c:when>
-																		<c:otherwise>-</c:otherwise>
+																		<c:otherwise>
+																			<fmt:formatDate value="${row.time_create}"
+																				pattern="d MMM yyyy" />
+																		</c:otherwise>
 																	</c:choose></td>
 																<td>${not empty row.user_name ? row.user_name : '-'}</td>
 																<td class="text-center"><span
@@ -321,6 +324,14 @@
 																			class="btn btn-icon btn-light-info" title="View">
 																			<i class="ki-duotone ki-document fs-1"> <span
 																				class="path1"></span><span class="path2"></span>
+																		</i>
+																		</a> <a
+																			href="${ctx}/travel_report?expense_group_id=${row.expense_group_id}"
+																			class="btn btn-icon btn-light-primary" title="View">
+																			<i class="ki-duotone ki-printer fs-1"> <span
+																				class="path1"></span> <span class="path2"></span> <span
+																				class="path3"></span> <span class="path4"></span> <span
+																				class="path5"></span>
 																		</i>
 																		</a>
 																	</div>
@@ -344,7 +355,10 @@
 																			<fmt:formatDate value="${row.requested_at}"
 																				pattern="d MMM yyyy" />
 																		</c:when>
-																		<c:otherwise>-</c:otherwise>
+																		<c:otherwise>
+																			<fmt:formatDate value="${row.time_create}"
+																				pattern="d MMM yyyy" />
+																		</c:otherwise>
 																	</c:choose></td>
 																<td>${not empty row.user_name ? row.user_name : '-'}</td>
 																<td class="text-center"><span
@@ -367,6 +381,14 @@
 																			class="btn btn-icon btn-light-info" title="View">
 																			<i class="ki-duotone ki-document fs-1"> <span
 																				class="path1"></span><span class="path2"></span>
+																		</i>
+																		</a> <a
+																			href="${ctx}/travel_report?expense_group_id=${row.expense_group_id}"
+																			class="btn btn-icon btn-light-primary" title="View">
+																			<i class="ki-duotone ki-printer fs-1"> <span
+																				class="path1"></span> <span class="path2"></span> <span
+																				class="path3"></span> <span class="path4"></span> <span
+																				class="path5"></span>
 																		</i>
 																		</a>
 																	</div>
