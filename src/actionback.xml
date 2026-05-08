@@ -1195,6 +1195,45 @@
 			<result name="error">/index.jsp</result>
 		</action>
 
+		<!-- PAGE URI -->
+		<action name="page_uri_list"
+			class="com.cubesofttech.action.PageUriAction" method="list">
+			<result name="success" type="tiles">pageUriList</result>
+			<result name="error">/index.jsp</result>
+		</action>
+
+		<action name="page_uri_add"
+			class="com.cubesofttech.action.PageUriAction" method="add">
+			<result name="success" type="tiles">pageUriAdd</result>
+			<result name="error">/index.jsp</result>
+		</action>
+
+		<action name="savePageUri" class="com.cubesofttech.action.PageUriAction" method="savePageUri">
+			<result name="success" type="redirectAction">
+				<param name="actionName">page_uri_list</param>
+			</result>
+			<result name="error">/index.jsp</result>
+		</action>
+
+		<action name="editPageUri" class="com.cubesofttech.action.PageUriAction" method="editPageUri">
+			<result name="success" type="tiles">pageUriEdit</result>
+			<result name="error">/index.jsp</result>
+		</action>
+
+		<action name="updatePageUri" class="com.cubesofttech.action.PageUriAction" method="updatePageUri">
+			<result name="success" type="redirectAction">
+				<param name="actionName">page_uri_list</param>
+			</result>
+			<result name="error">/index.jsp</result>
+		</action>
+
+		<action name="page_uri_delete" class="com.cubesofttech.action.PageUriAction" method="deletePageUri">
+			<result name="success" type="redirectAction">
+				<param name="actionName">page_uri_list</param>
+			</result>
+			<result name="error">/index.jsp</result>
+		</action>
+
 		<action name="checkDuplicatePositionId"
 			class="com.cubesofttech.action.PositionAction"
 			method="checkDuplicatePositionId">
