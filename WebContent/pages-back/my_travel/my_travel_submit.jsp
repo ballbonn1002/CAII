@@ -223,7 +223,11 @@
 								<div class="btn btn-sm btn-light-danger border border-danger">Canceled</div>
 							</c:when>
 							<c:when test="${statusActiveSafe eq 'A'}">
-								<div class="btn btn-sm btn-light-success border border-success">Completed</div>
+								<div class="btn btn-sm btn-light-success border border-success">Approved</div>
+							</c:when>
+							<c:when test="${statusActiveSafe eq 'P'}">
+								<div class="btn btn-sm btn-light-info border border-info">Paid
+									Already</div>
 							</c:when>
 							<c:when test="${statusActiveSafe eq 'R'}">
 								<div class="btn btn-sm btn-light-danger border border-danger">Rejected</div>
@@ -276,6 +280,7 @@
 										<table class="table m-0 table-striped">
 											<thead class="text-gray-500 border-bottom">
 												<tr>
+													<th>#</th>
 													<th>ID</th>
 													<th>REQUESTS</th>
 													<th>CATEGORIZED</th>
@@ -290,6 +295,7 @@
 												<c:forEach var="exp" items="${expenseListObj}"
 													varStatus="st">
 													<tr class="border-bottom">
+														<td>${st.count}</td>
 														<td>#${exp['expense_id']}</td>
 														<td><c:choose>
 																<c:when test="${not empty exp['dt_start']}">
@@ -340,10 +346,10 @@
 															<div class="d-flex flex-column gap-3">
 																<c:forEach var="det" items="${exp['details']}"
 																	varStatus="ds">
-																	<c:set var="total_amount" value="${exp['amount']}"></c:set>
+
 																	<div>
 																		<span>${det['travel_type_name']} <c:if
-																				test="${not empty det['description'] }">
+																				test="${not empty det['description']}">
 																				<span class="text-gray-500"> :
 																					${det['description']}</span>
 																			</c:if>
@@ -365,7 +371,9 @@
 															</div>
 														</td>
 														<td class="text-end"><c:if
-																test="${not empty total_amount}">${total_amount}</c:if></td>
+																test="${not empty exp['details'] and not empty exp['amount']}">
+										${exp['amount']}
+	</c:if></td>
 													</tr>
 													<tr>
 														<td colspan="7"><span class="text-gray-500">Purpose
@@ -500,7 +508,7 @@
 														<span class="text-primary pb-7 fs-7" id="receiverLabel1">ชื่อ
 															ผู้รับเงิน</span> <span class="text-dark fw-semibold fs-7">${userObj.nameEN}</span>
 														<span class="text-muted fs-8"><fmt:formatDate
-																value="${receiveAt}" pattern="d MMM yyyy, H:mm" /></span>
+																value="${requestAt}" pattern="d MMM yyyy, H:mm" /></span>
 													</div>
 												</c:otherwise>
 											</c:choose>

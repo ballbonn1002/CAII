@@ -211,6 +211,14 @@
 										</c:if>
 									</c:url>
 
+									<c:url var="tabP" value="/my_travel">
+										<c:param name="status" value="P" />
+										<c:param name="page" value="1" />
+										<c:if test="${not empty param.dateRange}">
+											<c:param name="dateRange" value="${param.dateRange}" />
+										</c:if>
+									</c:url>
+
 									<c:url var="tabA" value="/travel_approove">
 										<c:param name="status" value="A" />
 										<c:param name="page" value="1" />
@@ -238,6 +246,10 @@
 										<li class="nav-item"><a
 											class="nav-link text-active-primary ${statusActiveSafe=='A' ? 'active' : ''}"
 											href="${tabA}" data-status="A">Approve</a></li>
+
+										<li class="nav-item"><a
+											class="nav-link text-active-primary ${statusActiveSafe=='P' ? 'active' : ''}"
+											href="${tabP}" data-status="P">Paid</a></li>
 										<li class="nav-item"><a
 											class="nav-link text-active-primary ${statusActiveSafe=='R' ? 'active' : ''}"
 											href="${tabR}" data-status="R">Reject</a></li>
@@ -301,11 +313,11 @@
 																<td><c:choose>
 																		<c:when test="${not empty row.requested_at}">
 																			<fmt:formatDate value="${row.requested_at}"
-																				pattern="d MMM yyyy" />
+																				pattern="d MMM yyyy, H:mm" />
 																		</c:when>
 																		<c:otherwise>
 																			<fmt:formatDate value="${row.time_create}"
-																				pattern="d MMM yyyy" />
+																				pattern="d MMM yyyy, H:mm" />
 																		</c:otherwise>
 																	</c:choose></td>
 																<td>${not empty row.user_name ? row.user_name : '-'}</td>
@@ -353,11 +365,11 @@
 																<td><c:choose>
 																		<c:when test="${not empty row.requested_at}">
 																			<fmt:formatDate value="${row.requested_at}"
-																				pattern="d MMM yyyy" />
+																				pattern="d MMM yyyy, H:mm" />
 																		</c:when>
 																		<c:otherwise>
 																			<fmt:formatDate value="${row.time_create}"
-																				pattern="d MMM yyyy" />
+																				pattern="d MMM yyyy, H:mm" />
 																		</c:otherwise>
 																	</c:choose></td>
 																<td>${not empty row.user_name ? row.user_name : '-'}</td>
@@ -369,6 +381,9 @@
 																<td class="text-center"><c:choose>
 																		<c:when test="${row.status_id == 'A'}">
 																			<span class="badge badge-success fs-6 px-4 py-2">Approved</span>
+																		</c:when>
+																		<c:when test="${row.status_id == 'P'}">
+																			<span class="badge badge-info fs-6 px-4 py-2">Paid</span>
 																		</c:when>
 																		<c:when test="${row.status_id == 'R'}">
 																			<span class="badge badge-danger fs-6 px-4 py-2">Rejected</span>
@@ -475,154 +490,6 @@
 							</div>
 						</div>
 					</div>
-				</div>
-			</div>
-		</div>
-	</div>
-
-	<div id="modalDataStore" style="display: none;">
-		<c:forEach var="row" items="${travelListObj}">
-			<div class="modal-data-item" data-id="${row.expense_id}">
-				<span class="md-expense-id">${row.expense_id}</span>
-				<%-- ✅ Draft ไม่มี status_id — ปล่อยว่าง --%>
-				<span class="md-status-id">${row.status_id}</span> <span
-					class="md-request-date"><fmt:formatDate
-						value="${row.time_create}" pattern="d MMM yyyy" /></span>
-				<c:forEach var="u" items="${userListObj}">
-					<c:if test="${u['id'] == row.user_id}">
-						<span class="md-user"> ${not empty u['employee_id'] ? u['employee_id'] : ''}
-							&nbsp;&nbsp;-&nbsp;&nbsp; ${not empty u['name_en'] ? u['name_en'] : ''}
-							&nbsp;&nbsp;-&nbsp;&nbsp; ${not empty u['name'] ? u['name'] : ''}
-							&nbsp;&nbsp;-&nbsp;&nbsp; ${not empty u['department'] ? u['department'] : ''}
-						</span>
-					</c:if>
-				</c:forEach>
-				<span class="md-date"><fmt:formatDate value="${row.dt_start}"
-						pattern="d MMM yyyy" /></span> <span class="md-purpose">${row.description}</span>
-				<span class="md-from">${row.from_location}</span> <span
-					class="md-to">${row.to_location}</span> <span class="md-time-from"><fmt:formatDate
-						value="${row.dt_start}" pattern="H:mm" /></span> <span
-					class="md-time-to"><fmt:formatDate value="${row.dt_end}"
-						pattern="H:mm" /></span> <span class="md-amount"><fmt:formatNumber
-						value="${row.amount}" pattern="#,##0.00" /></span>
-				<div class="md-details">
-					<c:forEach var="det" items="${row.details}">
-						<div class="md-detail-row" data-type="${det.travel_type_name}"
-							data-desc="${det.description}" data-total="${det.total}"></div>
-					</c:forEach>
-					<c:if test="${empty row.details}">
-						<div class="md-detail-row" data-type="-" data-desc=""
-							data-total="${row.amount}"></div>
-					</c:if>
-				</div>
-			</div>
-		</c:forEach>
-	</div>
-
-	<!-- Modal -->
-	<div class="modal fade" id="travelDetailModal" tabindex="-1"
-		aria-hidden="true">
-		<div
-			class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
-			<div class="modal-content"
-				style="border-radius: 16px; border: none; box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);">
-
-				<div class="modal-header border-0 pb-0 px-8 pt-7 mb-6">
-					<h5 class="modal-title fw-bold fs-4">Travel expense</h5>
-					<button type="button"
-						class="btn btn-icon btn-sm btn-active-light-primary ms-2"
-						data-bs-dismiss="modal">
-						<i class="ki-duotone ki-cross fs-2"><span class="path1"></span><span
-							class="path2"></span></i>
-					</button>
-				</div>
-
-				<div class="modal-body px-8 py-6">
-
-					<div class="row mb-10">
-						<div class="col-6 d-flex align-items-center gap-5">
-							<span id="m_expenseId" class="fw-bold fs-5 text-primary"></span>
-							<%-- ✅ Draft ไม่มี status badge — ซ่อนถ้าว่าง --%>
-							<span id="m_statusBadge" class="fs-7 fw-semibold px-3 py-2"></span>
-						</div>
-						<div class="col-6 d-flex align-items-center gap-3">
-							<span id="m_requestDate" class="text-gray-700 fw-medium fs-6"></span>
-						</div>
-					</div>
-
-					<div class="d-flex align-items-center gap-3 mb-8 rounded-2">
-						<i class="ki-duotone ki-user-square fs-1"> <span class="path1"></span><span
-							class="path2"></span><span class="path3"></span>
-						</i> <span id="m_user" class="fw-medium text-gray-900 fs-6"></span>
-					</div>
-
-					<div class="row mb-8">
-						<div class="col-6 d-flex align-items-center gap-3">
-							<i class="ki-duotone ki-calendar fs-2 text-muted"> <span
-								class="path1"></span><span class="path2"></span>
-							</i> <span id="m_date" class="fw-semibold text-gray-800 fs-6"></span>
-						</div>
-						<div class="col-6 d-flex align-items-center gap-3">
-							<i class="ki-duotone ki-notepad fs-2 text-muted"> <span
-								class="path1"></span><span class="path2"></span> <span
-								class="path3"></span><span class="path4"></span> <span
-								class="path5"></span>
-							</i> <span id="m_purpose" class="fw-semibold text-gray-700 fs-6"></span>
-						</div>
-					</div>
-
-					<div class="row gy-8 mb-12">
-						<div class="col-6">
-							<div class="d-flex align-items-center gap-3">
-								<i class="ki-duotone ki-geolocation fs-2 text-primary"> <span
-									class="path1"></span><span class="path2"></span>
-								</i>
-								<div>
-									<span class="text-muted fs-6">Beginning : </span> <span
-										id="m_from" class="fw-semibold text-gray-800 fs-6"></span>
-								</div>
-							</div>
-						</div>
-						<div class="col-6 d-flex align-items-center gap-3">
-							<i class="ki-duotone ki-time fs-2 text-muted"> <span
-								class="path1"></span><span class="path2"></span>
-							</i> <span id="m_timeFrom" class="fw-medium text-gray-700 fs-6"></span>
-						</div>
-
-						<div class="col-6">
-							<div class="d-flex align-items-center gap-3">
-								<i class="ki-duotone ki-geolocation fs-2 text-success"> <span
-									class="path1"></span><span class="path2"></span>
-								</i>
-								<div>
-									<span class="text-muted fs-6">Destination : </span> <span
-										id="m_to" class="fw-medium text-gray-800 fs-6"></span>
-								</div>
-							</div>
-						</div>
-						<div class="col-6 d-flex align-items-center gap-3">
-							<i class="ki-duotone ki-time fs-2 text-muted"> <span
-								class="path1"></span><span class="path2"></span>
-							</i> <span id="m_timeTo" class="fw-semibold text-gray-700 fs-6"></span>
-						</div>
-					</div>
-
-					<div class="separator separator-dashed mb-12"></div>
-
-					<div class="d-flex align-items-center justify-content-between mb-4">
-						<span class="text-gray-700 fw-medium fs-5">Expense form</span> <span
-							id="m_total" class="fw-bold fs-6 px-3 py-1 rounded"
-							style="background: #E8F4FF; color: #0095E8;"></span>
-					</div>
-
-					<div id="m_expenseRows"></div>
-
-				</div>
-
-				<div
-					class="modal-footer border-0 px-8 pb-7 pt-15 justify-content-end">
-					<button type="button" class="btn btn-light btn-sm px-6 fw-medium"
-						data-bs-dismiss="modal">Close</button>
 				</div>
 			</div>
 		</div>
@@ -982,6 +849,7 @@
 	    const statusMap = {
 	        'W': { label: 'Waiting',  cls: 'badge-warning text-dark' },
 	        'A': { label: 'Approved', cls: 'badge-success'           },
+	        'P': { label: 'Paid', cls: 'badge-info'           },
 	        'R': { label: 'Rejected', cls: 'badge-danger'            }
 	    };
 	    const sid   = txt('md-status-id');

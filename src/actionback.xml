@@ -618,6 +618,16 @@
 		</action>
 		<!-- Approve ================================================================================================== -->
 
+		<!-- Paid ================================================================================================== -->
+		<action name="travel_approve_paid"
+			class="com.cubesofttech.action.TravelAction" method="travelPaid">
+			<result name="success" type="redirectAction">
+				<param name="actionName">travel_approve</param>
+			</result>
+			<result name="error">/index.jsp</result>
+		</action>
+		<!-- Paid ================================================================================================== -->
+
 		<!-- Reject ================================================================================================== -->
 		<action name="travel_approve_reject"
 			class="com.cubesofttech.action.TravelAction" method="travelReject">
@@ -1513,8 +1523,9 @@
 		</action>
 
 		<!-- ========================== Export to Excel ============================== -->
-		<action name="LeaveApproveExcelExport" 
-			class="com.cubesofttech.action.LeaveAction" method="LeaveApproveExcelExport">
+		<action name="LeaveApproveExcelExport"
+			class="com.cubesofttech.action.LeaveAction"
+			method="LeaveApproveExcelExport">
 			<result name="success" type="stream">
 				<param name="contentType">application/vnd.ms-excel</param>
 				<param name="inputName">excelStream</param>
@@ -1525,7 +1536,7 @@
 			</result>
 		</action>
 
-			<!-- Help & Support -->
+		<!-- Help & Support -->
 		<action name="help_support"
 			class="com.cubesofttech.action.HelpSupportAction" method="list">
 			<result name="success" type="tiles">help_support</result>
@@ -1558,13 +1569,15 @@
 
 		<action name="help_support_update"
 			class="com.cubesofttech.action.HelpSupportAction" method="update">
-			<result name="success" type="redirect">help_support_edit?supportId=${supportId}</result>
+			<result name="success" type="redirect">help_support_edit?supportId=${supportId}
+			</result>
 			<result name="error">/index.jsp</result>
 		</action>
 
 		<action name="help_support_admin_reply"
 			class="com.cubesofttech.action.HelpSupportAction" method="adminReply">
-			<result name="success" type="redirect">help_support_edit?supportId=${supportId}</result>
+			<result name="success" type="redirect">help_support_edit?supportId=${supportId}
+			</result>
 			<result name="error">/index.jsp</result>
 		</action>
 	</package>

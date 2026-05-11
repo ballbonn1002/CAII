@@ -219,7 +219,11 @@
 								<div class="btn btn-sm btn-light-danger border border-danger">Canceled</div>
 							</c:when>
 							<c:when test="${statusActiveSafe eq 'A'}">
-								<div class="btn btn-sm btn-light-success border border-success">Completed</div>
+								<div class="btn btn-sm btn-light-success border border-success">Approved</div>
+							</c:when>
+							<c:when test="${statusActiveSafe eq 'P'}">
+								<div class="btn btn-sm btn-light-info border border-info">Paid
+									Already</div>
 							</c:when>
 							<c:when test="${statusActiveSafe eq 'R'}">
 								<div class="btn btn-sm btn-light-danger border border-danger">Rejected</div>
@@ -268,6 +272,7 @@
 										<table class="m-0 table table-striped">
 											<thead class="text-gray-500 border-bottom">
 												<tr>
+													<th>#</th>
 													<th>ID</th>
 													<th>REQUESTS</th>
 													<th>CATEGORIZED</th>
@@ -282,6 +287,7 @@
 												<c:forEach var="exp" items="${expenseListObj}"
 													varStatus="st">
 													<tr class="border-bottom">
+														<td>${st.count}</td>
 														<td>#${exp['expense_id']}</td>
 														<td><c:choose>
 																<c:when test="${not empty exp['dt_start']}">
@@ -336,7 +342,7 @@
 																	<div>
 																		<span>${det['travel_type_name']} </span>
 																		<c:if test="${not empty det['description'] }">
-																			<span class="text-gray-500"> :
+																			<span class="text-gray-600"> :
 																				${det['description']}</span>
 																		</c:if>
 																	</div>
@@ -467,7 +473,7 @@
 												<span class="text-primary pb-7 fs-7" id="receiverLabel1">ชื่อ
 													ผู้รับเงิน</span> <span class="text-dark fw-semibold fs-7">${userObj.nameEN}</span>
 												<span class="text-muted fs-8"><fmt:formatDate
-														value="${receiveAt}" pattern="d MMM yyyy, H:mm" /></span>
+														value="${requestAt}" pattern="d MMM yyyy, H:mm" /></span>
 											</div>
 										</div>
 									</div>
@@ -520,18 +526,28 @@
 									class="ki-duotone ki-arrow-left fs-2"> <span class="path1"></span>
 										<span class="path2"></span>
 								</i>Back</a>
-								<c:if
-									test="${not empty statusActiveSafe  && statusActiveSafe == 'W'}">
-									<div>
+								<c:choose>
+									<c:when test="${statusActiveSafe == 'W'}">
+										<div>
+											<button type="submit"
+												formaction="${ctx}/travel_approve_reject?expense_group_id=${expense_group_id}"
+												class="btn btn-danger px-6"
+												onclick="return validateReject(event);">Reject</button>
+											<button type="submit"
+												formaction="${ctx}/travel_approve_paid?expense_group_id=${expense_group_id}"
+												class="btn btn-info px-6 ms-4">Paid</button>
+											<button type="submit"
+												formaction="${ctx}/travel_approve_approve?expense_group_id=${expense_group_id}"
+												class="btn btn-success px-6 ms-4">Approve</button>
+										</div>
+									</c:when>
+									<c:when test="${statusActiveSafe == 'A'}">
 										<button type="submit"
-											formaction="${ctx}/travel_approve_reject?expense_group_id=${expense_group_id}"
-											class="btn btn-danger px-6"
-											onclick="return validateReject(event);">Reject</button>
-										<button type="submit"
-											formaction="${ctx}/travel_approve_approve?expense_group_id=${expense_group_id}"
-											class="btn btn-success px-6 ms-4">Approve</button>
-									</div>
-								</c:if>
+											formaction="${ctx}/travel_approve_paid?expense_group_id=${expense_group_id}"
+											class="btn btn-info px-6 ms-4">Paid</button>
+									</c:when>
+								</c:choose>
+
 							</div>
 						</form>
 					</div>

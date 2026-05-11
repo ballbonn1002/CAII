@@ -22,6 +22,10 @@
     ed.total,
     eg.approved_at,
     eg.status_id,
+    eg.description_appr,
+    eg.requested_at,
+    eg.received_at,
+    eg.time_create as eg_time_create,
     e.from_location,
     e.to_location,
     e.description,
@@ -30,7 +34,7 @@
 
     ett.name as travel_type_name,
 
-    eg.time_create as eg_time_create,
+ 
     u.name as user_name,
     fu.file_id as file_user,
 	fau.file_id as file_approve_user,
@@ -65,7 +69,10 @@ order by e.dt_start,
 		<field name="file_approve_user" class="java.lang.Integer"/>
 		<field name="approve_user_name" class="java.lang.String"/>
 		<field name="eg_time_create" class="java.sql.Timestamp"/>
+		<field name="requested_at" class="java.sql.Timestamp"/>
+		<field name="received_at" class="java.sql.Timestamp"/>
 		<field name="total" class="java.math.BigDecimal"/>
+		<field name="description_appr" class="java.lang.String"/>
 	
 	
 	<variable name="total_sum" class="java.math.BigDecimal" calculation="Sum">
@@ -188,7 +195,7 @@ order by e.dt_start,
 				<textElement verticalAlignment="Middle">
 					<font size="8" isBold="true" pdfFontName="WareeSans.ttf" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
 				</textElement>
-				<text><![CDATA[From ~ To Location]]></text>
+				<text><![CDATA[From - To Location]]></text>
 			</staticText>
 			<staticText>
 				<reportElement x="345" y="2" width="70" height="20" uuid="de9b7fcd-5388-4cd3-a062-6d6288767c76"/>
@@ -243,7 +250,7 @@ order by e.dt_start,
 				<textElement textAlignment="Center">
 					<font size="8" pdfFontName="WareeSans.ttf" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
 				</textElement>
-				<textFieldExpression><![CDATA["~"]]></textFieldExpression>
+				<textFieldExpression><![CDATA["-"]]></textFieldExpression>
 			</textField>
 
 			<textField pattern="HH:mm" isBlankWhenNull="true">
@@ -259,7 +266,7 @@ order by e.dt_start,
 				<textElement>
 					<font size="8" pdfFontName="WareeSans.ttf" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{from_location} + " ~ " + $F{to_location} + "\n" + $F{description}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{from_location} + " - " + $F{to_location} + "\n" + $F{description}]]></textFieldExpression>
 			</textField>
 
 			<textField isBlankWhenNull="true">
@@ -289,7 +296,7 @@ order by e.dt_start,
 			</textField>
 		</band>
 	</detail>
-	<columnFooter>
+<columnFooter>
 		<band height="110" splitType="Immediate">
 			<staticText>
 				<reportElement x="2" y="0" width="177" height="30" uuid="c94ca76f-7362-4994-9d99-55c154af39b8"/>
@@ -304,7 +311,6 @@ order by e.dt_start,
 					<pen lineStyle="Dotted"/>
 				</graphicElement>
 			</line>
-			
 			<textField>
 				<reportElement x="2" y="68" width="177" height="20" uuid="0e16c65e-2664-4129-85c6-c633c2d48d2a"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
@@ -317,22 +323,17 @@ order by e.dt_start,
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font size="8" pdfFontName="WareeSans.ttf" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{eg_time_create}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{requested_at}]]></textFieldExpression>
 			</textField>
-
-			<line>
-				<reportElement x="383" y="62" width="158" height="1" uuid="33adb0ba-87b6-4905-9452-7be8876ad9a1"/>
-				<graphicElement>
-					<pen lineStyle="Dotted"/>
-				</graphicElement>
-			</line>
-
-			<rectangle>
-				<reportElement mode="Transparent" x="367" y="0" width="188" height="110" uuid="4326047f-fe5c-49e1-a56e-be9dea80785a"/>
-			</rectangle>
+			<image scaleImage="RetainShape" hAlign="Center" vAlign="Bottom" isUsingCache="true" onErrorType="Blank">
+				<reportElement x="35" y="22" width="130" height="40" uuid="e1a8b9c2-d3e4-4f5a-b6c7-d8e9f0a1b2c3"/>
+				<imageExpression><![CDATA[$P{basePath} + "/upload/user/user_signature_" +  String.valueOf($F{file_user}) + ".png"]]></imageExpression>
+			</image>
 			<rectangle>
 				<reportElement mode="Transparent" x="2" y="0" width="177" height="110" uuid="d736349d-c85c-4596-9a35-ffa035be23f9"/>
 			</rectangle>
+
+
 			<staticText>
 				<reportElement x="179" y="0" width="188" height="30" uuid="8c5950b9-4f30-404c-9398-ce862372304b"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
@@ -340,9 +341,6 @@ order by e.dt_start,
 				</textElement>
 				<text><![CDATA[ผู้อนุมัติ]]></text>
 			</staticText>
-			<rectangle>
-				<reportElement mode="Transparent" x="179" y="0" width="188" height="110" uuid="4bd55860-8ceb-4bc7-8bbd-0cbf3d5851f4"/>
-			</rectangle>
 			<line>
 				<reportElement x="192" y="62" width="158" height="1" uuid="5dee1624-fba6-4b28-a7c4-2b42562a97fd"/>
 				<graphicElement>
@@ -357,6 +355,7 @@ order by e.dt_start,
 				</textElement>
 				<textFieldExpression><![CDATA[$F{approve_user_name}]]></textFieldExpression>
 			</textField>
+			
 			<textField pattern="dd MMM yyyy, HH:mm" isBlankWhenNull="true">
 				<reportElement x="179" y="90" width="188" height="15" uuid="e1b2c3d4-f5a6-7b8c-9d0e-1f2a3b4c5d6e"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
@@ -364,6 +363,18 @@ order by e.dt_start,
 				</textElement>
 				<textFieldExpression><![CDATA[$F{approved_at}]]></textFieldExpression>
 			</textField>
+			
+			<image scaleImage="RetainShape" hAlign="Center" vAlign="Bottom" isUsingCache="true" onErrorType="Blank">
+				<reportElement x="192" y="22" width="158" height="40" uuid="1a2b3c4d-5e6f-7a8b-9c0d-1e2f3a4b5c6d">
+					<printWhenExpression><![CDATA[$F{status_id} != null && ($F{status_id}.equals("A") || $F{status_id}.equals("R") || $F{status_id}.equals("P") )]]></printWhenExpression>
+				</reportElement>
+				<imageExpression><![CDATA[$P{basePath} + "/upload/user/user_signature_" + String.valueOf($F{file_approve_user}) + ".png"]]></imageExpression>
+			</image>
+			
+			<rectangle>
+				<reportElement mode="Transparent" x="179" y="0" width="188" height="110" uuid="4bd55860-8ceb-4bc7-8bbd-0cbf3d5851f4"/>
+			</rectangle>
+
 
 			<staticText>
 				<reportElement x="367" y="0" width="177" height="30" uuid="3a75f363-95e5-4784-a6de-d0507575f689"/>
@@ -373,37 +384,43 @@ order by e.dt_start,
 				<text><![CDATA[ผู้รับเงิน]]></text>
 			</staticText>
 			
-			<textField>
-				<reportElement x="367" y="68" width="188" height="20" uuid="c4982620-da74-42a2-bdda-937deea2bb92"/>
+			<line>
+				<reportElement x="383" y="62" width="158" height="1" uuid="33adb0ba-87b6-4905-9452-7be8876ad9a1"/>
+				<graphicElement>
+					<pen lineStyle="Dotted"/>
+				</graphicElement>
+			</line>
+			
+			<textField isBlankWhenNull="true">
+				<reportElement x="367" y="68" width="188" height="20" uuid="c4982620-da74-42a2-bdda-937deea2bb92">
+					<printWhenExpression><![CDATA[$F{status_id} != null && $F{status_id}.equals("P")]]></printWhenExpression>
+				</reportElement>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font size="12" pdfFontName="WareeSans.ttf" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{user_name}]]></textFieldExpression>
 			</textField>
+			
 			<textField pattern="dd MMM yyyy, HH:mm" isBlankWhenNull="true">
-				<reportElement x="367" y="90" width="188" height="15" uuid="a1b2c3d4-e5f6-7a8b-9c0d-1e2f3a4b5c6d"/>
+				<reportElement x="367" y="90" width="188" height="15" uuid="a1b2c3d4-e5f6-7a8b-9c0d-1e2f3a4b5c6d">
+					<printWhenExpression><![CDATA[$F{status_id} != null && $F{status_id}.equals("P")]]></printWhenExpression>
+				</reportElement>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font size="8" pdfFontName="WareeSans.ttf" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{eg_time_create}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{received_at}]]></textFieldExpression>
 			</textField>
-			
-			<image scaleImage="RetainShape" hAlign="Center" vAlign="Bottom" isUsingCache="true" onErrorType="Blank">
-				<reportElement x="35" y="22" width="130" height="40" uuid="e1a8b9c2-d3e4-4f5a-b6c7-d8e9f0a1b2c3"/>
-				<imageExpression><![CDATA[$P{basePath} + "/upload/user/user_signature_" +  String.valueOf($F{file_user}) + ".png"]]></imageExpression>
-			</image>
-			
-			<image scaleImage="RetainShape" hAlign="Center" vAlign="Bottom" isUsingCache="true" onErrorType="Blank">
-				<reportElement x="192" y="22" width="158" height="40" uuid="1a2b3c4d-5e6f-7a8b-9c0d-1e2f3a4b5c6d">
-					<printWhenExpression><![CDATA[$F{status_id} != null && ($F{status_id}.equals("A") || $F{status_id}.equals("R"))]]></printWhenExpression>
-				</reportElement>
-				<imageExpression><![CDATA[$P{basePath} + "/upload/user/user_signature_" + String.valueOf($F{file_approve_user}) + ".png"]]></imageExpression>
-			</image>
 
 			<image scaleImage="RetainShape" hAlign="Center" vAlign="Bottom" isUsingCache="true" onErrorType="Blank">
-				<reportElement x="383" y="23" width="158" height="40" uuid="f4a1b2c3-d3e4-4f5a-b6c7-d8e9f0a1b2c4"/>
+				<reportElement x="383" y="23" width="158" height="40" uuid="f4a1b2c3-d3e4-4f5a-b6c7-d8e9f0a1b2c4">
+					<printWhenExpression><![CDATA[$F{status_id} != null && $F{status_id}.equals("P")]]></printWhenExpression>
+				</reportElement>
 				<imageExpression><![CDATA[$P{basePath} + "/upload/user/user_signature_" +  String.valueOf($F{file_user}) + ".png"]]></imageExpression>
 			</image>
+			<rectangle>
+				<reportElement mode="Transparent" x="367" y="0" width="188" height="110" uuid="4326047f-fe5c-49e1-a56e-be9dea80785a"/>
+			</rectangle>
+
 		</band>
 	</columnFooter>
 	<pageFooter>
@@ -443,23 +460,35 @@ order by e.dt_start,
 	</pageFooter>
 	<summary>
 		<band height="40" splitType="Stretch">
+			<line>
+				<reportElement x="0" y="0" width="555" height="1" uuid="277ba79b-b0a0-4d1f-8887-81035269488c"/>
+			</line>
+
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="11" y="2" width="260" height="35" uuid="5fa2b3c4-d5e6-4a8b-9c0d-1e2f3a4b5c6d">
+					<printWhenExpression><![CDATA[$F{description_appr} != null && !$F{description_appr}.isEmpty()]]></printWhenExpression>
+				</reportElement>
+				<textElement verticalAlignment="Middle">
+					<font fontName="SansSerif" size="10" isItalic="true" pdfFontName="WareeSans.ttf" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["หมายเหตุผู้อนุมัติ: " + $F{description_appr}]]></textFieldExpression>
+			</textField>
+
 			<staticText>
-				<reportElement x="283" y="0" width="152" height="36" uuid="19b76863-b2c4-4048-89b8-87200f1815e1"/>
+				<reportElement x="283" y="2" width="152" height="36" uuid="19b76863-b2c4-4048-89b8-87200f1815e1"/>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font size="14" isBold="true" pdfFontName="WareeSans.ttf" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
 				</textElement>
 				<text><![CDATA[TOTAL EXPENSE]]></text>
 			</staticText>
+
 			<textField pattern="#,##0.00">
-				<reportElement x="435" y="0" width="106" height="35" forecolor="#0000CC" uuid="7eb28b58-759c-4844-bc1d-de86b1ea6ad2"/>
+				<reportElement x="435" y="2" width="106" height="35" forecolor="#0000CC" uuid="7eb28b58-759c-4844-bc1d-de86b1ea6ad2"/>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font size="14" isBold="true" pdfFontName="WareeSans.ttf" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$V{total_sum}]]></textFieldExpression>
 			</textField>
-			<line>
-				<reportElement x="0" y="-2" width="555" height="1" uuid="277ba79b-b0a0-4d1f-8887-81035269488c"/>
-			</line>
 		</band>
 	</summary>
 </jasperReport>

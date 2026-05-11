@@ -68,7 +68,6 @@
 		<div class="app-main flex-column flex-row-fluid" id="kt_app_main">
 			<div class="d-flex flex-column flex-column-fluid">
 
-				<!-- Toolbar -->
 				<div id="kt_app_toolbar" class="app-toolbar py-3 py-lg-6">
 					<div id="kt_app_toolbar_container"
 						class="app-container container-fluid d-flex align-items-center">
@@ -88,7 +87,6 @@
 					</div>
 				</div>
 
-				<!-- Content -->
 				<div id="kt_app_content" class="app-content flex-column-fluid">
 					<div id="kt_app_content_container"
 						class="app-container container-fluid">
@@ -99,7 +97,6 @@
 							<input type="hidden" id="grandTotalInput" name="amount"
 								value="0.00" />
 
-							<!-- ===== Record travel expense form ===== -->
 							<div class="card card-flush mb-7">
 								<div class="card-header">
 									<div class="card-title">
@@ -108,7 +105,6 @@
 								</div>
 
 								<div class="card-body">
-									<!-- Row 1 -->
 									<div class="row g-5 mb-5">
 										<%-- Request Date --%>
 										<div class="col-md-4">
@@ -166,7 +162,6 @@
 										</div>
 									</div>
 
-									<!-- Row 2 -->
 									<div class="row g-5 mb-5">
 										<%-- Day of departure --%>
 										<div class="col-md-4">
@@ -181,7 +176,7 @@
 													type="text"
 													class="form-control bg-transparent border-0 shadow-none p-0 fw-medium text-gray-900"
 													style="font-size: 1rem;" id="departureDate"
-													placeholder="DD MMM YYYY" />
+													placeholder="DD MMM YYYY" required />
 											</div>
 										</div>
 
@@ -201,7 +196,6 @@
 										</div>
 									</div>
 
-									<!-- Row 3 -->
 									<div class="row g-5 mb-5">
 										<%-- Beginning --%>
 										<div class="col-md-3">
@@ -210,7 +204,7 @@
 												class="d-flex align-items-center border border-gray-300 rounded px-3 py-3">
 												<input type="text"
 													class="form-control bg-transparent border-0 shadow-none p-0 fw-medium text-gray-900"
-													style="font-size: 1rem;" name="beginning"
+													style="font-size: 1rem;" name="beginning" id="beginning"
 													placeholder="e.g. Head Office" value="${param.beginning}"
 													required />
 											</div>
@@ -237,7 +231,7 @@
 												<input type="text"
 													class="form-control bg-transparent border-0 shadow-none p-0 fw-medium text-gray-900"
 													style="font-size: 1rem;" name="destination"
-													placeholder="e.g. Customer site"
+													id="destination" placeholder="e.g. Customer site"
 													value="${param.destination}" required />
 											</div>
 										</div>
@@ -256,7 +250,6 @@
 										</div>
 									</div>
 
-									<!-- Row 4: Attach Files -->
 									<div class="row g-5">
 										<div class="col-12">
 											<div class="rounded">
@@ -282,7 +275,6 @@
 								</div>
 							</div>
 
-							<!-- ===== Expense Items ===== -->
 							<div class="card card-flush mb-7">
 								<div class="card-header">
 									<div class="card-title">
@@ -330,18 +322,18 @@
 									</div>
 
 									<div class="d-flex justify-content-end gap-3 mt-6">
-										<%-- ✅ เปลี่ยน status=P → status=Draft --%>
 										<a href="${ctx}/my_travel?status=Draft" class="btn btn-light">Cancel</a>
-										<button type="submit" class="btn btn-success">Save</button>
+
+										<%-- ✅ กำหนดปุ่ม Submit และใส่ disabled ไว้ตอนเริ่มต้น --%>
+										<button type="submit" id="btnSubmitSave"
+											class="btn btn-success" disabled>Save</button>
 									</div>
 								</div>
 							</div>
 
 						</form>
 
-						<!-- ===== Expense Modal ===== -->
-						<div class="modal fade" id="expenseModal" tabindex="-1"
-							aria-hidden="true">
+						<div class="modal fade" id="expenseModal" aria-hidden="true">
 							<div class="modal-dialog modal-dialog-scrollable modal-lg">
 								<div class="modal-content">
 
@@ -358,6 +350,7 @@
 										<div class="mb-5">
 											<label class="form-label fw-semibold required">Go by</label>
 											<select id="mGoBy" class="form-select" data-control="select2"
+												data-dropdown-parent="#expenseModal"
 												data-placeholder="Select go by" required>
 												<option value=""></option>
 												<c:forEach var="t" items="${expTravelTypeList}">
@@ -386,7 +379,7 @@
 													<div class="input-group">
 														<input id="mTotal" type="number" class="form-control"
 															style="text-align: left;" min="0" step="0.01"
-															placeholder="0.00" required /> <span
+															placeholder="0.00" required disabled="disabled" /> <span
 															class="input-group-text">บาท</span>
 													</div>
 												</div>
@@ -429,7 +422,6 @@
 			var CAR_PRIVATE_ID = "6";
 			var RATE_PER_KM = 7;
 
-			// ✅ icon ตาม extension ครอบคลุมทุก type
 			var ctx = "${ctx}";
 			function getTravelFileIcon(fileName) {
 				var ext = (fileName || '').split('.').pop().toLowerCase();
@@ -534,20 +526,28 @@
 				flatpickr(
 						depDisplayEl,
 						{
+							defaultDate : "today",
 							dateFormat : "d M Y",
 							allowInput : false,
 							onChange : function(selectedDates) {
 								if (depValEl)
 									depValEl.value = selectedDates.length > 0 ? toIsoDate(selectedDates[0])
 											: "";
+
+								// ✅ เพิ่มเติม (เช็ค Required Fields): อัปเดตสถานะปุ่มเมื่อเลือกวันที่
+								checkSubmitState();
 							},
-							onReady : function(_, __, fp) {
-								if (depValEl && depValEl.value) {
-									var p = depValEl.value.split("-");
-									if (p.length === 3)
-										fp.setDate(new Date(parseInt(p[0]),
-												parseInt(p[1]) - 1,
-												parseInt(p[2])), false);
+							onReady : function(selectedDates, dateStr, fp) {
+								if (depValEl) {
+									if (depValEl.value) {
+										var p = depValEl.value.split("-");
+										if (p.length === 3)
+											fp.setDate(new Date(parseInt(p[0]),
+													parseInt(p[1]) - 1,
+													parseInt(p[2])), false);
+									} else if (selectedDates.length > 0) {
+										depValEl.value = toIsoDate(selectedDates[0]);
+									}
 								}
 							}
 						});
@@ -562,7 +562,11 @@
 					noCalendar : true,
 					dateFormat : "H:i",
 					time_24hr : true,
-					allowInput : true
+					allowInput : true,
+					onChange : function() {
+						// ✅ เพิ่มเติม (เช็ค Required Fields): อัปเดตสถานะปุ่มเมื่อเลือกเวลา
+						checkSubmitState();
+					}
 				});
 			}
 			initTime("beginTime");
@@ -573,6 +577,59 @@
 			var grandTotalEl = document.getElementById("grandTotal");
 			var grandTotalInput = document.getElementById("grandTotalInput");
 			var btnModalSave = document.getElementById("btnModalSave");
+			var btnSubmitSave = document.getElementById("btnSubmitSave");
+
+			// ✅ เพิ่มเติม (เช็ค Required Fields): ฟังก์ชันตรวจสอบเงื่อนไขทั้งหมดก่อนเปิดปุ่ม Save
+			function checkSubmitState() {
+				if (!btnSubmitSave)
+					return;
+
+				// 1. เช็คว่ามี Expense อย่างน้อย 1 รายการหรือไม่
+				var rowCount = tbody.querySelectorAll("tr.expense-row").length;
+				var hasExpenseRows = (rowCount > 0);
+
+				// 2. เช็คว่ากรอก Required Fields ครบหรือไม่
+				var valDeparture = document.getElementById("departureDate") ? document
+						.getElementById("departureDate").value.trim()
+						: "";
+				var valPurpose = document.getElementById("purposeOfJourney") ? document
+						.getElementById("purposeOfJourney").value.trim()
+						: "";
+				var valBeginning = document.getElementById("beginning") ? document
+						.getElementById("beginning").value.trim()
+						: "";
+				var valBeginTime = document.getElementById("beginTime") ? document
+						.getElementById("beginTime").value.trim()
+						: "";
+				var valDestination = document.getElementById("destination") ? document
+						.getElementById("destination").value.trim()
+						: "";
+				var valDestTime = document.getElementById("destTime") ? document
+						.getElementById("destTime").value.trim()
+						: "";
+
+				var allRequiredFilled = (valDeparture !== ""
+						&& valPurpose !== "" && valBeginning !== ""
+						&& valBeginTime !== "" && valDestination !== "" && valDestTime !== "");
+
+				// ต้องผ่านทั้ง 2 เงื่อนไขถึงจะเปิดปุ่ม
+				if (hasExpenseRows && allRequiredFilled) {
+					btnSubmitSave.removeAttribute("disabled");
+				} else {
+					btnSubmitSave.setAttribute("disabled", "disabled");
+				}
+			}
+
+			// ✅ เพิ่มเติม (เช็ค Required Fields): ผูก Event Listener ดักจับการพิมพ์/การเปลี่ยนค่าในช่อง Required
+			var requiredInputIds = [ "departureDate", "purposeOfJourney",
+					"beginning", "beginTime", "destination", "destTime" ];
+			requiredInputIds.forEach(function(id) {
+				var el = document.getElementById(id);
+				if (el) {
+					el.addEventListener("input", checkSubmitState);
+					el.addEventListener("change", checkSubmitState);
+				}
+			});
 
 			function reindex() {
 				tbody.querySelectorAll("tr.expense-row").forEach(
@@ -611,13 +668,8 @@
 					row.remove();
 				reindex();
 				calcTotal();
-			}
 
-			function getActiveTotalEl() {
-				var group = document.getElementById("distanceGroup");
-				if (group && group.style.display !== "none")
-					return document.getElementById("mTotal");
-				return document.getElementById("mTotalNormal");
+				checkSubmitState(); // อัปเดตปุ่มตอนลบรายการ
 			}
 
 			function toggleDistanceField(goByVal) {
@@ -842,6 +894,9 @@
 
 								reindex();
 								calcTotal();
+
+								checkSubmitState(); // อัปเดตปุ่มตอนเพิ่มรายการเสร็จ
+
 								bootstrap.Modal.getOrCreateInstance(modalEl)
 										.hide();
 							});
@@ -865,6 +920,9 @@
 			});
 
 			calcTotal();
+
+			// รันเช็คสถานะครั้งแรกตอนโหลดหน้าจอ
+			checkSubmitState();
 
 			var travelSelectedFiles = [];
 

@@ -212,12 +212,19 @@ public class TravelAction extends ActionSupport {
 				int toIdx = Math.min(offset + pageSize, total);
 
 				list = expenseDAO.findMyTravelDraftNoGroup(userId, dateFrom, dateTo, offset, pageSize);
+				
+				log.debug(dateFrom);
+				log.debug(dateTo);
+				log.debug(userId);
+				log.debug(list);
+				
 				enrichRows(list);
 
 				setAttrs(request, userListObj, userJSON, status, list, currentPage, pageSize, total, totalPages,
 						fromIdx, toIdx);
 
 				request.setAttribute("viewMode", "expense");
+		
 
 			} else {
 
@@ -412,7 +419,6 @@ public class TravelAction extends ActionSupport {
 			User onlineUser = (User) request.getSession().getAttribute("onlineUser");
 			if (onlineUser == null)
 				return ERROR;
-
 			String departureDate = request.getParameter("departureDate");
 			String userId = request.getParameter("userId");
 			String beginning = request.getParameter("beginning");
@@ -462,8 +468,10 @@ public class TravelAction extends ActionSupport {
 			e.setExpenseId(newExpenseId);
 			e.setExpenseGroupId(0L);
 			e.setExpTypeId("T");
+			
 			e.setDtStart(dtStart);
 			e.setDtEnd(dtEnd);
+			
 			e.setDtBy(dtBy);
 			e.setUserId(userId);
 			e.setFromLocation(beginning);
@@ -829,7 +837,6 @@ public class TravelAction extends ActionSupport {
 				}
 
 				request.setAttribute("requestAt", expenseGroup.getRequestedAt());
-				request.setAttribute("receiveAt", expenseGroup.getReceivedAt());
 
 				request.setAttribute("description_appr", expenseGroup.getDescription_appr());
 				request.setAttribute("statusActiveSafe", status);
@@ -971,7 +978,7 @@ public class TravelAction extends ActionSupport {
 			group.setRequestedAt(now);
 
 			group.setReceivedBy(onlineUser.getId());
-			group.setReceivedAt(now);
+			group.setReceivedAt(null);
 
 			group.setUserCreate(onlineUser.getId());
 			group.setUserUpdate(onlineUser.getId());
@@ -1253,7 +1260,6 @@ public class TravelAction extends ActionSupport {
 				}
 
 				request.setAttribute("requestAt", expenseGroup.getRequestedAt());
-				request.setAttribute("receiveAt", expenseGroup.getReceivedAt());
 
 				request.setAttribute("expense_group_create_date", expenseGroup.getTimeCreate());
 				request.setAttribute("description_appr", expenseGroup.getDescription_appr());
@@ -1357,7 +1363,6 @@ public class TravelAction extends ActionSupport {
 			HttpServletRequest request = ServletActionContext.getRequest();
 			String expenseGroupIdStr = request.getParameter("expense_group_id");
 			String descriptionAppr = request.getParameter("description_appr");
-			log.debug(descriptionAppr);
 			User onlineUser = (User) request.getSession().getAttribute("onlineUser");
 			if (onlineUser == null)
 				return ERROR;
@@ -1370,8 +1375,50 @@ public class TravelAction extends ActionSupport {
 			expense.setAppr_user_id(onlineUser.getId());
 			expense.setApproved_at(now);
 			expense.setDescription_appr(descriptionAppr == null || descriptionAppr.isEmpty() ? null : descriptionAppr);
-			expense.setTimeUpdate(now);
 
+			expenseGroupDAO.update(expense);
+
+			return SUCCESS;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ERROR;
+		}
+	}
+	
+	// ===================== Travel Paid =====================
+	public String travelPaid() {
+		try {
+
+			HttpServletRequest request = ServletActionContext.getRequest();
+			String expenseGroupIdStr = request.getParameter("expense_group_id");
+			String descriptionAppr = request.getParameter("description_appr");
+			User onlineUser = (User) request.getSession().getAttribute("onlineUser");
+			if (onlineUser == null)
+				return ERROR;
+
+			Long expenseGroupId = Long.parseLong(expenseGroupIdStr);
+			ExpenseGroup expense = expenseGroupDAO.findById(expenseGroupId);
+
+			Timestamp now = DateUtil.getCurrentTime();
+			Calendar cal = Calendar.getInstance();
+			cal.setTime(now);
+			
+		
+			if (expense.getStatusId().equals("W")) {
+				// Waiting
+				expense.setApproved_at(now);
+				expense.setDescription_appr(descriptionAppr == null || descriptionAppr.isEmpty() ? null : descriptionAppr);
+				expense.setAppr_user_id(onlineUser.getId());
+			}
+			
+			expense.setStatusId("P");
+			expense.setReceivedAt(now);
+	
+			short currentMonth = (short) (cal.get(Calendar.MONTH) + 1);
+			Integer currentYear = cal.get(Calendar.YEAR);
+
+			expense.setPaidMonth(currentMonth);
+			expense.setPaidYear(currentYear);
 			expenseGroupDAO.update(expense);
 
 			return SUCCESS;
@@ -1400,7 +1447,6 @@ public class TravelAction extends ActionSupport {
 			expense.setAppr_user_id(onlineUser.getId());
 			expense.setApproved_at(now);
 			expense.setDescription_appr(descriptionAppr == null || descriptionAppr.isEmpty() ? null : descriptionAppr);
-			expense.setTimeUpdate(now);
 
 			expenseGroupDAO.update(expense);
 

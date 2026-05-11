@@ -225,6 +225,14 @@
 										</c:if>
 									</c:url>
 
+									<c:url var="tabP" value="/my_travel">
+										<c:param name="status" value="P" />
+										<c:param name="page" value="1" />
+										<c:if test="${not empty param.dateRange}">
+											<c:param name="dateRange" value="${param.dateRange}" />
+										</c:if>
+									</c:url>
+
 									<c:url var="tabR" value="/my_travel">
 										<c:param name="status" value="R" />
 										<c:param name="page" value="1" />
@@ -247,7 +255,10 @@
 											href="${tabC}" data-status="C">Cancel</a></li>
 										<li class="nav-item"><a
 											class="nav-link text-active-primary ${statusActiveSafe=='A' ? 'active' : ''}"
-											href="${tabA}" data-status="A">Complete</a></li>
+											href="${tabA}" data-status="A">Approve</a></li>
+										<li class="nav-item"><a
+											class="nav-link text-active-primary ${statusActiveSafe=='P' ? 'active' : ''}"
+											href="${tabP}" data-status="P">Paid</a></li>
 										<li class="nav-item"><a
 											class="nav-link text-active-primary ${statusActiveSafe=='R' ? 'active' : ''}"
 											href="${tabR}" data-status="R">Reject</a></li>
@@ -344,7 +355,7 @@
 																<td><c:choose>
 																		<c:when test="${not empty row.dt_start}">
 																			<fmt:formatDate value="${row.dt_start}"
-																				pattern="d MMM yyyy" />
+																				pattern="d MMM yyyy, H:mm" />
 																		</c:when>
 																		<c:otherwise>-</c:otherwise>
 																	</c:choose></td>
@@ -396,11 +407,11 @@
 																<td><c:choose>
 																		<c:when test="${not empty row.requested_at}">
 																			<fmt:formatDate value="${row.requested_at}"
-																				pattern="d MMM yyyy" />
+																				pattern="d MMM yyyy, H:mm" />
 																		</c:when>
 																		<c:otherwise>
 																			<fmt:formatDate value="${row.time_create}"
-																				pattern="d MMM yyyy" />
+																				pattern="d MMM yyyy, H:mm" />
 																		</c:otherwise>
 																	</c:choose></td>
 																<td>${not empty row.user_name ? row.user_name : '-'}</td>
@@ -448,7 +459,7 @@
 																<td><c:choose>
 																		<c:when test="${not empty row.requested_at}">
 																			<fmt:formatDate value="${row.requested_at}"
-																				pattern="d MMM yyyy" />
+																				pattern="d MMM yyyy, H:mm" />
 																		</c:when>
 																		<c:otherwise>-</c:otherwise>
 																	</c:choose></td>
@@ -460,7 +471,10 @@
 																		value="${row.total_amount}" pattern="#,##0.00" /></td>
 																<td class="text-center"><c:choose>
 																		<c:when test="${row.status_id == 'A'}">
-																			<span class="badge badge-success fs-6 px-4 py-2">Completed</span>
+																			<span class="badge badge-success fs-6 px-4 py-2">Approved</span>
+																		</c:when>
+																		<c:when test="${row.status_id == 'P'}">
+																			<span class="badge badge-info fs-6 px-4 py-2">Paid</span>
 																		</c:when>
 																		<c:when test="${row.status_id == 'C'}">
 																			<span class="badge badge-danger fs-6 px-4 py-2">Canceled</span>
@@ -581,8 +595,15 @@
 				<span class="md-expense-id">${row.expense_id}</span>
 				<%-- ✅ Draft ไม่มี status_id — ปล่อยว่าง --%>
 				<span class="md-status-id">${row.status_id}</span> <span
-					class="md-request-date"><fmt:formatDate
-						value="${row.time_create}" pattern="d MMM yyyy" /></span>
+					class="md-request-date"> <c:forEach var="u"
+						items="${userListObj}">
+						<c:if test="${u['id'] == row.user_id}">
+							<span class="md-user"> ${not empty u['employee_id'] ? u['employee_id'] : ''}
+								- ${not empty u['name_en'] ? u['name_en'] : ''} - ${not empty u['name'] ? u['name'] : ''}
+								- ${not empty u['department'] ? u['department'] : ''}, </span>
+						</c:if>
+					</c:forEach> <fmt:formatDate value="${row.time_create}"
+						pattern="d MMM yyyy H:mm" /></span>
 				<c:forEach var="u" items="${userListObj}">
 					<c:if test="${u['id'] == row.user_id}">
 						<span class="md-user"> ${not empty u['employee_id'] ? u['employee_id'] : ''}
@@ -1026,7 +1047,7 @@
 	    }
 
 	    set('m_expenseId',   '#' + txt('md-expense-id'));
-	    set('m_requestDate', 'Request date: ' + txt('md-request-date'));
+	    set('m_requestDate', 'Request by: ' + txt('md-request-date'));
 	    set('m_user',        txt('md-user'));
 	    set('m_date',        txt('md-date'));
 	    set('m_purpose',     txt('md-purpose'));
@@ -1039,7 +1060,8 @@
 	    const statusMap = {
 	        'W': { label: 'Waiting',  cls: 'badge-warning text-dark' },
 	        'C': { label: 'Cancel', cls: 'badge-danger'            },
-	        'A': { label: 'Complete', cls: 'badge-success'           },
+	        'A': { label: 'Approve', cls: 'badge-success'           },
+	        'P': { label: 'Paid', cls: 'badge-info'           },
 	        'R': { label: 'Reject', cls: 'badge-danger'            }
 	    };
 	    const sid   = txt('md-status-id');
