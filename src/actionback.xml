@@ -1239,6 +1239,9 @@
 			</result>
 			<result name="error">/index.jsp</result>
 		</action>
+		
+		<action name="checkDuplicateForwardTo" class="com.cubesofttech.action.PageUriAction" method="checkDuplicateForwardTo">
+		</action>
 
 		<action name="checkDuplicatePositionId"
 			class="com.cubesofttech.action.PositionAction"
