@@ -1510,6 +1510,10 @@
 		<action name="summaryWorkingDayData"
 			class="com.cubesofttech.action.ReportAction" method="workingDayData">
 		</action>
+		
+		<action name="borrowReport"
+			class="com.cubesofttech.action.ReportAction" method="borrowReport">
+		</action>
 
 		<!-- Article -->
 		<action name="article_feed"

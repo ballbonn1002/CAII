@@ -840,13 +840,34 @@ th.sort:hover {
 			
 			// Actions
 			var actionsCell = $('<td>').addClass('text-end');
-			actionsCell.html(
+			/* actionsCell.html(
 				    '<a href="javascript:void(0);" class="btn btn-icon btn-sm btn-light-info fs-3 btn-view-borrow" data-borrow-id="' + (row.borrow_id || '') + '">' +
 				    '<i class="ki-duotone ki-document fs-1"><span class="path1"></span><span class="path2"></span></i></a> ' +
 				    '<a href="${pageContext.request.contextPath}/borrow_edit?id=' + (row.borrow_id || '') + '" data-route="borrow_edit" class="btn btn-icon btn-sm btn-light-primary fs-3">' +
 				    '<i class="ki-duotone ki-pencil fs-1"><span class="path1"></span><span class="path2"></span></i></a> ' +
 				    '<button type="button" class="btn btn-icon btn-sm btn-light-warning btn-borrow-detail fs-3" title="Borrow Detail">' +
-				    '<i class="ki-duotone ki-file-left fs-1"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span></i></button>'
+				    '<i class="ki-duotone ki-file-left fs-1"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span></i></button>'+
+				    '<a href="javascript:;" id="exportPdfBtn" class="btn btn-icon btn-sm btn-secondary d-inline-flex align-items-center justify-content-center">' +
+				    '<i class="ki-duotone ki-printer fs-1"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span><span class="path5"></span></i></i></a>'
+				); */
+			
+			actionsCell.html(
+				    '<div class="d-flex justify-content-end gap-2 flex-nowrap">' +
+
+				    '<a href="javascript:void(0);" class="btn btn-icon btn-sm btn-light-info fs-3 btn-view-borrow" data-borrow-id="' + (row.borrow_id || '') + '">' +
+				    '<i class="ki-duotone ki-document fs-1"><span class="path1"></span><span class="path2"></span></i></a>' +
+
+				    '<a href="${pageContext.request.contextPath}/borrow_edit?id=' + (row.borrow_id || '') + '" data-route="borrow_edit" class="btn btn-icon btn-sm btn-light-primary fs-3">' +
+				    '<i class="ki-duotone ki-pencil fs-1"><span class="path1"></span><span class="path2"></span></i></a>' +
+
+				    '<button type="button" class="btn btn-icon btn-sm btn-light-warning btn-borrow-detail fs-3" title="Borrow Detail">' +
+				    '<i class="ki-duotone ki-file-left fs-1"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span></i></button>' +
+
+				    '<a href="${pageContext.request.contextPath}/borrowReport?borrowId=' + (row.borrow_id || '') + '" target="_blank" class="btn btn-icon btn-sm btn-secondary fs-3">' +
+				    '<i class="ki-duotone ki-printer fs-1"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span><span class="path5"></span>' +
+				    '</i></a>' +
+
+				    '</div>'
 				);
 			tr.append(actionsCell);
 			
@@ -1110,6 +1131,7 @@ th.sort:hover {
 		
 		  // สร้าง DataTable
 		  var table = $('#borrow_table').DataTable({
+			scrollX: true,
 		    pageLength: 10,
 		    lengthMenu: [10, 20, 50, 100],
 		    ordering: true,

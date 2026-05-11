@@ -5,13 +5,19 @@ import com.cubesofttech.dao.LeaveDAO;
 import com.cubesofttech.dao.UserDAO;
 import com.cubesofttech.dao.WorkLogDAO;
 import com.cubesofttech.model.User;
+import com.cubesofttech.util.ReportUtil;
 
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.Timestamp;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
+import javax.imageio.ImageIO;
+import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -28,6 +34,11 @@ public class ReportAction extends ActionSupport {
     Logger log = Logger.getLogger(getClass());
     HttpServletRequest request = ServletActionContext.getRequest();
     HttpServletResponse response = ServletActionContext.getResponse();
+    
+    public static final String LOGOPATH = "logoPath";
+	public static final String JASPERPATH = "/WEB-INF/classes/jasper";
+	public static final String IMAGEPATH = "/images";
+
 
     private User onlineUser = (User) request.getSession().getAttribute("onlineUser");
 
@@ -639,4 +650,23 @@ public class ReportAction extends ActionSupport {
                     + "}";
         }
     }
+    
+    public String borrowReport() throws IOException {
+		ServletContext context = request.getServletContext();
+		String borrowId = request.getParameter("borrowId");
+		String jasperPath = context.getRealPath(JASPERPATH);
+		String imagePath = context.getRealPath(IMAGEPATH);
+		Map<String, Object> reportParameter = new HashMap<>();
+		File logo = new File(imagePath + "/logo_cubesofttech.png");
+		BufferedImage logoimage = ImageIO.read(logo);
+		reportParameter.put(LOGOPATH, logoimage);
+		reportParameter.put("borrowId", borrowId);
+		try {
+			ReportUtil.printReportToBrowsePdf(jasperPath + "/", "borrowReport_new", "borrowReport.pdf", reportParameter,
+					request, response);
+		} catch (Exception e) {
+			log.debug(e);
+		}
+		return null;
+	}
 }
