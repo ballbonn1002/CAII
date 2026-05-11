@@ -26,6 +26,8 @@ public interface PageUriDAO {
 
 	void deleteByPageUrlIdAndForwardTo(String pageUrlId, String forwardTo);
 
+	PageUri findByForwardTo(String forwardTo) throws Exception;
 	
+	void changePageUriId(String oldId, String newId) throws Exception;
 	
 }

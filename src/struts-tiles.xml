@@ -360,6 +360,25 @@
 			value="/pages-back/position/position_list.jsp" />
 	</definition>
 
+	<!-- PAGE URI -->
+	<definition name="pageUriList" extends="baseLayout">
+		<put-attribute name="title" value="Page URI List" />
+		<put-attribute name="body"
+			value="/pages-back/page_uri/page_uri_list.jsp" />
+	</definition>
+
+	<definition name="pageUriAdd" extends="baseLayout">
+		<put-attribute name="title" value="New Page URI" />
+		<put-attribute name="body"
+			value="/pages-back/page_uri/page_uri_add.jsp" />
+	</definition>
+
+	<definition name="pageUriEdit" extends="baseLayout">
+		<put-attribute name="title" value="Edit Page URI" />
+		<put-attribute name="body"
+			value="/pages-back/page_uri/page_uri_edit.jsp" />
+	</definition>
+
 	<definition name="positionAdd" extends="baseLayout">
 		<put-attribute name="title" value="Add Position" />
 		<put-attribute name="body"

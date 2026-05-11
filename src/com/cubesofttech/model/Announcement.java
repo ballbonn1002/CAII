@@ -44,6 +44,10 @@ public class Announcement implements Serializable {
 	private java.sql.Timestamp timeUpdate;
 	@Column(name = "readcount")
 	private Integer readcount;
+	@Column(name = "viewer_logs")
+	private String viewerLogs;
+	@Column(name = "unique_readcount")
+	private Integer uniqueReadcount;
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "file_id", referencedColumnName = "file_id", insertable = false, updatable = false)
     private FileUpload fileUpload;
@@ -133,5 +137,17 @@ public class Announcement implements Serializable {
 	}
 	public void setReadcount(Integer readcount) {
 		this.readcount = readcount;
+	}
+	public String getViewerLogs() {
+		return viewerLogs;
+	}
+	public void setViewerLogs(String viewerLogs) {
+		this.viewerLogs = viewerLogs;
+	}
+	public Integer getUniqueReadcount() {
+		return uniqueReadcount;
+	}
+	public void setUniqueReadcount(Integer uniqueReadcount) {
+		this.uniqueReadcount = uniqueReadcount;
 	}
 }

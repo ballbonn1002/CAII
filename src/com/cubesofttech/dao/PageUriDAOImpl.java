@@ -143,4 +143,36 @@ public class PageUriDAOImpl implements PageUriDAO {
 		.executeUpdate();
 	}
 	
+	@Override
+	public PageUri findByForwardTo(String forwardTo) throws Exception {
+	    Session session = this.sessionFactory.getCurrentSession();
+	    PageUri item = null;
+	    try {
+	        String sql = "SELECT * FROM page_uri WHERE forward_to = :forwardTo LIMIT 1";
+	        SQLQuery query = session.createSQLQuery(sql);
+	        query.addEntity(PageUri.class);
+	        query.setParameter("forwardTo", forwardTo);
+	        item = (PageUri) query.uniqueResult();
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	    }
+	    return item;
+	}
+	
+	@Override
+	public void changePageUriId(String oldId, String newId) throws Exception {
+		Session session = this.sessionFactory.getCurrentSession();
+		try {
+			String sql = "UPDATE page_uri SET page_uri_id = :newId WHERE page_uri_id = :oldId";
+			SQLQuery query = session.createSQLQuery(sql);
+			query.setParameter("newId", newId);
+			query.setParameter("oldId", oldId);
+			query.executeUpdate();
+			session.flush();
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw e;
+		}
+	}
+	
 }

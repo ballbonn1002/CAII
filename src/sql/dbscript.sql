@@ -207,3 +207,24 @@ INSERT INTO authorized_object (authorized_object_id, name, description, active, 
 VALUES ('helpsupport.view', 'helpsupport.view', 'เมนู Help & Support', '1', '1');
 INSERT INTO authorized_object (authorized_object_id, name, description, active, authorized_object_group_id) 
 VALUES ('helpsupport.manage', 'helpsupport.manage', 'จัดการ Help & Support (Admin)', '1', '1');
+
+-- PROD 6 May 2026
+
+-- 07/05/2026 boom(Intern): modify Help & Support table for Thai Language support -- 
+-- แปลง Character Set ของตาราง support_menu
+ALTER TABLE support_menu 
+CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- แปลง Character Set ของตาราง support
+ALTER TABLE support 
+CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- แปลง Character Set ของตาราง support_detail
+ALTER TABLE support_detail 
+CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+
+-- 08/05/2026 boom(Intern): Modify 'announcement' table for viewer logs --
+ALTER TABLE announcement 
+ADD COLUMN viewer_logs LONGTEXT NULL,
+ADD COLUMN unique_readcount INT DEFAULT 0;

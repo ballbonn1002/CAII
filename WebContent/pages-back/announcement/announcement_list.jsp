@@ -343,8 +343,8 @@
         isAdmin = true;
     </perm:permission>
 
-    var start = moment().subtract(29, "days");
-    var end = moment();
+    var start = moment().startOf('year');
+    var end = moment().endOf('year');
     var searchTimer;
 
     
@@ -353,9 +353,6 @@
     }
 
     function getEffectiveEndDate(pickerEndDate) {
-        if (isAdmin) {
-            return moment().add(30, 'days').format('YYYY-MM-DD');
-        }
         return pickerEndDate.format('YYYY-MM-DD');
     }
 
@@ -435,7 +432,9 @@
                 'Last 7 Days' : [ moment().subtract(6, 'days'), moment() ],
                 'Last 30 Days' : [ moment().subtract(29, 'days'), moment() ],
                 'This Month' : [ moment().startOf('month'), moment().endOf('month') ],
-                'Last Month' : [ moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month') ]
+                'Last Month' : [ moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month') ],
+                'This Year' :  [ moment().startOf('year'), moment().endOf('year') ],
+                'Last Year' :  [ moment().subtract(1, 'year').startOf('year'), moment().subtract(1, 'year').endOf('year') ]
             }
         }, cb);
 

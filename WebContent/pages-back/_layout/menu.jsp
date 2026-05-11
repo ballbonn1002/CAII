@@ -436,7 +436,7 @@ String targetURL = Constant.getWebContext2() + "/authorization?token=" + token;
 						<!--begin:Menu item-->
 						<div class="menu-item">
 							<!--begin:Menu link-->
-							<a class="menu-link" href="leave_type_list"> <span
+							<a class="menu-link" href="leave_type_list" data-route="leave_type_list"> <span
 								class="menu-icon"> <i
 									class="ki-duotone ki-monitor-mobile fs-1"> <span
 										class="path1"></span> <span class="path2"></span>
@@ -505,12 +505,15 @@ String targetURL = Constant.getWebContext2() + "/authorization?token=" + token;
 					<!--end:Menu item-->
 					<!--begin:Menu item-->
 					<div class="menu-item">
-						<a class="menu-link" href="/article_feed" data-route="#"> <span
+						<a class="menu-link" href="article_feed" data-route="article_feed"> <span
 							class="menu-icon"> <i class="ki-duotone ki-book-open fs-1">
 									<span class="path1"></span> <span class="path2"></span> <span
 									class="path3"></span> <span class="path4"></span>
 							</i>
-						</span> <span class="menu-title">Article</span>
+						</span> <span class="menu-title">Article</span> <i
+							class="ki-duotone ki-check-circle fs-3 text-success"> <span
+								class="path1"></span><span class="path2"></span>
+						</i>
 						</a>
 					</div>
 
@@ -518,11 +521,14 @@ String targetURL = Constant.getWebContext2() + "/authorization?token=" + token;
 
 					<!--begin:Menu item-->
 					<div class="menu-item">
-						<a class="menu-link" href="/page_uri_list" data-route="#"> <span
+						<a class="menu-link" href="page_uri_list" data-route="page_uri_list"> <span
 							class="menu-icon"> <i class="ki-duotone ki-setting-2 fs-1">
 									<span class="path1"></span> <span class="path2"></span>
 							</i>
-						</span> <span class="menu-title">Page URL</span>
+						</span> <span class="menu-title">Page URL</span> <i
+							class="ki-duotone ki-check-circle fs-3 text-success"> <span
+								class="path1"></span><span class="path2"></span>
+						</i>
 						</a>
 					</div>
 
