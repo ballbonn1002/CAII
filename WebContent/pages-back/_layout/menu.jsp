@@ -162,7 +162,7 @@ String targetURL = Constant.getWebContext2() + "/authorization?token=" + token;
 					<!--My Leave-->
 
 					<!-- TimeSheet -->
-
+					<perm:permission object="timesheet.edit">
 					<div class="menu-item">
 						<a class="menu-link" href="timeSheet" data-route="time_sheet"><span
 							class="menu-icon "> <i
@@ -176,6 +176,7 @@ String targetURL = Constant.getWebContext2() + "/authorization?token=" + token;
 								class="path1"></span><span class="path2"></span>
 						</i> </a>
 					</div>
+					</perm:permission>
 					<!--TimeSheet -->
 
 					<!--begin:Menu item-->
