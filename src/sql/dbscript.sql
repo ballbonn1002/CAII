@@ -228,3 +228,7 @@ CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 ALTER TABLE announcement 
 ADD COLUMN viewer_logs LONGTEXT NULL,
 ADD COLUMN unique_readcount INT DEFAULT 0;
+
+-- PROD 12 MAY 2023
+
+
