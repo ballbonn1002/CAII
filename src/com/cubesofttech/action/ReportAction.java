@@ -662,7 +662,7 @@ public class ReportAction extends ActionSupport {
 		reportParameter.put(LOGOPATH, logoimage);
 		reportParameter.put("borrowId", borrowId);
 		try {
-			ReportUtil.printReportToBrowsePdf(jasperPath + "/", "borrowReport_new", "borrowReport.pdf", reportParameter,
+			ReportUtil.printReportToBrowsePdf(jasperPath + "/", "borrowReport", "borrowReport.pdf", reportParameter,
 					request, response);
 		} catch (Exception e) {
 			log.debug(e);
