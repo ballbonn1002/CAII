@@ -854,16 +854,16 @@ th.sort:hover {
 			actionsCell.html(
 				    '<div class="d-flex justify-content-end gap-2 flex-nowrap">' +
 
-				    '<a href="javascript:void(0);" class="btn btn-icon btn-sm btn-light-info fs-3 btn-view-borrow" data-borrow-id="' + (row.borrow_id || '') + '">' +
+				    '<a href="javascript:void(0);" class="btn btn-icon btn-sm btn-light-info fs-3 btn-view-borrow" data-borrow-id="' + (row.borrow_id || '') + '" data-bs-toggle="popover" data-bs-placement="bottom" title="Equipment Detail">' +
 				    '<i class="ki-duotone ki-document fs-1"><span class="path1"></span><span class="path2"></span></i></a>' +
 
-				    '<a href="${pageContext.request.contextPath}/borrow_edit?id=' + (row.borrow_id || '') + '" data-route="borrow_edit" class="btn btn-icon btn-sm btn-light-primary fs-3">' +
+				    '<a href="${pageContext.request.contextPath}/borrow_edit?id=' + (row.borrow_id || '') + '" data-route="borrow_edit" class="btn btn-icon btn-sm btn-light-primary fs-3" data-bs-toggle="popover" data-bs-placement="bottom" title="Edit Borrow Detail">' +
 				    '<i class="ki-duotone ki-pencil fs-1"><span class="path1"></span><span class="path2"></span></i></a>' +
 
-				    '<button type="button" class="btn btn-icon btn-sm btn-light-warning btn-borrow-detail fs-3" title="Borrow Detail">' +
+				    '<button type="button" class="btn btn-icon btn-sm btn-light-warning btn-borrow-detail fs-3"  data-bs-toggle="popover" data-bs-placement="bottom" title="Borrow Detail">' +
 				    '<i class="ki-duotone ki-file-left fs-1"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span></i></button>' +
 
-				    '<a href="${pageContext.request.contextPath}/borrowReport?borrowId=' + (row.borrow_id || '') + '" target="_blank" class="btn btn-icon btn-sm btn-secondary fs-3">' +
+				    '<a href="${pageContext.request.contextPath}/borrowReport?borrowId=' + (row.borrow_id || '') + '" target="_blank" class="btn btn-icon btn-sm btn-light-success fs-3" data-bs-toggle="popover" data-bs-placement="bottom" title="Borrow Report">' +
 				    '<i class="ki-duotone ki-printer fs-1"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span><span class="path5"></span>' +
 				    '</i></a>' +
 
@@ -874,7 +874,7 @@ th.sort:hover {
 			tbody.append(tr);
 		});
 	}
-
+	
 	function getTypeIcon(type) {
 		var typeStr = (type || '').toLowerCase();
 		switch(typeStr) {
@@ -924,7 +924,11 @@ th.sort:hover {
 				return 'ki-solid ki-dots-square';
 		}
 	}
+	const popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'));
 
+	popoverTriggerList.map(function (popoverTriggerEl) {
+	    return new bootstrap.Popover(popoverTriggerEl);
+	});
 	$(document).ready(function() {
 		const CTX = "${pageContext.request.contextPath}";
 
@@ -1131,7 +1135,6 @@ th.sort:hover {
 		
 		  // สร้าง DataTable
 		  var table = $('#borrow_table').DataTable({
-			scrollX: true,
 		    pageLength: 10,
 		    lengthMenu: [10, 20, 50, 100],
 		    ordering: true,
