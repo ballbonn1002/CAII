@@ -611,7 +611,7 @@
 			value="/pages-back/help_support/help_support_add.jsp" />
 	</definition>
 	<definition name="help_support_edit" extends="baseLayout">
-		<put-attribute name="title" value="Help Support Edit" />
+		<put-attribute name="title" value="Help Support Detail" />
 		<put-attribute name="body"
 			value="/pages-back/help_support/help_support_edit.jsp" />
 	</definition>

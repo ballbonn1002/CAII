@@ -4,14 +4,14 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="perm" uri="/WEB-INF/tlds/permission.tld"%>
-<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 
 <fmt:setLocale value="en_US" />
 
 <style>
 /* แสดงลูกศรเรียงลำดับเฉพาะคอลัมน์ที่อนุญาต */
-#kt_support_table thead th.sorting::before, 
-#kt_support_table thead th.sorting::after {
+#kt_support_table thead th.sorting::before, #kt_support_table thead th.sorting::after
+	{
 	opacity: 0.3 !important;
 }
 
@@ -62,7 +62,7 @@
 							Requests</h3>
 					</div>
 					<div class="card-body pt-0 px-10">
-						<form action="help_support" method="get">
+						<form id="filterForm" action="help_support" method="get">
 							<!-- Filter Row -->
 							<!-- Filter Row 1 -->
 							<div class="row g-5 mb-5 align-items-center">
@@ -76,12 +76,14 @@
 										<div class="flex-grow-1">
 											<select name="searchText" id="userSelect"
 												class="form-select rounded-start-0 border-start-0 h-45px"
-												data-control="select2" data-placeholder="Search" data-allow-clear="true">
+												data-control="select2" data-placeholder="Search"
+												data-allow-clear="true">
 												<option></option>
 												<option value="">All</option>
 												<optgroup label="Enable">
 													<c:forEach var="user" items="${userList}">
-														<c:if test="${user.enable == 1 && user.flag_search == '1'}">
+														<c:if
+															test="${user.enable == 1 && user.flag_search == '1'}">
 															<c:set var="displayText" value="" />
 															<!-- ถ้ามี employee_id -->
 															<c:if test="${not empty user.employee_id}">
@@ -89,19 +91,23 @@
 															</c:if>
 															<!-- name_en -->
 															<c:if test="${not empty user.name_en}">
-																<c:set var="displayText" value="${displayText}${not empty displayText ? ' - ' : ''}${user.name_en}" />
+																<c:set var="displayText"
+																	value="${displayText}${not empty displayText ? ' - ' : ''}${user.name_en}" />
 															</c:if>
 															<!-- name -->
 															<c:if test="${not empty user.name}">
-																<c:set var="displayText" value="${displayText}${not empty displayText ? ' - ' : ''}${user.name}" />
+																<c:set var="displayText"
+																	value="${displayText}${not empty displayText ? ' - ' : ''}${user.name}" />
 															</c:if>
-															<option value="${fn:trim(user.id)}" ${searchText eq fn:trim(user.id) ? 'selected' : '' }>${displayText}</option>
+															<option value="${fn:trim(user.id)}"
+																${searchText eq fn:trim(user.id) ? 'selected' : '' }>${displayText}</option>
 														</c:if>
 													</c:forEach>
 												</optgroup>
 												<optgroup label="Disable">
 													<c:forEach var="user" items="${userList}">
-														<c:if test="${user.enable == 0 && user.flag_search == '1'}">
+														<c:if
+															test="${user.enable == 0 && user.flag_search == '1'}">
 															<c:set var="displayText" value="" />
 															<!-- ถ้ามี employee_id -->
 															<c:if test="${not empty user.employee_id}">
@@ -109,13 +115,16 @@
 															</c:if>
 															<!-- name_en -->
 															<c:if test="${not empty user.name_en}">
-																<c:set var="displayText" value="${displayText}${not empty displayText ? ' - ' : ''}${user.name_en}" />
+																<c:set var="displayText"
+																	value="${displayText}${not empty displayText ? ' - ' : ''}${user.name_en}" />
 															</c:if>
 															<!-- name -->
 															<c:if test="${not empty user.name}">
-																<c:set var="displayText" value="${displayText}${not empty displayText ? ' - ' : ''}${user.name}" />
+																<c:set var="displayText"
+																	value="${displayText}${not empty displayText ? ' - ' : ''}${user.name}" />
 															</c:if>
-															<option value="${fn:trim(user.id)}" ${searchText eq fn:trim(user.id) ? 'selected' : '' }>${displayText}</option>
+															<option value="${fn:trim(user.id)}"
+																${searchText eq fn:trim(user.id) ? 'selected' : '' }>${displayText}</option>
 														</c:if>
 													</c:forEach>
 												</optgroup>
@@ -151,7 +160,9 @@
 											class="form-select form-select-solid text-start bg-white border border-gray-300"
 											type="button" data-bs-toggle="dropdown" aria-expanded="false"
 											data-bs-auto-close="outside">
-											<span id="statusLabel" class="text-gray-700 fw-semibold d-inline-block text-truncate" style="max-width: 150px;">All Status</span>
+											<span id="statusLabel"
+												class="text-gray-700 fw-semibold d-inline-block text-truncate"
+												style="max-width: 150px;">All Status</span>
 										</button>
 										<div class="dropdown-menu p-5 shadow rounded"
 											style="min-width: 300px;">
@@ -220,7 +231,9 @@
 											class="form-select form-select-solid text-start bg-white border border-gray-300"
 											type="button" data-bs-toggle="dropdown" aria-expanded="false"
 											data-bs-auto-close="outside">
-											<span id="categorizedLabel" class="text-gray-700 fw-semibold d-inline-block text-truncate" style="max-width: 150px;">All Type</span>
+											<span id="categorizedLabel"
+												class="text-gray-700 fw-semibold d-inline-block text-truncate"
+												style="max-width: 150px;">All Type</span>
 										</button>
 										<div class="dropdown-menu p-5 shadow rounded"
 											style="min-width: 300px;">
@@ -278,7 +291,9 @@
 											class="form-select form-select-solid text-start bg-white border border-gray-300"
 											type="button" data-bs-toggle="dropdown" aria-expanded="false"
 											data-bs-auto-close="outside">
-											<span id="menuLabel" class="text-gray-700 fw-semibold d-inline-block text-truncate" style="max-width: 150px;">All Menu</span>
+											<span id="menuLabel"
+												class="text-gray-700 fw-semibold d-inline-block text-truncate"
+												style="max-width: 150px;">All Menu</span>
 										</button>
 										<div class="dropdown-menu p-5 shadow rounded"
 											style="min-width: 300px;">
@@ -455,7 +470,8 @@
 													</span>
 												</s:else></td>
 											<td class="text-gray-800 align-middle">
-												<div class="text-truncate" style="max-width: 250px;" title="<s:property value='#request.messageMap[supportId]'/>">
+												<div class="text-truncate" style="max-width: 250px;"
+													title="<s:property value='#request.messageMap[supportId]'/>">
 													<s:property value="#request.messageMap[supportId]" />
 												</div>
 											</td>
@@ -471,7 +487,8 @@
 												<s:set var="sortOrder" value="3" />
 											</s:elseif>
 
-											<td class="align-middle" data-order="<s:property value='#sortOrder'/>"><s:if
+											<td class="align-middle"
+												data-order="<s:property value='#sortOrder'/>"><s:if
 													test="status == 'Pending' || status == 'New'">
 													<span
 														class="badge badge-light-warning fw-bold fs-7 px-2 py-2">New</span>
@@ -533,29 +550,74 @@
 	<script
 		src="${pageContext.request.contextPath}/assets/plugins/custom/datatables/datatables.bundle.js"></script>
 	<script>
-						$(document)
-							.ready(
-								function () {
-									// Initialize DataTable for pagination
-									var table = $('#kt_support_table')
-										.DataTable(
-											{
-												"pageLength": 10,
-												"lengthMenu": [
-													[10, 25, 50, -1],
-													[10, 25, 50, "All"]],
-												"language": {
-													"lengthMenu": "_MENU_",
-												},
-												"order": [[5, 'asc']], // เริ่มต้นให้เรียงลำดับตาม Status (New -> In Progress -> ...) เป็นอันดับแรก
-												"columnDefs": [{
-													"orderable": false,
-													"targets": [6] // ปิดการเรียงลำดับเฉพาะคอลัมน์ ACTION (index 6)
-												}
-												],
-												"dom": "<'row'<'col-sm-12 table-responsive'tr>>"
-													+ "<'row align-items-center mt-5'<'col-sm-12 col-md-5 d-flex align-items-center justify-content-center justify-content-md-start gap-3'l><'col-sm-12 col-md-7 d-flex align-items-center justify-content-center justify-content-md-end'p>>"
-											});
+// ประกาศตัวแปร table ไว้ด้านนอก
+var table;
+
+// สร้าง Function สำหรับ Initial DataTables
+function initDataTable() {
+    return $('#kt_support_table').DataTable({
+        "pageLength": 10,
+        "lengthMenu": [
+            [10, 25, 50, -1],
+            [10, 25, 50, "All"]
+        ],
+        "language": {
+            "lengthMenu": "_MENU_",
+        },
+        "order": [[5, 'asc']], // เรียงตาม Status เป็นอันดับแรก
+        "columnDefs": [{
+            "orderable": false,
+            "targets": [6] // ปิดเรียงลำดับคอลัมน์ ACTION
+        }],
+        "dom": "<'row'<'col-sm-12 table-responsive'tr>>" +
+               "<'row align-items-center mt-5'<'col-sm-12 col-md-5 d-flex align-items-center justify-content-center justify-content-md-start gap-3'l><'col-sm-12 col-md-7 d-flex align-items-center justify-content-center justify-content-md-end'p>>"
+    });
+}
+
+$(document).ready(function () {
+    // 1. เรียกใช้งานตอนโหลดหน้าครั้งแรก
+    table = initDataTable();
+
+    // 2. ดักจับการ Submit ของฟอร์ม (เมื่อกดปุ่ม Search)
+    $('#filterForm').on('submit', function (e) {
+        e.preventDefault(); // ป้องกันการเปลี่ยนหน้า
+
+        var form = $(this);
+        var submitBtn = form.find('button[type="submit"]');
+        
+        // ปิดปุ่มชั่วคราวกันกดรัวๆ
+        submitBtn.prop('disabled', true).text('Search');
+
+        $.ajax({
+            url: form.attr('action'),
+            type: form.attr('method'),
+            data: form.serialize(),
+            success: function (response) {
+                // แปลงผลลัพธ์เป็น HTML
+                var responseHtml = $($.parseHTML(response));
+
+                // ดึงเฉพาะข้อมูล <tbody> ของตารางมาอัปเดต
+                var newTableBody = responseHtml.find('#kt_support_table tbody').html();
+                
+                table.destroy(); // คืนค่า DataTables กลับเป็นตารางปกติก่อน
+                $('#kt_support_table tbody').html(newTableBody); // แทนที่ข้อมูลในตาราง
+                table = initDataTable(); // Initial DataTables ใหม่อีกครั้ง
+            },
+            error: function () {
+                Swal.fire({
+                    text: "เกิดข้อผิดพลาดในการดึงข้อมูล",
+                    icon: "error",
+                    buttonsStyling: false,
+                    confirmButtonText: "Ok",
+                    customClass: { confirmButton: "btn fw-bold btn-primary" }
+                });
+            },
+            complete: function() {
+                // เปิดปุ่มให้กดได้ปกติ
+                submitBtn.prop('disabled', false).text('Search');
+            }
+        });
+    });
 
 									// --- Filter Labels Update Logic ---
 									function updateLabel(checkboxClass, labelId, defaultText) {
@@ -706,11 +768,11 @@
 												var e = moment(selectedDates[1]).format('DD-MM-YYYY');
 												$("#startDate").val(s);
 												$("#endDate").val(e);
-												$("#supportRangePicker").closest('form').submit();
+												$("#filterForm").submit();
 											} else if (selectedDates.length === 0) {
 												$("#startDate").val("");
 												$("#endDate").val("");
-												$("#supportRangePicker").closest('form').submit();
+												$("#filterForm").submit();
 											}
 										}
 									});
