@@ -201,9 +201,10 @@ public class TravelAction extends ActionSupport {
 			int total;
 			List<Map<String, Object>> list;
 
+			int totalDraft = expenseDAO.countMyTravelDraftNoGroup(userId, dateFrom, dateTo);
+
 			if ("Draft".equals(status)) {
-				total = expenseDAO.countMyTravelDraftNoGroup(userId, dateFrom, dateTo);
-				request.setAttribute("total_status_draft", total);
+				total = totalDraft;
 
 				int totalPages = Math.max(1, (int) Math.ceil(total / (double) pageSize));
 				if (currentPage > totalPages)
@@ -244,7 +245,7 @@ public class TravelAction extends ActionSupport {
 
 				request.setAttribute("viewMode", "group");
 			}
-			
+
 			Map<String, Integer> counts = expenseDAO.countMyTravelListAllStatus(userId, dateFrom, dateTo);
 
 			if (counts == null) {
@@ -257,6 +258,7 @@ public class TravelAction extends ActionSupport {
 			int totalCanceled = counts.getOrDefault("C", 0);
 			int totalPaid = counts.getOrDefault("P", 0);
 
+			request.setAttribute("total_status_draft", totalDraft);
 			request.setAttribute("total_status_waiting", totalWaiting);
 			request.setAttribute("total_status_approved", totalApproved);
 			request.setAttribute("total_status_rejected", totalRejected);
@@ -1528,13 +1530,8 @@ public class TravelAction extends ActionSupport {
 				ReportUtil.printReportToBrowsePdf(jasperPath, "/expTravel", "expTravel.pdf", reportParameter, request,
 						response);
 			} else {
-				String jrxml = jasperPath + "/expTravelNew.jrxml";
-				String jasper = jasperPath + "/expTravelNew.jasper";
-
-				JasperCompileManager.compileReportToFile(jrxml, jasper);
 				ReportUtil.printReportToBrowsePdf(jasperPath, "/expTravelNew", "expTravel.pdf", reportParameter,
 						request, response);
-
 			}
 
 			return null;
