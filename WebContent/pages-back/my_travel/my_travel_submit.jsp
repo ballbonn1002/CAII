@@ -153,6 +153,11 @@
 	background: #F0FAFF;
 }
 
+.sig-box.unuploadable {
+	border: 2px dashed #C9D0E0;
+	background: #FAFAFA;
+}
+
 .sig-lock-badge {
 	position: absolute;
 	top: 6px;

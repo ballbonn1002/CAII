@@ -419,30 +419,12 @@
 
 												<%-- ✅ ไม่มีรูป → upload ได้ + มี input file ส่ง action --%>
 												<c:otherwise>
-													<c:choose>
-														<c:when test="${empty statusActiveSafe}">
-															<div class="sig-box uploadable" id="uploadSignatureBox"
-																onclick="document.getElementById('sigFileInput').click()">
-																<i class="ki-duotone ki-cloud-add fs-2x text-muted">
-																	<span class="path1"></span><span class="path2"></span>
-																</i> <span class="text-muted fs-8 mt-2">Click to
-																	upload Signature</span>
-															</div>
-															<span class="text-muted fs-8">Allowed: png, jpg,
-																jpeg</span>
-															<%-- ✅ name="files" ตรงกับ Struts2 field files[] ใน TravelAction --%>
-															<input type="file" id="sigFileInput" name="files"
-																accept=".png,.jpg,.jpeg" style="display: none;" />
-														</c:when>
-														<c:otherwise>
-															<div class="sig-box unuploadable" id="uploadSignatureBox">
-																<i class="ki-duotone ki-cloud-add fs-2x text-muted">
-																	<span class="path1"></span><span class="path2"></span>
-																</i> <span class="text-muted fs-8 mt-2">The signature
-																	has not been uploaded yet</span>
-															</div>
-														</c:otherwise>
-													</c:choose>
+													<div class="sig-box unuploadable" id="uploadSignatureBox">
+														<i class="ki-duotone ki-cloud-add fs-2x text-muted"> <span
+															class="path1"></span><span class="path2"></span>
+														</i> <span class="text-muted fs-8 mt-2">The signature
+															has not been uploaded yet</span>
+													</div>
 												</c:otherwise>
 											</c:choose>
 										</div>

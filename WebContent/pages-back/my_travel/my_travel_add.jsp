@@ -132,31 +132,11 @@
 													<span class="path1"></span><span class="path2"></span>
 												</i>
 												<div class="w-100">
-													<select id="userId"
-														class="form-select bg-transparent border-0 shadow-none p-0 fw-medium text-gray-900"
-														data-control="select2"
-														style="width: 100%; font-size: 1rem;" disabled>
-														<option value=""></option>
-														<c:forEach var="u" items="${userListObj}">
-															<c:set var="enabled" value="${u['enable']}" />
-															<c:if test="${enabled == 1 || enabled == '1'}">
-																<c:set var="uid"
-																	value="${not empty u['id'] ? u['id'] : ''}" />
-																<c:set var="emp"
-																	value="${not empty u['employee_id'] ? u['employee_id'] : ''}" />
-																<c:set var="nameEN"
-																	value="${not empty u['name_en'] ? u['name_en'] : ''}" />
-																<c:set var="nameTH"
-																	value="${not empty u['name'] ? u['name'] : ''}" />
-																<c:set var="dept"
-																	value="${not empty u['department'] ? u['department'] : ''}" />
-																<option value="${uid}"
-																	<c:if test="${onlineUser.id == uid}">selected</c:if>>
-																	${emp} - ${nameEN} - ${nameTH} - ${dept}</option>
-															</c:if>
-														</c:forEach>
-													</select> <input type="hidden" name="userId"
-														value="${onlineUser.id}" />
+													<input id="userId"
+														class="form-control bg-transparent border-0 shadow-none p-0 fw-medium text-gray-900"
+														value="${onlineUser.employeeId} - ${onlineUser.nameEN} - ${onlineUser.name} - ${onlineUser.departmentId}"
+														style="width: 100%; font-size: 1rem;" readonly /> <input
+														type="hidden" name="userId" value="${onlineUser.id}" />
 												</div>
 											</div>
 										</div>
@@ -514,7 +494,6 @@
 			}
 
 			var modalEl = document.getElementById("expenseModal");
-			initSelect2(document.getElementById("userId"));
 			initSelect2(document.getElementById("mGoBy"), {
 				dropdownParent : $(modalEl),
 				width : "100%"
@@ -534,7 +513,7 @@
 									depValEl.value = selectedDates.length > 0 ? toIsoDate(selectedDates[0])
 											: "";
 
-								// ✅ เพิ่มเติม (เช็ค Required Fields): อัปเดตสถานะปุ่มเมื่อเลือกวันที่
+								// อัปเดตสถานะปุ่มเมื่อเลือกวันที่
 								checkSubmitState();
 							},
 							onReady : function(selectedDates, dateStr, fp) {
@@ -557,14 +536,24 @@
 				var el = document.getElementById(id);
 				if (!el || typeof flatpickr === "undefined")
 					return;
+
 				flatpickr(el, {
 					enableTime : true,
 					noCalendar : true,
 					dateFormat : "H:i",
 					time_24hr : true,
 					allowInput : true,
+
+					onReady : function(selectedDates, dateStr, instance) {
+
+						instance.input.addEventListener("input", function(e) {
+							// อนุญาตเฉพาะ 0-9 และ :
+							this.value = this.value.replace(/[^0-9:]/g, "");
+						});
+
+					},
+
 					onChange : function() {
-						// ✅ เพิ่มเติม (เช็ค Required Fields): อัปเดตสถานะปุ่มเมื่อเลือกเวลา
 						checkSubmitState();
 					}
 				});
@@ -579,7 +568,7 @@
 			var btnModalSave = document.getElementById("btnModalSave");
 			var btnSubmitSave = document.getElementById("btnSubmitSave");
 
-			// ✅ เพิ่มเติม (เช็ค Required Fields): ฟังก์ชันตรวจสอบเงื่อนไขทั้งหมดก่อนเปิดปุ่ม Save
+			// (เช็ค Required Fields): ฟังก์ชันตรวจสอบเงื่อนไขทั้งหมดก่อนเปิดปุ่ม Save
 			function checkSubmitState() {
 				if (!btnSubmitSave)
 					return;
@@ -620,7 +609,7 @@
 				}
 			}
 
-			// ✅ เพิ่มเติม (เช็ค Required Fields): ผูก Event Listener ดักจับการพิมพ์/การเปลี่ยนค่าในช่อง Required
+			// (เช็ค Required Fields): ผูก Event Listener ดักจับการพิมพ์/การเปลี่ยนค่าในช่อง Required
 			var requiredInputIds = [ "departureDate", "purposeOfJourney",
 					"beginning", "beginTime", "destination", "destTime" ];
 			requiredInputIds.forEach(function(id) {

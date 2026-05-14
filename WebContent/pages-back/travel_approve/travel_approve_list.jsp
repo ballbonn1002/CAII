@@ -241,18 +241,27 @@
 										class="nav nav-stretch nav-line-tabs nav-line-tabs-2x border-transparent fs-5 fw-bold">
 
 										<li class="nav-item"><a
-											class="nav-link text-active-primary ${statusActiveSafe=='W' ? 'active' : ''}"
-											href="${tabW}" data-status="W">Waiting</a></li>
+											class="nav-link text-active-primary  ${statusActiveSafe=='W' ? 'active' : ''}"
+											href="${tabW}" data-status="W">Waiting<span
+												class="badge bg-warning text-white ms-2">${total_status_waiting}</span>
+										</a></li>
+
 										<li class="nav-item"><a
 											class="nav-link text-active-primary ${statusActiveSafe=='A' ? 'active' : ''}"
-											href="${tabA}" data-status="A">Approve</a></li>
+											href="${tabA}" data-status="A">Approve<span
+												class="badge bg-success text-white ms-2">${total_status_approved}</span>
+										</a></li>
 
 										<li class="nav-item"><a
 											class="nav-link text-active-primary ${statusActiveSafe=='P' ? 'active' : ''}"
-											href="${tabP}" data-status="P">Paid</a></li>
+											href="${tabP}" data-status="P">Paid<span
+												class="badge bg-info text-white ms-2">${total_status_paid}</span>
+										</a></li>
 										<li class="nav-item"><a
 											class="nav-link text-active-primary ${statusActiveSafe=='R' ? 'active' : ''}"
-											href="${tabR}" data-status="R">Reject</a></li>
+											href="${tabR}" data-status="R">Reject<span
+												class="badge bg-danger text-white ms-2">${total_status_rejected}</span>
+										</a></li>
 									</ul>
 								</div>
 							</div>
@@ -339,6 +348,7 @@
 																		</i>
 																		</a> <a
 																			href="${ctx}/travel_report?expense_group_id=${row.expense_group_id}"
+																			target="_blank" rel="noopener noreferrer"
 																			class="btn btn-icon btn-light-primary" title="View">
 																			<i class="ki-duotone ki-printer fs-1"> <span
 																				class="path1"></span> <span class="path2"></span> <span
@@ -399,6 +409,7 @@
 																		</i>
 																		</a> <a
 																			href="${ctx}/travel_report?expense_group_id=${row.expense_group_id}"
+																			target="_blank" rel="noopener noreferrer"
 																			class="btn btn-icon btn-light-primary" title="View">
 																			<i class="ki-duotone ki-printer fs-1"> <span
 																				class="path1"></span> <span class="path2"></span> <span
@@ -611,6 +622,7 @@
 	    updateTable(doc);
 	    updatePagination(doc);
 	    updateSubmitArea(doc);
+	    updateTabBadges(doc); 
 	    updateActiveTab();
 	    resetCheckboxState();
 	    
@@ -621,6 +633,24 @@
 	    bindUserFilter();
 	   
 	}
+	
+//  Badge ของแต่ละ Status Tab
+	function updateTabBadges(doc) {
+	    const statuses = ['Draft', 'W', 'C', 'A', 'P', 'R'];
+	    
+	    statuses.forEach(function(status) {
+	     
+	        const newBadge = doc.querySelector('.nav-link[data-status="' + status + '"] .badge');
+	  
+	        const curBadge = document.querySelector('.nav-link[data-status="' + status + '"] .badge');
+	        
+	        if (newBadge && curBadge) {
+	         
+	            curBadge.textContent = newBadge.textContent;
+	        }
+	    });
+	}
+	
 
 	function updateTable(doc) {
 	    const newTable     = doc.querySelector('#kt_travel_table');

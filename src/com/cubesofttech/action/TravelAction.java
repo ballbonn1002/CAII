@@ -203,6 +203,7 @@ public class TravelAction extends ActionSupport {
 
 			if ("Draft".equals(status)) {
 				total = expenseDAO.countMyTravelDraftNoGroup(userId, dateFrom, dateTo);
+				request.setAttribute("total_status_draft", total);
 
 				int totalPages = Math.max(1, (int) Math.ceil(total / (double) pageSize));
 				if (currentPage > totalPages)
@@ -212,19 +213,13 @@ public class TravelAction extends ActionSupport {
 				int toIdx = Math.min(offset + pageSize, total);
 
 				list = expenseDAO.findMyTravelDraftNoGroup(userId, dateFrom, dateTo, offset, pageSize);
-				
-				log.debug(dateFrom);
-				log.debug(dateTo);
-				log.debug(userId);
-				log.debug(list);
-				
+
 				enrichRows(list);
 
 				setAttrs(request, userListObj, userJSON, status, list, currentPage, pageSize, total, totalPages,
 						fromIdx, toIdx);
 
 				request.setAttribute("viewMode", "expense");
-		
 
 			} else {
 
@@ -249,6 +244,30 @@ public class TravelAction extends ActionSupport {
 
 				request.setAttribute("viewMode", "group");
 			}
+			
+			Map<String, Integer> counts = expenseDAO.countMyTravelListAllStatus(userId, dateFrom, dateTo);
+
+			if (counts == null) {
+				counts = new HashMap<>();
+			}
+
+			int totalWaiting = counts.getOrDefault("W", 0);
+			int totalApproved = counts.getOrDefault("A", 0);
+			int totalRejected = counts.getOrDefault("R", 0);
+			int totalCanceled = counts.getOrDefault("C", 0);
+			int totalPaid = counts.getOrDefault("P", 0);
+
+			request.setAttribute("total_status_waiting", totalWaiting);
+			request.setAttribute("total_status_approved", totalApproved);
+			request.setAttribute("total_status_rejected", totalRejected);
+			request.setAttribute("total_status_canceled", totalCanceled);
+			request.setAttribute("total_status_paid", totalPaid);
+
+			request.setAttribute("total_status_waiting", totalWaiting);
+			request.setAttribute("total_status_approved", totalApproved);
+			request.setAttribute("total_status_rejected", totalRejected);
+			request.setAttribute("total_status_canceled", totalCanceled);
+			request.setAttribute("total_status_paid", totalPaid);
 
 			return SUCCESS;
 
@@ -468,10 +487,10 @@ public class TravelAction extends ActionSupport {
 			e.setExpenseId(newExpenseId);
 			e.setExpenseGroupId(0L);
 			e.setExpTypeId("T");
-			
+
 			e.setDtStart(dtStart);
 			e.setDtEnd(dtEnd);
-			
+
 			e.setDtBy(dtBy);
 			e.setUserId(userId);
 			e.setFromLocation(beginning);
@@ -808,11 +827,13 @@ public class TravelAction extends ActionSupport {
 				return ERROR;
 
 			String[] ids = request.getParameterValues("ids");
+
 			String expenseGroupIdStr = request.getParameter("expense_group_id");
 			String status = request.getParameter("status");
 
 			List<Long> expenseIds = new ArrayList<>();
 			if (ids != null) {
+				Arrays.sort(ids, Comparator.comparingLong(Long::parseLong));
 				for (String s : ids) {
 					if (s != null) {
 						String t = s.trim();
@@ -823,6 +844,7 @@ public class TravelAction extends ActionSupport {
 			} else if (expenseGroupIdStr != null && !expenseGroupIdStr.isEmpty()) {
 				long expenseGroupId = Long.parseLong(expenseGroupIdStr);
 				List<Expense> expenseList = expenseDAO.findByGroupId(expenseGroupId);
+
 				ExpenseGroup expenseGroup = expenseGroupDAO.findById(expenseGroupId);
 				String userApprId = expenseGroup.getAppr_user_id();
 
@@ -1223,6 +1245,24 @@ public class TravelAction extends ActionSupport {
 
 			request.setAttribute("viewMode", "group");
 
+			Map<String, Integer> counts = expenseDAO.countMyTravelListAllStatus(userId, dateFrom, dateTo);
+
+			if (counts == null) {
+				counts = new HashMap<>();
+			}
+
+			int totalWaiting = counts.getOrDefault("W", 0);
+			int totalApproved = counts.getOrDefault("A", 0);
+			int totalRejected = counts.getOrDefault("R", 0);
+			int totalCanceled = counts.getOrDefault("C", 0);
+			int totalPaid = counts.getOrDefault("P", 0);
+
+			request.setAttribute("total_status_waiting", totalWaiting);
+			request.setAttribute("total_status_approved", totalApproved);
+			request.setAttribute("total_status_rejected", totalRejected);
+			request.setAttribute("total_status_canceled", totalCanceled);
+			request.setAttribute("total_status_paid", totalPaid);
+
 			return SUCCESS;
 
 		} catch (Exception e) {
@@ -1311,6 +1351,7 @@ public class TravelAction extends ActionSupport {
 						detailMaps.add(d);
 					}
 				}
+
 				expMap.put("details", detailMaps);
 
 				// ── Attached files ───────────────────────────────────
@@ -1384,7 +1425,7 @@ public class TravelAction extends ActionSupport {
 			return ERROR;
 		}
 	}
-	
+
 	// ===================== Travel Paid =====================
 	public String travelPaid() {
 		try {
@@ -1402,18 +1443,18 @@ public class TravelAction extends ActionSupport {
 			Timestamp now = DateUtil.getCurrentTime();
 			Calendar cal = Calendar.getInstance();
 			cal.setTime(now);
-			
-		
+
 			if (expense.getStatusId().equals("W")) {
 				// Waiting
 				expense.setApproved_at(now);
-				expense.setDescription_appr(descriptionAppr == null || descriptionAppr.isEmpty() ? null : descriptionAppr);
+				expense.setDescription_appr(
+						descriptionAppr == null || descriptionAppr.isEmpty() ? null : descriptionAppr);
 				expense.setAppr_user_id(onlineUser.getId());
 			}
-			
+
 			expense.setStatusId("P");
 			expense.setReceivedAt(now);
-	
+
 			short currentMonth = (short) (cal.get(Calendar.MONTH) + 1);
 			Integer currentYear = cal.get(Calendar.YEAR);
 

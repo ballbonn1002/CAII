@@ -20,6 +20,7 @@
 		<![CDATA[select 
     ed.expense_detail_id,
     ed.total,
+    ed.description as description_detail,
     eg.approved_at,
     eg.status_id,
     eg.description_appr,
@@ -28,7 +29,7 @@
     eg.time_create as eg_time_create,
     e.from_location,
     e.to_location,
-    e.description,
+    e.description as expense_description,
     e.dt_start,
     e.dt_end,
 
@@ -50,11 +51,9 @@ left join file fu on u.path_signature = fu.path
 left join file fau on au.path_signature = fau.path
 
 where eg.expense_group_id = $P{expenseGroupId}
-order by e.dt_start,
-    e.dt_end,
-    e.from_location,
-    e.to_location,
-    e.description;]]>
+order by date(e.dt_start),
+    e.expense_id
+ ;]]>
 	</queryString>
 		<field name="dt_start" class="java.sql.Timestamp"/>
 		<field name="dt_end" class="java.sql.Timestamp"/>
@@ -62,7 +61,8 @@ order by e.dt_start,
 		<field name="status_id" class="java.lang.String"/>
 		<field name="from_location" class="java.lang.String"/>
 		<field name="to_location" class="java.lang.String"/>
-		<field name="description" class="java.lang.String"/>
+		<field name="expense_description" class="java.lang.String"/>
+		<field name="description_detail" class="java.lang.String"/>
 		<field name="travel_type_name" class="java.lang.String"/>
 		<field name="user_name" class="java.lang.String"/>
 		<field name="file_user" class="java.lang.Integer"/>
@@ -83,18 +83,16 @@ order by e.dt_start,
 		<variableExpression><![CDATA[$F{total}]]></variableExpression>
 	</variable>
 	
+	<variable name="groupRowNumber" class="java.lang.Integer" calculation="DistinctCount">
+		<variableExpression><![CDATA[String.valueOf($F{dt_start}) + "|" + String.valueOf($F{dt_end}) + "|" + $F{from_location} + "|" + $F{to_location} + "|" + $F{expense_description}]]></variableExpression>
+	</variable>
+	
 	<group name="travelGroup">
-		<groupExpression><![CDATA[
-       String.valueOf($F{dt_start}.getTime())
-	+ "|" + String.valueOf($F{dt_end}.getTime())
-	+ "|" + $F{from_location}
-	+ "|" + $F{to_location}
-	+ "|" + $F{description}
-    ]]></groupExpression>
+		<groupExpression><![CDATA[String.valueOf($F{dt_start}) + "|" + String.valueOf($F{dt_end}) + "|" + $F{from_location} + "|" + $F{to_location} + "|" + $F{expense_description}]]></groupExpression>
 		<groupHeader>
-			<band height="5">
+			<band height="6">
 				<line>
-					<reportElement x="0" y="1" width="555" height="1">
+					<reportElement x="0" y="2" width="555" height="1">
 						<printWhenExpression><![CDATA[$V{REPORT_COUNT} > 0]]></printWhenExpression>
 					</reportElement>
 					<graphicElement>
@@ -162,13 +160,6 @@ order by e.dt_start,
 				</textElement>
 				<textFieldExpression><![CDATA[$F{eg_time_create}]]></textFieldExpression>
 			</textField>
-			<textField>
-				<reportElement x="112" y="0" width="11" height="20" uuid="81ac9309-3221-40b5-a6a2-7e43679348bc"/>
-				<textElement markup="none">
-					<font pdfFontName="WareeSans.ttf" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
-				</textElement>
-				<textFieldExpression><![CDATA[" ~ "]]></textFieldExpression>
-			</textField>
 		</band>
 	</title>
 	<pageHeader>
@@ -177,28 +168,35 @@ order by e.dt_start,
 	<columnHeader>
 		<band height="22" splitType="Stretch">
 			<staticText>
-				<reportElement x="0" y="2" width="70" height="20" uuid="5c9fe3d5-a825-48a8-aac3-0d2fe8a42cf5"/>
+				<reportElement x="0" y="2" width="20" height="20" uuid="a1b2c3d4-e5f6-7a8b-9c0d-1e2f3a4b5c6e"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8" isBold="true" pdfFontName="WareeSans.ttf" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+				</textElement>
+				<text><![CDATA[#]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="20" y="2" width="60" height="20" uuid="5c9fe3d5-a825-48a8-aac3-0d2fe8a42cf5"/>
 				<textElement verticalAlignment="Middle">
 					<font size="8" isBold="true" pdfFontName="WareeSans.ttf" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
 				</textElement>
 				<text><![CDATA[Date]]></text>
-			</staticText>
+			</staticText>	
 			<staticText>
-				<reportElement x="70" y="2" width="65" height="20" uuid="9472dc52-62d9-4ea9-968f-34620540d315"/>
+				<reportElement x="80" y="2" width="65" height="20" uuid="9472dc52-62d9-4ea9-968f-34620540d315"/>
 				<textElement verticalAlignment="Middle">
 					<font size="8" isBold="true" pdfFontName="WareeSans.ttf" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
 				</textElement>
 				<text><![CDATA[Time]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="135" y="2" width="210" height="20" uuid="fb0189d2-5848-4f88-bd59-bd4824f2619b"/>
+				<reportElement x="155" y="2" width="180" height="20" uuid="fb0189d2-5848-4f88-bd59-bd4824f2619b"/>
 				<textElement verticalAlignment="Middle">
 					<font size="8" isBold="true" pdfFontName="WareeSans.ttf" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
 				</textElement>
 				<text><![CDATA[From - To Location]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="345" y="2" width="70" height="20" uuid="de9b7fcd-5388-4cd3-a062-6d6288767c76"/>
+				<reportElement x="335" y="2" width="80" height="20" uuid="de9b7fcd-5388-4cd3-a062-6d6288767c76"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font size="8" isBold="true" pdfFontName="WareeSans.ttf" pdfEncoding="Identity-H"/>
 				</textElement>
@@ -228,9 +226,18 @@ order by e.dt_start,
 	</columnHeader>
 	
 	<detail>
-		<band height="20" splitType="Stretch">
+		<!-- ปรับ Band height เป็น 25 เพื่อให้มีช่องว่างด้านล่างเสมอ -->
+		<band height="25" splitType="Stretch">
+			<textField isBlankWhenNull="true">
+				<reportElement x="0" y="2" width="20" height="20" isPrintRepeatedValues="false" printWhenGroupChanges="travelGroup"/>
+				<textElement textAlignment="Center">
+					<font size="8" pdfFontName="WareeSans.ttf" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{groupRowNumber}]]></textFieldExpression>
+			</textField>
+
 			<textField pattern="dd MMM yyyy" isBlankWhenNull="true">
-				<reportElement x="0" y="0" width="70" height="20" isPrintRepeatedValues="false" printWhenGroupChanges="travelGroup"/>
+				<reportElement x="20" y="2" width="60" height="20" isPrintRepeatedValues="false" printWhenGroupChanges="travelGroup"/>
 				<textElement>
 					<font size="8" pdfFontName="WareeSans.ttf" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
 				</textElement>
@@ -238,7 +245,7 @@ order by e.dt_start,
 			</textField>
 
 			<textField pattern="HH:mm" isBlankWhenNull="true">
-				<reportElement x="70" y="0" width="25" height="20" isPrintRepeatedValues="false" printWhenGroupChanges="travelGroup"/>
+				<reportElement x="80" y="2" width="25" height="20" isPrintRepeatedValues="false" printWhenGroupChanges="travelGroup"/>
 				<textElement>
 					<font size="8" pdfFontName="WareeSans.ttf" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
 				</textElement>
@@ -246,7 +253,7 @@ order by e.dt_start,
 			</textField>
 
 			<textField isBlankWhenNull="true">
-				<reportElement x="95" y="0" width="10" height="20" isPrintRepeatedValues="false" printWhenGroupChanges="travelGroup"/>
+				<reportElement x="105" y="2" width="10" height="20" isPrintRepeatedValues="false" printWhenGroupChanges="travelGroup"/>
 				<textElement textAlignment="Center">
 					<font size="8" pdfFontName="WareeSans.ttf" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
 				</textElement>
@@ -254,7 +261,7 @@ order by e.dt_start,
 			</textField>
 
 			<textField pattern="HH:mm" isBlankWhenNull="true">
-				<reportElement x="105" y="0" width="30" height="20" isPrintRepeatedValues="false" printWhenGroupChanges="travelGroup"/>
+				<reportElement x="115" y="2" width="30" height="20" isPrintRepeatedValues="false" printWhenGroupChanges="travelGroup"/>
 				<textElement>
 					<font size="8" pdfFontName="WareeSans.ttf" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
 				</textElement>
@@ -262,23 +269,23 @@ order by e.dt_start,
 			</textField>
 
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
-				<reportElement x="135" y="0" width="210" height="20" isPrintRepeatedValues="false" printWhenGroupChanges="travelGroup"/>
+				<reportElement x="155" y="2" width="180" height="20" isPrintRepeatedValues="false" printWhenGroupChanges="travelGroup"/>
 				<textElement>
 					<font size="8" pdfFontName="WareeSans.ttf" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{from_location} + " - " + $F{to_location} + "\n" + $F{description}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{from_location} + " - " + $F{to_location} + ($F{expense_description} != null && !$F{expense_description}.trim().isEmpty() ? "\n" + $F{expense_description} : "")]]></textFieldExpression>
 			</textField>
 
-			<textField isBlankWhenNull="true">
-				<reportElement x="345" y="0" width="70" height="20"/>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="335" y="2" width="80" height="20"/>
 				<textElement textAlignment="Center">
 					<font size="8" pdfFontName="WareeSans.ttf" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{travel_type_name}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{travel_type_name} + ($F{description_detail} != null && !$F{description_detail}.trim().isEmpty() ? " : " + $F{description_detail} : "")]]></textFieldExpression>
 			</textField>
 
 			<textField pattern="#,##0.00" isBlankWhenNull="true">
-				<reportElement x="415" y="0" width="70" height="20"/>
+				<reportElement x="415" y="2" width="70" height="20"/>
 				<textElement textAlignment="Right">
 					<font size="8" pdfFontName="WareeSans.ttf" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
 				</textElement>
@@ -286,7 +293,7 @@ order by e.dt_start,
 			</textField>
 			
 			<textField evaluationTime="Group" evaluationGroup="travelGroup" pattern="#,##0.00" isBlankWhenNull="true">
-				<reportElement x="485" y="0" width="70" height="20" isPrintRepeatedValues="false" printWhenGroupChanges="travelGroup" uuid="8f9a0b1c-2d3e-4f5a-6b7c-8d9e0f1a2b3c">
+				<reportElement x="485" y="2" width="70" height="20" isPrintRepeatedValues="false" printWhenGroupChanges="travelGroup" uuid="8f9a0b1c-2d3e-4f5a-6b7c-8d9e0f1a2b3c">
 					<printWhenExpression><![CDATA[$V{travelGroup_COUNT} == 1]]></printWhenExpression>
 				</reportElement>
 				<textElement textAlignment="Right">
@@ -412,11 +419,12 @@ order by e.dt_start,
 			</textField>
 
 			<image scaleImage="RetainShape" hAlign="Center" vAlign="Bottom" isUsingCache="true" onErrorType="Blank">
-				<reportElement x="383" y="23" width="158" height="40" uuid="f4a1b2c3-d3e4-4f5a-b6c7-d8e9f0a1b2c4">
+				<reportElement x="383" y="22" width="158" height="40" uuid="f4a1b2c3-d3e4-4f5a-b6c7-d8e9f0a1b2c4">
 					<printWhenExpression><![CDATA[$F{status_id} != null && $F{status_id}.equals("P")]]></printWhenExpression>
 				</reportElement>
 				<imageExpression><![CDATA[$P{basePath} + "/upload/user/user_signature_" +  String.valueOf($F{file_user}) + ".png"]]></imageExpression>
 			</image>
+			
 			<rectangle>
 				<reportElement mode="Transparent" x="367" y="0" width="188" height="110" uuid="4326047f-fe5c-49e1-a56e-be9dea80785a"/>
 			</rectangle>
