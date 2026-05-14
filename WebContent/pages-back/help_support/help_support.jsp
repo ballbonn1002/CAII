@@ -240,10 +240,10 @@
 											<div class="d-flex flex-column gap-3 mb-4">
 												<div class="form-check form-check-custom form-check-solid">
 													<input class="form-check-input categorized-checkbox"
-														name="categorized" type="checkbox" value="Technical Issue"
+														name="categorized" type="checkbox" value="1"
 														id="chk-cat-1"
 														<s:if
-																		test="#request.selectedCategorized == null || #request.selectedCategorized.contains('Technical Issue')">checked
+																		test="#request.selectedCategorized == null || #request.selectedCategorized.contains('1'.toString())">checked
 																	</s:if> />
 													<label
 														class="form-check-label text-gray-800 fw-semibold cursor-pointer"
@@ -252,9 +252,9 @@
 												<div class="form-check form-check-custom form-check-solid">
 													<input class="form-check-input categorized-checkbox"
 														name="categorized" type="checkbox"
-														value="Inquiry / Question" id="chk-cat-2"
+														value="2" id="chk-cat-2"
 														<s:if
-																		test="#request.selectedCategorized == null || #request.selectedCategorized.contains('Inquiry / Question')">checked
+																		test="#request.selectedCategorized == null || #request.selectedCategorized.contains('2'.toString())">checked
 																	</s:if> />
 													<label
 														class="form-check-label text-gray-800 fw-semibold cursor-pointer"
@@ -262,10 +262,10 @@
 												</div>
 												<div class="form-check form-check-custom form-check-solid">
 													<input class="form-check-input categorized-checkbox"
-														name="categorized" type="checkbox" value="Feature Request"
+														name="categorized" type="checkbox" value="3"
 														id="chk-cat-3"
 														<s:if
-																		test="#request.selectedCategorized == null || #request.selectedCategorized.contains('Feature Request')">checked
+																		test="#request.selectedCategorized == null || #request.selectedCategorized.contains('3'.toString())">checked
 																	</s:if> />
 													<label
 														class="form-check-label text-gray-800 fw-semibold cursor-pointer"
@@ -413,12 +413,12 @@
 								<thead>
 									<tr
 										class="text-start text-gray-600 fw-bold fs-7 text-uppercase text-nowrap">
-										<th class="min-w-50px ps-9 pe-2">ID</th>
-										<th class="min-w-100px pe-2">REQUESTS</th>
-										<th class="min-w-100px pe-2">CATEGORIZED</th>
-										<th class="min-w-100px pe-2">MENU</th>
-										<th class="min-w-165px pe-2">MESSAGE</th>
-										<th class="min-w-60px pe-2">STATUS</th>
+										<th class="min-w-50px ps-9 ">ID</th>
+										<th class="min-w-100px ">REQUESTS</th>
+										<th class="min-w-100px ">CATEGORIZED</th>
+										<th class="min-w-100px ">MENU</th>
+										<th class="min-w-165px ">MESSAGE</th>
+										<th class="min-w-60px ">STATUS</th>
 										<th class="min-w-75px pe-9">ACTION</th>
 									</tr>
 								</thead>
@@ -440,13 +440,13 @@
 											</td>
 											<td class="align-middle">
 												<div class="d-flex align-items-center">
-													<s:if test="categorized == 'Technical Issue'">
+													<s:if test="categorized == '1'.toString()">
 														<i
 															class="ki-duotone ki-information-5 fs-1 text-danger me-3"><span
 															class="path1"></span><span class="path2"></span><span
 															class="path3"></span></i>
 													</s:if>
-													<s:elseif test="categorized == 'Inquiry / Question'">
+													<s:elseif test="categorized == '2'.toString()">
 														<i class="ki-duotone ki-question-2 fs-1 me-3"
 															style="color: #A11EBA;"><span class="path1"></span><span
 															class="path2"></span><span class="path3"></span></i>
@@ -457,7 +457,7 @@
 															class="path3"></span></i>
 													</s:else>
 													<span class="text-gray-800"> <s:property
-															value="categorized" />
+															value="#request.categoryMap[categorized]" />
 													</span>
 												</div>
 											</td>
@@ -552,6 +552,7 @@
 	<script>
 // ประกาศตัวแปร table ไว้ด้านนอก
 var table;
+var originalThHtml = [];
 
 // สร้าง Function สำหรับ Initial DataTables
 function initDataTable() {
@@ -569,12 +570,42 @@ function initDataTable() {
             "orderable": false,
             "targets": [6] // ปิดเรียงลำดับคอลัมน์ ACTION
         }],
+        "headerCallback": function (thead) {
+            $(thead).find('th').each(function (i) {
+                if ($(this).find('.th-inline').length) return;
+
+                const html = originalThHtml[i] || $(this).html();
+                $(this).empty().append(
+                    $('<span class="th-inline" style="display:inline-flex;align-items:center;gap:6px;white-space:nowrap;"/>')
+                        .append($('<span class="th-text"/>').html(html))
+                );
+            });
+        },
         "dom": "<'row'<'col-sm-12 table-responsive'tr>>" +
                "<'row align-items-center mt-5'<'col-sm-12 col-md-5 d-flex align-items-center justify-content-center justify-content-md-start gap-3'l><'col-sm-12 col-md-7 d-flex align-items-center justify-content-center justify-content-md-end'p>>"
     });
 }
 
 $(document).ready(function () {
+    $('#dt-inline-style').remove();
+    const dtCss = `
+        #kt_support_table.dataTable thead th {
+            white-space: nowrap;
+            position: relative;
+            padding-right: 16px;
+        }
+        #kt_support_table.dataTable thead th::before,
+        #kt_support_table.dataTable thead th::after {
+            top: 50% !important;
+            transform: translateY(-50%) !important;
+        }
+    `;
+    $('<style id="dt-inline-style">').text(dtCss).appendTo('head');
+
+    originalThHtml = $('#kt_support_table thead th').map(function () {
+        return $(this).html();
+    }).get();
+
     // 1. เรียกใช้งานตอนโหลดหน้าครั้งแรก
     table = initDataTable();
 
@@ -596,11 +627,11 @@ $(document).ready(function () {
                 // แปลงผลลัพธ์เป็น HTML
                 var responseHtml = $($.parseHTML(response));
 
-                // ดึงเฉพาะข้อมูล <tbody> ของตารางมาอัปเดต
-                var newTableBody = responseHtml.find('#kt_support_table tbody').html();
+                // ดึงข้อมูลทั้งตารางมาอัปเดตเพื่อเคลียร์สถานะ Header ที่อาจจะเพี้ยน
+                var newTableHtml = responseHtml.find('#kt_support_table').html();
                 
                 table.destroy(); // คืนค่า DataTables กลับเป็นตารางปกติก่อน
-                $('#kt_support_table tbody').html(newTableBody); // แทนที่ข้อมูลในตาราง
+                $('#kt_support_table').html(newTableHtml); // แทนที่ข้อมูลทั้งตาราง
                 table = initDataTable(); // Initial DataTables ใหม่อีกครั้ง
             },
             error: function () {

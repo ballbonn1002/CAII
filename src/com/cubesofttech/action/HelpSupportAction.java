@@ -477,6 +477,12 @@ public class HelpSupportAction extends ActionSupport {
         }
         request.setAttribute("menuMap", menuMap);
 
+        Map<String, String> categoryMap = new HashMap<>();
+        categoryMap.put("1", "Technical Issue");
+        categoryMap.put("2", "Inquiry / Question");
+        categoryMap.put("3", "Feature Request");
+        request.setAttribute("categoryMap", categoryMap);
+
         // ดึงข้อมูล User จาก Query_Userlist (จะได้ Map<String, Object> ที่มี key ตรงกับ
         // DB)
         List<Map<String, Object>> userList = userDAO.Query_Userlist();

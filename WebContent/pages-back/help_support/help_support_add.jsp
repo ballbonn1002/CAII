@@ -56,10 +56,9 @@
 											class="required form-label fs-7 fw-bold text-gray-800">Categorized:</label>
 										<select class="form-select" name="categorized" data-control="select2"
 											data-hide-search="true">
-											<option value="Technical Issue" selected>Technical
-												Issue</option>
-											<option value="Inquiry / Question">Inquiry / Question</option>
-											<option value="Feature Request">Feature Request</option>
+											<option value="1" selected>Technical Issue</option>
+											<option value="2">Inquiry / Question</option>
+											<option value="3">Feature Request</option>
 										</select>
 									</div>
 									<div class="col-lg-4">

@@ -229,6 +229,9 @@ ALTER TABLE announcement
 ADD COLUMN viewer_logs LONGTEXT NULL,
 ADD COLUMN unique_readcount INT DEFAULT 0;
 
--- PROD 12 MAY 2023
+-- PROD 12 MAY 2026
 
-
+-- 13/05/2026 boom(Intern) : Update categorized field in support table to use numeric values -- 
+UPDATE support SET categorized = '1' WHERE categorized = 'Technical Issue';
+UPDATE support SET categorized = '2' WHERE categorized = 'Inquiry / Question';
+UPDATE support SET categorized = '3' WHERE categorized = 'Feature Request';

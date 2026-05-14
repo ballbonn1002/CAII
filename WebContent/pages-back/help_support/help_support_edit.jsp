@@ -33,45 +33,36 @@
                             <div class="d-flex align-items-start justify-content-between mb-12">
                                 <div class="d-flex align-items-start gap-4">
                                     <!-- Icon -->
-                                    <div class="d-flex align-items-center justify-content-center">
-                                        <s:if test="#request.support.categorized == 'Technical Issue'">
-                                            <div
-                                                class="w-40px h-40px rounded-circle bg-light-danger d-flex align-items-center justify-content-center">
-                                                <i class="ki-duotone ki-information-5 fs-2x text-danger"><span
-                                                        class="path1"></span><span class="path2"></span><span
-                                                        class="path3"></span></i>
-                                            </div>
+                                    <div class="d-flex align-items-center justify-content-center mt-1">
+                                        <s:if test="#request.support.categorized == '1'.toString()">
+                                            <i class="ki-duotone ki-information-5 text-danger" style="font-size: 40px;"><span
+                                                    class="path1"></span><span class="path2"></span><span
+                                                    class="path3"></span></i>
                                         </s:if>
-                                        <s:elseif test="#request.support.categorized == 'Inquiry / Question'">
-                                            <div class="w-40px h-40px rounded-circle d-flex align-items-center justify-content-center"
-                                                style="background-color: #f8e5ff;">
-                                                <i class="ki-duotone ki-question-2 fs-2x" style="color: #A11EBA;"><span
-                                                        class="path1"></span><span class="path2"></span><span
-                                                        class="path3"></span></i>
-                                            </div>
+                                        <s:elseif test="#request.support.categorized == '2'.toString()">
+                                            <i class="ki-duotone ki-question-2" style="font-size: 40px; color: #A11EBA;"><span
+                                                    class="path1"></span><span class="path2"></span><span
+                                                    class="path3"></span></i>
                                         </s:elseif>
                                         <s:else>
-                                            <div
-                                                class="w-40px h-40px rounded-circle bg-light-primary d-flex align-items-center justify-content-center">
-                                                <i class="ki-duotone ki-like-tag fs-2x text-primary"><span
-                                                        class="path1"></span><span class="path2"></span><span
-                                                        class="path3"></span></i>
-                                            </div>
+                                            <i class="ki-duotone ki-like-tag text-primary" style="font-size: 40px;"><span
+                                                    class="path1"></span><span class="path2"></span><span
+                                                    class="path3"></span></i>
                                         </s:else>
                                     </div>
                                     <!-- Title and Details -->
                                     <div class="d-flex flex-column">
                                         <div class="d-flex align-items-center gap-2 mb-1">
                                             <span class="fw-bold fs-3
-                                <s:if test=" #request.support.categorized=='Technical Issue'">text-danger</s:if>
-                                <s:elseif test=" #request.support.categorized=='Inquiry / Question'"></s:elseif>
+                                <s:if test=" #request.support.categorized=='1'.toString()">text-danger</s:if>
+                                <s:elseif test=" #request.support.categorized=='2'.toString()"></s:elseif>
                                 <s:else>text-primary</s:else>" <s:if
-                                                test="#request.support.categorized == 'Inquiry / Question'">style="color:
+                                                test="#request.support.categorized == '2'.toString()">style="color:
                                                 #A11EBA;"</s:if>>
-                                                <s:property value="#request.support.categorized" />
+                                                <s:property value="#request.categoryMap[#request.support.categorized]" />
                                             </span> <span class="text-muted fs-5 text-gray-800">
                                                 <s:property
-                                                    value="#request.support.categorized == 'Technical Issue' ? '(ปัญหาการใช้งานระบบ)' : (#request.support.categorized == 'Inquiry / Question' ? '(สอบถามข้อมูล)' : '(ข้อเสนอแนะ)')" />
+                                                    value="#request.support.categorized == '1'.toString() ? '(ปัญหาการใช้งานระบบ)' : (#request.support.categorized == '2'.toString() ? '(สอบถามข้อมูล)' : '(ข้อเสนอแนะ)')" />
                                             </span>
                                         </div>
                                         <div class="d-flex align-items-center">
@@ -351,16 +342,16 @@
                                         <select class="form-select" data-control="select2" data-hide-search="true"
                                             name="categorized" <s:if test="#request.support.status != 'New'">disabled
                                             </s:if>>
-                                            <option value="Technical Issue" <s:if
-                                                test="support.categorized == 'Technical Issue'">selected</s:if>
+                                            <option value="1" <s:if
+                                                test="support.categorized == '1'.toString()">selected</s:if>
                                                 >Technical
                                                 Issue</option>
-                                            <option value="Inquiry / Question" <s:if
-                                                test="support.categorized == 'Inquiry / Question'">selected</s:if>
+                                            <option value="2" <s:if
+                                                test="support.categorized == '2'.toString()">selected</s:if>
                                                 >Inquiry
                                                 / Question</option>
-                                            <option value="Feature Request" <s:if
-                                                test="support.categorized == 'Feature Request'">selected</s:if>>Feature
+                                            <option value="3" <s:if
+                                                test="support.categorized == '3'.toString()">selected</s:if>>Feature
                                                 Request</option>
                                         </select>
                                         <s:if test="#request.support.status != 'New'">
@@ -394,10 +385,9 @@
                                                         class="path1"></span><span class="path2"></span><span
                                                         class="path3"></span><span class="path4"></span><span
                                                         class="path5"></span><span class="path6"></span></i> 
-                                                    <jsp:useBean id="nowDate" class="java.util.Date" />
                                                     <input
                                                     class="form-control ps-12" name="issueDate" type="text"
-                                                    value="<fmt:formatDate value='${nowDate}' pattern='d MMM yyyy , HH:mm'/>"
+                                                    value="<fmt:formatDate value='${requestScope.support.issueDate}' pattern='d MMM yyyy'/>"
                                                     readonly style="background-color: #f5f8fa; cursor: not-allowed;" />
                                             </div>
                                         </div>
