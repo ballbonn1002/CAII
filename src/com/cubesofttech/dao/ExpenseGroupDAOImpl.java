@@ -378,9 +378,9 @@ public class ExpenseGroupDAOImpl implements ExpenseGroupDAO {
 			StringBuilder sql = new StringBuilder();
 
 			sql.append("SELECT ").append(" g.expense_group_id, ").append(" g.status_id, ").append(" g.total_amount, ")
-					.append(" g.requested_at, ").append(" g.user_id, ").append(" COUNT(e.expense_id) AS item_count, ")
-					.append(" u.name_en AS user_name ").append("FROM expense_group g ")
-					.append("LEFT JOIN user u ON u.id = g.user_id ")
+					.append(" g.requested_at, ").append(" g.user_id, ").append(" g.time_create, ")
+					.append(" COUNT(e.expense_id) AS item_count, ").append(" u.name_en AS user_name ")
+					.append("FROM expense_group g ").append("LEFT JOIN user u ON u.id = g.user_id ")
 					.append("LEFT JOIN expense e ON e.expense_group_id = g.expense_group_id ")
 					.append("WHERE g.status_id = :status ");
 
@@ -397,8 +397,8 @@ public class ExpenseGroupDAOImpl implements ExpenseGroupDAO {
 			}
 
 			sql.append(" GROUP BY ").append(" g.expense_group_id, g.status_id, g.total_amount, ")
-					.append(" g.requested_at, g.user_id, u.name_en ").append(" ORDER BY g.expense_group_id DESC ")
-					.append(" LIMIT :limit OFFSET :offset ");
+					.append(" g.requested_at, g.user_id, g.time_create, u.name_en ")
+					.append(" ORDER BY g.expense_group_id DESC ").append(" LIMIT :limit OFFSET :offset ");
 
 			SQLQuery query = session.createSQLQuery(sql.toString());
 

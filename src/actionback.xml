@@ -610,19 +610,27 @@
 
 		<!-- Approve ================================================================================================== -->
 		<action name="travel_approve_approve"
-			class="com.cubesofttech.action.TravelAction"
-			method="travelApprove">
+			class="com.cubesofttech.action.TravelAction" method="travelApprove">
 			<result name="success" type="redirectAction">
 				<param name="actionName">travel_approve</param>
 			</result>
 			<result name="error">/index.jsp</result>
 		</action>
 		<!-- Approve ================================================================================================== -->
-		
+
+		<!-- Paid ================================================================================================== -->
+		<action name="travel_approve_paid"
+			class="com.cubesofttech.action.TravelAction" method="travelPaid">
+			<result name="success" type="redirectAction">
+				<param name="actionName">travel_approve</param>
+			</result>
+			<result name="error">/index.jsp</result>
+		</action>
+		<!-- Paid ================================================================================================== -->
+
 		<!-- Reject ================================================================================================== -->
 		<action name="travel_approve_reject"
-			class="com.cubesofttech.action.TravelAction"
-			method="travelReject">
+			class="com.cubesofttech.action.TravelAction" method="travelReject">
 			<result name="success" type="redirectAction">
 				<param name="actionName">travel_approve</param>
 			</result>
@@ -727,6 +735,14 @@
 		<!-- Group ================================================================================================== -->
 
 		<!-- My Travel ================================================================================================== -->
+
+		<!-- Download Expense PDF ================================================================================================== -->
+		<action name="travel_report"
+			class="com.cubesofttech.action.TravelAction"
+			method="expenseTravelReport">
+			<result name="error">/index.jsp</result>
+		</action>
+		<!-- Download Expense PDF ================================================================================================== -->
 
 		<!-- Overtime Request ================================================================================================== -->
 
@@ -1195,6 +1211,48 @@
 			<result name="error">/index.jsp</result>
 		</action>
 
+		<!-- PAGE URI -->
+		<action name="page_uri_list"
+			class="com.cubesofttech.action.PageUriAction" method="list">
+			<result name="success" type="tiles">pageUriList</result>
+			<result name="error">/index.jsp</result>
+		</action>
+
+		<action name="page_uri_add"
+			class="com.cubesofttech.action.PageUriAction" method="add">
+			<result name="success" type="tiles">pageUriAdd</result>
+			<result name="error">/index.jsp</result>
+		</action>
+
+		<action name="savePageUri" class="com.cubesofttech.action.PageUriAction" method="savePageUri">
+			<result name="success" type="redirectAction">
+				<param name="actionName">page_uri_list</param>
+			</result>
+			<result name="error">/index.jsp</result>
+		</action>
+
+		<action name="editPageUri" class="com.cubesofttech.action.PageUriAction" method="editPageUri">
+			<result name="success" type="tiles">pageUriEdit</result>
+			<result name="error">/index.jsp</result>
+		</action>
+
+		<action name="updatePageUri" class="com.cubesofttech.action.PageUriAction" method="updatePageUri">
+			<result name="success" type="redirectAction">
+				<param name="actionName">page_uri_list</param>
+			</result>
+			<result name="error">/index.jsp</result>
+		</action>
+
+		<action name="page_uri_delete" class="com.cubesofttech.action.PageUriAction" method="deletePageUri">
+			<result name="success" type="redirectAction">
+				<param name="actionName">page_uri_list</param>
+			</result>
+			<result name="error">/index.jsp</result>
+		</action>
+		
+		<action name="checkDuplicateForwardTo" class="com.cubesofttech.action.PageUriAction" method="checkDuplicateForwardTo">
+		</action>
+
 		<action name="checkDuplicatePositionId"
 			class="com.cubesofttech.action.PositionAction"
 			method="checkDuplicatePositionId">
@@ -1452,6 +1510,10 @@
 		<action name="summaryWorkingDayData"
 			class="com.cubesofttech.action.ReportAction" method="workingDayData">
 		</action>
+		
+		<action name="borrowReport"
+			class="com.cubesofttech.action.ReportAction" method="borrowReport">
+		</action>
 
 		<!-- Article -->
 		<action name="article_feed"
@@ -1507,8 +1569,9 @@
 		</action>
 
 		<!-- ========================== Export to Excel ============================== -->
-		<action name="LeaveApproveExcelExport" 
-			class="com.cubesofttech.action.LeaveAction" method="LeaveApproveExcelExport">
+		<action name="LeaveApproveExcelExport"
+			class="com.cubesofttech.action.LeaveAction"
+			method="LeaveApproveExcelExport">
 			<result name="success" type="stream">
 				<param name="contentType">application/vnd.ms-excel</param>
 				<param name="inputName">excelStream</param>
@@ -1517,6 +1580,51 @@
 				</param>
 				<param name="bufferSize">2048</param>
 			</result>
+		</action>
+
+		<!-- Help & Support -->
+		<action name="help_support"
+			class="com.cubesofttech.action.HelpSupportAction" method="list">
+			<result name="success" type="tiles">help_support</result>
+			<result name="error">/index.jsp</result>
+		</action>
+
+		<action name="help_support_add"
+			class="com.cubesofttech.action.HelpSupportAction" method="list">
+			<result name="success" type="tiles">help_support_add</result>
+			<result name="error">/index.jsp</result>
+		</action>
+
+		<action name="help_support_edit"
+			class="com.cubesofttech.action.HelpSupportAction" method="edit">
+			<result name="success" type="tiles">help_support_edit</result>
+			<result name="error">/index.jsp</result>
+		</action>
+
+		<action name="help_support_delete"
+			class="com.cubesofttech.action.HelpSupportAction" method="delete">
+			<result name="success" type="redirect">help_support</result>
+			<result name="error">/index.jsp</result>
+		</action>
+
+		<action name="help_support_save"
+			class="com.cubesofttech.action.HelpSupportAction" method="save">
+			<result name="success" type="redirect">help_support</result>
+			<result name="error">/index.jsp</result>
+		</action>
+
+		<action name="help_support_update"
+			class="com.cubesofttech.action.HelpSupportAction" method="update">
+			<result name="success" type="redirect">help_support_edit?supportId=${supportId}
+			</result>
+			<result name="error">/index.jsp</result>
+		</action>
+
+		<action name="help_support_admin_reply"
+			class="com.cubesofttech.action.HelpSupportAction" method="adminReply">
+			<result name="success" type="redirect">help_support_edit?supportId=${supportId}
+			</result>
+			<result name="error">/index.jsp</result>
 		</action>
 	</package>
 

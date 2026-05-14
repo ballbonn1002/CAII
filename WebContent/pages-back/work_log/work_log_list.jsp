@@ -613,6 +613,9 @@
 
             var createTimeStr = item.time_update ? formatDate(item.time_update) + ', ' + formatTime(item.time_update) : '';
             var ipAddress = item.ip_address || '';
+            if (ipAddress.includes(',')) {
+                ipAddress = ipAddress.split(',')[0].trim(); 
+            }
             var latitude = item.latitude || '';
             var longitude = item.longitude || '';
             //console.log(latitude);
@@ -641,7 +644,7 @@
                         '</div>' + descriptionHtml +
                     '</div></td>' +
                     '<td tabindex="0" style="cursor: pointer; text-decoration: underline;" ' +
-                        'data-bs-toggle="popover" data-bs-trigger="focus" data-bs-placement="top"' +
+                        'data-bs-toggle="popover" data-bs-trigger="hover" data-bs-placement="top"' +
                         'data-bs-content="' + item.user_agent + '">' +
                         '<span class="text-gray-800 fw-normal fs-6 d-block">' + createTimeStr + '</span>' +
                         '<span class="fw-normal text-gray-600 fs-6">' + ipAddress + '</span>' +

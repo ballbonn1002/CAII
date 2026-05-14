@@ -1,11 +1,14 @@
 package com.cubesofttech.action;
 
+import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.PrintWriter;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
+import javax.imageio.ImageIO;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -30,12 +33,19 @@ import com.cubesofttech.model.User;
 
 import com.cubesofttech.util.DateUtil;
 import com.cubesofttech.util.FileUtil;
+import com.cubesofttech.util.ReportUtil;
 import com.google.gson.Gson;
 import com.opensymphony.xwork2.ActionSupport;
+
+import net.sf.jasperreports.engine.JasperCompileManager;
 
 public class TravelAction extends ActionSupport {
 
 	private static final long serialVersionUID = 1L;
+	public static final String LOGOPATH = "logoPath";
+	public static final String JASPERPATH = "/WEB-INF/classes/jasper";
+	public static final String IMAGEPATH = "/images";
+
 	Logger log = Logger.getLogger(getClass());
 
 	@Autowired
@@ -191,8 +201,10 @@ public class TravelAction extends ActionSupport {
 			int total;
 			List<Map<String, Object>> list;
 
+			int totalDraft = expenseDAO.countMyTravelDraftNoGroup(userId, dateFrom, dateTo);
+
 			if ("Draft".equals(status)) {
-				total = expenseDAO.countMyTravelDraftNoGroup(userId, dateFrom, dateTo);
+				total = totalDraft;
 
 				int totalPages = Math.max(1, (int) Math.ceil(total / (double) pageSize));
 				if (currentPage > totalPages)
@@ -202,6 +214,7 @@ public class TravelAction extends ActionSupport {
 				int toIdx = Math.min(offset + pageSize, total);
 
 				list = expenseDAO.findMyTravelDraftNoGroup(userId, dateFrom, dateTo, offset, pageSize);
+
 				enrichRows(list);
 
 				setAttrs(request, userListObj, userJSON, status, list, currentPage, pageSize, total, totalPages,
@@ -232,6 +245,31 @@ public class TravelAction extends ActionSupport {
 
 				request.setAttribute("viewMode", "group");
 			}
+
+			Map<String, Integer> counts = expenseDAO.countMyTravelListAllStatus(userId, dateFrom, dateTo);
+
+			if (counts == null) {
+				counts = new HashMap<>();
+			}
+
+			int totalWaiting = counts.getOrDefault("W", 0);
+			int totalApproved = counts.getOrDefault("A", 0);
+			int totalRejected = counts.getOrDefault("R", 0);
+			int totalCanceled = counts.getOrDefault("C", 0);
+			int totalPaid = counts.getOrDefault("P", 0);
+
+			request.setAttribute("total_status_draft", totalDraft);
+			request.setAttribute("total_status_waiting", totalWaiting);
+			request.setAttribute("total_status_approved", totalApproved);
+			request.setAttribute("total_status_rejected", totalRejected);
+			request.setAttribute("total_status_canceled", totalCanceled);
+			request.setAttribute("total_status_paid", totalPaid);
+
+			request.setAttribute("total_status_waiting", totalWaiting);
+			request.setAttribute("total_status_approved", totalApproved);
+			request.setAttribute("total_status_rejected", totalRejected);
+			request.setAttribute("total_status_canceled", totalCanceled);
+			request.setAttribute("total_status_paid", totalPaid);
 
 			return SUCCESS;
 
@@ -402,7 +440,6 @@ public class TravelAction extends ActionSupport {
 			User onlineUser = (User) request.getSession().getAttribute("onlineUser");
 			if (onlineUser == null)
 				return ERROR;
-
 			String departureDate = request.getParameter("departureDate");
 			String userId = request.getParameter("userId");
 			String beginning = request.getParameter("beginning");
@@ -452,8 +489,10 @@ public class TravelAction extends ActionSupport {
 			e.setExpenseId(newExpenseId);
 			e.setExpenseGroupId(0L);
 			e.setExpTypeId("T");
+
 			e.setDtStart(dtStart);
 			e.setDtEnd(dtEnd);
+
 			e.setDtBy(dtBy);
 			e.setUserId(userId);
 			e.setFromLocation(beginning);
@@ -790,11 +829,13 @@ public class TravelAction extends ActionSupport {
 				return ERROR;
 
 			String[] ids = request.getParameterValues("ids");
+
 			String expenseGroupIdStr = request.getParameter("expense_group_id");
 			String status = request.getParameter("status");
 
 			List<Long> expenseIds = new ArrayList<>();
 			if (ids != null) {
+				Arrays.sort(ids, Comparator.comparingLong(Long::parseLong));
 				for (String s : ids) {
 					if (s != null) {
 						String t = s.trim();
@@ -805,18 +846,21 @@ public class TravelAction extends ActionSupport {
 			} else if (expenseGroupIdStr != null && !expenseGroupIdStr.isEmpty()) {
 				long expenseGroupId = Long.parseLong(expenseGroupIdStr);
 				List<Expense> expenseList = expenseDAO.findByGroupId(expenseGroupId);
-				ExpenseGroup expenseGroup = expenseGroupDAO.findById(expenseGroupId);
-				String userId = expenseGroup.getUserId();
 
-				if (userId != null && !userId.isEmpty()) {
-					User user = userDAO.findById(userId);
-					request.setAttribute("receiveBy", user.getNameEN());
-					request.setAttribute("requestBy", user.getNameEN());
-				}
+				ExpenseGroup expenseGroup = expenseGroupDAO.findById(expenseGroupId);
+				String userApprId = expenseGroup.getAppr_user_id();
 
 				for (Expense expense : expenseList) {
 					expenseIds.add(expense.getExpenseId());
 				}
+
+				if (userApprId != null && !userApprId.isEmpty()) {
+					User user = userDAO.findById(userApprId);
+					request.setAttribute("userAppr", user);
+					request.setAttribute("approved_at", expenseGroup.getApproved_at());
+				}
+
+				request.setAttribute("requestAt", expenseGroup.getRequestedAt());
 
 				request.setAttribute("description_appr", expenseGroup.getDescription_appr());
 				request.setAttribute("statusActiveSafe", status);
@@ -958,7 +1002,7 @@ public class TravelAction extends ActionSupport {
 			group.setRequestedAt(now);
 
 			group.setReceivedBy(onlineUser.getId());
-			group.setReceivedAt(now);
+			group.setReceivedAt(null);
 
 			group.setUserCreate(onlineUser.getId());
 			group.setUserUpdate(onlineUser.getId());
@@ -1203,6 +1247,24 @@ public class TravelAction extends ActionSupport {
 
 			request.setAttribute("viewMode", "group");
 
+			Map<String, Integer> counts = expenseDAO.countMyTravelListAllStatus(userId, dateFrom, dateTo);
+
+			if (counts == null) {
+				counts = new HashMap<>();
+			}
+
+			int totalWaiting = counts.getOrDefault("W", 0);
+			int totalApproved = counts.getOrDefault("A", 0);
+			int totalRejected = counts.getOrDefault("R", 0);
+			int totalCanceled = counts.getOrDefault("C", 0);
+			int totalPaid = counts.getOrDefault("P", 0);
+
+			request.setAttribute("total_status_waiting", totalWaiting);
+			request.setAttribute("total_status_approved", totalApproved);
+			request.setAttribute("total_status_rejected", totalRejected);
+			request.setAttribute("total_status_canceled", totalCanceled);
+			request.setAttribute("total_status_paid", totalPaid);
+
 			return SUCCESS;
 
 		} catch (Exception e) {
@@ -1231,12 +1293,15 @@ public class TravelAction extends ActionSupport {
 				List<Expense> expenseList = expenseDAO.findByGroupId(expenseGroupId);
 				ExpenseGroup expenseGroup = expenseGroupDAO.findById(expenseGroupId);
 				userId = expenseGroup.getUserId();
+				String userApprId = expenseGroup.getAppr_user_id();
 
-				if (userId != null && !userId.isEmpty()) {
-					User user = userDAO.findById(userId);
-					request.setAttribute("receiveBy", user.getNameEN());
-					request.setAttribute("requestBy", user.getNameEN());
+				if (userApprId != null && !userApprId.isEmpty()) {
+					User user = userDAO.findById(userApprId);
+					request.setAttribute("userAppr", user);
+					request.setAttribute("approved_at", expenseGroup.getApproved_at());
 				}
+
+				request.setAttribute("requestAt", expenseGroup.getRequestedAt());
 
 				request.setAttribute("expense_group_create_date", expenseGroup.getTimeCreate());
 				request.setAttribute("description_appr", expenseGroup.getDescription_appr());
@@ -1288,6 +1353,7 @@ public class TravelAction extends ActionSupport {
 						detailMaps.add(d);
 					}
 				}
+
 				expMap.put("details", detailMaps);
 
 				// ── Attached files ───────────────────────────────────
@@ -1340,7 +1406,6 @@ public class TravelAction extends ActionSupport {
 			HttpServletRequest request = ServletActionContext.getRequest();
 			String expenseGroupIdStr = request.getParameter("expense_group_id");
 			String descriptionAppr = request.getParameter("description_appr");
-			log.debug(descriptionAppr);
 			User onlineUser = (User) request.getSession().getAttribute("onlineUser");
 			if (onlineUser == null)
 				return ERROR;
@@ -1353,8 +1418,50 @@ public class TravelAction extends ActionSupport {
 			expense.setAppr_user_id(onlineUser.getId());
 			expense.setApproved_at(now);
 			expense.setDescription_appr(descriptionAppr == null || descriptionAppr.isEmpty() ? null : descriptionAppr);
-			expense.setTimeUpdate(now);
 
+			expenseGroupDAO.update(expense);
+
+			return SUCCESS;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ERROR;
+		}
+	}
+
+	// ===================== Travel Paid =====================
+	public String travelPaid() {
+		try {
+
+			HttpServletRequest request = ServletActionContext.getRequest();
+			String expenseGroupIdStr = request.getParameter("expense_group_id");
+			String descriptionAppr = request.getParameter("description_appr");
+			User onlineUser = (User) request.getSession().getAttribute("onlineUser");
+			if (onlineUser == null)
+				return ERROR;
+
+			Long expenseGroupId = Long.parseLong(expenseGroupIdStr);
+			ExpenseGroup expense = expenseGroupDAO.findById(expenseGroupId);
+
+			Timestamp now = DateUtil.getCurrentTime();
+			Calendar cal = Calendar.getInstance();
+			cal.setTime(now);
+
+			if (expense.getStatusId().equals("W")) {
+				// Waiting
+				expense.setApproved_at(now);
+				expense.setDescription_appr(
+						descriptionAppr == null || descriptionAppr.isEmpty() ? null : descriptionAppr);
+				expense.setAppr_user_id(onlineUser.getId());
+			}
+
+			expense.setStatusId("P");
+			expense.setReceivedAt(now);
+
+			short currentMonth = (short) (cal.get(Calendar.MONTH) + 1);
+			Integer currentYear = cal.get(Calendar.YEAR);
+
+			expense.setPaidMonth(currentMonth);
+			expense.setPaidYear(currentYear);
 			expenseGroupDAO.update(expense);
 
 			return SUCCESS;
@@ -1383,11 +1490,51 @@ public class TravelAction extends ActionSupport {
 			expense.setAppr_user_id(onlineUser.getId());
 			expense.setApproved_at(now);
 			expense.setDescription_appr(descriptionAppr == null || descriptionAppr.isEmpty() ? null : descriptionAppr);
-			expense.setTimeUpdate(now);
 
 			expenseGroupDAO.update(expense);
 
 			return SUCCESS;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ERROR;
+		}
+	}
+
+	public String expenseTravelReport() {
+		try {
+
+			HttpServletRequest request = ServletActionContext.getRequest();
+			HttpServletResponse response = ServletActionContext.getResponse();
+			ServletContext context = request.getServletContext();
+
+			String expenseGroupIdStr = request.getParameter("expense_group_id");
+			String jasperPath = context.getRealPath(JASPERPATH);
+			String imagePath = context.getRealPath(IMAGEPATH);
+
+			String basePath = context.getRealPath("");
+
+			Map<String, Object> reportParameter = new HashMap<>();
+
+			File logo = new File(imagePath + "/logo_cubesofttech.png");
+
+			BufferedImage image = ImageIO.read(logo);
+
+			reportParameter.put(LOGOPATH, image);
+			reportParameter.put("basePath", basePath);
+			reportParameter.put("expenseGroupId", expenseGroupIdStr);
+
+			ExpenseGroup expenseGroup = expenseGroupDAO.findById(Long.parseLong(expenseGroupIdStr));
+
+			// เช็คว่ามีตารางลูกไหม
+			if (expenseGroup.getRequestedBy() == null) {
+				ReportUtil.printReportToBrowsePdf(jasperPath, "/expTravel", "expTravel.pdf", reportParameter, request,
+						response);
+			} else {
+				ReportUtil.printReportToBrowsePdf(jasperPath, "/expTravelNew", "expTravel.pdf", reportParameter,
+						request, response);
+			}
+
+			return null;
 		} catch (Exception e) {
 			e.printStackTrace();
 			return ERROR;

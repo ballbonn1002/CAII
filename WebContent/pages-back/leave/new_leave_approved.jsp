@@ -519,7 +519,7 @@
 									<div class="card-toolbar">
 										<div class="d-inline-flex align-items-center justify-content-end gap-2">
 											<!-- Btn Info -->
-											<a href="javascript:void(0)" class="btn btn-icon btn-sm btn-light-info" onclick="leaveStatus(${leave.leave_id})">
+											<a href="javascript:void(0)" class="btn btn-icon btn-sm btn-light-info" onclick="leaveApproveStatus(${leave.leave_id})">
 												<i class="ki-duotone ki-document fs-5">
 													<span class="path1"></span>
 													<span class="path2"></span>
@@ -664,169 +664,11 @@
 </div>
 <!--end:::Main-->
 
-<!--begin::Modal - Leave Detail-->
-<div class="modal fade" id="leaveDetailModal" tabindex="-1" aria-hidden="true">
-	<div class="modal-dialog modal-lg">
-		<div class="modal-content">
-			<!--begin::Header-->
-			<div class="modal-header">
-				<h2 class="modal-title">Leave</h2>
-				<div class="btn btn-icon btn-sm btn-active-light-primary ms-2" data-bs-dismiss="modal" aria-label="Close">
-					<i class="ki-duotone ki-cross fs-1"><span class="path1"></span><span class="path2"></span></i>
-				</div>
-			</div>
-			<!--end::Header-->
-
-			<!--begin::Body-->
-			<div class="modal-body">
-
-				<!-- Leaver Info -->
-				<div class="row gx-5 gy-4">
-					<!-- Left -->
-					<div class="col-md-6">
-						<div class="d-flex align-items-center mb-3 fs-5">
-							<a href="#" class="fw-bold text-primary me-5">#<span id="leaveid"></span></a>
-							<span class="fw-semibold text-dark me-5" id="leavetype"></span>
-							<span class="badge badge-light-primary fs-7 fw-semibold" id="noday"></span>
-						</div>
-
-						<div class="d-flex align-items-center text-gray-700 mb-2 fs-6">
-							<i class="ki-duotone ki-calendar-2 me-2">
-								 <span class="path1"></span>
-								 <span class="path2"></span>
-								 <span class="path3"></span>
-								 <span class="path4"></span>
-								 <span class="path5"></span>
-							</i>
-							<span id="sdate"></span> - <span id="edate"></span>
-						</div>
-
-						<div class="d-flex align-items-center text-gray-700 mb-2 fs-6">
-							<i class="ki-duotone ki-message-text me-2">
-								 <span class="path1"></span>
-								 <span class="path2"></span>
-								 <span class="path3"></span>
-							</i>
-							<span id="desc"></span>
-						</div>
-
-						<span id="leavestatus" class="badge badge-lg mt-3 fs-7 fw-semibold"></span>
-					</div>
-
-					<!-- Right -->
-					<div class="col-md-6">
-						<div class="fw-semibold text-dark mb-2 fs-5">
-							<i class="ki-duotone ki-user-square fs-2">
-								<span class="path1"></span>
-								<span class="path2"></span>
-								<span class="path3"></span>
-							</i>
-							<span class="employeeId" id=""></span>
-							<span class="username" id=""></span>
-							<span id="userid"></span>
-						</div>
-
-						<div class="d-flex align-items-center text-gray-700 mb-2 fs-6">
-							<i class="ki-duotone ki-time me-2 fs-2">
-								 <span class="path1"></span>
-								 <span class="path2"></span>
-							</i>
-							<span id="stime"></span> - <span id="etime"></span>
-						</div>
-
-						<div class="d-flex align-items-center text-gray-700 mb-2 fs-6">
-							<i class="ki-duotone ki-document fs-2 me-2" id="mdFileIcon">
-								 <span class="path1"></span>
-								 <span class="path2"></span>
-							</i>
-							<a id="file" href="#" target="_blank" class="text-primary text-hover-underline"></a>
-						</div>
-
-						<div>
-							Request By: <span id="ucEmpId"></span> <span id="ucName"></span> , <span id="timecreate"></span>
-						</div>
-
-					</div>
-				</div>
-				<!-- Leaver Info -->
-
-				<hr style="border-top: 1px dashed #ced4da; opacity: 1;" class="my-5">
-
-				<!-- Approver Info -->
-				<div class="row gx-5 gy-4">
-					<div id="status_panel" class="mt-5" style="display: none;">
-						<h3 class="text-primary fw-semibold mb-3" id="status_title"></h3>
-
-						<div class="row gx-5 gy-3 fs-6" id="approved_detail">
-
-							<!-- Left -->
-							<div class="col-md-6">
-								<!-- Approver -->
-								<div class="d-flex align-items-center text-gray-700 mb-2 fs-6">
-										<i class="ki-duotone ki-user-tick me-2">
-											<span class="path1"></span>
-											<span class="path2"></span>
-											<span class="path3"></span>
-										</i>
-										<span id="approver"></span>
-								</div>
-								<!-- Approver -->
-
-								<!-- Reason Approve -->
-								<div class="d-flex align-items-center text-gray-700 mb-2 fs-6">
-										<i class="ki-duotone ki-document me-2">
-											<span class="path1"></span>
-											<span class="path2"></span>
-										</i>
-										<span id="reason_s"></span>
-								</div>
-								<!-- Reason Approve -->
-							</div>
-
-							<!-- Right -->
-							<div class="col-md-6">
-								<!-- Date Approve -->
-								<div class="d-flex align-items-center text-gray-700 mb-2 fs-6">
-										<i class="ki-duotone ki-calendar-2 me-2">
-											<span class="path1"></span>
-											<span class="path2"></span>
-											<span class="path3"></span>
-											<span class="path4"></span>
-											<span class="path5"></span>
-										</i>
-										<span id="timeupdate"></span>
-								</div>
-								<!-- Date Approve -->
-							</div>
-
-						</div>
-
-					</div>
-					
-					<div id="change_panel">
-						<h5 class="text-primary sbold" id="status_title_action" style="margin-bottom:20px;"></h5>
-						<div><span>Reason <span class="text-danger">*</span></span></div>
-						<textarea class="form-control" rows="3" id="appr_reason"></textarea>
-						<div class="reason invalid-feedback" style="display: none;"></div>
-					</div>
-					
-				</div>
-				<!-- Approver Info -->
-
-			</div>
-			<!--end::Body-->
-
-			<!--begin::Footer-->
-			<div class="modal-footer">
-				<button type="button" class="btn btn-lg btn-light" data-bs-dismiss="modal">Close</button>
-				<button type="button" value="2" class="btn btn-lg btn-danger" id="btn_reject">Reject</button>
-				<button type="button" value="1" class="btn btn-lg btn-success" id="btn_approve">Approved</button>
-			</div>
-			<!--end::Footer-->
-		</div>
-	</div>
-</div>
-<!--end::Modal - Leave Detail-->
+<jsp:include page="/pages-back/common/leave_modal.jsp">
+	<jsp:param name="showApproverInfo" value="true"/>
+	<jsp:param name="showApprovePanel" value="true"/>
+	<jsp:param name="showApproveButton" value="true"/>
+</jsp:include>
 
 <script>
 $(document).ready(function(){
@@ -1048,7 +890,7 @@ function setModalViewMode(isWaiting) {
 		$("#btn_approve").hide();
 	}
 }
-
+/* 
 function leaveStatus(id) {
 	const modal = new bootstrap.Modal(document.getElementById('leaveDetailModal'));
 	modal.show();
@@ -1065,8 +907,8 @@ function leaveStatus(id) {
 			console.log(obj);
 
 			$('#leaveid').html(obj.leave_id);
-			$('.employeeId').html(obj.employeeId + " ");
-			$('.username').html(obj.name);
+			$('#employeeId').html(obj.employeeId + " ");
+			$('#username').html(obj.name);
 			$('#stime').html(obj.start_time);
 			$('#etime').html(obj.end_time);
 			$('#desc').html(obj.description);
@@ -1135,7 +977,10 @@ function leaveStatus(id) {
 				//CASE: Approved / Reject / Cancel
 
 				setModalViewMode(false);
-				$('#approver').html(obj.user_update);
+				//$('#approver').html(obj.user_update);
+				$('#aprEmpId').html(obj.aprEmpId + " ");
+				$('#aprName').html(obj.aprName + " - ");
+				$('#aprRole').html(obj.aprRole);
 				$('#timeupdate').html(moment(obj.time_update).format("D MMM YYYY"));
 				$('#reason_s').html(obj.reason);
 
@@ -1160,7 +1005,7 @@ function leaveStatus(id) {
 			alert("Error retrieving leave detail.");
 		}
 	});
-}
+} */
 </script>
 <script>
 function changStatus(id) {
@@ -1283,7 +1128,7 @@ function sentData(id, value) {
 	function exportDataToExcel() {
 		var name1 = document.getElementById("name1") ? document.getElementById("name1").value : "";
 		var name2 = document.getElementById("name2") ? document.getElementById("name2").value : "";
-		var appr = document.getElementById("leaveStatus") ? document.getElementById("leaveStatus").value : "";
+		var appr = document.getElementById("leaveApproveStatus") ? document.getElementById("leaveApproveStatus").value : "";
 		var leaveType = document.getElementById("leaveType") ? document.getElementById("leaveType").value : "";
 		
 		var sd = document.getElementById("startdate") ? document.getElementById("startdate").value : "";

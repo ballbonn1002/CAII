@@ -143,7 +143,98 @@ ALTER TABLE expense_group ADD COLUMN appr_user_id varchar(45) DEFAULT NULL;
 DELETE FROM `tag`;
 DELETE FROM `article_tag`
 
--- PROD 28 APR 2026 #2
+-- PROD 29 APR 2026
+
+-- 06/05/2026 boom(Intern): add new tables for Help & Support menu -- 
+-- 1. Table: support_menu
+CREATE TABLE support_menu (
+    support_menu_id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    menu_name VARCHAR(32) NULL,
+    description VARCHAR(1024),
+    user_create VARCHAR(32) NULL,
+    user_update VARCHAR(32) NULL,
+    time_create TIMESTAMP NULL,
+    time_update TIMESTAMP NULL
+);
+
+-- add menu options for help & support
+INSERT INTO support_menu (
+    menu_name, 
+    description, 
+    user_create, 
+    user_update
+) VALUES 
+('Check In / Check Out', NULL, 'cft.admin', 'cft.admin'),
+('Calendar and Check List', NULL, 'cft.admin', 'cft.admin'),
+('My Leave', NULL, 'cft.admin', 'cft.admin'),
+('Overtime Request', NULL, 'cft.admin', 'cft.admin'),
+('My Travel', NULL, 'cft.admin', 'cft.admin'),
+('Equipment', NULL, 'cft.admin', 'cft.admin'),
+('Borrow', NULL, 'cft.admin', 'cft.admin'),
+('Master', NULL, 'cft.admin', 'cft.admin'),
+('Other', NULL, 'cft.admin', 'cft.admin');
+
+-- 2. Table: support
+CREATE TABLE support (
+    support_id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    user_id VARCHAR(32) NULL,
+    issue_date DATE NULL,
+    categorized VARCHAR(32) NULL,
+    support_menu_id VARCHAR(32) NULL,
+    status VARCHAR(32) NULL,
+    description VARCHAR(1024),
+    user_create VARCHAR(32) NULL,
+    user_update VARCHAR(32) NULL,
+    time_create TIMESTAMP NULL,
+    time_update TIMESTAMP NULL
+);
+
+-- 3. Table: support_detail
+CREATE TABLE support_detail (
+    support_detail_id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    support_id VARCHAR(32) NULL,
+    message VARCHAR(1024) NULL,
+    status VARCHAR(32) NULL,
+    description VARCHAR(1024),
+    user_create VARCHAR(32) NULL,
+    user_update VARCHAR(32) NULL,
+    time_create TIMESTAMP NULL,
+    time_update TIMESTAMP NULL
+);
+
+-- Add permissions for Help & Support --
+INSERT INTO authorized_object (authorized_object_id, name, description, active, authorized_object_group_id) 
+VALUES ('helpsupport.view', 'helpsupport.view', 'เมนู Help & Support', '1', '1');
+INSERT INTO authorized_object (authorized_object_id, name, description, active, authorized_object_group_id) 
+VALUES ('helpsupport.manage', 'helpsupport.manage', 'จัดการ Help & Support (Admin)', '1', '1');
+
+-- PROD 6 May 2026
+
+-- 07/05/2026 boom(Intern): modify Help & Support table for Thai Language support -- 
+-- แปลง Character Set ของตาราง support_menu
+ALTER TABLE support_menu 
+CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- แปลง Character Set ของตาราง support
+ALTER TABLE support 
+CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- แปลง Character Set ของตาราง support_detail
+ALTER TABLE support_detail 
+CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+
+-- 08/05/2026 boom(Intern): Modify 'announcement' table for viewer logs --
+ALTER TABLE announcement 
+ADD COLUMN viewer_logs LONGTEXT NULL,
+ADD COLUMN unique_readcount INT DEFAULT 0;
+
+-- PROD 12 MAY 2026
+
+-- 13/05/2026 boom(Intern) : Update categorized field in support table to use numeric values -- 
+UPDATE support SET categorized = '1' WHERE categorized = 'Technical Issue';
+UPDATE support SET categorized = '2' WHERE categorized = 'Inquiry / Question';
+UPDATE support SET categorized = '3' WHERE categorized = 'Feature Request';
 
 -- 15/05/2026 Eric: CREATE TABLE log_action
 CREATE TABLE `log_action` (

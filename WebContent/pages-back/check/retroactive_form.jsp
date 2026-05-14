@@ -776,6 +776,23 @@ $("#mdSubmitBtn").click(function() {
 	saveCheckInOut(userId, workType, checkType, "retro", date, time, reason, lat, lng);
 });
 
+$("#mdReason").on("keydown", function(e) {
+    const symbols = [":", ";", "'"];
+    if (symbols.includes(e.key)) {
+        e.preventDefault();
+    }
+    if (e.key === "Enter") {
+        e.preventDefault();
+    }
+});
+
+$("#mdReason").on("input", function() {
+    let value = $(this).val();
+    value = value.replace(/[:;']/g, "");
+    value = value.replace(/\n/g, "");
+    $(this).val(value);
+});
+
 // Save Function
 function saveCheckInOut(userId, workType, checkType, mode, selectDate, selectTime, reason, lat, lng){
 	console.log(userId+"|"+workType+"|"+checkType+"|"+mode+"|"+selectDate+"|"+selectTime+"|"+reason);

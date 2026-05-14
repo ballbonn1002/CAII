@@ -30,6 +30,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cubesofttech.dao.AnnouncementDAO;
 import com.cubesofttech.dao.FileUploadDAO;
+import com.cubesofttech.dao.UserDAO;
 import com.cubesofttech.model.Announcement;
 import com.cubesofttech.model.FileUpload;
 import com.cubesofttech.model.User;
@@ -53,6 +54,9 @@ public class AnnouncementAction extends ActionSupport {
 
 	@Autowired
 	public FileUploadDAO fileuploadDAO;
+
+	@Autowired
+	public UserDAO userDAO;
 
 	private String topic;
 	private String anndate;
@@ -283,6 +287,51 @@ public class AnnouncementAction extends ActionSupport {
 			Integer announceId = Integer.parseInt(id);
 			Announcement announce = announcementDAO.findById(announceId);
 			if (announce != null) {
+				User onlineUser = (User) request.getSession().getAttribute("onlineUser");
+				if (onlineUser != null) {
+					String userId = onlineUser.getId();
+					String viewerLogsStr = announce.getViewerLogs();
+					
+					Gson gson = new Gson();
+					java.lang.reflect.Type listType = new com.google.gson.reflect.TypeToken<List<Map<String, String>>>(){}.getType();
+					List<Map<String, String>> viewerLogsList;
+					
+					if (viewerLogsStr != null && !viewerLogsStr.trim().isEmpty()) {
+						viewerLogsList = gson.fromJson(viewerLogsStr, listType);
+						if (viewerLogsList == null) {
+							viewerLogsList = new java.util.ArrayList<>();
+						}
+					} else {
+						viewerLogsList = new java.util.ArrayList<>();
+					}
+					
+					SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX");
+					String currentTime = sdf.format(new Date());
+					
+					boolean isNewUniqueReader = true;
+					for (Map<String, String> logEntry : viewerLogsList) {
+						if (userId.equals(logEntry.get("user_id"))) {
+							isNewUniqueReader = false;
+							logEntry.put("read_time", currentTime);
+							break;
+						}
+					}
+					
+					if (isNewUniqueReader) {
+						Map<String, String> userLog = new java.util.HashMap<>();
+						userLog.put("user_id", userId);
+						userLog.put("read_time", currentTime);
+						viewerLogsList.add(userLog);
+						
+						Integer uniqueCount = announce.getUniqueReadcount() != null ? announce.getUniqueReadcount() : 0;
+						announce.setUniqueReadcount(uniqueCount + 1);
+					}
+					
+					announce.setViewerLogs(gson.toJson(viewerLogsList));
+					
+
+				}
+
 				Integer currentCount = announce.getReadcount() != null ? announce.getReadcount() : 0;
 				announce.setReadcount(currentCount + 1);
 				announcementDAO.update(announce);
@@ -292,6 +341,19 @@ public class AnnouncementAction extends ActionSupport {
 
 			fileUploadlist = announcementDAO.findByPageAndPageId("announcementFiles", String.valueOf(id));
 			request.setAttribute("announcementFiles", fileUploadlist);
+
+			try {
+				List<User> users = userDAO.findAll();
+				Map<String, String> userMap = new java.util.HashMap<>();
+				if (users != null) {
+					for (User u : users) {
+						userMap.put(u.getId(), u.getNameEN());
+					}
+				}
+				request.setAttribute("userMap", userMap);
+			} catch (Exception e) {
+				log.error("Error creating userMap", e);
+			}
 
 			return SUCCESS;
 		} catch (Exception e) {

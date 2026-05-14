@@ -42,6 +42,9 @@ public interface ExpenseDAO {
 	public List<Map<String, Object>> findSubmitPreviewByExpenseIds(List<Long> expenseIds) throws Exception;
 
 	public int countMyTravelDraftNoGroup(String userId, java.sql.Date dateFrom, java.sql.Date dateTo) throws Exception;
+	
+	public Map<String, Integer> countMyTravelListAllStatus(String userId, java.sql.Date dateFrom, java.sql.Date dateTo)
+			throws Exception;
 
 	public List<Map<String, Object>> findMyTravelDraftNoGroup(String userId, java.sql.Date dateFrom,
 			java.sql.Date dateTo, int offset, int limit) throws Exception;

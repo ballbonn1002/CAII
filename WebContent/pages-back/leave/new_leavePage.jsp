@@ -7,6 +7,7 @@
 <%@ page trimDirectiveWhitespaces="true"%>
 <%@ taglib uri="http://tiles.apache.org/tags-tiles" prefix="tiles"%>
 
+
 <!DOCTYPE html>
 <html>
 	<c:set var="now" value="<%=new java.util.Date()%>" />
@@ -51,9 +52,11 @@
 		<!--end::Custom Javascript-->
 		<!--end::Javascript-->
 		<link href="assets/plugins/global/plugins.bundle.css" rel="stylesheet" type="text/css"/>
-<script src="assets/plugins/global/plugins.bundle.js"></script>
-<link href="https://cdn.jsdelivr.net/npm/summernote@0.9.0/dist/summernote-bs4.min.css" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/summernote@0.9.0/dist/summernote-bs4.min.js"></script>
+		<script src="assets/plugins/global/plugins.bundle.js"></script>
+		<link href="https://cdn.jsdelivr.net/npm/summernote@0.9.0/dist/summernote-bs4.min.css" rel="stylesheet">
+    	<script src="https://cdn.jsdelivr.net/npm/summernote@0.9.0/dist/summernote-bs4.min.js"></script>
+    	
+    	<script src="https://cdnjs.cloudflare.com/ajax/libs/compressorjs/1.2.1/compressor.min.js"></script>
 	</head>
 	<body class="app-default">
 
@@ -68,7 +71,6 @@
 
 			<!--begin::Content wrapper-->
 			<div class="d-flex flex-column flex-column-fluid">
-
 				<!--begin::Toolbar-->
 				<div id="kt_app_toolbar" class="app-toolbar py-3 py-lg-6">
 					<!--begin::Toolbar container-->
@@ -99,45 +101,18 @@
 								<div class="card card-flush bgi-no-repeat bgi-size-contain bgi-position-x-center border-0 mb-5 mb-xl-10">
 									<div class="card-body">
 										<div class="row g-5">
-
-											<!-- ลาพักร้อน -->
-											<%-- <div class="col-6 col-md-4 col-xl-3">
-												<div class="d-flex align-items-center">
-													<div class="symbol symbol-50px me-4">
-														<span class="symbol-label bg-light-success">
-															<i class="ki-duotone ki-airplane fs-2x text-success">
-																<span class="path1"></span><span class="path2"></span>
-															</i>
-														</span>
-													</div>
-													<div class="d-flex flex-column">
-														<div class="d-flex align-items-center">
-															<span class="fs-2 fw-bold text-dark">
-																<fmt:formatNumber type="number" pattern="#.##" value="${leave_1}"/>/<fmt:formatNumber type="number" pattern="#.##" value="${quota_1-3}"/>
-															</span>
-															<c:if test="${LeaveWAnumT1.doubleValue() > 0}">
-																<span class="badge badge-sm badge-warning ms-1">
-																	<fmt:formatNumber type="number" pattern="#.##" value="${LeaveWAnumT1}"/>
-																</span>
-															</c:if>							
-														</div>
-														<span class="text-muted fs-5">${type_1}</span>
-													</div>
-												</div>
-											</div> --%>
-
 											<!-- ลาพักร้อน + ลากิจ -->
 											<div class="col-6 col-md-4 col-xl-3">
 												<div class="d-flex align-items-center">
 													<div class="symbol symbol-50px me-4">
 														<span class="symbol-label bg-light-primary">
 														<i class="ki-duotone ki-car-2 fs-2x text-primary">
-														<span class="path1"></span>
-														<span class="path2"></span>
-														<span class="path3"></span>
-														<span class="path4"></span>
-														<span class="path5"></span>
-														<span class="path6"></span>
+															<span class="path1"></span>
+															<span class="path2"></span>
+															<span class="path3"></span>
+															<span class="path4"></span>
+															<span class="path5"></span>
+															<span class="path6"></span>
 														</i>
 														</span>
 													</div>
@@ -252,9 +227,9 @@
 													<div class="symbol symbol-50px me-4">
 														<span class="symbol-label bg-light-dark">
 														<i class="ki-duotone ki-brifecase-cros fs-2x text-dark">
-														<span class="path1"></span>
-														<span class="path2"></span>
-														<span class="path3"></span>
+															<span class="path1"></span>
+															<span class="path2"></span>
+															<span class="path3"></span>
 														</i>
 														</span>
 													</div>
@@ -313,15 +288,12 @@
 
 				<!--begin::Content-->
 				<div id="kt_app_content" class="app-content flex-column-fluid">
-
 					<!--begin::Content container-->
 					<div id="kt_app_content_container" class="app-container container-fluid">
-
 						<div class="d-flex flex-row">
 							<div class="flex-row-fluid mb-5">
 								<div class="card card-flush bgi-no-repeat bgi-size-contain bgi-position-x-center border-0 mb-5 mb-xl-10">
 									<div class="card-body">
-
 										<form method="post" id="formid" class="form-horizontal" action="new_LeaveEdit_Do" enctype="multipart/form-data">
 
 											<!--Header -->
@@ -334,6 +306,11 @@
 												<!-- ด้านขวา -->
 												<!--DDL Status -->
 												<div class="d-flex justify-content-end">
+													<!-- Leave ID -->
+													<div class="d-flex align-items-center fw-bold fs-4 text-primary me-7" id="leaveidInfo">
+														#<span id="leaveId"></span>
+													</div>
+													<!-- Leave ID -->
 													<select class="form-select" id="status" name="status" disabled required style="min-width: 200px; max-width: 300px;">
 														<option value="0">Wait for approve</option>
 														<option value="1">Approved</option>
@@ -475,8 +452,7 @@
 														<textarea
 															class="form-control"
 															style="word-break: break-all; white-space: normal;" maxlength="1024"
-															name="description"
-															id="description"
+															name="description" id="description"
 															rows="3" placeholder="Enter a reason."
 															required></textarea>
 
@@ -484,36 +460,6 @@
 
 														<div class="text-danger mt-2">กรุณาระบุเหตุผลในการลา ตัวอย่าง ลางานเนื่องจากท้องเสีย</div>
 													</div>
-
-													<!--File Upload -->
-													<%-- <div class="mb-10">
-														<label class="form-label fs-5">Attach files</label>
-														<div class="d-flex flex-column">
-														
-															<!-- ปุ่มแนว Metronic แต่ยังใช้ ID/NAME เดิม -->
-															<label for="myFile" id="lbFile" class="btn btn-primary w-150px mb-2 d-inline-flex align-items-center justify-content-center gap-2" style="height: 40px;">
-																Attach files
-																<input type="file" id="myFile" name="fileUpload" style="display:none;" accept="image/*, application/zip" onchange="showFileName(this)">
-															</label>
-														
-															<!-- Hidden inputs ตามต้นฉบับ -->
-															<input type="hidden" name="fileUploadSize" value="${size}" id="size">
-															<input type="hidden" name="fileUploadId" id="fileUploadId">
-														
-															<!-- ข้อความเตือน -->
-															<div class="text-danger mb-2">
-																กรุณาอัปโหลดเฉพาะไฟล์ชื่อภาษาอังกฤษเท่านั้น
-															</div>
-														
-															<a target="_blank" id="linkImage" class="mt-3 border border-gray-300 rounded px-4 py-3 bg-light text-gray-700">
-																ยังไม่ได้เลือกไฟล์
-															</a>
-														
-															<!-- ภาพ preview -->
-															<!-- <img id="frame" src="" style="max-width: 150px; display: none; margin-top: 10px;" /> -->
-														
-														</div>
-														</div> --%>
 
 													<!--File Upload -->
 													<div class="mb-10">
@@ -551,7 +497,15 @@
 											</div>
 
 										</form>
-
+										<div class="py-9">
+											<div class="fs-6" id="requestInfo">
+												Request By : <span class="" id="ucEmpId"></span> <span id="ucName"></span> , <span id="timeCreate"></span>
+											</div>
+											<div class="fs-6" id="approveInfo">
+												Approved By : <span class="" id="aprEmpId"></span> <span class="" id="aprName"></span> - <span id="aprRole"></span> , <span id="timeUpdate"></span>
+												
+											</div>
+										</div>
 									</div>
 								</div>
 							</div>
@@ -559,7 +513,6 @@
 
 					</div>
 					<!--end::Content container-->
-
 				</div>
 				<!--end::Content-->
 
@@ -574,7 +527,6 @@
 //var action = '${action}';
 var action = '${empty action ? "" : action}';
 console.log("action = " + action);
-
 $(document).ready(function () {
 	$('#halfDay').on('change', function () {
 		if (action == 'Edit' && $('#status_hidden').val() != '0') return;
@@ -623,7 +575,6 @@ $(document).ready(function () {
 	$('#myFile').on("change", function () {
 		const file = this.files[0];
 		const fileName = this.files[0].name;
-
 		const forbiddenChars = /[\/:*?"<>|]/;
 
 		if (forbiddenChars.test(fileName)) {
@@ -679,7 +630,6 @@ $(function () {
 	var leaveTypes;
 	leaveTypes = JSON.parse('${leaveType}');
 	let leaveCheck = [${leave1Check},${leave2Check},${leave3Check},'','',${leave6Check}];
-	console.log(leaveCheck);
 	for (let i = 0; i < leaveTypes.length; i++) {
 		if (leaveTypes[i].id == '1' || leaveTypes[i].id == '2' || leaveTypes[i].id == '3' || leaveTypes[i].id == '6') {
 			if (leaveTypes[i].id == '6') {
@@ -714,13 +664,11 @@ $(function () {
 		} else if (leaveTypes[i].id == '5') {
 			// Leave w/o pay can be created by user who has 'leave.approve'
 			<perm:permission object="leave.approve">
-
 				let radio =	'<div class="col-6 col-sm-6 col-md-3"><div class="form-check form-check-custom form-check-solid mb-3">'
 					+'<input class="form-check-input me-3" type="radio" name="leaveType" id="lt_'+leaveTypes[i].id+'" value="'+leaveTypes[i].id+'" required>'+leaveTypes[i].name
 					+'</div></div>'
 					+'<input type="hidden" class="hide" name="leaveType_hidden" id="lt_hidden">';
 			$('#leaveTypes').addClass('row g-6').append(radio);
-
 			</perm:permission>
 		} else if (leaveTypes[i].id != '9') {
 			let radio =	'<div class="col-6 col-sm-6 col-md-3"><div class="form-check form-check-custom form-check-solid mb-3">'
@@ -742,11 +690,9 @@ $(function () {
 	if (leave6Container.length) { // validate #label_lt_6
 		if (month <= 2) { // if Jan, Feb, Mar : display "ลาพักร้อนที่เหลือจากปีก่อน"
 			leave6Container.show();
-			console.log("Leave ID 6: SHOW (Month <= 2)");
 		} else {
 			leave6Container.hide();
 			$('#lt_6').prop('checked', false);
-			console.log("Leave ID 6: HIDE (Month > 2). Unchecked.");
 		}
 	}
 	// END NEW LOGIC: Always render leave ID 6 and control visibility by month/checkbox logic
@@ -789,6 +735,7 @@ $(() => {
 	if (action == 'Edit') {
 		var leave = ${leave};
 		var fileLeave = ${fileLeave};
+		var leaveInfo = JSON.parse('${leaveInfo}');
 		user = leave.userId;
 		manager = leave.apprUserId;
 		department = leave.leaveStatusId.toString();
@@ -802,13 +749,55 @@ $(() => {
 			$('form').attr('action', 'new_LeaveEdit_Do');
 		}
 		
+		var aprEmpId;
+		var aprName;
+        var apprUserId;
+        var aprRole;
+        var ucEmpId;
+        var ucName;
+        var timeCreate;
+        var timeUpdate;
+		if (leaveInfo && leaveInfo.length > 0) {
+			
+			aprEmpId = leaveInfo[0].apr_emp_id;
+			aprName = leaveInfo[0].apr_name;
+	        apprUserId = leaveInfo[0].appr_user_id;
+	        aprRole = leaveInfo[0].apr_role;
+	        ucEmpId = leaveInfo[0].uc_emp_id;
+	        ucName = leaveInfo[0].uc_name;
+	        timeCreate = moment(leaveInfo[0].time_create).format("DD MMM YYYY HH:mm");
+	        timeUpdate = moment(leaveInfo[0].time_update).format("DD MMM YYYY HH:mm");
+		}
 		if (leave.leaveStatusId.toString() != '0') {
 		    $('input[name="leaveType"]').prop('disabled', true);
 			$('#status, #date_from, #date_to, #halfDay, #description, #myFile, #removeFileBtn, #approver, #submitBtn').prop('disabled', true);
 		    $('input[name="leaveType"]').closest('.form-check').css('pointer-events', 'none').css('opacity', '0.6');
+			$('#leaveidInfo').show();
+			$('#requestInfo').show();
+		    $('#approveInfo').show();
+		    
+		    $('#aprEmpId').text(aprEmpId);
+	        $('#aprName').text(aprName);
+	        $('#aprRole').text(aprRole);
+	        $('#timeUpdate').text(timeUpdate);
+	        
+	        $('#ucEmpId').text(ucEmpId);
+	        $('#ucName').text(ucName);
+	        $('#timeCreate').text(timeCreate);
 		}
+		else if(leave.leaveStatusId.toString() == '0'){
+			$('#leaveidInfo').show();
+			$('#requestInfo').show();
+		    $('#approveInfo').hide();
+			
+			$('#ucEmpId').text(ucEmpId);
+	        $('#ucName').text(ucName);
+	        $('#timeCreate').text(timeCreate);
+		}
+		
+		$('#leaveId').text('${leaveId}');
 
-	} else {
+	} else {	//Add
 		user = "${onlineUser.id}";
 		manager = "${onlineUser.managerId}";
 		if (la == '1') {
@@ -816,6 +805,10 @@ $(() => {
 		} else {
 			$('form').attr('action', 'new_LeaveAdd_Do');
 		}
+		$('#leaveidInfo').hide();
+		$('#requestInfo').hide();
+		$('#approveInfo').hide();
+		
 		if (la == '1') {
 			<perm:permission object="leave.viewall">
 				document.getElementById('user').disabled = false;
@@ -828,7 +821,6 @@ $(() => {
 	manager = manager.toLowerCase();
 
 	/* Date from leave calendar */
-
 	$('#date_from').val('${date}');
 	$('#date_to').val('${date}');
 	$('#amount').val(1);
@@ -849,46 +841,6 @@ $(() => {
 		}
 	}
 
-	/* $('.input-daterange').change(function(){
-	let amount = 0;
-	let holiday_count = 0;
-	let from = new Date( toISODate( $('#date_from').val() ) );
-	let to = new Date( toISODate( $('#date_to').val() ) );
-	let halfDay = $('#halfDay').val();
-	if(halfDay !== "0"){
-	$('#date_to').val($('#date_from').val());
-	$('#date_to_hidden').val($('#date_from').val());
-	$('#amount').val(0);
-	$('#amount_hidden').val(0);
-	} else {
-	if(from < to){
-		amount = ((to-from)/86400000)+1;
-		for(let i=from; i<to; i.setDate(i.getDate()+1)){
-			for(let j=0; j<holidays.length; j++){
-				let holiday_ts = toTimestamp2(holidays[j]);
-				if(i.getTime() == holiday_ts){
-					holiday_count++;
-				}
-			}
-			console.log(holiday_count);
-			if(i.getDay() == '0' || i.getDay() == '6'){
-				holiday_count++;
-			}
-		}
-		amount -= holiday_count;
-	} else if(from > to){
-		$('#date_from').val('');
-		$('#date_to').val('');
-			} else if(from.getTime() === to.getTime() && halfDay === "0"){
-		amount = 1;
-	} else if(from.getTime() === to.getTime() && halfDay !== "0"){
-		amount = 0;
-	}
-	$('#amount').val(amount);
-	$('#amount_hidden').val(amount);
-	//console.log($('#amount_hidden').val());
-	}
-	}); */
 	function handleDateChange() {
 		let amount = 0;
 		let holiday_count = 0;
@@ -1058,10 +1010,10 @@ $(() => {
 	/* End Applicant/Approver List */
 
 	console.log(leave);
-	console.log(fileLeave);
 	/* Start Leave Edit init */
 	if (leave != null) {
 		$('#user_hidden').val(leave.userCreate);
+		//$('#leaveId').val(leave.leaveId);
 		$('#leaveId_hidden').val(leave.leaveId);
 		console.log($('#leaveId_hidden').val());
 		$('#status_hidden').val(leave.leaveStatusId);
@@ -1089,13 +1041,6 @@ $(() => {
 		$('#halfDay').val(leave.halfDay).change();
 		$('#approver').val(leave.apprUserId).change();
 
-		// old
-		/* if(fileLeave != ''){
-		   $('#linkImage').text(fileLeave.name+fileLeave.type);
-		   $('#linkImage').attr('href', 'preview_File?id='+fileLeave.fileId);
-		   $('#fileUploadId').val(fileLeave.fileId);
-		} */
-
 		// new
 		if (fileLeave != '' && fileLeave != null) {
 			const fullFileName = fileLeave.name + fileLeave.type;
@@ -1107,22 +1052,6 @@ $(() => {
 	/* End Leave Edit init */
 
 	const qThisYear = '${quotaThisYear}';
-	/* beforeSubmit = function(){
-		var spinner = $('#loader');
-		var form = $('#formid');
-		var reportValidity = form[0].reportValidity();
-		if(reportValidity){
-			spinner.show();
-			$('#btn_submit').prop('disabled', true);
-			console.log(form);
-			form.submit();
-			
-			// Refresh the window that opened this one, if it exists to show the latest data
-			if (window.opener) {
-	            window.opener.location.reload();
-	        }
-		}
-	} */
 
 
 	// begin checkbox ลาปีหน้า ==============================================================
@@ -1144,32 +1073,7 @@ $(() => {
 	}
 	// display hide checkbox ลาปีหน้า
 
-
-	/* if($.fn.datetimepicker && $.fn.datetimepicker.DPGlobal) {
-	    var currentTemplate = $.fn.datetimepicker.DPGlobal.template;
-	    var newTemplate = currentTemplate.replace(/fa-angle-left/g, 'fa-arrow-left')
-	                                     .replace(/fa-angle-right/g, 'fa-arrow-right');
-	    
-	    $.fn.datetimepicker.DPGlobal.template = newTemplate;
-	    
-	    $.fn.datetimepicker.DPGlobal.headTemplate = 
-	    '<thead>'+
-	        '<tr>'+
-	            '<th class="prev" style="visibility: visible;">'+
-	                '<i class="fa fa-arrow-left" aria-hidden="true"></i>'+
-	            '</th>'+
-	            '<th colspan="5" class="switch"></th>'+
-	            '<th class="next" style="visibility: visible;">'+
-	                '<i class="fa fa-arrow-right" aria-hidden="true"></i>'+
-	            '</th>'+
-	        '</tr>'+
-	    '</thead>';
-	}
-
-	$('#date_from, #date_to').closest('.date-picker').removeClass('date-picker'); */
-
 	function updateDatePickerRange(isNextYear) {
-		//debugger;
 		var currentYear = new Date().getFullYear();
 		var targetYear = isNextYear ? (currentYear + 1) : currentYear;
 
@@ -1249,7 +1153,6 @@ $(() => {
 
 		} else {
 			userOnChange();
-			console.log("Current Year Leave: Re-checking quota for leave types.");
 
 			// if nextYearLeave = false : control visibility by month logic
 			if (leave6Container.length) {
@@ -1275,13 +1178,9 @@ $(() => {
 });
 
 function userOnChange() {
-	//console.log("[userOnChange]");
 
 	var empId = $('#user').find(":selected").text().split(" ")[0];
-	//console.log("[userOnChange] empId = " + empId);
-
 	var userId = $('#user').val();
-	//console.log("[userOnChange] userId  = " + userId);
 
 	$.ajax({
 		url: "getManagerIdAndManagerName",
@@ -1340,29 +1239,6 @@ function userOnChange() {
 </script>
 
 <script>
-/* document.addEventListener('DOMContentLoaded', function () {
-  //Start time picker
-  flatpickr("#start_time", {
-    enableTime: true,
-    noCalendar: true,
-    dateFormat: "H:i",
-    time_24hr: true,
-    defaultHour: 9,
-    defaultMinute: 0,
-    defaultDate: "09:00",
-  });
-
-  //End time picker
-  flatpickr("#end_time", {
-    enableTime: true,
-    noCalendar: true,
-    dateFormat: "H:i",
-    time_24hr: true,
-    defaultHour: 18,
-    defaultMinute: 0,
-    defaultDate: "18:00",
-  });
-}); */
 document.addEventListener("DOMContentLoaded", function () {
 	// Start Time picker
 	const startTimePicker = new tempusDominus.TempusDominus(document.getElementById("time_from"), {
@@ -1444,41 +1320,6 @@ function beforeSubmit() {
 
 <script>
 document.addEventListener("DOMContentLoaded", function () {
-	/*   // Start Date Picker
-	  const startPicker = new tempusDominus.TempusDominus(document.getElementById("date_from"), {
-	    localization: {
-	      format: "dd MMM yyyy",
-	    },
-	    display: {
-	      components: {
-	        calendar: true,
-	        date: true,
-	        month: true,
-	        year: true,
-	        clock: false
-	      },
-	      theme: 'light'
-	    },
-	    useCurrent: false
-	  });
-	
-	  // End Date Picker
-	  const endPicker = new tempusDominus.TempusDominus(document.getElementById("date_to"), {
-	    localization: {
-	      format: "dd MMM yyyy",
-	    },
-	    display: {
-	      components: {
-	        calendar: true,
-	        date: true,
-	        month: true,
-	        year: true,
-	        clock: false
-	      },
-	      theme: 'light'
-	    },
-	    useCurrent: false
-	  }); */
 
 	$("#user").select2({
 		allowClear: true,
@@ -1528,39 +1369,6 @@ document.addEventListener("DOMContentLoaded", function () {
 		document.getElementById("date_to_hidden").value = val;
 	});
 
-	/*
-	  // บังคับ End ≥ Start
-	  startPicker.subscribe(tempusDominus.Namespace.events.change, (e) => {
-	    if (e.date) {
-	      // ปรับ minDate ของ End
-	      endPicker.updateOptions({
-	        restrictions: { minDate: e.date }
-	      });
-	
-	      // ถ้า End ที่เลือกไว้น้อยกว่า Start → ล้างค่า End
-	      const endDate = endPicker.dates.lastPicked;
-	      if (endDate && endDate < e.date) {
-	        endPicker.dates.clear();
-	      }
-	    }
-	  });
-	
-	  // บังคับ Start ≤ End
-	  endPicker.subscribe(tempusDominus.Namespace.events.change, (e) => {
-	    if (e.date) {
-	      // ปรับ maxDate ของ Start
-	      startPicker.updateOptions({
-	        restrictions: { maxDate: e.date }
-	      });
-	
-	      // ถ้า Start ที่เลือกไว้อยู่หลัง End → ล้างค่า Start
-	      const startDate = startPicker.dates.lastPicked;
-	      if (startDate && startDate > e.date) {
-	        startPicker.dates.clear();
-	      }
-	    }
-	  });
-	*/
 });
 </script>
 
@@ -1646,14 +1454,10 @@ document.addEventListener('DOMContentLoaded', function () {
 	const fileInput = document.getElementById('myFile');
 
 	if (typeof action !== 'undefined' && action === 'Edit' && typeof fileLeave !== 'undefined' && fileLeave != null && fileLeave != '') {
-
 		const fullFileName = fileLeave.name + fileLeave.type;
 		const downloadPath = 'preview_File?id=' + fileLeave.fileId;
-
 		renderSingleFilePreview(fullFileName, downloadPath, true, fileLeave.fileId);
-
 		$('#fileUploadId').val(fileLeave.fileId);
-
 		$('#deleteFileId').val('');
 	}
 
@@ -1664,9 +1468,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
 	fileInput.addEventListener('change', function (event) {
 		const file = event.target.files[0];
-
 		if (!file) return;
-
 		const forbiddenChars = /[\/:*?"<>|]/;
 		if (forbiddenChars.test(file.name)) {
 			alert("File name contains invalid characters.");
@@ -1693,6 +1495,51 @@ document.addEventListener('DOMContentLoaded', function () {
 		document.getElementById('fileUploadId').value = '';
 	});
 
+});
+
+document.getElementById('myFile').addEventListener('change', function(e) {
+    console.log("fileUpload");
+	const file = e.target.files[0];
+
+    if (!file) {
+        return;
+    }
+
+    if (!file.type.startsWith('image/')) {
+        return;
+    }
+    
+    const limitSize = 500 * 1024;
+    if (file.size <= limitSize) {
+        console.log("ขนาดไฟล์เล็กอยู่แล้ว (" + (file.size / 1024).toFixed(2) + " KB) ข้ามการย่อขนาด");
+        return;
+    }
+    
+    console.log("Before resize: " + (file.size / 1024 / 1024).toFixed(2) + " MB");
+
+    new Compressor(file, {
+        quality: 0.8,
+        maxWidth: 1024, 
+        maxHeight: 1024,   
+        success(result) {
+
+            const compressedFile = new File([result], file.name, {
+                type: result.type,
+                lastModified: Date.now()
+            });
+
+            console.log("After resize: " + (compressedFile.size / 1024 / 1024).toFixed(2) + " MB");
+
+            const dataTransfer = new DataTransfer();
+            dataTransfer.items.add(compressedFile);
+            
+            document.getElementById('myFile').files = dataTransfer.files;
+            
+        },
+        error(err) {
+            console.error("Error resize: ", err.message);
+        },
+    });
 });
 </script>
 </html>

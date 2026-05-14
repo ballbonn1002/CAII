@@ -1386,6 +1386,7 @@ public class LeaveAction extends ActionSupport {
 			String userId = leave.getUserId();	
 			log.debug(userId);
 			User user2 = userDAO.findById(userId);
+			log.debug(id);
 			
 			DateTimeFormatter dateTimeFormat = DateTimeFormatter.ofPattern("01-01-yyyy");
 			LocalDate localDate = LocalDate.now();
@@ -1579,6 +1580,7 @@ public class LeaveAction extends ActionSupport {
 			request.setAttribute("holiday", holidayJSON);
 			log.debug(new Gson().toJson(leave));
 			request.setAttribute("leave", new Gson().toJson(leave));
+			request.setAttribute("leaveInfo", new Gson().toJson(leaveDAO.findLeaveById2(Integer.parseInt(id))));
 			request.setAttribute("action", "Edit");
 			
 			return SUCCESS;
@@ -1653,14 +1655,11 @@ public class LeaveAction extends ActionSupport {
 
 			int maxId = fileuploadDAO.getMaxId() + 1;
 			FileUpload fileupload = new FileUpload();
-			log.debug(fileUpload);
 			if (fileUpload != null) {
 				ServletContext context = request.getServletContext();
 				String fileServerPath = context.getRealPath("/");
 				String fileName = fileUploadFileName;
-				log.debug("fileName = " + fileName);
-				fileupload.setSize(fileUploadSize);
-				log.debug("fileUploadSize = " + fileUploadSize);
+				log.info("fileName = " + fileName);
 
 				int l = fileUploadFileName.length();
 				int split = fileUploadFileName.lastIndexOf('.');
@@ -1668,13 +1667,37 @@ public class LeaveAction extends ActionSupport {
 				String type = (String) fileUploadFileName.subSequence(split, l);
 
 				String serverFileName = maxId + type; // 101.jpg
-
-//				fileupload.setPath("/upload/user/" + maxId + "_" + fileName);
-//				FileUtil.upload(fileUpload, fileServerPath + "upload/user/", maxId + "_" + fileName);
+				String destFolder = fileServerPath + "upload/user/";
 				fileupload.setPath("/upload/user/" + serverFileName);
-				FileUtil.upload(fileUpload, fileServerPath + "upload/user/", serverFileName);
-
-				log.debug("File Upload Path = " + fileServerPath + "upload/user/" + serverFileName);
+				java.io.File directory = new java.io.File(destFolder);
+			    if (!directory.exists()) {
+			        directory.mkdirs(); 
+			    }
+			    
+				String ext = type.toLowerCase();
+				if (ext.equals(".jpg") || ext.equals(".jpeg") || ext.equals(".png")) {
+					log.info("Original image size = " + fileUploadSize);
+					
+					long limitSize = 500 * 1024;
+					if (fileUpload.length() > limitSize) {
+						try (java.io.FileInputStream fis = new java.io.FileInputStream(fileUpload);
+							java.io.FileOutputStream fos = new java.io.FileOutputStream(new java.io.File(destFolder, serverFileName))) {
+								log.info("Image size bigger than 500 KB");	
+								byte[] resizedBytes = FileUtil.resizeImage(fis, 800, 800);
+								fos.write(resizedBytes);
+								fileupload.setSize(String.valueOf(resizedBytes.length));
+								log.info("Resized image size = " + resizedBytes.length);
+						}
+					} else {
+						FileUtil.upload(fileUpload, destFolder, serverFileName);
+						fileupload.setSize(fileUploadSize);
+					}
+					
+				} else {
+					FileUtil.upload(fileUpload, destFolder, serverFileName);
+					fileupload.setSize(fileUploadSize); 
+					log.info("Normal file size = " + fileUploadSize);
+				}
 
 				fileupload.setFileId(maxId);
 				fileupload.setUserId(user);
@@ -1692,7 +1715,6 @@ public class LeaveAction extends ActionSupport {
 			// leavetypeDAO.findByLeaveTypeId(leaveType);
 
 			// emailservice.sendMail(user,leaveType,description,halfDay,from,to,noDay);
-			log.debug(leaveType);
 			Leaves leave = new Leaves();
 			leave.setLeaveId(id);
 			leave.setLeaveTypeId(leaveType);
@@ -1722,7 +1744,7 @@ public class LeaveAction extends ActionSupport {
 			log.debug("new_leaveAdd_Do Success!!");
 
 			return SUCCESS;
-		} catch (Exception e) {
+		} catch (Throwable e) {
 			e.printStackTrace();
 			return ERROR;
 		}
@@ -1798,12 +1820,10 @@ public class LeaveAction extends ActionSupport {
 	            try {
 	                int delFileId = Integer.parseInt(deleteFileId);
 	                FileUpload fileuploadDel = fileuploadDAO.findById(delFileId);
-
 	                if (fileuploadDel != null) {
 	                    ServletContext context = request.getServletContext();
 	                    String fileServerPath = context.getRealPath("/");
 	                    File file = new File(fileServerPath + fileuploadDel.getPath());
-	                    
 	                    if (file.delete()) {
 	                        log.info("Successfully deleted file on server (Trash Icon): " + delFileId);
 	                    } else {
@@ -1812,7 +1832,6 @@ public class LeaveAction extends ActionSupport {
 	                    
 	                    fileuploadDAO.delete(fileuploadDel);
 	                    log.info("Successfully deleted file record from DB (Trash Icon): " + delFileId);
-	                    
 	                    // Clear the file link on the server object
 	                    oldFileIdStr = null; 
 	                }
@@ -1826,65 +1845,84 @@ public class LeaveAction extends ActionSupport {
 	        }
 
 	        // logic manage file on update file attach
-	        if (fileUpload != null) {
-	            log.info("New file uploaded. Processing replacement/upload.");
+			if (fileUpload != null) {
+				log.info("New file uploaded. Processing replacement/upload.");
+				// delete old file
+				if (oldFileIdStr != null && !oldFileIdStr.isEmpty()) {
+					try {
+						int oldFileId = Integer.parseInt(oldFileIdStr);
+						FileUpload fileuploadDel = fileuploadDAO.findById(oldFileId);
+						
+						if (fileuploadDel != null) {
+							ServletContext context = request.getServletContext();
+							String fileServerPath = context.getRealPath("/");
+							File file = new File(fileServerPath + fileuploadDel.getPath());
+							
+							if (file.delete()) {
+								log.info("Successfully deleted OLD file during replacement: " + oldFileId);
+							} else {
+								log.info("Cannot delete OLD file during replacement: " + oldFileId);
+							}
+							fileuploadDAO.delete(fileuploadDel);
+							log.info("Successfully deleted OLD file record from DB: " + oldFileId);
+						}
+					} catch (NumberFormatException e) {
+						log.error("Invalid oldFileId format in Leaves object during replacement: " + oldFileIdStr, e);
+					}
+				}
 	            
-	            // delete old file
-	            if (oldFileIdStr != null && !oldFileIdStr.isEmpty()) {
-	                try {
-	                    int oldFileId = Integer.parseInt(oldFileIdStr);
-	                    FileUpload fileuploadDel = fileuploadDAO.findById(oldFileId);
-	                    
-	                    if (fileuploadDel != null) {
-	                        ServletContext context = request.getServletContext();
-	                        String fileServerPath = context.getRealPath("/");
-	                        File file = new File(fileServerPath + fileuploadDel.getPath());
-	                        
-	                        if (file.delete()) {
-	                            log.info("Successfully deleted OLD file during replacement: " + oldFileId);
-	                        } else {
-	                            log.info("Cannot delete OLD file during replacement: " + oldFileId);
-	                        }
-	                        fileuploadDAO.delete(fileuploadDel);
-	                        log.info("Successfully deleted OLD file record from DB: " + oldFileId);
-	                    }
-	                } catch (NumberFormatException e) {
-	                    log.error("Invalid oldFileId format in Leaves object during replacement: " + oldFileIdStr, e);
-	                }
-	            }
-	            // upload new file
-	            int maxId = fileuploadDAO.getMaxId() + 1;
-	            FileUpload fileupload = new FileUpload();
-	            
-	            ServletContext context = request.getServletContext();
-	            String fileServerPath = context.getRealPath("/");
-	            String fileName = fileUploadFileName;
-	            
-	            int l = fileUploadFileName.length();
-	            int split = fileUploadFileName.lastIndexOf('.');
-	            String name = fileUploadFileName.substring(0, split);
-	            String type = (String) fileUploadFileName.subSequence(split, l); //.jpg
+				// --- upload new file ---
+				int maxId = fileuploadDAO.getMaxId() + 1;
+				FileUpload fileupload = new FileUpload();
+				
+				ServletContext context = request.getServletContext();
+				String fileServerPath = context.getRealPath("/");
+				String fileName = fileUploadFileName;
+				
+				int l = fileUploadFileName.length();
+				int split = fileUploadFileName.lastIndexOf('.');
+				String name = fileUploadFileName.substring(0, split);
+				String type = (String) fileUploadFileName.subSequence(split, l); //.jpg
 
-	            String serverFileName = maxId + type; //101.jpg
-	            
-	            fileupload.setPath("/upload/user/" + serverFileName);
-	            FileUtil.upload(fileUpload, fileServerPath + "upload/user/", serverFileName);
-	            log.info("File Upload Path = " + fileServerPath + "upload/user/" + serverFileName);
+				String serverFileName = maxId + type; //101.jpg
+				String destFolder = fileServerPath + "upload/user/";
+				fileupload.setPath("/upload/user/" + serverFileName);
 
-	            // save on db
-	            fileupload.setFileId(maxId);
-	            fileupload.setUserId(user); 
-	            fileupload.setUserCreate(onlineUser.getId());
-	            fileupload.setName(name);
-	            fileupload.setType(type);
-	            fileupload.setSize(fileUploadSize);
-	            fileupload.setUserUpdate(onlineUser.getId());
-	            fileupload.setTimeCreate(DateUtil.getCurrentTime());
-	            fileupload.setTimeUpdate(DateUtil.getCurrentTime());
-	            fileuploadDAO.save(fileupload);
+				String ext = type.toLowerCase();
+				if (ext.equals(".jpg") || ext.equals(".jpeg") || ext.equals(".png")) {
+					java.io.File directory = new java.io.File(destFolder);
+					if (!directory.exists()) {
+						directory.mkdirs();
+					}
 
-	            leave.setLeaveFile(Integer.toString(maxId));
-	        }
+					try (java.io.FileInputStream fis = new java.io.FileInputStream(fileUpload);
+						 java.io.FileOutputStream fos = new java.io.FileOutputStream(new java.io.File(destFolder, serverFileName))) {
+						
+						log.info("กำลังจะเริ่มย่อขนาดรูปภาพในโหมด Edit...");
+						byte[] resizedBytes = FileUtil.resizeImage(fis, 800, 800);
+						
+						fos.write(resizedBytes);
+						fileupload.setSize(String.valueOf(resizedBytes.length));
+						log.info("Resize Image Size = " + resizedBytes.length);
+					}
+				} else {
+					FileUtil.upload(fileUpload, destFolder, serverFileName);
+					fileupload.setSize(fileUploadSize);
+					log.info("Normal Image Size = " + fileUploadSize);
+				}
+
+				// save on db
+				fileupload.setFileId(maxId);
+				fileupload.setUserId(user); 
+				fileupload.setUserCreate(onlineUser.getId());
+				fileupload.setName(name);
+				fileupload.setType(type);
+				fileupload.setUserUpdate(onlineUser.getId());
+				fileupload.setTimeCreate(DateUtil.getCurrentTime());
+				fileupload.setTimeUpdate(DateUtil.getCurrentTime());
+				fileuploadDAO.save(fileupload);
+				leave.setLeaveFile(Integer.toString(maxId));
+			}
 	        
 	        // Logic Manage File Attach
 	        
@@ -1902,8 +1940,8 @@ public class LeaveAction extends ActionSupport {
 	        leave.setStartTime(time_from);
 	        leave.setEndTime(time_to);
 	        leave.setNoDay(noDay);
-	        leave.setUserUpdate(onlineUser.getId());
-	        leave.setTimeUpdate(DateUtil.getCurrentTime());
+	        //leave.setUserUpdate(onlineUser.getId());
+	        //leave.setTimeUpdate(DateUtil.getCurrentTime());
 	        leaveDAO.update(leave);
 	        
 	        return SUCCESS;
@@ -1990,6 +2028,7 @@ public class LeaveAction extends ActionSupport {
 			
 			String aprEmpId = jsonobj.optString("apr_emp_id");
 			String aprName = jsonobj.optString("apr_name");
+			String aprRole = jsonobj.optString("apr_role");
 			
 			String ucEmpId = jsonobj.optString("uc_emp_id");
 			String ucName = jsonobj.optString("uc_name");
@@ -2022,6 +2061,7 @@ public class LeaveAction extends ActionSupport {
 			json.put("user_update", userUpdate);
 			json.put("aprEmpId", aprEmpId);
 			json.put("aprName", aprName);
+			json.put("aprRole", aprRole);
 			json.put("ucEmpId", ucEmpId);
 			json.put("ucName", ucName);
 			json.put("leave_file_id", leaveFileId);
