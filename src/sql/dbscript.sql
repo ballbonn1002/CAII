@@ -145,3 +145,11 @@ DELETE FROM `article_tag`
 
 -- PROD 28 APR 2026 #2
 
+-- 15/05/2026 Eric: CREATE TABLE log_action
+CREATE TABLE `log_action` (
+`log_action_id` BIGINT(20) NOT NULL PRIMARY KEY, 
+`log_data` TEXT NULL , 
+`user_create` VARCHAR(32) NULL , 
+`user_update` VARCHAR(32) NULL , 
+`time_create` TIMESTAMP NULL , 
+`time_update` TIMESTAMP NULL ) ENGINE = InnoDB;
