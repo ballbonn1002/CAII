@@ -27,12 +27,12 @@ import com.cubesofttech.dao.LeaveDAO;
 import com.cubesofttech.dao.UserDAO;
 import com.cubesofttech.dao.WorkHoursDAO;
 import com.cubesofttech.model.Holiday;
-import com.cubesofttech.model.Jobsite;
 import com.cubesofttech.dao.JobSiteTeamDAO;
 import com.cubesofttech.model.Announcement;
 import com.cubesofttech.dao.AnnouncementDAO;
 import com.cubesofttech.model.User;
 import com.cubesofttech.model.WorkHours;
+import com.cubesofttech.service.LogService;
 import com.cubesofttech.service.WorkHoursService;
 import com.cubesofttech.util.DateUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -62,6 +62,8 @@ public class WorkHoursAction extends ActionSupport {
 	private JobSiteTeamDAO jobSiteTeamDAO;
 	@Autowired
 	private AnnouncementDAO announcementDAO;
+	@Autowired
+	private LogService logService;
 
 	private Map<String, String> getHeadersInfo(HttpServletRequest request) {
 		String ipAddress = request.getHeader("x-forwarded-for");
@@ -91,6 +93,11 @@ public class WorkHoursAction extends ActionSupport {
 			log.info("logonUser : " + logonUser);
 			LocalDate currentDate = LocalDate.now();
 			request.setAttribute("currentDate", currentDate);
+			
+			String uri = request.getRequestURI();
+			String method = request.getMethod();
+			String date = LocalDateTime.now().toLocalDate().toString() + '%';
+			logService.updateRequestLog(uri, method, date, logonUser);
 
 			List<Holiday> holidayList = null;
 			holidayList = holidayDAO.findAllInMonth();
@@ -172,6 +179,13 @@ public class WorkHoursAction extends ActionSupport {
 	}
 
 	public String savecheck() {
+		User ur = (User) request.getSession().getAttribute("onlineUser");
+		String logonUser = ur.getId();
+		String uri = request.getRequestURI();
+		String method = request.getMethod();
+		String dateCheck = LocalDateTime.now().toLocalDate().toString() + '%';
+		logService.updateRequestLog(uri, method, dateCheck, logonUser);
+		
 		Map<String, Object> result = new HashMap<>();
 		try {
 			String userId = request.getParameter("userId");
