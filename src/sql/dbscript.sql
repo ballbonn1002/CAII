@@ -248,3 +248,7 @@ CREATE TABLE `log_action` (
 -- 15/05/2026 Koy: Add permission 'announcement.read' in 'authorized_object' table.
 INSERT INTO `authorized_object` (`authorized_object_id`, `name`, `description`, `active`, `time_create`, `time_update`, `authorized_object_group_id`) VALUES 
 ('announcement.read', 'announcement.read', 'อ่าน announcement ได้', '1', '2026-05-12 14:56:43', '2026-05-12 14:56:43', '1');
+
+# PROD 15 MAY 2026
+
+
