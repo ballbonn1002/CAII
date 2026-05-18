@@ -19,27 +19,8 @@
 			<tiles:insertAttribute name="title" ignore="true" />
 		</title>
 		<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-
-		<!--begin::Fonts(mandatory for all pages)-->
-		<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inter:300,400,500,600,700" />
-		<!--end::Fonts-->
-
-		<!--begin::Global Stylesheets Bundle(mandatory for all pages)-->
-		<link href="assets/plugins/global/plugins.bundle.css" rel="stylesheet" type="text/css" />
-		<link href="assets/css/style.bundle.css" rel="stylesheet" type="text/css" />
-
-		<!-- ===== [ใหม่] Metronic Tailwind CSS ===== -->
-		<!-- <link rel="stylesheet" href="assets/vendors/apexcharts/apexcharts.css" /> -->
-		<!-- <link rel="stylesheet" href="assets/css/styles.css" /> --><!-- Tailwind build -->
-		<!-- ===== [ใหม่] Metronic Tailwind CSS ===== -->
-
-		<!--end::Global Stylesheets Bundle-->
 		<!--begin::Javascript-->
 		<script>var hostUrl = "assets/";</script>
-		<!--begin::Global Javascript Bundle(mandatory for all pages)-->
-		<script src="assets/plugins/global/plugins.bundle.js"></script>
-		<script src="assets/js/scripts.bundle.js"></script>
-		<!--end::Global Javascript Bundle-->
 
 		<!--begin::Custom Javascript(used for this page only)-->
 		<script src="assets/js/widgets.bundle.js"></script>
@@ -462,20 +443,24 @@
 													</div>
 
 													<!--File Upload -->
-													<div class="mb-10">
-														<label class="form-label fs-5">Attach files</label>
+													<div class="mb-10" id="fileUploadSection">
+														<label class="form-label fs-5" id="fileUploadLabel">Attach files</label>
 														<div class="d-flex flex-column">
-															<label for="myFile" id="lbFile" class="btn btn-primary w-150px mb-2 d-inline-flex align-items-center justify-content-center gap-2" style="height: 40px;">
-															Attach files
-															<input type="file" id="myFile" name="fileUpload" style="display:none;" accept="image/*, application/zip"> 
-															</label>
-
-															<input type="hidden" name="deleteFileId" id="deleteFileId">
-															<input type="hidden" name="fileUploadSize" value="${size}" id="size">
-															<input type="hidden" name="fileUploadId" id="fileUploadId">
-
+															<div id="fileUploadControls">
+																<label for="myFile" id="lbFile" class="btn btn-primary w-150px mb-2 d-inline-flex align-items-center justify-content-center gap-2" style="height: 40px;">
+																Attach files
+																<input type="file" id="myFile" name="fileUpload" style="display:none;" accept="image/*,application/pdf,application/zip"> 
+																</label>
+																<input type="hidden" name="deleteFileId" id="deleteFileId">
+																<input type="hidden" name="fileUploadSize" value="${size}" id="size">
+																<input type="hidden" name="fileUploadId" id="fileUploadId">
+															</div>
 															<div id="filePreviewContainer" class="mt-2" style="max-width: 400px;"></div>
 														</div>
+													</div>
+
+													<div class="mb-10" id="exitingFileSection">
+														<div id="exitingFilePreviewContainer" class="mt-2" style="max-width: 400px;"></div>
 													</div>
 
 													<!--Approver -->
@@ -491,8 +476,34 @@
 													<div class="d-flex justify-content-end gap-3">
 														<button type="button" class="btn btn-light" onclick="window.history.go(-1); return false;">Cancel</button>
 														<button type="button" class="btn btn-success" id="submitBtn" onclick="beforeSubmit();">Submit</button>
+														<button type="button" id="lbafterFile" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#attachFileModal">
+															Attach files
+														</button>
 													</div>
+													<!-- <div id="filePreviewContainer_afterFile" class="d-flex justify-content-end gap-3"></div> -->
 
+													<!-- Attach File Modal -->
+													<div class="modal fade" id="attachFileModal" tabindex="-1" aria-hidden="true">
+														<div class="modal-dialog modal-dialog-centered">
+															<div class="modal-content">
+																<div class="modal-header">
+																	<h5 class="modal-title fw-bold">Attach File</h5>
+																	<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+																</div>
+																<div class="modal-body pt-5 pb-5">
+																	<label for="afterFile" class="btn btn-primary mb-3">
+																		Attach file
+																		<input type="file" id="afterFile" name="afterFileUpload" style="display:none;" accept="image/*,application/pdf" onchange="previewModalFile(this)">
+																	</label>
+																	<div id="modalFilePreviewName" class="text-muted fs-6">No file selected</div>
+																</div>
+																<div class="modal-footer">
+																	<button type="button" class="btn btn-light" data-bs-dismiss="modal">Close</button>
+																	<button type="button" class="btn btn-success" onclick="submitModalFile()">Submit</button>
+																</div>
+															</div>
+														</div>
+													</div>
 												</div>
 											</div>
 
@@ -503,14 +514,12 @@
 											</div>
 											<div class="fs-6" id="approveInfo">
 												Approved By : <span class="" id="aprEmpId"></span> <span class="" id="aprName"></span> - <span id="aprRole"></span> , <span id="timeUpdate"></span>
-												
 											</div>
 										</div>
 									</div>
 								</div>
 							</div>
 						</div>
-
 					</div>
 					<!--end::Content container-->
 				</div>
@@ -521,7 +530,6 @@
 
 		</div>
 		<!--end:::Main-->
-
 	</body>
 <script>
 //var action = '${action}';
@@ -776,6 +784,27 @@ $(() => {
 			$('#requestInfo').show();
 		    $('#approveInfo').show();
 		    
+		    // Hide file upload section and show existing file preview
+		    $('#fileUploadSection').addClass('d-none');
+			$('#exitingFileSection').addClass('d-block');
+			
+			// Render existing file in exitingFilePreviewContainer
+			if (fileLeave != '' && fileLeave != null) {
+				const fullFileName = fileLeave.name + fileLeave.type;
+				const downloadPath = 'preview_File?id=' + fileLeave.fileId;
+				const exitingContainer = document.getElementById('exitingFilePreviewContainer');
+				if (exitingContainer) {
+					exitingContainer.innerHTML = '';
+					renderSingleFilePreview(fullFileName, downloadPath, true, fileLeave.fileId, 'exitingFilePreviewContainer', 'myFile', true);
+				}
+			}
+		    $('#submitBtn').addClass('d-none');
+		    
+		    // Hide afterFile button unless status is Approved (1)
+		    if (leave.leaveStatusId.toString() != '1') {
+		    	$('#lbafterFile').addClass('d-none');
+		    }
+		    
 		    $('#aprEmpId').text(aprEmpId);
 	        $('#aprName').text(aprName);
 	        $('#aprRole').text(aprRole);
@@ -789,7 +818,16 @@ $(() => {
 			$('#leaveidInfo').show();
 			$('#requestInfo').show();
 		    $('#approveInfo').hide();
-			
+		    // Hide afterFile button for 'Wait for approve' status
+		    $('#lbafterFile').hide();
+			$('#fileUploadSection').removeClass('d-none');
+			$('#exitingFileSection').addClass('d-none');
+			if (fileLeave != '' && fileLeave != null && fileLeave.fileId) {
+				const fullFileName = fileLeave.name + fileLeave.type;
+				const downloadPath = 'preview_File?id=' + fileLeave.fileId;
+				renderSingleFilePreview(fullFileName, downloadPath, true, fileLeave.fileId, 'filePreviewContainer', 'myFile');
+				$('#fileUploadId').val(fileLeave.fileId);
+			}
 			$('#ucEmpId').text(ucEmpId);
 	        $('#ucName').text(ucName);
 	        $('#timeCreate').text(timeCreate);
@@ -808,6 +846,8 @@ $(() => {
 		$('#leaveidInfo').hide();
 		$('#requestInfo').hide();
 		$('#approveInfo').hide();
+		// Hide afterFile button in Add mode
+		$('#lbafterFile').hide();
 		
 		if (la == '1') {
 			<perm:permission object="leave.viewall">
@@ -1040,14 +1080,6 @@ $(() => {
 		$('#lt_' + leave.leaveTypeId).prop('checked', 'checked');
 		$('#halfDay').val(leave.halfDay).change();
 		$('#approver').val(leave.apprUserId).change();
-
-		// new
-		if (fileLeave != '' && fileLeave != null) {
-			const fullFileName = fileLeave.name + fileLeave.type;
-			const downloadPath = 'preview_File?id=' + fileLeave.fileId;
-			renderSingleFilePreview(fullFileName, downloadPath, true, fileLeave.fileId);
-			$('#fileUploadId').val(fileLeave.fileId);
-		}
 	}
 	/* End Leave Edit init */
 
@@ -1307,6 +1339,7 @@ function beforeSubmit() {
 	if (reportValidity) {
 		spinner.show();
 		$('#btn_submit').prop('disabled', true);
+		$('#formid').find(':input').prop('disabled', false);
 		console.log(form);
 		form.submit();
 
@@ -1373,15 +1406,17 @@ document.addEventListener("DOMContentLoaded", function () {
 </script>
 
 <script>
-function renderSingleFilePreview(fileName, fileUrl, isExisting = false, fileId = null) {
-	const container = document.getElementById('filePreviewContainer');
+function renderSingleFilePreview(fileName, fileUrl, isExisting = false, fileId = null, containerId = 'filePreviewContainer', fileInputId = 'myFile', disableTrash = false) {
+	const container = document.getElementById(containerId) || document.getElementById('filePreviewContainer');
 	if (!container) return;
 	container.innerHTML = '';
 	const fileExtension = fileName.split('.').pop().toLowerCase();
 
 	// เลือกไอคอนตามนามสกุลไฟล์
 	let iconClass = "fa-file";
-	if (fileExtension === "pdf") iconClass = "ki-duotone ki-file-pdf";
+	if (isExisting === true) {
+		iconClass = "ki-duotone ki-file-up";
+	} else if (fileExtension === "pdf") iconClass = "ki-duotone ki-file-pdf";
 	else if (["doc", "docx"].includes(fileExtension)) iconClass = "fa-file-word-o";
 	else if (["xls", "xlsx"].includes(fileExtension)) iconClass = "fa-file-excel-o";
 	else if (["png", "jpg", "jpeg", "gif"].includes(fileExtension)) iconClass = "fa-file-image-o";
@@ -1409,31 +1444,43 @@ function renderSingleFilePreview(fileName, fileUrl, isExisting = false, fileId =
 	// Right Group (Delete Button)
 	const removeBtn = document.createElement('span');
 	removeBtn.className = 'btn btn-icon btn-sm btn-light-danger cursor-pointer';
-	removeBtn.id = 'removeFileBtn';
+	removeBtn.id = 'removeFileBtn' + (containerId ? ('_' + containerId) : '');
 
-	// Event Handler
+	// Event Handler - pass container and input id to removal
 	removeBtn.onclick = function () {
-		removeSingleFile(isExisting, fileId);
+		removeSingleFile(isExisting, fileId, containerId, fileInputId);
 	};
 
 	const trashIcon = document.createElement('i');
 	trashIcon.className = 'ki-duotone ki-trash fs-3';
 	trashIcon.innerHTML = `<span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span><span class="path5"></span>`;
-
 	removeBtn.appendChild(trashIcon);
+	console.log("Disable Trash: " + disableTrash);
+	if (disableTrash === true) {
+		removeBtn.style.opacity = '0.5';
+		removeBtn.style.pointerEvents = 'none';
+		removeBtn.style.cursor = 'not-allowed';
+	} else {
+		removeBtn.classList.add('cursor-pointer');
+		removeBtn.onclick = function () {         
+			removeSingleFile(isExisting, fileId, containerId, fileInputId);
+		};
+	}
 
 	fileWrapper.appendChild(leftGroup);
 	fileWrapper.appendChild(removeBtn);
+
 	container.appendChild(fileWrapper);
 }
 
 // fn remove file
-window.removeSingleFile = function (isExisting, fileId) {
-	document.getElementById('filePreviewContainer').innerHTML = '';
+window.removeSingleFile = function (isExisting, fileId, containerId = 'filePreviewContainer', fileInputId = 'myFile') {
+	const container = document.getElementById(containerId) || document.getElementById('filePreviewContainer');
+	if (container) container.innerHTML = '';
 
-	const fileInput = document.getElementById('myFile');
+	const fileInput = document.getElementById(fileInputId);
 	if (fileInput) {
-		fileInput.value = '';
+		try { fileInput.value = ''; } catch (e) { /* ignore */ }
 	}
 
 	const sizeInput = document.getElementById('size');
@@ -1442,12 +1489,18 @@ window.removeSingleFile = function (isExisting, fileId) {
 	}
 
 	if (isExisting === true && fileId != null) {
-		document.getElementById('deleteFileId').value = fileId;
-		document.getElementById('fileUploadId').value = '';
+		const del = document.getElementById('deleteFileId');
+		if (del) del.value = fileId;
+		const fup = document.getElementById('fileUploadId');
+		if (fup) fup.value = '';
 	} else if (isExisting === 'true' && fileId !== 'null' && fileId !== '') {
-		document.getElementById('deleteFileId').value = fileId;
-		document.getElementById('fileUploadId').value = '';
+		const del = document.getElementById('deleteFileId');
+		if (del) del.value = fileId;
+		const fup = document.getElementById('fileUploadId');
+		if (fup) fup.value = '';
 	}
+	// clear any global preview target flag
+	if (window.filePreviewTarget) delete window.filePreviewTarget;
 };
 
 document.addEventListener('DOMContentLoaded', function () {
@@ -1473,10 +1526,19 @@ document.addEventListener('DOMContentLoaded', function () {
 		if (forbiddenChars.test(file.name)) {
 			alert("File name contains invalid characters.");
 			this.value = '';
-			document.getElementById('filePreviewContainer').innerHTML = '';
-			document.getElementById('size').value = '';
+			const def = document.getElementById('filePreviewContainer'); if (def) def.innerHTML = '';
+			const exf = document.getElementById('exitingFilePreviewContainer'); if (exf) exf.innerHTML = '';
+			const mdf = document.getElementById('modalFilePreviewName'); if (mdf) mdf.innerText = 'No file selected';
+			const sz = document.getElementById('size'); if (sz) sz.value = '';
 			return;
 		}
+
+		const containerId = window.filePreviewTarget || 'filePreviewContainer';
+		if (window.filePreviewTarget) delete window.filePreviewTarget;
+
+		const defC = document.getElementById('filePreviewContainer'); if (defC) defC.innerHTML = '';
+		const mdfC = document.getElementById('modalFilePreviewName'); if (mdfC) mdfC.innerText = 'No file selected';
+		const exfC = document.getElementById('exitingFilePreviewContainer'); if (exfC) exfC.innerHTML = '';
 
 		var fSExt = new Array('Bytes', 'KB', 'MB', 'GB');
 		var fSize = file.size;
@@ -1486,13 +1548,13 @@ document.addEventListener('DOMContentLoaded', function () {
 			i++;
 		}
 		var size_n = (Math.round(fSize * 100) / 100);
-		document.getElementById('size').value = size_n + ' ' + fSExt[i];
+		const sizeEl = document.getElementById('size'); if (sizeEl) sizeEl.value = size_n + ' ' + fSExt[i];
 
 		const tempUrl = URL.createObjectURL(file);
-		renderSingleFilePreview(file.name, tempUrl, false);
+		renderSingleFilePreview(file.name, tempUrl, false, null, containerId, 'myFile');
 
-		document.getElementById('deleteFileId').value = '';
-		document.getElementById('fileUploadId').value = '';
+		const delEl = document.getElementById('deleteFileId'); if (delEl) delEl.value = '';
+		const fupEl = document.getElementById('fileUploadId'); if (fupEl) fupEl.value = '';
 	});
 
 });
@@ -1541,5 +1603,95 @@ document.getElementById('myFile').addEventListener('change', function(e) {
         },
     });
 });
+
+function previewModalFile(input) {
+	const container = document.getElementById('modalFilePreviewName');
+    if (!container) return;
+	if (input.files && input.files[0]) {
+		const file = input.files[0];
+        const tempUrl = URL.createObjectURL(file);
+        renderSingleFilePreview(file.name, tempUrl, false, null, 'modalFilePreviewName', 'afterFile');
+
+	} else {
+		container.innerHTML = '<div class="text-muted fs-6">No file selected</div>';
+	}
+}
+function clearModalFile() {
+    const input = document.getElementById('afterFile');
+    if (input) input.value = '';
+    
+    removeSingleFile(false, null, 'modalFilePreviewName', 'afterFile');
+    
+    const container = document.getElementById('modalFilePreviewName');
+    if (container) {
+        container.innerHTML = '<div class="text-muted fs-6">No file selected</div>';
+    }
+}
+function submitModalFile() {
+	const input = document.getElementById('afterFile');
+	if (input.files && input.files.length > 0) {
+		handleAfterFileSelect(input);
+		var modalEl = document.getElementById('attachFileModal');
+		var modalInstance = bootstrap.Modal.getInstance(modalEl);
+		if (modalInstance) {
+			modalInstance.hide();
+		} else {
+			$('#attachFileModal').modal('hide');
+		}
+		clearModalFile();
+		beforeSubmit();
+	} else {
+		alert('Please select a file first.');
+	}
+}
 </script>
+
+<script>
+function handleAfterFileSelect(input) {
+	const file = input.files[0];
+	if (!file) return;
+	const forbiddenChars = /[\/:*?"<>|]/;
+	if (forbiddenChars.test(file.name)) {
+		alert("File name contains invalid characters.");
+		input.value = '';
+		return;
+	}
+
+	// Forward the chosen file to the existing #myFile input so existing handlers run
+	try {
+		// render into the afterFile preview container
+		window.filePreviewTarget = 'modalFilePreviewName';
+		const dataTransfer = new DataTransfer();
+		dataTransfer.items.add(file);
+		const myFile = document.getElementById('myFile');
+		if (myFile) {
+			myFile.files = dataTransfer.files;
+			const evt = new Event('change', { bubbles: true });
+			myFile.dispatchEvent(evt);
+			// clear the afterFile input so the form doesn't submit both
+			try { input.value = ''; } catch (e) { /* ignore */ }
+			return;
+		}
+	} catch (err) {
+		console.warn('Forward to #myFile failed, fallback to direct preview', err);
+	}
+
+	// Fallback: render preview directly and set hidden fields
+	const tempUrl = URL.createObjectURL(file);
+	renderSingleFilePreview(file.name, tempUrl, false, null, 'modalFilePreviewName', 'afterFile');
+
+	var fSExt = ['Bytes', 'KB', 'MB', 'GB'];
+	var fSize = file.size;
+	var i = 0;
+	while (fSize > 900) { fSize /= 1024; i++; }
+	var size_n = (Math.round(fSize * 100) / 100);
+	var sizeInput = document.getElementById('size');
+	if (sizeInput) sizeInput.value = size_n + ' ' + fSExt[i];
+	var deleteInput = document.getElementById('deleteFileId');
+	if (deleteInput) deleteInput.value = '';
+	var fileIdInput = document.getElementById('fileUploadId');
+	if (fileIdInput) fileIdInput.value = '';
+}
+</script>
+
 </html>
