@@ -455,7 +455,7 @@
 															<span class="path2"></span>
 														</i>
 													</a>
-													<a data-note="btn delete" onclick="changStatus(${leave.leave_id});" title="Delete" class="btn btn-icon btn-sm btn-light-danger">
+													<a data-note="btn delete" onclick="changeStatus(${leave.leave_id});" title="Delete" class="btn btn-icon btn-sm btn-light-danger">
 														<i class="ki-duotone ki-trash fs-5">
 															<span class="path1"></span>
 															<span class="path2"></span>
@@ -809,9 +809,9 @@ function leaveStatus(id) {
 		}
 	});
 }
-</script>
+</script>  -->
 <script>
-function changStatus(id) {
+function changeStatus(id) {
     Swal.fire({
         title: "Are you sure?",
         html: `
@@ -871,7 +871,6 @@ function changStatus(id) {
     });
 }
 </script>
- -->
 <jsp:include page="/pages-back/common/leave_modal.jsp">
     <jsp:param name="showApproverInfo" value="true"/>
 </jsp:include>
