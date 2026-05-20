@@ -221,7 +221,7 @@
 												class="d-flex align-items-center border border-gray-300 rounded px-3 py-3">
 												<input type="text"
 													class="form-control bg-transparent border-0 shadow-none p-0 fw-medium text-gray-900"
-													style="font-size: 1rem;" name="beginning"
+													style="font-size: 1rem;" id="beginning" name="beginning"
 													placeholder="e.g. Head Office"
 													value="${expenseObj.fromLocation}" required />
 											</div>
@@ -249,8 +249,8 @@
 												class="d-flex align-items-center border border-gray-300 rounded px-3 py-3">
 												<input type="text"
 													class="form-control bg-transparent border-0 shadow-none p-0 fw-medium text-gray-900"
-													style="font-size: 1rem;" name="destination"
-													placeholder="e.g. Customer site"
+													style="font-size: 1rem;" id="destination"
+													name="destination" placeholder="e.g. Customer site"
 													value="${expenseObj.toLocation}" required />
 											</div>
 										</div>
@@ -277,11 +277,8 @@
 											<div class="rounded">
 												<div class="d-flex align-items-center flex-wrap gap-3">
 													<label
-														class="btn btn-primary btn-flex h-40px border-0 fw-medium d-inline-flex align-items-center gap-2 flex-shrink-0"
-														for="travelFiles"> <i
-														class="ki-duotone ki-upload fs-4"> <span class="path1"></span><span
-															class="path2"></span>
-													</i> Attach files <input type="file" id="travelFiles"
+														class="btn btn-primary h-40px border-0 fw-medium"
+														for="travelFiles"> Attach files <input type="file" id="travelFiles"
 														name="files" multiple style="display: none;"
 														accept=".pdf,.doc,.docx,.xlsx,.pptx,.csv,.png,.jpg,.jpeg,.gif,.webp,.mp4" />
 													</label>
@@ -445,7 +442,8 @@
 
 									<div class="d-flex justify-content-end gap-3 mt-6">
 										<a href="${ctx}/my_travel?status=Draft" class="btn btn-light">Cancel</a>
-										<button type="submit" class="btn btn-success">Save</button>
+										<button type="submit" id="btnSubmitSave"
+											class="btn btn-success" disabled>Save</button>
 									</div>
 								</div>
 							</div>
@@ -525,7 +523,7 @@
 										<button type="button" class="btn btn-light"
 											data-bs-dismiss="modal">Cancel</button>
 										<button type="button" id="btnModalSave"
-											class="btn btn-success">Save</button>
+											class="btn btn-success" disabled>Save</button>
 									</div>
 								</div>
 							</div>
@@ -668,18 +666,28 @@
 				flatpickr(
 						depDisplayEl,
 						{
+							defaultDate : "today",
 							dateFormat : "d M Y",
 							allowInput : false,
 							onChange : function(selectedDates) {
 								if (depValEl)
 									depValEl.value = selectedDates.length > 0 ? toIsoDate(selectedDates[0])
 											: "";
+
+								// อัปเดตสถานะปุ่มเมื่อเลือกวันที่
+								checkSubmitState();
 							},
-							onReady : function(_, __, fp) {
-								if (depValEl && depValEl.value) {
-									var d = parseIso(depValEl.value);
-									if (d)
-										fp.setDate(d, false);
+							onReady : function(selectedDates, dateStr, fp) {
+								if (depValEl) {
+									if (depValEl.value) {
+										var p = depValEl.value.split("-");
+										if (p.length === 3)
+											fp.setDate(new Date(parseInt(p[0]),
+													parseInt(p[1]) - 1,
+													parseInt(p[2])), false);
+									} else if (selectedDates.length > 0) {
+										depValEl.value = toIsoDate(selectedDates[0]);
+									}
 								}
 							}
 						});
@@ -690,12 +698,26 @@
 				var el = document.getElementById(id);
 				if (!el || typeof flatpickr === "undefined")
 					return;
+
 				flatpickr(el, {
 					enableTime : true,
 					noCalendar : true,
 					dateFormat : "H:i",
 					time_24hr : true,
-					allowInput : true
+					allowInput : true,
+
+					onReady : function(selectedDates, dateStr, instance) {
+
+						instance.input.addEventListener("input", function(e) {
+							// อนุญาตเฉพาะ 0-9 และ :
+							this.value = this.value.replace(/[^0-9:]/g, "");
+						});
+
+					},
+
+					onChange : function() {
+						checkSubmitState();
+					}
 				});
 			}
 			initTime("beginTime");
@@ -707,6 +729,107 @@
 			var grandTotalEl = document.getElementById("grandTotal");
 			var grandTotalInput = document.getElementById("grandTotalInput");
 			var btnModalSave = document.getElementById("btnModalSave");
+			var btnSubmitSave = document.getElementById("btnSubmitSave");
+
+			// (เช็ค Required Fields ของหน้าหลัก):
+			function checkSubmitState() {
+				if (!btnSubmitSave)
+					return;
+
+				var rowCount = tbody.querySelectorAll("tr.expense-row").length;
+				var hasExpenseRows = (rowCount > 0);
+
+				var valDeparture = document.getElementById("departureDate") ? document
+						.getElementById("departureDate").value.trim()
+						: "";
+				var valPurpose = document.getElementById("purposeOfJourney") ? document
+						.getElementById("purposeOfJourney").value.trim()
+						: "";
+				var valBeginning = document.getElementById("beginning") ? document
+						.getElementById("beginning").value.trim()
+						: "";
+				var valBeginTime = document.getElementById("beginTime") ? document
+						.getElementById("beginTime").value.trim()
+						: "";
+				var valDestination = document.getElementById("destination") ? document
+						.getElementById("destination").value.trim()
+						: "";
+				var valDestTime = document.getElementById("destTime") ? document
+						.getElementById("destTime").value.trim()
+						: "";
+
+				var allRequiredFilled = (valDeparture !== ""
+						&& valPurpose !== "" && valBeginning !== ""
+						&& valBeginTime !== "" && valDestination !== "" && valDestTime !== "");
+
+				if (hasExpenseRows && allRequiredFilled) {
+					btnSubmitSave.removeAttribute("disabled");
+				} else {
+					btnSubmitSave.setAttribute("disabled", "disabled");
+				}
+			}
+
+			// (เช็ค Required Fields ของ Modal):
+			function checkModalSubmitState() {
+				if (!btnModalSave)
+					return;
+
+				var goSel = document.getElementById("mGoBy");
+				var goByVal = goSel ? goSel.value.trim() : "";
+
+				var isCar = (goByVal === CAR_PRIVATE_ID);
+				var isValid = false;
+
+				if (goByVal !== "") {
+					if (isCar) {
+						var kmVal = document.getElementById("mKilometers") ? document
+								.getElementById("mKilometers").value.trim()
+								: "";
+						var totalVal = document.getElementById("mTotal") ? document
+								.getElementById("mTotal").value.trim()
+								: "";
+						// เช็คว่ากรอกทั้ง Distance และ Total
+						if (kmVal !== "" && totalVal !== "") {
+							isValid = true;
+						}
+					} else {
+						var totalNormalVal = document
+								.getElementById("mTotalNormal") ? document
+								.getElementById("mTotalNormal").value.trim()
+								: "";
+						// เช็คว่ากรอก Total (กรณีปกติ)
+						if (totalNormalVal !== "") {
+							isValid = true;
+						}
+					}
+				}
+
+				if (isValid) {
+					btnModalSave.removeAttribute("disabled");
+				} else {
+					btnModalSave.setAttribute("disabled", "disabled");
+				}
+			}
+
+			// ผูก Event ฝั่งหน้าหลัก
+			var requiredInputIds = [ "departureDate", "purposeOfJourney",
+					"beginning", "beginTime", "destination", "destTime" ];
+			requiredInputIds.forEach(function(id) {
+				var el = document.getElementById(id);
+				if (el) {
+					el.addEventListener("input", checkSubmitState);
+					el.addEventListener("change", checkSubmitState);
+				}
+			});
+
+			// ผูก Event ฝั่ง Modal Inputs
+			var modalInputIds = [ "mKilometers", "mTotal", "mTotalNormal" ];
+			modalInputIds.forEach(function(id) {
+				var el = document.getElementById(id);
+				if (el) {
+					el.addEventListener("input", checkModalSubmitState);
+				}
+			});
 
 			function reindex() {
 				tbody.querySelectorAll("tr.expense-row").forEach(
@@ -745,6 +868,8 @@
 					row.remove();
 				reindex();
 				calcTotal();
+
+				checkSubmitState();
 			}
 
 			function toggleDistanceField(goByVal) {
@@ -778,6 +903,8 @@
 					var kmEl = document.getElementById("mKilometers");
 					if (kmEl)
 						kmEl.value = "";
+
+					checkModalSubmitState();
 				});
 			}
 
@@ -791,6 +918,7 @@
 					} else {
 						totalEl.value = "";
 					}
+					checkModalSubmitState();
 				});
 			}
 
@@ -844,6 +972,8 @@
 				document.getElementById("distanceGroup").style.display = "none";
 				document.getElementById("totalGroupNormal").style.display = "";
 				delete modalEl.dataset.editRow;
+
+				checkModalSubmitState();
 			}
 
 			function openEditModal(row) {
@@ -872,6 +1002,8 @@
 								document.getElementById("mTotalNormal").value = totalVal;
 							}
 							document.getElementById("mDescription").value = descVal;
+
+							checkModalSubmitState();
 						}, 0);
 
 				modalEl.dataset.editRow = Array.from(
@@ -971,6 +1103,7 @@
 
 								reindex();
 								calcTotal();
+								checkSubmitState();
 								bootstrap.Modal.getOrCreateInstance(modalEl)
 										.hide();
 							});
@@ -994,6 +1127,8 @@
 
 			reindex();
 			calcTotal();
+
+			checkSubmitState();
 
 			// ===== File upload =====
 			var travelSelectedFiles = [];

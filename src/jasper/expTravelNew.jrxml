@@ -355,21 +355,25 @@ order by date(e.dt_start),
 				</graphicElement>
 			</line>
 			
-			<textField isBlankWhenNull="true">
-				<reportElement x="179" y="68" width="188" height="20" uuid="46abc68f-aa65-428d-b201-ddfe6221c435"/>
-				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font size="12" pdfFontName="WareeSans.ttf" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$F{approve_user_name}]]></textFieldExpression>
-			</textField>
+	<textField isBlankWhenNull="true">
+    <reportElement x="179" y="68" width="188" height="20" uuid="46abc68f-aa65-428d-b201-ddfe6221c435">
+        <printWhenExpression><![CDATA[$F{status_id} != null && ($F{status_id}.equals("A") || $F{status_id}.equals("R") || $F{status_id}.equals("P") )]]></printWhenExpression>
+    </reportElement>
+    <textElement textAlignment="Center" verticalAlignment="Middle">
+        <font size="12" pdfFontName="WareeSans.ttf" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+    </textElement>
+    <textFieldExpression><![CDATA[$F{approve_user_name}]]></textFieldExpression>
+	</textField>
 			
 			<textField pattern="dd MMM yyyy, HH:mm" isBlankWhenNull="true">
-				<reportElement x="179" y="90" width="188" height="15" uuid="e1b2c3d4-f5a6-7b8c-9d0e-1f2a3b4c5d6e"/>
-				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font size="8" pdfFontName="WareeSans.ttf" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$F{approved_at}]]></textFieldExpression>
-			</textField>
+    <reportElement x="179" y="90" width="188" height="15" uuid="e1b2c3d4-f5a6-7b8c-9d0e-1f2a3b4c5d6e">
+        <printWhenExpression><![CDATA[$F{status_id} != null && ($F{status_id}.equals("A") || $F{status_id}.equals("R") || $F{status_id}.equals("P") )]]></printWhenExpression>
+    </reportElement>
+    <textElement textAlignment="Center" verticalAlignment="Middle">
+        <font size="8" pdfFontName="WareeSans.ttf" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+    </textElement>
+    <textFieldExpression><![CDATA[$F{approved_at}]]></textFieldExpression>
+	</textField>
 			
 			<image scaleImage="RetainShape" hAlign="Center" vAlign="Bottom" isUsingCache="true" onErrorType="Blank">
 				<reportElement x="192" y="22" width="158" height="40" uuid="1a2b3c4d-5e6f-7a8b-9c0d-1e2f3a4b5c6d">

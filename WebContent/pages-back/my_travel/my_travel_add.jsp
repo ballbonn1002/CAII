@@ -234,13 +234,10 @@
 										<div class="col-12">
 											<div class="rounded">
 												<div class="d-flex align-items-center flex-wrap gap-3">
-													<label
-														class="btn btn-primary btn-flex h-40px border-0 fw-medium d-inline-flex align-items-center gap-2 flex-shrink-0"
-														for="travelFiles"> <i
-														class="ki-duotone ki-upload fs-4"> <span class="path1"></span><span
-															class="path2"></span>
-													</i> Attach files <input type="file" id="travelFiles"
-														name="files" multiple style="display: none;"
+													<label class="btn btn-primary h-40px border-0 fw-medium "
+														for="travelFiles">Attach files <input type="file"
+														id="travelFiles" name="files" multiple
+														style="display: none;"
 														accept=".pdf,.doc,.docx,.xlsx,.pptx,.csv,.png,.jpg,.jpeg,.gif,.webp,.mp4" />
 													</label> <input type="hidden" name="filesUploadFileName"
 														id="filesUploadFileName" /> <input type="hidden"
@@ -357,9 +354,10 @@
 														class="text-muted fw-normal">7 บาท / Km</span>
 													</label>
 													<div class="input-group">
+														<!-- ✅ ลบ disabled ออกเพื่อไม่ให้กระทบเรื่อง required validation -->
 														<input id="mTotal" type="number" class="form-control"
 															style="text-align: left;" min="0" step="0.01"
-															placeholder="0.00" required disabled="disabled" /> <span
+															placeholder="0.00" required /> <span
 															class="input-group-text">บาท</span>
 													</div>
 												</div>
@@ -384,8 +382,9 @@
 									<div class="modal-footer">
 										<button type="button" class="btn btn-light"
 											data-bs-dismiss="modal">Cancel</button>
+										<%-- ✅ เพิ่ม disabled ให้ปุ่ม Save ใน Modal --%>
 										<button type="button" id="btnModalSave"
-											class="btn btn-success">Save</button>
+											class="btn btn-success" disabled>Save</button>
 									</div>
 								</div>
 							</div>
@@ -513,7 +512,6 @@
 									depValEl.value = selectedDates.length > 0 ? toIsoDate(selectedDates[0])
 											: "";
 
-								// อัปเดตสถานะปุ่มเมื่อเลือกวันที่
 								checkSubmitState();
 							},
 							onReady : function(selectedDates, dateStr, fp) {
@@ -545,12 +543,9 @@
 					allowInput : true,
 
 					onReady : function(selectedDates, dateStr, instance) {
-
 						instance.input.addEventListener("input", function(e) {
-							// อนุญาตเฉพาะ 0-9 และ :
 							this.value = this.value.replace(/[^0-9:]/g, "");
 						});
-
 					},
 
 					onChange : function() {
@@ -558,6 +553,7 @@
 					}
 				});
 			}
+
 			initTime("beginTime");
 			initTime("destTime");
 
@@ -568,16 +564,14 @@
 			var btnModalSave = document.getElementById("btnModalSave");
 			var btnSubmitSave = document.getElementById("btnSubmitSave");
 
-			// (เช็ค Required Fields): ฟังก์ชันตรวจสอบเงื่อนไขทั้งหมดก่อนเปิดปุ่ม Save
+			// (เช็ค Required Fields ของฟอร์มหลัก):
 			function checkSubmitState() {
 				if (!btnSubmitSave)
 					return;
 
-				// 1. เช็คว่ามี Expense อย่างน้อย 1 รายการหรือไม่
 				var rowCount = tbody.querySelectorAll("tr.expense-row").length;
 				var hasExpenseRows = (rowCount > 0);
 
-				// 2. เช็คว่ากรอก Required Fields ครบหรือไม่
 				var valDeparture = document.getElementById("departureDate") ? document
 						.getElementById("departureDate").value.trim()
 						: "";
@@ -601,7 +595,6 @@
 						&& valPurpose !== "" && valBeginning !== ""
 						&& valBeginTime !== "" && valDestination !== "" && valDestTime !== "");
 
-				// ต้องผ่านทั้ง 2 เงื่อนไขถึงจะเปิดปุ่ม
 				if (hasExpenseRows && allRequiredFilled) {
 					btnSubmitSave.removeAttribute("disabled");
 				} else {
@@ -609,7 +602,46 @@
 				}
 			}
 
-			// (เช็ค Required Fields): ผูก Event Listener ดักจับการพิมพ์/การเปลี่ยนค่าในช่อง Required
+			// ✅ (เช็ค Required Fields ของ Modal):
+			function checkModalSubmitState() {
+				if (!btnModalSave)
+					return;
+
+				var goSel = document.getElementById("mGoBy");
+				var goByVal = goSel ? goSel.value.trim() : "";
+
+				var isCar = (goByVal === CAR_PRIVATE_ID);
+				var isValid = false;
+
+				if (goByVal !== "") {
+					if (isCar) {
+						var kmVal = document.getElementById("mKilometers") ? document
+								.getElementById("mKilometers").value.trim()
+								: "";
+						var totalVal = document.getElementById("mTotal") ? document
+								.getElementById("mTotal").value.trim()
+								: "";
+						if (kmVal !== "" && totalVal !== "") {
+							isValid = true;
+						}
+					} else {
+						var totalNormalVal = document
+								.getElementById("mTotalNormal") ? document
+								.getElementById("mTotalNormal").value.trim()
+								: "";
+						if (totalNormalVal !== "") {
+							isValid = true;
+						}
+					}
+				}
+
+				if (isValid) {
+					btnModalSave.removeAttribute("disabled");
+				} else {
+					btnModalSave.setAttribute("disabled", "disabled");
+				}
+			}
+
 			var requiredInputIds = [ "departureDate", "purposeOfJourney",
 					"beginning", "beginTime", "destination", "destTime" ];
 			requiredInputIds.forEach(function(id) {
@@ -617,6 +649,15 @@
 				if (el) {
 					el.addEventListener("input", checkSubmitState);
 					el.addEventListener("change", checkSubmitState);
+				}
+			});
+
+			// ✅ ผูก Event ฝั่ง Modal Inputs
+			var modalInputIds = [ "mKilometers", "mTotal", "mTotalNormal" ];
+			modalInputIds.forEach(function(id) {
+				var el = document.getElementById(id);
+				if (el) {
+					el.addEventListener("input", checkModalSubmitState);
 				}
 			});
 
@@ -692,6 +733,9 @@
 					var kmEl = document.getElementById("mKilometers");
 					if (kmEl)
 						kmEl.value = "";
+
+					// ✅ เรียกตรวจสอบ
+					checkModalSubmitState();
 				});
 			}
 
@@ -705,6 +749,9 @@
 					} else {
 						totalEl.value = "";
 					}
+
+					// ✅ เรียกตรวจสอบ
+					checkModalSubmitState();
 				});
 			}
 
@@ -760,6 +807,9 @@
 				document.getElementById("distanceGroup").style.display = "none";
 				document.getElementById("totalGroupNormal").style.display = "";
 				delete modalEl.dataset.editRow;
+
+				// ✅ เรียกตรวจสอบ
+				checkModalSubmitState();
 			}
 
 			function openEditModal(row) {
@@ -788,6 +838,9 @@
 								document.getElementById("mTotalNormal").value = totalVal;
 							}
 							document.getElementById("mDescription").value = descVal;
+
+							// ✅ เรียกตรวจสอบ
+							checkModalSubmitState();
 						}, 0);
 
 				modalEl.dataset.editRow = Array.from(
