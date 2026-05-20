@@ -215,10 +215,22 @@
 										<div
 											class="border border-gray-300 rounded-1 px-4 py-3 border-dashed ">
 											<div class="d-flex flex-column">
-												<p class="fs-5 fw-bold text-gray-800 mb-2">${user.employeeTypeId == 1 ? 'พนักงานประจำ' 
-											: user.employeeTypeId == 2 ? 'พนักงานอัตราจ้าง'
-											: 'นักศึกษาฝึกงาน'}</p>
-												<p class="fs-6 fw-bold text-gray-500 mb-0">Employee Type</p>
+												<p class="fs-5 fw-bold text-gray-800 mb-2">
+													<c:choose>
+														<c:when test="${user.employeeTypeId == '1'}">พนักงานประจำ</c:when>
+														<c:when test="${user.employeeTypeId == '2'}">พนักงานอัตราจ้าง</c:when>
+														<c:when test="${user.employeeTypeId == '3'}">นักศึกษาฝึกงาน</c:when>
+														<c:otherwise>-</c:otherwise>
+													</c:choose>
+												</p>
+												<p class="fs-6 fw-bold mb-0 <c:choose><c:when test="${user.employeeStatus == '1'}">text-success</c:when><c:when test="${user.employeeStatus == '2'}">text-warning</c:when><c:when test="${user.employeeStatus == '3'}">text-danger</c:when><c:otherwise>text-gray-500</c:otherwise></c:choose>">
+													<c:choose>
+														<c:when test="${user.employeeStatus == '1'}">Active</c:when>
+														<c:when test="${user.employeeStatus == '2'}">Probation</c:when>
+														<c:when test="${user.employeeStatus == '3'}">Excluded</c:when>
+														<c:otherwise>-</c:otherwise>
+													</c:choose>
+												</p>
 											</div>
 										</div>
 										<div
@@ -1003,6 +1015,53 @@
 </script>
 
 <script>
+	// Image compression logic
+	async function compressImage(file, maxWidth = 1280, maxHeight = 1280, quality = 0.8) {
+		if (!file.type.match(/image\/(jpeg|jpg|png)/)) {
+			return file;
+		}
+
+		return new Promise((resolve, reject) => {
+			const reader = new FileReader();
+			reader.readAsDataURL(file);
+			reader.onload = event => {
+				const img = new Image();
+				img.src = event.target.result;
+				img.onload = () => {
+					let width = img.width;
+					let height = img.height;
+
+					if (width > maxWidth || height > maxHeight) {
+						const ratio = Math.min(maxWidth / width, maxHeight / height);
+						width = width * ratio;
+						height = height * ratio;
+					}
+
+					const canvas = document.createElement('canvas');
+					canvas.width = width;
+					canvas.height = height;
+					const ctx = canvas.getContext('2d');
+					ctx.drawImage(img, 0, 0, width, height);
+
+					canvas.toBlob((blob) => {
+						if (blob) {
+							const newFileName = file.name.replace(/\.[^/.]+$/, ".jpg");
+							const newFile = new File([blob], newFileName, {
+								type: 'image/jpeg',
+								lastModified: Date.now()
+							});
+							resolve(newFile);
+						} else {
+							resolve(file);
+						}
+					}, 'image/jpeg', quality);
+				};
+				img.onerror = error => reject(error);
+			};
+			reader.onerror = error => reject(error);
+		});
+	}
+
 	document.addEventListener("DOMContentLoaded", function() {
 		const fileInput = document.getElementById("imageInputFile");  
 	    const removeBtn = document.querySelector('[data-kt-image-input-action="remove"]');
@@ -1013,21 +1072,34 @@
 	        if (errorMsgProfile) errorMsgProfile.textContent = "";
 	    };
 	   
-	    fileInput.addEventListener("change", function () { 	
-	        const file = this.files[0];
-	        const maxSize = 2 * 1024 * 1024;
-	        
-	        if (!file) return;
+	    fileInput.addEventListener("change", async function () { 	
+	        if (this.files && this.files[0]) {
+	            const file = this.files[0];
+	            const btnSubmit = document.getElementById('saveFormBtn');
+	            const originalText = btnSubmit ? btnSubmit.innerHTML : 'Save';
+	            
+	            if (btnSubmit) {
+	                btnSubmit.disabled = true;
+	                btnSubmit.innerHTML = '<span class="spinner-border spinner-border-sm align-middle me-2"></span>Compressing...';
+	            }
 
-	        if (file.size > maxSize) {
-	        	errorMsgProfile.textContent = "Image must be smaller than 2MB.";
-	            this.value = "";
-	            return;
-	        } 
-	        
-	        if (removeHidden) removeHidden.value = "false";
-	        clearError();
-	       
+	            try {
+	                const compressedFile = await compressImage(file, 1280, 1280, 0.8);
+	                const dt = new DataTransfer();
+	                dt.items.add(compressedFile);
+	                this.files = dt.files;
+	            } catch (error) {
+	                console.error("Compression failed", error);
+	            }
+	            
+	            if (btnSubmit) {
+	                btnSubmit.disabled = false;
+	                btnSubmit.innerHTML = originalText;
+	            }
+	            
+	            if (removeHidden) removeHidden.value = "false";
+	            clearError();
+	        }
 	    });
 	    
 	    if (removeBtn) {

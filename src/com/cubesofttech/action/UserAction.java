@@ -981,8 +981,12 @@ public class UserAction extends ActionSupport {
 			if (this.birthDate != null && !this.birthDate.isEmpty()) {
 				u.setBirthDate(new java.sql.Date(sdf.parse(this.birthDate).getTime()));
 			}
-			if (this.endDate != null && !this.endDate.isEmpty()) {
-				u.setEndDate(new java.sql.Date(sdf.parse(this.endDate).getTime()));
+			if (this.endDate != null) {
+				if (!this.endDate.isEmpty()) {
+					u.setEndDate(new java.sql.Date(sdf.parse(this.endDate).getTime()));
+				} else {
+					u.setEndDate(null);
+				}
 			}
 
 			u.setSocialSecurity(user.getSocialSecurity() != null ? user.getSocialSecurity() : "0");
