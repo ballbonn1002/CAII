@@ -251,4 +251,6 @@ INSERT INTO `authorized_object` (`authorized_object_id`, `name`, `description`, 
 
 # PROD 15 MAY 2026
 
-
+-- 20/05/2026 boom(Intern) : Add column employee_status in user table -- 
+ALTER TABLE `user`
+ADD `employee_status` VARCHAR(1) COLLATE utf8mb3_general_ci NOT NULL DEFAULT '1'

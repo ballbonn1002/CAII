@@ -164,7 +164,7 @@
 													<p class="fs-2 fw-bold text-gray-900  mb-0">${selectUser.id}</p>
 													<c:forEach var="jobSite" items="${jobSite}">
 														<span
-															class="badge badge-lg bg-primary text-white fw-semibold fs-8">${jobSite.name_site}</span>
+															class="badge bg-primary text-white fw-bold fs-6 px-4 py-2">${jobSite.name_site}</span>
 													</c:forEach>
 												</div>
 												<div class="d-flex flex-wrap">
@@ -245,13 +245,47 @@
 													- ${selectUser.workTimeEnd}</p>
 											</div>
 										</div>
+										<div
+											class="border border-gray-300 rounded-1 px-4 py-3 border-dashed ">
+											<div class="d-flex flex-column">
+												<p class="fs-5 fw-bold text-gray-800 mb-2">
+													<c:choose>
+														<c:when test="${selectUser.employeeTypeId == '1'}">พนักงานประจำ</c:when>
+														<c:when test="${selectUser.employeeTypeId == '2'}">พนักงานอัตราจ้าง</c:when>
+														<c:when test="${selectUser.employeeTypeId == '3'}">นักศึกษาฝึกงาน</c:when>
+														<c:otherwise>-</c:otherwise>
+													</c:choose>
+												</p>
+												<p class="fs-6 fw-bold mb-0 <c:choose><c:when test="${selectUser.employeeStatus == '1'}">text-success</c:when><c:when test="${selectUser.employeeStatus == '2'}">text-warning</c:when><c:when test="${selectUser.employeeStatus == '3'}">text-danger</c:when><c:otherwise>text-gray-500</c:otherwise></c:choose>">
+													<c:choose>
+														<c:when test="${selectUser.employeeStatus == '1'}">Active</c:when>
+														<c:when test="${selectUser.employeeStatus == '2'}">Probation</c:when>
+														<c:when test="${selectUser.employeeStatus == '3'}">Excluded</c:when>
+														<c:otherwise>-</c:otherwise>
+													</c:choose>
+												</p>
+											</div>
+										</div>
+										<div
+											class="border border-gray-300 rounded-1 px-4 py-3 border-dashed">
+											<div class="d-flex flex-column">
+												<c:set var="managerName" value="${selectUser.managerId}" />
+												<c:forEach var="u" items="${userList}">
+													<c:if test="${u.id == selectUser.managerId}">
+														<c:set var="managerName" value="${not empty u.name_en ? u.name_en : u.name}" />
+													</c:if>
+												</c:forEach>
+												<p class="fs-5 fw-bold text-gray-800 mb-2">${empty selectUser.managerId ? 'NONE' : managerName}</p>
+												<p class="fs-6 fw-bold text-gray-500 mb-0">Manager</p>
+											</div>
+										</div>
 									</div>
 
 								</div>
 							</div>
 						</div>
 
-						<div class="separator my-2 mx-9 "></div>
+						<div class="separator mt-8 mb-2 mx-9 "></div>
 						<ul
 							class="nav nav-stretch nav-line-tabs nav-line-tabs-2x border-0 fs-6 fw-semibold px-9 mt-1 mb-1"
 							id="profileNav">
@@ -317,7 +351,7 @@
 												style="
 								                <c:choose>
 								                  <c:when test='${not empty editUserImgPath}'>
-								                        background-image: url(${editUserImgPath});
+								                        background-image: url('${pageContext.request.contextPath}${editUserImgPath}');
 								                        background-size: cover;
 								                        background-position: center;
 								                    </c:when>
@@ -560,27 +594,31 @@
 										value="${selectUser.employeeId}" data-tab="employee" data-required="true" data-label="Employee Code"/>
 								</div>
 
-								<div class="col-md-6 fv-row">
-									<label class="required form-label">Employee Type</label> <select
-										class="form-select" name="user.employeeTypeId"
-										data-control="select2" data-placeholder="Employee type"
-										data-hide-search="true" data-tab="employee" data-required="true" data-label="Employee Type">
-
-										<option></option>
-
-										<option value="1"
-											<c:if test="${selectUser.employeeTypeId == '1'}">selected</c:if>>
-											พนักงานประจำ</option>
-
-										<option value="2"
-											<c:if test="${selectUser.employeeTypeId == '2'}">selected</c:if>>
-											พนักงานอัตราจ้าง</option>
-
-										<option value="3"
-											<c:if test="${selectUser.employeeTypeId == '3'}">selected</c:if>>
-											นักศึกษาฝึกงาน</option>
-
-									</select>
+								<div class="col-md-6">
+									<div class="row g-9">
+										<div class="col-md-6 fv-row">
+											<label class="required form-label">Employee Type</label> <select
+												class="form-select" name="user.employeeTypeId"
+												data-control="select2" data-placeholder="Employee type"
+												data-hide-search="true" data-tab="employee" data-required="true" data-label="Employee Type">
+												<option></option>
+												<option value="1" <c:if test="${selectUser.employeeTypeId == '1'}">selected</c:if>>พนักงานประจำ</option>
+												<option value="2" <c:if test="${selectUser.employeeTypeId == '2'}">selected</c:if>>พนักงานอัตราจ้าง</option>
+												<option value="3" <c:if test="${selectUser.employeeTypeId == '3'}">selected</c:if>>นักศึกษาฝึกงาน</option>
+											</select>
+										</div>
+										<div class="col-md-6 fv-row">
+											<label class="required form-label">Employee Status</label> <select
+												class="form-select" name="user.employeeStatus"
+												data-control="select2" data-placeholder="Employee status"
+												data-hide-search="true" data-tab="employee" data-required="true" data-label="Employee Status">
+												<option></option>
+												<option value="1" <c:if test="${selectUser.employeeStatus == '1'}">selected</c:if>>Active</option>
+												<option value="2" <c:if test="${selectUser.employeeStatus == '2'}">selected</c:if>>Probation</option>
+												<option value="3" <c:if test="${selectUser.employeeStatus == '3'}">selected</c:if>>Excluded</option>
+											</select>
+										</div>
+									</div>
 								</div>
 
 								<div class="col-md-6 fv-row">
@@ -1473,12 +1511,12 @@
 	    
 	    fileInput.addEventListener("change", function () { 	
 	        const file = this.files[0];
-	        const maxSize = 2 * 1024 * 1024;
+	        const maxSize = 10 * 1024 * 1024;
 	        
 	        if (!file) return;
 
 	        if (file.size > maxSize) {
-	        	errorMsgProfile.textContent = "Image must be smaller than 2MB.";
+	        	errorMsgProfile.textContent = "Image must be smaller than 10MB.";
 	            this.value = "";
 	            return;
 	        } 
@@ -2138,6 +2176,80 @@
 		 }
 	 }
 	 
+	// Image compression logic
+	async function compressImage(file, maxWidth = 1280, maxHeight = 1280, quality = 0.8) {
+		if (!file.type.match(/image\/(jpeg|jpg|png)/)) {
+			return file;
+		}
+
+		return new Promise((resolve, reject) => {
+			const reader = new FileReader();
+			reader.readAsDataURL(file);
+			reader.onload = event => {
+				const img = new Image();
+				img.src = event.target.result;
+				img.onload = () => {
+					let width = img.width;
+					let height = img.height;
+
+					if (width > maxWidth || height > maxHeight) {
+						const ratio = Math.min(maxWidth / width, maxHeight / height);
+						width = width * ratio;
+						height = height * ratio;
+					}
+
+					const canvas = document.createElement('canvas');
+					canvas.width = width;
+					canvas.height = height;
+					const ctx = canvas.getContext('2d');
+					ctx.drawImage(img, 0, 0, width, height);
+
+					canvas.toBlob((blob) => {
+						if (blob) {
+							const newFileName = file.name.replace(/\.[^/.]+$/, ".jpg");
+							const newFile = new File([blob], newFileName, {
+								type: 'image/jpeg',
+								lastModified: Date.now()
+							});
+							resolve(newFile);
+						} else {
+							resolve(file);
+						}
+					}, 'image/jpeg', quality);
+				};
+				img.onerror = error => reject(error);
+			};
+			reader.onerror = error => reject(error);
+		});
+	}
+
+	document.getElementById('imageInputFile').addEventListener('change', async function(e) {
+		if (this.files && this.files[0]) {
+			const file = this.files[0];
+			const btnSubmit = document.getElementById('btnSubmit');
+			const originalText = btnSubmit ? btnSubmit.innerHTML : 'Save';
+			
+			if (btnSubmit) {
+				btnSubmit.disabled = true;
+				btnSubmit.innerHTML = '<span class="spinner-border spinner-border-sm align-middle me-2"></span>Compressing...';
+			}
+
+			try {
+				const compressedFile = await compressImage(file, 1280, 1280, 0.8);
+				const dt = new DataTransfer();
+				dt.items.add(compressedFile);
+				this.files = dt.files;
+			} catch (error) {
+				console.error("Compression failed", error);
+			}
+			
+			if (btnSubmit) {
+				btnSubmit.disabled = false;
+				btnSubmit.innerHTML = originalText;
+			}
+		}
+	});
+
 </script>
 
 
