@@ -235,3 +235,22 @@ ADD COLUMN unique_readcount INT DEFAULT 0;
 UPDATE support SET categorized = '1' WHERE categorized = 'Technical Issue';
 UPDATE support SET categorized = '2' WHERE categorized = 'Inquiry / Question';
 UPDATE support SET categorized = '3' WHERE categorized = 'Feature Request';
+
+-- 15/05/2026 Eric: CREATE TABLE log_action
+CREATE TABLE `log_action` (
+`log_action_id` BIGINT(20) NOT NULL PRIMARY KEY, 
+`log_data` TEXT NULL , 
+`user_create` VARCHAR(32) NULL , 
+`user_update` VARCHAR(32) NULL , 
+`time_create` TIMESTAMP NULL , 
+`time_update` TIMESTAMP NULL ) ENGINE = InnoDB;
+
+-- 15/05/2026 Koy: Add permission 'announcement.read' in 'authorized_object' table.
+INSERT INTO `authorized_object` (`authorized_object_id`, `name`, `description`, `active`, `time_create`, `time_update`, `authorized_object_group_id`) VALUES 
+('announcement.read', 'announcement.read', 'อ่าน announcement ได้', '1', '2026-05-12 14:56:43', '2026-05-12 14:56:43', '1');
+
+# PROD 15 MAY 2026
+
+-- 20/05/2026 boom(Intern) : Add column employee_status in user table -- 
+ALTER TABLE `user`
+ADD `employee_status` VARCHAR(1) COLLATE utf8mb3_general_ci NOT NULL DEFAULT '1'

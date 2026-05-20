@@ -338,6 +338,8 @@ public class User implements Serializable {
     private String paymentRemark;
     @Column(name = "path_signature")
     private String pathSignature;
+    @Column(name = "employee_status")
+    private String employeeStatus;
 
 
     public Integer getId_sitejob() {
@@ -834,6 +836,13 @@ public class User implements Serializable {
 		this.pathSignature = pathSignature;
 	}
 	
+	public String getEmployeeStatus() {
+		return employeeStatus;
+	}
+	public void setEmployeeStatus(String employeeStatus) {
+		this.employeeStatus = employeeStatus;
+	}
+	
 	@Override
 	public String toString() {
 		return "User [id=" + id + ", roleId=" + roleId + ", departmentId=" + departmentId + ", managerId=" + managerId
@@ -860,7 +869,7 @@ public class User implements Serializable {
 				+ ", withHoldAuto=" + withHoldAuto + ", taxDec=" + taxDec + ", transferType=" + transferType + ", bank="
 				+ bank + ", bankType=" + bankType + ", bankNum=" + bankNum + ", bankBranch=" + bankBranch
 				+ ", citizenId=" + citizenId + ", passportId=" + passportId + ", incDa=" + incDa + ", incNb=" + incNb
-				+ ", paymentRemark=" + paymentRemark + ", pathSignature=" + pathSignature + "]";
+				+ ", paymentRemark=" + paymentRemark + ", pathSignature=" + pathSignature + ", employeeStatus=" + employeeStatus + "]";
 	}
 	
 
@@ -1154,6 +1163,10 @@ public class User implements Serializable {
         }
         if(!(that.getPathSignature() == null ? this.getPathSignature() == null
         		: that.getPathSignature().equals(this.getPathSignature()))) {
+        	return false;	
+        }
+        if(!(that.getEmployeeStatus() == null ? this.getEmployeeStatus() == null
+        		: that.getEmployeeStatus().equals(this.getEmployeeStatus()))) {
         	return false;	
         }
         	

@@ -7,6 +7,7 @@ import java.io.FileInputStream;
 import java.io.InputStream;
 import java.io.PrintWriter;
 import java.math.BigDecimal;
+import java.net.URL;
 import java.nio.file.Files;
 import java.sql.Timestamp;
 import java.text.DecimalFormat;
@@ -1773,14 +1774,15 @@ public class LeaveAction extends ActionSupport {
 	        }
 	        log.debug(user);
 	        log.debug(approver);
+			log.debug(halfDay);
 	        
-	        if (halfDay.equals("0")) {
+	        if ("0".equals(halfDay)) {
 	            time_from = "9:00";
 	            time_to = "18:00";
-	        } else if (halfDay.equals("1")) {
+	        } else if ("1".equals(halfDay)) {
 	            time_from = "8:00";
 	            time_to = "12:00";
-	        } else if (halfDay.equals("2")) {
+	        } else if ("2".equals(halfDay)) {
 	            time_from = "13:00";
 	            time_to = "17:00";
 	        }
@@ -1898,7 +1900,7 @@ public class LeaveAction extends ActionSupport {
 					try (java.io.FileInputStream fis = new java.io.FileInputStream(fileUpload);
 						 java.io.FileOutputStream fos = new java.io.FileOutputStream(new java.io.File(destFolder, serverFileName))) {
 						
-						log.info("กำลังจะเริ่มย่อขนาดรูปภาพในโหมด Edit...");
+						log.info("Resizing image in Edit mode...");
 						byte[] resizedBytes = FileUtil.resizeImage(fis, 800, 800);
 						
 						fos.write(resizedBytes);
@@ -1955,33 +1957,50 @@ public class LeaveAction extends ActionSupport {
 		try {
 			User onlineUser = (User) request.getSession().getAttribute("onlineUser");
 			String id = request.getParameter("id");
-			log.debug(id);
+			log.debug("File ID: " + id);
 			FileUpload fileUpload = fileuploadDAO.findById(Integer.parseInt(id));
+			if (fileUpload == null) {
+				return ERROR;
+			}
+			String storedPath = fileUpload.getPath();
+        	log.debug("Stored Path in DB: " + storedPath);
 			String realPath = request.getSession().getServletContext().getRealPath(fileUpload.getPath());
+			log.debug("Real Path: " + realPath);
 			File imgFile = new File(realPath);
-			if (imgFile.exists()) {
-				byte[] fileContent = Files.readAllBytes(imgFile.toPath());
-				String base64Encoded = Base64.getEncoder().encodeToString(fileContent);
-				String mimeType = Files.probeContentType(imgFile.toPath());
-	            if (mimeType == null) {
-	                mimeType = "image/png"; //default value
-	            }
-	            String htmlResponse = "<!DOCTYPE html>"
-	                    + "<html><head><title>Preview Image</title>"
-	                    + "<style>"
-	                    + "  body { background-color: #f3f4f6; margin: 0; display: flex; justify-content: center; align-items: center; min-height: 100vh; }"
-	                    + "  img { max-width: 95%; max-height: 95vh; object-fit: contain; box-shadow: 0 4px 8px rgba(0,0,0,0.2); background: #fff; }"
-	                    + "</style>"
-	                    + "</head><body>"
-	                    + "<img src=\"data:" + mimeType + ";base64," + base64Encoded + "\" alt=\"Preview\">"
-	                    + "</body></html>";
-	            response.setContentType("text/html; charset=UTF-8");
-	            PrintWriter out = response.getWriter();
-	            out.print(htmlResponse);
-	            out.flush();
-	            out.close();
-	            return null;
+			log.debug("File exists: " + imgFile.exists());
+			log.debug("File absolute path: " + imgFile.getAbsolutePath());
+			
+			URL fileUrl = request.getSession().getServletContext().getResource(fileUpload.getPath());
+			log.debug("fileUrl: " + fileUrl);
+			if(fileUrl != null) {
+				log.debug("File URL: " + fileUrl.toString());
+				if (imgFile.exists()) {
+					byte[] fileContent = Files.readAllBytes(imgFile.toPath());
+					String base64Encoded = Base64.getEncoder().encodeToString(fileContent);
+					String mimeType = Files.probeContentType(imgFile.toPath());
+					if (mimeType == null) {
+						mimeType = "image/png"; //default value
+					}
+					String htmlResponse = "<!DOCTYPE html>"
+							+ "<html><head><title>Preview Image</title>"
+							+ "<style>"
+							+ "  body { background-color: #f3f4f6; margin: 0; display: flex; justify-content: center; align-items: center; min-height: 100vh; }"
+							+ "  img { max-width: 95%; max-height: 95vh; object-fit: contain; box-shadow: 0 4px 8px rgba(0,0,0,0.2); background: #fff; }"
+							+ "</style>"
+							+ "</head><body>"
+							+ "<img src=\"data:" + mimeType + ";base64," + base64Encoded + "\" alt=\"Preview\">"
+							+ "</body></html>";
+					response.setContentType("text/html; charset=UTF-8");
+					PrintWriter out = response.getWriter();
+					out.print(htmlResponse);
+					out.flush();
+					out.close();
+					return null;
+				} else {
+					return ERROR;
+				}
 			} else {
+				log.debug("File URL is null");
 				return ERROR;
 			}
 			

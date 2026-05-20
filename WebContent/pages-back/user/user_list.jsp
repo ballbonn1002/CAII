@@ -122,7 +122,7 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <button type="button" id="btnToggleFilters" class="btn btn-icon btn-light-primary text-gray-600 border-0 rounded-3 h-45px px-4 d-flex align-items-center justify-content-center" aria-expanded="false">
+                                    <button type="button" id="btnToggleFilters" class="btn btn-light-primary text-gray-600 border border-primary rounded-3 h-45px w-60px d-flex align-items-center justify-content-center" aria-expanded="false">
                                         <i class="ki-duotone ki-filter fs-2"><span class="path1"></span><span class="path2"></span></i>
                                     </button>
                                 </div>
@@ -130,33 +130,51 @@
                                 <div class="filter-divider border-bottom my-3 mt-6 d-none"></div>
 
                                 <div id="filterFields" class="filter-fields d-none">
-                                    <div class="row g-3">
+                                    <div class="row gy-5 gx-3">
                                         <div class="col-12 col-md-4">
-                                            <label for="statusSelect" class="form-label mb-1">Status:</label>
-                                            <select id="statusSelect" class="form-select" data-control="select2" data-hide-search="true" data-placeholder="All Status">
-                                                <option value="">All Status</option>
+                                            <label for="statusSelect" class="form-label mb-1">Active:</label>
+                                            <select id="statusSelect" class="form-select" data-control="select2" data-hide-search="true" data-placeholder="All">
+                                                <option value="all">All</option>
                                                 <option value="1">Active</option>
                                                 <option value="2">Non active</option>
-                                                <option value="3">All Users</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-12 col-md-4">
+                                            <label for="employeeTypeSelect" class="form-label mb-1">Employee type :</label>
+                                            <select id="employeeTypeSelect" class="form-select" data-control="select2" data-hide-search="true" data-placeholder="All">
+                                                <option value="all">All</option>
+                                                <option value="1">พนักงานประจำ</option>
+                                                <option value="2">พนักงานอัตราจ้าง</option>
+                                                <option value="3">นักศึกษาฝึกงาน</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-12 col-md-4">
+                                            <label for="employeeStatusSelect" class="form-label mb-1">Employee Status</label>
+                                            <select id="employeeStatusSelect" class="form-select" data-control="select2" data-hide-search="true" data-placeholder="All">
+                                                <option value="all">All</option>
+                                                <option value="1">Active</option>
+                                                <option value="2">Probation</option>
+                                                <option value="3">Excluded</option>
                                             </select>
                                         </div>
                                         <div class="col-12 col-md-4">
                                             <label for="birthdaysSelect" class="form-label mb-1">Birthdays:</label>
-                                            <select id="birthdaysSelect" class="form-select" data-allow-clear="true" data-control="select2" data-hide-search="true" data-placeholder="Select">
-                                                <option value="">Select</option>
+                                            <select id="birthdaysSelect" class="form-select" data-allow-clear="true" data-control="select2" data-hide-search="true" data-placeholder="All">
+                                                <option value="all">All</option>
                                                 <option value="1">This Month</option>
                                                 <option value="2">This Week</option>
-                                                <option value="3">All Users</option>
                                             </select>
                                         </div>
                                         <div class="col-12 col-md-4">
                                             <label for="anniversariesSelect" class="form-label mb-1">Anniversaries:</label>
-                                            <select id="anniversariesSelect" class="form-select" data-allow-clear="true" data-control="select2" data-hide-search="true" data-placeholder="Select">
-                                                <option value="">Select</option>
+                                            <select id="anniversariesSelect" class="form-select" data-allow-clear="true" data-control="select2" data-hide-search="true" data-placeholder="All">
+                                                <option value="all">All</option>
                                                 <option value="1">This Month</option>
                                                 <option value="2">This Week</option>
-                                                <option value="3">All Users</option>
                                             </select>
+                                        </div>
+                                        <div class="col-12 col-md-4 d-flex align-items-end">
+                                            <button type="button" id="btnFilterSearch" class="btn btn-primary px-8">Search</button>
                                         </div>
                                     </div>
                                 </div>
@@ -202,7 +220,7 @@
                                     <thead>
                                             <tr class="text-start text-gray-500 fw-bold fs-7 text-uppercase gs-0">
                                                 <th class="text-start" style="min-width:50px;">#</th>
-                                                <th style="min-width:120px;">Employee ID</th>
+                                                <th style="min-width:80px;">Emp. ID</th>
                                                 <th style="min-width:230px;">Name</th>
                                                 <th class="w-50px text-center p-0"></th> 
                                                 <th class="min-w-100px" >Job Site</th>
@@ -215,7 +233,7 @@
                                     <tbody>
                                             <c:forEach var="user" items="${cubesoftUser}" varStatus="st">
                                                 <c:set var="uid" value="${user.id != null ? fn:trim(user.id) : ''}" />
-                                                <tr data-user-id="${uid}" data-birth="<fmt:formatDate value='${user.birth_date}' pattern='yyyy-MM-dd'/>">
+                                                <tr data-user-id="${uid}" data-birth="<fmt:formatDate value='${user.birth_date}' pattern='yyyy-MM-dd'/>" data-employee-type="${user.employee_type_id}" data-employee-status="${user.employee_status}">
                                                     
                                                     <td class="fw-bold text-gray-800 text-start row-number "></td>
                                                     
@@ -224,31 +242,65 @@
                                                     </td>
                                                     
                                                     <td>
-                                                        <div class="fw-semibold text-gray-900">
-                                                            <c:choose>
-                                                                <c:when test="${not empty user.name_en}">
-                                                                    <a href="user-edit?userId=${user.id}" class="text-gray-900 text-hover-primary">${user.name_en}</a>
-                                                                </c:when>
-                                                                <c:otherwise>-</c:otherwise>
-                                                            </c:choose>
+                                                        <div class="d-flex align-items-center gap-4">
+                                                            <div class="symbol symbol-40px symbol-circle">
+                                                              <div class="d-flex flex-column">
+                                                                <c:choose>
+                                                                    <c:when test="${not empty user.ListUserImgPath}">
+                                                                        <div class="symbol-label"><img src="${pageContext.request.contextPath}${user.ListUserImgPath}" class="w-100 h-100 rounded-circle" style="object-fit: cover;" /></div>
+                                                                    </c:when>
+                                                                    <c:otherwise>
+                                                                        <span class="symbol-label bg-light-primary text-primary fw-bold d-flex align-items-center justify-content-center">
+                                                                            ${fn:toUpperCase(fn:substring(not empty user.name_en ? user.name_en : user.name, 0, 1))}
+                                                                        </span>
+                                                                    </c:otherwise>
+                                                                </c:choose>
+                                                                </div>
+                                                            </div>
+                                                            <div class="d-flex flex-column">
+                                                                <div class="fw-semibold text-gray-900">
+                                                                    <c:choose>
+                                                                        <c:when test="${not empty user.name_en}">
+                                                                            <a href="user-edit?userId=${user.id}" class="text-gray-900 text-hover-primary">${user.name_en}</a>
+                                                                        </c:when>
+                                                                        <c:otherwise>-</c:otherwise>
+                                                                    </c:choose>
+                                                                </div>
+                                                                <div class="text-gray-700 fs-6">${not empty user.name ? user.name : ''}</div>
+                                                                <div class="d-flex align-items-center gap-2 fs-6 mt-1">
+                                                                    <span class="text-primary text-nowrap">
+                                                                        <c:choose>
+                                                                            <c:when test="${user.employee_type_id == '1'}">พนักงานประจำ</c:when>
+                                                                            <c:when test="${user.employee_type_id == '2'}">พนักงานอัตราจ้าง</c:when>
+                                                                            <c:when test="${user.employee_type_id == '3'}">นักศึกษาฝึกงาน</c:when>
+                                                                        </c:choose>
+                                                                    </span>
+                                                                    <span class="<c:choose><c:when test="${user.employee_status == '1'}">text-success</c:when><c:when test="${user.employee_status == '2'}">text-warning</c:when><c:when test="${user.employee_status == '3'}">text-danger</c:when></c:choose>">
+                                                                        <c:choose>
+                                                                            <c:when test="${user.employee_status == '1'}">Active</c:when>
+                                                                            <c:when test="${user.employee_status == '2'}">Probation</c:when>
+                                                                            <c:when test="${user.employee_status == '3'}">Excluded</c:when>
+                                                                        </c:choose>
+                                                                    </span>
+                                                                </div>
+                                                            </div>
                                                         </div>
-                                                        <div class="text-gray-700 fs-6">${not empty user.name ? user.name : ''}</div>
                                                     </td>
 
                                                     <td class="text-center bday-cell"></td>
 
                                                     <td>
-                                                        <div class="d-flex flex-wrap align-items-start gap-2">
+                                                        <div class="d-flex flex-column align-items-start gap-2">
                                                             <c:choose>
                                                                 <c:when test="${not empty user.job_site_all}">
                                                                     <c:forEach var="site" items="${user.job_site_all}">
-                                                                        <span class="badge badge-primary fw-semibold me-2 d-inline-flex">${site.name_site}</span>
+                                                                        <span class="badge badge-primary fw-bold fs-6 px-3 py-2 d-inline-flex">${site.name_site}</span>
                                                                     </c:forEach>
                                                                 </c:when>
                                                                 <c:otherwise><span class="">-</span></c:otherwise>
                                                             </c:choose>
                                                             <c:if test="${not empty user.inhouse && user.inhouse}">
-                                                                <span class="badge badge-light-info fw-semibold d-inline-flex">In-house</span>
+                                                                <span class="badge badge-light-info fw-bold fs-6 px-3 py-2 d-inline-flex">In-house</span>
                                                             </c:if>
                                                         </div>
                                                     </td>
@@ -281,7 +333,7 @@
                     <div id="gridViewContainer" class="row g-8 d-none">
 					    <c:forEach var="user" items="${cubesoftUser}">
 					        <div class="col-12 col-md-6 col-xl-4 grid-card">
-					            <div class="card" data-user-id="${user.id}">
+					            <div class="card" data-user-id="${user.id}" data-employee-type="${user.employee_type_id}" data-employee-status="${user.employee_status}">
 					                <div class="card-header d-flex justify-content-between align-items-center">
 					                    <div class="d-flex align-items-center">
 					                        <span class="employee-id fw-bold">${not empty user.employee_id ? user.employee_id : 'NONE'}</span>
@@ -294,25 +346,27 @@
 					                </div>
 					                <div class="card-body d-flex flex-column">
 					                    <div style="flex-grow: 1;">
-					                        <div class="d-flex align-items-center mb-3">
-					                            <div class="symbol symbol-40px symbol-circle me-8">
+					                        <div class="d-flex align-items-center mb-5">
+					                            <div class="symbol symbol-50px symbol-circle me-4">
 					                                <c:choose>
 					                                    <c:when test="${not empty user.ListUserImgPath}">
-					                                        <div class="symbol-label"><img src="${user.ListUserImgPath}" class="w-100 h-100 rounded-circle" style="object-fit: cover;" /></div>
+					                                        <div class="symbol-label"><img src="${pageContext.request.contextPath}${user.ListUserImgPath}" class="w-100 h-100 rounded-circle" style="object-fit: cover;" /></div>
 					                                    </c:when>
 					                                    <c:otherwise>
-					                                        <span class="symbol-label bg-light-primary text-primary fw-bold d-flex align-items-center justify-content-center">
+					                                        <span class="symbol-label bg-light-primary text-primary fw-semibold fs-1 d-flex align-items-center justify-content-center">
 					                                            ${fn:toUpperCase(fn:substring(not empty user.name_en ? user.name_en : user.name, 0, 1))}
 					                                        </span>
 					                                    </c:otherwise>
 					                                </c:choose>
 					                                	                                
 					                            </div>
-					                            <div class="employee-info mb-4">
-					                                <span style="font-weight: 500;">${not empty user.name_en ? user.name_en : '-'}</span><br/>
-					                                <span style="font-weight: 300; margin-left: 6px;">${not empty user.name ? user.name : '-'}</span>
+					                            <div class="employee-info mb-0">
+					                                <div style="font-weight: 500; font-size: 1.1rem; color: #181C32;">${not empty user.name_en ? user.name_en : '-'}</div>
+					                                <div class="fs-6" style="font-weight: 400; color: #3F4254;">${not empty user.name ? user.name : '-'}</div>
 					                            </div>
 					                        </div>
+					                        
+					                        <div class="separator separator-dashed border-gray-300 mb-5"></div>
 					                        
 					                        <div class="info-row d-flex justify-content-between mb-4">
 					                            <div class="info-left d-flex align-items-center">
@@ -358,24 +412,24 @@
 					                    </div>
 					                </div>
 					                <div class="card-footer d-flex flex-column">
-					                    <div class="info-row d-flex justify-content-between mt-2">
+					                    <div class="info-row d-flex justify-content-between align-items-center">
 					                        <div class="text-start">
 					                            <c:choose>
 					                                <c:when test="${not empty user.job_site_all}">
 					                                    <c:forEach var="site" items="${user.job_site_all}">
-					                                        <span class="badge badge-primary fw-semibold me-2 d-inline-flex">${site.name_site}</span>
+					                                        <span class="badge badge-primary fw-semibold me-2 d-inline-flex fs-6 px-3 py-2">${site.name_site}</span>
 					                                    </c:forEach>
 					                                </c:when>
-					                                <c:otherwise><span class="badge badge-light d-inline-flex">None</span></c:otherwise>
+					                                <c:otherwise><span class="badge badge-light d-inline-flex fs-6 px-3 py-2 text-gray-800 fw-bold">None</span></c:otherwise>
 					                            </c:choose>
 					                        </div>
-					                        <div class="d-flex align-items-center gap-2">
-					                            <span class="status-text fw-semibold fs-8 <c:if test='${user.enable == 1}'>text-success</c:if> <c:if test='${user.enable != 1}'>text-muted</c:if>">
+					                        <div class="d-flex align-items-center gap-3">
+					                            <span class="status-text fw-semibold fs-6 <c:if test='${user.enable == 1}'>text-success</c:if> <c:if test='${user.enable != 1}'>text-muted</c:if>">
 					                                <c:choose><c:when test="${user.enable == 1}">Active</c:when><c:otherwise>Inactive</c:otherwise></c:choose>
 					                            </span>
 					                            <div class="form-check form-switch form-check-custom form-check-solid <c:if test='${user.enable == 1}'>form-check-success</c:if> <c:if test='${user.enable != 1}'>form-check-muted</c:if>">
 					                                <c:set var="uid" value="${user.id != null ? fn:trim(user.id) : ''}" />
-					                                <input class="form-check-input h-20px w-35px js-toggle-enable" type="checkbox" id="active_grid_${uid}" data-userid="${uid}" data-enable="${user.enable}" <c:if test="${user.enable == 1}">checked</c:if> />
+					                                <input class="form-check-input h-25px w-45px js-toggle-enable" type="checkbox" id="active_grid_${uid}" data-userid="${uid}" data-enable="${user.enable}" <c:if test="${user.enable == 1}">checked</c:if> />
 					                            </div>
 					                        </div>
 					                    </div>
@@ -409,7 +463,7 @@
   var tableItemsPerPage = 100;
   var currentPage = 1;
   var isGridView = false;
-  var activeFilters  = { status: '1', anniversaries: '', birthdays: '' };
+  var activeFilters  = { status: '1', employee_type: '', employee_status: '', anniversaries: '', birthdays: '' };
   var sortedCardCache = null;
 
 
@@ -719,6 +773,14 @@
         if (st === '2' &&  enabled) return false;
       }
     }
+    // Employee Type Filter
+    var et = (activeFilters.employee_type || '');
+    if (et !== '' && $tr.attr('data-employee-type') !== et) return false;
+    
+    // Employee Status Filter
+    var es = (activeFilters.employee_status || '');
+    if (es !== '' && $tr.attr('data-employee-status') !== es) return false;
+
     // Anniversaries Filter
     var an = String(activeFilters.anniversaries || '');
     if (an === '1' && $tr.attr('data-anniv-thismonth') !== '1') return false;
@@ -744,6 +806,12 @@
         if (st === '2' &&  enabled) return false;
       }
     }
+    var et = (activeFilters.employee_type || '');
+    if (et !== '' && $card.attr('data-employee-type') !== et) return false;
+    
+    var es = (activeFilters.employee_status || '');
+    if (es !== '' && $card.attr('data-employee-status') !== es) return false;
+
     var an = String(activeFilters.anniversaries || '');
     if (an === '1' && $card.attr('data-anniv-thismonth') !== '1') return false;
     if (an === '2' && $card.attr('data-anniv-thisweek')  !== '1') return false;
@@ -758,8 +826,17 @@
 
   function updateShowingText(total, totalAll){
     var badges = [];
-    if (activeFilters.status === '1') badges.push('Status: Active');
-    if (activeFilters.status === '2') badges.push('Status: Non active');
+    if (activeFilters.status === '1') badges.push('Active');
+    if (activeFilters.status === '2') badges.push('Non active');
+    
+    if (activeFilters.employee_type === '1') badges.push('พนักงานประจำ');
+    if (activeFilters.employee_type === '2') badges.push('พนักงานอัตราจ้าง');
+    if (activeFilters.employee_type === '3') badges.push('นักศึกษาฝึกงาน');
+    
+    if (activeFilters.employee_status === '1') badges.push('Status: Active');
+    if (activeFilters.employee_status === '2') badges.push('Status: Probation');
+    if (activeFilters.employee_status === '3') badges.push('Status: Excluded');
+
     if (String(activeFilters.anniversaries) === '1') badges.push('Anniversary month');
     if (String(activeFilters.anniversaries) === '2') badges.push('Anniversary week');
     if (String(activeFilters.birthdays) === '1') badges.push('Birthday month');
@@ -888,13 +965,15 @@
   function showAllUsers(){
     $rowsAll().attr('data-filtered','1');
     $gridCardsAll().attr('data-filtered','1'); 
-    activeFilters = { status: '1', birthdays: '3', anniversaries: '3' };
+    activeFilters = { status: '1', employee_type: '', employee_status: '', birthdays: '', anniversaries: '' };
     sortedCardCache = null
     sortedCache = null
     currentPage = 1;
     $('#statusSelect').val('1').trigger('change.select2');
-    $('#birthdaysSelect').val('3').trigger('change.select2');
-    $('#anniversariesSelect').val('3').trigger('change.select2');
+    $('#employeeTypeSelect').val('all').trigger('change.select2');
+    $('#employeeStatusSelect').val('all').trigger('change.select2');
+    $('#birthdaysSelect').val('all').trigger('change.select2');
+    $('#anniversariesSelect').val('all').trigger('change.select2');
     
     $('#name2').val('All').trigger('change.select2');
     
@@ -1163,11 +1242,15 @@
 
     initSel($('#name2')); 
     initSel($('#statusSelect'), true);
+    initSel($('#employeeTypeSelect'), true);
+    initSel($('#employeeStatusSelect'), true);
     initSel($('#birthdaysSelect'), true);
     initSel($('#anniversariesSelect'), true);
     $('#statusSelect').val('1').trigger('change.select2'); 
-    $('#birthdaysSelect').val('3').trigger('change.select2'); 
-    $('#anniversariesSelect').val('3').trigger('change.select2'); 
+    $('#employeeTypeSelect').val('all').trigger('change.select2'); 
+    $('#employeeStatusSelect').val('all').trigger('change.select2'); 
+    $('#birthdaysSelect').val('all').trigger('change.select2'); 
+    $('#anniversariesSelect').val('all').trigger('change.select2'); 
     activeFilters.status = '1';
 
     const $btn = $('#btnToggleFilters');
@@ -1188,17 +1271,18 @@
     setFiltersOpen(false);
     $btn.on('click', function(e){ e.preventDefault(); setFiltersOpen(!$btn.hasClass('active')); });
 
-    $('#statusSelect').on('change', function(){
-      var v = ($(this).val() || '');
-      activeFilters.status = (v === '3') ? '' : v;
-      refreshCurrentView();
-    });
-    $('#birthdaysSelect').on('change', function(){
-      activeFilters.birthdays = ($(this).val() || '');
-      refreshCurrentView();
-    });
-    $('#anniversariesSelect').on('change', function(){
-      activeFilters.anniversaries = ($(this).val() || '');
+    $('#btnFilterSearch').on('click', function(e) {
+      e.preventDefault();
+      var st = $('#statusSelect').val();
+      activeFilters.status = st === 'all' ? '' : (st || '');
+      var et = $('#employeeTypeSelect').val();
+      activeFilters.employee_type = et === 'all' ? '' : (et || '');
+      var es = $('#employeeStatusSelect').val();
+      activeFilters.employee_status = es === 'all' ? '' : (es || '');
+      var bd = $('#birthdaysSelect').val();
+      activeFilters.birthdays = bd === 'all' ? '' : (bd || '');
+      var an = $('#anniversariesSelect').val();
+      activeFilters.anniversaries = an === 'all' ? '' : (an || '');
       refreshCurrentView();
     });
 

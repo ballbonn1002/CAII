@@ -565,27 +565,27 @@ public class UserAction extends ActionSupport {
 				Object pathObj = map.get("path");
 				if (pathObj != null) {
 					String path = pathObj.toString();
-					if (path.contains("_")) {
-						try {
-							String originalFileName = new File(path).getName();
-
+					try {
+						String originalFileName = new File(path).getName();
+						if (path.contains("_") && !originalFileName.startsWith("user_")) {
 							String fileIdStr = originalFileName.substring(0, originalFileName.indexOf("_"));
 							int fileId = Integer.parseInt(fileIdStr);
-
 							String typeFile = originalFileName.substring(originalFileName.lastIndexOf("."));
-
 							imgPath = "/upload/user/user_" + fileId + typeFile;
-
-							String server = request.getServletContext().getRealPath("/");
-							File f = new File(server + imgPath);
-
-							if (!f.exists()) {
-								imgPath = null;
-							}
-
-						} catch (Exception e) {
+						} else {
+							imgPath = path;
+						}
+						
+						// Verify physical existence but don't strictly nullify if missing, 
+						// as the file might be hosted externally or the context path is different.
+						String server = request.getServletContext().getRealPath("/");
+						File f = new File(server + imgPath);
+						if (!f.exists()) {
+							// If we want to strictly fallback to initial letters when file is missing:
 							imgPath = null;
 						}
+					} catch (Exception e) {
+						imgPath = null;
 					}
 				}
 				map.put("ListUserImgPath", imgPath);
@@ -804,24 +804,24 @@ public class UserAction extends ActionSupport {
 
 
 			String imgPath = null;
-			if (selectUser.getPath() != null && selectUser.getPath().contains("_")) {
+			if (selectUser.getPath() != null) {
+				String path = selectUser.getPath();
 				try {
-					String originalFileName = new File(selectUser.getPath()).getName();
-
-					String fileIdStr = originalFileName.substring(0, originalFileName.indexOf("_"));
-					int fileId = Integer.parseInt(fileIdStr);
-
-					String typeFile = originalFileName.substring(originalFileName.lastIndexOf("."));
-
-					imgPath = "/upload/user/user_" + fileId + typeFile;
-
+					String originalFileName = new File(path).getName();
+					if (path.contains("_") && !originalFileName.startsWith("user_")) {
+						String fileIdStr = originalFileName.substring(0, originalFileName.indexOf("_"));
+						int fileId = Integer.parseInt(fileIdStr);
+						String typeFile = originalFileName.substring(originalFileName.lastIndexOf("."));
+						imgPath = "/upload/user/user_" + fileId + typeFile;
+					} else {
+						imgPath = path;
+					}
+					
 					String server = request.getServletContext().getRealPath("/");
 					File f = new File(server + imgPath);
-
 					if (!f.exists()) {
 						imgPath = null;
 					}
-
 				} catch (Exception e) {
 					imgPath = null;
 				}
@@ -1036,6 +1036,7 @@ public class UserAction extends ActionSupport {
 				u.setEmergContact(user.getEmergContact());
 				u.setEmergPhone(user.getEmergPhone());
 				u.setEmployeeTypeId(user.getEmployeeTypeId());
+				u.setEmployeeStatus(user.getEmployeeStatus());
 				u.setWithHold(user.getWithHold());
 				u.setPaymentRemark(user.getPaymentRemark());
 				u.setTaxDec(user.getTaxDec());

@@ -116,11 +116,10 @@
 
 								<div class="row g-8">
 									<div class="col-12 col-md-6">
-										<label class="form-label fw-semibold text-gray-800 required">User
-											ID</label>
+										<label class="form-label fw-semibold text-gray-800 required">Employee ID</label>
 										<div class="position-relative">
 											<input id="userid" name="user.id" type="text"
-												class="form-control userinfo pe-12" placeholder="User ID" required data-label="User ID" />
+												class="form-control userinfo pe-12" placeholder="Employee ID" required data-label="Employee ID" />
 
 											<div
 												class="position-absolute top-50 end-0 translate-middle-y me-3 d-none icon-wrapper"
@@ -153,6 +152,36 @@
 											</i> <input type="text" id="date_s" name="startDate"
 												class="form-control ps-12 userinfo" placeholder="1 Jan 2025"
 												autocomplete="off" required data-label="Start Working Date" />
+										</div>
+									</div>
+									
+									<div class="col-12 col-md-6">
+										<label class="form-label fw-semibold text-gray-800 required">Employee Code</label>
+										<input name="user.employeeId" type="text"
+											class="form-control userinfo" placeholder="Employee Code" required data-label="Employee Code" />
+									</div>
+									<div class="col-12 col-md-6">
+										<div class="row g-8">
+											<div class="col-12 col-md-6">
+												<label class="form-label fw-semibold text-gray-800 required">Employee Type</label>
+												<select class="form-select userinfo" name="user.employeeTypeId" required data-label="Employee Type"
+													data-control="select2" data-hide-search="true">
+													<option value="">Select</option>
+													<option value="1">พนักงานประจำ</option>
+													<option value="2">พนักงานอัตราจ้าง</option>
+													<option value="3">นักศึกษาฝึกงาน</option>
+												</select>
+											</div>
+											<div class="col-12 col-md-6">
+												<label class="form-label fw-semibold text-gray-800 required">Employee Status</label>
+												<select class="form-select userinfo" name="user.employeeStatus" required data-label="Employee Status"
+													data-control="select2" data-hide-search="true">
+													<option value="">Select</option>
+													<option value="1">Active</option>
+													<option value="2">Probation</option>
+													<option value="3">Excluded</option>
+												</select>
+											</div>
 										</div>
 									</div>
 
@@ -504,12 +533,12 @@
 	    
 	    fileInput.addEventListener("change", function () { 	
 	        const file = this.files[0];
-	        const maxSize = 2 * 1024 * 1024;
+	        const maxSize = 10 * 1024 * 1024;
 	        
 	        if (!file) return;
 
 	        if (file.size > maxSize) {
-	        	errorMsgProfile.textContent = "Image must be smaller than 2MB.";
+	        	errorMsgProfile.textContent = "Image must be smaller than 10MB.";
 	            this.value = "";
 	            return;
 	        } 
@@ -907,6 +936,80 @@
 	    }
 	}
 
+
+	// Image compression logic
+	async function compressImage(file, maxWidth = 1280, maxHeight = 1280, quality = 0.8) {
+		if (!file.type.match(/image\/(jpeg|jpg|png)/)) {
+			return file;
+		}
+
+		return new Promise((resolve, reject) => {
+			const reader = new FileReader();
+			reader.readAsDataURL(file);
+			reader.onload = event => {
+				const img = new Image();
+				img.src = event.target.result;
+				img.onload = () => {
+					let width = img.width;
+					let height = img.height;
+
+					if (width > maxWidth || height > maxHeight) {
+						const ratio = Math.min(maxWidth / width, maxHeight / height);
+						width = width * ratio;
+						height = height * ratio;
+					}
+
+					const canvas = document.createElement('canvas');
+					canvas.width = width;
+					canvas.height = height;
+					const ctx = canvas.getContext('2d');
+					ctx.drawImage(img, 0, 0, width, height);
+
+					canvas.toBlob((blob) => {
+						if (blob) {
+							const newFileName = file.name.replace(/\.[^/.]+$/, ".jpg");
+							const newFile = new File([blob], newFileName, {
+								type: 'image/jpeg',
+								lastModified: Date.now()
+							});
+							resolve(newFile);
+						} else {
+							resolve(file);
+						}
+					}, 'image/jpeg', quality);
+				};
+				img.onerror = error => reject(error);
+			};
+			reader.onerror = error => reject(error);
+		});
+	}
+
+	document.getElementById('imageInputFile').addEventListener('change', async function(e) {
+		if (this.files && this.files[0]) {
+			const file = this.files[0];
+			const btnSubmit = document.getElementById('btnSubmit');
+			const originalText = btnSubmit ? btnSubmit.innerHTML : 'Save';
+			
+			if (btnSubmit) {
+				btnSubmit.disabled = true;
+				btnSubmit.innerHTML = '<span class="spinner-border spinner-border-sm align-middle me-2"></span>Compressing...';
+			}
+
+			try {
+				const compressedFile = await compressImage(file, 1280, 1280, 0.8);
+				const dt = new DataTransfer();
+				dt.items.add(compressedFile);
+				this.files = dt.files;
+			} catch (error) {
+				console.error("Compression failed", error);
+			}
+			
+			if (btnSubmit) {
+				btnSubmit.disabled = false;
+				btnSubmit.innerHTML = originalText;
+			}
+		}
+	});
 
 </script>
 </body>

@@ -208,7 +208,7 @@ public class UserDAOImpl implements UserDAO {
 		Session session = this.sessionFactory.getCurrentSession();
 		List<Map<String, Object>> user = null;
 		try {
-			String sql = "SELECT user.id,user.name,user.path,user.employee_id,user.name_en,user.flag_search,user.role_id,user.birth_date,user.department_id,user.email,user.enable ,CONCAT(user.id), user.position_id,user.start_date,user.end_date,job_site.name_site,user.work_type,user.onsite_num, position.name AS name_position "
+			String sql = "SELECT user.id,user.name,user.path,user.employee_id,user.name_en,user.flag_search,user.role_id,user.birth_date,user.department_id,user.email,user.enable ,CONCAT(user.id), user.position_id,user.start_date,user.end_date,job_site.name_site,user.work_type,user.onsite_num, position.name AS name_position, user.employee_type_id, user.employee_status "
 					+ "FROM user " + "LEFT JOIN job_site ON user.id_sitejob = job_site.id_sitejob "
 					+ "LEFT JOIN position ON user.position_id = position.position_id " + "WHERE flag_search = 1 "
 					+ "ORDER BY " + "CASE " + "WHEN employee_id IS NOT NULL AND employee_id != '' THEN 0 "
