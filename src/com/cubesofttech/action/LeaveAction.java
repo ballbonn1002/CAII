@@ -1701,6 +1701,8 @@ public class LeaveAction extends ActionSupport {
 				}
 
 				fileupload.setFileId(maxId);
+				fileupload.setPage("leave");
+				fileupload.setPageId(String.valueOf(maxId));
 				fileupload.setUserId(user);
 				fileupload.setUserCreate(onlineUser.getId());
 				fileupload.setName(name);
@@ -1915,6 +1917,8 @@ public class LeaveAction extends ActionSupport {
 
 				// save on db
 				fileupload.setFileId(maxId);
+				fileupload.setPage("leave");
+				fileupload.setPageId(String.valueOf(maxId));
 				fileupload.setUserId(user); 
 				fileupload.setUserCreate(onlineUser.getId());
 				fileupload.setName(name);
