@@ -585,7 +585,7 @@ document.addEventListener("DOMContentLoaded", function () {
 		const startPicker = flatpickr(startEl, {
 			enableTime: true,
 			time_24hr: true,
-			dateFormat: "d m Y , H : i",
+			dateFormat: "Y-m-d H:i",
 			altInput: true,
 			altFormat: "d M Y , H : i",
 			allowInput: true,
@@ -595,7 +595,7 @@ document.addEventListener("DOMContentLoaded", function () {
 		const endPicker = flatpickr(endEl, {
 			enableTime: true,
 			time_24hr: true,
-			dateFormat: "d m Y , H : i",
+			dateFormat: "Y-m-d H:i",
 			altInput: true,
 			altFormat: "d M Y , H : i",
 			allowInput: true

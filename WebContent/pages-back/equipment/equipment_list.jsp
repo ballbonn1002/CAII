@@ -2,6 +2,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 
+<input type="hidden" id="hasSignature" value="${hasSignature}" />
 <div class="app-main flex-column flex-row-fluid" id="kt_app_main">
     <div class="d-flex flex-column flex-column-fluid">
         <div id="kt_app_toolbar" class="app-toolbar py-3 py-lg-6">
@@ -285,6 +286,14 @@
                     <button type="button" id="view_btn_return" class="btn btn-warning fw-bold d-none">
                         Request for Return
                     </button>
+                    
+                    <button type="button" id="view_btn_waiting_for_return" class="btn btn-secondary fw-bold d-none" disabled>
+                        Waiting for Return
+                    </button>
+                    
+                    <button type="button" id="view_btn_confirm_received" class="btn btn-success fw-bold d-none">
+					    Confirm Received
+					</button>
                     
                     <button type="button" id="view_btn_borrow" class="btn btn-warning fw-bold d-none">
                         Borrow
@@ -724,6 +733,8 @@
         var badge = $('#view_status_badge');
         var btnEdit = $('#view_btn_edit');
         var btnReturn = $('#view_btn_return');
+        var btnWaitingReturn = $('#view_btn_waiting_for_return');
+        var btnConfirmReceived = $('#view_btn_confirm_received');
         var btnBorrow = $('#view_btn_borrow');
         var borrowSection = $('#view_borrow_section');
         var returnSection = $('#view_return_section');
@@ -731,6 +742,8 @@
         // Reset UI Elements
         badge.removeClass().addClass('badge badge-lg fw-semibold py-2');
         btnReturn.addClass('d-none');
+        btnWaitingReturn.addClass('d-none');
+        btnConfirmReceived.addClass('d-none');
         btnBorrow.addClass('d-none');
         borrowSection.addClass('d-none');
         returnSection.addClass('d-none');
@@ -754,8 +767,8 @@
             });
         
         // กรณี B: Borrowed โชว์ปุ่ม Return และรายละเอียดคนยืม
-        } else if (item.status === 'B') {
-            btnReturn.removeClass('d-none');
+        } else if (item.status === 'B' || item.status === 'T') {
+           
             var eqIdStr = String(item.equipmentId);
             var borrow = lastBorrowByEqId[eqIdStr]; // หาข้อมูลการยืมล่าสุด
             
@@ -786,10 +799,80 @@
                 var dStart = formatDateTime(borrow.dateStart);
                 var dEnd = borrow.dateEnd ? formatDateTime(borrow.dateEnd) : 'None';
                 $('#view_borrow_date').text(dStart + ' - ' + dEnd);
+                
+                var hasDelivery = !!borrow.user_delivery;
+                var hasReceive = !!borrow.user_receive;
+                var hasReturn = !!borrow.user_return;
+                var hasReturnReceive = !!borrow.user_return_receive;
+				/* 
+                console.log('borrow = ', borrow);
+                console.log('userDelivery = ', borrow.user_delivery);
+                console.log('userReceive = ', borrow.user_receive);
+                console.log('userReturn = ', borrow.user_return);
+                console.log('status = ', item.status); */
 
              	// =========== Logic Request for Return ==================
-                btnReturn.off('click').on('click', function() {
-                    
+             	
+        if (borrow.status === 'B' && !hasReturn  && !hasReturnReceive) {
+
+            btnReturn.removeClass('d-none');
+
+             	btnReturn.off('click').on('click', function() {
+             		Swal.fire({
+        				title: 'Confirm Request for Return?',
+        		        text: 'Are you sure you want to request return for this item?',
+        		        icon: 'question',
+        		        showCancelButton: true,
+        		        confirmButtonText: 'Yes, Request Return',
+        		        cancelButtonText: "Cancel",
+        		        buttonsStyling: false,
+        		        customClass: {
+        		            confirmButton: "btn btn-success",
+        		            cancelButton: "btn btn-secondary"
+        		        }
+        		    }).then((result) => {
+        		        if (result.isConfirmed) {
+        		        	const borrowId = borrow.borrowId;
+        		        	
+        		        	fetch("${pageContext.request.contextPath}/request_return.action", {
+        		        	    method: "POST",
+        		        	    headers: {
+        		        	        "Content-Type": "application/x-www-form-urlencoded"
+        		        	    },
+        		        	    body: "id=" + encodeURIComponent(borrowId)
+        		        	})
+        		        	.then(response => response.text())
+        		        	.then(data => {
+        		        	    location.reload();
+        		        	})
+        		        	.catch(error => {
+        		        	    console.error(error);
+
+        		        	    Swal.fire({
+        		        	        icon: "error",
+        		        	        title: "Error",
+        		        	        text: "Failed to deliver equipment"
+        		        	    });
+
+        		        	});
+        		        }
+        		    });
+				});
+				}
+            }
+             	// ================= Confirm Received =================
+          var status = (item.status || '').trim();
+            if (borrow.status === 'T'  && !hasReturn  && !hasReturnReceive) {
+            	btnWaitingReturn.removeClass('d-none');
+            }
+             	
+            if (borrow.status === 'T' && hasReturn && !hasReturnReceive) {
+             			
+             	btnConfirmReceived.removeClass('d-none');
+             	btnConfirmReceived.off('click').on('click', function() {
+             		if (!checkSignatureBeforeAction()) {
+        				return;
+        			}
                     //  ถ้า Approver ยังไม่เปิด ให้เปิดก่อน
                     if (returnSection.hasClass('d-none')) {
                         returnSection.hide().removeClass('d-none').slideDown(500);
@@ -799,8 +882,8 @@
                     //  ถ้า Approver เปิด AJAX บันทึกคืนของ
                     } else {
                         var note = $('#return_note').val();
-                        var originalText = btnReturn.text();
-                        btnReturn.prop('disabled', true).text('Processing...');
+                        var originalText = btnConfirmReceived.text();
+                        btnConfirmReceived.prop('disabled', true).text('Processing...');
 
                         $.post('equipment_return', { 
                             equipmentId: id, 
@@ -816,13 +899,15 @@
                             } 
                             else {
                                 alert('Error returning item.');
-                                btnReturn.prop('disabled', false).text(originalText);
+                                btnConfirmReceived.prop('disabled', false).text(originalText);
                             }
                         });
                     }
                 });
+             		
             }
         }
+        
         // เปิด Modal
         $('#kt_modal_view_equipment').modal('show');
     }
@@ -857,4 +942,30 @@
             }
         })
     }
+    
+    function checkSignatureBeforeAction() {
+		const hasSignature = $('#hasSignature').val() === 'true';
+	    
+	    if (!hasSignature) {
+	        Swal.fire({
+	            title: "Signature Required!",
+	            text: "Please upload your signature before continuing.",
+	            icon: "warning",
+	            confirmButtonText: "Go to My Profile",
+	            showCancelButton: true,
+	            cancelButtonText: "Cancel",
+	            buttonsStyling: false,
+	            customClass: {
+	                confirmButton: "btn btn-warning",
+	                cancelButton: "btn btn-secondary"
+	            }
+	        }).then((result) => {
+	            if (result.isConfirmed) {
+	            	window.open("/my_profile", "_blank");
+	            }
+	        });
+	        return false;
+	    }
+	    return true;
+	}
 </script>

@@ -253,7 +253,7 @@ function leaveStatus(id) {
 	const modal = new bootstrap.Modal(document.getElementById('leaveDetailModal'));
 	modal.show();
 
-	console.log(id);
+	/* console.log(id); */
 
 	$.ajax({
 		url: "new_modalLeaveStatus",

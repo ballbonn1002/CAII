@@ -1,9 +1,11 @@
 package com.cubesofttech.action;
 
+import com.cubesofttech.dao.BorrowDAO;
 import com.cubesofttech.dao.HolidayDAO;
 import com.cubesofttech.dao.LeaveDAO;
 import com.cubesofttech.dao.UserDAO;
 import com.cubesofttech.dao.WorkLogDAO;
+import com.cubesofttech.model.Borrow;
 import com.cubesofttech.model.User;
 import com.cubesofttech.util.ReportUtil;
 
@@ -26,6 +28,8 @@ import org.apache.struts2.ServletActionContext;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.opensymphony.xwork2.ActionSupport;
+
+import net.sf.jasperreports.engine.JasperCompileManager;
 
 public class ReportAction extends ActionSupport {
 
@@ -50,6 +54,8 @@ public class ReportAction extends ActionSupport {
     private LeaveDAO leaveDAO;
     @Autowired
     private HolidayDAO holidayDAO;
+    @Autowired
+	private BorrowDAO borrowDAO;
 
     // ====== CONFIG =======
     private static final Set<String> EFFECTIVE_LEAVE_STATUS_IDS =
@@ -652,21 +658,99 @@ public class ReportAction extends ActionSupport {
     }
     
     public String borrowReport() throws IOException {
-		ServletContext context = request.getServletContext();
-		String borrowId = request.getParameter("borrowId");
-		String jasperPath = context.getRealPath(JASPERPATH);
-		String imagePath = context.getRealPath(IMAGEPATH);
-		Map<String, Object> reportParameter = new HashMap<>();
-		File logo = new File(imagePath + "/logo_cubesofttech.png");
-		BufferedImage logoimage = ImageIO.read(logo);
-		reportParameter.put(LOGOPATH, logoimage);
-		reportParameter.put("borrowId", borrowId);
-		try {
-			ReportUtil.printReportToBrowsePdf(jasperPath + "/", "borrowReport", "borrowReport.pdf", reportParameter,
-					request, response);
-		} catch (Exception e) {
-			log.debug(e);
-		}
-		return null;
-	}
+        ServletContext context = request.getServletContext();
+        String borrowId = request.getParameter("borrowId");
+        String jasperPath = context.getRealPath(JASPERPATH);
+        String imagePath = context.getRealPath(IMAGEPATH);
+        String serverPath = context.getRealPath("/");
+        
+        Map<String, Object> reportParameter = new HashMap<>();
+        
+        File logo = new File(imagePath + "/logo_cubesofttech.png");
+        BufferedImage logoimage = ImageIO.read(logo);
+        reportParameter.put(LOGOPATH, logoimage);
+        reportParameter.put("borrowId", borrowId);
+        
+        try {
+            Borrow borrow = borrowDAO.findById(Integer.parseInt(borrowId));
+            
+            if (borrow != null) {
+                User deliveryUser = borrow.getUser_delivery() != null ? userDAO.findById(borrow.getUser_delivery()) : null;
+                User receiveUser = borrow.getUser_receive() != null ? userDAO.findById(borrow.getUser_receive()) : null;
+                User returnUser = borrow.getUser_return() != null ? userDAO.findById(borrow.getUser_return()) : null;
+                User returnRecUser = borrow.getUser_return_receive() != null ? userDAO.findById(borrow.getUser_return_receive()) : null;
+                
+                // โหลดลายเซ็นแต่ละคน
+                reportParameter.put("deliverySignature",       loadSignatureImage(serverPath, deliveryUser));
+                reportParameter.put("receiveSignature",        loadSignatureImage(serverPath, receiveUser));
+                reportParameter.put("returnSignature",         loadSignatureImage(serverPath, returnUser));
+                reportParameter.put("returnReceiveSignature",  loadSignatureImage(serverPath, returnRecUser));
+            }
+
+        } catch (Exception e) {
+            log.debug("Error loading signatures: " + e.getMessage());
+        }
+
+        try {
+//        	compile PDF
+//        	log.debug("JRXML PATH = " + jasperPath + "/borrowReport.jrxml");
+//        	System.out.println("JASPER PATH = " + jasperPath + "/borrowReport.jasper");
+//        	
+//            JasperCompileManager.compileReportToFile(
+//                jasperPath + "/borrowReport.jrxml",
+//                jasperPath + "/borrowReport.jasper"
+//            );
+//            
+//            File jasperFile = new File(jasperPath + "/borrowReport.jasper");
+//
+//            System.out.println("Jasper exists = " + jasperFile.exists());
+//            log.debug("Jasper absolute path = " + jasperFile.getAbsolutePath());
+
+            ReportUtil.printReportToBrowsePdf(
+                jasperPath + "/",
+                "borrowReport",
+                "borrowReport.pdf",
+                reportParameter,
+                request,
+                response
+            );
+        } catch (Exception e) {
+            log.debug(e);
+        }
+
+        return null;
+    }
+
+    // Helper method โหลดรูปลายเซ็นจาก User
+    private BufferedImage loadSignatureImage(String serverPath, User user) {
+        if (user == null || user.getPathSignature() == null) {
+            return null;
+        }
+        
+        String pathSignature = user.getPathSignature();
+        
+        if (!pathSignature.contains("_")) {
+            return null;
+        }
+        
+        try {
+            String originalFileName = new File(pathSignature).getName();
+            String fileIdStr = originalFileName.substring(0, originalFileName.indexOf("_"));
+            String typeFile  = originalFileName.substring(originalFileName.lastIndexOf("."));
+            
+            String imgPathSignature = "/upload/user/user_signature_" + fileIdStr + typeFile;
+            File f = new File(serverPath + imgPathSignature);
+            
+            if (f.exists()) {
+                return ImageIO.read(f);
+            } else {
+                log.debug("Signature file not found: " + f.getAbsolutePath());
+                return null;
+            }
+            
+        } catch (Exception e) {
+            log.debug("Error loading signature: " + e.getMessage());
+            return null;
+        }
+    }
 }

@@ -1,5 +1,6 @@
 package com.cubesofttech.action;
 
+import java.io.File;
 import java.io.PrintWriter;
 import java.lang.reflect.Type;
 import java.sql.Timestamp;
@@ -28,6 +29,7 @@ import com.cubesofttech.model.Borrow;
 import com.cubesofttech.model.Equipment;
 import com.cubesofttech.model.EquipmentStatus;
 import com.cubesofttech.model.EquipmentType;
+import com.cubesofttech.model.FileUpload;
 import com.cubesofttech.model.User;
 import com.cubesofttech.util.DateUtil;
 import com.google.gson.Gson;
@@ -82,6 +84,16 @@ public class BorrowingAction extends ActionSupport {
 		this.borrowDAO = borrowDAO;
 	}
 
+	private Integer id;
+
+	public Integer getId() {
+	    return id;
+	}
+
+	public void setId(Integer id) {
+	    this.id = id;
+	}
+	
 	public static final String USERSEQ = "userseq";
 	public static final String USERS = "users";
 	public static final String ONLINEUSER = "onlineUser";
@@ -593,6 +605,17 @@ public class BorrowingAction extends ActionSupport {
 	        List<Map<String, Object>> borrowWithUser =
 	                borrowDAO.findBorrowWithUserByEquipmentId(equipmentId);
 
+	        User ur = (User) request.getSession().getAttribute("onlineUser");
+	        boolean hasSignature = false;
+
+	        if (ur != null) {
+	            User u = userDAO.findById(ur.getId());
+	            hasSignature = ( u.getPathSignature() != null && !u.getPathSignature().trim().isEmpty()
+	            );
+	        }
+
+	        request.setAttribute("hasSignature", hasSignature);
+
 	        request.setAttribute("borrowlistwithUser", borrowWithUser);
 	        request.setAttribute("borrowlistwithUserJSON", new Gson().toJson(borrowWithUser));
 
@@ -609,7 +632,8 @@ public class BorrowingAction extends ActionSupport {
 	        // เผื่อ JSP ใช้
 	        request.setAttribute("equipId", equipmentId);
 	        request.setAttribute("equipmentbyId", eq);
-
+	        request.setAttribute("borrowObj", borrow);
+	        
 	        return SUCCESS;
 	    } catch (Exception e) {
 	        e.printStackTrace();
@@ -637,14 +661,15 @@ public class BorrowingAction extends ActionSupport {
 				status = request.getParameter("status_hidden");
 			}
 
-			Timestamp startDate = DateUtil.dateFormatEdit(date_from);
-			Timestamp endDate = DateUtil.dateFormatEdit(date_to);
+			Timestamp startDate = DateUtil.parseBorrowDate(date_from);
+			Timestamp endDate = DateUtil.parseBorrowDate(date_to);
 			Timestamp timestamp = new Timestamp(System.currentTimeMillis());
 
 			Borrow b = new Borrow();
 
 			b.setBorrowAmout(1);
 			b.setBorrowId(borrowDAO.getMaxId() + 1);
+			id = b.getBorrowId();
 			b.setContactAddr(contact);
 			b.setDateEnd(endDate);
 			b.setDateStart(startDate);
@@ -719,8 +744,8 @@ public class BorrowingAction extends ActionSupport {
 				status = request.getParameter("status_hidden");
 			}
 
-			Timestamp startDate = DateUtil.dateFormatEdit(date_from);
-			Timestamp endDate = DateUtil.dateFormatEdit(date_to);
+			Timestamp startDate = DateUtil.parseBorrowDate(date_from);
+			Timestamp endDate = DateUtil.parseBorrowDate(date_to);
 			String bId = (String) request.getSession().getAttribute("bId");
 			
 			Borrow b = borrowDAO.findById(Integer.parseInt(bId));
@@ -850,7 +875,16 @@ public class BorrowingAction extends ActionSupport {
 			List<Equipment> equipments = equipmentDAO.getAll();
 			List<EquipmentType> type = equipmentTypeDAO.getall();
 			String userJSON = userDAO.userListJSON();
-			
+			User ur = (User) request.getSession().getAttribute("onlineUser");
+			boolean hasSignature = false;
+
+	        if (ur != null) {
+	            User u = userDAO.findById(ur.getId());
+	            hasSignature = ( u.getPathSignature() != null && !u.getPathSignature().trim().isEmpty()
+	            );
+	        }
+
+	        request.setAttribute("hasSignature", hasSignature);
 			//comment
 			request.setAttribute("userList", userJSON);
 			request.setAttribute("borrows", new Gson().toJson(borrows));
@@ -1027,6 +1061,37 @@ public class BorrowingAction extends ActionSupport {
 			e.printStackTrace();
 		}
 	}
+	
+	public void return_equipment() {
+		try {
+			User user = (User) request.getSession().getAttribute("onlineUser");
+			String id = request.getParameter("id");
+			String note = request.getParameter("note");
+			Map<String,String> map = new HashMap<String,String>();
+			Borrow borrow = borrowDAO.findById(Integer.parseInt(id));
+			
+			if(borrow.getStatus().equals("T")) 
+			{
+				borrow.setUser_return(onlineUser.getId());
+				borrow.setTime_return(timestamp);
+				borrow.setUserUpdate(onlineUser.getId());
+				borrow.setTimeUpdate(timestamp);
+				borrowDAO.update(borrow);
+				
+				map.put("message", "success");
+			} else {
+				map.put("message", "something wrong");
+			}
+			
+			response.setContentType("application/json");
+			PrintWriter out = response.getWriter();
+			out.println(new Gson().toJson(map));
+			out.flush();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
 
 	public void returnMyNewBorrow() {
 		try {
@@ -1036,11 +1101,18 @@ public class BorrowingAction extends ActionSupport {
 			Map<String,String> map = new HashMap<String,String>();
 			Borrow borrow = borrowDAO.findById(Integer.parseInt(id));
 			
-			if(borrow.getStatus().equals("B")) 
+			if(borrow.getStatus().equals("T")) 
 			{
+				if(borrow.getUser_return() == null || borrow.getUser_return().trim().isEmpty()) {
+					borrow.setUser_return(borrow.getUserBorrowid());
+					borrow.setTime_return(timestamp);
+				}
+			
 				borrow.setStatus("R");
 				borrow.setUserUpdate(onlineUser.getId());
 				borrow.setTimeUpdate(timestamp);
+				borrow.setUser_return_receive(onlineUser.getId());
+				borrow.setTime_return_receive(DateUtil.getCurrentTime());
 				borrowDAO.update(borrow);
 				Equipment equipment = equipmentDAO.getById(Integer.parseInt(borrow.getEquipmentId()));
 				if(equipment.getStatus().equals("B")) {
@@ -1277,4 +1349,80 @@ public class BorrowingAction extends ActionSupport {
 			e.printStackTrace();
 		}
 	}
+	
+	public String deliver_equipment() {
+		try {
+			User ur = (User) request.getSession().getAttribute("onlineUser");
+			String logonUser = ur.getId();
+			User u = userDAO.findById(logonUser);
+			
+			Borrow borrow = borrowDAO.findById(id);
+			
+			//update
+			borrow.setUser_delivery(logonUser);
+			borrow.setTime_delivery(DateUtil.getCurrentTime());
+			borrow.setUserUpdate(u.getId());
+			borrow.setTimeUpdate(timestamp);
+			borrowDAO.update(borrow);
+			
+			return SUCCESS;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ERROR;
+		}
+	}
+	
+	public String received_equipment() {
+		try {
+			User ur = (User) request.getSession().getAttribute("onlineUser");
+			String logonUser = ur.getId();
+			User u = userDAO.findById(logonUser);
+			
+			Borrow borrow = borrowDAO.findById(id);
+			
+			//update
+			borrow.setUser_receive(logonUser);
+			borrow.setTime_receive(DateUtil.getCurrentTime());
+			borrow.setUserUpdate(u.getId());
+			borrow.setTimeUpdate(timestamp);
+			borrowDAO.update(borrow);
+			
+			return SUCCESS;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ERROR;
+		}
+	}
+	
+	public void request_return() {
+		try {
+			User user = (User) request.getSession().getAttribute("onlineUser");
+			String id = request.getParameter("id");
+			String note = request.getParameter("note");
+			Map<String,String> map = new HashMap<String,String>();
+			Borrow borrow = borrowDAO.findById(Integer.parseInt(id));
+			
+			if(borrow.getStatus().equals("B")) 
+			{
+				borrow.setStatus("T");
+				borrow.setUserUpdate(onlineUser.getId());
+				borrow.setTimeUpdate(timestamp);
+				borrowDAO.update(borrow);
+				
+				map.put("message", "success");
+			} else {
+				map.put("message", "something wrong");
+			}
+			
+			response.setContentType("application/json");
+			PrintWriter out = response.getWriter();
+			out.println(new Gson().toJson(map));
+			out.flush();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	
+	
 }

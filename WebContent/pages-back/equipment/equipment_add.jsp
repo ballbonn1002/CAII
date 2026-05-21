@@ -1,6 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/compressorjs/1.2.1/compressor.min.js"></script>
 
 <div class="app-main flex-column flex-row-fluid" id="kt_app_main">
     <div class="d-flex flex-column flex-column-fluid">
@@ -42,7 +43,7 @@
                                         <div class="col-lg-6 mb-8">
                                             <label class="d-block fw-semibold fs-6 mb-3">Item Picture</label>
                                             <div class="d-flex flex-column align-items-start">
-                                                
+                                                 <div id="errorMsg" class="text-center text-danger mb-3"></div>
                                                 <c:set var="imageSrc" value="" />
                                                 <c:if test="${not empty equipmentbyId.image}">
                                                     <c:set var="imageSrc" value="${pageContext.request.contextPath}/${equipmentbyId.image}" />
@@ -247,14 +248,26 @@
     $(document).ready(function() {
         // Initialization Data
         // รับค่าจาก Java requestScope
-        var typeList = ${requestScope.type != null ? requestScope.type : '[]'};
+        /* var typeList = ${requestScope.type != null ? requestScope.type : '[]'};
 		var statusList = ${requestScope.status != null ? requestScope.status : '[]'};
 
         try {
             if (rawType) typeList = JSON.parse(rawType);
             if (rawStatus) statusList = JSON.parse(rawStatus);
         } catch (e) { console.error("JSON Parse Error:", e); }
-
+ */
+		 var rawType = '${requestScope.type != null ? requestScope.type : "[]"}';
+		 var rawStatus = '${requestScope.status != null ? requestScope.status : "[]"}';
+		
+		 var typeList = [];
+		 var statusList = [];
+		
+		 try {
+		     typeList = JSON.parse(rawType);
+		     statusList = JSON.parse(rawStatus);
+		 } catch (e) {
+		     console.error("JSON Parse Error:", e);
+		 }
         // Populate Dropdowns
         
         // TYPE Select
@@ -324,26 +337,103 @@
 
     // Image Preview Logic
     document.addEventListener('DOMContentLoaded', function () {
-        const fileInput   = document.getElementById('itemImageInput');
-        const previewImg  = document.getElementById('itemImagePreview');
-        const placeholder = document.getElementById('itemImagePlaceholder');
-        const selectBtn   = document.getElementById('itemImageSelectBtn');
 
-        if (!fileInput || !previewImg || !selectBtn) return;
+    const fileInput = document.getElementById('itemImageInput');
+    const previewImg = document.getElementById('itemImagePreview');
+    const placeholder = document.getElementById('itemImagePlaceholder');
+    const selectBtn = document.getElementById('itemImageSelectBtn');
+    const errorMsg = document.getElementById('errorMsg');
 
-        selectBtn.addEventListener('click', function () { fileInput.click(); });
+    if (!fileInput || !previewImg || !selectBtn) return;
 
-        fileInput.addEventListener('change', function (e) {
-            const file = e.target.files[0];
-            if (!file) return;
-
-            const reader = new FileReader();
-            reader.onload = function (ev) {
-                previewImg.src = ev.target.result;
-                previewImg.style.display = 'block';
-                if (placeholder) placeholder.classList.add('d-none');
-            };
-            reader.readAsDataURL(file);
-        });
+    // ปุ่มเลือกไฟล์
+    selectBtn.addEventListener('click', function () {
+        fileInput.click();
     });
+
+    // เมื่อเลือกรูป
+    fileInput.addEventListener('change', function (e) {
+
+        const file = e.target.files[0];
+
+        if (!file) return;
+
+        errorMsg.textContent = "";
+
+        if (!file.type.startsWith('image/')) {
+            errorMsg.textContent = "Please select an image file.";
+            fileInput.value = "";
+            return;
+        }
+
+        // จำกัด 2 MB
+        const maxSize = 2 * 1024 * 1024;
+
+        if (file.size > maxSize) {
+            errorMsg.textContent = "Image must be smaller than 2MB.";
+            fileInput.value = "";
+
+            previewImg.src = "";
+            previewImg.style.display = "none";
+
+            if (placeholder) {
+                placeholder.classList.remove('d-none');
+            }
+
+            return;
+        }
+
+        // Preview รูป
+        const reader = new FileReader();
+
+        reader.onload = function (ev) {
+            previewImg.src = ev.target.result;
+            previewImg.style.display = 'block';
+
+            if (placeholder) {
+                placeholder.classList.add('d-none');
+            }
+        };
+
+        reader.readAsDataURL(file);
+
+        // Compress รูปถ้าเกิน 500KB
+        const limitSize = 500 * 1024;
+
+        if (file.size > limitSize) {
+/* 
+            console.log("Before resize: " + (file.size / 1024 / 1024).toFixed(2) + " MB");
+ */
+            new Compressor(file, {
+                quality: 0.8,
+                maxWidth: 1024,
+                maxHeight: 1024,
+
+                success(result) {
+
+                    const compressedFile = new File(
+                        [result],
+                        file.name,
+                        {
+                            type: result.type,
+                            lastModified: Date.now()
+                        }
+                    );
+/* 
+                    console.log("After resize: " + (compressedFile.size / 1024 / 1024).toFixed(2) + " MB"); */
+
+                    const dataTransfer = new DataTransfer();
+                    dataTransfer.items.add(compressedFile);
+
+                    fileInput.files = dataTransfer.files;
+                },
+
+                error(err) {
+                    console.error("Compress Error:", err.message);
+                }
+            });
+        }
+    });
+});
+   
 </script>

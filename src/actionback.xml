@@ -1347,6 +1347,18 @@
 			<result name="success" type="redirectAction">my_profile</result>
 			<result name="error" type="tiles">/index.jsp</result>
 		</action>
+		
+		<action name="received_equipment"
+			class="com.cubesofttech.action.BorrowingAction" method="received_equipment">
+			<result name="success" type="redirect">my_profile</result>
+			<result name="error">/index.jsp</result>
+		</action>
+		
+		<action name="return_equipment"
+			class="com.cubesofttech.action.BorrowingAction" method="return_equipment">
+			<result name="success" type="redirect">my_profile</result>
+			<result name="error">/index.jsp</result>
+		</action>
 
 		<!-- JOB SITE -->
 		<action name="jobsite_list"
@@ -1448,7 +1460,7 @@
 		</action>
 		<action name="eBorrowAdd"
 			class="com.cubesofttech.action.BorrowingAction" method="eBorrowAdd">
-			<result name="success" type="redirectAction">borrow_list</result>
+			<result name="success" type="redirectAction">borrow_edit?id=${id}</result>
 			<result name="error">/index.jsp</result>
 			<result name="input" type="tiles">borrowAdd</result>
 		</action>
@@ -1470,10 +1482,22 @@
 			class="com.cubesofttech.action.BorrowingAction"
 			method="returnMyNewBorrow">
 		</action>
+		
 		<action name="eBorrowLog"
 			class="com.cubesofttech.action.BorrowingAction" method="eBorrowLog">
 		</action>
-
+		
+		<action name="deliver_equipment"
+			class="com.cubesofttech.action.BorrowingAction" method="deliver_equipment">
+			<result name="success" type="redirect">borrow_edit?id=${id}</result>
+			<result name="error">/index.jsp</result>
+		</action>
+		
+		<action name="request_return"
+			class="com.cubesofttech.action.BorrowingAction"
+			method="request_return">
+		</action>
+	
 		<!-- ========================== Work Log ============================== -->
 		<action name="work_log"
 			class="com.cubesofttech.action.WorkLogAction" method="open">
