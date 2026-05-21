@@ -24,7 +24,6 @@ import java.util.Map;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
 import org.apache.log4j.Logger;
 import org.apache.poi.ss.usermodel.BorderStyle;
@@ -1684,7 +1683,7 @@ public class LeaveAction extends ActionSupport {
 						try (java.io.FileInputStream fis = new java.io.FileInputStream(fileUpload);
 							java.io.FileOutputStream fos = new java.io.FileOutputStream(new java.io.File(destFolder, serverFileName))) {
 								log.info("Image size bigger than 500 KB");	
-								byte[] resizedBytes = FileUtil.resizeImage(fis, 800, 800);
+								byte[] resizedBytes = FileUtil.resizeImage(fis, 800, 800, ext.replace(".", ""));
 								fos.write(resizedBytes);
 								fileupload.setSize(String.valueOf(resizedBytes.length));
 								log.info("Resized image size = " + resizedBytes.length);
@@ -1903,7 +1902,7 @@ public class LeaveAction extends ActionSupport {
 						 java.io.FileOutputStream fos = new java.io.FileOutputStream(new java.io.File(destFolder, serverFileName))) {
 						
 						log.info("Resizing image in Edit mode...");
-						byte[] resizedBytes = FileUtil.resizeImage(fis, 800, 800);
+						byte[] resizedBytes = FileUtil.resizeImage(fis, 800, 800, ext.replace(".", ""));
 						
 						fos.write(resizedBytes);
 						fileupload.setSize(String.valueOf(resizedBytes.length));
