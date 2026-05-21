@@ -396,6 +396,33 @@
 					                            </span>
 					                        </div>
 					
+					                        <div class="info-row d-flex justify-content-between mb-4">
+					                            <div class="info-left d-flex align-items-center">
+					                                <i class="ki-duotone ki-profile-user me-1 fs-1">
+					                                    <span class="path1"></span>
+					                                    <span class="path2"></span>
+					                                    <span class="path3"></span>
+					                                    <span class="path4"></span>
+					                                </i>
+					                                <span class="info-text">
+					                                    <c:choose>
+					                                        <c:when test="${user.employee_type_id == '1'}">พนักงานประจำ</c:when>
+					                                        <c:when test="${user.employee_type_id == '2'}">พนักงานอัตราจ้าง</c:when>
+					                                        <c:when test="${user.employee_type_id == '3'}">นักศึกษาฝึกงาน</c:when>
+					                                        <c:otherwise>-</c:otherwise>
+					                                    </c:choose>
+					                                </span>
+					                            </div>
+					                            <span class="info-right fw-semibold <c:choose><c:when test="${user.employee_status == '1'}">text-success</c:when><c:when test="${user.employee_status == '2'}">text-warning</c:when><c:when test="${user.employee_status == '3'}">text-danger</c:when><c:otherwise>text-gray-500</c:otherwise></c:choose>">
+					                                <c:choose>
+					                                    <c:when test="${user.employee_status == '1'}">Active</c:when>
+					                                    <c:when test="${user.employee_status == '2'}">Probation</c:when>
+					                                    <c:when test="${user.employee_status == '3'}">Excluded</c:when>
+					                                    <c:otherwise>-</c:otherwise>
+					                                </c:choose>
+					                            </span>
+					                        </div>
+					
 					                        <div class="info-row d-flex justify-content-between">
 					                            <div class="info-left d-flex align-items-center">
 					                                <i class="ki-duotone ki-gift me-1 fs-1"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span></i>
@@ -413,11 +440,11 @@
 					                </div>
 					                <div class="card-footer d-flex flex-column">
 					                    <div class="info-row d-flex justify-content-between align-items-center">
-					                        <div class="text-start">
+					                        <div class="text-start d-flex flex-wrap gap-2">
 					                            <c:choose>
 					                                <c:when test="${not empty user.job_site_all}">
 					                                    <c:forEach var="site" items="${user.job_site_all}">
-					                                        <span class="badge badge-primary fw-semibold me-2 d-inline-flex fs-6 px-3 py-2">${site.name_site}</span>
+					                                        <span class="badge badge-primary fw-semibold d-inline-flex fs-6 px-3 py-2">${site.name_site}</span>
 					                                    </c:forEach>
 					                                </c:when>
 					                                <c:otherwise><span class="badge badge-light d-inline-flex fs-6 px-3 py-2 text-gray-800 fw-bold">None</span></c:otherwise>
