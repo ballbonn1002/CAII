@@ -1604,15 +1604,35 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     });
 
-    fileInput.addEventListener("change", function () { 	
-        const file = this.files[0];
-        const maxSize = 2 * 1024 * 1024;
+    fileInput.addEventListener("change", async function () { 	
+        let file = this.files[0];
+        const maxSize = 10 * 1024 * 1024;
         const errorMsg = document.getElementById("errorMsg");
 
         if (!file) return;
 
-        if (file.size > maxSize) {
+        const originalText = mainBtn ? mainBtn.innerText : 'Upload';
+        if (mainBtn) {
+            mainBtn.disabled = true;
+            mainBtn.innerHTML = '<span class="spinner-border spinner-border-sm align-middle me-2"></span>Compressing...';
+        }
 
+        try {
+            const compressedFile = await compressImage(file, 1280, 1280, 0.8);
+            const dt = new DataTransfer();
+            dt.items.add(compressedFile);
+            this.files = dt.files;
+            file = this.files[0];
+        } catch (error) {
+            console.error("Compression failed", error);
+        }
+
+        if (mainBtn) {
+            mainBtn.disabled = false;
+            mainBtn.innerHTML = originalText;
+        }
+
+        if (file.size > maxSize) {
             errorMsg.textContent = "Image must be smaller than 2MB.";
             this.value = "";
             return;
