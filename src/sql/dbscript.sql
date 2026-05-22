@@ -255,9 +255,14 @@ INSERT INTO `authorized_object` (`authorized_object_id`, `name`, `description`, 
 ALTER TABLE `user`
 ADD `employee_status` VARCHAR(1) COLLATE utf8mb3_general_ci NOT NULL DEFAULT '1'
 
-# PROD 21 MAY 2026
 
-
-
-
-
+-- 21/05/2026 June: add delivery / return columns to 'borrow' table --
+ALTER TABLE `borrow`
+ADD COLUMN `user_delivery` VARCHAR(32) NULL DEFAULT NULL,
+ADD COLUMN `time_delivery` TIMESTAMP NULL DEFAULT NULL,
+ADD COLUMN `user_receive` VARCHAR(32) NULL DEFAULT NULL,
+ADD COLUMN `time_receive` TIMESTAMP NULL DEFAULT NULL,
+ADD COLUMN `user_return` VARCHAR(32) NULL DEFAULT NULL,
+ADD COLUMN `time_return` TIMESTAMP NULL DEFAULT NULL,
+ADD COLUMN `user_return_receive` VARCHAR(32) NULL DEFAULT NULL,
+ADD COLUMN `time_return_receive` TIMESTAMP NULL DEFAULT NULL;

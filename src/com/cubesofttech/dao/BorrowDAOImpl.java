@@ -55,7 +55,7 @@ public class BorrowDAOImpl implements BorrowDAO {
 	    List<Borrow> borRowList = null;
 	    try {
 	        Criteria criteria = session.createCriteria(Borrow.class);
-	        criteria.add(Restrictions.in("status", Arrays.asList("W", "B")));
+	        criteria.add(Restrictions.in("status", Arrays.asList("W", "B","T")));
 	        borRowList = criteria.list();
 	    } catch (Exception e) {
 	        e.printStackTrace();
@@ -575,7 +575,7 @@ public class BorrowDAOImpl implements BorrowDAO {
 
 		List<Map<String, Object>> list = null;
 		try {
-			String sql = "SELECT b.borrow_id, b.date_start, b.location, b.time_create, b.status, e.equipment_id, e.name, e.item_no FROM borrow b JOIN equipment e ON b.equipment_id = e.equipment_id WHERE b.user_borrowid = :logonUser";
+			String sql = "SELECT b.borrow_id, b.date_start, b.location, b.time_create, b.status, b.user_delivery, b.time_delivery, b.user_receive, b.time_receive, b.user_return, b.time_return, b.user_return_receive, b.time_return_receive, e.equipment_id, e.name, e.item_no FROM borrow b JOIN equipment e ON b.equipment_id = e.equipment_id WHERE b.user_borrowid = :logonUser";
 
 			SQLQuery query = session.createSQLQuery(sql);
 			query.setParameter("logonUser", logonUser);

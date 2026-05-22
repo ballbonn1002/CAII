@@ -124,6 +124,7 @@ public class EquipmentAction extends ActionSupport {
 			}
 			int id = Integer.parseInt(request.getParameter("id"));
 			Equipment e = equipmentDAO.getById(id);
+			Object[] userCreate = equipmentDAO.getUserCreateByEquipmentId(id);
 			
 			List<EquipmentStatus> status = equipmentStatusDAO.getall();
 			List<EquipmentType> type = equipmentTypeDAO.getall();
@@ -144,10 +145,26 @@ public class EquipmentAction extends ActionSupport {
 			    statusLogList = new ArrayList<>();
 			}
 			
+			if (borrow != null && !borrow.isEmpty()) {
+			    request.setAttribute("borrowObj", borrow.get(0));
+			}
+			
+			
 			Collections.reverse(statusLogList); // Reverse the status log to show the latest logs first
 			request.setAttribute("statusLogList", statusLogList);
+			User ur = (User) request.getSession().getAttribute("onlineUser");
+	        boolean hasSignature = false;
+
+	        if (ur != null) {
+	            User u = userDAO.findById(ur.getId());
+	            hasSignature = ( u.getPathSignature() != null && !u.getPathSignature().trim().isEmpty()
+	            );
+	        }
+
+	        request.setAttribute("hasSignature", hasSignature);
 			
 			request.setAttribute("borrowlistwithUser", borrowWithUser);
+//			log.debug("borrowlistwithUser : " +borrowWithUser);
 			request.setAttribute("borrowlistwithUserJSON", new Gson().toJson(borrowWithUser));
 			
 			request.getSession().setAttribute("id_s", id);
@@ -158,6 +175,9 @@ public class EquipmentAction extends ActionSupport {
 			//edit on 22/04/20 add -> request.setAttribute("borrowlist", borrow);
 			request.setAttribute("borrowlist", borrow);
 			request.setAttribute("borrowlistJSON", new Gson().toJson(borrow));
+			request.setAttribute("userCreate", userCreate);
+			
+			
 			return SUCCESS;
 		} catch(Exception e) {
 			e.printStackTrace();
@@ -203,6 +223,8 @@ public class EquipmentAction extends ActionSupport {
 				f.setType(uploadFileType);
 				f.setUserCreate(user.getId());
 				f.setUserId(user.getId());
+				f.setPage("equipment");
+				f.setPageId(String.valueOf(equipmentDAO.getMaxId() + 1));
 				fileuploadDAO.save(f);
 				
 				e.setImage(UPLOAD_PATH + fName);
@@ -309,6 +331,8 @@ public class EquipmentAction extends ActionSupport {
 				f.setType(uploadFileType);
 				f.setUserCreate(user.getId());
 				f.setUserId(user.getId());
+				f.setPage("equipment");
+				f.setPageId(String.valueOf(equipmentDAO.getMaxId() + 1));
 				fileuploadDAO.save(f);
 				
 				e.setImage(UPLOAD_PATH + fName);
@@ -603,6 +627,17 @@ public class EquipmentAction extends ActionSupport {
 			
 			List<Equipment> equipmentall = equipmentDAO.getAll();
 			String userJSON = userDAO.userListJSON();
+			
+			User ur = (User) request.getSession().getAttribute("onlineUser");
+	        boolean hasSignature = false;
+
+	        if (ur != null) {
+	            User u = userDAO.findById(ur.getId());
+	            hasSignature = ( u.getPathSignature() != null && !u.getPathSignature().trim().isEmpty()
+	            );
+	        }
+
+	        request.setAttribute("hasSignature", hasSignature);
 			
 			request.setAttribute("userList", userJSON);
 			

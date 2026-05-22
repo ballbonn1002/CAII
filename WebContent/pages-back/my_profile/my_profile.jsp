@@ -21,7 +21,11 @@
 	src="${pageContext.request.contextPath}/assets/plugins/global/plugins.bundle.js"></script>
 <script
 	src="${pageContext.request.contextPath}/assets/js/scripts.bundle.js"></script>
-
+<link
+	href="${pageContext.request.contextPath}/assets/plugins/custom/datatables/datatables.bundle.css"
+	rel="stylesheet" type="text/css" />
+<script
+	src="${pageContext.request.contextPath}/assets/plugins/custom/datatables/datatables.bundle.js"></script>
 
 <style>
 .form-check-success .form-check-input {
@@ -746,6 +750,7 @@
 											</c:if>
 						                    <button type="button" id="mainActionBtn" class="btn btn-light">Upload</button>
 						                </div>
+						                <input type="hidden" id="hasSignature" value="${not empty imgPathSignature}" />
 						            </div>
 						        </div>
 						    </form>
@@ -889,15 +894,16 @@
 						<!--end::Card header-->
 						<div class="card-body p-10 opacity-80">
 							<div class="table-responsive ">
-								<table
+								<table id="borrowList"
 									class="table table-striped table-hover border-gray-300 table-row-bordered table-row-gray-200 ">
-									<thead class="border-bottom-1">
+									<thead class="border-bottom-1 text-uppercase">
 										<tr class="fs-7 fw-bold text-gray-500">
 											<th class="px-3 min-w-150px">Date Create</th>
 											<th class="px-3 min-w-140px">Item No</th>
 											<th class="px-3 min-w-150px">Equipment</th>
 											<th class="px-3 min-w-130px">Location</th>
 											<th class="px-3 min-w-130px">Status</th>
+											<th class="px-3 min-w-130px">Actions</th>
 										</tr>
 									</thead>
 
@@ -919,21 +925,56 @@
 												<td class="px-3 py-4 text-gray-900 fs-6 fw-normal">${empty item.name ? '-' : item.name}</td>
 												<td class="px-3 py-4 text-gray-900 fs-6 fw-normal">${ empty item.location ? '-' : item.location}</td>
 												<td class="px-3 py-4 ">
-												<c:if test="${item.status == 'R'}">
-													<span class="badge badge-lg bg-success text-white fw-semibold fs-8">Returned</span>
-												</c:if> 
-												<c:if test="${item.status == 'B'}">
-													<span class="badge badge-lg bg-warning text-white fw-semibold fs-8">Borrowing</span>
-												</c:if>
-												 <c:if test="${item.status == 'W'}">
-													<span class="badge badge-lg badge-secondary text-dark fw-semibold fs-8">Waiting</span>
-												</c:if>
-												<c:if test="${item.status == 'C'}">
-													<span class="badge badge-lg bg-dark text-white fw-semibold fs-8">Cancel</span>
-												</c:if> 
-												<c:if test="${empty item.status || item.status == '-'}">
-													<span class="badge badge-lg bg-light-secondary text-white fw-semibold fs-8">-</span>
-												</c:if>
+													<c:if test="${item.status == 'R'}">
+														<span class="badge badge-lg bg-success text-white fw-semibold fs-8">Returned</span>
+													</c:if> 
+													<c:if test="${item.status == 'B'}">
+														<span class="badge badge-lg bg-warning text-white fw-semibold fs-8">Borrowing</span>
+													</c:if>
+													<c:if test="${item.status == 'W'}">
+														<span class="badge badge-lg badge-secondary text-dark fw-semibold fs-8">Waiting</span>
+													</c:if>
+													<c:if test="${item.status == 'C'}">
+														<span class="badge badge-lg bg-dark text-white fw-semibold fs-8">Cancel</span>
+													</c:if> 
+													<c:if test="${item.status == 'T'}">
+														<span class="badge badge-lg bg-warning text-white fw-semibold fs-8">Waiting for Return</span>
+													</c:if> 
+													<c:if test="${empty item.status || item.status == '-'}">
+														<span class="badge badge-lg bg-light-secondary text-white fw-semibold fs-8">-</span>
+													</c:if>
+												</td>
+
+												<td class="px-3 py-4 ">
+													<c:choose>
+														<c:when test="${item.status == 'B'
+																		and not empty item.user_delivery 
+																		and empty item.user_receive
+																		and empty item.user_return
+																		and empty item.user_return_receive}">
+															<div class="d-flex align-items-center gap-2">
+																<button type="button" class="btn btn-success btnReceived" data-id="${item.borrow_id}">
+																	Received
+																</button>
+															</div>
+														</c:when>
+
+														<c:when test="${item.status == 'T'
+																		and not empty item.user_delivery 
+																		and not empty item.user_receive
+																		and empty item.user_return
+																		and empty item.user_return_receive}">
+															<div class="d-flex align-items-center gap-2">
+																<button type="button" class="btn btn-success btnReturn" data-id="${item.borrow_id}">
+																	Return
+																</button>
+															</div>
+														</c:when>
+														
+														<c:otherwise>
+														</c:otherwise>
+													</c:choose>
+
 												</td>
 											</tr>
 
@@ -1521,7 +1562,7 @@
 			  confirmNewPw.value = "";
 			  
 			  newPw.type = "password";
-			  confirmPw.type = "password";
+			  confirmNewPw.type = "password";
 
 			  newPwEye.classList.add("d-none");
 			  confirmNewPwEye.classList.add("d-none");
@@ -1604,15 +1645,35 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     });
 
-    fileInput.addEventListener("change", function () { 	
-        const file = this.files[0];
-        const maxSize = 2 * 1024 * 1024;
+    fileInput.addEventListener("change", async function () { 	
+        let file = this.files[0];
+        const maxSize = 10 * 1024 * 1024;
         const errorMsg = document.getElementById("errorMsg");
 
         if (!file) return;
 
-        if (file.size > maxSize) {
+        const originalText = mainBtn ? mainBtn.innerText : 'Upload';
+        if (mainBtn) {
+            mainBtn.disabled = true;
+            mainBtn.innerHTML = '<span class="spinner-border spinner-border-sm align-middle me-2"></span>Compressing...';
+        }
 
+        try {
+            const compressedFile = await compressImage(file, 1280, 1280, 0.8);
+            const dt = new DataTransfer();
+            dt.items.add(compressedFile);
+            this.files = dt.files;
+            file = this.files[0];
+        } catch (error) {
+            console.error("Compression failed", error);
+        }
+
+        if (mainBtn) {
+            mainBtn.disabled = false;
+            mainBtn.innerHTML = originalText;
+        }
+
+        if (file.size > maxSize) {
             errorMsg.textContent = "Image must be smaller than 2MB.";
             this.value = "";
             return;
@@ -1675,6 +1736,180 @@ document.addEventListener("DOMContentLoaded", function () {
 	    return false;
 	}
 	</script>
+	
+	￼
+
+<script type="text/javascript">
+document.addEventListener("DOMContentLoaded", function () {
+
+    var table = $('#borrowList').DataTable({
+
+        pageLength: 10,
+        lengthMenu: [10, 20, 50, 100],
+        ordering: true,
+        searching: true,
+        autoWidth: false,
+        info: false,
+        responsive: true,
+
+        columnDefs: [
+            {
+              orderable: false,
+              targets: [5] // Actions
+            }
+        ],
+        order: [],
+        language: {
+            emptyTable: "Not found borrow list."
+        },
+
+        headerCallback: function(thead) {
+            $(thead).find('th').each(function () {
+
+                if ($(this).find('.th-wrapper').length === 0) {
+
+                    $(this).wrapInner(
+                        '<span class="th-wrapper" style="display:inline-flex; align-items:center; white-space:nowrap; pointer-events:none;"></span>'
+                    );
+                }
+            });
+        }
+    });
+});
+
+function checkSignatureBeforeAction() {
+
+    const hasSignature = document.getElementById("hasSignature").value === "true";
+
+    if (!hasSignature) {
+
+        Swal.fire({
+            title: "Signature Required!",
+            text: "Please upload your signature before continuing.",
+            icon: "warning",
+            confirmButtonText: "Go to Security",
+            buttonsStyling: false,
+            customClass: {
+                confirmButton: "btn btn-warning"
+            }
+        }).then(() => {
+            // กด tab Security
+            document.querySelector(
+            	'#profileNav .nav-link[data-target="#security-info"]'
+            )?.click();
+        });
+
+        return false;
+    }
+    return true;
+}
+
+//----- Received -----
+$(document).on('click', '.btnReceived',function(e){
+	e.preventDefault();
+
+	if (!checkSignatureBeforeAction()) {
+		return;
+	}
+	const borrowId = $(this).data('id');
+
+	Swal.fire({
+        title: "Are you sure?!",
+        text: "Have you received this equipment?",
+        icon: "question",
+        showCancelButton: true,
+        confirmButtonText: "Yes, received it",
+        cancelButtonText: "Cancel",
+        buttonsStyling: false,
+        customClass: {
+            confirmButton: "btn btn-success",
+            cancelButton: "btn btn-secondary"
+        }
+    }).then((result) => {
+        if (result.isConfirmed) {
+        	fetch("received_equipment.action", {
+        	    method: "POST",
+        	    headers: {
+        	        "Content-Type": "application/x-www-form-urlencoded"
+        	    },
+        	    body: "id=" + encodeURIComponent(borrowId)
+        	})
+        	.then(response => response.text())
+        	.then(data => {
+        	    location.reload();
+        	})
+        	.catch(error => {
+        	    console.error(error);
+        	    Swal.fire({
+        	        icon: "error",
+        	        title: "Error",
+        	        text: "Failed to deliver equipment"
+        	    });
+        	});
+
+        	}
+        	});
+
+        	})
+
+        	//----- Return -----
+
+        	$(document).on('click', '.btnReturn', function(e) {
+
+        	    e.preventDefault();
+
+        	    // เช็คลายเซ็นก่อน
+        	    if (!checkSignatureBeforeAction()) {
+        	        return;
+        	    }
+
+        	    const borrowId = $(this).data('id');
+
+        	    Swal.fire({
+        	        title: "Confirm Return?",
+        	        text: "Confirm that you have returned this equipment.",
+        	        icon: "question",
+        	        showCancelButton: true,
+        	        confirmButtonText: "Yes, returned",
+        	        cancelButtonText: "Cancel",
+        	        buttonsStyling: false,
+        	        customClass: {
+        	            confirmButton: "btn btn-success",
+        	            cancelButton: "btn btn-secondary"
+        	        }
+        	    }).then((result) => {
+
+        	        if (result.isConfirmed) {
+
+        	            fetch("return_equipment.action", {
+        	                method: "POST",
+        	                headers: {
+        	                    "Content-Type": "application/x-www-form-urlencoded"
+        	                },
+        	                body: "id=" + encodeURIComponent(borrowId)
+        	            })
+        	            .then(response => response.text())
+        	            .then(data => {
+        	                location.reload();
+        	            })
+        	            .catch(error => {
+        	                console.error(error);
+
+        	                Swal.fire({
+        	                    icon: "error",
+        	                    title: "Error",
+        	                    text: "Failed to deliver equipment"
+        	                });
+        	            });
+
+        	        }
+
+        	    });
+
+        	})
+
+
+</script>
 
 </body>
 </html>

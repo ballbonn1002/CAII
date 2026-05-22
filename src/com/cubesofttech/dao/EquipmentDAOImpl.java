@@ -449,4 +449,20 @@ public class EquipmentDAOImpl implements EquipmentDAO {
 		return list;
 	}
 	
+	
+	@Override
+	public Object[] getUserCreateByEquipmentId(int id){
+		Session session = this.sessionFactory.getCurrentSession();
+		
+		try {
+			String sql = "SELECT e.time_create, e.user_create, u.name FROM equipment e LEFT JOIN user u ON e.user_create = u.id WHERE equipment_id = :id"; 
+			Query query = session.createSQLQuery(sql);
+			query.setParameter("id", id);
+			return (Object[]) query.uniqueResult();
+		} catch (HibernateException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+
 }

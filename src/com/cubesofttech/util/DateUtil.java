@@ -265,5 +265,29 @@ public class DateUtil {
 		}
 		return result;
 	}
+	
+	public static Timestamp parseBorrowDate(String dateStr) {
+	    if (dateStr == null || dateStr.trim().isEmpty()) {
+	        return null;
+	    }
+
+	    try {
+	        dateStr = dateStr.trim();
+
+	        if (dateStr.length() == 16) {
+	            dateStr = dateStr + ":00";
+	        }
+
+	        if (dateStr.length() == 19) {
+	            dateStr = dateStr + ".0";
+	        }
+
+	        return Timestamp.valueOf(dateStr);
+
+	    } catch (Exception e) {
+	        throw new IllegalArgumentException("Invalid borrow date format: " + dateStr, e);
+	    }
+	}
+
 
 }
