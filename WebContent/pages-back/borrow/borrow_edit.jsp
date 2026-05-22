@@ -90,78 +90,87 @@
 							<li class="breadcrumb-item text-muted">Borrow Detail</li>
 						</ul>
 					</div>
-					
-					<c:choose>
-						<c:when test="${not empty borrowlistwithUser
-					                    and borrowlistwithUser[0].status == 'B'
-					                    and empty borrowObj.user_delivery 
-										and empty borrowObj.user_receive
-										and empty borrowObj.user_return
-										and empty borrowObj.user_return_receive}">
-							<div class="d-flex align-items-center gap-2">
-								<button type="button" class="btn btn-primary" id="btnDeliverEquipment">
-									Deliver Equipment
-								</button>
-							</div>
-						</c:when>
-						
-						<c:when test="${not empty borrowlistwithUser
-					                    and borrowlistwithUser[0].status == 'B'
-					                    and not empty borrowObj.user_delivery 
-										and empty borrowObj.user_receive
-										and empty borrowObj.user_return
-										and empty borrowObj.user_return_receive}">
-							<div class="d-flex align-items-center gap-2">
-								<button type="button" class="btn btn-secondary" disabled>
-										Waiting to Receive
-								</button>
-							</div>
-						</c:when>
-						
-						<c:when test="${not empty borrowlistwithUser
-					                    and borrowlistwithUser[0].status == 'B'
-					                    and not empty borrowObj.user_delivery 
-										and not empty borrowObj.user_receive
-										and empty borrowObj.user_return
-										and empty borrowObj.user_return_receive}">
-							<div class="d-flex align-items-center gap-2">
-								<button type="button" class="btn btn-warning btn-request-return" >
-										Request for Return
-								</button>
-							</div>
-						</c:when>
-						
-						<c:when test="${not empty borrowlistwithUser
-					                     and borrowlistwithUser[0].status == 'T'
-					                     and not empty borrowObj.user_delivery 
-										 and not empty borrowObj.user_receive 
-										 and empty borrowObj.user_return
-										 and empty borrowObj.user_return_receive}">
-							<div class="d-flex align-items-center gap-2">
-								<a  class="me-3 fs-6 btn-open-return-modal">
-										Confirm Received
-								</a>
-								<button type="button" class="btn btn-secondary" disabled>
-										Waiting for Return
-								</button>
-							</div>
-						</c:when> 
-						
-						<%--  <c:when test="${not empty borrowlistwithUser
-					                     and borrowlistwithUser[0].status == 'T'
-					                     and not empty borrowObj.user_delivery 
-										 and not empty borrowObj.user_receive 
-										 and empty borrowObj.user_return
-										 and empty borrowObj.user_return_receive}">
-							
-						</c:when>  --%>
-						
-						<c:otherwise>
-							
-						</c:otherwise>
-						
+			<c:if test="${not empty borrowlistwithUser}">
+				<c:choose>
+				    <c:when test="${isLegacyBorrow}">
+				        <c:choose>
+				            <c:when test="${borrowObj.status == 'B'}">
+				                <div class="d-flex align-items-center gap-2">
+				                    <button type="button" class="btn btn-warning btn-request-return">
+				                        Request for Return
+				                    </button>
+				                </div>
+				            </c:when>
+				            
+				            <c:when test="${borrowObj.status == 'T'}">
+				                <div class="d-flex align-items-center gap-2">
+				                    <a class="me-3 fs-6 btn-open-return-modal">
+				                        Confirm Received
+				                    </a>
+				                    <button type="button" class="btn btn-secondary" disabled>
+				                        Waiting for Return
+				                    </button>
+				                </div>
+				            </c:when>
+				        </c:choose>
+				    </c:when>
+				
+				    <c:otherwise>
+				    	<c:choose>
+				            <c:when test="${borrowObj.status == 'B'
+				                            and empty borrowObj.user_delivery 
+				                            and empty borrowObj.user_receive
+				                            and empty borrowObj.user_return
+				                            and empty borrowObj.user_return_receive}">
+				                <div class="d-flex align-items-center gap-2">
+				                    <button type="button" class="btn btn-primary" id="btnDeliverEquipment">
+				                        Deliver Equipment
+				                    </button>
+				                </div>
+				            </c:when>
+				            
+				            <c:when test="${borrowObj.status == 'B'
+				                            and not empty borrowObj.user_delivery 
+				                            and empty borrowObj.user_receive
+				                            and empty borrowObj.user_return
+				                            and empty borrowObj.user_return_receive}">
+				                <div class="d-flex align-items-center gap-2">
+				                    <button type="button" class="btn btn-secondary" disabled>
+				                        Waiting to Receive
+				                    </button>
+				                </div>
+				            </c:when>
+				            
+				            <c:when test="${borrowObj.status == 'B'
+				                            and not empty borrowObj.user_delivery 
+				                            and not empty borrowObj.user_receive
+				                            and empty borrowObj.user_return
+				                            and empty borrowObj.user_return_receive}">
+				                <div class="d-flex align-items-center gap-2">
+				                    <button type="button" class="btn btn-warning btn-request-return">
+				                        Request for Return
+				                    </button>
+				                </div>
+				            </c:when>
+				            
+				            <c:when test="${borrowObj.status == 'T'
+				                             and not empty borrowObj.user_delivery 
+				                             and not empty borrowObj.user_receive 
+				                             and empty borrowObj.user_return
+				                             and empty borrowObj.user_return_receive}">
+				                <div class="d-flex align-items-center gap-2">
+				                    <a class="me-3 fs-6 btn-open-return-modal">
+				                        Confirm Received
+				                    </a>
+				                    <button type="button" class="btn btn-secondary" disabled>
+				                        Waiting for Return
+				                    </button>
+				                </div>
+				            </c:when>
+				       </c:choose>
+				    </c:otherwise>
 					</c:choose>
-					
+				</c:if>
 				</div>
 			</div>
 			<!-- end Toolbar -->
@@ -275,7 +284,31 @@
 									</div>
 									<div class="card-toolbar">
 										<c:if test="${not empty borrowlistwithUser}">
-											<c:if test="${borrowlistwithUser[0].status == 'B'
+										  <c:choose>
+											<c:when test="${isLegacyBorrow}">
+										        <c:choose>
+										            <c:when test="${borrowObj.status == 'B'}">
+										                <div class="d-flex align-items-center gap-2">
+										                    <button type="button" class="btn btn-sm btn-warning btn-request-return">
+										                        Request for Return
+										                    </button>
+										                </div>
+										            </c:when>
+										            
+										            <%-- <c:when test="${borrowObj.status == 'T'}">
+										                <div class="d-flex align-items-center gap-2">
+										                    <a class="me-3 fs-6 btn-open-return-modal">
+										                        Confirm Received
+										                    </a>
+										                    <button type="button" class="btn btn-sm btn-secondary" disabled>
+										                        Waiting for Return
+										                    </button>
+										                </div>
+										            </c:when> --%>
+										        </c:choose>
+										    </c:when>
+										     <c:otherwise>
+											<c:if test="${borrowObj.status == 'B'
 														 and not empty borrowObj.user_delivery 
 														 and not empty borrowObj.user_receive }">
 												<button type="button" class="btn btn-sm btn-warning btn-request-return">
@@ -283,7 +316,7 @@
 												</button>
 											</c:if>
 											
-											<c:if test="${borrowlistwithUser[0].status == 'T'
+											<c:if test="${borrowObj.status == 'T'
 														 and not empty borrowObj.user_delivery 
 														 and not empty borrowObj.user_receive 
 														 and not empty borrowObj.user_return
@@ -292,6 +325,8 @@
 													Confirm Received
 												</button>
 											</c:if>
+											</c:otherwise>
+											</c:choose>
 										</c:if>
 									</div>
 								</div>
@@ -607,8 +642,14 @@
 	});
 	
 	function checkSignatureBeforeAction() {
-		const hasSignature = $('#hasSignature').val() === 'true';
-	    
+		/* const hasSignature = $('#hasSignature').val() === 'true'; */
+	     const rawVal = $('#hasSignature').val();
+    // รองรับทั้ง "true", "True", "TRUE"
+    const hasSignature = String(rawVal).toLowerCase() === 'true';
+    
+    console.log("hasSignature raw:", rawVal); // debug
+    console.log("hasSignature bool:", hasSignature);
+    
 	    if (!hasSignature) {
 	        Swal.fire({
 	            title: "Signature Required!",
@@ -992,11 +1033,11 @@
 		})
 		
 		// ----- Request for Return -----
-		$('.btn-request-return').on('click',function(e){
-			e.preventDefault();
-			
-			Swal.fire({
-				title: 'Confirm Request for Return?',
+		$('.btn-request-return').on('click', function (e) {
+		    e.preventDefault();
+		
+		    Swal.fire({
+		        title: 'Confirm Request for Return?',
 		        text: 'Are you sure you want to request return for this item?',
 		        icon: 'question',
 		        showCancelButton: true,
@@ -1004,37 +1045,33 @@
 		        cancelButtonText: "Cancel",
 		        buttonsStyling: false,
 		        customClass: {
-		            confirmButton: "btn btn-success",
+		            confirmButton: "btn btn-warning",
 		            cancelButton: "btn btn-secondary"
 		        }
 		    }).then((result) => {
 		        if (result.isConfirmed) {
-		        	fetch(CTX + "request_return.action", {
-		        	    method: "POST",
-		        	    headers: {
-		        	        "Content-Type": "application/x-www-form-urlencoded"
-		        	    },
-		        	    body: "id=" + encodeURIComponent(
-		        	        getBorrowField('borrowId') || getBorrowField('borrow_id')
-		        	    )
-		        	})
-		        	.then(response => response.text())
-		        	.then(data => {
-		        	    location.reload();
-		        	})
-		        	.catch(error => {
-		        	    console.error(error);
-
-		        	    Swal.fire({
-		        	        icon: "error",
-		        	        title: "Error",
-		        	        text: "Failed to deliver equipment"
-		        	    });
-
-		        	});
+		            fetch(CTX + "/request_return.action", {
+		                method: "POST",
+		                headers: {
+		                    "Content-Type": "application/x-www-form-urlencoded"
+		                },
+		                body: "id=" + encodeURIComponent(getBorrowField('borrowId'))
+		            })
+		            .then(res => res.json())
+		            .then(data => {
+		                if (data.message === "success") {
+		                	location.reload();
+		                } else {
+		                    Swal.fire("Error", data.message, "error");
+		                }
+		            })
+		            .catch(err => {
+		                console.error(err);
+		                Swal.fire("Error", "Request failed", "error");
+		            });
 		        }
 		    });
-		})
+		});
 		
 		// ----- Confirm Received -----
 		/* $('#btnConfirmReceived').on('click',function(e){

@@ -910,7 +910,7 @@
 									<tbody>
 									<c:if test="${empty borrowList}">
 										<tr>
-											<td colspan="5" class="text-center text-muted py-4">
+											<td colspan="6" class="text-center text-muted py-4">
 												Not found borrow list.
 											</td>
 										</tr>
@@ -1737,13 +1737,10 @@ document.addEventListener("DOMContentLoaded", function () {
 	}
 	</script>
 	
-	￼
 
-<script type="text/javascript">
+<script >
 document.addEventListener("DOMContentLoaded", function () {
-
     var table = $('#borrowList').DataTable({
-
         pageLength: 10,
         lengthMenu: [10, 20, 50, 100],
         ordering: true,

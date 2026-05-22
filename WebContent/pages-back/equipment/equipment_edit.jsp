@@ -286,7 +286,7 @@
                                         </c:choose>
                                         
                                         <div class="py-5">
-                                        	<span>Create By : ${userCreate[2]}, <fmt:formatDate value='${userCreate[0]}' pattern='d MMM YYYY HH:mm' /> </span>
+                                        	<span>Create By : ${userCreate.name}, <fmt:formatDate value='${userCreate.time_create}' pattern='d MMM YYYY HH:mm' /> </span>
                                         </div>
                                     </div>
                                 </div>

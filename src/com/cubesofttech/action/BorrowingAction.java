@@ -598,20 +598,31 @@ public class BorrowingAction extends ActionSupport {
 	        List<EquipmentType> type = equipmentTypeDAO.getall();
 	        List<EquipmentStatus> status = equipmentStatusDAO.getall();
 
-	        Borrow borrow = borrowDAO.findById(Integer.parseInt(bId));
+	        int borrowId = Integer.parseInt(bId);
+	        
+//	        Borrow borrow = borrowDAO.findById(Integer.parseInt(bId));
+	        Borrow borrow = borrowDAO.findById(borrowId);
 
 	        String equipmentId = String.valueOf(borrow.getEquipmentId()); 
 
 	        List<Map<String, Object>> borrowWithUser =
-	                borrowDAO.findBorrowWithUserByEquipmentId(equipmentId);
+	                borrowDAO.findBorrowWithUserByEquipmentId(String.valueOf(borrow.getEquipmentId()));
 
 	        User ur = (User) request.getSession().getAttribute("onlineUser");
 	        boolean hasSignature = false;
 
 	        if (ur != null) {
-	            User u = userDAO.findById(ur.getId());
-	            hasSignature = ( u.getPathSignature() != null && !u.getPathSignature().trim().isEmpty()
-	            );
+	            User u = userDAO.findById(ur.getId()); 
+	            
+	            log.debug("User ID from Session: " + ur.getId());
+	            log.debug("User found in DB: " + (u != null));
+	            
+	            if (u != null) {
+	                String sig = u.getPathSignature();
+	                log.debug("PathSignature from DB: [" + sig + "]");
+	                
+	                hasSignature = sig != null && !sig.trim().isEmpty() && !"null".equalsIgnoreCase(sig.trim());
+	            }
 	        }
 
 	        request.setAttribute("hasSignature", hasSignature);
@@ -633,6 +644,10 @@ public class BorrowingAction extends ActionSupport {
 	        request.setAttribute("equipId", equipmentId);
 	        request.setAttribute("equipmentbyId", eq);
 	        request.setAttribute("borrowObj", borrow);
+	        
+	        boolean legacyBorrow = isLegacyBorrow(borrow);
+            request.setAttribute("isLegacyBorrow",legacyBorrow);
+
 	        
 	        return SUCCESS;
 	    } catch (Exception e) {
@@ -679,7 +694,7 @@ public class BorrowingAction extends ActionSupport {
 			b.setRemark(remark);
 			b.setStatus(status);
 			b.setUserBorrowid(borrower);
-			b.setUserCreate(onlineUser.getId());
+			b.setUserCreate(user.getId());
 			b.setTimeCreate(timestamp);
 			borrowDAO.save(b);
 
@@ -876,12 +891,20 @@ public class BorrowingAction extends ActionSupport {
 			List<EquipmentType> type = equipmentTypeDAO.getall();
 			String userJSON = userDAO.userListJSON();
 			User ur = (User) request.getSession().getAttribute("onlineUser");
-			boolean hasSignature = false;
+	        boolean hasSignature = false;
 
 	        if (ur != null) {
-	            User u = userDAO.findById(ur.getId());
-	            hasSignature = ( u.getPathSignature() != null && !u.getPathSignature().trim().isEmpty()
-	            );
+	            User u = userDAO.findById(ur.getId()); 
+	            
+	            log.debug("User ID from Session: " + ur.getId());
+	            log.debug("User found in DB: " + (u != null));
+	            
+	            if (u != null) {
+	                String sig = u.getPathSignature();
+	                log.debug("PathSignature from DB: [" + sig + "]");
+	                
+	                hasSignature = sig != null && !sig.trim().isEmpty() && !"null".equalsIgnoreCase(sig.trim());
+	            }
 	        }
 
 	        request.setAttribute("hasSignature", hasSignature);
@@ -1395,34 +1418,60 @@ public class BorrowingAction extends ActionSupport {
 	}
 	
 	public void request_return() {
-		try {
-			User user = (User) request.getSession().getAttribute("onlineUser");
-			String id = request.getParameter("id");
-			String note = request.getParameter("note");
-			Map<String,String> map = new HashMap<String,String>();
-			Borrow borrow = borrowDAO.findById(Integer.parseInt(id));
-			
-			if(borrow.getStatus().equals("B")) 
-			{
-				borrow.setStatus("T");
-				borrow.setUserUpdate(onlineUser.getId());
-				borrow.setTimeUpdate(timestamp);
-				borrowDAO.update(borrow);
-				
-				map.put("message", "success");
-			} else {
-				map.put("message", "something wrong");
-			}
-			
-			response.setContentType("application/json");
-			PrintWriter out = response.getWriter();
-			out.println(new Gson().toJson(map));
-			out.flush();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+	    try {
+	        User user = (User) request.getSession().getAttribute("onlineUser");
+
+	        String id = request.getParameter("id");
+
+	        Map<String, String> map = new HashMap<>();
+
+	        Borrow borrow = borrowDAO.findById(Integer.parseInt(id));
+
+	        if (borrow != null && "B".equalsIgnoreCase(borrow.getStatus().trim())) {
+
+	            borrow.setStatus("T");
+	            borrow.setUserUpdate(user != null ? user.getId() : null);
+	            borrow.setTimeUpdate(new Timestamp(System.currentTimeMillis()));
+
+	            borrowDAO.update(borrow);
+
+	            map.put("message", "success");
+	        } else {
+	            map.put("message", "invalid status: " + (borrow != null ? borrow.getStatus() : "null"));
+	        }
+
+	        response.setContentType("application/json");
+	        response.setCharacterEncoding("UTF-8");
+	        boolean legacyBorrow = isLegacyBorrow(borrow);
+            request.setAttribute("isLegacyBorrow",legacyBorrow);
+            
+	        PrintWriter out = response.getWriter();
+	        out.print(new Gson().toJson(map));
+	        out.flush();
+
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	    }
 	}
 	
-	
+	private boolean isLegacyBorrow(Borrow borrow) {
+	    if (borrow == null) {
+	        return false;
+	    }
+
+	    Timestamp migrationDate = Timestamp.valueOf("2026-05-22 00:00:00");
+
+	    boolean isOldData =
+	            borrow.getTimeCreate() != null &&
+	            borrow.getTimeCreate().before(migrationDate);
+
+	    boolean allNewFieldsNull =
+	            borrow.getUser_delivery() == null &&
+	            borrow.getUser_receive() == null &&
+	            borrow.getUser_return() == null &&
+	            borrow.getUser_return_receive() == null;
+
+	    return isOldData && allNewFieldsNull;
+	}
 	
 }

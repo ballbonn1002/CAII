@@ -272,20 +272,18 @@ public class DateUtil {
 	    }
 
 	    try {
-	        dateStr = dateStr.trim();
+	        SimpleDateFormat sdf =
+	            new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.ENGLISH);
 
-	        if (dateStr.length() == 16) {
-	            dateStr = dateStr + ":00";
-	        }
+	        sdf.setCalendar(new GregorianCalendar());
 
-	        if (dateStr.length() == 19) {
-	            dateStr = dateStr + ".0";
-	        }
+	        Date parsedDate = sdf.parse(dateStr.trim());
 
-	        return Timestamp.valueOf(dateStr);
+	        return new Timestamp(parsedDate.getTime());
 
 	    } catch (Exception e) {
-	        throw new IllegalArgumentException("Invalid borrow date format: " + dateStr, e);
+	        e.printStackTrace();
+	        return null;
 	    }
 	}
 

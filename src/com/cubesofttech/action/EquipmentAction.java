@@ -124,7 +124,7 @@ public class EquipmentAction extends ActionSupport {
 			}
 			int id = Integer.parseInt(request.getParameter("id"));
 			Equipment e = equipmentDAO.getById(id);
-			Object[] userCreate = equipmentDAO.getUserCreateByEquipmentId(id);
+			Map<String, Object> userCreate = equipmentDAO.getUserCreateByEquipmentId(id);
 			
 			List<EquipmentStatus> status = equipmentStatusDAO.getall();
 			List<EquipmentType> type = equipmentTypeDAO.getall();
@@ -156,9 +156,17 @@ public class EquipmentAction extends ActionSupport {
 	        boolean hasSignature = false;
 
 	        if (ur != null) {
-	            User u = userDAO.findById(ur.getId());
-	            hasSignature = ( u.getPathSignature() != null && !u.getPathSignature().trim().isEmpty()
-	            );
+	            User u = userDAO.findById(ur.getId()); 
+	            
+	            log.debug("User ID from Session: " + ur.getId());
+	            log.debug("User found in DB: " + (u != null));
+	            
+	            if (u != null) {
+	                String sig = u.getPathSignature();
+	                log.debug("PathSignature from DB: [" + sig + "]");
+	                
+	                hasSignature = sig != null && !sig.trim().isEmpty() && !"null".equalsIgnoreCase(sig.trim());
+	            }
 	        }
 
 	        request.setAttribute("hasSignature", hasSignature);
@@ -632,9 +640,17 @@ public class EquipmentAction extends ActionSupport {
 	        boolean hasSignature = false;
 
 	        if (ur != null) {
-	            User u = userDAO.findById(ur.getId());
-	            hasSignature = ( u.getPathSignature() != null && !u.getPathSignature().trim().isEmpty()
-	            );
+	            User u = userDAO.findById(ur.getId()); 
+	            
+	            log.debug("User ID from Session: " + ur.getId());
+	            log.debug("User found in DB: " + (u != null));
+	            
+	            if (u != null) {
+	                String sig = u.getPathSignature();
+	                log.debug("PathSignature from DB: [" + sig + "]");
+	                
+	                hasSignature = sig != null && !sig.trim().isEmpty() && !"null".equalsIgnoreCase(sig.trim());
+	            }
 	        }
 
 	        request.setAttribute("hasSignature", hasSignature);

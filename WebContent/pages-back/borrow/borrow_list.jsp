@@ -1270,59 +1270,65 @@ th.sort:hover {
 			return z ? z : '-';
 		}
 
-		function setBorrowModalButtons(status, userDelivery, userReceive, userReturn, userReturnReceive) {
-			$('#btn_request_return').hide();
+		function setBorrowModalButtons(status, userDelivery, userReceive, userReturn, userReturnReceive,isLegacyBorrow) {
+			/* $('#btn_request_return').hide();
 			$('#btn_cancel_borrow').hide();
 			$('#btn_confirm_borrow').hide();
 			$('#btn_confirm_received').hide();
-			$('#btn_deliver_equipment').hide();
+			$('#btn_deliver_equipment').hide(); */
+			$('#btn_request_return').hide().prop('disabled', false).text('Request for Return');
+			$('#btn_cancel_borrow').hide();
+			$('#btn_confirm_borrow').hide();
+			$('#btn_confirm_received').hide();
+			$('#btn_deliver_equipment')
+			    .hide()
+			    .prop('disabled', false)
+			    .removeClass('btn-secondary')
+			    .text('Deliver Equipment');
 
-			if (status === 'W') {
-				$('#btn_cancel_borrow').show();
-				$('#btn_confirm_borrow').show();
-			}else if (status === 'B') {
-				/* ยังไม่ส่งของ */
-				if (!userDelivery || String(userDelivery).trim() === '') {
-					$('#btn_deliver_equipment')
-					.show()
-					.prop('disabled', false);
+			if (isLegacyBorrow) {
 
-				} /* ส่งแล้ว รอรับ */
-				else if (userDelivery && (!userReceive || String(userReceive).trim() === '')) {
-					$('#btn_deliver_equipment')
-						.show()
-						.prop('disabled', true)
-						.removeClass('btn-warning btn-success')
-						.addClass('btn-secondary')
-						.text('Waiting to Receive');
+			    if (status === 'B') {
+			        $('#btn_request_return').show();
+			        return;
+			    }
 
-				} /* รับของแล้ว */
-				else if ( userDelivery && userReceive &&(!userReturn || String(userReturn).trim() === '') ) {
-						$('#btn_request_return')
-							.show()
-							.prop('disabled', false)
-							.removeClass('btn-secondary')
-							.addClass('btn-warning')
-							.text('Request for Return');
-					}
+			    if (status === 'T') {
+			        $('#btn_confirm_received').show();
+			        return;
+			    }
+
+			    return;
 			}
-			else if (status === 'T') {
-				/* รอคืน */
-				/* if (userDelivery && userReceive && (!userReturn || String(userReturn).trim() === '')) {
-					$('#btn_request_return')
-						.show()
-						.prop('disabled', true)
-						.removeClass('btn-warning btn-success')
-						.addClass('btn-secondary')
-						.text('Waiting for Return');
+			if (status === 'W') {
+			    $('#btn_cancel_borrow').show();
+			    $('#btn_confirm_borrow').show();
+			}
 
-				} */
-				/* มีการคืนแล้ว */
-				 if ( userDelivery && userReceive && (!userReturnReceive || String(userReturnReceive).trim() === '') ) {
-					$('#btn_confirm_received')
-						.show()
-						.prop('disabled', false);
-				}
+			else if (status === 'B') {
+
+			    if (!userDelivery) {
+			        $('#btn_deliver_equipment').show();
+			    }
+
+			    else if (userDelivery && !userReceive) {
+			        $('#btn_deliver_equipment')
+			            .show()
+			            .prop('disabled', true)
+			            .addClass('btn-secondary')
+			            .text('Waiting to Receive');
+			    }
+
+			    else if (userDelivery && userReceive && !userReturn) {
+			        $('#btn_request_return').show();
+			    }
+			}
+
+			else if (status === 'T') {
+
+			    if (userDelivery && userReceive && !userReturnReceive) {
+			        $('#btn_confirm_received').show();
+			    }
 			}
 		}
 
@@ -1379,8 +1385,16 @@ th.sort:hover {
 				$('#moreDetailWrapper').hide();
 			}
 		
+			const legacy = isLegacyBorrow(item);
 			/* setBorrowModalButtons(status); */
-			setBorrowModalButtons(status, item.user_delivery, item.user_receive, item.user_return,item.user_return_receive);
+			setBorrowModalButtons(
+			    item.statusborrow,
+			    item.user_delivery,
+			    item.user_receive,
+			    item.user_return,
+			    item.user_return_receive,
+			    legacy
+			);
 		
 			// เก็บข้อมูลไว้ใช้ปุ่ม Edit/Cancel/Confirm
 			$('#borrowModal').data('currentItem', item);
@@ -1847,6 +1861,16 @@ th.sort:hover {
 	        return false;
 	    }
 	    return true;
+	}
+	
+	function isLegacyBorrow(item) {
+	    if (!item || !item.time_create) return false;
+
+	    const migrationDate = new Date("2026-05-22T00:00:00");
+
+	    const createDate = new Date(String(item.time_create).replace(' ', 'T'));
+
+	    return createDate < migrationDate;
 	}
 	</script>
 </body>
