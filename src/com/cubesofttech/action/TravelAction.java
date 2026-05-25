@@ -45,6 +45,10 @@ public class TravelAction extends ActionSupport {
 	public static final String LOGOPATH = "logoPath";
 	public static final String JASPERPATH = "/WEB-INF/classes/jasper";
 	public static final String IMAGEPATH = "/images";
+	
+	private Map<String, Object> jsonData;
+
+
 
 	Logger log = Logger.getLogger(getClass());
 
@@ -105,6 +109,10 @@ public class TravelAction extends ActionSupport {
 
 	public void setFileUploadId(String v) {
 		this.fileUploadId = v;
+	}
+	
+	public Map<String, Object> getJsonData() {
+		return jsonData;
 	}
 
 	// ===================== หน้า add form =====================
@@ -1539,5 +1547,178 @@ public class TravelAction extends ActionSupport {
 			e.printStackTrace();
 			return ERROR;
 		}
+	}
+
+	// ============== Travel Setting =============
+
+	public String travelSettingList() {
+
+		HttpServletRequest request = ServletActionContext.getRequest();
+		try {
+			User onlineUser = (User) request.getSession().getAttribute("onlineUser");
+			if (onlineUser == null) {
+				return ERROR;
+			}
+
+			List<ExpTravelType> expTravelTypes = expTravelTypeDAO.findAll();
+
+			// หา count ของ expense ที่ใช้ go by แต่ละ type
+			Map<Long, Integer> expTravelTypeCountMap = expTravelTypeDAO.getCountUseType();
+
+			request.setAttribute("travelTypeList", expTravelTypes);
+			request.setAttribute("expTravelTypeCountMap", expTravelTypeCountMap);
+
+			return SUCCESS;
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ERROR;
+		}
+
+	}
+
+	// ============== Travel Setting Delete =============
+	public String travelSettingDelete() {
+
+		try {
+			HttpServletRequest request = ServletActionContext.getRequest();
+			String typeIdStr = request.getParameter("typeId");
+
+			User onlineUser = (User) request.getSession().getAttribute("onlineUser");
+			if (onlineUser == null) {
+				return ERROR;
+			}
+
+			Long typeIdLong = typeIdStr == null || typeIdStr.isEmpty() ? null : Long.parseLong(typeIdStr);
+
+			ExpTravelType expTravelTypes = expTravelTypeDAO.findById(typeIdLong);
+
+			expTravelTypeDAO.delete(expTravelTypes);
+
+			return SUCCESS;
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ERROR;
+		}
+
+	}
+
+	// ============== Travel Setting Add =============
+	public String travelSettingAdd() {
+
+		try {
+			HttpServletRequest request = ServletActionContext.getRequest();
+			String typeDescription = request.getParameter("typeDescription");
+			String typeName = request.getParameter("typeName");
+			String typeActive = request.getParameter("typeActive");
+
+
+			if ("on".equals(typeActive)) {
+				typeActive = "1";
+			} else {
+				typeActive = "0";
+			}
+
+			User onlineUser = (User) request.getSession().getAttribute("onlineUser");
+			if (onlineUser == null) {
+				return ERROR;
+			}
+
+			ExpTravelType newExpTravelType = new ExpTravelType();
+			Timestamp now = DateUtil.getCurrentTime();
+
+			newExpTravelType.setExpTravelTypeId(expTravelTypeDAO.getMaxId() + 1);
+			newExpTravelType.setName(typeName);
+			newExpTravelType
+					.setDescription(typeDescription == null || typeDescription.isEmpty() ? null : typeDescription);
+			newExpTravelType.setActive(typeActive);
+			newExpTravelType.setTimeCreate(now);
+			newExpTravelType.setTimeUpdate(now);
+			newExpTravelType.setUserCreate(onlineUser.getId());
+			newExpTravelType.setUserUpdate(onlineUser.getId());
+
+			expTravelTypeDAO.save(newExpTravelType);
+
+			return SUCCESS;
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ERROR;
+		}
+	}
+
+	// ============== Travel Setting Edit =============
+	public String travelSettingEdit() {
+
+		try {
+			HttpServletRequest request = ServletActionContext.getRequest();
+			String typeId = request.getParameter("typeId");
+
+			Long typeIdLong = typeId == null || typeId.isEmpty() ? null : Long.parseLong(typeId);
+
+			User onlineUser = (User) request.getSession().getAttribute("onlineUser");
+			if (onlineUser == null) {
+				return ERROR;
+			}
+
+			ExpTravelType expTravelType = expTravelTypeDAO.findById(typeIdLong);
+
+			jsonData = new HashMap<>();
+			
+			jsonData.put("expTravelTypeId", expTravelType.getExpTravelTypeId());
+			jsonData.put("name", expTravelType.getName());
+			jsonData.put("description", expTravelType.getDescription());
+			jsonData.put("active", expTravelType.getActive());
+
+			return SUCCESS;
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ERROR;
+		}
+	}
+
+	// ============== Travel Setting Update =============
+	public String travelSettingUpdate() {
+
+		try {
+			HttpServletRequest request = ServletActionContext.getRequest();
+			String typeId = request.getParameter("typeId");
+			String typeDescription = request.getParameter("typeDescription");
+			String typeName = request.getParameter("typeName");
+			String typeActive = request.getParameter("typeActive");
+
+			Long typeIdLong = typeId == null || typeId.isEmpty() ? null : Long.parseLong(typeId);
+
+			if ("on".equals(typeActive)) {
+				typeActive = "1";
+			} else {
+				typeActive = "0";
+			}
+
+			User onlineUser = (User) request.getSession().getAttribute("onlineUser");
+			if (onlineUser == null) {
+				return ERROR;
+			}
+
+			ExpTravelType expTravelType = expTravelTypeDAO.findById(typeIdLong);
+			Timestamp now = DateUtil.getCurrentTime();
+
+			expTravelType.setName(typeName);
+			expTravelType.setDescription(typeDescription == null || typeDescription.isEmpty() ? null : typeDescription);
+			expTravelType.setActive(typeActive);
+			expTravelType.setTimeUpdate(now);
+			expTravelType.setUserUpdate(onlineUser.getId());
+
+			expTravelTypeDAO.update(expTravelType);
+
+			return SUCCESS;
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ERROR;
+		}
+
 	}
 }

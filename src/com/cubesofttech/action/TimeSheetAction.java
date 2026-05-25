@@ -285,8 +285,7 @@ public class TimeSheetAction extends ActionSupport {
 					|| request.getParameter("userSelect").isEmpty() ? ur.getId() : request.getParameter("userSelect");
 
 			request.setAttribute("idUserSelected", idUserSelected);
-			log.debug(searchDate);
-			log.debug(idUserSelected);
+
 			request.setAttribute("searchDate", searchDate);
 			request.setAttribute("searchUserId", idUserSelected);
 			List<User> userList = userDAO.findAll();
@@ -443,13 +442,11 @@ public class TimeSheetAction extends ActionSupport {
 
 					// ❌ มาสาย
 					if (checkInTime.toLocalTime().isAfter(nineAM)) {
-						log.debug("late nineAM: " + checkInTime);
 						isLate = true;
 					}
 
 					// ❌ กลับก่อน
 					if (checkOutTime.toLocalTime().isBefore(sixPM)) {
-						log.debug("late sixPM: " + checkOutTime);
 						isLate = true;
 					}
 
@@ -546,11 +543,6 @@ public class TimeSheetAction extends ActionSupport {
 
 			Timesheet newTimesheet = new Timesheet();
 
-			log.debug("project ID: " + projectId);
-			log.debug("function ID: " + functionId);
-			log.debug("project name: " + projectName);
-			log.debug("function name: " + functionName);
-
 			Timestamp now = Timestamp.valueOf(LocalDateTime.now());
 
 			Project project = null;
@@ -564,7 +556,7 @@ public class TimeSheetAction extends ActionSupport {
 				newProject.setDescription(null);
 				newProject.setStatus_project("1");
 				newProject.setUser_create(idUserSelected);
-				newProject.setUser_update(null);
+				newProject.setUser_update(idUserSelected);
 				newProject.setTime_create(now);
 				newProject.setTime_update(now);
 				projectDAO.save(newProject);
@@ -628,7 +620,7 @@ public class TimeSheetAction extends ActionSupport {
 			newTimesheet.setProject_id(project == null ? null : project.getProject_id());
 			newTimesheet.setSummary(functionId == null ? null
 					: projectFunctionDAO.findById(Integer.valueOf(functionId)).getFunction_name());
-			newTimesheet.setFunction_id(functionId != null ? Integer.valueOf(functionId) : null);
+			newTimesheet.setFunction_id(functionId == null ? null : Integer.valueOf(functionId));
 			newTimesheet.setOT_type(null);
 			newTimesheet.setOT_time_start(startOverTimestamp);
 			newTimesheet.setOT_time_end(endOverTimestamp);
@@ -794,10 +786,10 @@ public class TimeSheetAction extends ActionSupport {
 	}
 
 	public String exportTimeSheet() throws Exception {
-		
+
 		String date = request.getParameter("date");
 		String userId = request.getParameter("userId");
-		
+
 		User user = userDAO.findById(userId);
 
 		FileInputStream file = new FileInputStream(
@@ -811,24 +803,216 @@ public class TimeSheetAction extends ActionSupport {
 		sheet.getRow(2).getCell(16).setCellValue(user.getTitleNameTH());
 
 		sheet.getRow(3).getCell(2).setCellValue("Cube SoftTech");
-//		sheet.getRow(4).getCell(2).setCellValue();
+		sheet.getRow(4).getCell(2).setCellValue("Monkey");
 		sheet.getRow(3).getCell(16).setCellValue(date);
 
-		// ===== ตัวอย่างข้อมูล timesheet =====
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM-yyyy");
+
+		YearMonth yearMonth = YearMonth.parse(date, formatter);
+
+		LocalDate startLocalDate = yearMonth.atDay(1);
+		LocalDate endLocalDate = yearMonth.atEndOfMonth();
+
+		Date startOfMonth = java.sql.Date.valueOf(startLocalDate);
+		Date endOfMonth = java.sql.Date.valueOf(endLocalDate);
+
+		Integer total_leave = 0;
+		Integer total_absent = 0;
+		Integer total_work = 0;
+		Integer total_late = 0;
+		Integer total_OT = 0;
+
+		// Map date with time sheet
+		Set<String> otDateSet = new HashSet<>();
+		Set<String> workDateSet = new HashSet<>();
+		Set<String> lateDateSet = new HashSet<>();
+
+		for (int day = 1; day <= yearMonth.lengthOfMonth(); day++) {
+
+			LocalDate localDate = yearMonth.atDay(day);
+
+			boolean isWeekend = false;
+			boolean isHoliday = false;
+			boolean isLeave = false;
+
+			// เช็ค weekend
+			DayOfWeek dayOfWeek = localDate.getDayOfWeek();
+			if (dayOfWeek == DayOfWeek.SATURDAY || dayOfWeek == DayOfWeek.SUNDAY) {
+				isWeekend = true;
+			}
+
+			List<Holiday> holidays = holidayDAO.findAll();
+
+			for (Holiday holiday : holidays) {
+
+				LocalDate startDate = holiday.getStart_date().toLocalDate();
+				LocalDate endDate = holiday.getEnd_date().toLocalDate();
+
+				// เทียบแบบ LocalDate
+				if (!localDate.isBefore(startDate) && !localDate.isAfter(endDate)) {
+					// เช็ควันหยุด
+					isHoliday = true;
+				}
+			}
+
+			List<Leaves> leaveUsers = leaveDAO.findLeaveByUserId(userId);
+
+			for (Leaves leaveUser : leaveUsers) {
+				LocalDate startDate = leaveUser.getStartDate().toLocalDateTime().toLocalDate();
+
+				LocalDate endDate = leaveUser.getEndDate().toLocalDateTime().toLocalDate();
+				// เทียบแบบ LocalDateTime
+				if (!localDate.isBefore(startDate) && !localDate.isAfter(endDate)) {
+					// เช็ควันลา
+					isLeave = true;
+					total_leave++;
+				}
+			}
+			// นับเฉพาะวันที่เป็นวันทำงานจริง
+			if (!isWeekend && !isHoliday && !isLeave) {
+				total_work++;
+			}
+		}
+
+		List<Map<String, Object>> timeSheetList = timesheetDAO.searchTimesheetByUserCreateAndDate(userId, startOfMonth,
+				endOfMonth);
+
 		int startRow = 7;
 
-		for (int i = 0; i < 5; i++) {
+		int index = 0;
 
-			Row row = sheet.getRow(startRow + i);
+		DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+		DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
 
-			row.getCell(0).setCellValue("01/03/2026");
-			row.getCell(2).setCellValue("09:00");
-			row.getCell(4).setCellValue("18:00");
-			row.getCell(6).setCellValue("");
-			row.getCell(8).setCellValue("");
-			row.getCell(10).setCellValue("8:00");
-			row.getCell(14).setCellValue("Develop Feature");
+		for (Map<String, Object> ts : timeSheetList) {
+
+			Date checkIn = (Date) ts.get("time_check_in");
+			Date checkOut = (Date) ts.get("time_check_out");
+			Date startOT = (Date) ts.get("OT_time_start");
+			Date endOT = (Date) ts.get("OT_time_end");
+			Date startedDate= (Date) ts.get("started_date");
+
+			// format วันที่
+			String startedDateStr = "";
+			if (startedDate!= null) {
+				LocalDate localDate = startedDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+
+				startedDateStr = localDate.format(dateFormatter);
+			}
+
+			// format เวลา
+			String checkInStr = "";
+			if (checkIn != null) {
+				LocalTime localTime = checkIn.toInstant().atZone(ZoneId.systemDefault()).toLocalTime();
+
+				checkInStr = localTime.format(timeFormatter);
+			}
+
+			String checkOutStr = "";
+			if (checkOut != null) {
+				LocalTime localTime = checkOut.toInstant().atZone(ZoneId.systemDefault()).toLocalTime();
+
+				checkOutStr = localTime.format(timeFormatter);
+			}
+
+			String startOTStr = "";
+			if (startOT != null) {
+				LocalTime localTime = startOT.toInstant().atZone(ZoneId.systemDefault()).toLocalTime();
+
+				startOTStr = localTime.format(timeFormatter);
+			}
+
+			String endOTStr = "";
+			if (endOT != null) {
+				LocalTime localTime = endOT.toInstant().atZone(ZoneId.systemDefault()).toLocalTime();
+
+				endOTStr = localTime.format(timeFormatter);
+			}
+
+//			Total time check in / check out
+			if (checkIn != null && checkOut != null) {
+
+				long diffMillis = checkOut.getTime() - checkIn.getTime();
+				long diffMinutes = diffMillis / (1000 * 60);
+				long hours = diffMinutes / 60;
+				long minutes = diffMinutes % 60;
+				String totalTime = String.format("%02d:%02d", hours, minutes);
+				ts.put("total_time", totalTime);
+
+			}
+
+//			Total time start OT / end OT
+			if (startOT != null && endOT != null) {
+
+				long diffMillis = endOT.getTime() - startOT.getTime();
+				long diffMinutes = diffMillis / (1000 * 60);
+				long hours = diffMinutes / 60;
+				long minutes = diffMinutes % 60;
+				String totalTimeOT = String.format("%02d:%02d", hours, minutes);
+				ts.put("total_time_OT", totalTimeOT);
+
+				LocalDate localDate = startOT.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+
+				String key = localDate.format(formatter);
+				otDateSet.add(key);
+			}
+
+			if (checkIn != null && checkOut != null) {
+
+				LocalDate localDate = checkIn.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+
+				LocalDateTime checkInTime = checkIn.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+				LocalDateTime checkOutTime = checkOut.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+
+				LocalTime nineAM = LocalTime.of(9, 0);
+				LocalTime sixPM = LocalTime.of(18, 0);
+
+				String key = localDate.format(formatter);
+				String keyLate = checkInTime.toLocalDate().format(formatter);
+				boolean isLate = false;
+
+				// ❌ มาสาย
+				if (checkInTime.toLocalTime().isAfter(nineAM)) {
+					isLate = true;
+				}
+
+				// ❌ กลับก่อน
+				if (checkOutTime.toLocalTime().isBefore(sixPM)) {
+					isLate = true;
+				}
+
+				if (isLate) {
+					lateDateSet.add(keyLate);
+				} else if (lateDateSet.contains(keyLate)) {
+					lateDateSet.remove(keyLate);
+				}
+
+				workDateSet.add(key);
+			}
+
+			Row row = sheet.getRow(startRow + index);
+
+			String project = ts.get("project") != null ? ts.get("project").toString() : "";
+			String summary = ts.get("summary") != null ? ts.get("summary").toString() : "";
+
+			String detailString = project + " / " + summary;
+
+			row.getCell(0).setCellValue(startedDateStr);
+			row.getCell(2).setCellValue(checkInStr);
+			row.getCell(4).setCellValue(checkOutStr);
+			row.getCell(6).setCellValue(startOTStr);
+			row.getCell(8).setCellValue(endOTStr);
+			row.getCell(10).setCellValue(ts.get("total_time") != null ? ts.get("total_time").toString() : "");
+			row.getCell(12).setCellValue(ts.get("total_time_OT") != null ? ts.get("total_time_OT").toString() : "");
+			row.getCell(14).setCellValue(detailString);
+
+			index++;
 		}
+
+		total_OT = otDateSet.size();
+		total_absent = total_work - workDateSet.size();
+		total_work = total_work - total_absent;
+		total_late = lateDateSet.size();
 
 		// ===== download =====
 		ServletActionContext.getResponse()

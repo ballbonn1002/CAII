@@ -734,6 +734,66 @@
 
 		<!-- Group ================================================================================================== -->
 
+		<!-- Travel Approve ================================================================================================== -->
+
+		<!-- Travel Setting================================================================================================== -->
+
+		<!-- List ================================================================================================== -->
+		<action name="travel_setting"
+			class="com.cubesofttech.action.TravelAction"
+			method="travelSettingList">
+			<result name="success" type="tiles">travel_setting</result>
+			<result name="error">/index.jsp</result>
+		</action>
+		<!-- List ================================================================================================== -->
+
+		<!-- Add ================================================================================================== -->
+		<action name="travel_setting_add"
+			class="com.cubesofttech.action.TravelAction"
+			method="travelSettingAdd">
+			<result name="success" type="redirectAction">
+				<param name="actionName">travel_setting</param>
+			</result>
+			<result name="error">/index.jsp</result>
+		</action>
+		<!-- Add ================================================================================================== -->
+
+		<!-- Edit ================================================================================================== -->
+		<action name="travel_setting_edit"
+			class="com.cubesofttech.action.TravelAction"
+			method="travelSettingEdit">
+			<result name="success" type="json">
+				<param name="root">jsonData</param>
+			</result>
+			<result name="error">/index.jsp</result>
+		</action>
+		<!-- Edit ================================================================================================== -->
+
+		<!-- Update ================================================================================================== -->
+		<action name="travel_setting_update"
+			class="com.cubesofttech.action.TravelAction"
+			method="travelSettingUpdate">
+			<result name="success" type="redirectAction">
+				<param name="actionName">travel_setting</param>
+			</result>
+			<result name="error">/index.jsp</result>
+		</action>
+		<!-- Update================================================================================================== -->
+
+		<!-- Delete ================================================================================================== -->
+		<action name="travel_setting_delete"
+			class="com.cubesofttech.action.TravelAction"
+			method="travelSettingDelete">
+			<result name="success" type="redirectAction">
+				<param name="actionName">travel_setting</param>
+			</result>
+			<result name="error">/index.jsp</result>
+		</action>
+		<!-- Delete ================================================================================================== -->
+
+		<!-- Travel Setting ================================================================================================== -->
+
+
 		<!-- My Travel ================================================================================================== -->
 
 		<!-- Download Expense PDF ================================================================================================== -->
@@ -1224,33 +1284,39 @@
 			<result name="error">/index.jsp</result>
 		</action>
 
-		<action name="savePageUri" class="com.cubesofttech.action.PageUriAction" method="savePageUri">
+		<action name="savePageUri"
+			class="com.cubesofttech.action.PageUriAction" method="savePageUri">
 			<result name="success" type="redirectAction">
 				<param name="actionName">page_uri_list</param>
 			</result>
 			<result name="error">/index.jsp</result>
 		</action>
 
-		<action name="editPageUri" class="com.cubesofttech.action.PageUriAction" method="editPageUri">
+		<action name="editPageUri"
+			class="com.cubesofttech.action.PageUriAction" method="editPageUri">
 			<result name="success" type="tiles">pageUriEdit</result>
 			<result name="error">/index.jsp</result>
 		</action>
 
-		<action name="updatePageUri" class="com.cubesofttech.action.PageUriAction" method="updatePageUri">
+		<action name="updatePageUri"
+			class="com.cubesofttech.action.PageUriAction" method="updatePageUri">
 			<result name="success" type="redirectAction">
 				<param name="actionName">page_uri_list</param>
 			</result>
 			<result name="error">/index.jsp</result>
 		</action>
 
-		<action name="page_uri_delete" class="com.cubesofttech.action.PageUriAction" method="deletePageUri">
+		<action name="page_uri_delete"
+			class="com.cubesofttech.action.PageUriAction" method="deletePageUri">
 			<result name="success" type="redirectAction">
 				<param name="actionName">page_uri_list</param>
 			</result>
 			<result name="error">/index.jsp</result>
 		</action>
-		
-		<action name="checkDuplicateForwardTo" class="com.cubesofttech.action.PageUriAction" method="checkDuplicateForwardTo">
+
+		<action name="checkDuplicateForwardTo"
+			class="com.cubesofttech.action.PageUriAction"
+			method="checkDuplicateForwardTo">
 		</action>
 
 		<action name="checkDuplicatePositionId"
@@ -1510,7 +1576,7 @@
 		<action name="summaryWorkingDayData"
 			class="com.cubesofttech.action.ReportAction" method="workingDayData">
 		</action>
-		
+
 		<action name="borrowReport"
 			class="com.cubesofttech.action.ReportAction" method="borrowReport">
 		</action>

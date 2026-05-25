@@ -111,7 +111,7 @@
 
 				<div id="kt_app_toolbar" class="app-toolbar py-3 py-lg-6">
 					<div id="kt_app_toolbar_container"
-						class="app-container container-fluid d-flex align-items-center">
+						class="app-container container-fluid d-flex justify-content-between align-items-center">
 						<div
 							class="page-title d-flex flex-column justify-content-center flex-wrap me-3">
 							<h1
@@ -125,7 +125,14 @@
 								<li class="breadcrumb-item text-muted">Admin Management</li>
 							</ul>
 						</div>
+
+						<div class="d-flex flex-wrap my-1">
+							<a href="/travel_setting" class="btn btn-primary btn-lg"> <i
+								class="ki-duotone ki-plus"></i> Setting Go By
+							</a>
+						</div>
 					</div>
+
 				</div>
 
 				<div id="kt_app_content" class="app-content flex-column-fluid">
