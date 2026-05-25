@@ -568,6 +568,72 @@ public class BorrowDAOImpl implements BorrowDAO {
 		}
 		return list;
 	}
+	
+	@Override
+	public List<Map<String, Object>> findBorrowWithUserByEquipmentId2(String eId) {
+		Session session = this.sessionFactory.getCurrentSession();
+		List<Map<String, Object>> list = new ArrayList<>();
+		
+		try {
+			String sql = "SELECT " +
+				    "b.borrow_id, " +
+				    "b.borrow_amout, " +
+				    "b.reason, " +
+				    "b.user_borrowid, " +
+				    "b.date_start, " +
+				    "b.date_end, " +
+				    "b.location, " +
+				    "b.contact_addr, " +
+				    "b.status, " +
+				    "b.sum, " +
+				    "b.time_create, " +
+				    "b.user_create, " +
+				    "b.time_update, " +
+				    "b.user_update, " +
+				    "b.equipment_id, " +
+				    "b.remark, " +
+				    "b.reasona, " +
+				    "u.employee_id, " +
+				    "u.name, " +
+				    "u.name_en " +
+				    "FROM borrow b " +
+				    "JOIN user u ON b.user_borrowid = u.id " +
+				    "WHERE b.equipment_id = :eId " +
+				    "ORDER BY b.borrow_id DESC";
+
+		     SQLQuery query = session.createSQLQuery(sql);
+		     query.setParameter("eId", eId);
+		     List<Object[]> rows = query.list();
+		     
+		     for (Object[] row : rows) {
+		            Map<String, Object> map = new HashMap<>();
+		            map.put("borrow_id", row[0]);
+		            map.put("borrow_amout", row[1]);
+		            map.put("reason", row[2]);
+		            map.put("user_borrowid", row[3]);
+		            map.put("date_start", row[4]);
+		            map.put("date_end", row[5]);
+		            map.put("location", row[6]);
+		            map.put("contact_addr", row[7]);
+		            map.put("status", row[8]);
+		            map.put("sum", row[9]);
+		            map.put("time_create", row[10]);
+		            map.put("user_create", row[11]);
+		            map.put("time_update", row[12]);
+		            map.put("user_update", row[13]);
+		            map.put("equipment_id", row[14]);
+		            map.put("remark", row[15]);
+		            map.put("reasona", row[16]);
+		            map.put("employee_id", row[17]);
+		            map.put("name", row[18]);
+		            map.put("name_en", row[19]);
+		            list.add(map);
+		        }
+		} catch (HibernateException e) {
+		    e.printStackTrace();
+		}
+		return list;
+	}
 
 	@Override
 	public List<Map<String, Object>> getBorrowListByUserId(String logonUser) {

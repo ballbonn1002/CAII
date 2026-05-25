@@ -66,6 +66,7 @@
     object-fit: contain;
 }
 
+
 </style>
 
 </head>
@@ -908,13 +909,7 @@
 									</thead>
 
 									<tbody>
-									<c:if test="${empty borrowList}">
-										<tr>
-											<td colspan="6" class="text-center text-muted py-4">
-												Not found borrow list.
-											</td>
-										</tr>
-									</c:if>
+									
 										<c:forEach var="item" items="${borrowList}">
 											<tr class="align-middle">
 												<td class="px-3 py-4 text-gray-900 fs-6 fw-normal">
@@ -958,6 +953,17 @@
 																</button>
 															</div>
 														</c:when>
+														
+														<c:when test="${item.status == 'T'
+																		and empty item.user_delivery 
+																		and empty item.user_receive
+																		and empty item.user_return}">
+															<div class="d-flex align-items-center gap-2">
+																<button type="button" class="btn btn-success btnReturn" data-id="${item.borrow_id}">
+																	Return
+																</button>
+															</div>
+														</c:when>
 
 														<c:when test="${item.status == 'T'
 																		and not empty item.user_delivery 
@@ -970,6 +976,7 @@
 																</button>
 															</div>
 														</c:when>
+														
 														
 														<c:otherwise>
 														</c:otherwise>
@@ -1740,15 +1747,15 @@ document.addEventListener("DOMContentLoaded", function () {
 
 <script >
 document.addEventListener("DOMContentLoaded", function () {
-    var table = $('#borrowList').DataTable({
+	const hasData = $('#borrowList tbody tr').length > 0;
+	$('#borrowList').DataTable({
         pageLength: 10,
         lengthMenu: [10, 20, 50, 100],
         ordering: true,
         searching: true,
         autoWidth: false,
         info: false,
-        responsive: true,
-
+        responsive: false,
         columnDefs: [
             {
               orderable: false,
@@ -1759,6 +1766,9 @@ document.addEventListener("DOMContentLoaded", function () {
         language: {
             emptyTable: "Not found borrow list."
         },
+        paging: hasData,
+        lengthChange: hasData,
+        searching: hasData,
 
         headerCallback: function(thead) {
             $(thead).find('th').each(function () {

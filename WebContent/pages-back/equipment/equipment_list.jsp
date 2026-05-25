@@ -282,6 +282,9 @@
                 <div class="d-flex justify-content-end align-items-center gap-3">
                     <button type="button" class="btn btn-light fw-bold" data-bs-dismiss="modal">Cancel</button>
                     <a href="#" id="view_btn_edit" class="btn btn-primary fw-bold">Edit</a>
+                     <button type="button" id="btn_waiting_to_receive" class="btn btn-secondary" disabled>
+				          Waiting to Receive
+				     </button>
                     
                     <button type="button" id="view_btn_return" class="btn btn-warning fw-bold d-none">
                         Request for Return
@@ -732,16 +735,163 @@
         // Borrow Return btn
         var badge = $('#view_status_badge');
         var btnEdit = $('#view_btn_edit');
+        var btnWaitingReceive = $('#btn_waiting_to_receive')
         var btnReturn = $('#view_btn_return');
         var btnWaitingReturn = $('#view_btn_waiting_for_return');
         var btnConfirmReceived = $('#view_btn_confirm_received');
         var btnBorrow = $('#view_btn_borrow');
         var borrowSection = $('#view_borrow_section');
         var returnSection = $('#view_return_section');
+        
+        function bindRequestReturnButton(){
+        	btnReturn.off('click').on('click', function() {
+         		Swal.fire({
+    				title: 'Confirm Request for Return?',
+    		        text: 'Are you sure you want to request return for this item?',
+    		        icon: 'question',
+    		        showCancelButton: true,
+    		        confirmButtonText: 'Yes, Request Return',
+    		        cancelButtonText: "Cancel",
+    		        buttonsStyling: false,
+    		        customClass: {
+    		            confirmButton: "btn btn-success",
+    		            cancelButton: "btn btn-secondary"
+    		        }
+    		    }).then((result) => {
+    		        if (result.isConfirmed) {
+    		        	const borrowId = borrow.borrowId;
+    		        	
+    		        	fetch("${pageContext.request.contextPath}/request_return.action", {
+    		        	    method: "POST",
+    		        	    headers: {
+    		        	        "Content-Type": "application/x-www-form-urlencoded"
+    		        	    },
+    		        	    body: "id=" + encodeURIComponent(borrowId)
+    		        	})
+    		        	.then(response => response.text())
+    		        	.then(data => {
+    		        	    location.reload();
+    		        	})
+    		        	.catch(error => {
+    		        	    console.error(error);
+
+    		        	    Swal.fire({
+    		        	        icon: "error",
+    		        	        title: "Error",
+    		        	        text: "Failed to deliver equipment"
+    		        	    });
+
+    		        	});
+    		        }
+    		    });
+            });
+        }
+        
+		function bindConfirmReceivedButton(){
+			btnConfirmReceived.off('click').on('click', function() {
+				var CTX = "${pageContext.request.contextPath}";
+         		if (!checkSignatureBeforeAction()) {
+    				return;
+    			}
+                //  ถ้า Approver ยังไม่เปิด ให้เปิดก่อน
+                if (returnSection.hasClass('d-none')) {
+                    returnSection.hide().removeClass('d-none').slideDown(500);
+                    $('#return_note').focus();
+                    $('#kt_modal_view_equipment .modal-header h2').text('Request for Return Equipment');
+                    
+                //  ถ้า Approver เปิด AJAX บันทึกคืนของ
+                } else {
+                    var note = $('#return_note').val();
+                    var originalText = btnConfirmReceived.text();
+                    btnConfirmReceived.prop('disabled', true).text('Processing...');
+
+                    /* $.post('equipment_return', { 
+                        equipmentId: id, 
+                        borrowId: borrow.borrowId,
+                        note: note
+                    }, function(res) {
+                        res = res.trim();
+                        if(res === 'success') {
+                            location.reload();
+                        } 
+                        else if (res === 'login') {
+                            window.location.href = 'index.jsp'; 
+                        } 
+                        else {
+                            alert('Error returning item.');
+                            btnConfirmReceived.prop('disabled', false).text(originalText);
+                        }
+                    }); */
+                    
+                    Swal.fire({
+            	    	title: "Confirm Received?",
+            	        text: "Have you return received this equipment?",
+            	        icon: "question",
+            	        showCancelButton: true,
+            	        confirmButtonText: "Yes, received it",
+            	        cancelButtonText: 'Cancel',
+            	        buttonsStyling: false,
+            	        customClass: {
+            	            confirmButton: "btn btn-warning",
+            	            cancelButton: "btn btn-secondary"
+            	        }
+            	    }).then((result) => {
+            	        if (result.isConfirmed) {
+            	            $.ajax({
+            	                url: CTX + "/equipment_return",
+            	                type: "POST",
+            	                data: {
+            	                	equipmentId: id, 
+                                    borrowId: borrow.borrowId,
+                                    note: note
+            	                },
+            	                success: function(res) {
+            	                    res = $.trim(res);
+            	                    if (res === 'success') {
+
+            	                        Swal.fire({
+            	                        	icon: 'success',
+            	                            title: 'Success!',
+            	                            text: 'Return request submitted successfully!'
+            	                        }).then(() => {
+            	                            var modal = bootstrap.Modal.getInstance(
+            	                                document.getElementById('kt_modal_view_equipment')
+            	                            );
+
+            	                            if (modal) {
+            	                                modal.hide();
+            	                            }
+
+            	                            window.open(CTX + "/borrowReport?borrowId=" + borrow.borrowId, "_blank");
+            	                            location.reload();
+            	                        });
+
+            	                    } else if (res === 'login') {
+            	                        window.location.href = 'index.jsp';
+            	                    } else {
+
+            	                        Swal.fire('Error!', 'Error returning item.','error');
+
+            	                        btnConfirmReceived
+            	                            .prop('disabled', false)
+            	                            .text(originalText);
+            	                    }
+            	                },
+            	                error: function(xhr) {
+            	                    console.error("HTTP", xhr.status, xhr.responseText);
+            	                    Swal.fire('Error!', 'Failed to submit return request.', 'error');
+            	                }
+            	            });
+            	        }
+            	    });
+                }
+            });
+        }
 
         // Reset UI Elements
         badge.removeClass().addClass('badge badge-lg fw-semibold py-2');
         btnReturn.addClass('d-none');
+        btnWaitingReceive.addClass('d-none');
         btnWaitingReturn.addClass('d-none');
         btnConfirmReceived.addClass('d-none');
         btnBorrow.addClass('d-none');
@@ -804,108 +954,57 @@
                 var hasReceive = !!borrow.user_receive;
                 var hasReturn = !!borrow.user_return;
                 var hasReturnReceive = !!borrow.user_return_receive;
+                
+                var status = (item.status || '').trim();
+                
+                var migrationDate = new Date('2026-05-22T00:00:00');
+                var borrowCreateDate = borrow.timeCreate ? new Date(borrow.timeCreate) : null;
+
+                var isLegacyBorrow = borrowCreateDate && borrowCreateDate < migrationDate;
 				/* 
                 console.log('borrow = ', borrow);
                 console.log('userDelivery = ', borrow.user_delivery);
                 console.log('userReceive = ', borrow.user_receive);
                 console.log('userReturn = ', borrow.user_return);
                 console.log('status = ', item.status); */
-
-             	// =========== Logic Request for Return ==================
-             	
-        if (borrow.status === 'B' && !hasReturn  && !hasReturnReceive) {
-
-            btnReturn.removeClass('d-none');
-
-             	btnReturn.off('click').on('click', function() {
-             		Swal.fire({
-        				title: 'Confirm Request for Return?',
-        		        text: 'Are you sure you want to request return for this item?',
-        		        icon: 'question',
-        		        showCancelButton: true,
-        		        confirmButtonText: 'Yes, Request Return',
-        		        cancelButtonText: "Cancel",
-        		        buttonsStyling: false,
-        		        customClass: {
-        		            confirmButton: "btn btn-success",
-        		            cancelButton: "btn btn-secondary"
-        		        }
-        		    }).then((result) => {
-        		        if (result.isConfirmed) {
-        		        	const borrowId = borrow.borrowId;
-        		        	
-        		        	fetch("${pageContext.request.contextPath}/request_return.action", {
-        		        	    method: "POST",
-        		        	    headers: {
-        		        	        "Content-Type": "application/x-www-form-urlencoded"
-        		        	    },
-        		        	    body: "id=" + encodeURIComponent(borrowId)
-        		        	})
-        		        	.then(response => response.text())
-        		        	.then(data => {
-        		        	    location.reload();
-        		        	})
-        		        	.catch(error => {
-        		        	    console.error(error);
-
-        		        	    Swal.fire({
-        		        	        icon: "error",
-        		        	        title: "Error",
-        		        	        text: "Failed to deliver equipment"
-        		        	    });
-
-        		        	});
-        		        }
-        		    });
-				});
+				if(isLegacyBorrow){
+					if(borrow.status === 'B' && !hasReturn && !hasReturnReceive){
+						/* แสดง RFR */
+			            btnReturn.removeClass('d-none');
+			            bindRequestReturnButton();
+					}
+					if(borrow.status === 'T' && !hasReturn && !hasReturnReceive){
+						/* WFR */
+						 btnWaitingReturn.removeClass('d-none');
+					}
+					if(borrow.status === 'T' && hasReturn && !hasReturnReceive){
+						/* CR */
+						 btnConfirmReceived.removeClass('d-none');
+						 bindConfirmReceivedButton();
+					}
+				
+				}else{
+					if(borrow.status === 'B' && hasDelivery && !hasReceive && !hasReturn && !hasReturnReceive){
+						/* แสดง WTR */
+			            btnWaitingReceive.removeClass('d-none');
+					}
+               		if(borrow.status === 'B' && hasDelivery && hasReceive && !hasReturn && !hasReturnReceive){
+               			/* แสดง RFR */
+               		 	btnReturn.removeClass('d-none');
+               		 	bindRequestReturnButton();
+               		}
+					if(borrow.status === 'T' && hasDelivery && hasReceive && !hasReturn && !hasReturnReceive){
+						/* WFR */
+						 btnWaitingReturn.removeClass('d-none');
+					}
+					if(borrow.status === 'T' && hasDelivery && hasReceive && hasReturn && !hasReturnReceive){
+						/* CR */
+						 btnConfirmReceived.removeClass('d-none');
+						 bindConfirmReceivedButton();
+					}
 				}
-            }
-             	// ================= Confirm Received =================
-          var status = (item.status || '').trim();
-            if (borrow.status === 'T'  && !hasReturn  && !hasReturnReceive) {
-            	btnWaitingReturn.removeClass('d-none');
-            }
-             	
-            if (borrow.status === 'T' && hasReturn && !hasReturnReceive) {
-             			
-             	btnConfirmReceived.removeClass('d-none');
-             	btnConfirmReceived.off('click').on('click', function() {
-             		if (!checkSignatureBeforeAction()) {
-        				return;
-        			}
-                    //  ถ้า Approver ยังไม่เปิด ให้เปิดก่อน
-                    if (returnSection.hasClass('d-none')) {
-                        returnSection.hide().removeClass('d-none').slideDown(500);
-                        $('#return_note').focus();
-                        $('#kt_modal_view_equipment .modal-header h2').text('Request for Return Equipment');
-                        
-                    //  ถ้า Approver เปิด AJAX บันทึกคืนของ
-                    } else {
-                        var note = $('#return_note').val();
-                        var originalText = btnConfirmReceived.text();
-                        btnConfirmReceived.prop('disabled', true).text('Processing...');
-
-                        $.post('equipment_return', { 
-                            equipmentId: id, 
-                            borrowId: borrow.borrowId,
-                            note: note
-                        }, function(res) {
-                            res = res.trim();
-                            if(res === 'success') {
-                                location.reload();
-                            } 
-                            else if (res === 'login') {
-                                window.location.href = 'index.jsp'; 
-                            } 
-                            else {
-                                alert('Error returning item.');
-                                btnConfirmReceived.prop('disabled', false).text(originalText);
-                            }
-                        });
-                    }
-                });
-             		
-            }
+             
+        	}
         }
         
         // เปิด Modal

@@ -131,7 +131,7 @@ public class EquipmentAction extends ActionSupport {
 			List<Borrow> borrow = borrowDAO.findBorrowByEquipmentId(request.getParameter("id"));
 			
 			// get borrow detail with user id, TH name, EN name
-			List<Map<String, Object>> borrowWithUser = borrowDAO.findBorrowWithUserByEquipmentId(request.getParameter("id"));
+			List<Map<String, Object>> borrowWithUser = borrowDAO.findBorrowWithUserByEquipmentId2(request.getParameter("id"));
 			
 			// get statusLog -> transfer statusLog to List<Map<String, String>>
 			List<Map<String, String>> statusLogList = new ArrayList<>();
@@ -184,6 +184,14 @@ public class EquipmentAction extends ActionSupport {
 			request.setAttribute("borrowlist", borrow);
 			request.setAttribute("borrowlistJSON", new Gson().toJson(borrow));
 			request.setAttribute("userCreate", userCreate);
+			
+			boolean legacyBorrow = false;
+
+			if (borrow != null && !borrow.isEmpty()) {
+			    legacyBorrow = isLegacyBorrow(borrow.get(0));
+			}
+
+			request.setAttribute("isLegacyBorrow", legacyBorrow);
 			
 			
 			return SUCCESS;
@@ -753,17 +761,27 @@ public class EquipmentAction extends ActionSupport {
 	        equipment.setStatus("A");
 	        //equipment.setStatusLog(note);
 	        equipmentDAO.update(equipment);
-	        
+	        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
 	        // Check date end if null use current time
 	        if (borrow.getDateEnd() == null) {
 	            // convert String into Date (time will be 00:00:00)
 	            Date parsedDate = sdf.parse(currentDate);
 
-	            borrow.setDateEnd(new Timestamp(parsedDate.getTime()));
+	            borrow.setDateEnd(timestamp);
 	        }
 
 	        // update borrow status
+//	        Borrow borrowById = borrowDAO.findById(borrowId);
+//	        if(borrowById.getUser_return() == null || borrowById.getUser_return().trim().isEmpty()) {
+//	        	borrowById.setUser_return(borrowById.getUserBorrowid());
+//	        	borrowById.setTime_return(timestamp);
+//			}
+	        
 	        borrow.setStatus("R");
+	        borrow.setUser_return_receive(onlineUser.getId());
+	        borrow.setTime_return_receive(timestamp);
+	        borrow.setUserUpdate(onlineUser.getId());
+	        borrow.setTimeUpdate(timestamp);
 	        borrowDAO.update(borrow);
 
 	        response.setStatus(HttpServletResponse.SC_OK);
@@ -1356,5 +1374,23 @@ public class EquipmentAction extends ActionSupport {
 	}
 	
 	//END JSON API
+	
+	private boolean isLegacyBorrow(Borrow borrow) {
+	    if (borrow == null) {
+	        return false;
+	    }
+
+	    Timestamp migrationDate = Timestamp.valueOf("2026-05-22 00:00:00");
+
+	    boolean isOldData =
+	            borrow.getTimeCreate() != null &&
+	            borrow.getTimeCreate().before(migrationDate);
+
+	    boolean allNewFieldsNull =
+	            borrow.getUser_delivery() == null &&
+	            borrow.getUser_receive() == null;
+
+	    return isOldData && allNewFieldsNull;
+	}
 	
 }
