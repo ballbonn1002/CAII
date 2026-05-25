@@ -54,17 +54,28 @@
 	transform: rotate(180deg);
 }
 
+.btn-open-return-modal{
+	color: inherit;
+	text-decoration: underline;
+    cursor: pointer;
+    transition: 0.2s;
+}
+.btn-open-return-modal:hover{
+	color: #17C653;
+	text-decoration: underline !important;
+}
+
 </style>
 
 </head>
 <body>
-
+	<input type="hidden" id="hasSignature" value="${hasSignature}" />
 	<div class="app-main flex-column flex-row-fluid" id="kt_app_main">
 		<div class="d-flex flex-column flex-column-fluid">
 
 			<!-- Toolbar -->
 			<div id="kt_app_toolbar" class="app-toolbar py-3 py-lg-6">
-				<div id="kt_app_toolbar_container" class="app-container container-fluid d-flex align-items-center justify-content-start">
+				<div id="kt_app_toolbar_container" class="app-container container-fluid d-flex align-items-center justify-content-between">
 					<div class="page-title d-flex flex-column flex-wrap me-3 align-items-start">
 						<h1 class="page-heading fw-semibold my-0 text-start" style="color: #4b5675;">Borrow Detail</h1>
 						<ul class="breadcrumb breadcrumb-separatorless fw-medium fs-7 my-0 pt-1">
@@ -79,6 +90,87 @@
 							<li class="breadcrumb-item text-muted">Borrow Detail</li>
 						</ul>
 					</div>
+			<c:if test="${not empty borrowlistwithUser}">
+				<c:choose>
+				    <c:when test="${isLegacyBorrow}">
+				        <c:choose>
+				            <c:when test="${borrowObj.status == 'B'}">
+				                <div class="d-flex align-items-center gap-2">
+				                    <button type="button" class="btn btn-warning btn-request-return">
+				                        Request for Return
+				                    </button>
+				                </div>
+				            </c:when>
+				            
+				            <c:when test="${borrowObj.status == 'T'}">
+				                <div class="d-flex align-items-center gap-2">
+				                    <a class="me-3 fs-6 btn-open-return-modal">
+				                        Confirm Received
+				                    </a>
+				                    <button type="button" class="btn btn-secondary" disabled>
+				                        Waiting for Return
+				                    </button>
+				                </div>
+				            </c:when>
+				        </c:choose>
+				    </c:when>
+				
+				    <c:otherwise>
+				    	<c:choose>
+				            <c:when test="${borrowObj.status == 'B'
+				                            and empty borrowObj.user_delivery 
+				                            and empty borrowObj.user_receive
+				                            and empty borrowObj.user_return
+				                            and empty borrowObj.user_return_receive}">
+				                <div class="d-flex align-items-center gap-2">
+				                    <button type="button" class="btn btn-primary" id="btnDeliverEquipment">
+				                        Deliver Equipment
+				                    </button>
+				                </div>
+				            </c:when>
+				            
+				            <c:when test="${borrowObj.status == 'B'
+				                            and not empty borrowObj.user_delivery 
+				                            and empty borrowObj.user_receive
+				                            and empty borrowObj.user_return
+				                            and empty borrowObj.user_return_receive}">
+				                <div class="d-flex align-items-center gap-2">
+				                    <button type="button" class="btn btn-secondary" disabled>
+				                        Waiting to Receive
+				                    </button>
+				                </div>
+				            </c:when>
+				            
+				            <c:when test="${borrowObj.status == 'B'
+				                            and not empty borrowObj.user_delivery 
+				                            and not empty borrowObj.user_receive
+				                            and empty borrowObj.user_return
+				                            and empty borrowObj.user_return_receive}">
+				                <div class="d-flex align-items-center gap-2">
+				                    <button type="button" class="btn btn-warning btn-request-return">
+				                        Request for Return
+				                    </button>
+				                </div>
+				            </c:when>
+				            
+				            <c:when test="${borrowObj.status == 'T'
+				                             and not empty borrowObj.user_delivery 
+				                             and not empty borrowObj.user_receive 
+				                             and empty borrowObj.user_return
+				                             and empty borrowObj.user_return_receive}">
+				                <div class="d-flex align-items-center gap-2">
+				                    <a class="me-3 fs-6 btn-open-return-modal">
+				                        Confirm Received
+				                    </a>
+				                    <button type="button" class="btn btn-secondary" disabled>
+				                        Waiting for Return
+				                    </button>
+				                </div>
+				            </c:when>
+				       </c:choose>
+				    </c:otherwise>
+					</c:choose>
+				</c:if>
 				</div>
 			</div>
 			<!-- end Toolbar -->
@@ -173,10 +265,10 @@
 										<span class="indicator-label">Save</span>
 									</button>
 								</div>
-
+								
 							</form>
 						</div>
-
+							
 						<!-- RIGHT : Equipment Detail & Status Log -->
 						<div class="col-xl-4">
 
@@ -192,11 +284,49 @@
 									</div>
 									<div class="card-toolbar">
 										<c:if test="${not empty borrowlistwithUser}">
-											<c:if test="${borrowlistwithUser[0].status == 'B'}">
-												<button type="button" class="btn btn-sm btn-warning btn-open-return-modal">
+										  <c:choose>
+											<c:when test="${isLegacyBorrow}">
+										        <c:choose>
+										            <c:when test="${borrowObj.status == 'B'}">
+										                <div class="d-flex align-items-center gap-2">
+										                    <button type="button" class="btn btn-sm btn-warning btn-request-return">
+										                        Request for Return
+										                    </button>
+										                </div>
+										            </c:when>
+										            
+										            <%-- <c:when test="${borrowObj.status == 'T'}">
+										                <div class="d-flex align-items-center gap-2">
+										                    <a class="me-3 fs-6 btn-open-return-modal">
+										                        Confirm Received
+										                    </a>
+										                    <button type="button" class="btn btn-sm btn-secondary" disabled>
+										                        Waiting for Return
+										                    </button>
+										                </div>
+										            </c:when> --%>
+										        </c:choose>
+										    </c:when>
+										     <c:otherwise>
+											<c:if test="${borrowObj.status == 'B'
+														 and not empty borrowObj.user_delivery 
+														 and not empty borrowObj.user_receive }">
+												<button type="button" class="btn btn-sm btn-warning btn-request-return">
 													Request for Return
 												</button>
 											</c:if>
+											
+											<c:if test="${borrowObj.status == 'T'
+														 and not empty borrowObj.user_delivery 
+														 and not empty borrowObj.user_receive 
+														 and not empty borrowObj.user_return
+														 and empty borrowObj.user_return_receive}">
+												<button type="button" class="btn btn-sm btn-success btn-open-return-modal">
+													Confirm Received
+												</button>
+											</c:if>
+											</c:otherwise>
+											</c:choose>
 										</c:if>
 									</div>
 								</div>
@@ -408,7 +538,7 @@
 
 				<div class="modal-footer border-0 pt-0 pb-6 px-6 d-flex justify-content-end gap-3">
 					<button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
-					<button type="button" class="btn btn-warning" id="bd_request_return">Request for Return</button>
+					<button type="button" class="btn btn-success" id=bd_confirm_received>Confirm Received</button>
 				</div>
 			</div>
 		</div>
@@ -424,7 +554,7 @@
 	var borrowWithUserList = ${borrowlistwithUserJSON != null ? borrowlistwithUserJSON : '[]'};
 	var CTX = "${pageContext.request.contextPath}";
 
-	// ✅ ข้อมูล Equipment ปัจจุบัน
+	// ข้อมูล Equipment ปัจจุบัน
 	var currentEquipment = {
 		id: "${equipmentbyId.equipmentId}",
 		itemNo: "${equipmentbyId.itemNo}",
@@ -463,7 +593,7 @@
 		return isNaN(n) ? '1' : Math.floor(n).toString();
 	}
 
-	// ✅ Equipment Status Badge
+	// Equipment Status Badge
 	function getStatusBadge(status) {
 		var badges = {
 			'B': 'bg-primary text-white">Borrowing',
@@ -473,13 +603,14 @@
 			'L': 'bg-dark text-white">Lost',
 			'S': 'bg-warning text-dark">Sold Out',
 			'W': 'bg-warning text-dark">Wait for approve',
-			'Z': 'bg-secondary text-white">Disabled'
+			'Z': 'bg-secondary text-white">Disabled',
+			'T': 'bg-warning text-white">Waiting for Return',
 		};
 		var badge = badges[status] || 'bg-light text-gray-700">-';
 		return '<span class="badge badge-lg px-4 fw-semibold ' + badge + '</span>';
 	}
 
-	// ✅ Equipment Type Info
+	// Equipment Type Info
 	function getTypeInfo(type) {
 		var types = {
 			'c': { label: 'Computer', icon: 'ki-laptop' },
@@ -492,7 +623,7 @@
 		return types[type] || { label: 'Other', icon: 'ki-dots-square' };
 	}
 
-	// ✅ Create Detail Row
+	// Create Detail Row
 	function createDetailRow(label, value) {
 		return '<div class="d-flex justify-content-between align-items-center py-5 border-bottom border-gray-200">' +
 			'<div class="text-gray-500" style="min-width: 130px;">' + label + '</div>' +
@@ -509,6 +640,38 @@
 		renderEquipmentCard();
 		setupEventHandlers();
 	});
+	
+	function checkSignatureBeforeAction() {
+		/* const hasSignature = $('#hasSignature').val() === 'true'; */
+	     const rawVal = $('#hasSignature').val();
+    // รองรับทั้ง "true", "True", "TRUE"
+    const hasSignature = String(rawVal).toLowerCase() === 'true';
+    
+    console.log("hasSignature raw:", rawVal); // debug
+    console.log("hasSignature bool:", hasSignature);
+    
+	    if (!hasSignature) {
+	        Swal.fire({
+	            title: "Signature Required!",
+	            text: "Please upload your signature before continuing.",
+	            icon: "warning",
+	            confirmButtonText: "Go to My Profile",
+	            showCancelButton: true,
+	            cancelButtonText: "Cancel",
+	            buttonsStyling: false,
+	            customClass: {
+	                confirmButton: "btn btn-warning",
+	                cancelButton: "btn btn-secondary"
+	            }
+	        }).then((result) => {
+	            if (result.isConfirmed) {
+	            	window.open(CTX + "/my_profile", "_blank");
+	            }
+	        });
+	        return false;
+	    }
+	    return true;
+	}
 
 	// ===== 1. Initialize Borrower Select =====
 	function initializeBorrowerSelect() {
@@ -530,7 +693,7 @@
 	        $select.append(new Option(text, uid, isSelected, isSelected));
 	    });
 	    
-	    // ✅ เพิ่ม: Set hidden input value
+	    // เพิ่ม: Set hidden input value
 	    $('#user-hidden').val(borrowerId);
 	    
 	    if ($.fn.select2 && $select.data('control') === 'select2') {
@@ -540,30 +703,60 @@
 
 	// ===== 2. Initialize Status Select =====
 	function initializeStatusSelect() {
-		var $select = $('#status-select');
-		var currentStatus = getBorrowField('status') || getBorrowField('statusborrow');
-		
-		// เพิ่ม Request for Return ในรายการ
-		var allowedStatuses = {
-			'B': 'Borrowing',
-			'C': 'Cancel',
-			'W': 'Wait for Approve',
-			'R': 'Request for Return'  // เพิ่มตัวเลือกใหม่
-		};
-		
-		statusList.forEach(function(status) {
-			var statusId = status.statusId || status.status_id || '';
-			if (allowedStatuses[statusId]) {
-				var isSelected = statusId === currentStatus;
-				$select.append(new Option(allowedStatuses[statusId], statusId, isSelected, isSelected));
-			}
-		});
-		
-		// เพิ่ม Request for Return ถ้ายังไม่มีใน statusList
-		if (!$select.find('option[value="R"]').length) {
-			$select.append(new Option('Request for Return', 'R', false, false));
-		}
+	    var $select = $('#status-select');
+	
+	    var currentStatus = getBorrowField('status') || getBorrowField('statusBorrow') || getBorrowField('status_borrow');
+	
+	    //แปลงเป็นพิมพ์ใหญ่ กรณี t/r/b
+	    currentStatus = String(currentStatus || '').toUpperCase();
+	    $select.empty();
+	    $select.append('<option value="">-- Select status --</option>');
+	
+	    var allowedStatuses = {
+	        'B': 'Borrowing',
+	        'C': 'Cancel',
+	        'W': 'Wait for Approve',
+	        'R': 'Request for Return',
+	        'T': 'Waiting for Return'
+	    };
+	
+	    statusList.forEach(function(status) {
+	        var statusId = status.statusId || status.status_id || '';
+	
+	        statusId = String(statusId).toUpperCase();
+	        if (allowedStatuses[statusId]) {
+	            var isSelected = statusId === currentStatus;
+	
+	            $select.append(
+	                new Option(
+	                    allowedStatuses[statusId],
+	                    statusId,
+	                    isSelected,
+	                    isSelected
+	                )
+	            );
+	        }
+	    });
+	
+	    //กรณีไม่มีใน DB
+	    Object.keys(allowedStatuses).forEach(function(key) {
+	        if (!$select.find('option[value="' + key + '"]').length) {
+	            var isSelected = key === currentStatus;
+	            $select.append(
+	                new Option(
+	                    allowedStatuses[key],
+	                    key,
+	                    isSelected,
+	                    isSelected
+	                )
+	            );
+	        }
+	    });
+	
+	    // refresh select2
+	    $select.trigger('change');
 	}
+	
 
 	// ===== 3. Initialize Equipment Select =====
 	function initializeEquipmentSelect() {
@@ -585,36 +778,48 @@
 
 	// ===== 4. Set Form Values =====
 	function setFormValues() {
-		var dateStart = getBorrowField('dateStart') || getBorrowField('date_start');
-		var dateEnd = getBorrowField('dateEnd') || getBorrowField('date_end');
-		
-		if (dateStart) $('#start_date').val(dateStart);
-		if (dateEnd) $('#end_date').val(dateEnd);
-		
-		$('#location-input').val(getBorrowField('location') || '');
-		$('#reason-textarea').val(getBorrowField('reason') || '');
-		$('#contact-textarea').val(getBorrowField('contactAddr') || getBorrowField('contact_addr') || '');
-		$('#remark-textarea').val(getBorrowField('remark') || '');
+	    $('#location-input').val(getBorrowField('location') || '');
+	    $('#reason-textarea').val(getBorrowField('reason') || '');
+	    $('#contact-textarea').val(getBorrowField('contactAddr') 
+	        || getBorrowField('contact_addr') || '');
+	    $('#remark-textarea').val(getBorrowField('remark') || '');
 	}
 
 	// ===== 5. Initialize DatePickers =====
 	function initializeDatePickers() {
-		if (typeof flatpickr === "undefined") return;
-
-		const DISPLAY_FORMAT = "d M Y , H:i";
-		const STORE_FORMAT = "d m Y , H:i";
-
-		const config = {
-			enableTime: true,
-			time_24hr: true,
-			dateFormat: STORE_FORMAT,
-			altInput: true,
-			altFormat: DISPLAY_FORMAT,
-			allowInput: true
-		};
-
-		flatpickr("#start_date", config);
-		flatpickr("#end_date", config);
+	    if (typeof flatpickr === "undefined") return;
+	
+	    function parseGsonDate(str) {
+	        if (!str) return null;
+	        var normalized = str.replace(" ", "T");
+	        var d = new Date(normalized);
+	        return isNaN(d.getTime()) ? null : d;
+	    }
+	
+	    var dateStart = getBorrowField('dateStart') || getBorrowField('date_start');
+	    var dateEnd   = getBorrowField('dateEnd')   || getBorrowField('date_end');
+	
+	    var parsedStart = parseGsonDate(dateStart);
+	    var parsedEnd   = parseGsonDate(dateEnd);
+	
+	    var config = {
+	        enableTime: true,
+	        time_24hr: true,
+	        dateFormat: "Y-m-d H:i",  
+	        altInput: true,
+	        altFormat: "d M Y, H:i", 
+	        allowInput: false        
+	    };
+	
+	    flatpickr("#start_date", {
+	        ...config,
+	        defaultDate: parsedStart
+	    });
+	
+	    flatpickr("#end_date", {
+	        ...config,
+	        defaultDate: parsedEnd
+	    });
 	}
 
 	function renderEquipmentCard() {
@@ -694,9 +899,9 @@
 		});
 
 		// Modal: Submit Return Request
-		$('#bd_request_return').on('click', function(e) {
+		$('#bd_confirm_received').on('click', function(e) {
 			e.preventDefault();
-			submitReturnRequest();
+			submitConfirmReceived();
 		});
 
 		// Modal: Close
@@ -726,7 +931,7 @@
 			$('#bd_moreDetailIcon').toggleClass('rotate-180', isOpen);
 		});
 
-		// ✅ เพิ่ม: Handle Form Submit - ตรวจสอบว่าเลือก Return หรือไม่
+		// เพิ่ม: Handle Form Submit - ตรวจสอบว่าเลือก Return หรือไม่
 		$('form[action*="eBorrowUpdate.action"]').on('submit', function(e) {
 		    var selectedStatus = $('#status-select').val();
 
@@ -779,6 +984,142 @@
 		    // ถ้าเลือก status อื่นๆ ให้ submit ตามปกติ
 		    return true;
 		});
+		
+		// ----- Deliver Equipment -----
+		$('#btnDeliverEquipment').on('click',function(e){
+			e.preventDefault();
+			if (!checkSignatureBeforeAction()) {
+				return;
+			}
+			Swal.fire({
+		        title: "Confirm Deliver Equipment?!",
+		        text: "Do you want to deliver this equipment?",
+		        icon: "question",
+		        showCancelButton: true,
+		        confirmButtonText: "Yes, deliver it",
+		        cancelButtonText: "Cancel",
+		        buttonsStyling: false,
+		        customClass: {
+		            confirmButton: "btn btn-success",
+		            cancelButton: "btn btn-secondary"
+		        }
+		    }).then((result) => {
+		        if (result.isConfirmed) {
+		        	fetch(CTX + "deliver_equipment.action", {
+		        	    method: "POST",
+		        	    headers: {
+		        	        "Content-Type": "application/x-www-form-urlencoded"
+		        	    },
+		        	    body: "id=" + encodeURIComponent(
+		        	        getBorrowField('borrowId') || getBorrowField('borrow_id')
+		        	    )
+		        	})
+		        	.then(response => response.text())
+		        	.then(data => {
+		        	    location.reload();
+		        	})
+		        	.catch(error => {
+		        	    console.error(error);
+
+		        	    Swal.fire({
+		        	        icon: "error",
+		        	        title: "Error",
+		        	        text: "Failed to deliver equipment"
+		        	    });
+
+		        	});
+		        }
+		    });
+		})
+		
+		// ----- Request for Return -----
+		$('.btn-request-return').on('click', function (e) {
+		    e.preventDefault();
+		
+		    Swal.fire({
+		        title: 'Confirm Request for Return?',
+		        text: 'Are you sure you want to request return for this item?',
+		        icon: 'question',
+		        showCancelButton: true,
+		        confirmButtonText: 'Yes, Request Return',
+		        cancelButtonText: "Cancel",
+		        buttonsStyling: false,
+		        customClass: {
+		            confirmButton: "btn btn-warning",
+		            cancelButton: "btn btn-secondary"
+		        }
+		    }).then((result) => {
+		        if (result.isConfirmed) {
+		            fetch(CTX + "/request_return.action", {
+		                method: "POST",
+		                headers: {
+		                    "Content-Type": "application/x-www-form-urlencoded"
+		                },
+		                body: "id=" + encodeURIComponent(getBorrowField('borrowId'))
+		            })
+		            .then(res => res.json())
+		            .then(data => {
+		                if (data.message === "success") {
+		                	location.reload();
+		                } else {
+		                    Swal.fire("Error", data.message, "error");
+		                }
+		            })
+		            .catch(err => {
+		                console.error(err);
+		                Swal.fire("Error", "Request failed", "error");
+		            });
+		        }
+		    });
+		});
+		
+		// ----- Confirm Received -----
+		/* $('#btnConfirmReceived').on('click',function(e){
+			e.preventDefault();
+			
+			Swal.fire({
+		        title: "Confirm Received?",
+		        text: "Have you return received this equipment?",
+		        icon: "question",
+		        showCancelButton: true,
+		        confirmButtonText: "Yes, received it",
+		        cancelButtonText: "Cancel",
+		        buttonsStyling: false,
+		        customClass: {
+		            confirmButton: "btn btn-success",
+		            cancelButton: "btn btn-secondary"
+		        }
+		    }).then((result) => {
+		        if (result.isConfirmed) {
+		        	fetch(CTX + "eBorrowReturn.action", {
+		        	    method: "POST",
+		        	    headers: {
+		        	        "Content-Type": "application/x-www-form-urlencoded"
+		        	    },
+		        	    body: "id=" + encodeURIComponent(
+		        	        getBorrowField('borrowId') || getBorrowField('borrow_id')
+		        	    )
+		        	})
+		        	.then(response => response.text())
+		        	.then(data => {
+		        		Swal.fire('Success!', 'Return request submitted successfully!', 'success').then(() => {
+                            window.location.replace(CTX + "/borrow_list");
+                        });
+		        	})
+		        	.catch(error => {
+		        	    console.error(error);
+
+		        	    Swal.fire({
+		        	        icon: "error",
+		        	        title: "Error",
+		        	        text: "Failed to deliver equipment"
+		        	    });
+
+		        	});
+		        }
+		    });
+		}) */
+		
 	}
 
 	// ===== Open Return Modal =====
@@ -808,7 +1149,8 @@
 
 		// Status Badge
 		var $badge = $('#bd_status_badge');
-		$badge.removeClass().addClass('badge badge-lg rounded-pill px-4 fw-semibold bg-warning text-white').text('Borrowing');
+	/* 	$badge.removeClass().addClass('badge badge-lg rounded-pill px-4 fw-semibold bg-warning text-white').text('Borrowing'); */
+		$badge.removeClass().addClass('badge badge-lg rounded-pill px-4 fw-semibold bg-warning text-white').text('Waiting for Return');
 
 		// More Details (Computer only)
 		var isComputer = String(eq.type || '').toLowerCase() === 'c';
@@ -837,7 +1179,7 @@
 	}
 
 	// ===== Submit Return Request =====
-	function submitReturnRequest() {
+	function submitConfirmReceived() {
 	    var borrowId = ($('#borrowDetailModal').data('borrowId') || '').toString().trim();
 	    var note = $('#bd_approver_note').val();
 	
@@ -845,13 +1187,19 @@
 	        Swal.fire('Error!', 'Borrow ID not found.', 'error');
 	        return;
 	    }
+	    
+	    if (!checkSignatureBeforeAction()) {
+	        var modal = bootstrap.Modal.getInstance( document.getElementById('borrowDetailModal') );
+	        if (modal) modal.hide();
+	        return;
+	    }
 	
 	    Swal.fire({
-	        title: 'Confirm Return',
-	        text: 'Are you sure you want to request return for this item?',
-	        icon: 'question',
+	    	title: "Confirm Received?",
+	        text: "Have you return received this equipment?",
+	        icon: "question",
 	        showCancelButton: true,
-	        confirmButtonText: 'Yes, Request Return',
+	        confirmButtonText: "Yes, received it",
 	        cancelButtonText: 'Cancel',
 	        confirmButtonColor: '#ffc107', // สีเหลือง
 	        cancelButtonColor: '#6c757d'   // สีเทา
@@ -870,7 +1218,8 @@
 	                        Swal.fire('Success!', 'Return request submitted successfully!', 'success').then(() => {
 	                            var modal = bootstrap.Modal.getInstance(document.getElementById('borrowDetailModal'));
 	                            if (modal) modal.hide();
-	                            window.location.replace(CTX + "/borrow_list");
+	                            window.open(CTX + "/borrowReport?borrowId=" + borrowId,"_blank");
+	                            window.location.href = CTX + "/borrow_list";
 	                        });
 	                    } else {
 	                        Swal.fire('Error!', "Something went wrong: " + (data ? data.message : "no data"), 'error');
@@ -884,6 +1233,8 @@
 	        }
 	    });
 	}
+	
 	</script>
+	
 </body>
 </html>

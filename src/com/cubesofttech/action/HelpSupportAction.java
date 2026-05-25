@@ -551,7 +551,7 @@ public class HelpSupportAction extends ActionSupport {
             log.info("[Support Upload] Resizing image: " + originalName + " (" + file.length() + " bytes)");
             try (java.io.FileInputStream fis = new java.io.FileInputStream(file);
                     java.io.FileOutputStream fos = new java.io.FileOutputStream(destFile)) {
-                byte[] resizedBytes = FileUtil.resizeImage(fis, 1280, 1280);
+                byte[] resizedBytes = FileUtil.resizeImage(fis, 1280, 1280, extension.replace(".", ""));
                 fos.write(resizedBytes);
                 savedSize = resizedBytes.length;
                 log.info("[Support Upload] Resized size: " + savedSize + " bytes");

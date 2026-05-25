@@ -54,11 +54,12 @@ public class FileUtil {
 		return result;
 	}
 
-	public static byte[] resizeImage(InputStream inputStream, int maxWidth, int maxHeight) throws Exception {
+	public static byte[] resizeImage(InputStream inputStream, int maxWidth, int maxHeight, String format) throws Exception {
 		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 		Thumbnails.of(inputStream)
 				.size(maxWidth, maxHeight)
 		        .outputQuality(0.8)  // Set image quality to 80%
+				.outputFormat(format)
 		        .toOutputStream(outputStream);
 		return outputStream.toByteArray();
 		

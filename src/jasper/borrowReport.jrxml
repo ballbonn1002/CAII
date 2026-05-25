@@ -7,19 +7,58 @@
 	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="DataAdapter.xml"/>
 	<parameter name="logoPath" class="java.lang.Object" isForPrompting="false"/>
 	<parameter name="borrowId" class="java.lang.String"/>
-	<queryString>
-		<![CDATA[SELECT  b.date_start, b.date_end, b.contact_addr, b.location, b.reason,
-        u.name AS borrower_name , p.name AS borrower_pos,
-        eq.item_no, eq.name as nb_name , eq.process, eq.note, eq.type,
+	<parameter name="deliverySignature"      class="java.awt.image.BufferedImage" isForPrompting="false"/>
+	<parameter name="receiveSignature"       class="java.awt.image.BufferedImage" isForPrompting="false"/>
+	<parameter name="returnSignature"        class="java.awt.image.BufferedImage" isForPrompting="false"/>
+	<parameter name="returnReceiveSignature" class="java.awt.image.BufferedImage" isForPrompting="false"/>
+
+		<queryString>
+	<![CDATA[
+	SELECT  
+	    b.date_start, b.date_end, b.contact_addr, b.location,b.reason, b.remark, b.time_create,
+	    u.name AS borrower_name, p.name AS borrower_pos,
+	
+	    -- delivery
+	    ud.name AS delivery_name,
+	    b.user_delivery, b.time_delivery,
+	
+	    -- receive
+	    urc.name AS receive_name,
+	    b.user_receive, b.time_receive,
+	
+		-- return
+	    urt.name AS return_name,
+	    b.user_return, b.time_return,
+	
+	    -- return receive
+	    urr.name AS return_receive_name,
+	    b.user_return_receive, b.time_return_receive,
+	
+	   	eq.item_no, eq.name as nb_name , eq.process, eq.note, eq.type,
         eq.windows, eq.status, eq.serial_no, eq.battery,
         eq.hdd, eq.amount, eq.detail, eq.image, eq.location, eq.ram,b.remark,
         floor(datediff(b.date_end,b.date_start)) as date_diff
-FROM borrow b
-INNER JOIN user u ON b.user_borrowid = u.id
-LEFT JOIN position p ON p.position_id = u.position_id
-INNER JOIN equipment eq ON eq.equipment_id = b.equipment_id
-WHERE b.borrow_id = $P{borrowId}]]>
+	
+	FROM borrow b
+	
+	INNER JOIN user u ON b.user_borrowid = u.id
+	LEFT JOIN position p ON p.position_id = u.position_id
+	INNER JOIN equipment eq ON eq.equipment_id = b.equipment_id
+	-- delivery
+	LEFT JOIN user ud ON b.user_delivery = ud.id
+	
+	-- receive / return
+	LEFT JOIN user urc ON b.user_receive = urc.id
+	
+	-- return
+	LEFT JOIN user urt ON b.user_return = urt.id
+	
+	-- return receive
+	LEFT JOIN user urr ON b.user_return_receive = urr.id
+	
+	WHERE b.borrow_id = $P{borrowId}]]>
 	</queryString>
+
 	<field name="date_start" class="java.sql.Timestamp">
 		<fieldDescription><![CDATA[]]></fieldDescription>
 	</field>
@@ -80,6 +119,26 @@ WHERE b.borrow_id = $P{borrowId}]]>
 	<field name="remark" class="java.lang.String">
 		<fieldDescription><![CDATA[]]></fieldDescription>
 	</field>
+	<field name="time_create" class="java.sql.Timestamp">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	
+	<field name="delivery_name" class="java.lang.String"/>
+	<field name="user_delivery" class="java.lang.String"/>
+	<field name="time_delivery" class="java.sql.Timestamp"/>
+	
+	<field name="receive_name" class="java.lang.String"/>
+	<field name="user_receive" class="java.lang.String"/>
+	<field name="time_receive" class="java.sql.Timestamp"/>
+	
+	<field name="return_name" class="java.lang.String"/>
+	<field name="user_return" class="java.lang.String"/>
+	<field name="time_return" class="java.sql.Timestamp"/>
+	
+	<field name="return_receive_name" class="java.lang.String"/>
+	<field name="user_return_receive" class="java.lang.String"/>
+	<field name="time_return_receive" class="java.sql.Timestamp"/>
+
 	<field name="date_diff" class="java.lang.Long"/>
 	<variable name="currDate" class="java.lang.String">
 		<variableExpression><![CDATA[new java.util.Date()]]></variableExpression>
@@ -129,7 +188,8 @@ WHERE b.borrow_id = $P{borrowId}]]>
 				<textElement>
 					<font fontName="THSarabun" size="16" isBold="true" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
 				</textElement>
-				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{time_create}]]></textFieldExpression>
+				<!-- <textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression> -->
 			</textField>
 			<textField>
 				<reportElement x="90" y="132" width="213" height="20" uuid="787402cb-b94f-4054-9e9f-b88fc775bede"/>
@@ -390,6 +450,13 @@ Silom Rd. Suriyawong, Bangrak, Bangkok 10500, Thailand]]></text>
 				</textElement>
 				<text><![CDATA[ติดต่อข้าพเจ้าได้ที่]]></text>
 			</staticText>
+			<textField isStretchWithOverflow="true">
+				<reportElement positionType="Float" x="99" y="200" width="448" height="20" uuid="787402cb-b94f-4054-9e9f-b88fc775bede"/>
+				<textElement lineSpacing="1_1_2">
+					<font fontName="THSarabun" size="16" isBold="true" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{contact_addr} == null ? "" : $F{contact_addr}]]></textFieldExpression>
+			</textField>
 			<staticText>
 				<reportElement x="99" y="202" width="448" height="20" uuid="c123592b-249c-4095-9e6e-a456398264ba"/>
 				<textElement verticalAlignment="Middle">
@@ -526,6 +593,15 @@ Silom Rd. Suriyawong, Bangrak, Bangkok 10500, Thailand]]></text>
 				</textElement>
 				<text><![CDATA[ลงนาม: ]]></text>
 			</staticText>
+			<!-- ลายเซ็น ผู้รับอุปกรณ์ (receive)-->
+			<image scaleImage="RetainShape" hAlign="Center">
+			    <reportElement x="53" y="295" width="150" height="40" 
+			        uuid="a1b2c3d4-e5f6-7890-abcd-ef1234567801">
+			        <printWhenExpression><![CDATA[$P{receiveSignature} != null]]></printWhenExpression>
+			    </reportElement>
+			    <imageExpression><![CDATA[$P{receiveSignature}]]></imageExpression>
+			</image>
+			
 			<staticText>
 				<reportElement x="282" y="295" width="47" height="23" uuid="93db9f89-07b8-4a54-969b-b98fb119bb97"/>
 				<textElement verticalAlignment="Middle">
@@ -533,6 +609,16 @@ Silom Rd. Suriyawong, Bangrak, Bangkok 10500, Thailand]]></text>
 				</textElement>
 				<text><![CDATA[ลงนาม: ]]></text>
 			</staticText>
+			<!-- ลายเซ็น ผู้ส่งอุปกรณ์ (delivery) -->
+			<image scaleImage="RetainShape" hAlign="Center">
+			    <reportElement x="329" y="295" width="150" height="40" 
+			        uuid="a1b2c3d4-e5f6-7890-abcd-ef1234567802">
+			        <printWhenExpression><![CDATA[$P{deliverySignature} != null]]></printWhenExpression>
+			    </reportElement>
+			    <imageExpression><![CDATA[$P{deliverySignature}]]></imageExpression>
+			</image>
+			
+			
 			<staticText>
 				<reportElement x="6" y="448" width="47" height="23" uuid="93db9f89-07b8-4a54-969b-b98fb119bb97"/>
 				<textElement verticalAlignment="Middle">
@@ -540,6 +626,15 @@ Silom Rd. Suriyawong, Bangrak, Bangkok 10500, Thailand]]></text>
 				</textElement>
 				<text><![CDATA[ลงนาม: ]]></text>
 			</staticText>
+			<!-- ลายเซ็น ผู้ส่งคืนอุปกรณ์ (return) -->
+			<image scaleImage="RetainShape" hAlign="Center">
+			    <reportElement x="53" y="448" width="150" height="40" 
+			        uuid="a1b2c3d4-e5f6-7890-abcd-ef1234567803">
+			        <printWhenExpression><![CDATA[$P{returnSignature} != null]]></printWhenExpression>
+			    </reportElement>
+			    <imageExpression><![CDATA[$P{returnSignature}]]></imageExpression>
+			</image>
+			
 			<staticText>
 				<reportElement x="281" y="448" width="47" height="23" uuid="93db9f89-07b8-4a54-969b-b98fb119bb97"/>
 				<textElement verticalAlignment="Middle">
@@ -547,20 +642,75 @@ Silom Rd. Suriyawong, Bangrak, Bangkok 10500, Thailand]]></text>
 				</textElement>
 				<text><![CDATA[ลงนาม: ]]></text>
 			</staticText>
+			<!-- ลายเซ็น ผู้รับคืนอุปกรณ์ (return_receive) -->
+			<image scaleImage="RetainShape" hAlign="Center">
+			    <reportElement x="328" y="448" width="150" height="40" 
+			        uuid="a1b2c3d4-e5f6-7890-abcd-ef1234567804">
+			        <printWhenExpression><![CDATA[$P{returnReceiveSignature} != null]]></printWhenExpression>
+			    </reportElement>
+			    <imageExpression><![CDATA[$P{returnReceiveSignature}]]></imageExpression>
+			</image>
+		
 			<textField>
 				<reportElement x="69" y="359" width="175" height="20" uuid="787402cb-b94f-4054-9e9f-b88fc775bede"/>
 				<textElement>
 					<font fontName="THSarabun" size="16" isBold="true" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{borrower_name}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{receive_name} == null ? "" : $F{receive_name}]]></textFieldExpression>
 			</textField>
+			<textField pattern="dd/MM/yyyy">
+				<reportElement x="69" y="384" width="175" height="20" uuid="787402cb-b94f-4054-9e9f-b88fc775bede"/>
+				<textElement>
+					<font fontName="THSarabun" size="16" isBold="true" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{time_receive} == null ? "" : $F{time_receive}]]></textFieldExpression>
+			</textField>
+			
+			<textField>
+				<reportElement x="340" y="359" width="200" height="20" uuid="787402cb-b94f-4054-9e9f-b88fc775bede"/>
+				<textElement>
+					<font fontName="THSarabun" size="16" isBold="true" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{delivery_name} == null ? "" : $F{delivery_name}]]></textFieldExpression>
+			</textField>
+			<textField pattern="dd/MM/yyyy">
+				<reportElement x="340" y="384" width="175" height="20" uuid="787402cb-b94f-4054-9e9f-b88fc775bede"/>
+				<textElement>
+					<font fontName="THSarabun" size="16" isBold="true" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{time_delivery} == null ? "" : $F{time_delivery}]]></textFieldExpression>
+			</textField>
+			
 			<textField>
 				<reportElement x="80" y="511" width="172" height="20" uuid="787402cb-b94f-4054-9e9f-b88fc775bede"/>
 				<textElement>
 					<font fontName="THSarabun" size="16" isBold="true" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{borrower_name}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{return_name} == null ? "" : $F{return_name}]]></textFieldExpression>
 			</textField>
+			<textField pattern="dd/MM/yyyy">
+				<reportElement x="80" y="536" width="175" height="20" uuid="787402cb-b94f-4054-9e9f-b88fc775bede"/>
+				<textElement>
+					<font fontName="THSarabun" size="16" isBold="true" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{time_return} == null ? "" : $F{time_return}]]></textFieldExpression>
+			</textField>
+			
+			<textField>
+				<reportElement x="345" y="511" width="172" height="20" uuid="787402cb-b94f-4054-9e9f-b88fc775bede"/>
+				<textElement>
+					<font fontName="THSarabun" size="16" isBold="true" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{return_receive_name} == null ? "" : $F{return_receive_name}]]></textFieldExpression>
+			</textField>
+			<textField pattern="dd/MM/yyyy">
+				<reportElement x="345" y="536" width="175" height="20" uuid="787402cb-b94f-4054-9e9f-b88fc775bede"/>
+				<textElement>
+					<font fontName="THSarabun" size="16" isBold="true" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{time_return_receive} == null ? "" : $F{time_return_receive}]]></textFieldExpression>
+			</textField>
+			
 			<break>
 				<reportElement x="0" y="560" width="100" height="1" uuid="e193d75e-7dbd-4c44-9142-17070bb5af25"/>
 			</break>

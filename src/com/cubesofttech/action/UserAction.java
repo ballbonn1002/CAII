@@ -949,7 +949,7 @@ public class UserAction extends ActionSupport {
 				file.setUserId(u.getId());
 				file.setName(fileName);
 				file.setPage("user");
-				file.setPageId(null);
+				file.setPageId(u.getId());
 				file.setUserId(logonUser);
 				file.setType(typeFile);
 				file.setSize(sizeText);
@@ -981,8 +981,12 @@ public class UserAction extends ActionSupport {
 			if (this.birthDate != null && !this.birthDate.isEmpty()) {
 				u.setBirthDate(new java.sql.Date(sdf.parse(this.birthDate).getTime()));
 			}
-			if (this.endDate != null && !this.endDate.isEmpty()) {
-				u.setEndDate(new java.sql.Date(sdf.parse(this.endDate).getTime()));
+			if (this.endDate != null) {
+				if (!this.endDate.isEmpty()) {
+					u.setEndDate(new java.sql.Date(sdf.parse(this.endDate).getTime()));
+				} else {
+					u.setEndDate(null);
+				}
 			}
 
 			u.setSocialSecurity(user.getSocialSecurity() != null ? user.getSocialSecurity() : "0");
@@ -1238,7 +1242,7 @@ public class UserAction extends ActionSupport {
 				file.setUserId(user.getId());
 				file.setName(fileName);
 				file.setPage("user");
-				file.setPageId(null);
+				file.setPageId(user.getId());
 				file.setUserId(logonUser);
 				file.setType(typeFile);
 				file.setSize(sizeText);
@@ -1973,7 +1977,7 @@ public class UserAction extends ActionSupport {
 					file.setUserId(u.getId());
 					file.setName(fileName);
 					file.setPage("user");
-					file.setPageId(null);
+					file.setPageId(u.getId());
 					file.setUserId(logonUser);
 					file.setType(typeFile);
 					file.setSize(sizeText);
@@ -2140,7 +2144,7 @@ public class UserAction extends ActionSupport {
 					file.setUserId(u.getId());
 					file.setName(fileName);
 					file.setPage("user_signature");
-					file.setPageId(null);
+					file.setPageId(u.getId());
 					file.setUserId(logonUser);
 					file.setType(typeFile);
 					file.setSize(sizeText);
