@@ -949,7 +949,7 @@ public class UserAction extends ActionSupport {
 				file.setUserId(u.getId());
 				file.setName(fileName);
 				file.setPage("user");
-				file.setPageId(null);
+				file.setPageId(u.getId());
 				file.setUserId(logonUser);
 				file.setType(typeFile);
 				file.setSize(sizeText);
@@ -1242,7 +1242,7 @@ public class UserAction extends ActionSupport {
 				file.setUserId(user.getId());
 				file.setName(fileName);
 				file.setPage("user");
-				file.setPageId(null);
+				file.setPageId(user.getId());
 				file.setUserId(logonUser);
 				file.setType(typeFile);
 				file.setSize(sizeText);
@@ -1977,7 +1977,7 @@ public class UserAction extends ActionSupport {
 					file.setUserId(u.getId());
 					file.setName(fileName);
 					file.setPage("user");
-					file.setPageId(null);
+					file.setPageId(u.getId());
 					file.setUserId(logonUser);
 					file.setType(typeFile);
 					file.setSize(sizeText);
@@ -2144,7 +2144,7 @@ public class UserAction extends ActionSupport {
 					file.setUserId(u.getId());
 					file.setName(fileName);
 					file.setPage("user_signature");
-					file.setPageId(null);
+					file.setPageId(u.getId());
 					file.setUserId(logonUser);
 					file.setType(typeFile);
 					file.setSize(sizeText);

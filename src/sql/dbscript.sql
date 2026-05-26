@@ -254,3 +254,24 @@ INSERT INTO `authorized_object` (`authorized_object_id`, `name`, `description`, 
 -- 20/05/2026 boom(Intern) : Add column employee_status in user table -- 
 ALTER TABLE `user`
 ADD `employee_status` VARCHAR(1) COLLATE utf8mb3_general_ci NOT NULL DEFAULT '1'
+
+-- 21/05/2026 June: add delivery / return columns to 'borrow' table --
+ALTER TABLE `borrow`
+ADD COLUMN `user_delivery` VARCHAR(32) NULL DEFAULT NULL,
+ADD COLUMN `time_delivery` TIMESTAMP NULL DEFAULT NULL,
+ADD COLUMN `user_receive` VARCHAR(32) NULL DEFAULT NULL,
+ADD COLUMN `time_receive` TIMESTAMP NULL DEFAULT NULL,
+ADD COLUMN `user_return` VARCHAR(32) NULL DEFAULT NULL,
+ADD COLUMN `time_return` TIMESTAMP NULL DEFAULT NULL,
+ADD COLUMN `user_return_receive` VARCHAR(32) NULL DEFAULT NULL,
+ADD COLUMN `time_return_receive` TIMESTAMP NULL DEFAULT NULL;
+
+# PROD 22 MAY 2026
+
+
+-- 22/05/2026 ochi(Intern) : Add column active in exp_travel_type table -- 
+ALTER TABLE `exp_travel_type`
+ADD `active` VARCHAR(1) COLLATE utf8mb3_general_ci NOT NULL DEFAULT '1';
+
+
+

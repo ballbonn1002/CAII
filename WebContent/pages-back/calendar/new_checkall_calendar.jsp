@@ -155,7 +155,7 @@
 								</div>
 								<div class="col-lg-3 col-md-4 col-6 mb-10 d-flex align-items-center">
 									<span class="fs-2hx me-2 text-warning" id="summaryLateEarly"></span>
-									<span class="badge badge-warning fs-7">Late / Early Out /<br>
+									<span class="badge badge-warning fs-7 lh-base">Late / Early Out /<br>
 										Unfinished Work
 									</span>
 								</div>
@@ -876,7 +876,9 @@ var AppCalendar = function() {
 	        if (dow !== 0 && dow !== 6) { // Not include Sat & Sun
 	            // Check holiday ?
 	            var isHoliday = holidays.some(function(hd) {
-	                return moment(hd.start).isSame(day, "day");
+	                var hdStart = moment(hd.start);
+	                var hdEnd = hd.end ? moment(hd.end).subtract(1, 'days') : hdStart.clone();
+	                return day.isSameOrAfter(hdStart, 'day') && day.isSameOrBefore(hdEnd, 'day');
 	            });
 	            if (!isHoliday) {
 	                workingDays++;
@@ -917,6 +919,10 @@ var AppCalendar = function() {
                     var evStart = moment(ev.start);
                     var evEnd = ev.end ? moment(ev.end).subtract(1, 'days') : evStart.clone();
                     return day.isSameOrAfter(evStart, 'day') && day.isSameOrBefore(evEnd, 'day');
+                } else if (ev.classNames && ev.classNames.includes('fc-event-secondary')) {
+                    var evStart = moment(ev.start);
+                    var evEnd = ev.end ? moment(ev.end).subtract(1, 'days') : evStart.clone();
+                    return day.isSameOrAfter(evStart, 'day') && day.isSameOrBefore(evEnd, 'day');
                 } else {
                     return moment(ev.start).isSame(day, 'day');
                 }
@@ -925,7 +931,11 @@ var AppCalendar = function() {
 	        var status = "";
 	        if (dayEvents.length === 0 && day.isSameOrBefore(today)) {
 	        	var dow = day.day(); // 0=Sunday, 6=Saturday
-	            var isHoliday = holidayEvents.some(hd => moment(hd.start).isSame(day, "day"));
+	            var isHoliday = holidayEvents.some(hd => {
+	                var hdStart = moment(hd.start);
+	                var hdEnd = hd.end ? moment(hd.end).subtract(1, 'days') : hdStart.clone();
+	                return day.isSameOrAfter(hdStart, 'day') && day.isSameOrBefore(hdEnd, 'day');
+	            });
 	            
 	            if (dow !== 0 && dow !== 6 && !isHoliday) {
 	                status = "NO_RECORD";

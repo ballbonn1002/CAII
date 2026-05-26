@@ -60,4 +60,6 @@ public interface EquipmentDAO {
 
 	public Equipment getById(int id);
 
+	public Map<String, Object> getUserCreateByEquipmentId(int id);
+
 }

@@ -265,5 +265,27 @@ public class DateUtil {
 		}
 		return result;
 	}
+	
+	public static Timestamp parseBorrowDate(String dateStr) {
+	    if (dateStr == null || dateStr.trim().isEmpty()) {
+	        return null;
+	    }
+
+	    try {
+	        SimpleDateFormat sdf =
+	            new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.ENGLISH);
+
+	        sdf.setCalendar(new GregorianCalendar());
+
+	        Date parsedDate = sdf.parse(dateStr.trim());
+
+	        return new Timestamp(parsedDate.getTime());
+
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        return null;
+	    }
+	}
+
 
 }

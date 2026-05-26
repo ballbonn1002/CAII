@@ -1,7 +1,9 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/compressorjs/1.2.1/compressor.min.js"></script>
 
+<input type="hidden" id="hasSignature" value="${hasSignature}" />
 <div class="app-main flex-column flex-row-fluid" id="kt_app_main">
     <div class="d-flex flex-column flex-column-fluid">
         
@@ -44,7 +46,7 @@
                                         <div class="col-lg-6 mb-8">
                                             <label class="d-block fw-medium form-label mb-3">Item Picture</label>
                                             <div class="d-flex flex-column align-items-start">
-                                                
+                                                <div id="errorMsg" class="text-center text-danger mb-3"></div>
                                                 <c:set var="imageSrc" value="" />
                                                 <c:if test="${not empty equipmentbyId.image}">
                                                     <c:set var="imageSrc" value="${pageContext.request.contextPath}/${equipmentbyId.image}" />
@@ -282,6 +284,10 @@
                                                 </div>
                                             </c:otherwise>
                                         </c:choose>
+                                        
+                                        <div class="py-5">
+                                        	<span>Create By : ${userCreate.name}, <fmt:formatDate value='${userCreate.time_create}' pattern='d MMM YYYY HH:mm' /> </span>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -293,11 +299,94 @@
                                     </div>
                                     <div class="card-toolbar">
                                         <c:if test="${not empty borrowlistwithUser}">
-                                            <c:if test="${borrowlistwithUser[0].status == 'B'}">
-                                                <button type="button" class="btn btn-sm btn-warning" data-bs-toggle="modal" data-bs-target="#modal_return_action">
+                                        <c:choose>
+											<c:when test="${isLegacyBorrow}">
+										        <c:choose>
+										            <c:when test="${borrowlistwithUser[0].status == 'B'}">
+										                <div class="d-flex align-items-center gap-2">
+										                    <button type="button" class="btn btn-sm btn-warning btn-request-return">
+										                        Request for Return
+										                    </button>
+										                </div>
+										            </c:when>
+										            
+										            <c:when test="${borrowlistwithUser[0].status == 'T'
+										             				and not empty borrowObj['user_return']
+															 		and empty borrowObj['user_return_receive']}">
+										                <div class="d-flex align-items-center gap-2">
+										                  <button type="button" class="btn btn-sm btn-success btn-open-return-modal" data-bs-toggle="modal" data-bs-target="#modal_return_action">
+															Confirm Received
+										                    </button>
+										                </div>
+										            </c:when>
+										            
+										            <c:when test="${borrowlistwithUser[0].status == 'T'
+										             				and empty borrowObj['user_return']
+															 		and empty borrowObj['user_return_receive']}">
+										                <div class="d-flex align-items-center gap-2">
+										                  <button type="button" class="btn btn-sm btn-secondary" disabled>
+															 Waiting for Return
+										                    </button>
+										                </div>
+										            </c:when>
+										        </c:choose>
+										    </c:when>
+										     <c:otherwise>
+												<c:if test="${borrowlistwithUser[0].status == 'B'
+															 and not empty borrowObj['user_delivery']
+															 and not empty borrowObj['user_receive'] }">
+													<button type="button" class="btn btn-sm btn-warning btn-request-return">
+														Request for Return
+													</button>
+												</c:if>
+												
+												<c:if test="${borrowlistwithUser[0].status == 'T'
+															 and not empty borrowObj['user_delivery']
+															 and not empty borrowObj['user_receive']
+															 and empty borrowObj['user_return']
+															 and empty borrowObj['user_return_receive']}">
+													<button type="button" class="btn btn-sm btn-secondary" disabled>
+															Waiting for Return
+													</button>
+												</c:if>
+												
+												<c:if test="${borrowlistwithUser[0].status == 'T'
+															 and not empty borrowObj['user_delivery']
+															 and not empty borrowObj['user_receive']
+															 and not empty borrowObj['user_return']
+															 and empty borrowObj['user_return_receive']}">
+													<button type="button" class="btn btn-sm btn-success" data-bs-toggle="modal" data-bs-target="#modal_return_action">
+														Confirm Received
+													</button>
+												</c:if>
+											</c:otherwise>
+											</c:choose>
+                                            <%-- <c:if test="${borrowlistwithUser[0].status == 'B'
+														 and not empty borrowObj['user_delivery']
+														 and not empty borrowObj['user_receive']}">
+                                                <button type="button" class="btn btn-sm btn-warning btn-request-return" >
                                                     Request for Return
                                                 </button>
                                             </c:if>
+                                            
+                                            <c:if test="${borrowlistwithUser[0].status == 'T'
+														 and not empty borrowObj['user_delivery']
+														 and not empty borrowObj['user_receive']
+														 and empty borrowObj['user_return']}">
+                                                <button type="button" class="btn btn-sm btn-secondary" disabled>
+														Waiting for Return
+												</button>
+                                            </c:if>
+                                            
+                                             <c:if test="${borrowlistwithUser[0].status eq 'T'
+													        and not empty borrowObj['user_delivery']
+													        and not empty borrowObj['user_receive']
+													        and not empty borrowObj['user_return']
+													        and empty borrowObj['user_return_receive']}">
+												<button type="button" class="btn btn-sm btn-success" data-bs-toggle="modal" data-bs-target="#modal_return_action">
+													Confirm Received
+												</button>
+											</c:if> --%>
                                         </c:if>
                                     </div>
                                 </div>
@@ -307,7 +396,7 @@
                                         <c:when test="${not empty borrowlistwithUser}">
                                             <div class="timeline timeline-border-dashed">
                                                 <c:forEach var="borrow" items="${borrowlistwithUser}">
-                                                    
+                                                    <c:set var="isReturned" value="${borrow.status == 'R'}" />
                                                     <c:if test="${borrow.status == 'R'}">
                                                         <div class="timeline-item">
                                                             <div class="timeline-line"></div>
@@ -315,12 +404,25 @@
                                                                 <i class="ki-duotone ki-cd fs-2 text-success"><span class="path1"></span><span class="path2"></span></i>
                                                             </div>
                                                             <div class="timeline-content mb-5 mt-n1">
-                                                                <div class="mb-2"><span class="badge badge-success fw-bold fs-7">Returned</span></div>
+                                                                <div class="mb-2"><span class="badge badge-success fw-bold fs-7">Returned</span> 
+                                                                	<c:if test="${isReturned}">
+	                                                                	<a href="${pageContext.request.contextPath}/borrowReport?borrowId=${borrow.borrow_id}" target="_blank" class="badge badge-light-success ms-3" title="Borrow Report">
+																		    Print <i class="ki-duotone ki-printer fs-3 ms-2 text-success">
+																			    <span class="path1"></span>
+																			    <span class="path2"></span>
+																			    <span class="path3"></span>
+																			    <span class="path4"></span>
+																			    <span class="path5"></span>
+																		    </i>
+																	    </a>
+																    </c:if>
+																  </div>
                                                                 <div class="d-flex align-items-center mt-4 mb-2">
                                                                     <i class="ki-duotone ki-user fs-4 text-gray-700 me-3"><span class="path1"></span><span class="path2"></span></i>
                                                                     <div class="fs-5 fw-semibold text-gray-800">
                                                                         <c:if test="${not empty borrow.employee_id}">${borrow.employee_id} - </c:if>${borrow.name}
                                                                         <c:if test="${not empty borrow.name_en}"> - ${borrow.name_en}</c:if>
+                                                                        
                                                                     </div>
                                                                 </div>
                                                                 <div class="d-flex align-items-center mt-4 fs-7 text-muted">
@@ -352,6 +454,17 @@
                                                         <div class="timeline-content mb-0 mt-n1">
                                                             <div class="mb-2">
                                                                 <span class="badge badge-warning fw-bold fs-7">${borrow.status == 'B' ? 'Borrowing' : 'Borrowed'}</span>
+                                                                <c:if test="${borrow.status != 'R'}">
+                                                                	<a href="${pageContext.request.contextPath}/borrowReport?borrowId=${borrow.borrow_id}" target="_blank" class="badge badge-light-success ms-3" title="Borrow Report">
+																	    Print <i class="ki-duotone ki-printer fs-3 ms-2 text-success">
+																		    <span class="path1"></span>
+																		    <span class="path2"></span>
+																		    <span class="path3"></span>
+																		    <span class="path4"></span>
+																		    <span class="path5"></span>
+																	    </i>
+																    </a>
+																 </c:if>
                                                             </div>
                                                             <div class="d-flex align-items-center mt-4 mb-2">
                                                                 <i class="ki-duotone ki-user fs-4 text-gray-700 me-3"><span class="path1"></span><span class="path2"></span></i>
@@ -536,8 +649,8 @@
 
                 <div class="d-flex justify-content-end align-items-center gap-3">
                     <button type="button" class="btn btn-light fw-bold" data-bs-dismiss="modal">Cancel</button>
-                    <button type="button" id="btn_confirm_return_edit" class="btn btn-warning fw-bold">
-                        Request for Return
+                    <button type="button" id="btn_confirm_return_edit" class="btn btn-success fw-bold">
+                       Confirm Received
                     </button>
                 </div>
             </div>
@@ -552,6 +665,7 @@
         const previewImg  = document.getElementById('itemImagePreview');
         const placeholder = document.getElementById('itemImagePlaceholder');
         const selectBtn   = document.getElementById('itemImageSelectBtn');
+        const errorMsg = document.getElementById('errorMsg');
 
         if (!fileInput || !previewImg || !selectBtn) return;
 
@@ -560,7 +674,31 @@
         fileInput.addEventListener('change', function (e) {
             const file = e.target.files[0];
             if (!file) return;
+            errorMsg.textContent = "";
+            
+            if (!file.type.startsWith('image/')) {
+                errorMsg.textContent = "Please select an image file.";
+                fileInput.value = "";
+                return;
+            }
+            
+         	// จำกัด 2 MB
+            const maxSize = 2 * 1024 * 1024;
 
+            if (file.size > maxSize) {
+                errorMsg.textContent = "Image must be smaller than 2MB.";
+                fileInput.value = "";
+
+                previewImg.src = "";
+                previewImg.style.display = "none";
+
+                if (placeholder) {
+                    placeholder.classList.remove('d-none');
+                }
+
+                return;
+            }
+            
             const reader = new FileReader();
             reader.onload = function (ev) {
                 previewImg.src = ev.target.result;
@@ -568,6 +706,39 @@
                 if (placeholder) placeholder.classList.add('d-none');
             };
             reader.readAsDataURL(file);
+            
+         // Compress รูปถ้าเกิน 500KB
+            const limitSize = 500 * 1024;
+
+            if (file.size > limitSize) {
+    
+                new Compressor(file, {
+                    quality: 0.8,
+                    maxWidth: 1024,
+                    maxHeight: 1024,
+
+                    success(result) {
+
+                        const compressedFile = new File(
+                            [result],
+                            file.name,
+                            {
+                                type: result.type,
+                                lastModified: Date.now()
+                            }
+                        );
+
+                        const dataTransfer = new DataTransfer();
+                        dataTransfer.items.add(compressedFile);
+
+                        fileInput.files = dataTransfer.files;
+                    },
+
+                    error(err) {
+                        console.error("Compress Error:", err.message);
+                    }
+                });
+            }
         });
     });
 
@@ -580,10 +751,22 @@
         var savedTypeID = "${equipmentbyId.type}";
         var savedStatusID = "${equipmentbyId.status}";
 
-        try {
+        /* try {
             if (rawType) typeList = JSON.parse(rawType);
             if (rawStatus) statusList = JSON.parse(rawStatus);
-        } catch (e) { console.error("Error parsing JSON", e); }
+        } catch (e) { console.error("Error parsing JSON", e); } */
+        var rawType = '${requestScope.type != null ? requestScope.type : "[]"}';
+        var rawStatus = '${requestScope.status != null ? requestScope.status : "[]"}';
+
+        var typeList = [];
+        var statusList = [];
+
+        try {
+            typeList = JSON.parse(rawType);
+            statusList = JSON.parse(rawStatus);
+        } catch (e) {
+            console.error("Error parsing JSON", e);
+        }
         
      // Update Icon Type
         if (typeList && typeList.length > 0) {
@@ -685,13 +868,62 @@
             });
         }
         
+     // ----- Request for Return -----
+		$('.btn-request-return').on('click',function(e){
+			e.preventDefault();
+			
+			Swal.fire({
+				title: 'Confirm Request for Return?',
+		        text: 'Are you sure you want to request return for this item?',
+		        icon: 'question',
+		        showCancelButton: true,
+		        confirmButtonText: 'Yes, Request Return',
+		        cancelButtonText: "Cancel",
+		        buttonsStyling: false,
+		        customClass: {
+		            confirmButton: "btn btn-success",
+		            cancelButton: "btn btn-secondary"
+		        }
+		    }).then((result) => {
+		        if (result.isConfirmed) {
+		        	const borrowId = '${not empty borrowlistwithUser ? borrowlistwithUser[0].borrow_id : ""}';
+		        	
+		        	fetch("${pageContext.request.contextPath}/request_return.action", {
+		        	    method: "POST",
+		        	    headers: {
+		        	        "Content-Type": "application/x-www-form-urlencoded"
+		        	    },
+		        	    body: "id=" + encodeURIComponent(borrowId)
+		        	})
+		        	.then(response => response.text())
+		        	.then(data => {
+		        	    location.reload();
+		        	})
+		        	.catch(error => {
+		        	    console.error(error);
+
+		        	    Swal.fire({
+		        	        icon: "error",
+		        	        title: "Error",
+		        	        text: "Failed to deliver equipment"
+		        	    });
+
+		        	});
+		        }
+		    });
+		})
+		
         // Modal: Return Action
         $('#modal_return_action').on('show.bs.modal', function () {
             $('#edit_return_note').val('');
-            $('#btn_confirm_return_edit').prop('disabled', false).text('Request for Return');
+            $('#btn_confirm_return_edit').prop('disabled', false).text('Confirm Received');
         });
 
         $('#btn_confirm_return_edit').click(function() {
+        	if (!checkSignatureBeforeAction()) {
+				return;
+			}
+        	var CTX = "${pageContext.request.contextPath}";
             var note = $('#edit_return_note').val();
             var eqId = '${equipmentbyId.equipmentId}';
             var borrowId = '${not empty borrowlistwithUser ? borrowlistwithUser[0].borrow_id : ""}'; 
@@ -701,7 +933,7 @@
 
             btn.prop('disabled', true).text('Processing...');
 
-            $.post('equipment_return', { 
+            /* $.post('equipment_return', { 
                 equipmentId: eqId, 
                 borrowId: borrowId,
                 note: note
@@ -712,7 +944,68 @@
                     alert('Error returning item.');
                     btn.prop('disabled', false).text(originalText);
                 }
-            });
+            }); */
+            Swal.fire({
+    	    	title: "Confirm Received?",
+    	        text: "Have you return received this equipment?",
+    	        icon: "question",
+    	        showCancelButton: true,
+    	        confirmButtonText: "Yes, received it",
+    	        cancelButtonText: 'Cancel',
+    	        buttonsStyling: false,
+    	        customClass: {
+    	            confirmButton: "btn btn-warning",
+    	            cancelButton: "btn btn-secondary"
+    	        }
+    	    }).then((result) => {
+    	        if (result.isConfirmed) {
+    	            $.ajax({
+    	                url: CTX + "/equipment_return",
+    	                type: "POST",
+    	                data: {
+    	                	equipmentId: eqId, 
+    	                    borrowId: borrowId,
+    	                    note: note
+    	                },
+    	                success: function(res) {
+    	                    res = $.trim(res);
+    	                    if (res === 'success') {
+
+    	                        Swal.fire({
+    	                        	icon: 'success',
+    	                            title: 'Success!',
+    	                            text: 'Return request submitted successfully!'
+    	                        }).then(() => {
+    	                            var modal = bootstrap.Modal.getInstance(
+    	                                document.getElementById('kt_modal_view_equipment')
+    	                            );
+
+    	                            if (modal) {
+    	                                modal.hide();
+    	                            }
+
+    	                            window.open(CTX + "/borrowReport?borrowId=" + borrowId, "_blank");
+    	                            location.reload();
+    	                        });
+
+    	                    } else if (res === 'login') {
+    	                        window.location.href = 'index.jsp';
+    	                    } else {
+
+    	                        Swal.fire('Error!', 'Error returning item.','error');
+
+    	                        btnConfirmReceived
+    	                            .prop('disabled', false)
+    	                            .text(originalText);
+    	                    }
+    	                },
+    	                error: function(xhr) {
+    	                    console.error("HTTP", xhr.status, xhr.responseText);
+    	                    Swal.fire('Error!', 'Failed to submit return request.', 'error');
+    	                }
+    	            });
+    	        }
+    	    });
         });
         
      	// เช็ค Duplicate Item No
@@ -756,4 +1049,30 @@
         });
     
     });
+    
+    function checkSignatureBeforeAction() {
+		const hasSignature = $('#hasSignature').val() === 'true';
+	    
+	    if (!hasSignature) {
+	        Swal.fire({
+	            title: "Signature Required!",
+	            text: "Please upload your signature before continuing.",
+	            icon: "warning",
+	            confirmButtonText: "Go to My Profile",
+	            showCancelButton: true,
+	            cancelButtonText: "Cancel",
+	            buttonsStyling: false,
+	            customClass: {
+	                confirmButton: "btn btn-warning",
+	                cancelButton: "btn btn-secondary"
+	            }
+	        }).then((result) => {
+	            if (result.isConfirmed) {
+	            	window.open("/my_profile", "_blank");
+	            }
+	        });
+	        return false;
+	    }
+	    return true;
+	}
 </script>

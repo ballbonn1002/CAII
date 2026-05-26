@@ -94,6 +94,22 @@ public class Borrow implements Serializable {
     private String remark;	
     @Column(name = "reasona")
     private String reasona;	
+    @Column(name = "user_delivery")
+    private String user_delivery;	
+    @Column(name = "time_delivery")
+    private java.sql.Timestamp time_delivery;
+    @Column(name = "user_receive")
+    private String user_receive;	
+    @Column(name = "time_receive")
+    private java.sql.Timestamp time_receive;
+    @Column(name = "user_return")
+    private String user_return;	
+    @Column(name = "time_return")
+    private java.sql.Timestamp time_return;
+    @Column(name = "user_return_receive")
+    private String user_return_receive;	
+    @Column(name = "time_return_receive")
+    private java.sql.Timestamp time_return_receive;
    
 
 
@@ -200,13 +216,70 @@ public class Borrow implements Serializable {
     public void setReasona(String reasona) {
         this.reasona = reasona;
     }
-    
-
-
-    
-    public String toString() {
-        return super.toString() + "borrowId=[" + borrowId + "]\n" + "borrowAmout=[" + borrowAmout + "]\n" + "reason=[" + reason + "]\n" + "userBorrowid=[" + userBorrowid + "]\n" + "dateStart=[" + dateStart + "]\n" + "dateEnd=[" + dateEnd + "]\n" + "location=[" + location + "]\n" + "contactAddr=[" + contactAddr + "]\n" + "status=[" + status + "]\n" + "sum=[" + sum + "]\n" + "timeCreate=[" + timeCreate + "]\n" + "userCreate=[" + userCreate + "]\n" + "timeUpdate=[" + timeUpdate + "]\n" + "userUpdate=[" + userUpdate + "]\n" + "equipmentId=[" + equipmentId + "]\n" + "remark=[" + remark + "]\n" + "reasona=[" + reasona + "]\n";
-    }
+   
+    public String getUser_delivery() {
+		return user_delivery;
+	}
+	public void setUser_delivery(String user_delivery) {
+		this.user_delivery = user_delivery;
+	}
+	public java.sql.Timestamp getTime_delivery() {
+		return time_delivery;
+	}
+	public void setTime_delivery(java.sql.Timestamp time_delivery) {
+		this.time_delivery = time_delivery;
+	}
+	public String getUser_receive() {
+		return user_receive;
+	}
+	public void setUser_receive(String user_receive) {
+		this.user_receive = user_receive;
+	}
+	public java.sql.Timestamp getTime_receive() {
+		return time_receive;
+	}
+	public void setTime_receive(java.sql.Timestamp time_receive) {
+		this.time_receive = time_receive;
+	}
+	public String getUser_return() {
+		return user_return;
+	}
+	public void setUser_return(String user_return) {
+		this.user_return = user_return;
+	}
+	public java.sql.Timestamp getTime_return() {
+		return time_return;
+	}
+	public void setTime_return(java.sql.Timestamp time_return) {
+		this.time_return = time_return;
+	}
+	public String getUser_return_receive() {
+		return user_return_receive;
+	}
+	public void setUser_return_receive(String user_return_receive) {
+		this.user_return_receive = user_return_receive;
+	}
+	public java.sql.Timestamp getTime_return_receive() {
+		return time_return_receive;
+	}
+	public void setTime_return_receive(java.sql.Timestamp time_return_receive) {
+		this.time_return_receive = time_return_receive;
+	}
+	
+	@Override
+	public String toString() {
+		return "Borrow [borrowId=" + borrowId + ", borrowAmout=" + borrowAmout + ", reason=" + reason
+				+ ", userBorrowid=" + userBorrowid + ", dateStart=" + dateStart + ", dateEnd=" + dateEnd + ", location="
+				+ location + ", contactAddr=" + contactAddr + ", status=" + status + ", sum=" + sum + ", timeCreate="
+				+ timeCreate + ", userCreate=" + userCreate + ", timeUpdate=" + timeUpdate + ", userUpdate="
+				+ userUpdate + ", equipmentId=" + equipmentId + ", remark=" + remark + ", reasona=" + reasona
+				+ ", user_delivery=" + user_delivery + ", time_delivery=" + time_delivery + ", user_receive="
+				+ user_receive + ", time_receive=" + time_receive + ", user_return=" + user_return + ", time_return="
+				+ time_return + ", user_return_receive=" + user_return_receive + ", time_return_receive="
+				+ time_return_receive + "]";
+	}
+	
+	
 
     public boolean equals(Object obj) {
         if (this == obj) {
@@ -284,6 +357,8 @@ public class Borrow implements Serializable {
                         : that.getReasona().equals(this.getReasona()))) {
                 return false;
         }
+        
+        
        
     return true;
     }

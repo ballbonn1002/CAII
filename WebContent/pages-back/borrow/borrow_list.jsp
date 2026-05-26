@@ -141,6 +141,7 @@ th.sort:hover {
 </style>
 </head>
 <body>
+	<input type="hidden" id="hasSignature" value="${hasSignature}" />
 	<!--begin::Main-->
 	<div class="app-main flex-column flex-row-fluid" id="kt_app_main">
 		<!--begin::Content wrapper-->
@@ -203,6 +204,7 @@ th.sort:hover {
 													multiple data-control="select2" data-placeholder="Select">
 													<option value="B">Borrowed</option>
 													<option value="W">Wait for Approve</option>
+													<option value="T">Waiting for Return</option>
 												</select>
 											</div>
 
@@ -489,14 +491,21 @@ th.sort:hover {
 					class="modal-footer border-0 pt-0 pb-6 px-6 d-flex justify-content-end gap-3">
 					<button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
 					<button type="button" class="btn btn-primary" id="btn_edit">Edit</button>
-					<button type="button" class="btn btn-warning"
-						id="btn_request_return" style="display: none;">Request
-						for Return</button>
+					<button type="button" class="btn btn-warning" id="btn_request_return" style="display: none;">
+						Request for Return</button>
 					<button type="button" class="btn btn-danger" id="btn_cancel_borrow"
 						style="display: none;">Cancel</button>
 					<button type="button" class="btn btn-success"
 						id="btn_confirm_borrow" style="display: none;">Confirm
 						Borrow</button>
+					<button type="button" class="btn btn-success"
+						id="btn_confirm_received" style="display: none;">
+						Confirm Received
+					</button>
+					<button type="button" class="btn btn-primary"
+						id="btn_deliver_equipment" style="display:none;">
+						Deliver Equipment
+					</button>
 				</div>
 			</div>
 		</div>
@@ -643,8 +652,8 @@ th.sort:hover {
 				<div
 					class="modal-footer border-0 pt-0 pb-6 px-6 d-flex justify-content-end gap-3">
 					<button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
-					<button type="button" class="btn btn-warning"
-						id="bd_request_return">Request for Return</button>
+					<button type="button" class="btn btn-success"
+						id="bd_confirm_received">Confirm Received</button>
 				</div>
 			</div>
 		</div>
@@ -747,6 +756,19 @@ th.sort:hover {
 			row.department = department;
 			row.statusborrow = status;
 			row.role_id = roleId;
+			row.borrow_time_create = b.time_create || b.timeCreate;
+			
+			row.user_delivery = b.user_delivery || b.userDelivery;
+			row.time_delivery = b.time_delivery || b.timeDelivery;
+
+			row.user_receive = b.user_receive || b.userReceive;
+			row.time_receive = b.time_receive || b.timeReceive;
+
+			row.user_return = b.user_return || b.userReturn;
+			row.time_return = b.time_return || b.timeReturn;
+
+			row.user_return_receive = b.user_return_receive || b.userReturnReceive;
+			row.time_return_receive = b.time_return_receive || b.timeReturnReceive;
 			
 			// เติมข้อมูล Equipment
 			if (equip) {
@@ -787,18 +809,18 @@ th.sort:hover {
 	var userByKey = createUserMap(users);
 	var borrowList = processBorrowData(borrows, equipById, userByKey);
 
-	// ✅ เก็บไว้ใน global variable
+	// เก็บไว้ใน global variable
 	window.borrowDataList = borrowList;
 
 
-	// ✅ ฟังก์ชันแสดงผลตาราง - เก็บแค่ index
+	// ฟังก์ชันแสดงผลตาราง - เก็บแค่ index
 	function renderBorrowTable(data) {
 		var tbody = $('#borrowTableBody');
 		tbody.empty();
 		
 		data.forEach(function(row, index) {
 			var tr = $('<tr>')
-				// ✅ เก็บแค่ index, status, type สำหรับ filter
+				// เก็บแค่ index, status, type สำหรับ filter
 				.attr('data-row-index', index)
 				.attr('data-borrow-id', row.borrow_id || '')
 				.attr('data-status', row.statusborrow || '')
@@ -901,6 +923,8 @@ th.sort:hover {
 				return '<span class="badge badge-primary py-2 fs-7" style="width: fit-content;">Borrowed</span>';
 			case 'W':
 				return '<span class="badge badge-light py-2 fs-7" style="width: fit-content;">Wait for Approve</span>';
+			case 'T':
+				return '<span class="badge badge-warning py-2 fs-7" style="width: fit-content;">Waiting for Return</span>';
 			default:
 				return '<span class="badge badge-light py-2 fs-7" style="width: fit-content;">-</span>';
 		}
@@ -1247,20 +1271,66 @@ th.sort:hover {
 			return z ? z : '-';
 		}
 
-		function setBorrowModalButtons(status) {
-			$('#btn_request_return').hide();
+		
+		function setBorrowModalButtons(status, userDelivery, userReceive, userReturn, userReturnReceive,isLegacyBorrow) {
+			/* $('#btn_request_return').hide();
 			$('#btn_cancel_borrow').hide();
 			$('#btn_confirm_borrow').hide();
+			$('#btn_confirm_received').hide();
+			$('#btn_deliver_equipment').hide(); */
+			$('#btn_request_return').hide().prop('disabled', false).text('Request for Return');
+			$('#btn_cancel_borrow').hide();
+			$('#btn_confirm_borrow').hide();
+			$('#btn_confirm_received').hide();
+			$('#btn_deliver_equipment')
+			    .hide()
+			    .prop('disabled', false)
+			    .removeClass('btn-secondary')
+			    .text('Deliver Equipment');
 
-			if (status === 'B') {
-				$('#btn_request_return').show();
-			} else if (status === 'W') {
-				$('#btn_cancel_borrow').show();
-				$('#btn_confirm_borrow').show();
+			if (isLegacyBorrow) {
+			    if (status === 'B') {
+			        $('#btn_request_return').show();
+			        return;
+			    }
+			    if (status === 'T') {
+			        $('#btn_confirm_received').show();
+			        return;
+			    }
+
+			    return;
+			}
+			if (status === 'W') {
+			    $('#btn_cancel_borrow').show();
+			    $('#btn_confirm_borrow').show();
+			}else if (status === 'B') {
+
+			    if (!userDelivery) {
+			        $('#btn_deliver_equipment').show();
+			    }
+
+			    else if (userDelivery && !userReceive) {
+			        $('#btn_deliver_equipment')
+			            .show()
+			            .prop('disabled', true)
+			            .addClass('btn-secondary')
+			            .text('Waiting to Receive');
+			    }
+
+			    else if (userDelivery && userReceive && !userReturn) {
+			        $('#btn_request_return').show();
+			    }
+			}
+
+			else if (status === 'T') {
+
+			    if (userDelivery && userReceive && !userReturnReceive) {
+			        $('#btn_confirm_received').show();
+			    }
 			}
 		}
 
-		// ✅ ฟังก์ชันสำหรับเติมข้อมูลใน Equipment Modal
+		// ฟังก์ชันสำหรับเติมข้อมูลใน Equipment Modal
 		function fillBorrowModal(item) {
 			if (!item) return;
 		
@@ -1290,6 +1360,8 @@ th.sort:hover {
 				$badge.addClass('bg-success text-white').text('Returned');
 			} else if (status === 'W') {
 				$badge.addClass('bg-light text-dark').text('Wait for Approve');
+			} else if (status === 'T') {
+				$badge.addClass('bg-warning text-white').text('Waiting for Return');
 			} else {
 				$badge.addClass('bg-light text-muted').text('-');
 			}
@@ -1311,13 +1383,22 @@ th.sort:hover {
 				$('#moreDetailWrapper').hide();
 			}
 		
-			setBorrowModalButtons(status);
+			const legacy = isLegacyBorrow(item);
+			/* setBorrowModalButtons(status); */
+			setBorrowModalButtons(
+			    item.statusborrow,
+			    item.user_delivery,
+			    item.user_receive,
+			    item.user_return,
+			    item.user_return_receive,
+			    legacy
+			);
 		
 			// เก็บข้อมูลไว้ใช้ปุ่ม Edit/Cancel/Confirm
 			$('#borrowModal').data('currentItem', item);
 		}
 
-		// ✅ ฟังก์ชันสำหรับเติมข้อมูลใน Borrow Detail Modal
+		// ฟังก์ชันสำหรับเติมข้อมูลใน Borrow Detail Modal
 		function fillBorrowDetailModal(item) {
 			if (!item) return;
 		
@@ -1339,6 +1420,8 @@ th.sort:hover {
 			var status = String(item.statusborrow || '').toUpperCase();
 			if (status === 'B') {
 				$badge.addClass('bg-warning text-white').text('Borrowing');
+			} else if (status === 'T') {
+				$badge.addClass('bg-warning text-white').text('Waiting for Return');
 			} else if (status === 'R') {
 				$badge.addClass('bg-success text-white').text('Returned');
 			} else if (status === 'W') {
@@ -1431,7 +1514,7 @@ th.sort:hover {
 			$('#moreDetailToggle').attr('aria-expanded', 'false');
 		}
 
-		// ✅ กดปุ่ม View - ดึงข้อมูลจาก array
+		// กดปุ่ม View - ดึงข้อมูลจาก array
 		$(document).on('click', '.btn-view-borrow', function(e) {
 			e.preventDefault();
 
@@ -1451,7 +1534,7 @@ th.sort:hover {
 			modalObj.show();
 		});
 
-		// ✅ กดปุ่ม Borrow Detail - เปิด modal Return
+		// กดปุ่ม Borrow Detail - เปิด modal Return
 		$(document).on('click', '.btn-borrow-detail', function(e) {
 			e.preventDefault();
 
@@ -1468,10 +1551,12 @@ th.sort:hover {
 			bdModalObj.show();
 		});
 
-		// ===== กดปุ่ม Request for Return =====
-		$('#btn_request_return').on('click', function(e) {
+		// ===== กดปุ่ม Confirm Received =====
+		$('#btn_confirm_received').on('click', function(e) {
 			e.preventDefault();
-
+			if (!checkSignatureBeforeAction()) {
+				return;
+			}
 			const item = $('#borrowModal').data('currentItem');
 
 			if (!item) {
@@ -1547,7 +1632,123 @@ th.sort:hover {
 						alert('Confirm error');
 						});
 						});
+		
+		
+		$('#btn_request_return').on('click',function(e){
+			e.preventDefault();
+			const item = $('#borrowModal').data('currentItem');
+		    const borrowId = item ? item.borrow_id : null;
 
+		    if (!borrowId) {
+		        Swal.fire({
+		            icon: "error",
+		            title: "Error",
+		            text: "Borrow ID not found"
+		        });
+		        return;
+		    }
+		    
+			Swal.fire({
+				title: 'Confirm Request for Return?',
+		        text: 'Are you sure you want to request return for this item?',
+		        icon: 'question',
+		        showCancelButton: true,
+		        confirmButtonText: 'Yes, request return',
+		        cancelButtonText: "Cancel",
+		        buttonsStyling: false,
+		        customClass: {
+		            confirmButton: "btn btn-success",
+		            cancelButton: "btn btn-secondary"
+		        }
+		    }).then((result) => {
+		        if (result.isConfirmed) {
+		        	modalObj.hide();
+		        	fetch(CTX + "request_return.action", {
+		        	    method: "POST",
+		        	    headers: {
+		        	        "Content-Type": "application/x-www-form-urlencoded"
+		        	    },
+		        	    body: "id=" + encodeURIComponent(borrowId)
+		        	})
+		        	.then(response => response.text())
+		        	.then(data => {
+		        		window.location.href = CTX + "/borrow_list.action";
+		        	})
+		        	.catch(error => {
+		        	    console.error(error);
+
+		        	    Swal.fire({
+		        	        icon: "error",
+		        	        title: "Error",
+		        	        text: "Failed to deliver equipment"
+		        	    });
+
+		        	});
+		        }
+		    });
+		})
+		
+		// ----- Deliver Equipment -----
+		$('#btn_deliver_equipment').on('click', function(e) {
+			e.preventDefault();
+		
+			if (!checkSignatureBeforeAction()) {
+				return;
+			}
+		
+			const item = $('#borrowModal').data('currentItem');
+			const borrowId = item ? item.borrow_id : null;
+		
+			if (!borrowId) {
+				Swal.fire({
+					icon: "error",
+					title: "Error",
+					text: "Borrow ID not found"
+				});
+				return;
+			}
+		
+			Swal.fire({
+				title: "Confirm Deliver Equipment?",
+				text: "Do you want to deliver this equipment?",
+				icon: "question",
+				showCancelButton: true,
+				confirmButtonText: "Yes, deliver it",
+				cancelButtonText: "Cancel",
+				buttonsStyling: false,
+				customClass: {
+					confirmButton: "btn btn-success",
+					cancelButton: "btn btn-secondary"
+				}
+			}).then((result) => {
+				if (result.isConfirmed) {
+					modalObj.hide();
+					fetch(CTX + "deliver_equipment.action", {
+						method: "POST",
+						headers: {
+							"Content-Type": "application/x-www-form-urlencoded"
+						},
+						body: "id=" + encodeURIComponent(borrowId)
+					})
+					.then(response => response.text())
+					.then(data => {
+						location.reload();
+					})
+					.catch(error => {
+		
+						console.error(error);
+		
+						Swal.fire({
+							icon: "error",
+							title: "Error",
+							text: "Failed to deliver equipment"
+						});
+		
+					});
+				}
+			});
+		});
+		
 		// ===== Edit =====
 		$('#btn_edit').on('click', function(e) {
 			e.preventDefault();
@@ -1564,9 +1765,12 @@ th.sort:hover {
 		});
 
 		// ===== ปุ่ม Request for Return ใน modal Return =====
-		$('#bd_request_return').on('click', function(e) {
+		$('#bd_confirm_received').on('click', function(e) {
 		    e.preventDefault();
-
+		    if (!checkSignatureBeforeAction()) {
+				return;
+			}
+		    
 		    const borrowId = $('#borrowDetailModal').data('borrowId') || '';
 		    const note = $('#bd_approver_note').val();
 
@@ -1576,18 +1780,21 @@ th.sort:hover {
 		    }
 
 		    Swal.fire({
-		        title: 'Confirm Return',
-		        text: 'Are you sure you want to request return for this item?',
-		        icon: 'question',
+		    	title: "Confirm Received?",
+		        text: "Have you return received this equipment?",
+		        icon: "question",
 		        showCancelButton: true,
-		        confirmButtonText: 'Yes, Request Return',
+		        confirmButtonText: "Yes, received it",
 		        cancelButtonText: 'Cancel',
-		       	confirmButtonColor: '#ffc107',
-		        cancelButtonColor: '#6c757d'
+		        buttonsStyling: false,
+		        customClass: {
+		            confirmButton: "btn btn-warning",
+		            cancelButton: "btn btn-secondary"
+		        }
 		    }).then((result) => {
 		        if (result.isConfirmed) {
 		            $.ajax({
-		                url: CTX + "/eBorrowReturn.action",
+		                url: CTX + "/eBorrowReturn",
 		                type: "POST",
 		                dataType: "json",
 		                data: { id: borrowId, note: note },
@@ -1595,6 +1802,7 @@ th.sort:hover {
 		                    if (data && data.message === "success") {
 		                        Swal.fire('Success!', 'Return request submitted successfully!', 'success').then(() => {
 		                            bdModalObj.hide();
+		                            window.open(CTX + "/borrowReport?borrowId=" + borrowId,"_blank");
 		                            window.location.href = CTX + "/borrow_list.action";
 		                        });
 		                    } else {
@@ -1629,6 +1837,48 @@ th.sort:hover {
 			$(this).css('z-index', currentZIndex + 2);
 		});
 	});
+	
+	function checkSignatureBeforeAction() {
+		const hasSignature = $('#hasSignature').val() === 'true';
+	    
+	    if (!hasSignature) {
+	        Swal.fire({
+	            title: "Signature Required!",
+	            text: "Please upload your signature before continuing.",
+	            icon: "warning",
+	            confirmButtonText: "Go to My Profile",
+	            showCancelButton: true,
+	            cancelButtonText: "Cancel",
+	            buttonsStyling: false,
+	            customClass: {
+	                confirmButton: "btn btn-warning",
+	                cancelButton: "btn btn-secondary"
+	            }
+	        }).then((result) => {
+	            if (result.isConfirmed) {
+	            	window.open("/my_profile", "_blank");
+	            }
+	        });
+	        return false;
+	    }
+	    return true;
+	}
+	
+	function isLegacyBorrow(item) {
+	    if (!item) return false;
+
+	    const borrowCreateStr = item.borrow_time_create;
+	    if (!borrowCreateStr) return false;
+
+	    const migrationDate = new Date("2026-05-22T00:00:00");
+	    const createDate = new Date(String(borrowCreateStr).replace(' ', 'T'));
+
+	    const isOldData = createDate < migrationDate;
+	    
+	    const noDeliveryTracking = !item.user_delivery && !item.user_receive;
+
+	    return isOldData && noDeliveryTracking;
+	}
 	</script>
 </body>
 </html>

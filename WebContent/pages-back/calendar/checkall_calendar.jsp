@@ -786,7 +786,9 @@ var AppCalendar = function() {
 	        if (dow !== 0 && dow !== 6) { // Not include Sat & Sun
 	            // Check holiday ?
 	            var isHoliday = holidays.some(function(hd) {
-	                return moment(hd.start).isSame(day, "day");
+	                var hdStart = moment(hd.start);
+	                var hdEnd = hd.end ? moment(hd.end).subtract(1, 'days') : hdStart.clone();
+	                return day.isSameOrAfter(hdStart, 'day') && day.isSameOrBefore(hdEnd, 'day');
 	            });
 	            if (!isHoliday) {
 	                workingDays++;
@@ -823,13 +825,27 @@ var AppCalendar = function() {
 
 	    for (var day = start.clone(); day.isBefore(end); day.add(1, 'days')) {
 	        var dayEvents = events.filter(function(ev) {
-	            return moment(ev.start).isSame(day, 'day');
+                if (ev.extendedProps && ev.extendedProps.leave_type_id) {
+                    var evStart = moment(ev.start);
+                    var evEnd = ev.end ? moment(ev.end).subtract(1, 'days') : evStart.clone();
+                    return day.isSameOrAfter(evStart, 'day') && day.isSameOrBefore(evEnd, 'day');
+                } else if (ev.classNames && ev.classNames.includes('fc-event-secondary')) {
+                    var evStart = moment(ev.start);
+                    var evEnd = ev.end ? moment(ev.end).subtract(1, 'days') : evStart.clone();
+                    return day.isSameOrAfter(evStart, 'day') && day.isSameOrBefore(evEnd, 'day');
+                } else {
+                    return moment(ev.start).isSame(day, 'day');
+                }
 	        });
 
 	        var status = "";
 	        if (dayEvents.length === 0 && day.isSameOrBefore(today)) {
 	        	var dow = day.day(); // 0=Sunday, 6=Saturday
-	            var isHoliday = holidayEvents.some(hd => moment(hd.start).isSame(day, "day"));
+	            var isHoliday = holidayEvents.some(hd => {
+	                var hdStart = moment(hd.start);
+	                var hdEnd = hd.end ? moment(hd.end).subtract(1, 'days') : hdStart.clone();
+	                return day.isSameOrAfter(hdStart, 'day') && day.isSameOrBefore(hdEnd, 'day');
+	            });
 	            
 	            if (dow !== 0 && dow !== 6 && !isHoliday) {
 	                status = "No Record";
