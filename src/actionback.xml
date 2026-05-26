@@ -1626,6 +1626,13 @@
 			</result>
 			<result name="error">/index.jsp</result>
 		</action>
+		
+		<!-- POST /webhook/LineOA -->
+		<action name="lineWebhook"
+			class="com.cubesofttech.action.WebhookAction"
+			method="execute">
+			<result name="none" type="httpheader" />
+		</action>
 	</package>
 
 </struts>
