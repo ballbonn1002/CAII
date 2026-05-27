@@ -92,42 +92,7 @@ a.btn-open-return-modal:hover{
 					</div>
 			<c:if test="${not empty borrowlistwithUser}">
 				<c:choose>
-				    <c:when test="${isLegacyBorrow}">
-				        <c:choose>
-				            <c:when test="${borrowObj.status == 'B'}">
-				                <div class="d-flex align-items-center gap-2">
-				                    <button type="button" class="btn btn-warning btn-request-return">
-				                        Request for Return
-				                    </button>
-				                </div>
-				            </c:when>
-				            
-				            <c:when test="${borrowObj.status == 'T'
-				                    and not empty borrowObj.user_return
-				                    and empty borrowObj.user_return_receive}">
-				                <div class="d-flex align-items-center gap-2">
-				                    <button type="button" class="btn btn-success btn-open-return-modal">
-				                        Confirm Received
-				                    </button>
-				                </div>
-				            </c:when>
-				            
-				            <c:when test="${borrowObj.status == 'T'
-				                            and empty borrowObj.user_return}">
-				                <div class="d-flex align-items-center gap-2">
-				                    <a class="me-3 fs-6 btn-open-return-modal">
-				                        Confirm Received
-				                    </a>
-				                    <button type="button" class="btn btn-secondary" disabled>
-				                        Waiting for Return
-				                    </button>
-				                </div>
-				            </c:when>
-				        </c:choose>
-				    </c:when>
-				
-				    <c:otherwise>
-				    	<c:choose>
+				   
 				            <c:when test="${borrowObj.status == 'B'
 				                            and empty borrowObj.user_delivery 
 				                            and empty borrowObj.user_receive
@@ -191,8 +156,7 @@ a.btn-open-return-modal:hover{
 				                </div>
 				            </c:when>
 				       </c:choose>
-				    </c:otherwise>
-					</c:choose>
+				   
 				</c:if>
 				</div>
 			</div>
@@ -307,27 +271,8 @@ a.btn-open-return-modal:hover{
 									</div>
 									<div class="card-toolbar">
 										<c:if test="${not empty borrowlistwithUser}">
-										  <c:choose>
-											<c:when test="${isLegacyBorrow}">
-										        <c:choose>
-										            <c:when test="${borrowObj.status == 'B'}">
-										                <div class="d-flex align-items-center gap-2">
-										                    <button type="button" class="btn btn-sm btn-warning btn-request-return">
-										                        Request for Return
-										                    </button>
-										                </div>
-										            </c:when>
-										            
-										            <c:when test="${borrowObj.status == 'T'}">
-										                <div class="d-flex align-items-center gap-2">
-										                  <button type="button" class="btn btn-sm btn-success btn-open-return-modal">
-															Confirm Received
-										                    </button>
-										                </div>
-										            </c:when>
-										        </c:choose>
-										    </c:when>
-										     <c:otherwise>
+										
+											
 											<c:if test="${borrowObj.status == 'B'
 														 and not empty borrowObj.user_delivery 
 														 and not empty borrowObj.user_receive }">
@@ -345,8 +290,7 @@ a.btn-open-return-modal:hover{
 													Confirm Received
 												</button>
 											</c:if>
-											</c:otherwise>
-											</c:choose>
+											
 										</c:if>
 									</div>
 								</div>

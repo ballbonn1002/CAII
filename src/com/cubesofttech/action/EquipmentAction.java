@@ -145,11 +145,6 @@ public class EquipmentAction extends ActionSupport {
 			    statusLogList = new ArrayList<>();
 			}
 			
-			if (borrow != null && !borrow.isEmpty()) {
-			    request.setAttribute("borrowObj", borrow.get(0));
-			}
-			
-			
 			Collections.reverse(statusLogList); // Reverse the status log to show the latest logs first
 			request.setAttribute("statusLogList", statusLogList);
 			User ur = (User) request.getSession().getAttribute("onlineUser");
@@ -185,13 +180,12 @@ public class EquipmentAction extends ActionSupport {
 			request.setAttribute("borrowlistJSON", new Gson().toJson(borrow));
 			request.setAttribute("userCreate", userCreate);
 			
-			boolean legacyBorrow = false;
-
-			if (borrow != null && !borrow.isEmpty()) {
-			    legacyBorrow = isLegacyBorrow(borrow.get(0));
-			}
-
-			request.setAttribute("isLegacyBorrow", legacyBorrow);
+//			boolean legacyBorrow = false;
+//			if (borrow != null && !borrow.isEmpty()) {
+//			    legacyBorrow = isLegacyBorrow(borrow.get(0));
+//			}
+//
+//			request.setAttribute("isLegacyBorrow", legacyBorrow);
 			
 			
 			return SUCCESS;
@@ -1374,23 +1368,23 @@ public class EquipmentAction extends ActionSupport {
 	}
 	
 	//END JSON API
-	
-	private boolean isLegacyBorrow(Borrow borrow) {
-	    if (borrow == null) {
-	        return false;
-	    }
-
-	    Timestamp migrationDate = Timestamp.valueOf("2026-05-22 00:00:00");
-
-	    boolean isOldData =
-	            borrow.getTimeCreate() != null &&
-	            borrow.getTimeCreate().before(migrationDate);
-
-	    boolean allNewFieldsNull =
-	            borrow.getUser_delivery() == null &&
-	            borrow.getUser_receive() == null;
-
-	    return isOldData && allNewFieldsNull;
-	}
+	//เช็คข้อมูล borrow เดิม ก่อนเพิ่ม process
+//	private boolean isLegacyBorrow(Borrow borrow) {
+//	    if (borrow == null) {
+//	        return false;
+//	    }
+//
+//	    Timestamp migrationDate = Timestamp.valueOf("2026-05-22 00:00:00");
+//
+//	    boolean isOldData =
+//	            borrow.getTimeCreate() != null &&
+//	            borrow.getTimeCreate().before(migrationDate);
+//
+//	    boolean allNewFieldsNull =
+//	            borrow.getUser_delivery() == null &&
+//	            borrow.getUser_receive() == null;
+//
+//	    return isOldData && allNewFieldsNull;
+//	}
 	
 }

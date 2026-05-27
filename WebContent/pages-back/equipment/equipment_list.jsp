@@ -957,33 +957,6 @@
                 
                 var status = (item.status || '').trim();
                 
-                var migrationDate = new Date('2026-05-22T00:00:00');
-                var borrowCreateDate = borrow.timeCreate ? new Date(borrow.timeCreate) : null;
-
-                var isLegacyBorrow = borrowCreateDate && borrowCreateDate < migrationDate;
-				/* 
-                console.log('borrow = ', borrow);
-                console.log('userDelivery = ', borrow.user_delivery);
-                console.log('userReceive = ', borrow.user_receive);
-                console.log('userReturn = ', borrow.user_return);
-                console.log('status = ', item.status); */
-				if(isLegacyBorrow){
-					if(borrow.status === 'B' && !hasReturn && !hasReturnReceive){
-						/* แสดง RFR */
-			            btnReturn.removeClass('d-none');
-			            bindRequestReturnButton();
-					}
-					if(borrow.status === 'T' && !hasReturn && !hasReturnReceive){
-						/* WFR */
-						 btnWaitingReturn.removeClass('d-none');
-					}
-					if(borrow.status === 'T' && hasReturn && !hasReturnReceive){
-						/* CR */
-						 btnConfirmReceived.removeClass('d-none');
-						 bindConfirmReceivedButton();
-					}
-				
-				}else{
 					if(borrow.status === 'B' && hasDelivery && !hasReceive && !hasReturn && !hasReturnReceive){
 						/* แสดง WTR */
 			            btnWaitingReceive.removeClass('d-none');
@@ -1002,7 +975,7 @@
 						 btnConfirmReceived.removeClass('d-none');
 						 bindConfirmReceivedButton();
 					}
-				}
+				
              
         	}
         }

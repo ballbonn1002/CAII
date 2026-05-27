@@ -1272,7 +1272,7 @@ th.sort:hover {
 		}
 
 		
-		function setBorrowModalButtons(status, userDelivery, userReceive, userReturn, userReturnReceive,isLegacyBorrow) {
+		function setBorrowModalButtons(status, userDelivery, userReceive, userReturn, userReturnReceive) {
 			/* $('#btn_request_return').hide();
 			$('#btn_cancel_borrow').hide();
 			$('#btn_confirm_borrow').hide();
@@ -1288,18 +1288,6 @@ th.sort:hover {
 			    .removeClass('btn-secondary')
 			    .text('Deliver Equipment');
 
-			if (isLegacyBorrow) {
-			    if (status === 'B') {
-			        $('#btn_request_return').show();
-			        return;
-			    }
-			    if (status === 'T') {
-			        $('#btn_confirm_received').show();
-			        return;
-			    }
-
-			    return;
-			}
 			if (status === 'W') {
 			    $('#btn_cancel_borrow').show();
 			    $('#btn_confirm_borrow').show();
@@ -1383,15 +1371,13 @@ th.sort:hover {
 				$('#moreDetailWrapper').hide();
 			}
 		
-			const legacy = isLegacyBorrow(item);
 			/* setBorrowModalButtons(status); */
 			setBorrowModalButtons(
 			    item.statusborrow,
 			    item.user_delivery,
 			    item.user_receive,
 			    item.user_return,
-			    item.user_return_receive,
-			    legacy
+			    item.user_return_receive
 			);
 		
 			// เก็บข้อมูลไว้ใช้ปุ่ม Edit/Cancel/Confirm
@@ -1864,21 +1850,6 @@ th.sort:hover {
 	    return true;
 	}
 	
-	function isLegacyBorrow(item) {
-	    if (!item) return false;
-
-	    const borrowCreateStr = item.borrow_time_create;
-	    if (!borrowCreateStr) return false;
-
-	    const migrationDate = new Date("2026-05-22T00:00:00");
-	    const createDate = new Date(String(borrowCreateStr).replace(' ', 'T'));
-
-	    const isOldData = createDate < migrationDate;
-	    
-	    const noDeliveryTracking = !item.user_delivery && !item.user_receive;
-
-	    return isOldData && noDeliveryTracking;
-	}
 	</script>
 </body>
 </html>

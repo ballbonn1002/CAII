@@ -709,8 +709,8 @@
 						                            <div id="displayMode">
 						                                <img src="${imgPathSignature}"  class="" />
 						                                 <p id="signatureFileName" class="text-gray-700 fs-5 fw-normal mt-2">
-							                        ${signatureFileName}
-							                    </p>
+							                        		${signatureFileName}
+							                    		</p>
 						                            </div>
 						                        </c:when>
 						                        
@@ -740,7 +740,7 @@
 						                </div>
 						
 						                <div class="d-flex gap-2 align-items-center">
-						                 	<c:if test="${not empty imgPathSignature}">
+						                 	<%-- <c:if test="${not empty imgPathSignature}">
 								                <a href="signature_perform_delete?userId=${user.id}" onclick="return confirmDelete(this.href);"
 													class="btn btn-icon btn-light-danger btn-sm" title="Delete">
 													<i class="ki-duotone ki-trash fs-2"><span
@@ -748,7 +748,7 @@
 														class="path3"></span><span class="path4"></span><span
 														class="path5"></span></i>
 												</a>
-											</c:if>
+											</c:if> --%>
 						                    <button type="button" id="mainActionBtn" class="btn btn-light">Upload</button>
 						                </div>
 						                <input type="hidden" id="hasSignature" value="${not empty imgPathSignature}" />
@@ -954,7 +954,7 @@
 															</div>
 														</c:when>
 														
-														<c:when test="${item.status == 'T'
+														<%-- <c:when test="${item.status == 'T'
 																		and empty item.user_delivery 
 																		and empty item.user_receive
 																		and empty item.user_return}">
@@ -963,7 +963,7 @@
 																	Return
 																</button>
 															</div>
-														</c:when>
+														</c:when> --%>
 
 														<c:when test="${item.status == 'T'
 																		and not empty item.user_delivery 
@@ -976,7 +976,6 @@
 																</button>
 															</div>
 														</c:when>
-														
 														
 														<c:otherwise>
 														</c:otherwise>
@@ -1720,7 +1719,7 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 </script>
 
-<script>
+<!-- <script>
 	function confirmDelete(url){
 		
 	    Swal.fire({
@@ -1742,7 +1741,7 @@ document.addEventListener("DOMContentLoaded", function () {
 	    });
 	    return false;
 	}
-	</script>
+</script> -->
 	
 
 <script >
@@ -1857,7 +1856,7 @@ $(document).on('click', '.btnReceived',function(e){
         	}
         	});
 
-        	})
+})
 
         	//----- Return -----
 
