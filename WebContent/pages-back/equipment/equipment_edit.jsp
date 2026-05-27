@@ -299,94 +299,50 @@
                                     </div>
                                     <div class="card-toolbar">
                                         <c:if test="${not empty borrowlistwithUser}">
-                                        <c:choose>
-											<c:when test="${isLegacyBorrow}">
-										        <c:choose>
-										            <c:when test="${borrowlistwithUser[0].status == 'B'}">
-										                <div class="d-flex align-items-center gap-2">
-										                    <button type="button" class="btn btn-sm btn-warning btn-request-return">
-										                        Request for Return
-										                    </button>
-										                </div>
-										            </c:when>
-										            
-										            <c:when test="${borrowlistwithUser[0].status == 'T'
-										             				and not empty borrowObj['user_return']
-															 		and empty borrowObj['user_return_receive']}">
-										                <div class="d-flex align-items-center gap-2">
-										                  <button type="button" class="btn btn-sm btn-success btn-open-return-modal" data-bs-toggle="modal" data-bs-target="#modal_return_action">
+	                                        <c:choose>
+													<c:when test="${borrowlistwithUser[0].status == 'B'
+																 and not empty borrowlistwithUser[0].user_delivery
+																 and empty borrowlistwithUser[0].user_receive
+																 and empty borrowlistwithUser[0].user_return
+																 and empty borrowlistwithUser[0].user_return_receive}">
+														<button type="button" class="btn btn-sm btn-secondary" disabled>
+															Waiting to Receive
+														</button>
+													</c:when>
+													
+													<c:when test="${borrowlistwithUser[0].status == 'B'
+																 and not empty borrowlistwithUser[0].user_delivery
+																 and not empty borrowlistwithUser[0].user_receive
+																 and empty borrowlistwithUser[0].user_return
+																 and empty borrowlistwithUser[0].user_return_receive}">
+														<button type="button" class="btn btn-sm btn-warning btn-request-return">
+															Request for Return
+														</button>
+													</c:when>
+													
+													<c:when test="${borrowlistwithUser[0].status == 'T'
+																 and not empty borrowlistwithUser[0].user_delivery
+																 and not empty borrowlistwithUser[0].user_receive
+																 and empty borrowlistwithUser[0].user_return
+																 and empty borrowlistwithUser[0].user_return_receive}">
+														<button type="button" class="btn btn-sm btn-secondary" disabled>
+																Waiting for Return
+														</button>
+													</c:when>
+													
+													<c:when test="${borrowlistwithUser[0].status == 'T'
+																 and not empty borrowlistwithUser[0].user_delivery
+																 and not empty borrowlistwithUser[0].user_receive
+																 and not empty borrowlistwithUser[0].user_return
+																 and empty borrowlistwithUser[0].user_return_receive}">
+														<button type="button" class="btn btn-sm btn-success" data-bs-toggle="modal" data-bs-target="#modal_return_action">
 															Confirm Received
-										                    </button>
-										                </div>
-										            </c:when>
-										            
-										            <c:when test="${borrowlistwithUser[0].status == 'T'
-										             				and empty borrowObj['user_return']
-															 		and empty borrowObj['user_return_receive']}">
-										                <div class="d-flex align-items-center gap-2">
-										                  <button type="button" class="btn btn-sm btn-secondary" disabled>
-															 Waiting for Return
-										                    </button>
-										                </div>
-										            </c:when>
-										        </c:choose>
-										    </c:when>
-										     <c:otherwise>
-												<c:if test="${borrowlistwithUser[0].status == 'B'
-															 and not empty borrowObj['user_delivery']
-															 and not empty borrowObj['user_receive'] }">
-													<button type="button" class="btn btn-sm btn-warning btn-request-return">
-														Request for Return
-													</button>
-												</c:if>
+														</button>
+													</c:when>
+													
+													<c:otherwise></c:otherwise>
 												
-												<c:if test="${borrowlistwithUser[0].status == 'T'
-															 and not empty borrowObj['user_delivery']
-															 and not empty borrowObj['user_receive']
-															 and empty borrowObj['user_return']
-															 and empty borrowObj['user_return_receive']}">
-													<button type="button" class="btn btn-sm btn-secondary" disabled>
-															Waiting for Return
-													</button>
-												</c:if>
-												
-												<c:if test="${borrowlistwithUser[0].status == 'T'
-															 and not empty borrowObj['user_delivery']
-															 and not empty borrowObj['user_receive']
-															 and not empty borrowObj['user_return']
-															 and empty borrowObj['user_return_receive']}">
-													<button type="button" class="btn btn-sm btn-success" data-bs-toggle="modal" data-bs-target="#modal_return_action">
-														Confirm Received
-													</button>
-												</c:if>
-											</c:otherwise>
-											</c:choose>
-                                            <%-- <c:if test="${borrowlistwithUser[0].status == 'B'
-														 and not empty borrowObj['user_delivery']
-														 and not empty borrowObj['user_receive']}">
-                                                <button type="button" class="btn btn-sm btn-warning btn-request-return" >
-                                                    Request for Return
-                                                </button>
-                                            </c:if>
-                                            
-                                            <c:if test="${borrowlistwithUser[0].status == 'T'
-														 and not empty borrowObj['user_delivery']
-														 and not empty borrowObj['user_receive']
-														 and empty borrowObj['user_return']}">
-                                                <button type="button" class="btn btn-sm btn-secondary" disabled>
-														Waiting for Return
-												</button>
-                                            </c:if>
-                                            
-                                             <c:if test="${borrowlistwithUser[0].status eq 'T'
-													        and not empty borrowObj['user_delivery']
-													        and not empty borrowObj['user_receive']
-													        and not empty borrowObj['user_return']
-													        and empty borrowObj['user_return_receive']}">
-												<button type="button" class="btn btn-sm btn-success" data-bs-toggle="modal" data-bs-target="#modal_return_action">
-													Confirm Received
-												</button>
-											</c:if> --%>
+												</c:choose>
                                         </c:if>
                                     </div>
                                 </div>

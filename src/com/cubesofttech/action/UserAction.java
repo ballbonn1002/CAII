@@ -2161,6 +2161,12 @@ public class UserAction extends ActionSupport {
 				userDAO.update(u);
 
 			}
+			
+			String redirectPage = request.getParameter("redirectPage");
+	        if ("check_in_out".equals(redirectPage)) {
+	            response.sendRedirect("check_in_out");
+	            return null;
+	        }
 
 			return SUCCESS;
 		} catch (Exception e) {
@@ -2201,6 +2207,13 @@ public class UserAction extends ActionSupport {
 				}
 				
 			}
+			
+			String redirectPage = request.getParameter("redirectPage");
+	        if ("check_in_out".equals(redirectPage)) {
+	            response.sendRedirect("check_in_out");
+	            return null;
+	        }
+
 			
 			return SUCCESS;
 		} catch (Exception e) {

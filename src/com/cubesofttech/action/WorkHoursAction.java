@@ -1,6 +1,8 @@
 package com.cubesofttech.action;
 
+import java.io.File;
 import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -10,8 +12,10 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -29,7 +33,10 @@ import com.cubesofttech.dao.WorkHoursDAO;
 import com.cubesofttech.model.Holiday;
 import com.cubesofttech.dao.JobSiteTeamDAO;
 import com.cubesofttech.model.Announcement;
+import com.cubesofttech.model.FileUpload;
 import com.cubesofttech.dao.AnnouncementDAO;
+import com.cubesofttech.dao.BorrowDAO;
+import com.cubesofttech.dao.FileUploadDAO;
 import com.cubesofttech.model.User;
 import com.cubesofttech.model.WorkHours;
 import com.cubesofttech.service.LogService;
@@ -64,6 +71,10 @@ public class WorkHoursAction extends ActionSupport {
 	private AnnouncementDAO announcementDAO;
 	@Autowired
 	private LogService logService;
+	@Autowired
+	private FileUploadDAO fileuploadDAO;
+	@Autowired
+	private BorrowDAO borrowDAO;
 
 	private Map<String, String> getHeadersInfo(HttpServletRequest request) {
 		String ipAddress = request.getHeader("x-forwarded-for");
@@ -171,6 +182,8 @@ public class WorkHoursAction extends ActionSupport {
 
 			request.setAttribute("allowedDate", workHoursService.calculateAllowedWorkDateIso(currentDate));
 
+			loadNotification(logonUser, ur);
+			
 			return SUCCESS;
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -739,5 +752,103 @@ public class WorkHoursAction extends ActionSupport {
 			e.printStackTrace();
 			return ERROR;
 		}
+	}
+	
+	
+	private void loadNotification(String logonUser, User ur) {
+	    try {
+			User u = userDAO.findById(logonUser);
+			
+			//หาลายเซ็น
+	    	String imgPathSignature = null;
+			String signatureFileName = null;
+			if (u.getPathSignature() != null && u.getPathSignature().contains("_")) {
+				try {
+					String originalFileName = new File(u.getPathSignature()).getName();
+					String fileIdStr = originalFileName.substring(0, originalFileName.indexOf("_"));
+					String typeFile = originalFileName.substring(originalFileName.lastIndexOf("."));
+
+					imgPathSignature = "/upload/user/user_signature_" + fileIdStr + typeFile;
+
+					String server = request.getServletContext().getRealPath("/");
+					File f = new File(server + imgPathSignature);
+					if (!f.exists()) {
+						imgPathSignature = null;
+					}
+
+					FileUpload file = fileuploadDAO.findById(Integer.parseInt(fileIdStr));
+					if (file != null) {
+			            signatureFileName = file.getName()+file.getType();  
+			        }
+					
+				} catch (Exception e) {
+					imgPathSignature = null;
+				}
+			}
+			request.setAttribute("imgPathSignature", imgPathSignature);
+			request.setAttribute("signatureFileName", signatureFileName);
+
+			//หา borrow
+			List<Map<String, Object>> borrow = borrowDAO.getBorrowListByUserId(logonUser);
+			boolean hasNotification = false;
+
+			if (borrow != null && !borrow.isEmpty()) {
+	            // Check Notification
+	            for (Map<String, Object> row : borrow) {
+
+	                String status = row.get("status") != null ? row.get("status").toString() : "";
+	                Object userDelivery = row.get("user_delivery");
+	                Object userReceive = row.get("user_receive");
+	                Object userReturn = row.get("user_return");
+	                Object userReturnReceive = row.get("user_return_receive");
+
+	                boolean isReceiveWaiting = "B".equals(status)
+	                        && userDelivery != null && userReceive == null
+	                        && userReturn == null && userReturnReceive == null;
+
+	                boolean isReturnWaiting = "T".equals(status)
+	                        && userDelivery != null && userReceive != null
+	                        && userReturn == null && userReturnReceive == null;
+
+	                if (isReceiveWaiting || isReturnWaiting) {
+
+	                    hasNotification = true;
+	                    break;
+	                }
+	            }
+	            
+	         // Format Date
+				SimpleDateFormat inputDate = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
+				inputDate.setCalendar(new GregorianCalendar());
+
+				SimpleDateFormat outputDate = new SimpleDateFormat("dd MMM yyyy", Locale.ENGLISH);
+				outputDate.setCalendar(new GregorianCalendar());
+
+				for (Map<String, Object> row : borrow) {
+					Object dateStartObj = row.get("time_create");
+					if (dateStartObj == null) {
+						continue;
+					}
+					String dt = dateStartObj.toString();
+					String[] parts = dt.split(" ");
+
+					String datePart = parts[0];
+					String timePart = parts[1].split("\\.")[0];
+
+					java.util.Date date = inputDate.parse(datePart);
+
+					row.put("formatted_date", outputDate.format(date));
+					row.put("formatted_time", timePart);
+				}
+
+				request.setAttribute("borrowList", borrow);
+				request.setAttribute("hasNotification",hasNotification);
+			} else {
+				request.setAttribute("borrowList", borrow);
+			}
+
+	    } catch (Exception e) {
+	        log.error("loadNotification error", e);
+	    }
 	}
 }
