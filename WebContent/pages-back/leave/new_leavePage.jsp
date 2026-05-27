@@ -743,7 +743,7 @@ $(() => {
 	if (action == 'Edit') {
 		var leave = ${leave};
 		var fileLeave = ${fileLeave};
-		var leaveInfo = JSON.parse('${leaveInfo}');
+		var leaveInfo = ${empty leaveInfo ? '[]' : leaveInfo};
 		user = leave.userId;
 		manager = leave.apprUserId;
 		department = leave.leaveStatusId.toString();

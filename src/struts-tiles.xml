@@ -621,4 +621,12 @@
 		<put-attribute name="body"
 			value="/pages-back/help_support/help_support_edit.jsp" />
 	</definition>
+
+	<!-- File Management -->
+	<definition name="fileManagementList" extends="baseLayout">
+		<put-attribute name="title" value="File Management" />
+		<put-attribute name="body"
+			value="/pages-back/file_management/file_management.jsp" />
+	</definition>
+
 </tiles-definitions>

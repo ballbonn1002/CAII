@@ -1,5 +1,6 @@
 package com.cubesofttech.dao;
 
+import java.util.Date;
 import java.util.List;
 
 import org.hibernate.Criteria;
@@ -152,26 +153,26 @@ public class FileUploadDAOImpl implements FileUploadDAO {
 	        String sql = "SELECT * FROM file WHERE page_id = :ticket_id";
 	        SQLQuery query = session.createSQLQuery(sql);
 	        query.addEntity(FileUpload.class);
-	        query.setParameter("ticket_id", ticket_id);  
+	        query.setParameter("ticket_id", ticket_id);
 	        fileList = query.list();
 	    } catch (Exception e) {
 	        e.printStackTrace();
 	    }
 	    return fileList;
 	}
-	
+
 	/*@Override
 	public void delete(String fileId) throws Exception{
 		 Session session = this.sessionFactory.getCurrentSession();
 		    FileUpload fileUpload = (FileUpload) session.get(FileUpload.class, fileId);
-		    
+
 		    if (fileUpload != null) {
 		        session.delete(fileUpload);
 		    } else {
 		        throw new Exception("No file!");
 		    }
 	}*/
-	
+
 	@Override
 	public List<FileUpload> findByPageAndPageId(String page, String pageId) throws Exception {
 		Session session = this.sessionFactory.getCurrentSession();
@@ -184,12 +185,12 @@ public class FileUploadDAOImpl implements FileUploadDAO {
 			query.setParameter("pageId", pageId);
 
 			fileList = query.list();
-		} catch (Exception e){ 
+		} catch (Exception e){
 			e.printStackTrace();
-		} 
+		}
 		return fileList;
 	}
-	
+
 	public void deletepageandpageid(String page, String PageId) throws Exception {
 		Session session = this.sessionFactory.getCurrentSession();
 		/* List<FileUpload> fileList = null; */
@@ -206,18 +207,18 @@ public class FileUploadDAOImpl implements FileUploadDAO {
 			e.printStackTrace();
 		}
 	}
-	
+
 	@Override
 	public List<FileUpload> findBypageandpageid(String page, String PageId) throws Exception {
 		Session session = this.sessionFactory.getCurrentSession();
-		List<FileUpload> fileList = null; 
+		List<FileUpload> fileList = null;
 		try {
 			String sql = "SELECT * FROM file WHERE page = :page AND page_id = :page_id";
 	        SQLQuery query = session.createSQLQuery(sql);
 	        query.setParameter("page", page);
 	        query.setParameter("page_id", PageId);
 			query.setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
-			fileList = query.list(); 
+			fileList = query.list();
 			Log.debug(query);
 			Log.debug("ssss : ");
 		} catch (Exception e) {
@@ -225,7 +226,7 @@ public class FileUploadDAOImpl implements FileUploadDAO {
 		}
 		return fileList;
 	}
-	
+
 	@Override
 	public void deleteByPathAtc(String path) {
 
@@ -237,6 +238,37 @@ public class FileUploadDAOImpl implements FileUploadDAO {
 		.setParameter("path", path)
 		.executeUpdate();
 	}
-	
+
+	@Override
+	public List<FileUpload> searchFiles(String keyword, Date startDate, Date endDate, String userId) throws Exception {
+		Session session = this.sessionFactory.getCurrentSession();
+		List<FileUpload> fileList = null;
+		try {
+			StringBuilder sql = new StringBuilder("SELECT * FROM file WHERE 1=1 ");
+			sql.append(" AND time_create BETWEEN :startDate AND :endDate ");
+			if (keyword != null && !keyword.trim().isEmpty()) {
+				sql.append(" AND lower(name) LIKE :keyword ");
+			}
+			if (userId != null && !userId.trim().isEmpty()) {
+				sql.append(" AND user_create = :userId ");
+			}
+			sql.append(" ORDER BY time_create DESC");
+			SQLQuery query = session.createSQLQuery(sql.toString());
+			query.addEntity(FileUpload.class);
+			query.setTimestamp("startDate", startDate);
+			query.setTimestamp("endDate", endDate);
+			if (keyword != null && !keyword.trim().isEmpty()) {
+				query.setString("keyword", "%" + keyword.toLowerCase() + "%");
+			}
+			if (userId != null && !userId.trim().isEmpty()) {
+				query.setString("userId", userId);
+			}
+			fileList = query.list();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return fileList;
+	}
+
 
 }
