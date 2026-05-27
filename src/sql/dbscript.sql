@@ -279,15 +279,17 @@ ADD `active` VARCHAR(1) COLLATE utf8mb3_general_ci NOT NULL DEFAULT '1';
 -- 27/05/2026 Got(Intern) : Add permissions File Management in authorized_object table --
 INSERT INTO `authorized_object` (`authorized_object_id`, `name`, `description`, `active`, `time_create`, `time_update`, `authorized_object_group_id`) 
 VALUES 
-('file.view', 'file.view', 'ดูและจัดการไฟล์ของตนเอง (File Management)', '1', NOW(), NOW(), '1'),
-('file.viewall', 'file.viewall', 'ดูและจัดการไฟล์ทั้งหมดในระบบ (File Management)', '1', NOW(), NOW(), '1')
-ON DUPLICATE KEY UPDATE `active` = '1';
+('file.view', 'file.view', 'ดูและจัดการไฟล์ของตนเอง (File Management)', '1', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '1'),
+('file.viewall', 'file.viewall', 'ดูและจัดการไฟล์ทั้งหมดในระบบ (File Management)', '1', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '1');
 
 -- Add permissions for File Management to admin role in role_authorized_object table --
 INSERT INTO `role_authorized_object` (`role_id`, `authorized_object_id`, `time_create`, `time_update`) 
 VALUES 
-('admin', 'file.view', NOW(), NOW()),
-('admin', 'file.viewall', NOW(), NOW())
-ON DUPLICATE KEY UPDATE `time_update` = NOW();
+('admin', 'file.view', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+('admin', 'file.viewall',CURRENT_TIMESTAMP,CURRENT_TIMESTAMP);
+
+# PROD 27 MAY 2026 #2
+
+
 
 
