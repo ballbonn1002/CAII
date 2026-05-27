@@ -273,6 +273,8 @@ ADD COLUMN `time_return_receive` TIMESTAMP NULL DEFAULT NULL;
 ALTER TABLE `exp_travel_type`
 ADD `active` VARCHAR(1) COLLATE utf8mb3_general_ci NOT NULL DEFAULT '1';
 
+# PROD 27 MAY 2026
+
 
 -- 27/05/2026 Got(Intern) : Add permissions File Management in authorized_object table --
 INSERT INTO `authorized_object` (`authorized_object_id`, `name`, `description`, `active`, `time_create`, `time_update`, `authorized_object_group_id`) 
