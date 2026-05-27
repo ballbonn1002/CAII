@@ -291,3 +291,42 @@ VALUES
 ON DUPLICATE KEY UPDATE `time_update` = NOW();
 
 
+-- 27/05/2026 June: Update borrow records created before 22 May 2026 --
+-- Update records with status = 'B' --
+UPDATE borrow
+SET 
+    user_delivery = user_create,
+    user_receive  = user_borrowid,
+    time_delivery = time_create,
+    time_receive  = time_create
+WHERE 
+    status = 'B'
+    AND time_create < '2026-05-22 00:00:00'
+    AND user_delivery IS NULL   
+    AND user_receive  IS NULL
+    AND time_delivery IS NULL
+    AND time_receive  IS NULL;
+
+-- Update records with status = 'R' --
+UPDATE borrow
+SET 
+    user_delivery        = user_create,
+    user_receive         = user_borrowid,
+    time_delivery        = time_create,
+    time_receive         = time_create,
+    user_return          = user_borrowid,
+    user_return_receive  = user_update,
+    time_return          = time_update,
+    time_return_receive  = time_update
+WHERE 
+    status = 'R'
+    AND time_create < '2026-05-22 00:00:00'
+    AND user_delivery       IS NULL
+    AND user_receive        IS NULL
+    AND time_delivery       IS NULL
+    AND time_receive        IS NULL
+    AND user_return         IS NULL
+    AND user_return_receive IS NULL
+    AND time_return         IS NULL
+    AND time_return_receive IS NULL;
+
