@@ -273,5 +273,7 @@ ADD COLUMN `time_return_receive` TIMESTAMP NULL DEFAULT NULL;
 ALTER TABLE `exp_travel_type`
 ADD `active` VARCHAR(1) COLLATE utf8mb3_general_ci NOT NULL DEFAULT '1';
 
+# PROD 27 MAY 2026
+
 
 
