@@ -222,6 +222,23 @@ String targetURL = Constant.getWebContext2() + "/authorization?token=" + token;
 					</div> -->
 					<!--end:Menu item-->
 					<!--begin:Menu item-->
+
+					<!--File Management-->
+					<div class="menu-item">
+						<a class="menu-link" href="file_management"
+							data-route="file_management"> <span class="menu-icon">
+								<i class="ki-duotone ki-folder fs-1"> <span class="path1"></span>
+									<span class="path2"></span>
+							</i>
+						</span> <span class="menu-title">File Management</span> <i
+							class="ki-duotone ki-check-circle fs-3 text-success"> <span
+								class="path1"></span><span class="path2"></span>
+						</i>
+						</a>
+					</div>
+					<!--File Management-->
+
+					<!--begin:Menu item-->
 					<div class="menu-item">
 						<a class="menu-link" href="my_travel" data-route="my_travel">
 							<span class="menu-icon"> <i

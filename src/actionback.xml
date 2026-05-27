@@ -1723,6 +1723,26 @@
 			method="execute">
 			<result name="none" type="httpheader" />
 		</action>
+		
+		<!-- File Management -->
+		<action name="file_management"
+			class="com.cubesofttech.action.FileManagementAction" method="list">
+			<result name="success" type="tiles">fileManagementList</result>
+			<result name="error">/index.jsp</result>
+			<result name="login" type="redirect">/index.jsp</result>
+		</action>
+		<action name="file_management_upload"
+			class="com.cubesofttech.action.FileManagementAction" method="upload">
+			<result name="success" type="redirect">file_management</result>
+			<result name="error" type="redirect">file_management</result>
+			<result name="login" type="redirect">/index.jsp</result>
+		</action>
+		<action name="file_management_delete"
+			class="com.cubesofttech.action.FileManagementAction" method="delete">
+			<result name="success" type="redirect">file_management</result>
+			<result name="error" type="redirect">file_management</result>
+			<result name="login" type="redirect">/index.jsp</result>
+		</action>
 	</package>
 
 </struts>
