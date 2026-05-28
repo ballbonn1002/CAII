@@ -89,8 +89,14 @@ public class ExpTravelTypeDAOImpl implements ExpTravelTypeDAO {
 
 		try {
 
-			String sql = "SELECT et.exp_travel_type_id, COUNT(*) " + "FROM exp_travel_type et "
-					+ "JOIN expense_detail ed ON et.exp_travel_type_id = ed.go_by " + "GROUP BY et.exp_travel_type_id";
+			String sql = "SELECT " + "  et.exp_travel_type_id, "
+					+ "    COALESCE(ed.cnt, 0) + COALESCE(e.cnt, 0) AS use_count " + "FROM exp_travel_type et " +
+
+					"LEFT JOIN ( " + "    SELECT go_by, COUNT(*) AS cnt " + "    FROM expense_detail "
+					+ "    GROUP BY go_by " + ") ed " + "ON et.exp_travel_type_id = ed.go_by " +
+
+					"LEFT JOIN ( " + "    SELECT dt_by, COUNT(*) AS cnt " + "    FROM expense " + "    GROUP BY dt_by "
+					+ ") e " + "ON et.exp_travel_type_id = e.dt_by";
 
 			List<Object[]> rows = session.createSQLQuery(sql).list();
 
@@ -107,5 +113,38 @@ public class ExpTravelTypeDAOImpl implements ExpTravelTypeDAO {
 		}
 
 		return result;
+	}
+
+	@Override
+	public List<ExpTravelType> findAllActive() throws Exception {
+
+		Session session = this.sessionFactory.getCurrentSession();
+
+		List<ExpTravelType> list = null;
+
+		try {
+
+			String sql = "SELECT * FROM exp_travel_type WHERE active = '1'";
+
+			list = session.createSQLQuery(sql).addEntity(ExpTravelType.class).list();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		return list;
+	}
+
+	@Override
+	public boolean checkDuplicateName(String typeName) throws Exception {
+
+		Session session = this.sessionFactory.getCurrentSession();
+
+		String sql = "SELECT COUNT(*) " + "FROM exp_travel_type " + "WHERE LOWER(name) = :name";
+
+		Number count = (Number) session.createSQLQuery(sql).setParameter("name", typeName.toLowerCase().trim())
+				.uniqueResult();
+
+		return count.intValue() > 0;
 	}
 }

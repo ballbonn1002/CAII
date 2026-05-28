@@ -751,9 +751,10 @@
 		<action name="travel_setting_add"
 			class="com.cubesofttech.action.TravelAction"
 			method="travelSettingAdd">
-			<result name="success" type="redirectAction">
-				<param name="actionName">travel_setting</param>
+			<result type="json">
+				<param name="includeProperties">status</param>
 			</result>
+
 			<result name="error">/index.jsp</result>
 		</action>
 		<!-- Add ================================================================================================== -->
@@ -1413,15 +1414,17 @@
 			<result name="success" type="redirectAction">my_profile</result>
 			<result name="error" type="tiles">/index.jsp</result>
 		</action>
-		
+
 		<action name="received_equipment"
-			class="com.cubesofttech.action.BorrowingAction" method="received_equipment">
+			class="com.cubesofttech.action.BorrowingAction"
+			method="received_equipment">
 			<result name="success" type="redirect">my_profile</result>
 			<result name="error">/index.jsp</result>
 		</action>
-		
+
 		<action name="return_equipment"
-			class="com.cubesofttech.action.BorrowingAction" method="return_equipment">
+			class="com.cubesofttech.action.BorrowingAction"
+			method="return_equipment">
 			<result name="success" type="redirect">my_profile</result>
 			<result name="error">/index.jsp</result>
 		</action>
@@ -1548,22 +1551,23 @@
 			class="com.cubesofttech.action.BorrowingAction"
 			method="returnMyNewBorrow">
 		</action>
-		
+
 		<action name="eBorrowLog"
 			class="com.cubesofttech.action.BorrowingAction" method="eBorrowLog">
 		</action>
-		
+
 		<action name="deliver_equipment"
-			class="com.cubesofttech.action.BorrowingAction" method="deliver_equipment">
+			class="com.cubesofttech.action.BorrowingAction"
+			method="deliver_equipment">
 			<result name="success" type="redirect">borrow_edit?id=${id}</result>
 			<result name="error">/index.jsp</result>
 		</action>
-		
+
 		<action name="request_return"
 			class="com.cubesofttech.action.BorrowingAction"
 			method="request_return">
 		</action>
-	
+
 		<!-- ========================== Work Log ============================== -->
 		<action name="work_log"
 			class="com.cubesofttech.action.WorkLogAction" method="open">

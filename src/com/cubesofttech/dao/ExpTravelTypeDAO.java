@@ -11,6 +11,8 @@ public interface ExpTravelTypeDAO {
 
     List<ExpTravelType> findAll() throws Exception;
     
+    List<ExpTravelType> findAllActive() throws Exception;
+    
     Map<Long, Integer> getCountUseType() throws Exception;
 
     ExpTravelType findById(Long expTravelTypeId) throws Exception;
@@ -20,4 +22,6 @@ public interface ExpTravelTypeDAO {
     void delete(ExpTravelType travelType) throws Exception;
 
     Long getMaxId() throws Exception;
+    
+    boolean checkDuplicateName(String typeName) throws Exception;
 }

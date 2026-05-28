@@ -668,7 +668,7 @@
 				<div class="modal-body px-8 py-6">
 
 					<div class="row mb-10">
-						<div class="col-6 d-flex align-items-center gap-5">
+						<div class="col-6 d-flex align-items-start gap-5">
 							<span id="m_expenseId" class="fw-bold fs-5 text-primary"></span>
 							<%-- ✅ Draft ไม่มี status badge — ซ่อนถ้าว่าง --%>
 							<span id="m_statusBadge" class="fs-7 fw-semibold px-3 py-2"></span>

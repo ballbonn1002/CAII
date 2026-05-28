@@ -45,10 +45,10 @@ public class TravelAction extends ActionSupport {
 	public static final String LOGOPATH = "logoPath";
 	public static final String JASPERPATH = "/WEB-INF/classes/jasper";
 	public static final String IMAGEPATH = "/images";
-	
+
 	private Map<String, Object> jsonData;
-
-
+	
+	private String status;
 
 	Logger log = Logger.getLogger(getClass());
 
@@ -110,9 +110,17 @@ public class TravelAction extends ActionSupport {
 	public void setFileUploadId(String v) {
 		this.fileUploadId = v;
 	}
-	
+
 	public Map<String, Object> getJsonData() {
 		return jsonData;
+	}
+	
+	public String getStatus() {
+	    return status;
+	}
+
+	public void setStatus(String status) {
+	    this.status = status;
 	}
 
 	// ===================== หน้า add form =====================
@@ -128,7 +136,7 @@ public class TravelAction extends ActionSupport {
 					new com.google.gson.reflect.TypeToken<List<Map<String, Object>>>() {
 					}.getType());
 
-			List<ExpTravelType> exptr = expTravelTypeDAO.findAll();
+			List<ExpTravelType> exptr = expTravelTypeDAO.findAllActive();
 			request.setAttribute("userListObj", userListObj);
 			request.setAttribute("expTravelTypeList", exptr);
 			return SUCCESS;
@@ -602,7 +610,7 @@ public class TravelAction extends ActionSupport {
 			List<Map<String, Object>> userListObj = new Gson().fromJson(userJSON,
 					new com.google.gson.reflect.TypeToken<List<Map<String, Object>>>() {
 					}.getType());
-			List<ExpTravelType> exptr = expTravelTypeDAO.findAll();
+			List<ExpTravelType> exptr = expTravelTypeDAO.findAllActive();
 
 			Gson gson = new Gson();
 			request.setAttribute("travelFiles", travelFiles);
@@ -1607,45 +1615,79 @@ public class TravelAction extends ActionSupport {
 	// ============== Travel Setting Add =============
 	public String travelSettingAdd() {
 
-		try {
-			HttpServletRequest request = ServletActionContext.getRequest();
-			String typeDescription = request.getParameter("typeDescription");
-			String typeName = request.getParameter("typeName");
-			String typeActive = request.getParameter("typeActive");
+	    try {
 
+	        HttpServletRequest request = ServletActionContext.getRequest();
 
-			if ("on".equals(typeActive)) {
-				typeActive = "1";
-			} else {
-				typeActive = "0";
-			}
+	        String typeDescription = request.getParameter("typeDescription");
+	        String typeName = request.getParameter("typeName");
+	        String typeActive = request.getParameter("typeActive");
 
-			User onlineUser = (User) request.getSession().getAttribute("onlineUser");
-			if (onlineUser == null) {
-				return ERROR;
-			}
+	        // trim กัน space
+	        typeName = typeName == null ? "" : typeName.trim();
 
-			ExpTravelType newExpTravelType = new ExpTravelType();
-			Timestamp now = DateUtil.getCurrentTime();
+	        // convert active
+	        if ("on".equals(typeActive)) {
+	            typeActive = "1";
+	        } else {
+	            typeActive = "0";
+	        }
 
-			newExpTravelType.setExpTravelTypeId(expTravelTypeDAO.getMaxId() + 1);
-			newExpTravelType.setName(typeName);
-			newExpTravelType
-					.setDescription(typeDescription == null || typeDescription.isEmpty() ? null : typeDescription);
-			newExpTravelType.setActive(typeActive);
-			newExpTravelType.setTimeCreate(now);
-			newExpTravelType.setTimeUpdate(now);
-			newExpTravelType.setUserCreate(onlineUser.getId());
-			newExpTravelType.setUserUpdate(onlineUser.getId());
+	        User onlineUser =
+	                (User) request.getSession().getAttribute("onlineUser");
 
-			expTravelTypeDAO.save(newExpTravelType);
+	        if (onlineUser == null) {
 
-			return SUCCESS;
+	            return ERROR;
+	        }
+	   
 
-		} catch (Exception e) {
-			e.printStackTrace();
-			return ERROR;
-		}
+	        // ================= CHECK DUPLICATE =================
+	        boolean isDuplicate =
+	                expTravelTypeDAO.checkDuplicateName(typeName);
+
+	        if (isDuplicate) {
+
+	            status = "duplicate";
+
+	            return SUCCESS;
+	        }
+	        
+	    
+
+	        // ================= SAVE =================
+	        ExpTravelType newExpTravelType = new ExpTravelType();
+
+	        Timestamp now = DateUtil.getCurrentTime();
+
+	        newExpTravelType.setExpTravelTypeId(
+	                expTravelTypeDAO.getMaxId() + 1);
+
+	        newExpTravelType.setName(typeName);
+
+	        newExpTravelType.setDescription(
+	                typeDescription == null || typeDescription.isEmpty()
+	                        ? null
+	                        : typeDescription);
+
+	        newExpTravelType.setActive(typeActive);
+
+	        newExpTravelType.setTimeCreate(now);
+	        newExpTravelType.setTimeUpdate(now);
+
+	        newExpTravelType.setUserCreate(onlineUser.getId());
+	        newExpTravelType.setUserUpdate(onlineUser.getId());
+
+	        expTravelTypeDAO.save(newExpTravelType);
+
+	        status = "success";
+
+	        return SUCCESS;
+
+	    } catch (Exception e) {
+
+	        return ERROR;
+	    }
 	}
 
 	// ============== Travel Setting Edit =============
@@ -1665,7 +1707,7 @@ public class TravelAction extends ActionSupport {
 			ExpTravelType expTravelType = expTravelTypeDAO.findById(typeIdLong);
 
 			jsonData = new HashMap<>();
-			
+
 			jsonData.put("expTravelTypeId", expTravelType.getExpTravelTypeId());
 			jsonData.put("name", expTravelType.getName());
 			jsonData.put("description", expTravelType.getDescription());

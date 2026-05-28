@@ -11,6 +11,14 @@
 <meta charset="UTF-8">
 <title>Travel Setting</title>
 
+<!-- Metronic core -->
+<link
+	href="${pageContext.request.contextPath}/assets/plugins/global/plugins.bundle.css"
+	rel="stylesheet" type="text/css" />
+<script
+	src="${pageContext.request.contextPath}/assets/plugins/global/plugins.bundle.js"></script>
+
+
 <fmt:setLocale value="en_US" />
 <fmt:setTimeZone value="Asia/Bangkok" />
 
@@ -88,7 +96,12 @@
 
 						<!--Header-->
 						<div class="card-header border-0 pt-6 mb-6 align-items-start">
-
+							<!--Btn Back-->
+							<div class="d-flex flex-wrap my-1">
+								<a href="travel_approve" class="btn btn-secondary btn-lg">
+									Back </a>
+							</div>
+							<!--Btn Back-->
 							<div class="card-title">
 								<h1 class="page-heading d-flex text-gray-900 fw-bold fs-3 my-0">
 									Travel Expense Type List</h1>
@@ -193,7 +206,7 @@
 	<div class="modal fade" tabindex="-1" id="modal_add_type">
 		<div class="modal-dialog">
 			<div class="modal-content">
-				<form method="POST" action="travel_setting_add" id="addNewTypeform">
+				<form method="POST" action="travel_setting_add" id="addNewTypeForm">
 					<div class="modal-header">
 						<h3 class="modal-title">Add New Type</h3>
 						<!--begin::Close-->
@@ -294,7 +307,7 @@
 							</label>
 							<div class="form-check form-switch">
 								<input class="form-check-input" type="checkbox" role="switch"
-									id="editTypeActive" name="typeActive"/>
+									id="editTypeActive" name="typeActive" />
 							</div>
 						</div>
 					</div>
@@ -406,6 +419,57 @@
 								});
 							});
 					/* Modal Edit */
+					
+					$('#addNewTypeForm').on('submit', function(e) {
+
+					    e.preventDefault();
+
+					    $.ajax({
+
+					        url: 'travel_setting_add',
+					        type: 'POST',
+					        data: $(this).serialize(),
+					        dataType: 'json',
+
+					        success: function(res) {
+						
+					            // duplicate
+					            if (res.status === 'duplicate') {
+
+					                Swal.fire({
+					                    icon: 'warning',
+					                    title: 'Duplicate Name',
+					                    text: 'This type name already exists.'
+					                });
+
+					                return;
+					            }
+
+					            // success
+					            if (res.status === 'success') {
+
+					                Swal.fire({
+					                    icon: 'success',
+					                    title: 'Success',
+					                    text: 'Saved successfully.',
+					                    timer: 1500,
+					                    showConfirmButton: false
+					                }).then(() => {
+					                    location.reload();
+					                });
+
+					                return;
+					            }
+					            
+					        },
+
+					        error: function(xhr) {
+
+					        	console.log(xhr);
+								alert('Cannot load type data');
+					        }
+					    });
+					});
 
 				});
 
