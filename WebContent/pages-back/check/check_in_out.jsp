@@ -1188,7 +1188,8 @@
 							        and empty item.user_receive
 							        and empty item.user_return
 							        and empty item.user_return_receive}">
-						<div class="d-flex align-items-center justify-content-between border border-warning rounded-2 p-6 ">
+						<!-- <div class="d-flex align-items-center justify-content-between border border-warning rounded-2 p-6 "> -->
+						<div class="d-flex flex-column flex-md-row align-items-start align-items-md-center justify-content-between border border-warning rounded-2 p-6 gap-4">
 							<div class="d-flex gap-5 align-items-center ">
 								<div class="d-flex flex-wrap align-items-center gap-9">
 									<div class="d-flex flex-column align-items-center border rounded p-4 text-center min-w-125px">
@@ -1267,7 +1268,7 @@
 								</div>
 							</div>
 							
-							<button type="button" class="btn btn-success btnReceived" data-id="${item.borrow_id}" 
+							<button type="button" class="btn btn-success btnReceived w-100 w-md-auto" data-id="${item.borrow_id}" 
 								<c:if test="${empty imgPathSignature}">disabled</c:if>
     						>Received</button>
 						</div>
@@ -1278,7 +1279,8 @@
 							        and not empty item.user_receive
 							        and empty item.user_return
 							        and empty item.user_return_receive}">
-						<div class="d-flex align-items-center justify-content-between border border-warning rounded-2 p-6 ">
+						<!-- <div class="d-flex align-items-center justify-content-between border border-warning rounded-2 p-6 "> -->
+						<div class="d-flex flex-column flex-md-row align-items-start align-items-md-center justify-content-between border border-warning rounded-2 p-6 gap-4">
 							<div class="d-flex gap-5 align-items-center ">
 								<div class="d-flex flex-wrap align-items-center gap-9">
 									<div class="d-flex flex-column align-items-center border rounded p-4 text-center min-w-125px">
@@ -1357,7 +1359,7 @@
 								</div>
 							</div>
 							
-							 <button type="button" class="btn btn-success btnReturn" data-id="${item.borrow_id}" 
+							 <button type="button" class="btn btn-success btnReturn w-100 w-md-auto" data-id="${item.borrow_id}" 
 								<c:if test="${empty imgPathSignature}">disabled</c:if>
     						>Return</button>
 						</div>
@@ -1406,7 +1408,7 @@ $(document).ready(function() {
 	
 	syncServerTime();
 	setInterval(updateClock, 1000);
-	
+	setTimeout(showNotificationModal, 1500);
 });
 
 // Modal Announcement
@@ -1440,36 +1442,17 @@ setTimeout(showAnnouncements, 1500);
  
 //Modal Notification
 function showNotificationModal() {
-     const modalElement = document.getElementById('notificationModal');
-     if (!modalElement) {
-         return;
-     }
-     const annModal = new bootstrap.Modal(modalElement);
-     annModal.show();
-
-     /* if (modalElement && $(modalElement).find('.carousel-item').length > 0) {
-         const annModal = new bootstrap.Modal(modalElement);
-         annModal.show();
-
-         const carouselItems = $(modalElement).find('.carousel-item');
-         if (carouselItems.length === 1) {
-             $(modalElement).find('.carousel-control-prev, .carousel-control-next').hide();
-             $(modalElement).find('.carousel-indicators').hide();
-         } else {
-             $(modalElement).find('.carousel-control-prev, .carousel-control-next').show();
-             $(modalElement).find('.carousel-indicators').show();
-         }
-
-         $("#btnAcknowledge").off("click").on("click", function() {
-             annModal.hide();
-             console.log("Announcement acknowledged.");
-         });
-     } else {
-         console.log("No highlighted announcements to show.");
-     } */
+	 try {
+	     const modalElement = document.getElementById('notificationModal');
+	     if (!modalElement) {
+	         return;
+	     }
+	     const annModal = new bootstrap.Modal(modalElement);
+	     annModal.show();
+	 } catch (e) {
+		 console.error("showNotificationModal error:", e);
+	 }
  }
-
- setTimeout(showNotificationModal, 1500);
 
   
 // Real-Time Clock
@@ -1728,37 +1711,39 @@ window.onload = function() {
 	const fileNameDisplay = document.getElementById("fileNameDisplay");
 
 	// upload / save
-	mainBtn.addEventListener("click", function () {
-
-	    if (mainBtn.innerText.trim() === "Upload") {
-
-	        if (fileInput) {
-	            fileInput.click();
-	        }
-
-	    } else {
-
-	        Swal.fire({
-	            title: "Are you sure?!",
-	            text: "Do you want to save the changes?",
-	            icon: "warning",
-	            showCancelButton: true,
-	            confirmButtonText: "Save",
-	            cancelButtonText: "Close",
-	            buttonsStyling: false,
-	            customClass: {
-	                confirmButton: "btn btn-success",
-	                cancelButton: "btn btn-secondary"
-	            }
-	        }).then((result) => {
-
-	            if (result.isConfirmed) {
-	                document.getElementById("signatureForm").submit();
-	            }
-
-	        });
-	    }
-	});
+	if (mainBtn) {
+		mainBtn.addEventListener("click", function () {
+	
+		    if (mainBtn.innerText.trim() === "Upload") {
+	
+		        if (fileInput) {
+		            fileInput.click();
+		        }
+	
+		    } else {
+	
+		        Swal.fire({
+		            title: "Are you sure?!",
+		            text: "Do you want to save the changes?",
+		            icon: "warning",
+		            showCancelButton: true,
+		            confirmButtonText: "Save",
+		            cancelButtonText: "Close",
+		            buttonsStyling: false,
+		            customClass: {
+		                confirmButton: "btn btn-success",
+		                cancelButton: "btn btn-secondary"
+		            }
+		        }).then((result) => {
+	
+		            if (result.isConfirmed) {
+		                document.getElementById("signatureForm").submit();
+		            }
+	
+		        });
+		    }
+		});
+	}
 
 	// preview image
 	if (fileInput) {	    
