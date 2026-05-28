@@ -70,4 +70,6 @@ public interface BorrowDAO {
 	public List<Borrow> findAll_exceptStatus_A() throws Exception;
 
 	public List<Map<String, Object>> getBorrowListByUserId(String logonUser);
+
+	List<Map<String, Object>> findBorrowWithUserByEquipmentId2(String eId);
 }

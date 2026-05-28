@@ -54,13 +54,13 @@
 	transform: rotate(180deg);
 }
 
-.btn-open-return-modal{
+a.btn-open-return-modal{
 	color: inherit;
 	text-decoration: underline;
     cursor: pointer;
     transition: 0.2s;
 }
-.btn-open-return-modal:hover{
+a.btn-open-return-modal:hover{
 	color: #17C653;
 	text-decoration: underline !important;
 }
@@ -92,31 +92,7 @@
 					</div>
 			<c:if test="${not empty borrowlistwithUser}">
 				<c:choose>
-				    <c:when test="${isLegacyBorrow}">
-				        <c:choose>
-				            <c:when test="${borrowObj.status == 'B'}">
-				                <div class="d-flex align-items-center gap-2">
-				                    <button type="button" class="btn btn-warning btn-request-return">
-				                        Request for Return
-				                    </button>
-				                </div>
-				            </c:when>
-				            
-				            <c:when test="${borrowObj.status == 'T'}">
-				                <div class="d-flex align-items-center gap-2">
-				                    <a class="me-3 fs-6 btn-open-return-modal">
-				                        Confirm Received
-				                    </a>
-				                    <button type="button" class="btn btn-secondary" disabled>
-				                        Waiting for Return
-				                    </button>
-				                </div>
-				            </c:when>
-				        </c:choose>
-				    </c:when>
-				
-				    <c:otherwise>
-				    	<c:choose>
+				   
 				            <c:when test="${borrowObj.status == 'B'
 				                            and empty borrowObj.user_delivery 
 				                            and empty borrowObj.user_receive
@@ -167,9 +143,20 @@
 				                    </button>
 				                </div>
 				            </c:when>
+				            
+				            <c:when test="${borrowObj.status == 'T'
+				                             and not empty borrowObj.user_delivery 
+				                             and not empty borrowObj.user_receive 
+				                             and not empty borrowObj.user_return
+				                             and empty borrowObj.user_return_receive}">
+				                <div class="d-flex align-items-center gap-2">
+				                    <button type="button" class="btn btn-success btn-open-return-modal">
+				                        Confirm Received
+				                    </button>
+				                </div>
+				            </c:when>
 				       </c:choose>
-				    </c:otherwise>
-					</c:choose>
+				   
 				</c:if>
 				</div>
 			</div>
@@ -284,30 +271,8 @@
 									</div>
 									<div class="card-toolbar">
 										<c:if test="${not empty borrowlistwithUser}">
-										  <c:choose>
-											<c:when test="${isLegacyBorrow}">
-										        <c:choose>
-										            <c:when test="${borrowObj.status == 'B'}">
-										                <div class="d-flex align-items-center gap-2">
-										                    <button type="button" class="btn btn-sm btn-warning btn-request-return">
-										                        Request for Return
-										                    </button>
-										                </div>
-										            </c:when>
-										            
-										            <%-- <c:when test="${borrowObj.status == 'T'}">
-										                <div class="d-flex align-items-center gap-2">
-										                    <a class="me-3 fs-6 btn-open-return-modal">
-										                        Confirm Received
-										                    </a>
-										                    <button type="button" class="btn btn-sm btn-secondary" disabled>
-										                        Waiting for Return
-										                    </button>
-										                </div>
-										            </c:when> --%>
-										        </c:choose>
-										    </c:when>
-										     <c:otherwise>
+										
+											
 											<c:if test="${borrowObj.status == 'B'
 														 and not empty borrowObj.user_delivery 
 														 and not empty borrowObj.user_receive }">
@@ -325,8 +290,7 @@
 													Confirm Received
 												</button>
 											</c:if>
-											</c:otherwise>
-											</c:choose>
+											
 										</c:if>
 									</div>
 								</div>
@@ -947,10 +911,13 @@
 		            text: 'Are you sure you want to request return for this item?',
 		            icon: 'question',
 		            showCancelButton: true,
-		            confirmButtonText: 'Yes, Request Return',
+		            confirmButtonText: 'Yes, request return',
 		            cancelButtonText: 'Cancel',
-		            confirmButtonColor: '#ffc107', // สีเหลือง
-		            cancelButtonColor: '#6c757d'   // สีเทา
+		            buttonsStyling: false,
+			        customClass: {
+			            confirmButton: "btn btn-warning",
+			            cancelButton: "btn btn-secondary"
+			        }
 		        }).then((result) => {
 		            if (result.isConfirmed) {
 		                // ส่งไปที่ eBorrowReturn.action แทน
@@ -1041,7 +1008,7 @@
 		        text: 'Are you sure you want to request return for this item?',
 		        icon: 'question',
 		        showCancelButton: true,
-		        confirmButtonText: 'Yes, Request Return',
+		        confirmButtonText: 'Yes, request return',
 		        cancelButtonText: "Cancel",
 		        buttonsStyling: false,
 		        customClass: {
@@ -1072,53 +1039,6 @@
 		        }
 		    });
 		});
-		
-		// ----- Confirm Received -----
-		/* $('#btnConfirmReceived').on('click',function(e){
-			e.preventDefault();
-			
-			Swal.fire({
-		        title: "Confirm Received?",
-		        text: "Have you return received this equipment?",
-		        icon: "question",
-		        showCancelButton: true,
-		        confirmButtonText: "Yes, received it",
-		        cancelButtonText: "Cancel",
-		        buttonsStyling: false,
-		        customClass: {
-		            confirmButton: "btn btn-success",
-		            cancelButton: "btn btn-secondary"
-		        }
-		    }).then((result) => {
-		        if (result.isConfirmed) {
-		        	fetch(CTX + "eBorrowReturn.action", {
-		        	    method: "POST",
-		        	    headers: {
-		        	        "Content-Type": "application/x-www-form-urlencoded"
-		        	    },
-		        	    body: "id=" + encodeURIComponent(
-		        	        getBorrowField('borrowId') || getBorrowField('borrow_id')
-		        	    )
-		        	})
-		        	.then(response => response.text())
-		        	.then(data => {
-		        		Swal.fire('Success!', 'Return request submitted successfully!', 'success').then(() => {
-                            window.location.replace(CTX + "/borrow_list");
-                        });
-		        	})
-		        	.catch(error => {
-		        	    console.error(error);
-
-		        	    Swal.fire({
-		        	        icon: "error",
-		        	        title: "Error",
-		        	        text: "Failed to deliver equipment"
-		        	    });
-
-		        	});
-		        }
-		    });
-		}) */
 		
 	}
 
@@ -1201,8 +1121,11 @@
 	        showCancelButton: true,
 	        confirmButtonText: "Yes, received it",
 	        cancelButtonText: 'Cancel',
-	        confirmButtonColor: '#ffc107', // สีเหลือง
-	        cancelButtonColor: '#6c757d'   // สีเทา
+	        buttonsStyling: false,
+	        customClass: {
+	            confirmButton: "btn btn-warning",
+	            cancelButton: "btn btn-secondary"
+	        }
 	    }).then((result) => {
 	        if (result.isConfirmed) {
 	            $.ajax({

@@ -756,6 +756,7 @@ th.sort:hover {
 			row.department = department;
 			row.statusborrow = status;
 			row.role_id = roleId;
+			row.borrow_time_create = b.time_create || b.timeCreate;
 			
 			row.user_delivery = b.user_delivery || b.userDelivery;
 			row.time_delivery = b.time_delivery || b.timeDelivery;
@@ -808,18 +809,18 @@ th.sort:hover {
 	var userByKey = createUserMap(users);
 	var borrowList = processBorrowData(borrows, equipById, userByKey);
 
-	// ✅ เก็บไว้ใน global variable
+	// เก็บไว้ใน global variable
 	window.borrowDataList = borrowList;
 
 
-	// ✅ ฟังก์ชันแสดงผลตาราง - เก็บแค่ index
+	// ฟังก์ชันแสดงผลตาราง - เก็บแค่ index
 	function renderBorrowTable(data) {
 		var tbody = $('#borrowTableBody');
 		tbody.empty();
 		
 		data.forEach(function(row, index) {
 			var tr = $('<tr>')
-				// ✅ เก็บแค่ index, status, type สำหรับ filter
+				// เก็บแค่ index, status, type สำหรับ filter
 				.attr('data-row-index', index)
 				.attr('data-borrow-id', row.borrow_id || '')
 				.attr('data-status', row.statusborrow || '')
@@ -1270,7 +1271,8 @@ th.sort:hover {
 			return z ? z : '-';
 		}
 
-		function setBorrowModalButtons(status, userDelivery, userReceive, userReturn, userReturnReceive,isLegacyBorrow) {
+		
+		function setBorrowModalButtons(status, userDelivery, userReceive, userReturn, userReturnReceive) {
 			/* $('#btn_request_return').hide();
 			$('#btn_cancel_borrow').hide();
 			$('#btn_confirm_borrow').hide();
@@ -1286,26 +1288,10 @@ th.sort:hover {
 			    .removeClass('btn-secondary')
 			    .text('Deliver Equipment');
 
-			if (isLegacyBorrow) {
-
-			    if (status === 'B') {
-			        $('#btn_request_return').show();
-			        return;
-			    }
-
-			    if (status === 'T') {
-			        $('#btn_confirm_received').show();
-			        return;
-			    }
-
-			    return;
-			}
 			if (status === 'W') {
 			    $('#btn_cancel_borrow').show();
 			    $('#btn_confirm_borrow').show();
-			}
-
-			else if (status === 'B') {
+			}else if (status === 'B') {
 
 			    if (!userDelivery) {
 			        $('#btn_deliver_equipment').show();
@@ -1385,22 +1371,20 @@ th.sort:hover {
 				$('#moreDetailWrapper').hide();
 			}
 		
-			const legacy = isLegacyBorrow(item);
 			/* setBorrowModalButtons(status); */
 			setBorrowModalButtons(
 			    item.statusborrow,
 			    item.user_delivery,
 			    item.user_receive,
 			    item.user_return,
-			    item.user_return_receive,
-			    legacy
+			    item.user_return_receive
 			);
 		
 			// เก็บข้อมูลไว้ใช้ปุ่ม Edit/Cancel/Confirm
 			$('#borrowModal').data('currentItem', item);
 		}
 
-		// ✅ ฟังก์ชันสำหรับเติมข้อมูลใน Borrow Detail Modal
+		// ฟังก์ชันสำหรับเติมข้อมูลใน Borrow Detail Modal
 		function fillBorrowDetailModal(item) {
 			if (!item) return;
 		
@@ -1516,7 +1500,7 @@ th.sort:hover {
 			$('#moreDetailToggle').attr('aria-expanded', 'false');
 		}
 
-		// ✅ กดปุ่ม View - ดึงข้อมูลจาก array
+		// กดปุ่ม View - ดึงข้อมูลจาก array
 		$(document).on('click', '.btn-view-borrow', function(e) {
 			e.preventDefault();
 
@@ -1655,7 +1639,7 @@ th.sort:hover {
 		        text: 'Are you sure you want to request return for this item?',
 		        icon: 'question',
 		        showCancelButton: true,
-		        confirmButtonText: 'Yes, Request Return',
+		        confirmButtonText: 'Yes, request return',
 		        cancelButtonText: "Cancel",
 		        buttonsStyling: false,
 		        customClass: {
@@ -1788,8 +1772,11 @@ th.sort:hover {
 		        showCancelButton: true,
 		        confirmButtonText: "Yes, received it",
 		        cancelButtonText: 'Cancel',
-		       	confirmButtonColor: '#ffc107',
-		        cancelButtonColor: '#6c757d'
+		        buttonsStyling: false,
+		        customClass: {
+		            confirmButton: "btn btn-warning",
+		            cancelButton: "btn btn-secondary"
+		        }
 		    }).then((result) => {
 		        if (result.isConfirmed) {
 		            $.ajax({
@@ -1863,15 +1850,6 @@ th.sort:hover {
 	    return true;
 	}
 	
-	function isLegacyBorrow(item) {
-	    if (!item || !item.time_create) return false;
-
-	    const migrationDate = new Date("2026-05-22T00:00:00");
-
-	    const createDate = new Date(String(item.time_create).replace(' ', 'T'));
-
-	    return createDate < migrationDate;
-	}
 	</script>
 </body>
 </html>

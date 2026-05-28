@@ -15,6 +15,7 @@ import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.hibernate.transform.AliasToEntityMapResultTransformer;
+import org.hibernate.transform.Transformers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -568,6 +569,58 @@ public class BorrowDAOImpl implements BorrowDAO {
 		}
 		return list;
 	}
+	
+	@Override
+	public List<Map<String, Object>> findBorrowWithUserByEquipmentId2(String eId) {
+		Session session = this.sessionFactory.getCurrentSession();
+		List<Map<String, Object>> list = new ArrayList<>();
+		
+		try {
+			String sql = "SELECT " +
+				    "b.borrow_id AS borrow_id, " +
+				    "b.borrow_amout AS borrow_amout, " +
+				    "b.reason AS reason, " +
+				    "b.user_borrowid AS user_borrowid, " +
+				    "b.date_start AS date_start, " +
+				    "b.date_end AS date_end, " +
+				    "b.location AS location, " +
+				    "b.contact_addr AS contact_addr, " +
+				    "b.status AS status, " +
+				    "b.sum AS sum, " +
+				    "b.time_create AS time_create, " +
+				    "b.user_create AS user_create, " +
+				    "b.time_update AS time_update, " +
+				    "b.user_update AS user_update, " +
+				    "b.equipment_id AS equipment_id, " +
+				    "b.user_delivery AS user_delivery, " +
+				    "b.time_delivery AS time_delivery, " +
+				    "b.user_receive AS user_receive, " +
+				    "b.time_receive AS time_receive, " +
+				    "b.user_return AS user_return, " +
+				    "b.time_return AS time_return, " +
+				    "b.user_return_receive AS user_return_receive, " +
+				    "b.time_return_receive AS time_return_receive, " +
+				    "b.remark AS remark, " +
+				    "b.reasona AS reasona, " +
+				    "u.employee_id AS employee_id, " +
+				    "u.name AS name, " +
+				    "u.name_en AS name_en " +
+				    "FROM borrow b " +
+				    "JOIN user u ON b.user_borrowid = u.id " +
+				    "WHERE b.equipment_id = :eId " +
+				    "ORDER BY b.borrow_id DESC";
+
+			SQLQuery query = session.createSQLQuery(sql);
+			query.setParameter("eId", eId);
+
+			query.setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP);
+
+			list = query.list();
+		} catch (HibernateException e) {
+		    e.printStackTrace();
+		}
+		return list;
+	}
 
 	@Override
 	public List<Map<String, Object>> getBorrowListByUserId(String logonUser) {
@@ -575,7 +628,7 @@ public class BorrowDAOImpl implements BorrowDAO {
 
 		List<Map<String, Object>> list = null;
 		try {
-			String sql = "SELECT b.borrow_id, b.date_start, b.location, b.time_create, b.status, b.user_delivery, b.time_delivery, b.user_receive, b.time_receive, b.user_return, b.time_return, b.user_return_receive, b.time_return_receive, e.equipment_id, e.name, e.item_no FROM borrow b JOIN equipment e ON b.equipment_id = e.equipment_id WHERE b.user_borrowid = :logonUser";
+			String sql = "SELECT b.borrow_id, b.date_start, b.location, b.time_create, b.time_update, b.status, b.user_delivery, b.time_delivery, b.user_receive, b.time_receive, b.user_return, b.time_return, b.user_return_receive, b.time_return_receive, e.equipment_id, e.name, e.item_no, e.type FROM borrow b JOIN equipment e ON b.equipment_id = e.equipment_id WHERE b.user_borrowid = :logonUser";
 
 			SQLQuery query = session.createSQLQuery(sql);
 			query.setParameter("logonUser", logonUser);

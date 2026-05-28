@@ -16,6 +16,13 @@
 .min-w-170px {
 	min-width: 170px !important;
 }
+
+#imgPreview,
+#displayMode img {
+    max-height: 80px;
+    width: auto;
+    object-fit: contain;
+}
 </style>
 
 <!--begin::Main-->
@@ -1090,6 +1097,291 @@
 	</div>
 </div> --%>
 <!--end:::Modal-->
+<!-- Popup Notification -->
+<c:if test="${hasNotification}">
+<div class="modal fade" id="notificationModal" data-bs-backdrop="static"
+	data-bs-keyboard="false" tabindex="-1" aria-hidden="true">
+	<div class="modal-dialog modal-dialog-centered modal-lg">
+		<div class="modal-content shadow-lg">
+
+			<div class="modal-header border-0">
+				<h2 class="modal-title text-gray-900 fw-weight d-flex align-items-center">
+					Notification
+				</h2>
+				<div class="btn btn-icon btn-sm btn-active-light-danger ms-2"
+					data-bs-dismiss="modal" aria-label="Close">
+					<i class="ki-duotone ki-cross fs-1 text-muted"> <span
+						class="path1"></span><span class="path2"></span>
+					</i>
+				</div>
+			</div>
+
+			<div class="modal-body py-7 px-5">
+				<div class="d-flex flex-column gap-6 p-7">
+					<h1 class="text-gray-900 fw-weight">ตรวจพบอุปกรณ์รอตอบรับ</h1>
+				
+					<div class="d-flex flex-column gap-6 p-7 border-gray-400 border-dashed rounded-2 p-7">
+						<span class="fs-4 fw-semibold text-gray-800">Signature</span>
+						<c:if test="${empty imgPathSignature}">
+							<span class="fs-6 text-danger">กรุณาอัปโหลดลายเซ็น เพื่อนำไปใช้ประกอบเอกสารรับอุปกรณ์ </span>
+						</c:if>
+						
+						
+						<form id="signatureForm" method="post" action="update_signature?redirectPage=check_in_out" enctype="multipart/form-data">
+						          <div id="errorMsg" class="text-start text-danger mb-3"></div> 
+						        <div class="d-flex align-items-center justify-content-between">
+						              
+						                    <c:choose>
+						                        <c:when test="${not empty imgPathSignature}">
+						                            <div id="displayMode">
+						                                <img src="${imgPathSignature}"  class="" />
+						                                 <p id="signatureFileName" class="text-gray-700 fs-5 fw-normal mt-2 mb-0">${signatureFileName}</p>
+						                            </div>
+						                        </c:when>
+						                        
+						                        <c:otherwise>
+						                            <div id="emptyMode" class="d-flex align-items-center gap-4">
+						                                <i class="ki-duotone ki-picture fs-2"><span class="path1"></span><span class="path2"></span></i>
+						                                <span class="fs-6 text-muted fw-medium">Allowed file types: png, jpg, jpeg.</span>
+						                            </div>
+						                        </c:otherwise>
+						                    </c:choose>
+						
+						                    <div id="previewMode" class="d-none">
+						                        <div class="symbol symbol-100px position-relative">
+						                            <img id="imgPreview" src="" alt="Preview"  class="rounded border" />
+						                            <label class="btn btn-icon btn-circle btn-color-muted btn-active-color-primary w-25px h-25px bg-body shadow position-absolute translate-middle top-0 start-100" 
+						                                   data-bs-toggle="tooltip" title="Change">
+						                                <i class="ki-duotone ki-pencil fs-7"><span class="path1"></span><span class="path2"></span></i>
+						                                <input type="file" id="signatureInputFile" name="fileUpload" accept=".png, .jpg, .jpeg" class="d-none" />
+						                            </label>
+						                            <span id="btnCancelPreview" class="btn btn-icon btn-circle btn-color-muted btn-active-color-primary w-25px h-25px bg-body shadow position-absolute translate-middle top-100 start-100" 
+						                                  data-bs-toggle="tooltip" title="Cancel">
+						                                <i class="ki-outline ki-cross fs-4"></i>
+						                            </span>
+						                        </div>
+						                       <div id="fileNameDisplay" class="text-gray-700 fs-5 fw-normal mt-1"></div>
+						                    </div>
+						       
+						
+						                <div class="d-flex gap-2 align-items-center">
+						                 	<%-- <c:if test="${not empty imgPathSignature}">
+								                <a href="signature_perform_delete?userId=${user.id}" onclick="return confirmDelete(this.href, 'check_in_out');"
+													class="btn btn-icon btn-light-danger btn-sm" title="Delete">
+													<i class="ki-duotone ki-trash fs-2"><span
+														class="path1"></span><span class="path2"></span><span
+														class="path3"></span><span class="path4"></span><span
+														class="path5"></span></i>
+												</a>
+											</c:if> --%>
+						                    <button type="button" id="mainActionBtn" class="btn btn-primary">Upload</button>
+						                </div>
+						                <input type="hidden" id="hasSignature" value="${not empty imgPathSignature}" />
+						            </div>
+						      
+						    </form>
+					</div>
+					
+				<c:forEach var="item" items="${borrowList}">
+					<c:if test="${item.status eq 'B' 
+									and not empty item.user_delivery
+							        and empty item.user_receive
+							        and empty item.user_return
+							        and empty item.user_return_receive}">
+						<div class="d-flex align-items-center justify-content-between border border-warning rounded-2 p-6 ">
+							<div class="d-flex gap-5 align-items-center ">
+								<div class="d-flex flex-wrap align-items-center gap-9">
+									<div class="d-flex flex-column align-items-center border rounded p-4 text-center min-w-125px">
+									
+										<c:choose>
+										    <c:when test="${item.type eq 'c'}">
+										        <i class="ki-duotone ki-laptop fs-1 text-dark">
+													<span class="path1"></span>
+				 									<span class="path2"></span>
+												</i> <span class="fs-6 fw-normal text-gray-900 mt-3">Computer</span>
+										    </c:when>
+										
+										    <c:when test="${item.type eq 'in'}">
+										        <i class="ki-duotone ki-keyboard fs-1 text-dark">
+										        	<span class="path1"></span>
+													<span class="path2"></span>
+												 </i>
+										        <span class="fs-6 fw-normal text-gray-900 mt-3">Instrument</span>
+										    </c:when>
+										
+										    <c:when test="${item.type eq 'L'}">
+										        <i class="ki-duotone ki-verify fs-1 text-dark">
+										        	<span class="path1"></span>
+													<span class="path2"></span>
+												 </i>
+										        <span class="fs-6 fw-normal text-gray-900 mt-3">Software License</span>
+										    </c:when>
+										
+										    <c:when test="${item.type eq 'Mob'}">
+										        <i class="ki-duotone ki-phone fs-1 text-dark">
+										        	<span class="path1"></span>
+													<span class="path2"></span>
+												 </i>
+										        <span class="fs-6 fw-normal text-gray-900 mt-3">Mobile</span>
+										    </c:when>
+										
+										    <c:when test="${item.type eq 'p'}">
+										        <i class="ki-duotone ki-wifi-square fs-1 text-dark">
+										        	<span class="path1"></span>
+													<span class="path2"></span>
+													<span class="path3"></span>
+													<span class="path4"></span>
+												 </i>
+										        <span class="fs-6 fw-normal text-gray-900 mt-3">Pocket WIFI</span>
+										    </c:when>
+										
+										    <c:when test="${item.type eq 'sl'}">
+										        <i class="ki-duotone ki-verify fs-1 text-dark"></i>
+										        <span class="fs-6 fw-normal text-gray-900 mt-3">SIM / Service</span>
+										    </c:when>
+										
+										    <c:otherwise>
+										        <i class="ki-duotone ki-dots-square fs-1 text-dark">
+										        	<span class="path1"></span>
+													<span class="path2"></span>
+													<span class="path3"></span>
+													<span class="path4"></span>
+												 </i>
+										        <span class="fs-6 fw-normal text-gray-900 mt-3">Other</span>
+										    </c:otherwise>
+										
+										</c:choose>
+										
+									</div>
+								</div>
+								<div class="d-flex flex-column justify-content-between min-h-80px">
+									<div class=" ">
+										<span class="fs-6 text-gray-900 me-1">${item.item_no}</span> <span class="fs-6 text-gray-900">${item.name}</span>
+									</div>
+									
+									<div class="">
+										<span class="fs-6 text-gray-900 me-1">ส่งมอบ :</span> <span class="fs-6 text-gray-900  me-3">
+										<fmt:formatDate value="${item.time_delivery}" pattern="dd MMM yyyy" />
+										</span>
+									</div>
+								</div>
+							</div>
+							
+							<button type="button" class="btn btn-success btnReceived" data-id="${item.borrow_id}" 
+								<c:if test="${empty imgPathSignature}">disabled</c:if>
+    						>Received</button>
+						</div>
+						</c:if>
+						
+						<c:if test="${item.status eq 'T' 
+									and not empty item.user_delivery
+							        and not empty item.user_receive
+							        and empty item.user_return
+							        and empty item.user_return_receive}">
+						<div class="d-flex align-items-center justify-content-between border border-warning rounded-2 p-6 ">
+							<div class="d-flex gap-5 align-items-center ">
+								<div class="d-flex flex-wrap align-items-center gap-9">
+									<div class="d-flex flex-column align-items-center border rounded p-4 text-center min-w-125px">
+									
+										<c:choose>
+										    <c:when test="${item.type eq 'c'}">
+										        <i class="ki-duotone ki-laptop fs-1 text-dark">
+													<span class="path1"></span>
+				 									<span class="path2"></span>
+												</i> <span class="fs-6 fw-normal text-gray-900 mt-3">Computer</span>
+										    </c:when>
+										
+										    <c:when test="${item.type eq 'in'}">
+										        <i class="ki-duotone ki-keyboard fs-1 text-dark">
+										        	<span class="path1"></span>
+													<span class="path2"></span>
+												 </i>
+										        <span class="fs-6 fw-normal text-gray-900 mt-3">Instrument</span>
+										    </c:when>
+										
+										    <c:when test="${item.type eq 'L'}">
+										        <i class="ki-duotone ki-verify fs-1 text-dark">
+										        	<span class="path1"></span>
+													<span class="path2"></span>
+												 </i>
+										        <span class="fs-6 fw-normal text-gray-900 mt-3">Software License</span>
+										    </c:when>
+										
+										    <c:when test="${item.type eq 'Mob'}">
+										        <i class="ki-duotone ki-phone fs-1 text-dark">
+										        	<span class="path1"></span>
+													<span class="path2"></span>
+												 </i>
+										        <span class="fs-6 fw-normal text-gray-900 mt-3">Mobile</span>
+										    </c:when>
+										
+										    <c:when test="${item.type eq 'p'}">
+										        <i class="ki-duotone ki-wifi-square fs-1 text-dark">
+										        	<span class="path1"></span>
+													<span class="path2"></span>
+													<span class="path3"></span>
+													<span class="path4"></span>
+												 </i>
+										        <span class="fs-6 fw-normal text-gray-900 mt-3">Pocket WIFI</span>
+										    </c:when>
+										
+										    <c:when test="${item.type eq 'sl'}">
+										        <i class="ki-duotone ki-verify fs-1 text-dark"></i>
+										        <span class="fs-6 fw-normal text-gray-900 mt-3">SIM / Service</span>
+										    </c:when>
+										
+										    <c:otherwise>
+										        <i class="ki-duotone ki-dots-square fs-1 text-dark">
+										        	<span class="path1"></span>
+													<span class="path2"></span>
+													<span class="path3"></span>
+													<span class="path4"></span>
+												 </i>
+										        <span class="fs-6 fw-normal text-gray-900 mt-3">Other</span>
+										    </c:otherwise>
+										
+										</c:choose>
+										
+									</div>
+								</div>
+								<div class="d-flex flex-column justify-content-between min-h-80px">
+									<div class=" ">
+										<span class="fs-6 text-gray-900 me-1">${item.item_no}</span> <span class="fs-6 text-gray-900">${item.name}</span>
+									</div>
+									
+									<div class="">
+										<span class="fs-6 text-gray-900 me-1">ขอคืน :</span> <span class="fs-6 text-gray-900  me-3">
+										<fmt:formatDate value="${item.time_update}" pattern="dd MMM yyyy" />
+										</span>
+									</div>
+								</div>
+							</div>
+							
+							 <button type="button" class="btn btn-success btnReturn" data-id="${item.borrow_id}" 
+								<c:if test="${empty imgPathSignature}">disabled</c:if>
+    						>Return</button>
+						</div>
+						</c:if>
+					</c:forEach>
+				</div>
+				
+				
+				
+			</div>
+
+			<div class="modal-footer border-0 pt-0 justify-content-end">
+				<%-- <a href="${pageContext.request.contextPath}/borrow_list" class="btn btn-light me-3">Cancel</a> --%>
+				<button type="button" class="btn btn-light me-3" data-bs-dismiss="modal">
+					<span class="indicator-label">Cancel</span>
+				</button>
+				<button type="button" class="btn btn-primary"  onclick="window.open('${pageContext.request.contextPath}/my_profile', '_blank')"
+					id="">Go to My Borrow</button>
+			</div>
+
+		</div>
+	</div>
+</div>
+</c:if>
 <script>
 let serverTimeOffset = 0;
 
@@ -1145,6 +1437,41 @@ $(document).ready(function() {
 
 setTimeout(showAnnouncements, 1500);
  */
+ 
+//Modal Notification
+function showNotificationModal() {
+     const modalElement = document.getElementById('notificationModal');
+     if (!modalElement) {
+         return;
+     }
+     const annModal = new bootstrap.Modal(modalElement);
+     annModal.show();
+
+     /* if (modalElement && $(modalElement).find('.carousel-item').length > 0) {
+         const annModal = new bootstrap.Modal(modalElement);
+         annModal.show();
+
+         const carouselItems = $(modalElement).find('.carousel-item');
+         if (carouselItems.length === 1) {
+             $(modalElement).find('.carousel-control-prev, .carousel-control-next').hide();
+             $(modalElement).find('.carousel-indicators').hide();
+         } else {
+             $(modalElement).find('.carousel-control-prev, .carousel-control-next').show();
+             $(modalElement).find('.carousel-indicators').show();
+         }
+
+         $("#btnAcknowledge").off("click").on("click", function() {
+             annModal.hide();
+             console.log("Announcement acknowledged.");
+         });
+     } else {
+         console.log("No highlighted announcements to show.");
+     } */
+ }
+
+ setTimeout(showNotificationModal, 1500);
+
+  
 // Real-Time Clock
 function syncServerTime() {
 	fetch("https://timeapi.io/api/Time/current/zone?timeZone=Asia/Bangkok")
@@ -1387,4 +1714,253 @@ var inactivityTime = function () {
 window.onload = function() {
     inactivityTime();
 };
+</script>
+
+<script>
+	const fileInput = document.getElementById("signatureInputFile");
+	const mainBtn = document.getElementById("mainActionBtn");
+	const btnCancel = document.getElementById("btnCancelPreview");
+
+	const displayMode = document.getElementById("displayMode");
+	const emptyMode = document.getElementById("emptyMode");
+	const previewMode = document.getElementById("previewMode");
+	const imgPreview = document.getElementById("imgPreview");
+	const fileNameDisplay = document.getElementById("fileNameDisplay");
+
+	// upload / save
+	mainBtn.addEventListener("click", function () {
+
+	    if (mainBtn.innerText.trim() === "Upload") {
+
+	        if (fileInput) {
+	            fileInput.click();
+	        }
+
+	    } else {
+
+	        Swal.fire({
+	            title: "Are you sure?!",
+	            text: "Do you want to save the changes?",
+	            icon: "warning",
+	            showCancelButton: true,
+	            confirmButtonText: "Save",
+	            cancelButtonText: "Close",
+	            buttonsStyling: false,
+	            customClass: {
+	                confirmButton: "btn btn-success",
+	                cancelButton: "btn btn-secondary"
+	            }
+	        }).then((result) => {
+
+	            if (result.isConfirmed) {
+	                document.getElementById("signatureForm").submit();
+	            }
+
+	        });
+	    }
+	});
+
+	// preview image
+	if (fileInput) {	    
+	    fileInput.addEventListener("change", async function () { 	
+	        let file = this.files[0];
+	        const maxSize = 2 * 1024 * 1024;
+	        const errorMsg = document.getElementById("errorMsg");
+
+	        if (!file) return;
+
+	        const originalText = mainBtn ? mainBtn.innerText : 'Upload';
+	        if (mainBtn) {
+	            mainBtn.disabled = true;
+	            mainBtn.innerHTML = '<span class="spinner-border spinner-border-sm align-middle me-2"></span>Compressing...';
+	        }
+
+	        try {
+	            const compressedFile = await compressImage(file, 1280, 1280, 0.8);
+	            const dt = new DataTransfer();
+	            dt.items.add(compressedFile);
+	            this.files = dt.files;
+	            file = this.files[0];
+	        } catch (error) {
+	            console.error("Compression failed", error);
+	        }
+
+	        if (mainBtn) {
+	            mainBtn.disabled = false;
+	            mainBtn.innerHTML = originalText;
+	        }
+
+	        if (file.size > maxSize) {
+	            errorMsg.textContent = "Image must be smaller than 2MB.";
+	            this.value = "";
+	            return;
+	        } else {
+	            errorMsg.textContent = "";
+	  
+	            const reader = new FileReader();
+	            reader.onload = function (e) {
+	                imgPreview.src = e.target.result;
+	                fileNameDisplay.innerText = file.name;
+
+	                if (displayMode) displayMode.classList.add("d-none");
+	                if (emptyMode) emptyMode.classList.add("d-none");
+	                previewMode.classList.remove("d-none");
+
+	                mainBtn.innerText = "Save";
+	                mainBtn.classList.replace("btn-primary", "btn-success");
+	            };
+	            reader.readAsDataURL(file);
+	        }
+	    });
+	}
+
+	// cancel preview
+	if (btnCancel) {
+
+	    btnCancel.addEventListener("click", function () {
+
+	        fileInput.value = "";
+
+	        previewMode.classList.add("d-none");
+
+	        if (displayMode) {
+	            displayMode.classList.remove("d-none");
+	        } else if (emptyMode) {
+	            emptyMode.classList.remove("d-none");
+	        }
+
+	        mainBtn.innerText = "Upload";
+
+	        mainBtn.classList.remove("btn-success");
+	        mainBtn.classList.add("btn-primary");
+	    });
+	}
+
+	// delete
+	/* function confirmDelete(url, redirectPage) {
+
+	    Swal.fire({
+	        title: "Are you sure?!",
+	        text: "Are you sure you want to delete this signature?",
+	        icon: "warning",
+	        showCancelButton: true,
+	        confirmButtonText: "Yes, delete it!",
+	        cancelButtonText: "Cancel",
+	        buttonsStyling: false,
+	        customClass: {
+	            confirmButton: "btn btn-danger",
+	            cancelButton: "btn btn-secondary"
+	        }
+
+	    }).then((result) => {
+
+	        if (result.isConfirmed) {
+
+	            window.location.href =
+	                url + "&redirectPage=" + redirectPage;
+
+	        }
+
+	    });
+
+	    return false;
+	} */
+	
+	//----- Received -----
+	$(document).on('click', '.btnReceived',function(e){
+		e.preventDefault();
+
+		const borrowId = $(this).data('id');
+
+		Swal.fire({
+	        title: "Are you sure?!",
+	        text: "Have you received this equipment?",
+	        icon: "question",
+	        showCancelButton: true,
+	        confirmButtonText: "Yes, received it",
+	        cancelButtonText: "Cancel",
+	        buttonsStyling: false,
+	        customClass: {
+	            confirmButton: "btn btn-success",
+	            cancelButton: "btn btn-secondary"
+	        }
+	    }).then((result) => {
+	        if (result.isConfirmed) {
+	        	fetch("received_equipment.action", {
+	        	    method: "POST",
+	        	    headers: {
+	        	        "Content-Type": "application/x-www-form-urlencoded"
+	        	    },
+	        	    body: "id=" + encodeURIComponent(borrowId)
+	        	})
+	        	.then(response => response.text())
+	        	.then(data => {
+	        	    location.reload();
+	        	})
+	        	.catch(error => {
+	        	    console.error(error);
+	        	    Swal.fire({
+	        	        icon: "error",
+	        	        title: "Error",
+	        	        text: "Failed to received equipment"
+	        	    });
+	        	});
+
+	        	}
+	        	});
+
+	})
+
+	        	//----- Return -----
+
+	        	$(document).on('click', '.btnReturn', function(e) {
+
+	        	    e.preventDefault();
+
+
+	        	    const borrowId = $(this).data('id');
+
+	        	    Swal.fire({
+	        	        title: "Confirm Return?",
+	        	        text: "Confirm that you have returned this equipment.",
+	        	        icon: "question",
+	        	        showCancelButton: true,
+	        	        confirmButtonText: "Yes, returned",
+	        	        cancelButtonText: "Cancel",
+	        	        buttonsStyling: false,
+	        	        customClass: {
+	        	            confirmButton: "btn btn-success",
+	        	            cancelButton: "btn btn-secondary"
+	        	        }
+	        	    }).then((result) => {
+
+	        	        if (result.isConfirmed) {
+
+	        	            fetch("return_equipment.action", {
+	        	                method: "POST",
+	        	                headers: {
+	        	                    "Content-Type": "application/x-www-form-urlencoded"
+	        	                },
+	        	                body: "id=" + encodeURIComponent(borrowId)
+	        	            })
+	        	            .then(response => response.text())
+	        	            .then(data => {
+	        	                location.reload();
+	        	            })
+	        	            .catch(error => {
+	        	                console.error(error);
+
+	        	                Swal.fire({
+	        	                    icon: "error",
+	        	                    title: "Error",
+	        	                    text: "Failed to return equipment"
+	        	                });
+	        	            });
+
+	        	        }
+
+	        	    });
+
+	        	})
+
 </script>

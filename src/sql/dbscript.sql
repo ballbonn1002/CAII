@@ -273,5 +273,62 @@ ADD COLUMN `time_return_receive` TIMESTAMP NULL DEFAULT NULL;
 ALTER TABLE `exp_travel_type`
 ADD `active` VARCHAR(1) COLLATE utf8mb3_general_ci NOT NULL DEFAULT '1';
 
+# PROD 27 MAY 2026
 
+
+-- 27/05/2026 Got(Intern) : Add permissions File Management in authorized_object table --
+INSERT INTO `authorized_object` (`authorized_object_id`, `name`, `description`, `active`, `time_create`, `time_update`, `authorized_object_group_id`) 
+VALUES 
+('file.view', 'file.view', 'ดูและจัดการไฟล์ของตนเอง (File Management)', '1', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '1'),
+('file.viewall', 'file.viewall', 'ดูและจัดการไฟล์ทั้งหมดในระบบ (File Management)', '1', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '1');
+
+-- Add permissions for File Management to admin role in role_authorized_object table --
+INSERT INTO `role_authorized_object` (`role_id`, `authorized_object_id`, `time_create`, `time_update`) 
+VALUES 
+('admin', 'file.view', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+('admin', 'file.viewall',CURRENT_TIMESTAMP,CURRENT_TIMESTAMP);
+
+# PROD 27 MAY 2026 #2
+
+
+
+
+-- 27/05/2026 June: Update borrow records created before 22 May 2026 --
+-- Update records with status = 'B' --
+UPDATE borrow
+SET 
+    user_delivery = user_create,
+    user_receive  = user_borrowid,
+    time_delivery = time_create,
+    time_receive  = time_create
+WHERE 
+    status = 'B'
+    AND time_create < '2026-05-22 00:00:00'
+    AND user_delivery IS NULL   
+    AND user_receive  IS NULL
+    AND time_delivery IS NULL
+    AND time_receive  IS NULL;
+
+-- Update records with status = 'R' --
+UPDATE borrow
+SET 
+    user_delivery        = user_create,
+    user_receive         = user_borrowid,
+    time_delivery        = time_create,
+    time_receive         = time_create,
+    user_return          = user_borrowid,
+    user_return_receive  = user_update,
+    time_return          = time_update,
+    time_return_receive  = time_update
+WHERE 
+    status = 'R'
+    AND time_create < '2026-05-22 00:00:00'
+    AND user_delivery       IS NULL
+    AND user_receive        IS NULL
+    AND time_delivery       IS NULL
+    AND time_receive        IS NULL
+    AND user_return         IS NULL
+    AND user_return_receive IS NULL
+    AND time_return         IS NULL
+    AND time_return_receive IS NULL;
 

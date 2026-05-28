@@ -66,6 +66,7 @@
     object-fit: contain;
 }
 
+
 </style>
 
 </head>
@@ -708,8 +709,8 @@
 						                            <div id="displayMode">
 						                                <img src="${imgPathSignature}"  class="" />
 						                                 <p id="signatureFileName" class="text-gray-700 fs-5 fw-normal mt-2">
-							                        ${signatureFileName}
-							                    </p>
+							                        		${signatureFileName}
+							                    		</p>
 						                            </div>
 						                        </c:when>
 						                        
@@ -739,7 +740,7 @@
 						                </div>
 						
 						                <div class="d-flex gap-2 align-items-center">
-						                 	<c:if test="${not empty imgPathSignature}">
+						                 	<%-- <c:if test="${not empty imgPathSignature}">
 								                <a href="signature_perform_delete?userId=${user.id}" onclick="return confirmDelete(this.href);"
 													class="btn btn-icon btn-light-danger btn-sm" title="Delete">
 													<i class="ki-duotone ki-trash fs-2"><span
@@ -747,7 +748,7 @@
 														class="path3"></span><span class="path4"></span><span
 														class="path5"></span></i>
 												</a>
-											</c:if>
+											</c:if> --%>
 						                    <button type="button" id="mainActionBtn" class="btn btn-light">Upload</button>
 						                </div>
 						                <input type="hidden" id="hasSignature" value="${not empty imgPathSignature}" />
@@ -908,13 +909,7 @@
 									</thead>
 
 									<tbody>
-									<c:if test="${empty borrowList}">
-										<tr>
-											<td colspan="6" class="text-center text-muted py-4">
-												Not found borrow list.
-											</td>
-										</tr>
-									</c:if>
+									
 										<c:forEach var="item" items="${borrowList}">
 											<tr class="align-middle">
 												<td class="px-3 py-4 text-gray-900 fs-6 fw-normal">
@@ -958,6 +953,17 @@
 																</button>
 															</div>
 														</c:when>
+														
+														<%-- <c:when test="${item.status == 'T'
+																		and empty item.user_delivery 
+																		and empty item.user_receive
+																		and empty item.user_return}">
+															<div class="d-flex align-items-center gap-2">
+																<button type="button" class="btn btn-success btnReturn" data-id="${item.borrow_id}">
+																	Return
+																</button>
+															</div>
+														</c:when> --%>
 
 														<c:when test="${item.status == 'T'
 																		and not empty item.user_delivery 
@@ -1713,7 +1719,7 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 </script>
 
-<script>
+<!-- <script>
 	function confirmDelete(url){
 		
 	    Swal.fire({
@@ -1735,20 +1741,20 @@ document.addEventListener("DOMContentLoaded", function () {
 	    });
 	    return false;
 	}
-	</script>
+</script> -->
 	
 
 <script >
 document.addEventListener("DOMContentLoaded", function () {
-    var table = $('#borrowList').DataTable({
+	const hasData = $('#borrowList tbody tr').length > 0;
+	$('#borrowList').DataTable({
         pageLength: 10,
         lengthMenu: [10, 20, 50, 100],
         ordering: true,
         searching: true,
         autoWidth: false,
         info: false,
-        responsive: true,
-
+        responsive: false,
         columnDefs: [
             {
               orderable: false,
@@ -1759,6 +1765,9 @@ document.addEventListener("DOMContentLoaded", function () {
         language: {
             emptyTable: "Not found borrow list."
         },
+        paging: hasData,
+        lengthChange: hasData,
+        searching: hasData,
 
         headerCallback: function(thead) {
             $(thead).find('th').each(function () {
@@ -1847,7 +1856,7 @@ $(document).on('click', '.btnReceived',function(e){
         	}
         	});
 
-        	})
+})
 
         	//----- Return -----
 

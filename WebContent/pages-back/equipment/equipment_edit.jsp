@@ -299,32 +299,50 @@
                                     </div>
                                     <div class="card-toolbar">
                                         <c:if test="${not empty borrowlistwithUser}">
-                                            <c:if test="${borrowlistwithUser[0].status == 'B'
-														 and not empty borrowObj['user_delivery']
-														 and not empty borrowObj['user_receive']}">
-                                                <button type="button" class="btn btn-sm btn-warning btn-request-return" >
-                                                    Request for Return
-                                                </button>
-                                            </c:if>
-                                            
-                                            <c:if test="${borrowlistwithUser[0].status == 'T'
-														 and not empty borrowObj['user_delivery']
-														 and not empty borrowObj['user_receive']
-														 and empty borrowObj['user_return']}">
-                                                <button type="button" class="btn btn-sm btn-secondary" disabled>
-														Waiting for Return
-												</button>
-                                            </c:if>
-                                            
-                                             <c:if test="${borrowlistwithUser[0].status eq 'T'
-													        and not empty borrowObj['user_delivery']
-													        and not empty borrowObj['user_receive']
-													        and not empty borrowObj['user_return']
-													        and empty borrowObj['user_return_receive']}">
-												<button type="button" class="btn btn-sm btn-success" data-bs-toggle="modal" data-bs-target="#modal_return_action">
-													Confirm Received
-												</button>
-											</c:if>
+	                                        <c:choose>
+													<c:when test="${borrowlistwithUser[0].status == 'B'
+																 and not empty borrowlistwithUser[0].user_delivery
+																 and empty borrowlistwithUser[0].user_receive
+																 and empty borrowlistwithUser[0].user_return
+																 and empty borrowlistwithUser[0].user_return_receive}">
+														<button type="button" class="btn btn-sm btn-secondary" disabled>
+															Waiting to Receive
+														</button>
+													</c:when>
+													
+													<c:when test="${borrowlistwithUser[0].status == 'B'
+																 and not empty borrowlistwithUser[0].user_delivery
+																 and not empty borrowlistwithUser[0].user_receive
+																 and empty borrowlistwithUser[0].user_return
+																 and empty borrowlistwithUser[0].user_return_receive}">
+														<button type="button" class="btn btn-sm btn-warning btn-request-return">
+															Request for Return
+														</button>
+													</c:when>
+													
+													<c:when test="${borrowlistwithUser[0].status == 'T'
+																 and not empty borrowlistwithUser[0].user_delivery
+																 and not empty borrowlistwithUser[0].user_receive
+																 and empty borrowlistwithUser[0].user_return
+																 and empty borrowlistwithUser[0].user_return_receive}">
+														<button type="button" class="btn btn-sm btn-secondary" disabled>
+																Waiting for Return
+														</button>
+													</c:when>
+													
+													<c:when test="${borrowlistwithUser[0].status == 'T'
+																 and not empty borrowlistwithUser[0].user_delivery
+																 and not empty borrowlistwithUser[0].user_receive
+																 and not empty borrowlistwithUser[0].user_return
+																 and empty borrowlistwithUser[0].user_return_receive}">
+														<button type="button" class="btn btn-sm btn-success" data-bs-toggle="modal" data-bs-target="#modal_return_action">
+															Confirm Received
+														</button>
+													</c:when>
+													
+													<c:otherwise></c:otherwise>
+												
+												</c:choose>
                                         </c:if>
                                     </div>
                                 </div>
@@ -861,7 +879,7 @@
         	if (!checkSignatureBeforeAction()) {
 				return;
 			}
-        
+        	var CTX = "${pageContext.request.contextPath}";
             var note = $('#edit_return_note').val();
             var eqId = '${equipmentbyId.equipmentId}';
             var borrowId = '${not empty borrowlistwithUser ? borrowlistwithUser[0].borrow_id : ""}'; 
@@ -871,7 +889,7 @@
 
             btn.prop('disabled', true).text('Processing...');
 
-            $.post('equipment_return', { 
+            /* $.post('equipment_return', { 
                 equipmentId: eqId, 
                 borrowId: borrowId,
                 note: note
@@ -882,7 +900,68 @@
                     alert('Error returning item.');
                     btn.prop('disabled', false).text(originalText);
                 }
-            });
+            }); */
+            Swal.fire({
+    	    	title: "Confirm Received?",
+    	        text: "Have you return received this equipment?",
+    	        icon: "question",
+    	        showCancelButton: true,
+    	        confirmButtonText: "Yes, received it",
+    	        cancelButtonText: 'Cancel',
+    	        buttonsStyling: false,
+    	        customClass: {
+    	            confirmButton: "btn btn-warning",
+    	            cancelButton: "btn btn-secondary"
+    	        }
+    	    }).then((result) => {
+    	        if (result.isConfirmed) {
+    	            $.ajax({
+    	                url: CTX + "/equipment_return",
+    	                type: "POST",
+    	                data: {
+    	                	equipmentId: eqId, 
+    	                    borrowId: borrowId,
+    	                    note: note
+    	                },
+    	                success: function(res) {
+    	                    res = $.trim(res);
+    	                    if (res === 'success') {
+
+    	                        Swal.fire({
+    	                        	icon: 'success',
+    	                            title: 'Success!',
+    	                            text: 'Return request submitted successfully!'
+    	                        }).then(() => {
+    	                            var modal = bootstrap.Modal.getInstance(
+    	                                document.getElementById('kt_modal_view_equipment')
+    	                            );
+
+    	                            if (modal) {
+    	                                modal.hide();
+    	                            }
+
+    	                            window.open(CTX + "/borrowReport?borrowId=" + borrowId, "_blank");
+    	                            location.reload();
+    	                        });
+
+    	                    } else if (res === 'login') {
+    	                        window.location.href = 'index.jsp';
+    	                    } else {
+
+    	                        Swal.fire('Error!', 'Error returning item.','error');
+
+    	                        btnConfirmReceived
+    	                            .prop('disabled', false)
+    	                            .text(originalText);
+    	                    }
+    	                },
+    	                error: function(xhr) {
+    	                    console.error("HTTP", xhr.status, xhr.responseText);
+    	                    Swal.fire('Error!', 'Failed to submit return request.', 'error');
+    	                }
+    	            });
+    	        }
+    	    });
         });
         
      	// เช็ค Duplicate Item No

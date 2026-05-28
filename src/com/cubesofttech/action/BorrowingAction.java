@@ -606,7 +606,7 @@ public class BorrowingAction extends ActionSupport {
 	        String equipmentId = String.valueOf(borrow.getEquipmentId()); 
 
 	        List<Map<String, Object>> borrowWithUser =
-	                borrowDAO.findBorrowWithUserByEquipmentId(String.valueOf(borrow.getEquipmentId()));
+	                borrowDAO.findBorrowWithUserByEquipmentId2(String.valueOf(borrow.getEquipmentId()));
 
 	        User ur = (User) request.getSession().getAttribute("onlineUser");
 	        boolean hasSignature = false;
@@ -645,8 +645,8 @@ public class BorrowingAction extends ActionSupport {
 	        request.setAttribute("equipmentbyId", eq);
 	        request.setAttribute("borrowObj", borrow);
 	        
-	        boolean legacyBorrow = isLegacyBorrow(borrow);
-            request.setAttribute("isLegacyBorrow",legacyBorrow);
+//	        boolean legacyBorrow = isLegacyBorrow(borrow);
+//            request.setAttribute("isLegacyBorrow",legacyBorrow);
 
 	        
 	        return SUCCESS;
@@ -705,6 +705,7 @@ public class BorrowingAction extends ActionSupport {
 				Gson gson = new GsonBuilder().setPrettyPrinting().create();
 				List<Map<String, Object>> logList;
 
+//				log.debug("statusLogData = " + statusLogData);
 				if (statusLogData == null || statusLogData.trim().isEmpty()) {
 				    logList = new ArrayList<>();
 				} else {
@@ -735,6 +736,7 @@ public class BorrowingAction extends ActionSupport {
 			return ERROR;
 		}
 	}
+	
 	
 	public String eBorrowUpdate() {
 		try {
@@ -791,12 +793,22 @@ public class BorrowingAction extends ActionSupport {
 					Gson gson = new GsonBuilder().setPrettyPrinting().create();
 					List<Map<String, Object>> logList;
 
-					if (statusLogData == null || statusLogData.trim().isEmpty()) {
+//					log.debug("statusLogData = "+ statusLogData);
+//					if (statusLogData == null || statusLogData.trim().isEmpty()) {
+//					    logList = new ArrayList<>();
+//					} else {
+//					    Type listType = new TypeToken<List<Map<String, Object>>>(){}.getType();
+//					    logList = gson.fromJson(statusLogData, listType);
+//					}
+					if (statusLogData == null || statusLogData.trim().isEmpty() || !statusLogData.trim().startsWith("[")) {
 					    logList = new ArrayList<>();
+
 					} else {
+
 					    Type listType = new TypeToken<List<Map<String, Object>>>(){}.getType();
 					    logList = gson.fromJson(statusLogData, listType);
 					}
+//					log.debug("logList = "+ logList);
 
 					Map<String, Object> newLog = new HashMap<>();
 					if ("R".equals(status)) {
@@ -831,9 +843,17 @@ public class BorrowingAction extends ActionSupport {
 					Gson gson = new GsonBuilder().setPrettyPrinting().create();
 					List<Map<String, Object>> logList;
 
-					if (statusLogData == null || statusLogData.trim().isEmpty()) {
+//					if (statusLogData == null || statusLogData.trim().isEmpty()) {
+//					    logList = new ArrayList<>();
+//					} else {
+//					    Type listType = new TypeToken<List<Map<String, Object>>>(){}.getType();
+//					    logList = gson.fromJson(statusLogData, listType);
+//					}
+					if (statusLogData == null || statusLogData.trim().isEmpty() || !statusLogData.trim().startsWith("[")) {
 					    logList = new ArrayList<>();
+
 					} else {
+
 					    Type listType = new TypeToken<List<Map<String, Object>>>(){}.getType();
 					    logList = gson.fromJson(statusLogData, listType);
 					}
@@ -1442,8 +1462,8 @@ public class BorrowingAction extends ActionSupport {
 
 	        response.setContentType("application/json");
 	        response.setCharacterEncoding("UTF-8");
-	        boolean legacyBorrow = isLegacyBorrow(borrow);
-            request.setAttribute("isLegacyBorrow",legacyBorrow);
+//	        boolean legacyBorrow = isLegacyBorrow(borrow);
+//            request.setAttribute("isLegacyBorrow",legacyBorrow);
             
 	        PrintWriter out = response.getWriter();
 	        out.print(new Gson().toJson(map));
@@ -1454,24 +1474,23 @@ public class BorrowingAction extends ActionSupport {
 	    }
 	}
 	
-	private boolean isLegacyBorrow(Borrow borrow) {
-	    if (borrow == null) {
-	        return false;
-	    }
-
-	    Timestamp migrationDate = Timestamp.valueOf("2026-05-22 00:00:00");
-
-	    boolean isOldData =
-	            borrow.getTimeCreate() != null &&
-	            borrow.getTimeCreate().before(migrationDate);
-
-	    boolean allNewFieldsNull =
-	            borrow.getUser_delivery() == null &&
-	            borrow.getUser_receive() == null &&
-	            borrow.getUser_return() == null &&
-	            borrow.getUser_return_receive() == null;
-
-	    return isOldData && allNewFieldsNull;
-	}
+	//เช็คข้อมูล borrow เดิม ก่อนเพิ่ม process
+//	private boolean isLegacyBorrow(Borrow borrow) {
+//	    if (borrow == null) {
+//	        return false;
+//	    }
+//
+//	    Timestamp migrationDate = Timestamp.valueOf("2026-05-22 00:00:00");
+//
+//	    boolean isOldData =
+//	            borrow.getTimeCreate() != null &&
+//	            borrow.getTimeCreate().before(migrationDate);
+//
+//	    boolean allNewFieldsNull =
+//	            borrow.getUser_delivery() == null &&
+//	            borrow.getUser_receive() == null;
+//
+//	    return isOldData && allNewFieldsNull;
+//	}
 	
 }
