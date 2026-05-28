@@ -217,7 +217,7 @@
 	                	<span class="required">Authorized Group ID</span>
 	                </label>
 					<!--end::Label-->
-	                <input type="text" class="form-control form-control-solid" placeholder="" name="authGroupId" id="authGroupId" onkeyup="myFunction()" required>
+	                <input type="text" class="form-control" placeholder="" name="authGroupId" id="authGroupId" onkeyup="myFunction()" required>
 	                <small class="text-danger small" style="display: none;" id="error">
 						This ID has already been used.
 					</small> 
@@ -231,7 +231,7 @@
 	                	<span class="required">Authorized Group Name</span>
 	                </label>
 					<!--end::Label-->
-	                <input type="text" class="form-control form-control-solid" placeholder="" name="authGroupName" id="authGroupName" onkeyup="myFunction2()" required>
+	                <input type="text" class="form-control" placeholder="" name="authGroupName" id="authGroupName" onkeyup="myFunction2()" required>
 	                <small class="text-danger small" style="display: none;" id="errorName">
 						This ID has already been used.
 					</small> 
@@ -272,7 +272,7 @@
 	                	<span class="required">Authorized Group ID</span>
 	                </label>
 					<!--end::Label-->
-	                <input type="text" class="form-control form-control-solid" name="editAuthGroupId" id="editAuthGroupId" disabled>
+	                <input type="text" class="form-control" name="editAuthGroupId" id="editAuthGroupId" disabled>
 	                <input type="hidden" name="hiddenEditGroupId" id="hiddenEditGroupId" />
 	                <small class="text-danger small" style="display: none;" id="error">
 						This ID has already been used.
@@ -287,7 +287,7 @@
 	                	<span class="required">Authorized Group Name</span>
 	                </label>
 					<!--end::Label-->
-	                <input type="text" class="form-control form-control-solid" name="editAuthGroupName" id="editAuthGroupName" onkeyup="myFunction3()" required>
+	                <input type="text" class="form-control" name="editAuthGroupName" id="editAuthGroupName" onkeyup="myFunction3()" required>
 	                <small class="text-danger small" style="display: none;" id="errorEditName">
 						This ID has already been used.
 					</small> 
@@ -359,7 +359,7 @@
 	                	<span class="required">Authorized Group ID</span>
 	                </label>
 					<!--end::Label-->
-	                <select class="form-select form-select-solid" name="editGroupId" id="editGroupId">
+	                <select class="form-select" name="editGroupId" id="editGroupId">
 	                	<c:forEach var="aog" items="${aogList}">
 	                		<option value="${aog.authorizedObjectGroupId}">${aog.name}</option>
 	                	</c:forEach>
@@ -371,7 +371,7 @@
 	                	<span class="required">Authorized ID</span>
 	                </label>
 					<!--end::Label-->
-	                <input type="text" class="form-control form-control-solid" name="editAuthId" id="editAuthId" disabled>
+	                <input type="text" class="form-control" name="editAuthId" id="editAuthId" disabled>
 	                <input type="hidden" class="form-control form-control-solid" name="hiddenEditAuthId" id="hiddenEditAuthId">
                 </div>
                 <div class="d-flex flex-column mb-8 fv-row fv-plugins-icon-container">
@@ -380,7 +380,7 @@
 	                	<span class="required">Authorized Name</span>
 	                </label>
 					<!--end::Label-->
-	                <input type="text" class="form-control form-control-solid" name="editAuthName" id="editAuthName" required>
+	                <input type="text" class="form-control" name="editAuthName" id="editAuthName" required>
                 </div>
                 <div class="d-flex flex-column mb-8 fv-row fv-plugins-icon-container">
 	                <!--begin::Label-->
@@ -388,7 +388,7 @@
 	                	<span>Description</span>
 	                </label>
 					<!--end::Label-->
-	                <input type="text" class="form-control form-control-solid" name="editAuthDesc" id="editAuthDesc">
+	                <input type="text" class="form-control" name="editAuthDesc" id="editAuthDesc">
                 </div>
             </div>
 

@@ -101,11 +101,11 @@
 						
 						<!-- Search -->
 						<div class="w-100 position-relative my-5">
-							<i class="ki-duotone ki-magnifier fs-3 position-absolute ms-4 top-50 translate-middle-y">
-								<span class="path1"></span>
-								<span class="path2"></span>
-							</i>
-							<input type="text" data-kt-table-filter="search" class="form-control form-control-solid w-100 ps-12" placeholder="Search..." />
+							<i
+								class="ki-duotone ki-magnifier fs-3 position-absolute ms-5 top-50 translate-middle-y"><span
+								class="path1"></span><span class="path2"></span></i> <input
+								type="text" data-kt-table-filter="search" class="form-control form-solid ps-14"
+								placeholder="Search">
 						</div>
 
 							<table

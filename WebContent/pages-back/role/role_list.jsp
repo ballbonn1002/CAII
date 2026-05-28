@@ -64,7 +64,7 @@
 						<perm:permission object="role.edit">
 							<div class="d-flex flex-wrap my-1">
 								<a href="javascript:void(0)" class="btn btn-primary btn-lg" onclick="document.location = 'role-list-setting';">
-								    <i class="ki-duotone ki-plus"></i>
+								    <i class="ki-duotone ki-setting-2"><span class="path1"></span><span class="path2"></span></i>
 								    Setting
 								</a>
 							</div>
