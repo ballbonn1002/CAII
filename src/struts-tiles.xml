@@ -585,6 +585,25 @@
 			value="/pages-back/travel_approve/travel_approve_preview.jsp" />
 	</definition>
 
+	<!-- Careers -->
+	<definition name="careers_list" extends="baseLayout">
+		<put-attribute name="title" value="Careers List" />
+		<put-attribute name="body"
+			value="/pages-back/careers/careers_list.jsp" />
+	</definition>
+	
+	<definition name="career_create" extends="baseLayout">
+		<put-attribute name="title" value="Career Create" />
+		<put-attribute name="body"
+			value="/pages-back/careers/career_create.jsp" />
+	</definition>
+	
+	<definition name="career_edit" extends="baseLayout">
+		<put-attribute name="title" value="Career Edit" />
+		<put-attribute name="body"
+			value="/pages-back/careers/career_edit.jsp" />
+	</definition>
+
 	<!-- Page URI -->
 	<definition name="page_uri_list" extends="baseLayout">
 		<put-attribute name="title" value="Page URI List" />

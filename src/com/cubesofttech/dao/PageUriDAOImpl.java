@@ -118,6 +118,23 @@ public class PageUriDAOImpl implements PageUriDAO {
 	}
 	
 	@Override
+	public PageUri findByModelId(String modelId) throws Exception {
+	    Session session = this.sessionFactory.getCurrentSession();
+	    PageUri item = null;
+	    try {
+	        String sql = "SELECT * FROM page_uri WHERE model_id = :modelId LIMIT 1";
+	        SQLQuery query = session.createSQLQuery(sql);
+	        query.addEntity(PageUri.class);
+	        query.setParameter("modelId", modelId);
+
+	        item = (PageUri) query.uniqueResult();
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	    }
+	    return item;
+	}
+	
+	@Override
 	public void deleteByModelAndModelId(String model, String articleId) {
 
 		Session session = sessionFactory.getCurrentSession();

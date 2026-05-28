@@ -29,5 +29,7 @@ public interface PageUriDAO {
 	PageUri findByForwardTo(String forwardTo) throws Exception;
 	
 	void changePageUriId(String oldId, String newId) throws Exception;
+
+	public PageUri findByModelId(String modelId) throws Exception;
 	
 }

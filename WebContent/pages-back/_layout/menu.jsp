@@ -536,6 +536,30 @@ String targetURL = Constant.getWebContext2() + "/authorization?token=" + token;
 					</div>
 
 					<!--end:Menu item-->
+					
+					<!--begin:Menu item-->
+					<perm:permission object="careers.view">
+					<div class="menu-item">
+						<a class="menu-link" href="careers_list" data-route="careers_list"> <span
+							class="menu-icon"> 
+							<i class="ki-duotone ki-notepad-bookmark fs-1">
+								<span class="path1"></span>
+								<span class="path2"></span>
+								<span class="path3"></span>
+								<span class="path4"></span>
+								<span class="path5"></span>
+								<span class="path6"></span>
+							</i>
+							</span> <span class="menu-title">Careers</span> 
+							<i class="ki-duotone ki-check-circle fs-3 text-success"> 
+								<span class="path1"></span><span class="path2"></span>
+							</i>
+						</a>
+					</div>
+					</perm:permission>
+					
+
+					<!--end:Menu item-->
 
 					<!--begin:Menu item-->
 					<div class="menu-item">
