@@ -641,13 +641,23 @@
     /* =========================
        Input Filters
     ========================== */
-    $('#name, #nickName').on('keypress', e =>
-        /^[\u0E00-\u0E7F\s]$/.test(e.key) || e.preventDefault()
-    );
+    $('#name, #nickName').on('keypress', e =>{
+    	if (e.key === 'Enter' || e.key === 'Tab') {
+            e.preventDefault();
+            return;
+        }
+    	
+    	/^[\u0E00-\u0E7F\s]$/.test(e.key) || e.preventDefault()
+    });
 
-    $('#nameEN, #nickNameEN').on('keypress', e =>
-        /^[a-zA-Z\s]$/.test(e.key) || e.preventDefault()
-    );
+    $('#nameEN, #nickNameEN').on('keypress', e =>{
+    	if (e.key === 'Enter' || e.key === 'Tab') {
+            e.preventDefault();
+            return;
+        }
+    	
+    	/^[a-zA-Z\s]$/.test(e.key) || e.preventDefault()
+    });
 
     $('#userid').on('keypress', e =>
         /^[A-Za-z.]$/.test(e.key) || e.preventDefault()

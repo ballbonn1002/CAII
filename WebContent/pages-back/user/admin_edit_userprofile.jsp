@@ -1501,6 +1501,7 @@
 
 	<script>
 	document.addEventListener("DOMContentLoaded", function() {
+		
 		toggleEyeIcon();
 		const fileInput = document.getElementById("imageInputFile");  
 		const errorMsgProfile = document.getElementById("errorMsgProfile");

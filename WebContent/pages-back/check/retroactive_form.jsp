@@ -776,7 +776,14 @@ $("#mdSubmitBtn").click(function() {
 	saveCheckInOut(userId, workType, checkType, "retro", date, time, reason, lat, lng);
 });
 
-$("#mdReason").on("keydown", function(e) {
+function removeEmoji(text) {
+    return text.replace(
+        /[\p{Extended_Pictographic}\p{Emoji_Presentation}]/gu,
+        ""
+    );
+}
+
+/* $("#mdReason").on("keydown", function(e) {
     const symbols = [":", ";", "'"];
     if (symbols.includes(e.key)) {
         e.preventDefault();
@@ -790,6 +797,40 @@ $("#mdReason").on("input", function() {
     let value = $(this).val();
     value = value.replace(/[:;']/g, "");
     value = value.replace(/\n/g, "");
+    $(this).val(value);
+}); */
+
+$("#mdReason").on("keydown", function(e) {
+    const symbols = [":", ";", "'"];
+
+    if (symbols.includes(e.key)) {
+        e.preventDefault();
+    }
+
+    // Block Enter
+    if (e.key === "Enter") {
+        e.preventDefault();
+    }
+
+    // Block Tab
+    if (e.key === "Tab") {
+        e.preventDefault();
+    }
+});
+
+// Block paste / copy / cut / drag-drop
+$("#mdReason").on("paste copy cut drop", function(e) {
+    e.preventDefault();
+});
+
+$("#mdReason").on("input", function() {
+    let value = $(this).val();
+
+    value = value.replace(/[<>:";'`&]/g, "");
+    value = value.replace(/\n/g, "");
+    value = value.replace(/\t/g, "");
+    value = removeEmoji(value);
+
     $(this).val(value);
 });
 

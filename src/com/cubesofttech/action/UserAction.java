@@ -965,8 +965,10 @@ public class UserAction extends ActionSupport {
 
 			}
 
-			u.setName(user.getName());
-			u.setNickName(user.getNickName());
+			u.setName(user.getName().replaceAll("[\\t\\n\\r]+", " ")
+		              .replaceAll("\\s{2,}", " ").trim());
+			u.setNickName(user.getNickName().replaceAll("[\\t\\n\\r]+", " ")
+		              .replaceAll("\\s{2,}", " ").trim());
 			u.setUsername(user_username);
 			u.setEmail(user_email);
 			u.setManagerId(user.getManagerId());
@@ -1035,8 +1037,10 @@ public class UserAction extends ActionSupport {
 				u.setGender(user.getGender());
 				u.setTitleNameTH(user.getTitleNameTH());
 				u.setTitleNameEN(user.getTitleNameEN());
-				u.setNameEN(user.getNameEN());
-				u.setNickNameEN(user.getNickNameEN());
+				u.setNameEN(user.getNameEN().replaceAll("[\\t\\n\\r]+", " ")
+			              .replaceAll("\\s{2,}", " ").trim());
+				u.setNickNameEN(user.getNickNameEN().replaceAll("[\\t\\n\\r]+", " ")
+			              .replaceAll("\\s{2,}", " ").trim());
 				u.setEmergContact(user.getEmergContact());
 				u.setEmergPhone(user.getEmergPhone());
 				u.setEmployeeTypeId(user.getEmployeeTypeId());
@@ -1264,12 +1268,16 @@ public class UserAction extends ActionSupport {
 			}
 
 			user.setEnable("1");
-			user.setName(user.getName().trim());
-			user.setNameEN(user.getNameEN().trim());
+			user.setName(user.getName().replaceAll("[\\t\\n\\r]+", " ")
+		              .replaceAll("\\s{2,}", " ").trim());
+			user.setNameEN(user.getNameEN().replaceAll("[\\t\\n\\r]+", " ")
+		              .replaceAll("\\s{2,}", " ").trim());
 			user.setEmail(email);
 			user.setPhonenum(phone);
-			user.setNickName(nickname);
-			user.setNickNameEN(nicknameEN);
+			user.setNickName(nickname.replaceAll("[\\t\\n\\r]+", " ")
+		              .replaceAll("\\s{2,}", " ").trim());
+			user.setNickNameEN(nicknameEN.replaceAll("[\\t\\n\\r]+", " ")
+		              .replaceAll("\\s{2,}", " ").trim());
 			user.setTitleNameTH(titlenameTH);
 			user.setTitleNameEN(titlenameEN);
 			user.setGender(gender);
@@ -1307,11 +1315,15 @@ public class UserAction extends ActionSupport {
 			User u = userDAO.findById(user_id);
 			u.setGender(user_gender);
 			u.setTitleNameTH(user_titleNameTH);
-			u.setName(user_name);
+			u.setName(user_name.replaceAll("[\\t\\n\\r]+", " ")
+		              .replaceAll("\\s{2,}", " ").trim());
 			u.setTitleNameEN(user_titleNameEN);
-			u.setNameEN(user_fullNameEN);
-			u.setNickName(user_nickNameTH);
-			u.setNickNameEN(user_nickNameEN);
+			u.setNameEN(user_fullNameEN.replaceAll("[\\t\\n\\r]+", " ")
+		              .replaceAll("\\s{2,}", " ").trim());
+			u.setNickName(user_nickNameTH.replaceAll("[\\t\\n\\r]+", " ")
+		              .replaceAll("\\s{2,}", " ").trim());
+			u.setNickNameEN(user_nickNameEN.replaceAll("[\\t\\n\\r]+", " ")
+		              .replaceAll("\\s{2,}", " ").trim());
 			u.setCitizenId(user_citizenId);
 			u.setPassportId(user_passportId);
 			u.setAddress(user_address);
@@ -1993,11 +2005,15 @@ public class UserAction extends ActionSupport {
 				}
 
 				u.setTitleNameTH(this.user_titleNameTH);
-				u.setName(this.user_name);
-				u.setNickName(this.user_nickName);
+				u.setName(this.user_name.replaceAll("[\\t\\n\\r]+", " ")
+			              .replaceAll("\\s{2,}", " ").trim());
+				u.setNickName(this.user_nickName.replaceAll("[\\t\\n\\r]+", " ")
+			              .replaceAll("\\s{2,}", " ").trim());
 				u.setTitleNameEN(this.user_titleNameEN);
-				u.setNameEN(this.user_fullNameEN);
-				u.setNickNameEN(this.user_nickNameEN);
+				u.setNameEN(this.user_fullNameEN.replaceAll("[\\t\\n\\r]+", " ")
+			              .replaceAll("\\s{2,}", " ").trim());
+				u.setNickNameEN(this.user_nickNameEN.replaceAll("[\\t\\n\\r]+", " ")
+			              .replaceAll("\\s{2,}", " ").trim());
 				u.setGender(this.user_gender);
 				u.setCitizenId(this.user_citizenId);
 				u.setPassportId(this.user_passportId);
