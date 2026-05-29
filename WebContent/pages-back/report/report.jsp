@@ -11,13 +11,13 @@
 	min-height: 175px;
 }
 
-.btn-active-primary, .btn-active-warning, .btn-active-success {
+.btn-active-primary, .btn-active-warning, .btn-active-success, .btn-active-danger {
 	border: 1px solid rgba(0, 0, 0, 0.1) !important;
 	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
 }
 
 [data-bs-theme="dark"] .btn-active-primary, [data-bs-theme="dark"] .btn-active-warning,
-	[data-bs-theme="dark"] .btn-active-success {
+	[data-bs-theme="dark"] .btn-active-success, [data-bs-theme="dark"] .btn-active-danger {
 	border: 1px solid rgba(255, 255, 255, 0.1) !important;
 	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
 }
@@ -59,7 +59,7 @@
 							<span class="fw-semibold fs-1 mb-3 text-gray-800">Work Log</span>
 							<div class="report-card-img">
 								<img
-									src="${pageContext.request.contextPath}/assets/media/svg/illustrations/easy/1.svg"
+									src="${pageContext.request.contextPath}/assets/media/svg/illustrations/easy/workLog.svg"
 									onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
 									class="mh-175px" alt="Work Log" />
 								<div
@@ -84,7 +84,7 @@
 								Monitor</span>
 							<div class="report-card-img">
 								<img
-									src="${pageContext.request.contextPath}/assets/media/svg/illustrations/easy/8.svg"
+									src="${pageContext.request.contextPath}/assets/media/svg/illustrations/easy/dailyMonitor.svg"
 									onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
 									class="mh-175px" alt="Daily Monitor" />
 								<div
@@ -109,7 +109,7 @@
 								Working Day</span>
 							<div class="report-card-img">
 								<img
-									src="${pageContext.request.contextPath}/assets/media/svg/illustrations/easy/2-dark.svg"
+									src="${pageContext.request.contextPath}/assets/media/svg/illustrations/easy/summaryWorkDay.svg"
 									onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
 									class="mh-175px" alt="Summary Working Day" />
 								<div
@@ -124,6 +124,30 @@
 					</a>
 				</div>
 				<%-- End Card: Summary Working Day --%>
+
+				<%-- Card: Action Log --%>
+				<div class="col-md-4">
+					<a href="${pageContext.request.contextPath}/action_log"
+						class="text-decoration-none">
+						<div
+							class="btn bg-body btn-active-danger w-100 h-100 d-flex flex-column align-items-center justify-content-center py-12 rounded-3">
+							<span class="fw-semibold fs-1 mb-3 text-gray-800">Action Log</span>
+							<div class="report-card-img">
+								<img
+									src="${pageContext.request.contextPath}/assets/media/svg/illustrations/easy/actionLog.svg"
+									onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
+									class="mh-175px" alt="Action Log" />
+								<div
+									style="display: none; align-items: center; justify-content: center; min-height: 175px;">
+									<i class="ki-duotone ki-abstract-26 fs-5tx text-danger">
+										<span class="path1"></span><span class="path2"></span>
+									</i>
+								</div>
+							</div>
+						</div>
+					</a>
+				</div>
+				<%-- End Card: Action Log --%>
 
 			</div>
 			<%-- End Row --%>

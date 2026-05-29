@@ -154,7 +154,8 @@
                                                 <option value="all">All</option>
                                                 <option value="1">Active</option>
                                                 <option value="2">Probation</option>
-                                                <option value="3">Excluded</option>
+                                                <option value="0">Excluded</option>
+                                                <option value="3">Intern</option>
                                             </select>
                                         </div>
                                         <div class="col-12 col-md-4">
@@ -275,11 +276,12 @@
                                                                             <c:when test="${user.employee_type_id == '3'}">นักศึกษาฝึกงาน</c:when>
                                                                         </c:choose>
                                                                     </span>
-                                                                    <span class="<c:choose><c:when test="${user.employee_status == '1'}">text-success</c:when><c:when test="${user.employee_status == '2'}">text-warning</c:when><c:when test="${user.employee_status == '3'}">text-danger</c:when></c:choose>">
+                                                                    <span class="<c:choose><c:when test="${user.employee_status == '1'}">text-success</c:when><c:when test="${user.employee_status == '2'}">text-warning</c:when><c:when test="${user.employee_status == '0'}">text-dark</c:when><c:when test="${user.employee_status == '3'}">text-primary</c:when></c:choose>">
                                                                         <c:choose>
                                                                             <c:when test="${user.employee_status == '1'}">Active</c:when>
                                                                             <c:when test="${user.employee_status == '2'}">Probation</c:when>
-                                                                            <c:when test="${user.employee_status == '3'}">Excluded</c:when>
+                                                                            <c:when test="${user.employee_status == '0'}">Excluded</c:when>
+                                                                            <c:when test="${user.employee_status == '3'}">Intern</c:when>
                                                                         </c:choose>
                                                                     </span>
                                                                 </div>
@@ -413,11 +415,12 @@
 					                                    </c:choose>
 					                                </span>
 					                            </div>
-					                            <span class="info-right fw-semibold <c:choose><c:when test="${user.employee_status == '1'}">text-success</c:when><c:when test="${user.employee_status == '2'}">text-warning</c:when><c:when test="${user.employee_status == '3'}">text-danger</c:when><c:otherwise>text-gray-500</c:otherwise></c:choose>">
+					                            <span class="info-right fw-semibold <c:choose><c:when test="${user.employee_status == '1'}">text-success</c:when><c:when test="${user.employee_status == '2'}">text-warning</c:when><c:when test="${user.employee_status == '0'}">text-dark</c:when><c:when test="${user.employee_status == '3'}">text-primary</c:when><c:otherwise>text-gray-500</c:otherwise></c:choose>">
 					                                <c:choose>
 					                                    <c:when test="${user.employee_status == '1'}">Active</c:when>
 					                                    <c:when test="${user.employee_status == '2'}">Probation</c:when>
-					                                    <c:when test="${user.employee_status == '3'}">Excluded</c:when>
+					                                    <c:when test="${user.employee_status == '0'}">Excluded</c:when>
+					                                    <c:when test="${user.employee_status == '3'}">Intern</c:when>
 					                                    <c:otherwise>-</c:otherwise>
 					                                </c:choose>
 					                            </span>
@@ -862,7 +865,8 @@
     
     if (activeFilters.employee_status === '1') badges.push('Status: Active');
     if (activeFilters.employee_status === '2') badges.push('Status: Probation');
-    if (activeFilters.employee_status === '3') badges.push('Status: Excluded');
+    if (activeFilters.employee_status === '0') badges.push('Status: Excluded');
+    if (activeFilters.employee_status === '3') badges.push('Status: Intern');
 
     if (String(activeFilters.anniversaries) === '1') badges.push('Anniversary month');
     if (String(activeFilters.anniversaries) === '2') badges.push('Anniversary week');

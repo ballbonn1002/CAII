@@ -179,7 +179,8 @@
 													<option value="">Select</option>
 													<option value="1">Active</option>
 													<option value="2">Probation</option>
-													<option value="3">Excluded</option>
+													<option value="0">Excluded</option>
+													<option value="3">Intern</option>
 												</select>
 											</div>
 										</div>

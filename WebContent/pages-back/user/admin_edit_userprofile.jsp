@@ -256,11 +256,12 @@
 														<c:otherwise>-</c:otherwise>
 													</c:choose>
 												</p>
-												<p class="fs-6 fw-bold mb-0 <c:choose><c:when test="${selectUser.employeeStatus == '1'}">text-success</c:when><c:when test="${selectUser.employeeStatus == '2'}">text-warning</c:when><c:when test="${selectUser.employeeStatus == '3'}">text-danger</c:when><c:otherwise>text-gray-500</c:otherwise></c:choose>">
+												<p class="fs-6 fw-bold mb-0 <c:choose><c:when test="${selectUser.employeeStatus == '1'}">text-success</c:when><c:when test="${selectUser.employeeStatus == '2'}">text-warning</c:when><c:when test="${selectUser.employeeStatus == '0'}">text-dark</c:when><c:when test="${selectUser.employeeStatus == '3'}">text-primary</c:when><c:otherwise>text-gray-500</c:otherwise></c:choose>">
 													<c:choose>
 														<c:when test="${selectUser.employeeStatus == '1'}">Active</c:when>
 														<c:when test="${selectUser.employeeStatus == '2'}">Probation</c:when>
-														<c:when test="${selectUser.employeeStatus == '3'}">Excluded</c:when>
+														<c:when test="${selectUser.employeeStatus == '0'}">Excluded</c:when>
+														<c:when test="${selectUser.employeeStatus == '3'}">Intern</c:when>
 														<c:otherwise>-</c:otherwise>
 													</c:choose>
 												</p>
@@ -615,7 +616,8 @@
 												<option></option>
 												<option value="1" <c:if test="${selectUser.employeeStatus == '1'}">selected</c:if>>Active</option>
 												<option value="2" <c:if test="${selectUser.employeeStatus == '2'}">selected</c:if>>Probation</option>
-												<option value="3" <c:if test="${selectUser.employeeStatus == '3'}">selected</c:if>>Excluded</option>
+												<option value="0" <c:if test="${selectUser.employeeStatus == '0'}">selected</c:if>>Excluded</option>
+												<option value="3" <c:if test="${selectUser.employeeStatus == '3'}">selected</c:if>>Intern</option>
 											</select>
 										</div>
 									</div>
