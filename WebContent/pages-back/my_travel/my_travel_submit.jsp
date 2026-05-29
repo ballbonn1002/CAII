@@ -237,8 +237,6 @@
 							<c:when test="${statusActiveSafe eq 'R'}">
 								<div class="btn btn-sm btn-light-danger border border-danger">Rejected</div>
 							</c:when>
-
-
 						</c:choose>
 
 					</div>
@@ -280,7 +278,7 @@
 									</div>
 								</div>
 
-								<div class="card-body py-6">
+								<div class="card-body pb-0">
 									<div class="table-responsive" style="position: relative;">
 										<table class="table m-0 table-striped">
 											<thead class="text-gray-500 border-bottom">
@@ -381,8 +379,23 @@
 	</c:if></td>
 													</tr>
 													<tr>
-														<td colspan="7"><span class="text-gray-500">Purpose
-																of journey : </span> ${exp['description']}</td>
+														<td colspan="8">
+															<div class="d-flex flex-column gap-3">
+																<span class="text-gray-500">Purpose of journey :
+																	<span class="text-dark">${exp['description']} </span>
+																</span>
+																<c:if test="${not empty exp['files']}">
+																	<div class="d-flex flex-warp align-items-center gap-4">
+																		<c:forEach var="file" items="${exp['files']}">
+																			<a href="${ctx}${file.path}"
+																				class="text-primary d-flex align-items-center"><i
+																				class="ki-duotone ki-document fs-3 me-2"><span
+																					class="path1"></span> <span class="path2"></span> </i>${file.name}${file.type}</a>
+																		</c:forEach>
+																	</div>
+																</c:if>
+															</div>
+														</td>
 													</tr>
 												</c:forEach>
 											</tbody>
