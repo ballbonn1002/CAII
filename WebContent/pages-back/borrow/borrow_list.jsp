@@ -1435,6 +1435,13 @@ th.sort:hover {
 		
 			$('#borrowDetailModal').data('borrowId', item.borrow_id);
 			$('#bd_approver_note').val('');
+		
+			const canConfirmReceived =
+			    String(item.statusborrow || '').toUpperCase() === 'T' &&
+			    item.user_delivery &&
+			    item.user_receive;
+
+			$('#bd_confirm_received').prop('disabled', !canConfirmReceived);
 		}
 
 		// ===== Collapse: More Detail (modal บน) =====
