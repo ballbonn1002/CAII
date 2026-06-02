@@ -325,6 +325,12 @@ a.btn-open-return-modal:hover{
 																				<fmt:setLocale value="en_US" />
 																				<fmt:formatDate value="${borrow.date_end}" pattern="d MMMM yyyy, HH:mm" />
 																			</c:when>
+																			
+																			<c:when test="${not empty borrow.time_return}">
+																				<fmt:setLocale value="en_US" />
+																				<fmt:formatDate value="${borrow.time_return}" pattern="d MMMM yyyy, HH:mm" />
+																			</c:when>
+																			
 																			<c:otherwise>Unknown Return Date</c:otherwise>
 																		</c:choose>
 																	</div>
