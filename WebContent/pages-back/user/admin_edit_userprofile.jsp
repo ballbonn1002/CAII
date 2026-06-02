@@ -1443,6 +1443,9 @@
 												<c:if test="${item.status == 'C'}">
 													<span class="badge badge-lg bg-dark text-white fw-semibold fs-8">Cancel</span>
 												</c:if> 
+												<c:if test="${item.status == 'T'}">
+													<span class="badge badge-lg bg-warning text-white fw-semibold fs-8">Waiting for Return</span>
+												</c:if> 
 												<c:if test="${empty item.status || item.status == '-'}">
 													<span class="badge badge-lg bg-light-secondary text-white fw-semibold fs-8">-</span>
 												</c:if>
@@ -1478,6 +1481,8 @@
 														</i>
 									            	</a>
 												</c:if> 
+												
+												
 												<c:if test="${empty item.status || item.status == '-'}">
 													-
 												</c:if>

@@ -384,11 +384,17 @@
                                                                 <div class="d-flex align-items-center mt-4 fs-7 text-muted">
                                                                     <i class="ki-duotone ki-calendar fs-4 text-gray-700 me-3"><span class="path1"></span><span class="path2"></span></i>
                                                                     <div class="fs-5 fw-semibold text-gray-800">
+                                                                    
                                                                         <c:choose>
                                                                             <c:when test="${not empty borrow.date_end}">
                                                                                 <fmt:setLocale value="en_US" />
                                                                                 <fmt:formatDate value="${borrow.date_end}" pattern="d MMMM yyyy, HH:mm" />
                                                                             </c:when>
+                                                                            <c:when test="${not empty borrow.time_return}">
+																		        <fmt:setLocale value="en_US" />
+																		        <fmt:formatDate value="${borrow.time_return}"
+																		            pattern="d MMMM yyyy, HH:mm" />
+																		    </c:when>
                                                                             <c:otherwise>Unknown Return Date</c:otherwise>
                                                                         </c:choose>
                                                                     </div>
