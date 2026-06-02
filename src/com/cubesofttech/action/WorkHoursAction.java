@@ -251,41 +251,9 @@ public class WorkHoursAction extends ActionSupport {
 			String desRaw = null;
 			String des = null;
 			desRaw = request.getParameter("reason");
-//			des = (desRaw != null || desRaw != "") ? desRaw.trim() : "";
-//			log.debug(desRaw);
+			des = (desRaw != null || desRaw != "") ? desRaw.trim() : "";
+			log.debug(desRaw);
 			
-			des = desRaw != null ? desRaw.trim() : "";
-
-			log.debug(des);
-			des = des.replaceAll("[:;']", "")
-			        .replaceAll("[\\n\\r\\t]", "")
-			        .replaceAll("[<>\"&]", "")
-			        .trim();
-			des = des.replaceAll("[\\p{So}\\p{Cn}]", "");
-			
-			if (des.isEmpty()) {
-			    result.put("status", "error");
-			    result.put("message", "Please provide a reason.");
-			    
-			    ObjectMapper mapper = new ObjectMapper();
-			    response.setContentType("application/json;charset=UTF-8");
-			    response.getWriter().write(mapper.writeValueAsString(result));
-			    response.getWriter().flush();
-			    response.getWriter().close();
-			    return null;
-			}
-
-			if (des.length() < 10) {
-			    result.put("status", "error");
-			    result.put("message", "Reason must be at least 10 characters long.");
-
-			    ObjectMapper mapper = new ObjectMapper();
-			    response.setContentType("application/json;charset=UTF-8");
-			    response.getWriter().write(mapper.writeValueAsString(result));
-			    response.getWriter().flush();
-			    response.getWriter().close();
-			    return null;
-			}
 
 			String lat = request.getParameter("latitude");
 			String lng = request.getParameter("longitude");
@@ -339,7 +307,41 @@ public class WorkHoursAction extends ActionSupport {
 				month = now.getMonthValue();
 				year = now.getYear();
 			}
-
+			
+			if ("retro".equals(checkMode)) {
+				des = desRaw != null ? desRaw.trim() : "";
+	
+				log.debug(des);
+				des = des.replaceAll("[:;']", "")
+				        .replaceAll("[\\n\\r\\t]", "")
+				        .replaceAll("[<>\"&]", "")
+				        .trim();
+				des = des.replaceAll("[\\p{So}\\p{Cn}]", "");
+				
+				if (des.isEmpty()) {
+				    result.put("status", "error");
+				    result.put("message", "Please provide a reason.");
+				    
+				    ObjectMapper mapper = new ObjectMapper();
+				    response.setContentType("application/json;charset=UTF-8");
+				    response.getWriter().write(mapper.writeValueAsString(result));
+				    response.getWriter().flush();
+				    response.getWriter().close();
+				    return null;
+				}
+	
+				if (des.length() < 10) {
+				    result.put("status", "error");
+				    result.put("message", "Reason must be at least 10 characters long.");
+	
+				    ObjectMapper mapper = new ObjectMapper();
+				    response.setContentType("application/json;charset=UTF-8");
+				    response.getWriter().write(mapper.writeValueAsString(result));
+				    response.getWriter().flush();
+				    response.getWriter().close();
+				    return null;
+				}
+			}
 			log.debug(timeString);
 			int workinghour = workHoursService.calculateWorkingHours(userId, checkType, date, month, year, timeString);
 
@@ -353,6 +355,7 @@ public class WorkHoursAction extends ActionSupport {
 			wh.setDescription(des);
 			wh.setUserAgent("CA-II | " + userAgent);
 			wh.setIpAddress(ipAddress);
+			
 			if ("retro".equals(checkMode)) {
 				wh.setTimeCreate(Timestamp.valueOf(now));
 				wh.setTimeUpdate(Timestamp.valueOf(now));
@@ -360,6 +363,7 @@ public class WorkHoursAction extends ActionSupport {
 				wh.setTimeCreate(Timestamp.valueOf(now));
 				wh.setTimeUpdate(Timestamp.valueOf(now));
 			}
+			
 			wh.setUserCreate(userId);
 			wh.setUserUpdate(userId);
 			wh.setWorkinghours(workinghour);
