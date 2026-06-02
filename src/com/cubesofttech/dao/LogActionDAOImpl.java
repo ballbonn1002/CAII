@@ -113,4 +113,45 @@ public class LogActionDAOImpl implements LogActionDAO{
 			e.printStackTrace();
 		}
 	}
+
+	@Override
+	public List<Map<String, Object>> search(String userId, String startDate, String endDate) throws Exception {
+		Session session = this.sessionFactory.getCurrentSession();
+		List<Map<String, Object>> result = null;
+		try {
+			StringBuilder sql = new StringBuilder();
+			sql.append("SELECT la.log_action_id, la.log_data, la.user_create, la.time_create, ");
+			sql.append("u.name, u.name_en, u.employee_id, u.path ");
+			sql.append("FROM log_action la ");
+			sql.append("LEFT JOIN user u ON u.id = la.user_create ");
+			sql.append("WHERE 1=1 ");
+
+			if (userId != null && !userId.trim().isEmpty() && !userId.trim().equalsIgnoreCase("All")) {
+				sql.append("AND la.user_create = :userId ");
+			}
+			if (startDate != null && !startDate.trim().isEmpty()) {
+				sql.append("AND DATE(la.time_create) >= :startDate ");
+			}
+			if (endDate != null && !endDate.trim().isEmpty()) {
+				sql.append("AND DATE(la.time_create) <= :endDate ");
+			}
+			sql.append("ORDER BY la.time_create DESC");
+
+			SQLQuery query = session.createSQLQuery(sql.toString());
+			if (userId != null && !userId.trim().isEmpty() && !userId.trim().equalsIgnoreCase("All")) {
+				query.setParameter("userId", userId);
+			}
+			if (startDate != null && !startDate.trim().isEmpty()) {
+				query.setParameter("startDate", startDate);
+			}
+			if (endDate != null && !endDate.trim().isEmpty()) {
+				query.setParameter("endDate", endDate);
+			}
+			query.setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
+			result = query.list();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return result;
+	}
 }

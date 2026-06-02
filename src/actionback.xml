@@ -1648,6 +1648,26 @@
 			class="com.cubesofttech.action.ReportAction" method="borrowReport">
 		</action>
 
+		<!-- Action Log -->
+		<action name="action_log"
+			class="com.cubesofttech.action.LogActionAction" method="open">
+			<result name="success" type="tiles">actionLog</result>
+			<result name="error">/index.jsp</result>
+			<result name="login" type="redirect">/index.jsp</result>
+		</action>
+		<action name="action_log_list"
+			class="com.cubesofttech.action.LogActionAction" method="list">
+			<result name="success" type="tiles">actionLog</result>
+			<result name="error">/index.jsp</result>
+			<result name="login" type="redirect">/index.jsp</result>
+		</action>
+		<action name="action_log_list_data"
+			class="com.cubesofttech.action.LogActionAction" method="listData">
+			<result name="json">/pages-back/common/json.jsp</result>
+			<result name="login" type="redirect">/index.jsp</result>
+			<result name="error">/index.jsp</result>
+		</action>
+
 		<!-- Article -->
 		<action name="article_feed"
 			class="com.cubesofttech.action.ArticleAction" method="article_feed">

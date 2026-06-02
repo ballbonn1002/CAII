@@ -480,6 +480,13 @@
 			value="/pages-back/report/summary_working_day.jsp" />
 	</definition>
 
+	<!-- Action Log -->
+	<definition name="actionLog" extends="baseLayout">
+		<put-attribute name="title" value="Action Log" />
+		<put-attribute name="body"
+			value="/pages-back/report/action_log_list.jsp" />
+	</definition>
+
 	<!-- Article -->
 	<definition name="article_feed" extends="baseLayout">
 		<put-attribute name="title" value="Article Feed" />
