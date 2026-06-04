@@ -1005,6 +1005,20 @@
 			<result name="error">/index.jsp</result>
 		</action>
 
+		<action name="admin_update_signature"
+			class="com.cubesofttech.action.UserAction"
+			method="admin_update_signature">
+			<result name="success" type="redirectAction">user-edit?userId=${userId}</result>
+			<result name="error">/index.jsp</result>
+		</action>
+
+		<action name="admin_signature_perform_delete"
+			class="com.cubesofttech.action.UserAction"
+			method="admin_signature_perform_delete">
+			<result name="success" type="redirectAction">user-edit?userId=${userId}</result>
+			<result name="error">/index.jsp</result>
+		</action>
+
 		<!-- Role Management ================================================================================================== -->
 
 		<action name="demo_table"

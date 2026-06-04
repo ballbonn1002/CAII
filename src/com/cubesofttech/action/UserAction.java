@@ -827,8 +827,36 @@ public class UserAction extends ActionSupport {
 				}
 			}
 
+			String imgPathSignature = null;
+			String signatureFileName = null;
+			if (selectUser.getPathSignature() != null && selectUser.getPathSignature().contains("_")) {
+				try {
+					String originalFileName = new File(selectUser.getPathSignature()).getName();
+					String fileIdStr = originalFileName.substring(0, originalFileName.indexOf("_"));
+					String typeFile = originalFileName.substring(originalFileName.lastIndexOf("."));
+
+					imgPathSignature = "/upload/user/user_signature_" + fileIdStr + typeFile;
+
+					String server = request.getServletContext().getRealPath("/");
+					File f = new File(server + imgPathSignature);
+					if (!f.exists()) {
+						imgPathSignature = null;
+					}
+
+					FileUpload file = fileuploadDAO.findById(Integer.parseInt(fileIdStr));
+					if (file != null) {
+			            signatureFileName = file.getName()+file.getType();  
+			        }
+					
+				} catch (Exception e) {
+					imgPathSignature = null;
+				}
+			}
+
 			request.setAttribute("selectUser", selectUser);
 			request.setAttribute("editUserImgPath", imgPath);
+			request.setAttribute("editUserImgPathSignature", imgPathSignature);
+			request.setAttribute("editSignatureFileName", signatureFileName);
 
 			return SUCCESS;
 		} catch (Exception e) {
@@ -2238,6 +2266,120 @@ public class UserAction extends ActionSupport {
 		}
 	}
 
+	public String admin_update_signature() {
+		try {
+			String targetUserId = this.user_id;
+			if (targetUserId == null || targetUserId.trim().isEmpty()) {
+				targetUserId = request.getParameter("user_id");
+			}
+
+			if (targetUserId == null || targetUserId.trim().isEmpty()) {
+				return ERROR;
+			}
+
+			User u = userDAO.findById(targetUserId.trim());
+			
+			if (u != null) {
+				if (signature_remove != null && signature_remove.equalsIgnoreCase("true")) {
+					u.setPathSignature(null);
+
+				} else if (fileUpload != null) {
+					int maxId = fileuploadDAO.getMaxId() + 1;
+					String fileServerPath = request.getServletContext().getRealPath("/");
+					String originalName = fileUploadFileName;
+					String fileName = originalName.substring(0, originalName.lastIndexOf("."));
+					String typeFile = originalName.substring(originalName.lastIndexOf("."));
+
+					if (fileName.contains(" ")) {
+						fileName = fileName.trim().replaceAll(" ", "_");
+					}
+
+					String newFileName = maxId + "_" + fileName + typeFile;
+					String serverFileName = "user_signature_" + maxId + typeFile;
+
+					long fileSize = fileUpload.length(); // byte
+					double sizeKB = fileSize / 1024.0;
+					double sizeMB = fileSize / (1024.0 * 1024.0);
+					String sizeText;
+					if (fileSize < 1024) {
+						sizeText = fileSize + " B";
+					} else if (fileSize < 1024 * 1024) {
+						sizeText = String.format("%.2f KB", sizeKB);
+					} else {
+						sizeText = String.format("%.2f MB", sizeMB);
+					}
+
+					FileUtil.upload(fileUpload, fileServerPath + "upload/user/", serverFileName);
+
+					FileUpload file = new FileUpload();
+					file.setFileId(maxId);
+					file.setName(fileName);
+					file.setPage("user_signature");
+					file.setPageId(u.getId());
+					
+					User onlineUser = (User) request.getSession().getAttribute("onlineUser");
+					String logonUser = onlineUser != null ? onlineUser.getId() : "SYSTEM";
+					
+					file.setUserId(logonUser);
+					file.setType(typeFile);
+					file.setSize(sizeText);
+					file.setAltName(null);
+					file.setUserCreate(logonUser);
+					file.setUserUpdate(logonUser);
+					file.setPath("/upload/user/" + newFileName);
+					file.setTimeCreate(DateUtil.getCurrentTime());
+					file.setTimeUpdate(DateUtil.getCurrentTime());
+					fileuploadDAO.save(file);
+
+					u.setPathSignature("/upload/user/" + newFileName);
+				}
+				userDAO.update(u);
+			}
+			
+			this.userId = targetUserId.trim();
+			return SUCCESS;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ERROR;
+		}
+	}
 	
-	
+	public String admin_signature_perform_delete() {
+		try {
+			String targetUserId = request.getParameter("userId");
+			
+			if (targetUserId == null || targetUserId.trim().isEmpty()) {
+			    return ERROR;
+			}
+			
+			User user = userDAO.findById(targetUserId.trim());
+			
+			if (user != null) {
+				if (user.getPathSignature() != null && user.getPathSignature().contains("_")) {
+					try {
+						String originalFileName = new File(user.getPathSignature()).getName();
+						String fileIdStr = originalFileName.substring(0, originalFileName.indexOf("_"));
+			
+						if (fileIdStr != null && !fileIdStr.isEmpty()) {
+							//delete file
+							FileUpload file = fileuploadDAO.findById(Integer.parseInt(fileIdStr));
+							if (file != null) {
+								fileuploadDAO.delete(file);
+								user.setPathSignature(null);
+								userDAO.update(user);
+							}
+						}
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+				}
+			}
+			
+			this.userId = targetUserId.trim();
+			return SUCCESS;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ERROR;
+		}
+	}
 }
