@@ -39,7 +39,9 @@
 	    u.name as user_name,
 	    u.bank_number,
 	    fu.file_id as file_user,
+	    fu.type as type_file_user,
 		fau.file_id as file_approve_user,
+		fau.type as type_file_approve_user,
 		au.name as approve_user_name
 	
 	from expense_detail ed
@@ -67,8 +69,10 @@
 	<field name="travel_type_name" class="java.lang.String"/>
 	<field name="user_name" class="java.lang.String"/>
 	<field name="file_user" class="java.lang.Integer"/>
+	<field name="type_file_user" class="java.lang.String"/>
 	<field name="bank_number" class="java.lang.String"/>
-	<field name="file_approve_user" class="java.lang.Integer"/>
+	<field name="file_approve_user" class="java.lang.String"/>
+	<field name="type_file_approve_user" class="java.lang.String"/>
 	<field name="approve_user_name" class="java.lang.String"/>
 	<field name="eg_time_create" class="java.sql.Timestamp"/>
 	<field name="requested_at" class="java.sql.Timestamp"/>
@@ -329,7 +333,7 @@
 			</textField>
 			<image scaleImage="RetainShape" hAlign="Center" vAlign="Bottom" isUsingCache="true" onErrorType="Blank">
 				<reportElement x="35" y="42" width="130" height="40" uuid="e1a8b9c2-d3e4-4f5a-b6c7-d8e9f0a1b2c3"/>
-				<imageExpression><![CDATA[$P{basePath} + "/upload/user/user_signature_" +  String.valueOf($F{file_user}) + ".png"]]></imageExpression>
+				<imageExpression><![CDATA[$P{basePath} + "/upload/user/user_signature_" +  String.valueOf($F{file_user}) +  $F{type_file_user}]]></imageExpression>
 			</image>
 			<rectangle>
 				<reportElement mode="Transparent" x="2" y="20" width="177" height="110" uuid="d736349d-c85c-4596-9a35-ffa035be23f9"/>
@@ -369,7 +373,7 @@
 				<reportElement x="192" y="42" width="158" height="40" uuid="1a2b3c4d-5e6f-7a8b-9c0d-1e2f3a4b5c6d">
 					<printWhenExpression><![CDATA[$F{status_id} != null && ($F{status_id}.equals("A") || $F{status_id}.equals("R") || $F{status_id}.equals("P") )]]></printWhenExpression>
 				</reportElement>
-				<imageExpression><![CDATA[$P{basePath} + "/upload/user/user_signature_" + String.valueOf($F{file_approve_user}) + ".png"]]></imageExpression>
+				<imageExpression><![CDATA[$P{basePath} + "/upload/user/user_signature_" + String.valueOf($F{file_approve_user}) + $F{type_file_approve_user}]]></imageExpression>
 			</image>
 			<rectangle>
 				<reportElement mode="Transparent" x="179" y="20" width="188" height="110" uuid="4bd55860-8ceb-4bc7-8bbd-0cbf3d5851f4"/>
@@ -409,7 +413,7 @@
 				<reportElement x="383" y="42" width="158" height="40" uuid="f4a1b2c3-d3e4-4f5a-b6c7-d8e9f0a1b2c4">
 					<printWhenExpression><![CDATA[$F{status_id} != null && $F{status_id}.equals("P")]]></printWhenExpression>
 				</reportElement>
-				<imageExpression><![CDATA[$P{basePath} + "/upload/user/user_signature_" +  String.valueOf($F{file_user}) + ".png"]]></imageExpression>
+				<imageExpression><![CDATA[$P{basePath} + "/upload/user/user_signature_" +  String.valueOf($F{file_user}) +  $F{type_file_user}]]></imageExpression>
 			</image>
 			<rectangle>
 				<reportElement mode="Transparent" x="367" y="20" width="188" height="110" uuid="4326047f-fe5c-49e1-a56e-be9dea80785a"/>
