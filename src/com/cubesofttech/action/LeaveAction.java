@@ -13,6 +13,7 @@ import java.sql.Timestamp;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Base64;
@@ -37,6 +38,7 @@ import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.apache.struts2.ServletActionContext;
+import org.jfree.util.Log;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,6 +57,7 @@ import com.cubesofttech.model.Role;
 import com.cubesofttech.model.RoleAuthorizedObject;
 import com.cubesofttech.model.User;
 import com.cubesofttech.service.LeaveService;
+import com.cubesofttech.service.LogService;
 import com.cubesofttech.util.DateUtil;
 import com.cubesofttech.util.FileUtil;
 import com.google.gson.Gson;
@@ -97,6 +100,9 @@ public class LeaveAction extends ActionSupport {
 
 	@Autowired
 	public FileUploadDAO fileuploadDAO;
+	
+	@Autowired
+    private LogService logService;
 
 	List<Leaves> modalLeaveList;
 	private String roleId;
@@ -1747,6 +1753,19 @@ public class LeaveAction extends ActionSupport {
 
 			return SUCCESS;
 		} catch (Throwable e) {
+			try {
+				User ur = (User) request.getSession().getAttribute("onlineUser");
+				
+				String uriLog = request.getRequestURI();
+	    		String methodLog = request.getMethod();
+	    		String statusLog = "ERROR";
+	    		String descLog = e.getClass().getName() + ": " + e.getMessage();
+	    		String dateLog = LocalDateTime.now().toLocalDate().toString() + '%';
+	    		
+	    		logService.updateRequestLog(uriLog, methodLog, statusLog, descLog, dateLog, ur.getId());
+			} catch (Exception logEx) {
+				log.debug("Log can't write to DB: " + logEx.getMessage());
+			}
 			e.printStackTrace();
 			return ERROR;
 		}
@@ -1951,6 +1970,19 @@ public class LeaveAction extends ActionSupport {
 	        
 	        return SUCCESS;
 	    } catch (Exception e) {
+	    	try {
+				User ur = (User) request.getSession().getAttribute("onlineUser");
+				
+				String uriLog = request.getRequestURI();
+	    		String methodLog = request.getMethod();
+	    		String statusLog = "ERROR";
+	    		String descLog = e.getClass().getName() + ": " + e.getMessage();
+	    		String dateLog = LocalDateTime.now().toLocalDate().toString() + '%';
+	    		
+	    		logService.updateRequestLog(uriLog, methodLog, statusLog, descLog, dateLog, ur.getId());
+			} catch (Exception logEx) {
+				log.debug("Log can't write to DB: " + logEx.getMessage());
+			}
 	        e.printStackTrace();
 	        return ERROR;
 	    }

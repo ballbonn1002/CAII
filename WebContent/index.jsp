@@ -85,11 +85,11 @@
 								<!--begin::Input group=-->
 								<div class="mb-10 text-start">
 									<label class="required form-label">User id</label>
-									<input id="username" name="username" class="form-control form-control-solid" type="text" />
+									<input id="username" name="username" class="form-control form-control-solid" type="text" required/>
 								</div>
 								<div class="mb-10 text-start">
 									<label class="required form-label">Password</label>
-									<input id="password" name="password" class="form-control form-control-solid" type="password" />
+									<input id="password" name="password" class="form-control form-control-solid" type="password" required/>
 								</div>
 								
 								<!--end::Input group=-->

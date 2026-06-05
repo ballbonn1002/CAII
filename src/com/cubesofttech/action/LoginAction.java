@@ -6,6 +6,7 @@ import java.math.BigDecimal;
 import java.security.SecureRandom;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -34,6 +35,7 @@ import com.cubesofttech.model.RoleAuthorizedObject;
 import com.cubesofttech.model.SsoToken;
 import com.cubesofttech.model.User;
 import com.cubesofttech.model.UserRole;
+import com.cubesofttech.service.LogService;
 import com.cubesofttech.service.LoginService;
 import com.cubesofttech.service.TokenService;
 import com.cubesofttech.system.Constant;
@@ -82,6 +84,9 @@ public class LoginAction extends ActionSupport {
 
 	@Autowired
 	private TokenService tokenService;
+	
+	@Autowired
+	private LogService logService;
 	
 	String username;
 	String password;
@@ -155,6 +160,7 @@ public class LoginAction extends ActionSupport {
 
 			// login success
 			if (loginSuccess && user != null) {
+				
 				String chkLogin = "sc";
 				Cookie cSuccess = new Cookie("cooksc", chkLogin);
 				cSuccess.setMaxAge(60 * 15);
@@ -343,6 +349,15 @@ public class LoginAction extends ActionSupport {
 				x4 = x1.add(x2).add(x3).add(x5).add(x6).add(x7);
 				request.setAttribute("x4", x4);
 				System.out.println(Constant.onlineUserList);
+				try {
+					String uriLog = request.getRequestURI();
+					String methodLog = request.getMethod();
+					String dateLog = LocalDateTime.now().toLocalDate().toString() + '%';
+					logService.updateRequestLog(uriLog, methodLog, "SUCCESS", null, dateLog, user.getId());
+				} catch (Exception logEx){
+					log.debug("Log can't write to DB: " + logEx.getMessage());
+				}
+				
 				return SUCCESS;
 			} else {
 				Cookie cSuccess = new Cookie("cooksc", null);

@@ -1551,8 +1551,15 @@ function saveCheckInOut(userId, workType, checkType, mode, selectDate, selectTim
         	+'<span class="text-white fs-4 fw-bold mt-3">Processing...</span>');
 	$("body").append(loadingEl);
 	
+	let targetUrl = "";
+	if(checkType === "1"){
+		targetUrl = "saveCheckIn";
+	} else if(checkType === "2") {
+		targetUrl = "saveCheckOut"
+	}
+	
 	$.ajax({
-	    url: "saveCheckInOut",
+	    url: targetUrl,
 	    type: "POST",
 	    dataType: "json",
 	    data: data,

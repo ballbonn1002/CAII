@@ -23,6 +23,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
 import org.apache.struts2.ServletActionContext;
+import org.jfree.util.Log;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cubesofttech.dao.HolidayDAO;
@@ -104,11 +105,6 @@ public class WorkHoursAction extends ActionSupport {
 			log.info("logonUser : " + logonUser);
 			LocalDate currentDate = LocalDate.now();
 			request.setAttribute("currentDate", currentDate);
-			
-			String uri = request.getRequestURI();
-			String method = request.getMethod();
-			String date = LocalDateTime.now().toLocalDate().toString() + '%';
-			logService.updateRequestLog(uri, method, date, logonUser);
 
 			List<Holiday> holidayList = null;
 			holidayList = holidayDAO.findAllInMonth();
@@ -193,11 +189,6 @@ public class WorkHoursAction extends ActionSupport {
 
 	public String savecheck() {
 		User ur = (User) request.getSession().getAttribute("onlineUser");
-		String logonUser = ur.getId();
-		String uri = request.getRequestURI();
-		String method = request.getMethod();
-		String dateCheck = LocalDateTime.now().toLocalDate().toString() + '%';
-		logService.updateRequestLog(uri, method, dateCheck, logonUser);
 		
 		Map<String, Object> result = new HashMap<>();
 		try {
@@ -215,6 +206,17 @@ public class WorkHoursAction extends ActionSupport {
 					try {
 						targetDate = LocalDate.parse(checkDate);
 					} catch (Exception e) {
+						try {
+							String uriLog = request.getRequestURI();
+				    		String methodLog = request.getMethod();
+				    		String statusLog = "ERROR";
+				    		String descLog = e.getClass().getName() + ": " + e.getMessage();
+				    		String dateLog = LocalDateTime.now().toLocalDate().toString() + '%';
+				    		
+				    		logService.updateRequestLog(uriLog, methodLog, statusLog, descLog, dateLog, ur.getId());
+						} catch (Exception logEx) {
+							log.debug("Log can't write to DB: " + logEx.getMessage());
+						}
 						log.error("Invalid date format", e);
 					}
 				} else {	// normal
@@ -242,6 +244,17 @@ public class WorkHoursAction extends ActionSupport {
 						response.getWriter().flush();
 						response.getWriter().close();
 					} catch (Exception e) {
+						try {
+							String uriLog = request.getRequestURI();
+				    		String methodLog = request.getMethod();
+				    		String statusLog = "ERROR";
+				    		String descLog = e.getClass().getName() + ": " + e.getMessage();
+				    		String dateLog = LocalDateTime.now().toLocalDate().toString() + '%';
+				    		
+				    		logService.updateRequestLog(uriLog, methodLog, statusLog, descLog, dateLog, ur.getId());
+						} catch (Exception logEx) {
+							log.debug("Log can't write to DB: " + logEx.getMessage());
+						}
 						e.printStackTrace();
 					}
 					return null;
@@ -378,6 +391,17 @@ public class WorkHoursAction extends ActionSupport {
 				result.put("time", timeString.substring(0, 5));
 			}
 		} catch (Exception e) {
+			try {
+				String uriLog = request.getRequestURI();
+	    		String methodLog = request.getMethod();
+	    		String statusLog = "ERROR";
+	    		String descLog = e.getClass().getName() + ": " + e.getMessage();
+	    		String dateLog = LocalDateTime.now().toLocalDate().toString() + '%';
+	    		
+	    		logService.updateRequestLog(uriLog, methodLog, statusLog, descLog, dateLog, ur.getId());
+			} catch (Exception logEx) {
+				log.debug("Log can't write to DB: " + logEx.getMessage());
+			}
 			e.printStackTrace();
 			result.put("status", "error");
 			result.put("message", "Failed to record your check-in/out time. Please try again.");
@@ -390,8 +414,32 @@ public class WorkHoursAction extends ActionSupport {
 			response.getWriter().flush();
 			response.getWriter().close();
 		} catch (Exception e) {
+			try {
+				String uriLog = request.getRequestURI();
+	    		String methodLog = request.getMethod();
+	    		String statusLog = "ERROR";
+	    		String descLog = e.getClass().getName() + ": " + e.getMessage();
+	    		String dateLog = LocalDateTime.now().toLocalDate().toString() + '%';
+	    		
+	    		logService.updateRequestLog(uriLog, methodLog, statusLog, descLog, dateLog, ur.getId());
+			} catch (Exception logEx) {
+				log.debug("Log can't write to DB: " + logEx.getMessage());
+			}
 			e.printStackTrace();
 		}
+		
+		try {
+			String uriLog = request.getRequestURI();
+			String methodLog = request.getMethod();
+			String statusLog = "SUCCESS";
+			String descLog = null;
+			String dateLog = LocalDateTime.now().toLocalDate().toString() + '%';
+			
+			logService.updateRequestLog(uriLog, methodLog, statusLog, descLog, dateLog, ur.getId());
+		} catch (Exception logEx) {
+			log.debug("Log can't write to DB: " + logEx.getMessage());
+		}
+		
 		return null;
 	}
 
