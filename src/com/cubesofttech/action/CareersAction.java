@@ -186,6 +186,16 @@ public class CareersAction extends ActionSupport {
 			    if (j != null) jobDAO.delete(j);
 			}
 			
+			String pageUriId = request.getParameter("id"); 
+
+			PageUri uri = pageUriDAO.findByModelId(pageUriId);
+	            
+	            if (uri != null) {
+	                if ("job".equalsIgnoreCase(uri.getModel())) {
+	                    pageUriDAO.delete(uri);
+	                }
+	            }
+			
 			return SUCCESS;
 		} catch (Exception e) {
 			e.printStackTrace();
