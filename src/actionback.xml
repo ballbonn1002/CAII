@@ -255,7 +255,7 @@
 			<result name="error">/index.jsp</result>
 		</action>
 		
-		<action name="retrosaveCheckOut"
+		<action name="retroSaveCheckOut"
 			class="com.cubesofttech.action.WorkHoursAction" method="savecheck">
 			<result name="error">/index.jsp</result>
 		</action>
