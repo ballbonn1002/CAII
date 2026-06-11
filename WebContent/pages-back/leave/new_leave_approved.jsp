@@ -1159,7 +1159,8 @@ function sentData(id, value) {
 			"reason": apprReasonTxt
 		}
 	}).done(function () {
-		location.reload();
+		/* location.reload(); */
+		 $("#searchForm").submit();
 	});
 }
 </script>
