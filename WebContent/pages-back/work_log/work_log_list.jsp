@@ -5,6 +5,8 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib uri="/WEB-INF/tlds/permission.tld" prefix="perm"%>
 
+<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 <style>
   .xml-icon {
     display: inline-block;
@@ -334,9 +336,8 @@
 	            </div>
 	
 	            <div class="modal-body p-0">
-	                <iframe id="gpsFrame" width="100%" height="100%"
-				        style="border:0;height:calc(100vh - 80px);" loading="lazy">
-				    </iframe>
+	                <div id="gpsMap" width="100%" height="100%"
+				        style="border:0;height:calc(100vh - 80px);"></div>
 	            </div>
 	
 	        </div>
@@ -352,8 +353,8 @@
     var currentMonth = '';         
     var progressInterval;          
     var currentRequest = null; 
-    var map = null;
-    var marker = null;
+    var gpsMap = null;
+    var gpsMarker = null;
 
     $(document).ready(function() {
         try {
@@ -636,11 +637,18 @@
             //console.log(longitude);
             
             var gpsButtonHtml = '';
+            var userName = item.name_en || item.name || 'Unknown User';
+
             if (latitude && longitude) {
-                gpsButtonHtml = '<a href="javascript:void(0)" onclick="showGPS(\'' + latitude + '\', \'' + longitude + '\')">' +
-                '<i class="ki-duotone ki-geolocation-home text-danger fs-1 mx-2" data-bs-toggle="modal">' +
-                '<span class="path1"></span><span class="path2"></span></i></a>';
-			}
+                gpsButtonHtml =
+                    '<a href="javascript:void(0)" onclick="showGPS(\'' +
+                    latitude + '\', \'' +
+                    longitude + '\', \'' +
+                    userName.replace(/'/g, "\\'") +
+                    '\')">' +
+                    '<i class="ki-duotone ki-geolocation-home text-danger fs-1 mx-2">' +
+                    '<span class="path1"></span><span class="path2"></span></i></a>';
+            }
             
             html += '<tr>' +
                     '<td class="ps-4"><div class="d-flex flex-column">' +
@@ -678,6 +686,9 @@
         $('#tableBody').append(html);
         currentIndex = end;
         setTimeout(processBatch, 0);
+        
+        
+        
     }
     
     // --- MODAL FUNCTION ---
@@ -747,7 +758,7 @@
     }
 	
     // --- SHOW GPS ---
-    function showGPS(la, lo) {
+    /* function showGPS(la, lo) {
     	console.log(la);
     	console.log(lo);
     	  var url = "https://maps.google.com/maps?q=" + la + "," + lo + "&z=17&output=embed";
@@ -755,6 +766,43 @@
     	    $("#gpsFrame").attr("src", url);
     	$('#showMapModal').modal('show');
     	
+    } */
+    function showGPS(la, lo, userName) {
+        var lat = parseFloat(la);
+        var lng = parseFloat(lo);
+
+        $('#showMapModal').modal('show');
+
+        setTimeout(function () {
+            if (!gpsMap) {
+                gpsMap = L.map('gpsMap').setView([lat, lng], 17);
+
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    maxZoom: 19,
+                    attribution: '&copy; OpenStreetMap'
+                }).addTo(gpsMap);
+            } else {
+                gpsMap.setView([lat, lng], 17);
+            }
+
+            if (gpsMarker) {
+                gpsMap.removeLayer(gpsMarker);
+            }
+
+            var popupHtml =
+                '<div style="min-width:180px;">' +
+                    '<strong>' + userName + '</strong><br>' +
+                    'Latitude: ' + lat + '<br>' +
+                    'Longitude: ' + lng +
+                '</div>';
+
+            gpsMarker = L.marker([lat, lng])
+                .addTo(gpsMap)
+                .bindPopup(popupHtml)
+                .openPopup();
+
+            gpsMap.invalidateSize();
+        }, 300);
     }
     
  	// --- SAVE EDIT ---
