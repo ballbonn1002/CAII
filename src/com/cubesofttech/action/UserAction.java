@@ -1391,6 +1391,8 @@ public class UserAction extends ActionSupport {
 					fileupload.setName(name);
 					fileupload.setType(type);
 					fileupload.setTimeCreate(DateUtil.getCurrentTime());
+					fileupload.setPage("user");
+					fileupload.setPageId(u.getId());
 					fileuploadDAO.save(fileupload);
 
 					u.setPath("/upload/user/" + maxId + "_" + fileName);
