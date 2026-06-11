@@ -195,7 +195,7 @@
                                             <th style="width: 150px; max-width: 150px;">Type</th>
                                             <th style="width: 300px; max-width: 300px;">Date - Time</th>
                                             <th class="min-w-100px">Time stamp / IP</th>
-                                            <!-- <th class="text-center min-w-60px">GPS</th> -->
+                                            <th class="text-center min-w-60px">GPS</th> 
                                             <th class="min-w-100px">Status</th>
                                             <th class="text-end min-w-70px pe-4">Action</th>
                                         </tr>
@@ -316,20 +316,32 @@
         </div>
     </div>
     
-    <div class="modal bg-body fade" tabindex="-1" id="showMapModal">
-    	<div class="modal-dialog modal-fullscreen">
-	    	<div class="modal-content shadow-none">
-	    		<div class="modal-header">
-	    			<h5 class="modal-title">Work Location</h5>
-	    			<!--begin::Close-->
-	                <div class="btn btn-icon btn-sm btn-active-light-primary ms-2" data-bs-dismiss="modal" aria-label="Close">
-	                    <i class="ki-duotone ki-cross fs-2x"><span class="path1"></span><span class="path2"></span></i>
+	    
+	<div class="modal bg-body fade" tabindex="-1" id="showMapModal">
+	    <div class="modal-dialog modal-fullscreen">
+	        <div class="modal-content shadow-none">
+	
+	            <div class="modal-header">
+	                <h5 class="modal-title">Work Location</h5>
+	
+	                <div class="btn btn-icon btn-sm btn-active-light-primary ms-2"
+	                     data-bs-dismiss="modal">
+	                    <i class="ki-duotone ki-cross fs-2x">
+	                        <span class="path1"></span>
+	                        <span class="path2"></span>
+	                    </i>
 	                </div>
-	                <!--end::Close-->
-	    		</div>
-	    	</div>
-    	</div>
-    </div>
+	            </div>
+	
+	            <div class="modal-body p-0">
+	                <iframe id="gpsFrame" width="100%" height="100%"
+				        style="border:0;height:calc(100vh - 80px);" loading="lazy">
+				    </iframe>
+	            </div>
+	
+	        </div>
+	    </div>
+	</div>
 </perm:permission>
 
 <script>
@@ -340,6 +352,8 @@
     var currentMonth = '';         
     var progressInterval;          
     var currentRequest = null; 
+    var map = null;
+    var marker = null;
 
     $(document).ready(function() {
         try {
@@ -649,9 +663,9 @@
                         '<span class="text-gray-800 fw-normal fs-6 d-block">' + createTimeStr + '</span>' +
                         '<span class="fw-normal text-gray-600 fs-6">' + ipAddress + '</span>' +
                     '</td>' +
-                    /* '<td class="text-center">'+
+                    '<td class="text-center">'+
                     	gpsButtonHtml +
-                    '</td>' + */
+                    '</td>' +
                     '<td><div class="d-flex flex-column align-items-start">' + statusBadge + '</div></td>' +
                     '<td class="text-end pe-4">' +
                         '<a href="javascript:void(0)" onclick="openEditModal(' + i + ')" class="btn btn-icon btn-light-primary btn-sm">' +
@@ -736,7 +750,11 @@
     function showGPS(la, lo) {
     	console.log(la);
     	console.log(lo);
+    	  var url = "https://maps.google.com/maps?q=" + la + "," + lo + "&z=17&output=embed";
+
+    	    $("#gpsFrame").attr("src", url);
     	$('#showMapModal').modal('show');
+    	
     }
     
  	// --- SAVE EDIT ---

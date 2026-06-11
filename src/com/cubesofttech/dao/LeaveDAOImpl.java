@@ -536,8 +536,9 @@ public class LeaveDAOImpl implements LeaveDAO {
 	    try {
 	        StringBuilder sql = new StringBuilder(
 	            "SELECT leaves.leave_id, leaves.user_id, user.name, leaves.leave_status_id, leaves.leave_type_id, leave_type.leave_type_name, leaves.half_day, leaves.start_date, "
-	            + "leaves.start_time, leaves.end_time, leaves.end_date, leaves.no_day ,user.path, leaves.time_create, leaves.description "
+	            + "leaves.start_time, leaves.end_time, leaves.end_date, leaves.no_day ,user.path, leaves.time_create, leaves.description, leaves.leave_file, file.name AS file_name, file.type "
 	            + "FROM leaves LEFT JOIN leave_type ON leave_type.leave_type_id = leaves.leave_type_id LEFT JOIN user ON leaves.user_id = user.id "
+	            + "LEFT JOIN file ON leaves.leave_file = file.file_id "
 	            + "WHERE leaves.start_date BETWEEN :startDate AND :endDate ");
 
 	        sql.append("ORDER BY leaves.leave_status_id ASC, leaves.start_date DESC");
