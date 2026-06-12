@@ -1119,6 +1119,7 @@ public class BorrowingAction extends ActionSupport {
 				borrow.setTime_return(timestamp);
 				borrow.setUserUpdate(onlineUser.getId());
 				borrow.setTimeUpdate(timestamp);
+				borrow.setDateEnd(timestamp);
 				borrowDAO.update(borrow);
 				
 				map.put("message", "success");
@@ -1149,6 +1150,7 @@ public class BorrowingAction extends ActionSupport {
 				if(borrow.getUser_return() == null || borrow.getUser_return().trim().isEmpty()) {
 					borrow.setUser_return(borrow.getUserBorrowid());
 					borrow.setTime_return(timestamp);
+					borrow.setDateEnd(timestamp);
 				}
 			
 				borrow.setStatus("R");

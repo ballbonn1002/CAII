@@ -85,22 +85,22 @@
 								<!--begin::Input group=-->
 								<div class="mb-10 text-start">
 									<label class="required form-label">User id</label>
-									<input id="username" name="username" class="form-control form-control-solid" type="text" />
+									<input id="username" name="username" class="form-control form-control-solid" type="text" required/>
 								</div>
 								<div class="mb-10 text-start">
 									<label class="required form-label">Password</label>
-									<input id="password" name="password" class="form-control form-control-solid" type="password" />
+									<input id="password" name="password" class="form-control form-control-solid" type="password" required/>
 								</div>
 								
 								<!--end::Input group=-->
-								<!--begin::Wrapper-->
-								<!-- <div class="d-flex flex-stack flex-wrap gap-3 fs-base fw-semibold mb-8">
-									<div></div>
-									begin::Link
+								<!-- begin::Wrapper -->
+								<div class="d-flex flex-stack flex-wrap gap-3 fs-base fw-semibold mb-8 justify-content-end">
+									<!-- <div></div>
+									begin::Link -->
 									<a href="forget_password" class="link-primary">Forgot Password ?</a>
-									end::Link
-								</div> -->
-								<!--end::Wrapper-->
+									<!-- end::Link -->
+								</div>
+								<!-- end::Wrapper -->
 								<!--begin::Submit button-->
 								<div class="d-grid mb-10">
 									<button type="submit" id="kt_sign_in_submit" class="btn btn-primary">

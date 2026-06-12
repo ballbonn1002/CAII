@@ -213,11 +213,16 @@
 																		class="path2"></span><span class="path3"></span>
 																	</i>
 																</c:when>
-
-																<c:otherwise>
+																<c:when test="${t.check_in_type == '2'}">
 																	<i class="ki-duotone ki-home-2 text-success me-2"
 																		style="font-size: 20px;"> <span class="path1"></span><span
 																		class="path2"></span>
+																	</i>
+																</c:when>
+																<c:otherwise>
+																	<i class="ki-duotone ki-cube-2 text-danger me-2"
+																		style="font-size: 20px;"> <span class="path1"></span><span
+																		class="path2"></span><span class="path3"></span>
 																	</i>
 																</c:otherwise>
 															</c:choose>
@@ -237,11 +242,16 @@
 																		class="path2"></span><span class="path3"></span>
 																	</i>
 																</c:when>
-
-																<c:otherwise>
+																<c:when test="${t.check_out_type == '2'}">
 																	<i class="ki-duotone ki-home-2 text-success me-2"
 																		style="font-size: 20px;"> <span class="path1"></span><span
 																		class="path2"></span>
+																	</i>
+																</c:when>
+																<c:otherwise>
+																	<i class="ki-duotone ki-cube-2 text-danger me-2"
+																		style="font-size: 20px;"> <span class="path1"></span><span
+																		class="path2"></span><span class="path3"></span>
 																	</i>
 																</c:otherwise>
 															</c:choose>

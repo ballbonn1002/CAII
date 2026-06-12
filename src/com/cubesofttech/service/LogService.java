@@ -22,13 +22,15 @@ public class LogService {
 	@Autowired
 	private LogActionDAO logActionDAO;
 	
-	public void updateRequestLog(String uri, String method, String date, String logonUser) {
+	public void updateRequestLog(String uri, String method, String status, String ex, String date, String logonUser) {
 		try {
 			List<Map<String, Object>> logActionList = logActionDAO.findByUserAndDate(logonUser, date);
 			JsonArray dataNew = new JsonArray();
 			JsonObject obj = new JsonObject();
 			obj.addProperty("requestURI", uri);
 			obj.addProperty("method", method);
+			obj.addProperty("status", status);
+			obj.addProperty("description", ex);
 			obj.addProperty("time", DateUtil.getCurrentTime().toString());
 			dataNew.add(obj);
 			

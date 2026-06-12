@@ -97,6 +97,7 @@ public class User implements Serializable {
             , String passportId
             , String paymentRemark
             , String pathSignature
+            , String changepass_code
             
         ) {
         this.id = id;	
@@ -174,6 +175,7 @@ public class User implements Serializable {
         this.passportId = passportId;
         this.paymentRemark = paymentRemark;
         this.pathSignature = pathSignature;
+        this.changepass_code = changepass_code;
     }
     
     @Id
@@ -340,6 +342,8 @@ public class User implements Serializable {
     private String pathSignature;
     @Column(name = "employee_status")
     private String employeeStatus;
+    @Column(name = "changepass_code")
+    private String changepass_code;
 
 
     public Integer getId_sitejob() {
@@ -843,6 +847,13 @@ public class User implements Serializable {
 		this.employeeStatus = employeeStatus;
 	}
 	
+	public String getChangepass_code() {
+		return changepass_code;
+	}
+	public void setChangepass_code(String changepass_code) {
+		this.changepass_code = changepass_code;
+	}
+	
 	@Override
 	public String toString() {
 		return "User [id=" + id + ", roleId=" + roleId + ", departmentId=" + departmentId + ", managerId=" + managerId
@@ -1167,6 +1178,10 @@ public class User implements Serializable {
         }
         if(!(that.getEmployeeStatus() == null ? this.getEmployeeStatus() == null
         		: that.getEmployeeStatus().equals(this.getEmployeeStatus()))) {
+        	return false;	
+        }
+        if(!(that.getChangepass_code() == null ? this.getChangepass_code() == null
+        		: that.getChangepass_code().equals(this.getChangepass_code()))) {
         	return false;	
         }
         	

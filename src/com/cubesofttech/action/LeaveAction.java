@@ -13,6 +13,7 @@ import java.sql.Timestamp;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Base64;
@@ -37,6 +38,7 @@ import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.apache.struts2.ServletActionContext;
+import org.jfree.util.Log;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,6 +57,7 @@ import com.cubesofttech.model.Role;
 import com.cubesofttech.model.RoleAuthorizedObject;
 import com.cubesofttech.model.User;
 import com.cubesofttech.service.LeaveService;
+import com.cubesofttech.service.LogService;
 import com.cubesofttech.util.DateUtil;
 import com.cubesofttech.util.FileUtil;
 import com.google.gson.Gson;
@@ -97,6 +100,9 @@ public class LeaveAction extends ActionSupport {
 
 	@Autowired
 	public FileUploadDAO fileuploadDAO;
+	
+	@Autowired
+    private LogService logService;
 
 	List<Leaves> modalLeaveList;
 	private String roleId;
@@ -666,12 +672,13 @@ public class LeaveAction extends ActionSupport {
 
 	public String New_searchleaveapproved() {
 		try {
-			String userSelect = request.getParameter("name1");
-			String userSelect2 = request.getParameter("name2");
+			String userSelect = request.getParameter("name1");//all || all to
+			String userSelect2 = request.getParameter("name2"); // userId ที่เลือก
 			String leaveStatus = request.getParameter("appr");
 			String startdate = request.getParameter("startdate");
 			String enddate = request.getParameter("enddate");
 			String leaveType = request.getParameter("type");
+			
 			log.info("Searching : " + userSelect+"|"+userSelect2+"|"+leaveStatus+"|"+leaveType+"|"+startdate+"|"+enddate);
 			String userLogin = null;
 			User ur = (User) request.getSession().getAttribute("onlineUser");
@@ -699,7 +706,8 @@ public class LeaveAction extends ActionSupport {
 			}
 			
 			List<Map<String, Object>> leaveList = null;
-			if((!userSelect.isEmpty() || userSelect != null) && (userSelect2.isEmpty() || userSelect2 == null)) {
+	
+			if((userSelect != null && !userSelect.isEmpty()) && (userSelect2 == null || userSelect2.isEmpty())) {
 				log.debug("all");		
 				if (userSelect.equalsIgnoreCase("All")) { //if choose "All Employee"
 					request.setAttribute("role_authorized", "1");
@@ -713,7 +721,7 @@ public class LeaveAction extends ActionSupport {
 					leaveList = leaveDAO.findLeaveInTeamByManagerAndType(start_date, end_date, userLogin, leaveStatus, leaveType);
 				}
 
-			} else if((!userSelect.isEmpty() || userSelect != null) && (!userSelect2.isEmpty() || userSelect2 != null)) {
+			} else if((userSelect != null && !userSelect.isEmpty()) && (userSelect2 != null && !userSelect2.isEmpty())) {
 				log.debug("1 user");
 				if (userSelect.equalsIgnoreCase("All")) {	//if choose "All Employee"
 					request.setAttribute("role_authorized", "1");
@@ -916,6 +924,7 @@ public class LeaveAction extends ActionSupport {
 			request.setAttribute("type_7", type_leave.get(6).getLeaveTypeName());
 			request.setAttribute("type_9", type_leave.get(7).getLeaveTypeName());
 			request.setAttribute("leavetypelistChoice", type_leave);
+			log.debug("New_searchleaveapproved: SUCCESS");
 			// New_myleave();
 			return SUCCESS;
 		} catch (Exception e) {
@@ -1747,6 +1756,19 @@ public class LeaveAction extends ActionSupport {
 
 			return SUCCESS;
 		} catch (Throwable e) {
+			try {
+				User ur = (User) request.getSession().getAttribute("onlineUser");
+				
+				String uriLog = request.getRequestURI();
+	    		String methodLog = request.getMethod();
+	    		String statusLog = "ERROR";
+	    		String descLog = e.getClass().getName() + ": " + e.getMessage();
+	    		String dateLog = LocalDateTime.now().toLocalDate().toString() + '%';
+	    		
+	    		logService.updateRequestLog(uriLog, methodLog, statusLog, descLog, dateLog, ur.getId());
+			} catch (Exception logEx) {
+				log.debug("Log can't write to DB: " + logEx.getMessage());
+			}
 			e.printStackTrace();
 			return ERROR;
 		}
@@ -1951,6 +1973,19 @@ public class LeaveAction extends ActionSupport {
 	        
 	        return SUCCESS;
 	    } catch (Exception e) {
+	    	try {
+				User ur = (User) request.getSession().getAttribute("onlineUser");
+				
+				String uriLog = request.getRequestURI();
+	    		String methodLog = request.getMethod();
+	    		String statusLog = "ERROR";
+	    		String descLog = e.getClass().getName() + ": " + e.getMessage();
+	    		String dateLog = LocalDateTime.now().toLocalDate().toString() + '%';
+	    		
+	    		logService.updateRequestLog(uriLog, methodLog, statusLog, descLog, dateLog, ur.getId());
+			} catch (Exception logEx) {
+				log.debug("Log can't write to DB: " + logEx.getMessage());
+			}
 	        e.printStackTrace();
 	        return ERROR;
 	    }
@@ -2015,12 +2050,12 @@ public class LeaveAction extends ActionSupport {
 
 	public String New_modalLeaveStatus() {
 		try {
-			log.debug("leave id " + leaveId);
+//			log.debug("leave id " + leaveId);
 
 			Gson gson = new GsonBuilder().setDateFormat("dd MMM yyyy, HH:mm").create();
 			String responseJSON = gson.toJson(leaveDAO.findLeaveById2(leaveId));
 			request.setAttribute("json", responseJSON);
-			log.debug(responseJSON);
+//			log.debug(responseJSON);
 
 			JSONArray jsonarray = new JSONArray(responseJSON);
 			JSONObject jsonobj = jsonarray.getJSONObject(0);
@@ -2506,6 +2541,7 @@ public class LeaveAction extends ActionSupport {
 
 			// Data Section
 			for (Map<String, Object> data : leaveList) {
+				String time_create;
 				//set no
 				int no = rowIndex - 4;
 				//set name
@@ -2526,6 +2562,9 @@ public class LeaveAction extends ActionSupport {
 				no_day = decimalFormat.format(data.get("no_day") == null ? 0 : Double.parseDouble(data.get("no_day").toString()));
 				//set status
 				leave_status_id = data.get("leave_status_id") == null ? null : data.get("leave_status_id").toString();
+				time_create = data.get("time_create") == null ? null : data.get("time_create").toString();
+				date = inputFormat.parse(time_create);
+				String formatTimeCreate = outputFormat.format(date);
 				if( leave_status_id.equals("0") ) { leave_status_id = "Wait for approve"; }
 				else if( leave_status_id.equals("1") ) { leave_status_id = "Approved"; }
 				else if( leave_status_id.equals("2") ) { leave_status_id = "Reject"; }
@@ -2565,6 +2604,10 @@ public class LeaveAction extends ActionSupport {
 					cell = row.createCell(7);
 					cell.setCellValue(leave_status_id);
 					cell.setCellStyle(styleLeftOdd);
+					
+					cell = row.createCell(8);
+					cell.setCellValue(formatTimeCreate);
+					cell.setCellStyle(styleEven);
 				} else {
 					row = sheet.createRow(rowIndex);
 
@@ -2599,6 +2642,10 @@ public class LeaveAction extends ActionSupport {
 					cell = row.createCell(7);
 					cell.setCellValue(leave_status_id);
 					cell.setCellStyle(styleLeftOdd);
+					
+					cell = row.createCell(8);
+					cell.setCellValue(formatTimeCreate);
+					cell.setCellStyle(styleOdd);
 				}
 				rowIndex++;
 			}

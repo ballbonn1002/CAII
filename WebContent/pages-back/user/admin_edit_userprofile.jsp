@@ -63,6 +63,12 @@
 }
 
 
+#imgPreview,
+#displayMode img {
+    max-height: 100px;
+    width: auto;
+    object-fit: contain;
+}
 </style>
 
 </head>
@@ -1279,34 +1285,34 @@
 					</div>
 				</form>
 
+				<div class="d-none" id="security-info">
 				<form action="admin_update_password" method="post" id="resetPasswordForm" 
 					 autocomplete="off">
 					<input type="hidden" name="user_id" value="${selectUser.id}" />
-					<div class="d-none" id="security-info">
 
 						<div class="card mb-10">
 							<div class="card-header">
-								<h3 class="card-title fw-semibold text-gray-900 m-0">Security</h3>
-							</div>
-							<div class="card-body pt-6">
-								<div class="row g-9">
-									<div
-										class="col d-flex align-items-center justify-content-between">
-										<div class="col">
-											<p class="fs-6 text-gray-800 fw-bold mb-0">Password</p>
-											<p class="fs-5 text-muted fw-medium mb-0">************</p>
-										</div>
-										<a class="btn btn-lg btn-light fw-medium text-light-inverse"
-											id="btnShowResetCard">Reset Password</a>
-									</div>
+								<div class="card-title">
+									<h3 class="fw-semibold text-gray-900">Security</h3>
 								</div>
 							</div>
-
+							<div class="card-body px-10 py-9">
+								<div class="col d-flex align-items-center justify-content-between">
+									<div class="col">
+										<p class="fs-6 text-gray-800 fw-bold mb-0">Password</p>
+										<p class="fs-5 text-muted fw-medium mb-0">************</p>
+									</div>
+									<a class="btn btn-lg btn-light fw-medium text-light-inverse"
+										id="btnShowResetCard">Reset Password</a>
+								</div>
+							</div>
 						</div>
 
 						<div class="card mb-10 d-none" id="resetPasswordCard">
 							<div class="card-header">
-								<h3 class="card-title fw-semibold text-gray-900 m-0">Security</h3>
+								<div class="card-title">
+									<h3 class="fw-semibold text-gray-900">Security</h3>
+								</div>
 							</div>
 							<div class="card-body px-10 py-9">
 								<div class="row mb-8">
@@ -1314,8 +1320,8 @@
 										<label class="required fs-6 fw-medium text-gray-800  mb-2">New
 											Password</label>
 										<div class="position-relative">
-											<input type="password" class="form-control" name="password"
-												id="password" placeholder="New Password"
+											<input type="password" class="form-control text-gray-800" name="password"
+												id="password" placeholder=""
 												autocomplete="new-password" oninput="validateNewPassword();"
 												minlength="6" /> 
 												<span class="btn btn-sm btn-icon position-absolute top-50 end-0 translate-middle-y toggle-password"
@@ -1341,9 +1347,9 @@
 										<label class="required fs-6 fw-medium text-gray-800  mb-2">Confirm
 											New Password</label>
 										<div class="position-relative">
-											<input type="password" class="form-control"
+											<input type="password" class="form-control text-gray-800"
 												name="confirmpassword" id="confirm_password"
-												placeholder="Confirm Password"
+												placeholder=""
 												oninput="validateConfirmPassword()" minlength="6" /> 
 												<span class="btn btn-sm btn-icon position-absolute top-50 end-0 translate-middle-y toggle-password"
 										         data-eye-target="confirm_password">
@@ -1372,17 +1378,81 @@
 								<p id="pwPattern" class="fs-6 fw-normal text-muted mb-0">Password
 									must be at least 6 character.</p>
 							</div>
-							<div class="card-footer">
-								<div class="text-end d-flex justify-content-end gap-6">
-									<button type="button" class="btn btn-light"
-										id="btnPasswordCancel">Cancel</button>
-									<button type="button" class="btn btn-success" onclick="validatePassword()"
-										id="btnPasswordUpdate">Update Password</button>
-								</div>
+							<div class="card-footer d-flex justify-content-end">
+								<button type="button" class="btn btn-lg btn-light fw-medium text-light-inverse me-2"
+									id="btnPasswordCancel">Cancel</button>
+								<button type="button" class="btn btn-lg btn-success fw-medium" onclick="validatePassword()"
+									id="btnPasswordUpdate">Update Password</button>
 							</div>
 						</div>
-					</div>
 				</form>
+				
+				<div class="card mb-10">
+				    <div class="card-header">
+				        <div class="card-title">
+				            <h3 class="fw-semibold text-gray-900">Signature</h3>
+				        </div>
+				    </div>
+				
+				    <form id="signatureForm" method="post" action="admin_update_signature" enctype="multipart/form-data">
+					<input type="hidden" name="user_id" value="${selectUser.id}" />
+				        <div class="card-body px-9 py-8">
+				            <div class="d-flex align-items-center justify-content-between">
+				                <div id="signatureContainer">
+				                <div id="errorMsg" class="text-start text-danger mb-3"></div>
+				                    <c:choose>
+				                        <c:when test="${not empty editUserImgPathSignature}">
+				                            <div id="displayMode">
+				                                <img src="${editUserImgPathSignature}"  class="" />
+				                                 <p id="signatureFileName" class="text-gray-700 fs-5 fw-normal mt-2">
+					                        		${editSignatureFileName}
+					                    		</p>
+				                            </div>
+				                        </c:when>
+				                        
+				                        <c:otherwise>
+				                            <div id="emptyMode" class="d-flex align-items-center gap-4">
+				                                <i class="ki-duotone ki-picture fs-2"><span class="path1"></span><span class="path2"></span></i>
+				                                <span class="fs-6 text-muted fw-medium">Allowed file types: png, jpg, jpeg.</span>
+				                            </div>
+				                        </c:otherwise>
+				                    </c:choose>
+				
+				                    <div id="previewMode" class="d-none">
+				                        <div class="symbol symbol-100px position-relative">
+				                            <img id="imgPreview" src="" alt="Preview"  class="rounded border" />
+				                            <label class="btn btn-icon btn-circle btn-color-muted btn-active-color-primary w-25px h-25px bg-body shadow position-absolute translate-middle top-0 start-100" 
+				                                   data-bs-toggle="tooltip" title="Change">
+				                                <i class="ki-duotone ki-pencil fs-7"><span class="path1"></span><span class="path2"></span></i>
+				                                <input type="file" id="signatureInputFile" name="fileUpload" accept=".png, .jpg, .jpeg" class="d-none" />
+				                            </label>
+				                            <span id="btnCancelPreview" class="btn btn-icon btn-circle btn-color-muted btn-active-color-primary w-25px h-25px bg-body shadow position-absolute translate-middle top-100 start-100" 
+				                                  data-bs-toggle="tooltip" title="Cancel">
+				                                <i class="ki-outline ki-cross fs-4"></i>
+				                            </span>
+				                        </div>
+				                        	<div id="fileNameDisplay" class="text-gray-700 fs-5 fw-normal mt-4"></div>
+				                    </div>
+				                </div>
+				
+				                <div class="d-flex gap-2 align-items-center">
+				                 	<c:if test="${not empty editUserImgPathSignature}">
+						                <a href="admin_signature_perform_delete?userId=${selectUser.id}" onclick="return confirmDelete(this.href);"
+											class="btn btn-icon btn-light-danger btn-sm" title="Delete">
+											<i class="ki-duotone ki-trash fs-2"><span
+												class="path1"></span><span class="path2"></span><span
+												class="path3"></span><span class="path4"></span><span
+												class="path5"></span></i>
+										</a>
+									</c:if>
+				                    <button type="button" id="mainActionBtn" class="btn btn-light">Upload</button>
+				                </div>
+				                <input type="hidden" id="hasSignature" value="${not empty editUserImgPathSignature}" />
+				            </div>
+				        </div>
+				    </form>
+				</div> 
+				</div>
 
 				<div class="card mb-10" id="borrow-info">
 					
@@ -1443,6 +1513,9 @@
 												<c:if test="${item.status == 'C'}">
 													<span class="badge badge-lg bg-dark text-white fw-semibold fs-8">Cancel</span>
 												</c:if> 
+												<c:if test="${item.status == 'T'}">
+													<span class="badge badge-lg bg-warning text-white fw-semibold fs-8">Waiting for Return</span>
+												</c:if> 
 												<c:if test="${empty item.status || item.status == '-'}">
 													<span class="badge badge-lg bg-light-secondary text-white fw-semibold fs-8">-</span>
 												</c:if>
@@ -1478,6 +1551,8 @@
 														</i>
 									            	</a>
 												</c:if> 
+												
+												
 												<c:if test="${empty item.status || item.status == '-'}">
 													-
 												</c:if>
@@ -1501,6 +1576,7 @@
 
 	<script>
 	document.addEventListener("DOMContentLoaded", function() {
+		
 		toggleEyeIcon();
 		const fileInput = document.getElementById("imageInputFile");  
 		const errorMsgProfile = document.getElementById("errorMsgProfile");
@@ -2254,6 +2330,134 @@
 
 </script>
 
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const fileInput = document.getElementById("signatureInputFile");
+    const mainBtn = document.getElementById("mainActionBtn");
+    const btnCancel = document.getElementById("btnCancelPreview");
+    
+    const displayMode = document.getElementById("displayMode");
+    const emptyMode = document.getElementById("emptyMode");
+    const previewMode = document.getElementById("previewMode");
+    const imgPreview = document.getElementById("imgPreview");
+    const fileNameDisplay = document.getElementById("fileNameDisplay");
+
+    if(mainBtn) {
+	    mainBtn.addEventListener("click", function () {
+	        if (mainBtn.innerText === "Upload") {
+	            fileInput.click();
+	        } else {
+	        	Swal.fire({
+			    	 title: "Are you sure?!",
+			 	        text: "Do you want to save the changes?",
+			 	        icon: "warning",
+			 	        showCancelButton: true,
+			 	        confirmButtonText: "Save",
+			 	        cancelButtonText: "Close",
+			 	        buttonsStyling: false,
+			 	        customClass: {
+			 	            confirmButton: "btn btn-success",
+			 	            cancelButton: "btn btn-secondary"
+			 	        }
+			    }).then((result) => {
+			    	if (result.isConfirmed) document.getElementById("signatureForm").submit();
+			    });
+	        }
+	    });
+    }
+
+    if(fileInput) {
+	    fileInput.addEventListener("change", async function () { 	
+	        let file = this.files[0];
+	        const maxSize = 10 * 1024 * 1024;
+	        const errorMsg = document.getElementById("errorMsg");
+	
+	        if (!file) return;
+	
+	        const originalText = mainBtn ? mainBtn.innerText : 'Upload';
+	        if (mainBtn) {
+	            mainBtn.disabled = true;
+	            mainBtn.innerHTML = '<span class="spinner-border spinner-border-sm align-middle me-2"></span>Compressing...';
+	        }
+	
+	        try {
+	            const compressedFile = await compressImage(file, 1280, 1280, 0.8);
+	            const dt = new DataTransfer();
+	            dt.items.add(compressedFile);
+	            this.files = dt.files;
+	            file = this.files[0];
+	        } catch (error) {
+	            console.error("Compression failed", error);
+	        }
+	
+	        if (mainBtn) {
+	            mainBtn.disabled = false;
+	            mainBtn.innerHTML = originalText;
+	        }
+	
+	        if (file.size > maxSize) {
+	            errorMsg.textContent = "Image must be smaller than 2MB.";
+	            this.value = "";
+	            return;
+	        } else {
+	            errorMsg.textContent = "";
+	  
+	            const reader = new FileReader();
+	            reader.onload = function (e) {
+	                imgPreview.src = e.target.result;
+	                fileNameDisplay.innerText = file.name;
+	
+	                if (displayMode) displayMode.classList.add("d-none");
+	                if (emptyMode) emptyMode.classList.add("d-none");
+	                previewMode.classList.remove("d-none");
+	
+	                mainBtn.innerText = "Save";
+	                mainBtn.classList.replace("btn-light", "btn-success");
+	            };
+	            reader.readAsDataURL(file);
+	        }
+	    });
+    }
+
+    if(btnCancel) {
+	    btnCancel.addEventListener("click", function () {
+	        fileInput.value = ""; 
+	        previewMode.classList.add("d-none");
+	
+	        if (displayMode) {
+	            displayMode.classList.remove("d-none");
+	        } else 
+	        	if (emptyMode) {
+	            emptyMode.classList.remove("d-none");
+	        }
+	
+	        mainBtn.innerText = "Upload";
+	        mainBtn.classList.replace("btn-success", "btn-light");
+	    });
+    }
+});
+
+function confirmDelete(url){
+    Swal.fire({
+        title: "Are you sure?!",
+        text: "Are you sure you want to delete this signature?",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonText: "Yes, delete it!",
+        cancelButtonText: "Cancel",
+        buttonsStyling: false,
+        customClass: {
+            confirmButton: "btn btn-danger",
+            cancelButton: "btn btn-secondary"
+        }
+    }).then((result) => {
+        if (result.isConfirmed) {
+            window.location.href = url;
+        }
+    });
+    return false;
+}
+</script>
 
 </body>
 </html>

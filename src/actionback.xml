@@ -197,21 +197,24 @@
 		</action>
 		<!-- ========================== Equipment CRUD ============================== -->
 
+		<!-- Forget password -->
 		<action name="forget_password"
 			class="com.cubesofttech.action.LoginAction" method="forgetPassword">
 			<result name="success" type="tiles">forgetPassword</result>
 			<result name="error">/index.jsp</result>
 		</action>
+		
+		<action name="send_code"
+			class="com.cubesofttech.action.LoginAction" method="requestResetCode">
+			<result name="success" type="tiles">newPassword</result>
+			<result name="error">/index.jsp</result>
+		</action>
+		
 		<action name="reset_password"
 			class="com.cubesofttech.action.LoginAction" method="resetPassword">
 			<result name="success" type="tiles">resetPasswordSuccess</result>
 			<result name="error">/pages-back/common/error/error_500.jsp</result>
-		</action>
-		<action name="reset_password_success"
-			class="com.cubesofttech.action.LoginAction"
-			method="resetPasswordSuccess">
-			<result name="success" type="tiles">resetPasswordSuccess</result>
-			<result name="error">/index.jsp</result>
+			<result name="input" type="tiles">newPassword</result>
 		</action>
 
 		<action name="validate_user"
@@ -233,7 +236,12 @@
 			<result name="error">/index.jsp</result>
 		</action>
 
-		<action name="saveCheckInOut"
+		<action name="saveCheckIn"
+			class="com.cubesofttech.action.WorkHoursAction" method="savecheck">
+			<result name="error">/index.jsp</result>
+		</action>
+		
+		<action name="saveCheckOut"
 			class="com.cubesofttech.action.WorkHoursAction" method="savecheck">
 			<result name="error">/index.jsp</result>
 		</action>
@@ -242,6 +250,16 @@
 		<action name="retroactive"
 			class="com.cubesofttech.action.WorkHoursAction" method="init">
 			<result name="success" type="tiles">retroactivePage</result>
+			<result name="error">/index.jsp</result>
+		</action>
+		
+		<action name="retroSaveCheckIn"
+			class="com.cubesofttech.action.WorkHoursAction" method="savecheck">
+			<result name="error">/index.jsp</result>
+		</action>
+		
+		<action name="retroSaveCheckOut"
+			class="com.cubesofttech.action.WorkHoursAction" method="savecheck">
 			<result name="error">/index.jsp</result>
 		</action>
 
@@ -281,17 +299,11 @@
 			<result name="success" type="tiles">newLeaveAdd</result>
 			<result name="error">/index.jsp</result>
 		</action>
-		<action name="new_LeaveAdd_Do"
-			class="com.cubesofttech.action.LeaveAction" method="new_LeaveAdd_Do">
-			<result name="success" type="redirect">leavecalendar</result>
-			<result name="error">/index.jsp</result>
-		</action>
 		<!-- Add -->
 
 		<!-- Send Approve Btn | Add Leave Page -->
 		<action name="new_LeaveAdd_Do"
 			class="com.cubesofttech.action.LeaveAction" method="new_LeaveAdd_Do">
-			<!-- <result name="success" type="redirect">leavecalendar</result> -->
 			<result name="success" type="redirect">new_myleave_list?Id=${onlineUser.id}
 			</result>
 			<result name="error">/index.jsp</result>
@@ -1023,6 +1035,20 @@
 			<result name="error">/index.jsp</result>
 		</action>
 
+		<action name="admin_update_signature"
+			class="com.cubesofttech.action.UserAction"
+			method="admin_update_signature">
+			<result name="success" type="redirectAction">user-edit?userId=${userId}</result>
+			<result name="error">/index.jsp</result>
+		</action>
+
+		<action name="admin_signature_perform_delete"
+			class="com.cubesofttech.action.UserAction"
+			method="admin_signature_perform_delete">
+			<result name="success" type="redirectAction">user-edit?userId=${userId}</result>
+			<result name="error">/index.jsp</result>
+		</action>
+
 		<!-- Role Management ================================================================================================== -->
 
 		<action name="demo_table"
@@ -1666,6 +1692,26 @@
 
 		<action name="borrowReport"
 			class="com.cubesofttech.action.ReportAction" method="borrowReport">
+		</action>
+
+		<!-- Action Log -->
+		<action name="action_log"
+			class="com.cubesofttech.action.LogActionAction" method="open">
+			<result name="success" type="tiles">actionLog</result>
+			<result name="error">/index.jsp</result>
+			<result name="login" type="redirect">/index.jsp</result>
+		</action>
+		<action name="action_log_list"
+			class="com.cubesofttech.action.LogActionAction" method="list">
+			<result name="success" type="tiles">actionLog</result>
+			<result name="error">/index.jsp</result>
+			<result name="login" type="redirect">/index.jsp</result>
+		</action>
+		<action name="action_log_list_data"
+			class="com.cubesofttech.action.LogActionAction" method="listData">
+			<result name="json">/pages-back/common/json.jsp</result>
+			<result name="login" type="redirect">/index.jsp</result>
+			<result name="error">/index.jsp</result>
 		</action>
 
 		<!-- Article -->

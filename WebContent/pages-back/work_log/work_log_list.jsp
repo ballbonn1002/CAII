@@ -5,6 +5,8 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib uri="/WEB-INF/tlds/permission.tld" prefix="perm"%>
 
+<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 <style>
   .xml-icon {
     display: inline-block;
@@ -195,7 +197,7 @@
                                             <th style="width: 150px; max-width: 150px;">Type</th>
                                             <th style="width: 300px; max-width: 300px;">Date - Time</th>
                                             <th class="min-w-100px">Time stamp / IP</th>
-                                            <!-- <th class="text-center min-w-60px">GPS</th> -->
+                                            <th class="text-center min-w-60px">GPS</th> 
                                             <th class="min-w-100px">Status</th>
                                             <th class="text-end min-w-70px pe-4">Action</th>
                                         </tr>
@@ -316,20 +318,31 @@
         </div>
     </div>
     
-    <div class="modal bg-body fade" tabindex="-1" id="showMapModal">
-    	<div class="modal-dialog modal-fullscreen">
-	    	<div class="modal-content shadow-none">
-	    		<div class="modal-header">
-	    			<h5 class="modal-title">Work Location</h5>
-	    			<!--begin::Close-->
-	                <div class="btn btn-icon btn-sm btn-active-light-primary ms-2" data-bs-dismiss="modal" aria-label="Close">
-	                    <i class="ki-duotone ki-cross fs-2x"><span class="path1"></span><span class="path2"></span></i>
+	    
+	<div class="modal bg-body fade" tabindex="-1" id="showMapModal">
+	    <div class="modal-dialog modal-fullscreen">
+	        <div class="modal-content shadow-none">
+	
+	            <div class="modal-header">
+	                <h5 class="modal-title">Work Location</h5>
+	
+	                <div class="btn btn-icon btn-sm btn-active-light-primary ms-2"
+	                     data-bs-dismiss="modal">
+	                    <i class="ki-duotone ki-cross fs-2x">
+	                        <span class="path1"></span>
+	                        <span class="path2"></span>
+	                    </i>
 	                </div>
-	                <!--end::Close-->
-	    		</div>
-	    	</div>
-    	</div>
-    </div>
+	            </div>
+	
+	            <div class="modal-body p-0">
+	                <div id="gpsMap" width="100%" height="100%"
+				        style="border:0;height:calc(100vh - 80px);"></div>
+	            </div>
+	
+	        </div>
+	    </div>
+	</div>
 </perm:permission>
 
 <script>
@@ -340,6 +353,8 @@
     var currentMonth = '';         
     var progressInterval;          
     var currentRequest = null; 
+    var gpsMap = null;
+    var gpsMarker = null;
 
     $(document).ready(function() {
         try {
@@ -622,11 +637,21 @@
             //console.log(longitude);
             
             var gpsButtonHtml = '';
+            var userName = item.name_en || item.name || 'Unknown User';
+
             if (latitude && longitude) {
-                gpsButtonHtml = '<a href="javascript:void(0)" onclick="showGPS(\'' + latitude + '\', \'' + longitude + '\')">' +
-                '<i class="ki-duotone ki-geolocation-home text-danger fs-1 mx-2" data-bs-toggle="modal">' +
-                '<span class="path1"></span><span class="path2"></span></i></a>';
-			}
+                gpsButtonHtml =
+                    '<a href="javascript:void(0)" onclick="showGPS(\'' +
+                    latitude + '\', \'' +
+                    longitude + '\', \'' +
+                    userName.replace(/'/g, "\\'") + '\', \'' +
+                    dateStr + '\', \'' +
+                    timeStr + '\', \'' +
+                    item.work_hours_type +
+                    '\')">' +
+                    '<i class="ki-duotone ki-geolocation-home text-danger fs-1 mx-2">' +
+                    '<span class="path1"></span><span class="path2"></span></i></a>';
+            }
             
             html += '<tr>' +
                     '<td class="ps-4"><div class="d-flex flex-column">' +
@@ -649,9 +674,9 @@
                         '<span class="text-gray-800 fw-normal fs-6 d-block">' + createTimeStr + '</span>' +
                         '<span class="fw-normal text-gray-600 fs-6">' + ipAddress + '</span>' +
                     '</td>' +
-                    /* '<td class="text-center">'+
+                    '<td class="text-center">'+
                     	gpsButtonHtml +
-                    '</td>' + */
+                    '</td>' +
                     '<td><div class="d-flex flex-column align-items-start">' + statusBadge + '</div></td>' +
                     '<td class="text-end pe-4">' +
                         '<a href="javascript:void(0)" onclick="openEditModal(' + i + ')" class="btn btn-icon btn-light-primary btn-sm">' +
@@ -664,6 +689,9 @@
         $('#tableBody').append(html);
         currentIndex = end;
         setTimeout(processBatch, 0);
+        
+        
+        
     }
     
     // --- MODAL FUNCTION ---
@@ -733,10 +761,54 @@
     }
 	
     // --- SHOW GPS ---
-    function showGPS(la, lo) {
+    /* function showGPS(la, lo) {
     	console.log(la);
     	console.log(lo);
+    	  var url = "https://maps.google.com/maps?q=" + la + "," + lo + "&z=17&output=embed";
+
+    	    $("#gpsFrame").attr("src", url);
     	$('#showMapModal').modal('show');
+    	
+    } */
+    function showGPS(la, lo, userName, dateStr, timeStr, workType) {
+        var lat = parseFloat(la);
+        var lng = parseFloat(lo);
+        var workTypeIcon = getWorkTypeIcon(workType);
+        
+
+        $('#showMapModal').modal('show');
+
+        setTimeout(function () {
+            if (!gpsMap) {
+                gpsMap = L.map('gpsMap').setView([lat, lng], 17);
+
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    maxZoom: 19,
+                    attribution: '&copy; OpenStreetMap'
+                }).addTo(gpsMap);
+            } else {
+                gpsMap.setView([lat, lng], 17);
+            }
+
+            if (gpsMarker) {
+                gpsMap.removeLayer(gpsMarker);
+            }
+
+            var popupHtml =
+                '<div style="min-width:180px;">' +
+                    '<strong>' + userName + '</strong><br>' +
+                    '<div class="my-2">' + workTypeIcon+' ' + dateStr+', '+timeStr + '<br>' + '</div>' +
+                    'Latitude: ' + lat + '<br>' +
+                    'Longitude: ' + lng +
+                '</div>';
+
+            gpsMarker = L.marker([lat, lng])
+                .addTo(gpsMap)
+                .bindPopup(popupHtml)
+                .openPopup();
+
+            gpsMap.invalidateSize();
+        }, 300);
     }
     
  	// --- SAVE EDIT ---

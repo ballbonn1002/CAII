@@ -209,6 +209,7 @@ public class EquipmentAction extends ActionSupport {
 			Timestamp timestamp = new Timestamp(System.currentTimeMillis());
 			
 			Equipment e = new Equipment();
+			int nextEqId = equipmentDAO.getMaxId() + 1;
 			
 			if(image != null) {
 				ServletContext context = request.getServletContext();
@@ -234,7 +235,7 @@ public class EquipmentAction extends ActionSupport {
 				f.setUserCreate(user.getId());
 				f.setUserId(user.getId());
 				f.setPage("equipment");
-				f.setPageId(String.valueOf(equipmentDAO.getMaxId() + 1));
+				f.setPageId(String.valueOf(nextEqId));
 				fileuploadDAO.save(f);
 				
 				e.setImage(UPLOAD_PATH + fName);
@@ -243,7 +244,7 @@ public class EquipmentAction extends ActionSupport {
 			e.setAmount(amount);
 			e.setBattery(battery);
 			e.setDetail(detail);
-			e.setEquipmentId(equipmentDAO.getMaxId() + 1);
+			e.setEquipmentId(nextEqId);
 			e.setHdd(hdd);
 			e.setItemNo(itemNo);
 			e.setLocation(location);
@@ -342,7 +343,7 @@ public class EquipmentAction extends ActionSupport {
 				f.setUserCreate(user.getId());
 				f.setUserId(user.getId());
 				f.setPage("equipment");
-				f.setPageId(String.valueOf(equipmentDAO.getMaxId() + 1));
+				f.setPageId(String.valueOf(e.getEquipmentId()));
 				fileuploadDAO.save(f);
 				
 				e.setImage(UPLOAD_PATH + fName);

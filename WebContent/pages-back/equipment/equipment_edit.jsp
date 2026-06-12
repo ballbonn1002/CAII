@@ -1,7 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/compressorjs/1.2.1/compressor.min.js"></script>
+
 
 <input type="hidden" id="hasSignature" value="${hasSignature}" />
 <div class="app-main flex-column flex-row-fluid" id="kt_app_main">
@@ -384,11 +384,17 @@
                                                                 <div class="d-flex align-items-center mt-4 fs-7 text-muted">
                                                                     <i class="ki-duotone ki-calendar fs-4 text-gray-700 me-3"><span class="path1"></span><span class="path2"></span></i>
                                                                     <div class="fs-5 fw-semibold text-gray-800">
+                                                                    
                                                                         <c:choose>
                                                                             <c:when test="${not empty borrow.date_end}">
                                                                                 <fmt:setLocale value="en_US" />
                                                                                 <fmt:formatDate value="${borrow.date_end}" pattern="d MMMM yyyy, HH:mm" />
                                                                             </c:when>
+                                                                            <c:when test="${not empty borrow.time_return}">
+																		        <fmt:setLocale value="en_US" />
+																		        <fmt:formatDate value="${borrow.time_return}"
+																		            pattern="d MMMM yyyy, HH:mm" />
+																		    </c:when>
                                                                             <c:otherwise>Unknown Return Date</c:otherwise>
                                                                         </c:choose>
                                                                     </div>
@@ -627,7 +633,7 @@
 
         selectBtn.addEventListener('click', function () { fileInput.click(); });
 
-        fileInput.addEventListener('change', function (e) {
+        fileInput.addEventListener('change', async function (e) {
             const file = e.target.files[0];
             if (!file) return;
             errorMsg.textContent = "";
@@ -638,22 +644,7 @@
                 return;
             }
             
-         	// จำกัด 2 MB
-            const maxSize = 2 * 1024 * 1024;
 
-            if (file.size > maxSize) {
-                errorMsg.textContent = "Image must be smaller than 2MB.";
-                fileInput.value = "";
-
-                previewImg.src = "";
-                previewImg.style.display = "none";
-
-                if (placeholder) {
-                    placeholder.classList.remove('d-none');
-                }
-
-                return;
-            }
             
             const reader = new FileReader();
             reader.onload = function (ev) {
@@ -667,36 +658,63 @@
             const limitSize = 500 * 1024;
 
             if (file.size > limitSize) {
-    
-                new Compressor(file, {
-                    quality: 0.8,
-                    maxWidth: 1024,
-                    maxHeight: 1024,
-
-                    success(result) {
-
-                        const compressedFile = new File(
-                            [result],
-                            file.name,
-                            {
-                                type: result.type,
-                                lastModified: Date.now()
-                            }
-                        );
-
-                        const dataTransfer = new DataTransfer();
-                        dataTransfer.items.add(compressedFile);
-
-                        fileInput.files = dataTransfer.files;
-                    },
-
-                    error(err) {
-                        console.error("Compress Error:", err.message);
-                    }
-                });
+                try {
+                    const compressedFile = await compressImage(file, 1280, 1280, 0.8);
+                    const dataTransfer = new DataTransfer();
+                    dataTransfer.items.add(compressedFile);
+                    fileInput.files = dataTransfer.files;
+                } catch (error) {
+                    console.error("Compress Error:", error);
+                }
             }
         });
     });
+
+    async function compressImage(file, maxWidth = 1280, maxHeight = 1280, quality = 0.8) {
+        if (!file.type.match(/image\/(jpeg|jpg|png)/)) {
+            return file;
+        }
+
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = event => {
+                const img = new Image();
+                img.src = event.target.result;
+                img.onload = () => {
+                    let width = img.width;
+                    let height = img.height;
+
+                    if (width > maxWidth || height > maxHeight) {
+                        const ratio = Math.min(maxWidth / width, maxHeight / height);
+                        width = width * ratio;
+                        height = height * ratio;
+                    }
+
+                    const canvas = document.createElement('canvas');
+                    canvas.width = width;
+                    canvas.height = height;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, width, height);
+
+                    canvas.toBlob((blob) => {
+                        if (blob) {
+                            const newFileName = file.name.replace(/\.[^/.]+$/, ".jpg");
+                            const newFile = new File([blob], newFileName, {
+                                type: 'image/jpeg',
+                                lastModified: Date.now()
+                            });
+                            resolve(newFile);
+                        } else {
+                            resolve(file);
+                        }
+                    }, 'image/jpeg', quality);
+                };
+                img.onerror = error => reject(error);
+            };
+            reader.onerror = error => reject(error);
+        });
+    }
 
     // Main Logic & Modal
     $(document).ready(function() {

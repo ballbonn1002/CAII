@@ -827,8 +827,36 @@ public class UserAction extends ActionSupport {
 				}
 			}
 
+			String imgPathSignature = null;
+			String signatureFileName = null;
+			if (selectUser.getPathSignature() != null && selectUser.getPathSignature().contains("_")) {
+				try {
+					String originalFileName = new File(selectUser.getPathSignature()).getName();
+					String fileIdStr = originalFileName.substring(0, originalFileName.indexOf("_"));
+					String typeFile = originalFileName.substring(originalFileName.lastIndexOf("."));
+
+					imgPathSignature = "/upload/user/user_signature_" + fileIdStr + typeFile;
+
+					String server = request.getServletContext().getRealPath("/");
+					File f = new File(server + imgPathSignature);
+					if (!f.exists()) {
+						imgPathSignature = null;
+					}
+
+					FileUpload file = fileuploadDAO.findById(Integer.parseInt(fileIdStr));
+					if (file != null) {
+			            signatureFileName = file.getName()+file.getType();  
+			        }
+					
+				} catch (Exception e) {
+					imgPathSignature = null;
+				}
+			}
+
 			request.setAttribute("selectUser", selectUser);
 			request.setAttribute("editUserImgPath", imgPath);
+			request.setAttribute("editUserImgPathSignature", imgPathSignature);
+			request.setAttribute("editSignatureFileName", signatureFileName);
 
 			return SUCCESS;
 		} catch (Exception e) {
@@ -965,8 +993,10 @@ public class UserAction extends ActionSupport {
 
 			}
 
-			u.setName(user.getName());
-			u.setNickName(user.getNickName());
+			u.setName(user.getName().replaceAll("[\\t\\n\\r]+", " ")
+		              .replaceAll("\\s{2,}", " ").trim());
+			u.setNickName(user.getNickName().replaceAll("[\\t\\n\\r]+", " ")
+		              .replaceAll("\\s{2,}", " ").trim());
 			u.setUsername(user_username);
 			u.setEmail(user_email);
 			u.setManagerId(user.getManagerId());
@@ -1035,8 +1065,10 @@ public class UserAction extends ActionSupport {
 				u.setGender(user.getGender());
 				u.setTitleNameTH(user.getTitleNameTH());
 				u.setTitleNameEN(user.getTitleNameEN());
-				u.setNameEN(user.getNameEN());
-				u.setNickNameEN(user.getNickNameEN());
+				u.setNameEN(user.getNameEN().replaceAll("[\\t\\n\\r]+", " ")
+			              .replaceAll("\\s{2,}", " ").trim());
+				u.setNickNameEN(user.getNickNameEN().replaceAll("[\\t\\n\\r]+", " ")
+			              .replaceAll("\\s{2,}", " ").trim());
 				u.setEmergContact(user.getEmergContact());
 				u.setEmergPhone(user.getEmergPhone());
 				u.setEmployeeTypeId(user.getEmployeeTypeId());
@@ -1264,12 +1296,16 @@ public class UserAction extends ActionSupport {
 			}
 
 			user.setEnable("1");
-			user.setName(user.getName().trim());
-			user.setNameEN(user.getNameEN().trim());
+			user.setName(user.getName().replaceAll("[\\t\\n\\r]+", " ")
+		              .replaceAll("\\s{2,}", " ").trim());
+			user.setNameEN(user.getNameEN().replaceAll("[\\t\\n\\r]+", " ")
+		              .replaceAll("\\s{2,}", " ").trim());
 			user.setEmail(email);
 			user.setPhonenum(phone);
-			user.setNickName(nickname);
-			user.setNickNameEN(nicknameEN);
+			user.setNickName(nickname.replaceAll("[\\t\\n\\r]+", " ")
+		              .replaceAll("\\s{2,}", " ").trim());
+			user.setNickNameEN(nicknameEN.replaceAll("[\\t\\n\\r]+", " ")
+		              .replaceAll("\\s{2,}", " ").trim());
 			user.setTitleNameTH(titlenameTH);
 			user.setTitleNameEN(titlenameEN);
 			user.setGender(gender);
@@ -1307,11 +1343,15 @@ public class UserAction extends ActionSupport {
 			User u = userDAO.findById(user_id);
 			u.setGender(user_gender);
 			u.setTitleNameTH(user_titleNameTH);
-			u.setName(user_name);
+			u.setName(user_name.replaceAll("[\\t\\n\\r]+", " ")
+		              .replaceAll("\\s{2,}", " ").trim());
 			u.setTitleNameEN(user_titleNameEN);
-			u.setNameEN(user_fullNameEN);
-			u.setNickName(user_nickNameTH);
-			u.setNickNameEN(user_nickNameEN);
+			u.setNameEN(user_fullNameEN.replaceAll("[\\t\\n\\r]+", " ")
+		              .replaceAll("\\s{2,}", " ").trim());
+			u.setNickName(user_nickNameTH.replaceAll("[\\t\\n\\r]+", " ")
+		              .replaceAll("\\s{2,}", " ").trim());
+			u.setNickNameEN(user_nickNameEN.replaceAll("[\\t\\n\\r]+", " ")
+		              .replaceAll("\\s{2,}", " ").trim());
 			u.setCitizenId(user_citizenId);
 			u.setPassportId(user_passportId);
 			u.setAddress(user_address);
@@ -1351,6 +1391,8 @@ public class UserAction extends ActionSupport {
 					fileupload.setName(name);
 					fileupload.setType(type);
 					fileupload.setTimeCreate(DateUtil.getCurrentTime());
+					fileupload.setPage("user");
+					fileupload.setPageId(u.getId());
 					fileuploadDAO.save(fileupload);
 
 					u.setPath("/upload/user/" + maxId + "_" + fileName);
@@ -1993,11 +2035,15 @@ public class UserAction extends ActionSupport {
 				}
 
 				u.setTitleNameTH(this.user_titleNameTH);
-				u.setName(this.user_name);
-				u.setNickName(this.user_nickName);
+				u.setName(this.user_name.replaceAll("[\\t\\n\\r]+", " ")
+			              .replaceAll("\\s{2,}", " ").trim());
+				u.setNickName(this.user_nickName.replaceAll("[\\t\\n\\r]+", " ")
+			              .replaceAll("\\s{2,}", " ").trim());
 				u.setTitleNameEN(this.user_titleNameEN);
-				u.setNameEN(this.user_fullNameEN);
-				u.setNickNameEN(this.user_nickNameEN);
+				u.setNameEN(this.user_fullNameEN.replaceAll("[\\t\\n\\r]+", " ")
+			              .replaceAll("\\s{2,}", " ").trim());
+				u.setNickNameEN(this.user_nickNameEN.replaceAll("[\\t\\n\\r]+", " ")
+			              .replaceAll("\\s{2,}", " ").trim());
 				u.setGender(this.user_gender);
 				u.setCitizenId(this.user_citizenId);
 				u.setPassportId(this.user_passportId);
@@ -2222,6 +2268,120 @@ public class UserAction extends ActionSupport {
 		}
 	}
 
+	public String admin_update_signature() {
+		try {
+			String targetUserId = this.user_id;
+			if (targetUserId == null || targetUserId.trim().isEmpty()) {
+				targetUserId = request.getParameter("user_id");
+			}
+
+			if (targetUserId == null || targetUserId.trim().isEmpty()) {
+				return ERROR;
+			}
+
+			User u = userDAO.findById(targetUserId.trim());
+			
+			if (u != null) {
+				if (signature_remove != null && signature_remove.equalsIgnoreCase("true")) {
+					u.setPathSignature(null);
+
+				} else if (fileUpload != null) {
+					int maxId = fileuploadDAO.getMaxId() + 1;
+					String fileServerPath = request.getServletContext().getRealPath("/");
+					String originalName = fileUploadFileName;
+					String fileName = originalName.substring(0, originalName.lastIndexOf("."));
+					String typeFile = originalName.substring(originalName.lastIndexOf("."));
+
+					if (fileName.contains(" ")) {
+						fileName = fileName.trim().replaceAll(" ", "_");
+					}
+
+					String newFileName = maxId + "_" + fileName + typeFile;
+					String serverFileName = "user_signature_" + maxId + typeFile;
+
+					long fileSize = fileUpload.length(); // byte
+					double sizeKB = fileSize / 1024.0;
+					double sizeMB = fileSize / (1024.0 * 1024.0);
+					String sizeText;
+					if (fileSize < 1024) {
+						sizeText = fileSize + " B";
+					} else if (fileSize < 1024 * 1024) {
+						sizeText = String.format("%.2f KB", sizeKB);
+					} else {
+						sizeText = String.format("%.2f MB", sizeMB);
+					}
+
+					FileUtil.upload(fileUpload, fileServerPath + "upload/user/", serverFileName);
+
+					FileUpload file = new FileUpload();
+					file.setFileId(maxId);
+					file.setName(fileName);
+					file.setPage("user_signature");
+					file.setPageId(u.getId());
+					
+					User onlineUser = (User) request.getSession().getAttribute("onlineUser");
+					String logonUser = onlineUser != null ? onlineUser.getId() : "SYSTEM";
+					
+					file.setUserId(logonUser);
+					file.setType(typeFile);
+					file.setSize(sizeText);
+					file.setAltName(null);
+					file.setUserCreate(logonUser);
+					file.setUserUpdate(logonUser);
+					file.setPath("/upload/user/" + newFileName);
+					file.setTimeCreate(DateUtil.getCurrentTime());
+					file.setTimeUpdate(DateUtil.getCurrentTime());
+					fileuploadDAO.save(file);
+
+					u.setPathSignature("/upload/user/" + newFileName);
+				}
+				userDAO.update(u);
+			}
+			
+			this.userId = targetUserId.trim();
+			return SUCCESS;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ERROR;
+		}
+	}
 	
-	
+	public String admin_signature_perform_delete() {
+		try {
+			String targetUserId = request.getParameter("userId");
+			
+			if (targetUserId == null || targetUserId.trim().isEmpty()) {
+			    return ERROR;
+			}
+			
+			User user = userDAO.findById(targetUserId.trim());
+			
+			if (user != null) {
+				if (user.getPathSignature() != null && user.getPathSignature().contains("_")) {
+					try {
+						String originalFileName = new File(user.getPathSignature()).getName();
+						String fileIdStr = originalFileName.substring(0, originalFileName.indexOf("_"));
+			
+						if (fileIdStr != null && !fileIdStr.isEmpty()) {
+							//delete file
+							FileUpload file = fileuploadDAO.findById(Integer.parseInt(fileIdStr));
+							if (file != null) {
+								fileuploadDAO.delete(file);
+								user.setPathSignature(null);
+								userDAO.update(user);
+							}
+						}
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+				}
+			}
+			
+			this.userId = targetUserId.trim();
+			return SUCCESS;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ERROR;
+		}
+	}
 }

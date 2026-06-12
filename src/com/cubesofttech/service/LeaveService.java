@@ -49,7 +49,6 @@ public class LeaveService {
 		Map<String, Object> resultData = new HashMap<>();
 		List<Map<String, Object>> userleave = new ArrayList<>();
 		userleave = leaveDAO.getSummaryLeave(type, userId, userLogin, status, startdate, enddate, leaveType);
-		log.info(userleave);
 		resultData.put("userleave", userleave);
 		BigDecimal quota_1 = null;
 		BigDecimal quota_2 = null;

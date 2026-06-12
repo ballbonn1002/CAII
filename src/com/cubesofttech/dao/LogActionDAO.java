@@ -20,5 +20,10 @@ public interface LogActionDAO {
 	public List<Map<String, Object>> findByUserAndDate(String user, String date) throws Exception;
 	
 	public void delete2YearLogs() throws Exception;
+
+	/**
+	 * ค้นหา action log ตาม userId (null = ทุก user) และช่วงวันที่ startDate/endDate (yyyy-MM-dd)
+	 */
+	public List<Map<String, Object>> search(String userId, String startDate, String endDate) throws Exception;
 	
 }

@@ -490,8 +490,8 @@
 
 								<!--begin::Footer -->
 								<div class="card-header fs-5">
-									<div class="d-flex align-items-center mb-2">
-										<div class="d-flex flex-wrap align-items-center gap-3">
+									<div class="d-flex align-items-center mt-3 mb-2">
+										<div class="d-flex flex-wrap align-items-center gap-3 row-gap-1">
 											<div class="fw-bold fs-6 text-dark">${leave.name}</div>
 											<div class="d-flex align-items-center">
 												<i class="ki-duotone ki-calendar-2 fs-5">
@@ -534,6 +534,21 @@
 												</i>
 												${leave.start_time} - ${leave.end_time}
 											</div>
+											
+											<c:if test="${not empty leave.leave_file}">
+											    <div class="d-flex align-items-center">
+											        <i class="ki-duotone ki-document me-2">
+											            <span class="path1"></span>
+											            <span class="path2"></span>
+											        </i>
+											
+											        <a href="preview_File?id=${leave.leave_file}"
+											           target="_blank"
+											           class="text-primary text-hover-underline">
+											            ${leave.file_name}${leave.type}
+											        </a>
+											    </div>
+											</c:if>
 										</div>
 									</div>
 

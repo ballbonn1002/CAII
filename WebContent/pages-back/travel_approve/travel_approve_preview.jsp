@@ -419,7 +419,7 @@
 										<div class="d-flex flex-column align-items-center gap-2">
 
 											<c:choose>
-												<%-- ✅ มีรูปแล้ว → ล็อค ห้ามเปลี่ยน ไม่มี input file --%>
+												<%-- มีรูปแล้ว → ล็อค ห้ามเปลี่ยน ไม่มี input file --%>
 												<c:when test="${not empty signaturePath}">
 													<div class="sig-box locked">
 														<img src="${ctx}${signaturePath}"
@@ -432,7 +432,7 @@
 													</div>
 												</c:when>
 
-												<%-- ✅ ไม่มีรูป → upload ได้ + มี input file ส่ง action --%>
+												<%-- ไม่มีรูป --%>
 												<c:otherwise>
 													<div class="sig-box unuploadable" id="uploadSignatureBox">
 														<i class="ki-duotone ki-cloud-add fs-2x text-muted"> <span
@@ -558,81 +558,8 @@
 		const currentUserName = "${userObj.nameEN}";
 		const hasSignature    = ${not empty signaturePath ? 'true' : 'false'};
 		
-		// ── ติดตาม state ──────────────────────────────────────────
-		let confirmed1 = false;
-		let confirmed2 = false;
-		
-		// ── เปิดใช้ Submit เมื่อทำครบ ──────────────────────────────
-		function checkSubmitReady() {
-		    const sigOk = hasSignature || document.getElementById('sigFileInput') &&
-		                  document.getElementById('sigFileInput').files.length > 0;
-		    const ready = confirmed1 && confirmed2 && sigOk;
-		    document.getElementById('btnSubmit').disabled = !ready;
-		}
-		
-		// ── Upload Signature Preview ───────────────────────────────
-		// ✅ ใช้ addEventListener เฉพาะตอนไม่มีรูป (element ถึงจะมีใน DOM)
-		if (!hasSignature) {
-		    document.getElementById('sigFileInput').addEventListener('change', function () {
-		        const file = this.files[0];
-		        if (!file) return;
-		        const reader = new FileReader();
-		        reader.onload = function (e) {
-		            const box = document.getElementById('uploadSignatureBox');
-		            box.innerHTML =
-		                '<img src="' + e.target.result +
-		                '" style="max-height:160px;max-width:360px;object-fit:contain;" />';
-		            box.classList.remove('uploadable');
-		            box.classList.add('locked');
-		            box.style.cursor = 'default';
-		            box.onclick = null; // ปิดคลิกหลังเลือกแล้ว
-		        };
-		        reader.onloadend = checkSubmitReady;
-		        reader.readAsDataURL(file);
-		    });
-		}
-		
-		
-		// ── Confirm Receiver ──────────────────────────────────────
-		function confirmReceiver(slot) {
-		    const now = new Date();
-		    const pad = n => String(n).padStart(2, '0');
-		    const months = ['Jan','Feb','Mar','Apr','May','Jun',
-		                    'Jul','Aug','Sep','Oct','Nov','Dec'];
-		    const dateStr = now.getDate() + ' ' + months[now.getMonth()] + ' ' + now.getFullYear();
-		    const timeStr = pad(now.getHours()) + ':' + pad(now.getMinutes());
-		    const timestamp = dateStr + ' , ' + timeStr;
-		
-		    // แสดงชื่อ + เวลา
-		    document.getElementById('receiverPreview' + slot).innerHTML =
-		        '<span class="fw-semibold text-dark fs-7">' + currentUserName + '</span>' +
-		        '<span class="text-muted fs-8 mt-1">' + timestamp + '</span>';
-		
-		    // ซ่อน label
-		    document.getElementById('receiverLabel' + slot).style.display = 'none';
-		
-		    // เปลี่ยนปุ่มเป็น confirmed style + disable
-		    const btn = document.getElementById('receiverBtn' + slot);
-		    btn.textContent  = '✓ ยืนยันแล้ว';
-		    btn.className    = 'btn btn-success btn-sm px-5';
-		    btn.disabled     = true;
-		
-		    // เพิ่ม border เขียวให้ box
-		    document.getElementById('receiverBox' + slot).classList.add('receiver-confirmed');
-		
-		    if (slot === 1) confirmed1 = true;
-		    if (slot === 2) confirmed2 = true;
-		
-		    checkSubmitReady();
-		}
-		
-		// ── เช็ค initial state (กรณีมี signature แล้ว) ────────────
-		checkSubmitReady();
-		
-		
 		function validateReject(event) {
 		    const description = document.querySelector('textarea[name="description_appr"]').value.trim();
-		    
 
 		    if (description === "") {
 		        event.preventDefault(); // หยุดการ Submit Form ทันที
