@@ -10,6 +10,8 @@ public interface ProjectDAO {
 
 	public Project findById(Integer projectId) throws Exception;
 	
+	public Project findByName(String projectName) throws Exception;
+	
 	public void save(Project project) throws Exception;
 	
 	public Integer getMaxId() throws Exception;
