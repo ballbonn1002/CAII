@@ -23,7 +23,7 @@
 		<meta property="og:url" content="https://keenthemes.com/metronic" />
 		<meta property="og:site_name" content="Metronic by Keenthemes" />
 		<link rel="canonical" href="http://preview.keenthemes.comauthentication/general/password-confirmation.html" />
-		<link rel="shortcut icon" href="assets/media/logos/favicon.ico" />
+		<link rel="shortcut icon" href="/assets/media/logos/cube-small-ico.ico" />
 		<!--begin::Fonts(mandatory for all pages)-->
 		<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inter:300,400,500,600,700" />
 		<!--end::Fonts-->
@@ -60,7 +60,7 @@
 							<h1 class="fw-bolder text-gray-900 mb-5">Password is changed</h1>
 							<!--end::Title-->
 							<!--begin::Message-->
-							<div class="fs-6 fw-semibold text-gray-500 mb-10">Check your email for a new password</div>
+							<div class="fs-6 fw-semibold text-gray-500 mb-10">You can sign in with a new password</div>
 							<!--end::Message-->
 							<!--begin::Link-->
 							<div class="mb-11">

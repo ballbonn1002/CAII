@@ -197,21 +197,24 @@
 		</action>
 		<!-- ========================== Equipment CRUD ============================== -->
 
+		<!-- Forget password -->
 		<action name="forget_password"
 			class="com.cubesofttech.action.LoginAction" method="forgetPassword">
 			<result name="success" type="tiles">forgetPassword</result>
 			<result name="error">/index.jsp</result>
 		</action>
+		
+		<action name="send_code"
+			class="com.cubesofttech.action.LoginAction" method="requestResetCode">
+			<result name="success" type="tiles">newPassword</result>
+			<result name="error">/index.jsp</result>
+		</action>
+		
 		<action name="reset_password"
 			class="com.cubesofttech.action.LoginAction" method="resetPassword">
 			<result name="success" type="tiles">resetPasswordSuccess</result>
 			<result name="error">/pages-back/common/error/error_500.jsp</result>
-		</action>
-		<action name="reset_password_success"
-			class="com.cubesofttech.action.LoginAction"
-			method="resetPasswordSuccess">
-			<result name="success" type="tiles">resetPasswordSuccess</result>
-			<result name="error">/index.jsp</result>
+			<result name="input" type="tiles">newPassword</result>
 		</action>
 
 		<action name="validate_user"

@@ -21,13 +21,14 @@ public class EmailService
     /**
      * This method will send compose and send the message 
      * */
-    public void sendMail(String user,String leaveType,String description,String halfDay,String from,String endDate,BigDecimal noDay) 
+    public void sendMail(String to,String subject,String body) 
     {
         SimpleMailMessage message = new SimpleMailMessage();
-        message.setFrom("test@cubesofttech.com");
-        message.setTo("ohoh2555@gmail.com");
-        message.setSubject("test1111test");
-        message.setText("user = "+user+" leaveType = "+leaveType+" description = "+description+" halfDay = "+ halfDay+" from = "+from+" to ="+ endDate+" noDay = "+noDay);
+//        message.setFrom("test@cubesofttech.com");
+        message.setFrom("chatchai.k@cubesofttech.com");
+        message.setTo(to);
+        message.setSubject(subject);
+        message.setText(body);
         mailSender.send(message);
         
         Log.debug(message);
