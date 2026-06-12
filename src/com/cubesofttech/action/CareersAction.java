@@ -305,32 +305,27 @@ public class CareersAction extends ActionSupport {
 	            Integer jobId = Integer.parseInt(id);
 	            
 	            Job jobData = jobDAO.findById(jobId); 
-	            PageUri uriData = pageUriDAO.findByModelId(id); 
-
-	            if (uriData != null && "job".equals(uriData.getModel())) {
-	                request.setAttribute("pageUri", uriData);
-	            }        
-	            
 	            request.setAttribute("jobInfo", jobData); 
 	            
-	         // Save page_uri
-				PageUri uri = new PageUri();
-				String forward;
-				String pageUriId;
-				String position = jobData.getPosition().trim();
-				String formattedPosition = position.replaceAll("\\s+", "-").toLowerCase();
-			
-			    forward = "/jobDetail.action?Id=" + id;
-			    pageUriId = "/careers-"+ formattedPosition;
+	            PageUri uriData = pageUriDAO.findByModelId(id); 
 	            
-			    uri.setPageUriId(pageUriId);
-				uri.setForwardTo(forward);
-				uri.setModel("job");
-				uri.setModelId(id);
-				
-				if (uriData == null) {
-		            request.setAttribute("pageUri", uri);
-		        }
+	            if (uriData != null && "job".equalsIgnoreCase(uriData.getModel() != null ? uriData.getModel().trim() : "")) {
+	                request.setAttribute("pageUri", uriData);
+	            } else {
+	                PageUri newUri = new PageUri();
+	                String position = (jobData != null && jobData.getPosition() != null) ? jobData.getPosition().trim() : "";
+	                String formattedPosition = position.replaceAll("\\s+", "-").toLowerCase();
+	            
+	                String forward = "/jobDetail.action?Id=" + id;
+	                String pageUriId = "/careers-" + formattedPosition;
+	                
+	                newUri.setPageUriId(pageUriId);
+	                newUri.setForwardTo(forward);
+	                newUri.setModel("job");
+	                newUri.setModelId(id);
+	                
+	                request.setAttribute("pageUri", newUri);
+	            }
 	        }
 
 	        return SUCCESS;
