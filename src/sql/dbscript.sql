@@ -336,5 +336,5 @@ WHERE
 INSERT INTO `authorized_object` (`authorized_object_id`, `name`, `description`, `active`, `time_create`, `time_update`, `authorized_object_group_id`) 
 VALUES ('careers.view', 'careers.view', 'จัดการ careers ได้', '1', '2026-05-18 15:37:00', '2026-05-18 15:37:00', '1');
 
--- PROD 4 JUNE 2026
+-- PROD 12 JUNE 2026
 
