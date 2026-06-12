@@ -574,8 +574,8 @@
 								<!--begin::Footer -->
 								<div class="card-header fs-6">
 
-									<div class="d-flex align-items-center mb-2">
-										<div class="d-flex flex-wrap align-items-center gap-3">
+									<div class="d-flex align-items-center mt-3 mb-2">
+										<div class="d-flex flex-wrap align-items-center gap-3 row-gap-1 ">
 											<div class="fw-bold text-dark">${leave.name}</div>
 
 											<div class="d-flex align-items-center">

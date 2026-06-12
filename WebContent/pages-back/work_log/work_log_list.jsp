@@ -644,7 +644,10 @@
                     '<a href="javascript:void(0)" onclick="showGPS(\'' +
                     latitude + '\', \'' +
                     longitude + '\', \'' +
-                    userName.replace(/'/g, "\\'") +
+                    userName.replace(/'/g, "\\'") + '\', \'' +
+                    dateStr + '\', \'' +
+                    timeStr + '\', \'' +
+                    item.work_hours_type +
                     '\')">' +
                     '<i class="ki-duotone ki-geolocation-home text-danger fs-1 mx-2">' +
                     '<span class="path1"></span><span class="path2"></span></i></a>';
@@ -767,9 +770,11 @@
     	$('#showMapModal').modal('show');
     	
     } */
-    function showGPS(la, lo, userName) {
+    function showGPS(la, lo, userName, dateStr, timeStr, workType) {
         var lat = parseFloat(la);
         var lng = parseFloat(lo);
+        var workTypeIcon = getWorkTypeIcon(workType);
+        
 
         $('#showMapModal').modal('show');
 
@@ -792,6 +797,7 @@
             var popupHtml =
                 '<div style="min-width:180px;">' +
                     '<strong>' + userName + '</strong><br>' +
+                    '<div class="my-2">' + workTypeIcon+' ' + dateStr+', '+timeStr + '<br>' + '</div>' +
                     'Latitude: ' + lat + '<br>' +
                     'Longitude: ' + lng +
                 '</div>';
