@@ -10,6 +10,7 @@ import org.hibernate.criterion.Projections;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import com.cubesofttech.model.Project;
 import com.cubesofttech.model.ProjectFunction;
 
 @Repository
@@ -74,6 +75,18 @@ public class ProjectFunctionDAOImpl implements ProjectFunctionDAO {
 		} else {
 			return new Integer(0);
 		}
+	}
+
+	@Override
+	public ProjectFunction findByName(String functionName) throws Exception {
+		Session session = this.sessionFactory.getCurrentSession();
+
+		String sql = "SELECT * FROM project_function " + "WHERE CONVERT(function_name USING utf8mb4) = :functionName";
+		
+		List<ProjectFunction> list = session.createSQLQuery(sql).addEntity(ProjectFunction.class)
+				.setParameter("functionName", functionName).list();
+
+		return list.isEmpty() ? null : list.get(0);
 	}
 
 }

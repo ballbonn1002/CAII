@@ -419,6 +419,24 @@
 		</action>
 		<!-- List Function =========================================================================================================== -->
 
+		<!-- Import =========================================================================================================== -->
+		<action name="timeSheetImport"
+			class="com.cubesofttech.action.TimeSheetAction"
+			method="importTimeSheet">
+			<interceptor-ref name="defaultStack">
+				<param name="fileUpload.allowedTypes">
+					application/vnd.ms-excel,
+					application/vnd.openxmlformats-officedocument.spreadsheetml.sheet
+				</param>
+				<param name="fileUpload.allowedExtensions">xls,xlsx</param>
+			</interceptor-ref>
+			<result name="success" type="redirectAction">
+				<param name="actionName">timeSheet</param>
+			</result>
+			<result name="error">/index.jsp</result>
+		</action>
+		<!-- Import =========================================================================================================== -->
+
 		<!-- Export =========================================================================================================== -->
 		<action name="timeSheetExport"
 			class="com.cubesofttech.action.TimeSheetAction"
@@ -1279,38 +1297,40 @@
 			<result name="error">/index.jsp</result>
 		</action>
 
-		<action name="career_delete" 
+		<action name="career_delete"
 			class="com.cubesofttech.action.CareersAction" method="deleteCareer">
 			<result name="success" type="redirect">careers_list</result>
 			<result name="error">/index.jsp</result>
 		</action>
-		
+
 		<action name="career_create"
 			class="com.cubesofttech.action.CareersAction" method="createCareer">
 			<result name="success" type="tiles">career_create</result>
 			<result name="error">/index.jsp</result>
 		</action>
-		
-		<action name="career_savecreate" 
+
+		<action name="career_savecreate"
 			class="com.cubesofttech.action.CareersAction" method="saveCareer">
-		    <result name="success" type="redirect">career_edit?id=${id}</result>
-		    <result name="error">/index.jsp</result>
+			<result name="success" type="redirect">career_edit?id=${id}</result>
+			<result name="error">/index.jsp</result>
 		</action>
-		
-		<action name="career_edit" 
+
+		<action name="career_edit"
 			class="com.cubesofttech.action.CareersAction" method="editCareer">
-		    <result name="success" type="tiles">career_edit</result>
-		    <result name="error">/index.jsp</result>
+			<result name="success" type="tiles">career_edit</result>
+			<result name="error">/index.jsp</result>
 		</action>
-		
-		<action name="career_saveedit" 
+
+		<action name="career_saveedit"
 			class="com.cubesofttech.action.CareersAction" method="saveEditCareer">
-		    <result name="success" type="redirect">career_edit?id=${id}</result>
-		    <result name="error">/index.jsp</result>
+			<result name="success" type="redirect">career_edit?id=${id}</result>
+			<result name="error">/index.jsp</result>
 		</action>
-		
-		<action name="checkPositionDuplicate" class="com.cubesofttech.action.CareersAction" method="checkPositionDuplicate"></action>
-		
+
+		<action name="checkPositionDuplicate"
+			class="com.cubesofttech.action.CareersAction"
+			method="checkPositionDuplicate"></action>
+
 		<!-- PAGE URI -->
 		<action name="page_uri_list"
 			class="com.cubesofttech.action.PageUriAction" method="list">
@@ -1759,14 +1779,13 @@
 			</result>
 			<result name="error">/index.jsp</result>
 		</action>
-		
+
 		<!-- POST /webhook/LineOA -->
 		<action name="lineWebhook"
-			class="com.cubesofttech.action.WebhookAction"
-			method="execute">
+			class="com.cubesofttech.action.WebhookAction" method="execute">
 			<result name="none" type="httpheader" />
 		</action>
-		
+
 		<!-- File Management -->
 		<action name="file_management"
 			class="com.cubesofttech.action.FileManagementAction" method="list">

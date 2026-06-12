@@ -911,7 +911,7 @@ public class TimesheetDAOImpl implements TimesheetDAO {
 		Session session = this.sessionFactory.getCurrentSession();
 		List<Map<String, Object>> expSearch = null;
 		try {
-			String sql = "SELECT * FROM timesheet WHERE user_create = :userId AND time_check_in BETWEEN :startOfMonth AND :endOfMonth";
+			String sql = "SELECT * FROM timesheet WHERE user_create = :userId AND started_date BETWEEN :startOfMonth AND :endOfMonth";
 			SQLQuery query = session.createSQLQuery(sql);
 			query.setParameter("userId", userId);
 			query.setParameter("startOfMonth", startOfMonth);
