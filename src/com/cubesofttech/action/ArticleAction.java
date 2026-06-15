@@ -567,7 +567,11 @@ public class ArticleAction extends ActionSupport {
 			this.articleId = article.getArticleId();
 
 			// Save article_tag
-			if (article_tag != null) {
+			if (article_tag != null 
+			        && !article_tag.trim().isEmpty()
+			        && !"undefined".equals(article_tag.trim())
+			        && !"null".equals(article_tag.trim())) {
+
 				log.debug(article_tag);
 				JSONArray jsonArray = new JSONArray(article_tag);
 
