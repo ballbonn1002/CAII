@@ -336,8 +336,5 @@ WHERE
 INSERT INTO `authorized_object` (`authorized_object_id`, `name`, `description`, `active`, `time_create`, `time_update`, `authorized_object_group_id`) 
 VALUES ('careers.view', 'careers.view', 'จัดการ careers ได้', '1', '2026-05-18 15:37:00', '2026-05-18 15:37:00', '1');
 
--- PROD 12 JUNE 2026
-
--- 12/06/2026 team(Intern) : Add column 'changepass_code' in 'user' table.
-ALTER TABLE user ADD COLUMN changepass_code VARCHAR(6) DEFAULT NULL;
+-- PROD 15 JUNE 2026
 
