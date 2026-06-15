@@ -338,3 +338,6 @@ VALUES ('careers.view', 'careers.view', 'จัดการ careers ได้', 
 
 -- PROD 15 JUNE 2026
 
+-- 15/06/2026 team(Intern) : Add column 'changepass_code' in 'user' table.
+ALTER TABLE user ADD COLUMN changepass_code VARCHAR(6) DEFAULT NULL;
+
