@@ -413,6 +413,15 @@ public class ArticleAction extends ActionSupport {
 		this.srcDelete = srcDelete;
 	}
 
+	private String tempKey;
+
+	public String getTempKey() {
+	    return tempKey;
+	}
+
+	public void setTempKey(String tempKey) {
+	    this.tempKey = tempKey;
+	}
 	public String article_feed() {
 		try {
 			User onlineUser = (User) request.getSession().getAttribute("onlineUser");
@@ -487,6 +496,7 @@ public class ArticleAction extends ActionSupport {
 			}
 			String logonUser = onlineUser.getId();
 			String fileIdStr = null;
+			int articleMaxId = articleDAO.getMaxId()+1;
 			
 			// Upload file
 			if (fileUpload != null) {
@@ -522,7 +532,7 @@ public class ArticleAction extends ActionSupport {
 				file.setUserId(logonUser);
 				file.setName(fileName);
 				file.setPage("article");
-				file.setPageId(null);
+				file.setPageId(String.valueOf(articleMaxId));
 				file.setType(typeFile);
 				file.setSize(sizeText);
 				file.setAltName(null);
@@ -538,7 +548,7 @@ public class ArticleAction extends ActionSupport {
 			}
 			
 			// Save article
-			int articleMaxId = articleDAO.getMaxId()+1;
+			
 			Article article = new Article();
 			article.setArticleId(articleMaxId);
 			article.setTopic(article_title);
@@ -564,6 +574,11 @@ public class ArticleAction extends ActionSupport {
 
 			article.setTimePost(Timestamp.valueOf(dateTime));
 			articleDAO.save(article);
+			String articleIdStr = String.valueOf(article.getArticleId());
+
+			if (tempKey != null && !tempKey.trim().isEmpty()) {
+			    fileuploadDAO.updateTempArticleImageToArticle(tempKey,articleIdStr);
+			}
 			this.articleId = article.getArticleId();
 
 			// Save article_tag
@@ -612,7 +627,6 @@ public class ArticleAction extends ActionSupport {
 			
 			// Save page_uri
 			PageUri uri = new PageUri();
-			String articleIdStr = String.valueOf(article.getArticleId());
 			String forward;
 			String pageUriId;
 			if (article_type == 1) {
@@ -740,7 +754,7 @@ public class ArticleAction extends ActionSupport {
 			LocalDateTime time_post = article.getTimePost().toLocalDateTime();
 			String publicDate = time_post.toLocalDate().toString();
 			String publicTime = time_post.toLocalTime().toString();
-
+			
 			List<PageUri> pageUri = pageUriDAO.findByModelAndModelId("article", String.valueOf(articleId));
 			
 			String imgPath = null;
@@ -841,7 +855,7 @@ public class ArticleAction extends ActionSupport {
 				file.setUserId(logonUser);
 				file.setName(fileName);
 				file.setPage("article");
-				file.setPageId(null);
+				file.setPageId(String.valueOf(articleId));
 				file.setType(typeFile);
 				file.setSize(sizeText);
 				file.setAltName(null);
@@ -998,7 +1012,7 @@ public class ArticleAction extends ActionSupport {
 				                Files.delete(path);
 				            }
 
-				            String dbPath = constant.getWebPath() + imgSrc;
+				            String dbPath = imgSrc;
 				            articleImageDAO.deleteByPath(dbPath);
 				            fileuploadDAO.deleteByPathAtc(dbPath);
 
@@ -1025,6 +1039,7 @@ public class ArticleAction extends ActionSupport {
 	    String logonUser = (onlineUser != null) ? onlineUser.getId() : "system";
 
 	    try {
+	    	String tempKey = this.tempKey;
 	        String locationFile = "";
 	        int imgMaxId = articleImageDAO.getMaxId() + 1;
 	        
@@ -1062,8 +1077,8 @@ public class ArticleAction extends ActionSupport {
 	            FileUtil.upload(articleImageFile, fileServerPath + "upload/article/", newFileName);
 
 	            String contextPath = request.getContextPath();
-	            locationFile = contextPath + "/upload/article/" + newFileName;
-	            String filePath = constant.getWebPath() + "/upload/article/" +finalNameForSystem+typeFile;
+	            locationFile = "/upload/article/" + newFileName;
+	            String filePath = "/upload/article/" +finalNameForSystem+typeFile;
 	            
 	            long fileSize = articleImageFile.length();
 	            String sizeText = (fileSize < 1024 * 1024) 
@@ -1085,7 +1100,16 @@ public class ArticleAction extends ActionSupport {
 	            int maxFileId = fileuploadDAO.getMaxId() + 1;
 	            FileUpload file = new FileUpload();
 	            file.setFileId(maxFileId);
-	            file.setPage("article");
+	            String article_Id = String.valueOf(articleId);
+	            if(article_Id != null && !article_Id.trim().isEmpty()) {
+	                file.setPage("article");
+	                file.setPageId(article_Id);
+	            }else if (tempKey != null && !tempKey.trim().isEmpty()) {
+	                file.setPage("article_temp");
+	                file.setPageId(tempKey);
+	            }else {
+	                throw new RuntimeException("articleId and tempKey are both null");
+	            }
 	            file.setUserId(logonUser);
 	            file.setName(finalNameForSystem);
 	            file.setPath(filePath);
@@ -1112,31 +1136,39 @@ public class ArticleAction extends ActionSupport {
 	}
 	
 	public void DeleteImgFormEditor() {
-	    if (srcDelete != null) {
-	        try {
-	            File fileImage = new File(srcDelete);
-	         
-	            ServletContext context = request.getServletContext();
-	            String fileServerPath = context.getRealPath("/");
-
-	            Path path = Paths.get(fileServerPath + "upload/article/" + fileImage.getName());
-
-	            if (Files.exists(path)) {
-	                
-	                Files.delete(path);
-	            } else {
-	                log.debug("File NOT found : " + path.toString());
-	            }
-	            String dbPath = constant.getWebPath() + "/upload/article/" + fileImage.getName();
-
-	            articleImageDAO.deleteByPath(dbPath);
-	            fileuploadDAO.deleteByPathAtc(dbPath);
-
-	        } catch (Exception e) {
-	            e.printStackTrace();
-	        }
-	    } else {
-	        log.debug("srcDelete is NULL");
+	    try {
+		    if (srcDelete != null) {
+		        try {
+		            File fileImage = new File(srcDelete);
+	
+		            ServletContext context = request.getServletContext();
+		            String fileServerPath = context.getRealPath("/");
+	
+		            Path path = Paths.get(fileServerPath,"upload","article",fileImage.getName()
+		            );
+	
+		            log.debug("Delete file path = " + path.toString());
+	
+		            if (Files.exists(path)) {
+		                Files.delete(path);
+		                log.debug("Deleted file : " + path.toString());
+		            } else {
+		                log.debug("File NOT found : " + path.toString());
+		            }
+	
+		            String dbPath = "/upload/article/" + fileImage.getName();
+	
+		            articleImageDAO.deleteByPath(dbPath);
+		            fileuploadDAO.deleteByPathAtc(dbPath);
+	
+		        } catch (Exception e) {
+		            e.printStackTrace();
+		        }
+		    } else {
+		        log.debug("srcDelete is NULL");
+		    }
+	    } catch (Exception e) {
+	        log.error("Delete Image Error: ", e);
 	    }
 	}
 

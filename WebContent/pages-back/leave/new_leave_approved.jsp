@@ -796,7 +796,7 @@ function CreateListUsers(value, user_login, userSelect2) {
 		    console.log("before trigger");
 		    console.log("name2 =", selectElem.val());
 		    console.log("userSelect2 =", userSelect2);
-		    selectElem.trigger('change');
+		    /* selectElem.trigger('change'); */
 		    
 		    console.log("after trigger");
 		    console.log("name2 =", selectElem.val());

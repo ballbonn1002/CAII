@@ -258,6 +258,7 @@
 					<form id="formAddArticle" action="article_perform_add"
 						method="POST" class="form" autocomplete="off"
 						enctype="multipart/form-data">
+						<input type="hidden" name="tempKey" id="tempKey" value="<%= String.valueOf(System.currentTimeMillis()) %>">
 						<input type="hidden" name="submitType" id="submitType">
 						<div class="card mb-10">
 							<div
@@ -519,15 +520,19 @@
 	    errorBox.textContent = "";
 	    
 		var form_data = new FormData();
+		const tempKey = document.getElementById("tempKey").value;
+		console.log("tempKey before upload =", tempKey);
+
 		
 		form_data.append('articleImageFile', file);
 		form_data.append('articleImageFileFileName', file.name);
 		form_data.append('articleImageFileContentType', file.type);
+		form_data.append("tempKey", tempKey); //ส่วรหัสชั่วคราว
 		
 		$.ajax({
 			data : form_data,
 			type : "POST",
-			url : 'addImgFormEditor',
+			url : '${pageContext.request.contextPath}/addImgFormEditor',
 			cache : false,
 			contentType : false,
 			processData : false,
@@ -545,7 +550,7 @@
 		$.ajax({
 			data : "srcDelete=" + src,
 			type : "POST",
-			url : "DeleteImgFormEditor",
+			url : "${pageContext.request.contextPath}/DeleteImgFormEditor",
 			cache : false,
 			success : function(response) {
 			}

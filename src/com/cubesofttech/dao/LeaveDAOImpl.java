@@ -1695,7 +1695,7 @@ public class LeaveDAOImpl implements LeaveDAO {
 	            + "leaves.appr_user_id, user.path, leaves.time_create, leaves.description, leaves.leave_file, file.name AS file_name, file.type "
 	            + "FROM leaves LEFT JOIN leave_type ON leave_type.leave_type_id = leaves.leave_type_id "
 	            + "LEFT JOIN user ON leaves.user_id = user.id "
-	            + "LEFT JOIN file ON leaves.leave_file = file.file_id "
+	            + "LEFT JOIN file ON CAST(leaves.leave_file AS UNSIGNED) = file.file_id "
 	            + "WHERE leaves.start_date BETWEEN :startDate AND :endDate "
 	            + "AND (user.manager_id = :manager OR leaves.appr_user_id = :manager) "
 	        );
@@ -1727,7 +1727,7 @@ public class LeaveDAOImpl implements LeaveDAO {
 					+ "leaves.start_date, leaves.start_time, leaves.end_time, leaves.end_date, leaves.no_day , file.path, leaves.time_create, "
 					+ "leaves.description, leaves.leave_file, file.name AS file_name, file.type "
 					+ "FROM leaves LEFT JOIN leave_type ON leave_type.leave_type_id = leaves.leave_type_id "
-					+ "LEFT JOIN user ON leaves.user_id = user.id LEFT JOIN file ON leaves.leave_file = file.file_id "
+					+ "LEFT JOIN user ON leaves.user_id = user.id LEFT JOIN file ON CAST(leaves.leave_file AS UNSIGNED) = file.file_id "
 					+ "WHERE leaves.start_date BETWEEN :startDate AND :endDate ");
 			if(manager != null && !manager.isEmpty()) {
 				sql.append("AND leaves.appr_user_id = :manager ");
@@ -2043,7 +2043,8 @@ public class LeaveDAOImpl implements LeaveDAO {
 							+ "leaves.leave_file, file.name AS file_name, file.type "
 							+ "FROM leaves LEFT JOIN leave_type ON leave_type.leave_type_id = leaves.leave_type_id "
 							+ "LEFT JOIN user ON leaves.user_id = user.id "
-							+ "LEFT JOIN file ON leaves.leave_file = file.file_id " + "WHERE leaves.user_id = :userId "
+							+ "LEFT JOIN file ON CAST(leaves.leave_file AS UNSIGNED) = file.file_id "
+							+ "WHERE leaves.user_id = :userId "
 							+ "AND (leaves.start_date <= :endDate AND leaves.end_date >= :startDate) ");
 
 			if (status != null && !status.isEmpty() && !status.equals("4")) {

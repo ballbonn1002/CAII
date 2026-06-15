@@ -659,5 +659,12 @@
 		<put-attribute name="body"
 			value="/pages-back/file_management/file_management.jsp" />
 	</definition>
-
+	
+	<!-- Work Location -->
+	<definition name="workLocation" extends="baseLayout">
+		<put-attribute name="title" value="Work Location" />
+		<put-attribute name="body"
+			value="/pages-back/work_location/work_location_list.jsp" />
+	</definition>
+	
 </tiles-definitions>

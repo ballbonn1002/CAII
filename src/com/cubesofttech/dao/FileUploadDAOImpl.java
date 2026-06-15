@@ -270,5 +270,24 @@ public class FileUploadDAOImpl implements FileUploadDAO {
 		return fileList;
 	}
 
+	@Override
+	public void updateTempArticleImageToArticle(String tempKey, String articleId) {
+	    try {
+	        String hql = "UPDATE FileUpload "
+	                   + "SET page = :page, pageId = :articleId "
+	                   + "WHERE page = :tempPage AND pageId = :tempKey";
+
+	        Query query = sessionFactory.getCurrentSession().createQuery(hql);
+	        query.setParameter("page", "article");
+	        query.setParameter("articleId", articleId);
+	        query.setParameter("tempPage", "article_temp");
+	        query.setParameter("tempKey", tempKey);
+
+	        query.executeUpdate();
+
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	    }
+	}
 
 }
