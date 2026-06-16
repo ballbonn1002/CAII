@@ -11,4 +11,6 @@ public interface WorkLogDAO {
     
     public WorkHours findById(Integer id) throws Exception;
     public void update(WorkHours workHours) throws Exception;
+
+	List<Map<String, Object>> searchWorkLocation(Map<String, Object> params) throws Exception;
 }

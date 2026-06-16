@@ -1861,9 +1861,14 @@
 		
 		<!-- Work Location -->
 		<action name="work_location"
-			class="com.cubesofttech.action.WorkLogAction" method="open">
+			class="com.cubesofttech.action.WorkLocationAction" method="open">
 			<result name="success" type="tiles">workLocation</result>
 			<result name="error">/index.jsp</result>
+			<result name="login" type="redirect">/index.jsp</result>
+		</action>
+		
+		<action name="search_work_location"
+			class="com.cubesofttech.action.WorkLocationAction" method="search">
 			<result name="login" type="redirect">/index.jsp</result>
 		</action>
 		

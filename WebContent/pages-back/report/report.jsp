@@ -148,6 +148,27 @@
 					</a>
 				</div>
 				<%-- End Card: Action Log --%>
+				
+				<div class="col-md-4">
+					<a href="${pageContext.request.contextPath}/work_location"
+						class="text-decoration-none">
+						<div class="btn bg-body btn-active-info w-100 h-100 d-flex flex-column align-items-center justify-content-center py-12 rounded-3">
+							<span class="fw-semibold fs-1 mb-3 text-gray-800">Work Location</span>
+							<div class="report-card-img">
+								<%-- <img
+									src="${pageContext.request.contextPath}/assets/media/svg/illustrations/easy/workLocation.svg"
+									onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
+									class="mh-175px" alt="Action Log" /> --%>
+								<div
+									style="display: none; align-items: center; justify-content: center; min-height: 175px;">
+									<i class="ki-duotone ki-abstract-26 fs-5tx text-danger">
+										<span class="path1"></span><span class="path2"></span>
+									</i>
+								</div>
+							</div>
+						</div>
+					</a>
+				</div>
 
 			</div>
 			<%-- End Row --%>

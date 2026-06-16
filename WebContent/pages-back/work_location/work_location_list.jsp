@@ -145,26 +145,23 @@
                                        
 								
 								    <div class="position-relative d-flex align-items-center">
-                                    <select name="siteId" class="form-select" data-control="select2" data-hide-search="true">
-                                                 <option value="">All Site</option>
-		                                         <optgroup label="Site Enable" class="text-muted fs-8 fw-bold text-uppercase">
+                                    	<select name="siteIds" class="form-select" data-control="select2" data-close-on-select="false" data-placeholder="All Site" data-allow-clear="true" multiple="multiple">
+		                                     <optgroup label="Site Enable" class="text-muted fs-8 fw-bold text-uppercase">
 		                                            <c:forEach var="site" items="${siteList}">
 		                                                <option value="${site.id_sitejob}" <c:if test="${criteria.siteId eq site.id_sitejob}">selected</c:if>>${site.name_site}</option>
 		                                            </c:forEach>
-		                                         </optgroup>
-                                            </select>
-                                        </div>
+		                                     </optgroup>
+                                        </select>
+                                   </div>
                           
                                 </div>
                                 
                                 <div class="col-md-4">
                                      <label class="form-label fs-7 fw-bold text-gray-700">Action:</label>
 								    <div class="position-relative d-flex align-items-center">
-                                    	<select name="action" class="form-select" data-control="select2" data-hide-search="true">
-                                                <option value="">All</option>
+                                    	<select name="actions" class="form-select" data-control="select2" data-control="select2" data-close-on-select="false" data-placeholder="All Action" data-allow-clear="true" multiple="multiple">
 											    <option value="1">In</option>
 											    <option value="2">Out</option>
-		                                         
                                         </select>
                                      </div>
                           
@@ -255,11 +252,11 @@ $(document).ready(function() {
         }
     });
 
-    $('select[name="siteId"]').on('change', function() {
+    $('select[name="siteIds"]').on('change', function() {
         loadData();
     });
     
-    $('select[name="action"]').on('change', function () {
+    $('select[name="actions"]').on('change', function () {
         renderLocalData();
     });
 
@@ -273,12 +270,17 @@ $(document).ready(function() {
 
 function renderLocalData() {
 
-    var actionFilter = $('select[name="action"]').val() || '';
+    var actionsFilter = $('select[name="actions"]').val() || [];
 
     displayWorkLocations = allWorkLocationsData.filter(function(item) {
 
-        if (actionFilter && String(item.work_hours_type) !== actionFilter) {
+        /* if (actionFilter && String(item.work_hours_type) !== actionFilter) {
             return false;
+        }*/
+    	if (actionsFilter.length > 0) {
+            if (!actionsFilter.includes(String(item.work_hours_type))) {
+                return false;
+            }
         }
 
         return true;
@@ -347,7 +349,7 @@ window.loadData = function() {
 
     currentRequest = $.ajax({
 
-        url: "${pageContext.request.contextPath}/work_log_json.action",
+        url: "${pageContext.request.contextPath}/search_work_location",
         type: "POST",
         data: formData,
         dataType: "json",
