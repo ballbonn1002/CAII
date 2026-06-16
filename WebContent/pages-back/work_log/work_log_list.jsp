@@ -755,7 +755,7 @@
         locationRadio.closest('label').addClass('active');
 
         // Set Description
-        $('#edit_description').val('');
+        $('#edit_description').val(item.description || '');
         
         $('#editWorkLogModal').modal('show');
     }
