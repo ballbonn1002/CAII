@@ -314,7 +314,12 @@ public class CareersAction extends ActionSupport {
 	            } else {
 	                PageUri newUri = new PageUri();
 	                String position = (jobData != null && jobData.getPosition() != null) ? jobData.getPosition().trim() : "";
-	                String formattedPosition = position.replaceAll("\\s+", "-").toLowerCase();
+//	                String formattedPosition = position.replaceAll("\\s+", "-").toLowerCase();
+	                String formattedPosition = position.trim()
+                            .replaceAll("[\\s\\u00a0]+", "-")
+                            .replaceAll("-+", "-")
+                            .replaceAll("^-|-$", "")
+                            .toLowerCase();
 	            
 	                String forward = "/jobDetail.action?Id=" + id;
 	                String pageUriId = "/careers-" + formattedPosition;
