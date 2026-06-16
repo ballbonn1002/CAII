@@ -62,35 +62,6 @@
                                             <i class="ki-duotone ki-magnifier fs-3"><span class="path1"></span><span class="path2"></span></i>
                                         </span>
                                         <div class="flex-grow-1">
-                                            <%-- <select name="searchText" id="userSelect" class="form-select rounded-start-0 border-start-0 h-45px" data-control="select2">
-                                                <option value="">All</option>
-                                                <optgroup label="User Enable" class="text-muted fs-8 fw-bold text-uppercase">
-                                                   <c:forEach var="u" items="${userList}">
-                                                        <c:set var="label" value="" />
-                                                        
-                                                        <c:if test="${not empty u.employee_id}">
-                                                            <c:set var="label" value="${u.employee_id}" />
-                                                        </c:if>
-                                                        <c:if test="${not empty u.name_en}">
-                                                            <c:if test="${not empty label}"><c:set var="label" value="${label} - " /></c:if>
-                                                            <c:set var="label" value="${label}${u.name_en}" />
-                                                        </c:if>
-                                                        <c:if test="${not empty u.name}">
-                                                            <c:if test="${not empty label}"><c:set var="label" value="${label} - " /></c:if>
-                                                            <c:set var="label" value="${label}${u.name}" />
-                                                        </c:if>
-                                                        <c:if test="${not empty u.role_id}">
-                                                            <c:if test="${not empty label}"><c:set var="label" value="${label} - " /></c:if>
-                                                            <c:set var="label" value="${label}${u.role_id}" />
-                                                        </c:if>
-                                                    
-                                                        <option value="${u.id}" ${criteria.searchText eq u.id ? 'selected' : ''}>
-                                                            ${label}
-                                                        </option>
-                                                        
-                                                    </c:forEach>
-                                                </optgroup>
-                                            </select> --%>
                                             <select name="searchText"
 											        id="userSelect"
 											        class="form-select rounded-start-0 border-start-0 h-45px"
@@ -169,18 +140,6 @@
                                     </div>
                                </div>
                                
-                               <!-- <div class="col-md-3">
-                                    <div class="input-group flex-nowrap">
-                                        <span class="input-group-text">Sortting
-                                        </span>
-                                        <div class="overflow-hidden flex-grow-1">
-                                            <select name="sortting" class="form-select rounded-start-0" data-control="select2" data-hide-search="true">
-                                                <option value="1">ASC</option>
-                                                <option value="2">DESC</option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                </div> -->
                                  <div class="col-md-4">
                                      <label class="form-label fs-7 fw-bold text-gray-700">Site:</label>
                                        
@@ -210,32 +169,6 @@
                                      </div>
                           
                                 </div>
-                                
-                               
-                               <%--  <div class="col-md-3">
-                                    <label class="form-label fs-7 fw-bold text-gray-700">Status:</label>
-                                    <select name="status" class="form-select" data-control="select2" data-hide-search="true">
-                                        <option value="">All Status</option>
-                                            <optgroup label="Status Enable" class="text-muted fs-8 fw-bold text-uppercase">
-                                            <option value="OnTime" <c:if test="${criteria.status eq 'OnTime'}">selected</c:if>>On Time</option>
-                                            <option value="Late" <c:if test="${criteria.status eq 'Late'}">selected</c:if>>Late</option>
-                                            <option value="Early Out" <c:if test="${criteria.status eq 'Early Out'}">selected</c:if>>Early Out</option>
-                                            <option value="Finished Work" <c:if test="${criteria.status eq 'Finished Work'}">selected</c:if>>Finished Work</option>
-                                            <option value="Unfinished Work" <c:if test="${criteria.status eq 'Unfinished Work'}">selected</c:if>>Unfinished Work</option>
-                                        </optgroup>
-                                    </select>
-                                </div> --%>
-                                <%-- <div class="col-md-3">
-                                    <label class="form-label fs-7 fw-bold text-gray-700">Site:</label>
-                                    <select name="siteId" class="form-select" data-control="select2" data-hide-search="true">
-                                        <option value="">All Site</option>
-                                        <optgroup label="Site Enable" class="text-muted fs-8 fw-bold text-uppercase">
-                                            <c:forEach var="site" items="${siteList}">
-                                                <option value="${site.id_sitejob}" <c:if test="${criteria.siteId eq site.id_sitejob}">selected</c:if>>${site.name_site}</option>
-                                            </c:forEach>
-                                        </optgroup>
-                                    </select>
-                                </div> --%>
                                 <div class="col-md-4">
 								    <label class="form-label fs-7 fw-bold text-gray-700">
 								        Date:
@@ -257,20 +190,7 @@
 								               placeholder="Select date"/>
 								    </div>
 								</div>
-                                <%-- <div class="col-md-3">
-                                    <label class="form-label fs-7 fw-bold text-gray-700">Start Date:</label>
-                                    <div class="position-relative d-flex align-items-center">
-                                        <i class="ki-duotone ki-calendar-8 position-absolute ms-4 mb-1 text-gray-500 fs-2"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span><span class="path5"></span><span class="path6"></span></i>
-                                        <input class="form-control form-control ps-12 datepicker" placeholder="Select date" name="startDate" value="${not empty criteria.startDate ? criteria.startDate : defaultStartDate}" />
-                                    </div>
-                                </div>
-                                <div class="col-md-3">
-                                    <label class="form-label fs-7 fw-bold text-gray-700">End Date:</label>
-                                    <div class="position-relative d-flex align-items-center">
-                                        <i class="ki-duotone ki-calendar-8 position-absolute ms-4 mb-1 text-gray-500 fs-2"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span><span class="path5"></span><span class="path6"></span></i>
-                                        <input class="form-control form-control ps-12 datepicker" placeholder="Select date" name="endDate" value="${not empty criteria.endDate ? criteria.endDate : defaultEndDate}" />
-                                    </div>
-                                </div>  --%>   
+                                 
                             </div>
                         </div>
                     </div>
@@ -505,7 +425,7 @@ function renderAllUserMap() {
         else {
             markersLayer = L.layerGroup().addTo(map);
         }
-
+        console.log(allWorkLocationsData);
         var bounds = [];
 
         displayWorkLocations.forEach(function(item) {
@@ -518,6 +438,25 @@ function renderAllUserMap() {
             if (isNaN(lat) || isNaN(lng)) {
                 return;
             }
+            
+            var retroactive =
+                item.description &&
+                item.time_create &&
+                item.work_hours_time_work &&
+                item.time_create !== item.work_hours_time_work;
+
+            var retroactiveHtml = '';
+
+            if (retroactive) {
+                var retroactiveHtml =
+                    '<i class="ki-duotone ki-message-text-2 fs-2 text-gray-500 me-1 align-middle">' +
+                            '<span class="path1"></span>' +
+                            '<span class="path2"></span>' +
+                            '<span class="path3"></span>' +
+                        '</i>' +
+                        '<span>' + item.description + '</span>';
+            }
+            
 
             var userName = item.name_en || item.name || 'Unknown User';
 
@@ -529,13 +468,17 @@ function renderAllUserMap() {
                 + ' '
                 + formatDate(item.work_hours_time_work)
                 + ', '
-                + formatTime(item.work_hours_time_work)
+                + formatTime(item.work_hours_time_work)+ '<br>'
+                + '</div>'
+                + '<div class="my-1">'
+                + retroactiveHtml
                 + '</div>'
                 + 'Latitude : ' + lat + '<br>'
                 + 'Longitude : ' + lng + '<br>'
                 + '<hr>'
                 + '<b>IP :</b> ' + ip + '<br>'
                 + '<b>Device :</b> <small>' + device + '</small>'
+                
                 + '</div>';
 
                 var icon;
