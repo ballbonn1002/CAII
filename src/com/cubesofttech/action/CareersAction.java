@@ -320,8 +320,8 @@ public class CareersAction extends ActionSupport {
                             .replaceAll("^-|-$", "")
                             .toLowerCase();
 	            
-	                String forward = "/jobDetail.action?Id=" + id;
-	                String pageUriId = "/careers-" + formattedPosition;
+	                String forward = "/jobDetail.action?id=" + id;
+	                String pageUriId = "/careers/" + formattedPosition;
 	                
 	                newUri.setPageUriId(pageUriId);
 	                newUri.setForwardTo(forward);
