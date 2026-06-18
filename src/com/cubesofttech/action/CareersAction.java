@@ -310,11 +310,10 @@ public class CareersAction extends ActionSupport {
 	            PageUri uriData = pageUriDAO.findByModelId(id); 
 	            
 	            if (uriData != null && "job".equalsIgnoreCase(uriData.getModel() != null ? uriData.getModel().trim() : "")) {
-	                request.setAttribute("pageUri", uriData);
+	            		request.setAttribute("pageUri", uriData);
 	            } else {
 	                PageUri newUri = new PageUri();
 	                String position = (jobData != null && jobData.getPosition() != null) ? jobData.getPosition().trim() : "";
-//	                String formattedPosition = position.replaceAll("\\s+", "-").toLowerCase();
 	                String formattedPosition = position.trim()
                             .replaceAll("[\\s\\u00a0]+", "-")
                             .replaceAll("-+", "-")
