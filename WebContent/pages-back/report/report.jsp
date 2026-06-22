@@ -11,13 +11,14 @@
 	min-height: 175px;
 }
 
-.btn-active-primary, .btn-active-warning, .btn-active-success, .btn-active-danger {
+.btn-active-primary, .btn-active-warning, .btn-active-success, .btn-active-danger, .btn-active-info {
 	border: 1px solid rgba(0, 0, 0, 0.1) !important;
 	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
 }
 
 [data-bs-theme="dark"] .btn-active-primary, [data-bs-theme="dark"] .btn-active-warning,
-	[data-bs-theme="dark"] .btn-active-success, [data-bs-theme="dark"] .btn-active-danger {
+[data-bs-theme="dark"] .btn-active-success, [data-bs-theme="dark"] .btn-active-danger,
+[data-bs-theme="dark"] .btn-active-info {
 	border: 1px solid rgba(255, 255, 255, 0.1) !important;
 	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
 }
@@ -155,10 +156,11 @@
 						<div class="btn bg-body btn-active-info w-100 h-100 d-flex flex-column align-items-center justify-content-center py-12 rounded-3">
 							<span class="fw-semibold fs-1 mb-3 text-gray-800">Work Location</span>
 							<div class="report-card-img">
-								<%-- <img
-									src="${pageContext.request.contextPath}/assets/media/svg/illustrations/easy/workLocation.svg"
-									onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
-									class="mh-175px" alt="Action Log" /> --%>
+								<img src="${pageContext.request.contextPath}/assets/media/svg/illustrations/easy/workLocation.svg"
+								     onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
+								     class="mh-175px" 
+								     style="object-fit: contain; width: 100%; max-height: 160px;" 
+								     alt="Work Location" />
 								<div
 									style="display: none; align-items: center; justify-content: center; min-height: 175px;">
 									<i class="ki-duotone ki-abstract-26 fs-5tx text-danger">
