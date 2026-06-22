@@ -970,393 +970,6 @@ public class TimeSheetAction extends ActionSupport {
 		return SUCCESS;
 	}
 
-//	public String importTimeSheet() throws Exception {
-//
-//		try {
-//			FileInputStream fis = new FileInputStream(fileUpload);
-//			Workbook workbook = WorkbookFactory.create(fis);
-//
-//			Sheet sheet = workbook.getSheetAt(0);
-//			DataFormatter dataFormatter = new DataFormatter();
-//
-//			// ดึงค่า User
-//			Row userRow = sheet.getRow(1);
-//			String userStr = "";
-//			if (userRow != null) {
-//				String colB = getCellValue(userRow.getCell(1), dataFormatter);
-//				String colA = getCellValue(userRow.getCell(0), dataFormatter);
-//
-//				if (colB != null && !colB.trim().isEmpty()) {
-//					userStr = colB.trim();
-//				} else if (colA != null && colA.contains(":")) {
-//					userStr = colA.substring(colA.indexOf(":") + 1).trim();
-//				}
-//			}
-//
-//			if (userStr == null || userStr.trim().isEmpty()) {
-//				return ERROR;
-//			}
-//
-//			Timestamp now = new Timestamp(System.currentTimeMillis());
-//
-//			// --- ตัวแปรความจำ (Memory) ---
-//			LocalDate memDate = null;
-//			Timestamp memCheckIn = null;
-//			Timestamp memCheckOut = null;
-//			Timestamp memOtStart = null;
-//			Timestamp memOtEnd = null;
-//			String memProject = null;
-//			String memSummary = null;
-//
-//			log.debug("==================================================");
-//			log.debug("🚀 เริ่มต้นกระบวนการ Import TimeSheet");
-//			log.debug("==================================================");
-//
-//			// ข้อมูลเริ่มที่ Row 8 (Index 7)
-//			for (int rowIndex = 7; rowIndex <= sheet.getLastRowNum(); rowIndex++) {
-//				Row row = sheet.getRow(rowIndex);
-//				if (row == null) {
-//					continue;
-//				}
-//
-//				// =======================================================
-//				// 1. ดึงข้อมูลดิบจาก Excel (Raw Data)
-//				// =======================================================
-//				String rawDateStr = getCellValue(row.getCell(0), dataFormatter);
-//
-//				// ป้องกันแถวสรุปด้านล่างสุด
-//				if (rawDateStr != null && (rawDateStr.contains("สรุปเวลา") || rawDateStr.contains("Total"))) {
-//					log.debug("🛑 เจอคำว่า 'สรุปเวลา/Total' -> สั่งหยุดการทำงาน (Break) ที่บรรทัด " + rowIndex);
-//					break;
-//				}
-//
-//				String rawCheckIn = getCellValue(row.getCell(1), dataFormatter);
-//				String rawCheckOut = getCellValue(row.getCell(2), dataFormatter);
-//				String rawOtStart = getCellValue(row.getCell(3), dataFormatter);
-//				String rawOtEnd = getCellValue(row.getCell(4), dataFormatter);
-//				String timeSpentStr = getCellValue(row.getCell(5), dataFormatter);
-//				String projectStr = getCellValue(row.getCell(7), dataFormatter);
-//				String summaryStr = getCellValue(row.getCell(8), dataFormatter);
-//				String descriptionStr = getCellValue(row.getCell(9), dataFormatter);
-//
-//				// --- ยามเฝ้าประตู: เช็คว่าบรรทัดนี้ "มีข้อมูลอะไรให้เซฟไหม" ---
-//				boolean hasWork = (projectStr != null && !projectStr.trim().isEmpty())
-//						|| (summaryStr != null && !summaryStr.trim().isEmpty())
-//						|| (descriptionStr != null && !descriptionStr.trim().isEmpty())
-//						|| (rawCheckIn != null && !rawCheckIn.trim().isEmpty());
-//
-//				if (!hasWork) {
-//					continue; // วันหยุด หรือ แถวว่างเปล่า -> เตะทิ้ง ไม่เซฟ!
-//				}
-//
-//				// =======================================================
-//				// 🔴 พิมพ์ LOG ข้อมูลดิบก่อนแปลง (Raw Data)
-//				// =======================================================
-//				log.debug("\n📍 แถวที่ (Row Index) : " + rowIndex);
-//				log.debug("🔍 [1. ข้อมูลดิบจาก Excel]");
-//				log.debug("   - วันที่ดิบ   : [" + rawDateStr + "]");
-//				log.debug("   - เวลาเข้าดิบ : [" + rawCheckIn + "]");
-//				log.debug("   - เวลาออกดิบ  : [" + rawCheckOut + "]");
-//				log.debug("   - Project   : [" + projectStr + "]");
-//				log.debug("   - Summary   : [" + summaryStr + "]");
-//
-//				// =======================================================
-//				// 2. แปลงค่า "วันที่" (Date Parsing)
-//				// =======================================================
-//				boolean isMainTask = (rawDateStr != null && !rawDateStr.trim().isEmpty());
-//
-//				if (isMainTask) {
-//					LocalDate parsedDate = parseDateRobust(row.getCell(0), dataFormatter);
-//					if (parsedDate != null) {
-//						memDate = parsedDate;
-//					}
-//
-//					// 🔥 หัวใจสำคัญ: เมื่อเริ่มวันใหม่ ล้างความจำเวลาของวันเก่าทิ้งให้เกลี้ยง 100%
-//					memCheckIn = null;
-//					memCheckOut = null;
-//					memOtStart = null;
-//					memOtEnd = null;
-//					memProject = null;
-//					memSummary = null;
-//				}
-//
-//				// =======================================================
-//				// 3. แปลงค่า "เวลา" (Time Parsing)
-//				// =======================================================
-//				Timestamp curIn = parseTimeRobust(row.getCell(1), memDate, dataFormatter);
-//				if (curIn != null)
-//					memCheckIn = curIn; // ถ้ามีค่าใหม่ ให้เอาทับค่าเดิม
-//
-//				Timestamp curOut = parseTimeRobust(row.getCell(2), memDate, dataFormatter);
-//				if (curOut != null)
-//					memCheckOut = curOut;
-//
-//				Timestamp curOtStart = parseTimeRobust(row.getCell(3), memDate, dataFormatter);
-//				if (curOtStart != null)
-//					memOtStart = curOtStart;
-//
-//				Timestamp curOtEnd = parseTimeRobust(row.getCell(4), memDate, dataFormatter);
-//				if (curOtEnd != null)
-//					memOtEnd = curOtEnd;
-//
-//				// อัปเดต Project/Summary ถ้ามีการพิมพ์มา (เพื่อใช้กับงานย่อย)
-//				if (projectStr != null && !projectStr.trim().isEmpty())
-//					memProject = projectStr.trim();
-//				if (summaryStr != null && !summaryStr.trim().isEmpty())
-//					memSummary = summaryStr.trim();
-//
-//				// =======================================================
-//				// 🟢 พิมพ์ LOG หลังจากแปลงค่าเสร็จแล้ว (Parsed Data)
-//				// =======================================================
-//				log.debug("✅ [2. ผลลัพธ์หลังแปลงค่า (เตรียมลง DB)]");
-//				log.debug("   - memDate (วันที่)     : " + memDate);
-//				log.debug("   - memCheckIn (เวลาเข้า) : " + memCheckIn);
-//				log.debug("   - memCheckOut (เวลาออก) : " + memCheckOut);
-//				log.debug("   - memProject (โปรเจกต์) : " + memProject);
-//				log.debug("--------------------------------------------------");
-//
-//				// =======================================================
-//				// 4. บันทึกข้อมูลลง Database
-//				// =======================================================
-//				Timesheet timesheet = new Timesheet();
-//				timesheet.setId(timesheetDAO.getMaxId() + 1);
-//				timesheet.setUserCreate(userStr);
-//				timesheet.setUserUpdate(userStr);
-//				timesheet.setStatus("W");
-//				timesheet.setTimeCreate(now);
-//				timesheet.setTimeUpdate(now);
-//
-//				if (memDate != null) {
-//					timesheet.setStarted_date(java.sql.Date.valueOf(memDate));
-//				}
-//
-//				timesheet.setTimeCheckIn(memCheckIn);
-//				timesheet.setTimeCheckOut(memCheckOut);
-//				timesheet.setOT_time_start(memOtStart);
-//				timesheet.setOT_time_end(memOtEnd);
-//
-//				timesheet.setProject(memProject);
-//				if (memProject != null) {
-//					Project project = projectDAO.findByName(memProject);
-//					if (project == null) {
-//						Project newProject = new Project();
-//						newProject.setProject_id(projectDAO.getMaxId() + 1);
-//						newProject.setProject_name(memProject);
-//						newProject.setStatus_project("1");
-//						newProject.setUser_create(userStr);
-//						newProject.setUser_update(userStr);
-//						newProject.setTime_create(now);
-//						newProject.setTime_update(now);
-//						projectDAO.save(newProject);
-//						timesheet.setProject_id(newProject.getProject_id());
-//					} else {
-//						timesheet.setProject_id(project.getProject_id());
-//					}
-//				}
-//
-//				timesheet.setSummary(memSummary);
-//				if (memSummary != null) {
-//					ProjectFunction function = projectFunctionDAO.findByName(memSummary);
-//					if (function == null) {
-//						ProjectFunction newFunction = new ProjectFunction();
-//						newFunction.setFunction_id(projectFunctionDAO.getMaxId() + 1);
-//						newFunction.setFunction_name(memSummary);
-//						newFunction.setStatus("1");
-//						newFunction.setProject_id(timesheet.getProject_id());
-//						newFunction.setUser_create(userStr);
-//						newFunction.setUser_update(userStr);
-//						newFunction.setTime_create(now);
-//						newFunction.setTime_update(now);
-//						projectFunctionDAO.save(newFunction);
-//						timesheet.setFunction_id(newFunction.getFunction_id());
-//					} else {
-//						timesheet.setFunction_id(function.getFunction_id());
-//					}
-//				}
-//
-//				timesheet.setDescription(
-//						descriptionStr != null && !descriptionStr.trim().isEmpty() ? descriptionStr.trim() : null);
-//				timesheet.setTimespent(
-//						timeSpentStr != null && !timeSpentStr.trim().isEmpty() ? timeSpentStr.trim() : null);
-//
-//				timesheetDAO.save(timesheet);
-//			}
-//
-//			log.debug("🎉 นำเข้าข้อมูลสำเร็จ!");
-//			return SUCCESS;
-//
-//		} catch (Exception e) {
-//			log.error("❌ เกิดข้อผิดพลาดระหว่างนำเข้า: ", e);
-//			e.printStackTrace();
-//			return ERROR;
-//		}
-//	}
-//
-//	// ==============================================================================
-//	// Method 1: ตัวช่วยหั่นวันที่ขั้นเทพ (รองรับภาษาไทย อังกฤษ และทุก Format)
-//	// ==============================================================================
-//	private LocalDate parseDateRobust(Cell cell, DataFormatter formatter) {
-//		if (cell == null)
-//			return null;
-//
-//		// ท่าที่ 1: อ่านข้อความตรงๆ ก่อนเพื่อหลีกเลี่ยงวันที่เพี้ยน
-//		String dStr = formatter.formatCellValue(cell);
-//		if (dStr != null && !dStr.trim().isEmpty()) {
-//			dStr = dStr.trim().toUpperCase();
-//
-//			// ดักจับเดือนภาษาไทยและอังกฤษ
-//			String[] months = { "มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน", "กรกฎาคม", "สิงหาคม",
-//					"กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม", "ม.ค.", "ก.พ.", "มี.ค.", "เม.ย.", "พ.ค.", "มิ.ย.",
-//					"ก.ค.", "ส.ค.", "ก.ย.", "ต.ค.", "พ.ย.", "ธ.ค.", "JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL",
-//					"AUG", "SEP", "OCT", "NOV", "DEC" };
-//
-//			for (int i = 0; i < months.length; i++) {
-//				if (dStr.contains(months[i])) {
-//					String nums = dStr.replaceAll("[^0-9]", " ").trim();
-//					String[] parts = nums.split("\\s+");
-//					if (parts.length >= 2) {
-//						int day = Integer.parseInt(parts[0]);
-//						int year = Integer.parseInt(parts[parts.length - 1]);
-//						if (year < 100)
-//							year += 2000;
-//						if (year > 2500)
-//							year -= 543;
-//						return LocalDate.of(year, (i % 12) + 1, day);
-//					}
-//				}
-//			}
-//
-//			// ดักจับรูปแบบตัวเลข (เช่น 30/03/2026 หรือ 2026-03-30)
-//			String cleanStr = dStr.replaceAll("[^0-9]", " ").trim();
-//			String[] parts = cleanStr.split("\\s+");
-//			if (parts.length >= 3) {
-//				int p0 = Integer.parseInt(parts[0]);
-//				int p1 = Integer.parseInt(parts[1]);
-//				int p2 = Integer.parseInt(parts[2]);
-//
-//				int year, month, day;
-//				if (p0 > 1000) {
-//					year = p0;
-//					month = p1;
-//					day = p2;
-//				} else if (p2 > 1000) {
-//					year = p2;
-//					month = p1;
-//					day = p0;
-//				} else {
-//					year = p2 + 2000;
-//					month = p1;
-//					day = p0;
-//				}
-//
-//				// 🔥 ป้องกัน Excel สลับเดือนกับวันมาให้ (เช่น เดือน 30 วันที่ 3)
-//				if (month > 12 && day <= 12) {
-//					int temp = month;
-//					month = day;
-//					day = temp;
-//				}
-//
-//				if (year > 2500)
-//					year -= 543;
-//				return LocalDate.of(year, month, day);
-//			}
-//		}
-//
-//		// ท่าที่ 2: ถ้าเป็นตัวเลขวันที่ใน Excel จริงๆ (ไม่ได้จัดรูปแบบเป็น Text)
-//		try {
-//			java.util.Date javaDate = cell.getDateCellValue();
-//			if (javaDate != null) {
-//				java.util.Calendar cal = java.util.Calendar.getInstance();
-//				cal.setTime(javaDate);
-//				int year = cal.get(java.util.Calendar.YEAR);
-//				if (year > 1900) {
-//					if (year > 2500)
-//						year -= 543;
-//					return LocalDate.of(year, cal.get(java.util.Calendar.MONTH) + 1,
-//							cal.get(java.util.Calendar.DAY_OF_MONTH));
-//				}
-//			}
-//		} catch (Exception e) {
-//		}
-//
-//		return null;
-//	}
-//
-//	// ==============================================================================
-//	// Method 2: ตัวดึงเวลา (ดูดล้างทุกอักขระขยะ ไม่พึ่ง CellType)
-//	// ==============================================================================
-//	private Timestamp parseTimeRobust(Cell cell, LocalDate date, DataFormatter formatter) {
-//		if (cell == null || date == null)
-//			return null;
-//
-//		// 1. อ่าน Text ตรงๆ
-//		String tStr = formatter.formatCellValue(cell);
-//		if (tStr != null && !tStr.trim().isEmpty()) {
-//			tStr = tStr.trim().toUpperCase();
-//
-//			// ดักจับทศนิยมในคราบ String (เช่น 0.3388)
-//			String decStr = tStr.replace(",", ".").replaceAll("[^0-9\\.]", "");
-//			if (decStr.startsWith("0.") && decStr.length() > 2) {
-//				try {
-//					double val = Double.parseDouble(decStr);
-//					if (val > 0 && val < 1.0) {
-//						int totalSeconds = (int) Math.round(val * 24 * 60 * 60);
-//						int h = totalSeconds / 3600;
-//						int m = (totalSeconds % 3600) / 60;
-//						int s = totalSeconds % 60;
-//						return Timestamp.valueOf(String.format("%s %02d:%02d:%02d", date.toString(), h, m, s));
-//					}
-//				} catch (Exception e) {
-//				}
-//			}
-//
-//			// ดึงแบบปกติ (ตัดตัวอักษรทิ้ง เปลี่ยนจุดเป็นโคลอน)
-//			String cleanTime = tStr.replace(".", ":").replaceAll("[^0-9:]", "");
-//			String[] parts = cleanTime.split(":");
-//			if (parts.length >= 2) {
-//				try {
-//					int h = Integer.parseInt(parts[0]);
-//					int m = Integer.parseInt(parts[1]);
-//					int s = (parts.length > 2 && !parts[2].isEmpty()) ? Integer.parseInt(parts[2]) : 0;
-//
-//					if (tStr.contains("PM") && h < 12)
-//						h += 12;
-//					if (tStr.contains("AM") && h == 12)
-//						h = 0;
-//
-//					return Timestamp.valueOf(String.format("%s %02d:%02d:%02d", date.toString(), h, m, s));
-//				} catch (Exception e) {
-//				}
-//			}
-//		}
-//
-//		// 2. ถ้าเป็นเลขเศษส่วนวันใน Excel โดยตรง
-//		try {
-//			double val = cell.getNumericCellValue();
-//			double fraction = val - Math.floor(val);
-//			if (fraction > 0) {
-//				int totalSeconds = (int) Math.round(fraction * 24 * 60 * 60);
-//				int h = totalSeconds / 3600;
-//				int m = (totalSeconds % 3600) / 60;
-//				int s = totalSeconds % 60;
-//				return Timestamp.valueOf(String.format("%s %02d:%02d:%02d", date.toString(), h, m, s));
-//			}
-//		} catch (Exception e) {
-//		}
-//
-//		return null;
-//	}
-//
-//	// ==============================================================================
-//	// Method 3: ตัวดึงข้อความทั่วไป
-//	// ==============================================================================
-//	private String getCellValue(Cell cell, DataFormatter formatter) {
-//		if (cell == null) {
-//			return "";
-//		}
-//		return formatter.formatCellValue(cell).trim();
-//	}
-
 	public String importTimeSheet() throws Exception {
 
 		try {
@@ -1366,10 +979,8 @@ public class TimeSheetAction extends ActionSupport {
 			Sheet sheet = workbook.getSheetAt(0);
 			DataFormatter dataFormatter = new DataFormatter();
 
-			// 🔥 เพิ่มอาวุธใหม่: ตัวคำนวณสูตร Excel (Formula Evaluator)
 			FormulaEvaluator evaluator = workbook.getCreationHelper().createFormulaEvaluator();
 
-			// ดึงค่า User
 			Row userRow = sheet.getRow(1);
 			String userStr = "";
 			if (userRow != null) {
@@ -1398,7 +1009,6 @@ public class TimeSheetAction extends ActionSupport {
 			String memProject = null;
 			String memSummary = null;
 
-			// ข้อมูลเริ่มที่ Row 8 (Index 7)
 			for (int rowIndex = 7; rowIndex <= sheet.getLastRowNum(); rowIndex++) {
 				Row row = sheet.getRow(rowIndex);
 				if (row == null) {
@@ -1407,7 +1017,6 @@ public class TimeSheetAction extends ActionSupport {
 
 				String rawDateStr = getCellValue(row.getCell(0), dataFormatter, evaluator);
 
-				// ป้องกันแถวสรุปด้านล่าง
 				if (rawDateStr != null && (rawDateStr.contains("สรุปเวลา") || rawDateStr.contains("Total"))) {
 					break;
 				}
@@ -1421,7 +1030,6 @@ public class TimeSheetAction extends ActionSupport {
 				String summaryStr = getCellValue(row.getCell(8), dataFormatter, evaluator);
 				String descriptionStr = getCellValue(row.getCell(9), dataFormatter, evaluator);
 
-				// --- 1. ยามเฝ้าประตู ---
 				boolean hasWork = (projectStr != null && !projectStr.trim().isEmpty())
 						|| (summaryStr != null && !summaryStr.trim().isEmpty())
 						|| (descriptionStr != null && !descriptionStr.trim().isEmpty())
@@ -1431,13 +1039,12 @@ public class TimeSheetAction extends ActionSupport {
 					continue;
 				}
 
-				// --- 2. จัดการ "วันที่" ---
+
 				LocalDate parsedDate = parseDateRobust(row.getCell(0), dataFormatter, evaluator);
 
 				if (parsedDate != null) {
 					memDate = parsedDate;
 
-					// 🔥 ล้างความจำเก่าทิ้งทั้งหมด
 					memCheckIn = null;
 					memCheckOut = null;
 					memOtStart = null;
@@ -1446,7 +1053,6 @@ public class TimeSheetAction extends ActionSupport {
 					memSummary = null;
 				}
 
-				// --- 3. ดึง "เวลา" (ส่ง Evaluator เข้าไปประมวลผลสูตร RAND() ด้วย) ---
 				Timestamp curIn = parseTimeRobust(row.getCell(1), memDate, dataFormatter, evaluator);
 				if (curIn != null)
 					memCheckIn = curIn;
@@ -1469,7 +1075,6 @@ public class TimeSheetAction extends ActionSupport {
 				if (summaryStr != null && !summaryStr.trim().isEmpty())
 					memSummary = summaryStr.trim();
 
-				// --- 4. บันทึกข้อมูลลง Database ---
 				Timesheet timesheet = new Timesheet();
 				timesheet.setId(timesheetDAO.getMaxId() + 1);
 				timesheet.setUserCreate(userStr);
@@ -1542,9 +1147,6 @@ public class TimeSheetAction extends ActionSupport {
 		}
 	}
 
-	// ==============================================================================
-	// Method 1: ตัวหั่นวันที่ (รองรับ Evaluator)
-	// ==============================================================================
 	private LocalDate parseDateRobust(Cell cell, DataFormatter formatter, FormulaEvaluator evaluator) {
 		if (cell == null)
 			return null;
@@ -1631,15 +1233,12 @@ public class TimeSheetAction extends ActionSupport {
 		return null;
 	}
 
-	// ==============================================================================
-	// Method 2: ตัวดึงเวลา (รองรับ Evaluator ประมวลผลสูตร RAND)
-	// ==============================================================================
+
 	private Timestamp parseTimeRobust(Cell cell, LocalDate date, DataFormatter formatter, FormulaEvaluator evaluator) {
 		if (cell == null || date == null)
 			return null;
 
 		try {
-			// 🔥 ใช้ evaluator บังคับให้ Excel รันสูตรให้ออกมาเป็นเวลาจริงๆ ก่อน
 			String tStr = formatter.formatCellValue(cell, evaluator);
 			if (tStr != null && !tStr.trim().isEmpty()) {
 				tStr = tStr.trim().toUpperCase();
@@ -1690,15 +1289,11 @@ public class TimeSheetAction extends ActionSupport {
 		return null;
 	}
 
-	// ==============================================================================
-	// Method 3: ดึงข้อความทั่วไป (รองรับ Evaluator)
-	// ==============================================================================
 	private String getCellValue(Cell cell, DataFormatter formatter, FormulaEvaluator evaluator) {
 		if (cell == null) {
 			return "";
 		}
 		try {
-			// ประมวลผลสูตรทุกอย่างให้เป็นข้อความ
 			return formatter.formatCellValue(cell, evaluator).trim();
 		} catch (Exception e) {
 			return formatter.formatCellValue(cell).trim();
@@ -1805,6 +1400,7 @@ public class TimeSheetAction extends ActionSupport {
 					total_leave++;
 				}
 			}
+			
 			// นับเฉพาะวันที่เป็นวันทำงานจริง
 			if (!isWeekend && !isHoliday && !isLeave) {
 				total_work++;
@@ -1975,7 +1571,7 @@ public class TimeSheetAction extends ActionSupport {
 
 		int[] hourCols = { 8, 9, 10, 11 };
 
-		// 1. บรรทัด Total Mandays (Index 40)
+		// 1. บรรทัด Total Mandays
 		Row rowMandays = sheet.getRow(40);
 		if (rowMandays != null) {
 			for (int c : dayCols) {
@@ -1990,7 +1586,7 @@ public class TimeSheetAction extends ActionSupport {
 			}
 		}
 
-		// 2. บรรทัด สาย + ออกก่อน (Index 41)
+		// 2. บรรทัด สาย + ออกก่อน 
 		Row rowLate = sheet.getRow(41);
 		if (rowLate != null) {
 			for (int c : dayCols) {
@@ -2005,7 +1601,7 @@ public class TimeSheetAction extends ActionSupport {
 			}
 		}
 
-		// 3. บรรทัด ลางาน (Index 42)
+		// 3. บรรทัด ลางาน 
 		Row rowLeave = sheet.getRow(42);
 		if (rowLeave != null) {
 			for (int c : dayCols) {
@@ -2020,7 +1616,7 @@ public class TimeSheetAction extends ActionSupport {
 			}
 		}
 
-		// 4. บรรทัด ล่วงเวลาทั้งหมด (Index 43)
+		// 4. บรรทัด ล่วงเวลาทั้งหมด 
 		Row rowOT = sheet.getRow(43);
 		if (rowOT != null) {
 			for (int c : dayCols) {
@@ -2035,7 +1631,7 @@ public class TimeSheetAction extends ActionSupport {
 			}
 		}
 
-		// 5. บรรทัด จำนวนชม.OT * 1 เท่า (Index 44)
+		// 5. บรรทัด จำนวนชม.OT * 1 เท่า 
 		Row rowOT1 = sheet.getRow(44);
 		if (rowOT1 != null) {
 			for (int c : dayCols) {
@@ -2050,7 +1646,7 @@ public class TimeSheetAction extends ActionSupport {
 			}
 		}
 
-		// 6. บรรทัด จำนวนชม.OT * 1.5 เท่า (Index 45)
+		// 6. บรรทัด จำนวนชม.OT * 1.5 เท่า 
 		Row rowOT15 = sheet.getRow(45);
 		if (rowOT15 != null) {
 			for (int c : dayCols) {
@@ -2065,7 +1661,7 @@ public class TimeSheetAction extends ActionSupport {
 			}
 		}
 
-		// 7. บรรทัด จำนวนชม.OT * 3 เท่า (Index 46)
+		// 7. บรรทัด จำนวนชม.OT * 3 เท่า 
 		Row rowOT3 = sheet.getRow(46);
 		if (rowOT3 != null) {
 			for (int c : dayCols) {
