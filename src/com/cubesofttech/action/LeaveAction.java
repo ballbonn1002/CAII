@@ -2206,7 +2206,7 @@ public class LeaveAction extends ActionSupport {
 			out.flush();
 			out.close();
 
-			return SUCCESS;
+			return null;
 		} catch (Exception e) {
 			e.printStackTrace();
 			return ERROR;
@@ -2534,7 +2534,7 @@ public class LeaveAction extends ActionSupport {
 			cell.setCellValue(formattedDateTime);
 			cell.setCellStyle(casual);
 
-			String name,leave_type_name,sd,ed,start_time,end_time,no_day,leave_status_id;
+			String name,leave_type_name,sd,ed,start_time,end_time,no_day,leave_status_id,remark;
 			DecimalFormat decimalFormat = new DecimalFormat("0.0");
 			inputFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.S");
 			outputFormat = new SimpleDateFormat("dd-MM-yyyy");
@@ -2565,6 +2565,7 @@ public class LeaveAction extends ActionSupport {
 				time_create = data.get("time_create") == null ? null : data.get("time_create").toString();
 				date = inputFormat.parse(time_create);
 				String formatTimeCreate = outputFormat.format(date);
+				remark = data.get("description") == null ? "" : data.get("description").toString();
 				if( leave_status_id.equals("0") ) { leave_status_id = "Wait for approve"; }
 				else if( leave_status_id.equals("1") ) { leave_status_id = "Approved"; }
 				else if( leave_status_id.equals("2") ) { leave_status_id = "Reject"; }
@@ -2608,6 +2609,10 @@ public class LeaveAction extends ActionSupport {
 					cell = row.createCell(8);
 					cell.setCellValue(formatTimeCreate);
 					cell.setCellStyle(styleEven);
+					
+					cell = row.createCell(9);
+					cell.setCellValue(remark);
+					cell.setCellStyle(styleLeftEven);
 				} else {
 					row = sheet.createRow(rowIndex);
 
@@ -2646,6 +2651,10 @@ public class LeaveAction extends ActionSupport {
 					cell = row.createCell(8);
 					cell.setCellValue(formatTimeCreate);
 					cell.setCellStyle(styleOdd);
+					
+					cell = row.createCell(9);
+					cell.setCellValue(remark);
+					cell.setCellStyle(styleLeftOdd);
 				}
 				rowIndex++;
 			}

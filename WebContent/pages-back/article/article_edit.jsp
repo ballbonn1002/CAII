@@ -549,7 +549,7 @@
 								class="btn btn-success text-white fw-medium px-3 py-4"
 								onclick="submitForm()">Submit</button>
 						</div>
-						<input type="hidden" name="articleId" value="${article.articleId}">
+						<input type="hidden" id="articleId" name="articleId" value="${article.articleId}">
 					</form>
 				</div>
 			</div>
@@ -618,15 +618,17 @@
 	    errorBox.textContent = "";
 
 		var form_data = new FormData();
-
+		const articleId = document.getElementById("articleId").value;
+		console.log("articleId =", articleId);
 		form_data.append('articleImageFile', file);
 		form_data.append('articleImageFileFileName', file.name);
 		form_data.append('articleImageFileContentType', file.type);
+		form_data.append('articleId', articleId); 
 		
 		$.ajax({
 			data : form_data,
 			type : "POST",
-			url : 'addImgFormEditor',
+			url : '${pageContext.request.contextPath}/addImgFormEditor',
 			cache : false,
 			contentType : false,
 			processData : false,
@@ -644,7 +646,7 @@
 		$.ajax({
 			data : "srcDelete=" + src,
 			type : "POST",
-			url : "DeleteImgFormEditor",
+			url : "${pageContext.request.contextPath}/DeleteImgFormEditor",
 			cache : false,
 			success : function(response) {
 			}

@@ -536,7 +536,6 @@
 		<!-- Get List User -->
 		<action name="CreateListUsers"
 			class="com.cubesofttech.action.LeaveAction" method="CreateListUsers">
-			<result name="success" type="chain">new_leave_approved</result>
 			<result name="error">/index.jsp</result>
 		</action>
 		<!-- Get List User -->
@@ -1766,6 +1765,14 @@
 			<result name="success" type="redirectAction">article_feed</result>
 			<result name="error" type="tiles">/index.jsp</result>
 		</action>
+		
+		<action name="addImgFormEditor"
+			class="com.cubesofttech.action.ArticleAction" method="addImgFormEditor">
+		</action>
+		
+		<action name="DeleteImgFormEditor"
+			class="com.cubesofttech.action.ArticleAction" method="DeleteImgFormEditor">
+		</action>
 
 		<!-- ========================== Export to Excel ============================== -->
 		<action name="LeaveApproveExcelExport"
@@ -1851,6 +1858,20 @@
 			<result name="error" type="redirect">file_management</result>
 			<result name="login" type="redirect">/index.jsp</result>
 		</action>
+		
+		<!-- Work Location -->
+		<action name="work_location"
+			class="com.cubesofttech.action.WorkLocationAction" method="open">
+			<result name="success" type="tiles">workLocation</result>
+			<result name="error">/index.jsp</result>
+			<result name="login" type="redirect">/index.jsp</result>
+		</action>
+		
+		<action name="search_work_location"
+			class="com.cubesofttech.action.WorkLocationAction" method="search">
+			<result name="login" type="redirect">/index.jsp</result>
+		</action>
+		
 	</package>
 
 </struts>
