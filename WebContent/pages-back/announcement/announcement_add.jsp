@@ -470,6 +470,11 @@
 
                 var fileNames = selectedFiles.map(file => file.name);
                 document.getElementById("filesUploadFileName").value = JSON.stringify(fileNames);
+                
+                var fileUploadIdEl = document.getElementById("fileUploadId");
+                if (!fileUploadIdEl.value || fileUploadIdEl.value.trim() === "") {
+                    fileUploadIdEl.value = "[]";
+                }
 
                 var form = document.getElementById("formid");
                 
