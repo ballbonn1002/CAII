@@ -295,6 +295,10 @@
             </script>
 
             <script>
+	            console.log("Title = ${pageUri.pageUriTitle}");
+	            console.log("Meta = ${pageUri.meta}");
+	            console.log("Description = ${pageUri.pageUriDescription}");
+            
                 function initSummernote(content="") {
                     $('#summernote').summernote({
                         placeholder: 'Type here...',

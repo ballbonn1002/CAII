@@ -311,6 +311,12 @@ public class CareersAction extends ActionSupport {
 	            
 	            if (uriData != null && "job".equalsIgnoreCase(uriData.getModel() != null ? uriData.getModel().trim() : "")) {
 	            		request.setAttribute("pageUri", uriData);
+//	            		log.debug("Title = " + uriData.getPageUriTitle());
+//	            		log.debug("Meta = " + uriData.getMeta());
+//	            		log.debug("Description = " + uriData.getPageUriDescription());
+//	            		System.out.println("Title = " + uriData.getPageUriTitle());
+//	            		System.out.println("Meta = " + uriData.getMeta());
+//	            		System.out.println("Description = " + uriData.getPageUriDescription());
 	            } else {
 	                PageUri newUri = new PageUri();
 	                String position = (jobData != null && jobData.getPosition() != null) ? jobData.getPosition().trim() : "";
