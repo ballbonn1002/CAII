@@ -470,6 +470,7 @@
 										<div class="mb-5">
 											<label class="form-label fw-semibold required">Go by</label>
 											<select id="mGoBy" class="form-select" data-control="select2"
+											data-dropdown-parent="#expenseModal"
 												data-placeholder="Select go by" required>
 												<option value=""></option>
 												<c:forEach var="t" items="${expTravelTypeList}">
