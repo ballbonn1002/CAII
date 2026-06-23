@@ -274,6 +274,8 @@
 										<div id="oldFileList" class="d-flex flex-column mt-3 gap-2"></div>
 
 										<div id="newFileList" class="d-flex flex-column mt-3 gap-2"></div>
+										
+										<div id="errorMsgAF" class="text-center text-danger mt-2"></div>
 									</div>
 								</div>
 							</div>
@@ -338,18 +340,41 @@
         }
     }
 
-    document.getElementById('myFile').addEventListener('change', function(event) {
-        var fileListInput = event.target.files;
+    async function processFiles(fileListInput) {
+    	const maxSize = 2 * 1024 * 1024;
+        var oversizedFiles = [];
+
         for (let i = 0; i < fileListInput.length; i++) {
             const file = fileListInput[i];
             const existing = selectedFiles.find(f => f.name === file.name && f.size === file.size);
+            
             if (!existing) {
-                selectedFiles.push(file);
+                
+                if (file.type.match(/image\/(jpeg|jpg|png)/)) {
+                    const processedFile = await compressImage(file);
+                    selectedFiles.push(processedFile);
+                } else {
+                    if (file.size > maxSize) {
+                        oversizedFiles.push(file.name);
+                    } else {
+                        selectedFiles.push(file);
+                    }
+                }
+                const errorMsgAF = document.getElementById("errorMsgAF");
+                if (oversizedFiles.length > 0) {
+                    errorMsgAF.innerHTML = "Files exceed 2MB: <strong>" + oversizedFiles.join(", ") + "</strong>";
+                } else {
+                    errorMsgAF.textContent = "";
+                }
             }
+            
         }
-        
         renderNewFileList();
         updateInputFiles();
+    }
+
+    document.getElementById('myFile').addEventListener('change', function(event) {
+        processFiles(event.target.files);
     });
 
     function renderNewFileList() {
@@ -412,20 +437,20 @@
     <!-- save and close -->
     function confirmButton() {
         event.preventDefault();
-
+        document.getElementById("errorMsg").textContent = "";
         var topic = document.querySelector("input[name='topic']").value.trim();
         var annDate = document.querySelector("input[name='anndate']").value.trim();
         /* var detail = editorInstance.getData().trim(); */
         const detail = editorInstance.getData();
 	    document.getElementById("detailInput").value = detail;
-	    const errorMsg = document.getElementById("errorMsg");
+	    /* const errorMsg = document.getElementById("errorMsg");
 		  if (errorMsg && errorMsg.textContent.trim() !== "") {
 			  window.scrollTo({
 			        top: 0,
 			        behavior: "smooth"
 			    });
 			  return false; 
-		  }
+		  } */
 
         var errorFields = [];
         if (!topic) {
@@ -557,24 +582,77 @@ document.addEventListener('DOMContentLoaded', function() {
     
     const imageInput = document.getElementById("imageInputFile");
 	
-    imageInput.addEventListener("change", function () {
-
+    imageInput.addEventListener("change", async function () {
         const file = this.files[0];
-        const maxSize = 2 * 1024 * 1024;
+        const maxSize = 10 * 1024 * 1024;
         const errorMsg = document.getElementById("errorMsg");
 
         if (!file) return;
 
-        if (file.size > maxSize) {
+        // Compress ก่อนเช็คขนาด
+        const compressed = await compressImage(file);
 
-            errorMsg.textContent = "Image must be smaller than 2MB.";
+        if (compressed.size > maxSize) {
+            errorMsg.textContent = "Image must be smaller than 10MB.";
             this.value = "";
         } else {
             errorMsg.textContent = "";
-        }
 
+            // ใส่ไฟล์ที่ compress แล้วกลับเข้า input
+            const dataTransfer = new DataTransfer();
+            dataTransfer.items.add(compressed);
+            this.files = dataTransfer.files;
+        }
     });
 });
+
+//Image compression logic
+async function compressImage(file, maxWidth = 1280, maxHeight = 1280, quality = 0.8) {
+	if (!file.type.match(/image\/(jpeg|jpg|png)/)) {
+		return file;
+	}
+
+	return new Promise((resolve, reject) => {
+		const reader = new FileReader();
+		reader.readAsDataURL(file);
+		reader.onload = event => {
+			const img = new Image();
+			img.src = event.target.result;
+			img.onload = () => {
+				let width = img.width;
+				let height = img.height;
+
+				if (width > maxWidth || height > maxHeight) {
+					const ratio = Math.min(maxWidth / width, maxHeight / height);
+					width = width * ratio;
+					height = height * ratio;
+				}
+
+				const canvas = document.createElement('canvas');
+				canvas.width = width;
+				canvas.height = height;
+				const ctx = canvas.getContext('2d');
+				ctx.drawImage(img, 0, 0, width, height);
+
+				canvas.toBlob((blob) => {
+					if (blob) {
+						const newFileName = file.name.replace(/\.[^/.]+$/, ".jpg");
+						const newFile = new File([blob], newFileName, {
+							type: 'image/jpeg',
+							lastModified: Date.now()
+						});
+						resolve(newFile);
+					} else {
+						resolve(file);
+					}
+				}, 'image/jpeg', quality);
+			};
+			img.onerror = error => reject(error);
+		};
+		reader.onerror = error => reject(error);
+	});
+}
+
 </script>
 
 <c:if test="${not empty announcement}">

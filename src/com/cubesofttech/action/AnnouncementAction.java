@@ -430,7 +430,7 @@ public class AnnouncementAction extends ActionSupport {
 				FileUpload fileupload = new FileUpload();
 				fileupload.setFileId(maxId);
 				fileupload.setPath("/upload/user/" + maxId + "_" + fileName);
-				fileupload.setSize(fileUploadSize);
+				fileupload.setSize(formatFileSize(fileUpload.length()));
 				fileupload.setName(name);
 				fileupload.setType(type);
 				fileupload.setUserId(onlineUser.getId());
