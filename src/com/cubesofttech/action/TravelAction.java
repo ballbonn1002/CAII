@@ -1406,6 +1406,19 @@ public class TravelAction extends ActionSupport {
 				} catch (Exception ignore) {
 				}
 			}
+			
+			boolean onlineUserSignature = false;
+
+	        if (onlineUser != null) {
+	            User u = userDAO.findById(onlineUser.getId()); 
+	            
+	            if (u != null) {
+	                String sig = u.getPathSignature();
+	                onlineUserSignature = sig != null && !sig.trim().isEmpty() && !"null".equalsIgnoreCase(sig.trim());
+	            }
+	        }
+
+	        request.setAttribute("onlineUserSignature", onlineUserSignature);
 
 			return SUCCESS;
 

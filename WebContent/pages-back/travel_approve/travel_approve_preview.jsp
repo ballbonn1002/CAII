@@ -187,6 +187,7 @@
 </head>
 
 <body id="kt_app_body" class="app-default">
+	<input type="hidden" id="onlineUserSignature" value="${onlineUserSignature}" />
 	<c:set var="ctx" value="${pageContext.request.contextPath}" />
 
 	<div class="d-flex flex-column flex-root" id="kt_app_root">
@@ -532,16 +533,19 @@
 												onclick="return validateReject(event);">Reject</button>
 											<button type="submit"
 												formaction="${ctx}/travel_approve_paid?expense_group_id=${expense_group_id}"
-												class="btn btn-info px-6 ms-4">Paid</button>
+												class="btn btn-info px-6 ms-4"
+												onclick="return validateSignature();">Paid</button>
 											<button type="submit"
 												formaction="${ctx}/travel_approve_approve?expense_group_id=${expense_group_id}"
-												class="btn btn-success px-6 ms-4">Approve</button>
+												class="btn btn-success px-6 ms-4"
+												onclick="return validateSignature();">Approve</button>
 										</div>
 									</c:when>
 									<c:when test="${statusActiveSafe == 'A'}">
 										<button type="submit"
 											formaction="${ctx}/travel_approve_paid?expense_group_id=${expense_group_id}"
-											class="btn btn-info px-6 ms-4">Paid</button>
+											class="btn btn-info px-6 ms-4"
+											onclick="return validateSignature();">Paid</button>
 									</c:when>
 								</c:choose>
 
@@ -557,23 +561,44 @@
 		const ctx             = "${pageContext.request.contextPath}";
 		const currentUserName = "${userObj.nameEN}";
 		const hasSignature    = ${not empty signaturePath ? 'true' : 'false'};
+		const onlineUserSignature = document.getElementById("onlineUserSignature").value === "true";
 		
-		function validateReject(event) {
-		    const description = document.querySelector('textarea[name="description_appr"]').value.trim();
+		function validateSignature() {
+	        if (!onlineUserSignature) {
+	            Swal.fire({
+	                title: "Signature Required!",
+	                text: "Please upload your signature before continuing.",
+	                icon: "warning",
+	                confirmButtonText: "Go to My Profile",
+	                showCancelButton: true,
+	                cancelButtonText: "Cancel",
+	                buttonsStyling: false,
+	                customClass: {
+	                    confirmButton: "btn btn-warning",
+	                    cancelButton: "btn btn-secondary"
+	                }
+	            }).then((result) => {
+	                if (result.isConfirmed) {
+	                    window.open(ctx + "/my_profile", "_blank");
+	                }
+	            });
+	            return false;
+	        }
+	        return true;
+	    }
 
-		    if (description === "") {
-		        event.preventDefault(); // หยุดการ Submit Form ทันที
-		        
-		    	Swal.fire({
-					text : "Please enter a reason.",
-					icon : "warning",
-				});
-		        
-		        return false;
-		    }
-		   
-		    return true;
-		}
-</script>
+	    function validateReject(event) {
+	        const description = document.querySelector('textarea[name="description_appr"]').value.trim();
+	        if (description === "") {
+	            event.preventDefault();
+	            Swal.fire({
+	                text: "Please enter a reason.",
+	                icon: "warning",
+	            });
+	            return false;
+	        }
+	        return true;
+	    }
+	</script>
 </body>
 </html>
