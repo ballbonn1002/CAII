@@ -173,6 +173,11 @@ public class PageUriAction extends ActionSupport {
 
 	public String list() {
 		try {
+			User onlineUser = (User) request.getSession().getAttribute("onlineUser");
+			if (onlineUser == null) {
+				return ERROR;
+			}
+			
 			List<PageUri> pageUriList = pageUriDAO.findAll();
 			request.setAttribute("pageUriList", pageUriList);
 			return SUCCESS;
@@ -183,6 +188,11 @@ public class PageUriAction extends ActionSupport {
 	}
 
 	public String add() {
+		User onlineUser = (User) request.getSession().getAttribute("onlineUser");
+		if (onlineUser == null) {
+			return ERROR;
+		}
+		
 		return SUCCESS;
 	}
 
@@ -217,6 +227,11 @@ public class PageUriAction extends ActionSupport {
 
 	public String editPageUri() {
 		try {
+			User onlineUser = (User) request.getSession().getAttribute("onlineUser");
+			if (onlineUser == null) {
+				return ERROR;
+			}
+			
 			String id = request.getParameter("pageUriId");
 			if (id != null && !id.isEmpty()) {
 				PageUri uri = pageUriDAO.findById(id);

@@ -50,6 +50,10 @@ public class PositionAction extends ActionSupport {
     /** -------------------- LIST -------------------- */
     public String list() {
         try {
+        	User onlineUser = (User) request.getSession().getAttribute("onlineUser");
+			if (onlineUser == null) {
+				return ERROR;
+			}
             positionList = positionDAO.findAll();
             return SUCCESS;
         } catch (Exception e) {
@@ -61,6 +65,10 @@ public class PositionAction extends ActionSupport {
     /** -------------------- ADD -------------------- */
     public String addPosition() {
         try {
+        	User onlineUser = (User) request.getSession().getAttribute("onlineUser");
+			if (onlineUser == null) {
+				return ERROR;
+			}
             departmentList = departmentDAO.sequense();
             return SUCCESS;
         } catch (Exception e) {
@@ -142,6 +150,10 @@ public class PositionAction extends ActionSupport {
     /** -------------------- EDIT -------------------- */
     public String PositionEdit() {
         try {
+        	User onlineUser = (User) request.getSession().getAttribute("onlineUser");
+			if (onlineUser == null) {
+				return ERROR;
+			}
             String positionId = trimOrNull(request.getParameter("position_id"));
             if (positionId == null) positionId = trimOrNull(request.getParameter("positionId"));
 

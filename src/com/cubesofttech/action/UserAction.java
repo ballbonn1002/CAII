@@ -515,6 +515,11 @@ public class UserAction extends ActionSupport {
 
 	public String list() {
 		try {
+			User onlineUser = (User) request.getSession().getAttribute("onlineUser");
+			if (onlineUser == null) {
+				return ERROR;
+			}
+			
 			List<Map<String, Object>> cubesoftUsers = userDAO.Query_Userlist();
 
 			for (Map<String, Object> map : cubesoftUsers) {
@@ -721,6 +726,11 @@ public class UserAction extends ActionSupport {
 
 	public String openEdit() {
 		try {
+			User onlineUser = (User) request.getSession().getAttribute("onlineUser");
+			if (onlineUser == null) {
+				return ERROR;
+			}
+
 			User selectUser = userDAO.findById(userId);
 			String id = request.getParameter("userId");
 
@@ -867,6 +877,10 @@ public class UserAction extends ActionSupport {
 
 	public String open() {
 		try {
+			User onlineUser = (User) request.getSession().getAttribute("onlineUser");
+			if (onlineUser == null) {
+				return ERROR;
+			}
 
 			List<Map<String, Object>> departmentList = departmentDAO.findAllList();
 

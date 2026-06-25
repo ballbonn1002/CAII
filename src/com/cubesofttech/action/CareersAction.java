@@ -127,6 +127,10 @@ public class CareersAction extends ActionSupport {
 
 	public String careersList() {
 		try {
+			User onlineUser = (User) request.getSession().getAttribute("onlineUser");
+			if (onlineUser == null) {
+				return ERROR;
+			}
 			request.setCharacterEncoding("UTF-8");
 			response.setCharacterEncoding("UTF-8");
 			
@@ -204,6 +208,11 @@ public class CareersAction extends ActionSupport {
 	}
 	
 	public String createCareer() {
+		User onlineUser = (User) request.getSession().getAttribute("onlineUser");
+		if (onlineUser == null) {
+			return ERROR;
+		}
+		
 		return SUCCESS;
 	}
 	
@@ -299,6 +308,11 @@ public class CareersAction extends ActionSupport {
 	
 	public String editCareer() {
 	    try {
+	    	User onlineUser = (User) request.getSession().getAttribute("onlineUser");
+			if (onlineUser == null) {
+				return ERROR;
+			}
+			
 	        String id = request.getParameter("id"); 
 	        
 	        if (id != null && !id.isEmpty()) {
