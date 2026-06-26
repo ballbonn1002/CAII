@@ -541,8 +541,39 @@ public class JobsiteAction extends ActionSupport {
 				String memberUserId = String.valueOf(r.get("u_id"));
 
 				Map<String, Object> statusMap = WorkHoursService.calculateDailyStatus(memberUserId, workDate);
+				
+				String currentStatus = (String) statusMap.get("status");
+				String leaveDesc = (String) statusMap.get("leave_desc");
+				String leaveStatus = (String) statusMap.get("leave_status");
+				String halfDay = (String) statusMap.get("halfDay");
 
-				member.put("status", statusMap.get("status"));
+				// ---- แทรก Logic ดักจับและแก้ไข Status ตรงนี้ ----
+				if ("NO_RECORD".equals(currentStatus) && leaveDesc != null && !leaveDesc.trim().isEmpty()) {
+					if ("WAITING".equals(leaveStatus)) {
+				        currentStatus = "WAITING";
+				    } else {
+				    // ถ้าไม่มีเวลาเข้าออก แต่ดันมีคำอธิบายการลา ให้เปลี่ยนสถานะให้ตรงตามประเภทการลา
+					    if (leaveDesc.contains("ลาป่วย")) {
+					        currentStatus = "SICK_LEAVE";
+					    } else if (leaveDesc.contains("ลาพักร้อน")) {
+					        currentStatus = "ANNUAL_LEAVE";
+					    } else if (leaveDesc.contains("ลากิจ")) {
+					        currentStatus = "BUSINESS_LEAVE";
+					    } else if (leaveDesc.contains("ขาดงาน")) {
+					    		currentStatus = "ABSENT";
+					    } else {
+					        currentStatus = "OTHER_LEAVE"; // ถ้าเข้าเงื่อนไขอื่น ๆ
+					    }
+					}
+				}
+				log.debug("currentStatus" + currentStatus);
+				log.debug("leaveDesc" + leaveDesc);
+				// ------------------------------------------
+
+//				member.put("status", statusMap.get("status"));
+				member.put("status", currentStatus);
+				member.put("leave_status", leaveStatus);
+				member.put("halfDay", halfDay);
 				member.put("check_in", statusMap.get("check_in"));
 				member.put("check_out", statusMap.get("check_out"));
 				member.put("leave_desc", statusMap.get("leave_desc"));

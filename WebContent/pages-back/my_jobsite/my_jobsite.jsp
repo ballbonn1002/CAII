@@ -262,6 +262,25 @@
 												<c:set var="statusIcon" value="" />
 												<c:set var="badgeClass" value="badge-primary" />
 												<c:set var="statusText" value="${t.status}" />
+												
+												<%-- <div style="background: yellow; color: black; padding: 5px; margin-bottom: 10px;">
+												    Data for DEBUG -> Status: [${t.status}], Leave Desc: [${t.leave_desc}], approve status: [${t}]
+												</div> --%>
+												
+												<c:set var="halfDayText" value="" />
+													<c:if test="${not empty t.halfDay}">
+													    <c:choose>
+													        <c:when test="${t.halfDay == '0'}">
+													            <c:set var="halfDayText" value=" : เต็มวัน" /> <%-- ถ้าอยากได้ภาษาไทยเปลี่ยนเป็น " : เต็มวัน" --%>
+													        </c:when>
+													        <c:when test="${t.halfDay == '1'}">
+													            <c:set var="halfDayText" value=" : ช่วงเช้า" />  <%-- ถ้าอยากได้ภาษาไทยเปลี่ยนเป็น " : ช่วงเช้า" --%>
+													        </c:when>
+													        <c:when test="${t.halfDay == '2'}">
+													            <c:set var="halfDayText" value=" : ช่วงบ่าย" /><%-- ถ้าอยากได้ภาษาไทยเปลี่ยนเป็น " : ช่วงบ่าย" --%>
+													        </c:when>
+													    </c:choose>
+													</c:if>
 
 												<c:choose>
 													<c:when test="${t.status == 'ONTIME'}">
@@ -289,45 +308,58 @@
 														<c:set var="badgeClass" value="badge-danger" />
 														<c:set var="statusText" value="No Record" />
 													</c:when>
+													
+													<%--  Approved Leaves --%>
 													<c:when test="${t.status == 'SICK_LEAVE'}">
-														<c:set var="badgeClass" value="badge bg-purple text-white" />
-														<c:set var="statusText" value="${t.leave_desc}" />
-													</c:when>
-													<c:when test="${t.status == 'WAITING'}">
-														<c:set var="statusIcon" value="ki-duotone ki-watch" />
-														<c:choose>
-															<c:when test="${t.leave_desc == 'ลาป่วย'}">
-																<c:set var="badgeClass"
-																	value="badge bg-purple text-white" />
-															</c:when>
-															<c:otherwise>
-																<c:set var="badgeClass" value="badge-primary" />
-															</c:otherwise>
-														</c:choose>
-														<c:set var="statusText"
-															value="${empty t.leave_desc ? 'Waiting' : t.leave_desc}" />
-													</c:when>
-													<c:when
-														test="${t.status == 'ANNUAL_LEAVE' || 
-						                                t.status == 'BUSINESS_LEAVE' || 
-						                                t.status == 'ABSENT' || 
-						                                t.status == 'WITHOUT_PAY' || 
-						                                t.status == 'ANNUAL_LEAVE_REMAINING' || 
-						                                t.status == 'OTHER_LEAVE' || 
-						                                t.status == 'OTHERS'}">
-														<c:set var="badgeClass" value="badge-primary" />
-														<c:set var="statusText" value="${t.leave_desc}" />
-													</c:when>
+												        <c:set var="badgeClass" value="badge bg-purple text-white" />
+												        <c:set var="statusText" value="ลาป่วย ${halfDayText}" />
+												    </c:when>
+												    <c:when test="${t.status == 'ANNUAL_LEAVE'}">
+												        <c:set var="badgeClass" value="badge-primary" />
+												        <c:set var="statusText" value="ลาพักร้อน ${halfDayText}" />
+												    </c:when>
+												    <c:when test="${t.status == 'BUSINESS_LEAVE'}">
+												        <c:set var="badgeClass" value="badge-primary" />
+												        <c:set var="statusText" value="ลากิจ ${halfDayText}" />
+												    </c:when>
+												    <c:when test="${t.status == 'OTHER_LEAVE' || t.status == 'OTHERS' || t.status == 'ANNUAL_LEAVE_REMAINING'}">
+												        <c:set var="badgeClass" value="badge-primary" />
+												        <c:set var="statusText" value="ลาอื่นๆ ${halfDayText}" />
+												    </c:when>
+													
+												    <%-- Waiting Approved Leaves --%>
+												    <c:when test="${t.status == 'WAITING'}">
+												        <c:set var="statusIcon" value="ki-duotone ki-watch" />
+												        <c:choose>
+												            <c:when test="${fn:contains(t.leave_desc, 'ลาป่วย')}">
+												                <c:set var="badgeClass" value="badge bg-purple text-white" />
+												                <c:set var="statusText" value="ลาป่วย ${halfDayText}" />
+												            </c:when>
+												            <c:when test="${fn:contains(t.leave_desc, 'ลากิจ')}">
+												                <c:set var="badgeClass" value="badge-primary" />
+												                <c:set var="statusText" value="ลากิจ ${halfDayText}" />
+												            </c:when>
+												            <c:when test="${fn:contains(t.leave_desc, 'ลาพักร้อน')}">
+												                <c:set var="badgeClass" value="badge-primary" />
+												                <c:set var="statusText" value="ลาพักร้อน ${halfDayText}" />
+												            </c:when>
+												            <c:otherwise>
+												                <c:set var="badgeClass" value="badge-primary" />
+												                <c:set var="statusText" value="ลาอื่นๆ ${halfDayText}" />
+												            </c:otherwise>
+												        </c:choose>
+												    </c:when>
 												</c:choose>
 
 												<td><span class="badge ${badgeClass} badge-lg"
-													style="height: 26px;"> <c:if
+													style="height: 26px;"> ${statusText} &nbsp;
+														<c:if
 															test="${not empty statusIcon}">
 															<i class="${statusIcon} text-warning me-2"
 																style="font-size: 16px;"> <span class="path1"></span>
 																<span class="path2"></span>
 															</i>
-														</c:if> ${statusText}
+														</c:if>
 												</span></td>
 											</tr>
 										</c:forEach>
