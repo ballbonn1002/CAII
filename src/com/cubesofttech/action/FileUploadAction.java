@@ -6,6 +6,7 @@ import java.sql.Timestamp;
 import java.text.Format;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import javax.servlet.ServletContext;
@@ -217,11 +218,12 @@ public class FileUploadAction extends ActionSupport {
 			int maxId = fileuploadDAO.getMaxId() + 1;
 			Long newId = holidayDAO.getMaxId() ;//holiday
 			FileUpload fileupload = new FileUpload();
-			SimpleDateFormat sdf2Digit = new SimpleDateFormat("d/M/yy");
-			SimpleDateFormat sdf4Digit = new SimpleDateFormat("d/M/yyyy");
-			Calendar cal = Calendar.getInstance();
+			SimpleDateFormat sdf2Digit = new SimpleDateFormat("d/M/yy", Locale.ENGLISH);
+			SimpleDateFormat sdf4Digit = new SimpleDateFormat("d/M/yyyy", Locale.ENGLISH);
+			Calendar cal = Calendar.getInstance(Locale.ENGLISH);
 			cal.set(2000, Calendar.JANUARY, 1);
 			sdf2Digit.set2DigitYearStart(cal.getTime());
+			
 
 			int l = fileUploadFileName.length();
 			int split = fileUploadFileName.lastIndexOf('.');

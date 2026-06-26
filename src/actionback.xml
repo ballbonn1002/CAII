@@ -1146,7 +1146,7 @@
 
 		<action name="AddHoliday"
 			class="com.cubesofttech.action.HolidayAction" method="Add">
-			<result name="success" type="chain">holiday_list</result> <!-- type = "chain" เป้นการส่งให้ชื่อ Action นั่นทำงาน -->
+			<result name="success" type="redirectAction">holiday_list</result>
 			<result name="error" type="tiles">/error.jsp</result>
 			<result name="input" type="tiles">holidayAdd</result>
 		</action>
@@ -1172,7 +1172,7 @@
 
 		<action name="DeleteHoliday"
 			class="com.cubesofttech.action.HolidayAction" method="Delete">
-			<result name="success" type="chain">holiday_list</result>
+			<result name="success" type="redirectAction">holiday_list</result>
 			<result name="error">/index.jsp</result>
 		</action>
 
@@ -1242,8 +1242,10 @@
 			<result name="error">/index.jsp</result>
 			<result name="input" type="tiles">AnnouncementAdd</result>
 		</action>
-		<action name="announcementAddPage">
-			<result type="tiles">AnnouncementAdd</result>
+		<action name="announcementAddPage" 
+				class="com.cubesofttech.action.AnnouncementAction" method="announcementAddPage">
+			    <result name="success" type="tiles">AnnouncementAdd</result>
+			    <result name="error">/index.jsp</result>
 		</action>
 
 		<action name="announcementUpdate"
@@ -1414,6 +1416,7 @@
 		<action name="department_list"
 			class="com.cubesofttech.action.DepartmentAction" method="list">
 			<result name="success" type="tiles">departmentList</result>
+			<result name="error">/index.jsp</result>
 		</action>
 
 		<action name="department_add"
@@ -1517,6 +1520,7 @@
 		<action name="jobsite_list"
 			class="com.cubesofttech.action.JobsiteAction" method="list">
 			<result name="success" type="tiles">jobsiteList</result>
+			<result name="error">/index.jsp</result>
 		</action>
 
 		<action name="jobsite_add"
@@ -1588,13 +1592,11 @@
 		<action name="borrow_list"
 			class="com.cubesofttech.action.BorrowingAction"
 			method="newEquipBorrowList">
-
 			<result name="success" type="tiles">borrowList</result>
 			<result name="error">/index.jsp</result>
 		</action>
 		<action name="borrow_edit"
 			class="com.cubesofttech.action.BorrowingAction" method="eBorrowEdit">
-
 			<result name="success" type="tiles">borrowEdit</result>
 			<result name="error">/index.jsp</result>
 		</action>
@@ -1691,6 +1693,7 @@
 
 		<action name="borrowReport"
 			class="com.cubesofttech.action.ReportAction" method="borrowReport">
+			<result name="error">/index.jsp</result>
 		</action>
 
 		<!-- Action Log -->
