@@ -216,6 +216,10 @@ public class AnnouncementAction extends ActionSupport {
 
 	public String AnnouncementList() {
 	    try {
+	    	User onlineUser = (User) request.getSession().getAttribute("onlineUser");
+			if (onlineUser == null) {
+				return ERROR;
+			}
 	    	
 	    	request.setCharacterEncoding("UTF-8");
 	        response.setCharacterEncoding("UTF-8");
@@ -283,11 +287,14 @@ public class AnnouncementAction extends ActionSupport {
 
 	public String readcardannounce() {
 		try {
+			User onlineUser = (User) request.getSession().getAttribute("onlineUser");
+			if (onlineUser == null) {
+				return ERROR;
+			}
 			String id = request.getParameter("id");
 			Integer announceId = Integer.parseInt(id);
 			Announcement announce = announcementDAO.findById(announceId);
 			if (announce != null) {
-				User onlineUser = (User) request.getSession().getAttribute("onlineUser");
 				if (onlineUser != null) {
 					String userId = onlineUser.getId();
 					String viewerLogsStr = announce.getViewerLogs();
@@ -670,5 +677,13 @@ public class AnnouncementAction extends ActionSupport {
 			}
 			return null;
 		}
+	}
+	
+	public String announcementAddPage() {
+	    User onlineUser = (User) request.getSession().getAttribute("onlineUser");
+	    if (onlineUser == null) {
+	        return ERROR;
+	    }
+	    return SUCCESS;
 	}
 }

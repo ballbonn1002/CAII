@@ -1535,6 +1535,10 @@ public class TravelAction extends ActionSupport {
 			HttpServletRequest request = ServletActionContext.getRequest();
 			HttpServletResponse response = ServletActionContext.getResponse();
 			ServletContext context = request.getServletContext();
+			User onlineUser = (User) request.getSession().getAttribute("onlineUser");
+			if (onlineUser == null) {
+				return ERROR;
+			}
 
 			String expenseGroupIdStr = request.getParameter("expense_group_id");
 			String jasperPath = context.getRealPath(JASPERPATH);

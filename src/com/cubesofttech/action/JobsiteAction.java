@@ -103,6 +103,13 @@ public class JobsiteAction extends ActionSupport {
 	// ------------------------ LIST ------------------------
 	public String list() {
 		try {
+			User onlineUser = (User) request.getSession().getAttribute("onlineUser");
+
+			if (onlineUser == null) {
+
+				return ERROR;
+
+			}
 			jobsiteList = jobsiteDAO.findAllWithTeamAmount();
 		} catch (Exception e) {
 			log.error("Error in JobsiteAction.list()", e);
@@ -114,6 +121,13 @@ public class JobsiteAction extends ActionSupport {
 	// ------------------------ ADD ------------------------
 	public String addJobsite() {
 		try {
+			User onlineUser = (User) request.getSession().getAttribute("onlineUser");
+
+			if (onlineUser == null) {
+
+				return ERROR;
+
+			}
 			jobsite = new Jobsite();
 			jobsite.setIs_active("1");
 			userList = getActiveUsers();
@@ -129,6 +143,13 @@ public class JobsiteAction extends ActionSupport {
 	// ------------------------ EDIT ------------------------
 	public String editJobsite() {
 		try {
+			User onlineUser = (User) request.getSession().getAttribute("onlineUser");
+
+			if (onlineUser == null) {
+
+				return ERROR;
+
+			}
 			log.info("=== START editJobsite ===");
 
 			String idParam = trimOrNull(request.getParameter("id_sitejob"));
@@ -186,7 +207,6 @@ public class JobsiteAction extends ActionSupport {
 			}
 
 			try {
-				User onlineUser = (User) request.getSession().getAttribute("onlineUser");
 				String logonUserId = (onlineUser != null) ? onlineUser.getId() : "";
 				request.setAttribute("logonUser", logonUserId);
 

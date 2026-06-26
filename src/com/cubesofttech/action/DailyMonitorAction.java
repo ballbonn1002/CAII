@@ -28,6 +28,7 @@ import com.cubesofttech.dao.JobSiteTeamDAO;
 import com.cubesofttech.dao.JobsiteDAO;
 import com.cubesofttech.dao.UserDAO;
 import com.cubesofttech.dao.WorkHoursDAO;
+import com.cubesofttech.model.User;
 import com.opensymphony.xwork2.ActionSupport;
 
 public class DailyMonitorAction extends ActionSupport {
@@ -59,7 +60,10 @@ public class DailyMonitorAction extends ActionSupport {
 	public String dailyMonitorList() {
 
 		try {
-
+			User onlineUser = (User) request.getSession().getAttribute("onlineUser");
+			if (onlineUser == null) {
+				return ERROR;
+			}
 			request.setAttribute("idUserSelected", "all");
 			request.setAttribute("idJobSiteSelected", "all");
 			request.setAttribute("statusSelected", "all");
