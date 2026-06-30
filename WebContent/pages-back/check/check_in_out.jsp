@@ -1663,6 +1663,15 @@ function adddata() {
 	$(document).ready(function() {
 		document.getElementById("y").value = y;
 	});
+	
+	$.ajax({
+		url: "saveLocationToSession",
+		type: "POST",
+		data: {
+			latitude: x,
+			longitude: y
+		}
+	});
 }
 function handleLocationError(browserHasGeolocation, infoWindow, pos) {
 	infoWindow.setPosition(pos);

@@ -237,6 +237,7 @@ $(document).ready(function() {
     });
 
     $('.datepicker').flatpickr({
+    	locale: "en",
         dateFormat: "d-m-Y",
         altInput: true,
         altFormat: "j M Y",

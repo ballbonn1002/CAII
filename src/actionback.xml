@@ -262,6 +262,11 @@
 			class="com.cubesofttech.action.WorkHoursAction" method="savecheck">
 			<result name="error">/index.jsp</result>
 		</action>
+		
+		<action name="saveLocationToSession"
+			class="com.cubesofttech.action.WorkHoursAction" method="saveLocationToSession">
+			<result name="error">/index.jsp</result>
+		</action>
 
 		<!-- MyLeave =========================================================================================================== -->
 

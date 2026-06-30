@@ -952,4 +952,38 @@ public class WorkHoursAction extends ActionSupport {
 	        log.error("loadNotification error", e);
 	    }
 	}
+	
+	public String saveLocationToSession() {
+	    Map<String, Object> result = new HashMap<>();
+	    try {
+	        String lat = request.getParameter("latitude");
+	        String lng = request.getParameter("longitude");
+
+	        HttpSession session = request.getSession();
+
+	        if (lat != null && !lat.trim().isEmpty()) {
+	            session.setAttribute("latitude", lat);
+	        }
+	        if (lng != null && !lng.trim().isEmpty()) {
+	            session.setAttribute("longitude", lng);
+	        }
+
+	        result.put("status", "success");
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        result.put("status", "error");
+	        result.put("message", e.getMessage());
+	    }
+
+	    try {
+	        ObjectMapper mapper = new ObjectMapper();
+	        response.setContentType("application/json;charset=UTF-8");
+	        response.getWriter().write(mapper.writeValueAsString(result));
+	        response.getWriter().flush();
+	        response.getWriter().close();
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	    }
+	    return null;
+	}
 }
