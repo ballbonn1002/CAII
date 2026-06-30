@@ -326,6 +326,16 @@ public class CareersAction extends ActionSupport {
 	            
 	            if (uri != null && "job".equalsIgnoreCase(uri.getModel() != null ? uri.getModel().trim() : "")) {
 	            		request.setAttribute("pageUri", uri);
+	            		
+	            		log.debug("Data = " + uri);
+	            		log.debug("Model = " + uri.getModel());
+	            		log.debug("ModelId = " + uri.getModelId());
+	            		log.debug("PageUriId = " + uri.getPageUriId());
+	            		log.debug("ForwardTo = " + uri.getForwardTo());
+	            		log.debug("Title = " + uri.getPageUriTitle());
+	            		log.debug("Meta = " + uri.getMeta());
+	            		log.debug("Description = " + uri.getPageUriDescription());
+	            		
 	            		System.out.println("Data = " + uri);
 	            		System.out.println("Model = " + uri.getModel());
 	            		System.out.println("ModelId = " + uri.getModelId());
