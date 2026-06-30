@@ -522,19 +522,20 @@ String targetURL = Constant.getWebContext2() + "/authorization?token=" + token;
 					</div>
 					<!--end:Menu item-->
 					<!--begin:Menu item-->
-					<div class="menu-item">
-						<a class="menu-link" href="article_feed" data-route="article_feed"> <span
-							class="menu-icon"> <i class="ki-duotone ki-book-open fs-1">
-									<span class="path1"></span> <span class="path2"></span> <span
-									class="path3"></span> <span class="path4"></span>
+					<perm:permission object="article.view">
+						<div class="menu-item">
+							<a class="menu-link" href="article_feed" data-route="article_feed"> <span
+								class="menu-icon"> <i class="ki-duotone ki-book-open fs-1">
+										<span class="path1"></span> <span class="path2"></span> <span
+										class="path3"></span> <span class="path4"></span>
+								</i>
+							</span> <span class="menu-title">Article</span> <i
+								class="ki-duotone ki-check-circle fs-3 text-success"> <span
+									class="path1"></span><span class="path2"></span>
 							</i>
-						</span> <span class="menu-title">Article</span> <i
-							class="ki-duotone ki-check-circle fs-3 text-success"> <span
-								class="path1"></span><span class="path2"></span>
-						</i>
-						</a>
-					</div>
-
+							</a>
+						</div>
+					</perm:permission>
 					<!--end:Menu item-->
 					
 					<!--begin:Menu item-->
@@ -562,18 +563,19 @@ String targetURL = Constant.getWebContext2() + "/authorization?token=" + token;
 					<!--end:Menu item-->
 
 					<!--begin:Menu item-->
-					<div class="menu-item">
-						<a class="menu-link" href="page_uri_list" data-route="page_uri_list"> <span
-							class="menu-icon"> <i class="ki-duotone ki-setting-2 fs-1">
-									<span class="path1"></span> <span class="path2"></span>
+					<perm:permission object="pageurl.view">
+						<div class="menu-item">
+							<a class="menu-link" href="page_uri_list" data-route="page_uri_list"> <span
+								class="menu-icon"> <i class="ki-duotone ki-setting-2 fs-1">
+										<span class="path1"></span> <span class="path2"></span>
+								</i>
+							</span> <span class="menu-title">Page URL</span> <i
+								class="ki-duotone ki-check-circle fs-3 text-success"> <span
+									class="path1"></span><span class="path2"></span>
 							</i>
-						</span> <span class="menu-title">Page URL</span> <i
-							class="ki-duotone ki-check-circle fs-3 text-success"> <span
-								class="path1"></span><span class="path2"></span>
-						</i>
-						</a>
-					</div>
-
+							</a>
+						</div>
+					</perm:permission>
 					<!--end:Menu item-->
 
 					<!--begin:Menu item-->
@@ -731,5 +733,27 @@ String targetURL = Constant.getWebContext2() + "/authorization?token=" + token;
 									.parents('.menu-accordion,.menu-sub').addClass('show here');
 							}
 						});
+					});
+					
+					$(function () {
+					    $('.menu-item').has('.menu-heading').each(function () {
+					        var $header = $(this);
+					        var hasVisibleItem = false;
+
+					        var $next = $header.next('.menu-item');
+					        while ($next.length) {
+					            if ($next.has('.menu-heading').length) break;
+					            
+					            if ($next.find('a.menu-link').length) {
+					                hasVisibleItem = true;
+					                break;
+					            }
+					            $next = $next.next('.menu-item');
+					        }
+
+					        if (!hasVisibleItem) {
+					            $header.hide();
+					        }
+					    });
 					});
 				</script>

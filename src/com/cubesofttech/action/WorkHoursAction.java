@@ -20,6 +20,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.apache.log4j.Logger;
 import org.apache.struts2.ServletActionContext;
@@ -270,6 +271,21 @@ public class WorkHoursAction extends ActionSupport {
 
 			String lat = request.getParameter("latitude");
 			String lng = request.getParameter("longitude");
+			
+			//set latitude/longitude ลง session
+			HttpSession session = request.getSession();
+
+			if (lat == null || "".equals(lat.trim())) {
+			    lat = (String) session.getAttribute("latitude");
+			} else {
+			    session.setAttribute("latitude", lat);
+			}
+
+			if (lng == null || "".equals(lng.trim())) {
+			    lng = (String) session.getAttribute("longitude");
+			} else {
+			    session.setAttribute("longitude", lng);
+			}
 
 			Map<String, String> headersInfo = getHeadersInfo(request);
 			String userAgent = (String) headersInfo.get("user-agent");

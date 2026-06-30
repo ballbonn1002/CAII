@@ -343,3 +343,8 @@ ALTER TABLE user ADD COLUMN changepass_code VARCHAR(6) DEFAULT NULL;
 
 -- PROD 22 JUNE 2026
 
+-- 23/06/2026 June: Add permission 'pageurl.view','pageurl.edit','worklocation.view' in 'authorized_object' table.
+INSERT INTO `authorized_object` (`authorized_object_id`, `name`, `description`, `active`, `time_create`, `time_update`, `authorized_object_group_id`) 
+VALUES ('pageurl.view', 'pageurl.view', 'สามารถดูรายการ page url ได้', '1', '2026-06-18 11:57:00', '2026-06-18 11:57:00', '6'),
+('pageurl.edit', 'pageurl.edit', 'สามารถแก้ไขรายการ page url ได้', '1', '2026-06-18 11:57:00', '2026-06-18 11:57:00', '6'),
+('worklocation.view', 'worklocation.view', 'สามารถดูรายการ work location ได้', '1', '2026-06-18 11:57:00', '2026-06-18 11:57:00', '100');
