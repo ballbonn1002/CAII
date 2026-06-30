@@ -1610,7 +1610,7 @@ function initMap() {
 
 			marker.setPosition(pos),
 			marker.setMap(map),
-			marker.setDraggable(true);
+			marker.setDraggable(false);
 
 			infoWindow.setContent('Current Position');
 			infoWindow.open(map,marker);
