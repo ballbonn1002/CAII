@@ -321,16 +321,19 @@ public class CareersAction extends ActionSupport {
 	            Job jobData = jobDAO.findById(jobId); 
 	            request.setAttribute("jobInfo", jobData); 
 	            
-	            PageUri uriData = pageUriDAO.findByModelId(id); 
+	            PageUri uri = pageUriDAO.findByModelId(id);
+	            System.out.println("Data = " + uri);
 	            
-	            if (uriData != null && "job".equalsIgnoreCase(uriData.getModel() != null ? uriData.getModel().trim() : "")) {
-	            		request.setAttribute("pageUri", uriData);
-//	            		log.debug("Title = " + uriData.getPageUriTitle());
-//	            		log.debug("Meta = " + uriData.getMeta());
-//	            		log.debug("Description = " + uriData.getPageUriDescription());
-//	            		System.out.println("Title = " + uriData.getPageUriTitle());
-//	            		System.out.println("Meta = " + uriData.getMeta());
-//	            		System.out.println("Description = " + uriData.getPageUriDescription());
+	            if (uri != null && "job".equalsIgnoreCase(uri.getModel() != null ? uri.getModel().trim() : "")) {
+	            		request.setAttribute("pageUri", uri);
+	            		System.out.println("Data = " + uri);
+	            		System.out.println("Model = " + uri.getModel());
+	            		System.out.println("ModelId = " + uri.getModelId());
+	            		System.out.println("PageUriId = " + uri.getPageUriId());
+	            		System.out.println("ForwardTo = " + uri.getForwardTo());
+	            		System.out.println("Title = " + uri.getPageUriTitle());
+	            		System.out.println("Meta = " + uri.getMeta());
+	            		System.out.println("Description = " + uri.getPageUriDescription());
 	            } else {
 	                PageUri newUri = new PageUri();
 	                String position = (jobData != null && jobData.getPosition() != null) ? jobData.getPosition().trim() : "";

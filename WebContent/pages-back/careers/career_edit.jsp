@@ -158,7 +158,7 @@
 
                     <div class="app-content flex-column-fluid">
                         <div class="app-container container-fluid">
-                            <form id="formEditCareer" action="career_saveedit" method="POST" class="form" autocomplete="off">
+                            <form id="formEditCareer" action="${pageContext.request.contextPath}/career_saveedit.action" method="POST" class="form" autocomplete="off">
                                 
                                 <input type="hidden" name="jobId" id="jobId" value="${jobInfo.jobId}">
                                 <input type="hidden" name="contentDetail" id="contentDetailInput">
@@ -295,6 +295,11 @@
             </script>
 
             <script>
+            	    console.log("Data = ${pageUri}");
+            	    console.log("Model = ${pageUri.model}");
+            	    console.log("ModelId = ${pageUri.modelId}");
+            	    console.log("PageUriId = ${pageUri.pageUriId}");
+            	    console.log("ForwardTo = ${pageUri.forwardTo}");
 	            console.log("Title = ${pageUri.pageUriTitle}");
 	            console.log("Meta = ${pageUri.meta}");
 	            console.log("Description = ${pageUri.pageUriDescription}");
