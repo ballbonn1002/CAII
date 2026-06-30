@@ -271,13 +271,13 @@
 													<c:if test="${not empty t.halfDay}">
 													    <c:choose>
 													        <c:when test="${t.halfDay == '0'}">
-													            <c:set var="halfDayText" value=" : เต็มวัน" /> <%-- ถ้าอยากได้ภาษาไทยเปลี่ยนเป็น " : เต็มวัน" --%>
+													            <c:set var="halfDayText" value=" : เต็มวัน" />
 													        </c:when>
 													        <c:when test="${t.halfDay == '1'}">
-													            <c:set var="halfDayText" value=" : ช่วงเช้า" />  <%-- ถ้าอยากได้ภาษาไทยเปลี่ยนเป็น " : ช่วงเช้า" --%>
+													            <c:set var="halfDayText" value=" : ช่วงเช้า" />
 													        </c:when>
 													        <c:when test="${t.halfDay == '2'}">
-													            <c:set var="halfDayText" value=" : ช่วงบ่าย" /><%-- ถ้าอยากได้ภาษาไทยเปลี่ยนเป็น " : ช่วงบ่าย" --%>
+													            <c:set var="halfDayText" value=" : ช่วงบ่าย" />
 													        </c:when>
 													    </c:choose>
 													</c:if>
