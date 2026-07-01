@@ -321,20 +321,16 @@ public class CareersAction extends ActionSupport {
 	            Job jobData = jobDAO.findById(jobId); 
 	            request.setAttribute("jobInfo", jobData); 
 	            
-	            PageUri uri = pageUriDAO.findByModelId(id);
-	            System.out.println("Data = " + uri);
+	            List<PageUri> uriList = pageUriDAO.findByModelAndModelId("job", id);
+	            PageUri uri = null;
+	            if (uriList != null && !uriList.isEmpty()) {
+	                uri = uriList.get(0); 
+	            }
+	            System.out.println("Data = " + uri);	            
 	            
-	            if (uri != null && "job".equalsIgnoreCase(uri.getModel() != null ? uri.getModel().trim() : "")) {
+	            if (uri != null) {
+	            		log.debug("Found");
 	            		request.setAttribute("pageUri", uri);
-	            		
-	            		log.debug("Data = " + uri);
-	            		log.debug("Model = " + uri.getModel());
-	            		log.debug("ModelId = " + uri.getModelId());
-	            		log.debug("PageUriId = " + uri.getPageUriId());
-	            		log.debug("ForwardTo = " + uri.getForwardTo());
-	            		log.debug("Title = " + uri.getPageUriTitle());
-	            		log.debug("Meta = " + uri.getMeta());
-	            		log.debug("Description = " + uri.getPageUriDescription());
 	            		
 	            		System.out.println("Data = " + uri);
 	            		System.out.println("Model = " + uri.getModel());
@@ -345,6 +341,7 @@ public class CareersAction extends ActionSupport {
 	            		System.out.println("Meta = " + uri.getMeta());
 	            		System.out.println("Description = " + uri.getPageUriDescription());
 	            } else {
+	            		log.debug("Not Found");
 	                PageUri newUri = new PageUri();
 	                String position = (jobData != null && jobData.getPosition() != null) ? jobData.getPosition().trim() : "";
 	                String formattedPosition = position.trim()
