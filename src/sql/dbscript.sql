@@ -349,4 +349,4 @@ VALUES ('pageurl.view', 'pageurl.view', 'สามารถดูรายกา
 ('pageurl.edit', 'pageurl.edit', 'สามารถแก้ไขรายการ page url ได้', '1', '2026-06-18 11:57:00', '2026-06-18 11:57:00', '6'),
 ('worklocation.view', 'worklocation.view', 'สามารถดูรายการ work location ได้', '1', '2026-06-18 11:57:00', '2026-06-18 11:57:00', '100');
 
---  PROD 1 JULY 2026
+--  PROD 1 JULY 2026 12:30
