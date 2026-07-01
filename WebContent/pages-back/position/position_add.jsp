@@ -1,5 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@ taglib prefix="s" uri="/struts-tags" %>
 
 <!DOCTYPE html>
 <html>
@@ -58,14 +59,20 @@
                 <div class="col-12 col-md-12 col-xl-12">
                   <div class="mb-7">
                     <label class="form-label fw-semibold">Position ID <span class="required"></span></label>
-                    <input
-                      type="text"
-                      name="positionId"
-                      maxlength="20"
-                      required
-                      class="form-control form-control-lg"
-                      value="${not empty form.positionId ? form.positionId : param.positionId}" />
-                    <div class="invalid-feedback" style="display:none;"></div>
+				<input
+				    type="text"
+				    name="positionId"
+				    maxlength="4"
+				    required
+				    class="form-control form-control-lg
+				        <s:if test="fieldErrors.containsKey('positionId')">is-invalid</s:if>"
+				    value="${not empty form.positionId ? form.positionId : param.positionId}" />
+					
+					<s:if test="fieldErrors.containsKey('positionId')">
+					    <div class="invalid-feedback d-block">
+					        <s:property value="fieldErrors['positionId'][0]" />
+					    </div>
+					</s:if>
                   </div>
                 </div>
 
@@ -73,12 +80,19 @@
                 <div class="col-12 col-md-12 col-xl-12">
                   <div class="mb-7">
                     <label class="form-label fw-semibold">Position Name <span class="required"></span></label>
-                    <input
-                      type="text"
-                      name="name"
-                      required
-                      class="form-control form-control-lg"
-                      value="${not empty form.name ? form.name : param.name}" />
+					<input
+					    type="text"
+					    name="name"
+					    required
+					    class="form-control form-control-lg
+					        <s:if test="fieldErrors.containsKey('name')">is-invalid</s:if>"
+					    value="${not empty form.name ? form.name : param.name}" />
+					
+					<s:if test="fieldErrors.containsKey('name')">
+					    <div class="invalid-feedback d-block">
+					        <s:property value="fieldErrors['name'][0]" />
+					    </div>
+					</s:if>
                   </div>
                 </div>
 
@@ -86,7 +100,7 @@
                 <div class="col-12 col-md-12 col-xl-12">
                   <div class="mb-7">
                     <label class="form-label fw-semibold">Department ID <span class="required"></span></label>
-                    <select class="form-select form-select-lg" name="departmentId" required>
+                    <select class="form-select form-select-lg <s:if test="fieldErrors.containsKey('departmentId')">is-invalid</s:if>" name="departmentId" required>
                       <c:forEach var="department" items="${departmentList}">
                         <option value="${department.id}"
                           <c:if test="${selectedDeptId == department.id}">selected</c:if>>
@@ -94,6 +108,12 @@
                         </option>
                       </c:forEach>
                     </select>
+                    
+                    <s:if test="fieldErrors.containsKey('departmentId')">
+					    <div class="invalid-feedback d-block">
+					        <s:property value="fieldErrors['departmentId'][0]" />
+					    </div>
+					</s:if>
                   </div>
                 </div>
 
@@ -111,15 +131,12 @@
 
               </div>
               <!-- /row -->
-
-              <input type="hidden" name="date" id="date" value="" />
-              <input type="hidden" name="time" id="time" value="" />
             </div>
 
             <!-- Actions -->
             <div class="card-footer d-flex justify-content-end gap-3 p-8">
               <a href="${pageContext.request.contextPath}/position_list.action" class="btn btn-light px-8">Cancel</a>
-              <button type="submit" class="btn btn-success px-8">Save</button>
+              <button type="submit" class="btn btn-success px-8" id="saveBtn">Save</button>
             </div>
           </form>
         </div>
@@ -134,28 +151,43 @@
 <!--end::Main-->
 
 <script>
-document.addEventListener('DOMContentLoaded', function () {
-  const d = new Date();
-  const dd = String(d.getDate()).padStart(2,'0');
-  const mm = String(d.getMonth() + 1).padStart(2,'0');
-  const yyyy = d.getFullYear();
-  document.getElementById('date').value = `${dd}-${mm}-${yyyy}`;
-
-  const hh = String(d.getHours()).padStart(2,'0');
-  const mi = String(d.getMinutes()).padStart(2,'0');
-  document.getElementById('time').value = `${hh}:${mi}`;
-});
-</script>
-
-<!-- Validate + Duplicate-check Position ID (โค้ดเดิม) -->
-<script>
 document.addEventListener("DOMContentLoaded", function () {
   const form    = document.querySelector("form");
   const idInput = document.querySelector('input[name="positionId"]');
   const ctx     = "${pageContext.request.contextPath}";
+  const saveBtn = document.getElementById('saveBtn');
+  const nameInput = document.querySelector('input[name="name"]');
+  const departmentSelect = document.querySelector('select[name="departmentId"]');
 
-  // A–Z, a–z, 0–9, _ และ - (สูงสุด 20 ตัว)
-  const idPattern = /^[A-Za-z0-9_-]{1,20}$/;
+  // A–Z, a–z, 0–9, _ และ - (สูงสุด 4 ตัว)
+  const idPattern = /^[A-Za-z0-9_-]{1,4}$/;
+  
+  nameInput.addEventListener('input', () => {
+	    nameInput.classList.remove('is-invalid');
+
+	    const err = nameInput.parentNode.querySelector('.invalid-feedback');
+	    if (err) {
+	        err.style.display = 'none';
+	    }
+
+	    updateSaveButton();
+	});
+  
+  departmentSelect.addEventListener('change', () => {
+	    departmentSelect.classList.remove('is-invalid');
+
+	    const err = departmentSelect.parentNode.querySelector('.invalid-feedback');
+	    if (err) {
+	        err.style.display = 'none';
+	    }
+
+	    updateSaveButton();
+	});
+  
+  function updateSaveButton() {
+	    const hasError = document.querySelector('.is-invalid') !== null;
+	    saveBtn.disabled = hasError;
+	}
 
   function ensureErrorNode(input) {
     let node = input.parentNode.querySelector('.invalid-feedback');
@@ -179,16 +211,18 @@ document.addEventListener("DOMContentLoaded", function () {
       node.style.display = 'none';
       node.textContent = '';
     }
+    
+    updateSaveButton();
   }
 
   function validateIdPattern() {
     const v = (idInput.value || '').trim();
     if (v.length === 0) { setError(idInput, idErr, null); return false; }
     if (!idPattern.test(v)) {
-      setError(idInput, idErr, 'Position ID can include only A–Z, a–z, 0–9, _ or -.');
+         setError(idInput, idErr, 'Position ID must be 1-4 characters long and can contain only A–Z, a–z, 0–9, _ or -.');   
       return false;
     }
-    setError(idInput, idErr, null);
+    setError(idInput, idErr, null); 
     return true;
   }
 
@@ -266,6 +300,8 @@ document.addEventListener("DOMContentLoaded", function () {
       e.preventDefault();
     }
   });
+  
+  updateSaveButton();
 });
 </script>
 

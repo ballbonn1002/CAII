@@ -76,76 +76,100 @@ public class PositionAction extends ActionSupport {
             return ERROR;
         }
     }
-
+    
     /** -------------------- SAVE -------------------- */
     public String savePosition() {
         try {
             User ur = (User) request.getSession().getAttribute("onlineUser");
-            String logonUser = (ur != null && ur.getId() != null) ? ur.getId() : "system";
+            String logonUser = (ur != null && ur.getId() != null)
+                    ? ur.getId()
+                    : "system";
 
-            String positionId   = trimOrNull(request.getParameter("positionId"));
-            if (positionId == null) positionId = trimOrNull(request.getParameter("position_id"));
+            String positionId = trimOrNull(request.getParameter("positionId"));
+            if (positionId == null) {
+                positionId = trimOrNull(request.getParameter("position_id"));
+            }
+
             String departmentId = trimOrNull(request.getParameter("departmentId"));
-            String name         = trimOrNull(request.getParameter("name"));
-            String description  = request.getParameter("description");
+            String name = trimOrNull(request.getParameter("name"));
+            String description = request.getParameter("description");
 
-            // validate
-            if (positionId == null || name == null) {
-                error = "positionId and name are required.";
+            // Required validation
+            if (positionId == null) {
+            	addFieldError("positionId", "Position ID is required.");
                 departmentList = departmentDAO.sequense();
                 return INPUT;
             }
+            
+            if (name == null) {
+            	addFieldError("name", "Position Name is required.");
+                departmentList = departmentDAO.sequense();
+                return INPUT;
+            }
+
+
             if (departmentId == null) {
-                error = "Please select a department (departmentId).";
-                departmentList = departmentDAO.sequense();
-                return INPUT;
-            }
-            if (positionDAO.findById(positionId) != null) {
-                flag = "1"; // duplicate
+            	addFieldError("departmentId", "Please select a department.");
                 departmentList = departmentDAO.sequense();
                 return INPUT;
             }
 
-            Timestamp ts;
-            try {
-                String date = trimOrNull(request.getParameter("date"));
-                String time = trimOrNull(request.getParameter("time"));
-                ts = (date != null && time != null)
-                        ? DateUtil.dateToTimestamp(date, time)
-                        : new Timestamp(System.currentTimeMillis());
-            } catch (Exception dtEx) {
-                log.warn("[savePosition] parse date/time fail, fallback to now", dtEx);
-                ts = new Timestamp(System.currentTimeMillis());
+            // Position ID validation
+            if (!positionId.matches("^[A-Za-z0-9_-]{1,4}$")) {
+                addFieldError(
+                        "positionId",
+                        "Position ID must be 1-4 characters long and can contain only A–Z, a–z, 0–9, _ or -."
+                    );
+                departmentList = departmentDAO.sequense();
+                return INPUT;
             }
+
+            // Duplicate validation
+            if (positionDAO.findById(positionId) != null) {
+                flag = "1"; // duplicate flag
+                addFieldError("positionId", "Position ID is already in use.");
+                departmentList = departmentDAO.sequense();
+                return INPUT;
+            }
+
+            Timestamp ts = new Timestamp(System.currentTimeMillis());
 
             Position p = new Position();
             p.setPositionId(positionId);
             p.setDepartmentId(departmentId);
             p.setName(name);
-            p.setDescription(description != null ? description : "");
+            p.setDescription(description != null ? description.trim() : "");
             p.setUserCreate(logonUser);
             p.setUserUpdate(logonUser);
             p.setTimeCreate(ts);
             p.setTimeUpdate(ts);
+
             positionDAO.save(p);
 
-            String ns = org.apache.struts2.ServletActionContext.getActionMapping().getNamespace();
-            if (ns == null) ns = "";
-            if ("/".equals(ns)) ns = "";
+            String ns = org.apache.struts2.ServletActionContext
+                    .getActionMapping()
+                    .getNamespace();
+
+            if (ns == null) {
+                ns = "";
+            }
+            if ("/".equals(ns)) {
+                ns = "";
+            }
+
             String target = request.getContextPath()
                     + ns
                     + "/editPosition.action?positionId="
                     + URLEncoder.encode(positionId, StandardCharsets.UTF_8.name());
 
             response.sendRedirect(response.encodeRedirectURL(target));
-            return null; 
+            return null;
 
         } catch (Exception e) {
             log.error("[savePosition] error", e);
             return ERROR;
         }
     }
-
 
     /** -------------------- EDIT -------------------- */
     public String PositionEdit() {
