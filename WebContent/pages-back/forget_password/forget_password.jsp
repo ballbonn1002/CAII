@@ -76,6 +76,9 @@
 			            <span id="userIdText"></span>
 						<span id="emailText" class="ms-2 text-primary"></span>
 			          </p>
+
+					  <div id="modalWarning" class="text-danger text-center mt-3 fw-bold" style="display:none; font-size: 14px;"></div>
+					  
 						<div class="mb-0 text-center">
 							<img src="/assets/media/auth/please-verify-your-email.png" class="mw-100 mh-300px theme-light-show" alt="" />
 						</div>
@@ -84,7 +87,7 @@
 		
 		            <div class="modal-footer justify-content-center gap-3">
 		                <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
-		                <button type="submit" class="btn btn-primary">Submit</button>
+						<button type="submit" id="finalSubmitBtn" class="btn btn-primary">Submit</button>
 		            </div>
 			      </form>
 		    </div>
@@ -134,39 +137,43 @@
 					}
 					
 					feedback.textContent = 'Checking…';
+					feedback.style.color = '#7e8299';
 					
-					fetch(validateUrl, {
-						method: 'POST',
-						headers: {
-							'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
-							'X-Requested-With': 'XMLHttpRequest'
+					$.ajax({
+						url: validateUrl,
+						type: 'POST',
+						data: { useridOrEmail: v },
+						dataType: 'json',
+						success: function(data) {
+							console.log('validate_user response:', data);
+
+							const exists = (data.exists === true || data.exists === 'true' || data.exists === 1 || data.exists === '1');
+
+							if (exists) {
+								input.classList.remove('is-invalid');
+								input.classList.add('is-valid');
+								feedback.textContent = data.message || 'Account found.';
+								feedback.style.color = 'green';
+								input.dataset.userId = data.userId || '';
+								input.dataset.email  = data.email  || '';
+								
+								if (preBtn) { preBtn.disabled = false; preBtn.removeAttribute('disabled'); }
+							} else {
+								input.classList.remove('is-valid');
+								input.classList.add('is-invalid');
+								feedback.textContent = data.message || 'No account matched.';
+								feedback.style.color = 'red'; 
+								if (preBtn) { preBtn.disabled = true; preBtn.setAttribute('disabled', 'disabled'); }
+							}
 						},
-						body: 'useridOrEmail=' + encodeURIComponent(v)
-					})
-					.then(r => r.ok ? r.json() : Promise.reject(r))
-					.then(data => {
-						console.log('validate_user response:', data);
-
-						const exists = (data.exists === true || data.exists === 'true' || data.exists === 1 || data.exists === '1');
-
-						if (exists) {
-							input.classList.add('is-valid');
-							feedback.textContent = data.message || 'Account found.';
-							input.dataset.userId = data.userId || '';
-							input.dataset.email  = data.email  || '';
-							if (preBtn) { preBtn.disabled = false; preBtn.removeAttribute('disabled'); }
-						} else {
+						error: function(xhr, status, error) {
+							console.error("AJAX Error:", error);
+							input.classList.remove('is-valid');
 							input.classList.add('is-invalid');
-							feedback.textContent = data.message || 'No account matched.';
+							feedback.textContent = 'Error: cannot validate now.';
 							feedback.style.color = 'red'; 
 							if (preBtn) { preBtn.disabled = true; preBtn.setAttribute('disabled', 'disabled'); }
 						}
-					})
-					.catch(() => {
-						input.classList.add('is-invalid');
-						feedback.textContent = 'Error: cannot validate now.';
-						feedback.style.color = 'red'; 
-						if (preBtn) { preBtn.disabled = true; preBtn.setAttribute('disabled', 'disabled'); }
 					});
 				});
 
@@ -181,6 +188,29 @@
 					if (spaceSpan)  spaceSpan.textContent  = (uid && mail) ? ' ' : '';
 
 					if (hiddenInput) hiddenInput.value = (input.value || '').trim();
+
+					const finalBtn = document.getElementById('finalSubmitBtn');
+					const modalWarning = document.getElementById('modalWarning');
+					const userEmail = mail.toLowerCase();
+
+					if (userEmail.endsWith('@cubesofttech.com')) {
+						if (finalBtn) {
+							finalBtn.disabled = false;
+							finalBtn.removeAttribute('disabled');
+						}
+						if (modalWarning) {
+							modalWarning.style.display = 'none';
+						}
+					} else {
+						if (finalBtn) {
+							finalBtn.disabled = true;
+							finalBtn.setAttribute('disabled', 'disabled');
+						}
+						if (modalWarning) {
+							modalWarning.innerHTML = 'กรุณาติดต่อ Admin เนื่องจากต้องสามารถเปลี่ยนรหัสผ่าน<br>เฉพาะเมล @cubesofttech.com ที่บริษัทสร้างให้พนักงานเท่านั้น';
+							modalWarning.style.display = 'block';
+						}
+					}
 
 					if (modal) modal.show();
 				});
