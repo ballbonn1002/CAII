@@ -291,156 +291,148 @@
             </div>
 
             <script>
-            	    console.log("Data = ${pageUri}");
-            	    console.log("Model = ${pageUri.model}");
-            	    console.log("ModelId = ${pageUri.modelId}");
-            	    console.log("PageUriId = ${pageUri.pageUriId}");
-            	    console.log("ForwardTo = ${pageUri.forwardTo}");
-	            console.log("Title = ${pageUri.pageUriTitle}");
-	            console.log("Meta = ${pageUri.meta}");
-	            console.log("Description = ${pageUri.pageUriDescription}");
-            
-	            function initSummernote() {
-	                $('#summernote').summernote({
-	                    placeholder: 'Type here...',
-	                    minHeight: 250,
-	                    tabsize: 2,
-	                    toolbar: [
-	                    ['style', ['style']],
-	                    ['font', ['bold', 'italic', 'underline', 'clear']],
-	                    ['fontname', ['fontname']],
-	                    ['color', ['color']],
-	                    ['para', ['ul', 'ol', 'paragraph']],
-	                    ['insert', ['link', 'picture', 'table']],
-	                    ['view', ['undo', 'redo', 'fullscreen', 'codeview']]
-	                    ]
-	                });
-	            }
-                
-                document.addEventListener("DOMContentLoaded", function () {
-                    flatpickr("#startDate", { dateFormat: "Y-m-d", altInput: true, altFormat: "d M Y", locale: "en", allowInput: false });
-                    flatpickr("#endDate", { dateFormat: "Y-m-d", altInput: true, altFormat: "d M Y", locale: "en", allowInput: false }); 
-                    if (!$('#summernote').next('.note-editor').length) {
-                        initSummernote();
-                    }
-                });
-                
-                function submitForm(){
-                    const content = $('#summernote').summernote('code');
-                    
-                    document.getElementById("contentDetailInput").value = content;
-                    var errorFields = [];
-                    const form = document.getElementById("formEditCareer");
-                    
-                    ["positionName", "jobRef", "startDate", "endDate"].forEach(id => {
-                        const element = document.getElementById(id);
-                        if (element && element.value) { element.value = element.value.trim(); }
-                    });
-                    
-                    if ($('#positionName').hasClass('is-invalid')) {
-                        window.scrollTo({ top: 0, behavior: "smooth" });
-                        Swal.fire({
-                            title: "Duplicate Position!",
-                            text: "This Position Name is already taken. Please change it before saving.",
-                            icon: "error",
-                            confirmButtonText: "OK",
-                            customClass: { confirmButton: "btn btn-danger" }
-                        });
-                        return false;
-                    }
-                    
-                    if(!document.getElementById("positionName").value) errorFields.push("Position Name");
-                    if(!document.getElementById("jobRef").value) errorFields.push("Job Ref");
-                    if(!document.getElementById("startDate").value) errorFields.push("Start Date");
-                    if(!document.getElementById("endDate").value) errorFields.push("End Date");
-                    if(!content.replace(/<[^>]*>/g, "").trim()) errorFields.push("Content Detail");
-                    
-                    if (errorFields.length > 0) {
-                        Swal.fire({
-                            title: "Incomplete Form",
-                            html: "Please fill in: <strong>" + errorFields.join(", ") + "</strong>",
-                            icon: "error",
-                            confirmButtonText: "OK",
-                            customClass: { confirmButton: "btn btn-danger" }
-                        });
-                        return false;
-                    }
-                    
-                    Swal.fire({
-                        title: "Confirm Update",
-                        text: "Are you sure you want to save these changes?",
-                        icon: "warning",
-                        showCancelButton: true,
-                        confirmButtonText: "Yes, Update",
-                        cancelButtonText: "Cancel",
-                        reverseButtons: true,
-                        customClass: { confirmButton: "btn btn-success", cancelButton: "btn btn-secondary" }
-                    }).then((result) => {
-                        if (result.isConfirmed) {
-                            form.submit();
-                        }
-                    });
-                }
-                
-                $(document).ready(function() {
-                    let typingTimer;  
-                    let doneTypingInterval = 500; 
-                    
-                    const originalPositionName = "${jobInfo.position}".trim().toLowerCase();
-
-                    $('#positionName').on('input', function () {
-                        clearTimeout(typingTimer);
-                        let positionName = $(this).val().trim();
-                        let inputElement = $(this);
-
-                        if (positionName === '') {
-                            inputElement.removeClass('is-invalid is-valid');
-                            return;
-                        }
-                        
-                        if (positionName.toLowerCase() === originalPositionName) {
-                            inputElement.removeClass('is-invalid').addClass('is-valid');
-                            return;
-                        }
-
-                        typingTimer = setTimeout(function () {
-                            $.ajax({
-                                url: 'checkPositionDuplicate',
-                                type: 'GET',
-                                data: { positionName: positionName },
-                                dataType: 'json',
-                                success: function (data) {
-                                    if (data.isDuplicate) {
-                                        inputElement.removeClass('is-valid').addClass('is-invalid');
-                                    } else {
-                                        inputElement.removeClass('is-invalid').addClass('is-valid');
-                                    }
-                                },
-                                error: function (xhr, status, error) {
-                                    console.error("AJAX Error:", error);
-                                }
-                            });
-                        }, doneTypingInterval);
-                    });
-                });
-            
-                function confirmLeaveForm(redirectUrl){
-                    Swal.fire({
-                        title: "Discard Changes?",
-                        text: "Closing will discard any unsaved edits.",
-                        icon: "warning",
-                        showCancelButton: true,
-                        confirmButtonText: "Yes, discard",
-                        cancelButtonText: "Cancel",
-                        reverseButtons: true,
-                        customClass: { confirmButton: "btn btn-danger", cancelButton: "btn btn-secondary" }
-                    }).then((result) => {
-                        if (result.isConfirmed) {
-                            window.location.href = "careers_list";
-                        }
-                    });
-                }
-            </script>
+			    function initSummernote() {
+			        $('#summernote').summernote({
+			            placeholder: 'Type here...',
+			            minHeight: 250,
+			            tabsize: 2,
+			            toolbar: [
+			            ['style', ['style']],
+			            ['font', ['bold', 'italic', 'underline', 'clear']],
+			            ['fontname', ['fontname']],
+			            ['color', ['color']],
+			            ['para', ['ul', 'ol', 'paragraph']],
+			            ['insert', ['link', 'picture', 'table']],
+			            ['view', ['undo', 'redo', 'fullscreen', 'codeview']]
+			            ]
+			        });
+			    }
+			    
+			    document.addEventListener("DOMContentLoaded", function () {
+			        flatpickr("#startDate", { dateFormat: "Y-m-d", altInput: true, altFormat: "d M Y", locale: "en", allowInput: false });
+			        flatpickr("#endDate", { dateFormat: "Y-m-d", altInput: true, altFormat: "d M Y", locale: "en", allowInput: false }); 
+			        if (!$('#summernote').next('.note-editor').length) {
+			            initSummernote(); 
+			        }
+			    });
+			    
+			    function submitForm(){
+			        const content = $('#summernote').summernote('code');
+			        
+			        document.getElementById("contentDetailInput").value = content;
+			        var errorFields = [];
+			        const form = document.getElementById("formEditCareer");
+			        
+			        ["positionName", "jobRef", "startDate", "endDate"].forEach(id => {
+			            const element = document.getElementById(id);
+			            if (element && element.value) { element.value = element.value.trim(); }
+			        });
+			        
+			        if ($('#positionName').hasClass('is-invalid')) {
+			            window.scrollTo({ top: 0, behavior: "smooth" });
+			            Swal.fire({
+			                title: "Duplicate Position!",
+			                text: "This Position Name is already taken. Please change it before saving.",
+			                icon: "error",
+			                confirmButtonText: "OK",
+			                customClass: { confirmButton: "btn btn-danger" }
+			            });
+			            return false;
+			        }
+			        
+			        if(!document.getElementById("positionName").value) errorFields.push("Position Name");
+			        if(!document.getElementById("jobRef").value) errorFields.push("Job Ref");
+			        if(!document.getElementById("startDate").value) errorFields.push("Start Date");
+			        if(!document.getElementById("endDate").value) errorFields.push("End Date");
+			        if(!content.replace(/<[^>]*>/g, "").trim()) errorFields.push("Content Detail");
+			        
+			        if (errorFields.length > 0) {
+			            Swal.fire({
+			                title: "Incomplete Form",
+			                html: "Please fill in: <strong>" + errorFields.join(", ") + "</strong>",
+			                icon: "error",
+			                confirmButtonText: "OK",
+			                customClass: { confirmButton: "btn btn-danger" }
+			            });
+			            return false;
+			        }
+			        
+			        Swal.fire({
+			            title: "Confirm Update",
+			            text: "Are you sure you want to save these changes?",
+			            icon: "warning",
+			            showCancelButton: true,
+			            confirmButtonText: "Yes, Update",
+			            cancelButtonText: "Cancel",
+			            reverseButtons: true,
+			            customClass: { confirmButton: "btn btn-success", cancelButton: "btn btn-secondary" }
+			        }).then((result) => {
+			            if (result.isConfirmed) {
+			                form.submit();
+			            }
+			        });
+			    }
+			    
+			    $(document).ready(function() {
+			        let typingTimer;  
+			        let doneTypingInterval = 500; 
+			        
+			        const positionInput = document.getElementById("positionName");
+			        const originalPositionName = positionInput ? positionInput.defaultValue.trim().toLowerCase() : "";
+			
+			        $('#positionName').on('input', function () {
+			            clearTimeout(typingTimer);
+			            let positionName = $(this).val().trim();
+			            let inputElement = $(this);
+			
+			            if (positionName === '') {
+			                inputElement.removeClass('is-invalid is-valid');
+			                return;
+			            }
+			            
+			            if (positionName.toLowerCase() === originalPositionName) {
+			                inputElement.removeClass('is-invalid').addClass('is-valid');
+			                return;
+			            }
+			
+			            typingTimer = setTimeout(function () {
+			                $.ajax({
+			                    url: 'checkPositionDuplicate',
+			                    type: 'GET',
+			                    data: { positionName: positionName },
+			                    dataType: 'json',
+			                    success: function (data) {
+			                        if (data.isDuplicate) {
+			                            inputElement.removeClass('is-valid').addClass('is-invalid');
+			                        } else {
+			                            inputElement.removeClass('is-invalid').addClass('is-valid');
+			                        }
+			                    },
+			                    error: function (xhr, status, error) {
+			                        console.error("AJAX Error:", error);
+			                    }
+			                });
+			            }, doneTypingInterval);
+			        });
+			    });
+			
+			    function confirmLeaveForm(redirectUrl){
+			        Swal.fire({
+			            title: "Discard Changes?",
+			            text: "Closing will discard any unsaved edits.",
+			            icon: "warning",
+			            showCancelButton: true,
+			            confirmButtonText: "Yes, discard",
+			            cancelButtonText: "Cancel",
+			            reverseButtons: true,
+			            customClass: { confirmButton: "btn btn-danger", cancelButton: "btn btn-secondary" }
+			        }).then((result) => {
+			            if (result.isConfirmed) {
+			                window.location.href = "careers_list";
+			            }
+			        });
+			    }
+			</script>
         </perm:permission>
     </body>
 </html>
