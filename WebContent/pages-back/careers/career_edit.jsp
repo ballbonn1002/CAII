@@ -214,7 +214,7 @@
                                     <div class="card-body">
                                         <div id="editorError" class="text-danger mb-2 text-center"></div>
                                         <div class="ckeditor-wrapper">
-                                            <div id="summernote"></div>
+                                            <div id="summernote">${jobInfo.description}</div>
                                         </div>
                                     </div>
                                 </div>
@@ -291,10 +291,6 @@
             </div>
 
             <script>
-                var existingContent = `${jobInfo.description}`;
-            </script>
-
-            <script>
             	    console.log("Data = ${pageUri}");
             	    console.log("Model = ${pageUri.model}");
             	    console.log("ModelId = ${pageUri.modelId}");
@@ -304,29 +300,28 @@
 	            console.log("Meta = ${pageUri.meta}");
 	            console.log("Description = ${pageUri.pageUriDescription}");
             
-                function initSummernote(content="") {
-                    $('#summernote').summernote({
-                        placeholder: 'Type here...',
-                        minHeight: 250,
-                        tabsize: 2,
-                        toolbar: [
-                        ['style', ['style']],
-                        ['font', ['bold', 'italic', 'underline', 'clear']],
-                        ['fontname', ['fontname']],
-                        ['color', ['color']],
-                        ['para', ['ul', 'ol', 'paragraph']],
-                        ['insert', ['link', 'picture', 'table']],
-                        ['view', ['undo', 'redo', 'fullscreen', 'codeview']]
-                        ]
-                    });
-                    $('#summernote').summernote('code', content);
-                }
+	            function initSummernote() {
+	                $('#summernote').summernote({
+	                    placeholder: 'Type here...',
+	                    minHeight: 250,
+	                    tabsize: 2,
+	                    toolbar: [
+	                    ['style', ['style']],
+	                    ['font', ['bold', 'italic', 'underline', 'clear']],
+	                    ['fontname', ['fontname']],
+	                    ['color', ['color']],
+	                    ['para', ['ul', 'ol', 'paragraph']],
+	                    ['insert', ['link', 'picture', 'table']],
+	                    ['view', ['undo', 'redo', 'fullscreen', 'codeview']]
+	                    ]
+	                });
+	            }
                 
                 document.addEventListener("DOMContentLoaded", function () {
                     flatpickr("#startDate", { dateFormat: "Y-m-d", altInput: true, altFormat: "d M Y", locale: "en", allowInput: false });
                     flatpickr("#endDate", { dateFormat: "Y-m-d", altInput: true, altFormat: "d M Y", locale: "en", allowInput: false }); 
                     if (!$('#summernote').next('.note-editor').length) {
-                        initSummernote(existingContent);
+                        initSummernote();
                     }
                 });
                 
