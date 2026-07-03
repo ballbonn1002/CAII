@@ -203,13 +203,13 @@
 			<result name="success" type="tiles">forgetPassword</result>
 			<result name="error">/index.jsp</result>
 		</action>
-		
+
 		<action name="send_code"
 			class="com.cubesofttech.action.LoginAction" method="requestResetCode">
 			<result name="success" type="tiles">newPassword</result>
 			<result name="error">/index.jsp</result>
 		</action>
-		
+
 		<action name="reset_password"
 			class="com.cubesofttech.action.LoginAction" method="resetPassword">
 			<result name="success" type="tiles">resetPasswordSuccess</result>
@@ -240,7 +240,7 @@
 			class="com.cubesofttech.action.WorkHoursAction" method="savecheck">
 			<result name="error">/index.jsp</result>
 		</action>
-		
+
 		<action name="saveCheckOut"
 			class="com.cubesofttech.action.WorkHoursAction" method="savecheck">
 			<result name="error">/index.jsp</result>
@@ -252,12 +252,12 @@
 			<result name="success" type="tiles">retroactivePage</result>
 			<result name="error">/index.jsp</result>
 		</action>
-		
+
 		<action name="retroSaveCheckIn"
 			class="com.cubesofttech.action.WorkHoursAction" method="savecheck">
 			<result name="error">/index.jsp</result>
 		</action>
-		
+
 		<action name="retroSaveCheckOut"
 			class="com.cubesofttech.action.WorkHoursAction" method="savecheck">
 			<result name="error">/index.jsp</result>
@@ -1037,14 +1037,16 @@
 		<action name="admin_update_signature"
 			class="com.cubesofttech.action.UserAction"
 			method="admin_update_signature">
-			<result name="success" type="redirectAction">user-edit?userId=${userId}</result>
+			<result name="success" type="redirectAction">user-edit?userId=${userId}
+			</result>
 			<result name="error">/index.jsp</result>
 		</action>
 
 		<action name="admin_signature_perform_delete"
 			class="com.cubesofttech.action.UserAction"
 			method="admin_signature_perform_delete">
-			<result name="success" type="redirectAction">user-edit?userId=${userId}</result>
+			<result name="success" type="redirectAction">user-edit?userId=${userId}
+			</result>
 			<result name="error">/index.jsp</result>
 		</action>
 
@@ -1765,14 +1767,72 @@
 			<result name="success" type="redirectAction">article_feed</result>
 			<result name="error" type="tiles">/index.jsp</result>
 		</action>
-		
+
 		<action name="addImgFormEditor"
-			class="com.cubesofttech.action.ArticleAction" method="addImgFormEditor">
+			class="com.cubesofttech.action.ArticleAction"
+			method="addImgFormEditor">
 		</action>
-		
+
 		<action name="DeleteImgFormEditor"
-			class="com.cubesofttech.action.ArticleAction" method="DeleteImgFormEditor">
+			class="com.cubesofttech.action.ArticleAction"
+			method="DeleteImgFormEditor">
 		</action>
+
+		<!-- ========================== Footer Menu ============================== -->
+
+		<action name="footer_list"
+			class="com.cubesofttech.action.FooterAction" method="footerList">
+			<result name="success" type="tiles">footer_list</result>
+			<result name="error">/index.jsp</result>
+		</action>
+
+		<action name="footer_add"
+			class="com.cubesofttech.action.FooterAction" method="footerAdd">
+			<result name="success" type="tiles">footer_form</result>
+			<result name="error">/index.jsp</result>
+		</action>
+
+		<action name="footer_save"
+			class="com.cubesofttech.action.FooterAction" method="footerSave">
+			<result name="success" type="redirectAction">
+				<param name="actionName">footer_list</param>
+			</result>
+			<result name="error">/index.jsp</result>
+		</action>
+
+		<action name="footer_edit"
+			class="com.cubesofttech.action.FooterAction" method="footerEdit">
+			<result name="success" type="tiles">footer_form</result>
+			<result name="error">/index.jsp</result>
+		</action>
+
+		<action name="footer_update"
+			class="com.cubesofttech.action.FooterAction" method="footerUpdate">
+			<result name="success" type="redirectAction">
+				<param name="actionName">footer_list</param>
+			</result>
+			<result name="error">/index.jsp</result>
+		</action>
+
+		<action name="footer_delete"
+			class="com.cubesofttech.action.FooterAction" method="footerDelete">
+			<result name="success" type="redirectAction">
+				<param name="actionName">footer_list</param>
+			</result>
+			<result name="error">/index.jsp</result>
+		</action>
+
+		<action name="footer_update_sequence"
+			class="com.cubesofttech.action.FooterAction"
+			method="footerUpdateSequence">
+			<result name="success" type="redirectAction">
+				<param name="actionName">footer_list</param>
+			</result>
+			<result name="error">/index.jsp</result>
+		</action>
+
+
+		<!-- ========================== Footer Menu ============================== -->
 
 		<!-- ========================== Export to Excel ============================== -->
 		<action name="LeaveApproveExcelExport"
@@ -1858,7 +1918,7 @@
 			<result name="error" type="redirect">file_management</result>
 			<result name="login" type="redirect">/index.jsp</result>
 		</action>
-		
+
 		<!-- Work Location -->
 		<action name="work_location"
 			class="com.cubesofttech.action.WorkLocationAction" method="open">
@@ -1866,12 +1926,12 @@
 			<result name="error">/index.jsp</result>
 			<result name="login" type="redirect">/index.jsp</result>
 		</action>
-		
+
 		<action name="search_work_location"
 			class="com.cubesofttech.action.WorkLocationAction" method="search">
 			<result name="login" type="redirect">/index.jsp</result>
 		</action>
-		
+
 	</package>
 
 </struts>

@@ -516,6 +516,19 @@
 		<put-attribute name="body"
 			value="/pages-back/article/article_preview.jsp" />
 	</definition>
+	
+		<!-- Footer Menu -->
+	<definition name="footer_list" extends="baseLayout">
+		<put-attribute name="title" value="Footer Menu" />
+		<put-attribute name="body"
+			value="/pages-back/footer/footer_list.jsp" />
+	</definition>
+	
+	<definition name="footer_form" extends="baseLayout">
+		<put-attribute name="title" value="Add New Footer" />
+		<put-attribute name="body"
+			value="/pages-back/footer/footer_form.jsp" />
+	</definition>
 
 	<!-- Overtime Request -->
 	<definition name="overtime_request_list"

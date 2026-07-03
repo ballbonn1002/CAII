@@ -163,19 +163,19 @@ String targetURL = Constant.getWebContext2() + "/authorization?token=" + token;
 
 					<!-- TimeSheet -->
 					<perm:permission object="timesheet.edit">
-					<div class="menu-item">
-						<a class="menu-link" href="timeSheet" data-route="time_sheet"><span
-							class="menu-icon "> <i
-								class="ki-duotone ki-calendar-8 fs-2"> <span class="path1"></span>
-									<span class="path2"></span> <span class="path3"></span> <span
-									class="path4"></span> <span class="path5"></span> <span
-									class="path6"></span>
-							</i>
-						</span> <span class="menu-title">TimeSheet</span> <i
-							class="ki-duotone ki-check-circle fs-3 text-success"> <span
-								class="path1"></span><span class="path2"></span>
-						</i> </a>
-					</div>
+						<div class="menu-item">
+							<a class="menu-link" href="timeSheet" data-route="time_sheet"><span
+								class="menu-icon "> <i
+									class="ki-duotone ki-calendar-8 fs-2"> <span class="path1"></span>
+										<span class="path2"></span> <span class="path3"></span> <span
+										class="path4"></span> <span class="path5"></span> <span
+										class="path6"></span>
+								</i>
+							</span> <span class="menu-title">TimeSheet</span> <i
+								class="ki-duotone ki-check-circle fs-3 text-success"> <span
+									class="path1"></span><span class="path2"></span>
+							</i> </a>
+						</div>
 					</perm:permission>
 					<!--TimeSheet -->
 
@@ -332,7 +332,7 @@ String targetURL = Constant.getWebContext2() + "/authorization?token=" + token;
 					<!--end:Menu item-->
 
 					<!--begin:Menu item-->
-					<perm:permission object="expense.approve"> 
+					<perm:permission object="expense.approve">
 						<div class="menu-item">
 							<a class="menu-link" href="travel_approve"
 								data-route="travel_approve"> <span class="menu-icon">
@@ -344,7 +344,7 @@ String targetURL = Constant.getWebContext2() + "/authorization?token=" + token;
 							</span> <span class="menu-title">Travel Approve</span>
 							</a>
 						</div>
-				</perm:permission> 
+					</perm:permission>
 					<!--end:Menu item-->
 
 					<perm:permission object="equipmentlist.view">
@@ -454,9 +454,9 @@ String targetURL = Constant.getWebContext2() + "/authorization?token=" + token;
 						<!--begin:Menu item-->
 						<div class="menu-item">
 							<!--begin:Menu link-->
-							<a class="menu-link" href="leave_type_list" data-route="leave_type_list"> <span
-								class="menu-icon"> <i
-									class="ki-duotone ki-monitor-mobile fs-1"> <span
+							<a class="menu-link" href="leave_type_list"
+								data-route="leave_type_list"> <span class="menu-icon">
+									<i class="ki-duotone ki-monitor-mobile fs-1"> <span
 										class="path1"></span> <span class="path2"></span>
 								</i>
 							</span> <span class="menu-title">Leave Type</span> <i
@@ -523,10 +523,11 @@ String targetURL = Constant.getWebContext2() + "/authorization?token=" + token;
 					<!--end:Menu item-->
 					<!--begin:Menu item-->
 					<div class="menu-item">
-						<a class="menu-link" href="article_feed" data-route="article_feed"> <span
-							class="menu-icon"> <i class="ki-duotone ki-book-open fs-1">
-									<span class="path1"></span> <span class="path2"></span> <span
-									class="path3"></span> <span class="path4"></span>
+						<a class="menu-link" href="article_feed" data-route="article_feed">
+							<span class="menu-icon"> <i
+								class="ki-duotone ki-book-open fs-1"> <span class="path1"></span>
+									<span class="path2"></span> <span class="path3"></span> <span
+									class="path4"></span>
 							</i>
 						</span> <span class="menu-title">Article</span> <i
 							class="ki-duotone ki-check-circle fs-3 text-success"> <span
@@ -536,36 +537,34 @@ String targetURL = Constant.getWebContext2() + "/authorization?token=" + token;
 					</div>
 
 					<!--end:Menu item-->
-					
+
 					<!--begin:Menu item-->
 					<perm:permission object="careers.view">
-					<div class="menu-item">
-						<a class="menu-link" href="careers_list" data-route="careers_list"> <span
-							class="menu-icon"> 
-							<i class="ki-duotone ki-notepad-bookmark fs-1">
-								<span class="path1"></span>
-								<span class="path2"></span>
-								<span class="path3"></span>
-								<span class="path4"></span>
-								<span class="path5"></span>
-								<span class="path6"></span>
+						<div class="menu-item">
+							<a class="menu-link" href="careers_list"
+								data-route="careers_list"> <span class="menu-icon"> <i
+									class="ki-duotone ki-notepad-bookmark fs-1"> <span
+										class="path1"></span> <span class="path2"></span> <span
+										class="path3"></span> <span class="path4"></span> <span
+										class="path5"></span> <span class="path6"></span>
+								</i>
+							</span> <span class="menu-title">Careers</span> <i
+								class="ki-duotone ki-check-circle fs-3 text-success"> <span
+									class="path1"></span><span class="path2"></span>
 							</i>
-							</span> <span class="menu-title">Careers</span> 
-							<i class="ki-duotone ki-check-circle fs-3 text-success"> 
-								<span class="path1"></span><span class="path2"></span>
-							</i>
-						</a>
-					</div>
+							</a>
+						</div>
 					</perm:permission>
-					
+
 
 					<!--end:Menu item-->
 
 					<!--begin:Menu item-->
 					<div class="menu-item">
-						<a class="menu-link" href="page_uri_list" data-route="page_uri_list"> <span
-							class="menu-icon"> <i class="ki-duotone ki-setting-2 fs-1">
-									<span class="path1"></span> <span class="path2"></span>
+						<a class="menu-link" href="page_uri_list"
+							data-route="page_uri_list"> <span class="menu-icon"> <i
+								class="ki-duotone ki-setting-2 fs-1"> <span class="path1"></span>
+									<span class="path2"></span>
 							</i>
 						</span> <span class="menu-title">Page URL</span> <i
 							class="ki-duotone ki-check-circle fs-3 text-success"> <span
@@ -573,7 +572,23 @@ String targetURL = Constant.getWebContext2() + "/authorization?token=" + token;
 						</i>
 						</a>
 					</div>
+					<!--end:Menu item-->
 
+					<!--begin:Menu item-->
+					<perm:permission object="footer.view">
+						<div class="menu-item">
+							<a class="menu-link" href="footer_list" data-route="footer_list">
+								<span class="menu-icon"> <i
+									class="ki-duotone ki-setting-2 fs-1"> <span class="path1"></span>
+										<span class="path2"></span>
+								</i>
+							</span> <span class="menu-title">Footer Menu</span> <i
+								class="ki-duotone ki-check-circle fs-3 text-success"> <span
+									class="path1"></span><span class="path2"></span>
+							</i>
+							</a>
+						</div>
+					</perm:permission>
 					<!--end:Menu item-->
 
 					<!--begin:Menu item-->
