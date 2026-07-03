@@ -282,7 +282,7 @@
 											<label class="required fw-medium text-gray-800 mb-2">Title</label>
 											<input type="text" class="form-control text-gray-700"
 												placeholder="Title" name="article_title" id="article_title"
-												value="${empty article.topic ? '' : article.topic}" />
+												value="${empty article.topic ? '' : fn:escapeXml(article.topic)}" />
 										</div>
 										<div class="col-12 mt-5">
 											<label class="required fw-medium text-gray-800 mb-2">Type</label>
@@ -515,14 +515,14 @@
 										<label class="required fw-medium text-gray-800 mb-2">Page URL</label>
 										<input type="text" 
 												class="form-control text-gray-700"
-												placeholder="Page URL" id="pageUriId" name="pageUriId" value="${empty pageUri[0].pageUriId ? '' :pageUri[0].pageUriId}" />
+												placeholder="Page URL" id="pageUriId" name="pageUriId" value="${empty pageUri[0].pageUriId ? '' : fn:escapeXml(pageUri[0].pageUriId)}" />
 														
 									</div>
 									<div class="col-12 mt-5">
 										<label class="required fw-medium text-gray-800 mb-2">Title</label>
 										<input type="text" 
 												class="form-control text-gray-700" maxlength="100"
-												placeholder="Title" id="pageUriTitle" name="pageUriTitle" value="${empty pageUri[0].pageUriTitle ? '' :pageUri[0].pageUriTitle}"/>				
+												placeholder="Title" id="pageUriTitle" name="pageUriTitle" value="${empty pageUri[0].pageUriTitle ? '' : fn:escapeXml(pageUri[0].pageUriTitle)}"/>				
 									</div>
 									<div class="col-12 mt-5">
 										<label class="required fw-medium text-gray-800 mb-2">Meta</label>

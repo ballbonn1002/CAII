@@ -658,6 +658,11 @@ public class ReportAction extends ActionSupport {
     }
     
     public String borrowReport() throws IOException {
+    	User onlineUser = (User) request.getSession().getAttribute("onlineUser");
+		if (onlineUser == null) {
+			return ERROR;
+		}
+		
         ServletContext context = request.getServletContext();
         String borrowId = request.getParameter("borrowId");
         String jasperPath = context.getRealPath(JASPERPATH);

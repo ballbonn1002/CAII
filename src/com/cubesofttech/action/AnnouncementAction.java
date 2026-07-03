@@ -216,6 +216,10 @@ public class AnnouncementAction extends ActionSupport {
 
 	public String AnnouncementList() {
 	    try {
+	    	User onlineUser = (User) request.getSession().getAttribute("onlineUser");
+			if (onlineUser == null) {
+				return ERROR;
+			}
 	    	
 	    	request.setCharacterEncoding("UTF-8");
 	        response.setCharacterEncoding("UTF-8");
@@ -283,11 +287,14 @@ public class AnnouncementAction extends ActionSupport {
 
 	public String readcardannounce() {
 		try {
+			User onlineUser = (User) request.getSession().getAttribute("onlineUser");
+			if (onlineUser == null) {
+				return ERROR;
+			}
 			String id = request.getParameter("id");
 			Integer announceId = Integer.parseInt(id);
 			Announcement announce = announcementDAO.findById(announceId);
 			if (announce != null) {
-				User onlineUser = (User) request.getSession().getAttribute("onlineUser");
 				if (onlineUser != null) {
 					String userId = onlineUser.getId();
 					String viewerLogsStr = announce.getViewerLogs();
@@ -430,7 +437,7 @@ public class AnnouncementAction extends ActionSupport {
 				FileUpload fileupload = new FileUpload();
 				fileupload.setFileId(maxId);
 				fileupload.setPath("/upload/user/" + maxId + "_" + fileName);
-				fileupload.setSize(fileUploadSize);
+				fileupload.setSize(formatFileSize(fileUpload.length()));
 				fileupload.setName(name);
 				fileupload.setType(type);
 				fileupload.setUserId(onlineUser.getId());
@@ -461,8 +468,11 @@ public class AnnouncementAction extends ActionSupport {
 				announcementDAO.update(announcement);
 			}
 
-			// ✅ Multiple Attachments (add/update)
-			String[] fileIdss = new Gson().fromJson(fileUploadId, String[].class);
+			// Multiple Attachments (add/update)
+//			String[] fileIdss = new Gson().fromJson(fileUploadId, String[].class);
+			String[] fileIdss = (fileUploadId != null && !fileUploadId.isEmpty())
+				    ? new Gson().fromJson(fileUploadId, String[].class)
+				    : new String[0];
 			log.debug("files to delete: " + Arrays.toString(fileIdss));
 
 			if (fileIdss != null && fileIdss.length > 0) {
@@ -470,7 +480,7 @@ public class AnnouncementAction extends ActionSupport {
 					FileUpload file = fileuploadDAO.findById(Integer.parseInt(fileId));
 					if (file != null) {
 						fileuploadDAO.delete(file);
-						log.debug("✅ Deleted file ID: " + fileId);
+						log.debug("Deleted file ID: " + fileId);
 					}
 				}
 			} else {
@@ -511,7 +521,7 @@ public class AnnouncementAction extends ActionSupport {
 					fileupload1.setTimeCreate(DateUtil.getCurrentTime());
 					fileuploadDAO.save(fileupload1);
 
-					log.debug("✅ Added file ID: " + fileupload1.getFileId());
+					log.debug("Added file ID: " + fileupload1.getFileId());
 				}
 			} else {
 				log.debug("No new file to upload");
@@ -667,5 +677,13 @@ public class AnnouncementAction extends ActionSupport {
 			}
 			return null;
 		}
+	}
+	
+	public String announcementAddPage() {
+	    User onlineUser = (User) request.getSession().getAttribute("onlineUser");
+	    if (onlineUser == null) {
+	        return ERROR;
+	    }
+	    return SUCCESS;
 	}
 }

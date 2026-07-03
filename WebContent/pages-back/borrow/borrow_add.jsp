@@ -430,36 +430,92 @@
 
 	<!-- Populate User Select -->
 	<script>
-document.addEventListener("DOMContentLoaded", function () {
-	const userSelect = document.getElementById("user_select");
-	const hiddenId = document.querySelector('input[name="id"]');
-	
-	if (!userSelect || !Array.isArray(users)) return;
+	document.addEventListener("DOMContentLoaded", function () {
 
-	users.forEach(function(u) {
-		const uid = u.id || u.user_id || u.USER_ID || '';
-		const emp = u.employee_id || u.employeeId || '';
-		const nameTH = u.name || u.fullname || '';
-		const nameEN = u.name_en || u.nameEn || '';
-		const role = u.role || '';
-		const enableVal = u.enable || u.ENABLE || u.is_enable || u.isEnable || '0';
+	    const select = document.getElementById("user_select");
+	    const hiddenId = document.querySelector('input[name="id"]');
 
-		// เช็คว่า enable = true
-		if (enableVal == 1 || enableVal == '1' || enableVal == true || enableVal == 'true') {
-			const opt = document.createElement('option');
-			opt.value = uid;
-			opt.textContent = emp + ' - ' + nameEN + ' - ' + nameTH + ' - ' + role;
-			userSelect.appendChild(opt);
-		}
+	    if (!select || !Array.isArray(users)) {
+	        return;
+	    }
+	    
+	    const sortByEmployeeId = (a, b) => {
+
+	        const aHasEmp = a.employee_id && a.employee_id.trim();
+	        const bHasEmp = b.employee_id && b.employee_id.trim();
+
+	        // ไม่มี employee_id ลงล่าง
+	        if (!aHasEmp && bHasEmp) return 1;
+	        if (aHasEmp && !bHasEmp) return -1;
+
+	        return (a.employee_id || "").localeCompare(
+	            (b.employee_id || ""),
+	            undefined,
+	            {
+	                numeric: true,
+	                sensitivity: "base"
+	            }
+	        );
+	    };
+
+        users.sort(sortByEmployeeId);
+
+	    let option = '<option value="">-- Select borrower --</option>';
+	    let enableGroup = '<optgroup label="Enable">';
+	    let disableGroup = '<optgroup label="Disable">';
+
+	    for (let i = 0; i < users.length; i++) {
+
+	        const employeeId = users[i].employee_id || "";
+	        const name = users[i].name || "";
+	        const nameEn = users[i].name_en || "";
+	        const role = users[i].role || "";
+
+	        let displayText = '';
+
+	        if (employeeId) {
+	            displayText += employeeId;
+	        }
+
+	        if (nameEn) {
+	            displayText += (displayText ? ' - ' : '') + nameEn;
+	        }
+
+	        if (name) {
+	            displayText += (displayText ? ' - ' : '') + name;
+	        }
+
+	        if (role) {
+	            displayText += (displayText ? ' - ' : '') + role;
+	        }
+
+	        const optionHtml =
+	            '<option value="' + users[i].id + '">' +
+	            displayText +
+	            '</option>';
+
+	        if (users[i].enable == 1) {
+	            enableGroup += optionHtml;
+	        } else {
+	            disableGroup += optionHtml;
+	        }
+	    }
+
+	    enableGroup += '</optgroup>';
+	    disableGroup += '</optgroup>';
+
+	    select.innerHTML = option + enableGroup + disableGroup;
+
+	    if (hiddenId) {
+	        select.addEventListener("change", function () {
+	            hiddenId.value = this.value || "";
+	        });
+	    }
+
+	    if ($(select).hasClass("select2-hidden-accessible")) {
+	        $(select).trigger("change");
+	    }
 	});
-
-	// อัพเดท hidden id เมื่อเลือก user
-	if (hiddenId) {
-		userSelect.addEventListener("change", function () {
-			hiddenId.value = this.value || "";
-		});
-	}
-});
 	</script>
 
 	<!-- Populate Equipment Select -->

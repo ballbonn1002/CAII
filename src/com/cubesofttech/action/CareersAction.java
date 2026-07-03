@@ -127,6 +127,10 @@ public class CareersAction extends ActionSupport {
 
 	public String careersList() {
 		try {
+			User onlineUser = (User) request.getSession().getAttribute("onlineUser");
+			if (onlineUser == null) {
+				return ERROR;
+			}
 			request.setCharacterEncoding("UTF-8");
 			response.setCharacterEncoding("UTF-8");
 			
@@ -204,6 +208,11 @@ public class CareersAction extends ActionSupport {
 	}
 	
 	public String createCareer() {
+		User onlineUser = (User) request.getSession().getAttribute("onlineUser");
+		if (onlineUser == null) {
+			return ERROR;
+		}
+		
 		return SUCCESS;
 	}
 	
@@ -299,6 +308,11 @@ public class CareersAction extends ActionSupport {
 	
 	public String editCareer() {
 	    try {
+	    	User onlineUser = (User) request.getSession().getAttribute("onlineUser");
+			if (onlineUser == null) {
+				return ERROR;
+			}
+			
 	        String id = request.getParameter("id"); 
 	        
 	        if (id != null && !id.isEmpty()) {
@@ -307,11 +321,27 @@ public class CareersAction extends ActionSupport {
 	            Job jobData = jobDAO.findById(jobId); 
 	            request.setAttribute("jobInfo", jobData); 
 	            
-	            PageUri uriData = pageUriDAO.findByModelId(id); 
+	            List<PageUri> uriList = pageUriDAO.findByModelAndModelId("job", id);
+	            PageUri uri = null;
+	            if (uriList != null && !uriList.isEmpty()) {
+	                uri = uriList.get(0); 
+	            }
+	            System.out.println("Data = " + uri);	            
 	            
-	            if (uriData != null && "job".equalsIgnoreCase(uriData.getModel() != null ? uriData.getModel().trim() : "")) {
-	            		request.setAttribute("pageUri", uriData);
+	            if (uri != null) {
+	            		log.debug("Found");
+	            		request.setAttribute("pageUri", uri);
+	            		
+	            		System.out.println("Data = " + uri);
+	            		System.out.println("Model = " + uri.getModel());
+	            		System.out.println("ModelId = " + uri.getModelId());
+	            		System.out.println("PageUriId = " + uri.getPageUriId());
+	            		System.out.println("ForwardTo = " + uri.getForwardTo());
+	            		System.out.println("Title = " + uri.getPageUriTitle());
+	            		System.out.println("Meta = " + uri.getMeta());
+	            		System.out.println("Description = " + uri.getPageUriDescription());
 	            } else {
+	            		log.debug("Not Found");
 	                PageUri newUri = new PageUri();
 	                String position = (jobData != null && jobData.getPosition() != null) ? jobData.getPosition().trim() : "";
 	                String formattedPosition = position.trim()

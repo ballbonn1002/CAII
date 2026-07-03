@@ -1,6 +1,7 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt"  prefix="fmt"%>
+<fmt:setLocale value="en_US" />
 <!DOCTYPE html>
 <html>
 <head>
@@ -64,8 +65,8 @@
                 <input type="hidden" id="flag_form"   value="${flag_form}"/>
 
                 <!-- เตรียมค่าวันที่รูปแบบ dd-MM-yyyy -->
-                <c:set var="start_dmy"><fmt:formatDate value="${holidayrecord.start_date}" pattern="dd-MM-yyyy"/></c:set>
-                <c:set var="end_dmy"><fmt:formatDate   value="${holidayrecord.end_date}"   pattern="dd-MM-yyyy"/></c:set>
+                <c:set var="start_dmy"><fmt:formatDate value="${holidayrecord.start_date}" pattern="yyyy-MM-dd"/></c:set>
+                <c:set var="end_dmy"><fmt:formatDate   value="${holidayrecord.end_date}"   pattern="yyyy-MM-dd"/></c:set>
 
                 <div class="row g-5 mb-5">
                   <!-- Start Date -->
@@ -180,32 +181,40 @@
 
     // Validate ก่อน submit
     function myVal_form() {
-      var el  = document.getElementById("demo2");
-      var val = el.value.replace(/\s/g, "");
-      document.getElementById("demo3").value = val;
-
-      const sVal = document.getElementById("date_s").value;
-      const eVal = document.getElementById("date_e").value || sVal;
-
-      if (!sVal) {
-        swal('Please!', 'กรุณาเลือก Start Date', 'warning');
-        return false;
-      }
-
-      const toISO = (dmy) => { const [dd, mm, yy] = dmy.split('-'); return new Date(+yy, mm - 1, +dd); };
-      const sd = toISO(sVal);
-      const ed = toISO(eVal);
-
-      if (sd.getTime() > ed.getTime()) {
-        swal('Please!', 'Start Date ต้องไม่มากกว่า End Date', 'warning');
-        return false;
-      }
-      return true;
-    }
+	    document.getElementById("demo3").value =
+	        document.getElementById("demo2").value.replace(/\s/g, "");
+	
+	    const sVal = fpStart && fpStart.selectedDates[0]
+	        ? fpStart.formatDate(fpStart.selectedDates[0], "Y-m-d")
+	        : document.getElementById("date_s").value;
+	
+	    const eVal = fpEnd && fpEnd.selectedDates[0]
+	        ? fpEnd.formatDate(fpEnd.selectedDates[0], "Y-m-d")
+	        : (document.getElementById("date_e").value || sVal);
+	
+	    document.getElementById("date_s").value = sVal;
+	    document.getElementById("date_e").value = eVal || sVal;
+	
+	    if (!sVal) {
+	        swal('Please!', 'กรุณาเลือก Start Date', 'warning');
+	        return false;
+	    }
+	
+	    const toDate = (ymd) => {
+	        const [yy, mm, dd] = ymd.split('-');
+	        return new Date(+yy, mm - 1, +dd);
+	    };
+	
+	    if (toDate(sVal) > toDate(eVal)) {
+	        swal('Please!', 'Start Date ต้องไม่มากกว่า End Date', 'warning');
+	        return false;
+	    }
+	    return true;
+	}
 
     // ===== flatpickr =====
     const fpOpts = {
-      dateFormat: "d-m-Y",
+      dateFormat: "Y-m-d",
       altInput: true,
       altFormat: "j M Y",
       allowInput: true,
@@ -217,8 +226,8 @@
     (function boot(){
       const s = document.getElementById("date_s").value;
       const e = document.getElementById("date_e").value;
-      if (fpStart && s) fpStart.setDate(s, true, "d-m-Y");
-      if (fpEnd   && e) fpEnd.setDate(e, true, "d-m-Y");
+      if (fpStart && s) fpStart.setDate(s, true, "Y-m-d");
+      if (fpEnd   && e) fpEnd.setDate(e, true, "Y-m-d");
 
       var flagDup = "${flag}";
       if (flagDup == 1) {

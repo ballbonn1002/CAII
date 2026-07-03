@@ -15,14 +15,14 @@
     	background-repeat: no-repeat;
     }
     
-    .select2-results__group {
-    	font-size: 10px !important;
+/*     .select2-results__group {
+    	font-size: 10px !important; 
     	color: #A1A5B7 !important;
     	text-transform: uppercase !important;
-    	font-weight: 500 !important;
+    	font-weight: 500 !important; 
     	padding-top: 10px !important;
     	padding-bottom: 5px !important;
-    }
+    }  */
     
     .text-orange {
     	color: #FD7E14 !important;
@@ -78,7 +78,7 @@
                                         </span>
                                         <div class="flex-grow-1">
                                             <select name="searchText" id="userSelect" class="form-select border-0 h-45px"  data-control="select2">
-                                                <c:forEach var="u" items="${userList}">
+ <%--                                                <c:forEach var="u" items="${userList}">
                                                     <c:set var="label" value="" />
                                                     <c:if test="${not empty u.employee_id}">
                                                         <c:set var="label" value="${u.employee_id}" />
@@ -96,7 +96,7 @@
                                                         <c:set var="label" value="${label}${u.role_id}" />
                                                     </c:if>
                                                     <option value="${u.id}" data-name-en="${u.name_en}" data-name-th="${u.name}" ${u.id eq defaultUserId ? 'selected' : ''}>${label}</option>
-                                                </c:forEach>
+                                                </c:forEach> --%>
                                             </select>
                                         </div>
                                     </div>
@@ -277,6 +277,90 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
 <script>
+	document.addEventListener("DOMContentLoaded", function () {
+
+        const select = document.getElementById("userSelect");
+        const users = [
+            <c:forEach items="${userList}" var="u" varStatus="s">
+            {
+                id: "${u.id}",
+                employee_id: "${u.employee_id}",
+                name_en: "${u.name_en}",
+                name: "${u.name}",
+                role_id: "${u.role_id}",
+                enable: "${u.enable}"
+            }${!s.last ? ',' : ''}
+            </c:forEach>
+        ];
+        
+        const selectedValue = "${criteria.searchText}";
+
+
+        const enabledUsers = users.filter(u => String(u.enable) === "1");
+        const disabledUsers = users.filter(u => String(u.enable) !== "1");
+
+	    const sortByEmployeeId = (a, b) => {
+
+	        const aHasEmp = a.employee_id && a.employee_id.trim();
+	        const bHasEmp = b.employee_id && b.employee_id.trim();
+
+	        // ไม่มี employee_id ลงล่าง
+	        if (!aHasEmp && bHasEmp) return 1;
+	        if (aHasEmp && !bHasEmp) return -1;
+
+	        return (a.employee_id || "").localeCompare(
+	            (b.employee_id || ""),
+	            undefined,
+	            {
+	                numeric: true,
+	                sensitivity: "base"
+	            }
+	        );
+	    };
+
+        enabledUsers.sort(sortByEmployeeId);
+        disabledUsers.sort(sortByEmployeeId);
+        
+        function buildGroup(label, list) {
+
+            const group = document.createElement("optgroup");
+            group.label = label;
+
+            list.forEach(u => {
+
+                let text = [];
+
+                if (u.employee_id) text.push(u.employee_id);
+                if (u.name_en) text.push(u.name_en);
+                if (u.name) text.push(u.name);
+                if (u.role_id) text.push(u.role_id);
+
+                const option = document.createElement("option");
+
+                option.value = u.id;
+                option.textContent = text.join(" - ");
+                
+                option.setAttribute("data-name-en", u.name_en || "");
+                option.setAttribute("data-name-th", u.name || "");
+
+                if (selectedValue === u.id) {
+                    option.selected = true;
+                }
+
+                group.appendChild(option);
+            });
+
+            select.appendChild(group);
+        }
+
+        buildGroup("Enable", enabledUsers);
+        buildGroup("Disable", disabledUsers);
+
+        if ($(select).hasClass("select2-hidden-accessible")) {
+            $(select).trigger("change.select2");
+        }
+    });
+
 (function () {
 	  const $user = $("#userSelect");
 	  const $year = $("#yearPicker");

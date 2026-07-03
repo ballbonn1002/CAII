@@ -167,7 +167,7 @@
 						</div>
 
 						<!-- Read By Section Card -->
-						<perm:permission object="announcement.edit">
+						<perm:permission object="announcement.read">
 							<div class="card card-flush py-3 mt-5">
 								<div class="card-body mx-5 py-5">
 									<div class="d-flex align-items-center justify-content-between mb-6">

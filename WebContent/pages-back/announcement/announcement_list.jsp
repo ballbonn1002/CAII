@@ -194,7 +194,7 @@
 							<c:choose>
 								<c:when
 									test="${ann.status == '0' or announcementDateStr > todayStr}">
-									<perm:permission object="announcement.view">
+									<perm:permission object="announcement.edit">
 										<!-- Card แบบไม่มี permission -->
 										<div class="col-lg-4 col-md-12 col-12 mb-5 mb-xl-10">
 											<div

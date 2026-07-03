@@ -343,6 +343,7 @@ public class WorkHoursService {
                 }
             }
             result.put("status", status);
+            result.put("halfDay", halfDay);
             
             if ("0".equals(leaveStatusId)) {
                 result.put("leave_status", "WAITING");

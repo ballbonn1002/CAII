@@ -52,6 +52,9 @@ public class OvertimeAction extends ActionSupport {
 			String dateRange = request.getParameter("dateRange");
 
 			User onlineUser = (User) session.getAttribute("onlineUser");
+			if (onlineUser == null) {
+				return ERROR;
+			}
 			String userId = onlineUser != null ? onlineUser.getId() : null;
 
 			overtimeList = overtimeDAO.findByCriteria(userId, status, dateRange);
@@ -66,6 +69,10 @@ public class OvertimeAction extends ActionSupport {
 	public String add() {
 		try {
 			HttpServletRequest request = ServletActionContext.getRequest();
+			User onlineUser = (User) request.getSession().getAttribute("onlineUser");
+			if (onlineUser == null) {
+				return ERROR;
+			}
 			String loginUser = (String) request.getSession().getAttribute("user_id");
 
 			overtime = new Overtime();
@@ -193,6 +200,10 @@ public class OvertimeAction extends ActionSupport {
 	public String edit() {
 		try {
 			HttpServletRequest request = ServletActionContext.getRequest();
+			User onlineUser = (User) request.getSession().getAttribute("onlineUser");
+			if (onlineUser == null) {
+				return ERROR;
+			}
 			String idStr = request.getParameter("id");
 
 			if (idStr != null && !idStr.isEmpty()) {
@@ -210,6 +221,10 @@ public class OvertimeAction extends ActionSupport {
 	public String overtimeApprove() {
 		try {
 			HttpServletRequest request = ServletActionContext.getRequest();
+			User onlineUser = (User) request.getSession().getAttribute("onlineUser");
+			if (onlineUser == null) {
+				return ERROR;
+			}
 			String userId = request.getParameter("userId");
 			String dateRange = request.getParameter("dateRange");
 
@@ -266,6 +281,10 @@ public class OvertimeAction extends ActionSupport {
 	public String overtimeApproveForm() {
 		try {
 			HttpServletRequest request = ServletActionContext.getRequest();
+			User onlineUser = (User) request.getSession().getAttribute("onlineUser");
+			if (onlineUser == null) {
+				return ERROR;
+			}
 			String otId = request.getParameter("ot_id");
 
 			if (otId != null && !otId.isEmpty()) {

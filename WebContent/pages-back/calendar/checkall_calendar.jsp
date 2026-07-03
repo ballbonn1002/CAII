@@ -822,6 +822,7 @@ var AppCalendar = function() {
 	    var start = moment(view.currentStart);
 	    var end = moment(view.currentEnd);
 	    var today = moment();
+	    var processedLeaves = new Set();
 
 	    for (var day = start.clone(); day.isBefore(end); day.add(1, 'days')) {
 	        var dayEvents = events.filter(function(ev) {
@@ -859,26 +860,26 @@ var AppCalendar = function() {
 	                summary.holiday++;
 	            }
 	            // leave
-	            else if (dayEvents.some(ev => ev.extendedProps && ev.extendedProps.leave_type_id)) {
-	            	dayEvents.forEach(ev => {
-	                    if (ev.extendedProps && ev.extendedProps.leave_type_id) {
-	                        var evStart = moment(ev.start);
-	                        var evEnd = ev.end ? moment(ev.end).subtract(1, 'days') : evStart; // ลด 1 วัน
-
-	                        // คำนวณจำนวนวัน leave
-	                        var leaveDays = evEnd.diff(evStart, 'days') + 1; // +1 เพราะ diff คืนค่าเป็นจำนวนวันเต็มระหว่างวันที่
-	                        if (ev.title === "ลาป่วย") {
-	                            status = "Sick Leave";
-	                            summary.sickLeave += leaveDays;
-	                        } else {
-	                            status = "Leave";
-	                            summary.leave += leaveDays;
+	            if (dayEvents.some(ev => ev.extendedProps && ev.extendedProps.leave_type_id)) {
+	            	dayEvents.filter(ev => ev.extendedProps && ev.extendedProps.leave_type_id).forEach(ev => {
+	                    var noDay = parseFloat(ev.extendedProps.no_day) || 0;
+	                    if (ev.title === "ลาป่วย") {
+	                        status = "Sick Leave";
+	                        if(!processedLeaves.has(ev.id)) {
+	                            summary.sickLeave += noDay;
+	                            processedLeaves.add(ev.id);
+	                        }
+	                    } else {
+	                        status = "Leave";
+	                        if(!processedLeaves.has(ev.id)) {
+	                            summary.leave += noDay;
+	                            processedLeaves.add(ev.id);
 	                        }
 	                    }
 	                });
 	            }
 	            // work
-	            else if (dayEvents.some(ev => ev.extendedProps && ev.extendedProps.eventType === "work")) {
+	            if (dayEvents.some(ev => ev.extendedProps && ev.extendedProps.eventType === "work")) {
 	                var workEv = dayEvents.find(ev => ev.extendedProps.eventType === "work");
 	                switch (workEv.extendedProps.status) {
 	                case "On Time":
@@ -1003,6 +1004,8 @@ var AppCalendar = function() {
                 
                 initialView: 'dayGridMonth',
                 initialDate: noTime.format('YYYY-MM-DD'),
+                showNonCurrentDates: false,
+                fixedWeekCount: false,
                 
                 nowIndicator: true,
                 editable: true,

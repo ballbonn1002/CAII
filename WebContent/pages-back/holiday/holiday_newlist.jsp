@@ -1,6 +1,7 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
+<fmt:setLocale value="en_US" />
 
 <%
     String yearParam = request.getParameter("year");
@@ -227,7 +228,7 @@
     <!--begin::Scripts-->
     <script>
         function add() {
-            var today = moment().format('DD-MM-YYYY');
+            var today = moment().format('YYYY-MM-DD');
             window.location.href = "${pageContext.request.contextPath}/holiday_add?flag=1&date_cal=" + encodeURIComponent(today) + "&flag=1";
         }
     </script>

@@ -18,6 +18,7 @@ import com.cubesofttech.dao.SupportMenuDAO;
 import com.cubesofttech.dao.UserDAO;
 import com.cubesofttech.model.Support;
 import com.cubesofttech.model.SupportMenu;
+import com.cubesofttech.model.User;
 import com.cubesofttech.util.DateUtil;
 import com.cubesofttech.util.FileUtil;
 import com.opensymphony.xwork2.ActionSupport;
@@ -339,6 +340,10 @@ public class HelpSupportAction extends ActionSupport {
 
     public String list() {
         try {
+        	User onlineUser = (User) request.getSession().getAttribute("onlineUser");
+			if (onlineUser == null) {
+				return ERROR;
+			}
             // รับค่าเงื่อนไขจากหน้าจอ (ดึงเป็น Array เพื่อรองรับการเลือกหลายค่า)
             String searchText = request.getParameter("searchText");
             String[] status = request.getParameterValues("status");
@@ -398,6 +403,10 @@ public class HelpSupportAction extends ActionSupport {
 
     public String edit() {
         try {
+        	User onlineUser = (User) request.getSession().getAttribute("onlineUser");
+			if (onlineUser == null) {
+				return ERROR;
+			}
             if (supportId == null || supportId.isEmpty()) {
                 supportId = request.getParameter("supportId");
             }

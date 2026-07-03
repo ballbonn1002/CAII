@@ -1610,7 +1610,7 @@ function initMap() {
 
 			marker.setPosition(pos),
 			marker.setMap(map),
-			marker.setDraggable(true);
+			marker.setDraggable(false);
 
 			infoWindow.setContent('Current Position');
 			infoWindow.open(map,marker);
@@ -1662,6 +1662,15 @@ function adddata() {
 
 	$(document).ready(function() {
 		document.getElementById("y").value = y;
+	});
+	
+	$.ajax({
+		url: "saveLocationToSession",
+		type: "POST",
+		data: {
+			latitude: x,
+			longitude: y
+		}
 	});
 }
 function handleLocationError(browserHasGeolocation, infoWindow, pos) {

@@ -16,14 +16,14 @@
     background-size: cover;
     background-repeat: no-repeat;
   }
-    .select2-results__group {
+/*     .select2-results__group {
         font-size: 10px !important;
         color: #A1A5B7 !important;
         text-transform: uppercase !important;
         font-weight: 500 !important;
         padding-top: 10px !important;
         padding-bottom: 5px !important;
-    }
+    } */
     .badge-light-info {
     background-color: #E3D7FB !important;
     color: var(--bs-info) !important;
@@ -78,7 +78,7 @@
                                         <div class="flex-grow-1">
                                             <select name="searchText" id="userSelect" class="form-select rounded-start-0 border-start-0 h-45px" data-control="select2">
                                                 <option value="">All</option>
-                                                <optgroup label="User Enable" class="text-muted fs-8 fw-bold text-uppercase">
+<%--                                                 <optgroup label="User Enable" class="text-muted fs-8 fw-bold text-uppercase">
                                                    <c:forEach var="u" items="${userList}">
                                                         <c:set var="label" value="" />
                                                         
@@ -103,7 +103,7 @@
                                                         </option>
                                                         
                                                     </c:forEach>
-                                                </optgroup>
+                                                </optgroup>  --%>
                                             </select>
                                         </div>
                                     </div>
@@ -111,7 +111,7 @@
                                
                                <div class="col-md-3">
                                     <div class="input-group flex-nowrap">
-                                        <span class="input-group-text">Sortting
+                                        <span class="input-group-text">Sorting
                                         </span>
                                         <div class="overflow-hidden flex-grow-1">
                                             <select name="sortting" class="form-select rounded-start-0" data-control="select2" data-hide-search="true">
@@ -355,6 +355,89 @@
     var currentRequest = null; 
     var gpsMap = null;
     var gpsMarker = null;
+    
+    document.addEventListener("DOMContentLoaded", function () {
+
+        const select = document.getElementById("userSelect");
+        const users = [
+            <c:forEach items="${userList}" var="u" varStatus="s">
+            {
+                id: "${u.id}",
+                employee_id: "${u.employee_id}",
+                name_en: "${u.name_en}",
+                name: "${u.name}",
+                role_id: "${u.role_id}",
+                enable: "${u.enable}"
+            }${!s.last ? ',' : ''}
+            </c:forEach>
+        ];
+        const selectedValue = "${criteria.searchText}";
+
+        // option All
+        select.innerHTML = '<option value="">All</option>';
+
+        const enabledUsers = users.filter(u => String(u.enable) === "1");
+        const disabledUsers = users.filter(u => String(u.enable) !== "1");
+
+	    const sortByEmployeeId = (a, b) => {
+
+	        const aHasEmp = a.employee_id && a.employee_id.trim();
+	        const bHasEmp = b.employee_id && b.employee_id.trim();
+
+	        // ไม่มี employee_id ลงล่าง
+	        if (!aHasEmp && bHasEmp) return 1;
+	        if (aHasEmp && !bHasEmp) return -1;
+
+	        return (a.employee_id || "").localeCompare(
+	            (b.employee_id || ""),
+	            undefined,
+	            {
+	                numeric: true,
+	                sensitivity: "base"
+	            }
+	        );
+	    };
+
+        enabledUsers.sort(sortByEmployeeId);
+        disabledUsers.sort(sortByEmployeeId);
+
+        function buildGroup(label, list) {
+
+            const group = document.createElement("optgroup");
+            group.label = label;
+
+            list.forEach(u => {
+
+                let text = [];
+
+                if (u.employee_id) text.push(u.employee_id);
+                if (u.name_en) text.push(u.name_en);
+                if (u.name) text.push(u.name);
+                if (u.role_id) text.push(u.role_id);
+
+                const option = document.createElement("option");
+
+                option.value = u.id;
+                option.textContent = text.join(" - ");
+
+                if (selectedValue === u.id) {
+                    option.selected = true;
+                }
+
+                group.appendChild(option);
+            });
+
+            select.appendChild(group);
+        }
+
+        buildGroup("Enable", enabledUsers);
+        buildGroup("Disable", disabledUsers);
+
+        if ($(select).hasClass("select2-hidden-accessible")) {
+            $(select).trigger("change.select2");
+        }
+    });
+
 
     $(document).ready(function() {
         try {

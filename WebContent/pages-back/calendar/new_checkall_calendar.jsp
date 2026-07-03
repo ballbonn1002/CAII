@@ -949,25 +949,26 @@ var AppCalendar = function() {
 	                summary.holiday++;
 	            }
 	            // leave
-	            else if (dayEvents.some(ev => ev.extendedProps && ev.extendedProps.leave_type_id)) {
-                    var leaveEv = dayEvents.find(ev => ev.extendedProps && ev.extendedProps.leave_type_id);
-                    var noDay = parseFloat(leaveEv.extendedProps.no_day) || 0;
-					if (leaveEv.title.includes("ลาป่วย")) {
-                        status = "Sick Leave";
-						if(!processedLeaves.has(leaveEv)) {
-							summary.sickLeave += noDay;
-							processedLeaves.add(leaveEv);
-						}
-                    } else {
-                        status = "Leave";
-						if(!processedLeaves.has(leaveEv)) {
-							summary.leave += noDay;
-							processedLeaves.add(leaveEv);
-						}
-                    }
+	            if (dayEvents.some(ev => ev.extendedProps && ev.extendedProps.leave_type_id)) {
+                    dayEvents.filter(ev => ev.extendedProps && ev.extendedProps.leave_type_id).forEach(leaveEv => {
+                        var noDay = parseFloat(leaveEv.extendedProps.no_day) || 0;
+                        if (leaveEv.title.includes("ลาป่วย")) {
+                            status = "Sick Leave";
+                            if(!processedLeaves.has(leaveEv.id)) {
+                                summary.sickLeave += noDay;
+                                processedLeaves.add(leaveEv.id);
+                            }
+                        } else {
+                            status = "Leave";
+                            if(!processedLeaves.has(leaveEv.id)) {
+                                summary.leave += noDay;
+                                processedLeaves.add(leaveEv.id);
+                            }
+                        }
+                    });
 	            }
 	            // work
-	            else if (dayEvents.some(ev => ev.extendedProps && ev.extendedProps.eventType === "work")) {
+	            if (dayEvents.some(ev => ev.extendedProps && ev.extendedProps.eventType === "work")) {
 	                var workEv = dayEvents.find(ev => ev.extendedProps.eventType === "work");
 	                switch (workEv.extendedProps.status) {
 	                case "ONTIME":
@@ -1082,6 +1083,8 @@ var AppCalendar = function() {
 
 				initialView: 'dayGridMonth',
                 initialDate: noTime.format('YYYY-MM-DD'),
+                showNonCurrentDates: false,
+                fixedWeekCount: false,
 
 				nowIndicator: true,
                 editable: false,

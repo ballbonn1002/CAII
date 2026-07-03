@@ -796,7 +796,7 @@ function CreateListUsers(value, user_login, userSelect2) {
 		    console.log("before trigger");
 		    console.log("name2 =", selectElem.val());
 		    console.log("userSelect2 =", userSelect2);
-		    /* selectElem.trigger('change'); */
+		     selectElem.trigger('change');
 		    
 		    console.log("after trigger");
 		    console.log("name2 =", selectElem.val());
@@ -870,8 +870,8 @@ function CreateListUsers(value, user_login, userSelect2) {
 		}, function (start, end) {
 			$("#startdate").val(start.format("DD-MM-YYYY"));
 			$("#enddate").val(end.format("DD-MM-YYYY"));
-			/* $("#searchForm").submit(); */
-			$("#searchForm").submit(function(){
+			$("#searchForm").submit();
+			/* $("#searchForm").submit(function(){
 				console.log($("##########").val());
 			    console.log($("#name1").val());
 			    console.log($("#name2").val());
@@ -879,7 +879,7 @@ function CreateListUsers(value, user_login, userSelect2) {
 			    console.log($("#appr").val());
 			    console.log($("#startdate").val());
 			    console.log($("#enddate").val());
-			});
+			}); */
 		});
 
 		$("#startdate").val(start.format("DD-MM-YYYY"));
