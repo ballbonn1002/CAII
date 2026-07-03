@@ -463,6 +463,23 @@
 		<put-attribute name="body"
 			value="/pages-back/borrow/borrow_add.jsp" />
 	</definition>
+	
+	<!-- Company -->
+	<definition name="companyList" extends="baseLayout">
+		<put-attribute name="title" value="Company List" />
+		<put-attribute name="body"
+			value="/pages-back/company/company_list.jsp" />
+	</definition>
+	<definition name="companyEdit" extends="baseLayout">
+		<put-attribute name="title" value="Company Edit" />
+		<put-attribute name="body"
+			value="/pages-back/company/company_edit.jsp" />
+	</definition>
+	<definition name="companyAdd" extends="baseLayout">
+		<put-attribute name="title" value="Company Add" />
+		<put-attribute name="body"
+			value="/pages-back/company/company_add.jsp" />
+	</definition>
 
 	<!-- Work Log -->
 	<definition name="workLog" extends="baseLayout">

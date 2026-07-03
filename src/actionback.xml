@@ -1660,6 +1660,47 @@
 			class="com.cubesofttech.action.BorrowingAction"
 			method="request_return">
 		</action>
+		
+		<!-- ========================== Vender ============================== -->
+		
+		<!-- Company -->
+		<action name="company_list"
+			class="com.cubesofttech.action.CompanyAction" method="list">
+			<result name="success" type="tiles">companyList</result>
+			<result name="error">/index.jsp</result>
+		</action>
+		<action name="company_edit"
+			class="com.cubesofttech.action.CompanyAction" method="edit">
+			<result name="success" type="tiles">companyEdit</result>
+			<result name="error">/index.jsp</result>
+		</action>
+		<action name="company_add"
+			class="com.cubesofttech.action.CompanyAction" method="add">
+			<result name="success" type="tiles">companyAdd</result>
+			<result name="error">/index.jsp</result>
+		</action>
+		
+		<action name="create_company"
+			class="com.cubesofttech.action.CompanyAction" method="save">
+			<result name="success" type="redirect">company_list</result>
+			<result name="error">/index.jsp</result>
+		</action>
+		
+		<action name="delete_company"
+			class="com.cubesofttech.action.CompanyAction" method="delete">
+			<result name="success" type="redirect">company_list</result>
+			<result name="input" type="redirect">company_list</result>
+			<result name="error">/index.jsp</result>
+		</action>
+		
+		<action name="update_company"
+			class="com.cubesofttech.action.CompanyAction" method="update">
+			<result name="success" type="json"/>
+		</action>
+		
+		<action name="check_company_code"
+        	class="com.cubesofttech.action.CompanyAction" method="checkCompanyCode">
+        </action>
 
 		<!-- ========================== Work Log ============================== -->
 		<action name="work_log"

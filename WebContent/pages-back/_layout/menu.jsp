@@ -433,6 +433,10 @@ String targetURL = Constant.getWebContext2() + "/authorization?token=" + token;
 						</div>
 					</perm:permission>
 					<!--end:Menu item-->
+					
+					
+					<!--begin:Menu item-->
+					
 
 					<!--begin:Menu item-->
 					<perm:permission object="equipmentlist.view">
@@ -541,14 +545,13 @@ String targetURL = Constant.getWebContext2() + "/authorization?token=" + token;
 					<!--end:Menu item-->
 					<!--begin:Company-->
 					<div class="menu-item">
-						<a class="menu-link" href="#"
-							data-route="#"> <span class="menu-icon">
+						<a class="menu-link" href="company_list"
+							data-route="company"> <span class="menu-icon">
 								<i class="ki-duotone ki-delivery-3 fs-1"> <span
 									class="path1"></span> <span class="path2"></span>
 									<span class="path3"></span>
 							</i>
 						</span> <span class="menu-title">Company</span>
-						</i>
 						</a>
 					</div>
 					<!--end:Company-->
