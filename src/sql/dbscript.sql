@@ -350,3 +350,9 @@ VALUES ('pageurl.view', 'pageurl.view', 'สามารถดูรายกา
 ('worklocation.view', 'worklocation.view', 'สามารถดูรายการ work location ได้', '1', '2026-06-18 11:57:00', '2026-06-18 11:57:00', '100');
 
 --  PROD 1 JULY 2026 12:30
+
+-- 07/03/2026 ochi(Intern) : Add permissions Footer in authorized_object table.
+INSERT INTO `authorized_object` (`authorized_object_id`, `name`, `description`, `active`, `time_create`, `time_update`, `authorized_object_group_id`) 
+VALUES 
+('footer.view', 'footer.view', 'ดูแลจัดการ footer ของ เว็บ CubeSoftTech', '1', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '1');
+
