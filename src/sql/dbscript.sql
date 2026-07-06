@@ -356,3 +356,6 @@ INSERT INTO `authorized_object` (`authorized_object_id`, `name`, `description`, 
 VALUES 
 ('footer.view', 'footer.view', 'ดูแลจัดการ footer ของ เว็บ CubeSoftTech', '1', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '1');
 
+
+--  PROD 6 JULY 2026 10:00
+
