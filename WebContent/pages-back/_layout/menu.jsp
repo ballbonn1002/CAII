@@ -251,6 +251,18 @@ String targetURL = Constant.getWebContext2() + "/authorization?token=" + token;
 						</a>
 					</div>
 					<!--end:Menu item-->
+					<!--begin:MR-->
+					<div class="menu-item">
+						<a class="menu-link" href="#" data-route="#">
+							<span class="menu-icon"> <i
+								class="ki-duotone ki-delivery-3 fs-1"> <span
+									class="path1"></span> <span class="path2"></span> <span
+									class="path3"></span>
+							</i>
+						</span> <span class="menu-title">MR - Material Request</span>
+						</a>
+					</div>
+					<!--end:MR-->
 
 					<!--begin:Menu item-->
 					<div class="menu-item pt-5">
@@ -346,7 +358,7 @@ String targetURL = Constant.getWebContext2() + "/authorization?token=" + token;
 						</div>
 					</perm:permission>
 					<!--end:Menu item-->
-
+					<!--begin:Menu item-->
 					<perm:permission object="equipmentlist.view">
 						<!--begin:Menu item-->
 						<div class="menu-item pt-5">
@@ -357,9 +369,8 @@ String targetURL = Constant.getWebContext2() + "/authorization?token=" + token;
 							<!--end:Menu content-->
 						</div>
 						<!--end:Menu item-->
-						<!--begin:Menu item-->
+						<!--begin:Equipment-->
 						<div class="menu-item">
-							<!--begin:Menu link-->
 							<a class="menu-link" href="equipment_list"
 								data-route="equipment_list"> <span class="menu-icon">
 									<i class="ki-duotone ki-monitor-mobile fs-1"> <span
@@ -370,10 +381,40 @@ String targetURL = Constant.getWebContext2() + "/authorization?token=" + token;
 									class="path1"></span><span class="path2"></span>
 							</i>
 							</a>
-							<!--end:Menu link-->
 						</div>
+						<!--end:Equipment-->
 					</perm:permission>
 					<!--end:Menu item-->
+					<!--begin:Consumables-->
+					<div class="menu-item">
+						<a class="menu-link" href="#"
+							data-route="#"> <span class="menu-icon">
+								<i class="ki-duotone ki-lots-shopping fs-1"> 
+									<span class="path1"></span> <span class="path2"></span>
+									<span class="path3"></span> <span class="path4"></span>
+									<span class="path5"></span> <span class="path6"></span>
+									<span class="path7"></span> <span class="path8"></span>
+							</i>
+							</span> <span class="menu-title">Consumables</span>
+						</a>
+					</div>
+					<!--end:Consumables-->
+					<!--begin:Consumables-->
+						<div class="menu-item">
+							<a class="menu-link" href="#"
+								data-route="#"> <span class="menu-icon">
+									<i class="ki-duotone ki-parcel fs-1"> <span
+										class="path1"></span> <span class="path2"></span>
+										<span class="path3"></span><span class="path4"></span>
+										<span class="path5"></span>
+								</i>
+							</span> <span class="menu-title">Office Supplies</span> <i
+								class="ki-duotone ki-check-circle fs-3 text-success"> <span
+									class="path1"></span><span class="path2"></span>
+							</i>
+							</a>
+						</div>
+					<!--end:Consumables-->
 					<!--begin:Menu item-->
 					<perm:permission object="borrow.view">
 						<div class="menu-item">
@@ -392,6 +433,137 @@ String targetURL = Constant.getWebContext2() + "/authorization?token=" + token;
 						</div>
 					</perm:permission>
 					<!--end:Menu item-->
+
+					<!--begin:Menu item-->
+					<perm:permission object="equipmentlist.view">
+						<!--begin:Menu item-->
+						<div class="menu-item pt-5">
+							<!--begin:Menu content-->
+							<div class="menu-content">
+								<span class="menu-heading fw-bold text-uppercase fs-7">Product</span>
+							</div>
+							<!--end:Menu content-->
+						</div>
+						<!--end:Menu item-->
+						<!--begin:Stock-->
+						<div data-kt-menu-trigger="click" class="menu-item menu-accordion">
+							<span class="menu-link"> <span class="menu-icon"> 
+								<i class="ki-duotone ki-parcel fs-2">
+									<span class="path1"></span><span class="path2"></span>
+									<span class="path3"></span><span class="path4"></span>
+									<span class="path5"></span>
+								</i>
+							</span> <span class="menu-title">Stock</span> <span class="menu-arrow"></span>
+							</span>
+							<!--begin:Menu sub-->
+							<div class="menu-sub menu-sub-accordion">
+								<!--begin:Menu item-->
+								<div class="menu-item">
+									<a class="menu-link" href="#"
+										data-route="#"> <span class="menu-icon">
+											<span class="bullet bullet-dot"></span>
+									</span> <span class="menu-title">Consumables</span>
+									</a>
+								</div>
+								<!--end:Menu item-->
+								<!--begin:Menu item-->
+								<div class="menu-item">
+									<a class="menu-link" href="#"
+										data-route="#"> <span class="menu-icon">
+											<span class="bullet bullet-dot"></span>
+									</span> <span class="menu-title">Office Supplies</span>
+									</a>
+								</div>
+								<!--end:Menu item-->
+								
+							</div>
+							<!--end:Menu sub-->
+						</div>
+						<!--end:Menu item-->
+						<!--begin:MR-->
+						<div class="menu-item">
+							<a class="menu-link" href="#" data-route="#">
+								<span class="menu-icon">
+									<i class="ki-duotone ki-delivery-3 fs-1"> 
+										<span class="path1"></span><span class="path2"></span><span class="path3"></span>
+									</i>
+							</span> <span class="menu-title">MR - Approval</span>
+							</a>
+						</div>
+						<!--end:MR-->
+						<!--begin:PR-->
+						<div class="menu-item">
+							<a class="menu-link" href="#" data-route="#">
+								<span class="menu-icon"> 
+									<i class="ki-duotone ki-tablet-book fs-1"> 
+										<span class="path1"></span><span class="path2"></span>
+									</i>
+								</span> 
+								<span class="menu-title">PR - Purchase Requisition</span> 
+							</a>
+						</div>
+						<!--end:PR-->
+						<!--begin:PO-->
+						<div class="menu-item">
+							<a class="menu-link" href="#" data-route="#">
+								<span class="menu-icon"> 
+									<i class="ki-duotone ki-courier-express fs-1"> <span class="path1"></span>
+										<span class="path2"></span><span class="path3"></span><span class="path4"></span>
+										<span class="path5"></span><span class="path6"></span><span class="path7"></span>
+									</i>
+								</span> <span class="menu-title">PO - Purchase Order</span>
+							</a>
+						</div>
+						<!--end:PO-->
+						<!--begin:GR-->
+						<div class="menu-item">
+							<a class="menu-link" href="#" data-route="#">
+								<span class="menu-icon"> <in
+									class="ki-duotone ki-delivery-2 fs-1"> 
+									<span class="path1"></span><span class="path2"></span><span class="path3">
+									</span><span class="path4"></span><span class="path5"></span><span class="path6"></span>
+									<span class="path7"></span><span class="path8"></span><span class="path9"></span>
+								</in>
+							</span> <span class="menu-title">GR - Goods Receipt</span>
+							</a>
+						</div>
+						<!--end:GR-->
+					</perm:permission>
+					<!--end:Menu item-->
+					<!--begin:Menu item-->
+					<div class="menu-item pt-5">
+						<!--begin:Menu content-->
+						<div class="menu-content">
+							<span class="menu-heading fw-bold text-uppercase fs-7">Vender</span>
+						</div>
+						<!--end:Menu content-->
+					</div>
+					<!--end:Menu item-->
+					<!--begin:Company-->
+					<div class="menu-item">
+						<a class="menu-link" href="#"
+							data-route="#"> <span class="menu-icon">
+								<i class="ki-duotone ki-delivery-3 fs-1"> <span
+									class="path1"></span> <span class="path2"></span>
+									<span class="path3"></span>
+							</i>
+						</span> <span class="menu-title">Company</span>
+						</i>
+						</a>
+					</div>
+					<!--end:Company-->
+					<!--begin:Contact-->
+					<div class="menu-item">
+						<a class="menu-link" href="#"
+							data-route="#"> <span class="menu-icon">
+								<i class="ki-duotone ki-tablet-book fs-1"> <span
+									class="path1"></span> <span class="path2"></span>
+							</i>
+						</span> <span class="menu-title">Contact</span>
+						</i>
+						</a>
+					</div>
+					<!--end:Contact-->
 
 					<perm:permission object="master.view">
 						<!--begin:Menu item-->
