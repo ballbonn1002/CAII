@@ -70,6 +70,7 @@ import com.cubesofttech.model.Position;
 import com.cubesofttech.model.Role;
 import com.cubesofttech.model.Tag;
 import com.cubesofttech.model.User;
+import com.cubesofttech.system.Constant;
 import com.cubesofttech.util.Convert;
 import com.cubesofttech.util.DateUtil;
 import com.cubesofttech.util.FileUtil;
@@ -112,6 +113,9 @@ public class UserAction extends ActionSupport {
 
 	@Autowired
 	private WorkHoursDAO workHoursDAO;
+	
+	@Autowired
+	private Constant constant;
 
 	private User onlineUser = (User) request.getSession().getAttribute("onlineUser");
 
@@ -290,6 +294,7 @@ public class UserAction extends ActionSupport {
 	private String user_name;
 	private String user_nickName;
 	private String user_address;
+	private String user_line_id;
 	private String user_username;
 	private String user_titleNameTH;
 	private String user_titleNameEN;
@@ -501,6 +506,14 @@ public class UserAction extends ActionSupport {
 
 	public void setUser_address(String user_address) {
 		this.user_address = user_address;
+	}
+
+	public String getUser_line_id() {
+		return user_line_id;
+	}
+
+	public void setUser_line_id(String user_line_id) {
+		this.user_line_id = user_line_id;
 	}
 
 	private List<User> cubesoftUsers;
@@ -1843,6 +1856,9 @@ public class UserAction extends ActionSupport {
 		try {
 			User ur = (User) request.getSession().getAttribute("onlineUser");
 			String logonUser = ur.getId();
+			
+			String webLinelogin = constant.getWebLinelogin();
+			request.setAttribute("webLinelogin", webLinelogin);
 
 			User u = userDAO.findById(logonUser);
 
@@ -2046,6 +2062,7 @@ public class UserAction extends ActionSupport {
 				u.setCitizenId(this.user_citizenId);
 				u.setPassportId(this.user_passportId);
 				u.setEmail(this.user_email);
+				u.setLine_id(this.user_line_id);
 				u.setPhonenum(this.user_phonenum);
 				u.setAddress(this.user_address);
 				u.setEmergContact(this.user_emergContact);

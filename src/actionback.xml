@@ -1804,6 +1804,22 @@
 		</action>
 		
 		<!-- POST /webhook/LineOA -->
+		<action name="lineLogin" class="com.cubesofttech.action.LineLoginAction" method="login">
+            <result name="redirect" type="redirect">${authUrl}</result>
+        </action>
+
+        <action name="lineCallback" class="com.cubesofttech.action.LineLoginAction" method="callback">
+            <result name="success" type="redirect">my_profile</result>
+            <result name="error_callback" type="tiles">my_profile</result>
+            <result name="error" type="redirect">my_profile</result>
+        </action>
+        
+        <action name="lineUnbound" class="com.cubesofttech.action.LineLoginAction" method="unbound">
+            <result name="success" type="redirect">my_profile</result>
+            <result name="error_unbound" type="tiles">my_profile</result>
+            <result name="error" type="redirect">my_profile</result>
+        </action>
+        
 		<action name="lineWebhook"
 			class="com.cubesofttech.action.WebhookAction"
 			method="execute">

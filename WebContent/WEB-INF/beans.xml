@@ -31,6 +31,11 @@
         <property name="webPath" value="${web.path}" />
         <property name="webContext" value="${web.context}" />
         <property name="webContext2" value="${web.context2}" />
+        <property name="webLinelogin" value="${web.linelogin}" />
+        <property name="lineChannel_id" value="${line.channel_id}" />
+        <property name="lineChannel_secret" value="${line.channel_secret}" />
+        <property name="lineCallback_url" value="${line.callback_url}" />
+        <property name="lineChannel_access_token" value="${line.channel_access_token}" />
         <property name="webEnv" value="${env}" />
     </bean>
     

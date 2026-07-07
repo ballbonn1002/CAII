@@ -74,6 +74,7 @@ public class User implements Serializable {
             , java.sql.Timestamp lastLoginFailedTime	
             , String path
             , String line_id
+            , String uid_line_oa
             , String facebookid
             , String flagSearch
             , String phonenum
@@ -151,6 +152,7 @@ public class User implements Serializable {
         this.lastLoginFailedTime = lastLoginFailedTime;	
         this.path = path;
         this.line_id = line_id;
+        this.uid_line_oa = uid_line_oa;
         this.facebookid = facebookid;
         this.flagSearch = flagSearch;
         this.phonenum = phonenum;
@@ -286,6 +288,8 @@ public class User implements Serializable {
     //line
     @Column(name = "line_id")
     private String line_id;
+    @Column(name = "uid_line_oa")
+    private String uid_line_oa;
     @Column(name = "phone_num")
     private String phonenum;
     @Column(name = "gender")
@@ -682,6 +686,12 @@ public class User implements Serializable {
 	}
 	public void setLine_id(String line_id) {
 		this.line_id = line_id;
+	}
+	public String getUid_line_oa() {
+		return uid_line_oa;
+	}
+	public void setUid_line_oa(String uid_line_oa) {
+		this.uid_line_oa = uid_line_oa;
 	}
 	public String getPhonenum() {
         return phonenum;
