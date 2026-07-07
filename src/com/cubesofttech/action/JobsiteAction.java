@@ -103,6 +103,13 @@ public class JobsiteAction extends ActionSupport {
 	// ------------------------ LIST ------------------------
 	public String list() {
 		try {
+			User onlineUser = (User) request.getSession().getAttribute("onlineUser");
+
+			if (onlineUser == null) {
+
+				return ERROR;
+
+			}
 			jobsiteList = jobsiteDAO.findAllWithTeamAmount();
 		} catch (Exception e) {
 			log.error("Error in JobsiteAction.list()", e);
@@ -114,6 +121,13 @@ public class JobsiteAction extends ActionSupport {
 	// ------------------------ ADD ------------------------
 	public String addJobsite() {
 		try {
+			User onlineUser = (User) request.getSession().getAttribute("onlineUser");
+
+			if (onlineUser == null) {
+
+				return ERROR;
+
+			}
 			jobsite = new Jobsite();
 			jobsite.setIs_active("1");
 			userList = getActiveUsers();
@@ -129,6 +143,13 @@ public class JobsiteAction extends ActionSupport {
 	// ------------------------ EDIT ------------------------
 	public String editJobsite() {
 		try {
+			User onlineUser = (User) request.getSession().getAttribute("onlineUser");
+
+			if (onlineUser == null) {
+
+				return ERROR;
+
+			}
 			log.info("=== START editJobsite ===");
 
 			String idParam = trimOrNull(request.getParameter("id_sitejob"));
@@ -186,7 +207,6 @@ public class JobsiteAction extends ActionSupport {
 			}
 
 			try {
-				User onlineUser = (User) request.getSession().getAttribute("onlineUser");
 				String logonUserId = (onlineUser != null) ? onlineUser.getId() : "";
 				request.setAttribute("logonUser", logonUserId);
 
@@ -541,8 +561,35 @@ public class JobsiteAction extends ActionSupport {
 				String memberUserId = String.valueOf(r.get("u_id"));
 
 				Map<String, Object> statusMap = WorkHoursService.calculateDailyStatus(memberUserId, workDate);
+				
+				String currentStatus = (String) statusMap.get("status");
+				String leaveDesc = (String) statusMap.get("leave_desc");
+				String leaveStatus = (String) statusMap.get("leave_status");
+				String halfDay = (String) statusMap.get("halfDay");
 
-				member.put("status", statusMap.get("status"));
+				if ("NO_RECORD".equals(currentStatus) && leaveDesc != null && !leaveDesc.trim().isEmpty()) {
+					if ("WAITING".equals(leaveStatus)) {
+				        currentStatus = "WAITING";
+				    } else {
+					    if (leaveDesc.contains("ลาป่วย")) {
+					        currentStatus = "SICK_LEAVE";
+					    } else if (leaveDesc.contains("ลาพักร้อน")) {
+					        currentStatus = "ANNUAL_LEAVE";
+					    } else if (leaveDesc.contains("ลากิจ")) {
+					        currentStatus = "BUSINESS_LEAVE";
+					    } else if (leaveDesc.contains("ขาดงาน")) {
+					    		currentStatus = "ABSENT";
+					    } else {
+					        currentStatus = "OTHER_LEAVE";
+					    }
+					}
+				}
+//				log.debug("currentStatus" + currentStatus);
+//				log.debug("leaveDesc" + leaveDesc);
+
+				member.put("status", currentStatus);
+				member.put("leave_status", leaveStatus);
+				member.put("halfDay", halfDay);
 				member.put("check_in", statusMap.get("check_in"));
 				member.put("check_out", statusMap.get("check_out"));
 				member.put("leave_desc", statusMap.get("leave_desc"));

@@ -153,14 +153,20 @@
 					<div class="action-right">
 						<a class="btn btn-sm"
 							href="upload/template/Timesheet_Template2022.xlsx"
-							style="background-color: #8E44AD; color: white;"> Template </a> <label
-							class="btn btn-sm" for="myFile"
-							style="width: 80px; background-color: #E7505A; color: white; display: inline-block; cursor: pointer;">
-							Import <input class="fileinput fileinput-new"
-							data-provides="fileinput" type="file"
-							accept="application/vnd.ms-excel, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-							name="fileUpload" id="myFile" style="display: none;" />
-						</label> <a class="btn btn-sm"
+							style="background-color: #8E44AD; color: white;"> Template </a>
+
+
+						<form action="timeSheetImport" method="post" id="timeSheetImport"
+							enctype="multipart/form-data" class="btn btn-sm"
+							style="width: 80px; background-color: #E7505A; color: white; display: inline-block;">
+							<label for="myFile" style="cursor: pointer;"> Import <input
+								class="fileinput fileinput-new" data-provides="fileinput"
+								type="file"
+								accept="application/vnd.ms-excel, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+								name="fileUpload" id="myFile" style="display: none;" />
+							</label>
+						</form>
+						<a class="btn btn-sm"
 							href="timeSheetExport?date=${searchDate}&userId=${not empty searchUserId ? searchUserId : user.id}"
 							title="Print" style="background-color: #26C281; color: white;">Export</a>
 					</div>
@@ -191,7 +197,6 @@
 									<th></th>
 									<th></th>
 									<th></th>
-
 								</tr>
 							</thead>
 							<tbody>
@@ -258,10 +263,9 @@
 														type="text" name="description"
 														id="input-description-${ts.id}"
 														class="form-control py-4 d-none" value="${ts.description}"></td>
-													<td><fmt:formatDate value="${ts.timespent}"
-															pattern="HH:mm" /></td>
+													<td>${ts.timespent}"</td>
 													<c:choose>
-														<c:when test="${holiday == null && leave == null}">
+														<c:when test="${empty holiday  && empty leave}">
 															<td class="fs-6 fw-normal"><fmt:parseDate
 																	value="${d.date}" pattern="dd/MM/yyyy" var="parsedDate" />
 																<div class="d-flex gap-2 justify-content-center">
@@ -284,8 +288,6 @@
 																			</i>
 																		</button>
 																	</perm:permission>
-
-
 																</div></td>
 														</c:when>
 														<c:otherwise>
@@ -355,8 +357,8 @@
 									<th>ขาดงาน</th>
 									<th>ลางาน</th>
 									<th>ล่วงเวลาทั้งหมด</th>
-									<th>จำนวนชั่วโมงการบริการส่วนเพิ่ม x1</th>
 									<th>จำนวนชั่วโมงการบริการส่วนเพิ่ม x1.5</th>
+									<th>จำนวนชั่วโมงการบริการส่วนเพิ่ม x2</th>
 									<th>จำนวนชั่วโมงการบริการส่วนเพิ่ม x3</th>
 								</tr>
 							</thead>
@@ -369,30 +371,21 @@
 									<td>${total_absent}</td>
 									<td>${total_leave}</td>
 									<td>${total_OT}</td>
-									<td></td>
-									<td></td>
-									<td></td>
+									<td>${total_days_ot_x15}</td>
+									<td>${total_days_ot_x2}</td>
+									<td>${total_days_ot_x3}</td>
 								</tr>
 								<tr
 									class="border-bottom fs-6 fw-normal text-center align-middle">
 									<td class="px-4">ชั่วโมง(นาที/60*100)</td>
-									<%-- <td><fmt:formatDate value="${0}" pattern="HH:mm" /></td>
-									<td><fmt:formatDate value="${0}" pattern="HH:mm" /></td>
-									<td><fmt:formatDate value="${0}" pattern="HH:mm" /></td>
-									<td><fmt:formatDate value="${0}" pattern="HH:mm" /></td>
-									<td><fmt:formatDate value="${0}" pattern="HH:mm" /></td>
-									<td><fmt:formatDate value="${0}" pattern="HH:mm" /></td>
-									<td><fmt:formatDate value="${0}" pattern="HH:mm" /></td>
-									<td><fmt:formatDate value="${0}" pattern="HH:mm" /></td> --%>
-
-									<td></td>
-									<td></td>
-									<td></td>
-									<td></td>
-									<td></td>
-									<td></td>
-									<td></td>
-									<td></td>
+									<td>${hours_total_work}</td>
+									<td>${hours_total_late}</td>
+									<td>${hours_total_absent}</td>
+									<td>${hours_total_leave}</td>
+									<td>${hours_total_ot}</td>
+									<td>${sum_ot_x15 }</td>
+									<td>${sum_ot_x2 }</td>
+									<td>${sum_ot_x3 }</td>
 								</tr>
 							</tbody>
 						</table>
@@ -413,6 +406,12 @@
 			$('#userSelect, #date').on('change', function() {
 				$('#timeSheetForm').submit();
 			});
+			
+			$('#myFile').on('change', function() {
+		        if ($(this).val()) {
+		            $('#timeSheetImport').submit();
+		        }
+		    });
 
 			const fpOpts = {
 				plugins : [ new monthSelectPlugin({

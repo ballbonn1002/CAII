@@ -545,6 +545,8 @@ public class BorrowAction extends ActionSupport {
 				fileupload.setName(name2);
 				fileupload.setType(type2);
 				fileupload.setTimeUpdate(DateUtil.getCurrentTime());
+				fileupload.setPage("equipment");
+				fileupload.setPageId(String.valueOf(equipment.getEquipmentId()));
 				fileuploadDAO.save(fileupload);
 				equipment.setImage("/upload/user/" + maxId + "_" + fileName);
 				equipment.setTimeUpdate(DateUtil.getCurrentTime());
@@ -612,6 +614,8 @@ public class BorrowAction extends ActionSupport {
 				fileupload.setName(name2);
 				fileupload.setType(type2);
 				fileupload.setTimeCreate(DateUtil.getCurrentTime());
+				fileupload.setPage("equipment");
+				fileupload.setPageId(String.valueOf(equipmentDAO.getMaxId() + 1));
 				fileuploadDAO.save(fileupload);
 				Equipment equipment = new Equipment();
 				equipment.setUserCreate(ur.getId());

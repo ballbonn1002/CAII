@@ -40,5 +40,7 @@ public interface FileUploadDAO {
 
 	List<FileUpload> searchFiles(String keyword, Date startDate, Date endDate, String userId) throws Exception;
 
+	void updateTempArticleImageToArticle(String tempKey, String articleId);
+
 
 }

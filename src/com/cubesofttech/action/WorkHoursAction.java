@@ -20,6 +20,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.apache.log4j.Logger;
 import org.apache.struts2.ServletActionContext;
@@ -270,6 +271,21 @@ public class WorkHoursAction extends ActionSupport {
 
 			String lat = request.getParameter("latitude");
 			String lng = request.getParameter("longitude");
+			
+			//set latitude/longitude ลง session
+			HttpSession session = request.getSession();
+
+			if (lat == null || "".equals(lat.trim())) {
+			    lat = (String) session.getAttribute("latitude");
+			} else {
+			    session.setAttribute("latitude", lat);
+			}
+
+			if (lng == null || "".equals(lng.trim())) {
+			    lng = (String) session.getAttribute("longitude");
+			} else {
+			    session.setAttribute("longitude", lng);
+			}
 
 			Map<String, String> headersInfo = getHeadersInfo(request);
 			String userAgent = (String) headersInfo.get("user-agent");
@@ -935,5 +951,39 @@ public class WorkHoursAction extends ActionSupport {
 	    } catch (Exception e) {
 	        log.error("loadNotification error", e);
 	    }
+	}
+	
+	public String saveLocationToSession() {
+	    Map<String, Object> result = new HashMap<>();
+	    try {
+	        String lat = request.getParameter("latitude");
+	        String lng = request.getParameter("longitude");
+
+	        HttpSession session = request.getSession();
+
+	        if (lat != null && !lat.trim().isEmpty()) {
+	            session.setAttribute("latitude", lat);
+	        }
+	        if (lng != null && !lng.trim().isEmpty()) {
+	            session.setAttribute("longitude", lng);
+	        }
+
+	        result.put("status", "success");
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        result.put("status", "error");
+	        result.put("message", e.getMessage());
+	    }
+
+	    try {
+	        ObjectMapper mapper = new ObjectMapper();
+	        response.setContentType("application/json;charset=UTF-8");
+	        response.getWriter().write(mapper.writeValueAsString(result));
+	        response.getWriter().flush();
+	        response.getWriter().close();
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	    }
+	    return null;
 	}
 }

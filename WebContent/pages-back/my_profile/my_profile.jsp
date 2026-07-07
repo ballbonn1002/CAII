@@ -1697,7 +1697,7 @@ document.addEventListener("DOMContentLoaded", function () {
         }
 
         if (file.size > maxSize) {
-            errorMsg.textContent = "Image must be smaller than 2MB.";
+            errorMsg.textContent = "Image must be smaller than 10MB.";
             this.value = "";
             return;
         } else {

@@ -100,10 +100,15 @@
 			value="/pages-back/equipment/equipment_type_add.jsp" />
 	</definition>
 
-	<!-- FORGET PASSWORD (standalone page) -->
+	<!-- FORGET PASSWORD -->
 	<definition name="forgetPassword"
 		template="/pages-back/forget_password/forget_password.jsp">
 		<put-attribute name="title" value="Forget Password" />
+	</definition>
+	
+	<definition name="newPassword"
+		template="/pages-back/forget_password/reset_password.jsp">
+		<put-attribute name="title" value="Reset Password" />
 	</definition>
 
 	<!-- RESET PASSWORD -->
@@ -113,7 +118,7 @@
 			value="/pages-back/forget_password/reset_password.jsp" />
 	</definition>
 
-	<!-- FORGET PASSWORD SUCCESS (standalone page) -->
+	<!-- FORGET PASSWORD SUCCESS -->
 	<definition name="resetPasswordSuccess"
 		template="/pages-back/forget_password/reset_password_success.jsp">
 		<put-attribute name="title"
@@ -511,6 +516,19 @@
 		<put-attribute name="body"
 			value="/pages-back/article/article_preview.jsp" />
 	</definition>
+	
+		<!-- Footer Menu -->
+	<definition name="footer_list" extends="baseLayout">
+		<put-attribute name="title" value="Footer Menu" />
+		<put-attribute name="body"
+			value="/pages-back/footer/footer_list.jsp" />
+	</definition>
+	
+	<definition name="footer_form" extends="baseLayout">
+		<put-attribute name="title" value="Add New Footer" />
+		<put-attribute name="body"
+			value="/pages-back/footer/footer_form.jsp" />
+	</definition>
 
 	<!-- Overtime Request -->
 	<definition name="overtime_request_list"
@@ -654,5 +672,12 @@
 		<put-attribute name="body"
 			value="/pages-back/file_management/file_management.jsp" />
 	</definition>
-
+	
+	<!-- Work Location -->
+	<definition name="workLocation" extends="baseLayout">
+		<put-attribute name="title" value="Work Location" />
+		<put-attribute name="body"
+			value="/pages-back/work_location/work_location_list.jsp" />
+	</definition>
+	
 </tiles-definitions>

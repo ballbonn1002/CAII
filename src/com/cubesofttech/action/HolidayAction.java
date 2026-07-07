@@ -3,6 +3,7 @@ package com.cubesofttech.action;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -38,6 +39,10 @@ public class HolidayAction extends ActionSupport {
     HttpServletResponse response = ServletActionContext.getResponse();
 
     public String List() {
+    	User onlineUser = (User) request.getSession().getAttribute("onlineUser");
+		if (onlineUser == null) {
+			return ERROR;
+		}
         long t0 = System.currentTimeMillis();
         request.setAttribute("dbTried", true);
         try {
@@ -45,7 +50,8 @@ public class HolidayAction extends ActionSupport {
 
             String yearParam = request.getParameter("year");
 
-            Integer currentYear = Calendar.getInstance().get(Calendar.YEAR);
+//            Integer currentYear = Calendar.getInstance().get(Calendar.YEAR);
+            Integer currentYear = java.time.LocalDate.now().getYear();
 
             List<Object> yearsRaw = holidayDAO.searchallyear();
             if (yearsRaw == null) yearsRaw = new ArrayList<>();
@@ -128,8 +134,14 @@ public class HolidayAction extends ActionSupport {
             String date = request.getParameter("date");
             String date1 = request.getParameter("date1");
 
+//            if (date != null) {
+//                java.util.Date utilDate = new SimpleDateFormat("dd-MM-yyyy").parse(date);
+//                java.sql.Date start_date = new java.sql.Date(utilDate.getTime());
+//                request.setAttribute("flag12", start_date);
+//            }
             if (date != null) {
-                java.util.Date utilDate = new SimpleDateFormat("dd-MM-yyyy").parse(date);
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
+                java.util.Date utilDate = sdf.parse(date);
                 java.sql.Date start_date = new java.sql.Date(utilDate.getTime());
                 request.setAttribute("flag12", start_date);
             }
@@ -192,16 +204,30 @@ public class HolidayAction extends ActionSupport {
                 Date_End = Date_Start;
             }
 
-            SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
+//            SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy", Locale.ENGLISH);
+//            sdf.setLenient(false);
+//            java.sql.Date start_date = new java.sql.Date(sdf.parse(Date_Start).getTime());
+//            java.sql.Date end_date   = new java.sql.Date(sdf.parse(Date_End).getTime());
+//
+//            if (start_date.after(end_date)) {
+//                request.setAttribute("flag", flag);
+//                request.setAttribute("date", Date_Start);
+//                request.setAttribute("flag_form", checkFlag);
+//                return INPUT;
+//            }
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
             sdf.setLenient(false);
-            java.sql.Date start_date = new java.sql.Date(sdf.parse(Date_Start).getTime());
-            java.sql.Date end_date   = new java.sql.Date(sdf.parse(Date_End).getTime());
 
-            if (start_date.after(end_date)) {
-                request.setAttribute("flag", flag);
-                request.setAttribute("date", Date_Start);
-                request.setAttribute("flag_form", checkFlag);
-                return INPUT;
+            java.sql.Date start_date = null;
+            java.sql.Date end_date   = null;
+
+            if (Date_Start != null && !Date_Start.trim().isEmpty()) {
+                start_date = new java.sql.Date(sdf.parse(Date_Start).getTime());
+            }
+            if (Date_End != null && !Date_End.trim().isEmpty()) {
+                end_date = new java.sql.Date(sdf.parse(Date_End).getTime());
+            } else {
+                end_date = start_date;
             }
 
             if (start_date.equals(end_date)) {
@@ -254,6 +280,10 @@ public class HolidayAction extends ActionSupport {
     // ------------------- Edit -------------------
     public String Edit() {
         try {
+        	User onlineUser = (User) request.getSession().getAttribute("onlineUser");
+			if (onlineUser == null) {
+				return ERROR;
+			}
             String dateid = request.getParameter("id");
             request.setCharacterEncoding("UTF-8");
             request.setAttribute("flag_form", checkFlag);
@@ -303,19 +333,32 @@ public class HolidayAction extends ActionSupport {
             if (Date_End == null || Date_End.trim().isEmpty()) {
                 Date_End = Date_Start;
             }
-
-            SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
             sdf.setLenient(false);
-            java.sql.Date start_date = new java.sql.Date(sdf.parse(Date_Start).getTime());
-            java.sql.Date end_date   = new java.sql.Date(sdf.parse(Date_End).getTime());
 
-            if (start_date.after(end_date)) {
-                request.setAttribute("flag", flag);
-                request.setAttribute("date", Date_Start);
-                request.setAttribute("holidayrecord", holidayDAO.findById(id));
-                request.setAttribute("flag_form", checkFlag);
-                return INPUT;
+            java.sql.Date start_date = null;
+            java.sql.Date end_date   = null;
+
+            if (Date_Start != null && !Date_Start.trim().isEmpty()) {
+                start_date = new java.sql.Date(sdf.parse(Date_Start).getTime());
             }
+            if (Date_End != null && !Date_End.trim().isEmpty()) {
+                end_date = new java.sql.Date(sdf.parse(Date_End).getTime());
+            } else {
+                end_date = start_date;
+            }
+//            SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
+//            sdf.setLenient(false);
+//            java.sql.Date start_date = new java.sql.Date(sdf.parse(Date_Start).getTime());
+//            java.sql.Date end_date   = new java.sql.Date(sdf.parse(Date_End).getTime());
+//
+//            if (start_date.after(end_date)) {
+//                request.setAttribute("flag", flag);
+//                request.setAttribute("date", Date_Start);
+//                request.setAttribute("holidayrecord", holidayDAO.findById(id));
+//                request.setAttribute("flag_form", checkFlag);
+//                return INPUT;
+//            }
 
             Holiday holiday = holidayDAO.findById(id);
             if (holiday == null) {
@@ -421,6 +464,10 @@ public class HolidayAction extends ActionSupport {
     }
 
     public String formadd() {
+    	User onlineUser = (User) request.getSession().getAttribute("onlineUser");
+		if (onlineUser == null) {
+			return ERROR;
+		}
         String flag = request.getParameter("flag");
         String date = request.getParameter("date_cal");
 

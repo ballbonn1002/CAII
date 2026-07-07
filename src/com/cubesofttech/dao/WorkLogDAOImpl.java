@@ -108,4 +108,99 @@ public class WorkLogDAOImpl implements WorkLogDAO {
         sessionFactory.getCurrentSession().update(workHours);
         sessionFactory.getCurrentSession().flush();
     }
+    
+    @Override
+    public List<Map<String, Object>> searchWorkLocation(Map<String, Object> params) throws Exception {
+        try {
+            String searchText = (String) params.get("searchText");
+            String startDate = (String) params.get("startDate");
+            String endDate = (String) params.get("endDate");
+            String sortting = (String) params.get("sortting");
+
+            String[] siteIds = (String[]) params.get("siteIds");
+            String[] actions = (String[]) params.get("actions");
+
+            StringBuilder sql = new StringBuilder();
+
+            sql.append(" SELECT ");
+            sql.append("   wh.work_hours_id, ");
+            sql.append("   wh.work_hours_type, ");
+            sql.append("   wh.work_hours_time_work, ");
+            sql.append("   wh.time_create, ");
+            sql.append("   wh.time_update, ");
+            sql.append("   wh.work_type, ");
+            sql.append("   wh.description, ");
+            sql.append("   wh.user_agent, ");
+            sql.append("   wh.ip_address, ");
+            sql.append("   wh.latitude, ");
+            sql.append("   wh.longitude, ");
+            sql.append("   u.id AS user_id, ");
+            sql.append("   u.name, ");
+            sql.append("   u.name_en, ");
+            sql.append("   u.position_id, ");
+            sql.append("   u.employee_id, ");
+            sql.append("   u.role_id, ");
+            sql.append("   j.id_sitejob, ");
+            sql.append("   j.name_site ");
+            sql.append(" FROM work_hours wh ");
+            sql.append(" LEFT JOIN user u ON wh.user_create = u.id ");
+            sql.append(" LEFT JOIN job_site j ON j.id_sitejob = u.id_sitejob ");
+            sql.append(" WHERE 1=1 ");
+
+            if (startDate != null && endDate != null && !startDate.isEmpty() && !endDate.isEmpty()) {
+                sql.append(" AND DATE(wh.work_hours_time_work) ");
+                sql.append(" BETWEEN STR_TO_DATE(:startDate, '%d-%m-%Y') ");
+                sql.append(" AND STR_TO_DATE(:endDate, '%d-%m-%Y') ");
+            }
+
+            if (siteIds != null && siteIds.length > 0) {
+                sql.append(" AND EXISTS ( ");
+                sql.append("   SELECT 1 ");
+                sql.append("   FROM job_site_team jst ");
+                sql.append("   WHERE jst.user_id = wh.user_create ");
+                sql.append("   AND jst.id_sitejob IN (:siteIds) ");
+                sql.append(" ) ");
+            }
+
+            if (actions != null && actions.length > 0) {
+                sql.append(" AND wh.work_hours_type IN (:actions) ");
+            }
+
+            if (searchText != null && !searchText.isEmpty()) {
+                sql.append(" AND u.id = :userId ");
+            }
+
+            if ("1".equals(sortting)) {
+                sql.append(" ORDER BY wh.work_hours_time_work ASC ");
+            } else {
+                sql.append(" ORDER BY wh.work_hours_time_work DESC ");
+            }
+
+            SQLQuery query = sessionFactory.getCurrentSession().createSQLQuery(sql.toString());
+            query.setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
+
+            if (startDate != null && endDate != null && !startDate.isEmpty() && !endDate.isEmpty()) {
+                query.setParameter("startDate", startDate);
+                query.setParameter("endDate", endDate);
+            }
+
+            if (siteIds != null && siteIds.length > 0) {
+                query.setParameterList("siteIds", siteIds);
+            }
+
+            if (actions != null && actions.length > 0) {
+                query.setParameterList("actions", actions);
+            }
+
+            if (searchText != null && !searchText.isEmpty()) {
+                query.setParameter("userId", searchText);
+            }
+
+            return query.list();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw e;
+        }
+    }
 }

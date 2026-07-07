@@ -71,4 +71,17 @@ public class ProjectDAOImpl implements ProjectDAO {
 		}
 	}
 
+	@Override
+	public Project findByName(String projectName) throws Exception {
+
+		Session session = this.sessionFactory.getCurrentSession();
+
+		String sql = "SELECT * FROM project WHERE project_name = :projectName";
+
+		List<Project> list = session.createSQLQuery(sql).addEntity(Project.class)
+				.setParameter("projectName", projectName).list();
+
+		return list.isEmpty() ? null : list.get(0);
+	}
+
 }

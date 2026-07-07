@@ -44,6 +44,10 @@ public class DepartmentAction extends ActionSupport {
     /** -------------------- LIST -------------------- */
     public String list() {
         try {
+        	User onlineUser = (User) request.getSession().getAttribute("onlineUser");
+			if (onlineUser == null) {
+				return ERROR;
+			}
             departmentList = departmentDAO.findAll();
             return SUCCESS;
         } catch (Exception e) {
@@ -81,6 +85,11 @@ public class DepartmentAction extends ActionSupport {
     /** -------------------- UPDATE -------------------- */
     public String updateDepart() {
         try {
+        	User onlineUser = (User) request.getSession().getAttribute("onlineUser");
+			if (onlineUser == null) {
+				return ERROR;
+			}
+			
             String departmentId = trimOrNull(request.getParameter("departmentId"));
             if (departmentId == null) departmentId = trimOrNull(request.getParameter("id"));
             if (departmentId == null) departmentId = trimOrNull(request.getParameter("ID"));
@@ -162,6 +171,11 @@ public class DepartmentAction extends ActionSupport {
     /** -------------------- ADD -------------------- */
     public String addDepart() {
         try {
+        	User onlineUser = (User) request.getSession().getAttribute("onlineUser");
+			if (onlineUser == null) {
+				return ERROR;
+			}
+			
             return SUCCESS;
         } catch (Exception e) {
             log.error("[addDepart] error", e);

@@ -1406,6 +1406,19 @@ public class TravelAction extends ActionSupport {
 				} catch (Exception ignore) {
 				}
 			}
+			
+			boolean onlineUserSignature = false;
+
+	        if (onlineUser != null) {
+	            User u = userDAO.findById(onlineUser.getId()); 
+	            
+	            if (u != null) {
+	                String sig = u.getPathSignature();
+	                onlineUserSignature = sig != null && !sig.trim().isEmpty() && !"null".equalsIgnoreCase(sig.trim());
+	            }
+	        }
+
+	        request.setAttribute("onlineUserSignature", onlineUserSignature);
 
 			return SUCCESS;
 
@@ -1522,6 +1535,10 @@ public class TravelAction extends ActionSupport {
 			HttpServletRequest request = ServletActionContext.getRequest();
 			HttpServletResponse response = ServletActionContext.getResponse();
 			ServletContext context = request.getServletContext();
+			User onlineUser = (User) request.getSession().getAttribute("onlineUser");
+			if (onlineUser == null) {
+				return ERROR;
+			}
 
 			String expenseGroupIdStr = request.getParameter("expense_group_id");
 			String jasperPath = context.getRealPath(JASPERPATH);

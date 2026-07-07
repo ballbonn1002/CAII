@@ -85,6 +85,10 @@ public class RoleAction extends ActionSupport {
 
 	public String list() {
 		try {
+			User onlineUser = (User) request.getSession().getAttribute("onlineUser");
+			if (onlineUser == null) {
+				return ERROR;
+			}
 			request.setAttribute("roleList", roleDAO.sequense2());
 			return SUCCESS;
 		} catch (Exception e) {
@@ -96,6 +100,9 @@ public class RoleAction extends ActionSupport {
 	public String openEdit() {
 		try {
 			User ur = (User) request.getSession().getAttribute("onlineUser");
+			if (ur == null) {
+				return ERROR;
+			}
 			String ur2 = ur.getId();
 			role = roleDAO.findById(roleId);
 			HttpSession session = request.getSession();
@@ -134,6 +141,10 @@ public class RoleAction extends ActionSupport {
 	
 	public String openEdit2() {
 	    try {
+	    	User onlineUser = (User) request.getSession().getAttribute("onlineUser");
+			if (onlineUser == null) {
+				return ERROR;
+			}
 	        request.setAttribute("role", role);
 	        
 	        List<AuthorizedObjectGroup> authorizedHierarchy = authorizedObjectGroupDAO.getAuthorizedHierarchy();

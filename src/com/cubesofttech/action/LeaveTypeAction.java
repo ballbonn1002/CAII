@@ -32,6 +32,10 @@ public class LeaveTypeAction extends ActionSupport {
 
 	public String getAllLeaveType() {
 		try {
+			User onlineUser = (User) request.getSession().getAttribute("onlineUser");
+			if (onlineUser == null) {
+				return ERROR;
+			}
 			leaveTypeList = leaveTypeDAO.findAll();
 			leaveTypeList.sort(Comparator.comparingInt(o -> {
 				String id = o.getLeaveTypeId();
@@ -59,6 +63,10 @@ public class LeaveTypeAction extends ActionSupport {
 
 	public String addLeaveType() {
 		try {
+			User onlineUser = (User) request.getSession().getAttribute("onlineUser");
+			if (onlineUser == null) {
+				return ERROR;
+			}
 			leaveType = new LeaveType();
 			leaveTypeList = leaveTypeDAO.findAll();
 		} catch (Exception e) {
@@ -69,6 +77,10 @@ public class LeaveTypeAction extends ActionSupport {
 
 	public String editLeaveType() {
 		try {
+			User onlineUser = (User) request.getSession().getAttribute("onlineUser");
+			if (onlineUser == null) {
+				return ERROR;
+			}
 			String id = request.getParameter("leaveTypeId");
 			leaveType = leaveTypeDAO.findById(id);
 			if (leaveType == null) {

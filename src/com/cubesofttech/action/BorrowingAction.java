@@ -591,6 +591,10 @@ public class BorrowingAction extends ActionSupport {
 	
 	public String eBorrowEdit() {
 	    try {
+	    	User ur = (User) request.getSession().getAttribute("onlineUser");
+	    	if (onlineUser == null) {
+				return ERROR;
+			}
 	        String bId = request.getParameter("id");
 
 	        String userJSON = userDAO.userListJSON();
@@ -608,7 +612,6 @@ public class BorrowingAction extends ActionSupport {
 	        List<Map<String, Object>> borrowWithUser =
 	                borrowDAO.findBorrowWithUserByEquipmentId2(String.valueOf(borrow.getEquipmentId()));
 
-	        User ur = (User) request.getSession().getAttribute("onlineUser");
 	        boolean hasSignature = false;
 
 	        if (ur != null) {
@@ -925,6 +928,8 @@ public class BorrowingAction extends ActionSupport {
 	                
 	                hasSignature = sig != null && !sig.trim().isEmpty() && !"null".equalsIgnoreCase(sig.trim());
 	            }
+	        }else if(ur == null){
+	        	return ERROR;
 	        }
 
 	        request.setAttribute("hasSignature", hasSignature);

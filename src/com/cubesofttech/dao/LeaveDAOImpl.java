@@ -536,8 +536,9 @@ public class LeaveDAOImpl implements LeaveDAO {
 	    try {
 	        StringBuilder sql = new StringBuilder(
 	            "SELECT leaves.leave_id, leaves.user_id, user.name, leaves.leave_status_id, leaves.leave_type_id, leave_type.leave_type_name, leaves.half_day, leaves.start_date, "
-	            + "leaves.start_time, leaves.end_time, leaves.end_date, leaves.no_day ,user.path, leaves.time_create, leaves.description "
+	            + "leaves.start_time, leaves.end_time, leaves.end_date, leaves.no_day ,user.path, leaves.time_create, leaves.description, leaves.leave_file, file.name AS file_name, file.type "
 	            + "FROM leaves LEFT JOIN leave_type ON leave_type.leave_type_id = leaves.leave_type_id LEFT JOIN user ON leaves.user_id = user.id "
+	            + "LEFT JOIN file ON leaves.leave_file = file.file_id "
 	            + "WHERE leaves.start_date BETWEEN :startDate AND :endDate ");
 
 	        sql.append("ORDER BY leaves.leave_status_id ASC, leaves.start_date DESC");
@@ -1691,13 +1692,14 @@ public class LeaveDAOImpl implements LeaveDAO {
 	        StringBuilder sql = new StringBuilder(
 	            "SELECT leaves.leave_id, leaves.user_id, user.name, leaves.leave_status_id, leaves.leave_type_id, leave_type.leave_type_name, "
 	            + "leaves.half_day, leaves.start_date, leaves.start_time, leaves.end_time, leaves.end_date, leaves.no_day, "
-	            + "leaves.appr_user_id, user.path, leaves.time_create, leaves.description "
+	            + "leaves.appr_user_id, user.path, leaves.time_create, leaves.description, leaves.leave_file, file.name AS file_name, file.type "
 	            + "FROM leaves LEFT JOIN leave_type ON leave_type.leave_type_id = leaves.leave_type_id "
 	            + "LEFT JOIN user ON leaves.user_id = user.id "
+	            + "LEFT JOIN file ON CAST(leaves.leave_file AS UNSIGNED) = file.file_id "
 	            + "WHERE leaves.start_date BETWEEN :startDate AND :endDate "
 	            + "AND (user.manager_id = :manager OR leaves.appr_user_id = :manager) "
 	        );
-
+	        
 	        sql.append("ORDER BY leaves.leave_status_id ASC, leaves.start_date DESC");
 //	        sql.append("ORDER BY leaves.start_date DESC, leaves.leave_status_id ASC");
 
@@ -1723,8 +1725,9 @@ public class LeaveDAOImpl implements LeaveDAO {
 			StringBuilder sql = new StringBuilder(
 					"SELECT leaves.leave_id, leaves.user_id, user.name, leaves.leave_status_id, leaves.leave_type_id, leave_type.leave_type_name, leaves.half_day, "
 					+ "leaves.start_date, leaves.start_time, leaves.end_time, leaves.end_date, leaves.no_day , file.path, leaves.time_create, "
-					+ "leaves.description FROM leaves LEFT JOIN leave_type ON leave_type.leave_type_id = leaves.leave_type_id "
-					+ "LEFT JOIN user ON leaves.user_id = user.id LEFT JOIN file ON leaves.leave_file = file.file_id "
+					+ "leaves.description, leaves.leave_file, file.name AS file_name, file.type "
+					+ "FROM leaves LEFT JOIN leave_type ON leave_type.leave_type_id = leaves.leave_type_id "
+					+ "LEFT JOIN user ON leaves.user_id = user.id LEFT JOIN file ON CAST(leaves.leave_file AS UNSIGNED) = file.file_id "
 					+ "WHERE leaves.start_date BETWEEN :startDate AND :endDate ");
 			if(manager != null && !manager.isEmpty()) {
 				sql.append("AND leaves.appr_user_id = :manager ");
@@ -2036,10 +2039,12 @@ public class LeaveDAOImpl implements LeaveDAO {
 		try {
 			StringBuilder sql = new StringBuilder(
 					"SELECT leaves.leave_id, leaves.user_id, user.name, leaves.leave_status_id, leave_type.leave_type_id, leave_type.leave_type_name, leaves.half_day, leaves.no_day, "
-							+ "leaves.start_date, leaves.end_date, leaves.start_time, leaves.end_time, leaves.description, leaves.time_create, file.path "
+							+ "leaves.start_date, leaves.end_date, leaves.start_time, leaves.end_time, leaves.description, leaves.time_create, file.path, "
+							+ "leaves.leave_file, file.name AS file_name, file.type "
 							+ "FROM leaves LEFT JOIN leave_type ON leave_type.leave_type_id = leaves.leave_type_id "
 							+ "LEFT JOIN user ON leaves.user_id = user.id "
-							+ "LEFT JOIN file ON leaves.leave_file = file.file_id " + "WHERE leaves.user_id = :userId "
+							+ "LEFT JOIN file ON CAST(leaves.leave_file AS UNSIGNED) = file.file_id "
+							+ "WHERE leaves.user_id = :userId "
 							+ "AND (leaves.start_date <= :endDate AND leaves.end_date >= :startDate) ");
 
 			if (status != null && !status.isEmpty() && !status.equals("4")) {

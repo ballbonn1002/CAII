@@ -574,8 +574,8 @@
 								<!--begin::Footer -->
 								<div class="card-header fs-6">
 
-									<div class="d-flex align-items-center mb-2">
-										<div class="d-flex flex-wrap align-items-center gap-3">
+									<div class="d-flex align-items-center mt-3 mb-2">
+										<div class="d-flex flex-wrap align-items-center gap-3 row-gap-1 ">
 											<div class="fw-bold text-dark">${leave.name}</div>
 
 											<div class="d-flex align-items-center">
@@ -618,6 +618,22 @@
 												</i>
 												 ${leave.start_time} - ${leave.end_time}
 											</div>
+											
+										    <c:if test="${not empty leave.leave_file}">
+											    <div class="d-flex align-items-center">
+											        <i class="ki-duotone ki-document me-2">
+											            <span class="path1"></span>
+											            <span class="path2"></span>
+											        </i>
+											
+											        <a href="preview_File?id=${leave.leave_file}"
+											           target="_blank"
+											           class="text-primary text-hover-underline">
+											            ${leave.file_name}${leave.type}
+											        </a>
+											    </div>
+											</c:if>
+										
 										</div>
 									</div>
 
@@ -671,6 +687,7 @@
 </jsp:include>
 
 <script>
+
 $(document).ready(function(){
 	var userSelect =  '${userSelect}';
 	var userSelect2 =  '${userSelect2}';
@@ -716,7 +733,6 @@ $(document).ready(function(){
 		var value = $(this).val();
 		CreateListUsers(value, user_login, userSelect2);
 	});
-	
 });
 
 function CreateListUsers(value, user_login, userSelect2) {
@@ -777,9 +793,13 @@ function CreateListUsers(value, user_login, userSelect2) {
 		    if (userSelect2) {
 		        selectElem.val(userSelect2);
 		    }
-
-		    selectElem.trigger('change');
+		    console.log("before trigger");
+		    console.log("name2 =", selectElem.val());
+		    console.log("userSelect2 =", userSelect2);
+		     selectElem.trigger('change');
 		    
+		    console.log("after trigger");
+		    console.log("name2 =", selectElem.val());
 		    if (originalOnChange) {
 		        selectElem.attr('onchange', originalOnChange);
 		    }
@@ -802,7 +822,23 @@ function CreateListUsers(value, user_login, userSelect2) {
 		var end = moment("2025-12-31", "YYYY-MM-DD"); */
 		var start = moment("<fmt:formatDate value='${startdate}' pattern='dd-MM-yyyy'/>", "DD-MM-YYYY");
 		var end = moment("<fmt:formatDate value='${enddate}' pattern='dd-MM-yyyy'/>", "DD-MM-YYYY");
+		console.log("start =", start.format("DD-MM-YYYY"));
+		console.log("start valid =", start.isValid());
 
+		console.log("end =", end.format("DD-MM-YYYY"));
+		console.log("end valid =", end.isValid());
+		$("#searchForm").on("submit", function () {
+
+		    console.log("===== SUBMIT =====");
+
+		    console.log("name1 =", $("#name1").val());
+		    console.log("name2 =", $("#name2").val());
+		    console.log("leaveType =", $("#leaveType").val());
+		    console.log("appr =", $("#appr").val());
+		    console.log("startdate =", $("#startdate").val());
+		    console.log("enddate =", $("#enddate").val());
+
+		});
 		/* $("#kt_daterangepicker").daterangepicker({
 			startDate: start,
 			endDate: end,
@@ -835,6 +871,15 @@ function CreateListUsers(value, user_login, userSelect2) {
 			$("#startdate").val(start.format("DD-MM-YYYY"));
 			$("#enddate").val(end.format("DD-MM-YYYY"));
 			$("#searchForm").submit();
+			/* $("#searchForm").submit(function(){
+				console.log($("##########").val());
+			    console.log($("#name1").val());
+			    console.log($("#name2").val());
+			    console.log($("#leaveType").val());
+			    console.log($("#appr").val());
+			    console.log($("#startdate").val());
+			    console.log($("#enddate").val());
+			}); */
 		});
 
 		$("#startdate").val(start.format("DD-MM-YYYY"));
@@ -1114,7 +1159,8 @@ function sentData(id, value) {
 			"reason": apprReasonTxt
 		}
 	}).done(function () {
-		location.reload();
+		/* location.reload(); */
+		 $("#searchForm").submit();
 	});
 }
 </script>

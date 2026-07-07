@@ -1,6 +1,7 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
+<fmt:setLocale value="en_US" />
 <!DOCTYPE html>
 <html>
 <head>
@@ -185,7 +186,7 @@
       }
 
       const toISO = (dmy) => {
-        const [dd, mm, yy] = dmy.split('-');
+    	const [yy, mm, dd] = ymd.split('-');
         return new Date(+yy, mm - 1, +dd);
       };
 
@@ -200,10 +201,10 @@
     }
 
     const fpOpts = {
-      dateFormat: "d-m-Y",
+      dateFormat: "Y-m-d",
       altInput: true,
       altFormat: "j M Y",
-      allowInput: true,
+      allowInput: false,
       disableMobile: true
     };
     const fpStart = window.flatpickr ? flatpickr("#date_s", fpOpts) : null;
@@ -213,14 +214,14 @@
       var s = document.getElementById("date1").value;
       var e = document.getElementById("date2").value;
 
-      if (fpStart && s) fpStart.setDate(s, true, "d-m-Y");
-      if (fpEnd && e) fpEnd.setDate(e, true, "d-m-Y");
+      if (fpStart && s) fpStart.setDate(s, true, "Y-m-d");
+      if (fpEnd && e) fpEnd.setDate(e, true, "Y-m-d");
 
       var flagDup = "${flag}";
       if (flagDup == 1) {
         swal('Please!', 'Check Date Duplicate', 'warning');
-        if (fpStart && s) fpStart.setDate(s, true, "d-m-Y");
-        if (fpEnd && e) fpEnd.setDate(e, true, "d-m-Y");
+        if (fpStart && s) fpStart.setDate(s, true, "Y-m-d");
+        if (fpEnd && e) fpEnd.setDate(e, true, "Y-m-d");
       }
     })();
   </script>

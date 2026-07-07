@@ -336,5 +336,26 @@ WHERE
 INSERT INTO `authorized_object` (`authorized_object_id`, `name`, `description`, `active`, `time_create`, `time_update`, `authorized_object_group_id`) 
 VALUES ('careers.view', 'careers.view', 'จัดการ careers ได้', '1', '2026-05-18 15:37:00', '2026-05-18 15:37:00', '1');
 
--- PROD 4 JUNE 2026
+-- PROD 15 JUNE 2026
+
+-- 15/06/2026 team(Intern) : Add column 'changepass_code' in 'user' table.
+ALTER TABLE user ADD COLUMN changepass_code VARCHAR(6) DEFAULT NULL;
+
+-- PROD 29 JUNE 2026
+
+-- 23/06/2026 June: Add permission 'pageurl.view','pageurl.edit','worklocation.view' in 'authorized_object' table.
+INSERT INTO `authorized_object` (`authorized_object_id`, `name`, `description`, `active`, `time_create`, `time_update`, `authorized_object_group_id`) 
+VALUES ('pageurl.view', 'pageurl.view', 'สามารถดูรายการ page url ได้', '1', '2026-06-18 11:57:00', '2026-06-18 11:57:00', '6'),
+('pageurl.edit', 'pageurl.edit', 'สามารถแก้ไขรายการ page url ได้', '1', '2026-06-18 11:57:00', '2026-06-18 11:57:00', '6'),
+('worklocation.view', 'worklocation.view', 'สามารถดูรายการ work location ได้', '1', '2026-06-18 11:57:00', '2026-06-18 11:57:00', '100');
+
+--  PROD 1 JULY 2026 12:30
+
+-- 07/03/2026 ochi(Intern) : Add permissions Footer in authorized_object table.
+INSERT INTO `authorized_object` (`authorized_object_id`, `name`, `description`, `active`, `time_create`, `time_update`, `authorized_object_group_id`) 
+VALUES 
+('footer.view', 'footer.view', 'ดูแลจัดการ footer ของ เว็บ CubeSoftTech', '1', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '1');
+
+
+--  PROD 6 JULY 2026 10:00
 
