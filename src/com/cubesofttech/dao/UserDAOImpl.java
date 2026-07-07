@@ -670,5 +670,55 @@ public class UserDAOImpl implements UserDAO {
 		return userActive;
 	}
 	
+	@Override
+	public List<Map<String, Object>> findByLineId(String id) throws Exception {
+		Session session = this.sessionFactory.getCurrentSession();
+		List<Map<String, Object>> user = null;
+		try {
+			String sql = " SELECT id, line_id FROM user WHERE user.line_id = :lineId ";
+			SQLQuery query = session.createSQLQuery(sql);
+			query.setParameter("lineId", id);
+			query.setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
+			user = query.list();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return user;
+	}
 
+	@Override
+	public User findByLine(String line_id) throws Exception {
+	    Session session = this.sessionFactory.getCurrentSession();
+	    User user = null;
+	    try {
+	        String hql = "FROM User WHERE line_id = :line";
+	        
+	        user = (User) session.createQuery(hql)
+	                      .setParameter("line", line_id)
+	                      .uniqueResult();
+	                      
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        throw e;
+	    }
+	    return user;
+	}
+	
+	@Override
+	public User findByUid(String uid) throws Exception {
+	    Session session = this.sessionFactory.getCurrentSession();
+	    User user = null;
+	    try {
+	        String hql = "FROM User WHERE uid_line_oa = :uid";
+	        
+	        user = (User) session.createQuery(hql)
+	                      .setParameter("uid", uid)
+	                      .uniqueResult();
+	                      
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        throw e;
+	    }
+	    return user;
+	}
 }

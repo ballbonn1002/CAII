@@ -64,4 +64,9 @@ public interface UserDAO {
 
 	List<Map<String, Object>> findUserActive() throws Exception;
 
+	public List<Map<String, Object>> findByLineId(String id) throws Exception;
+	
+	public User findByLine(String line_id) throws Exception;
+	
+	public User findByUid(String uid) throws Exception;
 }
