@@ -21,7 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 public class LineLoginAction extends ActionSupport {
 
-	Logger log = Logger.getLogger(getClass());
+	private static final Logger log = Logger.getLogger(LineLoginAction.class);
 	HttpServletRequest request = ServletActionContext.getRequest();
 	
     // data from LINE Developer Console
@@ -67,6 +67,7 @@ public class LineLoginAction extends ActionSupport {
      * 2. Method for get Callback from LINE
      */
     public String callback() {
+    	log.debug("Line Login success!!");
         String code = request.getParameter("code");
         String state = request.getParameter("state");
         String sessionState = (String) request.getSession().getAttribute("line_state");
