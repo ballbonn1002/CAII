@@ -370,8 +370,8 @@
 									<div class="fs-5 text-gray-800 fw-semibold d-flex flex-wrap justify-content-between align-items-center">
 										<span class="text-break">${empty user.line_id ? '-' : user.line_id}</span>
 										<div class="d-flex gap-1">
-											<button class="btn btn-sm btn-success fw-medium" onclick="window.location.href='${webLinelogin}';">Bind Account</button>
-											<button class="btn btn-sm btn-danger" onclick="confirmUnbound('${user.id}')">X</button>
+											<c:if test="${empty user.line_id}"><button class="btn btn-sm btn-success fw-medium" onclick="window.location.href='${webLinelogin}';">Bind Account</button></c:if>
+											<c:if test="${not empty user.line_id}"><button class="btn btn-sm btn-danger" onclick="confirmUnbound('${user.id}')">X</button></c:if>
 										</div>
 									</div>
 									<s:if test="hasActionErrors()">

@@ -97,18 +97,10 @@ public class LineLoginAction extends ActionSupport {
                 	user.setLine_id(lineId);
                 	userDAO.update(user);
                 } else {
-                	String userId = userList.get(0).get("id").toString();
-                	if(userId.equals(onlineUser.getId())) {
-                		//update binding check match user
-                		User user = userDAO.findById(userId);
-                    	user.setLine_id(lineId);
-                    	userDAO.update(user);
-                	} else {
-                		String webLinelogin = constant.getWebLinelogin();
-            			request.setAttribute("webLinelogin", webLinelogin);
-                		addActionError("This account is bound, Please unbound account or use another account.");
-                        return "error_callback";
-                	}
+                	String webLinelogin = constant.getWebLinelogin();
+        			request.setAttribute("webLinelogin", webLinelogin);
+            		addActionError("This account is bound, Please unbound last account before binding new account.");
+                    return "error_callback";
                 }
 
                 return SUCCESS;
