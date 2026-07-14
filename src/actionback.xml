@@ -1996,6 +1996,38 @@
 			class="com.cubesofttech.action.WorkLocationAction" method="search">
 			<result name="login" type="redirect">/index.jsp</result>
 		</action>
+		
+		<!-- PO - Purchase Order -->
+		<action name="purchase_order_list"
+			class="com.cubesofttech.action.PurchaseOrderAction" method="purchase_order_list">
+			<result name="success" type="tiles">purchaseOrderList</result>
+			<result name="error">/index.jsp</result>
+		</action>
+		
+		<action name="purchase_order_detail"
+			class="com.cubesofttech.action.PurchaseOrderAction" method="purchase_order_detail">
+			<result name="success" type="tiles">purchaseOrderDetail</result>
+			<result name="error">/index.jsp</result>
+		</action>
+		
+		<action name="purchase_order_add"
+			class="com.cubesofttech.action.PurchaseOrderAction" method="purchase_order_add">
+			<result name="success" type="tiles">purchaseOrderAdd</result>
+			<result name="error">/index.jsp</result>
+		</action>
+		
+		<!-- Item Catalog -->
+		<action name="item_catalog"
+			class="com.cubesofttech.action.ItemCatalogAction" method="item_catalog">
+			<result name="success" type="tiles">itemCatalog</result>
+			<result name="error">/index.jsp</result>
+		</action>
+		
+		<action name="item_catalog_save"
+		    class="com.cubesofttech.action.ItemCatalogAction" method="item_catalog_save">
+		    <result name="success" type="tiles">itemCatalog</result>
+		    <result name="error">/index.jsp</result>
+		</action>
 
 	</package>
 

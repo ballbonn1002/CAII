@@ -697,4 +697,30 @@
 			value="/pages-back/work_location/work_location_list.jsp" />
 	</definition>
 	
+	<!-- PO - Purchase Order -->
+	<definition name="purchaseOrderList" extends="baseLayout">
+		<put-attribute name="title" value="Purchase Order List" />
+		<put-attribute name="body"
+			value="/pages-back/purchase_order/purchase_order_list.jsp" />
+	</definition>
+	
+	<definition name="purchaseOrderDetail" extends="baseLayout">
+		<put-attribute name="title" value="Purchase Order Detail" />
+		<put-attribute name="body"
+			value="/pages-back/purchase_order/purchase_order_detail.jsp" />
+	</definition>
+	
+	<definition name="purchaseOrderAdd" extends="baseLayout">
+		<put-attribute name="title" value="Purchase Order Add" />
+		<put-attribute name="body"
+			value="/pages-back/purchase_order/purchase_order_create.jsp" />
+	</definition>
+	
+	<!-- Item Catalog -->
+	<definition name="itemCatalog" extends="baseLayout">
+		<put-attribute name="title" value="Item Catalog" />
+		<put-attribute name="body"
+			value="/pages-back/item_catalog/item_catalog.jsp" />
+	</definition>
+	
 </tiles-definitions>

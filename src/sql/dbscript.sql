@@ -426,3 +426,14 @@ CREATE TABLE company_contact (
 ) ENGINE=InnoDB
 DEFAULT CHARSET=utf8mb4
 COLLATE=utf8mb4_unicode_ci;
+
+-- 15/05/2026 June: CREATE TABLE item_catalog
+CREATE TABLE item_catalog (
+	item_catalog_id BIGINT(11) NOT NULL AUTO_INCREMENT PRIMARY KEY, 
+	item_equipment_name VARCHAR(64)  NULL,
+    active              VARCHAR(8)     NULL,
+    user_create         VARCHAR(32)  NULL,
+    user_update         VARCHAR(32)  NULL,
+    time_create         TIMESTAMP    NULL,
+    time_update         TIMESTAMP    NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
