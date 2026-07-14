@@ -27,26 +27,8 @@ public class CompanyAddress {
     @Column(name = "address")
     private String address;
 
-    @Column(name = "province")
-    private String province;
-
-    @Column(name = "district")
-    private String district;
-
-    @Column(name = "subdistrict")
-    private String subdistrict;
-
-    @Column(name = "zip_code")
-    private String zipCode;
-
-    @Column(name = "location")
-    private String location;
-
     @Column(name = "google_map")
     private String googleMap;
-
-    @Column(name = "description")
-    private String description;
 
     @Column(name = "user_create")
     private String userCreate;
@@ -92,60 +74,12 @@ public class CompanyAddress {
         this.address = address;
     }
 
-    public String getProvince() {
-        return province;
-    }
-
-    public void setProvince(String province) {
-        this.province = province;
-    }
-
-    public String getDistrict() {
-        return district;
-    }
-
-    public void setDistrict(String district) {
-        this.district = district;
-    }
-
-    public String getSubdistrict() {
-        return subdistrict;
-    }
-
-    public void setSubdistrict(String subdistrict) {
-        this.subdistrict = subdistrict;
-    }
-
-    public String getZipCode() {
-        return zipCode;
-    }
-
-    public void setZipCode(String zipCode) {
-        this.zipCode = zipCode;
-    }
-
-    public String getLocation() {
-        return location;
-    }
-
-    public void setLocation(String location) {
-        this.location = location;
-    }
-
     public String getGoogleMap() {
         return googleMap;
     }
 
     public void setGoogleMap(String googleMap) {
         this.googleMap = googleMap;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
     }
 
     public String getUserCreate() {

@@ -36,23 +36,8 @@ public class Company {
 	@Column(name = "industry")
 	private String industry;
 
-	@Column(name = "website")
-	private String website;
-
 	@Column(name = "is_active")
 	private String isActive;
-
-	@Column(name = "pck_status")
-	private String pckStatus;
-
-	@Column(name = "phone")
-	private String phone;
-
-	@Column(name = "email")
-	private String email;
-
-	@Column(name = "description")
-	private String description;
 
 	@Column(name = "user_create")
 	private String userCreate;
@@ -125,15 +110,6 @@ public class Company {
 		this.industry = industry;
 	}
 
-
-	public String getWebsite() {
-		return website;
-	}
-
-	public void setWebsite(String website) {
-		this.website = website;
-	}
-
 	public String getIsActive() {
 		return isActive;
 	}
@@ -142,37 +118,6 @@ public class Company {
 		this.isActive = isActive;
 	}
 
-	public String getPckStatus() {
-		return pckStatus;
-	}
-
-	public void setPckStatus(String pckStatus) {
-		this.pckStatus = pckStatus;
-	}
-
-	public String getPhone() {
-		return phone;
-	}
-
-	public void setPhone(String phone) {
-		this.phone = phone;
-	}
-
-	public String getEmail() {
-		return email;
-	}
-
-	public void setEmail(String email) {
-		this.email = email;
-	}
-
-	public String getDescription() {
-		return description;
-	}
-
-	public void setDescription(String description) {
-		this.description = description;
-	}
 
 	public String getUserCreate() {
 		return userCreate;
