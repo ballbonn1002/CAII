@@ -1665,6 +1665,47 @@
 			class="com.cubesofttech.action.BorrowingAction"
 			method="request_return">
 		</action>
+		
+		<!-- ========================== Vender ============================== -->
+		
+		<!-- Company -->
+		<action name="company_list"
+			class="com.cubesofttech.action.CompanyAction" method="list">
+			<result name="success" type="tiles">companyList</result>
+			<result name="error">/index.jsp</result>
+		</action>
+		<action name="company_edit"
+			class="com.cubesofttech.action.CompanyAction" method="edit">
+			<result name="success" type="tiles">companyEdit</result>
+			<result name="error">/index.jsp</result>
+		</action>
+		<action name="company_add"
+			class="com.cubesofttech.action.CompanyAction" method="add">
+			<result name="success" type="tiles">companyAdd</result>
+			<result name="error">/index.jsp</result>
+		</action>
+		
+		<action name="create_company"
+			class="com.cubesofttech.action.CompanyAction" method="save">
+			<result name="success" type="redirect">company_list</result>
+			<result name="error">/index.jsp</result>
+		</action>
+		
+		<action name="delete_company"
+			class="com.cubesofttech.action.CompanyAction" method="delete">
+			<result name="success" type="redirect">company_list</result>
+			<result name="input" type="redirect">company_list</result>
+			<result name="error">/index.jsp</result>
+		</action>
+		
+		<action name="update_company"
+			class="com.cubesofttech.action.CompanyAction" method="update">
+			<result name="success" type="json"/>
+		</action>
+		
+		<action name="check_company_code"
+        	class="com.cubesofttech.action.CompanyAction" method="checkCompanyCode">
+        </action>
 
 		<!-- ========================== Work Log ============================== -->
 		<action name="work_log"
@@ -1959,6 +2000,38 @@
 		<action name="search_work_location"
 			class="com.cubesofttech.action.WorkLocationAction" method="search">
 			<result name="login" type="redirect">/index.jsp</result>
+		</action>
+		
+		<!-- PO - Purchase Order -->
+		<action name="purchase_order_list"
+			class="com.cubesofttech.action.PurchaseOrderAction" method="purchase_order_list">
+			<result name="success" type="tiles">purchaseOrderList</result>
+			<result name="error">/index.jsp</result>
+		</action>
+		
+		<action name="purchase_order_detail"
+			class="com.cubesofttech.action.PurchaseOrderAction" method="purchase_order_detail">
+			<result name="success" type="tiles">purchaseOrderDetail</result>
+			<result name="error">/index.jsp</result>
+		</action>
+		
+		<action name="purchase_order_add"
+			class="com.cubesofttech.action.PurchaseOrderAction" method="purchase_order_add">
+			<result name="success" type="tiles">purchaseOrderAdd</result>
+			<result name="error">/index.jsp</result>
+		</action>
+		
+		<!-- Item Catalog -->
+		<action name="item_catalog"
+			class="com.cubesofttech.action.ItemCatalogAction" method="item_catalog">
+			<result name="success" type="tiles">itemCatalog</result>
+			<result name="error">/index.jsp</result>
+		</action>
+		
+		<action name="item_catalog_save"
+		    class="com.cubesofttech.action.ItemCatalogAction" method="item_catalog_save">
+		    <result name="success" type="tiles">itemCatalog</result>
+		    <result name="error">/index.jsp</result>
 		</action>
 
 		<!-- Stock -->

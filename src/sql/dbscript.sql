@@ -362,6 +362,78 @@ VALUES
 -- 07/07/2026 Eric : Add column uid_line_oa in user TABLE
 ALTER TABLE `user` ADD COLUMN uid_line_oa VARCHAR(64) DEFAULT NULL AFTER line_id;
 
+-- PROD 14 JULY 2026 13:10
+
+
+-- 07/07/2026 Eric : Add column uid_line_oa in user TABLE
+ALTER TABLE `user` ADD COLUMN uid_line_oa VARCHAR(64) DEFAULT NULL AFTER line_id;
+
 -- PROD 10 JULY 2026 10:40
 
 
+
+-- 14/07/2026 Best(Intern) : Create company, contact, address tables
+
+CREATE TABLE company (
+    company_id BIGINT(32) NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    file_id VARCHAR(32),
+    company_code VARCHAR(32) NOT NULL,
+    tax_number VARCHAR(13) NOT NULL,
+    company_en VARCHAR(128) NOT NULL,
+    company_th VARCHAR(128) NOT NULL,
+    industry VARCHAR(1) NOT NULL,
+    is_active VARCHAR(1) DEFAULT true,
+    description VARCHAR(1024),
+    user_create VARCHAR(32),
+    user_update VARCHAR(32),
+    time_create TIMESTAMP NULL,
+    time_update TIMESTAMP NULL
+) ENGINE=InnoDB
+DEFAULT CHARSET=utf8mb4
+COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE company_address (
+    company_address_id BIGINT NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    company_id VARCHAR(32) NOT NULL,
+    address_name VARCHAR(64) NOT NULL,
+    address VARCHAR(1024) NOT NULL,
+    google_map VARCHAR(1024),
+    user_create VARCHAR(32),
+    user_update VARCHAR(32),
+    time_create TIMESTAMP NULL,
+    time_update TIMESTAMP NULL
+) ENGINE=InnoDB
+DEFAULT CHARSET=utf8mb4
+COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE company_contact (
+    company_contact_id BIGINT NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    company_id VARCHAR(32),
+    file_id VARCHAR(32),
+    company_address_id VARCHAR(32),
+    title_name_en VARCHAR(32) NOT NULL,
+    contact_name VARCHAR(256) NOT NULL,
+    title_name_th VARCHAR(32) NOT NULL,
+    contact_name_th VARCHAR(256) NOT NULL,
+    position VARCHAR(64) NOT NULL,
+    phone VARCHAR(64) NOT NULL,
+    email VARCHAR(256) NOT NULL,
+    is_active VARCHAR(1) ,
+    user_create VARCHAR(32),
+    user_update VARCHAR(32),
+    time_create TIMESTAMP NULL,
+    time_update TIMESTAMP NULL
+) ENGINE=InnoDB
+DEFAULT CHARSET=utf8mb4
+COLLATE=utf8mb4_unicode_ci;
+
+-- 15/05/2026 June: CREATE TABLE item_catalog
+CREATE TABLE item_catalog (
+	item_catalog_id BIGINT(11) NOT NULL AUTO_INCREMENT PRIMARY KEY, 
+	item_equipment_name VARCHAR(64)  NULL,
+    active              VARCHAR(8)     NULL,
+    user_create         VARCHAR(32)  NULL,
+    user_update         VARCHAR(32)  NULL,
+    time_create         TIMESTAMP    NULL,
+    time_update         TIMESTAMP    NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
