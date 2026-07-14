@@ -36,6 +36,13 @@
 			value="/pages-back/dashboard/demo_dashboard.jsp" />
 	</definition>
 
+	<!-- DEV PAGES-->
+	<definition name="devPages" extends="baseLayout">
+		<put-attribute name="title" value="Development Pages" />
+		<put-attribute name="body"
+			value="/pages-back/_layout/dev_pages.jsp" />
+	</definition>
+
 	<!-- TABLE -->
 	<definition name="demoTable" extends="baseLayout">
 		<put-attribute name="title" value="Demo Table" />
@@ -679,5 +686,43 @@
 		<put-attribute name="body"
 			value="/pages-back/work_location/work_location_list.jsp" />
 	</definition>
-	
+
+	<!-- Stock -->
+	<definition name="stockConsList" extends="baseLayout">
+		<put-attribute name="title" value="Stock - Consumables" />
+		<put-attribute name="body"
+			value="/pages-back/stock/stock_cons_list.jsp" />
+	</definition>
+
+	<definition name="stockConsAdd" extends="baseLayout">
+		<put-attribute name="title" value="Stock - Consumables" />
+		<put-attribute name="body"
+			value="/pages-back/stock/stock_cons_add.jsp" />
+	</definition>
+
+	<definition name="stockConsEdit" extends="baseLayout">
+		<put-attribute name="title" value="Stock - Consumables" />
+		<put-attribute name="body"
+			value="/pages-back/stock/stock_cons_edit.jsp" />
+	</definition>
+
+	<definition name="stockConsBalance" extends="baseLayout">
+		<put-attribute name="title" value="Stock - Consumables" />
+		<put-attribute name="body"
+			value="/pages-back/stock/stock_cons_balance.jsp" />
+	</definition>
+
+	<definition name="stockOffsList" extends="baseLayout">
+		<put-attribute name="title" value="Stock - Office Supplies" />
+		<put-attribute name="body"
+			value="/pages-back/stock/stock_offs_list.jsp" />
+	</definition>
+
+	<!-- Product -->
+	<definition name="productList" extends="baseLayout">
+		<put-attribute name="title" value="Product List" />
+		<put-attribute name="body"
+			value="/pages-back/product/product_list.jsp" />
+	</definition>
+
 </tiles-definitions>

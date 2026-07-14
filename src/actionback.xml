@@ -34,6 +34,11 @@
 			<result name="success" type="tiles">demoDashboard</result>
 			<result name="error">/index.jsp</result>
 		</action>
+		<action name="dev_pages"
+			class="com.cubesofttech.action.NewsAction" method="demoDashboard">
+			<result name="success" type="tiles">devPages</result>
+			<result name="error">/index.jsp</result>
+		</action>
 
 		<!-- Equipment List -->
 		<action name="equipment_list"
@@ -1956,6 +1961,49 @@
 			<result name="login" type="redirect">/index.jsp</result>
 		</action>
 
+		<!-- Stock -->
+		<action name="stock_cons_list"
+			class="com.cubesofttech.action.ProductAction" method="stockConsList">
+			<result name="success" type="tiles">stockConsList</result>
+			<result name="error">/index.jsp</result>
+		</action>
+
+		<action name="stock_cons_add"
+			class="com.cubesofttech.action.ProductAction" method="showStockAddPage">
+			<result name="success" type="tiles">stockConsAdd</result>
+			<result name="error">/index.jsp</result>
+		</action>
+
+		<action name="stock_cons_edit"
+			class="com.cubesofttech.action.ProductAction" method="showStockEditPage">
+			<result name="success" type="tiles">stockConsEdit</result>
+			<result name="error">/index.jsp</result>
+		</action>
+
+		<action name="stock_cons_balance"
+			class="com.cubesofttech.action.ProductAction" method="showStockBalancePage">
+			<result name="success" type="tiles">stockConsBalance</result>
+			<result name="error">/index.jsp</result>
+		</action>
+
+		<action name="stock_offs_list"
+			class="com.cubesofttech.action.ProductAction" method="stockOffsList">
+			<result name="success" type="tiles">stockOffsList</result>
+			<result name="error">/index.jsp</result>
+		</action>
+
+		<!-- Product -->
+		<action name="product_cons_list"
+			class="com.cubesofttech.action.ProductAction" method="list">
+			<result name="success" type="tiles">productList</result>
+			<result name="error">/index.jsp</result>
+		</action>
+
+		<action name="product_offs_list"
+			class="com.cubesofttech.action.ProductAction" method="list">
+			<result name="success" type="tiles">productList</result>
+			<result name="error">/index.jsp</result>
+		</action>
 	</package>
 
 </struts>

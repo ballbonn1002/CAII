@@ -251,7 +251,8 @@ String targetURL = Constant.getWebContext2() + "/authorization?token=" + token;
 						</a>
 					</div>
 					<!--end:Menu item-->
-					<!--begin:MR-->
+					<!---->
+					<!--begin:MR
 					<div class="menu-item">
 						<a class="menu-link" href="#" data-route="#">
 							<span class="menu-icon"> <i
@@ -262,7 +263,7 @@ String targetURL = Constant.getWebContext2() + "/authorization?token=" + token;
 						</span> <span class="menu-title">MR - Material Request</span>
 						</a>
 					</div>
-					<!--end:MR-->
+					end:MR-->
 
 					<!--begin:Menu item-->
 					<div class="menu-item pt-5">
@@ -385,7 +386,7 @@ String targetURL = Constant.getWebContext2() + "/authorization?token=" + token;
 						<!--end:Equipment-->
 					</perm:permission>
 					<!--end:Menu item-->
-					<!--begin:Consumables-->
+					<!--begin:Consumables
 					<div class="menu-item">
 						<a class="menu-link" href="#"
 							data-route="#"> <span class="menu-icon">
@@ -398,8 +399,8 @@ String targetURL = Constant.getWebContext2() + "/authorization?token=" + token;
 							</span> <span class="menu-title">Consumables</span>
 						</a>
 					</div>
-					<!--end:Consumables-->
-					<!--begin:Consumables-->
+					end:Consumables-->
+					<!--begin:Consumables
 						<div class="menu-item">
 							<a class="menu-link" href="#"
 								data-route="#"> <span class="menu-icon">
@@ -408,13 +409,11 @@ String targetURL = Constant.getWebContext2() + "/authorization?token=" + token;
 										<span class="path3"></span><span class="path4"></span>
 										<span class="path5"></span>
 								</i>
-							</span> <span class="menu-title">Office Supplies</span> <i
-								class="ki-duotone ki-check-circle fs-3 text-success"> <span
-									class="path1"></span><span class="path2"></span>
+							</span> <span class="menu-title">Office Supplies</span>
 							</i>
 							</a>
 						</div>
-					<!--end:Consumables-->
+					end:Consumables-->
 					<!--begin:Menu item-->
 					<perm:permission object="borrow.view">
 						<div class="menu-item">
@@ -435,17 +434,15 @@ String targetURL = Constant.getWebContext2() + "/authorization?token=" + token;
 					<!--end:Menu item-->
 
 					<!--begin:Menu item-->
-					<perm:permission object="equipmentlist.view">
-						<!--begin:Menu item-->
+					<!-- <perm:permission object="equipmentlist.view"> -->
+						<!--begin:Product
 						<div class="menu-item pt-5">
-							<!--begin:Menu content-->
 							<div class="menu-content">
 								<span class="menu-heading fw-bold text-uppercase fs-7">Product</span>
 							</div>
-							<!--end:Menu content-->
 						</div>
-						<!--end:Menu item-->
-						<!--begin:Stock-->
+						end:Product-->
+						<!--begin:Stock
 						<div data-kt-menu-trigger="click" class="menu-item menu-accordion">
 							<span class="menu-link"> <span class="menu-icon"> 
 								<i class="ki-duotone ki-parcel fs-2">
@@ -455,32 +452,25 @@ String targetURL = Constant.getWebContext2() + "/authorization?token=" + token;
 								</i>
 							</span> <span class="menu-title">Stock</span> <span class="menu-arrow"></span>
 							</span>
-							<!--begin:Menu sub-->
 							<div class="menu-sub menu-sub-accordion">
-								<!--begin:Menu item-->
 								<div class="menu-item">
-									<a class="menu-link" href="#"
-										data-route="#"> <span class="menu-icon">
+									<a class="menu-link" href="stock_cons_list"
+										data-route="stock_cons_list"> <span class="menu-icon">
 											<span class="bullet bullet-dot"></span>
 									</span> <span class="menu-title">Consumables</span>
 									</a>
 								</div>
-								<!--end:Menu item-->
-								<!--begin:Menu item-->
 								<div class="menu-item">
-									<a class="menu-link" href="#"
-										data-route="#"> <span class="menu-icon">
+									<a class="menu-link" href="stock_offs_list"
+										data-route="stock_offs_list"> <span class="menu-icon">
 											<span class="bullet bullet-dot"></span>
 									</span> <span class="menu-title">Office Supplies</span>
 									</a>
-								</div>
-								<!--end:Menu item-->
-								
+								</div>								
 							</div>
-							<!--end:Menu sub-->
 						</div>
-						<!--end:Menu item-->
-						<!--begin:MR-->
+						end:Stock-->
+						<!--begin:MR
 						<div class="menu-item">
 							<a class="menu-link" href="#" data-route="#">
 								<span class="menu-icon">
@@ -490,8 +480,8 @@ String targetURL = Constant.getWebContext2() + "/authorization?token=" + token;
 							</span> <span class="menu-title">MR - Approval</span>
 							</a>
 						</div>
-						<!--end:MR-->
-						<!--begin:PR-->
+						end:MR-->
+						<!--begin:PR
 						<div class="menu-item">
 							<a class="menu-link" href="#" data-route="#">
 								<span class="menu-icon"> 
@@ -502,8 +492,8 @@ String targetURL = Constant.getWebContext2() + "/authorization?token=" + token;
 								<span class="menu-title">PR - Purchase Requisition</span> 
 							</a>
 						</div>
-						<!--end:PR-->
-						<!--begin:PO-->
+						end:PR-->
+						<!--begin:PO
 						<div class="menu-item">
 							<a class="menu-link" href="#" data-route="#">
 								<span class="menu-icon"> 
@@ -514,8 +504,8 @@ String targetURL = Constant.getWebContext2() + "/authorization?token=" + token;
 								</span> <span class="menu-title">PO - Purchase Order</span>
 							</a>
 						</div>
-						<!--end:PO-->
-						<!--begin:GR-->
+						end:PO-->
+						<!--begin:GR
 						<div class="menu-item">
 							<a class="menu-link" href="#" data-route="#">
 								<span class="menu-icon"> <in
@@ -527,19 +517,17 @@ String targetURL = Constant.getWebContext2() + "/authorization?token=" + token;
 							</span> <span class="menu-title">GR - Goods Receipt</span>
 							</a>
 						</div>
-						<!--end:GR-->
-					</perm:permission>
+						end:GR-->
+					<!-- </perm:permission> -->
 					<!--end:Menu item-->
-					<!--begin:Menu item-->
+					<!--begin:Vender
 					<div class="menu-item pt-5">
-						<!--begin:Menu content-->
 						<div class="menu-content">
 							<span class="menu-heading fw-bold text-uppercase fs-7">Vender</span>
 						</div>
-						<!--end:Menu content-->
 					</div>
-					<!--end:Menu item-->
-					<!--begin:Company-->
+					end:Vender-->
+					<!--begin:Company
 					<div class="menu-item">
 						<a class="menu-link" href="#"
 							data-route="#"> <span class="menu-icon">
@@ -551,8 +539,8 @@ String targetURL = Constant.getWebContext2() + "/authorization?token=" + token;
 						</i>
 						</a>
 					</div>
-					<!--end:Company-->
-					<!--begin:Contact-->
+					end:Company-->
+					<!--begin:Contact
 					<div class="menu-item">
 						<a class="menu-link" href="#"
 							data-route="#"> <span class="menu-icon">
@@ -563,7 +551,7 @@ String targetURL = Constant.getWebContext2() + "/authorization?token=" + token;
 						</i>
 						</a>
 					</div>
-					<!--end:Contact-->
+					end:Contact-->
 
 					<perm:permission object="master.view">
 						<!--begin:Menu item-->
@@ -826,6 +814,27 @@ String targetURL = Constant.getWebContext2() + "/authorization?token=" + token;
 						</a>
 					</div>
 					<!--end:Menu item-->
+					<perm:permission object="admin">
+					<!--begin:Developing-->
+					<div class="menu-item pt-5">
+						<div class="menu-content">
+							<span class="menu-heading fw-bold text-uppercase fs-7">Developing</span>
+						</div>
+					</div>
+					<!--begin:Menu item-->
+					<div class="menu-item">
+						<a class="menu-link" href="dev_pages" data-route="dev_pages"> <span
+							class="menu-icon"> <i class="ki-duotone ki-cube-2 fs-1">
+								<span class="path1"></span>
+								<span class="path2"></span>
+								<span class="path3"></span>
+							</i>
+						</span> <span class="menu-title">Developing Pages</span>
+						</a>
+					</div>
+					<!--end:Menu item-->
+					<!--end:Developing-->
+					</perm:permission>
 					<!--begin:Menu item-->
 					<div class="menu-item pt-5">
 						<!--begin:Menu content-->
@@ -846,7 +855,6 @@ String targetURL = Constant.getWebContext2() + "/authorization?token=" + token;
 						<!--end:Menu link-->
 						<!--begin:Menu sub-->
 						<div class="menu-sub menu-sub-accordion">
-
 							<!--begin:Menu item-->
 							<div class="menu-item">
 								<!--begin:Menu link-->
