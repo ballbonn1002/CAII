@@ -1406,8 +1406,10 @@ $(document).ready(function() {
 	    console.log("not selecting any option");
 	  }
 	
-	syncServerTime();
-	setInterval(updateClock, 1000);
+	//syncServerTime();
+	//setInterval(updateClock, 1000);
+	updateClock(); // เรียกทำงานครั้งแรกทันทีตอนหน้าเว็บโหลดเสร็จ
+    setInterval(updateClock, 1000); // สั่งให้อัปเดตซ้ำทุกๆ 1,000 มิลลิวินาที (1 วินาที)
 	setTimeout(showNotificationModal, 1500);
 });
 
@@ -1454,42 +1456,27 @@ function showNotificationModal() {
 	 }
  }
 
-  
-// Real-Time Clock
-function syncServerTime() {
-	fetch("https://timeapi.io/api/Time/current/zone?timeZone=Asia/Bangkok")
-	.then(resp => resp.json())
-	.then(data => {
-        let serverTime = new Date(data.dateTime).getTime();
-        let localTime = new Date().getTime();
-        serverTimeOffset = serverTime - localTime;
-        updateClock();
-    })
-    .catch(err => console.error("Sync error:", err));
-}
-//Real-Time Clock Helper
 function updateClock() {
-    let currentServerTime = new Date(new Date().getTime() + serverTimeOffset);
+    let currentTime = new Date(); 
     
-    let hours = currentServerTime.getHours();
-    let minutes = currentServerTime.getMinutes();
+    let hours = currentTime.getHours();
+    let minutes = currentTime.getMinutes();
     
     if (hours > 18 || (hours === 18 && minutes >= 30)) {
         $("#clock").text("18:30");
         $("#clock-second").text(":00");
     } 
     else {
-        
         let showHours = hours.toString().padStart(2, '0');
         let showMinutes = minutes.toString().padStart(2, '0');
-        let showSeconds = currentServerTime.getSeconds().toString().padStart(2, '0');
+        let showSeconds = currentTime.getSeconds().toString().padStart(2, '0');
         
         $("#clock").text(showHours + ":" + showMinutes);
         $("#clock-second").text(":" + showSeconds);
     }
     
     let options = { day: '2-digit', month: 'short', year: 'numeric' };
-    let dateStr = currentServerTime.toLocaleDateString('en-GB', options).replace(/,/g, '');
+    let dateStr = currentTime.toLocaleDateString('en-GB', options).replace(/,/g, '');
     $("#date").text(dateStr);
 }
 
@@ -1917,7 +1904,6 @@ window.onload = function() {
 	        	$(document).on('click', '.btnReturn', function(e) {
 
 	        	    e.preventDefault();
-
 
 	        	    const borrowId = $(this).data('id');
 

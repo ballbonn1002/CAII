@@ -3,6 +3,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
+<%@ taglib uri="/struts-tags" prefix="s"%>
 <fmt:setLocale value="en_US" />
 
 <!DOCTYPE html>
@@ -364,7 +365,22 @@
 								</div>
 							</div>
 							<div class="row">
-								<div class="col-12 gap-2">
+								<div class="col-12 col-md-6 col-lg-6">
+									<p class="fs-5 text-muted fw-medium mb-0">Line Account</p>
+									<div class="fs-5 text-gray-800 fw-semibold d-flex flex-wrap justify-content-between align-items-center">
+										<span class="text-break">${empty user.line_id ? '-' : user.line_id}</span>
+										<div class="d-flex gap-1">
+											<c:if test="${empty user.line_id}"><button class="btn btn-sm btn-success fw-medium" onclick="window.location.href='${webLinelogin}';">Bind Account</button></c:if>
+											<c:if test="${not empty user.line_id}"><button class="btn btn-sm btn-danger" onclick="confirmUnbound('${user.id}')">X</button></c:if>
+										</div>
+									</div>
+									<s:if test="hasActionErrors()">
+								        <div class="text-danger">
+								            <s:actionerror />
+								        </div>
+								    </s:if>
+								</div>
+								<div class="col-12 col-md-6 col-lg-6">
 									<p class="fs-5 text-muted fw-medium mb-0">Address</p>
 									<p class="fs-5 text-gray-800 fw-semibold">${empty user.address ? '-' : user.address}</p>
 								</div>
@@ -1917,6 +1933,36 @@ $(document).on('click', '.btnReceived',function(e){
 
 
 </script>
-
+<script>
+function confirmUnbound(id) {
+    Swal.fire({
+        title: '<h1 class="fw-semibold text-gray-900 mt-10">Unbound Account?</h1>',
+        html: `<span class="fw-medium text-gray-800 fs-5">Are you sure to unbound account?</span> <br>
+               <span class="fw-medium text-gray-800 fs-5">Once the data is unbound, you need to bind new account on Line application.</span>`,
+        width: '500px',
+        icon: undefined, 
+        iconHtml: `
+            <i class="ki-duotone ki-information text-danger" style="font-size: 10rem;">
+                <span class="path1"></span><span class="path2"></span>
+                <span class="path3"></span>
+            </i>
+        `,
+        showCancelButton: true,
+        cancelButtonText: 'Cancel',
+        confirmButtonText: 'Unbound',
+        customClass: {
+            icon: 'border-0',
+            cancelButton: 'btn btn-light',
+            confirmButton: "btn btn-danger"
+        },
+        focusConfirm: false,
+        focusCancel: true
+    }).then((result) => {
+        if (result.isConfirmed) {
+            window.location.href = "lineUnbound?id=" + id;
+        }
+    })
+}
+</script>
 </body>
 </html>

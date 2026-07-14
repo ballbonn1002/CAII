@@ -359,6 +359,18 @@ VALUES
 
 --  PROD 6 JULY 2026 10:00
 
+-- 07/07/2026 Eric : Add column uid_line_oa in user TABLE
+ALTER TABLE `user` ADD COLUMN uid_line_oa VARCHAR(64) DEFAULT NULL AFTER line_id;
+
+-- PROD 10 JULY 2026 10:40
+
+
+-- 07/07/2026 Eric : Add column uid_line_oa in user TABLE
+ALTER TABLE `user` ADD COLUMN uid_line_oa VARCHAR(64) DEFAULT NULL AFTER line_id;
+
+-- PROD 10 JULY 2026 10:40
+
+
 
 -- 14/07/2026 Best(Intern) : Create company, contact, address tables
 
