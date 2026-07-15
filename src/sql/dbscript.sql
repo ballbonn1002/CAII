@@ -427,7 +427,7 @@ CREATE TABLE company_contact (
 DEFAULT CHARSET=utf8mb4
 COLLATE=utf8mb4_unicode_ci;
 
--- 15/05/2026 June: CREATE TABLE catalog_equipment
+-- 14/07/2026 June: CREATE TABLE catalog_equipment and catalog_consumables
 CREATE TABLE catalog_equipment (
 	catalog_equipment_id BIGINT(11) NOT NULL AUTO_INCREMENT PRIMARY KEY, 
 	equipment_name 		VARCHAR(64)  NOT NULL,
