@@ -17,49 +17,50 @@ import org.hibernate.transform.AliasToEntityMapResultTransformer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import com.cubesofttech.model.CatalogEquipment;
 import com.cubesofttech.model.FileUpload;
-import com.cubesofttech.model.ItemCatalog;
+
 import com.cubesofttech.model.User;
 
 @Repository
-public class ItemCatalogDAOImpl implements ItemCatalogDAO {
+public class CatalogEquipmentDAOImpl implements CatalogEquipmentDAO {
 
 	@Autowired
 	private SessionFactory sessionFactory;
 
 	@Override
-	public List<ItemCatalog> findAll() throws Exception {
+	public List<CatalogEquipment> findAll() throws Exception {
 		Session session = sessionFactory.getCurrentSession();
-		List<ItemCatalog> itemCatalog = null;
+		List<CatalogEquipment> catalogEquipment = null;
 		try {
-			itemCatalog = session.createCriteria(ItemCatalog.class).list();
+			catalogEquipment = session.createCriteria(CatalogEquipment.class).list();
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
 			// session.close();
 		}
-		return itemCatalog;
+		return catalogEquipment;
 	}
 	@Override
-	public void save(ItemCatalog ItemCatalog) throws Exception {
+	public void save(CatalogEquipment CatalogEquipment) throws Exception {
 		Session session = this.sessionFactory.getCurrentSession();
-		session.save(ItemCatalog);
+		session.save(CatalogEquipment);
 		session.flush();
 		// session.close();
 	}
 
 	@Override
-	public ItemCatalog findById(Long itemCatalogId) throws Exception {
+	public CatalogEquipment findById(Long catalogEquipmentId) throws Exception {
 		Session session = sessionFactory.getCurrentSession();
-		ItemCatalog itemCatalog = null;
+		CatalogEquipment catalogEquipment = null;
 		try {
-			itemCatalog = (ItemCatalog) session.get(ItemCatalog.class, itemCatalogId);
+			catalogEquipment = (CatalogEquipment) session.get(CatalogEquipment.class, catalogEquipmentId);
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
 			// session.close();
 		}
-		return itemCatalog;
+		return catalogEquipment;
 		
 
 	}
@@ -70,7 +71,7 @@ public class ItemCatalogDAOImpl implements ItemCatalogDAO {
 		Long maxId = 0L;
 		try {
 
-			Criteria criteria = session.createCriteria(ItemCatalog.class).setProjection(Projections.max("itemCatalogId"));
+			Criteria criteria = session.createCriteria(CatalogEquipment.class).setProjection(Projections.max("catalogEquipmentId"));
 			maxId = (Long) criteria.uniqueResult();
 
 		} catch (Exception e) {
@@ -88,18 +89,18 @@ public class ItemCatalogDAOImpl implements ItemCatalogDAO {
 	}
 	
 	@Override
-	public void delete(ItemCatalog ItemCatalog) throws Exception {
+	public void delete(CatalogEquipment CatalogEquipment) throws Exception {
 		Session session = this.sessionFactory.getCurrentSession();
-		session.delete(ItemCatalog);
+		session.delete(CatalogEquipment);
 		session.flush();
 		// session.close();
 	}
 	
 	@Override
-	public void update(ItemCatalog ItemCatalog) throws Exception {
+	public void update(CatalogEquipment CatalogEquipment) throws Exception {
 		Session session = this.sessionFactory.getCurrentSession();
 		session.clear();
-		session.update(ItemCatalog);
+		session.update(CatalogEquipment);
 		session.flush();
 		// session.close();
 	}

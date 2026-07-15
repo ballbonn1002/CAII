@@ -10,17 +10,17 @@ import javax.persistence.Id;
 
 import javax.persistence.Table;
  @Entity
-@Table(name = "item_catalog")
-public class ItemCatalog implements Serializable{
+@Table(name = "catalog_equipment")
+public class CatalogEquipment implements Serializable{
 	 
 	 private static final long serialVersionUID = 1L;
 	 
 	@Id
-	@Column(name = "item_catalog_id")
-	private Long itemCatalogId;
+	@Column(name = "catalog_equipment_id")
+	private Long catalogEquipmentId;
 	
-	@Column(name = "item_equipment_name")
-	private String itemEquipmentName;
+	@Column(name = "equipment_name")
+	private String catalogEquipmentName;
 	
 	@Column(name = "active")
 	private String  active;
@@ -37,20 +37,20 @@ public class ItemCatalog implements Serializable{
 	@Column(name = "time_update")
 	private java.sql.Timestamp timeUpdate;
 
-	public Long getItemCatalogId() {
-		return itemCatalogId;
+	public Long getCatalogEquipmentId() {
+		return catalogEquipmentId;
 	}
 
-	public void setItemCatalogId(Long itemCatalogId) {
-		this.itemCatalogId = itemCatalogId;
+	public void setCatalogEquipmentId(Long catalogEquipmentId) {
+		this.catalogEquipmentId = catalogEquipmentId;
 	}
 
-	public String getItemEquipmentName() {
-		return itemEquipmentName;
+	public String getCatalogEquipmentName() {
+		return catalogEquipmentName;
 	}
 
-	public void setItemEquipmentName(String itemEquipmentName) {
-		this.itemEquipmentName = itemEquipmentName;
+	public void setCatalogEquipmentName(String catalogEquipmentName) {
+		this.catalogEquipmentName = catalogEquipmentName;
 	}
 
 	public String getActive() {
@@ -95,10 +95,11 @@ public class ItemCatalog implements Serializable{
 
 	@Override
 	public String toString() {
-		return "ItemCatalog [itemCatalogId=" + itemCatalogId + ", itemEquipmentName=" + itemEquipmentName + ", active="
-				+ active + ", userCreate=" + userCreate + ", timeCreate=" + timeCreate + ", userUpdate=" + userUpdate
-				+ ", timeUpdate=" + timeUpdate + "]";
+		return "CatalogEquipment [catalogEquipmentId=" + catalogEquipmentId + ", catalogEquipmentName="
+				+ catalogEquipmentName + ", active=" + active + ", userCreate=" + userCreate + ", timeCreate="
+				+ timeCreate + ", userUpdate=" + userUpdate + ", timeUpdate=" + timeUpdate + "]";
 	}
+
 	
 	
 }
