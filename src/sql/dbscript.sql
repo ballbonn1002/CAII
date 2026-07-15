@@ -427,11 +427,22 @@ CREATE TABLE company_contact (
 DEFAULT CHARSET=utf8mb4
 COLLATE=utf8mb4_unicode_ci;
 
--- 15/05/2026 June: CREATE TABLE item_catalog
-CREATE TABLE item_catalog (
-	item_catalog_id BIGINT(11) NOT NULL AUTO_INCREMENT PRIMARY KEY, 
-	item_equipment_name VARCHAR(64)  NULL,
-    active              VARCHAR(8)     NULL,
+-- 15/05/2026 June: CREATE TABLE catalog_equipment
+CREATE TABLE catalog_equipment (
+	catalog_equipment_id BIGINT(11) NOT NULL AUTO_INCREMENT PRIMARY KEY, 
+	equipment_name 		VARCHAR(64)  NOT NULL,
+    active              VARCHAR(8)   NOT NULL,
+    user_create         VARCHAR(32)  NULL,
+    user_update         VARCHAR(32)  NULL,
+    time_create         TIMESTAMP    NULL,
+    time_update         TIMESTAMP    NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE catalog_consumables (
+	catalog_consumables_id BIGINT(11) NOT NULL AUTO_INCREMENT PRIMARY KEY, 
+	consumables_name 	VARCHAR(64)  NOT NULL,
+	sub_product_active 	VARCHAR(8)  NOT NULL,
+    active              VARCHAR(8)   NOT NULL,
     user_create         VARCHAR(32)  NULL,
     user_update         VARCHAR(32)  NULL,
     time_create         TIMESTAMP    NULL,

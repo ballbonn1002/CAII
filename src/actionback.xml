@@ -2028,8 +2028,20 @@
 			<result name="error">/index.jsp</result>
 		</action>
 		
-		<action name="item_catalog_save"
-		    class="com.cubesofttech.action.ItemCatalogAction" method="item_catalog_save">
+		<action name="catalog_equipment_save"
+		    class="com.cubesofttech.action.ItemCatalogAction" method="catalog_equipment_save">
+		    <result name="success" type="tiles">itemCatalog</result>
+		    <result name="error">/index.jsp</result>
+		</action>
+		
+		<action name="catalog_equipment_delete"
+			class="com.cubesofttech.action.ItemCatalogAction" method="catalog_equipment_delete">
+			<result name="success" type="redirectAction">item_catalog</result>
+		    <result name="error">/index.jsp</result>
+		</action>
+		
+		<action name="catalog_consumables_update"
+		    class="com.cubesofttech.action.ItemCatalogAction" method="catalog_consumables_update">
 		    <result name="success" type="tiles">itemCatalog</result>
 		    <result name="error">/index.jsp</result>
 		</action>

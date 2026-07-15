@@ -1,13 +1,15 @@
 package com.cubesofttech.action;
 
 import com.cubesofttech.dao.FileUploadDAO;
-import com.cubesofttech.dao.ItemCatalogDAO;
+import com.cubesofttech.dao.CatalogConsumablesDAO;
+import com.cubesofttech.dao.CatalogEquipmentDAO;
 import com.cubesofttech.dao.JobsiteDAO;
 import com.cubesofttech.dao.UserDAO;
 import com.cubesofttech.dao.WorkLogDAO;
 import com.cubesofttech.model.ArticleType;
+import com.cubesofttech.model.CatalogConsumables;
 import com.cubesofttech.model.FileUpload;
-import com.cubesofttech.model.ItemCatalog;
+import com.cubesofttech.model.CatalogEquipment;
 import com.cubesofttech.model.User;
 import com.cubesofttech.util.DateUtil;
 
@@ -45,47 +47,88 @@ public class ItemCatalogAction extends ActionSupport {
     private UserDAO userDAO;
     
     @Autowired
-    private ItemCatalogDAO itemCatalogDAO;
+    private CatalogEquipmentDAO catalogEquipmentDAO;
+    
+    @Autowired
+    private CatalogConsumablesDAO catalogConsumablesDAO;
     
     @Autowired
 	private FileUploadDAO fileuploadDAO;
     
-    private String itemEquipmentName;
-    private String active;
-    private Long itemCatalogId;
+    private String catalogEquipmentName;
+    private String eqptActive;
+    private Long catalogEquipmentId;
+    private String subProductActive;
+    private String consActive;
+    private Long catalogConsumablesId;
+	
+	public CatalogEquipmentDAO getCatalogEquipmentDAO() {
+		return catalogEquipmentDAO;
+	}
 
-    
-    public String getItemEquipmentName() {
-		return itemEquipmentName;
+	public void setCatalogEquipmentDAO(CatalogEquipmentDAO catalogEquipmentDAO) {
+		this.catalogEquipmentDAO = catalogEquipmentDAO;
 	}
-	public void setItemEquipmentName(String itemEquipmentName) {
-		this.itemEquipmentName = itemEquipmentName;
-	}
-	public String getActive() {
-		return active;
-	}
-	public void setActive(String active) {
-		this.active = active;
-	}
-	public Long getItemCatalogId() {
-        return itemCatalogId;
-    }
-    public void setItemCatalogId(Long itemCatalogId) {
-        this.itemCatalogId = itemCatalogId;
-    }
-    
-    
 
-    public String item_catalog() {
+	public String getCatalogEquipmentName() {
+		return catalogEquipmentName;
+	}
+
+	public void setCatalogEquipmentName(String catalogEquipmentName) {
+		this.catalogEquipmentName = catalogEquipmentName;
+	}
+
+	public String getEqptActive() {
+		return eqptActive;
+	}
+
+	public void setEqptActive(String eqptActive) {
+		this.eqptActive = eqptActive;
+	}
+
+	public Long getCatalogEquipmentId() {
+		return catalogEquipmentId;
+	}
+
+	public void setCatalogEquipmentId(Long catalogEquipmentId) {
+		this.catalogEquipmentId = catalogEquipmentId;
+	}
+
+	public String getSubProductActive() {
+		return subProductActive;
+	}
+
+	public void setSubProductActive(String subProductActive) {
+		this.subProductActive = subProductActive;
+	}
+
+	public String getConsActive() {
+		return consActive;
+	}
+
+	public void setConsActive(String consActive) {
+		this.consActive = consActive;
+	}
+
+	public Long getCatalogConsumablesId() {
+		return catalogConsumablesId;
+	}
+
+	public void setCatalogConsumablesId(Long catalogConsumablesId) {
+		this.catalogConsumablesId = catalogConsumablesId;
+	}
+
+	public String item_catalog() {
         try {
             if (onlineUser == null) {
             	return ERROR;
             }
             
-            List<ItemCatalog> itemCatalogList = itemCatalogDAO.findAll();
-//            log.debug(itemCatalogList);
+            List<CatalogEquipment> catalogEquipmentList = catalogEquipmentDAO.findAll();
+            List<CatalogConsumables> catalogConsumablesList = catalogConsumablesDAO.findAll();
             
-            request.setAttribute("itemCatalogList", itemCatalogList);
+            request.setAttribute("catalogEqptList", catalogEquipmentList);
+            request.setAttribute("catalogConsList", catalogConsumablesList);
 
             return SUCCESS;
 
@@ -95,47 +138,44 @@ public class ItemCatalogAction extends ActionSupport {
         }
     }
     
-    public String item_catalog_save() {
+    public String catalog_equipment_save() {
         try {
             if (onlineUser == null) {
                 return ERROR;
             }
 
-            if (itemEquipmentName == null || itemEquipmentName.trim().isEmpty()) {
+            if (catalogEquipmentName == null || catalogEquipmentName.trim().isEmpty()) {
                 return ERROR;
             }
 
-            Long maxId = itemCatalogDAO.getMaxId() + 1;
-            ItemCatalog itemCatalog;
+            Long maxId = catalogEquipmentDAO.getMaxId() + 1;
+            CatalogEquipment catalogEquipment;
 
-            if (itemCatalogId != null) {
-//                log.debug("Edit itemCatalogId = " + itemCatalogId);
-                itemCatalog = itemCatalogDAO.findById(itemCatalogId); 
+            if (catalogEquipmentId != null) {
+            	catalogEquipment = catalogEquipmentDAO.findById(catalogEquipmentId); 
                 
-                if (itemCatalog == null) {
+                if (catalogEquipment == null) {
                     return ERROR;
                 }
             } else {
-                itemCatalog = new ItemCatalog();
-                itemCatalog.setItemCatalogId(maxId);
-                itemCatalog.setUserCreate(onlineUser.getId());
-                itemCatalog.setTimeCreate(DateUtil.getCurrentTime());
+            	catalogEquipment = new CatalogEquipment();
+            	catalogEquipment.setCatalogEquipmentId(maxId);
+            	catalogEquipment.setUserCreate(onlineUser.getId());
+            	catalogEquipment.setTimeCreate(DateUtil.getCurrentTime());
             }
 
-            
-            itemCatalog.setItemEquipmentName(itemEquipmentName);
-            itemCatalog.setActive("1".equals(active) ? "1" : "0");
-            itemCatalog.setUserUpdate(onlineUser.getId());
-            itemCatalog.setTimeUpdate(DateUtil.getCurrentTime());
+            catalogEquipment.setCatalogEquipmentName(catalogEquipmentName);
+            catalogEquipment.setActive("1".equals(eqptActive) ? "1" : "0");
+            catalogEquipment.setUserUpdate(onlineUser.getId());
+            catalogEquipment.setTimeUpdate(DateUtil.getCurrentTime());
 
          
-            if (itemCatalogId != null) {
-                itemCatalogDAO.update(itemCatalog);
+            if (catalogEquipmentId != null) {
+            	catalogEquipmentDAO.update(catalogEquipment);
             } else {
-                itemCatalogDAO.save(itemCatalog);  
+            	catalogEquipmentDAO.save(catalogEquipment);  
             }
 
-//            log.debug("Item Catalog Saved Successfully");
             return SUCCESS;
 
         } catch (Exception e) {
@@ -144,11 +184,54 @@ public class ItemCatalogAction extends ActionSupport {
         }
     }
     
-    public String item_catalog_update() {
+    public String catalog_consumables_update() {
+        try {
+            if (onlineUser == null) {
+                return ERROR;
+            }
+
+            if (catalogConsumablesId == null) {
+                return ERROR;
+            }
+
+            CatalogConsumables catalogConsumables = catalogConsumablesDAO.findById(catalogConsumablesId);
+            if (catalogConsumables == null) {
+                return ERROR;
+            }
+
+            if (consActive != null) {
+                catalogConsumables.setActive("1".equals(consActive) ? "1" : "0");
+            }
+            if (subProductActive != null) {
+                catalogConsumables.setSubProductActive("1".equals(subProductActive) ? "1" : "0");
+            }
+
+            catalogConsumables.setUserUpdate(onlineUser.getId());
+            catalogConsumables.setTimeUpdate(DateUtil.getCurrentTime());
+            catalogConsumablesDAO.update(catalogConsumables);
+
+            return SUCCESS;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ERROR;
+        }
+    }
+    
+    public String catalog_equipment_delete() {
     	try {
     		if (onlineUser == null) {
             	return ERROR;
             }
+    		
+    		if(catalogEquipmentId != null) {
+    			CatalogEquipment itemId = catalogEquipmentDAO.findById(catalogEquipmentId);
+    			if(itemId != null) {
+    				catalogEquipmentDAO.delete(itemId);
+    			}else {
+    				return ERROR;
+    			}
+    		}
     		
     		return SUCCESS;
     	} catch (Exception e) {
