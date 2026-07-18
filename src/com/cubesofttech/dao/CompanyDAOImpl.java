@@ -29,7 +29,7 @@ public class CompanyDAOImpl implements CompanyDAO {
 
 		Session session = sessionFactory.getCurrentSession();
 
-		String sql = "SELECT " + "c.company_id, " + "c.company_code, " + "c.company_th, " + "c.company_en, "
+		String sql = "SELECT " + "c.company_id, " + "c.company_code, " + "c.company_th, " + "c.company_en, " + "c.industry, " 
 				+ "c.is_active, " + "f.path AS file_path "
 				+ "FROM company c " + "LEFT JOIN file f ON c.file_id = f.file_id " + "ORDER BY c.company_id";
 

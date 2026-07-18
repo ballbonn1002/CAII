@@ -383,7 +383,6 @@ CREATE TABLE company (
     company_th VARCHAR(128) NOT NULL,
     industry VARCHAR(1) NOT NULL,
     is_active VARCHAR(1) DEFAULT true,
-    description VARCHAR(1024),
     user_create VARCHAR(32),
     user_update VARCHAR(32),
     time_create TIMESTAMP NULL,

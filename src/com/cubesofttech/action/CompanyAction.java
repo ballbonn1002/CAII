@@ -1,8 +1,6 @@
 package com.cubesofttech.action;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.sql.Date;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -15,7 +13,6 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.log4j.Logger;
 import org.apache.struts2.ServletActionContext;
-import org.hibernate.Session;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cubesofttech.dao.CompanyAddressDAO;
@@ -62,11 +59,32 @@ public class CompanyAction extends ActionSupport {
 	private String logoFileName;
 	private String logoContentType;
 	private String filePath;
-	
-	public void setIsActive(String isActive) {
-	    this.isActive = isActive;
+
+	private String payload;
+	private File[] contactProfiles;
+	private String[] contactProfilesFileName;
+	private String[] contactProfileIds;
+
+	public void setContactProfiles(File[] contactProfiles) {
+		this.contactProfiles = contactProfiles;
 	}
-	
+
+	public void setContactProfilesFileName(String[] contactProfilesFileName) {
+		this.contactProfilesFileName = contactProfilesFileName;
+	}
+
+	public void setContactProfileIds(String[] contactProfileIds) {
+		this.contactProfileIds = contactProfileIds;
+	}
+
+	public void setPayload(String payload) {
+		this.payload = payload;
+	}
+
+	public void setIsActive(String isActive) {
+		this.isActive = isActive;
+	}
+
 	public String getFilePath() {
 		return filePath;
 	}
@@ -74,7 +92,6 @@ public class CompanyAction extends ActionSupport {
 	public void setFilePath(String filePath) {
 		this.filePath = filePath;
 	}
-
 
 	public File getLogo() {
 		return logo;
@@ -161,7 +178,6 @@ public class CompanyAction extends ActionSupport {
 		return String.format("%.2f %s", formattedSize, units[unitIndex]);
 	}
 
-
 	public String list() throws Exception {
 
 		List<Map<String, Object>> companies = companyDAO.findAll();
@@ -172,7 +188,7 @@ public class CompanyAction extends ActionSupport {
 			Map<Long, List<Map<String, Object>>> addressMap = new HashMap<Long, List<Map<String, Object>>>();
 
 			for (Map<String, Object> address : addresses) {
-				Long companyId = Long.valueOf((String)address.get("company_id"));
+				Long companyId = Long.valueOf((String) address.get("company_id"));
 
 				List<Map<String, Object>> list = addressMap.get(companyId);
 
@@ -211,9 +227,11 @@ public class CompanyAction extends ActionSupport {
 
 				List<Map<String, Object>> contactList = contactMap.get(companyId);
 
-				company.put("address_location", addressList != null ? addressList : new ArrayList<Map<String, Object>>());
+				company.put("address_location",
+						addressList != null ? addressList : new ArrayList<Map<String, Object>>());
 
-				company.put("company_contact", contactList != null ? contactList : new ArrayList<Map<String, Object>>());
+				company.put("company_contact",
+						contactList != null ? contactList : new ArrayList<Map<String, Object>>());
 			}
 
 		} catch (Exception e) {
@@ -226,40 +244,45 @@ public class CompanyAction extends ActionSupport {
 
 	public String edit() {
 
-	    try {
+		try {
 
-	        String companyIdString = request.getParameter("companyId");
+			String companyIdString = request.getParameter("companyId");
 
-	        if (companyIdString == null || companyIdString.trim().isEmpty()) {
-	            return ERROR;
-	        }
+			if (companyIdString == null || companyIdString.trim().isEmpty()) {
+				return ERROR;
+			}
 
-	        Long companyId = Long.valueOf(companyIdString);
+			Long companyId = Long.valueOf(companyIdString);
 
-	        Company company = companyDAO.findById(companyId);
+			Company company = companyDAO.findById(companyId);
 
-	        if (company == null) {
-	            return ERROR;
-	        }
+			if (company == null) {
+				return ERROR;
+			}
 
-	        List<Map<String, Object>> addressList =
-	                addressDAO.findByCompanyId(companyId);
+			FileUpload file = null;
 
-	        List<Map<String, Object>> contactList =
-	                contactDAO.findByCompanyId(companyId);
+			if (company.getFileId() != null && !company.getFileId().isEmpty()) {
+				file = fileUploadDAO.findById(Integer.parseInt(company.getFileId()));
+			}
 
-	        request.setAttribute("company", company);
-	        request.setAttribute("addressList", addressList);
-	        request.setAttribute("contactList", contactList);
+			List<Map<String, Object>> addressList = addressDAO.findByCompanyId(companyId);
 
-	        return SUCCESS;
+			List<Map<String, Object>> contactList = contactDAO.findByCompanyId(companyId);
 
-	    } catch (Exception e) {
+			request.setAttribute("company", company);
+			request.setAttribute("profile", file);
+			request.setAttribute("addressList", addressList);
+			request.setAttribute("contactList", contactList);
 
-	        log.error("Error loading company", e);
+			return SUCCESS;
 
-	        return ERROR;
-	    }
+		} catch (Exception e) {
+
+			log.error("Error loading company", e);
+
+			return ERROR;
+		}
 	}
 
 	public String add() {
@@ -282,7 +305,6 @@ public class CompanyAction extends ActionSupport {
 			company.setTimeCreate(DateUtil.getCurrentTime());
 			company.setTimeUpdate(DateUtil.getCurrentTime());
 			companyDAO.save(company);
-
 
 			if (logo != null) {
 
@@ -358,288 +380,315 @@ public class CompanyAction extends ActionSupport {
 			return ERROR;
 		}
 	}
-	
+
 	public String update() {
+		try {
 
-	    try {
-	    	
-	    	User onlineUser = (User) request.getSession().getAttribute("onlineUser");
+			User onlineUser = (User) request.getSession().getAttribute("onlineUser");
 
-	        BufferedReader reader = request.getReader();
+			if (onlineUser == null) {
+				response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+				return ERROR;
+			}
 
-	        StringBuilder sb = new StringBuilder();
+			ObjectMapper mapper = new ObjectMapper();
 
-	        String line;
+			Map<String, Object> payload = mapper.readValue(this.payload, Map.class);
+			Map<String, Object> updatedCompany = (Map<String, Object>) payload.get("company");
+			String companyId = updatedCompany.get("id").toString();
 
-	        while ((line = reader.readLine()) != null) {
-	            sb.append(line);
-	        }
+			// Company Update
+			Company company = companyDAO.findById(Long.valueOf(companyId));
 
-	        String json = sb.toString();
+			if (company == null) {
+				response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+				return ERROR;
+			}
 
-	        System.out.println("Payload:");
-	        System.out.println(json);
+			company.setCompanyCode((String) updatedCompany.get("code"));
+			company.setTaxNumber((String) updatedCompany.get("taxId"));
+			company.setCompanyEn((String) updatedCompany.get("nameEN"));
+			company.setCompanyTh((String) updatedCompany.get("nameTH"));
+			company.setIndustry((String) updatedCompany.get("industry"));
+			company.setIsActive((String) updatedCompany.get("isActive"));
 
-	        ObjectMapper mapper = new ObjectMapper();
+			// Handle File Upload Request
+			if (logo != null) {
 
-	        Map<String, Object> payload =
-	                mapper.readValue(json, Map.class);
-	        
-	        Map<String, Object> updatedCompany = (Map<String, Object>) payload.get("company");
-	        String companyId = updatedCompany.get("id").toString();
+				Integer maxId = fileUploadDAO.getMaxId() + 1;
 
-	        // address
-	        Map<String, Object> address =
-	                (Map<String, Object>) payload.get("address");
+				ServletContext context = request.getServletContext();
+				String fileServerPath = context.getRealPath("/");
+				System.out.println(fileServerPath);
 
-	        List<Map<String, Object>> addressCreated =
-	                (List<Map<String, Object>>) address.get("created");
+				String originalFileName = logoFileName;
 
-	        List<Map<String, Object>> addressUpdated =
-	                (List<Map<String, Object>>) address.get("updated");
+				FileUtil.upload(logo, fileServerPath + "upload/company/", maxId + "_" + originalFileName);
 
-	        List<Object> addressDeleted =
-	                (List<Object>) address.get("deleted");
-	        
-	        // Company Update
-	        Company company = companyDAO.findById(Long.valueOf(companyId));
-	        company.setCompanyCode((String) updatedCompany.get("code"));
-	        company.setTaxNumber((String) updatedCompany.get("taxId"));
-	        company.setCompanyEn((String) updatedCompany.get("nameEN"));
-	        company.setCompanyTh((String) updatedCompany.get("nameTH"));
-	        company.setIndustry((String) updatedCompany.get("industry"));
-	        company.setIsActive((String) updatedCompany.get("isActive"));
-	        company.setUserUpdate(onlineUser.getId());
-	        company.setTimeUpdate(DateUtil.getCurrentTime());
-	        
-	        companyDAO.update(company);
-	        
+				int split = originalFileName.lastIndexOf('.');
 
-	        // create
-	        for (Map<String, Object> item : addressCreated) {
+				String name = originalFileName.substring(0, split);
+				String type = originalFileName.substring(split).toLowerCase();
 
-	            CompanyAddress addressObj = new CompanyAddress();
+				FileUpload fileUpload = new FileUpload();
 
-	            addressObj.setCompanyId(companyId);
+				fileUpload.setFileId(maxId.intValue());
+				fileUpload.setPath("/upload/company/" + maxId + "_" + originalFileName);
+				fileUpload.setSize(formatFileSize(logo.length()));
+				fileUpload.setName(name);
+				fileUpload.setType(type);
 
-	            addressObj.setAddressName(
-	                (String) item.get("address_name"));
+				fileUpload.setUserId(onlineUser.getId());
+				fileUpload.setUserCreate(onlineUser.getId());
 
-	            addressObj.setAddress(
-	                (String) item.get("address"));
+				fileUpload.setPage("company");
+				fileUpload.setPageId(String.valueOf(company.getCompanyId()));
 
-	            addressObj.setGoogleMap(
-	                (String) item.get("google_map"));
-	            
-	            addressObj.setUserCreate(onlineUser.getId());
-	            addressObj.setUserUpdate(onlineUser.getId());
-	            
-	            addressObj.setTimeCreate(DateUtil.getCurrentTime());
-	            addressObj.setTimeUpdate(DateUtil.getCurrentTime());
-	            
-	            addressDAO.save(addressObj);
-	        }
+				fileUpload.setTimeCreate(DateUtil.getCurrentTime());
 
-	        // update
-	        for (Map<String, Object> item : addressUpdated) {
+				fileUploadDAO.save(fileUpload);
 
-	            Long addressId =
-	                Long.valueOf(item.get("address_id").toString());
+				company.setFileId(String.valueOf(fileUpload.getFileId()));
 
-	            CompanyAddress addressObj =
-	                addressDAO.findById(addressId);
+			}
 
-	            if (addressObj == null) {
-	                continue;
-	            }
+			company.setUserUpdate(onlineUser.getId());
+			company.setTimeUpdate(DateUtil.getCurrentTime());
+			companyDAO.update(company);
 
-	            addressObj.setAddressName(
-	                (String) item.get("address_name"));
+			// address
+			Map<String, Object> address = (Map<String, Object>) payload.get("address");
 
-	            addressObj.setAddress(
-	                (String) item.get("address"));
+			// contact
+			Map<String, Object> contact = (Map<String, Object>) payload.get("contact");
+			Map<String, File> profileMap = new HashMap<>();
+			Map<String, String> profileNameMap = new HashMap<>();
 
-	            addressObj.setGoogleMap(
-	                (String) item.get("google_map"));
-	            
-	            addressObj.setUserUpdate(onlineUser.getId());
-	            
-	            addressObj.setTimeUpdate(DateUtil.getCurrentTime());
+			if (contactProfiles != null) {
+				for (int i = 0; i < contactProfiles.length; i++) {
+					profileMap.put(contactProfileIds[i], contactProfiles[i]);
+					profileNameMap.put(contactProfileIds[i], contactProfilesFileName[i]);
+				}
+			}
 
-	            addressDAO.update(addressObj);
-	        }
+			processAddressUpdateRequest(companyId, onlineUser, address);
+			processContactUpdateRequest(companyId, onlineUser, contact, profileMap, profileNameMap);
 
-	        // delete
-	        for (Object id : addressDeleted) {
+			response.setStatus(HttpServletResponse.SC_OK);
 
-	            Long addressId =
-	                Long.valueOf(id.toString());
+			return SUCCESS;
 
-	            CompanyAddress addressObj =
-	                addressDAO.findById(addressId);
+		} catch (Exception e) {
 
-	            if (addressObj != null) {
-	                addressDAO.delete(addressObj);
-	            }
-	        }
+			log.error("Update company failed", e);
+			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 
-	        // CONTACT
-
-	        Map<String, Object> contact =
-	                (Map<String, Object>) payload.get("contact");
-
-	        List<Map<String, Object>> contactCreated =
-	                (List<Map<String, Object>>) contact.get("created");
-
-	        List<Map<String, Object>> contactUpdated =
-	                (List<Map<String, Object>>) contact.get("updated");
-
-	        List<Object> contactDeleted =
-	                (List<Object>) contact.get("deleted");
-
-	        // create
-	        for (Map<String, Object> item : contactCreated) {
-
-	            CompanyContact contactObj =
-	                new CompanyContact();
-
-	            contactObj.setCompanyId(companyId);
-
-	            contactObj.setCompanyAddressId(item.get("address_id").toString());
-
-	            contactObj.setTitleNameTh(
-	                (String) item.get("title_name_th"));
-
-	            contactObj.setTitleNameEn(
-	                (String) item.get("title_name_en"));
-
-	            contactObj.setContactNameTh(
-	                (String) item.get("name_th"));
-
-	            contactObj.setContactName(
-	                (String) item.get("name_en"));
-
-	            contactObj.setPosition(
-	                (String) item.get("position"));
-
-	            contactObj.setPhone(
-	                (String) item.get("phone_number"));
-
-	            contactObj.setEmail(
-	                (String) item.get("email"));
-	            
-	            contactObj.setUserCreate(onlineUser.getId());
-	            contactObj.setUserUpdate(onlineUser.getId());
-	            
-	            contactObj.setTimeCreate(DateUtil.getCurrentTime());
-	            contactObj.setTimeUpdate(DateUtil.getCurrentTime());
-
-	            contactDAO.save(contactObj);
-	        }
-
-	        // update
-	        for (Map<String, Object> item : contactUpdated) {
-
-	            Long contactId =
-	                Long.valueOf(item.get("contact_id").toString());
-
-	            CompanyContact contactObj =
-	                contactDAO.findById(contactId);
-
-	            if (contactObj == null) {
-	                continue;
-	            }
-
-	            contactObj.setCompanyAddressId((item.get("address_id").toString()));
-
-	            contactObj.setTitleNameTh(
-	                (String) item.get("title_name_th"));
-
-	            contactObj.setTitleNameEn(
-	                (String) item.get("title_name_en"));
-
-	            contactObj.setContactNameTh(
-	                (String) item.get("name_th"));
-
-	            contactObj.setContactName(
-	                (String) item.get("name_en"));
-
-	            contactObj.setPosition(
-	                (String) item.get("position"));
-
-	            contactObj.setPhone(
-	                (String) item.get("phone_number"));
-
-	            contactObj.setEmail(
-	                (String) item.get("email"));
-	            
-	            contactObj.setUserUpdate(onlineUser.getId());
-	            contactObj.setTimeUpdate(DateUtil.getCurrentTime());
-
-	            contactDAO.update(contactObj);
-	        }
-
-	        // delete
-	        for (Object id : contactDeleted) {
-
-	            Long contactId =
-	                Long.valueOf(id.toString());
-
-	            CompanyContact contactObj =
-	                contactDAO.findById(contactId);
-
-	            if (contactObj != null) {
-	                contactDAO.delete(contactObj);
-	            }
-	        }
-
-	        response.setStatus(HttpServletResponse.SC_OK);
-	        return SUCCESS;
-
-	    } catch (Exception e) {
-
-	        log.error("Update company failed", e);
-	        response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-	        return ERROR;
-	    }
+			return ERROR;
+		}
 	}
 
-	
 	public String checkCompanyCode() {
 
-	    try {
+		try {
 
-	        String companyCode =
-	            request.getParameter("companyCode");
+			String companyCode = request.getParameter("companyCode");
+			Long companyId = null;
+			String companyIdString = request.getParameter("companyId");
 
-	        Long companyId = null;
-	        
-	        String companyIdString = request.getParameter("companyId");
-	        if(companyIdString != null && !companyIdString.isEmpty()) {
-	        	companyId = Long.valueOf(companyIdString);
-	        }
+			if (companyIdString != null && !companyIdString.isEmpty()) {
+				companyId = Long.valueOf(companyIdString);
+			}
 
-	        boolean exists =
-	            companyDAO.existsCompanyCode(
-	                companyCode,
-	                companyId);
+			boolean exists = companyDAO.existsCompanyCode(companyCode, companyId);
 
-	        response.setContentType(
-	            "application/json");
+			response.setContentType("application/json");
+			response.getWriter().write("{\"exists\":" + exists + "}");
 
-	        response.getWriter().write(
-	            "{\"exists\":" + exists + "}");
+			return NONE;
 
-	        return NONE;
+		} catch (Exception e) {
 
-	    } catch (Exception e) {
+			e.printStackTrace();
 
-	        e.printStackTrace();
-
-	        return NONE;
-	    }
+			return NONE;
+		}
 	}
 
+	private void processAddressUpdateRequest(String companyId, User onlineUser, Map<String, Object> address)
+			throws Exception {
+
+		List<Map<String, Object>> addressCreated = (List<Map<String, Object>>) address.get("created");
+		List<Map<String, Object>> addressUpdated = (List<Map<String, Object>>) address.get("updated");
+		List<Object> addressDeleted = (List<Object>) address.get("deleted");
+
+		// create
+		for (Map<String, Object> item : addressCreated) {
+
+			CompanyAddress addressObj = new CompanyAddress();
+
+			addressObj.setCompanyId(companyId);
+			addressObj.setAddressName((String) item.get("address_name"));
+			addressObj.setAddress((String) item.get("address"));
+			addressObj.setGoogleMap((String) item.get("google_map"));
+			addressObj.setUserCreate(onlineUser.getId());
+			addressObj.setTimeCreate(DateUtil.getCurrentTime());
+
+			addressDAO.save(addressObj);
+		}
+
+		// update
+		for (Map<String, Object> item : addressUpdated) {
+
+			Long addressId = Long.valueOf(item.get("address_id").toString());
+			CompanyAddress addressObj = addressDAO.findById(addressId);
+
+			if (addressObj == null) {
+				continue;
+			}
+
+			addressObj.setAddressName((String) item.get("address_name"));
+			addressObj.setAddress((String) item.get("address"));
+			addressObj.setGoogleMap((String) item.get("google_map"));
+			addressObj.setUserUpdate(onlineUser.getId());
+			addressObj.setTimeUpdate(DateUtil.getCurrentTime());
+
+			addressDAO.update(addressObj);
+		}
+
+		// delete
+		for (Object id : addressDeleted) {
+
+			Long addressId = Long.valueOf(id.toString());
+			CompanyAddress addressObj = addressDAO.findById(addressId);
+
+			if (addressObj != null) {
+				addressDAO.delete(addressObj);
+			}
+		}
+
+	}
+
+	public void processContactUpdateRequest(String companyId, User onlineUser, Map<String, Object> contact,
+			Map<String, File> profileMap, Map<String, String> profileNameMap) throws Exception {
+		List<Map<String, Object>> contactCreated = (List<Map<String, Object>>) contact.get("created");
+		List<Map<String, Object>> contactUpdated = (List<Map<String, Object>>) contact.get("updated");
+		List<Object> contactDeleted = (List<Object>) contact.get("deleted");
+
+		// create
+		for (Map<String, Object> item : contactCreated) {
+
+			CompanyContact contactObj = new CompanyContact();
+			contactObj.setCompanyId(companyId);
+			contactObj.setCompanyAddressId(item.get("address_id").toString());
+			contactObj.setTitleNameTh((String) item.get("title_name_th"));
+			contactObj.setTitleNameEn((String) item.get("title_name_en"));
+			contactObj.setContactNameTh((String) item.get("name_th"));
+			contactObj.setContactName((String) item.get("name_en"));
+			contactObj.setPosition((String) item.get("position"));
+			contactObj.setPhone((String) item.get("phone_number"));
+			contactObj.setEmail((String) item.get("email"));
+			contactObj.setUserCreate(onlineUser.getId());
+			contactObj.setUserUpdate(onlineUser.getId());
+			contactObj.setTimeCreate(DateUtil.getCurrentTime());
+			contactObj.setTimeUpdate(DateUtil.getCurrentTime());
+
+			contactDAO.save(contactObj);
+
+			String tempId = item.get("contact_id").toString();
+			File profileFile = profileMap.get(tempId);
+
+			if (profileFile != null) {
+				
+				String fileName = profileNameMap.get(tempId);
+				String contactId = contactObj.getCompanyContactId().toString();
+				String fileId = processFileUpload("upload/contact/", profileFile, fileName, "contact", contactId, onlineUser);
+				
+				contactObj.setFileId(fileId);
+				
+				contactDAO.update(contactObj);
+			}
+		}
+
+		// update
+		for (Map<String, Object> item : contactUpdated) {
+
+			Long contactId = Long.valueOf(item.get("contact_id").toString());
+			CompanyContact contactObj = contactDAO.findById(contactId);
+
+			if (contactObj == null) {
+				continue;
+			}
+
+			contactObj.setCompanyAddressId(item.get("address_id").toString());
+			contactObj.setTitleNameTh((String) item.get("title_name_th"));
+			contactObj.setTitleNameEn((String) item.get("title_name_en"));
+			contactObj.setContactNameTh((String) item.get("name_th"));
+			contactObj.setContactName((String) item.get("name_en"));
+			contactObj.setPosition((String) item.get("position"));
+			contactObj.setPhone((String) item.get("phone_number"));
+			contactObj.setEmail((String) item.get("email"));
+			contactObj.setUserUpdate(onlineUser.getId());
+			contactObj.setTimeUpdate(DateUtil.getCurrentTime());
+			
+			File profileFile = profileMap.get(contactId.toString());
+
+			if (profileFile != null) {
+				
+				String fileName = profileNameMap.get(contactId.toString());
+				String fileId = processFileUpload("upload/contact/", profileFile, fileName, "contact", contactId.toString(), onlineUser);
+				
+				contactObj.setFileId(fileId);
+			}
+
+			contactDAO.update(contactObj);
+		}
+
+		// delete
+		for (Object id : contactDeleted) {
+
+			Long contactId = Long.valueOf(id.toString());
+			CompanyContact contactObj = contactDAO.findById(contactId);
+
+			if (contactObj != null) {
+				contactDAO.delete(contactObj);
+			}
+		}
+	}
+
+	private String processFileUpload(String filePath, File file, String fileName, String page, String pageId,
+			User onlineUser) throws Exception {
+
+		Integer maxId = fileUploadDAO.getMaxId() + 1;
+
+		ServletContext context = request.getServletContext();
+		String fileServerPath = context.getRealPath("/");
+		String originalFileName = fileName;
+
+		FileUtil.upload(file, fileServerPath + filePath, maxId + "_" + originalFileName);
+
+		int split = originalFileName.lastIndexOf('.');
+
+		String name = originalFileName.substring(0, split);
+		String type = originalFileName.substring(split).toLowerCase();
+
+		FileUpload fileUpload = new FileUpload();
+
+		fileUpload.setFileId(maxId.intValue());
+		fileUpload.setPath(filePath + maxId + "_" + originalFileName);
+		fileUpload.setSize(formatFileSize(file.length()));
+		fileUpload.setName(name);
+		fileUpload.setType(type);
+
+		fileUpload.setUserId(onlineUser.getId());
+		fileUpload.setUserCreate(onlineUser.getId());
+
+		fileUpload.setPage(page);
+		fileUpload.setPageId(pageId);
+
+		fileUpload.setTimeCreate(DateUtil.getCurrentTime());
+
+		fileUploadDAO.save(fileUpload);
+
+		return fileUpload.getFileId().toString();
+	}
 }
-
-

@@ -81,7 +81,8 @@ public class CompanyContactDAOImpl implements CompanyContactDAO {
 	            "ON f.file_id = c.file_id " +
 	            "LEFT JOIN company_address ca " +
 	            "ON ca.company_address_id = c.company_address_id " +
-	            "WHERE c.company_id = :companyId";
+	            "WHERE c.company_id = :companyId " +
+	            "ORDER BY c.company_contact_id";
 
 	    SQLQuery query = session.createSQLQuery(sql);
 
