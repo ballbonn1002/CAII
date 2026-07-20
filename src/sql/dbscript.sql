@@ -429,7 +429,7 @@ COLLATE=utf8mb4_unicode_ci;
 
 -- 14/07/2026 June: CREATE TABLE catalog_equipment and catalog_consumables
 CREATE TABLE catalog_equipment (
-	catalog_equipment_id BIGINT(11) NOT NULL AUTO_INCREMENT PRIMARY KEY, 
+	catalog_equipment_id BIGINT(11) NOT NULL, 
 	equipment_name 		VARCHAR(64)  NOT NULL,
     active              VARCHAR(8)   NOT NULL,
     user_create         VARCHAR(32)  NULL,
@@ -439,7 +439,7 @@ CREATE TABLE catalog_equipment (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE catalog_consumables (
-	catalog_consumables_id BIGINT(11) NOT NULL AUTO_INCREMENT PRIMARY KEY, 
+	catalog_consumables_id BIGINT(11) NOT NULL, 
 	consumables_name 	VARCHAR(64)  NOT NULL,
 	sub_product_active 	VARCHAR(8)  NOT NULL,
     active              VARCHAR(8)   NOT NULL,

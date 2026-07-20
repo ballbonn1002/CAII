@@ -605,7 +605,7 @@
 	        var data = {
 	        	catalogEquipmentId: id,
 	        	catalogEquipmentName: name,
-	            active: $('#active_switch').is(':checked') ? '1' : '0'
+	        	eqptActive: $('#active_switch').is(':checked') ? '1' : '0'
 	        };
 
 	        /* var url = CTX + '/' + (id ? 'item_catalog_update' : 'item_catalog_add'); */
@@ -668,7 +668,7 @@
 	        var data = {
 	        	catalogEquipmentId: id,
 	        	catalogEquipmentName: name,
-	            active: isActive ? '1' : '0'
+	        	eqptActive: isActive ? '1' : '0'
 	        };
 
 	        $.ajax({
