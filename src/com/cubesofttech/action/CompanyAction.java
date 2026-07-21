@@ -352,13 +352,11 @@ public class CompanyAction extends ActionSupport {
 				CompanyContact contactObj = contactDAO.findById(Long.valueOf(contactId));
 				
 				if (contactObj != null) {
-					return ERROR;
-					/*
-					 * contactObj.setCompanyId("0"); contactObj.setCompanyAddressId(null);
-					 * contactObj.setUserUpdate(onlineUser.getId());
-					 * contactObj.setTimeUpdate(DateUtil.getCurrentTime());
-					 * contactDAO.update(contactObj);
-					 */
+					  contactObj.setCompanyId("0"); 
+					  contactObj.setCompanyAddressId(null);
+					  contactObj.setUserUpdate(onlineUser.getId());
+					  contactObj.setTimeUpdate(DateUtil.getCurrentTime());
+					  contactDAO.update(contactObj);
 				}
 			}
 			
