@@ -6,7 +6,6 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Insert title here</title>
 <style>
 /* Header */
 #kt_datatable_zero_configuration thead th {
@@ -324,7 +323,8 @@
 				</div>
 
 				<div id="cardView" class="d-none">
-					<div class="d-flex justify-content-center align-items-center <c:if test="${not empty companyList }">d-none</c:if> js-not-found"
+					<div
+						class="d-flex justify-content-center align-items-center <c:if test="${not empty companyList }">d-none</c:if> js-not-found"
 						style="height: 200px;">
 						<span class="text-muted fs-5">No matching records found</span>
 					</div>
@@ -404,10 +404,10 @@
 														<c:forEach items="${company.address_location}"
 															var="address">
 															<div class="d-flex align-items-center text-gray-700 fs-6">
-																<i
-																	class="ki-duotone ki-geolocation fs-4 text-gray-500 me-2">
-																	<span class="path1"></span><span class="path2"></span>
-																</i> <span class="fw-medium">${address.address_name}</span>
+																<i class="ki-duotone ki-map me-2 fs-2"> <span
+																	class="path1"></span> <span class="path2"></span> <span
+																	class="path3"></span>
+																</i> <span class="fw-medium text-gray-700">${address.address_name}</span>
 															</div>
 														</c:forEach>
 													</div>
@@ -433,7 +433,7 @@
 															var="contact">
 															<div class="d-flex align-items-center fs-6 text-gray-700">
 																<i
-																	class="ki-duotone ki-user-square fs-4 me-2 text-gray-500">
+																	class="ki-duotone ki-user-square fs-2 me-2 text-gray-500">
 																	<span class="path1"></span> <span class="path2"></span>
 																	<span class="path3"></span>
 																</i> <span class="fw-medium">

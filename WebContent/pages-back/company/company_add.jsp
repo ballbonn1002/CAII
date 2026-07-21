@@ -70,7 +70,7 @@
 							<div
 								class="form-check form-switch form-check-custom form-check-solid form-check-success">
 								<label class="form-check-label me-3 fw-semibold"> Active
-								</label> <input class="form-check-input" type="checkbox" checked
+								</label> <input class="form-check-input h-20px w-30px" type="checkbox" checked
 									form="companyForm" name="isActive" value="1" />
 							</div>
 						</div>

@@ -307,41 +307,11 @@ public class CompanyAction extends ActionSupport {
 			companyDAO.save(company);
 
 			if (logo != null) {
-
-				Integer maxId = fileUploadDAO.getMaxId() + 1;
-
-				ServletContext context = request.getServletContext();
-				String fileServerPath = context.getRealPath("/");
-				System.out.println(fileServerPath);
-
-				String originalFileName = logoFileName;
-
-				FileUtil.upload(logo, fileServerPath + "upload/company/", maxId + "_" + originalFileName);
-
-				int split = originalFileName.lastIndexOf('.');
-
-				String name = originalFileName.substring(0, split);
-				String type = originalFileName.substring(split).toLowerCase();
-
-				FileUpload fileUpload = new FileUpload();
-
-				fileUpload.setFileId(maxId.intValue());
-				fileUpload.setPath("/upload/company/" + maxId + "_" + originalFileName);
-				fileUpload.setSize(formatFileSize(logo.length()));
-				fileUpload.setName(name);
-				fileUpload.setType(type);
-
-				fileUpload.setUserId(onlineUser.getId());
-				fileUpload.setUserCreate(onlineUser.getId());
-
-				fileUpload.setPage("company");
-				fileUpload.setPageId(String.valueOf(company.getCompanyId()));
-
-				fileUpload.setTimeCreate(DateUtil.getCurrentTime());
-
-				fileUploadDAO.save(fileUpload);
-
-				company.setFileId(String.valueOf(fileUpload.getFileId()));
+				String fileName = logoFileName;
+				String id = company.getCompanyId().toString();
+				String fileId = processFileUpload("/upload/company/", logo, fileName, "company", id, onlineUser);
+				
+				company.setFileId(fileId);
 
 				companyDAO.update(company);
 			}
@@ -355,10 +325,17 @@ public class CompanyAction extends ActionSupport {
 	}
 
 	public String delete() {
+		
+		User onlineUser = (User) request.getSession().getAttribute("onlineUser");
 
+		if (onlineUser == null) {
+			return ERROR;
+		}
+		
 		if (companyId == null || companyId < 1) {
 			return INPUT;
 		}
+		
 
 		try {
 
@@ -366,10 +343,36 @@ public class CompanyAction extends ActionSupport {
 
 			if (company == null) {
 				log.warn("Company not found. id=" + companyId);
-				return INPUT;
+			}
+			
+			List<Map<String, Object>> contacts = contactDAO.findByCompanyId(companyId);
+			
+			for (Map<String, Object> contact : contacts) {
+				String contactId = contact.get("contact_id").toString();
+				CompanyContact contactObj = contactDAO.findById(Long.valueOf(contactId));
+				
+				if (contactObj != null) {
+					return ERROR;
+					/*
+					 * contactObj.setCompanyId("0"); contactObj.setCompanyAddressId(null);
+					 * contactObj.setUserUpdate(onlineUser.getId());
+					 * contactObj.setTimeUpdate(DateUtil.getCurrentTime());
+					 * contactDAO.update(contactObj);
+					 */
+				}
+			}
+			
+			for (Map<String, Object> address : addressDAO.findByCompanyId(companyId)) {
+				String addressId = address.get("address_id").toString();
+				CompanyAddress addressObj = addressDAO.findById(Long.valueOf(addressId));
+				
+				if (addressObj != null) {
+					addressDAO.delete(addressObj);
+				}
 			}
 
 			companyDAO.delete(company);
+			
 
 			return SUCCESS;
 
@@ -387,7 +390,6 @@ public class CompanyAction extends ActionSupport {
 			User onlineUser = (User) request.getSession().getAttribute("onlineUser");
 
 			if (onlineUser == null) {
-				response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 				return ERROR;
 			}
 
@@ -401,7 +403,6 @@ public class CompanyAction extends ActionSupport {
 			Company company = companyDAO.findById(Long.valueOf(companyId));
 
 			if (company == null) {
-				response.setStatus(HttpServletResponse.SC_NOT_FOUND);
 				return ERROR;
 			}
 
@@ -414,42 +415,11 @@ public class CompanyAction extends ActionSupport {
 
 			// Handle File Upload Request
 			if (logo != null) {
-
-				Integer maxId = fileUploadDAO.getMaxId() + 1;
-
-				ServletContext context = request.getServletContext();
-				String fileServerPath = context.getRealPath("/");
-				System.out.println(fileServerPath);
-
-				String originalFileName = logoFileName;
-
-				FileUtil.upload(logo, fileServerPath + "upload/company/", maxId + "_" + originalFileName);
-
-				int split = originalFileName.lastIndexOf('.');
-
-				String name = originalFileName.substring(0, split);
-				String type = originalFileName.substring(split).toLowerCase();
-
-				FileUpload fileUpload = new FileUpload();
-
-				fileUpload.setFileId(maxId.intValue());
-				fileUpload.setPath("/upload/company/" + maxId + "_" + originalFileName);
-				fileUpload.setSize(formatFileSize(logo.length()));
-				fileUpload.setName(name);
-				fileUpload.setType(type);
-
-				fileUpload.setUserId(onlineUser.getId());
-				fileUpload.setUserCreate(onlineUser.getId());
-
-				fileUpload.setPage("company");
-				fileUpload.setPageId(String.valueOf(company.getCompanyId()));
-
-				fileUpload.setTimeCreate(DateUtil.getCurrentTime());
-
-				fileUploadDAO.save(fileUpload);
-
-				company.setFileId(String.valueOf(fileUpload.getFileId()));
-
+				String fileName = logoFileName;
+				String id = company.getCompanyId().toString();
+				String fileId = processFileUpload("/upload/company/", logo, fileName, "company", id, onlineUser);
+				
+				company.setFileId(fileId);
 			}
 
 			company.setUserUpdate(onlineUser.getId());
@@ -474,14 +444,11 @@ public class CompanyAction extends ActionSupport {
 			processAddressUpdateRequest(companyId, onlineUser, address);
 			processContactUpdateRequest(companyId, onlineUser, contact, profileMap, profileNameMap);
 
-			response.setStatus(HttpServletResponse.SC_OK);
-
 			return SUCCESS;
 
 		} catch (Exception e) {
 
 			log.error("Update company failed", e);
-			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 
 			return ERROR;
 		}
@@ -509,8 +476,7 @@ public class CompanyAction extends ActionSupport {
 		} catch (Exception e) {
 
 			e.printStackTrace();
-
-			return NONE;
+			return ERROR;
 		}
 	}
 
@@ -601,7 +567,7 @@ public class CompanyAction extends ActionSupport {
 				
 				String fileName = profileNameMap.get(tempId);
 				String contactId = contactObj.getCompanyContactId().toString();
-				String fileId = processFileUpload("upload/contact/", profileFile, fileName, "contact", contactId, onlineUser);
+				String fileId = processFileUpload("/upload/contact/", profileFile, fileName, "contact", contactId, onlineUser);
 				
 				contactObj.setFileId(fileId);
 				
@@ -635,7 +601,7 @@ public class CompanyAction extends ActionSupport {
 			if (profileFile != null) {
 				
 				String fileName = profileNameMap.get(contactId.toString());
-				String fileId = processFileUpload("upload/contact/", profileFile, fileName, "contact", contactId.toString(), onlineUser);
+				String fileId = processFileUpload("/upload/contact/", profileFile, fileName, "contact", contactId.toString(), onlineUser);
 				
 				contactObj.setFileId(fileId);
 			}

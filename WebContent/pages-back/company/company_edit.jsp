@@ -97,7 +97,7 @@
 							<div
 								class="form-check form-switch form-check-custom form-check-solid form-check-success">
 								<label class="form-check-label me-3 fw-semibold"> Active
-								</label> <input class="form-check-input" type="checkbox"
+								</label> <input class="form-check-input h-20px w-30px" type="checkbox"
 									id="company-active"
 									<c:if test="${company.isActive eq '1'}">checked</c:if> />
 							</div>
@@ -324,7 +324,7 @@
 										id="addressCard-${address.address_id}">
 
 										<div class="address-name-col ps-md-3">
-											<h2 id="name_${address.address_id}" class="text-break">${address.address_name}</h2>
+											<span id="name_${address.address_id}" class="text-break fs-2">${address.address_name}</span>
 										</div>
 
 										<div
@@ -502,7 +502,7 @@
 															class="btn btn-icon btn-circle btn-color-muted btn-active-color-primary w-25px h-25px bg-body shadow-sm"
 															data-kt-image-input-action="change"
 															data-bs-toggle="tooltip" data-bs-dismiss="click"
-															title="Change company logo"> <i
+															title="Change profile"> <i
 															class="ki-duotone ki-pencil fs-6"><span class="path1"></span><span
 																class="path2"></span></i> <!--begin::Inputs--> <input
 															type="file" name="contactProfile"
@@ -516,7 +516,7 @@
 															class="btn btn-icon btn-circle btn-color-muted btn-active-color-primary w-25px h-25px bg-body shadow-sm"
 															data-kt-image-input-action="cancel"
 															data-bs-toggle="tooltip" data-bs-dismiss="click"
-															title="Cancel logo"> <i
+															title="Cancel profile"> <i
 															class="ki-outline ki-cross fs-3"></i>
 														</span>
 														<!--end::Cancel button-->
@@ -526,7 +526,7 @@
 															class="btn btn-icon btn-circle btn-color-muted btn-active-color-primary w-25px h-25px bg-body shadow-sm"
 															data-kt-image-input-action="remove"
 															data-bs-toggle="tooltip" data-bs-dismiss="click"
-															title="Remove logo"> <i
+															title="Remove profile"> <i
 															class="ki-outline ki-cross fs-3 " id="contact-update"></i>
 														</span>
 														<!--end::Remove button-->
@@ -773,7 +773,7 @@
 															class="btn btn-icon btn-circle btn-color-muted btn-active-color-primary w-25px h-25px bg-body shadow-sm"
 															data-kt-image-input-action="change"
 															data-bs-toggle="tooltip" data-bs-dismiss="click"
-															title="Change company logo"> <i
+															title="Change profile"> <i
 															class="ki-duotone ki-pencil fs-6"><span class="path1"></span><span
 																class="path2"></span></i> <!--begin::Inputs--> <input
 															type="file" name="contactUpdate"
@@ -787,7 +787,7 @@
 															class="btn btn-icon btn-circle btn-color-muted btn-active-color-primary w-25px h-25px bg-body shadow-sm"
 															data-kt-image-input-action="cancel"
 															data-bs-toggle="tooltip" data-bs-dismiss="click"
-															title="Cancel logo"> <i
+															title="Cancel profile"> <i
 															class="ki-outline ki-cross fs-3"></i>
 														</span>
 														<!--end::Cancel button-->
@@ -797,7 +797,7 @@
 															class="btn btn-icon btn-circle btn-color-muted btn-active-color-primary w-25px h-25px bg-body shadow-sm"
 															data-kt-image-input-action="remove"
 															data-bs-toggle="tooltip" data-bs-dismiss="click"
-															title="Remove logo"> <i
+															title="Remove profile"> <i
 															class="ki-outline ki-cross fs-3"></i>
 														</span>
 														<!--end::Remove button-->

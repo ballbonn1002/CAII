@@ -377,7 +377,7 @@ ALTER TABLE `user` ADD COLUMN uid_line_oa VARCHAR(64) DEFAULT NULL AFTER line_id
 CREATE TABLE company (
     company_id BIGINT(32) NOT NULL PRIMARY KEY AUTO_INCREMENT,
     file_id VARCHAR(32),
-    company_code VARCHAR(32) NOT NULL,
+    company_code VARCHAR(32) NOT NULL UNIQUE,
     tax_number VARCHAR(13) NOT NULL,
     company_en VARCHAR(128) NOT NULL,
     company_th VARCHAR(128) NOT NULL,
