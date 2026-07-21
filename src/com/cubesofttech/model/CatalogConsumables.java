@@ -19,8 +19,11 @@ public class CatalogConsumables implements Serializable{
 	@Column(name = "catalog_consumables_id")
 	private Long catalogConsumablesId;
 	
-	@Column(name = "consumables_name")
-	private String catalogConsumablesName;
+	@Column(name = "product_id")
+	private String productId;
+	
+	@Column(name = "items_type")
+	private String itemsType;
 	
 	@Column(name = "sub_product_active")
 	private String  subProductActive;
@@ -48,12 +51,20 @@ public class CatalogConsumables implements Serializable{
 		this.catalogConsumablesId = catalogConsumablesId;
 	}
 
-	public String getCatalogConsumablesName() {
-		return catalogConsumablesName;
+	public String getProductId() {
+		return productId;
 	}
 
-	public void setCatalogConsumablesName(String catalogConsumablesName) {
-		this.catalogConsumablesName = catalogConsumablesName;
+	public void setProductId(String productId) {
+		this.productId = productId;
+	}
+
+	public String getItemsType() {
+		return itemsType;
+	}
+
+	public void setItemsType(String itemsType) {
+		this.itemsType = itemsType;
 	}
 
 	public String getSubProductActive() {
@@ -106,8 +117,8 @@ public class CatalogConsumables implements Serializable{
 
 	@Override
 	public String toString() {
-		return "CatalogConsumables [catalogConsumablesId=" + catalogConsumablesId + ", catalogConsumablesName="
-				+ catalogConsumablesName + ", subProductActive=" + subProductActive + ", active=" + active
+		return "CatalogConsumables [catalogConsumablesId=" + catalogConsumablesId + ", productId=" + productId
+				+ ", itemsType=" + itemsType + ", subProductActive=" + subProductActive + ", active=" + active
 				+ ", userCreate=" + userCreate + ", timeCreate=" + timeCreate + ", userUpdate=" + userUpdate
 				+ ", timeUpdate=" + timeUpdate + "]";
 	}

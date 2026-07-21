@@ -164,6 +164,7 @@ public class ItemCatalogAction extends ActionSupport {
             	catalogEquipment.setTimeCreate(DateUtil.getCurrentTime());
             }
 
+            catalogEquipment.setItemsType("1");
             catalogEquipment.setCatalogEquipmentName(catalogEquipmentName);
             catalogEquipment.setActive("1".equals(eqptActive) ? "1" : "0");
             catalogEquipment.setUserUpdate(onlineUser.getId());

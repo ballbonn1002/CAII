@@ -675,6 +675,18 @@
 	            url: CTX + '/catalog_equipment_save',
 	            method: 'POST',
 	            data: data,
+	            success: function (res) {
+                    Swal.fire({
+                        title: 'Success!',
+                        text: 'Item saved successfully!',
+                        icon: 'success',
+                        timer: 1000,
+                        timerProgressBar: true,
+                        showConfirmButton: false
+                    }).then(() => {
+                        window.location.reload();
+                    });
+                },
 	            error: function (xhr) {
 	                console.error("HTTP", xhr.status, xhr.responseText);
 	                $checkbox.prop('checked', !isActive);
@@ -695,6 +707,18 @@
 	                catalogConsumablesId: id,
 	                consActive: isActive ? '1' : '0'
 	            },
+	            success: function (res) {
+                    Swal.fire({
+                        title: 'Success!',
+                        text: 'Item saved successfully!',
+                        icon: 'success',
+                        timer: 1000,
+                        timerProgressBar: true,
+                        showConfirmButton: false
+                    }).then(() => {
+                        window.location.reload();
+                    });
+                },
 	            error: function (xhr) {
 	                console.error("HTTP", xhr.status, xhr.responseText);
 	                $checkbox.prop('checked', !isActive);
@@ -714,6 +738,18 @@
 	                catalogConsumablesId: id,
 	                subProductActive: isSubProductActive ? '1' : '0'
 	            },
+	            success: function (res) {
+                    Swal.fire({
+                        title: 'Success!',
+                        text: 'Item saved successfully!',
+                        icon: 'success',
+                        timer: 1000,
+                        timerProgressBar: true,
+                        showConfirmButton: false
+                    }).then(() => {
+                        window.location.reload();
+                    });
+                },
 	            error: function (xhr) {
 	                console.error("HTTP", xhr.status, xhr.responseText);
 	                $checkbox.prop('checked', !isSubProductActive);

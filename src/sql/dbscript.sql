@@ -431,6 +431,7 @@ COLLATE=utf8mb4_unicode_ci;
 CREATE TABLE catalog_equipment (
 	catalog_equipment_id BIGINT(11) NOT NULL, 
 	equipment_name 		VARCHAR(64)  NOT NULL,
+	items_type			VARCHAR(32)  NULL,
     active              VARCHAR(8)   NOT NULL,
     user_create         VARCHAR(32)  NULL,
     user_update         VARCHAR(32)  NULL,
@@ -440,7 +441,8 @@ CREATE TABLE catalog_equipment (
 
 CREATE TABLE catalog_consumables (
 	catalog_consumables_id BIGINT(11) NOT NULL, 
-	consumables_name 	VARCHAR(64)  NOT NULL,
+	product_id 			BIGINT(11)  NOT NULL,
+	items_type			VARCHAR(32) NULL,
 	sub_product_active 	VARCHAR(8)  NOT NULL,
     active              VARCHAR(8)   NOT NULL,
     user_create         VARCHAR(32)  NULL,
