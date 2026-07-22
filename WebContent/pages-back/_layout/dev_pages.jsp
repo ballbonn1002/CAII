@@ -49,7 +49,7 @@
                             </div>
                             <div class="card-body">
                                 <div class="d-flex gap-4">
-                                    <a href="#" class="btn btn-light-primary d-inline-flex align-items-center px-6 py-3">Company</a>
+                                    <a href="company_list" class="btn btn-light-primary d-inline-flex align-items-center px-6 py-3">Company</a>
                                     <a href="#" class="btn btn-light-success d-inline-flex align-items-center px-6 py-3">Contact</a>
                                 </div>
                             </div>

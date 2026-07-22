@@ -22,6 +22,9 @@ public class CatalogEquipment implements Serializable{
 	@Column(name = "equipment_name")
 	private String catalogEquipmentName;
 	
+	@Column(name = "items_type")
+	private String itemsType;
+	
 	@Column(name = "active")
 	private String  active;
 	
@@ -51,6 +54,14 @@ public class CatalogEquipment implements Serializable{
 
 	public void setCatalogEquipmentName(String catalogEquipmentName) {
 		this.catalogEquipmentName = catalogEquipmentName;
+	}
+
+	public String getItemsType() {
+		return itemsType;
+	}
+
+	public void setItemsType(String itemsType) {
+		this.itemsType = itemsType;
 	}
 
 	public String getActive() {
@@ -96,10 +107,9 @@ public class CatalogEquipment implements Serializable{
 	@Override
 	public String toString() {
 		return "CatalogEquipment [catalogEquipmentId=" + catalogEquipmentId + ", catalogEquipmentName="
-				+ catalogEquipmentName + ", active=" + active + ", userCreate=" + userCreate + ", timeCreate="
-				+ timeCreate + ", userUpdate=" + userUpdate + ", timeUpdate=" + timeUpdate + "]";
+				+ catalogEquipmentName + ", itemsType=" + itemsType + ", active=" + active + ", userCreate="
+				+ userCreate + ", timeCreate=" + timeCreate + ", userUpdate=" + userUpdate + ", timeUpdate="
+				+ timeUpdate + "]";
 	}
-
-	
 	
 }

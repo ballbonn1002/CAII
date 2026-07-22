@@ -70,7 +70,7 @@
 							<div
 								class="form-check form-switch form-check-custom form-check-solid form-check-success">
 								<label class="form-check-label me-3 fw-semibold"> Active
-								</label> <input class="form-check-input" type="checkbox" checked
+								</label> <input class="form-check-input h-20px w-30px" type="checkbox" checked
 									form="companyForm" name="isActive" value="1" />
 							</div>
 						</div>
@@ -148,7 +148,7 @@
 								</div>
 
 								<div class="col-md-6 company-tax-number-container">
-									<label class="form-label"> Tax ID </label> <input type="text"
+									<label class="form-label required"> Tax ID </label> <input type="text"
 										class="form-control" name="taxNumber" id="company-tax-number">
 								</div>
 
@@ -158,13 +158,13 @@
 							<div class="row g-6 mb-6 ">
 
 								<div class="col-md-6 company-name-en-container">
-									<label class="form-label"> Company Name EN </label> <input
+									<label class="form-label required"> Company Name EN </label> <input
 										type="text" class="form-control" name="nameEN"
 										id="company-name-en">
 								</div>
 
 								<div class="col-md-6 company-name-th-container">
-									<label class="form-label"> Company Name TH </label> <input
+									<label class="form-label required"> Company Name TH </label> <input
 										type="text" class="form-control" name="nameTH"
 										id="company-name-th">
 								</div>
@@ -175,13 +175,13 @@
 							<div class="row g-6">
 
 								<div class="col-md-6 ">
-									<label class="form-label"> Industry </label> <select
-										class="form-select" data-control="select2" name="industry">
-
-										<option value="1">IT</option>
-										<option value="2">Finance</option>
-										<option value="3">Retail</option>
-										<option value="4">Manufacturing</option>
+									<label class="form-label required"> Industry </label> <select id="company-industry"
+										class="form-select" data-control="select2" data-hide-search="true" data-placeholder="Select an option" name="industry">
+										<option></option>
+										<option value="IT">IT</option>
+										<option value="Finance">Finance</option>
+										<option value="Retail">Retail</option>
+										<option value="Manufacturing">Manufacturing</option>
 
 									</select>
 								</div>
@@ -217,8 +217,11 @@
 	
 		const validationState = {
 			    companyCode: false,
-			    companyNameEn: true
-			};
+			    companyNameEn: false,
+			    companyNameTh: false,
+			    taxNumber: false,
+			    industry: false
+		};
 	
 		let companyCodeExists = false;
 	
@@ -275,6 +278,8 @@
 		
 	</script>
 	<script type="text/javascript">
+		let isSubmitting = false;
+		
 		$(document).ready(function(){
 			$("#company-code").on(
 				    "input",
@@ -283,21 +288,64 @@
 			
  			$("#company-name-en").on(
 				    "input",
-				    debounce(validateCompanyEnName, 500)
+				    debounce(validateCompanyEnName, 300)
 			);
+			
+			$("#company-name-th").on(
+				    "input",
+				    debounce(validateCompanyThName, 300)
+			);
+			
+			$("#company-industry").on(
+				    "input",
+				    debounce(validateIndustry, 300)
+			);
+			
+			$("#submit-btn").on("click", function (e) {
+
+			    e.preventDefault();
+
+			    if (isSubmitting) {
+			        return;
+			    }
+
+			    validateCompanyCode.call($("#company-code"));
+			    validateCompanyEnName.call($("#company-name-en"));
+			    validateCompanyThName.call($("#company-name-th"));
+			    validateTaxNumber.call($("#company-tax-number"));
+			    validateIndustry.call($("#company-industry"));
+
+			    if (!hasValidationErrors()) {
+
+			        isSubmitting = true;
+
+			        $(this)
+			            .prop("disabled", true)
+			            .addClass("disabled");
+
+			        $("#companyForm").submit();
+			    }
+			});
+			
 			
 			$("#company-tax-number").on("input", function () {
 			    this.value = this.value.replace(/\D/g, "");
-			}); 
+			    validateTaxNumber.call(this);
+			});
+			
+			
 			
 			function validateCompanyEnName() {
 
 			    const value = $(this).val().trim();
 			    
-			    if (value === "") {
-					validationState.companyNameEn = true;
-			        clearFieldError("#company-name-en");
-			        updateBtnState();
+			    if (value === "" || value.length === 0) {
+					validationState.companyNameEn = false;
+					setFieldInvalid(
+				            "#company-name-en",
+				            "Company name EN is required"
+				        );
+				    updateBtnState();
 			        return;
 			    }
 
@@ -377,6 +425,89 @@
 			    });
 			    
 			    
+			}
+			
+			function validateCompanyThName() {
+
+			    const value = $(this).val().trim();
+
+			    if (value === "" || value.length === 0) {
+			        validationState.companyNameTh = false;
+			        setFieldInvalid(
+				            "#company-name-th",
+				            "Company name is required"
+				     );
+			        updateBtnState();
+			        return
+			    }
+
+			    const regex = /^[ก-๙0-9\s().,&/-]+$/;
+
+			    if (!regex.test(value)) {
+			        validationState.companyNameTh = false;
+			        setFieldInvalid(
+			            "#company-name-th",
+			            "Only Thai characters are allowed"
+			        );
+			    } else {
+			        validationState.companyNameTh = true;
+			        clearFieldError("#company-name-th");
+			    }
+			    updateBtnState();
+			    return
+			}
+			
+			function validateTaxNumber() {
+				const value = $(this).val().trim();
+				console.log(value)
+
+			    if (value === "") {
+
+			        validationState.taxNumber = false;
+			        setFieldInvalid(
+				            "#company-tax-number",
+				            "Tax ID is required"
+				     );
+			        updateBtnState();
+			        return
+			    }
+
+			    if (!/^\d{1,13}$/.test(value)) {
+
+			        validationState.taxNumber = false;
+			        
+			        console.log(value)
+
+			        setFieldInvalid(
+			            "#company-tax-number",
+			            "Tax ID must contain 1-13 digits"
+			        );
+			        
+			    } else {
+			        validationState.taxNumber = true;
+			        clearFieldError("#company-tax-number");
+			    }
+			    updateBtnState();
+				return
+			}
+			
+			function validateIndustry() {
+
+			    const value = $("#company-industry").val();
+			    console.log(value)
+
+			    if (!value) {
+			        validationState.industry = false;
+			        setFieldInvalid(
+			            "#company-industry",
+			            "Please select an industry"
+			        );
+			    } else {
+			        validationState.industry = true;
+			        clearFieldError("#company-industry");
+			    }
+			    updateBtnState();
+			    return
 			}
 			
 			function updateBtnState() {
