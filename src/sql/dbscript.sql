@@ -377,11 +377,11 @@ ALTER TABLE `user` ADD COLUMN uid_line_oa VARCHAR(64) DEFAULT NULL AFTER line_id
 CREATE TABLE company (
     company_id BIGINT(32) NOT NULL PRIMARY KEY AUTO_INCREMENT,
     file_id VARCHAR(32),
+    industry_id VARCHAR(32) NOT NULL,
     company_code VARCHAR(32) NOT NULL UNIQUE,
     tax_number VARCHAR(13) NOT NULL,
     company_en VARCHAR(128) NOT NULL,
     company_th VARCHAR(128) NOT NULL,
-    industry VARCHAR(1) NOT NULL,
     is_active VARCHAR(1) DEFAULT true,
     user_create VARCHAR(32),
     user_update VARCHAR(32),
@@ -449,6 +449,19 @@ CREATE TABLE catalog_consumables (
     time_create         TIMESTAMP    NULL,
     time_update         TIMESTAMP    NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- 22/07/2026 Best(Intern): CREATE TABLE company_industry 
+CREATE TABLE company_industry (
+    industry_id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    industry_name VARCHAR(50) NOT NULL UNIQUE,
+    description VARCHAR(1024),
+    user_create VARCHAR(32),
+    user_update VARCHAR(32),
+    time_create TIMESTAMP NULL,
+    time_update TIMESTAMP NULL 
+) ENGINE=InnoDB
+DEFAULT CHARSET=utf8mb4
+COLLATE=utf8mb4_unicode_ci;
 
 -- 21/07/2026 Koy: create table 'product' and insert mockup data
 CREATE TABLE `product` (

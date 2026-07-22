@@ -1706,6 +1706,10 @@
 		<action name="check_company_code"
         	class="com.cubesofttech.action.CompanyAction" method="checkCompanyCode">
         </action>
+        
+        <action name="create_industry"
+        	class="com.cubesofttech.action.CompanyAction" method="createIndustry">
+        </action>
 
 		<!-- ========================== Work Log ============================== -->
 		<action name="work_log"

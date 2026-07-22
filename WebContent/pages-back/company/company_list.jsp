@@ -385,7 +385,7 @@
 											<!-- Industry Badge -->
 											<span
 												class="badge badge-primary fw-bold px-3 py-2 flex-shrink-0">
-												${company.industry} </span>
+												${company.industry_name} </span>
 
 										</div>
 									</div>

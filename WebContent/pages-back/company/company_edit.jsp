@@ -208,13 +208,28 @@
 						<!-- Row 3 -->
 						<div class="row g-6">
 
-							<div class="col-md-6 company-idustry-validate-container">
-								<label class="form-label required"> Industry </label> <select
-									class="form-select" data-control="select2"
+							<div class="col-md-6 company-idustry-validate-container ">
+								<div class="d-flex justify-content-between align-items-center">
+									<label class="form-label required "> Industry </label>
+									<button type="button"
+										class="btn btn-sm btn-light-primary d-inline-flex align-items-center py-1 px-3 mb-3"
+										id="createIndustryBtn">
+										<i class="ki-duotone ki-plus fs-5"> <span class="path1"></span>
+											<span class="path2"></span>
+										</i> <span class="fw-bold">Add Industry</span>
+									</button>
+								</div>
+								<select class="form-select" data-control="select2"
 									data-hide-search="true" id="company-industry">
-									<option value="IT"
-										${company.industry eq 'IT' ? 'selected' : ''}>IT</option>
-									<option value="Finance"
+
+
+									<c:forEach items="${industryList}" var="industry">
+										<option value="${industry.industryId}"
+											${company.industryId == industry.industryId ? 'selected' : ''}>
+											${industry.industryName}</option>
+									</c:forEach>
+
+									<%-- <option value="Finance"
 										${company.industry eq 'Finance' ? 'selected' : ''}>
 										Finance</option>
 									<option value="Retail"
@@ -222,8 +237,56 @@
 										Retail</option>
 									<option value="Manufacturing"
 										${company.industry eq 'Manufacturing' ? 'selected' : ''}>
-										Manufacturing</option>
+										Manufacturing</option> --%>
 								</select>
+
+								<div class="modal fade" tabindex="-1" id="industryModal">
+									<div class="modal-dialog  modal-dialog-centered">
+										<div class="modal-content">
+											<div class="modal-header border-0">
+												<h2 class="modal-title fw-semibold">Company Industry</h2>
+
+												<!--begin::Close-->
+												<div
+													class="btn btn-icon btn-sm btn-active-light-primary ms-2"
+													data-bs-dismiss="modal" aria-label="Close">
+													<i class="ki-duotone ki-cross fs-1"><span class="path1"></span><span
+														class="path2"></span></i>
+												</div>
+												<!--end::Close-->
+											</div>
+
+											<div class="modal-body">
+												<div class="row g-8 mb-8">
+													<div class="col-md-12 create-industry-validate-container">
+														<label for="Industry Name" class="form-label required">Industry
+															Name</label> <input type="text"
+															class="form-control form-control-lg"
+															id="industry-name-create"
+															required />
+
+													</div>
+													<div class="col-md-12 create-desc-validate-container">
+														<label for="Description" class="form-label">
+															Description </label>
+														<textarea class="form-control" data-kt-autosize="true"
+															id="desc-value-create"></textarea>
+													</div>
+
+												</div>
+											</div>
+
+											<div class="modal-footer border-0">
+												<button type="button" class="btn btn-light"
+													data-bs-dismiss="modal">Close</button>
+												<button type="button" id="saveIndustryBtn"
+													class="btn btn-success">Save</button>
+											</div>
+										</div>
+									</div>
+								</div>
+
+
 							</div>
 
 						</div>
@@ -2365,6 +2428,149 @@
 		        debounce(validateEmail, 300)
 		    );
 		});
+	</script>
+
+	<script>
+	
+		const industryValidationState = {
+			    industryName: false
+		};
+		
+		$(document).ready(function () {
+            $("#industry-name-create").on(
+                "input",
+                debounce(validateIndustryName, 300)
+            );
+            
+    		$("#createIndustryBtn").on("click", function () {
+    			const modal = new bootstrap.Modal(document.getElementById("industryModal"));
+    			
+    			$("#industry-name-create").val("");
+    		    $("#desc-value-create").val("");
+
+    		    $("#industry-name-create").removeClass("is-invalid");
+    		    $("#desc-value-create").removeClass("is-invalid");
+
+    		    $(".invalid-feedback").remove();
+    		    
+    		    updateBtnState("#saveIndustryBtn", true);
+
+    		    industryValidationState.industryName = false;
+    		    
+    		    modal.show();
+    		});
+    		
+    		$("#saveIndustryBtn").on("click", function () {
+
+    		    validateIndustryName();
+
+    		    if (hasValidationErrors(industryValidationState)) {
+    		        updateBtnState("#saveIndustryBtn", true);
+    		        return;
+    		    }
+
+    		    const btn = $(this);
+
+    		    $.ajax({
+    		        url: "create_industry",
+    		        type: "POST",
+    		        data: {
+    		            industryName: $("#industry-name-create").val().trim(),
+    		            industryDescription: $("#desc-value-create").val().trim()
+    		        },
+
+    		        beforeSend: function () {
+
+    		            btn.prop("disabled", true);
+
+    		            Swal.fire({
+    		                title: "Saving...",
+    		                text: "Please wait",
+    		                allowOutsideClick: false,
+    		                allowEscapeKey: false,
+    		                showConfirmButton: false,
+    		                didOpen: () => {
+    		                    Swal.showLoading();
+    		                }
+    		            });
+    		        },
+
+    		        success: function (res) {
+
+    		            Swal.close();
+
+    		            const option = new Option(
+    		                res.industry_name,
+    		                res.industry_id,
+    		                true,
+    		                true
+    		            );
+
+    		            $("#company-industry")
+    		                .append(option)
+    		                .trigger("change");
+
+    		            bootstrap.Modal
+    		                .getOrCreateInstance(document.getElementById("industryModal"))
+    		                .hide();
+
+    		            $("#industry-name-create").val("");
+    		            $("#desc-value-create").val("");
+    		            
+    		            Swal.fire({
+    		                icon: "success",
+    		                title: "Saved",
+    		                text: "Industry created successfully"
+    		            });
+    		        },
+
+    		        error: function (xhr) {
+
+    		            Swal.fire({
+    		                icon: "error",
+    		                title: "Error",
+    		                text: "Cannot create industry"
+    		            });
+    		        },
+
+    		        complete: function () {
+    		            btn.prop("disabled", false);
+    		        }
+    		    });
+    		});
+    		
+        });
+
+
+		function validateIndustryName() {
+
+		    const value = $("#industry-name-create").val().trim();
+		    const container = $(".create-industry-validate-container");
+
+		    container.find(".invalid-feedback").remove();
+
+		    if (!value) {
+
+		        industryValidationState.industryName = false;
+
+		        $("#industry-name-create").addClass("is-invalid");
+
+		        container.append(`
+		            <div class="invalid-feedback d-block">
+		                Industry Name is required
+		            </div>
+		        `);
+		       
+		        updateBtnState("#saveIndustryBtn", hasValidationErrors(industryValidationState));
+		        return
+		    }
+
+		    $("#industry-name-create").removeClass("is-invalid");
+		    industryValidationState.industryName = true;
+		    updateBtnState("#saveIndustryBtn", hasValidationErrors(industryValidationState));
+		}
+
+
 	</script>
 </body>
 </html>

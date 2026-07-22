@@ -27,16 +27,32 @@ public class CompanyDAOImpl implements CompanyDAO {
 	@Override
 	public List<Map<String, Object>> findAll() throws Exception {
 
-		Session session = sessionFactory.getCurrentSession();
+	    Session session = sessionFactory.getCurrentSession();
 
-		String sql = "SELECT " + "c.company_id, " + "c.company_code, " + "c.company_th, " + "c.company_en, " + "c.industry, " 
-				+ "c.is_active, " + "f.path AS file_path "
-				+ "FROM company c " + "LEFT JOIN file f ON c.file_id = f.file_id " + "ORDER BY c.company_id";
+	    String sql =
+	            "SELECT " +
+	            "c.company_id, " +
+	            "c.company_code, " +
+	            "c.company_th, " +
+	            "c.company_en, " +
+	            "c.industry_id, " +
+	            "ci.industry_name, " +
+	            "c.is_active, " +
+	            "f.path AS file_path " +
+	            "FROM company c " +
+	            "LEFT JOIN company_industry ci " +
+	            "ON c.industry_id = ci.industry_id " +
+	            "LEFT JOIN file f " +
+	            "ON c.file_id = f.file_id " +
+	            "ORDER BY c.company_id";
 
-		SQLQuery query = session.createSQLQuery(sql);
-		query.setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
+	    SQLQuery query = session.createSQLQuery(sql);
 
-		return query.list();
+	    query.setResultTransformer(
+	        AliasToEntityMapResultTransformer.INSTANCE
+	    );
+
+	    return query.list();
 	}
 
 	@Override

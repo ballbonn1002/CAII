@@ -20,6 +20,9 @@ public class Company {
 
 	@Column(name = "file_id")
 	private String fileId;
+	
+	@Column(name = "industry_id")
+	private String industryId;
 
 	@Column(name = "company_code")
 	private String companyCode;
@@ -32,9 +35,6 @@ public class Company {
 
 	@Column(name = "company_th")
 	private String companyTh;
-
-	@Column(name = "industry")
-	private String industry;
 
 	@Column(name = "is_active")
 	private String isActive;
@@ -102,12 +102,12 @@ public class Company {
 		this.companyTh = companyTh;
 	}
 
-	public String getIndustry() {
-		return industry;
+	public String getIndustryId() {
+		return industryId;
 	}
 
-	public void setIndustry(String industry) {
-		this.industry = industry;
+	public void setIndustryId(String industry) {
+		this.industryId = industry;
 	}
 
 	public String getIsActive() {

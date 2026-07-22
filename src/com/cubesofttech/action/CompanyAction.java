@@ -18,10 +18,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.cubesofttech.dao.CompanyAddressDAO;
 import com.cubesofttech.dao.CompanyContactDAO;
 import com.cubesofttech.dao.CompanyDAO;
+import com.cubesofttech.dao.CompanyIndustryDAO;
 import com.cubesofttech.dao.FileUploadDAO;
 import com.cubesofttech.model.Company;
 import com.cubesofttech.model.CompanyAddress;
 import com.cubesofttech.model.CompanyContact;
+import com.cubesofttech.model.CompanyIndustry;
 import com.cubesofttech.model.FileUpload;
 import com.cubesofttech.model.User;
 import com.cubesofttech.util.DateUtil;
@@ -39,6 +41,9 @@ public class CompanyAction extends ActionSupport {
 	private CompanyAddressDAO addressDAO;
 	@Autowired
 	private FileUploadDAO fileUploadDAO;
+	
+	@Autowired
+	private CompanyIndustryDAO industryDAO;
 
 	private static final long serialVersionUID = 1L;
 	private static final Logger log = Logger.getLogger(CompanyAction.class);
@@ -64,6 +69,25 @@ public class CompanyAction extends ActionSupport {
 	private File[] contactProfiles;
 	private String[] contactProfilesFileName;
 	private String[] contactProfileIds;
+	
+	private String industryName;
+	private String industryDescription;
+	
+	public String getIndustryDescription() {
+		return industryDescription;
+	}
+
+	public void setIndustryDescription(String industryDescription) {
+		this.industryDescription = industryDescription;
+	}
+
+	public String getIndustryName() {
+		return industryName;
+	}
+
+	public void setIndustryName(String industryName) {
+		this.industryName = industryName;
+	}
 
 	public void setContactProfiles(File[] contactProfiles) {
 		this.contactProfiles = contactProfiles;
@@ -267,11 +291,12 @@ public class CompanyAction extends ActionSupport {
 			}
 
 			List<Map<String, Object>> addressList = addressDAO.findByCompanyId(companyId);
-
 			List<Map<String, Object>> contactList = contactDAO.findByCompanyId(companyId);
+			List<CompanyIndustry> industryList = industryDAO.findAll();
 
 			request.setAttribute("company", company);
 			request.setAttribute("profile", file);
+			request.setAttribute("industryList", industryList);
 			request.setAttribute("addressList", addressList);
 			request.setAttribute("contactList", contactList);
 
@@ -286,24 +311,35 @@ public class CompanyAction extends ActionSupport {
 	}
 
 	public String add() {
+		try {
+			List<CompanyIndustry> industryList = industryDAO.findAll();
+			request.setAttribute("industryList", industryList);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ERROR;
+		}
+		
 		return SUCCESS;
 	}
 
-	public String save() {
+	public String save() throws Exception {
 		Company company = new Company();
 		User onlineUser = (User) request.getSession().getAttribute("onlineUser");
+		
+		if(onlineUser == null) {
+			response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+			return ERROR;
+		}
 
 		try {
 			company.setCompanyCode(companyCode);
 			company.setCompanyEn(nameEN);
 			company.setCompanyTh(nameTH);
 			company.setTaxNumber(taxNumber);
-			company.setIndustry(industry);
+			company.setIndustryId(industry);
 			company.setIsActive("1".equals(isActive) ? "1" : "0");
 			company.setUserCreate(onlineUser.getId());
-			company.setUserUpdate(onlineUser.getId());
 			company.setTimeCreate(DateUtil.getCurrentTime());
-			company.setTimeUpdate(DateUtil.getCurrentTime());
 			companyDAO.save(company);
 
 			if (logo != null) {
@@ -324,16 +360,18 @@ public class CompanyAction extends ActionSupport {
 		return SUCCESS;
 	}
 
-	public String delete() {
+	public String delete() throws Exception {
 		
 		User onlineUser = (User) request.getSession().getAttribute("onlineUser");
 
 		if (onlineUser == null) {
+			response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 			return ERROR;
 		}
 		
 		if (companyId == null || companyId < 1) {
-			return INPUT;
+			response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid company ID");
+			return ERROR;
 		}
 		
 
@@ -371,18 +409,18 @@ public class CompanyAction extends ActionSupport {
 
 			companyDAO.delete(company);
 			
-
+			
 			return SUCCESS;
 
 		} catch (Exception e) {
 
 			log.error("Failed to delete company. id=" + companyId, e);
-
+			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 			return ERROR;
 		}
 	}
 
-	public String update() {
+	public String update() throws Exception {
 		try {
 
 			User onlineUser = (User) request.getSession().getAttribute("onlineUser");
@@ -401,6 +439,7 @@ public class CompanyAction extends ActionSupport {
 			Company company = companyDAO.findById(Long.valueOf(companyId));
 
 			if (company == null) {
+				response.sendError(HttpServletResponse.SC_NOT_FOUND, "Company not found");
 				return ERROR;
 			}
 
@@ -408,7 +447,7 @@ public class CompanyAction extends ActionSupport {
 			company.setTaxNumber((String) updatedCompany.get("taxId"));
 			company.setCompanyEn((String) updatedCompany.get("nameEN"));
 			company.setCompanyTh((String) updatedCompany.get("nameTH"));
-			company.setIndustry((String) updatedCompany.get("industry"));
+			company.setIndustryId((String) updatedCompany.get("industry"));
 			company.setIsActive((String) updatedCompany.get("isActive"));
 
 			// Handle File Upload Request
@@ -441,13 +480,12 @@ public class CompanyAction extends ActionSupport {
 
 			processAddressUpdateRequest(companyId, onlineUser, address);
 			processContactUpdateRequest(companyId, onlineUser, contact, profileMap, profileNameMap);
-
 			return SUCCESS;
 
 		} catch (Exception e) {
 
 			log.error("Update company failed", e);
-
+			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Cannot delete company");
 			return ERROR;
 		}
 	}
@@ -533,7 +571,7 @@ public class CompanyAction extends ActionSupport {
 	}
 
 	public void processContactUpdateRequest(String companyId, User onlineUser, Map<String, Object> contact,
-			Map<String, File> profileMap, Map<String, String> profileNameMap) throws Exception {
+		Map<String, File> profileMap, Map<String, String> profileNameMap) throws Exception {
 		List<Map<String, Object>> contactCreated = (List<Map<String, Object>>) contact.get("created");
 		List<Map<String, Object>> contactUpdated = (List<Map<String, Object>>) contact.get("updated");
 		List<Object> contactDeleted = (List<Object>) contact.get("deleted");
@@ -655,4 +693,57 @@ public class CompanyAction extends ActionSupport {
 
 		return fileUpload.getFileId().toString();
 	}
+	
+	public String createIndustry() {
+		
+		
+		try {
+			User onlineUser = (User) request.getSession().getAttribute("onlineUser");
+			
+			if (onlineUser == null) {
+				response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+				return ERROR;
+			}
+			
+			if (industryName == null || industryName.trim().isEmpty()) {
+				response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+				return ERROR;
+			}
+			
+			CompanyIndustry industry = new CompanyIndustry();
+			
+			industry.setIndustryName(industryName);
+			industry.setUserCreate(onlineUser.getId());
+			industry.setTimeCreate(DateUtil.getCurrentTime());
+			
+			if (industryDescription != null && !industryDescription.trim().isEmpty()) {
+				industry.setDescription(industryDescription);
+			}
+			
+			industryDAO.save(industry);
+			
+			Map<String, Object> result = new HashMap<>();
+
+			result.put("industry_id", industry.getIndustryId());
+			result.put("industry_name", industry.getIndustryName());
+
+			response.setContentType("application/json");
+			response.setCharacterEncoding("UTF-8");
+
+			new ObjectMapper().writeValue(
+			    response.getWriter(),
+			    result
+			);
+			
+			return NONE;
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+			return NONE;
+		}
+		
+	}
+
+
 }
