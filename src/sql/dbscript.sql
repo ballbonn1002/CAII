@@ -449,3 +449,27 @@ CREATE TABLE catalog_consumables (
     time_create         TIMESTAMP    NULL,
     time_update         TIMESTAMP    NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- 21/07/2026 Koy: create table 'product' and insert mockup data
+CREATE TABLE `product` (
+  `product_id` int(11) NOT NULL,
+  `sequence` int(11) DEFAULT NULL,
+  `product_no` varchar(256) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `product_name` varchar(256) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `product_type` varchar(32) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `parent_product_id` varchar(32) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `description` text COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `user_create` varchar(32) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `user_update` varchar(32) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `time_create` timestamp NULL DEFAULT NULL,
+  `time_update` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+INSERT INTO `product` (`product_id`, `sequence`, `product_no`, `product_name`, `product_type`, `parent_product_id`, `description`, `user_create`, `user_update`, `time_create`, `time_update`) VALUES
+(1, 1, 'Item-Shirt2026-Black', 'เสื้อบริษัท 2026 (สีดำ)', '2', '0', 'เสื้อบริษัท 2026 (สีดำ)', 'cft.admin', NULL, NULL, NULL),
+(2, 2, 'Item-Trash', 'ถุงขยะ', '2', '0', 'ถุงขยะ', 'cft.admin', NULL, NULL, NULL),
+(3, 1, 'Item-Shirt2026-Black-S', 'S', '2', '1', 'อก 32', 'cft.admin', NULL, NULL, NULL),
+(4, 3, 'Item-Shirt2026-Black-L', 'L', '2', '1', 'อก 36', 'cft.admin', NULL, NULL, NULL),
+(5, 2, 'Item-Shirt2026-Black-M', 'M', '2', '1', 'อก 34', 'cft.admin', NULL, NULL, NULL),
+(6, 4, 'Item-Shirt2026-Black-XL', 'XL', '2', '1', 'อก 38', 'cft.admin', NULL, NULL, NULL),
+(7, 5, 'Item-Shirt2026-Black-2XL', '2XL', '2', '1', 'อก 40', 'cft.admin', NULL, NULL, NULL);
