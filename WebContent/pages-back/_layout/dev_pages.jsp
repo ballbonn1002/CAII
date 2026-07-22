@@ -29,7 +29,7 @@
                             </div>
                             <div class="card-body">
                                 <div class="d-flex gap-4">
-                                    <a href="#" class="btn btn-light-primary d-inline-flex align-items-center px-6 py-3">MR - Material Request</a>
+                                    <a href="/equipment_request_list" class="btn btn-light-primary d-inline-flex align-items-center px-6 py-3">MR - Material Request</a>
                                     <a href="#" class="btn btn-light-success d-inline-flex align-items-center px-6 py-3">MR - Approval</a>
                                     <a href="#" class="btn btn-light-warning d-inline-flex align-items-center px-6 py-3">PR - Purchase Requisition</a>
                                     <a href="#" class="btn btn-light-info d-inline-flex align-items-center px-6 py-3">PO - Purchase Order</a>
