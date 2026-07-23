@@ -1207,7 +1207,54 @@
 			<result name="error">/index.jsp</result>
 		</action>
 
-
+		<!-- PR - Purchase Requisition -->
+		<action name="purchase_requisition"
+			class="com.cubesofttech.action.WorkHoursAction" method="CheckAllCalendar">
+			<result name="success" type="tiles">purchase_requisition</result>
+			<result name="error">/index.jsp</result>
+		</action>
+		
+		<action name="purchase_requisition_create"
+			class="com.cubesofttech.action.WorkHoursAction" method="CheckAllCalendar">
+			<result name="success" type="tiles">purchase_requisition_create</result>
+			<result name="error">/index.jsp</result>
+		</action>
+		
+		<action name="purchase_requisition_detail_savecreate"
+			class="com.cubesofttech.action.WorkHoursAction" method="CheckAllCalendar">
+			<result name="success" type="redirect">purchase_requisition_create</result>
+			<result name="error">/index.jsp</result>
+		</action>
+		
+		<action name="purchase_requisition_detail_delete"
+			class="com.cubesofttech.action.WorkHoursAction" method="CheckAllCalendar">
+			<result name="success" type="redirect">purchase_requisition_create</result>
+			<result name="error">/index.jsp</result>
+		</action>
+		
+		<action name="purchase_requisition_savecreate"
+			class="com.cubesofttech.action.WorkHoursAction" method="CheckAllCalendar">
+			<result name="success" type="redirect">purchase_requisition</result>
+			<result name="error">/index.jsp</result>
+		</action>
+		
+		<action name="purchase_requisition_delete"
+			class="com.cubesofttech.action.WorkHoursAction" method="CheckAllCalendar">
+			<result name="success" type="redirect">purchase_requisition</result>
+			<result name="error">/index.jsp</result>
+		</action>
+		
+		<action name="purchase_requisition_edit"
+			class="com.cubesofttech.action.WorkHoursAction" method="CheckAllCalendar">
+			<result name="success" type="tiles">purchase_requisition_edit</result>
+			<result name="error">/index.jsp</result>
+		</action>
+		
+		<action name="purchase_requisition_saveedit"
+			class="com.cubesofttech.action.WorkHoursAction" method="CheckAllCalendar">
+			<result name="success" type="redirect">purchase_requisition_edit?id=${id}</result>
+			<result name="error">/index.jsp</result>
+		</action>
 
 		<!-- Check All Calendar -->
 		<action name="checkAllCalendar"

@@ -633,6 +633,25 @@
 		<put-attribute name="body"
 			value="/pages-back/travel_approve/travel_approve_preview.jsp" />
 	</definition>
+	
+	<!-- PR - Purchase Requisition -->
+	<definition name="purchase_requisition" extends="baseLayout">
+		<put-attribute name="title" value="Purchase Requisition" />
+		<put-attribute name="body"
+			value="/pages-back/purchase_requisition/purchase_requisition.jsp" />
+	</definition>
+	
+	<definition name="purchase_requisition_create" extends="baseLayout">
+		<put-attribute name="title" value="Purchase Requisition Create" />
+		<put-attribute name="body"
+			value="/pages-back/purchase_requisition/purchase_requisition_create.jsp" />
+	</definition>
+	
+	<definition name="purchase_requisition_edit" extends="baseLayout">
+		<put-attribute name="title" value="Purchase Requisition Edit" />
+		<put-attribute name="body"
+			value="/pages-back/purchase_requisition/purchase_requisition_edit.jsp" />
+	</definition>
 
 	<!-- Careers -->
 	<definition name="careers_list" extends="baseLayout">

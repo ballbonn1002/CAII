@@ -487,7 +487,7 @@ String targetURL = Constant.getWebContext2() + "/authorization?token=" + token;
 						end:MR-->
 						<!--begin:PR
 						<div class="menu-item">
-							<a class="menu-link" href="#" data-route="#">
+							<a class="menu-link" href="purchase_requisition" data-route="purchase_requisition">
 								<span class="menu-icon"> 
 									<i class="ki-duotone ki-tablet-book fs-1"> 
 										<span class="path1"></span><span class="path2"></span>
