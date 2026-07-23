@@ -155,7 +155,7 @@
 								<table id="kt_datatable_zero_configuration"
 									class="table table-row-bordered gy-5 table-striped align-middle">
 									<thead>
-										<tr class=" text-muted text-uppercase text-gray-500">
+										<tr class="text-muted text-uppercase text-gray-500">
 											<th>#</th>
 											<th>company name</th>
 											<th>company code</th>
@@ -238,9 +238,6 @@
 															</c:otherwise>
 
 														</c:choose>
-
-
-
 
 													</div>
 												</td>
@@ -335,20 +332,18 @@
 							<div class="col-md-6 col-xl-4 mb-6 company-card"
 								data-company-id="${company.company_id}">
 								<!-- begin::Card -->
-								<div
-									class="card card-flush h-100 shadow-sm border border-gray-200">
+								<div class="card card-px-0 shadow-sm border border-gray-200">
 
 									<!-- begin::Card Header -->
-									<div class="card-header pt-6 pb-4">
+									<div class="card-header px-6 pt-4 pb-4">
 										<div
 											class="card-title w-100 d-flex justify-content-between align-items-start flex-nowrap">
 
 											<!-- Company Info -->
-											<div class="d-flex align-items-center me-3">
+											<div class="d-flex gap-2 me-3">
 
 												<!-- Symbol/Logo -->
-												<div
-													class="symbol symbol-50px symbol-circle me-4 position-relative">
+												<div class="symbol symbol-75px me-4">
 													<c:choose>
 														<c:when test="${not empty company.file_path}">
 															<img
@@ -362,72 +357,105 @@
 															</div>
 														</c:otherwise>
 													</c:choose>
-
-													<div
-														class="position-absolute bottom-0 end-0 me-n1 
-												                bg-${company.is_active eq '1' ? 'success' : 'danger'} 
-												                rounded-circle border border-2 border-body h-15px w-15px"
-														data-bs-toggle="tooltip"
-														title="${company.is_active eq '1' ? 'Active Company' : 'Inactive Company'}">
-													</div>
 												</div>
 
 												<!-- Company Name & Code -->
-												<div class="d-flex flex-column">
+												<div class="d-flex flex-column mt-1">
 													<a href="company_edit?companyId=${company.company_id}"
-														class="fs-5 fw-bold text-gray-900 text-hover-primary mb-1">
+														class="fs-5 fw-bold text-gray-900 text-hover-primary mb-2">
 														${company.company_en} </a> <span
-														class="fs-7 fw-semibold text-muted">${company.company_th}</span>
+														class="fs-7 fw-semibold text-muted">${company.company_code}</span>
 												</div>
 
 											</div>
 
-											<!-- Industry Badge -->
-											<span
-												class="badge badge-primary fw-bold px-3 py-2 flex-shrink-0">
-												${company.industry_name} </span>
+										</div>
+
+										<!-- Address Section -->
+										<%-- <div class="mt-3 d-flex flex-column gap-5 mb-6">
+											<div class="d-flex gap-2">
+												<i class="ki-duotone ki-credit-cart fs-2"> <span
+													class="path1"></span> <span class="path2"></span>
+												</i> <span class="fw-medium text-gray-700">${company.tax_number}</span>
+											</div>
+											<c:if test="${not empty company.address_location}">
+												<div class="d-flex flex-column gap-3">
+													<c:forEach items="${company.address_location}"
+														var="address">
+														<div class="d-flex gap-2 align-items-center">
+															<i class="ki-duotone ki-map fs-2"> <span
+																class="path1"></span> <span class="path2"></span> <span
+																class="path3"></span>
+															</i> <span class="fw-medium text-gray-700">${address.address_name}</span>
+														</div>
+
+														<div class="ps-8">
+															<span class="text-gray-500">${address.address}</span>
+														</div>
+													</c:forEach>
+												</div>
+											</c:if>
+										</div> --%>
+
+										<div class="mt-3 d-flex flex-column gap-5 mb-6">
+
+											<div class="d-flex gap-2">
+												<i class="ki-duotone ki-credit-cart fs-2"> <span
+													class="path1"></span> <span class="path2"></span>
+												</i> <span class="fw-medium text-gray-700">${company.tax_number}</span>
+											</div>
+
+											<c:choose>
+
+												<c:when test="${not empty company.address_location}">
+													<div class="d-flex flex-column gap-3">
+
+														<c:forEach items="${company.address_location}"
+															var="address">
+
+															<div class="d-flex gap-2 align-items-center">
+																<i class="ki-duotone ki-map fs-2"> <span
+																	class="path1"></span> <span class="path2"></span> <span
+																	class="path3"></span>
+																</i> <span class="fw-medium text-gray-700">
+																	${address.address_name} </span>
+															</div>
+
+															<div class="ps-8">
+																<span class="text-gray-500"> ${address.address} </span>
+															</div>
+
+														</c:forEach>
+
+													</div>
+												</c:when>
+
+												<c:otherwise>
+
+													<div class="d-flex gap-2 align-items-center">
+														<i class="ki-duotone ki-map fs-2"> <span
+															class="path1"></span> <span class="path2"></span> <span
+															class="path3"></span>
+														</i> <span class="text-gray-700 fw-medium"> - </span>
+													</div>
+
+												</c:otherwise>
+
+											</c:choose>
 
 										</div>
 									</div>
 									<!-- end::Card Header -->
 
 									<!-- begin::Card Body -->
-									<div class="card-body py-3">
-										<!-- Address Section -->
-										<div class="mb-5">
-											<div
-												class="fs-7 text-muted fw-bold text-uppercase tracking-wider mb-2">Address</div>
-
-											<c:choose>
-												<c:when test="${not empty company.address_location}">
-													<div class="d-flex flex-column gap-2">
-														<c:forEach items="${company.address_location}"
-															var="address">
-															<div class="d-flex align-items-center text-gray-700 fs-6">
-																<i class="ki-duotone ki-map me-2 fs-2"> <span
-																	class="path1"></span> <span class="path2"></span> <span
-																	class="path3"></span>
-																</i> <span class="fw-medium text-gray-700">${address.address_name}</span>
-															</div>
-														</c:forEach>
-													</div>
-												</c:when>
-												<c:otherwise>
-													<span class="text-gray-400 fs-6 italic">No address
-														provided</span>
-												</c:otherwise>
-											</c:choose>
-										</div>
-
-										<div class="separator separator-dashed my-4"></div>
-
+									<%-- <div class="card-body py-3 px-6">
 										<!-- Contacts Section -->
 										<div class="mb-4">
-											<div
-												class="fs-7 text-muted fw-bold text-uppercase tracking-wider mb-2">Contacts</div>
-
 											<c:choose>
 												<c:when test="${not empty company.company_contact}">
+													<div class="fw-medium text-gray-700 mb-2">
+														Contact ( ${ fn:length(company.company_contact)} )
+													</div>
 													<div class="d-flex flex-column gap-2">
 														<c:forEach items="${company.company_contact}"
 															var="contact">
@@ -448,12 +476,97 @@
 												</c:otherwise>
 											</c:choose>
 										</div>
+									</div> --%>
+
+									<div class="card-body py-5 px-6">
+
+										<%-- 	<c:choose>
+											<c:when test="${not empty company.company_contact}"> --%>
+
+										<!-- Header -->
+										<div
+											class="d-flex justify-content-between align-items-center cursor-pointer rotate collapsed collapsible "
+											data-bs-toggle="collapse"
+											data-bs-target="#contactCollapse${company.company_id}">
+
+											<div class="fw-medium text-gray-700">Contact (
+												${fn:length(company.company_contact)} )</div>
+
+											<span class="rotate-n180"> <i
+												class="ki-duotone ki-down fs-3"> <span class="path1"></span>
+													<span class="path2"></span>
+											</i>
+											</span>
+
+
+										</div>
+
+										<!-- Collapse Content -->
+										<div class="collapse mt-6 pb-3"
+											id="contactCollapse${company.company_id}">
+
+											<div class="d-flex flex-column gap-6">
+
+												<c:forEach items="${company.company_contact}" var="contact"
+													varStatus="loop">
+
+													<div class="d-flex align-items-center">
+														<!-- Avatar -->
+														<div class="symbol symbol-40px symbol-circle me-3">
+
+															<c:choose>
+																<c:when test="${not empty contact.file_path}">
+																	<img
+																		src="${pageContext.request.contextPath}${contact.file_path}">
+																</c:when>
+
+																<c:otherwise>
+																	<div
+																		class="symbol-label bg-light-primary text-primary fw-bold">
+																		${fn:substring(contact.contact_name,0,1)}</div>
+																</c:otherwise>
+															</c:choose>
+
+														</div>
+
+														<!-- Contact Info -->
+														<div class="d-flex flex-column">
+
+															<span class="fw-medium text-gray-800 ">
+																${contact.title_name_en} ${contact.contact_name} </span> <span
+																class="text-muted fs-7"> ${contact.position} </span>
+
+														</div>
+
+													</div>
+
+													<!-- Separator ยกเว้นคนสุดท้าย -->
+													<c:if test="${!loop.last}">
+														<div class="separator separator-solid border-1"></div>
+													</c:if>
+
+												</c:forEach>
+
+											</div>
+
+										</div>
+
+										<%-- </c:when> --%>
+
+										<%-- <c:otherwise>
+
+												<div class="text-muted">Contact (0)</div>
+
+											</c:otherwise> --%>
+
+										<%-- </c:choose> --%>
+
 									</div>
 									<!-- end::Card Body -->
 
 									<!-- begin::Card Footer -->
 									<div
-										class="card-footer d-flex justify-content-end align-items-center pt-4 pb-6">
+										class="card-footer px-6 d-flex justify-content-between align-items-center pt-4 pb-6">
 										<!-- Status Badge -->
 										<%-- 										<span
 											class="badge ${company.is_active eq '1' ? 'badge-light-success text-success' : 'badge-light-danger text-danger'} fw-bold px-4 py-2">
@@ -462,10 +575,17 @@
 											${company.is_active eq '1' ? 'Active' : 'Inactive'}
 										</span> --%>
 
+										<div
+											class="form-check form-check-custom form-check-solid form-check-sm">
+											<input class="form-check-input" type="checkbox" disabled
+												<c:if test="${company.is_active eq '1'}">checked</c:if>>
+											<span class="ms-3 text-gray-700 fw-medium">Is Active</span>
+										</div>
+
 										<!-- Action Buttons -->
-										<div class="d-flex gap-2">
+										<div class="d-flex">
 											<a href="company_edit?companyId=${company.company_id}"
-												class="btn btn-sm btn-light-primary me-3"> <i
+												class="btn btn-sm btn-light-primary me-2"> <i
 												class="ki-duotone ki-pencil fs-4 me-1"> <span
 													class="path1"></span><span class="path2"></span>
 											</i> Edit

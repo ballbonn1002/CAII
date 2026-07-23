@@ -1757,6 +1757,20 @@
         <action name="create_industry"
         	class="com.cubesofttech.action.CompanyAction" method="createIndustry">
         </action>
+        
+        <action name="check_industry_name"
+        	class="com.cubesofttech.action.CompanyAction" method="checkIndustryName">
+        </action>
+        
+        
+        <!-- ========================== Setting ============================== -->
+		
+		<!-- Ware House -->
+		<action name="warehouse_list"
+			class="com.cubesofttech.action.WarehouseAction" method="list">
+			<result name="success" type="tiles">warehouseList</result>
+			<result name="error">/index.jsp</result>
+		</action>
 
 		<!-- ========================== Work Log ============================== -->
 		<action name="work_log"

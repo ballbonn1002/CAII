@@ -487,6 +487,14 @@
 		<put-attribute name="body"
 			value="/pages-back/company/company_add.jsp" />
 	</definition>
+	
+		<!-- Warehouse -->
+	<definition name="warehouseList" extends="baseLayout">
+		<put-attribute name="title" value="Warehouse List" />
+		<put-attribute name="body"
+			value="/pages-back/warehouse/warehouse_list.jsp" />
+	</definition>
+
 
 	<!-- Work Log -->
 	<definition name="workLog" extends="baseLayout">
