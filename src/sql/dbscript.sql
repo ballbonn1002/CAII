@@ -426,7 +426,7 @@ CREATE TABLE company_contact (
 DEFAULT CHARSET=utf8mb4
 COLLATE=utf8mb4_unicode_ci;
 
--- 14/07/2026 June: CREATE TABLE catalog_equipment and catalog_consumables
+-- 17/07/2026 June: CREATE TABLE catalog_equipment and catalog_consumables
 CREATE TABLE catalog_equipment (
 	catalog_equipment_id BIGINT(11) NOT NULL, 
 	equipment_name 		VARCHAR(64)  NOT NULL,
@@ -437,10 +437,14 @@ CREATE TABLE catalog_equipment (
     time_create         TIMESTAMP    NULL,
     time_update         TIMESTAMP    NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+INSERT INTO `catalog_equipment` (`catalog_equipment_id`, `equipment_name`, `items_type`, `active`, `user_create`, `user_update`, `time_create`, `time_update`) VALUES
+(1, 'Adapter Lan', '1', '1', 'cft.admin', 'cft.admin', '2026-07-21 06:23:09', '2026-07-21 06:23:09'),
+(2, 'Computer', '1', '0', 'cft.admin', 'cft.admin', '2026-07-21 06:23:52', '2026-07-21 06:23:56');
 
 CREATE TABLE catalog_consumables (
 	catalog_consumables_id BIGINT(11) NOT NULL, 
 	product_id 			BIGINT(11)  NOT NULL,
+	parent_product_id 	VARCHAR(32) NOT NULL,
 	items_type			VARCHAR(32) NULL,
 	sub_product_active 	VARCHAR(8)  NOT NULL,
     active              VARCHAR(8)   NOT NULL,
@@ -449,6 +453,9 @@ CREATE TABLE catalog_consumables (
     time_create         TIMESTAMP    NULL,
     time_update         TIMESTAMP    NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+INSERT INTO `catalog_consumables` (`catalog_consumables_id`, `product_id`, `parent_product_id`, `items_type`, `sub_product_active`, `active`, `user_create`, `user_update`, `time_create`, `time_update`) VALUES
+(1, 1, 0, '2', '1', '1', 'cft.admin', 'cft.admin', '2026-07-21 08:17:30', '2026-07-23 03:01:01'),
+(2, 2, 0, '2', '0', '0', 'cft.admin', 'cft.admin', '2026-07-21 08:17:30', '2026-07-21 08:17:30');
 
 -- 22/07/2026 Best(Intern): CREATE TABLE company_industry 
 CREATE TABLE company_industry (

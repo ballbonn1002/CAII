@@ -11,4 +11,6 @@ public interface ProductDAO {
     public Product findById(Integer id) throws Exception;
     public List<Product> findAll() throws Exception;
     public List<Map<String, Object>> findAllConsWithSubProducts() throws Exception;
+	List<Product> findByIds(List<Integer> productIds) throws Exception;
+	List<Product> findByParentProductIds(List<String> parentProductIds) throws Exception;
 }

@@ -252,11 +252,12 @@
 													<tr class="align-middle border-bottom-1">
 														<td class="px-3 py-4 text-gray-900 fs-6 fw-normal text-center row-number"></td>
 														<td class="px-3 py-4 text-gray-900 fs-6 fw-normal">
-															${itemConsList.catalogConsumablesName}
+															 ${itemConsList.catalogConsumablesName}
 														</td>
 														<td class="px-3 py-4 text-gray-900 fs-6 fw-normal">
-															<span class="badge badge-lg badge-primary fs-7 me-2">Double A</span>
-															<span class="badge badge-lg badge-primary fs-7 me-2">Double A</span>
+															<c:forEach items="${itemConsList.subProductNames}" var="subName">
+												                <span class="badge badge-lg badge-primary fs-7 me-2 d-inline-block text-center">${subName}</span>
+												            </c:forEach>
 														</td>
 														
 														<td class="px-3 py-4 text-gray-900 fs-6 fw-normal text-center">
@@ -275,96 +276,6 @@
 														</td>
 													</tr>
 												</c:forEach>
-												<!-- <tr class="align-middle border-bottom-1">
-													<td class="px-3 py-4 text-gray-900 fs-6 fw-normal text-center row-number"></td>
-													<td class="px-3 py-4 text-gray-900 fs-6 fw-normal">
-														A4
-													</td>
-													<td class="px-3 py-4 text-gray-900 fs-6 fw-normal">
-														<span class="badge badge-lg badge-primary fs-7 me-2">Double A</span>
-													</td>
-													
-													<td class="px-3 py-4 text-gray-900 fs-6 fw-normal text-center">
-														<span class="form-check d-flex justify-content-center"><input class="form-check-input" type="checkbox" value="" id="flexCheckChecked" checked /></span>
-													</td>
-													
-													<td class="px-3 py-4 text-gray-900 fs-6 fw-normal text-center ">
-														<span class="form-check form-switch form-check-custom form-check-success form-check-solid d-flex justify-content-center ">
-    														<input class="form-check-input h-20px w-30px" type="checkbox" value="" checked id="kt_flexSwitchCustomDefault_1_1"/>
-														</span>
-													</td>
-												</tr>
-												
-												<tr class="align-middle border-bottom-1">
-													<td class="px-3 py-4 text-gray-900 fs-6 fw-normal text-center row-number"></td>
-													<td class="px-3 py-4 text-gray-900 fs-6 fw-normal">
-														ถุงขยะ
-													</td>
-													<td class="px-3 py-4 text-gray-900 fs-6 fw-normal">
-														<span class="badge badge-lg badge-primary fs-7 me-2">18x32</span> 
-														<span class="badge badge-lg badge-primary fs-7 me-2">20x40</span>
-													</td>
-													
-													<td class="px-3 py-4 text-gray-900 fs-6 fw-normal text-center">
-														<span class="form-check d-flex justify-content-center"><input class="form-check-input" type="checkbox" value="" id="flexCheckChecked" checked /></span>
-													</td>
-													
-													<td class="px-3 py-4 text-gray-900 fs-6 fw-normal text-center ">
-														<span class="form-check form-switch form-check-custom form-check-success form-check-solid d-flex justify-content-center ">
-    														<input class="form-check-input h-20px w-30px" type="checkbox" value="" checked id="kt_flexSwitchCustomDefault_1_1"/>
-														</span>
-													</td>
-												</tr>
-												
-												<tr class="align-middle border-bottom-1">
-													<td class="px-3 py-4 text-gray-900 fs-6 fw-normal text-center row-number"></td>
-													<td class="px-3 py-4 text-gray-900 fs-6 fw-normal">
-														เสื้อบริษัท 2026 (สีดำ)
-													</td>
-													<td class="px-3 py-4 text-gray-900 fs-6 fw-normal">
-														<span class="badge badge-lg badge-primary fs-7 me-2">S</span> 
-														<span class="badge badge-lg badge-primary fs-7 me-2">M</span>
-														<span class="badge badge-lg badge-primary fs-7 me-2">L</span> 
-														<span class="badge badge-lg badge-primary fs-7 me-2">XL</span>
-														<span class="badge badge-lg badge-primary fs-7 me-2">2XL</span> 
-														<span class="badge badge-lg badge-primary fs-7 me-2">3XL</span>
-													</td>
-													
-													<td class="px-3 py-4 text-gray-900 fs-6 fw-normal text-center">
-														<span class="form-check d-flex justify-content-center"><input class="form-check-input" type="checkbox" value="" id="flexCheckChecked" checked /></span>
-													</td>
-													
-													<td class="px-3 py-4 text-gray-900 fs-6 fw-normal text-center ">
-														<span class="form-check form-switch form-check-custom form-check-success form-check-solid d-flex justify-content-center ">
-    														<input class="form-check-input h-20px w-30px" type="checkbox" value="" checked id="kt_flexSwitchCustomDefault_1_1"/>
-														</span>
-													</td>
-												</tr>
-												
-												<tr class="align-middle border-bottom-1">
-													<td class="px-3 py-4 text-gray-900 fs-6 fw-normal text-center row-number"></td>
-													<td class="px-3 py-4 text-gray-900 fs-6 fw-normal">
-														ริ้บบิ้น
-													</td>
-													<td class="px-3 py-4 text-gray-900 fs-6 fw-normal">
-														<span class="badge badge-lg badge-primary fs-7 me-2">สีแดง</span> 
-														<span class="badge badge-lg badge-primary fs-7 me-2">สีขาว</span>
-														<span class="badge badge-lg badge-primary fs-7 me-2">สีดำ</span> 
-													</td>
-													
-													<td class="px-3 py-4 text-gray-900 fs-6 fw-normal text-center">
-														<span class="form-check d-flex justify-content-center"><input class="form-check-input" type="checkbox" value="" id="flexCheckChecked" checked /></span>
-													</td>
-													
-													<td class="px-3 py-4 text-gray-900 fs-6 fw-normal text-center ">
-														<span class="form-check form-switch form-check-custom form-check-success form-check-solid d-flex justify-content-center ">
-    														<input class="form-check-input h-20px w-30px" type="checkbox" value="" checked id="kt_flexSwitchCustomDefault_1_1"/>
-														</span>
-													</td>
-												</tr> -->
-												
-												
-												
 											</tbody>
 										</table>
 									</div>

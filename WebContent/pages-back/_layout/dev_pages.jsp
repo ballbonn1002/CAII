@@ -32,7 +32,7 @@
                                     <a href="/equipment_request_list" class="btn btn-light-primary d-inline-flex align-items-center px-6 py-3">MR - Material Request</a>
                                     <a href="#" class="btn btn-light-success d-inline-flex align-items-center px-6 py-3">MR - Approval</a>
                                     <a href="#" class="btn btn-light-warning d-inline-flex align-items-center px-6 py-3">PR - Purchase Requisition</a>
-                                    <a href="#" class="btn btn-light-info d-inline-flex align-items-center px-6 py-3">PO - Purchase Order</a>
+                                    <a href="purchase_order_list" class="btn btn-light-info d-inline-flex align-items-center px-6 py-3">PO - Purchase Order</a>
                                     <a href="#" class="btn btn-light-danger d-inline-flex align-items-center px-6 py-3">GR - Goods Receipt</a>
                                 </div>
                             </div>
@@ -68,6 +68,24 @@
                                 <div class="d-flex gap-4">
                                     <a href="#" class="btn btn-light-warning d-inline-flex align-items-center px-6 py-3">Stock - Consumables</a>
                                     <a href="#" class="btn btn-light-danger d-inline-flex align-items-center px-6 py-3">Stock - Office Supplies</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row mt-8">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-header border-0 pt-6 align-items-start">
+                                <div class="card-title">
+                                    <h3 class="page-heading d-flex text-gray-900 fw-medium my-0">Setting</h3>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <div class="d-flex gap-4">
+                                    <a href="#" class="btn btn-light-primary d-inline-flex align-items-center px-6 py-3">Warehouse</a>
+                                    <a href="/item_catalog" class="btn btn-light-danger d-inline-flex align-items-center px-6 py-3">Item Catalog</a>
                                 </div>
                             </div>
                         </div>

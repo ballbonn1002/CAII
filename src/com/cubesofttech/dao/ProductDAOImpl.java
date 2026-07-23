@@ -1,5 +1,6 @@
 package com.cubesofttech.dao;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import org.hibernate.SQLQuery;
@@ -70,5 +71,27 @@ public class ProductDAOImpl implements ProductDAO {
         }
         
         return products;
+    }
+    
+    @Override
+    public List<Product> findByIds(List<Integer> productIds) throws Exception {
+        Session session = this.sessionFactory.getCurrentSession();
+        if (productIds == null || productIds.isEmpty()) {
+            return new ArrayList<>();
+        }
+        return session.createQuery("from Product where productId in (:ids)")
+                .setParameterList("ids", productIds)
+                .list();
+    }
+    
+    @Override
+    public List<Product> findByParentProductIds(List<String> parentProductIds) throws Exception {
+        Session session = this.sessionFactory.getCurrentSession();
+        if (parentProductIds == null || parentProductIds.isEmpty()) {
+            return new ArrayList<>();
+        }
+        return session.createQuery("from Product where parentProductId in (:ids)")
+                .setParameterList("ids", parentProductIds)
+                .list();
     }
 }
