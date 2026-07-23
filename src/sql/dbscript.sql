@@ -493,3 +493,16 @@ INSERT INTO `product` (`product_id`, `sequence`, `product_no`, `product_name`, `
 (5, 2, 'Item-Shirt2026-Black-M', 'M', '2', '1', 'อก 34', 'cft.admin', NULL, NULL, NULL),
 (6, 4, 'Item-Shirt2026-Black-XL', 'XL', '2', '1', 'อก 38', 'cft.admin', NULL, NULL, NULL),
 (7, 5, 'Item-Shirt2026-Black-2XL', '2XL', '2', '1', 'อก 40', 'cft.admin', NULL, NULL, NULL);
+
+CREATE TABLE warehouse (
+    warehouse_id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    warehouse_name VARCHAR(64) NOT NULL,
+    parent BIGINT NOT NULL DEFAULT 0,
+    description VARCHAR(1024),
+    user_create VARCHAR(32),
+    user_update VARCHAR(32),
+    time_create TIMESTAMP NULL DEFAULT NULL,
+    time_update TIMESTAMP NULL DEFAULT NULL
+) ENGINE=InnoDB
+DEFAULT CHARSET=utf8mb4
+COLLATE=utf8mb4_unicode_ci;

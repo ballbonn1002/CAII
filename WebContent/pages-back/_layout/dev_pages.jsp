@@ -84,7 +84,7 @@
                             </div>
                             <div class="card-body">
                                 <div class="d-flex gap-4">
-                                    <a href="#" class="btn btn-light-primary d-inline-flex align-items-center px-6 py-3">Warehouse</a>
+                                    <a href="warehouse_list" class="btn btn-light-primary d-inline-flex align-items-center px-6 py-3">Warehouse</a>
                                     <a href="/item_catalog" class="btn btn-light-danger d-inline-flex align-items-center px-6 py-3">Item Catalog</a>
                                 </div>
                             </div>
