@@ -29,8 +29,12 @@ public class CompanyContactDAOImpl implements CompanyContactDAO {
 
 		Session session = sessionFactory.getCurrentSession();
 
-		String sql = "SELECT * FROM company_contact";
-
+		String sql =
+			    "SELECT " +
+			    "cc.*, " +
+			    "f.path AS file_path " +
+			    "FROM company_contact cc " +
+			    "LEFT JOIN file f ON cc.file_id = f.file_id";
 		SQLQuery query = session.createSQLQuery(sql);
 		query.setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
 

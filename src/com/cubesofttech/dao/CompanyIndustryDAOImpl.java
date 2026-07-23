@@ -47,5 +47,14 @@ public class CompanyIndustryDAOImpl implements CompanyIndustryDAO {
 		Session session = sessionFactory.getCurrentSession();
 		session.delete(industry);
 	}
+	
+	@Override
+	public CompanyIndustry findByName(String industryName) throws Exception {
+		Session session = sessionFactory.getCurrentSession();
+		String hql = "FROM CompanyIndustry WHERE industryName = :industryName";
+		return (CompanyIndustry) session.createQuery(hql)
+				.setParameter("industryName", industryName)
+				.uniqueResult();
+	}
 
 }

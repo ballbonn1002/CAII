@@ -35,10 +35,13 @@ public class CompanyAction extends ActionSupport {
 
 	@Autowired
 	private CompanyDAO companyDAO;
+	
 	@Autowired
 	private CompanyContactDAO contactDAO;
+	
 	@Autowired
 	private CompanyAddressDAO addressDAO;
+	
 	@Autowired
 	private FileUploadDAO fileUploadDAO;
 	
@@ -620,8 +623,13 @@ public class CompanyAction extends ActionSupport {
 			if (contactObj == null) {
 				continue;
 			}
-
-			contactObj.setCompanyAddressId(item.get("address_id").toString());
+			
+			if (item.get("address_id") == null || item.get("address_id").toString().isEmpty()) {
+				contactObj.setCompanyAddressId(null);
+			} else {
+				contactObj.setCompanyAddressId(item.get("address_id").toString());
+			}
+			
 			contactObj.setTitleNameTh((String) item.get("title_name_th"));
 			contactObj.setTitleNameEn((String) item.get("title_name_en"));
 			contactObj.setContactNameTh((String) item.get("name_th"));
@@ -745,5 +753,30 @@ public class CompanyAction extends ActionSupport {
 		
 	}
 
+	public String checkIndustryName() {
+	    try {
+
+	        String industryName = request.getParameter("industryName");
+
+	        CompanyIndustry industry = industryDAO.findByName(industryName);
+
+	        Map<String, Object> result = new HashMap<>();
+	        result.put("exists", industry != null);
+
+	        response.setContentType("application/json");
+	        response.setCharacterEncoding("UTF-8");
+
+	        new ObjectMapper().writeValue(
+	            response.getWriter(),
+	            result
+	        );
+
+	        return NONE;
+
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        return ERROR;
+	    }
+	}
 
 }

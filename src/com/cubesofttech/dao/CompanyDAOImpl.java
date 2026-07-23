@@ -38,6 +38,7 @@ public class CompanyDAOImpl implements CompanyDAO {
 	            "c.industry_id, " +
 	            "ci.industry_name, " +
 	            "c.is_active, " +
+	            "c.tax_number, " +
 	            "f.path AS file_path " +
 	            "FROM company c " +
 	            "LEFT JOIN company_industry ci " +

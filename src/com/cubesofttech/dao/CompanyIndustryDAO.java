@@ -9,4 +9,5 @@ public interface CompanyIndustryDAO {
 	public void save(CompanyIndustry industry) throws Exception;
 	public void update(CompanyIndustry industry) throws Exception;
 	public void delete(CompanyIndustry industry) throws Exception;
+	public CompanyIndustry findByName(String industryName) throws Exception;
 }

@@ -217,13 +217,18 @@
 
 											<div class="modal-body">
 												<div class="row g-8 mb-8">
-													<div class="col-md-12 create-industry-validate-container">
+													<div
+														class="col-md-12 position-relative create-industry-validate-container">
 														<label for="Industry Name" class="form-label required">Industry
-															Name</label> <input type="text"
-															class="form-control form-control-lg"
-															id="industry-name-create"
-															required />
-
+															Name</label>
+														<div class="position-relative">
+															<input type="text" class="form-control form-control-lg"
+																id="industry-name-create" required /> <i
+																id="industry-name-valid-icon"
+																class="ki-duotone ki-check-circle fs-1 text-success position-absolute top-50 end-0 translate-middle-y me-4 d-none">
+																<span class="path1"></span> <span class="path2"></span>
+															</i>
+														</div>
 													</div>
 													<div class="col-md-12 create-desc-validate-container">
 														<label for="Description" class="form-label">
@@ -713,6 +718,8 @@
 
 		    if (!value) {
 
+		        $("#industry-name-valid-icon").addClass("d-none");
+
 		        industryValidationState.industryName = false;
 
 		        $("#industry-name-create").addClass("is-invalid");
@@ -722,14 +729,68 @@
 		                Industry Name is required
 		            </div>
 		        `);
-		       
-		        updateBtnState("#saveIndustryBtn", hasValidationErrors(industryValidationState));
-		        return
-		    }
 
-		    $("#industry-name-create").removeClass("is-invalid");
-		    industryValidationState.industryName = true;
-		    updateBtnState("#saveIndustryBtn", hasValidationErrors(industryValidationState));
+		        updateBtnState(
+		            "#saveIndustryBtn",
+		            hasValidationErrors(industryValidationState)
+		        );
+
+		        return;
+		    }
+		    
+		    console.log("Checking industry name: " + value);
+
+		    $.ajax({
+		        url: "check_industry_name",
+		        type: "GET",
+		        data: {
+		            industryName: value
+		        },
+		        success: function(res) {
+
+		            if (res.exists) {
+
+		                industryValidationState.industryName = false;
+
+		                setFieldInvalid(
+		                    "#industry-name-create",
+		                    "Industry name already exists"
+		                );
+
+		                $("#industry-name-valid-icon")
+		                    .addClass("d-none");
+
+		            } else {
+
+		                industryValidationState.industryName = true;
+
+		                clearFieldError(
+		                    "#industry-name-create"
+		                );
+
+		                $("#industry-name-valid-icon")
+		                    .removeClass("d-none");
+		            }
+
+		            updateBtnState(
+		                "#saveIndustryBtn",
+		                hasValidationErrors(industryValidationState)
+		            );
+		        },
+
+		        error: function() {
+
+		            industryValidationState.industryName = false;
+
+		            $("#industry-name-valid-icon")
+		                .addClass("d-none");
+
+		            updateBtnState(
+		                "#saveIndustryBtn",
+		                hasValidationErrors(industryValidationState)
+		            );
+		        }
+		    });
 		}
 
 
