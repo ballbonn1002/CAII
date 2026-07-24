@@ -58,6 +58,7 @@ import com.cubesofttech.model.RoleAuthorizedObject;
 import com.cubesofttech.model.User;
 import com.cubesofttech.service.LeaveService;
 import com.cubesofttech.service.LogService;
+import com.cubesofttech.service.NotificationService;
 import com.cubesofttech.util.DateUtil;
 import com.cubesofttech.util.FileUtil;
 import com.google.gson.Gson;
@@ -103,6 +104,9 @@ public class LeaveAction extends ActionSupport {
 	
 	@Autowired
     private LogService logService;
+
+	@Autowired
+	private NotificationService notificationService;
 
 	List<Leaves> modalLeaveList;
 	private String roleId;
@@ -473,6 +477,9 @@ public class LeaveAction extends ActionSupport {
 		try {
 			log.info("leave for admin");
 			User ur = (User) request.getSession().getAttribute("onlineUser");
+			if (ur == null) {
+				return ERROR;
+			}
 			String userLogin = ur.getId();
 			String listbyuser = request.getParameter("Id");
 			if(listbyuser != null) {
@@ -553,9 +560,9 @@ public class LeaveAction extends ActionSupport {
 			BigDecimal LeaveWAnumT9 = new BigDecimal(0);
 
 			for (int i = 0; i < userleave.size(); i++) {
-				Character type = (Character) userleave.get(i).get(TYPELEAVE);
+				char type = userleave.get(i).get(TYPELEAVE).toString().charAt(0);
 				BigDecimal num = (BigDecimal) userleave.get(i).get(NODAY);
-				Character status = (Character) userleave.get(i).get(STATUS);
+				char status = userleave.get(i).get(STATUS).toString().charAt(0);
 
 				switch (status) {
 				case '0':
@@ -1955,6 +1962,7 @@ public class LeaveAction extends ActionSupport {
 	        
 	        // Update Leave
 	        log.info(leaveType);
+	        String oldStatus = leave.getLeaveStatusId();
 	        leave.setLeaveTypeId(leaveType);
 	        leave.setLeaveStatusId(status);
 	        leave.setHalfDay(halfDay);
@@ -1970,7 +1978,8 @@ public class LeaveAction extends ActionSupport {
 	        //leave.setUserUpdate(onlineUser.getId());
 	        //leave.setTimeUpdate(DateUtil.getCurrentTime());
 	        leaveDAO.update(leave);
-	        
+	        notifyLeaveStatusChange(leave, oldStatus, status, onlineUser.getId());
+
 	        return SUCCESS;
 	    } catch (Exception e) {
 	    	try {
@@ -2137,6 +2146,38 @@ public class LeaveAction extends ActionSupport {
 		}
 	}
 
+	private void notifyLeaveStatusChange(Leaves leave, String oldStatus, String newStatus, String actorId) {
+		if (oldStatus != null && oldStatus.equals(newStatus)) {
+			return;
+		}
+		if (!"1".equals(newStatus) && !"2".equals(newStatus)) {
+			return;
+		}
+		try {
+			String leaveTypeName = leave.getLeaveTypeId();
+			LeaveType leaveType = leavetypeDAO.findById(leave.getLeaveTypeId());
+			if (leaveType != null && leaveType.getLeaveTypeName() != null) {
+				leaveTypeName = leaveType.getLeaveTypeName();
+			}
+			String statusWord = "1".equals(newStatus) ? "Approve" : "Reject";
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
+			String startDate = leave.getStartDate() != null ? sdf.format(leave.getStartDate()) : "";
+			String endDate = leave.getEndDate() != null ? sdf.format(leave.getEndDate()) : "";
+
+			JSONObject messageJson = new JSONObject();
+			messageJson.put("leaveId", leave.getLeaveId());
+			messageJson.put("leaveTypeId", leave.getLeaveTypeId());
+			messageJson.put("leaveTypeName", leaveTypeName);
+			messageJson.put("status", statusWord);
+			messageJson.put("startDate", startDate);
+			messageJson.put("endDate", endDate);
+
+			notificationService.create(leave.getUserId(), null, messageJson.toString(), leave.getDescription(), actorId);
+		} catch (Exception e) {
+			log.error("Unable to create leave status notification", e);
+		}
+	}
+
 	public String Leave_inListStatusToCancel() {
 		try {
 			String leave_id = request.getParameter("leave_id");
@@ -2171,12 +2212,14 @@ public class LeaveAction extends ActionSupport {
 		    }
 		    
 			Leaves leave = leaveDAO.findByLeaveId(Integer.parseInt(leave_id));
+			String oldStatus = leave.getLeaveStatusId();
 			leave.setLeaveStatusId(status);
 			leave.setReason(reason);
 			leave.setTimeUpdate(DateUtil.getCurrentTime());
 			leave.setUserUpdate(onlineUser.getId());
 			leaveDAO.save(leave);
 			log.debug(leave);
+			notifyLeaveStatusChange(leave, oldStatus, status, onlineUser.getId());
 			return SUCCESS;
 		} catch (Exception e) {
 			e.printStackTrace();
