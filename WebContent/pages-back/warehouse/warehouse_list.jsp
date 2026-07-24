@@ -1,5 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 <!DOCTYPE html>
 <html>
 <head>
@@ -10,6 +12,16 @@
 <link
 	href="${pageContext.request.contextPath}/assets/css/style.bundle.css"
 	rel="stylesheet" />
+<style>
+.toggle-folder i {
+    display: inline-block;
+    transition: transform .2s ease;
+}
+
+.toggle-folder i.expanded {
+    transform: rotate(90deg);
+}
+</style>
 </head>
 <body>
 
@@ -100,279 +112,291 @@
 
 					<div class="card-body">
 						<div class="table-responsive">
-							<table class="table table-striped align-middle table-row-dashed"
+							<table class="table table-striped align-middle table-hover"
 								id="kt_datatable_zero_configuration">
 								<thead>
-									<tr class="text-muted text-uppercase">
-										<th>Name</th>
+									<tr class="text-gray-500 fs-7 fw-semibold text-uppercase">
+										<th class="ps-6">Name</th>
 										<th>Description</th>
-										<th class="text-end">Action</th>
+										<th>
+											<div
+												class="d-flex justify-content-end aling-items-center pe-4">
+												Action</div>
+										</th>
 									</tr>
 								</thead>
 
-								<tbody>
-
-									<!-- ================= ROOT ================= -->
-
-									<tr class="folder-row" data-id="1">
-										<td>
-											<div class="d-flex align-items-center">
-												<span class="toggle-folder me-2 cursor-pointer"> <i
-													class="ki-duotone ki-right fs-5"></i>
-												</span> <i class="ki-duotone ki-folder fs-3 me-2 text-warning"></i>
-												Cube ITF Warehouse
-											</div>
-										</td>
-										<td>Main Warehouse</td>
-										<td class="text-end">
-											<button class="btn btn-sm btn-light-success">+</button>
-											<button class="btn btn-sm btn-light-primary">Edit</button>
-											<button class="btn btn-sm btn-light-danger">Delete</button>
-										</td>
-									</tr>
-
-									<!-- ================= LEVEL 1 ================= -->
-
-									<tr class="folder-child d-none" data-id="2" data-parent="1">
-										<td>
-											<div class="d-flex align-items-center ps-8">
-												<span class="toggle-folder me-2 cursor-pointer"> <i
-													class="ki-duotone ki-right fs-5"></i>
-												</span> <i class="ki-duotone ki-folder fs-3 me-2 text-warning"></i>
-												อาคาร A
-											</div>
-										</td>
-										<td>Building A</td>
-										<td class="text-end">
-											<button class="btn btn-sm btn-light-success">+</button>
-											<button class="btn btn-sm btn-light-primary">Edit</button>
-											<button class="btn btn-sm btn-light-danger">Delete</button>
-										</td>
-									</tr>
-
-									<tr class="folder-child d-none" data-id="3" data-parent="1">
-										<td>
-											<div class="d-flex align-items-center ps-8">
-												<span class="toggle-folder me-2 cursor-pointer"> <i
-													class="ki-duotone ki-right fs-5"></i>
-												</span> <i class="ki-duotone ki-folder fs-3 me-2 text-warning"></i>
-												อาคาร B
-											</div>
-										</td>
-										<td>Building B</td>
-										<td class="text-end">
-											<button class="btn btn-sm btn-light-success">+</button>
-											<button class="btn btn-sm btn-light-primary">Edit</button>
-											<button class="btn btn-sm btn-light-danger">Delete</button>
-										</td>
-									</tr>
-
-									<!-- ================= LEVEL 2 ================= -->
-
-									<tr class="folder-child d-none" data-id="4" data-parent="2">
-										<td>
-											<div class="d-flex align-items-center ps-15">
-												<span class="toggle-folder me-2 cursor-pointer"> <i
-													class="ki-duotone ki-right fs-5"></i>
-												</span> <i class="ki-duotone ki-folder fs-3 me-2 text-warning"></i>
-												ชั้น 1
-											</div>
-										</td>
-										<td>Floor 1</td>
-										<td class="text-end">
-											<button class="btn btn-sm btn-light-success">+</button>
-											<button class="btn btn-sm btn-light-primary">Edit</button>
-											<button class="btn btn-sm btn-light-danger">Delete</button>
-										</td>
-									</tr>
-
-									<tr class="folder-child d-none" data-id="5" data-parent="2">
-										<td>
-											<div class="d-flex align-items-center ps-15">
-												<i class="ki-duotone ki-folder fs-3 me-2 text-warning"></i>
-												ชั้น 2
-											</div>
-										</td>
-										<td>Floor 2</td>
-										<td class="text-end">
-											<button class="btn btn-sm btn-light-success">+</button>
-											<button class="btn btn-sm btn-light-primary">Edit</button>
-											<button class="btn btn-sm btn-light-danger">Delete</button>
-										</td>
-									</tr>
-
-									<!-- ================= LEVEL 3 ================= -->
-
-									<tr class="folder-child d-none" data-id="6" data-parent="4">
-										<td>
-											<div class="d-flex align-items-center ps-20">
-												<span class="toggle-folder me-2 cursor-pointer"> <i
-													class="ki-duotone ki-right fs-5"></i>
-												</span> <i class="ki-duotone ki-folder fs-3 me-2 text-warning"></i>
-												ห้อง Server
-											</div>
-										</td>
-										<td>Server Room</td>
-										<td class="text-end">
-											<button class="btn btn-sm btn-light-success">+</button>
-											<button class="btn btn-sm btn-light-primary">Edit</button>
-											<button class="btn btn-sm btn-light-danger">Delete</button>
-										</td>
-									</tr>
-
-									<tr class="folder-child d-none" data-id="7" data-parent="4">
-										<td>
-											<div class="d-flex align-items-center ps-20">
-												<span class="toggle-folder me-2 cursor-pointer"> <i
-													class="ki-duotone ki-right fs-5"></i>
-												</span> <i class="ki-duotone ki-folder fs-3 me-2 text-warning"></i>
-												ห้อง IT
-											</div>
-										</td>
-										<td>IT Room</td>
-										<td class="text-end">
-											<button class="btn btn-sm btn-light-success">+</button>
-											<button class="btn btn-sm btn-light-primary">Edit</button>
-											<button class="btn btn-sm btn-light-danger">Delete</button>
-										</td>
-									</tr>
-
-									<!-- ================= LEVEL 4 ================= -->
-
-									<tr class="folder-child d-none" data-id="8" data-parent="6">
-										<td>
-											<div class="d-flex align-items-center ps-25">
-												<span class="toggle-folder me-2 cursor-pointer"> <i
-													class="ki-duotone ki-right fs-5"></i>
-												</span> <i class="ki-duotone ki-folder fs-3 me-2 text-warning"></i>
-												Rack A
-											</div>
-										</td>
-										<td>Rack A</td>
-										<td class="text-end">
-											<button class="btn btn-sm btn-light-success">+</button>
-											<button class="btn btn-sm btn-light-primary">Edit</button>
-											<button class="btn btn-sm btn-light-danger">Delete</button>
-										</td>
-									</tr>
-
-									<tr class="folder-child d-none" data-id="9" data-parent="6">
-										<td>
-											<div class="d-flex align-items-center ps-25">
-												<i class="ki-duotone ki-folder fs-3 me-2 text-warning"></i>
-												Rack B
-											</div>
-										</td>
-										<td>Rack B</td>
-										<td class="text-end">
-											<button class="btn btn-sm btn-light-success">+</button>
-											<button class="btn btn-sm btn-light-primary">Edit</button>
-											<button class="btn btn-sm btn-light-danger">Delete</button>
-										</td>
-									</tr>
-
-									<!-- ================= LEVEL 5 ================= -->
-
-									<tr class="folder-child d-none" data-id="10" data-parent="8">
-										<td>
-											<div class="d-flex align-items-center ps-30">
-												<i class="ki-duotone ki-folder fs-3 me-2 text-info"></i>
-												Shelf A-01
-											</div>
-										</td>
-										<td>Dell Servers</td>
-										<td class="text-end">
-											<button class="btn btn-sm btn-light-success">+</button>
-											<button class="btn btn-sm btn-light-primary">Edit</button>
-											<button class="btn btn-sm btn-light-danger">Delete</button>
-										</td>
-									</tr>
-
-									<tr class="folder-child d-none" data-id="11" data-parent="8">
-										<td>
-											<div class="d-flex align-items-center ps-30">
-												<i class="ki-duotone ki-folder fs-3 me-2 text-info"></i>
-												Shelf A-02
-											</div>
-										</td>
-										<td>HP Servers</td>
-										<td class="text-end">
-											<button class="btn btn-sm btn-light-success">+</button>
-											<button class="btn btn-sm btn-light-primary">Edit</button>
-											<button class="btn btn-sm btn-light-danger">Delete</button>
-										</td>
-									</tr>
-
-									<!-- ================= Another Branch ================= -->
-
-									<tr class="folder-child d-none" data-id="12" data-parent="3">
-										<td>
-											<div class="d-flex align-items-center ps-15">
-												<span class="toggle-folder me-2 cursor-pointer"> <i
-													class="ki-duotone ki-right fs-5"></i>
-												</span> <i class="ki-duotone ki-folder fs-3 me-2 text-warning"></i>
-												ห้องเอกสาร
-											</div>
-										</td>
-										<td>Document Room</td>
-										<td class="text-end">
-											<button class="btn btn-sm btn-light-success">+</button>
-											<button class="btn btn-sm btn-light-primary">Edit</button>
-											<button class="btn btn-sm btn-light-danger">Delete</button>
-										</td>
-									</tr>
-
-									<tr class="folder-child d-none" data-id="13" data-parent="12">
-										<td>
-											<div class="d-flex align-items-center ps-20">
-												<i class="ki-duotone ki-folder fs-3 me-2 text-info"></i>
-												ตู้เอกสาร 2026
-											</div>
-										</td>
-										<td>Archive</td>
-										<td class="text-end">
-											<button class="btn btn-sm btn-light-success">+</button>
-											<button class="btn btn-sm btn-light-primary">Edit</button>
-											<button class="btn btn-sm btn-light-danger">Delete</button>
-										</td>
-									</tr>
-
-								</tbody>
+								<tbody class="ps-3">
+                                    <!-- Rows will be dynamically generated here -->
 								</tbody>
 
 							</table>
 						</div>
-
 					</div>
-
-
 				</div>
-
-
-
 			</div>
-
 		</div>
-
 	</div>
-
-	<script
-		src="${pageContext.request.contextPath}/assets/plugins/global/plugins.bundle.js"></script>
-	<script
-		src="${pageContext.request.contextPath}/assets/js/scripts.bundle.js"></script>
 	<script>
-		$(document).on("click", ".toggle-folder", function() {
+		const warehouseList = [
+				<c:forEach items="${warehouseList}" var="wh" varStatus="s">
+					{
+					    id: ${wh.warehouseId},
+					    parentId: ${wh.parent},
+					    name: "${fn:escapeXml(wh.warehouseName)}",
+					    description: "${fn:escapeXml(wh.description)}"
+					}<c:if test="${!s.last}">,</c:if>
+				</c:forEach>
+			];
+		
+		const warehouseState = {
+			    tree: [],
+			    map: {},
+			    expanded: new Set()
+		};
+		
+		function initWarehouse(data){
 
-			const row = $(this).closest("tr");
-			console.log(row.data("id"));
-			const folderId = row.data("id");
+		    warehouseState.tree = buildTree(data);
 
-			const children = $(`tr[data-parent='\${folderId}']`);
+		    renderWarehouse();
 
-			children.toggleClass("d-none");
+		}
+		
+		function buildTree(data){
 
-			$(this).find("i").toggleClass("ki-right").toggleClass("ki-down");
+		    const map = {};
+		    const roots = [];
+
+		    data.forEach(item => {
+
+		        map[item.id] = {
+		            ...item,
+		            children:[]
+		        };
+
+		    });
+
+		    data.forEach(item=>{
+
+		        if(item.parentId===0){
+
+		            roots.push(map[item.id]);
+
+		        }else{
+
+		            map[item.parentId]?.children.push(map[item.id]);
+
+		        }
+
+		    });
+
+		    warehouseState.map = map;
+
+		    return roots;
+
+		}
+		
+		function renderWarehouse(){
+
+		    const tbody=$("#kt_datatable_zero_configuration tbody");
+
+		    tbody.html(renderNodes(warehouseState.tree));
+
+		}
+		
+		function renderNodes(nodes,level=0){
+
+		    let html="";
+
+		    nodes.forEach(node=>{
+
+		        html+=renderRow(node,level);
+
+		        if(node.children.length){
+
+		            html+=renderNodes(node.children,level+1);
+
+		        }
+
+		    });
+
+		    return html;
+		}
+		
+		function isVisible(node) {
+
+		    if (node.parentId === 0) {
+		        return true;
+		    }
+
+		    let current = node;
+
+		    while (current.parentId !== 0) {
+
+		        if (!warehouseState.expanded.has(current.parentId)) {
+		            return false;
+		        }
+
+		        current = warehouseState.map[current.parentId];
+		    }
+
+		    return true;
+		}
+		
+		function renderRow(node,level){
+
+		    const hasChildren=node.children.length>0;
+
+		    const visible = isVisible(node);
+
+		    const expanded=
+		        warehouseState.expanded.has(node.id);
+
+		    return `
+					<tr
+					    class="\${visible?'':'d-none'}"
+					    data-id="\${node.id}"
+					    data-parent="\${node.parentId}"
+					>
+			
+						<td>
+							<div class="d-flex align-items-center"
+							style="padding-left:\${level*40+12}px">
+								\${
+									hasChildren?
+									`
+										<span class="toggle-folder me-2 cursor-pointer">
+											<i class="ki-duotone ki-right fs-5 \${expanded?'expanded':''}"></i>
+										</span>
+									`
+									:
+										
+									`<span style="width:22px"></span>`
+									}
+							
+									<i class="ki-duotone ki-folder fs-2x me-5">
+										<span class="path1"></span>
+										<span class="path2"></span>
+									</i>
+									\${node.name}
+							</div>
+						</td>
+				
+						<td>\${node.description||"-"}</td>
+				
+						<td>
+		                	<div class="d-flex justify-content-end aling-items-center gap-2 pe-3">
+			                	<button class="btn btn-icon btn-light-success w-35px h-35px" data-bs-toggle="modal" data-bs-target="#createWarehouseModal">
+				                	<i class="ki-duotone ki-plus fs-2">
+				                	</i>
+			                	</button>
+			                    <button class="btn btn-icon btn-light-primary w-35px h-35px" data-bs-toggle="modal" data-bs-target="#createWarehouseModal">
+				                    <i class="ki-duotone ki-pencil fs-2">
+					                    <span class="path1"></span>
+					                    <span class="path2"></span>
+				                   	</i>
+			                	</button>
+			                    <button class="btn btn-icon btn-light-danger w-35px h-35px">
+				                    <i class="ki-duotone ki-trash fs-2">
+					                    <span class="path1"></span>
+					                    <span class="path2"></span>
+					                    <span class="path3"></span>
+					                    <span class="path4"></span>
+					                    <span class="path5"></span>
+				                   	</i>
+			                	</button>
+		                	</div>
+		                </td>
+					</tr>
+				`;
+		}
+		
+		function toggleChildren(parentId, show) {
+
+		    const children = $(`tr[data-parent='\${parentId}']`);
+		    console.log(parentId, children.length);
+
+		    children.each(function () {
+
+		        const row = $(this);
+		        const childId = row.data("id");
+
+		        if (show) {
+
+		            row
+		                .stop(true, true)
+		                .removeClass("d-none")
+		                .css({
+		                    display: "table-row",
+		                    opacity: 0
+		                })
+		                .animate({
+		                    opacity: 1
+		                }, 180);
+
+		            if (warehouseState.expanded.has(childId)) {
+		                toggleChildren(childId, true);
+		            }
+
+		        } else {
+
+		            toggleChildren(childId, false);
+
+		            row
+		                .stop(true, true)
+		                .animate({
+		                    opacity: 0
+		                }, 180, function () {
+
+		                    row
+		                        .addClass("d-none")
+		                        .css({
+		                            opacity: "",
+		                            display: ""
+		                        });
+
+		                });
+		        }
+
+		    });
+
+		}
+		
+		
+		
+		$(document).on("click", ".toggle-folder", function () {
+
+		    const row = $(this).closest("tr");
+		    const id = row.data("id");
+		    const icon = $(this).find("i");
+
+		    if (warehouseState.expanded.has(id)) {
+
+		        warehouseState.expanded.delete(id);
+
+		        icon.removeClass("expanded");
+
+		        toggleChildren(id, false);
+
+		    } else {
+
+		        warehouseState.expanded.add(id);
+
+		        icon.addClass("expanded");
+
+		        toggleChildren(id, true);
+
+		    }
+
 		});
+		
+		$(document).ready(function () {
+            initWarehouse(warehouseList);
+        });
+		
+		
+
 	</script>
 </body>
 </html>
