@@ -1771,6 +1771,21 @@
 			<result name="success" type="tiles">warehouseList</result>
 			<result name="error">/index.jsp</result>
 		</action>
+		
+		<action name="create_warehouse"
+			class="com.cubesofttech.action.WarehouseAction" method="save">
+			<result name="success" type="json"/>
+		</action>
+		
+		<action name="update_warehouse"
+			class="com.cubesofttech.action.WarehouseAction" method="update">
+			<result name="success" type="json"/>
+		</action>
+		
+		<action name="delete_warehouse"
+			class="com.cubesofttech.action.WarehouseAction" method="delete">
+			<result name="success" type="json"/>
+		</action>
 
 		<!-- ========================== Work Log ============================== -->
 		<action name="work_log"

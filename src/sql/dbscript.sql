@@ -494,6 +494,8 @@ INSERT INTO `product` (`product_id`, `sequence`, `product_no`, `product_name`, `
 (6, 4, 'Item-Shirt2026-Black-XL', 'XL', '2', '1', 'อก 38', 'cft.admin', NULL, NULL, NULL),
 (7, 5, 'Item-Shirt2026-Black-2XL', '2XL', '2', '1', 'อก 40', 'cft.admin', NULL, NULL, NULL);
 
+
+-- 27/07/2026 Best(Intern): create table warehouse
 CREATE TABLE warehouse (
     warehouse_id BIGINT AUTO_INCREMENT PRIMARY KEY,
     warehouse_name VARCHAR(64) NOT NULL,

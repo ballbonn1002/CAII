@@ -490,7 +490,7 @@
 	
 		<!-- Warehouse -->
 	<definition name="warehouseList" extends="baseLayout">
-		<put-attribute name="title" value="Warehouse List" />
+		<put-attribute name="title" value="Warehouse" />
 		<put-attribute name="body"
 			value="/pages-back/warehouse/warehouse_list.jsp" />
 	</definition>
