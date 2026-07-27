@@ -34,6 +34,12 @@ public class Product implements Serializable {
     @Column(name = "description")
     private String description;
 
+    @Column(name = "sub_product_active")
+    private String subProductActive;
+
+    @Column(name = "active")
+    private String active;
+
     @Column(name = "user_create")
     private String userCreate;
 
@@ -103,6 +109,22 @@ public class Product implements Serializable {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public String getSubProductActive() {
+        return subProductActive;
+    }
+
+    public void setSubProductActive(String subProductActive) {
+        this.subProductActive = subProductActive;
+    }
+
+    public String getActive() {
+        return active;
+    }
+
+    public void setActive(String active) {
+        this.active = active;
     }
 
     public String getUserCreate() {
