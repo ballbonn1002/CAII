@@ -511,5 +511,8 @@ COLLATE=utf8mb4_unicode_ci;
 
 -- PROD 24 JUL 2026
 
+-- 27/07/2026 Koy: add column 'sub_product_active' and 'active' in table product.
+ALTER TABLE `product` ADD `sub_product_active` VARCHAR(8) NOT NULL AFTER `description`, ADD `active` VARCHAR(8) NOT NULL AFTER `sub_product_active`;
+
 
 
