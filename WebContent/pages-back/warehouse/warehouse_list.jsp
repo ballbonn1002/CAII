@@ -58,9 +58,9 @@
 			<div id="kt_app_content_container"
 				class="app-container container-fluid">
 
-				<div class="card card-flush ">
+				<div class="card card-flush">
 
-					<div class="card-header">
+					<div class="card-header mt-2">
 						<div class="card-title">
 							<h3 class="fw-semibold text-gray-900">Cube Center</h3>
 						</div>
@@ -74,6 +74,7 @@
 
 					<div class="modal modal-lg fade" tabindex="-1"
 						id="createWarehouseModal">
+
 						<div class="modal-dialog modal-dialog-centered">
 							<div class="modal-content">
 								<div class="modal-header border-0">
@@ -279,7 +280,7 @@
 					    data-parent="\${node.parentId}"
 					>
 					    
-						<td>
+						<td style="min-width: 300px;">
 							<div class="d-flex align-items-center"
 							style="padding-left:\${level*40 + 12}px">
 								\${
