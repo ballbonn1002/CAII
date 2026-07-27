@@ -104,7 +104,66 @@ public class CatalogConsumablesDAOImpl implements CatalogConsumablesDAO {
 		session.flush();
 		// session.close();
 	}
-
 	
+	@Override
+	public List<Map<String, Object>> findConsAllWithProduct() throws Exception {
+		Session session = sessionFactory.getCurrentSession();
+	    List<Map<String, Object>> result = null;
+		try {
+			String sql = "SELECT cc.catalog_consumables_id, cc.product_id, cc.active, "
+					+ "    p.product_name AS catalog_consumables_name, cc.sub_product_active, "
+					+ "    GROUP_CONCAT( sp.product_name ORDER BY sp.sequence ASC SEPARATOR ',' ) "
+					+ "    AS sub_product_names "
+					+ "FROM catalog_consumables cc "
+					+ "INNER JOIN product p "
+					+ "    ON cc.product_id = p.product_id "
+					+ "LEFT JOIN product sp "
+					+ "    ON sp.parent_product_id = p.product_id "
+					+ "WHERE cc.parent_product_id = 0 "
+					+ "GROUP BY "
+					+ "    cc.catalog_consumables_id, "
+					+ "    cc.product_id, "
+					+ "    p.product_name, "
+					+ "    cc.active, "
+					+ "    cc.sub_product_active "
+					+ "ORDER BY p.sequence ASC;";
+			
+			SQLQuery query = session.createSQLQuery(sql);
+	        query.setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
 
+	        result = query.list();
+
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	    }
+
+	    return result;
+	}
+	
+	@Override
+	public List<Map<String, Object>> findAllWithProductByItemsType(String itemsType) throws Exception {
+
+	    Session session = sessionFactory.getCurrentSession();
+
+	    String sql =
+	            "SELECT cc.catalog_consumables_id, " +
+	            "       cc.product_id, " +
+	            "       cc.active, " +
+	            "       cc.sub_product_active, " +
+	            "       cc.items_type, " +
+	            "       p.product_name AS catalog_consumables_name " +
+	            "FROM catalog_consumables cc " +
+	            "INNER JOIN product p ON cc.product_id = p.product_id " +
+	            "WHERE cc.parent_product_id = 0 " +
+	            "AND cc.active = '1' " +
+	            "AND cc.items_type = :itemsType " +
+	            "ORDER BY p.sequence";
+
+	    SQLQuery query = session.createSQLQuery(sql);
+	    query.setParameter("itemsType", itemsType);
+	    query.setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
+
+	    return query.list();
+	}
+	
 }

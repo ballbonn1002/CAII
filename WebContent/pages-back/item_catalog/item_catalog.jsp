@@ -581,13 +581,13 @@
 	        	catalogEquipmentName: name,
 	        	eqptActive: isActive ? '1' : '0'
 	        };
-
+	        showPageLoader();
 	        $.ajax({
 	            url: CTX + '/catalog_equipment_save',
 	            method: 'POST',
 	            data: data,
 	            success: function (res) {
-                    Swal.fire({
+                    /* Swal.fire({
                         title: 'Success!',
                         text: 'Item saved successfully!',
                         icon: 'success',
@@ -596,9 +596,13 @@
                         showConfirmButton: false
                     }).then(() => {
                         window.location.reload();
-                    });
+                    }); */
+	            	hidePageLoader();
+	                toastr.success("Item saved successfully!", "Saved successfully!");
+	            	    
                 },
 	            error: function (xhr) {
+	            	hidePageLoader();
 	                console.error("HTTP", xhr.status, xhr.responseText);
 	                $checkbox.prop('checked', !isActive);
 	            }
@@ -610,7 +614,7 @@
 	        var $checkbox = $(this);
 	        var id = $checkbox.attr('id').replace('switch_', '');
 	        var isActive = $checkbox.is(':checked');
-
+	        showPageLoader();
 	        $.ajax({
 	            url: CTX + '/catalog_consumables_update',
 	            method: 'POST',
@@ -619,7 +623,9 @@
 	                consActive: isActive ? '1' : '0'
 	            },
 	            success: function (res) {
-                    Swal.fire({
+	            	hidePageLoader();
+	                toastr.success("Item saved successfully!", "Saved successfully!");
+                    /* Swal.fire({
                         title: 'Success!',
                         text: 'Item saved successfully!',
                         icon: 'success',
@@ -628,9 +634,10 @@
                         showConfirmButton: false
                     }).then(() => {
                         window.location.reload();
-                    });
+                    }); */
                 },
 	            error: function (xhr) {
+	            	hidePageLoader();
 	                console.error("HTTP", xhr.status, xhr.responseText);
 	                $checkbox.prop('checked', !isActive);
 	            }
@@ -641,7 +648,7 @@
 	        var $checkbox = $(this);
 	        var id = $checkbox.attr('id').replace('subproduct_', '');
 	        var isSubProductActive = $checkbox.is(':checked');
-
+	        showPageLoader();
 	        $.ajax({
 	            url: CTX + '/catalog_consumables_update',
 	            method: 'POST',
@@ -650,7 +657,9 @@
 	                subProductActive: isSubProductActive ? '1' : '0'
 	            },
 	            success: function (res) {
-                    Swal.fire({
+	            	hidePageLoader();
+	                toastr.success("Item saved successfully!", "Saved successfully!");
+                   /*  Swal.fire({
                         title: 'Success!',
                         text: 'Item saved successfully!',
                         icon: 'success',
@@ -659,9 +668,10 @@
                         showConfirmButton: false
                     }).then(() => {
                         window.location.reload();
-                    });
+                    }); */
                 },
 	            error: function (xhr) {
+	            	 hidePageLoader();
 	                console.error("HTTP", xhr.status, xhr.responseText);
 	                $checkbox.prop('checked', !isSubProductActive);
 	            }
@@ -690,5 +700,30 @@ function confirmDelete(url){
 	    });
 	    return false;
 	}
+	
+function showPageLoader() {
+    if ($("#page-loader").length) return; // กันซ้อน
+    var loadingEl = $("<div>")
+        .attr("id", "page-loader")
+        .css({
+            "position": "fixed",
+            "top": "0", "left": "0",
+            "width": "100%", "height": "100%",
+            "background-color": "rgba(0, 0, 0, 0.5)",
+            "z-index": "9999",
+            "display": "flex",
+            "align-items": "center",
+            "justify-content": "center",
+            "flex-direction": "column",
+            "backdrop-filter": "blur(2px)"
+        })
+        .html('<div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;"></div>'
+            +'<span class="text-white fs-4 fw-bold mt-3">Processing...</span>');
+    $("body").append(loadingEl);
+}
+
+function hidePageLoader() {
+    $("#page-loader").remove();
+}
 </script>
 </html>
