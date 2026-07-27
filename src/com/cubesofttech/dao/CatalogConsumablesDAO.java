@@ -20,6 +20,10 @@ public interface CatalogConsumablesDAO {
 
 	void update(CatalogConsumables CatalogConsumables) throws Exception;
 
+	List<Map<String, Object>> findConsAllWithProduct() throws Exception;
+
+	List<Map<String, Object>> findAllWithProductByItemsType(String itemsType) throws Exception;
+
 	
 
 }
