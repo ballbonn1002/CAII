@@ -20,6 +20,7 @@ import java.io.PrintWriter;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -134,67 +135,75 @@ public class ItemCatalogAction extends ActionSupport {
 	        }
 
 	        List<CatalogEquipment> catalogEquipmentList = catalogEquipmentDAO.findAll();
-	        List<CatalogConsumables> catalogConsumablesList = catalogConsumablesDAO.findAll();
-
-	        List<CatalogConsumables> parents = new ArrayList<>();
-	        for (CatalogConsumables cc : catalogConsumablesList) {
-	            if (cc.getParentProductId() != null && "0".equals(cc.getParentProductId())) {
-	                parents.add(cc);
+//	        List<CatalogConsumables> catalogConsumablesList = catalogConsumablesDAO.findAll();
+	        
+	        List<Map<String, Object>> catalogConsumablesList = catalogConsumablesDAO.findConsAllWithProduct();
+	        
+	        for (Map<String, Object> row : catalogConsumablesList) {
+	            String sub = (String) row.get("sub_product_names");
+	            if (sub != null) {
+	                row.put("subProductNames", Arrays.asList(sub.split(",")));
 	            }
 	        }
-
-	        Set<Integer> parentProductIds = new HashSet<>();
-	        for (CatalogConsumables cc : parents) {
-	            if (cc.getProductId() != null) {
-	                parentProductIds.add(cc.getProductId().intValue());
-	            }
-	        }
-
-	        List<Product> parentProducts = productDAO.findByIds(new ArrayList<>(parentProductIds));
-	        Map<Integer, Product> parentProductMap = new HashMap<>();
-	        for (Product p : parentProducts) {
-	            parentProductMap.put(p.getProductId(), p);
-	        }
-
-	        List<String> parentProductIdsAsString = parentProductIds.stream().map(String::valueOf).collect(Collectors.toList());
-	        List<Product> childProducts = productDAO.findByParentProductIds(parentProductIdsAsString);
-
-	        Map<Integer, List<Product>> childrenByParentId = new HashMap<>();
-	        for (Product child : childProducts) {
-	            if (child.getParentProductId() != null) {
-	                Integer parentKey = Integer.valueOf(child.getParentProductId());
-	                childrenByParentId.computeIfAbsent(parentKey, k -> new ArrayList<>()).add(child);
-	            }
-	        }
-
-	        List<Map<String, Object>> catalogConsRows = new ArrayList<>();
-	        for (CatalogConsumables parent : parents) {
-	            Map<String, Object> row = new HashMap<>();
-	            row.put("catalogConsumablesId", parent.getCatalogConsumablesId());
-	            row.put("active", parent.getActive());
-	            row.put("subProductActive", parent.getSubProductActive());
-
-	            Integer parentProductId = parent.getProductId() != null ? parent.getProductId().intValue() : null;
-
-	            Product parentProduct = parentProductId != null ? parentProductMap.get(parentProductId) : null;
-	            row.put("catalogConsumablesName", parentProduct != null ? parentProduct.getProductName() : null);
-
-	            List<String> subProductNames = new ArrayList<>();
-	            List<Product> children = parentProductId != null ? childrenByParentId.get(parentProductId) : null;
-	            if (children != null) {
-	                for (Product child : children) {
-	                    subProductNames.add(child.getProductName());
-	                }
-	            }
-	            row.put("subProductNames", subProductNames);
-
-	            catalogConsRows.add(row);
-	        }
+//	        List<CatalogConsumables> parents = new ArrayList<>();
+//	        for (CatalogConsumables cc : catalogConsumablesList) {
+//	            if (cc.getParentProductId() != null && "0".equals(cc.getParentProductId())) {
+//	                parents.add(cc);
+//	            }
+//	        }
+//
+//	        Set<Integer> parentProductIds = new HashSet<>();
+//	        for (CatalogConsumables cc : parents) {
+//	            if (cc.getProductId() != null) {
+//	                parentProductIds.add(cc.getProductId().intValue());
+//	            }
+//	        }
+//
+//	        List<Product> parentProducts = productDAO.findByIds(new ArrayList<>(parentProductIds));
+//	        Map<Integer, Product> parentProductMap = new HashMap<>();
+//	        for (Product p : parentProducts) {
+//	            parentProductMap.put(p.getProductId(), p);
+//	        }
+//
+//	        List<String> parentProductIdsAsString = parentProductIds.stream().map(String::valueOf).collect(Collectors.toList());
+//	        List<Product> childProducts = productDAO.findByParentProductIds(parentProductIdsAsString);
+//
+//	        Map<Integer, List<Product>> childrenByParentId = new HashMap<>();
+//	        for (Product child : childProducts) {
+//	            if (child.getParentProductId() != null) {
+//	                Integer parentKey = Integer.valueOf(child.getParentProductId());
+//	                childrenByParentId.computeIfAbsent(parentKey, k -> new ArrayList<>()).add(child);
+//	            }
+//	        }
+//
+//	        List<Map<String, Object>> catalogConsRows = new ArrayList<>();
+//	        for (CatalogConsumables parent : parents) {
+//	            Map<String, Object> row = new HashMap<>();
+//	            row.put("catalogConsumablesId", parent.getCatalogConsumablesId());
+//	            row.put("active", parent.getActive());
+//	            row.put("subProductActive", parent.getSubProductActive());
+//
+//	            Integer parentProductId = parent.getProductId() != null ? parent.getProductId().intValue() : null;
+//
+//	            Product parentProduct = parentProductId != null ? parentProductMap.get(parentProductId) : null;
+//	            row.put("catalogConsumablesName", parentProduct != null ? parentProduct.getProductName() : null);
+//
+//	            List<String> subProductNames = new ArrayList<>();
+//	            List<Product> children = parentProductId != null ? childrenByParentId.get(parentProductId) : null;
+//	            if (children != null) {
+//	                for (Product child : children) {
+//	                    subProductNames.add(child.getProductName());
+//	                }
+//	            }
+//	            row.put("subProductNames", subProductNames);
+//
+//	            catalogConsRows.add(row);
+//	        }
 
 //	        log.debug("catalogConsRows: " + catalogConsRows);
 
 	        request.setAttribute("catalogEqptList", catalogEquipmentList);
-	        request.setAttribute("catalogConsList", catalogConsRows);
+	        request.setAttribute("catalogConsList", catalogConsumablesList);
 
 	        return SUCCESS;
 

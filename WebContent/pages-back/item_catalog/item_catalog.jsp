@@ -252,7 +252,7 @@
 													<tr class="align-middle border-bottom-1">
 														<td class="px-3 py-4 text-gray-900 fs-6 fw-normal text-center row-number"></td>
 														<td class="px-3 py-4 text-gray-900 fs-6 fw-normal">
-															 ${itemConsList.catalogConsumablesName}
+															 ${itemConsList.catalog_consumables_name}
 														</td>
 														<td class="px-3 py-4 text-gray-900 fs-6 fw-normal">
 															<c:forEach items="${itemConsList.subProductNames}" var="subName">
@@ -263,14 +263,14 @@
 														<td class="px-3 py-4 text-gray-900 fs-6 fw-normal text-center">
 															<span class="form-check d-flex justify-content-center">
 														        <input class="form-check-input" type="checkbox"
-														               id="subproduct_${itemConsList.catalogConsumablesId}"
-														               <c:if test="${itemConsList.subProductActive == '1'}">checked</c:if> />
+														               id="subproduct_${itemConsList.catalog_consumables_id}"
+														               <c:if test="${itemConsList.sub_product_active == '1'}">checked</c:if> />
 														    </span>
 														</td>
 														
 														<td class="px-3 py-4 text-gray-900 fs-6 fw-normal text-center ">
 															<span class="form-check form-switch form-check-custom form-check-success form-check-solid d-flex justify-content-center ">
-														        <input class="form-check-input h-20px w-30px" type="checkbox" id="switch_${itemConsList.catalogConsumablesId}"
+														        <input class="form-check-input h-20px w-30px" type="checkbox" id="switch_${itemConsList.catalog_consumables_id}"
        																<c:if test="${itemConsList.active == '1'}">checked</c:if>/>
 														    </span>
 														</td>
