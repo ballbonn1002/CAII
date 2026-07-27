@@ -733,6 +733,7 @@ public class CompanyAction extends ActionSupport {
 			Map<String, Object> result = new HashMap<>();
 
 			result.put("industry_id", industry.getIndustryId());
+			result.put("industry_description", industry.getDescription());
 			result.put("industry_name", industry.getIndustryName());
 
 			response.setContentType("application/json");

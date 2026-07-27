@@ -226,7 +226,7 @@
 									<c:forEach items="${industryList}" var="industry">
 										<option value="${industry.industryId}"
 											${company.industryId == industry.industryId ? 'selected' : ''}>
-											${industry.industryName}</option>
+											${industry.industryName} ${not empty industry.description ? ' - ' : ''}${industry.description}</option>
 									</c:forEach>
 
 									<%-- <option value="Finance"
@@ -271,7 +271,7 @@
 															</i>
 														</div>
 													</div>
-													
+
 													<div class="col-md-12 create-desc-validate-container">
 														<label for="Description" class="form-label">
 															Description </label>
@@ -2504,9 +2504,11 @@
     		        success: function (res) {
 
     		            Swal.close();
+    		            
+    		            const text = res.industry_name + (res.industry_description ? " - " + res.industry_description : "");
 
-    		            const option = new Option(
-    		                res.industry_name,
+    		            const option = new Option( 
+    		                text,
     		                res.industry_id,
     		                true,
     		                true
