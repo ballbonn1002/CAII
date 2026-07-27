@@ -305,7 +305,7 @@
 						<td>\${node.description||"-"}</td>
 				
 						<td>
-		                	<div class="d-flex justify-content-end aling-items-center gap-2 pe-3">
+		                	<div class="d-flex justify-content-end aling-items-center gap-3 pe-3">
 			                	<button class="btn btn-icon btn-light-success w-35px h-35px js-create-btn" data-id="\${node.id}">
 				                	<i class="ki-duotone ki-plus fs-2">
 				                	</i>
@@ -689,6 +689,8 @@
 	
 		$(document).on("click", ".js-create-btn", function () {
             const parentId = $(this).data("id") || 0;
+            
+            $('#saveWarehouseBtn').prop('disabled', true);
             
             $("#createWarehouseForm input[name='parentId']").val(parentId);
             openWarehouseModal("create");
