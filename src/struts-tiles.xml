@@ -697,4 +697,12 @@
 			value="/pages-back/work_location/work_location_list.jsp" />
 	</definition>
 	
+	<!-- Line OA -->
+	<definition name="bind_account" extends="baseLayout">
+		<put-attribute name="title" value="Bind Account" />
+		<put-attribute name="body"
+			value="/pages-back/LineOA/BindAccountLineOA.jsp" />
+	</definition>
+	<!-- Line OA -->
+	
 </tiles-definitions>
