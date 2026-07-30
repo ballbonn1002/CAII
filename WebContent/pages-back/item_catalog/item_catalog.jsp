@@ -518,55 +518,52 @@
 	        	catalogEquipmentName: name,
 	        	eqptActive: $('#active_switch').is(':checked') ? '1' : '0'
 	        };
-
-	        /* var url = CTX + '/' + (id ? 'item_catalog_update' : 'item_catalog_add'); */
-
+	        
 	        function submitData() {
-	            $.ajax({
-	                url: CTX + '/catalog_equipment_save',
-	                method: 'POST',
-	                data: data,
-	                success: function (res) {
-	                    $('#modal_equipment').modal('hide');
-	                    Swal.fire({
-	                        title: 'Success!',
-	                        text: 'Item saved successfully!',
-	                        icon: 'success',
-	                        timer: 1000,
-	                        timerProgressBar: true,
-	                        showConfirmButton: false
-	                    }).then(() => {
-	                        window.location.reload();
-	                    });
-	                },
-	                error: function (xhr) {
-	                	console.error("HTTP", xhr.status, xhr.responseText);
-	                    Swal.fire('Error!', 'Failed to submit return request.', 'error');
-	                }
-	            });
-	        }
-
-	        if (id) {
-	            Swal.fire({
-	                title: "Are you sure?!",
-	                text: "Do you want to save the changes?",
-	                icon: "warning",
-	                showCancelButton: true,
-	                confirmButtonText: "Save",
-	                cancelButtonText: "Close",
-	                buttonsStyling: false,
-	                customClass: {
-	                    confirmButton: "btn btn-success",
-	                    cancelButton: "btn btn-secondary"
-	                }
-	            }).then((result) => {
-	                if (result.isConfirmed) {
-	                    submitData();
-	                }
-	            });
-	        } else {
-	            submitData();
-	        }
+			    showPageLoader();
+			    $.ajax({
+			        url: CTX + '/catalog_equipment_save',
+			        method: 'POST',
+			        data: data,
+			        success: function (res) {
+			            hidePageLoader();
+			            $('#modal_equipment').modal('hide');
+			            
+			            toastr.success("Item saved successfully!", "Saved successfully!");
+			            
+			            setTimeout(function() {
+			                window.location.reload();
+			            }, 800);
+			        },
+			        error: function (xhr) {
+			            hidePageLoader();
+			            console.error("HTTP", xhr.status, xhr.responseText);
+			            toastr.error("Failed to save item.", "Error!");
+			        }
+			    });
+			}
+			
+			if (id) {
+			    Swal.fire({
+			        title: "Are you sure?!",
+			        text: "Do you want to save the changes?",
+			        icon: "warning",
+			        showCancelButton: true,
+			        confirmButtonText: "Save",
+			        cancelButtonText: "Close",
+			        buttonsStyling: false,
+			        customClass: {
+			            confirmButton: "btn btn-success",
+			            cancelButton: "btn btn-secondary"
+			        }
+			    }).then((result) => {
+			        if (result.isConfirmed) {
+			            submitData();
+			        }
+			    });
+			} else {
+			    submitData();
+			}
 	    });
 	    
 	    
@@ -575,7 +572,8 @@
 	        var id = $checkbox.attr('id').replace('switch_', '');
 	        var isActive = $checkbox.is(':checked');
 	        var name = $checkbox.closest('tr').find('td').eq(1).text().trim();
-
+	        var $row = $checkbox.closest('tr');
+	        
 	        var data = {
 	        	catalogEquipmentId: id,
 	        	catalogEquipmentName: name,
@@ -598,6 +596,8 @@
                         window.location.reload();
                     }); */
 	            	hidePageLoader();
+                    $row.find('.btn-edit-equipment').data('active', isActive ? '1' : '0');
+                    $row.find('.btn-edit-equipment').attr('data-active', isActive ? '1' : '0');
 	                toastr.success("Item saved successfully!", "Saved successfully!");
 	            	    
                 },
@@ -618,13 +618,19 @@
 	        $.ajax({
 	            url: CTX + '/catalog_consumables_update',
 	            method: 'POST',
+	            dataType: 'json',
 	            data: {
 	                catalogConsumablesId: id,
 	                consActive: isActive ? '1' : '0'
 	            },
 	            success: function (res) {
 	            	hidePageLoader();
-	                toastr.success("Item saved successfully!", "Saved successfully!");
+	            	if (res && res.success) {
+	                    toastr.success(res.message || "Item saved successfully!", "Saved successfully!");
+	                } else {
+	                    toastr.error(res && res.message ? res.message : "Failed to save item.", "Error!");
+	                    $checkbox.prop('checked', !isActive);
+	                }
                     /* Swal.fire({
                         title: 'Success!',
                         text: 'Item saved successfully!',
@@ -638,7 +644,8 @@
                 },
 	            error: function (xhr) {
 	            	hidePageLoader();
-	                console.error("HTTP", xhr.status, xhr.responseText);
+	            	console.error("HTTP", xhr.status, xhr.responseText);
+	                toastr.error("Failed to save item.", "Error!");
 	                $checkbox.prop('checked', !isActive);
 	            }
 	        });
@@ -652,35 +659,31 @@
 	        $.ajax({
 	            url: CTX + '/catalog_consumables_update',
 	            method: 'POST',
+	            dataType: 'json',
 	            data: {
 	                catalogConsumablesId: id,
 	                subProductActive: isSubProductActive ? '1' : '0'
 	            },
 	            success: function (res) {
-	            	hidePageLoader();
-	                toastr.success("Item saved successfully!", "Saved successfully!");
-                   /*  Swal.fire({
-                        title: 'Success!',
-                        text: 'Item saved successfully!',
-                        icon: 'success',
-                        timer: 1000,
-                        timerProgressBar: true,
-                        showConfirmButton: false
-                    }).then(() => {
-                        window.location.reload();
-                    }); */
-                },
+	                hidePageLoader();
+	                if (res && res.success) {
+	                    toastr.success(res.message || "Item saved successfully!", "Saved successfully!");
+	                } else {
+	                    toastr.error(res && res.message ? res.message : "Failed to save item.", "Error!");
+	                    $checkbox.prop('checked', !isSubProductActive);
+	                }
+	            },
 	            error: function (xhr) {
-	            	 hidePageLoader();
+	                hidePageLoader();
 	                console.error("HTTP", xhr.status, xhr.responseText);
+	                toastr.error("Failed to save item.", "Error!");
 	                $checkbox.prop('checked', !isSubProductActive);
 	            }
 	        });
 	    });
 });	
 	
-function confirmDelete(url){
-		
+	function confirmDelete(url) {
 	    Swal.fire({
 	        title: "Are you sure?!",
 	        text: "Are you sure you want to delete this item?",
@@ -695,7 +698,26 @@ function confirmDelete(url){
 	        }
 	    }).then((result) => {
 	        if (result.isConfirmed) {
-	            window.location.href = url;
+	            showPageLoader();
+	            
+	            $.ajax({
+	                url: url,
+	                type: 'POST',
+	                success: function(res) {
+	                    hidePageLoader();
+	                    
+	                    toastr.success("Item deleted successfully!", "Deleted!");
+	                    
+	                    setTimeout(function() {
+	                        window.location.reload();
+	                    }, 800);
+	                },
+	                error: function(xhr) {
+	                    hidePageLoader();
+	                    console.error("HTTP", xhr.status, xhr.responseText);
+	                    toastr.error("Failed to delete item.", "Error!");
+	                }
+	            });
 	        }
 	    });
 	    return false;

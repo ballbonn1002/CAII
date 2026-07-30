@@ -1,14 +1,12 @@
 package com.cubesofttech.action;
 
 import com.cubesofttech.dao.FileUploadDAO;
-import com.cubesofttech.dao.CatalogConsumablesDAO;
 import com.cubesofttech.dao.CatalogEquipmentDAO;
 import com.cubesofttech.dao.JobsiteDAO;
 import com.cubesofttech.dao.ProductDAO;
 import com.cubesofttech.dao.UserDAO;
 import com.cubesofttech.dao.WorkLogDAO;
 import com.cubesofttech.model.ArticleType;
-import com.cubesofttech.model.CatalogConsumables;
 import com.cubesofttech.model.FileUpload;
 import com.cubesofttech.model.Product;
 import com.cubesofttech.model.CatalogEquipment;
@@ -57,9 +55,6 @@ public class ItemCatalogAction extends ActionSupport {
     private CatalogEquipmentDAO catalogEquipmentDAO;
     
     @Autowired
-    private CatalogConsumablesDAO catalogConsumablesDAO;
-    
-    @Autowired
 	private FileUploadDAO fileuploadDAO;
     
     @Autowired
@@ -70,7 +65,7 @@ public class ItemCatalogAction extends ActionSupport {
     private Long catalogEquipmentId;
     private String subProductActive;
     private String consActive;
-    private Long catalogConsumablesId;
+    private Integer catalogConsumablesId;
 	
 	public CatalogEquipmentDAO getCatalogEquipmentDAO() {
 		return catalogEquipmentDAO;
@@ -120,14 +115,20 @@ public class ItemCatalogAction extends ActionSupport {
 		this.consActive = consActive;
 	}
 
-	public Long getCatalogConsumablesId() {
+	public Integer getCatalogConsumablesId() {
 		return catalogConsumablesId;
 	}
 
-	public void setCatalogConsumablesId(Long catalogConsumablesId) {
+	public void setCatalogConsumablesId(Integer catalogConsumablesId) {
 		this.catalogConsumablesId = catalogConsumablesId;
 	}
 
+	private boolean success;
+	private String message;
+
+	public boolean isSuccess() { return success; }
+	public String getMessage() { return message; }
+	
 	public String item_catalog() {
 	    try {
 	        if (onlineUser == null) {
@@ -135,9 +136,8 @@ public class ItemCatalogAction extends ActionSupport {
 	        }
 
 	        List<CatalogEquipment> catalogEquipmentList = catalogEquipmentDAO.findAll();
-//	        List<CatalogConsumables> catalogConsumablesList = catalogConsumablesDAO.findAll();
 	        
-	        List<Map<String, Object>> catalogConsumablesList = catalogConsumablesDAO.findConsAllWithProduct();
+	        List<Map<String, Object>> catalogConsumablesList = productDAO.findCatalogItemsWithSubProducts();
 	        
 	        for (Map<String, Object> row : catalogConsumablesList) {
 	            String sub = (String) row.get("sub_product_names");
@@ -145,62 +145,6 @@ public class ItemCatalogAction extends ActionSupport {
 	                row.put("subProductNames", Arrays.asList(sub.split(",")));
 	            }
 	        }
-//	        List<CatalogConsumables> parents = new ArrayList<>();
-//	        for (CatalogConsumables cc : catalogConsumablesList) {
-//	            if (cc.getParentProductId() != null && "0".equals(cc.getParentProductId())) {
-//	                parents.add(cc);
-//	            }
-//	        }
-//
-//	        Set<Integer> parentProductIds = new HashSet<>();
-//	        for (CatalogConsumables cc : parents) {
-//	            if (cc.getProductId() != null) {
-//	                parentProductIds.add(cc.getProductId().intValue());
-//	            }
-//	        }
-//
-//	        List<Product> parentProducts = productDAO.findByIds(new ArrayList<>(parentProductIds));
-//	        Map<Integer, Product> parentProductMap = new HashMap<>();
-//	        for (Product p : parentProducts) {
-//	            parentProductMap.put(p.getProductId(), p);
-//	        }
-//
-//	        List<String> parentProductIdsAsString = parentProductIds.stream().map(String::valueOf).collect(Collectors.toList());
-//	        List<Product> childProducts = productDAO.findByParentProductIds(parentProductIdsAsString);
-//
-//	        Map<Integer, List<Product>> childrenByParentId = new HashMap<>();
-//	        for (Product child : childProducts) {
-//	            if (child.getParentProductId() != null) {
-//	                Integer parentKey = Integer.valueOf(child.getParentProductId());
-//	                childrenByParentId.computeIfAbsent(parentKey, k -> new ArrayList<>()).add(child);
-//	            }
-//	        }
-//
-//	        List<Map<String, Object>> catalogConsRows = new ArrayList<>();
-//	        for (CatalogConsumables parent : parents) {
-//	            Map<String, Object> row = new HashMap<>();
-//	            row.put("catalogConsumablesId", parent.getCatalogConsumablesId());
-//	            row.put("active", parent.getActive());
-//	            row.put("subProductActive", parent.getSubProductActive());
-//
-//	            Integer parentProductId = parent.getProductId() != null ? parent.getProductId().intValue() : null;
-//
-//	            Product parentProduct = parentProductId != null ? parentProductMap.get(parentProductId) : null;
-//	            row.put("catalogConsumablesName", parentProduct != null ? parentProduct.getProductName() : null);
-//
-//	            List<String> subProductNames = new ArrayList<>();
-//	            List<Product> children = parentProductId != null ? childrenByParentId.get(parentProductId) : null;
-//	            if (children != null) {
-//	                for (Product child : children) {
-//	                    subProductNames.add(child.getProductName());
-//	                }
-//	            }
-//	            row.put("subProductNames", subProductNames);
-//
-//	            catalogConsRows.add(row);
-//	        }
-
-//	        log.debug("catalogConsRows: " + catalogConsRows);
 
 	        request.setAttribute("catalogEqptList", catalogEquipmentList);
 	        request.setAttribute("catalogConsList", catalogConsumablesList);
@@ -265,27 +209,32 @@ public class ItemCatalogAction extends ActionSupport {
             if (onlineUser == null) {
                 return ERROR;
             }
-
             if (catalogConsumablesId == null) {
                 return ERROR;
             }
 
-            CatalogConsumables catalogConsumables = catalogConsumablesDAO.findById(catalogConsumablesId);
+            Product catalogConsumables = productDAO.findById(catalogConsumablesId);
             if (catalogConsumables == null) {
                 return ERROR;
             }
 
             if (consActive != null) {
-                catalogConsumables.setActive("1".equals(consActive) ? "1" : "0");
+                String activeVal = "1".equals(consActive) ? "1" : "0";
+                catalogConsumables.setActive(activeVal);
+                productDAO.updateActiveByParentId(catalogConsumablesId, activeVal, onlineUser.getId());
             }
             if (subProductActive != null) {
-                catalogConsumables.setSubProductActive("1".equals(subProductActive) ? "1" : "0");
+                String subActiveVal = "1".equals(subProductActive) ? "1" : "0";
+                catalogConsumables.setSubProductActive(subActiveVal);
+                productDAO.updateSubProductActiveByParentId(catalogConsumablesId, subActiveVal, onlineUser.getId());
             }
 
             catalogConsumables.setUserUpdate(onlineUser.getId());
             catalogConsumables.setTimeUpdate(DateUtil.getCurrentTime());
-            catalogConsumablesDAO.update(catalogConsumables);
-
+            productDAO.update(catalogConsumables);
+            
+            success = true;
+            message = "Item saved successfully!";
             return SUCCESS;
 
         } catch (Exception e) {

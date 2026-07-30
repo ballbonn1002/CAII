@@ -2089,16 +2089,38 @@
 			<result name="error">/index.jsp</result>
 		</action>
 		
-		<action name="purchase_order_detail"
-			class="com.cubesofttech.action.PurchaseOrderAction" method="purchase_order_detail">
-			<result name="success" type="tiles">purchaseOrderDetail</result>
-			<result name="error">/index.jsp</result>
-		</action>
-		
 		<action name="purchase_order_add"
 			class="com.cubesofttech.action.PurchaseOrderAction" method="purchase_order_add">
 			<result name="success" type="tiles">purchaseOrderAdd</result>
 			<result name="error">/index.jsp</result>
+		</action>
+		
+		<action name="purchase_order_edit"
+			class="com.cubesofttech.action.PurchaseOrderAction" method="purchase_order_edit">
+			<result name="success" type="tiles">purchaseOrderDetail</result>
+			<result name="error">/index.jsp</result>
+		</action>
+		
+		<action name="get_items_catalog"
+			class="com.cubesofttech.action.PurchaseOrderAction" method="getItemsCatalog">
+		</action>
+		
+		<action name="get_company_profile"
+			class="com.cubesofttech.action.PurchaseOrderAction" method="getCompanyProfile">
+		</action>
+		
+		<action name="get_company_location"
+			class="com.cubesofttech.action.PurchaseOrderAction" method="getCompanyLocation">
+		</action>
+		
+		<action name="get_company_contact"
+			class="com.cubesofttech.action.PurchaseOrderAction" method="getCompanyContact">
+		</action>
+		
+		<action name="save_po"
+		    class="com.cubesofttech.action.PurchaseOrderAction" method="save_po">
+		    <result name="success" type="tiles">purchaseOrderList</result>
+		    <result name="error">/index.jsp</result>
 		</action>
 		
 		<!-- Item Catalog -->
@@ -2122,7 +2144,7 @@
 		
 		<action name="catalog_consumables_update"
 		    class="com.cubesofttech.action.ItemCatalogAction" method="catalog_consumables_update">
-		    <result name="success" type="tiles">itemCatalog</result>
+		    <result name="success" type="json"/>
 		    <result name="error">/index.jsp</result>
 		</action>
 

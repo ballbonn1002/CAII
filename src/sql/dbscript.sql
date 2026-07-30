@@ -514,5 +514,9 @@ COLLATE=utf8mb4_unicode_ci;
 -- 27/07/2026 Koy: add column 'sub_product_active' and 'active' in table product.
 ALTER TABLE `product` ADD `sub_product_active` VARCHAR(8) NOT NULL AFTER `description`, ADD `active` VARCHAR(8) NOT NULL AFTER `sub_product_active`;
 
+-- 30/07/2026 June: Delete Table Catalog_consumables.
+DROP TABLE catalog_consumables;
 
+-- 30/07/2026 June: Update Product Table Information.
+UPDATE product SET active ='0', sub_product_active ='0' WHERE user_create='cft.admin';
 
