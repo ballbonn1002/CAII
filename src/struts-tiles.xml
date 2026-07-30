@@ -796,4 +796,12 @@
 			value="/pages-back/item_catalog/item_catalog.jsp" />
 	</definition>
 	
+	<!-- Line OA -->
+	<definition name="bind_account" extends="baseLayout">
+		<put-attribute name="title" value="Bind Account" />
+		<put-attribute name="body"
+			value="/pages-back/LineOA/BindAccountLineOA.jsp" />
+	</definition>
+	<!-- Line OA -->
+	
 </tiles-definitions>

@@ -9,11 +9,13 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.opensymphony.xwork2.ActionSupport;
 
+import java.io.File;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 import org.apache.log4j.Logger;
 import org.apache.struts2.ServletActionContext;
@@ -209,6 +211,57 @@ public class LineLoginAction extends ActionSupport {
             
 
             return SUCCESS;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ERROR;
+        }
+    }
+    
+    public String liffLogin() {
+    	try {
+            String lineId = request.getParameter("lineUserId");
+            String typeAction = request.getParameter("typeAction");
+            log.debug(lineId);
+            log.debug(typeAction);
+            HttpSession session = request.getSession();
+            User user = userDAO.findByLine(lineId);
+            
+            if(user != null) {
+            	String imgPath = null;
+    			if (user.getPath() != null && user.getPath().contains("_")) {
+    			    try {
+    			        String originalFileName = new File(user.getPath()).getName();
+    			        String fileIdStr = originalFileName.substring(0, originalFileName.indexOf("_"));
+    			        int fileId = Integer.parseInt(fileIdStr);
+    			        String typeFile = originalFileName.substring(originalFileName.lastIndexOf("."));
+    			        imgPath = "/upload/user/user_" + fileId + typeFile;
+
+//    			        String server = request.getServletContext().getRealPath("/");
+//    			        File f = new File(server + imgPath);
+//    			        if (!f.exists()) {
+//    			            imgPath = null;
+//    			        }
+    			    } catch (Exception e) {
+    			        imgPath = null;
+    			    }
+    			}
+    			session.setAttribute("userImgPath", imgPath);
+                session.setAttribute("user", user);
+    			session.setAttribute("onlineUser", user);
+    			
+    			switch (typeAction) {
+    		    case "1":
+    		    	return "returnCheck";
+    		    case "2":
+    		    	return "returnCheckList";
+    		    case "3":
+    		    	return "returnLeave";
+    		    default:
+    		    	return ERROR;
+    			}
+            } else {
+            	return ERROR;
+            }
         } catch (Exception e) {
             e.printStackTrace();
             return ERROR;

@@ -2027,7 +2027,19 @@
 			<result name="error">/index.jsp</result>
 		</action>
 
-		<!-- POST /webhook/LineOA -->
+		<!-- POST /webhook/LineOA/LineLiff -->
+		<action name="checkAccount" class="com.cubesofttech.action.LineLoginAction" method="">
+			<result name="success" type="tiles">bind_account</result>
+			<result name="error">/index.jsp</result>
+		</action>
+		
+		<action name="lineLiffLogin" class="com.cubesofttech.action.LineLoginAction" method="liffLogin">
+			<result name="returnCheck" type="redirect">check_in_out</result>
+			<result name="returnCheckList" type="redirect">Calendar_Checklist</result>
+			<result name="returnLeave" type="redirect">new_myleave_list</result>
+			<result name="error">/index.jsp</result>
+		</action>
+		
 		<action name="lineLogin" class="com.cubesofttech.action.LineLoginAction" method="login">
             <result name="redirect" type="redirect">${authUrl}</result>
         </action>
