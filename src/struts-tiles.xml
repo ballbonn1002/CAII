@@ -36,6 +36,13 @@
 			value="/pages-back/dashboard/demo_dashboard.jsp" />
 	</definition>
 
+	<!-- DEV PAGES-->
+	<definition name="devPages" extends="baseLayout">
+		<put-attribute name="title" value="Development Pages" />
+		<put-attribute name="body"
+			value="/pages-back/_layout/dev_pages.jsp" />
+	</definition>
+
 	<!-- TABLE -->
 	<definition name="demoTable" extends="baseLayout">
 		<put-attribute name="title" value="Demo Table" />
@@ -480,6 +487,14 @@
 		<put-attribute name="body"
 			value="/pages-back/company/company_add.jsp" />
 	</definition>
+	
+		<!-- Warehouse -->
+	<definition name="warehouseList" extends="baseLayout">
+		<put-attribute name="title" value="Warehouse" />
+		<put-attribute name="body"
+			value="/pages-back/warehouse/warehouse_list.jsp" />
+	</definition>
+
 
 	<!-- Work Log -->
 	<definition name="workLog" extends="baseLayout">
@@ -626,6 +641,25 @@
 		<put-attribute name="body"
 			value="/pages-back/travel_approve/travel_approve_preview.jsp" />
 	</definition>
+	
+	<!-- PR - Purchase Requisition -->
+	<definition name="purchase_requisition" extends="baseLayout">
+		<put-attribute name="title" value="Purchase Requisition" />
+		<put-attribute name="body"
+			value="/pages-back/purchase_requisition/purchase_requisition.jsp" />
+	</definition>
+	
+	<definition name="purchase_requisition_create" extends="baseLayout">
+		<put-attribute name="title" value="Purchase Requisition Create" />
+		<put-attribute name="body"
+			value="/pages-back/purchase_requisition/purchase_requisition_create.jsp" />
+	</definition>
+	
+	<definition name="purchase_requisition_edit" extends="baseLayout">
+		<put-attribute name="title" value="Purchase Requisition Edit" />
+		<put-attribute name="body"
+			value="/pages-back/purchase_requisition/purchase_requisition_edit.jsp" />
+	</definition>
 
 	<!-- Careers -->
 	<definition name="careers_list" extends="baseLayout">
@@ -695,6 +729,71 @@
 		<put-attribute name="title" value="Work Location" />
 		<put-attribute name="body"
 			value="/pages-back/work_location/work_location_list.jsp" />
+	</definition>
+
+	<!-- Stock -->
+	<definition name="stockConsList" extends="baseLayout">
+		<put-attribute name="title" value="Stock - Consumables" />
+		<put-attribute name="body"
+			value="/pages-back/stock/stock_cons_list.jsp" />
+	</definition>
+
+	<definition name="stockConsAdd" extends="baseLayout">
+		<put-attribute name="title" value="Stock - Consumables" />
+		<put-attribute name="body"
+			value="/pages-back/stock/stock_cons_add.jsp" />
+	</definition>
+
+	<definition name="stockConsEdit" extends="baseLayout">
+		<put-attribute name="title" value="Stock - Consumables" />
+		<put-attribute name="body"
+			value="/pages-back/stock/stock_cons_edit.jsp" />
+	</definition>
+
+	<definition name="stockConsBalance" extends="baseLayout">
+		<put-attribute name="title" value="Stock - Consumables" />
+		<put-attribute name="body"
+			value="/pages-back/stock/stock_cons_balance.jsp" />
+	</definition>
+
+	<definition name="stockOffsList" extends="baseLayout">
+		<put-attribute name="title" value="Stock - Office Supplies" />
+		<put-attribute name="body"
+			value="/pages-back/stock/stock_offs_list.jsp" />
+	</definition>
+
+	<!-- Product -->
+	<definition name="productList" extends="baseLayout">
+		<put-attribute name="title" value="Product List" />
+		<put-attribute name="body"
+			value="/pages-back/product/product_list.jsp" />
+	</definition>
+
+	
+	<!-- PO - Purchase Order -->
+	<definition name="purchaseOrderList" extends="baseLayout">
+		<put-attribute name="title" value="Purchase Order List" />
+		<put-attribute name="body"
+			value="/pages-back/purchase_order/purchase_order_list.jsp" />
+	</definition>
+	
+	<definition name="purchaseOrderDetail" extends="baseLayout">
+		<put-attribute name="title" value="Purchase Order Detail" />
+		<put-attribute name="body"
+			value="/pages-back/purchase_order/purchase_order_detail.jsp" />
+	</definition>
+	
+	<definition name="purchaseOrderAdd" extends="baseLayout">
+		<put-attribute name="title" value="Purchase Order Add" />
+		<put-attribute name="body"
+			value="/pages-back/purchase_order/purchase_order_create.jsp" />
+	</definition>
+	
+	<!-- Item Catalog -->
+	<definition name="itemCatalog" extends="baseLayout">
+		<put-attribute name="title" value="Item Catalog" />
+		<put-attribute name="body"
+			value="/pages-back/item_catalog/item_catalog.jsp" />
 	</definition>
 	
 	<!-- Line OA -->

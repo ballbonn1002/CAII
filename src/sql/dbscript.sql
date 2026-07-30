@@ -377,28 +377,14 @@ ALTER TABLE `user` ADD COLUMN uid_line_oa VARCHAR(64) DEFAULT NULL AFTER line_id
 CREATE TABLE company (
     company_id BIGINT(32) NOT NULL PRIMARY KEY AUTO_INCREMENT,
     file_id VARCHAR(32),
-
-    company_code VARCHAR(32) NOT NULL,
+    industry_id VARCHAR(32) NOT NULL,
+    company_code VARCHAR(32) NOT NULL UNIQUE,
     tax_number VARCHAR(13) NOT NULL,
-
     company_en VARCHAR(128) NOT NULL,
     company_th VARCHAR(128) NOT NULL,
-
-    industry VARCHAR(1) NOT NULL,
-
-    website VARCHAR(1024),
-
     is_active VARCHAR(1) DEFAULT true,
-    pck_status VARCHAR(1),
-
-    phone VARCHAR(32) ,
-    email VARCHAR(50) ,
-
-    description VARCHAR(1024),
-
     user_create VARCHAR(32),
     user_update VARCHAR(32),
-
     time_create TIMESTAMP NULL,
     time_update TIMESTAMP NULL
 ) ENGINE=InnoDB
@@ -407,26 +393,12 @@ COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE company_address (
     company_address_id BIGINT NOT NULL PRIMARY KEY AUTO_INCREMENT,
-
     company_id VARCHAR(32) NOT NULL,
-
     address_name VARCHAR(64) NOT NULL,
     address VARCHAR(1024) NOT NULL,
-
-    province VARCHAR(32),
-    district VARCHAR(32),
-    subdistrict VARCHAR(32),
-
-    zip_code VARCHAR(5),
-
-    location VARCHAR(200),
     google_map VARCHAR(1024),
-
-    description VARCHAR(1024),
-
     user_create VARCHAR(32),
     user_update VARCHAR(32),
-
     time_create TIMESTAMP NULL,
     time_update TIMESTAMP NULL
 ) ENGINE=InnoDB
@@ -435,43 +407,112 @@ COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE company_contact (
     company_contact_id BIGINT NOT NULL PRIMARY KEY AUTO_INCREMENT,
-
     company_id VARCHAR(32),
     file_id VARCHAR(32),
-    social_id VARCHAR(32),
-
     company_address_id VARCHAR(32),
-
     title_name_en VARCHAR(32) NOT NULL,
     contact_name VARCHAR(256) NOT NULL,
-    nickname VARCHAR(32),
-
     title_name_th VARCHAR(32) NOT NULL,
     contact_name_th VARCHAR(256) NOT NULL,
-    nickname_th VARCHAR(32),
-
     position VARCHAR(64) NOT NULL,
-
-    company_en VARCHAR(128),
-
     phone VARCHAR(64) NOT NULL,
     email VARCHAR(256) NOT NULL,
-    password VARCHAR(32),
-
-    admin VARCHAR(1),
-
-    address_location VARCHAR(1024),
-
     is_active VARCHAR(1) ,
-
-    description VARCHAR(1024),
-
     user_create VARCHAR(32),
     user_update VARCHAR(32),
-
     time_create TIMESTAMP NULL,
     time_update TIMESTAMP NULL
 ) ENGINE=InnoDB
 DEFAULT CHARSET=utf8mb4
 COLLATE=utf8mb4_unicode_ci;
-desc company_contact;
+
+-- 17/07/2026 June: CREATE TABLE catalog_equipment and catalog_consumables
+CREATE TABLE catalog_equipment (
+	catalog_equipment_id BIGINT(11) NOT NULL, 
+	equipment_name 		VARCHAR(64)  NOT NULL,
+	items_type			VARCHAR(32)  NULL,
+    active              VARCHAR(8)   NOT NULL,
+    user_create         VARCHAR(32)  NULL,
+    user_update         VARCHAR(32)  NULL,
+    time_create         TIMESTAMP    NULL,
+    time_update         TIMESTAMP    NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+INSERT INTO `catalog_equipment` (`catalog_equipment_id`, `equipment_name`, `items_type`, `active`, `user_create`, `user_update`, `time_create`, `time_update`) VALUES
+(1, 'Adapter Lan', '1', '1', 'cft.admin', 'cft.admin', '2026-07-21 06:23:09', '2026-07-21 06:23:09'),
+(2, 'Computer', '1', '0', 'cft.admin', 'cft.admin', '2026-07-21 06:23:52', '2026-07-21 06:23:56');
+
+CREATE TABLE catalog_consumables (
+	catalog_consumables_id BIGINT(11) NOT NULL, 
+	product_id 			BIGINT(11)  NOT NULL,
+	parent_product_id 	VARCHAR(32) NOT NULL,
+	items_type			VARCHAR(32) NULL,
+	sub_product_active 	VARCHAR(8)  NOT NULL,
+    active              VARCHAR(8)   NOT NULL,
+    user_create         VARCHAR(32)  NULL,
+    user_update         VARCHAR(32)  NULL,
+    time_create         TIMESTAMP    NULL,
+    time_update         TIMESTAMP    NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+INSERT INTO `catalog_consumables` (`catalog_consumables_id`, `product_id`, `parent_product_id`, `items_type`, `sub_product_active`, `active`, `user_create`, `user_update`, `time_create`, `time_update`) VALUES
+(1, 1, 0, '2', '1', '1', 'cft.admin', 'cft.admin', '2026-07-21 08:17:30', '2026-07-23 03:01:01'),
+(2, 2, 0, '2', '0', '0', 'cft.admin', 'cft.admin', '2026-07-21 08:17:30', '2026-07-21 08:17:30');
+
+-- 22/07/2026 Best(Intern): CREATE TABLE company_industry 
+CREATE TABLE company_industry (
+    industry_id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    industry_name VARCHAR(50) NOT NULL UNIQUE,
+    description VARCHAR(1024),
+    user_create VARCHAR(32),
+    user_update VARCHAR(32),
+    time_create TIMESTAMP NULL,
+    time_update TIMESTAMP NULL 
+) ENGINE=InnoDB
+DEFAULT CHARSET=utf8mb4
+COLLATE=utf8mb4_unicode_ci;
+
+-- 21/07/2026 Koy: create table 'product' and insert mockup data
+CREATE TABLE `product` (
+  `product_id` int(11) NOT NULL,
+  `sequence` int(11) DEFAULT NULL,
+  `product_no` varchar(256) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `product_name` varchar(256) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `product_type` varchar(32) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `parent_product_id` varchar(32) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `description` text COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `user_create` varchar(32) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `user_update` varchar(32) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `time_create` timestamp NULL DEFAULT NULL,
+  `time_update` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+INSERT INTO `product` (`product_id`, `sequence`, `product_no`, `product_name`, `product_type`, `parent_product_id`, `description`, `user_create`, `user_update`, `time_create`, `time_update`) VALUES
+(1, 1, 'Item-Shirt2026-Black', 'เสื้อบริษัท 2026 (สีดำ)', '2', '0', 'เสื้อบริษัท 2026 (สีดำ)', 'cft.admin', NULL, NULL, NULL),
+(2, 2, 'Item-Trash', 'ถุงขยะ', '2', '0', 'ถุงขยะ', 'cft.admin', NULL, NULL, NULL),
+(3, 1, 'Item-Shirt2026-Black-S', 'S', '2', '1', 'อก 32', 'cft.admin', NULL, NULL, NULL),
+(4, 3, 'Item-Shirt2026-Black-L', 'L', '2', '1', 'อก 36', 'cft.admin', NULL, NULL, NULL),
+(5, 2, 'Item-Shirt2026-Black-M', 'M', '2', '1', 'อก 34', 'cft.admin', NULL, NULL, NULL),
+(6, 4, 'Item-Shirt2026-Black-XL', 'XL', '2', '1', 'อก 38', 'cft.admin', NULL, NULL, NULL),
+(7, 5, 'Item-Shirt2026-Black-2XL', '2XL', '2', '1', 'อก 40', 'cft.admin', NULL, NULL, NULL);
+
+
+-- 27/07/2026 Best(Intern): create table warehouse
+CREATE TABLE warehouse (
+    warehouse_id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    warehouse_name VARCHAR(64) NOT NULL,
+    parent BIGINT NOT NULL DEFAULT 0,
+    description VARCHAR(1024),
+    user_create VARCHAR(32),
+    user_update VARCHAR(32),
+    time_create TIMESTAMP NULL DEFAULT NULL,
+    time_update TIMESTAMP NULL DEFAULT NULL
+) ENGINE=InnoDB
+DEFAULT CHARSET=utf8mb4
+COLLATE=utf8mb4_unicode_ci;
+
+-- PROD 24 JUL 2026
+
+-- 27/07/2026 Koy: add column 'sub_product_active' and 'active' in table product.
+ALTER TABLE `product` ADD `sub_product_active` VARCHAR(8) NOT NULL AFTER `description`, ADD `active` VARCHAR(8) NOT NULL AFTER `sub_product_active`;
+
+
+

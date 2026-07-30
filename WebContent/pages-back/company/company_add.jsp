@@ -1,5 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <!DOCTYPE html>
 <html>
 <head>
@@ -70,8 +71,8 @@
 							<div
 								class="form-check form-switch form-check-custom form-check-solid form-check-success">
 								<label class="form-check-label me-3 fw-semibold"> Active
-								</label> <input class="form-check-input" type="checkbox" checked
-									form="companyForm" name="isActive" value="1" />
+								</label> <input class="form-check-input h-20px w-30px" type="checkbox"
+									checked form="companyForm" name="isActive" value="1" />
 							</div>
 						</div>
 					</div>
@@ -148,8 +149,9 @@
 								</div>
 
 								<div class="col-md-6 company-tax-number-container">
-									<label class="form-label"> Tax ID </label> <input type="text"
-										class="form-control" name="taxNumber" id="company-tax-number">
+									<label class="form-label required"> Tax ID </label> <input
+										type="text" class="form-control" name="taxNumber"
+										id="company-tax-number">
 								</div>
 
 							</div>
@@ -158,13 +160,13 @@
 							<div class="row g-6 mb-6 ">
 
 								<div class="col-md-6 company-name-en-container">
-									<label class="form-label"> Company Name EN </label> <input
+									<label class="form-label required"> Company Name EN </label> <input
 										type="text" class="form-control" name="nameEN"
 										id="company-name-en">
 								</div>
 
 								<div class="col-md-6 company-name-th-container">
-									<label class="form-label"> Company Name TH </label> <input
+									<label class="form-label required"> Company Name TH </label> <input
 										type="text" class="form-control" name="nameTH"
 										id="company-name-th">
 								</div>
@@ -175,16 +177,79 @@
 							<div class="row g-6">
 
 								<div class="col-md-6 ">
-									<label class="form-label"> Industry </label> <select
-										class="form-select" data-control="select2" name="industry">
-
-										<option value="1">IT</option>
-										<option value="2">Finance</option>
-										<option value="3">Retail</option>
-										<option value="4">Manufacturing</option>
+									<div class="d-flex justify-content-between align-items-center">
+										<label class="form-label required "> Industry </label>
+										<button type="button"
+											class="btn btn-sm btn-light-primary d-inline-flex align-items-center py-1 px-3 mb-3"
+											id="createIndustryBtn">
+											<i class="ki-duotone ki-plus fs-5"> <span class="path1"></span>
+												<span class="path2"></span>
+											</i> <span class="fw-bold">Add Industry</span>
+										</button>
+									</div>
+									<select id="company-industry" class="form-select"
+										data-control="select2" data-hide-search="true"
+										data-placeholder="Select an option" name="industry">
+										<option></option>
+										<c:forEach items="${industryList}" var="industry">
+											<option value="${industry.industryId}">
+												${industry.industryName}</option>
+										</c:forEach>
 
 									</select>
 								</div>
+								
+								<div class="modal fade" tabindex="-1" id="industryModal">
+									<div class="modal-dialog  modal-dialog-centered">
+										<div class="modal-content">
+											<div class="modal-header border-0">
+												<h2 class="modal-title fw-semibold">Company Industry</h2>
+
+												<!--begin::Close-->
+												<div
+													class="btn btn-icon btn-sm btn-active-light-primary ms-2"
+													data-bs-dismiss="modal" aria-label="Close">
+													<i class="ki-duotone ki-cross fs-1"><span class="path1"></span><span
+														class="path2"></span></i>
+												</div>
+												<!--end::Close-->
+											</div>
+
+											<div class="modal-body">
+												<div class="row g-8 mb-8">
+													<div
+														class="col-md-12 position-relative create-industry-validate-container">
+														<label for="Industry Name" class="form-label required">Industry
+															Name</label>
+														<div class="position-relative">
+															<input type="text" class="form-control form-control-lg"
+																id="industry-name-create" required /> <i
+																id="industry-name-valid-icon"
+																class="ki-duotone ki-check-circle fs-1 text-success position-absolute top-50 end-0 translate-middle-y me-4 d-none">
+																<span class="path1"></span> <span class="path2"></span>
+															</i>
+														</div>
+													</div>
+													<div class="col-md-12 create-desc-validate-container">
+														<label for="Description" class="form-label">
+															Description </label>
+														<textarea class="form-control" data-kt-autosize="true"
+															id="desc-value-create"></textarea>
+													</div>
+
+												</div>
+											</div>
+
+											<div class="modal-footer border-0">
+												<button type="button" class="btn btn-light"
+													data-bs-dismiss="modal">Close</button>
+												<button type="button" id="saveIndustryBtn"
+													class="btn btn-success">Save</button>
+											</div>
+										</div>
+									</div>
+								</div>
+								
 
 							</div>
 
@@ -217,8 +282,11 @@
 	
 		const validationState = {
 			    companyCode: false,
-			    companyNameEn: true
-			};
+			    companyNameEn: false,
+			    companyNameTh: false,
+			    taxNumber: false,
+			    industry: false
+		};
 	
 		let companyCodeExists = false;
 	
@@ -267,14 +335,23 @@
 		    };
 		}
 		
-		function hasValidationErrors() {
+		function hasValidationErrors(state) {
 
-		    return Object.values(validationState)
+		    return Object.values(state || validationState)
 		                 .some(valid => !valid);
 		}
 		
 	</script>
 	<script type="text/javascript">
+		let isSubmitting = false;
+		
+		function updateBtnState(selector, state) {
+		    $(selector).prop(
+		        "disabled",
+		        state
+		    );
+		}
+		
 		$(document).ready(function(){
 			$("#company-code").on(
 				    "input",
@@ -283,21 +360,64 @@
 			
  			$("#company-name-en").on(
 				    "input",
-				    debounce(validateCompanyEnName, 500)
+				    debounce(validateCompanyEnName, 300)
 			);
+			
+			$("#company-name-th").on(
+				    "input",
+				    debounce(validateCompanyThName, 300)
+			);
+			
+			$("#company-industry").on(
+				    "input",
+				    debounce(validateIndustry, 300)
+			);
+			
+			$("#submit-btn").on("click", function (e) {
+
+			    e.preventDefault();
+
+			    if (isSubmitting) {
+			        return;
+			    }
+
+			    validateCompanyCode.call($("#company-code"));
+			    validateCompanyEnName.call($("#company-name-en"));
+			    validateCompanyThName.call($("#company-name-th"));
+			    validateTaxNumber.call($("#company-tax-number"));
+			    validateIndustry.call($("#company-industry"));
+
+			    if (!hasValidationErrors()) {
+
+			        isSubmitting = true;
+
+			        $(this)
+			            .prop("disabled", true)
+			            .addClass("disabled");
+
+			        $("#companyForm").submit();
+			    }
+			});
+			
 			
 			$("#company-tax-number").on("input", function () {
 			    this.value = this.value.replace(/\D/g, "");
-			}); 
+			    validateTaxNumber.call(this);
+			});
+			
+			
 			
 			function validateCompanyEnName() {
 
 			    const value = $(this).val().trim();
 			    
-			    if (value === "") {
-					validationState.companyNameEn = true;
-			        clearFieldError("#company-name-en");
-			        updateBtnState();
+			    if (value === "" || value.length === 0) {
+					validationState.companyNameEn = false;
+					setFieldInvalid(
+				            "#company-name-en",
+				            "Company name EN is required"
+				        );
+				    updateBtnState("#submit-btn", hasValidationErrors());
 			        return;
 			    }
 
@@ -309,12 +429,12 @@
 			            "#company-name-en",
 			            "Only English letters are allowed"
 			        );
-			        updateBtnState();
+			        updateBtnState("#submit-btn", hasValidationErrors());
 			        return;
 			    }
 			    validationState.companyNameEn = true;
 			    clearFieldError("#company-name-en");
-			    updateBtnState();
+			    updateBtnState("#submit-btn", hasValidationErrors());
 			    return;
 			}
 			
@@ -335,7 +455,7 @@
 		                    "Company code is required"
 		                );
 			        
-			        updateBtnState()
+			        updateBtnState("#submit-btn", hasValidationErrors())
 			        return;
 			    }
 
@@ -372,21 +492,308 @@
 			                $("#company-code-valid-icon")
 			                    .removeClass("d-none");
 			            }
-			            updateBtnState();
+			            updateBtnState("#submit-btn", hasValidationErrors());
 			        }
 			    });
 			    
 			    
 			}
 			
-			function updateBtnState() {
+			function validateCompanyThName() {
+
+			    const value = $(this).val().trim();
+
+			    if (value === "" || value.length === 0) {
+			        validationState.companyNameTh = false;
+			        setFieldInvalid(
+				            "#company-name-th",
+				            "Company name is required"
+				     );
+			        updateBtnState("#submit-btn", hasValidationErrors());
+			        return
+			    }
+
+			    const regex = /^[ก-๙0-9\s().,&/-]+$/;
+
+			    if (!regex.test(value)) {
+			        validationState.companyNameTh = false;
+			        setFieldInvalid(
+			            "#company-name-th",
+			            "Only Thai characters are allowed"
+			        );
+			    } else {
+			        validationState.companyNameTh = true;
+			        clearFieldError("#company-name-th");
+			    }
+			    updateBtnState("#submit-btn", hasValidationErrors());
+			    return
+			}
+			
+			function validateTaxNumber() {
+				const value = $(this).val().trim();
+				console.log(value)
+
+			    if (value === "") {
+
+			        validationState.taxNumber = false;
+			        setFieldInvalid(
+				            "#company-tax-number",
+				            "Tax ID is required"
+				     );
+			        updateBtnState("#submit-btn", hasValidationErrors());
+			        return
+			    }
+
+			    if (!/^\d{1,13}$/.test(value)) {
+
+			        validationState.taxNumber = false;
+			        
+			        console.log(value)
+
+			        setFieldInvalid(
+			            "#company-tax-number",
+			            "Tax ID must contain 1-13 digits"
+			        );
+			        
+			    } else {
+			        validationState.taxNumber = true;
+			        clearFieldError("#company-tax-number");
+			    }
+			    updateBtnState("#submit-btn", hasValidationErrors());
+				return
+			}
+			
+			function validateIndustry() {
+
+			    const value = $("#company-industry").val();
+			    console.log(value)
+
+			    if (!value) {
+			        validationState.industry = false;
+			        setFieldInvalid(
+			            "#company-industry",
+			            "Please select an industry"
+			        );
+			    } else {
+			        validationState.industry = true;
+			        clearFieldError("#company-industry");
+			    }
+			    updateBtnState("#submit-btn", hasValidationErrors());
+			    return
+			}
+			
+/* 			function updateBtnState() {
 			    $("#submit-btn").prop(
 			        "disabled",
 			        hasValidationErrors()
 			    );
-			}
+			} */
+			
 			updateBtnState();
 		});
+	</script>
+
+	<script>
+	
+		const industryValidationState = {
+			    industryName: false
+		};
+		
+		$(document).ready(function () {
+            $("#industry-name-create").on(
+                "input",
+                debounce(validateIndustryName, 300)
+            );
+            
+    		$("#createIndustryBtn").on("click", function () {
+    			const modal = new bootstrap.Modal(document.getElementById("industryModal"));
+    			
+    			$("#industry-name-create").val("");
+    		    $("#desc-value-create").val("");
+
+    		    $("#industry-name-create").removeClass("is-invalid");
+    		    $("#desc-value-create").removeClass("is-invalid");
+
+    		    $(".invalid-feedback").remove();
+    		    
+    		    updateBtnState("#saveIndustryBtn", true);
+
+    		    industryValidationState.industryName = false;
+    		    
+    		    modal.show();
+    		});
+    		
+    		$("#saveIndustryBtn").on("click", function () {
+
+    		    validateIndustryName();
+
+    		    if (hasValidationErrors(industryValidationState)) {
+    		        updateBtnState("#saveIndustryBtn", true);
+    		        return;
+    		    }
+
+    		    const btn = $(this);
+
+    		    $.ajax({
+    		        url: "create_industry",
+    		        type: "POST",
+    		        data: {
+    		            industryName: $("#industry-name-create").val().trim(),
+    		            industryDescription: $("#desc-value-create").val().trim()
+    		        },
+
+    		        beforeSend: function () {
+
+    		            btn.prop("disabled", true);
+
+    		            Swal.fire({
+    		                title: "Saving...",
+    		                text: "Please wait",
+    		                allowOutsideClick: false,
+    		                allowEscapeKey: false,
+    		                showConfirmButton: false,
+    		                didOpen: () => {
+    		                    Swal.showLoading();
+    		                }
+    		            });
+    		        },
+
+    		        success: function (res) {
+
+    		            Swal.close();
+
+    		            const option = new Option(
+    		                res.industry_name,
+    		                res.industry_id,
+    		                true,
+    		                true
+    		            );
+
+    		            $("#company-industry")
+    		                .append(option)
+    		                .trigger("change");
+    		            
+    		            validationState.industry = true;
+    		            
+						updateBtnState("#submit-btn", hasValidationErrors());
+    		            
+    		            bootstrap.Modal
+    		                .getOrCreateInstance(document.getElementById("industryModal"))
+    		                .hide();
+
+    		            $("#industry-name-create").val("");
+    		            $("#desc-value-create").val("");
+
+    		            Swal.fire({
+    		                icon: "success",
+    		                title: "Saved",
+    		                text: "Industry created successfully"
+    		            });
+    		        },
+
+    		        error: function (xhr) {
+
+    		            Swal.fire({
+    		                icon: "error",
+    		                title: "Error",
+    		                text: "Cannot create industry"
+    		            });
+    		        },
+
+    		        complete: function () {
+    		            btn.prop("disabled", false);
+    		        }
+    		    });
+    		});
+    		
+        });
+
+
+		function validateIndustryName() {
+
+		    const value = $("#industry-name-create").val().trim();
+		    const container = $(".create-industry-validate-container");
+
+		    container.find(".invalid-feedback").remove();
+
+		    if (!value) {
+
+		        $("#industry-name-valid-icon").addClass("d-none");
+
+		        industryValidationState.industryName = false;
+
+		        $("#industry-name-create").addClass("is-invalid");
+
+		        container.append(`
+		            <div class="invalid-feedback d-block">
+		                Industry Name is required
+		            </div>
+		        `);
+
+		        updateBtnState(
+		            "#saveIndustryBtn",
+		            hasValidationErrors(industryValidationState)
+		        );
+
+		        return;
+		    }
+		    
+		    console.log("Checking industry name: " + value);
+
+		    $.ajax({
+		        url: "check_industry_name",
+		        type: "GET",
+		        data: {
+		            industryName: value
+		        },
+		        success: function(res) {
+
+		            if (res.exists) {
+
+		                industryValidationState.industryName = false;
+
+		                setFieldInvalid(
+		                    "#industry-name-create",
+		                    "Industry name already exists"
+		                );
+
+		                $("#industry-name-valid-icon")
+		                    .addClass("d-none");
+
+		            } else {
+
+		                industryValidationState.industryName = true;
+
+		                clearFieldError(
+		                    "#industry-name-create"
+		                );
+
+		                $("#industry-name-valid-icon")
+		                    .removeClass("d-none");
+		            }
+
+		            updateBtnState(
+		                "#saveIndustryBtn",
+		                hasValidationErrors(industryValidationState)
+		            );
+		        },
+
+		        error: function() {
+
+		            industryValidationState.industryName = false;
+
+		            $("#industry-name-valid-icon")
+		                .addClass("d-none");
+
+		            updateBtnState(
+		                "#saveIndustryBtn",
+		                hasValidationErrors(industryValidationState)
+		            );
+		        }
+		    });
+		}
+
+
 	</script>
 </body>
 </html>

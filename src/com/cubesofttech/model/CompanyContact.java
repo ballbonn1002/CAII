@@ -24,9 +24,6 @@ public class CompanyContact {
     @Column(name = "file_id")
     private String fileId;
 
-    @Column(name = "social_id")
-    private String socialId;
-
     @Column(name = "company_address_id")
     private String companyAddressId;
 
@@ -36,23 +33,14 @@ public class CompanyContact {
     @Column(name = "contact_name")
     private String contactName;
 
-    @Column(name = "nickname")
-    private String nickname;
-
     @Column(name = "title_name_th")
     private String titleNameTh;
 
     @Column(name = "contact_name_th")
     private String contactNameTh;
 
-    @Column(name = "nickname_th")
-    private String nicknameTh;
-
     @Column(name = "position")
     private String position;
-
-    @Column(name = "company_en")
-    private String companyEn;
 
     @Column(name = "phone")
     private String phone;
@@ -60,20 +48,8 @@ public class CompanyContact {
     @Column(name = "email")
     private String email;
 
-    @Column(name = "password")
-    private String password;
-
-    @Column(name = "admin")
-    private String admin;
-
-    @Column(name = "address_location")
-    private String addressLocation;
-
     @Column(name = "is_active")
     private String isActive;
-
-    @Column(name = "description")
-    private String description;
 
     @Column(name = "user_create")
     private String userCreate;
@@ -111,14 +87,6 @@ public class CompanyContact {
         this.fileId = fileId;
     }
 
-    public String getSocialId() {
-        return socialId;
-    }
-
-    public void setSocialId(String socialId) {
-        this.socialId = socialId;
-    }
-
     public String getCompanyAddressId() {
         return companyAddressId;
     }
@@ -143,14 +111,6 @@ public class CompanyContact {
         this.contactName = contactName;
     }
 
-    public String getNickname() {
-        return nickname;
-    }
-
-    public void setNickname(String nickname) {
-        this.nickname = nickname;
-    }
-
     public String getTitleNameTh() {
         return titleNameTh;
     }
@@ -167,28 +127,12 @@ public class CompanyContact {
         this.contactNameTh = contactNameTh;
     }
 
-    public String getNicknameTh() {
-        return nicknameTh;
-    }
-
-    public void setNicknameTh(String nicknameTh) {
-        this.nicknameTh = nicknameTh;
-    }
-
     public String getPosition() {
         return position;
     }
 
     public void setPosition(String position) {
         this.position = position;
-    }
-
-    public String getCompanyEn() {
-        return companyEn;
-    }
-
-    public void setCompanyEn(String companyEn) {
-        this.companyEn = companyEn;
     }
 
     public String getPhone() {
@@ -207,44 +151,12 @@ public class CompanyContact {
         this.email = email;
     }
 
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public String getAdmin() {
-        return admin;
-    }
-
-    public void setAdmin(String admin) {
-        this.admin = admin;
-    }
-
-    public String getAddressLocation() {
-        return addressLocation;
-    }
-
-    public void setAddressLocation(String addressLocation) {
-        this.addressLocation = addressLocation;
-    }
-
     public String getIsActive() {
         return isActive;
     }
 
     public void setIsActive(String isActive) {
         this.isActive = isActive;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
     }
 
     public String getUserCreate() {

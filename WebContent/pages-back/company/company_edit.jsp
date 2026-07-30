@@ -13,31 +13,26 @@
 	href="${pageContext.request.contextPath}/assets/css/style.bundle.css"
 	rel="stylesheet" />
 <style>
-.company-logo .image-input-wrapper {
+.company-logo.image-input-empty .image-input-wrapper {
 	background-image:
-		url('${pageContext.request.contextPath}/assets/media/svg/files/blank-image.svg');
+		url('${pageContext.request.contextPath}/assets/media/svg/files/blank-image.svg')
+		!important;
 }
 
-.contact-profile .image-input-wrapper {
+.contact-profile.image-input-empty .image-input-wrapper {
 	background-image:
-		url('${pageContext.request.contextPath}/assets/media/svg/avatars/blank-old.svg');
+		url('${pageContext.request.contextPath}/assets/media/svg/avatars/blank-old.svg')
+		!important;
 }
 
 .border {
 	border-radius: 1px !important;
 }
 
-.btn-success {
-	background-color: #17C653 !important;
-}
-
 .address-name-col {
 	width: 100%;
 }
 
-/* .middle-section {
-    padding-left: clamp(0px, 6vw, 120px);
-} */
 @media ( min-width : 768px) {
 	/*  	.middle-section {
 		padding-left: 50px;
@@ -48,23 +43,6 @@
 	}
 }
 
-/* @media ( min-width : 992px) {
-	.middle-section {
-		padding-left: 30px;
-	}
-}
-
-@media ( min-width : 1200px) {
-	.middle-section {
-		padding-left: 40px;
-	}
-}
-
-@media ( min-width : 1400px) {
-	.middle-section {
-		padding-left: 120px;
-	}
-} */
 /* Uncomment this to enable placeholder in dark mode */
 /* [data-bs-theme="dark"] .image-input-placeholder {
 	background-image:
@@ -119,7 +97,7 @@
 							<div
 								class="form-check form-switch form-check-custom form-check-solid form-check-success">
 								<label class="form-check-label me-3 fw-semibold"> Active
-								</label> <input class="form-check-input" type="checkbox"
+								</label> <input class="form-check-input h-20px w-30px" type="checkbox"
 									id="company-active"
 									<c:if test="${company.isActive eq '1'}">checked</c:if> />
 							</div>
@@ -136,10 +114,17 @@
 
 									<!--begin::Image input-->
 									<div
-										class="image-input image-input-empty image-input-placeholder company-logo mb-3"
+										class="image-input company-logo mb-3
+									    <c:if test='${empty profile.path}'>
+									        image-input-empty image-input-placeholder
+									    </c:if>"
 										data-kt-image-input="true">
 										<!--begin::Image preview wrapper-->
-										<div class="image-input-wrapper w-150px h-150px"></div>
+										<div class="image-input-wrapper w-150px h-150px"
+											<c:if test="${not empty profile.path}">
+									            style="background-image: url('${pageContext.request.contextPath}${profile.path}')"
+									        </c:if>>
+										</div>
 										<!--end::Image preview wrapper-->
 
 										<!--begin::Edit button-->
@@ -183,7 +168,7 @@
 						<!-- Row 1 -->
 						<div class="row g-6 mb-6">
 
-							<div class="col-md-6 company-code-container">
+							<div class="col-md-6 company-code-validate-container">
 								<label class="required form-label"> Company Code </label>
 								<div class="position-relative">
 									<input type="text" id="company-code" class="form-control pe-10"
@@ -195,9 +180,9 @@
 								</div>
 							</div>
 
-							<div class="col-md-6 company-tax-number-container">
-								<label class="form-label"> Tax ID </label> <input type="text"
-									class="form-control " value="${company.taxNumber }"
+							<div class="col-md-6 company-tax-number-validate-container">
+								<label class="form-label required"> Tax ID </label> <input
+									type="text" class="form-control " value="${company.taxNumber }"
 									id="company-tax-number">
 							</div>
 
@@ -206,16 +191,16 @@
 						<!-- Row 2 -->
 						<div class="row g-6 mb-6">
 
-							<div class="col-md-6 company-name-en-container">
-								<label class="form-label"> Company Name EN </label> <input
+							<div class="col-md-6 company-name-en-validate-container">
+								<label class="form-label required"> Company Name EN </label> <input
 									type="text" class="form-control " id="company-name-en"
 									value="${company.companyEn }">
 							</div>
 
-							<div class="col-md-6 company-name-th-container">
-								<label class="form-label"> Company Name TH </label> <input type="text"
-									class="form-control "
-									value="${company.companyTh }" id="company-name-th">
+							<div class="col-md-6 company-name-th-validate-container">
+								<label class="form-label required"> Company Name TH </label> <input
+									type="text" class="form-control " value="${company.companyTh }"
+									id="company-name-th">
 							</div>
 
 						</div>
@@ -223,19 +208,91 @@
 						<!-- Row 3 -->
 						<div class="row g-6">
 
-							<div class="col-md-6 company-idustry-container">
-								<label class="form-label"> Industry </label> <select
-									class="form-select" data-control="select2"
-									id="company-industry">
-									<option value="1" ${company.industry eq '1' ? 'selected' : ''}>
-										IT</option>
-									<option value="2" ${company.industry eq '2' ? 'selected' : ''}>
+							<div class="col-md-6 company-idustry-validate-container ">
+								<div class="d-flex justify-content-between align-items-center">
+									<label class="form-label required "> Industry </label>
+									<button type="button"
+										class="btn btn-sm btn-light-primary d-inline-flex align-items-center py-1 px-3 mb-3"
+										id="createIndustryBtn">
+										<i class="ki-duotone ki-plus fs-5"> <span class="path1"></span>
+											<span class="path2"></span>
+										</i> <span class="fw-bold">Add Industry</span>
+									</button>
+								</div>
+								<select class="form-select" data-control="select2"
+									data-hide-search="true" id="company-industry">
+
+
+									<c:forEach items="${industryList}" var="industry">
+										<option value="${industry.industryId}"
+											${company.industryId == industry.industryId ? 'selected' : ''}>
+											${industry.industryName} ${not empty industry.description ? ' - ' : ''}${industry.description}</option>
+									</c:forEach>
+
+									<%-- <option value="Finance"
+										${company.industry eq 'Finance' ? 'selected' : ''}>
 										Finance</option>
-									<option value="3" ${company.industry eq '3' ? 'selected' : ''}>
+									<option value="Retail"
+										${company.industry eq 'Retail' ? 'selected' : ''}>
 										Retail</option>
-									<option value="4" ${company.industry eq '4' ? 'selected' : ''}>
-										Manufacturing</option>
+									<option value="Manufacturing"
+										${company.industry eq 'Manufacturing' ? 'selected' : ''}>
+										Manufacturing</option> --%>
 								</select>
+
+								<div class="modal fade" tabindex="-1" id="industryModal">
+									<div class="modal-dialog  modal-dialog-centered">
+										<div class="modal-content">
+											<div class="modal-header border-0">
+												<h2 class="modal-title fw-semibold">Company Industry</h2>
+
+												<!--begin::Close-->
+												<div
+													class="btn btn-icon btn-sm btn-active-light-primary ms-2"
+													data-bs-dismiss="modal" aria-label="Close">
+													<i class="ki-duotone ki-cross fs-1"><span class="path1"></span><span
+														class="path2"></span></i>
+												</div>
+												<!--end::Close-->
+											</div>
+
+											<div class="modal-body">
+												<div class="row g-8 mb-8">
+													<div
+														class="col-md-12 position-relative create-industry-validate-container">
+														<label for="Industry Name" class="form-label required">Industry
+															Name</label>
+														<div class="position-relative">
+															<input type="text" class="form-control form-control-lg"
+																id="industry-name-create" required /> <i
+																id="industry-name-valid-icon"
+																class="ki-duotone ki-check-circle fs-1 text-success position-absolute top-50 end-0 translate-middle-y me-4 d-none">
+																<span class="path1"></span> <span class="path2"></span>
+															</i>
+														</div>
+													</div>
+
+													<div class="col-md-12 create-desc-validate-container">
+														<label for="Description" class="form-label">
+															Description </label>
+														<textarea class="form-control" data-kt-autosize="true"
+															id="desc-value-create"></textarea>
+													</div>
+
+												</div>
+											</div>
+
+											<div class="modal-footer border-0">
+												<button type="button" class="btn btn-light"
+													data-bs-dismiss="modal">Close</button>
+												<button type="button" id="saveIndustryBtn"
+													class="btn btn-success">Save</button>
+											</div>
+										</div>
+									</div>
+								</div>
+
+
 							</div>
 
 						</div>
@@ -279,19 +336,19 @@
 
 								<div class="modal-body">
 									<div class="row g-8 mb-8">
-										<div class="col-md-12 create-address-container">
+										<div class="col-md-12 create-address-validate-container">
 											<label for="Address name" class="form-label required">Address
 												Name</label> <input type="text" class="form-control form-control-lg"
 												placeholder="Address name" id="address-name-create" required />
 
 										</div>
-										<div class="col-md-12 create-addressVal-container">
+										<div class="col-md-12 create-addressVal-validate-container">
 											<label for="Address value" class="form-label required">
 												Address </label>
 											<textarea class="form-control" data-kt-autosize="true"
 												id="address-value-create"></textarea>
 										</div>
-										<div class="col-md-12 create-ggMap-container">
+										<div class="col-md-12 create-ggMap-validate-container">
 											<label for="Google map URL" class="form-label required">
 												Google Map URL </label> <input type="url"
 												class="form-control form-control-lg"
@@ -336,7 +393,7 @@
 										id="addressCard-${address.address_id}">
 
 										<div class="address-name-col ps-md-3">
-											<h2 id="name_${address.address_id}" class="text-break">${address.address_name}</h2>
+											<span id="name_${address.address_id}" class="text-break fs-2">${address.address_name}</span>
 										</div>
 
 										<div
@@ -423,19 +480,19 @@
 								<div class="modal-body">
 									<input type="hidden" id="editingAddressId">
 									<div class="row g-8 mb-8">
-										<div class="col-md-12 address-name-update-container">
+										<div class="col-md-12 address-name-update-validate-container">
 											<label class="form-label required"> Address Name </label> <input
 												type="text" class="form-control form-control-lg"
 												id="address-name-update" />
 										</div>
 
-										<div class="col-md-12 address-value-update-container">
+										<div class="col-md-12 address-value-update-validate-container">
 											<label class="form-label required"> Address </label>
 											<textarea class="form-control" data-kt-autosize="true"
 												id="address-value-update"></textarea>
 										</div>
 
-										<div class="col-md-12 ggMap-update-container">
+										<div class="col-md-12 ggMap-update-validate-container">
 											<label class="form-label required"> Google Map URL </label> <input
 												type="text" class="form-control form-control-lg"
 												id="ggMap-update" />
@@ -503,7 +560,7 @@
 
 													<!--begin::Image input-->
 													<div
-														class="image-input image-input-empty image-input-placeholder contact-profile mb-3"
+														class="image-input image-input-empty image-input-placeholder contact-profile contact-profile-create mb-3"
 														data-kt-image-input="true">
 														<!--begin::Image preview wrapper-->
 														<div class="image-input-wrapper w-150px h-150px"></div>
@@ -514,11 +571,12 @@
 															class="btn btn-icon btn-circle btn-color-muted btn-active-color-primary w-25px h-25px bg-body shadow-sm"
 															data-kt-image-input-action="change"
 															data-bs-toggle="tooltip" data-bs-dismiss="click"
-															title="Change company logo"> <i
+															title="Change profile"> <i
 															class="ki-duotone ki-pencil fs-6"><span class="path1"></span><span
 																class="path2"></span></i> <!--begin::Inputs--> <input
-															type="file" name="logo" accept=".png, .jpg, .jpeg" /> <input
-															type="hidden" name="logo_remove" /> <!--end::Inputs-->
+															type="file" name="contactProfile"
+															accept=".png, .jpg, .jpeg" /> <input type="hidden"
+															name="logo_remove" /> <!--end::Inputs-->
 														</label>
 														<!--end::Edit button-->
 
@@ -527,7 +585,7 @@
 															class="btn btn-icon btn-circle btn-color-muted btn-active-color-primary w-25px h-25px bg-body shadow-sm"
 															data-kt-image-input-action="cancel"
 															data-bs-toggle="tooltip" data-bs-dismiss="click"
-															title="Cancel logo"> <i
+															title="Cancel profile"> <i
 															class="ki-outline ki-cross fs-3"></i>
 														</span>
 														<!--end::Cancel button-->
@@ -537,8 +595,8 @@
 															class="btn btn-icon btn-circle btn-color-muted btn-active-color-primary w-25px h-25px bg-body shadow-sm"
 															data-kt-image-input-action="remove"
 															data-bs-toggle="tooltip" data-bs-dismiss="click"
-															title="Remove logo"> <i
-															class="ki-outline ki-cross fs-3"></i>
+															title="Remove profile"> <i
+															class="ki-outline ki-cross fs-3 " id="contact-update"></i>
 														</span>
 														<!--end::Remove button-->
 													</div>
@@ -554,7 +612,8 @@
 												<label for="Title name" class="form-label required">
 													คํานําหน้า </label> <select class="form-select form-select-lg"
 													data-control="select2" data-placeholder="Select an option"
-													name="titleNameTH" id="titleNameTH-create">
+													data-hide-search="true" name="titleNameTH"
+													id="titleNameTH-create">
 													<option value=""></option>
 													<option value="นาย">นาย</option>
 													<option value="นาง">นาง</option>
@@ -562,7 +621,8 @@
 												</select>
 
 											</div>
-											<div class="col-md-9 create-contact-nameTH-container">
+											<div
+												class="col-md-9 create-contact-nameTH-validate-container">
 												<label for="Full thai name" class="form-label required">
 													ชื่อ สกุล </label> <input class="form-control form-control-lg"
 													type="text" name="contactNameTH" id="contactNameTH-create">
@@ -574,7 +634,8 @@
 												<label for="Address name" class="form-label required">
 													Title Name </label> <select class="form-select form-select-lg"
 													data-control="select2" data-placeholder="Select an option"
-													name="titleNameEN" id="titleNameEN-create">
+													data-hide-search="true" name="titleNameEN"
+													id="titleNameEN-create">
 													<option value=""></option>
 													<option value="Mr.">Mr.</option>
 													<option value="Ms.">Ms.</option>
@@ -583,7 +644,7 @@
 												</select>
 
 											</div>
-											<div class="col-md-9 creat-contact-nameEN-container">
+											<div class="col-md-9 creat-contact-nameEN-validate-container">
 												<label for="Full english name" class="form-label required">
 													Full Name EN</label> <input type="text"
 													class="form-control form-control-lg" name="contactNameEN"
@@ -596,7 +657,8 @@
 												<label for="Address name" class="form-label required">
 													Address Name </label> <select class="form-select form-select-lg"
 													data-control="select2" data-placeholder="Select an option"
-													name="addressId" id="contactAddressId-create">
+													data-hide-search="true" name="addressId"
+													id="contactAddressId-create">
 													<option value=""></option>
 													<c:forEach items="${addressList}" var="address">
 														<option value="${address.address_id}">${address.address_name}</option>
@@ -604,21 +666,22 @@
 												</select>
 
 											</div>
-											<div class="col-md-6 create-position-container">
-												<label for="Position" class="form-label required"> Position</label>
-												<input type="text" class="form-control form-control-lg"
-													name="position" id="contactPosition-create">
+											<div class="col-md-6 create-position-validate-container">
+												<label for="Position" class="form-label required">
+													Position</label> <input type="text"
+													class="form-control form-control-lg" name="position"
+													id="contactPosition-create">
 											</div>
 										</div>
 
 										<div class="row g-8 mb-8">
-											<div class="col-md-6 create-contact-phone-container">
+											<div class="col-md-6 create-contact-phone-validate-container">
 												<label for="Phone Number" class="form-label required">
 													Phone Number</label> <input type="tel" name="phoneNumber"
 													class="form-control form-control-lg"
 													id="phoneNumber-create">
 											</div>
-											<div class="col-md-6 create-contact-email-container">
+											<div class="col-md-6 create-contact-email-validate-container">
 												<label for="Email" class="form-label required">
 													Email</label> <input type="email" name="email"
 													class="form-control form-control-lg"
@@ -659,16 +722,18 @@
 										id="contactCard-${contact.contact_id}">
 										<div class="d-flex align-items-center gap-4 flex-shrink-0 "
 											style="width: 250px">
-											<div class="symbol symbol-50px symbol-circle">
+											<div class="symbol symbol-40px symbol-circle">
 												<c:choose>
 													<c:when test="${not empty contact.file_path}">
 														<div class="symbol-label"
+															id="contactProfile${contact.contact_id}"
 															style="background-image:url('${pageContext.request.contextPath}${contact.file_path}')">
 														</div>
 													</c:when>
 
 													<c:otherwise>
-														<div class="symbol-label fs-5 fw-bold text-primary">
+														<div class="symbol-label fs-5 fw-bold text-primary"
+															id="contactProfile${contact.contact_id}">
 															<c:choose>
 																<c:when test="${not empty contact.contact_name}">
 																	${fn:toUpperCase(fn:substring(contact.contact_name,0,1))}
@@ -690,22 +755,24 @@
 
 										<div
 											class="row flex-grow-1 gap-2 gap-xl-0 middle-section justify-content-md-around ">
+
 											<div class="col-xl-3 gap-2 d-flex align-items-center ">
 												<i class="ki-duotone ki-map me-2 fs-1"> <span
 													class="path1"></span> <span class="path2"></span> <span
 													class="path3"></span>
 												</i> <span class="text-gray-800 fs-6 text-break"
-													id="contactAddressName${contact.contact_id}">${contact.address_name}</span>
+													id="contactAddressName${contact.contact_id}"><c:if
+														test="${empty contact.address_name}">-</c:if>${contact.address_name}</span>
 											</div>
 											<div class="col-xl-3 gap-2 d-flex align-items-center ">
-												<i class="ki-duotone ki-map me-2 fs-1"> <span
+												<i class="ki-duotone ki-phone me-2 fs-1"> <span
 													class="path1"></span> <span class="path2"></span> <span
 													class="path3"></span>
 												</i> <span class="text-gray-800 fs-6 text-break"
 													id="contactPhoneNumber${contact.contact_id }">${contact.phone }</span>
 											</div>
 											<div class="col-xl-4 gap-2 d-flex align-items-center ">
-												<i class="ki-duotone ki-map me-2 fs-1"> <span
+												<i class="ki-duotone ki-sms me-2 fs-1"> <span
 													class="path1"></span> <span class="path2"></span> <span
 													class="path3"></span>
 												</i> <span class="text-gray-800 fs-6 text-break"
@@ -737,6 +804,8 @@
 
 
 						</c:choose>
+
+						<!-- begin::edit contact modal -->
 						<div class="modal fade" tabindex="-1" id="editContactModal">
 							<div class="modal-dialog modal-lg modal-dialog-centered">
 								<div class="modal-content">
@@ -762,7 +831,7 @@
 
 													<!--begin::Image input-->
 													<div
-														class="image-input image-input-empty image-input-placeholder contact-profile mb-3"
+														class="image-input image-input-empty image-input-placeholder contact-profile contact-profile-update mb-3"
 														data-kt-image-input="true">
 														<!--begin::Image preview wrapper-->
 														<div class="image-input-wrapper w-150px h-150px"></div>
@@ -773,11 +842,12 @@
 															class="btn btn-icon btn-circle btn-color-muted btn-active-color-primary w-25px h-25px bg-body shadow-sm"
 															data-kt-image-input-action="change"
 															data-bs-toggle="tooltip" data-bs-dismiss="click"
-															title="Change company logo"> <i
+															title="Change profile"> <i
 															class="ki-duotone ki-pencil fs-6"><span class="path1"></span><span
 																class="path2"></span></i> <!--begin::Inputs--> <input
-															type="file" name="logo" accept=".png, .jpg, .jpeg" /> <input
-															type="hidden" name="logo_remove" /> <!--end::Inputs-->
+															type="file" name="contactUpdate"
+															accept=".png, .jpg, .jpeg" /> <input type="hidden"
+															name="logo_remove" /> <!--end::Inputs-->
 														</label>
 														<!--end::Edit button-->
 
@@ -786,7 +856,7 @@
 															class="btn btn-icon btn-circle btn-color-muted btn-active-color-primary w-25px h-25px bg-body shadow-sm"
 															data-kt-image-input-action="cancel"
 															data-bs-toggle="tooltip" data-bs-dismiss="click"
-															title="Cancel logo"> <i
+															title="Cancel profile"> <i
 															class="ki-outline ki-cross fs-3"></i>
 														</span>
 														<!--end::Cancel button-->
@@ -796,7 +866,7 @@
 															class="btn btn-icon btn-circle btn-color-muted btn-active-color-primary w-25px h-25px bg-body shadow-sm"
 															data-kt-image-input-action="remove"
 															data-bs-toggle="tooltip" data-bs-dismiss="click"
-															title="Remove logo"> <i
+															title="Remove profile"> <i
 															class="ki-outline ki-cross fs-3"></i>
 														</span>
 														<!--end::Remove button-->
@@ -813,7 +883,7 @@
 												<label for="Title name" class="form-label required">
 													คํานําหน้า </label> <select class="form-select form-select-lg"
 													data-control="select2" data-placeholder="Select an option"
-													name="titleNameTH" id="titleNameTH">
+													data-hide-search="true" name="titleNameTH" id="titleNameTH">
 													<option value=""></option>
 													<option value="นาย">นาย</option>
 													<option value="นาง">นาง</option>
@@ -821,10 +891,10 @@
 												</select>
 
 											</div>
-											<div class="col-md-9">
+											<div class="col-md-9 contactNameTH-update-validate-container">
 												<label for="Full thai name" class="form-label required">
 													ชื่อ สกุล </label> <input class="form-control form-control-lg"
-													type="text" name="contactNameTH" id="contactNameTH">
+													type="text" name="contactNameTH" id="contactNameTH-update">
 											</div>
 										</div>
 
@@ -833,7 +903,8 @@
 												<label for="Address name" class="form-label required">
 													Title Name </label> <select class="form-select form-select-lg"
 													data-control="select2" data-placeholder="Select an option"
-													name="titleNameEN" id="titleNameEN">
+													data-hide-search="true" name="titleNameEN" id="titleNameEN">
+													<option value=""></option>
 													<option value="Mr.">Mr.</option>
 													<option value="Ms.">Ms.</option>
 													<option value="Mrs.">Mrs.</option>
@@ -841,11 +912,11 @@
 												</select>
 
 											</div>
-											<div class="col-md-9">
+											<div class="col-md-9 contactNameEN-update-validate-container">
 												<label for="Full english name" class="form-label required">
 													Full Name EN</label> <input type="text"
 													class="form-control form-control-lg" name="contactNameEN"
-													id="contactNameEN">
+													id="contactNameEN-update">
 											</div>
 										</div>
 
@@ -854,7 +925,8 @@
 												<label for="Address name" class="form-label required">
 													Address Name </label> <select class="form-select form-select-lg"
 													data-control="select2" data-placeholder="Select an option"
-													name="addressId" id="contactAddressId">
+													data-hide-search="true" name="addressId"
+													id="contactAddressId-update">
 
 													<c:forEach items="${addressList}" var="address">
 														<option value="${address.address_id}">${address.address_name}</option>
@@ -862,23 +934,27 @@
 												</select>
 
 											</div>
-											<div class="col-md-6">
-												<label for="Position" class="form-label required"> Position</label>
-												<input type="text" class="form-control form-control-lg"
-													name="position" id="contactPosition">
+											<div
+												class="col-md-6 contactPosition-update-validate-container">
+												<label for="Position" class="form-label required">
+													Position</label> <input type="text"
+													class="form-control form-control-lg" name="position"
+													id="contactPosition-update">
 											</div>
 										</div>
 
-										<div class="row g-8 mb-8">
-											<div class="col-md-6">
+										<div class="row g-8 mb-8 ">
+											<div class="col-md-6 phoneNumber-update-validate-container">
 												<label for="Phone Number" class="form-label required">
 													Phone Number</label> <input type="tel" name="phoneNumber"
-													class="form-control form-control-lg" id="phoneNumber">
+													class="form-control form-control-lg"
+													id="phoneNumber-update">
 											</div>
-											<div class="col-md-6">
+											<div class="col-md-6 contactEmail-update-validate-container">
 												<label for="Email" class="form-label required">
 													Email</label> <input type="email" name="email"
-													class="form-control form-control-lg" id="contactEmail">
+													class="form-control form-control-lg"
+													id="contactEmail-update">
 											</div>
 										</div>
 
@@ -901,7 +977,7 @@
 				<!-- Footer Button -->
 				<div class="d-flex justify-content-end gap-3 mt-8">
 
-					<button type="button" onclick="window.history.back();"
+					<button type="button" onclick="window.location.href='company_list'"
 						class="btn btn-light">Close</button>
 
 					<button type="button" class="btn btn-success js-submit-btn">
@@ -982,7 +1058,7 @@
 
 			    input.addClass("is-invalid");
 
-			    const container = input.closest("[class*='container']");
+			    const container = input.closest("[class$='-validate-container']")
 
 			    let feedback = container.find(".invalid-feedback");
 
@@ -1000,7 +1076,7 @@
 
 			    input.removeClass("is-invalid");
 
-			    input.closest("[class$='-container']")
+			    input.closest("[class$='-validate-container']")
 			         .find(".invalid-feedback")
 			         .remove();
 			}
@@ -1031,7 +1107,9 @@
 
 				const validationState = {
 					    companyCode: true,
-					    companyNameEn: true
+					    companyNameEn: true,
+					    companyNameTh: true,
+					    taxNumber: true
 					};
 
 				let companyCodeExists = false;
@@ -1090,16 +1168,34 @@
 				/* ----------------------- Validating -----------------------------*/
 				$("#company-code").on(
 					    "input",
-					    debounce(validateCompanyCode, 500)
+					    debounce(validateCompanyCode, 300)
 				);
 				
 				$("#company-name-en").on(
 					    "input",
-					    debounce(validateCompanyEnName, 500)
+					    debounce(validateCompanyEnName, 300)
+				);
+				
+				$("#company-name-th").on(
+					    "input",
+					    debounce(validateCompanyThName, 300)
+				);
+				
+				$("#company-industry").on(
+					    "input",
+					    debounce(validateIndustry, 300)
+				);
+				
+				
+				
+				$("#company-name-en").on(
+					    "input",
+					    debounce(validateCompanyEnName, 300)
 				);
 				
 				$("#company-tax-number").on("input", function () {
 				    this.value = this.value.replace(/\D/g, "");
+				    validateTaxNumber.call($(this));
 				});
 				
 				
@@ -1169,9 +1265,12 @@
 				    const value = $(this).val().trim();
 				    
 				    if (value === "") {
-						validationState.companyNameEn = true;
-				        clearFieldError("#company-name-en");
-				        return;
+						validationState.companyNameEn = false;
+						setFieldInvalid(
+					            "#company-name-en",
+					            "Company name is required"
+					        );
+						return
 				    }
 
 				    const regex = /^[A-Za-z0-9\s.,&()\/'@+_-]+$/;
@@ -1182,11 +1281,86 @@
 				            "#company-name-en",
 				            "Only English letters are allowed"
 				        );
-				        return;
+				        return
 				    }
+				    
 				    validationState.companyNameEn = true;
 				    clearFieldError("#company-name-en");
-				    return;
+				    return
+				}
+				
+				function validateCompanyThName() {
+
+				    const value = $(this).val().trim();
+
+				    if (value === "" || value.length === 0) {
+				        validationState.companyNameTh = false;
+				        setFieldInvalid(
+					            "#company-name-th",
+					            "Company name is required"
+					     );
+				        return
+				    }
+
+				    const regex = /^[ก-๙0-9\s().,&/-]+$/;
+
+				    if (!regex.test(value)) {
+				        validationState.companyNameTh = false;
+				        setFieldInvalid(
+				            "#company-name-th",
+				            "Only Thai characters are allowed"
+				        );
+				    } else {
+				        validationState.companyNameTh = true;
+				        clearFieldError("#company-name-th");
+				    }
+				    return
+				}
+				
+				function validateTaxNumber() {
+
+					const value = $(this).val().trim();
+				    if (value === "" || value.length === 0) {
+
+				        validationState.taxNumber = false;
+
+				        setFieldInvalid(
+					            "#company-tax-number",
+					            "Tax ID is required"
+					     );
+				        return
+				    }
+
+				    if (!/^\d{1,13}$/.test(value)) {
+
+				        validationState.taxNumber = false;
+
+				        setFieldInvalid(
+				            "#company-tax-number",
+				            "Tax ID must contain 1-13 digits"
+				        );
+				    } else {
+				        validationState.taxNumber = true;
+				        clearFieldError("#company-tax-number");
+				    }
+					return
+				}
+				
+				function validateIndustry() {
+
+				    const value = $(this).val().trim();
+
+				    if (!value) {
+				        validationState.industry = false;
+				        setFieldInvalid(
+				            "#company-industry",
+				            "Please select an industry"
+				        );
+				    } else {
+				        validationState.industry = true;
+				        clearFieldError("#company-industry");
+				    }
+				    return
 				}
 				
 				
@@ -1194,6 +1368,10 @@
 					for (const key of Object.keys(addressValidationState)) {
 						addressValidationState[key] = true;
 					}
+					
+					clearFieldError('#address-name-update')
+					clearFieldError('#address-value-update')
+					clearFieldError('#ggMap-update')
 					
 					updateBtnState("#saveAddressModalBtn", hasValidationErrors(addressValidationState));
 					
@@ -1252,37 +1430,108 @@
 				}
 				
 				function deleteAddress(addressId) {
-					const addressIdStr = String(addressId)
-					const isTemp = addressIdStr.startsWith("temp_")
-					
-					if (isTemp) {
-						delete pendingChanges.address.created[addressIdStr]
-					} 
-					
-					delete pendingChanges.address.updated[addressIdStr]
-					$("#addressCard-" + addressIdStr).remove()
 
-					if (!isTemp) pendingChanges.address.deleted.push(addressIdStr)
-					console.log(pendingChanges)
+				    Swal.fire({
+				        icon: 'warning',
+				        title: 'Delete Address',
+				        text: 'Are you sure you want to delete this address?',
+
+				        showCancelButton: true,
+
+				        confirmButtonText: 'Yes, Delete',
+				        cancelButtonText: 'Cancel',
+
+				        buttonsStyling: false,
+
+				        customClass: {
+				            confirmButton: 'btn btn-danger px-3',
+				            cancelButton: 'btn btn-light'
+				        },
+
+				        reverseButtons: true
+
+				    }).then((result) => {
+
+				        if (!result.isConfirmed) {
+				            return;
+				        }
+
+				        const addressIdStr = String(addressId);
+				        const isTemp = addressIdStr.startsWith("temp_");
+
+				        if (isTemp) {
+				            delete pendingChanges.address.created[addressIdStr];
+				        }
+
+				        delete pendingChanges.address.updated[addressIdStr];
+
+				        $("#addressCard-" + addressIdStr).remove();
+
+				        if (!isTemp) {
+				            pendingChanges.address.deleted.push(addressIdStr);
+				        }
+
+				        console.log(pendingChanges);
+				    });
 				}
 				
 				function showEditContactModal(contactId) {
+
+					 for (const key of Object.keys(contactValidationState)) {
+						contactValidationState[key] = true;
+					}
+					 
+					$('input[name="contactUpdate"]').val('');
+
+					clearFieldError("#contactNameTH-update")
+					clearFieldError("#contactNameEN-update")
+					
+					clearFieldError("#contactPosition-update")
+					clearFieldError("#phoneNumber-update")
+					clearFieldError("#contactEmail-update") 
+					
 				    const data =
 				        pendingChanges.contact.updated[contactId]
 				        || contactStore[contactId]
 				    	|| pendingChanges.contact.created[contactId];
 
 				    $("#editingContactId").val(contactId);
+				    
+				    const imageInput = $(".contact-profile-update");
+				    const wrapper = imageInput.find(".image-input-wrapper");
+				    
+				    console.log(data)
+				    console.log(data.profile_path)
+
+				    if (data.profile_path) {
+
+				        imageInput.removeClass(
+				            "image-input-empty image-input-placeholder"
+				        );
+
+				        wrapper.css(
+				            "background-image",
+				            `url('${pageContext.request.contextPath}\${data.profile_path}')`
+				        );
+
+				    } else {
+
+				        imageInput.addClass(
+				            "image-input-empty image-input-placeholder"
+				        );
+
+				        wrapper.css("background-image", "");
+				    }
 
 				    $("#titleNameTH").val(data.title_name_th).trigger("change");
 				    $("#titleNameEN").val(data.title_name_en).trigger("change");
 
-				    $("#contactNameTH").val(data.name_th);
-				    $("#contactNameEN").val(data.name_en);
+				    $("#contactNameTH-update").val(data.name_th);
+				    $("#contactNameEN-update").val(data.name_en);
 
-				    $("#contactPosition").val(data.position);
-				    $("#phoneNumber").val(data.phone_number);
-				    $("#contactEmail").val(data.email);
+				    $("#contactPosition-update").val(data.position);
+				    $("#phoneNumber-update").val(data.phone_number);
+				    $("#contactEmail-update").val(data.email);
 
 				    $("#contactAddressId")
 				        .val(data.address_id)
@@ -1298,6 +1547,12 @@
 				function saveContactChanges() {
 
 				    const contactId = $("#editingContactId").val();
+				    const file = $('input[name="contactUpdate"]')[0]?.files[0] || null;
+				    
+				    const oldData =
+				        pendingChanges.contact.updated[contactId]
+				        || pendingChanges.contact.created[contactId]
+				        || contactStore[contactId];
 
 				    const data = {
 
@@ -1306,24 +1561,39 @@
 				        title_name_th: $("#titleNameTH").val(),
 				        title_name_en: $("#titleNameEN").val(),
 
-				        name_th: $("#contactNameTH").val(),
-				        name_en: $("#contactNameEN").val(),
+				        name_th: $("#contactNameTH-update").val(),
+				        name_en: $("#contactNameEN-update").val(),
 
-				        position: $("#contactPosition").val(),
+				        position: $("#contactPosition-update").val(),
 
-				        phone_number: $("#phoneNumber").val(),
-				        email: $("#contactEmail").val(),
+				        phone_number: $("#phoneNumber-update").val(),
+				        email: $("#contactEmail-update").val(),
 
-				        address_id: $("#contactAddressId").val() || null,
+				        address_id: $("#contactAddressId-update").val() || null,
 
-				        profile_path:
-				            contactStore[contactId]?.profile_path || null
+				        profile_path: file ? URL.createObjectURL(file) : oldData.profile_path,
+				        contactProfile: file || oldData.contactProfile || null
 				    };
 				    
-				    console.log(data.address_id)
+				    console.log(data)
 
 				 	// Append changes
 				    contactId.startsWith("temp_") ? pendingChanges.contact.created[contactId] = data : pendingChanges.contact.updated[contactId] = data;
+				    
+				/*     $("#contactProfile" + contactId).attr('class', 'class="," id="contactProfile\${contactId}"
+	                         style="background-image:url('${pageContext.request.contextPath}\${data.profile_path}')"') */
+	                         
+	               	if (data.profile_path) {
+	               		const profile = $('#contactProfile' + contactId);
+	               		profile.removeClass('fs-5 fw-bold text-primary')
+	               				.css('background-image', `url('\${data.profile_path}')`)
+	                        	.text('');
+					} else {
+						const profile = $('#contactProfile' + contactId);
+						profile.addClass('fs-5 fw-bold text-primary')
+							.attr('style', '')
+                    		.text(`\${data.name_en?.charAt(0).toUpperCase() || "?"}`);
+					}
 
 				    $("#contactName" + contactId)
 				        .text(data.name_en);
@@ -1348,18 +1618,46 @@
 				}
 				
 				function deleteContact(contactId) {
-					const contactIdStr = String(contactId)
-					const isTemp = contactIdStr.startsWith("temp_")
-					
-					if (isTemp) {
-						delete pendingChanges.contact.created[contactIdStr]
-					} 
-					
-					delete pendingChanges.contact.updated[contactIdStr]
-					$("#contactCard-" + contactIdStr).remove()
 
-					if (!isTemp) pendingChanges.contact.deleted.push(contactIdStr)
-					console.log(pendingChanges)
+					Swal.fire({
+				        icon: 'warning',
+				        title: 'Delete Contact',
+				        text: 'Are you sure you want to delete this contact?',
+
+				        showCancelButton: true,
+
+				        confirmButtonText: 'Yes, Delete',
+				        cancelButtonText: 'Cancel',
+
+				        buttonsStyling: false,
+
+				        customClass: {
+				            confirmButton: 'btn btn-danger px-3',
+				            cancelButton: 'btn btn-light'
+				        },
+
+				        reverseButtons: true
+
+				    }).then((result) => {
+
+				        if (!result.isConfirmed) {
+				            return;
+				        }
+
+				        const contactIdStr = String(contactId)
+						const isTemp = contactIdStr.startsWith("temp_")
+						
+						if (isTemp) {
+							delete pendingChanges.contact.created[contactIdStr]
+						} 
+						
+						delete pendingChanges.contact.updated[contactIdStr]
+						$("#contactCard-" + contactIdStr).remove()
+
+						if (!isTemp) pendingChanges.contact.deleted.push(contactIdStr)
+						console.log(pendingChanges)
+				    });
+					
 				}
 				
 				function showCreateAddressModal() {
@@ -1491,10 +1789,14 @@
 				
 				function showCreateContactModal() {
 					// Clear input
+					const file = $(".contact-profile-create")
+					file.removeClass('image-input-changed')
+					file.addClass('image-input-empty')
+					file.find('.image-input-wrapper').attr('style', 'background-images: none;')
+					
 				    $("#titleNameTH-create").val("").trigger("change")
 				    $("#titleNameEN-create").val("").trigger("change")
 				    $("#contactAddressId-create").val("").trigger("change")
-				    
 				    
 				    $("#contactNameTH-create").val("")
 				    $("#contactNameEN-create").val("")
@@ -1514,10 +1816,14 @@
 				function saveCreatedContact() {
 					// Construct a new address
 					const contactId = "temp_" + (++tempIdCounter) 
+					const file = $('input[name="contactProfile"]')[0]?.files[0] || null;
+					console.log()
 					const data = {
 
 				        contact_id: contactId,
-
+						profile_path: file ? URL.createObjectURL(file) : null,
+						contactProfile: file,
+				        
 				        title_name_th: $("#titleNameTH-create").val(),
 				        title_name_en: $("#titleNameEN-create").val(),
 
@@ -1529,10 +1835,7 @@
 				        phone_number: $("#phoneNumber-create").val(),
 				        email: $("#contactEmail-create").val(),
 
-				        address_id: $("#contactAddressId-create").val(),
-
-				        profile_path:
-				            contactStore[contactId]?.profile_path || null
+				        address_id: $("#contactAddressId-create").val()
 				    };
 					
 					// Append changes
@@ -1548,6 +1851,9 @@
 					// Append new contact
 					const cardElm = $('#contactCard')
 					cardElm.find('#contactNotFound').remove();
+					
+					const profilePath = data.profile_path
+					console.log('path: ' + profilePath)
 					const html = `
 						<div
 						   class="d-flex flex-column flex-md-row
@@ -1558,16 +1864,16 @@
 				          >
 						<div class="d-flex align-items-center gap-4 flex-shrink-0 "
 							style="width: 250px">
-							<div class="symbol symbol-50px symbol-circle">
+							<div class="symbol symbol-40px symbol-circle">
 							 \${
 					                data.profile_path
 					                ? `
-					                    <div class="symbol-label"
+					                    <div class="symbol-label" id="contactProfile\${contactId}"
 					                         style="background-image:url('${pageContext.request.contextPath}\${data.profile_path}')">
 					                    </div>
 					                  `
 					                : `
-					                    <div class="symbol-label fs-5 fw-bold text-primary">
+					                    <div class="symbol-label fs-5 fw-bold text-primary" id="contactProfile\${contactId}">
 					                        \${data.name_en?.charAt(0).toUpperCase() || "?"}
 					                    </div>
 					                  `
@@ -1629,6 +1935,12 @@
 				
 				function submitChanges() {
 
+					validateCompanyCode.call($("#company-code"));
+					validateCompanyEnName.call($("#company-name-en"));
+					validateCompanyThName.call($("#company-name-th"));
+					validateTaxNumber.call($("#company-tax-number"));
+					validateIndustry.call($("#company-industry"));
+
 					if (hasValidationErrors(validationState)) {
 
 				        Swal.fire({
@@ -1650,21 +1962,74 @@
 						isActive: $("#company-active").is(":checked") ? "1" : "0"
 					};
 					
-				    const payload = {
-				        company,
-				        address: {
-				            updated: Object.values(pendingChanges.address.updated),
-				            created: Object.values(pendingChanges.address.created),
-				            deleted: pendingChanges.address.deleted
-				        },
+					const formData = new FormData();
+					
+					const payload = {
+					        company,
+					        address: {
+					            updated: Object.values(pendingChanges.address.updated),
+					            created: Object.values(pendingChanges.address.created),
+					            deleted: pendingChanges.address.deleted
+					        },
 
-				        contact: {
-				            updated: Object.values(pendingChanges.contact.updated),
-				            created: Object.values(pendingChanges.contact.created),
-				            deleted: pendingChanges.contact.deleted
-				        }
-				    };
+					        contact: {
+					            updated: Object.values(pendingChanges.contact.updated),
+					            created: Object.values(pendingChanges.contact.created),
+					            deleted: pendingChanges.contact.deleted
+					        }
+					    };
 
+					formData.append(
+					    "payload",
+					    JSON.stringify(payload)
+					);
+					
+					const companyLogo =
+					    $('input[name="logo"]')[0]?.files[0];
+
+					if (companyLogo) {
+
+					    formData.append(
+					        "logo",
+					        companyLogo
+					    );
+					}
+					
+					Object.values(pendingChanges.contact.created)
+					.forEach(contact => {
+
+					    if (contact.contactProfile) {
+
+					        formData.append(
+					            "contactProfiles",
+					            contact.contactProfile
+					        );
+
+					        formData.append(
+					            "contactProfileIds",
+					            contact.contact_id
+					        );
+					    }
+					});
+
+					Object.values(pendingChanges.contact.updated)
+					.forEach(contact => {
+
+					    if (contact.contactProfile) {
+
+					        formData.append(
+					            "contactProfiles",
+					            contact.contactProfile
+					        );
+
+					        formData.append(
+					            "contactProfileIds",
+					            contact.contact_id
+					        );
+					    }
+					});
+					
+					
 				    Swal.fire({
 				        icon: 'warning',
 				        title: 'Confirm Save',
@@ -1672,18 +2037,26 @@
 				        showCancelButton: true,
 				        confirmButtonText: 'Yes, Save',
 				        cancelButtonText: 'Cancel',
+				        customClass: {
+				            confirmButton: 'btn btn btn-success px-3',
+				            cancelButton: 'btn btn btn-light'
+				        },
+				        buttonsStyling: false,
+				        focusConfirm: false,
+				        focusCancel: false,
 				        reverseButtons: true
 				    }).then((result) => {
 
 				        if (!result.isConfirmed) {
 				            return;
 				        }
-
+				        
 				        $.ajax({
 				            url: 'update_company',
 				            type: 'POST',
-				            contentType: 'application/json; charset=UTF-8',
-				            data: JSON.stringify(payload),
+				            data: formData,
+				            processData: false,
+				            contentType: false,
 				            
 				            beforeSend: function() {
 				                Swal.fire({
@@ -1698,7 +2071,6 @@
 				            },
 
 				            success: function(res) {
-								console.log(res);
 				                Swal.fire({
 				                    icon: 'success',
 				                    title: 'Saved',
@@ -1713,7 +2085,7 @@
 				            },
 
 				            error: function(xhr) {
-
+								console.log(xhr)
 				                Swal.fire({
 				                    icon: 'error',
 				                    title: 'Error',
@@ -1729,7 +2101,7 @@
 			});
 	</script>
 	<!-- end::Custom Script -->
-	
+
 	<script>
 	
 		const addressValidationState = {
@@ -1799,14 +2171,11 @@
 			
 		});
 	</script>
-		
+
 	<script>
 		const contactValidationState = {
-			    titleNameTH: false,
 			    contactNameTH: false,
-			    titleNameEN: false,
 			    contactNameEN: false,
-			    addressId: false,
 			    position: false,
 			    phoneNumber: false,
 			    email: false
@@ -1824,6 +2193,8 @@
 		function validateContactRequired(input, errMsg, key) {
 
 		    const val = input.val()?.trim();
+		    const mode = input.attr("id").includes("-update") ? "update" : "create"
+		    const btnSelector = mode === "update" ? "#saveContactModalBtn" : "#saveContactBtn"
 
 		    if (!val) {
 
@@ -1844,7 +2215,7 @@
 		    }
 
 		    updateBtnState(
-		        "#saveContactBtn",
+		        btnSelector,
 		        hasValidationErrors(contactValidationState)
 		    );
 		}
@@ -1853,18 +2224,20 @@
 
 		    const input = $(this);
 		    const value = input.val().trim();
+		    const mode = input.attr("id").includes("-update") ? "update" : "create"
+		    const btnSelector = mode === "update" ? "#saveContactModalBtn" : "#saveContactBtn"
 
 		    if (!value) {
 
 		        contactValidationState.phoneNumber = false;
 
 		        setFieldInvalid(
-		            "#phoneNumber-create",
+		            "#phoneNumber-" + mode,
 		            "Phone Number is required"
 		        );
 
 		        return updateBtnState(
-		            "#saveContactBtn",
+		        	btnSelector,
 		            hasValidationErrors(contactValidationState)
 		        );
 		    }
@@ -1874,19 +2247,17 @@
 		        contactValidationState.phoneNumber = false;
 
 		        setFieldInvalid(
-		            "#phoneNumber-create",
+		            "#phoneNumber-" + mode,
 		            "Phone Number must contain only numbers"
 		        );
 
 		    } else {
-
 		        contactValidationState.phoneNumber = true;
-
-		        clearFieldError("#phoneNumber-create");
+		        clearFieldError("#phoneNumber-" + mode);
 		    }
 
 		    updateBtnState(
-		        "#saveContactBtn",
+		        btnSelector,
 		        hasValidationErrors(contactValidationState)
 		    );
 		}
@@ -1895,31 +2266,32 @@
 
 		    const input = $(this);
 		    const value = input.val().trim();
+		    const mode = input.attr("id").includes("-update") ? "update" : "create"
+		    const btnSelector = mode === "update" ? "#saveContactModalBtn" : "#saveContactBtn"
 
 		    if (!value) {
 
 		        contactValidationState.email = false;
-
+				
 		        setFieldInvalid(
-		            "#contactEmail-create",
+		            "#contactEmail-" + mode,
 		            "Email is required"
 		        );
 
 		        return updateBtnState(
-		            "#saveContactBtn",
+		        	btnSelector,
 		            hasValidationErrors(contactValidationState)
 		        );
 		    }
 
-		    const emailRegex =
-		        /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+		    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 		    if (!emailRegex.test(value)) {
 
 		        contactValidationState.email = false;
 
 		        setFieldInvalid(
-		            "#contactEmail-create",
+		            "#contactEmail-" + mode,
 		            "Invalid email format"
 		        );
 
@@ -1927,11 +2299,11 @@
 
 		        contactValidationState.email = true;
 
-		        clearFieldError("#contactEmail-create");
+		        clearFieldError("#contactEmail-" + mode);
 		    }
 
 		    updateBtnState(
-		        "#saveContactBtn",
+		        btnSelector,
 		        hasValidationErrors(contactValidationState)
 		    );
 		}
@@ -1940,13 +2312,15 @@
 
 		    const input = $(this);
 		    const value = input.val().trim();
+		    const mode = input.attr("id").includes("-update") ? "update" : "create";
+		    const btnSelector = mode === "update" ? "#saveContactModalBtn" : "#saveContactBtn";
 
 		    if (!value) {
 
 		        contactValidationState.contactNameEN = false;
 
 		        setFieldInvalid(
-		            "#contactNameEN-create",
+		            "#contactNameEN-" + mode,
 		            "Full Name EN is required"
 		        );
 
@@ -1957,7 +2331,7 @@
 		        contactValidationState.contactNameEN = false;
 
 		        setFieldInvalid(
-		            "#contactNameEN-create",
+		            "#contactNameEN-" + mode,
 		            "Only English letters are allowed"
 		        );
 
@@ -1965,11 +2339,11 @@
 
 		        contactValidationState.contactNameEN = true;
 
-		        clearFieldError("#contactNameEN-create");
+		        clearFieldError("#contactNameEN-" + mode);
 		    }
 
 		    updateBtnState(
-		        "#saveContactBtn",
+		        btnSelector,
 		        hasValidationErrors(contactValidationState)
 		    );
 		}
@@ -1978,13 +2352,15 @@
 
 		    const input = $(this);
 		    const value = input.val().trim();
+		    const mode = input.attr("id").includes("-update") ? "update" : "create"
+		    const btnSelector = mode === "update" ? "#saveContactModalBtn" : "#saveContactBtn"
 
 		    if (!value) {
 
 		        contactValidationState.contactNameTH = false;
 
 		        setFieldInvalid(
-		            "#contactNameTH-create",
+		            "#contactNameTH-" + mode,
 		            "Name TH is required"
 		        );
 
@@ -1995,7 +2371,7 @@
 		        contactValidationState.contactNameTH = false;
 
 		        setFieldInvalid(
-		            "#contactNameTH-create",
+		            "#contactNameTH-" + mode,
 		            "Only Thai characters are allowed"
 		        );
 
@@ -2003,61 +2379,262 @@
 
 		        contactValidationState.contactNameTH = true;
 
-		        clearFieldError("#contactNameTH-create");
+		        clearFieldError("#contactNameTH-" + mode);
 		    }
 
 		    updateBtnState(
-		        "#saveContactBtn",
+		        btnSelector,
 		        hasValidationErrors(contactValidationState)
 		    );
 		}
 		
 		$(document).ready(function () {
-
+			
 		    bindContactValidation(
-		        "#titleNameTH-create",
+		        "#titleNameTH-create, #titleNameTH-update",
 		        "Title Name TH is required",
 		        "titleNameTH"
 		    );
 
 		    bindContactValidation(
-		        "#titleNameEN-create",
+		        "#titleNameEN-create, #titleNameEN-update",
 		        "Title Name EN is required",
 		        "titleNameEN"
 		    );
 
 		    bindContactValidation(
-		        "#contactAddressId-create",
+		        "#contactAddressId-create, #contactAddressId-update",
 		        "Address is required",
 		        "addressId"
 		    );
 
 		    bindContactValidation(
-		        "#contactPosition-create",
+		        "#contactPosition-create, #contactPosition-update",
 		        "Position is required",
 		        "position"
 		    );
 
-		    $("#contactNameTH-create").on(
+		    $("#contactNameTH-create, #contactNameTH-update").on(
 		        "input",
 		        debounce(validateContactNameTH, 300)
 		    );
 
-		    $("#contactNameEN-create").on(
+		    $("#contactNameEN-create, #contactNameEN-update").on(
 		        "input",
 		        debounce(validateContactNameEN, 300)
 		    );
 
-		    $("#phoneNumber-create").on(
+		    $("#phoneNumber-create, #phoneNumber-update").on(
 		        "input",
 		        debounce(validatePhoneNumber, 300)
 		    );
 
-		    $("#contactEmail-create").on(
+		    $("#contactEmail-create, #contactEmail-update").on(
 		        "input",
 		        debounce(validateEmail, 300)
 		    );
 		});
+	</script>
+
+	<script>
+	
+		const industryValidationState = {
+			    industryName: false
+		};
+		
+		$(document).ready(function () {
+            $("#industry-name-create").on(
+                "input",
+                debounce(validateIndustryName, 500)
+            );
+            
+    		$("#createIndustryBtn").on("click", function () {
+    			const modal = new bootstrap.Modal(document.getElementById("industryModal"));
+    			
+    			$("#industry-name-create").val("");
+    		    $("#desc-value-create").val("");
+
+    		    $("#industry-name-create").removeClass("is-invalid");
+    		    $("#desc-value-create").removeClass("is-invalid");
+
+    		    $(".invalid-feedback").remove();
+    		    
+    		    updateBtnState("#saveIndustryBtn", true);
+
+    		    industryValidationState.industryName = false;
+    		    
+    		    modal.show();
+    		});
+    		
+    		$("#saveIndustryBtn").on("click", function () {
+
+    		    validateIndustryName();
+
+    		    if (hasValidationErrors(industryValidationState)) {
+    		        updateBtnState("#saveIndustryBtn", true);
+    		        return;
+    		    }
+
+    		    const btn = $(this);
+
+    		    $.ajax({
+    		        url: "create_industry",
+    		        type: "POST",
+    		        data: {
+    		            industryName: $("#industry-name-create").val().trim(),
+    		            industryDescription: $("#desc-value-create").val().trim()
+    		        },
+
+    		        beforeSend: function () {
+
+    		            btn.prop("disabled", true);
+
+    		            Swal.fire({
+    		                title: "Saving...",
+    		                text: "Please wait",
+    		                allowOutsideClick: false,
+    		                allowEscapeKey: false,
+    		                showConfirmButton: false,
+    		                didOpen: () => {
+    		                    Swal.showLoading();
+    		                }
+    		            });
+    		        },
+
+    		        success: function (res) {
+
+    		            Swal.close();
+    		            
+    		            const text = res.industry_name + (res.industry_description ? " - " + res.industry_description : "");
+
+    		            const option = new Option( 
+    		                text,
+    		                res.industry_id,
+    		                true,
+    		                true
+    		            );
+
+    		            $("#company-industry")
+    		                .append(option)
+    		                .trigger("change");
+
+    		            bootstrap.Modal
+    		                .getOrCreateInstance(document.getElementById("industryModal"))
+    		                .hide();
+
+    		            $("#industry-name-create").val("");
+    		            $("#desc-value-create").val("");
+    		            
+    		            Swal.fire({
+    		                icon: "success",
+    		                title: "Saved",
+    		                text: "Industry created successfully"
+    		            });
+    		        },
+
+    		        error: function (xhr) {
+
+    		            Swal.fire({
+    		                icon: "error",
+    		                title: "Error",
+    		                text: "Cannot create industry"
+    		            });
+    		        },
+
+    		        complete: function () {
+    		            btn.prop("disabled", false);
+    		        }
+    		    });
+    		});
+    		
+        });
+
+
+		function validateIndustryName() {
+
+		    const value = $("#industry-name-create").val().trim();
+		    const container = $(".create-industry-validate-container");
+
+		    container.find(".invalid-feedback").remove();
+
+		    if (!value) {
+
+		        $("#industry-name-valid-icon").addClass("d-none");
+
+		        industryValidationState.industryName = false;
+
+		        $("#industry-name-create").addClass("is-invalid");
+
+		        container.append(`
+		            <div class="invalid-feedback d-block">
+		                Industry Name is required
+		            </div>
+		        `);
+
+		        updateBtnState(
+		            "#saveIndustryBtn",
+		            hasValidationErrors(industryValidationState)
+		        );
+
+		        return;
+		    }
+		    
+		    console.log("Checking industry name: " + value);
+
+		    $.ajax({
+		        url: "check_industry_name",
+		        type: "GET",
+		        data: {
+		            industryName: value
+		        },
+		        success: function(res) {
+
+		            if (res.exists) {
+
+		                industryValidationState.industryName = false;
+
+		                setFieldInvalid(
+		                    "#industry-name-create",
+		                    "Industry name already exists"
+		                );
+
+		                $("#industry-name-valid-icon")
+		                    .addClass("d-none");
+
+		            } else {
+
+		                industryValidationState.industryName = true;
+
+		                clearFieldError(
+		                    "#industry-name-create"
+		                );
+
+		                $("#industry-name-valid-icon")
+		                    .removeClass("d-none");
+		            }
+
+		            updateBtnState(
+		                "#saveIndustryBtn",
+		                hasValidationErrors(industryValidationState)
+		            );
+		        },
+
+		        error: function() {
+
+		            industryValidationState.industryName = false;
+
+		            $("#industry-name-valid-icon")
+		                .addClass("d-none");
+
+		            updateBtnState(
+		                "#saveIndustryBtn",
+		                hasValidationErrors(industryValidationState)
+		            );
+		        }
+		    });
+		}
+
+
 	</script>
 </body>
 </html>

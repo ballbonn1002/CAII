@@ -7,6 +7,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 @Entity
@@ -20,6 +21,9 @@ public class Company {
 
 	@Column(name = "file_id")
 	private String fileId;
+	
+	@Column(name = "industry_id")
+	private String industryId;
 
 	@Column(name = "company_code")
 	private String companyCode;
@@ -33,26 +37,8 @@ public class Company {
 	@Column(name = "company_th")
 	private String companyTh;
 
-	@Column(name = "industry")
-	private String industry;
-
-	@Column(name = "website")
-	private String website;
-
 	@Column(name = "is_active")
 	private String isActive;
-
-	@Column(name = "pck_status")
-	private String pckStatus;
-
-	@Column(name = "phone")
-	private String phone;
-
-	@Column(name = "email")
-	private String email;
-
-	@Column(name = "description")
-	private String description;
 
 	@Column(name = "user_create")
 	private String userCreate;
@@ -117,21 +103,12 @@ public class Company {
 		this.companyTh = companyTh;
 	}
 
-	public String getIndustry() {
-		return industry;
+	public String getIndustryId() {
+		return industryId;
 	}
 
-	public void setIndustry(String industry) {
-		this.industry = industry;
-	}
-
-
-	public String getWebsite() {
-		return website;
-	}
-
-	public void setWebsite(String website) {
-		this.website = website;
+	public void setIndustryId(String industry) {
+		this.industryId = industry;
 	}
 
 	public String getIsActive() {
@@ -142,37 +119,6 @@ public class Company {
 		this.isActive = isActive;
 	}
 
-	public String getPckStatus() {
-		return pckStatus;
-	}
-
-	public void setPckStatus(String pckStatus) {
-		this.pckStatus = pckStatus;
-	}
-
-	public String getPhone() {
-		return phone;
-	}
-
-	public void setPhone(String phone) {
-		this.phone = phone;
-	}
-
-	public String getEmail() {
-		return email;
-	}
-
-	public void setEmail(String email) {
-		this.email = email;
-	}
-
-	public String getDescription() {
-		return description;
-	}
-
-	public void setDescription(String description) {
-		this.description = description;
-	}
 
 	public String getUserCreate() {
 		return userCreate;
