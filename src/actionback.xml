@@ -2108,6 +2108,11 @@
 			<result name="error">/index.jsp</result>
 		</action>
 
+		<action name="notification_read_all"
+			class="com.cubesofttech.action.NotificationAction" method="readAll">
+			<result name="error">/index.jsp</result>
+		</action>
+
 		<action name="notification_detail"
 			class="com.cubesofttech.action.NotificationAction" method="detail">
 			<result name="success" type="tiles">notification_detail</result>

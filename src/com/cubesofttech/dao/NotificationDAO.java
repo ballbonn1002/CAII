@@ -14,4 +14,8 @@ public interface NotificationDAO {
 
 	public List<Notification> findByUserId(String userId) throws Exception;
 
+	public List<Notification> findLatestByUserId(String userId, int maxResults) throws Exception;
+
+	public void markAllRead(String userId, String actorId) throws Exception;
+
 }

@@ -127,7 +127,7 @@
 						class="btn btn-icon btn-custom btn-icon-muted btn-active-light btn-active-color-primary w-35px h-35px"
 						data-kt-menu-trigger="{default: 'click', lg: 'hover'}"
 						data-kt-menu-attach="parent" data-kt-menu-placement="bottom-end">
-						<i class="ki-duotone ki-notification-status fs-2">
+						<i class="ki-duotone ki-notification fs-2">
 							<span class="path1"></span>
 							<span class="path2"></span>
 							<span class="path3"></span>
@@ -143,11 +143,24 @@
 						<div class="d-flex flex-column bgi-no-repeat rounded-top"
 							style="background-image:url('assets/media/misc/menu-header-bg.jpg')">
 							<!--begin::Title-->
-							<h3 class="text-white fw-semibold px-9 mt-10 mb-6">Notifications</h3>
+							<div class="d-flex flex-stack px-9 mt-10 mb-6">
+								<h3 class="text-white fw-semibold m-0">Notifications</h3>
+								<button type="button" id="kt_notification_mark_all_read"
+									class="btn btn-sm btn-color-white btn-active-color-primary">Mark
+									all as read</button>
+							</div>
 							<!--end::Title-->
 						</div>
 						<!--end::Heading-->
 						<!--begin::Items-->
+						<style>
+							.notif-row {
+								display: grid;
+								grid-template-columns: 12px 35px 1fr auto;
+								align-items: center;
+								column-gap: 8px;
+							}
+						</style>
 						<div class="scroll-y mh-325px my-5 px-8" id="kt_notification_list">
 							<div class="text-muted text-center py-5">No notifications</div>
 						</div>
@@ -235,7 +248,7 @@
 							}
 
 							var typeInfo = LEAVE_TYPE_ICON[String(data.leaveTypeId)] || DEFAULT_ICON;
-							var titleText = n.title || "";
+							var titleText = data.leaveTypeName || n.title || "";
 
 							var statusBadge = "";
 							if (data.status) {
@@ -248,12 +261,17 @@
 								dateRow = '<div class="text-gray-500 fs-7">' + formatLongDate(data.startDate) + ' - ' + formatLongDate(data.endDate) + '</div>';
 							}
 
-							var $row = $('<a href="notification_read?id=' + n.id + '" class="d-flex flex-stack py-4 text-decoration-none"></a>');
+							var dotHtml = n.isRead ? '' : '<span class="bullet bullet-dot bg-danger"></span>';
+
+							var $row = $('<a href="notification_read?id=' + n.id + '" class="notif-row py-4 text-decoration-none"></a>');
 							$row.append(
-								buildIconHtml(typeInfo)
-								+ '<div class="mb-0 me-2">'
-								+ '<span class="fs-6 text-gray-800 text-hover-primary fw-bold">' + titleText + '</span>' + statusBadge
-								+ dateRow
+								'<div class="d-flex justify-content-center">' + dotHtml + '</div>'
+								+ buildIconHtml(typeInfo)
+								+ '<div>'
+									+ '<div class="mb-0 me-2">'
+									+ '<span class="fs-6 text-gray-800 text-hover-primary fw-bold">' + titleText + '</span>' + statusBadge
+									+ dateRow
+									+ '</div>'
 								+ '</div>'
 								+ '<div class="d-flex flex-column align-items-center">'
 								+ '<span class="badge badge-light fs-8">' + notifTimeLabel(n.timeCreate) + '</span>'
@@ -262,25 +280,42 @@
 							return $row;
 						}
 
-						$.ajax({
-							url : "notification_list_json",
-							method : "POST",
-							success : function(data) {
-								var list = typeof data === "string" ? JSON.parse(data) : data;
-								var $container = $("#kt_notification_list");
-								$container.empty();
-								if (!list || list.length === 0) {
-									$container.append('<div class="text-muted text-center py-5">No notifications</div>');
-									return;
+						function loadNotifications() {
+							$.ajax({
+								url : "notification_list_json",
+								method : "POST",
+								success : function(data) {
+									var list = typeof data === "string" ? JSON.parse(data) : data;
+									var $container = $("#kt_notification_list");
+									$container.empty();
+									if (!list || list.length === 0) {
+										$container.append('<div class="text-muted text-center py-5">No notifications</div>');
+										return;
+									}
+									list.forEach(function(n) {
+										$container.append(buildNotifRow(n));
+									});
+								},
+								error : function() {
+									console.log("Unable to load notifications.");
 								}
-								list.forEach(function(n) {
-									$container.append(buildNotifRow(n));
-								});
-							},
-							error : function() {
-								console.log("Unable to load notifications.");
-							}
+							});
+						}
+
+						$("#kt_notification_mark_all_read").on("click", function() {
+							$.ajax({
+								url : "notification_read_all",
+								method : "POST",
+								success : function() {
+									loadNotifications();
+								},
+								error : function() {
+									console.log("Unable to mark notifications as read.");
+								}
+							});
 						});
+
+						loadNotifications();
 					});
 				</script>
 				<!--  -->

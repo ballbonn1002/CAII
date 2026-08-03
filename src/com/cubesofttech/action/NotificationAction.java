@@ -42,7 +42,7 @@ public class NotificationAction extends ActionSupport {
 	public String listJson() {
 		try {
 			User onlineUser = (User) request.getSession().getAttribute("onlineUser");
-			List<Notification> list = notificationDAO.findByUserId(onlineUser.getId());
+			List<Notification> list = notificationDAO.findLatestByUserId(onlineUser.getId(), 10);
 
 			Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd'T'HH:mm:ss").create();
 			String json = gson.toJson(list);
@@ -83,6 +83,17 @@ public class NotificationAction extends ActionSupport {
 				notificationDAO.update(notification);
 			}
 			return SUCCESS;
+		} catch (Exception e) {
+			log.error(e);
+			return ERROR;
+		}
+	}
+
+	public String readAll() {
+		try {
+			User onlineUser = (User) request.getSession().getAttribute("onlineUser");
+			notificationDAO.markAllRead(onlineUser.getId(), onlineUser.getId());
+			return null;
 		} catch (Exception e) {
 			log.error(e);
 			return ERROR;

@@ -77,7 +77,14 @@ public class LeaveAction extends ActionSupport {
 	public static final String TYPELEAVE = "leave_type_id";
 	public static final String NODAY = "no_day";
 	public static final String STATUS = "leave_status_id";
-	
+
+	private static char toChar(Object value) {
+		if (value instanceof Character) {
+			return (Character) value;
+		}
+		return value.toString().charAt(0);
+	}
+
 	@Autowired
 	private LeaveService leaveService;
 	
@@ -808,9 +815,9 @@ public class LeaveAction extends ActionSupport {
 			BigDecimal LeaveWAnumT9 = new BigDecimal(0);
 
 			for (int i = 0; i < userleave.size(); i++) {
-				Character type = (Character) userleave.get(i).get(TYPELEAVE);
+				char type = toChar(userleave.get(i).get(TYPELEAVE));
 				BigDecimal num = (BigDecimal) userleave.get(i).get(NODAY);
-				Character status = (Character) userleave.get(i).get(STATUS);
+				char status = toChar(userleave.get(i).get(STATUS));
 				try {
 					switch (status) {
 					case '0':
@@ -1057,9 +1064,9 @@ public class LeaveAction extends ActionSupport {
 			log.debug(status);
 			userleave = leaveDAO.findUserLeaveByTypeAndStatus(start_date, end_date, userLogin, type, leaveType);
 			for (int i = 0; i < userleave.size(); i++) {
-				Character type1 = (Character) userleave.get(i).get(TYPELEAVE);
+				char type1 = toChar(userleave.get(i).get(TYPELEAVE));
 				BigDecimal num = (BigDecimal) userleave.get(i).get(NODAY);
-				Character status1 = (Character) userleave.get(i).get(STATUS);
+				char status1 = toChar(userleave.get(i).get(STATUS));
 
 				switch (status1) {
 				case '0':
@@ -1314,9 +1321,9 @@ public class LeaveAction extends ActionSupport {
 			List<Map<String, Object>> userleave = null;
 			userleave = leaveDAO.findUserLeaveByTypeAndStatus(start_date, end_date, userLogin, start, "");
 			for (int i = 0; i < userleave.size(); i++) {
-				Character type = (Character) userleave.get(i).get(TYPELEAVE);
+				char type = toChar(userleave.get(i).get(TYPELEAVE));
 				BigDecimal num = (BigDecimal) userleave.get(i).get(NODAY);
-				Character status = (Character) userleave.get(i).get(STATUS);
+				char status = toChar(userleave.get(i).get(STATUS));
 
 				switch (status) {
 				case '0':
@@ -1529,9 +1536,9 @@ public class LeaveAction extends ActionSupport {
 			
 			List<Map<String, Object>> userleave = leaveDAO.findUserLeaveByTypeAndStatus(start_date, end_date, userId, "", "");
 			for (int i = 0; i < userleave.size(); i++) {
-				Character type = (Character) userleave.get(i).get(TYPELEAVE);
+				char type = toChar(userleave.get(i).get(TYPELEAVE));
 				BigDecimal num = (BigDecimal) userleave.get(i).get(NODAY);
-				Character status1 = (Character) userleave.get(i).get(STATUS);
+				char status1 = toChar(userleave.get(i).get(STATUS));
 				switch (status1) {
 				case '0':
 					switch (type) {
