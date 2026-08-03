@@ -2179,7 +2179,7 @@ public class LeaveAction extends ActionSupport {
 			messageJson.put("startDate", startDate);
 			messageJson.put("endDate", endDate);
 
-			notificationService.create(leave.getUserId(), null, messageJson.toString(), leave.getDescription(), actorId);
+			notificationService.create(leave.getUserId(), "leave", messageJson.toString(), leave.getDescription(), actorId);
 		} catch (Exception e) {
 			log.error("Unable to create leave status notification", e);
 		}
