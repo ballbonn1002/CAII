@@ -124,7 +124,7 @@
 				<div class="app-navbar-item ms-1 ms-md-4">
 					<!--begin::Menu toggle-->
 					<div
-						class="btn btn-icon btn-custom btn-icon-muted btn-active-light btn-active-color-primary w-35px h-35px"
+						class="btn btn-icon btn-custom btn-icon-muted btn-active-light btn-active-color-primary w-35px h-35px position-relative"
 						data-kt-menu-trigger="{default: 'click', lg: 'hover'}"
 						data-kt-menu-attach="parent" data-kt-menu-placement="bottom-end">
 						<i class="ki-duotone ki-notification fs-2">
@@ -133,6 +133,8 @@
 							<span class="path3"></span>
 							<span class="path4"></span>
 						</i>
+						<span id="kt_notification_unread_dot"
+							class="bullet bullet-dot bg-success h-6px w-6px position-absolute translate-middle top-0 start-50 animation-blink d-none"></span>
 					</div>
 					<!--end::Menu toggle-->
 					<!--begin::Menu-->
@@ -288,6 +290,10 @@
 									var list = typeof data === "string" ? JSON.parse(data) : data;
 									var $container = $("#kt_notification_list");
 									$container.empty();
+
+									var hasUnread = list && list.some(function(n) { return !n.isRead; });
+									$("#kt_notification_unread_dot").toggleClass("d-none", !hasUnread);
+
 									if (!list || list.length === 0) {
 										$container.append('<div class="text-muted text-center py-5">No notifications</div>');
 										return;
