@@ -158,7 +158,7 @@
 						<style>
 							.notif-row {
 								display: grid;
-								grid-template-columns: 12px 35px 1fr auto;
+								grid-template-columns: 35px 1fr auto 12px;
 								align-items: center;
 								column-gap: 8px;
 							}
@@ -267,8 +267,7 @@
 
 							var $row = $('<a href="notification_read?id=' + n.id + '" class="notif-row py-4 text-decoration-none"></a>');
 							$row.append(
-								'<div class="d-flex justify-content-center">' + dotHtml + '</div>'
-								+ buildIconHtml(typeInfo)
+								buildIconHtml(typeInfo)
 								+ '<div>'
 									+ '<div class="mb-0 me-2">'
 									+ '<span class="fs-6 text-gray-800 text-hover-primary fw-bold">' + titleText + '</span>' + statusBadge
@@ -278,6 +277,7 @@
 								+ '<div class="d-flex flex-column align-items-center">'
 								+ '<span class="badge badge-light fs-8">' + notifTimeLabel(n.timeCreate) + '</span>'
 								+ '</div>'
+								+ '<div class="d-flex justify-content-center">' + dotHtml + '</div>'
 							);
 							return $row;
 						}
