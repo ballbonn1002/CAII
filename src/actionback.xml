@@ -2093,7 +2093,7 @@
 			class="com.cubesofttech.action.WorkLocationAction" method="search">
 			<result name="login" type="redirect">/index.jsp</result>
 		</action>
-		
+
 		<!-- PO - Purchase Order -->
 		<action name="purchase_order_list"
 			class="com.cubesofttech.action.PurchaseOrderAction" method="purchase_order_list">
@@ -2159,7 +2159,45 @@
 		    <result name="success" type="json"/>
 		    <result name="error">/index.jsp</result>
 		</action>
-
+		
+		<action name="equipment_request_list" 
+		class="com.cubesofttech.action.EquipmentRequestAction" method="myEquipmentRequest">
+		    <result name="success" type="tiles">equipment_request_list</result>
+		    <result name="error">/index.jsp</result>
+		    <result name="login" type="redirect">/index.jsp</result>
+		</action>
+		<action name="equipment_request_listdelete" 
+		class="com.cubesofttech.action.EquipmentRequestAction" method="EquipmentDelete">
+		    <result name="success" type="tiles">equipment_request_listdelete</result>
+		    <result name="error">/index.jsp</result>
+		    <result name="login" type="redirect">/index.jsp</result>
+		</action>
+		
+		<action name="equipment_request_create"
+		    class="com.cubesofttech.action.EquipmentRequestAction" method="initgetMaster">
+		    <result name="success" type="tiles">equipment_request_create</result>
+		    <result name="error">/index.jsp</result>
+		</action>
+		
+			<action name="equipment_request_update"
+			class="com.cubesofttech.action.EquipmentRequestAction"
+			method="EquipmentPreview">
+			<result name="success" type="tiles">equipment_request_update</result>
+			<result name="error">/index.jsp</result>
+		</action>
+		
+		
+		<action name="equipment_request_save"
+		    class="com.cubesofttech.action.EquipmentRequestAction" method="equipment_request_save">
+		    <result name="success" type="tiles">equipment_request_save</result>
+		    <result name="error">/index.jsp</result>
+		</action>
+		<action name="getauto_id_load"
+		    class="com.cubesofttech.action.EquipmentRequestAction" method="getauto_id_load">
+		    <result name="success" type="tiles">getauto_id_load</result>
+		    <result name="error">/index.jsp</result>
+		</action>
+		
 		<!-- Stock -->
 		<action name="stock_cons_list"
 			class="com.cubesofttech.action.ProductAction" method="stockConsList">
@@ -2203,6 +2241,7 @@
 			<result name="success" type="tiles">productList</result>
 			<result name="error">/index.jsp</result>
 		</action>
+
 	</package>
 
 </struts>
