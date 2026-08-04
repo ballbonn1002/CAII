@@ -274,9 +274,8 @@
 													<div
 														class="form-check form-check-custom form-check-solid justify-content-center">
 
-														<input class="form-check-input" type="checkbox" disabled
+														<input class="form-check-input js-isactive-input" type="checkbox" data-company-id="${company.company_id}" 
 															<c:if test="${company.is_active eq '1'}">checked</c:if>>
-
 													</div>
 
 												</td>
@@ -577,7 +576,7 @@
 
 										<div
 											class="form-check form-check-custom form-check-solid form-check-sm">
-											<input class="form-check-input" type="checkbox" disabled
+											<input class="form-check-input js-isactive-input" type="checkbox" data-company-id="${company.company_id}"
 												<c:if test="${company.is_active eq '1'}">checked</c:if>>
 											<span class="ms-3 text-gray-700 fw-medium">Is Active</span>
 										</div>
@@ -627,6 +626,8 @@
 					orderable : false
 				} ]
 			});
+			
+			const isActiveInputs = $(".js-isactive-input");
 
 			$("#company-search").on("keyup", function() {
 
@@ -639,6 +640,98 @@
 					$("#itemsFound").text(`Company (\${count})`);
 
 					syncCardView(table, count);
+			});
+			
+			$(document).on("change", ".js-isactive-input", function () {
+			    const checkbox = $(this);
+			    const companyId = checkbox.data("company-id");
+			    const prevChecked = !checkbox.is(":checked"); 
+
+			    Swal.fire({
+			        title: "Update status?",
+			        text: "Do you want to change active status?",
+			        icon: "warning",
+			        showCancelButton: true,
+			        confirmButtonText: "Yes",
+			        cancelButtonText: "Cancel",
+			        reverseButtons: true,
+			        buttonsStyling: false,
+			        customClass: {
+			            confirmButton: "btn btn-success",
+			            cancelButton: "btn btn-light"
+			        }
+			    }).then((result) => {
+			        if (!result.isConfirmed) {
+			            checkbox.prop("checked", prevChecked);
+			            return;
+			        }
+
+			        Swal.fire({
+			            title: "Updating...",
+			            text: "Please wait",
+			            allowOutsideClick: false,
+			            allowEscapeKey: false,
+			            showConfirmButton: false,
+			            didOpen: () => {
+			                Swal.showLoading();
+			            }
+			        });
+
+			        $.ajax({
+			            url: "update_company_status",
+			            type: "POST",
+			            dataType: "json",
+			            data: {
+			                companyId: companyId
+			            },
+			            success: function (res) {
+			                Swal.close();
+
+			                if (res.success) {
+			                    $(`.js-isactive-input[data-company-id='\${companyId}']`).each(function () {
+									console.log("test")
+			                        $(this).prop("checked", res.isActive === "1" || res.isActive === 1);
+			                    });
+
+			                    Swal.fire({
+			                        icon: "success",
+			                        title: "Updated",
+			                        text: "Status updated successfully.",
+			                        buttonsStyling: false,
+			                        customClass: {
+			                            confirmButton: "btn btn-success"
+			                        }
+			                    });
+			                } else {
+			                    checkbox.prop("checked", prevChecked);
+
+			                    Swal.fire({
+			                        icon: "error",
+			                        title: "Error",
+			                        text: res.message || "Cannot update status",
+			                        buttonsStyling: false,
+			                        customClass: {
+			                            confirmButton: "btn btn-danger"
+			                        }
+			                    });
+			                }
+			            },
+			            error: function (xhr) {
+			                Swal.close();
+			                checkbox.prop("checked", prevChecked);
+
+			                Swal.fire({
+			                    icon: "error",
+			                    title: "Error",
+			                    text: xhr.responseJSON?.message || "Cannot update status",
+			                    buttonsStyling: false,
+			                    customClass: {
+			                        confirmButton: "btn btn-danger"
+			                    }
+			                });
+			            }
+			        });
+			    });
 			});
 
 			$("#toggle-card-view").on("click", function() {

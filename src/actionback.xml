@@ -1762,6 +1762,10 @@
         	class="com.cubesofttech.action.CompanyAction" method="checkIndustryName">
         </action>
         
+        <action name="update_company_status"
+        	class="com.cubesofttech.action.CompanyAction" method="updateIsActiveStatus">
+        </action>
+        
         
         <!-- ========================== Setting ============================== -->
 		

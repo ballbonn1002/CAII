@@ -520,3 +520,7 @@ DROP TABLE catalog_consumables;
 -- 30/07/2026 June: Update Product Table Information.
 UPDATE product SET active ='0', sub_product_active ='0' WHERE user_create='cft.admin';
 
+-- PROD 31 Jul 2026
+
+
+

@@ -779,5 +779,81 @@ public class CompanyAction extends ActionSupport {
 	        return ERROR;
 	    }
 	}
+	
+	public String updateIsActiveStatus() {
+	    try {
+	        User user = (User) request.getSession().getAttribute("user");
+	        if (user == null) {
+	            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+	            response.setContentType("application/json;charset=UTF-8");
+	            
+	            Map<String, Object> error = new HashMap<>();
+	            error.put("success", false);
+	            error.put("message", "User not logged in or session expired");
+	            
+	            new ObjectMapper().writeValue(response.getWriter(), error);
+	            return NONE;
+	        }
 
+	        if (companyId == null) {
+	            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+	            response.setContentType("application/json;charset=UTF-8");
+	            
+	            Map<String, Object> error = new HashMap<>();
+	            error.put("success", false);
+	            error.put("message", "Company ID is required");
+	            
+	            new ObjectMapper().writeValue(response.getWriter(), error);
+	            return NONE;
+	        }
+
+	        Company company = companyDAO.findById(companyId);
+	        if (company == null) {
+	            response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+	            response.setContentType("application/json;charset=UTF-8");
+	            
+	            Map<String, Object> error = new HashMap<>();
+	            error.put("success", false);
+	            error.put("message", "Company not found");
+	            
+	            new ObjectMapper().writeValue(response.getWriter(), error);
+	            return NONE;
+	        }
+
+	        String current = company.getIsActive(); // "0" or "1"
+	        String next = "1".equals(current) ? "0" : "1";
+
+	        company.setIsActive(next);
+	        company.setUserUpdate(user.getId());
+	        company.setTimeUpdate(DateUtil.getCurrentTime());
+
+	        companyDAO.update(company);
+
+	        response.setContentType("application/json;charset=UTF-8");
+	        response.setStatus(HttpServletResponse.SC_OK);
+
+	        Map<String, Object> result = new HashMap<>();
+	        result.put("success", true);
+	        result.put("companyId", company.getCompanyId());
+	        result.put("isActive", company.getIsActive());
+
+	        new ObjectMapper().writeValue(response.getWriter(), result);
+
+	        return NONE;
+
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        try {
+	            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+	            response.setContentType("application/json;charset=UTF-8");
+	            
+	            Map<String, Object> error = new HashMap<>();
+	            error.put("success", false);
+	            error.put("message", "An error occurred while updating the status");
+	            new ObjectMapper().writeValue(response.getWriter(), error);
+	        } catch (Exception ignored) {
+	        }
+	        return NONE;
+	    }
+	}
 }
