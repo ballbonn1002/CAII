@@ -161,5 +161,28 @@ public class ProductDAOImpl implements ProductDAO {
 	    }
 	}
 	
+	@Override
+	public List<Product> getproductid(Product product) throws Exception {
+	     Session session = this.sessionFactory.getCurrentSession();
+	     
+	     String hql = "FROM Product";
+	        
+	     List<Product> productIdList = session.createQuery(hql).list();
+	                                    
+	     return productIdList;
+	}
+		
 	
+	@Override
+	public List<Object[]> getArrayProduct(Product Product) throws Exception {
+	     Session session = this.sessionFactory.getCurrentSession();
+	     
+	     String sql = "SELECT pd.product_id, pd.product_name, pd.parent_product_id, pd.product_type " 
+	                + "FROM product pd "
+	                + "WHERE pd.parent_product_id = 0";
+	        
+	     List<Object[]> mrgetall = (List<Object[]>) session.createSQLQuery(sql).list();
+	                                    
+	     return mrgetall;
+	}
 }

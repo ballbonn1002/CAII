@@ -494,7 +494,6 @@ INSERT INTO `product` (`product_id`, `sequence`, `product_no`, `product_name`, `
 (6, 4, 'Item-Shirt2026-Black-XL', 'XL', '2', '1', 'อก 38', 'cft.admin', NULL, NULL, NULL),
 (7, 5, 'Item-Shirt2026-Black-2XL', '2XL', '2', '1', 'อก 40', 'cft.admin', NULL, NULL, NULL);
 
-
 -- 27/07/2026 Best(Intern): create table warehouse
 CREATE TABLE warehouse (
     warehouse_id BIGINT AUTO_INCREMENT PRIMARY KEY,
@@ -523,4 +522,37 @@ UPDATE product SET active ='0', sub_product_active ='0' WHERE user_create='cft.a
 -- PROD 31 Jul 2026
 
 
+CREATE TABLE `mr` (
+  `mr_id` VARCHAR(16) NOT NULL,
+  `catalog_items_id` VARCHAR(8) NOT NULL,
+  `item_typw` VARCHAR(32) DEFAULT NULL, 
+  `item_sub_id` VARCHAR(32) DEFAULT NULL,
+  `amount` double DEFAULT NULL,
+  `status_id` VARCHAR(8) DEFAULT NULL,
+  `request_user` VARCHAR(32) DEFAULT NULL,
+  `request_date` date NULL DEFAULT NULL,
+  `Approve_user` VARCHAR(32) DEFAULT NULL,
+  `Approve_date` date DEFAULT NULL,
+  `receive_user` VARCHAR(32) DEFAULT NULL,
+  `receive_date` date DEFAULT NULL,
+  `description` text DEFAULT NULL,
+  `user_update` timestamp NULL DEFAULT NULL,
+  `time_create` VARCHAR(32) DEFAULT NULL,
+  `time_update` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`mr_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+
+CREATE TABLE `doc_status` (
+  `doc_status_id` VARCHAR(32) NOT NULL,
+  `status_code` VARCHAR(32) NOT NULL,
+  `status_name` VARCHAR(200) DEFAULT NULL,
+  `group` VARCHAR(200) DEFAULT NULL,
+  `decscription` VARCHAR(1024) NOT NULL,
+  `user_create` VARCHAR(32) DEFAULT NULL,
+  `user_update` VARCHAR(32) DEFAULT NULL,
+  `time_create` TIMESTAMP NULL DEFAULT NULL,
+  `time_update` TIMESTAMP NULL DEFAULT NULL,
+  PRIMARY KEY (`doc_status_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 

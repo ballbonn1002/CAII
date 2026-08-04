@@ -12474,9 +12474,19 @@ fieldset:disabled .btn {
     color: rgba(var(--bs-warning-rgb), var(--bs-text-opacity)) !important
 }
 
+.text-gray {
+    --bs-text-opacity: 1;
+    color: rgba(var(--bs-gray-rgb), var(--bs-text-opacity)) !important
+}
+
 .text-danger {
     --bs-text-opacity: 1;
     color: rgba(var(--bs-danger-rgb), var(--bs-text-opacity)) !important
+}
+
+.text-cyan {
+    --bs-text-opacity: 1;
+    color: rgba(var(--bs-cyan-rgb), var(--bs-text-opacity)) !important
 }
 
 .text-dark {
@@ -34704,6 +34714,7 @@ fieldset:disabled .btn {
     --bs-dark-rgb: 30, 33, 41;
     --bs-text-white: #ffffff;
     --bs-text-primary: #1B84FF;
+    --bs-text-orange: #fd7e14;
     --bs-text-secondary: #F1F1F4;
     --bs-text-light: #F9F9F9;
     --bs-text-success: #17C653;
@@ -58417,6 +58428,10 @@ label.rating-label:hover~.rating-label>i {
 
 .text-primary {
     color: var(--bs-text-primary) !important
+}
+
+.text-orange {
+    color: var(--bs-text-orange) !important
 }
 
 .text-inverse-primary {
