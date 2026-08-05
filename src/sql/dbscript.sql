@@ -536,7 +536,7 @@ CREATE TABLE `mr` (
   `receive_user` varchar(32) DEFAULT NULL,
   `receive_date` date DEFAULT NULL,
   `description` text DEFAULT NULL,
-  `url_ref` text NOT NULL,
+  `url_ref` text DEFAULT NULL,
   `user_update` timestamp NULL DEFAULT NULL,
   `time_create` varchar(32) DEFAULT NULL,
   `time_update` timestamp NULL DEFAULT NULL
