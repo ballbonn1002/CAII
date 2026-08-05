@@ -523,25 +523,24 @@ UPDATE product SET active ='0', sub_product_active ='0' WHERE user_create='cft.a
 
 
 CREATE TABLE `mr` (
-  `mr_id` VARCHAR(16) NOT NULL,
-  `catalog_items_id` VARCHAR(8) NOT NULL,
-  `item_typw` VARCHAR(32) DEFAULT NULL, 
-  `item_sub_id` VARCHAR(32) DEFAULT NULL,
+  `mr_id` varchar(16) NOT NULL,
+  `catalog_items_id` varchar(8) NOT NULL,
+  `item_type` varchar(32) DEFAULT NULL,
+  `item_sub_id` varchar(32) DEFAULT NULL,
   `amount` double DEFAULT NULL,
-  `status_id` VARCHAR(8) DEFAULT NULL,
-  `request_user` VARCHAR(32) DEFAULT NULL,
-  `request_date` date NULL DEFAULT NULL,
-  `Approve_user` VARCHAR(32) DEFAULT NULL,
-  `Approve_date` date DEFAULT NULL,
-  `receive_user` VARCHAR(32) DEFAULT NULL,
+  `status_id` varchar(8) DEFAULT NULL,
+  `request_user` varchar(50) DEFAULT NULL,
+  `request_date` date DEFAULT NULL,
+  `approve_user` varchar(32) DEFAULT NULL,
+  `approve_date` date DEFAULT NULL,
+  `receive_user` varchar(32) DEFAULT NULL,
   `receive_date` date DEFAULT NULL,
   `description` text DEFAULT NULL,
+  `url_ref` text NOT NULL,
   `user_update` timestamp NULL DEFAULT NULL,
-  `time_create` VARCHAR(32) DEFAULT NULL,
-  `time_update` timestamp NULL DEFAULT NULL,
-  PRIMARY KEY (`mr_id`)
+  `time_create` varchar(32) DEFAULT NULL,
+  `time_update` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
 
 CREATE TABLE `doc_status` (
   `doc_status_id` VARCHAR(32) NOT NULL,
