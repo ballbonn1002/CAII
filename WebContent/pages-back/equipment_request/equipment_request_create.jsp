@@ -342,7 +342,7 @@
 									<div class="row g-5 mb-5">
 										<%-- Beginning --%>
 										<div class="col-md-6">
-											<label class="form-label required fw-semibold">Description</label>
+											<label class="form-label fw-semibold">Description</label>
 											<div
 												class="d-flex align-items-center border border-gray-300 rounded px-3 py-3">
 												<textarea class="form-control bg-transparent border-0 shadow-none p-0 fw-medium text-gray-900"
@@ -354,7 +354,7 @@
 											</div>
 										</div>
 										<div class="col-md-6">
-											<label class="form-label required fw-semibold">URL Reference</label>
+											<label class="form-label fw-semibold">URL Reference</label>
 											<div
 												class="d-flex align-items-center border border-gray-300 rounded px-3 py-3">
 												<textarea class="form-control bg-transparent border-0 shadow-none p-0 fw-medium text-gray-900"
