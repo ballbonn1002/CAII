@@ -3,9 +3,11 @@ package com.cubesofttech.dao;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import org.hibernate.Criteria;
 import org.hibernate.SQLQuery;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.criterion.Projections;
 import org.hibernate.transform.AliasToEntityMapResultTransformer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -22,6 +24,7 @@ public class ProductDAOImpl implements ProductDAO {
     public void save(Product product) throws Exception {
         Session session = this.sessionFactory.getCurrentSession();
         session.save(product);
+        session.flush();
     }
 
     @Override
@@ -35,6 +38,7 @@ public class ProductDAOImpl implements ProductDAO {
     public void delete(Product product) throws Exception {
         Session session = this.sessionFactory.getCurrentSession();
         session.delete(product);
+        session.flush();
     }
 
     @Override
@@ -57,13 +61,14 @@ public class ProductDAOImpl implements ProductDAO {
             StringBuilder sql = new StringBuilder();
             sql.append("SELECT main.product_id AS product_id, main.sequence AS sequence, ");
             sql.append("main.product_name AS product_name, main.product_type AS product_type, ");
-            sql.append("GROUP_CONCAT(sub.product_name ORDER BY sub.sequence ASC SEPARATOR ',') AS sub_products, ");
-            sql.append("u.unit_id AS unit_id, u.unit_name AS unit_name ");
+            sql.append("GROUP_CONCAT(sub.product_name ORDER BY sub.sequence ASC SEPARATOR ',') AS sub_products ");
             sql.append("FROM product main ");
             sql.append("LEFT JOIN product sub ON main.product_id = sub.parent_product_id ");
-            sql.append("LEFT JOIN unit_of_measure u ON main.product_id = u.product_id AND u.sequence = 0 ");
-            sql.append("WHERE main.product_type = 2 AND main.parent_product_id = 0 ");
-            sql.append("GROUP BY main.product_id, main.sequence, main.product_name, main.product_type, u.unit_id, u.unit_name ");
+            // ข้อมูล unit ไม่ join ที่นี่แล้ว - ดึงผ่าน UnitOfMeasureDAO.findMainUnitsByProductIds()
+            // product_type / parent_product_id เป็น varchar ต้องเทียบด้วย string literal
+            // ถ้าเทียบกับตัวเลขเปล่า MySQL จะ cast ทั้งคอลัมน์เป็น number ทำให้ใช้ index ไม่ได้
+            sql.append("WHERE main.product_type = '2' AND main.parent_product_id = '0' ");
+            sql.append("GROUP BY main.product_id, main.sequence, main.product_name, main.product_type ");
             sql.append("ORDER BY main.product_id ASC");
             SQLQuery query = session.createSQLQuery(sql.toString());
             query.setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
@@ -185,4 +190,30 @@ public class ProductDAOImpl implements ProductDAO {
 	                                    
 	     return mrgetall;
 	}
+    @Override
+    public Integer getMaxId() throws Exception {
+        Session session = this.sessionFactory.getCurrentSession();
+        Integer maxId = 0;
+        try {
+            Criteria criteria = session.createCriteria(Product.class)
+                    .setProjection(Projections.max("productId"));
+            maxId = (Integer) criteria.uniqueResult();
+        } catch (Exception e) {
+            e.printStackTrace();
+            maxId = 0;
+        }
+        return (maxId != null) ? maxId : Integer.valueOf(0);
+    }
+
+    @Override
+    public List<Product> findByParentProductIds(List<String> parentProductIds) throws Exception {
+        Session session = this.sessionFactory.getCurrentSession();
+        if (parentProductIds == null || parentProductIds.isEmpty()) {
+            return new ArrayList<>();
+        }
+        return session.createQuery("from Product where parentProductId in (:ids)")
+                .setParameterList("ids", parentProductIds)
+                .list();
+    }
+
 }

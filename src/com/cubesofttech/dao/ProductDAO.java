@@ -18,4 +18,6 @@ public interface ProductDAO {
 	List<Product> getproductid(Product product) throws Exception;
 	List<Object[]> getArrayProduct(Product Product) throws Exception;
 	
+    public Integer getMaxId() throws Exception;
+    List<Product> findByParentProductIds(List<String> parentProductIds) throws Exception;
 }

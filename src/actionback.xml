@@ -2221,10 +2221,67 @@
 			<result name="error">/index.jsp</result>
 		</action>
 
+		<action name="stock_cons_save"
+			class="com.cubesofttech.action.ProductAction" method="stockConsSave">
+			<!-- PRG: redirect หลังบันทึกกัน refresh แล้ว submit ซ้ำ -->
+			<result name="success" type="redirect">stock_cons_edit?productId=${productId}</result>
+			<result name="error">/index.jsp</result>
+		</action>
+
+		<!-- stockConsUpdate ตอบ JSON เอง (AJAX) จึงไม่ต้องมี result -->
+		<action name="stock_cons_update"
+			class="com.cubesofttech.action.ProductAction" method="stockConsUpdate">
+		</action>
+
 		<action name="stock_cons_balance"
 			class="com.cubesofttech.action.ProductAction" method="showStockBalancePage">
 			<result name="success" type="tiles">stockConsBalance</result>
 			<result name="error">/index.jsp</result>
+		</action>
+
+		<!-- Stock: Sub product active toggle (AJAX, ตอบ JSON) -->
+		<action name="stock_cons_sub_active_update"
+			class="com.cubesofttech.action.ProductAction" method="subProductActiveUpdate">
+		</action>
+
+		<!-- Stock: Unit of Measure (UOM) -->
+		<action name="stock_cons_uom_add"
+			class="com.cubesofttech.action.ProductAction" method="stockConsUomSave">
+			<result name="success" type="redirect">stock_cons_edit?productId=${productId}</result>
+			<result name="error">/index.jsp</result>
+		</action>
+		<action name="stock_cons_uom_edit"
+			class="com.cubesofttech.action.ProductAction" method="stockConsUomUpdate">
+			<result name="success" type="redirect">stock_cons_edit?productId=${productId}</result>
+			<result name="error">/index.jsp</result>
+		</action>
+		<action name="stock_cons_uom_delete"
+			class="com.cubesofttech.action.ProductAction" method="stockConsUomDelete">
+			<result name="success" type="redirect">stock_cons_edit?productId=${productId}</result>
+			<result name="error">/index.jsp</result>
+		</action>
+		<action name="stock_cons_uom_reorder"
+			class="com.cubesofttech.action.ProductAction" method="stockConsUomReorder">
+		</action>
+
+		<!-- Stock: Sub product -->
+		<action name="stock_cons_sub_add"
+			class="com.cubesofttech.action.ProductAction" method="stockConsSubSave">
+			<result name="success" type="redirect">stock_cons_edit?productId=${parentProductId}</result>
+			<result name="error">/index.jsp</result>
+		</action>
+		<action name="stock_cons_sub_edit"
+			class="com.cubesofttech.action.ProductAction" method="stockConsSubUpdate">
+			<result name="success" type="redirect">stock_cons_edit?productId=${parentProductId}</result>
+			<result name="error">/index.jsp</result>
+		</action>
+		<action name="stock_cons_sub_delete"
+			class="com.cubesofttech.action.ProductAction" method="stockConsSubDelete">
+			<result name="success" type="redirect">stock_cons_edit?productId=${parentProductId}</result>
+			<result name="error">/index.jsp</result>
+		</action>
+		<action name="stock_cons_sub_reorder"
+			class="com.cubesofttech.action.ProductAction" method="stockConsSubReorder">
 		</action>
 
 		<action name="stock_offs_list"
