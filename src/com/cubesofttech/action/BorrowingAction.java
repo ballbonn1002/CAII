@@ -1150,19 +1150,26 @@ public class BorrowingAction extends ActionSupport {
 			Map<String,String> map = new HashMap<String,String>();
 			Borrow borrow = borrowDAO.findById(Integer.parseInt(id));
 			
-			if(borrow.getStatus().equals("T")) 
+			if(borrow.getStatus().equals("T") || borrow.getStatus().equals("B")) 
 			{
+				if(borrow.getUser_receive() == null || borrow.getUser_receive().trim().isEmpty()) {
+					borrow.setUser_receive(borrow.getUserBorrowid());
+					borrow.setTime_receive(timestamp);
+				}
+			
 				if(borrow.getUser_return() == null || borrow.getUser_return().trim().isEmpty()) {
 					borrow.setUser_return(borrow.getUserBorrowid());
 					borrow.setTime_return(timestamp);
 					borrow.setDateEnd(timestamp);
 				}
-			
+				if(borrow.getUser_return_receive() == null || borrow.getUser_return_receive().trim().isEmpty()) {
+					borrow.setUser_return_receive(onlineUser.getId());
+					borrow.setTime_return_receive(DateUtil.getCurrentTime());
+				}
 				borrow.setStatus("R");
 				borrow.setUserUpdate(onlineUser.getId());
 				borrow.setTimeUpdate(timestamp);
-				borrow.setUser_return_receive(onlineUser.getId());
-				borrow.setTime_return_receive(DateUtil.getCurrentTime());
+				
 				borrowDAO.update(borrow);
 				Equipment equipment = equipmentDAO.getById(Integer.parseInt(borrow.getEquipmentId()));
 				if(equipment.getStatus().equals("B")) {

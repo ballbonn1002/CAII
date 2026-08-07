@@ -54,13 +54,13 @@
 	transform: rotate(180deg);
 }
 
-a.btn-open-return-modal{
+a.btn-open-return-modal, a.btn-receive-instead{
 	color: inherit;
 	text-decoration: underline;
     cursor: pointer;
     transition: 0.2s;
 }
-a.btn-open-return-modal:hover{
+a.btn-open-return-modal:hover, a.btn-receive-instead:hover{
 	color: #17C653;
 	text-decoration: underline !important;
 }
@@ -111,12 +111,15 @@ a.btn-open-return-modal:hover{
 				                            and empty borrowObj.user_return
 				                            and empty borrowObj.user_return_receive}">
 				                <div class="d-flex align-items-center gap-2">
-				                    <button type="button" class="btn btn-secondary" disabled>
+				                     <a class="me-3 fs-6 btn-receive-instead">
+				                        Receive on Behalf
+				                    </a>
+									<button type="button" class="btn btn-secondary" disabled>
 				                        Waiting to Receive
 				                    </button>
 				                </div>
 				            </c:when>
-				            
+							
 				            <c:when test="${borrowObj.status == 'B'
 				                            and not empty borrowObj.user_delivery 
 				                            and not empty borrowObj.user_receive
@@ -131,7 +134,7 @@ a.btn-open-return-modal:hover{
 				            
 				            <c:when test="${borrowObj.status == 'T'
 				                             and not empty borrowObj.user_delivery 
-				                             and not empty borrowObj.user_receive 
+				                           
 				                             and empty borrowObj.user_return
 				                             and empty borrowObj.user_return_receive}">
 				                <div class="d-flex align-items-center gap-2">
@@ -673,58 +676,75 @@ a.btn-open-return-modal:hover{
 
 	// ===== 2. Initialize Status Select =====
 	function initializeStatusSelect() {
-	    var $select = $('#status-select');
-	
-	    var currentStatus = getBorrowField('status') || getBorrowField('statusBorrow') || getBorrowField('status_borrow');
-	
-	    //แปลงเป็นพิมพ์ใหญ่ กรณี t/r/b
-	    currentStatus = String(currentStatus || '').toUpperCase();
-	    $select.empty();
-	    $select.append('<option value="">-- Select status --</option>');
-	
-	    var allowedStatuses = {
-	        'B': 'Borrowing',
-	        'C': 'Cancel',
-	        'W': 'Wait for Approve',
-	        'R': 'Request for Return',
-	        'T': 'Waiting for Return'
-	    };
-	
-	    statusList.forEach(function(status) {
-	        var statusId = status.statusId || status.status_id || '';
-	
-	        statusId = String(statusId).toUpperCase();
-	        if (allowedStatuses[statusId]) {
-	            var isSelected = statusId === currentStatus;
-	
-	            $select.append(
-	                new Option(
-	                    allowedStatuses[statusId],
-	                    statusId,
-	                    isSelected,
-	                    isSelected
-	                )
-	            );
-	        }
-	    });
-	
-	    //กรณีไม่มีใน DB
-	    Object.keys(allowedStatuses).forEach(function(key) {
-	        if (!$select.find('option[value="' + key + '"]').length) {
-	            var isSelected = key === currentStatus;
-	            $select.append(
-	                new Option(
-	                    allowedStatuses[key],
-	                    key,
-	                    isSelected,
-	                    isSelected
-	                )
-	            );
-	        }
-	    });
-	
-	    // refresh select2
-	    $select.trigger('change');
+		var $select = $('#status-select');
+
+		var currentStatus = getBorrowField('status') || getBorrowField('statusBorrow') || getBorrowField('status_borrow');
+
+		//แปลงเป็นพิมพ์ใหญ่ กรณี t/r/b
+		currentStatus = String(currentStatus || '').toUpperCase();
+		$select.empty();
+		$select.append('<option value="">-- Select status --</option>');
+
+		var allowedStatuses = {
+			'B': 'Borrowing',
+			'C': 'Cancel',
+			'W': 'Wait for Approve',
+			'R': 'Request for Return',
+			'T': 'Waiting for Return'
+		};
+
+		var hasDelivery = !!(getBorrowField('userDelivery') || getBorrowField('user_delivery'));
+
+		var hiddenStatuses = ['R'];
+
+		//ถ้า status ปัจจุบันเป็น B ห้ามแสดง T
+		if (currentStatus === 'B') {
+			hiddenStatuses.push( 'T');
+		}
+		// T ต้องมี user_delivery ก่อนเท่านั้นถึงจะแสดงได้
+		if (!hasDelivery) {
+			hiddenStatuses.push('T');
+		}
+
+		statusList.forEach(function(status) {
+			var statusId = status.statusId || status.status_id || '';
+
+			statusId = String(statusId).toUpperCase();
+			if (allowedStatuses[statusId] && hiddenStatuses.indexOf(statusId) === -1) {
+				var isSelected = statusId === currentStatus;
+
+				$select.append(
+					new Option(
+						allowedStatuses[statusId],
+						statusId,
+						isSelected,
+						isSelected
+					)
+				);
+			}
+		});
+
+		//กรณีไม่มีใน DB
+		Object.keys(allowedStatuses).forEach(function(key) {
+			if (hiddenStatuses.indexOf(key) === -1 && !$select.find('option[value="' + key + '"]').length) {
+				var isSelected = key === currentStatus;
+				$select.append(
+					new Option(
+						allowedStatuses[key],
+						key,
+						isSelected,
+						isSelected    
+					)
+				);
+			}
+		});
+
+		if (currentStatus && allowedStatuses[currentStatus] && !$select.find('option[value="' + currentStatus + '"]').length) {
+			$select.append(new Option(allowedStatuses[currentStatus], currentStatus, true, true));
+		}
+
+		// refresh select2
+		$select.trigger('change');
 	}
 	
 
@@ -926,7 +946,6 @@ a.btn-open-return-modal:hover{
 			        }
 		        }).then((result) => {
 		            if (result.isConfirmed) {
-		                // ส่งไปที่ eBorrowReturn.action แทน
 		                $.ajax({
 		                    url: CTX + "/eBorrowReturn.action",
 		                    type: "POST",
@@ -1005,6 +1024,55 @@ a.btn-open-return-modal:hover{
 		    });
 		})
 		
+		// ----- รับของแทน (Receive on Behalf) -----
+		$(document).on('click', '.btn-receive-instead', function (e) {
+			e.preventDefault();
+
+			var borrowId = getBorrowField('borrowId') || getBorrowField('borrow_id');
+
+			Swal.fire({
+				title: 'ยืนยันการรับของแทน?',
+				html: 'กรณีรับแทน หากพนักงานไม่อัพโหลดลายเซ็นต์ ' +
+					'จะไม่มีลายเซ็นต์แสดงที่ PDF',
+				icon: 'warning',
+				showCancelButton: true,
+				confirmButtonText: 'ยืนยัน',
+				cancelButtonText: 'ยกเลิก',
+				buttonsStyling: false,
+				customClass: {
+					confirmButton: "btn btn-primary",
+					cancelButton: "btn btn-secondary"
+				}
+			}).then((result) => {
+				if (result.isConfirmed) {
+					fetch(CTX + "/eBorrowReturn.action", {
+						method: "POST",
+						headers: {
+							"Content-Type": "application/x-www-form-urlencoded"
+						},
+						body: "id=" + encodeURIComponent(borrowId)
+					})
+					.then(res => res.json())
+					.then(data => {
+						if (data && String(data.message).toLowerCase() === "success") {
+	                        Swal.fire('Success!', 'Return request submitted successfully!', 'success').then(() => {
+	                            var modal = bootstrap.Modal.getInstance(document.getElementById('borrowDetailModal'));
+	                            if (modal) modal.hide();
+	                            window.open(CTX + "/borrowReport?borrowId=" + borrowId,"_blank");
+	                            window.location.href = CTX + "/borrow_list";
+	                        });
+	                    } else {
+	                        Swal.fire('Error!', "Something went wrong: " + (data ? data.message : "no data"), 'error');
+	                    }
+					})
+					.catch(err => {
+						console.error(err);
+						Swal.fire('Error!', 'ไม่สามารถบันทึกการรับของแทนได้', 'error');
+					});
+				}
+			});
+		});
+
 		// ----- Request for Return -----
 		$('.btn-request-return').on('click', function (e) {
 		    e.preventDefault();
