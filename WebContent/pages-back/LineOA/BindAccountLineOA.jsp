@@ -15,7 +15,7 @@
 	<div style="text-align: center; margin-top: 50px;">
         <h2>ข้อมูลผู้ใช้งาน LINE</h2>
         <img id="user-picture" src="" alt="Profile Picture" style="width:100px; border-radius:50%; display:none;" />
-        <h3 id="user-name">กำลังโหลดข้อมูล...</h3>
+        <h3 id="user-name">กำลังเชื่อมต่อระบบ...</h3>
         <p id="user-status"></p>
         <p id="user-id" style="color: gray; font-size: 12px;"></p>
     </div>
@@ -29,7 +29,6 @@
 <script>
 	liff.init({
 	    liffId: "2010626368-KRvpzgeB",
-	    withLoginOnExternalBrowser: true
 	}).then(() => {
 		
 	    if (!liff.isLoggedIn()) {

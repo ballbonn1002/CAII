@@ -797,7 +797,7 @@
 	</definition>
 	
 	<!-- Line OA -->
-	<definition name="bind_account" extends="baseLayout">
+	<definition name="bind_account" template="/pages-back/LineOA/BindAccountLineOA.jsp">
 		<put-attribute name="title" value="Bind Account" />
 		<put-attribute name="body"
 			value="/pages-back/LineOA/BindAccountLineOA.jsp" />
