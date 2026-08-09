@@ -622,3 +622,6 @@ CREATE TABLE `unit_of_measure` (
     `time_update` timestamp NULL DEFAULT NULL,
     PRIMARY KEY (`unit_id`)
 ) ENGINE = InnoDB AUTO_INCREMENT = 10 DEFAULT CHARSET = utf8mb4
+
+-- PROD 10 AUG 2026
+
