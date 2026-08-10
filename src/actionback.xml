@@ -1697,6 +1697,11 @@
 			method="returnMyNewBorrow">
 		</action>
 
+		<action name="eBorrowReceiveOnBehalf"
+			class="com.cubesofttech.action.BorrowingAction"
+			method="receiveOnBehalfBorrow">
+		</action>
+
 		<action name="eBorrowLog"
 			class="com.cubesofttech.action.BorrowingAction" method="eBorrowLog">
 		</action>
@@ -1760,10 +1765,6 @@
         
         <action name="check_industry_name"
         	class="com.cubesofttech.action.CompanyAction" method="checkIndustryName">
-        </action>
-        
-        <action name="update_company_status"
-        	class="com.cubesofttech.action.CompanyAction" method="updateIsActiveStatus">
         </action>
         
         
@@ -2137,6 +2138,30 @@
 		    class="com.cubesofttech.action.PurchaseOrderAction" method="save_po">
 		    <result name="success" type="tiles">purchaseOrderList</result>
 		    <result name="error">/index.jsp</result>
+		</action>
+		
+		<action name="po_perform_delete"
+			class="com.cubesofttech.action.PurchaseOrderAction" method="po_perform_delete">
+			<result name="success" type="redirect">purchase_order_list</result>
+		    <result name="error">/index.jsp</result>
+		</action>
+
+		<action name="update_po"
+		    class="com.cubesofttech.action.PurchaseOrderAction" method="update_po">
+		    <result name="success" type="tiles">purchaseOrderList</result>
+		    <result name="error">/index.jsp</result>
+		</action>
+
+		<action name="delete_po_detail"
+			class="com.cubesofttech.action.PurchaseOrderAction" method="delete_po_detail">
+		</action>
+
+		<action name="update_po_detail"
+			class="com.cubesofttech.action.PurchaseOrderAction" method="update_po_detail">
+		</action>
+
+		<action name="confirm_po_sign"
+			class="com.cubesofttech.action.PurchaseOrderAction" method="confirm_po_sign">
 		</action>
 		
 		<!-- Item Catalog -->

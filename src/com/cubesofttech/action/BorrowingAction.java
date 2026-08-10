@@ -1141,6 +1141,35 @@ public class BorrowingAction extends ActionSupport {
 		}
 	}
 	
+	public void receiveOnBehalfBorrow() {
+		try {
+			User user = (User) request.getSession().getAttribute("onlineUser");
+			String id = request.getParameter("id");
+			String note = request.getParameter("note");
+			Map<String,String> map = new HashMap<String,String>();
+			Borrow borrow = borrowDAO.findById(Integer.parseInt(id));
+			if(borrow.getStatus().equals("B") && (borrow.getUser_delivery() != null && !borrow.getUser_delivery().trim().isEmpty()) ) {
+				if(borrow.getUser_receive() == null || borrow.getUser_receive().trim().isEmpty()) {
+					borrow.setUser_receive(borrow.getUserBorrowid());
+					borrow.setTime_receive(timestamp);
+					borrow.setUserUpdate(onlineUser.getId());
+					borrow.setTimeUpdate(timestamp);
+				
+					borrowDAO.update(borrow);
+				}
+				map.put("message", "success"); 
+			} else {
+				map.put("message", "something wrong");
+			}
+			
+			response.setContentType("application/json");
+			PrintWriter out = response.getWriter();
+			out.println(new Gson().toJson(map));
+			out.flush();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
 
 	public void returnMyNewBorrow() {
 		try {

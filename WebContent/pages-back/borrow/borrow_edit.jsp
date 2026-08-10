@@ -1045,7 +1045,7 @@ a.btn-open-return-modal:hover, a.btn-receive-instead:hover{
 				}
 			}).then((result) => {
 				if (result.isConfirmed) {
-					fetch(CTX + "/eBorrowReturn.action", {
+					fetch(CTX + "/eBorrowReceiveOnBehalf", {
 						method: "POST",
 						headers: {
 							"Content-Type": "application/x-www-form-urlencoded"
@@ -1055,7 +1055,7 @@ a.btn-open-return-modal:hover, a.btn-receive-instead:hover{
 					.then(res => res.json())
 					.then(data => {
 						if (data && String(data.message).toLowerCase() === "success") {
-	                        Swal.fire('Success!', 'Return request submitted successfully!', 'success').then(() => {
+	                        Swal.fire('Success!', 'Receive on behalf request submitted successfully!', 'success').then(() => {
 	                            var modal = bootstrap.Modal.getInstance(document.getElementById('borrowDetailModal'));
 	                            if (modal) modal.hide();
 	                            window.open(CTX + "/borrowReport?borrowId=" + borrowId,"_blank");
