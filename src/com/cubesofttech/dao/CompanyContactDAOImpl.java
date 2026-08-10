@@ -7,8 +7,13 @@ import org.hibernate.SQLQuery;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.transform.AliasToEntityMapResultTransformer;
+
+import org.hibernate.Query;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.cubesofttech.model.CompanyContact;
 
@@ -26,7 +31,6 @@ public class CompanyContactDAOImpl implements CompanyContactDAO {
 
 	@Override
 	public List<Map<String, Object>> findAll() throws Exception {
-
 		Session session = sessionFactory.getCurrentSession();
 
 		String sql =
@@ -41,10 +45,12 @@ public class CompanyContactDAOImpl implements CompanyContactDAO {
 		return query.list();
 	}
 
+
 	@Override
 	public void save(CompanyContact contact) throws Exception {
 		Session session = sessionFactory.getCurrentSession();
 		session.save(contact);
+		session.flush();
 	}
 
 	@Override
@@ -96,5 +102,6 @@ public class CompanyContactDAOImpl implements CompanyContactDAO {
 
 	    return query.list();
 	}
-
+	
+	
 }
