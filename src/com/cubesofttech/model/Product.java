@@ -158,4 +158,19 @@ public class Product implements Serializable {
     public void setTimeUpdate(java.sql.Timestamp timeUpdate) {
         this.timeUpdate = timeUpdate;
     }
+	@Override
+	public String toString() {
+	    return "Product [product_id=" + productId 
+	        + ", description=" + description 
+	        + ", parent_product_id=" + parentProductId 
+	        + ", product_name=" + productName 
+	        + ", product_no=" + productNo 
+	        + ", product_type=" + productType 
+	        + ", sequence=" + sequence 
+	        + ", time_create=" + timeCreate 
+	        + ", time_update=" + timeUpdate 
+	        + ", user_create=" + userCreate 
+	        + ", user_update=" + userUpdate 
+	        + "]";
+	}
 }

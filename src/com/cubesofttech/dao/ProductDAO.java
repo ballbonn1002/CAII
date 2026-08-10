@@ -15,5 +15,9 @@ public interface ProductDAO {
 	List<Map<String, Object>> findByItemsType(String itemsType) throws Exception;
 	void updateActiveByParentId(Integer parentId, String active, String userUpdateId) throws Exception;
 	void updateSubProductActiveByParentId(Integer parentId, String subProductActive, String userUpdateId) throws Exception;
+	List<Product> getproductid(Product product) throws Exception;
+	List<Object[]> getArrayProduct(Product Product) throws Exception;
 	
+    public Integer getMaxId() throws Exception;
+    List<Product> findByParentProductIds(List<String> parentProductIds) throws Exception;
 }

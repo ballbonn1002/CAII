@@ -797,20 +797,12 @@
 	</definition>
 	
 	<!-- Line OA -->
-	<definition name="bind_account" extends="baseLayout">
+	<definition name="bind_account" template="/pages-back/LineOA/BindAccountLineOA.jsp">
 		<put-attribute name="title" value="Bind Account" />
 		<put-attribute name="body"
 			value="/pages-back/LineOA/BindAccountLineOA.jsp" />
 	</definition>
 	<!-- Line OA -->
-	
-	
-	<definition name="demo_test" extends="baseLayout">
-		<put-attribute name="title" value="demo test" />
-		<put-attribute name="body"
-			value="/pages-back/demo/demo.jsp" />
-	</definition>
-	
 	
 	<definition name="contact" extends="baseLayout">
 		<put-attribute name="title" value="Contact" />
@@ -826,4 +818,24 @@
 </definition>
 	
 	
+		<!-- Equipment Request -->
+	<definition name="equipment_request_list" extends="baseLayout">
+		<put-attribute name="title" value="Equipment Request" />
+		<put-attribute name="body"
+			value="/pages-back/equipment_request/equipment_request_list.jsp" />
+	</definition>
+	
+			<!-- Equipment Request Create -->
+	<definition name="equipment_request_create" extends="baseLayout">
+		<put-attribute name="title" value="Equipment Request Create" />
+		<put-attribute name="body"
+			value="/pages-back/equipment_request/equipment_request_create.jsp" />
+	</definition>
+	
+		<definition name="equipment_request_update" extends="baseLayout">
+		<put-attribute name="title" value="Equipment Request Update" />
+		<put-attribute name="body"
+			value="/pages-back/equipment_request/equipment_request_update.jsp" />
+	</definition>
+
 </tiles-definitions>

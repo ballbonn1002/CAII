@@ -251,20 +251,9 @@ String targetURL = Constant.getWebContext2() + "/authorization?token=" + token;
 						</a>
 					</div>
 					<!--end:Menu item-->
-					<!---->
-					<!--begin:MR
-					<div class="menu-item">
-						<a class="menu-link" href="#" data-route="#">
-							<span class="menu-icon"> <i
-								class="ki-duotone ki-delivery-3 fs-1"> <span
-									class="path1"></span> <span class="path2"></span> <span
-									class="path3"></span>
-							</i>
-						</span> <span class="menu-title">MR - Material Request</span>
-						</a>
-					</div>
-					end:MR-->
 
+	
+					
 					<!--begin:Menu item-->
 					<div class="menu-item pt-5">
 						<!--begin:Menu content-->
