@@ -24,6 +24,20 @@
 			<result-type name="tiles"
 				class="org.apache.struts2.views.tiles.TilesResult" />
 		</result-types>
+
+		<interceptors>
+			<interceptor-stack name="authStack">
+				<interceptor-ref name="auth" />
+				<interceptor-ref name="defaultStack" />
+			</interceptor-stack>
+		</interceptors>
+		<default-interceptor-ref name="authStack" />
+
+		<!-- Fallback for actions that don't declare their own "login" result -->
+		<global-results>
+			<result name="login" type="redirect">/index.jsp</result>
+		</global-results>
+
 		<action name="blank_template"
 			class="com.cubesofttech.action.NewsAction" method="demoDashboard">
 			<result name="success" type="tiles">blankTemplate</result>
@@ -202,21 +216,24 @@
 		</action>
 		<!-- ========================== Equipment CRUD ============================== -->
 
-		<!-- Forget password -->
+		<!-- Forget password (pre-login, must bypass auth interceptor) -->
 		<action name="forget_password"
 			class="com.cubesofttech.action.LoginAction" method="forgetPassword">
+			<interceptor-ref name="defaultStack" />
 			<result name="success" type="tiles">forgetPassword</result>
 			<result name="error">/index.jsp</result>
 		</action>
 
 		<action name="send_code"
 			class="com.cubesofttech.action.LoginAction" method="requestResetCode">
+			<interceptor-ref name="defaultStack" />
 			<result name="success" type="tiles">newPassword</result>
 			<result name="error">/index.jsp</result>
 		</action>
 
 		<action name="reset_password"
 			class="com.cubesofttech.action.LoginAction" method="resetPassword">
+			<interceptor-ref name="defaultStack" />
 			<result name="success" type="tiles">resetPasswordSuccess</result>
 			<result name="error">/pages-back/common/error/error_500.jsp</result>
 			<result name="input" type="tiles">newPassword</result>
@@ -225,11 +242,13 @@
 		<action name="validate_user"
 			class="com.cubesofttech.action.LoginAction"
 			method="validateUserLogin">
+			<interceptor-ref name="defaultStack" />
 			<result type="json" />
 		</action>
 
 		<action name="signout"
 			class="com.cubesofttech.action.LoginAction" method="signout">
+			<interceptor-ref name="defaultStack" />
 			<result name="success">/index.jsp</result>
 			<result name="error">/index.jsp</result>
 		</action>

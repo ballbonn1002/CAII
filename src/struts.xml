@@ -9,6 +9,8 @@
 		<interceptors>
 			<interceptor name="json"
 				class="org.apache.struts2.json.JSONInterceptor" />
+			<interceptor name="auth"
+				class="com.cubesofttech.interceptor.AuthInterceptor" />
 		</interceptors>
 		<action name="Welcome">
 			<result>/index.jsp</result>
