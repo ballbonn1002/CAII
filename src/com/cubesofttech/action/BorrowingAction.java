@@ -1141,6 +1141,35 @@ public class BorrowingAction extends ActionSupport {
 		}
 	}
 	
+	public void receiveOnBehalfBorrow() {
+		try {
+			User user = (User) request.getSession().getAttribute("onlineUser");
+			String id = request.getParameter("id");
+			String note = request.getParameter("note");
+			Map<String,String> map = new HashMap<String,String>();
+			Borrow borrow = borrowDAO.findById(Integer.parseInt(id));
+			if(borrow.getStatus().equals("B") && (borrow.getUser_delivery() != null && !borrow.getUser_delivery().trim().isEmpty()) ) {
+				if(borrow.getUser_receive() == null || borrow.getUser_receive().trim().isEmpty()) {
+					borrow.setUser_receive(borrow.getUserBorrowid());
+					borrow.setTime_receive(timestamp);
+					borrow.setUserUpdate(onlineUser.getId());
+					borrow.setTimeUpdate(timestamp);
+				
+					borrowDAO.update(borrow);
+				}
+				map.put("message", "success"); 
+			} else {
+				map.put("message", "something wrong");
+			}
+			
+			response.setContentType("application/json");
+			PrintWriter out = response.getWriter();
+			out.println(new Gson().toJson(map));
+			out.flush();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
 
 	public void returnMyNewBorrow() {
 		try {
@@ -1150,19 +1179,26 @@ public class BorrowingAction extends ActionSupport {
 			Map<String,String> map = new HashMap<String,String>();
 			Borrow borrow = borrowDAO.findById(Integer.parseInt(id));
 			
-			if(borrow.getStatus().equals("T")) 
+			if(borrow.getStatus().equals("T") || borrow.getStatus().equals("B")) 
 			{
+				if(borrow.getUser_receive() == null || borrow.getUser_receive().trim().isEmpty()) {
+					borrow.setUser_receive(borrow.getUserBorrowid());
+					borrow.setTime_receive(timestamp);
+				}
+			
 				if(borrow.getUser_return() == null || borrow.getUser_return().trim().isEmpty()) {
 					borrow.setUser_return(borrow.getUserBorrowid());
 					borrow.setTime_return(timestamp);
 					borrow.setDateEnd(timestamp);
 				}
-			
+				if(borrow.getUser_return_receive() == null || borrow.getUser_return_receive().trim().isEmpty()) {
+					borrow.setUser_return_receive(onlineUser.getId());
+					borrow.setTime_return_receive(DateUtil.getCurrentTime());
+				}
 				borrow.setStatus("R");
 				borrow.setUserUpdate(onlineUser.getId());
 				borrow.setTimeUpdate(timestamp);
-				borrow.setUser_return_receive(onlineUser.getId());
-				borrow.setTime_return_receive(DateUtil.getCurrentTime());
+				
 				borrowDAO.update(borrow);
 				Equipment equipment = equipmentDAO.getById(Integer.parseInt(borrow.getEquipmentId()));
 				if(equipment.getStatus().equals("B")) {

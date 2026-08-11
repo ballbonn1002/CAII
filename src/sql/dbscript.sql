@@ -511,7 +511,7 @@ COLLATE=utf8mb4_unicode_ci;
 -- PROD 24 JUL 2026
 
 -- 27/07/2026 Koy: add column 'sub_product_active' and 'active' in table product.
-ALTER TABLE `product` ADD `sub_product_active` VARCHAR(8) NOT NULL AFTER `description`, ADD `active` VARCHAR(8) NOT NULL AFTER `sub_product_active`;
+ALTER TABLE `product` ADD `sub_product_active` VARCHAR(8) DEFAULT NULL AFTER `description`, ADD `active` VARCHAR(8) DEFAULT NULL AFTER `sub_product_active`;
 
 -- 30/07/2026 June: Delete Table Catalog_consumables.
 DROP TABLE catalog_consumables;
@@ -521,7 +521,7 @@ UPDATE product SET active ='0', sub_product_active ='0' WHERE user_create='cft.a
 
 -- PROD 31 Jul 2026
 
-
+-- 04/08/2026 Chaiwit: Create table mr and doc_status for material request system
 CREATE TABLE `mr` (
   `mr_id` varchar(16) NOT NULL,
   `catalog_items_id` varchar(8) NOT NULL,
@@ -554,4 +554,74 @@ CREATE TABLE `doc_status` (
   `time_update` TIMESTAMP NULL DEFAULT NULL,
   PRIMARY KEY (`doc_status_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- 04/08/2026 Koy: add auto_increment to unit_id in table unit_of_measure.
+ALTER TABLE `unit_of_measure` CHANGE `unit_id` `unit_id` INT(11) NOT NULL AUTO_INCREMENT, add PRIMARY KEY (`unit_id`);
+
+-- 05/08/2026 Koy: add column 'warehouse_id' in table stock.
+CREATE TABLE `stock` (
+    `stock_id` varchar(16) NOT NULL,
+    `product_id` varchar(16) DEFAULT NULL,
+    `action_type` varchar(32) DEFAULT NULL COMMENT 'gr_issue, mr_issue, direct_issue',
+    `action_ref` varchar(32) DEFAULT NULL,
+    `unit` varchar(32) DEFAULT NULL COMMENT 'unit ที่ใช้ใน action_type',
+    `amount_unit` double DEFAULT NULL COMMENT 'จำนวนตาม action_type',
+    `amount_convert` double DEFAULT NULL COMMENT 'จำนวนตาม Unit หลัก',
+    `reconcile` double DEFAULT NULL COMMENT 'ผลรวมกระทบยอด',
+    `warehouse_id` varchar(16) DEFAULT NULL,
+    `description` text DEFAULT NULL,
+    `user_create` varchar(32) DEFAULT NULL,
+    `user_update` varchar(32) DEFAULT NULL,
+    `time_create` timestamp NOT NULL DEFAULT current_timestamp(),
+    `time_update` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+    PRIMARY KEY (`stock_id`)
+) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4
+
+-- 05/08/2026 Koy: create table good_receipt, good_receipt_detail and unit_of_measure.
+CREATE TABLE `good_receipt` (
+    `good_receipt_id` int(11) NOT NULL AUTO_INCREMENT,
+    `gr_ref` varchar(256) DEFAULT NULL,
+    `receive_date` datetime DEFAULT NULL,
+    `recipient_user` varchar(32) DEFAULT NULL COMMENT 'ผู้รับ',
+    `warehouse_id` varchar(32) DEFAULT NULL,
+    `description` text DEFAULT NULL,
+    `user_create` varchar(32) DEFAULT NULL,
+    `user_update` varchar(32) DEFAULT NULL,
+    `time_create` timestamp NULL DEFAULT NULL,
+    `time_update` timestamp NULL DEFAULT NULL,
+    PRIMARY KEY (`good_receipt_id`)
+) ENGINE = InnoDB AUTO_INCREMENT = 2 DEFAULT CHARSET = utf8mb4
+
+CREATE TABLE `good_receipt_detail` (
+    `good_receipt_detail_id` int(11) NOT NULL AUTO_INCREMENT,
+    `good_receipt_id` varchar(32) DEFAULT NULL,
+    `po_id` varchar(32) DEFAULT NULL,
+    `product_id` varchar(32) DEFAULT NULL,
+    `parent` varchar(32) DEFAULT NULL COMMENT 'sub product',
+    `amount` double DEFAULT NULL,
+    `unit` varchar(32) DEFAULT NULL,
+    `warehouse_id` varchar(32) DEFAULT NULL,
+    `description` text DEFAULT NULL,
+    `user_create` varchar(32) DEFAULT NULL,
+    `user_update` varchar(32) DEFAULT NULL,
+    `time_create` timestamp NULL DEFAULT NULL,
+    `time_update` timestamp NULL DEFAULT NULL,
+    PRIMARY KEY (`good_receipt_detail_id`)
+) ENGINE = InnoDB AUTO_INCREMENT = 2 DEFAULT CHARSET = utf8mb4
+
+CREATE TABLE `unit_of_measure` (
+    `unit_id` int(11) NOT NULL AUTO_INCREMENT,
+    `product_id` varchar(32) NOT NULL,
+    `sequence` varchar(32) DEFAULT NULL,
+    `unit_name` varchar(32) DEFAULT NULL,
+    `conversion_rate` int(11) DEFAULT NULL,
+    `description` text DEFAULT NULL,
+    `user_create` varchar(32) DEFAULT NULL,
+    `user_update` varchar(32) DEFAULT NULL,
+    `time_create` timestamp NULL DEFAULT NULL,
+    `time_update` timestamp NULL DEFAULT NULL,
+    PRIMARY KEY (`unit_id`)
+) ENGINE = InnoDB AUTO_INCREMENT = 10 DEFAULT CHARSET = utf8mb4
+
+-- PROD 10 AUG 2026 9:50
 

@@ -137,7 +137,7 @@ public class WebhookAction extends ActionSupport implements ServletRequestAware,
 			            }
 			            
 		            	// Check-In/Check-Out
-			            if(text.equals("Check-In/WFH") || text.equals("Check-In/On-Site") || text.equals("Check-Out/WFH") || text.equals("Check-Out/On-Site")) {
+			            if(text.equals("Check-In/WFH") || text.equals("Check-In/On-Site") || text.equals("Check-In/Head Office") || text.equals("Check-Out/WFH") || text.equals("Check-Out/On-Site") || text.equals("Check-Out/Head Office")) {
 			            	String checkType = null;
 			            	String workType = null;
 			            	switch (text) {
@@ -149,7 +149,7 @@ public class WebhookAction extends ActionSupport implements ServletRequestAware,
 			            			checkType = "1";
 			            			workType = "2";
 			            			break;
-			            		case "Check-In/Head-Office":
+			            		case "Check-In/Head Office":
 			            			checkType = "1";
 			            			workType = "3";
 			            			break;
@@ -161,7 +161,7 @@ public class WebhookAction extends ActionSupport implements ServletRequestAware,
 			            			checkType = "2";
 			            			workType = "2";
 			            			break;
-			            		case "Check-Out/Head-Office":
+			            		case "Check-Out/Head Office":
 			            			checkType = "2";
 			            			workType = "3";
 			            			break;
