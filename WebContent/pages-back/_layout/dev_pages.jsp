@@ -86,6 +86,69 @@
                                 <div class="d-flex gap-4">
                                     <a href="warehouse_list" class="btn btn-light-primary d-inline-flex align-items-center px-6 py-3">Warehouse</a>
                                     <a href="/item_catalog" class="btn btn-light-danger d-inline-flex align-items-center px-6 py-3">Item Catalog</a>
+
+                                    <!--begin::Notifications-->
+                                    <div class="position-relative">
+                                        <!--begin::Menu toggle-->
+                                        <div
+                                            class="btn btn-icon btn-custom btn-icon-muted btn-active-light btn-active-color-primary w-35px h-35px position-relative"
+                                            data-kt-menu-trigger="{default: 'click', lg: 'hover'}"
+                                            data-kt-menu-attach="parent" data-kt-menu-placement="bottom-end">
+                                            <i class="ki-duotone ki-notification fs-2">
+                                                <span class="path1"></span>
+                                                <span class="path2"></span>
+                                                <span class="path3"></span>
+                                                <span class="path4"></span>
+                                            </i>
+                                            <span id="kt_notification_unread_dot"
+                                                class="bullet bullet-dot bg-success h-6px w-6px position-absolute translate-middle top-0 start-50 animation-blink d-none"></span>
+                                        </div>
+                                        <!--end::Menu toggle-->
+                                        <!--begin::Menu-->
+                                        <div
+                                            class="menu menu-sub menu-sub-dropdown menu-column w-350px w-lg-375px"
+                                            data-kt-menu="true" id="kt_menu_notifications">
+                                            <!--begin::Heading-->
+                                            <div class="d-flex flex-column bgi-no-repeat rounded-top"
+                                                style="background-image:url('assets/media/misc/menu-header-bg.jpg')">
+                                                <!--begin::Title-->
+                                                <div class="d-flex flex-stack px-9 mt-10 mb-6">
+                                                    <h3 class="text-white fw-semibold m-0">Notifications</h3>
+                                                    <button type="button" id="kt_notification_mark_all_read"
+                                                        class="btn btn-sm btn-color-white btn-active-color-primary">Mark
+                                                        all as read</button>
+                                                </div>
+                                                <!--end::Title-->
+                                            </div>
+                                            <!--end::Heading-->
+                                            <!--begin::Items-->
+                                            <style>
+                                                .notif-row {
+                                                    display: grid;
+                                                    grid-template-columns: 35px 1fr auto 12px;
+                                                    align-items: center;
+                                                    column-gap: 8px;
+                                                }
+                                            </style>
+                                            <div class="scroll-y mh-325px my-5 px-8" id="kt_notification_list">
+                                                <div class="text-muted text-center py-5">No notifications</div>
+                                            </div>
+                                            <!--end::Items-->
+                                            <!--begin::View more-->
+                                            <div class="py-3 text-center border-top">
+                                                <a href="my_notification"
+                                                    class="btn btn-color-gray-600 btn-active-color-primary">View
+                                                    All <i class="ki-duotone ki-arrow-right fs-5"><span
+                                                        class="path1"></span> <span class="path2"></span>
+                                                </i></a>
+                                            </div>
+                                            <!--end::View more-->
+                                        </div>
+                                        <!--end::Menu-->
+                                    </div>
+                                    <!--end::Notifications-->
+
+                                    <a href="my_notification" class="btn btn-light-info d-inline-flex align-items-center px-6 py-3">My Notification</a>
                                 </div>
                             </div>
                         </div>

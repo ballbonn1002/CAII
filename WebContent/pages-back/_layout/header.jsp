@@ -121,6 +121,7 @@
 				</div>
 				<!--end::Theme mode-->
 				<!--begin::Notifications-->
+				<%--
 				<div class="app-navbar-item ms-1 ms-md-4">
 					<!--begin::Menu toggle-->
 					<div
@@ -179,6 +180,7 @@
 					</div>
 					<!--end::Menu-->
 				</div>
+				--%>
 				<!--end::Notifications-->
 				<script>
 					$(document).ready(function() {
@@ -410,10 +412,12 @@
 								Profile</a>
 						</div>
 						<!-- My Notification -->
+						<%--
 						<div class="menu-item px-5">
 							<a href="my_notification" class="menu-link px-5">My
 								Notification</a>
 						</div>
+						--%>
 						<!-- My Projects -->
 						<!-- <div class="menu-item px-5">
 							<a href="#" class="menu-link px-5"> <span
