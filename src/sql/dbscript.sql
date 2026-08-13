@@ -627,6 +627,7 @@ CREATE TABLE `unit_of_measure` (
 ALTER TABLE mr 
 MODIFY COLUMN request_date TIMESTAMP;
 
+-- PROD 13 AUG 2026
 
 -- 13/08/2026 Krit: CREATE TABLE notification --
 CREATE TABLE `notification` (
@@ -650,3 +651,6 @@ INSERT INTO `notification` (`title`, `message`, `description`, `is_read`, `user_
 ('leave', '{"leaveId":11100,"leaveTypeId":"3","leaveTypeName":"ลาป่วย","status":"Approve","startDate":"2026-08-05","endDate":"2026-08-05"}', 'อนุมัติคำขอลาป่วยเรียบร้อยแล้ว', 1, 'cft.admin', 'cft.admin', 'cft.admin', NOW() - INTERVAL 1 DAY, NOW() - INTERVAL 1 DAY),
 ('leave', '{"leaveId":11101,"leaveTypeId":"6","leaveTypeName":"ลาพักร้อนที่เหลือจากปีก่อน","status":"Reject","startDate":"2026-06-10","endDate":"2026-06-12"}', 'ปฏิเสธคำขอลาพักร้อนที่เหลือจากปีก่อน', 0, 'cft.admin', 'cft.admin', 'cft.admin', NOW() - INTERVAL 9 DAY, NOW() - INTERVAL 9 DAY),
 ('leave', '{"leaveId":11102,"leaveTypeId":"5","leaveTypeName":"ลาโดยไม่รับค่าจ้าง","status":"Approve","startDate":"2026-07-01","endDate":"2026-07-02"}', 'อนุมัติคำขอลาโดยไม่รับค่าจ้างเรียบร้อยแล้ว', 0, 'cft.admin', 'cft.admin', 'cft.admin', NOW() - INTERVAL 15 DAY, NOW() - INTERVAL 15 DAY);
+
+
+
