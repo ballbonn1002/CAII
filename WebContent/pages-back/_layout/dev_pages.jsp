@@ -86,7 +86,22 @@
                                 <div class="d-flex gap-4">
                                     <a href="warehouse_list" class="btn btn-light-primary d-inline-flex align-items-center px-6 py-3">Warehouse</a>
                                     <a href="/item_catalog" class="btn btn-light-danger d-inline-flex align-items-center px-6 py-3">Item Catalog</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
+                <div class="row mt-8">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-header border-0 pt-6 align-items-start">
+                                <div class="card-title">
+                                    <h3 class="page-heading d-flex text-gray-900 fw-medium my-0">Notification</h3>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <div class="d-flex gap-4">
                                     <!--begin::Notifications-->
                                     <div class="position-relative">
                                         <!--begin::Menu toggle-->
