@@ -120,10 +120,210 @@
 					<!--end::Menu-->
 				</div>
 				<!--end::Theme mode-->
-				<!--  -->
+				<!--begin::Notifications-->
 				<div class="app-navbar-item ms-1 ms-md-4">
-					<span class="menu-title">${onlineUser.id}</span>
+					<!--begin::Menu toggle-->
+					<div
+						class="btn btn-icon btn-custom btn-icon-muted btn-active-light btn-active-color-primary w-35px h-35px position-relative"
+						data-kt-menu-trigger="{default: 'click', lg: 'hover'}"
+						data-kt-menu-attach="parent" data-kt-menu-placement="bottom-end">
+						<i class="ki-duotone ki-notification fs-2">
+							<span class="path1"></span>
+							<span class="path2"></span>
+							<span class="path3"></span>
+							<span class="path4"></span>
+						</i>
+						<span id="kt_notification_unread_dot"
+							class="bullet bullet-dot bg-success h-6px w-6px position-absolute translate-middle top-0 start-50 animation-blink d-none"></span>
+					</div>
+					<!--end::Menu toggle-->
+					<!--begin::Menu-->
+					<div
+						class="menu menu-sub menu-sub-dropdown menu-column w-350px w-lg-375px"
+						data-kt-menu="true" id="kt_menu_notifications">
+						<!--begin::Heading-->
+						<div class="d-flex flex-column bgi-no-repeat rounded-top"
+							style="background-image:url('assets/media/misc/menu-header-bg.jpg')">
+							<!--begin::Title-->
+							<div class="d-flex flex-stack px-9 mt-10 mb-6">
+								<h3 class="text-white fw-semibold m-0">Notifications</h3>
+								<button type="button" id="kt_notification_mark_all_read"
+									class="btn btn-sm btn-color-white btn-active-color-primary">Mark
+									all as read</button>
+							</div>
+							<!--end::Title-->
+						</div>
+						<!--end::Heading-->
+						<!--begin::Items-->
+						<style>
+							.notif-row {
+								display: grid;
+								grid-template-columns: 35px 1fr auto 12px;
+								align-items: center;
+								column-gap: 8px;
+							}
+						</style>
+						<div class="scroll-y mh-325px my-5 px-8" id="kt_notification_list">
+							<div class="text-muted text-center py-5">No notifications</div>
+						</div>
+						<!--end::Items-->
+						<!--begin::View more-->
+						<div class="py-3 text-center border-top">
+							<a href="my_notification"
+								class="btn btn-color-gray-600 btn-active-color-primary">View
+								All <i class="ki-duotone ki-arrow-right fs-5"><span
+									class="path1"></span> <span class="path2"></span>
+							</i></a>
+						</div>
+						<!--end::View more-->
+					</div>
+					<!--end::Menu-->
 				</div>
+				<!--end::Notifications-->
+				<script>
+					$(document).ready(function() {
+						var MONTH_ABBR = [ "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" ];
+
+						// leave_type_id -> icon/color, mirrors leave_type table usage in new_leave_approved.jsp
+						var LEAVE_TYPE_ICON = {
+							"1" : { icon : "ki-airplane", paths : 2, bg : "bg-light-success", color : "text-success" },
+							"2" : { icon : "ki-car-2", paths : 6, bg : "bg-light-primary", color : "text-primary" },
+							"3" : { icon : "ki-pulse", paths : 2, bg : "bg-light-info", color : "text-info" },
+							"4" : { icon : "ki-calendar-remove", paths : 6, bg : "bg-light-danger", color : "text-danger" },
+							"5" : { icon : "ki-brifecase-cros", paths : 3, bg : "bg-light-dark", color : "text-dark" },
+							"6" : { icon : "ki-timer", paths : 3, bg : "bg-light-warning", color : "text-warning" },
+							"7" : { icon : "ki-abstract-12", paths : 2, custom : true },
+							"9" : { icon : "ki-abstract-12", paths : 2, custom : true }
+						};
+						var DEFAULT_ICON = { icon : "ki-notification-status", paths : 4, bg : "bg-light-primary", color : "text-primary" };
+
+						function formatShortDate(d) {
+							return d.getDate() + " " + MONTH_ABBR[d.getMonth()];
+						}
+
+						function formatLongDate(dateStr) {
+							if (!dateStr) return "";
+							var d = new Date(dateStr + "T00:00:00");
+							return d.getDate() + " " + MONTH_ABBR[d.getMonth()] + " " + d.getFullYear();
+						}
+
+						function notifTimeLabel(timeCreateStr) {
+							var then = new Date(timeCreateStr);
+							var now = new Date();
+							var diffMin = Math.floor((now - then) / 60000);
+							if (diffMin < 60) {
+								return diffMin + " minutes";
+							}
+							var diffHour = Math.floor(diffMin / 60);
+							if (diffHour < 24) {
+								return diffHour + " hours";
+							}
+							var diffDay = Math.floor(diffHour / 24);
+							if (diffDay < 7) {
+								return diffDay + " days";
+							}
+							return formatShortDate(then);
+						}
+
+						function buildIconHtml(typeInfo) {
+							var pathSpans = "";
+							for (var i = 1; i <= typeInfo.paths; i++) {
+								pathSpans += '<span class="path' + i + '"></span>';
+							}
+							var wrapStyle = typeInfo.custom ? ' style="background-color:#4B5675;"' : '';
+							var iconStyle = typeInfo.custom ? ' style="color:#FFFFFF;"' : '';
+							var bgClass = typeInfo.custom ? '' : typeInfo.bg;
+							var colorClass = typeInfo.custom ? '' : typeInfo.color;
+							return '<div class="symbol symbol-35px mb-1">'
+								+ '<span class="symbol-label ' + bgClass + '"' + wrapStyle + '>'
+								+ '<i class="ki-duotone ' + typeInfo.icon + ' fs-3 ' + colorClass + '"' + iconStyle + '>' + pathSpans + '</i>'
+								+ '</span>'
+								+ '</div>';
+						}
+
+						function buildNotifRow(n) {
+							var data = {};
+							try {
+								data = JSON.parse(n.message) || {};
+							} catch (e) {
+								data = {};
+							}
+
+							var typeInfo = LEAVE_TYPE_ICON[String(data.leaveTypeId)] || DEFAULT_ICON;
+							var titleText = data.leaveTypeName || n.title || "";
+
+							var statusBadge = "";
+							if (data.status) {
+								var statusClass = data.status === "Approve" ? "badge-light-success" : "badge-light-danger";
+								statusBadge = ' <span class="badge ' + statusClass + ' fs-8">' + data.status + '</span>';
+							}
+
+							var dateRow = "";
+							if (data.startDate && data.endDate) {
+								dateRow = '<div class="text-gray-500 fs-7">' + formatLongDate(data.startDate) + ' - ' + formatLongDate(data.endDate) + '</div>';
+							}
+
+							var dotHtml = n.isRead ? '' : '<span class="bullet bullet-dot bg-danger"></span>';
+
+							var $row = $('<a href="notification_read?id=' + n.id + '" class="notif-row py-4 text-decoration-none"></a>');
+							$row.append(
+								buildIconHtml(typeInfo)
+								+ '<div>'
+									+ '<div class="mb-0 me-2">'
+									+ '<span class="fs-6 text-gray-800 text-hover-primary fw-bold">' + titleText + '</span>' + statusBadge
+									+ dateRow
+									+ '</div>'
+								+ '</div>'
+								+ '<div class="d-flex flex-column align-items-center">'
+								+ '<span class="badge badge-light fs-8">' + notifTimeLabel(n.timeCreate) + '</span>'
+								+ '</div>'
+								+ '<div class="d-flex justify-content-center">' + dotHtml + '</div>'
+							);
+							return $row;
+						}
+
+						function loadNotifications() {
+							$.ajax({
+								url : "notification_list_json",
+								method : "POST",
+								success : function(data) {
+									var list = typeof data === "string" ? JSON.parse(data) : data;
+									var $container = $("#kt_notification_list");
+									$container.empty();
+
+									var hasUnread = list && list.some(function(n) { return !n.isRead; });
+									$("#kt_notification_unread_dot").toggleClass("d-none", !hasUnread);
+
+									if (!list || list.length === 0) {
+										$container.append('<div class="text-muted text-center py-5">No notifications</div>');
+										return;
+									}
+									list.forEach(function(n) {
+										$container.append(buildNotifRow(n));
+									});
+								},
+								error : function() {
+									console.log("Unable to load notifications.");
+								}
+							});
+						}
+
+						$("#kt_notification_mark_all_read").on("click", function() {
+							$.ajax({
+								url : "notification_read_all",
+								method : "POST",
+								success : function() {
+									loadNotifications();
+								},
+								error : function() {
+									console.log("Unable to mark notifications as read.");
+								}
+							});
+						});
+
+						loadNotifications();
+					});
+				</script>
 				<!--  -->
 				<!--begin::User menu-->
 				<div class="app-navbar-item ms-1 ms-md-4"
@@ -208,6 +408,11 @@
 						<div class="menu-item px-5">
 							<a href="my_profile" class="menu-link px-5">My
 								Profile</a>
+						</div>
+						<!-- My Notification -->
+						<div class="menu-item px-5">
+							<a href="my_notification" class="menu-link px-5">My
+								Notification</a>
 						</div>
 						<!-- My Projects -->
 						<!-- <div class="menu-item px-5">
