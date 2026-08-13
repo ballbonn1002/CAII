@@ -1,5 +1,6 @@
 package com.cubesofttech.action;
 
+import java.io.File;
 import java.io.PrintWriter;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
@@ -96,6 +97,7 @@ public class EquipmentRequestAction extends ActionSupport {
 	  private String item_sub_id;
 	  private String status;
 	  private String url_ref;
+	  private String action;
 	  
 	  private java.io.File[] files;
 	  private String[] filesFileName;
@@ -108,6 +110,16 @@ public class EquipmentRequestAction extends ActionSupport {
 	  private List<Object[]> catalogList; 
 	  private List<DocStatus> StatusList;  
 	  
+	  
+	  
+	  public String getAction() {
+		return action;
+	}
+
+	  public void setAction(String action) {
+		  this.action = action;
+	  }
+
 	  public java.io.File[] getFiles() {
 			return files;
 		}
@@ -374,7 +386,7 @@ public class EquipmentRequestAction extends ActionSupport {
                         String mrId = String.valueOf(row.get("mr_id")).toLowerCase();
                         String category = String.valueOf(row.get("category")).toLowerCase();
                         String productName = String.valueOf(row.get("product_name")).toLowerCase();
-                        String statusSearch = String.valueOf(row.get("status_id")).toLowerCase();
+                        String statusSearch = String.valueOf(row.get("status_name")).toLowerCase();
                         
                         boolean isMatch = mrId.contains(searchKeyword) 
                                        || category.contains(searchKeyword) 
@@ -565,7 +577,6 @@ public class EquipmentRequestAction extends ActionSupport {
 	        	// ส่งออกไปหน้าบ้านเหมือนเดิม
 	        	request.setAttribute("ProductList", this.Product);
 	        	        	
-//	        	 log.debug("เข้า unionList()"+this.catalogList);
 	    
 	        	 catalogEquipmentList = catalogEquipmentDAO.findAll();
 	            
@@ -620,9 +631,11 @@ public class EquipmentRequestAction extends ActionSupport {
 
         try {
       	  User onlineUser = (User) request.getSession().getAttribute("onlineUser");
+      	  	String currentAction = this.action; 
       		if (onlineUser == null)
   				return ERROR;
-
+      			
+      		log.debug("action >>>"+ currentAction);
 //            if (catalogEquipmentName == null || catalogEquipmentName.trim().isEmpty()) {
 //                return ERROR;
 //            }
@@ -637,21 +650,24 @@ public class EquipmentRequestAction extends ActionSupport {
 //                    return ERROR;
 //                }
 //            } else {
-            equipmentRequest = new EquipmentRequestMr();
-            equipmentRequest.setMrId(mr_id);
-            equipmentRequest.setCatalogItemsId(catalog_items_id);
-            equipmentRequest.setAmount(amount);
-            equipmentRequest.setRequestUser(onlineUser.getId());
-            equipmentRequest.setReceiveUser(onlineUser.getId());
-            equipmentRequest.setReceiveDate(new java.sql.Date(DateUtil.getCurrentTime().getTime()));
-            equipmentRequest.setDescription(description);
-            equipmentRequest.setItemType(items_type);
-            equipmentRequest.setItemSubId(item_sub_id);
-            equipmentRequest.setStatusId(status);
-            equipmentRequest.setUrlRef(url_ref);
-            equipmentRequest.setRequestDate(new java.sql.Date(DateUtil.getCurrentTime().getTime()));
-            equipmentRequest.setUserUpdate(DateUtil.getCurrentTime());
-            equipmentRequest.setTimeCreate( DateUtil.getCurrentTime().toString());
+               equipmentRequest = new EquipmentRequestMr();
+            	
+               equipmentRequest.setMrId(mr_id);
+               equipmentRequest.setCatalogItemsId(catalog_items_id);
+               equipmentRequest.setAmount(amount);
+               equipmentRequest.setRequestUser(onlineUser.getId());
+//                   equipmentRequest.setReceiveUser(onlineUser.getId());
+//                   equipmentRequest.setReceiveDate(new java.sql.Date(DateUtil.getCurrentTime().getTime()));
+               equipmentRequest.setDescription(description);
+               equipmentRequest.setItemType(items_type);
+               equipmentRequest.setItemSubId(item_sub_id);
+               equipmentRequest.setStatusId(status);
+               equipmentRequest.setUrlRef(url_ref);
+               equipmentRequest.setRequestDate(DateUtil.getCurrentTime());
+               equipmentRequest.setUserUpdate(DateUtil.getCurrentTime());
+               equipmentRequest.setTimeCreate( DateUtil.getCurrentTime().toString());
+
+         
 //            }
             System.out.println("เข้า uploadfile()"+files + filesFileName );
         	// ── 5. บันทึก Signature ใหม่ (ถ้ามี upload) ─────────────
@@ -714,8 +730,12 @@ public class EquipmentRequestAction extends ActionSupport {
 //            	catalogEquipmentDAO.update(catalogEquipment);
 //            } else {
 
-			
-            equipmentRequestMrDAO.save(equipmentRequest);  
+			  if("insert".equals(currentAction)) { 
+		           equipmentRequestMrDAO.save(equipmentRequest);  
+			  }else {
+		           equipmentRequestMrDAO.update(equipmentRequest); 
+			  }
+
 //            }
 
             return null;
@@ -794,10 +814,57 @@ public class EquipmentRequestAction extends ActionSupport {
 	        if (onlineUser == null)
 	            return ERROR;
 	        
-//	        List<Expense> expenseList = expenseDAO.findByGroupId(expenseGroupId);
+	        String mr_id = request.getParameter("id");
+	        log.debug("mr_id" + mr_id);
+	        Map<String, Object> dataload = equipmentRequestMrDAO.loaddataEquipment(mr_id);
 
+	        log.debug("dataload" + dataload);
+	        request.setAttribute("Equipmentload", dataload);
+	        
+        	Product paramProduct = new Product();
+    	    
+        	this.Product = productDAO.getproductid(paramProduct);
+        	log.debug("เข้า this.Product()"+this.Product);
+        	
+        	// ส่งออกไปหน้าบ้านเหมือนเดิม
+        	request.setAttribute("ProductList", this.Product);
+	        
+        	 catalogEquipmentList = catalogEquipmentDAO.findAll();
+	            
+	            List<Map<String, Object>> unionList = new ArrayList<>();
+	            
+	            for (CatalogEquipment eq : catalogEquipmentList) {
+	                Map<String, Object> item = new HashMap<>();
+	                item.put("id", eq.getCatalogEquipmentId());
+	                item.put("name", eq.getCatalogEquipmentName());
+	                item.put("type", "EQ");
+	                item.put("parent_product_id", "");
+	                item.put("items_type", eq.getItemsType());
+	                unionList.add(item);
+	            }
 
-	        String[] ids = request.getParameterValues("id");
+	            Product product = new Product();
+	            // 1. เรียกใช้งานข้อมูลจากฐานข้อมูลจริง
+	               List<Object[]> rawDataList = productDAO.getArrayProduct(product);
+	               List<Map<String, Object>> allList = new ArrayList<>();
+
+	               if (rawDataList != null) {
+	                   for (Object[] row : rawDataList) {
+	                       Map<String, Object> item = new HashMap<>();
+	                       
+	                       // แตกค่าจาก Object[] เข้า Map ตามลำดับดัชนีใน SQL SELECT
+	                       item.put("id", row[0]);
+	                       item.put("name", row[1]);              // pd.product_name
+	                       item.put("type", "Cs");
+	                       item.put("parent_product_id", row[2]); // pd.parent_product_id
+	                       item.put("items_type", row[3]);  
+
+	                       unionList.add(item);
+	                   }
+	               }
+	            request.setAttribute("catalogEqptList", unionList);
+//	        
+//	        String[] ids = request.getParameterValues("id");
 	        
 	        // ── 1. ดึงไฟล์แนบโดยใช้ User ID ของคนที่ล็อกอิน ──────────────────────
 	        // อ้างอิงจากตาราง: page = "user_signature" และดึงตาม user_id ของผู้ใช้รายนั้น
@@ -807,15 +874,19 @@ public class EquipmentRequestAction extends ActionSupport {
 	        Map<String, Object> expMap = new HashMap<>();
 	        expMap.put("files", fileList != null ? fileList : new ArrayList<>());
 	        expenseListObj.add(expMap);
-
+	        
+	  
 	        request.setAttribute("expenseListObj", expenseListObj);
+	        
+	        Map<String, Object> EquipmentMap = new HashMap<>();
+	        EquipmentMap.put("amount", EquipmentMap);
 	        
 	        User userObj = userDAO.findById(onlineUser.getId());
 	        
 	        request.setAttribute("userObj", userObj);
-	        request.setAttribute("selectedIds", ids != null ? Arrays.asList(ids) : java.util.Collections.emptyList());
+	        request.setAttribute("selectedIds", mr_id != null ? Arrays.asList(mr_id) : java.util.Collections.emptyList());
 	       
-	        if (userObj != null && userObj.getPathSignature() != null && userObj.getPathSignature().contains("_")) {
+	        if (dataload != null && userObj.getPathSignature() != null && userObj.getPathSignature().contains("_")) {
 	            try {
 	                String originalFileName = new java.io.File(userObj.getPathSignature()).getName();
 	                String fileIdStr = originalFileName.substring(0, originalFileName.indexOf("_"));
@@ -831,6 +902,28 @@ public class EquipmentRequestAction extends ActionSupport {
 	            } catch (Exception ignore) {}
 	        }
 	        
+	        String pathStr = dataload != null && dataload.get("path") != null ? dataload.get("path").toString() : null;
+
+	        String imgPath = null;
+	    	if (pathStr != null && pathStr.contains("_")) {
+			    try {
+			        String originalFileName = new File(pathStr).getName();
+			        String fileIdStr = originalFileName.substring(0, originalFileName.indexOf("_"));
+			        int fileId = Integer.parseInt(fileIdStr);
+			        String typeFile = originalFileName.substring(originalFileName.lastIndexOf("."));
+			        imgPath = "/upload/user/user_" + fileId + typeFile;
+
+//			        String server = request.getServletContext().getRealPath("/");
+//			        File f = new File(server + imgPath);
+//			        if (!f.exists()) {
+//			            imgPath = null;
+//			        }
+			    } catch (Exception e) {
+			        imgPath = null;
+			    }
+			}
+	    	request.setAttribute("userImgPath", imgPath);
+			
 	        boolean onlineUserSignature = false;
 	        if (onlineUser != null) {
 	            User u = userDAO.findById(onlineUser.getId()); 

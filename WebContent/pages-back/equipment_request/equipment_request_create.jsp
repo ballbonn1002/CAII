@@ -130,7 +130,7 @@
 /* ===== Signature Box ===== */
 .sig-box {
 	width: 400px;
-	height: 200px;
+	height: 148px;
 	border-radius: 10px;
 	display: flex;
 	flex-direction: column;
@@ -138,11 +138,12 @@
 	justify-content: center;
 	position: relative;
 	overflow: hidden;
+	margin-top: 24px;
 }
 
 .sig-box.locked {
-	border: 2px solid #E4E6EF;
-	background: #F9F9F9;
+/* 	border: 2px solid #E4E6EF; */
+/* 	background: #FFF; */
 	cursor: default;
 }
 
@@ -186,7 +187,13 @@
 .receiver-confirmed {
 	border-color: #50CD89 !important;
 	background: #F6FFF9 !important;
+    padding-top: 5.1rem !important;
+    padding-bottom: 5.2rem !important;
 }
+.p-user-request{
+padding-top: 6rem;
+    padding-bottom: 6rem;
+    }
 </style>
 </head>
 
@@ -222,7 +229,7 @@
 								<div class="row">
 									<div class="col-xl-9 fs-1 text-primary fw-bold">#<span id="mr_id"></span></div>
 									<div class="col-xl-3 ">
-										<div class="btn btn-secondary btn-sm px-4" style="pointer-events: none;">Draft</div>
+										<div class="btn btn-primary btn-sm px-4" style="pointer-events: none;">New</div>
 									</div>
 								</div>
 <%-- 							</c:when> --%>
@@ -330,11 +337,16 @@
 											<label class="form-label required fw-semibold">Quantity</label>
 											<div
 												class="d-flex align-items-center border border-gray-300 rounded px-3 py-3">
-												<input type="number"
-													class="form-control bg-transparent border-0 shadow-none p-0 fw-medium text-gray-900"
-													style="font-size: 1rem;" name="amount"
-													id="amount"
-													value="${param.amount}" required  maxlength="3"/>
+<input type="number"
+       class="form-control bg-transparent border-0 shadow-none p-0 fw-medium text-gray-900"
+       style="font-size: 1rem;" 
+       name="amount"
+       id="amount"
+       value="${param.amount}" 
+       required  
+       step="1"
+       onblur="if(this.value !== '') { this.value = Math.trunc(this.value); }" />
+
 											</div>
 										</div>
 									</div>
@@ -381,8 +393,9 @@
 								<div class="card-body">
 									<div class="d-flex gap-8 flex-wrap align-items-start">
 
+<div style="border: 1px solid #e4e6ef;border-radius: 20px;">
 										<!-- LEFT: Signature Image -->
-										<div class="d-flex  flex-column align-items-center gap-2">
+										<div class="d-flex  flex-column align-items-center gap-2 ps-15 pe-15 pt-4 pb-4">
 											<c:choose>
 												<%-- ✅ มีรูปแล้ว → ล็อค ห้ามเปลี่ยน ไม่มี input file --%>
 												<c:when test="${not empty signaturePath}">
@@ -426,17 +439,17 @@
 												</c:otherwise>
 											</c:choose>
 										</div>
-
+</div>
 										<!-- MIDDLE: Receiver 1 = ผู้ขอเบิก -->
 										<div
-											class="receiver-box d-flex flex-fill flex-column align-items-center gap-2"
+											class="receiver-box d-flex flex-fill flex-column align-items-center gap-2 p-user-request"
 											id="receiverBox1">
 											<c:choose>
 												<c:when test="${empty statusActiveSafe}">
 													<span class="text-muted fs-7" id="receiverLabel1">คลิ๊ก
 														เพื่อยืนยันผู้ขอเบิกเงิน</span>
 													<div id="receiverPreview1"
-														style="min-height: 44px; display: flex; flex-direction: column; align-items: center;">
+														style="min-height: 44px; display: none; flex-direction: column; align-items: center;">
 													</div>
 													<button type="button" class="btn btn-primary btn-sm px-5"
 														id="receiverBtn1" onclick="confirmReceiver(1)">
@@ -444,13 +457,13 @@
 												</c:when>
 												<c:otherwise>
 													<div id="receiverPreview1"
-														style="min-height: 44px; display: flex; flex-direction: column; align-items: center;">
+														style="min-height: 44px; display: none; flex-direction: column; align-items: center;">
 														<span class="text-primary pb-7 fs-7" id="receiverLabel1">ชื่อ
 															ผู้ขอเบิก</span>
 														<div class="d-flex flex-column">
 															<span class="text-dark fw-semibold fs-7">${userObj.nameEN}</span>
 															<span class="text-muted fs-8"><fmt:formatDate
-																	value="${requestAt}" pattern="d MMM yyyy, H:mm" /></span>
+																	value="${requestAt}" pattern="d MMM yyyy, H:mm" /></span> 
 
 														</div>
 													</div>
@@ -459,32 +472,32 @@
 										</div>
 
 										<!-- RIGHT: Receiver 2 = ผู้รับเงิน -->
-										<div
-											class="receiver-box d-flex flex-fill flex-column align-items-center gap-2"
-											id="receiverBox2">
-											<c:choose>
-												<c:when test="${empty statusActiveSafe}">
-													<span class="text-muted fs-7" id="receiverLabel2">คลิ๊ก
-														เพื่อยืนยันผู้รับเงิน</span>
-													<div id="receiverPreview2"
-														style="min-height: 44px; display: flex; flex-direction: column; align-items: center;">
-													</div>
-													<button type="button" class="btn btn-primary btn-sm px-5"
-														id="receiverBtn2" onclick="confirmReceiver(2)">
-														ลงชื่อ ผู้รับ</button>
+<!-- 										<div -->
+<!-- 											class="receiver-box d-flex flex-fill flex-column align-items-center gap-2" -->
+<!-- 											id="receiverBox2"> -->
+<%-- 											<c:choose> --%>
+<%-- 												<c:when test="${empty statusActiveSafe}"> --%>
+<!-- 													<span class="text-muted fs-7" id="receiverLabel2">คลิ๊ก -->
+<!-- 														เพื่อยืนยันผู้รับเงิน</span> -->
+<!-- 													<div id="receiverPreview2" -->
+<!-- 														style="min-height: 44px; display: flex; flex-direction: column; align-items: center;"> -->
+<!-- 													</div> -->
+<!-- 													<button type="button" class="btn btn-primary btn-sm px-5" -->
+<!-- 														id="receiverBtn2" onclick="confirmReceiver(2)"> -->
+<!-- 														ลงชื่อ ผู้รับ</button> -->
 
-												</c:when>
-												<c:otherwise>
-													<div id="receiverPreview2"
-														style="min-height: 44px; display: flex; flex-direction: column; align-items: center;">
-														<span class="text-primary pb-7 fs-7" id="receiverLabel1">ชื่อ
-															ผู้รับเงิน</span> <span class="text-dark fw-semibold fs-7">${userObj.nameEN}</span>
-														<span class="text-muted fs-8"><fmt:formatDate
-																value="${requestAt}" pattern="d MMM yyyy, H:mm" /></span>
-													</div>
-												</c:otherwise>
-											</c:choose>
-										</div>
+<%-- 												</c:when> --%>
+<%-- 												<c:otherwise> --%>
+<!-- 													<div id="receiverPreview2" -->
+<!-- 														style="min-height: 44px; display: flex; flex-direction: column; align-items: center;"> -->
+<!-- 														<span class="text-primary pb-7 fs-7" id="receiverLabel1">ชื่อ -->
+<%-- 															ผู้รับเงิน</span> <span class="text-dark fw-semibold fs-7">${userObj.nameEN}</span> --%>
+<%-- 														<span class="text-muted fs-8"><fmt:formatDate --%>
+<%--  																value="${requestAt}" pattern="d MMM yyyy, H:mm" /></span>  --%>
+<!-- 													</div> -->
+<%-- 												</c:otherwise> --%>
+<%-- 											</c:choose> --%>
+<!-- 										</div> -->
 									</div>
 								</div>
 							</div>
@@ -519,7 +532,7 @@
 										<span class="path2"></span>
 								</i>Back </a>
 						<div>
-						<button type="button" id="BtnSaveDreft" onclick="submitData(this)"  class="btn btn-secondary px-6">
+						<button type="button" id="BtnSaveDraft" onclick="submitData(this)"  class="btn btn-secondary px-6">
 							    Save Draft
 						</button>		
 						<button type="button" id="BtnSubmit_Equipment_Request" onclick="submitData(this)"  class="btn btn-success px-6">
@@ -547,6 +560,7 @@
 			</div>
 		</div>
 	</div>
+<script src="${pageContext.request.contextPath}/assets/js/custom/utilities/attachFile/attcahfile.js"></script>
 
 	<script>
 		const ctx             = "${pageContext.request.contextPath}";
@@ -567,85 +581,34 @@
 		
 		// ── Upload Signature Preview ───────────────────────────────
 		// ✅ ใช้ addEventListener เฉพาะตอนไม่มีรูป (element ถึงจะมีใน DOM)
-		if (!hasSignature) {
-		    document.getElementById('sigFileInput').addEventListener('change', async function () { 
-		    	console.log('เข้า uploadfile js')
-		    	let file = this.files[0];
-		        if (!file) return;
-		        try {
-		            const compressedFile = await compressImage(file, 1280, 1280, 0.8);
-		            
-		            const processedFile = await new Promise((resolve, reject) => {
-		                const reader = new FileReader();
-		                reader.onload = function(event) {
-		                    const img = new Image();
-		                    img.onload = function() {
-		                        // สร้าง Canvas สำหรับประมวลผลพิกเซล
-		                        const canvas = document.createElement('canvas');
-		                        const ctx = canvas.getContext('2d');
-		                        canvas.width = img.width;
-		                        canvas.height = img.height;
-		                        ctx.drawImage(img, 0, 0);
+	if (!hasSignature) {
+    document.getElementById('sigFileInput').addEventListener('change', async function () { 
+        console.log('เข้า uploadfile js');
+        let file = this.files[0];
+        if (!file) return;
 
-		                        const image = ctx.getImageData(0, 0, canvas.width, canvas.height);
-		                        const imageData = image.data;
+        try {
+            // เรียกฟังก์ชันด้านบนได้ทันที ไม่เกิดปัญหา ReferenceError หรือ 404 แน่นอน
+            const processedFile = await processAndRemoveWhiteBg(file);
+            console.log('processedFile ทำสำเร็จแล้ว:', processedFile);
+            
+            const dt = new DataTransfer();
+            dt.items.add(processedFile);
+            this.files = dt.files;
+            file = this.files[0];
+        } catch (error) {
+            console.error("Image processing failed", error);
+        }
 
-		                        // วนลูปตรวจสอบพิกเซลสีขาว (R, G, B > 240) แล้วปรับ Alpha เป็น 0 (โปร่งใส)
-		                        for (let i = 0; i < imageData.length; i += 4) {
-		                            const r = imageData[i];
-		                            const g = imageData[i + 1];
-		                            const b = imageData[i + 2];
-		                            if (r > 240 && g > 240 && b > 240) {
-		                                imageData[i + 3] = 0; 
-		                            }
-		                        }
-		                        ctx.putImageData(image, 0, 0);
-
-		                        // แปลง Canvas กลับเป็น Blob รูปแบบ PNG เพื่อให้รองรับความโปร่งใส
-		                        canvas.toBlob(function(blob) {
-		                            // เปลี่ยนนามสกุลไฟล์ต้นฉบับให้เป็น .png
-		                            const originalName = compressedFile.name;
-		                            const dotIdx = originalName.lastIndexOf('.');
-		                            const nameOnly = dotIdx > 0 ? originalName.substring(0, dotIdx) : originalName;
-		                            const finalFileName = nameOnly + ".png";
-
-		                            // สร้างออบเจกต์ File ตัวใหม่ที่พร้อมส่งต่อ
-		                            const finalFile = new File([blob], finalFileName, { type: "image/png" });
-		                            resolve(finalFile);
-		                        }, 'image/png');
-		                    };
-		                    img.onerror = reject;
-		                    img.src = event.target.result;
-		                };
-		                reader.onerror = reject;
-		                reader.readAsDataURL(compressedFile);
-		            });
-
-		            const dt = new DataTransfer();
-		            dt.items.add(processedFile);
-		            this.files = dt.files;
-
-		            file = this.files[0];
-
-		        } catch (error) {
-		            console.error("Compression failed", error);
-		        }
-
-		        const reader = new FileReader();
-		        reader.onload = function (e) {
-		            const box = document.getElementById('uploadSignatureBox');
-		            box.innerHTML =
-		                '<img src="' + e.target.result +
-		                '" style="max-height:160px;max-width:360px;object-fit:contain;" />';
-		            box.classList.remove('uploadable');
-		            box.classList.add('locked');
-		            box.style.cursor = 'default';
-		            box.onclick = null; // ปิดคลิกหลังเลือกแล้ว
-		        };
-		        reader.onloadend = checkSubmitReady;
-		        reader.readAsDataURL(file);
-		    });
-		}
+        // พรีวิวรูปภาพขึ้นหน้าจอตามปกติ
+        const reader = new FileReader();
+        reader.onload = function (e) {
+            const box = document.getElementById('uploadSignatureBox');
+            box.innerHTML = '<img src="' + e.target.result + '" style="max-height:160px;max-width:360px;object-fit:contain;" />';
+        };
+        reader.readAsDataURL(file);
+    });
+}
 		
 		// ── Confirm Receiver ──────────────────────────────────────
 		function confirmReceiver(slot) {
@@ -741,7 +704,7 @@
 		    var description = $('#Description').val() ? $('#Description').val().trim() : '';
            
 		    var status
-		    if(id_btn.id == 'BtnSaveDreft'){
+		    if(id_btn.id == 'BtnSaveDraft'){
 		    	status = '0'
 		    }else{
 		    	status = '2'
@@ -769,6 +732,7 @@
 		    formData.append('items_type', $('#userSelect').find(':selected').attr('data-items_type'));
 		    formData.append('status', status);
 		    formData.append('url_ref', $('#urlref').val());
+		    formData.append('action', "insert");
 		    for (var pair of formData.entries()) {
 		        console.log(pair[0] + ' >> ', pair[1]);
 		    }
@@ -804,6 +768,11 @@
 	var dropdown
 	var dataList
 	$(document).ready(function() {
+		
+		$('#receiverBtn1').on('click', function() {
+			console.log('check data')
+			$('#receiverBtn1').prev().css('display','flex')
+		})
 		
 		<perm:permission object="admin">
 		$("#dowpdownselectuser").prop("disabled", false);

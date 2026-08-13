@@ -1,6 +1,7 @@
 package com.cubesofttech.dao;
 
 import java.util.List;
+import java.util.Map;
 
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -41,6 +42,17 @@ public class EquipmentRequestMrDAOImpl  implements EquipmentRequestMrDAO{
 	}
 	
 	@Override
+	public void update(EquipmentRequestMr EquipmentRequest) throws Exception {
+	    Session session = this.sessionFactory.getCurrentSession();
+	    
+	    // 🌟 เปลี่ยนจาก update เป็น merge เพื่อลดปัญหา Session ซ้ำซ้อนใน Hibernate
+	    session.merge(EquipmentRequest); 
+	    
+	    session.flush();
+	}
+
+	
+	@Override
 	public void deleteMr(EquipmentRequestMr equipmentRequestMr) throws Exception {
 	     Session session = this.sessionFactory.getCurrentSession();
 	     
@@ -52,21 +64,45 @@ public class EquipmentRequestMrDAOImpl  implements EquipmentRequestMrDAO{
 	            .setParameter("mrId", equipmentRequestMr.getMrId()) // สมมติว่า getMrId() คืนค่าไอดีกลับมา
 	            .executeUpdate(); // 💡 ต้องใช้ executeUpdate() สำหรับ INSERT, UPDATE, DELETE
 	}
-	
 	@Override
-	public List<Expense> loaddataEquipment(Long mr_id) throws Exception {
-		Session session = this.sessionFactory.getCurrentSession();
-		List<Expense> list = null;
-		try {
-			String hql = "from mr  where mr_id = :mr_id";
-			org.hibernate.Query q = session.createQuery(hql);
-			q.setParameter("mr_id", mr_id);
-			list = q.list();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return list;
+	public Map<String, Object> loaddataEquipment(String mr_id) throws Exception {
+	    Session session = this.sessionFactory.getCurrentSession();
+	    Map<String, Object> result = null;
+	    try {
+	        StringBuilder sql = new StringBuilder();
+	        // 1. ระบุคอลัมน์ทั้งหมดที่ต้องการดึง (ตรงนี้สามารถเพิ่มคอลัมน์อื่น ๆ ของตาราง doc_status ได้ตามสบายเลยครับ)
+	        sql.append("SELECT mr.*, ");
+	        sql.append("ds.status_name AS status_name, ");
+	        sql.append("ds.doc_status_id AS doc_status_id, "); // อยากได้ค่าไหนเพิ่มจากตาราง ds สามารถ .append ต่อตรงนี้ได้เลย
+	        sql.append("pd.product_name, ");
+	        sql.append("cq.equipment_name, ");
+	        sql.append("pd.sequence, ");
+	        sql.append("pd.parent_product_id, ");
+	        sql.append("ur.path ");
+	        sql.append("FROM mr mr ");
+	        sql.append("LEFT JOIN doc_status ds ON mr.status_id = ds.doc_status_id ");
+	        sql.append("LEFT JOIN catalog_equipment cq ON cq.catalog_equipment_id = mr.catalog_items_id AND mr.item_type = 1 ");
+	        sql.append("LEFT JOIN product pd ON pd.product_id = mr.catalog_items_id and mr.item_type = 2 ");
+	        sql.append("LEFT JOIN user ur ON ur.id = mr.request_user ");
+	        sql.append("WHERE mr.mr_id = :mr_id");
+
+	        // 2. ใช้ SQLQuery และแปลงผลลัพธ์ให้ออกมาเป็น Map ด้วย AliasToEntityMapResultTransformer
+	        org.hibernate.SQLQuery query = session.createSQLQuery(sql.toString());
+	        query.setResultTransformer(org.hibernate.transform.AliasToEntityMapResultTransformer.INSTANCE);
+	        query.setParameter("mr_id", mr_id);
+
+	        // 3. ดึงค่าออกมาเป็นผลลัพธ์แถวเดียว (เนื่องจากค้นหาด้วย ID หลัก)
+	        result = (Map<String, Object>) query.uniqueResult();
+
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	    }
+	    
+	    return result;
 	}
+
+
+
 	
 	@Override
 	public List<Object[]> getAllEquopmentRequestMr(EquipmentRequestMr equipmentRequestMr) throws Exception {

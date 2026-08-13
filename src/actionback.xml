@@ -2388,6 +2388,35 @@
 
 
 
+
+		<!-- ========================== Notification ============================== -->
+
+		<action name="notification_list_json"
+			class="com.cubesofttech.action.NotificationAction" method="listJson">
+		</action>
+
+		<action name="my_notification"
+			class="com.cubesofttech.action.NotificationAction" method="list">
+			<result name="success" type="tiles">my_notification</result>
+			<result name="error">/index.jsp</result>
+		</action>
+
+		<action name="notification_read"
+			class="com.cubesofttech.action.NotificationAction" method="read">
+			<result name="success" type="redirect">notification_detail?id=${id}</result>
+			<result name="error">/index.jsp</result>
+		</action>
+
+		<action name="notification_read_all"
+			class="com.cubesofttech.action.NotificationAction" method="readAll">
+			<result name="error">/index.jsp</result>
+		</action>
+
+		<action name="notification_detail"
+			class="com.cubesofttech.action.NotificationAction" method="detail">
+			<result name="success" type="tiles">notification_detail</result>
+			<result name="error">/index.jsp</result>
+		</action>
 	</package>
 
 </struts>

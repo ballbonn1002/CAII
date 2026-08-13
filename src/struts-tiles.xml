@@ -838,4 +838,18 @@
 			value="/pages-back/equipment_request/equipment_request_update.jsp" />
 	</definition>
 
+
+	<!-- Notification -->
+	<definition name="my_notification" extends="baseLayout">
+		<put-attribute name="title" value="My Notification" />
+		<put-attribute name="body"
+			value="/pages-back/notification/my_notification.jsp" />
+	</definition>
+
+	<definition name="notification_detail" extends="baseLayout">
+		<put-attribute name="title" value="Notification Detail" />
+		<put-attribute name="body"
+			value="/pages-back/notification/notification_detail.jsp" />
+	</definition>
+
 </tiles-definitions>

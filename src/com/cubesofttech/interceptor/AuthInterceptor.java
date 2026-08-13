@@ -16,11 +16,17 @@ public class AuthInterceptor extends AbstractInterceptor {
 
 	@Override
 	public String intercept(ActionInvocation invocation) throws Exception {
+		String actionName = invocation.getProxy().getActionName();
+
+	    if ("lineWebhook".equalsIgnoreCase(actionName) || "checkAccount".equalsIgnoreCase(actionName) || "lineLiffLogin".equalsIgnoreCase(actionName)) {
+	        return invocation.invoke();
+	    }
+	    
 		HttpSession session = ServletActionContext.getRequest().getSession(false);
 		User onlineUser = (session != null) ? (User) session.getAttribute("onlineUser") : null;
 
 		if (onlineUser == null) {
-			log.warn("Blocked unauthenticated access to " + invocation.getProxy().getActionName());
+			log.warn("Blocked unauthenticated access to " + actionName);
 			return ActionSupport.LOGIN;
 		}
 

@@ -442,7 +442,7 @@ INSERT INTO `catalog_equipment` (`catalog_equipment_id`, `equipment_name`, `item
 (2, 'Computer', '1', '0', 'cft.admin', 'cft.admin', '2026-07-21 06:23:52', '2026-07-21 06:23:56');
 
 CREATE TABLE catalog_consumables (
-	catalog_consumables_id BIGINT(11) NOT NULL, 
+	catalog_consumables_id BIGINT(11) NOT NULL,
 	product_id 			BIGINT(11)  NOT NULL,
 	parent_product_id 	VARCHAR(32) NOT NULL,
 	items_type			VARCHAR(32) NULL,
@@ -624,4 +624,33 @@ CREATE TABLE `unit_of_measure` (
 ) ENGINE = InnoDB AUTO_INCREMENT = 10 DEFAULT CHARSET = utf8mb4
 
 -- PROD 10 AUG 2026 9:50
+ALTER TABLE mr 
+MODIFY COLUMN request_date TIMESTAMP;
+
+-- PROD 13 AUG 2026
+
+-- 13/08/2026 Krit: CREATE TABLE notification --
+CREATE TABLE `notification` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `title` VARCHAR(255) DEFAULT NULL,
+  `message` TEXT,
+  `description` TEXT,
+  `is_read` TINYINT(1) NOT NULL DEFAULT 0,
+  `user_id` VARCHAR(32) DEFAULT NULL,
+  `user_create` VARCHAR(32) DEFAULT NULL,
+  `user_update` VARCHAR(32) DEFAULT NULL,
+  `time_create` TIMESTAMP NULL DEFAULT NULL,
+  `time_update` TIMESTAMP NULL DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- 13/08/2026 Krit: insert mockup data into 'notification' table for admin user (message as JSON text, title left blank) --
+INSERT INTO `notification` (`title`, `message`, `description`, `is_read`, `user_id`, `user_create`, `user_update`, `time_create`, `time_update`) VALUES
+('leave', '{"leaveId":11098,"leaveTypeId":"1","leaveTypeName":"ลาพักร้อน","status":"Approve","startDate":"2026-07-31","endDate":"2026-07-31"}', 'อนุมัติคำขอลาพักร้อนเรียบร้อยแล้ว', 0, 'cft.admin', 'cft.admin', 'cft.admin', NOW() - INTERVAL 40 MINUTE, NOW() - INTERVAL 40 MINUTE),
+('leave', '{"leaveId":11099,"leaveTypeId":"2","leaveTypeName":"ลากิจ","status":"Reject","startDate":"2026-08-02","endDate":"2026-08-03"}', 'ปฏิเสธคำขอลากิจ', 0, 'cft.admin', 'cft.admin', 'cft.admin', NOW() - INTERVAL 3 HOUR, NOW() - INTERVAL 3 HOUR),
+('leave', '{"leaveId":11100,"leaveTypeId":"3","leaveTypeName":"ลาป่วย","status":"Approve","startDate":"2026-08-05","endDate":"2026-08-05"}', 'อนุมัติคำขอลาป่วยเรียบร้อยแล้ว', 1, 'cft.admin', 'cft.admin', 'cft.admin', NOW() - INTERVAL 1 DAY, NOW() - INTERVAL 1 DAY),
+('leave', '{"leaveId":11101,"leaveTypeId":"6","leaveTypeName":"ลาพักร้อนที่เหลือจากปีก่อน","status":"Reject","startDate":"2026-06-10","endDate":"2026-06-12"}', 'ปฏิเสธคำขอลาพักร้อนที่เหลือจากปีก่อน', 0, 'cft.admin', 'cft.admin', 'cft.admin', NOW() - INTERVAL 9 DAY, NOW() - INTERVAL 9 DAY),
+('leave', '{"leaveId":11102,"leaveTypeId":"5","leaveTypeName":"ลาโดยไม่รับค่าจ้าง","status":"Approve","startDate":"2026-07-01","endDate":"2026-07-02"}', 'อนุมัติคำขอลาโดยไม่รับค่าจ้างเรียบร้อยแล้ว', 0, 'cft.admin', 'cft.admin', 'cft.admin', NOW() - INTERVAL 15 DAY, NOW() - INTERVAL 15 DAY);
+
+
 
