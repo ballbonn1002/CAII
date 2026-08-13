@@ -103,5 +103,26 @@ public class CompanyContactDAOImpl implements CompanyContactDAO {
 	    return query.list();
 	}
 	
-	
+	@Override
+	public List<Map<String, Object>> findByAddressId(Long addressId) throws Exception {
+
+	    Session session = sessionFactory.getCurrentSession();
+
+	    String sql =
+	        "SELECT " +
+	        "company_contact_id, " +
+	        "contact_name, " +
+	        "phone, " +
+	        "email " +
+	        "FROM company_contact " +
+	        "WHERE company_address_id = :addressId " +
+	        "ORDER BY contact_name";
+
+	    SQLQuery query = session.createSQLQuery(sql);
+	    query.setParameter("addressId", addressId);
+	    query.setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
+
+	    return query.list();
+	}
+
 }
