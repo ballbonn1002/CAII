@@ -12,4 +12,5 @@ public interface CompanyContactDAO {
 	public void save(CompanyContact contact) throws Exception;
 	public void update(CompanyContact contact) throws Exception;
 	public void delete(CompanyContact contact) throws Exception;
+	List<Map<String, Object>> findByAddressId(Long addressId) throws Exception;
 }

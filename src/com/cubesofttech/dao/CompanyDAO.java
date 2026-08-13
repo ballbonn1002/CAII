@@ -12,4 +12,5 @@ public interface CompanyDAO {
 	public void update(Company company) throws Exception;
 	public void delete(Company company) throws Exception;
 	public boolean existsCompanyCode(String companyCode, Long companyId) throws Exception;
+	Map<String, Object> findCompanyProfileById(Long companyId) throws Exception;
 }

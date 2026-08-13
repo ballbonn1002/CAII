@@ -103,5 +103,38 @@ public class CompanyDAOImpl implements CompanyDAO {
 
 	    return count > 0;
 	}
+	
+	@Override
+
+	public Map<String, Object> findCompanyProfileById(Long companyId) throws Exception {
+	    Session session = sessionFactory.getCurrentSession();
+	    String companySql = "SELECT c.company_id, c.company_code, c.company_th, c.company_en, "
+	            + "c.tax_number, c.is_active, f.path AS file_path "
+	            + "FROM company c LEFT JOIN file f ON c.file_id = f.file_id "
+	            + "WHERE c.company_id = :companyId";
+
+	    SQLQuery companyQuery = session.createSQLQuery(companySql);
+	    companyQuery.setParameter("companyId", companyId);
+	    companyQuery.setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
+	    List<Map<String, Object>> companyResult = companyQuery.list();
+
+	    if (companyResult.isEmpty()) {
+	        return null;
+	    }
+
+	    Map<String, Object> result = companyResult.get(0);
+
+	    String addressSql = "SELECT company_address_id, address_name, address, google_map "
+	            + "FROM company_address WHERE company_id = :companyId";
+	    
+	    SQLQuery addressQuery = session.createSQLQuery(addressSql);
+	    addressQuery.setParameter("companyId", companyId);
+	    addressQuery.setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
+	    result.put("addressList", addressQuery.list());
+
+	    return result;
+
+	}
+
 
 }
