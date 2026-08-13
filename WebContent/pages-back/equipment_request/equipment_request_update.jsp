@@ -158,8 +158,14 @@
 }
 
 .sig-box.unuploadable {
-	border: 2px dashed #C9D0E0;
-	background: #FAFAFA;
+/* 	border: 2px dashed #C9D0E0; */
+/* 	background: #FAFAFA; */
+}
+
+.sig-box.locked {
+	border: 0px solid #E4E6EF;
+	background: #FFF;
+	cursor: default;
 }
 
 .sig-lock-badge {
@@ -186,6 +192,44 @@
 .receiver-confirmed {
 	border-color: #50CD89 !important;
 	background: #F6FFF9 !important;
+}
+
+.border-Signature {
+border: 1px solid #e4e6ef;
+border-radius: 20px;"
+}
+.border-requetuser{
+    padding-top: 2rem !important;
+    padding-bottom: 7rem !important;
+    }
+    
+.form-control:disabled {
+    color: var(--bs-gray-500) !important;
+    background-color: var(--bs-gray-200) !important;
+    border-color: var(--bs-gray-300) !important;
+    opacity: 1;
+}
+.disabled{
+    color: var(--bs-gray-500) !important;
+    background-color: var(--bs-gray-200) !important;
+    border-color: var(--bs-gray-300) !important;
+    opacity: 1;
+}
+
+.high-icon{
+    height: calc(1em + 1.55rem + 2px) !important;
+    }
+.style-pending{
+
+width : 100% !important;
+height : 250px !important;
+border: 0px;
+}
+.text-pending{
+display : none
+}
+.height-only{
+height : 100% !important;
 }
 </style>
 </head>
@@ -220,9 +264,15 @@
 <%-- 							<c:when test="${empty catalogList}"> --%>
 
 								<div class="row">
-									<div class="col-xl-9 fs-1 text-primary fw-bold">#<span id="mr_id"></span></div>
+									<div class="col-xl-9 fs-1 text-primary fw-bold">#<span id="mr_id">${Equipmentload.mr_id}</span></div>
 									<div class="col-xl-3 ">
-										<div class="btn btn-secondary btn-sm px-4" style="pointer-events: none;">Draft</div>
+										<div class="btn    <c:choose>
+        <c:when test="${Equipmentload.status_name == 'Approved'}">btn-success</c:when>
+        <c:when test="${Equipmentload.status_name == 'Pending'}">btn-warning</c:when>
+        <c:when test="${Equipmentload.status_name == 'Reject'}">btn-danger</c:when>
+        <c:when test="${Equipmentload.status_name == 'Cancel'}">btn-dark</c:when>
+        <c:otherwise>btn-secondary</c:otherwise>
+    </c:choose>  btn-sm px-4" style="pointer-events: none;">${Equipmentload.status_name}</div>
 									</div>
 								</div>
 <%-- 							</c:when> --%>
@@ -248,7 +298,7 @@
 					</div>
 				</div>
 
-							<div id="kt_app_content" class="app-content flex-column-fluid">
+	<div id="kt_app_content" class="app-content flex-column-fluid">
 					<div id="kt_app_content_container"
 						class="app-container container-fluid">
 
@@ -257,7 +307,7 @@
 
 							<input type="hidden" id="grandTotalInput" name="amount"
 								value="0.00" />
-
+	<c:if test="${Equipmentload.status_name != 'Pending'}">
 							<div class="card card-flush mb-7">
 								<div class="card-header">
 									<div class="card-title">
@@ -293,14 +343,15 @@
 											<label class="form-label required fw-semibold">item</label>
 							        
 							            <select class="form-select ps-11" id="userSelect" name="userSelect" style="width: 100%;"
-							            onchange="getdataitem()">
+							            onchange="getdataitem()"  ${Equipmentload.status_id == '8' || Equipmentload.status_id == '2' ? 'disabled' : ''} >
 							               <!-- ช่องตั้งต้นเมื่อเคลียร์คำค้นหา -->
 							                <option value="All"> search </option>			
 							<!--                     🆕 วนลูปข้อมูลแถวทั้งหมดจากเบื้องหลัง เพื่อสร้างเป็นตัวเลือกกางโชว์ตั้งแต่แรก -->
 										<c:forEach var="itemEqptList" items="${catalogEqptList}">
 										    <option value="${itemEqptList.id}" data-type="${itemEqptList.type}"
 										    data-parent_product="${itemEqptList.parent_product_id}"
-										    data-items_type="${itemEqptList.items_type}">
+										    data-items_type="${itemEqptList.items_type}"
+										    ${itemEqptList.id == Equipmentload.catalog_items_id ? 'selected="selected"' : ''}>
 										        ${itemEqptList.name}
 										    </option>
 										</c:forEach>
@@ -312,14 +363,17 @@
 										<%-- Purpose of journey --%>
 										<div class="col-md-4">
 											<label class="form-label required fw-semibold">Sub item</label>
-										<select id="subItemSelect" class="form-select" data-placeholder="No Data" name="type" disabled>
+										<select id="subItemSelect" class="form-select" data-placeholder="No Data" name="type"
+										  ${Equipmentload.status_id == '8' || Equipmentload.status_id == '2' 
+										  || Equipmentload.item_sub_id == ''  ? 'disabled' : ''} >
 											    <option value="allType">No data</option>
 											    
 											    <!-- 🔄 เปลี่ยน var จาก product_list ให้เหลือแค่ product ให้ตรงกับด้านล่างครับ -->
 											    <c:forEach var="product" items="${ProductList}">
-											        <option value="${product.product_id}"
-											        data-parent_product="${product.parent_product_id} }">
-											            ${product.product_name}
+											        <option value="${product.productId}"
+											        data-parent_product="${product.parentProductId}"
+											         ${product.productId == Equipmentload.item_sub_id ? 'selected="selected"' : ''}>
+											            ${product.productName}
 											        </option>
 											    </c:forEach>
 											</select>
@@ -329,12 +383,16 @@
 										<div class="col-md-4">
 											<label class="form-label required fw-semibold">Quantity</label>
 											<div
-												class="d-flex align-items-center border border-gray-300 rounded px-3 py-3">
+												class="d-flex align-items-center border border-gray-300 rounded px-3 py-3
+												 ${Equipmentload.status_id == '8' || Equipmentload.status_id == '2'  ? 'disabled' : ''}">
 												<input type="number"
 													class="form-control bg-transparent border-0 shadow-none p-0 fw-medium text-gray-900"
 													style="font-size: 1rem;" name="amount"
-													id="amount"
-													value="${param.amount}" required  maxlength="3"/>
+													id="amount" pattern="#,##0.00"
+													value="${Equipmentload.amount.intValue()}" required  maxlength="3"
+													 ${Equipmentload.status_id == '8' || Equipmentload.status_id == '2'  ? 'disabled' : ''} />
+													 
+<%-- 													  <fmt:formatNumber value="${Equipmentload.amount}" pattern="#,##0" /> --%>
 											</div>
 										</div>
 									</div>
@@ -342,27 +400,32 @@
 									<div class="row g-5 mb-5">
 										<%-- Beginning --%>
 										<div class="col-md-6">
-											<label class="form-label required fw-semibold">Description</label>
+											<label class="form-label fw-semibold">Description</label>
 											<div
-												class="d-flex align-items-center border border-gray-300 rounded px-3 py-3">
+												class="d-flex align-items-center border border-gray-300 rounded px-3 py-3
+												 ${Equipmentload.status_id == '8' || Equipmentload.status_id == '2'  ? 'disabled' : ''}">
 												<textarea class="form-control bg-transparent border-0 shadow-none p-0 fw-medium text-gray-900"
 										          style="font-size: 1rem; resize: none;" 
 										          id="description" 
 										          name="description"
 										          rows="3" 
-										          required> </textarea>
+										           ${Equipmentload.status_id == '8' || Equipmentload.status_id == '2'  ? 'disabled' : ''} 
+										          required
+										          >${Equipmentload.description}</textarea>
 											</div>
 										</div>
 										<div class="col-md-6">
-											<label class="form-label required fw-semibold">URL Reference</label>
+											<label class="form-label fw-semibold">URL Reference</label>
 											<div
-												class="d-flex align-items-center border border-gray-300 rounded px-3 py-3">
+												class="d-flex align-items-center border border-gray-300 rounded px-3 py-3 
+												${Equipmentload.status_id == '8' || Equipmentload.status_id == '2' ? 'disabled' : ''}">
 												<textarea class="form-control bg-transparent border-0 shadow-none p-0 fw-medium text-gray-900"
 										          style="font-size: 1rem; resize: none;" 
 										          id="urlref" 
 										          name="urlref"
+										          ${Equipmentload.status_id == '8' || Equipmentload.status_id == '2' ? 'disabled' : ''}	
 										          rows="3" 
-										          required> </textarea>
+										          required>${Equipmentload.url_ref}</textarea>
 											</div>
 										</div>
 
@@ -371,6 +434,61 @@
 
 								</div>
 							</div>
+					</c:if>
+
+<c:if test="${Equipmentload.status_name == 'Pending'}">
+							<!-- การ์ดหลักครอบทั้งหมด -->
+<div class="card shadow-sm border-0 rounded-3 p-10 mb-4" style="background-color: #ffffff;">
+    
+    <!-- ส่วนหัวข้อหลัก -->
+    <h5 class="fw-bold mb-4" style="color: #2c3e50;">Equipment Request - Detail</h5>
+    
+    <div class="row align-items-center">
+        <!-- ฝั่งซ้าย: ข้อมูลผู้ขอและรูปโปรไฟล์ -->
+        <div class="col-md-6 d-flex align-items-center mb-3 mb-md-0">
+            <!-- รูปภาพโปรไฟล์วงกลม -->
+            <img src="${ctx}${userImgPath}" 
+                 class="rounded-circle me-3" 
+                 alt="Profile" 
+                 style="width: 50px; height: 50px; object-fit: cover;">
+            
+            <div>
+                <!-- ชื่อพนักงานและรหัส (สามารถเปลี่ยนตัวแปรตามจริงในระบบได้เลยครับ) -->
+                <div class="fw-semibold text-dark" style="font-size: 1.05rem;height: calc(1em + 1.55rem + 2px) !important;">
+                   ${Equipmentload.request_user}
+                </div>
+                <!-- วันที่และเวลา -->
+        <%-- กำหนด Locale เป็นภาษาอังกฤษก่อน --%>
+		<fmt:setLocale value="en_US" />
+		
+		<small class="text-muted" style="font-size: 0.85rem;">
+		    <fmt:formatDate value="${Equipmentload.request_date}" pattern="d MMM yyyy, H:mm" />
+		</small>
+		
+            </div>
+        </div>
+        <!-- ฝั่งขวา: รายละเอียดอุปกรณ์ที่ขอ -->
+        <div class="col-md-6">
+            <!-- บรรทัดบน: ประเภทอุปกรณ์ -->
+            <div class="d-flex align-items-center high-icon" style="font-size: 0.95rem;">
+              <a  class="btn btn-icon fs-3">  <i class="ki-duotone ki-monitor-mobile text-primary fs-1">
+				 <span class="path1"></span>
+				 <span class="path2"></span>
+				</i> </a>
+                <span class="text-muted me-2">Equipment</span>
+                <span class="text-muted me-2">→</span>
+                <span class="fw-medium text-dark" >${Equipmentload.parent_product_id == 0 ?  Equipmentload.product_name : Equipmentload.equipment_name  } : <fmt:formatNumber value="${Equipmentload.amount}" pattern="#,##0" /> เครื่อง</span>
+            </div>
+            
+            <!-- บรรทัดล่าง: รายละเอียดสเปกเพิ่มเติม -->
+            <div class="d-flex align-items-center text-muted high-icon" style="font-size: 0.9rem;">
+                        <a  class="btn btn-icon fs-3"><i class="ki-duotone ki-document fs-1"><span class="path1"></span><span class="path2"></span></i></a>
+                <span>${Equipmentload.description}</span>
+            </div>
+        </div>
+    </div>
+</div>
+</c:if>					
 								<!-- ===== Signature ===== -->
 							<div class="card card-flush mb-6">
 								<div class="card-header">
@@ -380,17 +498,37 @@
 								</div>
 								<div class="card-body py-5">
 									<div class="d-flex align-items-start gap-8 flex-wrap">
-
+									<div class="border-Signature <c:choose>
+        <c:when test="${Equipmentload.status_name == 'Pending'}">style-pending</c:when>
+    </c:choose>">
 										<!-- LEFT: Signature Image -->
-										<div class="d-flex flex-column align-items-center gap-2">
-
+										<div class="d-flex flex-column align-items-center gap-2 ps-15 pe-15 
+										 <c:choose>
+        <c:when test="${Equipmentload.status_name == 'Pending'}">height-only</c:when>
+    </c:choose>">
 											<c:choose>
 												<%-- มีรูปแล้ว → ล็อค ห้ามเปลี่ยน ไม่มี input file --%>
 												<c:when test="${not empty signaturePath}">
-													<div class="sig-box locked">
+													<div class="sig-box locked <c:choose>
+												        <c:when test="${Equipmentload.status_name == 'Pending'}">height-only</c:when>
+												    </c:choose>">
 														<img src="${ctx}${signaturePath}"
 															style="max-height: 160px; max-width: 360px; object-fit: contain;" />
-														<div class="sig-lock-badge">
+															
+														<div class="text-center 
+														<c:choose>
+													        <c:when test="${Equipmentload.status_name != 'Pending'}">text-pending</c:when>
+													    </c:choose>">	
+														    <span class="text-primary fs-7" id="receiverLabel1">ชื่อผู้ขอเบิก
+														    </span>
+														<div class="d-flex flex-column pt-4">
+															<span class="text-dark fw-semibold fs-7">${userObj.nameEN}</span>
+															<span class="text-muted fs-8 mb-2 mt-1"><fmt:formatDate
+																	value="${Equipmentload.request_date}" pattern="d MMM yyyy, H:mm" /></span>
+														</div>
+														</div>
+														<div class="sig-lock-badge
+														<c:choose><c:when test="${Equipmentload.status_name == 'Pending'}">text-pending height-only</c:when></c:choose>">
 															<i class="ki-duotone ki-lock fs-7"> <span
 																class="path1"></span><span class="path2"></span>
 															</i> Signature on file
@@ -409,10 +547,11 @@
 												</c:otherwise>
 											</c:choose>
 										</div>
-
+									</div>
 										<!-- MIDDLE: Receiver 1 = ผู้ขอเบิก -->
+										<c:if test="${Equipmentload.status_name != 'Pending'}">
 										<div
-											class="receiver-box d-flex flex-fill flex-column align-items-center gap-2"
+											class="receiver-box d-flex flex-fill flex-column align-items-center gap-2 border-requetuser "
 											id="receiverBox1">
 											<div id="receiverPreview1"
 												style="min-height: 44px; display: flex; flex-direction: column; align-items: center;">
@@ -420,25 +559,25 @@
 													ผู้ขอเบิก</span>
 												<div class="d-flex flex-column">
 													<span class="text-dark fw-semibold fs-7">${userObj.nameEN}</span>
-													<span class="text-muted fs-8"><fmt:formatDate
-															value="${requestAt}" pattern="d MMM yyyy, H:mm" /></span>
+													<span class="text-muted fs-8 mb-2"><fmt:formatDate
+															value="${Equipmentload.request_date}" pattern="d MMM yyyy, H:mm" /></span>
 
 												</div>
 											</div>
 										</div>
-
+										</c:if>
 										<!-- RIGHT: Receiver 2 = ผู้รับเงิน -->
-										<div
-											class="receiver-box d-flex flex-fill flex-column align-items-center gap-2"
-											id="receiverBox2">
-											<div id="receiverPreview2"
-												style="min-height: 44px; display: flex; flex-direction: column; align-items: center;">
-												<span class="text-primary pb-7 fs-7" id="receiverLabel1">ชื่อ
-													ผู้รับเงิน</span> <span class="text-dark fw-semibold fs-7">${userObj.nameEN}</span>
-												<span class="text-muted fs-8"><fmt:formatDate
-														value="${requestAt}" pattern="d MMM yyyy, H:mm" /></span>
-											</div>
-										</div>
+<!-- 										<div -->
+<!-- 											class="receiver-box d-flex flex-fill flex-column align-items-center gap-2" -->
+<!-- 											id="receiverBox2"> -->
+<!-- 											<div id="receiverPreview2" -->
+<!-- 												style="min-height: 44px; display: flex; flex-direction: column; align-items: center;"> -->
+<!-- 												<span class="text-primary pb-7 fs-7" id="receiverLabel1">ชื่อ -->
+<%-- 													ผู้รับเงิน</span> <span class="text-dark fw-semibold fs-7">${userObj.nameEN}</span> --%>
+<%-- 												<span class="text-muted fs-8"><fmt:formatDate --%>
+<%-- 														value="${requestAt}" pattern="d MMM yyyy, H:mm" /></span> --%>
+<!-- 											</div> -->
+<!-- 										</div> -->
 									</div>
 								</div>
 							</div>
@@ -467,18 +606,27 @@
 							</c:if>
 
 							<div class="d-flex justify-content-between mb-10">
-								<a href="${ctx}/equipment_request_list?status=All"
+								<div><a href="${ctx}/equipment_request_list?status=All"
 									class="btn btn-light px-6"><i
 									class="ki-duotone ki-arrow-left fs-2"> <span class="path1"></span>
 										<span class="path2"></span>
 								</i>Back </a>
+								<c:if test="${Equipmentload.status_name != 'Cancel'}">
+									<button type="button" id="BtnCanccel"  class="btn btn-dark px-6 btn-cancel ms-5" data-id="${Equipmentload.mr_id}">
+											    Cancel
+									</button> 
+								</c:if>
+								</div>
 						<div>
-						<button type="button" id="BtnSaveDreft" onclick="submitData(this)"  class="btn btn-secondary px-6">
-							    Save Draft
-						</button>		
-						<button type="button" id="BtnSubmit_Equipment_Request" onclick="submitData(this)"  class="btn btn-success px-6">
-							    Submit PR
-						</button>
+
+							<c:if test="${Equipmentload.status_name != 'Cancel' && Equipmentload.status_name != 'Pending'}">
+								<button type="button" id="BtnSaveDraft" onclick="submitData(this)"  class="btn btn-secondary px-6 ms-5">
+									    Save Draft
+								</button>		
+								<button type="button" id="BtnSubmit_Equipment_Request" onclick="submitData(this)"  class="btn btn-success px-6 ms-5">
+									    Submit PR
+								</button>
+							</c:if>
 						</div>
 
 <%-- 								<c:if test="${empty statusActiveSafe}"> --%>
@@ -503,9 +651,232 @@
 	</div>
 
 	<script>
+	const ctx             = "${pageContext.request.contextPath}";
+	$(document).ready(function() {
+	 $('#userSelect').select2({
+	        placeholder: "ค้นหา...",
+	        allowClear: true,
+	        width: '100%',
+	        tags: true, // ยอมรับคำพิมพ์ใหม่ๆ อิสระ
+	        
+	        // [ส่วนที่เพิ่มใหม่] ถ้าอยากให้มีประวัติคำที่เคยพิมพ์ไปแล้วโชว์ใน Dropdown เพื่อกดเลือกซ้ำได้
+	        createTag: function (params) {
+	            var term = $.trim(params.term);
+	            if (term === '') {
+	                return null;
+	            }
+	            return {
+	                id: term,
+	                text: term,
+	                newTag: true 
+	            }
+	        }
+	    });
+	 if(document.getElementById('subItemSelect')){
+		 dropdown = document.getElementById('subItemSelect'); subItemSelect
+	  	 dataList = Array.from(dropdown.options).map(option => {
+			    // ดึงค่าแอตทริบิวต์ data-parent_product ออกมาลอย ๆ
+			    var rawParent = option.getAttribute("data-parent_product"); 
 	
+			    // เคลียร์เอาเครื่องหมาย " }" และช่องว่างที่พิมพ์เกินออกให้เหลือแต่ตัวเลข
+			    var cleanParent = rawParent ? rawParent.replace("}", "").trim() : null;
+			
+			    return {
+			        value: option.value,
+			        text: option.text.trim(), // ลบช่องว่างส่วนเกินรอบตัวหนังสือออกให้สวยงาม
+			        parent_product: cleanParent // ได้ค่าเป็นตัวเลขคลีน ๆ เช่น "0" หรือ "1"
+			    };
+			})	 
+	 }
+		 
+		initDeleteExpense(); 	 
+	});
+	
+	function initDeleteExpense() {
+	    document.addEventListener('click', function (e) {
+	    	console.log("btn calcel")
+	        const btn = e.target.closest('.btn-cancel');
+	        if (!btn) return;
 
+	        const expenseId = btn.getAttribute('data-id');
+	        if (!expenseId) return;
+
+	        Swal.fire({
+	            title: 'Cancel รายการนี้?',
+	            html: 'Expense <strong>#' + expenseId + '</strong>',
+	            icon: 'warning',
+	            showCancelButton: true,
+	            confirmButtonText: 'ตกลง',
+	            cancelButtonText: 'ยกเลิก',
+	            confirmButtonColor: '#F64E60',
+	            reverseButtons: true
+	        }).then(function (result) {
+	            if (!result.isConfirmed) return;
+
+	            // แสดง loading บน button ระหว่างรอ
+	            btn.disabled = true;
+	            btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span>';
+
+	            fetch(ctx + '/equipment_request_listdelete?id=' + expenseId, {
+	                method: 'POST',
+	                headers: { 'X-Requested-With': 'XMLHttpRequest' }
+	            })
+	            .then(function (res) { return res.json(); })
+	            .then(function (data) {
+	                if (data.success) {
+	                    Swal.fire({
+	                        icon: 'success',
+	                        title: 'Cancel รายการ',
+	                        text: 'Expense #' + expenseId + ' เรียบร้อย',
+	                        timer: 1500,
+	                        showConfirmButton: false
+	                    }).then(function () {
+	                    	window.location.reload()	
+	                    });
+	                } else {
+	                    // คืนค่า icon ให้ button
+	                    btn.disabled = false;
+	                    btn.innerHTML =
+	                        '<i class="ki-duotone ki-trash fs-1">' +
+	                        '<span class="path1"></span><span class="path2"></span>' +
+	                        '<span class="path3"></span><span class="path4"></span></i>';
+	                    Swal.fire({
+	                        icon: 'error',
+	                        title: 'ไม่สามารถลบได้',
+	                        text: data.message || 'เกิดข้อผิดพลาด'
+	                    });
+	                }
+	            })
+	            .catch(function (err) {
+	                console.error('Delete error:', err);
+	                btn.disabled = false;
+	                btn.innerHTML =
+	                    '<i class="ki-duotone ki-trash fs-1">' +
+	                    '<span class="path1"></span><span class="path2"></span>' +
+	                    '<span class="path3"></span><span class="path4"></span></i>';
+	                Swal.fire({
+	                    icon: 'error',
+	                    title: 'Network error',
+	                    text: 'กรุณาลองใหม่อีกครั้ง'
+	                });
+	            });
+	        });
+	    });
+	}
 	
+	 function submitData(id_btn) {
+		 console.log('id btn',id_btn.id)
+		    // เพิ่ม .trim() ป้องกันช่องว่าง \t \n หลุดไปกับค่า Value
+		    var item_catalog = $('#userSelect').val() ? $('#userSelect').val().trim() : '';
+		    var quantity = $('#quantity').val() ? $('#quantity').val().trim() : '';
+		    
+		    // ดึงค่า Description มารอไว้ (ใช้ ID ให้ตรงกับที่ออกแบบไว้ใน HTML)
+		    var description = $('#Description').val() ? $('#Description').val().trim() : '';
+           
+		    var status
+		    if(id_btn.id == 'BtnSaveDraft'){
+		    	status = '0'
+		    }else{
+		    	status = '2'
+		    }
+		    const formData = new FormData();
+		    
+		    const fileInput = document.getElementById('sigFileInput');
+		    console.log('fileInput >>',fileInput)
+		 
+		    if (fileInput && fileInput.files.length > 0) {
+		        formData.append('files', fileInput.files[0]); 
+		        formData.append('filesFileName', fileInput.files[0].name);
+		    } else {
+		        formData.append('filesFileName', '');
+		    }
+		    
+		   
+// 		    2. ย้ายข้อมูลทั้งหมดจาก Object เดิม มา append เข้า formData ตรง ๆ
+		    formData.append('mr_id', $('#mr_id').text()); // ใช้ .text() ตามโค้ดเดิมของคุณ
+		    formData.append('catalog_items_id', item_catalog);
+		    formData.append('amount', $('#amount').val());
+		    formData.append('description', $('#description').val());
+		    formData.append('request_user', $('#userId').val());
+		    formData.append('item_sub_id', $('#subItemSelect').val() == 'allType' ? '' : $('#subItemSelect').val());
+		    formData.append('items_type', $('#userSelect').find(':selected').attr('data-items_type'));
+		    formData.append('status', status);
+		    formData.append('url_ref', $('#urlref').val());
+		    formData.append('action', "update");
+		    for (var pair of formData.entries()) {
+		        console.log(pair[0] + ' >> ', pair[1]);
+		    }
+		    
+		    $.ajax({
+		        url: ctx + '/equipment_request_save',
+		        method: 'POST',
+		        data: formData,
+		        processData: false,   // ⚠️ สำคัญมาก: ห้าม jQuery แปลงข้อมูล
+		        contentType: false,   // ⚠️ สำคัญมาก: ให้เบราว์เซอร์ตั้งค่า boundary เอง
+		        success: function (res) {
+		            $('#modal_equipment').modal('hide');
+		            Swal.fire({
+		                title: 'Success!',
+		                text: 'Item saved successfully!',
+		                icon: 'success',
+		                timer: 1000,
+		                timerProgressBar: true,
+		                showConfirmButton: false
+		            }).then(() => {
+		            	window.location.replace("equipment_request_list");	
+		            });
+		        },
+		        error: function (xhr) {
+		            // ดูรายละเอียดของ Error ที่เกิดขึ้นจริงใน Console (F12)
+		            console.error("HTTP Status:", xhr.status);
+		            console.error("Error Response:", xhr.responseText);
+		            Swal.fire('Error!', 'Failed to submit return request.', 'error');
+		        }
+		    });
+		}
+	 function getdataitem(){
+		    console.log('--- เริ่มรันฟังก์ชัน getdataitem ---');      
+		        var subDropdown = $('#subItemSelect');
+//	 	        subDropdown.empty().append('<option value="">No data</option>');
+		        
+		        // ตัวแปรไว้เช็คสถานะการปลดล็อค
+		        var shouldUnlock = false;
+		        
+//	 			console.log('dataList >>>>>>>>>>>>',dataList)
+		  
+				   const filteredResult = dataList.filter(item => {
+				    // กรองเอาแถวเริ่มต้นติดมาด้วย และคัดเฉพาะตัวที่ idProduct ตรงกัน
+				    return item.parent_product == $('#userSelect').val()
+//	 			    && item.parent_product == $('#userSelect').find(':selected').attr('data-parent_product') 
+				    && item.parent_product != 0 && item.value != 'allType'
+					});
+		         console.log(filteredResult)
+		         
+			         if(filteredResult.length != 0){
+			        	 shouldUnlock = true
+			        	 subDropdown.empty().append('<option value="">Search</option>');
+			         }else{
+			        	 subDropdown.empty().append('<option value="">No data</option>');
+			        	 shouldUnlock = false 
+			         }
+		         
+		         filteredResult.forEach(item => {
+		        	 shouldUnlock = true
+		        	    // ใส่เครื่องหมาย ' ครอบตัว value และดึงค่า text มาแสดงผล
+		        	    $('#subItemSelect').append("<option value='" + item.value + "'>" + item.text + "</option>");
+		        	});
+		          
+		        if (shouldUnlock) {
+		            subDropdown.prop('disabled', false); // ปลดล็อคกล่อง (ลบ disabled ออก) ให้กดได้ปกติ
+		            console.log("ข้อมูลตรงเงื่อนไข -> ปลดล็อคช่อง Sub item เรียบร้อย");
+		        } else {
+		            subDropdown.prop('disabled', true);  // หากไม่ตรงเงื่อนไข ให้ล็อคไว้ตามเดิม
+		        }
+	           	
+	            if (typeof subDropdown.trigger === 'function') {
+	                subDropdown.trigger('change'); 
+	            }
+		}
 </script>
 	
 </body>

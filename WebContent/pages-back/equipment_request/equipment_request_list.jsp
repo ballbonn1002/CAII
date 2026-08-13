@@ -437,7 +437,7 @@ color: var(--bs-primary);
 																<td><span class="text-gray-600 fw-bold">${not empty row.product_name ? row.product_name : '-'}</span></td>
 																	<td>
 																	<span class="text-gray-600 fw-bold">
-																	${row.quantity}
+																	<fmt:formatNumber value="${row.quantity}" pattern="#,##0" />
 																	</span>
 																	</td>
 																<td class="text-start"><fmt:formatDate value="${row.request_date}" pattern="d MMM yyyy, H:mm" /></td>
@@ -505,7 +505,7 @@ color: var(--bs-primary);
 																<td><span class="text-gray-600 fw-bold">${not empty row.product_name ? row.product_name : '-'}</span></td>
 																	<td>
 																	<span class="text-gray-600 fw-bold">
-																	${row.quantity}
+																	<fmt:formatNumber value="${row.quantity}" pattern="#,##0" />
 																	</span>
 																	</td>
 																<td class="text-start"><fmt:formatDate value="${row.request_date}" pattern="d MMM yyyy, H:mm" /></td>
@@ -574,7 +574,7 @@ color: var(--bs-primary);
 																<td><span class="text-gray-600 fw-bold">${not empty row.product_name ? row.product_name : '-'}</span></td>
 																	<td>
 																	<span class="text-gray-600 fw-bold">
-																	${row.quantity}
+																	<fmt:formatNumber value="${row.quantity}" pattern="#,##0" />
 																	</span>
 																	</td>
 																<td class="text-start"><fmt:formatDate value="${row.request_date}" pattern="d MMM yyyy, H:mm" /></td>
@@ -642,7 +642,7 @@ color: var(--bs-primary);
 																<td><span class="text-gray-600 fw-bold">${not empty row.product_name ? row.product_name : '-'}</span></td>
 																	<td>
 																	<span class="text-gray-600 fw-bold">
-																	${row.quantity}
+																	<fmt:formatNumber value="${row.quantity}" pattern="#,##0" />
 																	</span>
 																	</td>
 																<td class="text-start"><fmt:formatDate value="${row.request_date}" pattern="d MMM yyyy, H:mm" /></td>
@@ -711,7 +711,7 @@ color: var(--bs-primary);
 																${not empty row.product_name ? row.product_name : '-'}</span></td>
 																	<td>
 																	<span class="text-gray-600 fw-bold">
-																	${row.quantity}
+																	<fmt:formatNumber value="${row.quantity}" pattern="#,##0" />
 																	</span>
 																	</td>
 																<td class="text-start"><fmt:formatDate value="${row.request_date}" pattern="d MMM yyyy, H:mm" /></td>
@@ -783,7 +783,7 @@ color: var(--bs-primary);
 																</td>
 																	<td>
 																	<span class="text-gray-600 fw-bold">
-																	${row.quantity}
+																	<fmt:formatNumber value="${row.quantity}" pattern="#,##0" />
 																	</span>
 																	</td>
 																<td class="text-start"><fmt:formatDate value="${row.request_date}" pattern="d MMM yyyy, H:mm" /></td>
@@ -854,7 +854,7 @@ color: var(--bs-primary);
 																</td>
 																	<td>
 																	<span class="text-gray-600 fw-bold">
-																	${row.quantity}
+																	<fmt:formatNumber value="${row.quantity}" pattern="#,##0" />
 																	</span>
 																	</td>
 																<td class="text-start"><fmt:formatDate value="${row.request_date}" pattern="d MMM yyyy, H:mm" /></td>
@@ -1541,7 +1541,7 @@ color: var(--bs-primary);
 
 	        Swal.fire({
 	            title: 'ลบรายการนี้?',
-	            html: 'Expense <strong>#' + expenseId + '</strong> จะถูกลบถาวร',
+	            html: 'Expense <strong>#' + expenseId + '</strong> ',
 	            icon: 'warning',
 	            showCancelButton: true,
 	            confirmButtonText: 'ลบ',
@@ -1711,64 +1711,83 @@ color: var(--bs-primary);
 		
 		
 		
-	    // 1. เปิดสไตล์ Smart Search ค้นหาอัตโนมัติแบบรองรับคำพิมพ์อิสระ (Tags Mode)
- 		 $('#userSelect').select2({
-	        placeholder: "ค้นหา...",
-	        allowClear: true,
-	        width: '100%',
-	        tags: true, // ยอมรับคำพิมพ์ใหม่ๆ อิสระ
-	        
-	        // [ส่วนที่เพิ่มใหม่] ถ้าอยากให้มีประวัติคำที่เคยพิมพ์ไปแล้วโชว์ใน Dropdown เพื่อกดเลือกซ้ำได้
-	        createTag: function (params) {
-	            var term = $.trim(params.term);
-	            if (term === '') {
-	                return null;
-	            }
-	            return {
-	                id: term,
-	                text: term,
-	                newTag: true 
-	            }
-	        }
-	    });
+		// เก็บออปชันเริ่มต้นของหน้าจอไว้เป็นก้อนพิมพ์เขียว (ไม่ให้ข้อมูลจริงโดนลบ)
+		var originalOptionsHtml = $('#userSelect').html();
 
-		    // [ส่วนที่เพิ่มใหม่] เช็คว่าถ้าฝั่ง Java มีการส่งค่าเก่าที่เคยเลือกค้างไว้กลับมา (เช่น ตอนเปิดหน้าแรก)
-		    // ให้ทำการยัดค่านั้นกลับเข้ากล่องเพื่อแสดงผลให้ผู้ใช้เห็นทันที ไม่ให้กล่องว่างเปล่า
-		    var previousSelectedValue = "${idUserSelected}";
-		    if (previousSelectedValue && previousSelectedValue.trim() !== '' && previousSelectedValue !== 'null') {
-		        // ถ้าค่าที่ส่งมายังไม่มีในลิสต์ ให้สร้าง option ชั่วคราวขึ้นมารองรับ
-		        if ($('#userSelect').find("option[value='" + previousSelectedValue + "']").length === 0) {
-		            var newOption = new Option(previousSelectedValue, previousSelectedValue, true, true);
-		            $('#userSelect').append(newOption).trigger('change.select2');
-		        } else {
-		            $('#userSelect').val(previousSelectedValue).trigger('change.select2');
+		// ฟังก์ชันสำหรับสั่งเริ่มต้นเปิดใช้งาน Select2 ใหม่ทุกครั้งที่มีการล้างกระดาน
+		function initUserSelect2() {
+		    $('#userSelect').select2({
+		        placeholder: "ค้นหา...",
+		        allowClear: true,
+		        width: '100%',
+		        tags: true,
+		        createTag: function (params) {
+		            var term = $.trim(params.term);
+		            if (term === '') return null;
+		            return { id: term, text: term, newTag: true }
+		        }
+		    });
+		}
+
+		// ฟังก์ชันศูนย์กลางสำหรับส่งค่าไปกรองตารางด้วย Ajax
+		function handleSmartSearchUpdate(value) {
+		    var currentValue = value || "";
+		    if (typeof state !== 'undefined' && state.currentFilters) {
+		        state.currentFilters.userSelect = currentValue;
+		        state.currentFilters.page = 1;
+		        if (typeof loadTableData === 'function') {
+		            loadTableData();
 		        }
 		    }
+		    console.log('Smart search triggered lookup with value:', currentValue);
+		}
 
-    			// 2. ดักจับเมื่อผู้ใช้งานเลือกคำค้นหา (Smart Search ตัวเดิมที่คุณแก้ไขตามข้อที่แล้ว)
-			    $('#userSelect').off('change').on('change', function() {
-			        if (typeof state !== 'undefined') {
-			            state.currentFilters.userSelect = $(this).val() || "";
-			            state.currentFilters.page = 1; // รีเซ็ตกลับไปหน้า 1 ทุกครั้งที่พิมพ์คำค้นใหม่
-			            if (typeof loadTableData === 'function') {
-			                loadTableData();
-			            }
-			        }
-			        console.log('Smart search updated via Ajax:', $(this).val());
-			    });
+		// เรียกใช้งาน Select2 ครั้งแรกตอนโหลดหน้าเว็บ
+		initUserSelect2();
 
-	    
-	    	    $('#userSelect').off('change').on('change', function() {
-	        // 🛠️ [แก้ไขจุดที่ 2] อัปเดตคำค้นหาลง state แล้วสั่งดึงข้อมูลแบบ Ajax ไม่เอาการโหลดหน้าใหม่ (.submit)
-	        if (typeof state !== 'undefined') {
-	            state.currentFilters.userSelect = $(this).val();
-	            state.currentFilters.page = 1;
-	            if (typeof loadTableData === 'function') {
-	                loadTableData();
-	            }
-	        }
-	        console.log('Smart search updated via Ajax');
-	    });
+		// 1. นำค่าเก่าจากฐานข้อมูลมายัดคืนใส่ช่องตอนเปิดหน้าเว็บครั้งแรก
+		var previousSelectedValue = "${idUserSelected}";
+		if (previousSelectedValue && previousSelectedValue.trim() !== '' && previousSelectedValue !== 'null') {
+		    $('#userSelect').off('change'); 
+		    if ($('#userSelect').find("option[value='" + previousSelectedValue + "']").length === 0) {
+		        var newOption = new Option(previousSelectedValue, previousSelectedValue, true, true);
+		        $('#userSelect').append(newOption);
+		    } else {
+		        $('#userSelect').val(previousSelectedValue);
+		    }
+		    $('#userSelect').trigger('change.select2');
+		}
+
+		// 2. ดักจับเหตุการณ์เมื่อผู้ใช้คลิกเลือกหรือสลับตัวเลือก
+		$('#userSelect').off('change').on('change', function() {
+		    var currentValue = $(this).val() || "";
+		    handleSmartSearchUpdate(currentValue);
+		});	
+
+		// 3. 🛠️ [แก้บัคเคลียร์ค่า] ดักจับทั้งปุ่มกากบาท "x" และปุ่ม Clear ใหญ่ของระบบ
+		$('#userSelect').on('select2:clearing', function (e) {
+		    e.preventDefault(); // สกัดกั้นกลไกเดิมที่ทำให้ค่าค้าง
+		    
+		    // ทำลายสแตทเก่า ยัดโครงสร้าง HTML ดั้งเดิมกลับเข้าไป แล้วชุบชีวิต Select2 ขึ้นมาใหม่
+		    $('#userSelect').select2('destroy').html(originalOptionsHtml).val(null);
+		    initUserSelect2();
+		    
+		    // สั่งให้ตารางโหลดข้อมูลกลับมาทั้งหมด
+		    handleSmartSearchUpdate(""); 
+		    console.log('ล้างกล่องข้อความและคืนค่ารายการ Dropdown เรียบร้อยแล้ว');
+		});
+
+		// 4. ดักจับเมื่อผู้ใช้งานพิมพ์ข้อความเสร็จแล้วกดปุ่ม "Enter" 
+		$('#userSelect').off('keydown').on('keydown', function(e) {
+		    if (e.key === "Enter" || e.keyCode === 13) {
+		        e.preventDefault();
+		        var currentValue = $(this).val() || "";
+		        handleSmartSearchUpdate(currentValue);
+		    }
+		});
+
+
+
 
 	    	    //  [แก้ไขจุดที่ 3] ดักจับแถบเลือกวันที่ เมื่อเปลี่ยนค่าให้สั่งเปลี่ยนข้อมูลในตารางแบบ Pure Ajax ไม่รีโหลดหน้า
 	    	    $('#kt_daterangepicker_fm').off('apply.daterangepicker').on('apply.daterangepicker', function(ev, picker) {

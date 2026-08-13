@@ -5,6 +5,8 @@ import java.sql.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+//import javax.persistence.JoinColumn;
+//import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 @Entity
@@ -12,6 +14,17 @@ import javax.persistence.Table;
 public class EquipmentRequestMr {
 	private static final long serialVersionUID = 1L;
 
+//	@ManyToOne
+//	@JoinColumn(name = "status_id", referencedColumnName = "doc_status_id", insertable = false, updatable = false)
+//	private DocStatus docStatus; 
+//
+//	// ⚠️ อย่าลืมสร้าง Getter และ Setter ของตัวแปร docStatus ด้วยนะครับ
+//	public DocStatus getDocStatus() {
+//	    return docStatus;
+//	}
+//	public void setDocStatus(DocStatus docStatus) {
+//	    this.docStatus = docStatus;
+//	}
 	    @Id
 	    @Column(name = "mr_id")
 	    private String mrId;
@@ -35,7 +48,7 @@ public class EquipmentRequestMr {
 	    private String requestUser;
 
 	    @Column(name = "request_date")
-	    private java.sql.Date requestDate;
+	    private java.sql.Timestamp requestDate;
 
 	    @Column(name = "Approve_user")
 	    private String approveUser;
@@ -106,10 +119,11 @@ public class EquipmentRequestMr {
 	public void setRequestUser(String requestUser) {
 		this.requestUser = requestUser;
 	}
-	public java.sql.Date getRequestDate() {
+
+	public java.sql.Timestamp getRequestDate() {
 		return requestDate;
 	}
-	public void setRequestDate(java.sql.Date requestDate) {
+	public void setRequestDate(java.sql.Timestamp requestDate) {
 		this.requestDate = requestDate;
 	}
 	public String getApproveUser() {
@@ -186,6 +200,7 @@ public class EquipmentRequestMr {
 	        + ", userUpdate=" + userUpdate 
 	        + ", timeCreate=" + timeCreate 
 	        + ", timeUpdate=" + timeUpdate 
+	        + " , urlRef=" + urlRef
 	        + "]";
 	}
 
