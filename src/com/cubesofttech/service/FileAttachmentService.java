@@ -4,7 +4,10 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.apache.log4j.Logger;
+import org.apache.struts2.ServletActionContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -72,7 +75,7 @@ public class FileAttachmentService {
             }
 
             nextId++;
-            String storedName = nextId + "_" + originalName;
+            String storedName = nextId +extension(originalName); //แก้เป็น maxId+typeFileName
             FileUtil.upload(file, uploadDir, storedName);
 
             FileUpload fu = new FileUpload();
@@ -201,4 +204,31 @@ public class FileAttachmentService {
     private boolean isBlank(String value) {
         return value == null || value.trim().isEmpty();
     }
+
+    public String getFileUrl(String path) throws Exception {
+        if (isBlank(path)) {
+            return null;
+        }
+
+        return path;
+    }
+
+    /** ดึงชื่อไฟล์ต้นฉบับ (name + type) จาก path ที่เก็บไว้ */
+    public String getFileDisplayName(String path) {
+        if (isBlank(path)) {
+            return null;
+        }
+        try {
+            String fileName = new File(path).getName();
+            int dot = fileName.lastIndexOf('.');
+            String idStr = (dot > 0) ? fileName.substring(0, dot) : fileName;
+            FileUpload file = fileUploadDAO.findById(Integer.parseInt(idStr));
+            return (file != null) ? file.getName() + file.getType() : null;
+        } catch (Exception e) {
+            log.debug("getFileDisplayName failed for path=" + path, e);
+            return null;
+        }
+    }
+
+
 }
