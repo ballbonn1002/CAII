@@ -346,7 +346,7 @@ public class PurchaseOrderAction extends ActionSupport {
             }
             
             Po poList = poDAO.findById(poId);
-            log.debug("--- poList ----- "+ poList);
+            // log.debug("--- poList ----- "+ poList);
             request.setAttribute("poList", poList);
             
             if(poList.getUserCreate() != null) {
@@ -355,11 +355,6 @@ public class PurchaseOrderAction extends ActionSupport {
                 request.setAttribute("userCreate", userCreate);
             }
 
-            // if("5".equals(poList.getStatus())) {
-            //     User userUpdate = userDAO.findById(poList.getUserUpdate());
-            //     log.debug("--- userUpdate ----- "+ userUpdate);
-            //     request.setAttribute("userUpdate", userUpdate);
-            // }
             if (poList.getStatus() != null && ("5".equals(String.valueOf(poList.getStatus())) 
             || "3".equals(String.valueOf(poList.getStatus())))) {
                 String userUpdateId = poList.getUserUpdate();
@@ -384,12 +379,12 @@ public class PurchaseOrderAction extends ActionSupport {
             //--- Get ApproveUser signature ---
             if (poList.getApproveUser() != null && !poList.getApproveUser().trim().isEmpty()) {
                 User userApproveUser = userDAO.findById(poList.getApproveUser());
-                log.debug("--- userApproveUser ----- " + userApproveUser);
+                // log.debug("--- userApproveUser ----- " + userApproveUser);
                 request.setAttribute("userApproveUser", userApproveUser);
 
                 String imgPathApproveSignature = fileAttachmentService.getFileUrl(userApproveUser != null ? userApproveUser.getPathSignature() : null);
                 request.setAttribute("imgPathApproveSignature", imgPathApproveSignature);
-                log.debug("--- imgPathApproveSignature ----- " + imgPathApproveSignature);
+                // log.debug("--- imgPathApproveSignature ----- " + imgPathApproveSignature);
             }
 
             List<Map<String, Object>> companyList = companyDAO.findAll();
@@ -583,7 +578,6 @@ public class PurchaseOrderAction extends ActionSupport {
                     dbProductId = p.getProductId().toString();
                     dbParentId = String.valueOf(p.getParentProductId());
                 }
-//                String itemsTypeVal = item.get("items_type") != null ? String.valueOf(item.get("items_type")) : null;
                 
                 // --- PoDetail ---
                 PoDetail detail = new PoDetail();
@@ -913,6 +907,9 @@ public class PurchaseOrderAction extends ActionSupport {
             if (reason != null) {
                 po.setReason(reason.trim());
             }
+            if ("0".equals(status)) {
+                po.setReason(null);
+            }
             if ("4".equals(status)) {
                 po.setApproveUser(loginUserId);
                 po.setApproveDate(DateUtil.getCurrentTime());
@@ -1035,7 +1032,6 @@ public class PurchaseOrderAction extends ActionSupport {
             CompanyAddress address = companyAddressDAO.findById(addressId);
             debugLog.add("address = " + address);
 
-            // แก้ให้ผูกกับ address ไม่ใช่ company ทั้งก้อน
             List<Map<String, Object>> contactList = companyContactDAO.findByAddressId(addressId);
             debugLog.add("contactList size = " + (contactList != null ? contactList.size() : 0));
 
@@ -1129,15 +1125,12 @@ public class PurchaseOrderAction extends ActionSupport {
             if (po == null) {
                 return ERROR;
             }
-
-            // อนุญาตให้ลบเฉพาะ PO สถานะ Draft (status = "0") เท่านั้น
             if (!"0".equals(po.getStatus())) {
                 request.getSession().setAttribute("errorMessage",
                         "ไม่สามารถลบ PO ที่ไม่ใช่สถานะ Draft ได้");
                 return "redirectList";
             }
 
-            // ลบ PoParent ที่ผูกกับ PoDetail ของ PO นี้ก่อน (child ต้องลบก่อน parent) แล้วค่อยลบ PoDetail ทีละรายการ
             List<Map<String, Object>> poDetailList = poDetailDAO.findPoDetailByPoId(poId);
             if (poDetailList != null) {
                 for (Map<String, Object> detail : poDetailList) {
@@ -1149,7 +1142,6 @@ public class PurchaseOrderAction extends ActionSupport {
                 }
             }
 
-            // ลบ Po header (ใช้ entity ตาม signature ของ PoDAO)
             poDAO.delete(po);
 
             return SUCCESS;
