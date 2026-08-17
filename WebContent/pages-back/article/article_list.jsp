@@ -240,13 +240,13 @@
 																class="path1"></span><span class="path2"></span><span
 																class="path3"></span></i>
 														</a> 
-														<%-- <perm:permission object="article.edit"> --%>
+														
 															<a href="article_edit?articleId=${article.article_id}"
 																class="btn btn-icon btn-light-primary btn-sm me-2"
 																title="Edit"> <i class="ki-duotone ki-pencil fs-2"><span
 																	class="path1"></span><span class="path2"></span></i>
 															</a> 
-														<%-- </perm:permission> --%>
+													
 														<a href="article_perform_delete?articleId=${article.article_id}" onclick="return confirmDelete(this.href);"
 															class="btn btn-icon btn-light-danger btn-sm" title="Delete">
 															<i class="ki-duotone ki-trash fs-2"><span

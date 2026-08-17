@@ -652,5 +652,56 @@ INSERT INTO `notification` (`title`, `message`, `description`, `is_read`, `user_
 ('leave', '{"leaveId":11101,"leaveTypeId":"6","leaveTypeName":"ลาพักร้อนที่เหลือจากปีก่อน","status":"Reject","startDate":"2026-06-10","endDate":"2026-06-12"}', 'ปฏิเสธคำขอลาพักร้อนที่เหลือจากปีก่อน', 0, 'cft.admin', 'cft.admin', 'cft.admin', NOW() - INTERVAL 9 DAY, NOW() - INTERVAL 9 DAY),
 ('leave', '{"leaveId":11102,"leaveTypeId":"5","leaveTypeName":"ลาโดยไม่รับค่าจ้าง","status":"Approve","startDate":"2026-07-01","endDate":"2026-07-02"}', 'อนุมัติคำขอลาโดยไม่รับค่าจ้างเรียบร้อยแล้ว', 0, 'cft.admin', 'cft.admin', 'cft.admin', NOW() - INTERVAL 15 DAY, NOW() - INTERVAL 15 DAY);
 
+-- 17/08/2026 June: CREATE TABLE po, po_detail and po_parent
+CREATE TABLE `po` (
+  `po_id` varchar(16) NOT NULL,
+  `ref_no` varchar(256) NOT NULL,
+  `ref_date` datetime NOT NULL,
+  `company_id` bigint(32) NOT NULL,
+  `company_location` bigint(32) NOT NULL,
+  `contact_id` bigint(32) NOT NULL,
+  `description` text DEFAULT NULL,
+  `description_vendor` text DEFAULT NULL,
+  `user_create` varchar(32) NOT NULL,
+  `user_update` varchar(32) DEFAULT NULL,
+  `time_create` timestamp NULL DEFAULT NULL,
+  `time_update` timestamp NULL DEFAULT NULL,
+  `sign_user` varchar(32) DEFAULT NULL,
+  `sign_date` datetime DEFAULT NULL,
+  `approve_user` varchar(32) DEFAULT NULL,
+  `approve_date` datetime DEFAULT NULL,
+  `po_total` double NOT NULL,
+  `status` varchar(32) NOT NULL,
+  `reason` varchar(1024) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+CREATE TABLE `po_detail` (
+  `po_detail_id` varchar(16) NOT NULL,
+  `po_id` varchar(16) NOT NULL,
+  `product_id` varchar(16) DEFAULT NULL,
+  `parent_id` varchar(32) DEFAULT NULL,
+  `amount_total` double NOT NULL,
+  `unit` varchar(32) NOT NULL,
+  `unit_price` varchar(32) NOT NULL,
+  `price_total` decimal(10,2) NOT NULL,
+  `description` text DEFAULT NULL,
+  `user_create` varchar(32) NOT NULL,
+  `user_update` varchar(32) DEFAULT NULL,
+  `time_create` timestamp NULL DEFAULT NULL,
+  `time_update` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+CREATE TABLE `po_parent` (
+  `po_parent_id` varchar(16) NOT NULL,
+  `po_detail_id` varchar(16) NOT NULL,
+  `pr_id` varchar(16) DEFAULT NULL,
+  `product_id` varchar(16) DEFAULT NULL,
+  `parent_id` varchar(32) DEFAULT NULL,
+  `amount` double NOT NULL,
+  `unit` varchar(32) NOT NULL,
+  `description` text DEFAULT NULL,
+  `user_create` varchar(32) NOT NULL,
+  `user_update` varchar(32) DEFAULT NULL,
+  `time_create` timestamp NULL DEFAULT NULL,
+  `time_update` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

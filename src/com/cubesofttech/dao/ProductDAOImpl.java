@@ -113,7 +113,7 @@ public class ProductDAOImpl implements ProductDAO {
 	public List<Map<String, Object>> findByItemsType(String itemsType) throws Exception {
 	    Session session = sessionFactory.getCurrentSession();
 
-	    String sql = "SELECT p.product_id AS catalog_consumables_id, p.sequence, p.product_no, p.product_type, p.product_name " +
+	    String sql = "SELECT p.product_id, p.sequence, p.product_no, p.product_type, p.product_name " +
 	                 "FROM product p " +
 	                 "WHERE p.parent_product_id = '0' " +
 	                 "AND p.product_type = :itemsType " +

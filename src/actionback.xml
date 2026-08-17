@@ -2140,6 +2140,10 @@
 		<action name="get_items_catalog"
 			class="com.cubesofttech.action.PurchaseOrderAction" method="getItemsCatalog">
 		</action>
+
+		<action name="get_unit_of_measure"
+			class="com.cubesofttech.action.PurchaseOrderAction" method="getUnitOfMeasure">
+		</action>
 		
 		<action name="get_company_profile"
 			class="com.cubesofttech.action.PurchaseOrderAction" method="getCompanyProfile">
@@ -2169,6 +2173,10 @@
 		    class="com.cubesofttech.action.PurchaseOrderAction" method="update_po">
 		    <result name="success" type="tiles">purchaseOrderList</result>
 		    <result name="error">/index.jsp</result>
+		</action>
+
+		<action name="update_status_po"
+		    class="com.cubesofttech.action.PurchaseOrderAction" method="updateStatusPo">
 		</action>
 
 		<action name="delete_po_detail"

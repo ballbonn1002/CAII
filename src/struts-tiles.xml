@@ -780,7 +780,7 @@
 	<definition name="purchaseOrderDetail" extends="baseLayout">
 		<put-attribute name="title" value="Purchase Order Detail" />
 		<put-attribute name="body"
-			value="/pages-back/purchase_order/purchase_order_detail.jsp" />
+			value="/pages-back/purchase_order/purchase_order_edit.jsp" />
 	</definition>
 	
 	<definition name="purchaseOrderAdd" extends="baseLayout">
