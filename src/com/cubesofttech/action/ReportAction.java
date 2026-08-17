@@ -731,28 +731,22 @@ public class ReportAction extends ActionSupport {
         if (user == null || user.getPathSignature() == null) {
             return null;
         }
-        
-        String pathSignature = user.getPathSignature();
-        
-        if (!pathSignature.contains("_")) {
+
+        String pathSignature = user.getPathSignature().trim();
+        if (pathSignature.isEmpty()) {
             return null;
         }
-        
+
         try {
-            String originalFileName = new File(pathSignature).getName();
-            String fileIdStr = originalFileName.substring(0, originalFileName.indexOf("_"));
-            String typeFile  = originalFileName.substring(originalFileName.lastIndexOf("."));
-            
-            String imgPathSignature = "/upload/user/user_signature_" + fileIdStr + typeFile;
-            File f = new File(serverPath + imgPathSignature);
-            
+            File f = new File(serverPath + pathSignature);
+
             if (f.exists()) {
                 return ImageIO.read(f);
             } else {
                 log.debug("Signature file not found: " + f.getAbsolutePath());
                 return null;
             }
-            
+
         } catch (Exception e) {
             log.debug("Error loading signature: " + e.getMessage());
             return null;

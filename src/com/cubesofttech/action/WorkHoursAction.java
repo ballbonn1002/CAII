@@ -41,6 +41,7 @@ import com.cubesofttech.dao.BorrowDAO;
 import com.cubesofttech.dao.FileUploadDAO;
 import com.cubesofttech.model.User;
 import com.cubesofttech.model.WorkHours;
+import com.cubesofttech.service.FileAttachmentService;
 import com.cubesofttech.service.LogService;
 import com.cubesofttech.service.WorkHoursService;
 import com.cubesofttech.util.DateUtil;
@@ -77,6 +78,8 @@ public class WorkHoursAction extends ActionSupport {
 	private FileUploadDAO fileuploadDAO;
 	@Autowired
 	private BorrowDAO borrowDAO;
+	@Autowired
+	private FileAttachmentService fileAttachmentService;
 
 	private Map<String, String> getHeadersInfo(HttpServletRequest request) {
 		String ipAddress = request.getHeader("x-forwarded-for");
@@ -861,33 +864,14 @@ public class WorkHoursAction extends ActionSupport {
 			User u = userDAO.findById(logonUser);
 			
 			//หาลายเซ็น
-	    	String imgPathSignature = null;
-			String signatureFileName = null;
-			if (u.getPathSignature() != null && u.getPathSignature().contains("_")) {
-				try {
-					String originalFileName = new File(u.getPathSignature()).getName();
-					String fileIdStr = originalFileName.substring(0, originalFileName.indexOf("_"));
-					String typeFile = originalFileName.substring(originalFileName.lastIndexOf("."));
+			if (u.getPathSignature() != null) {
+				String imgPathSignature = fileAttachmentService.getFileUrl(u.getPathSignature());
+				String signatureFileName = fileAttachmentService.getFileDisplayName(u.getPathSignature());
 
-					imgPathSignature = "/upload/user/user_signature_" + fileIdStr + typeFile;
-
-					String server = request.getServletContext().getRealPath("/");
-					File f = new File(server + imgPathSignature);
-					if (!f.exists()) {
-						imgPathSignature = null;
-					}
-
-					FileUpload file = fileuploadDAO.findById(Integer.parseInt(fileIdStr));
-					if (file != null) {
-			            signatureFileName = file.getName()+file.getType();  
-			        }
-					
-				} catch (Exception e) {
-					imgPathSignature = null;
-				}
+				request.setAttribute("imgPathSignature", imgPathSignature);
+				request.setAttribute("signatureFileName", signatureFileName);
 			}
-			request.setAttribute("imgPathSignature", imgPathSignature);
-			request.setAttribute("signatureFileName", signatureFileName);
+			
 
 			//หา borrow
 			List<Map<String, Object>> borrow = borrowDAO.getBorrowListByUserId(logonUser);

@@ -26,7 +26,6 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.GregorianCalendar;
 
-import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -70,10 +69,10 @@ import com.cubesofttech.model.Position;
 import com.cubesofttech.model.Role;
 import com.cubesofttech.model.Tag;
 import com.cubesofttech.model.User;
+import com.cubesofttech.service.FileAttachmentService;
 import com.cubesofttech.system.Constant;
 import com.cubesofttech.util.Convert;
 import com.cubesofttech.util.DateUtil;
-import com.cubesofttech.util.FileUtil;
 import com.cubesofttech.util.MD5;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -131,6 +130,9 @@ public class UserAction extends ActionSupport {
 
 	@Autowired
 	private FileUploadDAO fileuploadDAO;
+
+	@Autowired
+	private FileAttachmentService fileAttachmentService;
 
 	@Autowired
 	private BorrowDAO borrowDAO;
@@ -579,33 +581,8 @@ public class UserAction extends ActionSupport {
 					map.put("job_site_all_names", "");
 				}
 
-				String imgPath = null;
 				Object pathObj = map.get("path");
-				if (pathObj != null) {
-					String path = pathObj.toString();
-					try {
-						String originalFileName = new File(path).getName();
-						if (path.contains("_") && !originalFileName.startsWith("user_")) {
-							String fileIdStr = originalFileName.substring(0, originalFileName.indexOf("_"));
-							int fileId = Integer.parseInt(fileIdStr);
-							String typeFile = originalFileName.substring(originalFileName.lastIndexOf("."));
-							imgPath = "/upload/user/user_" + fileId + typeFile;
-						} else {
-							imgPath = path;
-						}
-						
-						// Verify physical existence but don't strictly nullify if missing, 
-						// as the file might be hosted externally or the context path is different.
-						String server = request.getServletContext().getRealPath("/");
-						File f = new File(server + imgPath);
-						if (!f.exists()) {
-							// If we want to strictly fallback to initial letters when file is missing:
-							imgPath = null;
-						}
-					} catch (Exception e) {
-						imgPath = null;
-					}
-				}
+				String imgPath = (pathObj != null) ? fileAttachmentService.getFileUrl(pathObj.toString()) : null;
 				map.put("ListUserImgPath", imgPath);
 
 				if (map.get("end_date") == null) {
@@ -826,55 +803,9 @@ public class UserAction extends ActionSupport {
 			}
 
 
-			String imgPath = null;
-			if (selectUser.getPath() != null) {
-				String path = selectUser.getPath();
-				try {
-					String originalFileName = new File(path).getName();
-					if (path.contains("_") && !originalFileName.startsWith("user_")) {
-						String fileIdStr = originalFileName.substring(0, originalFileName.indexOf("_"));
-						int fileId = Integer.parseInt(fileIdStr);
-						String typeFile = originalFileName.substring(originalFileName.lastIndexOf("."));
-						imgPath = "/upload/user/user_" + fileId + typeFile;
-					} else {
-						imgPath = path;
-					}
-					
-					String server = request.getServletContext().getRealPath("/");
-					File f = new File(server + imgPath);
-					if (!f.exists()) {
-						imgPath = null;
-					}
-				} catch (Exception e) {
-					imgPath = null;
-				}
-			}
-
-			String imgPathSignature = null;
-			String signatureFileName = null;
-			if (selectUser.getPathSignature() != null && selectUser.getPathSignature().contains("_")) {
-				try {
-					String originalFileName = new File(selectUser.getPathSignature()).getName();
-					String fileIdStr = originalFileName.substring(0, originalFileName.indexOf("_"));
-					String typeFile = originalFileName.substring(originalFileName.lastIndexOf("."));
-
-					imgPathSignature = "/upload/user/user_signature_" + fileIdStr + typeFile;
-
-					String server = request.getServletContext().getRealPath("/");
-					File f = new File(server + imgPathSignature);
-					if (!f.exists()) {
-						imgPathSignature = null;
-					}
-
-					FileUpload file = fileuploadDAO.findById(Integer.parseInt(fileIdStr));
-					if (file != null) {
-			            signatureFileName = file.getName()+file.getType();  
-			        }
-					
-				} catch (Exception e) {
-					imgPathSignature = null;
-				}
-			}
+			String imgPath = fileAttachmentService.getFileUrl(selectUser.getPath());
+			String imgPathSignature = fileAttachmentService.getFileUrl(selectUser.getPathSignature());
+			String signatureFileName = fileAttachmentService.getFileDisplayName(selectUser.getPathSignature());
 
 			request.setAttribute("selectUser", selectUser);
 			request.setAttribute("editUserImgPath", imgPath);
@@ -972,52 +903,18 @@ public class UserAction extends ActionSupport {
 				u.setPath(null);
 
 			} else if (fileUpload != null) {
-				int maxId = fileuploadDAO.getMaxId() + 1;
-				String fileServerPath = request.getServletContext().getRealPath("/");
-				String originalName = fileUploadFileName;
-				String fileName = originalName.substring(0, originalName.lastIndexOf("."));
-				String typeFile = originalName.substring(originalName.lastIndexOf("."));
+				List<FileUpload> savedFiles = fileAttachmentService.attach(
+					Arrays.asList(fileUpload),
+					Arrays.asList(fileUploadFileName),
+					"user",
+					u.getId(),
+					logonUser,
+					request.getServletContext().getRealPath("/")
+				);
 
-				if (fileName.contains(" ")) {
-					fileName = fileName.trim().replaceAll(" ", "_");
+				if (savedFiles != null && !savedFiles.isEmpty()) {
+					u.setPath(savedFiles.get(0).getPath());
 				}
-
-				String newFileName = maxId + "_" + fileName + typeFile;
-				String serverFileName = "user_" + maxId + typeFile;
-
-				long fileSize = fileUpload.length(); // byte
-				double sizeKB = fileSize / 1024.0;
-				double sizeMB = fileSize / (1024.0 * 1024.0);
-				String sizeText;
-				if (fileSize < 1024) {
-					sizeText = fileSize + " B";
-				} else if (fileSize < 1024 * 1024) {
-					sizeText = String.format("%.2f KB", sizeKB);
-				} else {
-					sizeText = String.format("%.2f MB", sizeMB);
-				}
-
-				FileUtil.upload(fileUpload, fileServerPath + "upload/user/", serverFileName);
-
-				FileUpload file = new FileUpload();
-				file.setFileId(maxId);
-				file.setUserId(u.getId());
-				file.setName(fileName);
-				file.setPage("user");
-				file.setPageId(u.getId());
-				file.setUserId(logonUser);
-				file.setType(typeFile);
-				file.setSize(sizeText);
-				file.setAltName(null);
-				file.setUserCreate(logonUser);
-				file.setUserUpdate(logonUser);
-				file.setPath("/upload/user/" + newFileName);
-				file.setTimeCreate(DateUtil.getCurrentTime());
-				file.setTimeUpdate(DateUtil.getCurrentTime());
-				fileuploadDAO.save(file);
-
-				u.setPath("/upload/user/" + newFileName);
-
 			}
 
 			u.setName(user.getName().replaceAll("[\\t\\n\\r]+", " ")
@@ -1124,23 +1021,7 @@ public class UserAction extends ActionSupport {
 				onlineUser.setPath(u.getPath());
 				onlineUser.setWorkType(u.getWorkType());
 
-				String imgPathForSession = null;
-				if (u.getPath() != null && u.getPath().contains("_")) {
-					try {
-						String fileName = new File(u.getPath()).getName();
-						String fileId = fileName.substring(0, fileName.indexOf("_"));
-						String type = fileName.substring(fileName.lastIndexOf("."));
-
-						imgPathForSession = "/upload/user/user_" + fileId + type;
-
-						File f = new File(request.getServletContext().getRealPath("/") + imgPathForSession);
-						if (!f.exists())
-							imgPathForSession = null;
-
-					} catch (Exception e) {
-						imgPathForSession = null;
-					}
-				}
+				String imgPathForSession = fileAttachmentService.getFileUrl(u.getPath());
 
 				session.setAttribute("onlineUser", onlineUser);
 				session.setAttribute("userImgPath", imgPathForSession);
@@ -1149,13 +1030,7 @@ public class UserAction extends ActionSupport {
 			userId = user.getId();
 			// ดึงค่าที่พิ่ง Save
 			User updatedUser = userDAO.findById(userId);
-			String newEditPath = null;
-			if (updatedUser.getPath() != null && updatedUser.getPath().contains("_")) {
-				String fileName = new File(updatedUser.getPath()).getName();
-				String fId = fileName.substring(0, fileName.indexOf("_"));
-				String fType = fileName.substring(fileName.lastIndexOf("."));
-				newEditPath = "/upload/user/user_" + fId + fType;
-			}
+			String newEditPath = fileAttachmentService.getFileUrl(updatedUser.getPath());
 			request.setAttribute("editUserImgPath", newEditPath);
 			request.setAttribute("selectUser", updatedUser);
 
@@ -1269,52 +1144,18 @@ public class UserAction extends ActionSupport {
 			user.setTimeUpdate(DateUtil.getCurrentTime());
 
 			if (fileUpload != null) {
-				int maxId = fileuploadDAO.getMaxId() + 1;
-				String fileServerPath = request.getServletContext().getRealPath("/");
-				String originalName = fileUploadFileName;
-				String fileName = originalName.substring(0, originalName.lastIndexOf("."));
-				String typeFile = originalName.substring(originalName.lastIndexOf("."));
+				List<FileUpload> savedFiles = fileAttachmentService.attach(
+					Arrays.asList(fileUpload),
+					Arrays.asList(fileUploadFileName),
+					"user",
+					user.getId(),
+					logonUser,
+					request.getServletContext().getRealPath("/")
+				);
 
-				if (fileName.contains(" ")) {
-					fileName = fileName.trim().replaceAll(" ", "_");
+				if (savedFiles != null && !savedFiles.isEmpty()) {
+					user.setPath(savedFiles.get(0).getPath());
 				}
-
-				String newFileName = maxId + "_" + fileName + typeFile;
-				String serverFileName = "user_" + maxId + typeFile;
-
-				long fileSize = fileUpload.length(); // byte
-				double sizeKB = fileSize / 1024.0;
-				double sizeMB = fileSize / (1024.0 * 1024.0);
-				String sizeText;
-				if (fileSize < 1024) {
-					sizeText = fileSize + " B";
-				} else if (fileSize < 1024 * 1024) {
-					sizeText = String.format("%.2f KB", sizeKB);
-				} else {
-					sizeText = String.format("%.2f MB", sizeMB);
-				}
-
-				FileUtil.upload(fileUpload, fileServerPath + "upload/user/", serverFileName);
-
-				FileUpload file = new FileUpload();
-				file.setFileId(maxId);
-				file.setUserId(user.getId());
-				file.setName(fileName);
-				file.setPage("user");
-				file.setPageId(user.getId());
-				file.setUserId(logonUser);
-				file.setType(typeFile);
-				file.setSize(sizeText);
-				file.setAltName(null);
-				file.setUserCreate(logonUser);
-				file.setUserUpdate(logonUser);
-				file.setPath("/upload/user/" + newFileName);
-				file.setTimeCreate(DateUtil.getCurrentTime());
-				file.setTimeUpdate(DateUtil.getCurrentTime());
-				fileuploadDAO.save(file);
-
-				user.setPath("/upload/user/" + newFileName);
-
 			}
 
 			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
@@ -1394,64 +1235,18 @@ public class UserAction extends ActionSupport {
 			}
 			userDAO.update(u);
 
-			FileUpload fileupload = new FileUpload();
-			String picture = mypic;
-			if ("".equals(picture)) {
-				if (fileUpload != null) {
-					int maxId = fileuploadDAO.getMaxId() + 1;
-					ServletContext context = request.getServletContext();
-					String fileServerPath = context.getRealPath("/");
-					
-					fileupload.setSize(fileUploadSize);
-					String fileName = fileUploadFileName;
-					fileupload.setPath("/upload/user/" + maxId + "_" + fileName);
-					FileUtil.upload(fileUpload, fileServerPath + "upload/user/", maxId + "_" + fileName);
+			if (fileUpload != null) {
+				List<FileUpload> savedFiles = fileAttachmentService.attach(
+					Arrays.asList(fileUpload),
+					Arrays.asList(fileUploadFileName),
+					"user",
+					u.getId(),
+					logonUser,
+					request.getServletContext().getRealPath("/")
+				);
 
-					int l = fileUploadFileName.length();
-					int split = fileUploadFileName.indexOf(".");
-					String name = fileUploadFileName.substring(0, split);
-					String type = (String) fileUploadFileName.subSequence(split, l);
-
-					fileupload.setFileId(maxId);
-					fileupload.setUserId(logonUser);
-					fileupload.setUserCreate(logonUser);
-					fileupload.setName(name);
-					fileupload.setType(type);
-					fileupload.setTimeCreate(DateUtil.getCurrentTime());
-					fileupload.setPage("user");
-					fileupload.setPageId(u.getId());
-					fileuploadDAO.save(fileupload);
-
-					u.setPath("/upload/user/" + maxId + "_" + fileName);
-					userDAO.update(u);
-
-					log.info("Upload to server SUCCESS");
-				}
-			} else {
-				if (fileUpload != null) {
-					int maxId = fileuploadDAO.getMaxId();
-					ServletContext context = request.getServletContext();
-					String fileServerPath = context.getRealPath("/");
-					
-					fileupload.setSize(fileUploadSize);
-					String fileName = fileUploadFileName;
-					fileupload.setPath("/upload/user/" + maxId + "_" + fileName);
-					FileUtil.upload(fileUpload, fileServerPath + "upload/user/", maxId + "_" + fileName);
-
-					int l = fileUploadFileName.length();
-					int split = fileUploadFileName.indexOf(".");
-					String name = fileUploadFileName.substring(0, split);
-					String type = (String) fileUploadFileName.subSequence(split, l);
-
-					fileupload.setFileId(maxId);
-					fileupload.setUserId(logonUser);
-					fileupload.setUserCreate(logonUser);
-					fileupload.setName(name);
-					fileupload.setType(type);
-					fileupload.setTimeCreate(DateUtil.getCurrentTime());
-					fileuploadDAO.update(fileupload);
-
-					u.setPath("/upload/user/" + maxId + "_" + fileName);
+				if (savedFiles != null && !savedFiles.isEmpty()) {
+					u.setPath(savedFiles.get(0).getPath());
 					userDAO.update(u);
 				}
 			}
@@ -1878,56 +1673,16 @@ public class UserAction extends ActionSupport {
 
 			User u = userDAO.findById(logonUser);
 
-			String imgPath = null;
+			if (u.getPath() != null || u.getPathSignature() != null) {
+				String imgPath = fileAttachmentService.getFileUrl(u.getPath());
+				String imgPathSignature = fileAttachmentService.getFileUrl(u.getPathSignature());
+				String signatureFileName = fileAttachmentService.getFileDisplayName(u.getPathSignature());
 
-			if (u.getPath() != null && u.getPath().contains("_")) {
-				try {
-					String originalFileName = new File(u.getPath()).getName();
-
-					String fileIdStr = originalFileName.substring(0, originalFileName.indexOf("_"));
-					int fileId = Integer.parseInt(fileIdStr);
-
-					String typeFile = originalFileName.substring(originalFileName.lastIndexOf("."));
-
-					imgPath = "/upload/user/user_" + fileId + typeFile;
-
-					String server = request.getServletContext().getRealPath("/");
-					File f = new File(server + imgPath);
-
-					if (!f.exists()) {
-						imgPath = null;
-					}
-
-				} catch (Exception e) {
-					imgPath = null;
-				}
+				request.setAttribute("userImgPath", imgPath);
+				request.setAttribute("imgPathSignature", imgPathSignature);
+				request.setAttribute("signatureFileName", signatureFileName);
 			}
 			
-			String imgPathSignature = null;
-			String signatureFileName = null;
-			if (u.getPathSignature() != null && u.getPathSignature().contains("_")) {
-				try {
-					String originalFileName = new File(u.getPathSignature()).getName();
-					String fileIdStr = originalFileName.substring(0, originalFileName.indexOf("_"));
-					String typeFile = originalFileName.substring(originalFileName.lastIndexOf("."));
-
-					imgPathSignature = "/upload/user/user_signature_" + fileIdStr + typeFile;
-
-					String server = request.getServletContext().getRealPath("/");
-					File f = new File(server + imgPathSignature);
-					if (!f.exists()) {
-						imgPathSignature = null;
-					}
-
-					FileUpload file = fileuploadDAO.findById(Integer.parseInt(fileIdStr));
-					if (file != null) {
-			            signatureFileName = file.getName()+file.getType();  
-			        }
-					
-				} catch (Exception e) {
-					imgPathSignature = null;
-				}
-			}
 
 			List<Map<String, Object>> managerList = userDAO.getManagerIdAndManagerNameByUserId(logonUser);
 			Map<String, Object> manager = null;
@@ -1993,9 +1748,7 @@ public class UserAction extends ActionSupport {
 
 			request.setAttribute("workPeriod", workPeriod);
 			request.setAttribute("user", u);
-			request.setAttribute("userImgPath", imgPath);
-			request.setAttribute("imgPathSignature", imgPathSignature);
-			request.setAttribute("signatureFileName", signatureFileName);
+			
 
 			return SUCCESS;
 		} catch (Exception e) {
@@ -2017,51 +1770,18 @@ public class UserAction extends ActionSupport {
 					u.setPath(null);
 
 				} else if (fileUpload != null) {
-					int maxId = fileuploadDAO.getMaxId() + 1;
-					String fileServerPath = request.getServletContext().getRealPath("/");
-					String originalName = fileUploadFileName;
-					String fileName = originalName.substring(0, originalName.lastIndexOf("."));
-					String typeFile = originalName.substring(originalName.lastIndexOf("."));
+					List<FileUpload> savedFiles = fileAttachmentService.attach(
+						Arrays.asList(fileUpload),
+						Arrays.asList(fileUploadFileName),
+						"user",
+						u.getId(),
+						logonUser,
+						request.getServletContext().getRealPath("/")
+					);
 
-					if (fileName.contains(" ")) {
-						fileName = fileName.trim().replaceAll(" ", "_");
+					if (savedFiles != null && !savedFiles.isEmpty()) {
+						u.setPath(savedFiles.get(0).getPath());
 					}
-
-					String newFileName = maxId + "_" + fileName + typeFile;
-					String serverFileName = "user_" + maxId + typeFile;
-
-					long fileSize = fileUpload.length(); // byte
-					double sizeKB = fileSize / 1024.0;
-					double sizeMB = fileSize / (1024.0 * 1024.0);
-					String sizeText;
-					if (fileSize < 1024) {
-						sizeText = fileSize + " B";
-					} else if (fileSize < 1024 * 1024) {
-						sizeText = String.format("%.2f KB", sizeKB);
-					} else {
-						sizeText = String.format("%.2f MB", sizeMB);
-					}
-
-					FileUtil.upload(fileUpload, fileServerPath + "upload/user/", serverFileName);
-
-					FileUpload file = new FileUpload();
-					file.setFileId(maxId);
-					file.setUserId(u.getId());
-					file.setName(fileName);
-					file.setPage("user");
-					file.setPageId(u.getId());
-					file.setUserId(logonUser);
-					file.setType(typeFile);
-					file.setSize(sizeText);
-					file.setAltName(null);
-					file.setUserCreate(logonUser);
-					file.setUserUpdate(logonUser);
-					file.setPath("/upload/user/" + newFileName);
-					file.setTimeCreate(DateUtil.getCurrentTime());
-					file.setTimeUpdate(DateUtil.getCurrentTime());
-					fileuploadDAO.save(file);
-
-					u.setPath("/upload/user/" + newFileName);
 				}
 
 				u.setTitleNameTH(this.user_titleNameTH);
@@ -2092,24 +1812,7 @@ public class UserAction extends ActionSupport {
 				}
 				userDAO.update(u);
 
-				String imgPathForSession = null;
-				if (u.getPath() != null && u.getPath().contains("_")) {
-					try {
-						String originalFileName = new File(u.getPath()).getName();
-						String fileIdStr = originalFileName.substring(0, originalFileName.indexOf("_"));
-						String typeFile = originalFileName.substring(originalFileName.lastIndexOf("."));
-
-						imgPathForSession = "/upload/user/user_" + fileIdStr + typeFile;
-
-						String server = request.getServletContext().getRealPath("/");
-						File f = new File(server + imgPathForSession);
-						if (!f.exists()) {
-							imgPathForSession = null;
-						}
-					} catch (Exception e) {
-						imgPathForSession = null;
-					}
-				}
+				String imgPathForSession = fileAttachmentService.getFileUrl(u.getPath());
 
 				session.setAttribute("onlineUser", u);
 				session.setAttribute("userImgPath", imgPathForSession);
@@ -2175,10 +1878,8 @@ public class UserAction extends ActionSupport {
 			return ERROR;
 		}
 	}
-	
 	public String update_signature() {
 		try {
-			HttpSession session = request.getSession();
 			User ur = (User) request.getSession().getAttribute("onlineUser");
 			String logonUser = ur.getId();
 
@@ -2189,51 +1890,18 @@ public class UserAction extends ActionSupport {
 					u.setPathSignature(null);
 
 				} else if (fileUpload != null) {
-					int maxId = fileuploadDAO.getMaxId() + 1;
-					String fileServerPath = request.getServletContext().getRealPath("/");
-					String originalName = fileUploadFileName;
-					String fileName = originalName.substring(0, originalName.lastIndexOf("."));
-					String typeFile = originalName.substring(originalName.lastIndexOf("."));
+					List<FileUpload> savedFiles = fileAttachmentService.attach(
+						Arrays.asList(fileUpload),
+						Arrays.asList(fileUploadFileName),
+						"user_signature",
+						u.getId(),
+						logonUser,
+						request.getServletContext().getRealPath("/")
+                	);
 
-					if (fileName.contains(" ")) {
-						fileName = fileName.trim().replaceAll(" ", "_");
+					if (savedFiles != null && !savedFiles.isEmpty()) {
+						u.setPathSignature(savedFiles.get(0).getPath());
 					}
-
-					String newFileName = maxId + "_" + fileName + typeFile;
-					String serverFileName = "user_signature_" + maxId + typeFile;
-
-					long fileSize = fileUpload.length(); // byte
-					double sizeKB = fileSize / 1024.0;
-					double sizeMB = fileSize / (1024.0 * 1024.0);
-					String sizeText;
-					if (fileSize < 1024) {
-						sizeText = fileSize + " B";
-					} else if (fileSize < 1024 * 1024) {
-						sizeText = String.format("%.2f KB", sizeKB);
-					} else {
-						sizeText = String.format("%.2f MB", sizeMB);
-					}
-
-					FileUtil.upload(fileUpload, fileServerPath + "upload/user/", serverFileName);
-
-					FileUpload file = new FileUpload();
-					file.setFileId(maxId);
-					file.setUserId(u.getId());
-					file.setName(fileName);
-					file.setPage("user_signature");
-					file.setPageId(u.getId());
-					file.setUserId(logonUser);
-					file.setType(typeFile);
-					file.setSize(sizeText);
-					file.setAltName(null);
-					file.setUserCreate(logonUser);
-					file.setUserUpdate(logonUser);
-					file.setPath("/upload/user/" + newFileName);
-					file.setTimeCreate(DateUtil.getCurrentTime());
-					file.setTimeUpdate(DateUtil.getCurrentTime());
-					fileuploadDAO.save(file);
-
-					u.setPathSignature("/upload/user/" + newFileName);
 				}
 				userDAO.update(u);
 
@@ -2257,41 +1925,19 @@ public class UserAction extends ActionSupport {
 			User ur = (User) request.getSession().getAttribute("onlineUser");
 			String logonUser = ur.getId();
 			User user = userDAO.findById(String.valueOf(logonUser));
-			
-			if (user== null ) {
-			    return ERROR;
-			} else {
-				String imgPathForSession = null;
-				if (user.getPathSignature() != null && user.getPathSignature().contains("_")) {
-					try {
-						String originalFileName = new File(user.getPathSignature()).getName();
-						String fileIdStr = originalFileName.substring(0, originalFileName.indexOf("_"));
-			
-						if (fileIdStr != null) {
-							//delete file
-							  FileUpload file = fileuploadDAO.findById(Integer.parseInt(fileIdStr));
-							  if (file != null) {
-								fileuploadDAO.delete(file);
-								user.setPathSignature(null);
-								userDAO.update(user);
-							}
-			
-						}
-			
-					} catch (Exception e) {
-						imgPathForSession = null;
-					}
-				}
-				
-			}
-			
-			String redirectPage = request.getParameter("redirectPage");
-	        if ("check_in_out".equals(redirectPage)) {
-	            response.sendRedirect("check_in_out");
-	            return null;
-	        }
 
-			
+			if (user == null) {
+				return ERROR;
+			}
+
+			deleteUserSignature(user);
+
+			String redirectPage = request.getParameter("redirectPage");
+			if ("check_in_out".equals(redirectPage)) {
+				response.sendRedirect("check_in_out");
+				return null;
+			}
+
 			return SUCCESS;
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -2317,58 +1963,25 @@ public class UserAction extends ActionSupport {
 					u.setPathSignature(null);
 
 				} else if (fileUpload != null) {
-					int maxId = fileuploadDAO.getMaxId() + 1;
-					String fileServerPath = request.getServletContext().getRealPath("/");
-					String originalName = fileUploadFileName;
-					String fileName = originalName.substring(0, originalName.lastIndexOf("."));
-					String typeFile = originalName.substring(originalName.lastIndexOf("."));
-
-					if (fileName.contains(" ")) {
-						fileName = fileName.trim().replaceAll(" ", "_");
-					}
-
-					String newFileName = maxId + "_" + fileName + typeFile;
-					String serverFileName = "user_signature_" + maxId + typeFile;
-
-					long fileSize = fileUpload.length(); // byte
-					double sizeKB = fileSize / 1024.0;
-					double sizeMB = fileSize / (1024.0 * 1024.0);
-					String sizeText;
-					if (fileSize < 1024) {
-						sizeText = fileSize + " B";
-					} else if (fileSize < 1024 * 1024) {
-						sizeText = String.format("%.2f KB", sizeKB);
-					} else {
-						sizeText = String.format("%.2f MB", sizeMB);
-					}
-
-					FileUtil.upload(fileUpload, fileServerPath + "upload/user/", serverFileName);
-
-					FileUpload file = new FileUpload();
-					file.setFileId(maxId);
-					file.setName(fileName);
-					file.setPage("user_signature");
-					file.setPageId(u.getId());
-					
 					User onlineUser = (User) request.getSession().getAttribute("onlineUser");
 					String logonUser = onlineUser != null ? onlineUser.getId() : "SYSTEM";
-					
-					file.setUserId(logonUser);
-					file.setType(typeFile);
-					file.setSize(sizeText);
-					file.setAltName(null);
-					file.setUserCreate(logonUser);
-					file.setUserUpdate(logonUser);
-					file.setPath("/upload/user/" + newFileName);
-					file.setTimeCreate(DateUtil.getCurrentTime());
-					file.setTimeUpdate(DateUtil.getCurrentTime());
-					fileuploadDAO.save(file);
 
-					u.setPathSignature("/upload/user/" + newFileName);
+					List<FileUpload> savedFiles = fileAttachmentService.attach(
+						Arrays.asList(fileUpload),
+						Arrays.asList(fileUploadFileName),
+						"user_signature",
+						u.getId(),
+						logonUser,
+						request.getServletContext().getRealPath("/")
+					);
+
+					if (savedFiles != null && !savedFiles.isEmpty()) {
+						u.setPathSignature(savedFiles.get(0).getPath());
+					}
 				}
 				userDAO.update(u);
 			}
-			
+
 			this.userId = targetUserId.trim();
 			return SUCCESS;
 		} catch (Exception e) {
@@ -2376,38 +1989,20 @@ public class UserAction extends ActionSupport {
 			return ERROR;
 		}
 	}
-	
+
 	public String admin_signature_perform_delete() {
 		try {
 			String targetUserId = request.getParameter("userId");
-			
+
 			if (targetUserId == null || targetUserId.trim().isEmpty()) {
-			    return ERROR;
+				return ERROR;
 			}
-			
+
 			User user = userDAO.findById(targetUserId.trim());
-			
 			if (user != null) {
-				if (user.getPathSignature() != null && user.getPathSignature().contains("_")) {
-					try {
-						String originalFileName = new File(user.getPathSignature()).getName();
-						String fileIdStr = originalFileName.substring(0, originalFileName.indexOf("_"));
-			
-						if (fileIdStr != null && !fileIdStr.isEmpty()) {
-							//delete file
-							FileUpload file = fileuploadDAO.findById(Integer.parseInt(fileIdStr));
-							if (file != null) {
-								fileuploadDAO.delete(file);
-								user.setPathSignature(null);
-								userDAO.update(user);
-							}
-						}
-					} catch (Exception e) {
-						e.printStackTrace();
-					}
-				}
+				deleteUserSignature(user);
 			}
-			
+
 			this.userId = targetUserId.trim();
 			return SUCCESS;
 		} catch (Exception e) {
@@ -2415,4 +2010,57 @@ public class UserAction extends ActionSupport {
 			return ERROR;
 		}
 	}
+
+	private boolean deleteUserSignature(User user) {
+		try {
+			if (user == null) {
+				return false;
+			}
+
+			String pathSignature = user.getPathSignature();
+
+			if (pathSignature == null || pathSignature.trim().isEmpty()) {
+				return true;
+			}
+
+			pathSignature = pathSignature.trim();
+
+			// log.info("Deleting signature path = " + pathSignature);
+
+			//หา FileUpload จาก path
+			FileUpload file = fileuploadDAO.findByPath(pathSignature);
+
+			//ลบไฟล์จริงใน server
+			String realPath = request.getServletContext().getRealPath(pathSignature);
+
+			if (realPath != null) {
+				File physicalFile = new File(realPath);
+
+				if (physicalFile.exists()) {
+					boolean deleted = physicalFile.delete();
+				}
+			}
+
+			//ลบ record ใน file_upload
+			if (file != null) {
+				fileuploadDAO.delete(file);
+			}
+
+			//ล้าง path_signature ใน user
+			user.setPathSignature(null);
+			userDAO.update(user);
+
+			return true;
+
+		} catch (Exception e) {
+			log.error(
+				"Cannot delete user signature. userId="
+				+ (user != null ? user.getId() : "null"),
+				e
+			);
+
+			return false;
+		}
+	}
+
 }

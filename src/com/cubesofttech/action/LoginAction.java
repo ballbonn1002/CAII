@@ -36,6 +36,7 @@ import com.cubesofttech.model.RoleAuthorizedObject;
 import com.cubesofttech.model.SsoToken;
 import com.cubesofttech.model.User;
 import com.cubesofttech.model.UserRole;
+import com.cubesofttech.service.FileAttachmentService;
 import com.cubesofttech.service.LogService;
 import com.cubesofttech.service.LoginService;
 import com.cubesofttech.service.TokenService;
@@ -91,6 +92,9 @@ public class LoginAction extends ActionSupport {
 	
 	@Autowired 
 	private EmailService emailService;
+
+	@Autowired
+	private FileAttachmentService fileAttachmentService;
 	
 	String username;
 	String password;
@@ -180,25 +184,10 @@ public class LoginAction extends ActionSupport {
 				userAuthority = loginService.addRoleByUserRoleTabel(userRoleList, userAuthority);
 				
 				//ดึงรูปprofileผู้ใช้
-				String imgPath = null;
-				if (user.getPath() != null && user.getPath().contains("_")) {
-				    try {
-				        String originalFileName = new File(user.getPath()).getName();
-				        String fileIdStr = originalFileName.substring(0, originalFileName.indexOf("_"));
-				        int fileId = Integer.parseInt(fileIdStr);
-				        String typeFile = originalFileName.substring(originalFileName.lastIndexOf("."));
-				        imgPath = "/upload/user/user_" + fileId + typeFile;
-
-//				        String server = request.getServletContext().getRealPath("/");
-//				        File f = new File(server + imgPath);
-//				        if (!f.exists()) {
-//				            imgPath = null;
-//				        }
-				    } catch (Exception e) {
-				        imgPath = null;
-				    }
+				if (user.getPath() != null) {
+				    String imgPath = fileAttachmentService.getFileUrl(user.getPath());
+					session.setAttribute("userImgPath", imgPath);
 				}
-				session.setAttribute("userImgPath", imgPath);
 				
 				session.setAttribute("user", user);
 				session.setAttribute("onlineUser", user);

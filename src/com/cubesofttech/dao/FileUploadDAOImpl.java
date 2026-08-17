@@ -290,4 +290,24 @@ public class FileUploadDAOImpl implements FileUploadDAO {
 	    }
 	}
 
+	@Override
+	public FileUpload findByPath(String path) {
+		Session session = this.sessionFactory.getCurrentSession();
+		FileUpload fileUpload = null;
+		try {
+			String sql = "SELECT * FROM file WHERE path = :path";
+			SQLQuery query = session.createSQLQuery(sql);
+			query.addEntity(FileUpload.class);
+			query.setParameter("path", path);
+
+			List<FileUpload> list = query.list();
+			if (list != null && !list.isEmpty()) {
+				fileUpload = list.get(0);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return fileUpload;
+	}
+
 }

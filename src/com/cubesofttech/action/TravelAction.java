@@ -31,8 +31,8 @@ import com.cubesofttech.model.ExpenseGroup;
 import com.cubesofttech.model.FileUpload;
 import com.cubesofttech.model.User;
 
+import com.cubesofttech.service.FileAttachmentService;
 import com.cubesofttech.util.DateUtil;
-import com.cubesofttech.util.FileUtil;
 import com.cubesofttech.util.ReportUtil;
 import com.google.gson.Gson;
 import com.opensymphony.xwork2.ActionSupport;
@@ -64,6 +64,8 @@ public class TravelAction extends ActionSupport {
 	private ExpTravelTypeDAO expTravelTypeDAO;
 	@Autowired
 	private FileUploadDAO fileuploadDAO;
+	@Autowired
+	private FileAttachmentService fileAttachmentService;
 
 	private java.io.File[] files;
 	private String[] filesFileName;
@@ -943,21 +945,10 @@ public class TravelAction extends ActionSupport {
 			request.setAttribute("grandTotal", grandTotal);
 			request.setAttribute("selectedIds", ids != null ? Arrays.asList(ids) : java.util.Collections.emptyList());
 
-			if (userObj != null && userObj.getPathSignature() != null && userObj.getPathSignature().contains("_")) {
-				try {
-					String originalFileName = new java.io.File(userObj.getPathSignature()).getName();
-					String fileIdStr = originalFileName.substring(0, originalFileName.indexOf("_"));
-					String typeFile = originalFileName.substring(originalFileName.lastIndexOf("."));
-
-					String imgPathSignature = "/upload/user/user_signature_" + fileIdStr + typeFile;
-
-					java.io.File f = new java.io.File(request.getServletContext().getRealPath("/") + imgPathSignature);
-
-					if (f.exists()) {
-						request.setAttribute("signaturePath", imgPathSignature);
-					}
-
-				} catch (Exception ignore) {
+			if (userObj != null) {
+				String imgPathSignature = fileAttachmentService.getFileUrl(userObj.getPathSignature());
+				if (imgPathSignature != null) {
+					request.setAttribute("signaturePath", imgPathSignature);
 				}
 			}
 
@@ -1037,45 +1028,28 @@ public class TravelAction extends ActionSupport {
 			// ── 5. บันทึก Signature ใหม่ (ถ้ามี upload) ─────────────
 			if (files != null && files.length > 0 && filesFileName != null && filesFileName.length > 0) {
 				try {
-					String sigOrigName = filesFileName[0];
-					long sigSize = files[0].length();
-					int newFileId = fileuploadDAO.getMaxId() + 1;
+					List<FileUpload> savedFiles = fileAttachmentService.attach(
+						Arrays.asList(files[0]),
+						Arrays.asList(filesFileName[0]),
+						"user_signature",
+						onlineUser.getId(),
+						onlineUser.getId(),
+						ServletActionContext.getServletContext().getRealPath("/")
+					);
 
-					int dotIdx = sigOrigName.lastIndexOf('.');
-					String nameOnly = dotIdx > 0 ? sigOrigName.substring(0, dotIdx) : sigOrigName;
-					String ext = dotIdx > 0 ? sigOrigName.substring(dotIdx) : "";
+					if (savedFiles != null && !savedFiles.isEmpty()) {
+						String savePath = savedFiles.get(0).getPath();
 
-					String serverFileName = "user_signature_" + newFileId + ext;
-					String newFileName = newFileId + "_" + nameOnly + ext;
-					String savePath = "/upload/user/" + newFileName;
+						// ── อัปเดต path_signature ใน User ────────────────────────────
+						User u = userDAO.findById(onlineUser.getId());
+						if (u != null) {
+							u.setPathSignature(savePath);
+							u.setTimeUpdate(now);
+							userDAO.update(u);
 
-					String serverRoot = ServletActionContext.getServletContext().getRealPath("/");
-					FileUtil.upload(files[0], serverRoot + "upload/user/", serverFileName);
-					// ── บันทึก FileUpload record ──────────────────────────────────
-					FileUpload fu = new FileUpload();
-					fu.setFileId(newFileId);
-					fu.setName(nameOnly);
-					fu.setType(ext);
-					fu.setPath(savePath);
-					fu.setSize(formatFileSize(sigSize));
-					fu.setPage("user_signature");
-					fu.setPageId(null);
-					fu.setUserId(onlineUser.getId());
-					fu.setUserCreate(onlineUser.getId());
-					fu.setUserUpdate(onlineUser.getId());
-					fu.setTimeCreate(now);
-					fu.setTimeUpdate(now);
-					fileuploadDAO.save(fu);
-
-					// ── อัปเดต path_signature ใน User ────────────────────────────
-					User u = userDAO.findById(onlineUser.getId());
-					if (u != null) {
-						u.setPathSignature(savePath);
-						u.setTimeUpdate(now);
-						userDAO.update(u);
-
-						onlineUser.setPathSignature(savePath);
-						request.getSession().setAttribute("onlineUser", onlineUser);
+							onlineUser.setPathSignature(savePath);
+							request.getSession().setAttribute("onlineUser", onlineUser);
+						}
 					}
 
 				} catch (Exception sigEx) {
@@ -1102,37 +1076,19 @@ public class TravelAction extends ActionSupport {
 			String[] fileNames = new Gson().fromJson(filesUploadFileName, String[].class);
 			if (fileNames == null)
 				return;
-			ServletContext ctx = ServletActionContext.getServletContext();
-			String serverPath = ctx.getRealPath("/");
 
-			for (int i = 0; i < files.length; i++) {
-				if (i >= fileNames.length)
-					continue;
-				int maxFileId = fileuploadDAO.getMaxId() + 1;
-				String fileName = fileNames[i];
-				long fileSize = files[i].length();
-				int dotIdx = fileName.lastIndexOf('.');
-				String nameOnly = dotIdx > 0 ? fileName.substring(0, dotIdx) : fileName;
-				String ext = dotIdx > 0 ? fileName.substring(dotIdx) : "";
-				String saveName = maxFileId + "_" + fileName;
-				String savePath = "/upload/user/" + saveName;
+			// เหมือน logic เดิม: ถ้าไฟล์มากกว่าชื่อไฟล์ที่ส่งมา ตัดไฟล์ส่วนเกินทิ้ง ไม่แนบ
+			int n = Math.min(files.length, fileNames.length);
+			String serverPath = ServletActionContext.getServletContext().getRealPath("/");
 
-				FileUtil.upload(files[i], serverPath + "upload/user/", saveName);
-
-				FileUpload fu = new FileUpload();
-				fu.setFileId(maxFileId);
-				fu.setName(nameOnly);
-				fu.setType(ext);
-				fu.setPath(savePath);
-				fu.setSize(formatFileSize(fileSize));
-				fu.setPage(page);
-				fu.setPageId(pageId);
-				fu.setUserId(userId);
-				fu.setUserCreate(userId);
-				fu.setUserUpdate(userId);
-				fu.setTimeCreate(now);
-				fileuploadDAO.save(fu);
-			}
+			fileAttachmentService.attach(
+				Arrays.asList(files).subList(0, n),
+				Arrays.asList(fileNames).subList(0, n),
+				page,
+				pageId,
+				userId,
+				serverPath
+			);
 		} catch (Exception e) {
 			log.error("Error saving travel files", e);
 		}
@@ -1389,24 +1345,13 @@ public class TravelAction extends ActionSupport {
 			request.setAttribute("grandTotal", grandTotal);
 			request.setAttribute("selectedIds", ids != null ? Arrays.asList(ids) : java.util.Collections.emptyList());
 
-			if (userObj != null && userObj.getPathSignature() != null && userObj.getPathSignature().contains("_")) {
-				try {
-					String originalFileName = new java.io.File(userObj.getPathSignature()).getName();
-					String fileIdStr = originalFileName.substring(0, originalFileName.indexOf("_"));
-					String typeFile = originalFileName.substring(originalFileName.lastIndexOf("."));
-
-					String imgPathSignature = "/upload/user/user_signature_" + fileIdStr + typeFile;
-
-					java.io.File f = new java.io.File(request.getServletContext().getRealPath("/") + imgPathSignature);
-
-					if (f.exists()) {
-						request.setAttribute("signaturePath", imgPathSignature);
-					}
-
-				} catch (Exception ignore) {
+			if (userObj != null) {
+				String imgPathSignature = fileAttachmentService.getFileUrl(userObj.getPathSignature());
+				if (imgPathSignature != null) {
+					request.setAttribute("signaturePath", imgPathSignature);
 				}
 			}
-			
+
 			boolean onlineUserSignature = false;
 
 	        if (onlineUser != null) {
