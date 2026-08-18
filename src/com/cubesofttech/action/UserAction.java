@@ -1893,7 +1893,7 @@ public class UserAction extends ActionSupport {
 					List<FileUpload> savedFiles = fileAttachmentService.attach(
 						Arrays.asList(fileUpload),
 						Arrays.asList(fileUploadFileName),
-						"user_signature",
+						"user",
 						u.getId(),
 						logonUser,
 						request.getServletContext().getRealPath("/")
@@ -1928,9 +1928,12 @@ public class UserAction extends ActionSupport {
 
 			if (user == null) {
 				return ERROR;
+			}else{
+				if (user.getPathSignature() != null){
+					user.setPathSignature(null);
+					userDAO.update(user);
+				}
 			}
-
-			deleteUserSignature(user);
 
 			String redirectPage = request.getParameter("redirectPage");
 			if ("check_in_out".equals(redirectPage)) {
@@ -1969,7 +1972,7 @@ public class UserAction extends ActionSupport {
 					List<FileUpload> savedFiles = fileAttachmentService.attach(
 						Arrays.asList(fileUpload),
 						Arrays.asList(fileUploadFileName),
-						"user_signature",
+						"user",
 						u.getId(),
 						logonUser,
 						request.getServletContext().getRealPath("/")
@@ -2000,7 +2003,11 @@ public class UserAction extends ActionSupport {
 
 			User user = userDAO.findById(targetUserId.trim());
 			if (user != null) {
-				deleteUserSignature(user);
+				if (user.getPathSignature() != null){
+					user.setPathSignature(null);
+					userDAO.update(user);
+				}
+				
 			}
 
 			this.userId = targetUserId.trim();
@@ -2008,58 +2015,6 @@ public class UserAction extends ActionSupport {
 		} catch (Exception e) {
 			e.printStackTrace();
 			return ERROR;
-		}
-	}
-
-	private boolean deleteUserSignature(User user) {
-		try {
-			if (user == null) {
-				return false;
-			}
-
-			String pathSignature = user.getPathSignature();
-
-			if (pathSignature == null || pathSignature.trim().isEmpty()) {
-				return true;
-			}
-
-			pathSignature = pathSignature.trim();
-
-			// log.info("Deleting signature path = " + pathSignature);
-
-			//หา FileUpload จาก path
-			FileUpload file = fileuploadDAO.findByPath(pathSignature);
-
-			//ลบไฟล์จริงใน server
-			String realPath = request.getServletContext().getRealPath(pathSignature);
-
-			if (realPath != null) {
-				File physicalFile = new File(realPath);
-
-				if (physicalFile.exists()) {
-					boolean deleted = physicalFile.delete();
-				}
-			}
-
-			//ลบ record ใน file_upload
-			if (file != null) {
-				fileuploadDAO.delete(file);
-			}
-
-			//ล้าง path_signature ใน user
-			user.setPathSignature(null);
-			userDAO.update(user);
-
-			return true;
-
-		} catch (Exception e) {
-			log.error(
-				"Cannot delete user signature. userId="
-				+ (user != null ? user.getId() : "null"),
-				e
-			);
-
-			return false;
 		}
 	}
 

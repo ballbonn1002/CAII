@@ -33,6 +33,7 @@ import com.cubesofttech.model.User;
 
 import com.cubesofttech.service.FileAttachmentService;
 import com.cubesofttech.util.DateUtil;
+import com.cubesofttech.util.FileUtil;
 import com.cubesofttech.util.ReportUtil;
 import com.google.gson.Gson;
 import com.opensymphony.xwork2.ActionSupport;
@@ -336,7 +337,7 @@ public class TravelAction extends ActionSupport {
 			expenseDetailDAO.deleteByExpenseId(expenseId);
 
 			// ── ลบไฟล์แนบ (ถ้ามี) ─────────────────────────────────────────────
-			List<FileUpload> attachedFiles = fileuploadDAO.findByPageAndPageId("travelFiles",
+			List<FileUpload> attachedFiles = fileuploadDAO.findByPageAndPageId("travel",
 					String.valueOf(expenseId));
 			if (attachedFiles != null) {
 				String serverRoot = ServletActionContext.getServletContext().getRealPath("/");
@@ -577,8 +578,23 @@ public class TravelAction extends ActionSupport {
 				}
 			}
 
-			saveAttachedFiles(files, filesFileName, filesUploadFileName, "travelFiles", String.valueOf(newExpenseId),
-					onlineUser.getId(), now);
+			if (files != null && files.length > 0) {
+				String serverRealPath =
+						ServletActionContext.getServletContext().getRealPath("/");
+
+				fileAttachmentService.attach(
+					Arrays.asList(files),
+					filesFileName != null
+						? Arrays.asList(filesFileName)
+						: null,
+					"travel",
+					String.valueOf(newExpenseId),
+					onlineUser.getId(),
+					serverRealPath
+				);
+			}
+			// saveAttachedFiles(files, filesFileName, filesUploadFileName, "travel", String.valueOf(newExpenseId),
+			// 		onlineUser.getId(), now);
 
 			return SUCCESS;
 
@@ -606,7 +622,7 @@ public class TravelAction extends ActionSupport {
 				return ERROR;
 
 			List<ExpenseDetail> detailList = expenseDetailDAO.findByExpenseId(expenseId);
-			List<FileUpload> travelFiles = fileuploadDAO.findByPageAndPageId("travelFiles", id);
+			List<FileUpload> travelFiles = fileuploadDAO.findByPageAndPageId("travel", id);
 
 			String userJSON = userDAO.userListJSON();
 			List<Map<String, Object>> userListObj = new Gson().fromJson(userJSON,
@@ -804,8 +820,22 @@ public class TravelAction extends ActionSupport {
 				}
 			}
 
-			saveAttachedFiles(files, filesFileName, filesUploadFileName, "travelFiles", String.valueOf(expenseId),
-					onlineUser.getId(), now);
+			if (files != null && files.length > 0) {
+				String serverRealPath = ServletActionContext.getServletContext().getRealPath("/");
+
+				fileAttachmentService.attach(
+					Arrays.asList(files),
+					filesFileName != null
+						? Arrays.asList(filesFileName)
+						: null,
+					"travel",
+					String.valueOf(expenseId),
+					onlineUser.getId(),
+					serverRealPath
+				);
+			}
+			// saveAttachedFiles(files, filesFileName, filesUploadFileName, "travel", String.valueOf(expenseId),
+			// 		onlineUser.getId(), now);
 
 			return SUCCESS;
 
@@ -929,7 +959,7 @@ public class TravelAction extends ActionSupport {
 				expMap.put("details", detailMaps);
 
 				// ── Attached files ───────────────────────────────────
-				List<FileUpload> fileList = fileuploadDAO.findByPageAndPageId("travelFiles", String.valueOf(expenseId));
+				List<FileUpload> fileList = fileuploadDAO.findByPageAndPageId("travel", String.valueOf(expenseId));
 				expMap.put("files", fileList != null ? fileList : new ArrayList<>());
 
 				if (exp.getAmount() != null)
@@ -1031,7 +1061,7 @@ public class TravelAction extends ActionSupport {
 					List<FileUpload> savedFiles = fileAttachmentService.attach(
 						Arrays.asList(files[0]),
 						Arrays.asList(filesFileName[0]),
-						"user_signature",
+						"user",
 						onlineUser.getId(),
 						onlineUser.getId(),
 						ServletActionContext.getServletContext().getRealPath("/")
@@ -1076,19 +1106,58 @@ public class TravelAction extends ActionSupport {
 			String[] fileNames = new Gson().fromJson(filesUploadFileName, String[].class);
 			if (fileNames == null)
 				return;
+			ServletContext ctx = ServletActionContext.getServletContext();
+			String serverPath = ctx.getRealPath("/");
 
-			// เหมือน logic เดิม: ถ้าไฟล์มากกว่าชื่อไฟล์ที่ส่งมา ตัดไฟล์ส่วนเกินทิ้ง ไม่แนบ
-			int n = Math.min(files.length, fileNames.length);
-			String serverPath = ServletActionContext.getServletContext().getRealPath("/");
-
-			fileAttachmentService.attach(
-				Arrays.asList(files).subList(0, n),
-				Arrays.asList(fileNames).subList(0, n),
+			for (int i = 0; i < files.length; i++) {
+				fileAttachmentService.attach(
+				Arrays.asList(files).subList(0, i),
+				Arrays.asList(fileNames).subList(0, i),
 				page,
 				pageId,
 				userId,
 				serverPath
 			);
+				// if (i >= fileNames.length)
+				// 	continue;
+				// int maxFileId = fileuploadDAO.getMaxId() + 1;
+				// String fileName = fileNames[i];
+				// long fileSize = files[i].length();
+				// int dotIdx = fileName.lastIndexOf('.');
+				// String nameOnly = dotIdx > 0 ? fileName.substring(0, dotIdx) : fileName;
+				// String ext = dotIdx > 0 ? fileName.substring(dotIdx) : "";
+				// String saveName = maxFileId + "_" + fileName;
+				// String savePath = "/upload/" + page + "/" + saveName;
+
+				// FileUtil.upload(files[i], serverPath + "upload/" + page + "/", saveName);
+
+				// FileUpload fu = new FileUpload();
+				// fu.setFileId(maxFileId);
+				// fu.setName(nameOnly);
+				// fu.setType(ext);
+				// fu.setPath(savePath);
+				// fu.setSize(formatFileSize(fileSize));
+				// fu.setPage(page);
+				// fu.setPageId(pageId);
+				// fu.setUserId(userId);
+				// fu.setUserCreate(userId);
+				// fu.setUserUpdate(userId);
+				// fu.setTimeCreate(now);
+				// fileuploadDAO.save(fu);
+			}
+
+			// เหมือน logic เดิม: ถ้าไฟล์มากกว่าชื่อไฟล์ที่ส่งมา ตัดไฟล์ส่วนเกินทิ้ง ไม่แนบ
+			// int n = Math.min(files.length, fileNames.length);
+			// String serverPath = ServletActionContext.getServletContext().getRealPath("/");
+
+			// fileAttachmentService.attach(
+			// 	Arrays.asList(files).subList(0, n),
+			// 	Arrays.asList(fileNames).subList(0, n),
+			// 	page,
+			// 	pageId,
+			// 	userId,
+			// 	serverPath
+			// );
 		} catch (Exception e) {
 			log.error("Error saving travel files", e);
 		}

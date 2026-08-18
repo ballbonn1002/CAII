@@ -29,9 +29,9 @@ public class FileAttachmentService {
     private static final Logger log = Logger.getLogger(FileAttachmentService.class);
 
     /** โฟลเดอร์จริงใต้ context root ที่เก็บไฟล์ (สอดคล้องกับของเดิมในระบบ) */
-    private static final String UPLOAD_SUBDIR = "upload/user/";
+    private static final String UPLOAD_SUBDIR = "/upload/";
     /** path เชิง web ที่บันทึกลง DB */
-    private static final String WEB_PATH_PREFIX = "/upload/user/";
+    private static final String WEB_PATH_PREFIX = "/upload/";
 
     @Autowired
     private FileUploadDAO fileUploadDAO;
@@ -75,7 +75,7 @@ public class FileAttachmentService {
             }
 
             nextId++;
-            String storedName = nextId +extension(originalName); //แก้เป็น maxId+typeFileName
+            String storedName = page + "/" + nextId +extension(originalName); //แก้เป็น path/maxId+typeFileName
             FileUtil.upload(file, uploadDir, storedName);
 
             FileUpload fu = new FileUpload();

@@ -102,7 +102,7 @@
 					<div class="card mb-10">
 						<div
 							class="card-header d-flex justify-content-between align-items-center border-0 m-0 p-0">
-							<img src="${fileImgPath}" class="banner-img" alt="user">
+							<img src="${pageContext.request.contextPath}${fileImgPath}" class="banner-img" alt="user">
 
 						</div>
 						<div class="card-body d-flex flex-column">
