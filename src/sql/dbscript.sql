@@ -714,17 +714,3 @@ CREATE TABLE `po_parent` (
 
 -- 18/08/2026 Koy: add column equipment_type to product (ref to equipment_type.Type)
 ALTER TABLE `product` ADD COLUMN `equipment_type` VARCHAR(32) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'ref -> equipment_type.Type (เฉพาะ product_type = 1)' AFTER `product_type`;
-
--- 21/07/2026 - per-article view counter (BlogDAOImpl.incrementViewCount /
--- BlogAction.blogDetail), shown on blogCard.tag's card meta row.
--- Already applied to the local dev DB (ca_202312) - run against UAT/prod.
-ALTER TABLE `article` ADD COLUMN `view_count` INT NOT NULL DEFAULT 0 AFTER `time_post`;
-
--- 17/08/2026 - fix footer's "Software Development" link 
-UPDATE `footer` SET `footer_url` = 'https://www.cubesofttech.com/software-development'
-WHERE `footer_id` = 28 AND `footer_name` = 'Software Development';
-
--- 19/08/2026 Siro: Equipment ไม่ใช้ sub product แล้ว (รายละเอียดรายเครื่องเก็บที่ตาราง
--- equipment แทน) - ปิด sub_product_active ให้ตรงกันทุกแถวของ product_type = '1'
--- (idempotent - รันซ้ำได้ ไม่มีผลถ้า flag ปิดอยู่แล้ว)
-UPDATE `product` SET `sub_product_active` = '0' WHERE `product_type` = '1';
