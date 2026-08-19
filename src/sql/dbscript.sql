@@ -714,3 +714,15 @@ CREATE TABLE `po_parent` (
 
 -- 18/08/2026 Koy: add column equipment_type to product (ref to equipment_type.Type)
 ALTER TABLE `product` ADD COLUMN `equipment_type` VARCHAR(32) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'ref -> equipment_type.Type (เฉพาะ product_type = 1)' AFTER `product_type`;
+
+-- 19/08/2026 June: Fix typo in doc_status table column name from 'decscription' to 'description'
+ALTER TABLE `doc_status` CHANGE `decscription` `description` VARCHAR(1024) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL;
+-- 19/08/2026 June: Insert initial document status master data for PO groups
+INSERT INTO `doc_status` (`doc_status_id`, `status_code`, `status_name`, `group`, `description`, `user_create`, `user_update`, `time_create`, `time_update`) VALUES 
+('1', '1', 'Draft', 'po', NULL, 'cft.admin', 'cft.admin', '2026-08-19 09:54:00', '2026-08-19 09:54:00'),
+('2', '2', 'Pending', 'po', NULL, 'cft.admin', 'cft.admin', '2026-08-19 09:54:00', '2026-08-19 09:54:00'),
+('3', '3', 'Approved', 'po', NULL, 'cft.admin', 'cft.admin', '2026-08-19 09:54:00', '2026-08-19 09:54:00'),
+('4', '4', 'Return', 'po', NULL, 'cft.admin', 'cft.admin', '2026-08-19 09:54:00', '2026-08-19 09:54:00'),
+('5', '5', 'Rejected', 'po', NULL, 'cft.admin', 'cft.admin', '2026-08-19 09:54:00', '2026-08-19 09:54:00'),
+('6', '6', 'Cancel', 'po', NULL, 'cft.admin', 'cft.admin', '2026-08-19 09:54:00', '2026-08-19 09:54:00'),
+('7', '7', 'In-Progress', 'po', NULL, 'cft.admin', 'cft.admin', '2026-08-19 09:54:00', '2026-08-19 09:54:00');
