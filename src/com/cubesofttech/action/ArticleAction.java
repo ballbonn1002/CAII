@@ -511,7 +511,6 @@ public class ArticleAction extends ActionSupport {
 				}
 
 				String newFileName = maxId + "_" + fileName + typeFile;
-				String serverFileName = "article_" + maxId + typeFile;
 
 				long fileSize = fileUpload.length(); // byte
 				double sizeKB = fileSize / 1024.0;
@@ -525,7 +524,7 @@ public class ArticleAction extends ActionSupport {
 					sizeText = String.format("%.2f MB", sizeMB);
 				}
 
-				FileUtil.upload(fileUpload, fileServerPath + "upload/user/", serverFileName);
+				FileUtil.upload(fileUpload, fileServerPath + "/upload/user/", newFileName);
 
 				FileUpload file = new FileUpload();
 				file.setFileId(maxId);
@@ -535,7 +534,6 @@ public class ArticleAction extends ActionSupport {
 				file.setPageId(String.valueOf(articleMaxId));
 				file.setType(typeFile);
 				file.setSize(sizeText);
-				file.setAltName(null);
 				file.setUserCreate(logonUser);
 				file.setUserUpdate(logonUser);
 				file.setAltName(cover_alt);
@@ -706,8 +704,7 @@ public class ArticleAction extends ActionSupport {
 			if (article.getFileId() != null) {
 			    FileUpload file = fileuploadDAO.findById(Integer.parseInt(article.getFileId()));
 			    if (file != null) {
-			        String type = file.getType();
-			        imgPath = "/upload/user/article_" + file.getFileId()+ type;
+			        imgPath = file.getPath();
 			        imgAlt = file.getAltName();
 			    }
 			}
@@ -722,6 +719,7 @@ public class ArticleAction extends ActionSupport {
 			request.setAttribute("publicDate", publicDate);
 			request.setAttribute("publicTime", publicTime);
 			
+			log.debug("imgPath "+ imgPath);
 			request.setAttribute("fileImgPath", imgPath);
 			request.setAttribute("fileImgAlt", imgAlt);
 			
@@ -762,8 +760,7 @@ public class ArticleAction extends ActionSupport {
 			if (article.getFileId() != null) {
 			    FileUpload file = fileuploadDAO.findById(Integer.parseInt(article.getFileId()));
 			    if (file != null) {
-			        String type = file.getType();
-			        imgPath = "/upload/user/article_" + file.getFileId()+ type;
+			        imgPath = file.getPath();
 			        imgAlt = file.getAltName();
 			    }
 			}
@@ -834,7 +831,6 @@ public class ArticleAction extends ActionSupport {
 				}
 
 				String newFileName = maxId + "_" + fileName + typeFile;
-				String serverFileName = "article_" + maxId + typeFile;
 
 				long fileSize = fileUpload.length(); // byte
 				double sizeKB = fileSize / 1024.0;
@@ -848,7 +844,7 @@ public class ArticleAction extends ActionSupport {
 					sizeText = String.format("%.2f MB", sizeMB);
 				}
 
-				FileUtil.upload(fileUpload, fileServerPath + "upload/user/", serverFileName);
+				FileUtil.upload(fileUpload, fileServerPath + "/upload/user/", newFileName);
 
 				FileUpload file = new FileUpload();
 				file.setFileId(maxId);
@@ -858,7 +854,6 @@ public class ArticleAction extends ActionSupport {
 				file.setPageId(String.valueOf(articleId));
 				file.setType(typeFile);
 				file.setSize(sizeText);
-				file.setAltName(null);
 				file.setUserCreate(logonUser);
 				file.setUserUpdate(logonUser);
 				file.setAltName(cover_alt);
@@ -913,7 +908,6 @@ public class ArticleAction extends ActionSupport {
 			}
 
 			// Update article_related
-			log.debug(article_related);
 			articleRelatedDAO.deleteByArticleId(String.valueOf(articleId));
 			if (article_related != null) {
 			    for (String rid : article_related) {
@@ -1063,12 +1057,12 @@ public class ArticleAction extends ActionSupport {
 
 	        	if (pureFileName != null && !pureFileName.isEmpty()) {
 	        	    if (pureFileName.matches("^[a-zA-Z0-9._-]+$")) {
-	        	        finalNameForSystem = imgMaxId + "_article_" + pureFileName;
+	        	        finalNameForSystem = imgMaxId + "_atc_" + pureFileName;
 	        	    } else {
-	        	        finalNameForSystem = imgMaxId + "_article_" + imgMaxId;
+	        	        finalNameForSystem = imgMaxId + "_atc_" + imgMaxId;
 	        	    }
 	        	} else {
-	        	    finalNameForSystem = imgMaxId + "_article_" + imgMaxId;
+	        	    finalNameForSystem = imgMaxId + "_atc_" + imgMaxId;
 	        	}
 	        	String newFileName = finalNameForSystem + typeFile;
 
@@ -1076,9 +1070,9 @@ public class ArticleAction extends ActionSupport {
 
 	            FileUtil.upload(articleImageFile, fileServerPath + "upload/article/", newFileName);
 
-	            String contextPath = request.getContextPath();
+	            String contextPath = constant.getWebPath();
 	            locationFile = "/upload/article/" + newFileName;
-	            String filePath = "/upload/article/" +finalNameForSystem+typeFile;
+	            String filePath = contextPath +"/upload/article/" +finalNameForSystem+typeFile;
 	            
 	            long fileSize = articleImageFile.length();
 	            String sizeText = (fileSize < 1024 * 1024) 
