@@ -555,7 +555,21 @@ CREATE TABLE `doc_status` (
   PRIMARY KEY (`doc_status_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- 04/08/2026 Koy: add auto_increment to unit_id in table unit_of_measure.
+-- 04/08/2026 Koy: create table and add auto_increment to unit_id in table unit_of_measure.
+CREATE TABLE `unit_of_measure` (
+    `unit_id` int(11) NOT NULL AUTO_INCREMENT,
+    `product_id` varchar(32) NOT NULL,
+    `sequence` varchar(32) DEFAULT NULL,
+    `unit_name` varchar(32) DEFAULT NULL,
+    `conversion_rate` int(11) DEFAULT NULL,
+    `description` text DEFAULT NULL,
+    `user_create` varchar(32) DEFAULT NULL,
+    `user_update` varchar(32) DEFAULT NULL,
+    `time_create` timestamp NULL DEFAULT NULL,
+    `time_update` timestamp NULL DEFAULT NULL,
+    PRIMARY KEY (`unit_id`)
+) ENGINE = InnoDB AUTO_INCREMENT = 10 DEFAULT CHARSET = utf8mb4
+
 ALTER TABLE `unit_of_measure` CHANGE `unit_id` `unit_id` INT(11) NOT NULL AUTO_INCREMENT, add PRIMARY KEY (`unit_id`);
 
 -- 05/08/2026 Koy: add column 'warehouse_id' in table stock.
@@ -609,23 +623,15 @@ CREATE TABLE `good_receipt_detail` (
     PRIMARY KEY (`good_receipt_detail_id`)
 ) ENGINE = InnoDB AUTO_INCREMENT = 2 DEFAULT CHARSET = utf8mb4
 
-CREATE TABLE `unit_of_measure` (
-    `unit_id` int(11) NOT NULL AUTO_INCREMENT,
-    `product_id` varchar(32) NOT NULL,
-    `sequence` varchar(32) DEFAULT NULL,
-    `unit_name` varchar(32) DEFAULT NULL,
-    `conversion_rate` int(11) DEFAULT NULL,
-    `description` text DEFAULT NULL,
-    `user_create` varchar(32) DEFAULT NULL,
-    `user_update` varchar(32) DEFAULT NULL,
-    `time_create` timestamp NULL DEFAULT NULL,
-    `time_update` timestamp NULL DEFAULT NULL,
-    PRIMARY KEY (`unit_id`)
-) ENGINE = InnoDB AUTO_INCREMENT = 10 DEFAULT CHARSET = utf8mb4
-
 -- PROD 10 AUG 2026 9:50
-ALTER TABLE mr 
-MODIFY COLUMN request_date TIMESTAMP;
+ALTER TABLE mr MODIFY COLUMN request_date TIMESTAMP;
+
+-- 10/08/2026 Koy: add column to link equipment -> product
+ALTER TABLE `equipment`
+  ADD COLUMN `product_id` VARCHAR(32) DEFAULT NULL COMMENT 'FK -> product.product_id' AFTER `type`;
+
+-- 10/08/2026 Koy: add primary key to product table.
+ALTER TABLE `product` CHANGE `product_id` `product_id` INT(11) NOT NULL AUTO_INCREMENT, ADD PRIMARY KEY (`product_id`);
 
 -- PROD 13 AUG 2026
 
@@ -705,3 +711,20 @@ CREATE TABLE `po_parent` (
   `time_create` timestamp NULL DEFAULT NULL,
   `time_update` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- 18/08/2026 Koy: add column equipment_type to product (ref to equipment_type.Type)
+ALTER TABLE `product` ADD COLUMN `equipment_type` VARCHAR(32) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'ref -> equipment_type.Type (เฉพาะ product_type = 1)' AFTER `product_type`;
+
+-- 21/07/2026 - per-article view counter (BlogDAOImpl.incrementViewCount /
+-- BlogAction.blogDetail), shown on blogCard.tag's card meta row.
+-- Already applied to the local dev DB (ca_202312) - run against UAT/prod.
+ALTER TABLE `article` ADD COLUMN `view_count` INT NOT NULL DEFAULT 0 AFTER `time_post`;
+
+-- 17/08/2026 - fix footer's "Software Development" link 
+UPDATE `footer` SET `footer_url` = 'https://www.cubesofttech.com/software-development'
+WHERE `footer_id` = 28 AND `footer_name` = 'Software Development';
+
+-- 19/08/2026 Siro: Equipment ไม่ใช้ sub product แล้ว (รายละเอียดรายเครื่องเก็บที่ตาราง
+-- equipment แทน) - ปิด sub_product_active ให้ตรงกันทุกแถวของ product_type = '1'
+-- (idempotent - รันซ้ำได้ ไม่มีผลถ้า flag ปิดอยู่แล้ว)
+UPDATE `product` SET `sub_product_active` = '0' WHERE `product_type` = '1';

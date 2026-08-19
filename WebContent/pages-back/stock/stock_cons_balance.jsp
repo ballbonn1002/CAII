@@ -27,13 +27,13 @@
                 </div>
 
                 <div class="d-flex align-items-center gap-3">
-                    <a href="stock_cons_balance?productId=${product.productId}" class="btn btn-light-primary d-inline-flex align-items-center px-5 py-3 active">
-                        <i class="ki-duotone ki-package fs-3 me-2"><span class="path1"></span><span class="path2"></span><span class="path3"></span></i>
-                        <span class="fw-semibold">Stock Balance</span>
-                    </a>
                     <a href="stock_cons_edit?productId=${product.productId}" class="btn btn-light d-inline-flex align-items-center px-5 py-3">
                         <i class="ki-duotone ki-setting-2 fs-3 me-2 text-gray-500"><span class="path1"></span><span class="path2"></span></i>
                         <span class="fw-semibold text-gray-700">Settings</span>
+                    </a>
+                    <a href="stock_cons_balance?productId=${product.productId}" class="btn btn-light-primary d-inline-flex align-items-center px-5 py-3 active">
+                        <i class="ki-duotone ki-package fs-3 me-2"><span class="path1"></span><span class="path2"></span><span class="path3"></span></i>
+                        <span class="fw-semibold">Stock Balance</span>
                     </a>
                 </div>
             </div>
@@ -47,16 +47,23 @@
                     <div class="card-border-radius">
                         <div class="card-header border-0 pt-6 d-flex align-items-center justify-content-between flex-wrap gap-3">
                             <h3 class="page-heading text-gray-900 fw-bold mb-0">Stock Balance</h3>
-                            <%-- TODO: ผูก date range picker ของโปรเจกต์ (flatpickr/daterangepicker) ตอนต่อ backend --%>
-                            <div class="position-relative">
-                                <input type="text" id="balanceDateRange" readonly
-                                       class="form-control form-control-solid ps-4 pe-12 text-gray-700"
-                                       style="min-width: 260px;"
-                                       value="1 Jan 2026 - 31 Dec 2026" />
-                                <i class="ki-duotone ki-calendar-8 fs-2 position-absolute end-0 top-50 translate-middle-y me-4 text-gray-500">
-                                    <span class="path1"></span><span class="path2"></span><span class="path3"></span>
-                                    <span class="path4"></span><span class="path5"></span><span class="path6"></span>
-                                </i>
+                            <div class="d-flex align-items-center flex-wrap gap-3">
+                                <%-- TODO: ผูก date range picker ของโปรเจกต์ (flatpickr/daterangepicker) ตอนต่อ backend --%>
+                                <div class="position-relative">
+                                    <input type="text" id="balanceDateRange" readonly
+                                           class="form-control form-control-solid ps-4 pe-12 text-gray-700"
+                                           style="min-width: 260px;"
+                                           value="1 Jan 2026 - 31 Dec 2026" />
+                                    <i class="ki-duotone ki-calendar-8 fs-2 position-absolute end-0 top-50 translate-middle-y me-4 text-gray-500">
+                                        <span class="path1"></span><span class="path2"></span><span class="path3"></span>
+                                        <span class="path4"></span><span class="path5"></span><span class="path6"></span>
+                                    </i>
+                                </div>
+                                <button type="button" class="btn btn-success d-inline-flex align-items-center px-6 py-3"
+                                        data-bs-toggle="modal" data-bs-target="#addStockModal">
+                                    <i class="ki-duotone ki-plus fs-3 me-2"><span class="path1"></span><span class="path2"></span></i>
+                                    <span class="fw-bold">Add Stock</span>
+                                </button>
                             </div>
                         </div>
 
@@ -220,8 +227,131 @@
     </div>
 </div>
 
+<%-- ============ Modal: Add Stock (รับเข้าสต็อก / IN) ============ --%>
+<div class="modal fade" id="addStockModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered mw-650px">
+        <div class="modal-content">
+            <%-- TODO: ยังไม่มี action stock_cons_stock_add - ต่อ backend (บันทึกรับเข้า/Good Receipt) ภายหลัง --%>
+            <form id="addStockForm" method="POST" action="stock_cons_stock_add" class="form">
+                <input type="hidden" name="productId" value="${product.productId}" />
+
+                <div class="modal-header">
+                    <h3 class="modal-title fw-bold text-gray-900">Add Stock</h3>
+                    <button type="button" class="btn btn-icon btn-sm btn-active-light-primary" data-bs-dismiss="modal" aria-label="Close">
+                        <i class="ki-duotone ki-cross fs-1"><span class="path1"></span><span class="path2"></span></i>
+                    </button>
+                </div>
+
+                <div class="modal-body">
+                    <div class="row g-5 mb-2">
+                        <div class="col-12 col-md-6">
+                            <label class="form-label fw-semibold text-gray-700" for="addStockWarehouse">
+                                Warehouse <span class="text-danger">*</span>
+                            </label>
+                            <%-- options เติมด้วย JS ให้เรียงแบบ tree (DFS + indent ตามลำดับชั้น) ดู fillWarehouseTree() --%>
+                            <select id="addStockWarehouse" name="warehouseId" required class="form-select text-gray-700">
+                                <option value="">- เลือกคลัง -</option>
+                            </select>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <label class="form-label fw-semibold text-gray-700" for="addStockRef">Reference No.</label>
+                            <input type="text" id="addStockRef" name="refNo" maxlength="100"
+                                   class="form-control text-gray-700" placeholder="เช่น QR001" />
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <label class="form-label fw-semibold text-gray-700" for="addStockDate">Date</label>
+                            <input type="date" id="addStockDate" name="receiveDate" class="form-control text-gray-700" />
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <label class="form-label fw-semibold text-gray-700" for="addStockUnit">
+                                Unit <span class="text-danger">*</span>
+                            </label>
+                            <%-- ตัวเลือก unit ดึงจาก DB ตาม product (attribute units) เรียงตาม sequence (ตัวแรก = unit หลัก) --%>
+                            <select id="addStockUnit" name="unitId" required class="form-select text-gray-700">
+                                <option value="">- เลือกหน่วยนับ -</option>
+                                <c:forEach var="u" items="${units}" varStatus="us">
+                                    <option value="${u.unitId}" ${us.first ? 'selected' : ''}>${fn:escapeXml(u.unitName)}</option>
+                                </c:forEach>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="separator my-6"></div>
+
+                    <label class="form-label fw-semibold text-gray-700 mb-4">จำนวนรับเข้า (แยกตาม Sub product)</label>
+                    <c:choose>
+                        <c:when test="${not empty subProducts}">
+                            <div class="row g-4">
+                                <c:forEach var="sub" items="${subProducts}">
+                                    <div class="col-12 col-md-6">
+                                        <div class="input-group">
+                                            <span class="input-group-text fw-semibold text-gray-700" style="min-width: 80px;">
+                                                ${fn:escapeXml(sub.productName)}
+                                            </span>
+                                            <%-- name = amount_<subProductId> ให้ backend map เข้ากับ sub product ได้ --%>
+                                            <input type="number" min="0" step="1" value="0"
+                                                   name="amount_${sub.productId}"
+                                                   class="form-control text-gray-700" />
+                                        </div>
+                                    </div>
+                                </c:forEach>
+                            </div>
+                        </c:when>
+                        <c:otherwise>
+                            <div class="text-muted">ยังไม่มี sub product - เพิ่มได้ที่หน้า Settings</div>
+                        </c:otherwise>
+                    </c:choose>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-success">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
 <script>
     $(document).ready(function () {
+
+        // กันกด Save ซ้ำระหว่างรอ response
+        $('#addStockForm').on('submit', function () {
+            $(this).find('button[type="submit"]')
+                   .prop('disabled', true)
+                   .attr('data-kt-indicator', 'on');
+        });
+
+        // ---- เติม dropdown Warehouse แบบ tree (อ้างอิงโครงสร้างจากหน้า warehouse_list) ----
+        var warehouseData = [
+            <c:forEach items="${warehouses}" var="wh" varStatus="s">
+            { id: ${wh.warehouseId}, parentId: ${empty wh.parent ? 0 : wh.parent}, name: "${fn:escapeXml(wh.warehouseName)}" }<c:if test="${!s.last}">,</c:if>
+            </c:forEach>
+        ];
+
+        (function fillWarehouseTree() {
+            var $sel = $('#addStockWarehouse');
+            if (!$sel.length || !warehouseData.length) { return; }
+
+            // สร้าง map + tree (parentId = 0 หรือหา parent ไม่เจอ = root)
+            var map = {}, roots = [];
+            warehouseData.forEach(function (w) { map[w.id] = { id: w.id, parentId: w.parentId, name: w.name, children: [] }; });
+            warehouseData.forEach(function (w) {
+                if (w.parentId === 0 || !map[w.parentId]) { roots.push(map[w.id]); }
+                else { map[w.parentId].children.push(map[w.id]); }
+            });
+
+            // เดินแบบ DFS แล้ว indent ตามระดับชั้น (option ใน select ทำ expand ไม่ได้ ใช้เยื้องแทน)
+            function walk(nodes, level) {
+                nodes.forEach(function (n) {
+                    var indent = new Array(level + 1).join('    ');
+                    var prefix = level > 0 ? (indent + '└ ') : ''; // └
+                    $sel.append($('<option>', { value: n.id, text: prefix + n.name }));
+                    if (n.children.length) { walk(n.children, level + 1); }
+                });
+            }
+            walk(roots, 0);
+        })();
 
         // ---- กรองตารางยอดคงเหลือตามไซซ์ ----
         $('.size-filter').on('click', function () {

@@ -1,0 +1,221 @@
+<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
+
+<%--
+  Stock - Equipment : Stock Balance
+
+  ต่างจาก stock_cons_balance.jsp ตรงที่ยอดคงเหลือของ Equipment คือ "จำนวนเครื่องจริง"
+  ในตาราง equipment ที่ผูก product_id ไว้ ไม่ได้มาจากตาราง stock / good_receipt
+  จึงไม่มี Add Stock / History IN-OUT แต่แสดงเป็นรายการเครื่องแทน
+
+  attribute จาก ProductAction.showEquipmentBalancePage():
+    product      : Product (catalog item ที่กำลังดู)
+    groups       : List<Map> {label, productId, total, retired, rows:List<Equipment>}
+    totalOnHand  : จำนวนเครื่องที่นับเป็นของคงเหลือ
+    totalRetired : จำนวนเครื่องที่ปลดระวาง/บริจาคไปแล้ว
+--%>
+
+<div class="app-main flex-column flex-row-fluid" id="kt_app_main">
+    <div class="d-flex flex-column flex-column-fluid">
+        <div id="kt_app_toolbar" class="app-toolbar py-3 py-lg-6">
+            <div id="kt_app_toolbar_container" class="app-container container-fluid d-flex flex-stack">
+                <div class="page-title d-flex flex-column justify-content-center flex-wrap me-3">
+                    <h1 class="page-heading d-flex text-gray-700 fw-semibold my-0">Stock - Equipment</h1>
+                    <ul class="breadcrumb breadcrumb-separatorless fw-semibold fs-7 my-0 pt-1">
+                        <li class="breadcrumb-item text-muted"><a href="${pageContext.request.contextPath}/demo_dashboard" class="text-muted text-hover-primary fw-medium fs-7">Home</a></li>
+                        <li class="breadcrumb-item"><span class="bullet bg-gray-500 fw-medium fs-7 w-5px h-2px"></span></li>
+                        <li class="breadcrumb-item text-muted fw-medium fs-7"><a href="${pageContext.request.contextPath}/stock_cons_list" class="text-muted text-hover-primary">Product</a></li>
+                    </ul>
+                </div>
+
+                <div class="d-flex align-items-center gap-3">
+                    <a href="stock_equ_edit?productId=${product.productId}" class="btn btn-light d-inline-flex align-items-center px-5 py-3">
+                        <i class="ki-duotone ki-setting-2 fs-3 me-2 text-gray-500"><span class="path1"></span><span class="path2"></span></i>
+                        <span class="fw-semibold text-gray-700">Settings</span>
+                    </a>
+                    <a href="stock_equ_balance?productId=${product.productId}" class="btn btn-light-primary d-inline-flex align-items-center px-5 py-3 active">
+                        <i class="ki-duotone ki-package fs-3 me-2"><span class="path1"></span><span class="path2"></span><span class="path3"></span></i>
+                        <span class="fw-semibold">Stock Balance</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div id="kt_app_content" class="app-content flex-column-fluid">
+            <div id="kt_app_content_container" class="app-container container-fluid">
+
+                <div class="card mb-8">
+                    <div class="card-border-radius">
+                        <div class="card-header border-0 pt-6 d-flex align-items-center justify-content-between flex-wrap gap-3">
+                            <div>
+                                <h3 class="page-heading text-gray-900 fw-bold mb-1">Stock Balance</h3>
+                                <span class="text-gray-500 fs-7">${fn:escapeXml(product.productName)}</span>
+                            </div>
+                            <div class="d-flex align-items-center gap-8">
+                                <div class="text-center">
+                                    <div class="text-gray-500 fw-semibold fs-7 text-uppercase">On hand</div>
+                                    <div class="fw-bold fs-2 text-gray-900">${totalOnHand}</div>
+                                </div>
+                                <div class="text-center">
+                                    <div class="text-gray-500 fw-semibold fs-7 text-uppercase">ปลดระวาง</div>
+                                    <div class="fw-bold fs-2 text-gray-500">${totalRetired}</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card-body">
+                            <div class="d-flex align-items-center position-relative mb-6">
+                                <i class="ki-duotone ki-magnifier fs-3 position-absolute ms-5"><span class="path1"></span><span class="path2"></span></i>
+                                <input type="text" id="equipmentSearch" class="form-control form-control-solid ps-14 text-gray-700"
+                                       placeholder="ค้นหา Item ID / Serial No / ชื่อเครื่อง / ที่ตั้ง" />
+                            </div>
+
+                            <div class="table-responsive">
+                                <table class="table align-middle fs-6 mb-0" id="equipmentBalanceTable">
+                                    <thead class="fs-7 text-gray-500 text-uppercase">
+                                        <tr class="fw-semibold">
+                                            <th class="min-w-150px text-nowrap">Item ID</th>
+                                            <th class="min-w-250px text-nowrap">ชื่อเครื่อง</th>
+                                            <th class="min-w-180px text-nowrap">Serial No</th>
+                                            <th class="min-w-120px text-nowrap text-center">Status</th>
+                                            <th class="min-w-180px text-nowrap">ที่ตั้ง</th>
+                                            <th class="w-60px"></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <c:forEach var="g" items="${groups}" varStatus="gs">
+                                            <%-- หัวกลุ่ม = ตัว catalog เอง (Equipment ไม่มี sub product แล้ว เครื่องทุกตัวรวมอยู่กลุ่มเดียว) กดขยาย/ยุบได้ --%>
+                                            <tr class="equ-total bg-light-primary${gs.first ? '' : ' collapsed'}" data-group="${g.productId}">
+                                                <td class="text-gray-900 fw-bold" colspan="3">${fn:escapeXml(g.label)}</td>
+                                                <td class="text-center">
+                                                    <span class="badge badge-primary fw-bold">${g.total} เครื่อง</span>
+                                                </td>
+                                                <td class="text-gray-500 fs-7">
+                                                    <c:if test="${g.retired > 0}">ปลดระวางแล้ว ${g.retired}</c:if>
+                                                </td>
+                                                <td class="text-end">
+                                                    <button type="button" class="btn btn-icon btn-sm btn-active-light-primary equ-toggle" data-group="${g.productId}">
+                                                        <i class="ki-duotone ${gs.first ? 'ki-up' : 'ki-down'} fs-3"><span class="path1"></span><span class="path2"></span></i>
+                                                    </button>
+                                                </td>
+                                            </tr>
+
+                                            <%-- เครื่องที่ปลดระวางแล้วยังโชว์อยู่ แต่ทำให้จางลงและไม่ถูกนับในยอด
+                                                 flag e.retired คำนวณมาจาก action แล้ว (อิง EquipmentDAO.RETIRED_STATUSES) --%>
+                                            <c:forEach var="e" items="${g.rows}">
+                                                <tr class="equ-detail${gs.first ? '' : ' d-none'}${e.retired ? ' opacity-50' : ''}" data-group="${g.productId}">
+                                                    <%-- ข้อมูลเก่าบางแถว item_no / name ว่าง (8 และ 13 แถว ณ 10/08/2026)
+                                                         โชว์ #equipment_id แทนจะได้ยังอ้างอิงเครื่องได้ --%>
+                                                    <td class="text-gray-900 fw-bold">
+                                                        <c:choose>
+                                                            <c:when test="${not empty fn:trim(e.itemNo)}">${fn:escapeXml(e.itemNo)}</c:when>
+                                                            <c:otherwise><span class="text-muted">#${e.equipmentId}</span></c:otherwise>
+                                                        </c:choose>
+                                                    </td>
+                                                    <td class="text-gray-700">
+                                                        <c:choose>
+                                                            <c:when test="${not empty fn:trim(e.name)}">${fn:escapeXml(e.name)}</c:when>
+                                                            <c:otherwise><span class="text-muted">(ไม่ระบุชื่อ)</span></c:otherwise>
+                                                        </c:choose>
+                                                    </td>
+                                                    <td class="text-gray-700">
+                                                        <c:choose>
+                                                            <c:when test="${not empty e.serialNo}">${fn:escapeXml(e.serialNo)}</c:when>
+                                                            <c:otherwise><span class="text-muted">-</span></c:otherwise>
+                                                        </c:choose>
+                                                    </td>
+                                                    <td class="text-center">
+                                                        <span class="badge fw-semibold ${e.retired ? 'badge-light-danger' : 'badge-light-success'}">
+                                                            <c:choose>
+                                                                <c:when test="${not empty e.status}">${fn:escapeXml(e.status)}</c:when>
+                                                                <c:otherwise>-</c:otherwise>
+                                                            </c:choose>
+                                                        </span>
+                                                    </td>
+                                                    <td class="text-gray-700">
+                                                        <c:choose>
+                                                            <c:when test="${not empty e.location}">${fn:escapeXml(e.location)}</c:when>
+                                                            <c:otherwise><span class="text-muted">-</span></c:otherwise>
+                                                        </c:choose>
+                                                    </td>
+                                                    <td></td>
+                                                </tr>
+                                            </c:forEach>
+
+                                            <c:if test="${empty g.rows}">
+                                                <tr class="equ-detail${gs.first ? '' : ' d-none'}" data-group="${g.productId}">
+                                                    <td colspan="6" class="text-center text-muted py-6">ยังไม่มีเครื่องในกลุ่มนี้</td>
+                                                </tr>
+                                            </c:if>
+                                        </c:forEach>
+
+                                        <c:if test="${empty groups}">
+                                            <tr>
+                                                <td colspan="6" class="text-center text-muted py-10">
+                                                    ยังไม่มีเครื่องผูกกับ item นี้ - ตรวจสอบว่ารัน migration ผูก equipment.product_id แล้วหรือยัง
+                                                </td>
+                                            </tr>
+                                        </c:if>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-start">
+                    <a href="stock_cons_list" class="btn btn-light d-inline-flex align-items-center px-6 py-3">
+                        <i class="ki-duotone ki-arrow-left fs-3 me-2"><span class="path1"></span><span class="path2"></span></i>
+                        <span class="fw-bold text-gray-700">Back</span>
+                    </a>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        // ---- ขยาย/ยุบ รายการเครื่องของแต่ละกลุ่ม ----
+        $('#equipmentBalanceTable').on('click', '.equ-toggle', function () {
+            var group = $(this).data('group');
+            var $total = $('#equipmentBalanceTable .equ-total[data-group="' + group + '"]');
+            var willOpen = $total.hasClass('collapsed');
+
+            $total.toggleClass('collapsed', !willOpen);
+            $('#equipmentBalanceTable .equ-detail[data-group="' + group + '"]').toggleClass('d-none', !willOpen);
+
+            var $icon = $total.find('.equ-toggle .ki-duotone');
+            $icon.removeClass('ki-up ki-down').addClass(willOpen ? 'ki-up' : 'ki-down');
+        });
+
+        // ---- ค้นหาข้ามทุกกลุ่ม ----
+        // ไม่ใช้ DataTables เพราะตารางมีแถวหัวกลุ่มปนอยู่ ซึ่ง DataTables จะ sort/paging รวมไปด้วย
+        $('#equipmentSearch').on('keyup', function () {
+            var keyword = $.trim($(this).val()).toLowerCase();
+
+            if (!keyword) {
+                // คืนสถานะขยาย/ยุบเดิมของแต่ละกลุ่ม
+                $('#equipmentBalanceTable .equ-total').removeClass('d-none').each(function () {
+                    var group = $(this).data('group');
+                    var collapsed = $(this).hasClass('collapsed');
+                    $('#equipmentBalanceTable .equ-detail[data-group="' + group + '"]').toggleClass('d-none', collapsed);
+                });
+                return;
+            }
+
+            // ระหว่างค้นหา: ซ่อนหัวกลุ่มที่ไม่มีแถวตรงเงื่อนไข และกางกลุ่มที่เหลือให้เห็นเลย
+            $('#equipmentBalanceTable .equ-detail').each(function () {
+                var matched = $(this).text().toLowerCase().indexOf(keyword) !== -1;
+                $(this).toggleClass('d-none', !matched);
+            });
+            $('#equipmentBalanceTable .equ-total').each(function () {
+                var group = $(this).data('group');
+                var visible = $('#equipmentBalanceTable .equ-detail[data-group="' + group + '"]').not('.d-none').length;
+                $(this).toggleClass('d-none', visible === 0);
+            });
+        });
+    });
+</script>

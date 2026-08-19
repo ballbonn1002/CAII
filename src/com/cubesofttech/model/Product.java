@@ -3,6 +3,8 @@ package com.cubesofttech.model;
 import java.io.Serializable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
@@ -12,7 +14,10 @@ public class Product implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    // product_id เป็น AUTO_INCREMENT ใน DB แล้ว (10/08/2026) - ให้ MySQL ออกเลขให้
+    // แทนการไล่ max+1 เอง ซึ่งมีโอกาส race condition ถ้ามี 2 request สร้างพร้อมกัน
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "product_id")
     private Integer productId;
 
@@ -25,6 +30,14 @@ public class Product implements Serializable {
     @Column(name = "product_type")
     private String productType;
 
+    /**
+     * ref อ่อนไปยัง equipment_type.Type (ไม่มี FK constraint จริง ตาม pattern
+     * เดิมของ product_id/warehouse_id ในโปรเจกต์นี้) มีค่าเฉพาะ product_type = '1'
+     * (Equipment) เป็นค่า default ของ catalog - ยังไม่ผูกกับเครื่องจริงใน equipment
+     */
+    @Column(name = "equipment_type")
+    private String equipmentType;
+
     @Column(name = "parent_product_id")
     private String parentProductId;
 
@@ -33,6 +46,23 @@ public class Product implements Serializable {
 
     @Column(name = "description")
     private String description;
+
+    /**
+     * สเปคระดับ "รุ่น" (catalog) มีความหมายเฉพาะ product_type = '1' (Equipment)
+     * ต่างจาก equipment.ram/hdd/process/windows ที่เป็นสเปครายเครื่องจริง (มี serial)
+     * ใช้แสดง/แก้ไขในหน้า stock_equ_edit เท่านั้น
+     */
+    @Column(name = "spec_ram")
+    private String specRam;
+
+    @Column(name = "spec_ssd")
+    private String specSsd;
+
+    @Column(name = "spec_process")
+    private String specProcess;
+
+    @Column(name = "spec_windows")
+    private String specWindows;
 
     @Column(name = "sub_product_active")
     private String subProductActive;
@@ -87,6 +117,14 @@ public class Product implements Serializable {
         this.productType = productType;
     }
 
+    public String getEquipmentType() {
+        return equipmentType;
+    }
+
+    public void setEquipmentType(String equipmentType) {
+        this.equipmentType = equipmentType;
+    }
+
     public String getParentProductId() {
         return parentProductId;
     }
@@ -109,6 +147,38 @@ public class Product implements Serializable {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public String getSpecRam() {
+        return specRam;
+    }
+
+    public void setSpecRam(String specRam) {
+        this.specRam = specRam;
+    }
+
+    public String getSpecSsd() {
+        return specSsd;
+    }
+
+    public void setSpecSsd(String specSsd) {
+        this.specSsd = specSsd;
+    }
+
+    public String getSpecProcess() {
+        return specProcess;
+    }
+
+    public void setSpecProcess(String specProcess) {
+        this.specProcess = specProcess;
+    }
+
+    public String getSpecWindows() {
+        return specWindows;
+    }
+
+    public void setSpecWindows(String specWindows) {
+        this.specWindows = specWindows;
     }
 
     public String getSubProductActive() {

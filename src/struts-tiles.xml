@@ -732,8 +732,9 @@
 	</definition>
 
 	<!-- Stock -->
+	<!-- หน้า list เดียวแสดงรวมทั้ง Equipment / Consumables / Accessory -->
 	<definition name="stockConsList" extends="baseLayout">
-		<put-attribute name="title" value="Stock - Consumables" />
+		<put-attribute name="title" value="Stock - Product" />
 		<put-attribute name="body"
 			value="/pages-back/stock/stock_cons_list.jsp" />
 	</definition>
@@ -754,6 +755,20 @@
 		<put-attribute name="title" value="Stock - Consumables" />
 		<put-attribute name="body"
 			value="/pages-back/stock/stock_cons_balance.jsp" />
+	</definition>
+
+	<!-- Equipment ใช้หน้า settings คนละไฟล์กับ Consumables เพราะยอดคงเหลือ
+	     คิดจากเครื่องจริงในตาราง equipment ไม่ได้คิดจากตาราง stock -->
+	<definition name="stockEquEdit" extends="baseLayout">
+		<put-attribute name="title" value="Stock - Equipment" />
+		<put-attribute name="body"
+			value="/pages-back/stock/stock_equ_edit.jsp" />
+	</definition>
+
+	<definition name="stockEquBalance" extends="baseLayout">
+		<put-attribute name="title" value="Stock - Equipment" />
+		<put-attribute name="body"
+			value="/pages-back/stock/stock_equ_balance.jsp" />
 	</definition>
 
 	<definition name="stockOffsList" extends="baseLayout">

@@ -2296,6 +2296,16 @@
 			class="com.cubesofttech.action.ProductAction" method="subProductActiveUpdate">
 		</action>
 
+		<!-- Stock: product active toggle / Catalog MR (AJAX, ตอบ JSON) -->
+		<action name="stock_cons_active_update"
+			class="com.cubesofttech.action.ProductAction" method="productActiveUpdate">
+		</action>
+
+		<!-- Stock: ลบ product (AJAX, ตอบ JSON) - ใช้ร่วมกันทั้ง Consumables/Accessory/Equipment -->
+		<action name="stock_cons_delete"
+			class="com.cubesofttech.action.ProductAction" method="stockConsDelete">
+		</action>
+
 		<!-- Stock: Unit of Measure (UOM) -->
 		<action name="stock_cons_uom_add"
 			class="com.cubesofttech.action.ProductAction" method="stockConsUomSave">
@@ -2336,22 +2346,36 @@
 			class="com.cubesofttech.action.ProductAction" method="stockConsSubReorder">
 		</action>
 
-		<action name="stock_offs_list"
-			class="com.cubesofttech.action.ProductAction" method="stockOffsList">
-			<result name="success" type="tiles">stockOffsList</result>
+		<!-- Stock: Equipment (product_type = 1)
+		     ใช้ method เดียวกับฝั่ง consumables ทั้งหมด ต่างกันแค่หน้าปลายทาง
+		     ที่ redirect กลับ จึงต้องมี action name แยก
+		     ส่วน action ที่ตอบ JSON (update / toggle / reorder) ใช้ของ stock_cons_* ร่วมกันได้เลย
+		     เพราะไม่มี redirect -->
+		<action name="stock_equ_edit"
+			class="com.cubesofttech.action.ProductAction" method="showStockEditPage">
+			<result name="success" type="tiles">stockEquEdit</result>
 			<result name="error">/index.jsp</result>
 		</action>
 
-		<!-- Product -->
-		<action name="product_cons_list"
-			class="com.cubesofttech.action.ProductAction" method="list">
-			<result name="success" type="tiles">productList</result>
+		<action name="stock_equ_balance"
+			class="com.cubesofttech.action.ProductAction" method="showEquipmentBalancePage">
+			<result name="success" type="tiles">stockEquBalance</result>
 			<result name="error">/index.jsp</result>
 		</action>
 
-		<action name="product_offs_list"
-			class="com.cubesofttech.action.ProductAction" method="list">
-			<result name="success" type="tiles">productList</result>
+		<action name="stock_equ_uom_add"
+			class="com.cubesofttech.action.ProductAction" method="stockConsUomSave">
+			<result name="success" type="redirect">stock_equ_edit?productId=${productId}</result>
+			<result name="error">/index.jsp</result>
+		</action>
+		<action name="stock_equ_uom_edit"
+			class="com.cubesofttech.action.ProductAction" method="stockConsUomUpdate">
+			<result name="success" type="redirect">stock_equ_edit?productId=${productId}</result>
+			<result name="error">/index.jsp</result>
+		</action>
+		<action name="stock_equ_uom_delete"
+			class="com.cubesofttech.action.ProductAction" method="stockConsUomDelete">
+			<result name="success" type="redirect">stock_equ_edit?productId=${productId}</result>
 			<result name="error">/index.jsp</result>
 		</action>
 
