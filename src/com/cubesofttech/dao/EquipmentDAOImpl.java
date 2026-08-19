@@ -1,5 +1,6 @@
 package com.cubesofttech.dao;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -447,6 +448,26 @@ public class EquipmentDAOImpl implements EquipmentDAO {
 			e.printStackTrace();
 		}
 		return list;
+	}
+
+	@Override
+	public List<Equipment> findByProductIds(List<String> productIds) throws Exception {
+		// setParameterList กับ list ว่างจะได้ SQL 'in ()' ซึ่ง MySQL syntax error
+		if (productIds == null || productIds.isEmpty()) {
+			return new ArrayList<Equipment>();
+		}
+
+		Session session = this.sessionFactory.getCurrentSession();
+		List<Equipment> list = null;
+		try {
+			String hql = "from Equipment where productId in (:productIds) order by itemNo asc";
+			Query query = session.createQuery(hql);
+			query.setParameterList("productIds", productIds);
+			list = query.list();
+		} catch (HibernateException e) {
+			e.printStackTrace();
+		}
+		return (list != null) ? list : new ArrayList<Equipment>();
 	}
 	
 	

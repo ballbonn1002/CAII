@@ -48,8 +48,9 @@
 
                                     <div class="col-12 col-lg-6">
                                         <label class="form-label fw-semibold text-gray-700" for="productType">
-                                            Equipment Type <span class="text-danger">*</span>
+                                            Item Type <span class="text-danger">*</span>
                                         </label>
+                                        <%-- product_type: 1=Equipment, 2=Consumable, 3=Accessories (ดู skill product-module) --%>
                                         <select id="productType" name="productType" required class="form-select text-gray-700">
                                             <c:choose>
                                                 <c:when test="${not empty productTypes}">
@@ -62,14 +63,29 @@
                                                 </c:when>
                                                 <c:otherwise>
                                                     <%-- TODO: ยังไม่มีตาราง master ของ product_type --%>
-                                                    <option value="2" selected>Consumables</option>
+                                                    <option value="1">Equipment</option>
+                                                    <option value="2" selected>Consumable</option>
                                                     <option value="3">Accessories</option>
                                                 </c:otherwise>
                                             </c:choose>
                                         </select>
                                     </div>
 
-                                    <div class="col-12 col-lg-6">
+                                    <%-- แสดงเฉพาะตอน Item Type = Equipment (value '1') - คุมด้วย JS ด้านล่าง (#toggleEquipmentType) --%>
+                                    <div class="col-12 col-lg-6 d-none" id="equipmentTypeWrap">
+                                        <label class="form-label fw-semibold text-gray-700" for="equipmentType">
+                                            Equipment Type <span class="text-danger">*</span>
+                                        </label>
+                                        <%-- ดึงจากตาราง equipment_type ผ่าน EquipmentTypeDAO.getall() --%>
+                                        <select id="equipmentType" name="equipmentType" class="form-select text-gray-700">
+                                            <option value="">- เลือก Equipment Type -</option>
+                                            <c:forEach var="eqType" items="${equipmentTypes}">
+                                                <option value="${fn:escapeXml(eqType.typeID)}">${fn:escapeXml(eqType.typeText)}</option>
+                                            </c:forEach>
+                                        </select>
+                                    </div>
+
+                                    <div class="col-12">
                                         <label class="form-label fw-semibold text-gray-700" for="description">Description</label>
                                         <input type="text" id="description" name="description" maxlength="255"
                                                class="form-control text-gray-700"
@@ -99,5 +115,20 @@
                    .prop('disabled', true)
                    .attr('data-kt-indicator', 'on');
         });
+
+        // ---- แสดง/ซ่อน Equipment Type ตาม Item Type ----
+        // product_type '1' = Equipment เท่านั้นที่ต้องเลือก Equipment Type ต่อ
+        function toggleEquipmentType() {
+            var isEquipment = $('#productType').val() === '1';
+            $('#equipmentTypeWrap').toggleClass('d-none', !isEquipment);
+            // ไม่ให้ required ค้างตอนซ่อน ไม่งั้น browser จะ block submit เงียบๆ
+            $('#equipmentType').prop('required', isEquipment);
+            if (!isEquipment) {
+                $('#equipmentType').val('');
+            }
+        }
+
+        $('#productType').on('change', toggleEquipmentType);
+        toggleEquipmentType(); // เผื่อ browser จำค่า select เดิมไว้ตอน refresh
     });
 </script>

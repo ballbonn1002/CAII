@@ -66,8 +66,7 @@
                             </div>
                             <div class="card-body">
                                 <div class="d-flex gap-4">
-                                    <a href="stock_cons_list" class="btn btn-light-warning d-inline-flex align-items-center px-6 py-3">Stock - Consumables</a>
-                                    <a href="#" class="btn btn-light-danger d-inline-flex align-items-center px-6 py-3">Stock - Office Supplies</a>
+                                    <a href="stock_cons_list" class="btn btn-light-warning d-inline-flex align-items-center px-6 py-3">Stock - Product</a>
                                 </div>
                             </div>
                         </div>
