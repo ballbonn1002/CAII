@@ -47,23 +47,6 @@ public class Product implements Serializable {
     @Column(name = "description")
     private String description;
 
-    /**
-     * สเปคระดับ "รุ่น" (catalog) มีความหมายเฉพาะ product_type = '1' (Equipment)
-     * ต่างจาก equipment.ram/hdd/process/windows ที่เป็นสเปครายเครื่องจริง (มี serial)
-     * ใช้แสดง/แก้ไขในหน้า stock_equ_edit เท่านั้น
-     */
-    @Column(name = "spec_ram")
-    private String specRam;
-
-    @Column(name = "spec_ssd")
-    private String specSsd;
-
-    @Column(name = "spec_process")
-    private String specProcess;
-
-    @Column(name = "spec_windows")
-    private String specWindows;
-
     @Column(name = "sub_product_active")
     private String subProductActive;
 
@@ -147,38 +130,6 @@ public class Product implements Serializable {
 
     public void setDescription(String description) {
         this.description = description;
-    }
-
-    public String getSpecRam() {
-        return specRam;
-    }
-
-    public void setSpecRam(String specRam) {
-        this.specRam = specRam;
-    }
-
-    public String getSpecSsd() {
-        return specSsd;
-    }
-
-    public void setSpecSsd(String specSsd) {
-        this.specSsd = specSsd;
-    }
-
-    public String getSpecProcess() {
-        return specProcess;
-    }
-
-    public void setSpecProcess(String specProcess) {
-        this.specProcess = specProcess;
-    }
-
-    public String getSpecWindows() {
-        return specWindows;
-    }
-
-    public void setSpecWindows(String specWindows) {
-        this.specWindows = specWindows;
     }
 
     public String getSubProductActive() {
