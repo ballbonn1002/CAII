@@ -3,6 +3,7 @@ package com.cubesofttech.action;
 import com.cubesofttech.dao.CompanyAddressDAO;
 import com.cubesofttech.dao.CompanyContactDAO;
 import com.cubesofttech.dao.CompanyDAO;
+import com.cubesofttech.dao.DocStatusDAO;
 import com.cubesofttech.dao.FileUploadDAO;
 import com.cubesofttech.dao.JobsiteDAO;
 import com.cubesofttech.dao.PoDAO;
@@ -15,6 +16,7 @@ import com.cubesofttech.dao.WorkLogDAO;
 import com.cubesofttech.model.Company;
 import com.cubesofttech.model.CompanyAddress;
 import com.cubesofttech.model.CompanyContact;
+import com.cubesofttech.model.DocStatus;
 import com.cubesofttech.model.FileUpload;
 import com.cubesofttech.model.Po;
 import com.cubesofttech.model.PoDetail;
@@ -37,6 +39,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.Arrays;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -92,6 +95,9 @@ public class PurchaseOrderAction extends ActionSupport {
 
     @Autowired
     private UnitOfMeasureDAO unitOfMeasureDAO;
+
+    @Autowired
+    private DocStatusDAO docStatusDAO;
     
     private String poId;
     private String itemsType;
@@ -262,7 +268,7 @@ public class PurchaseOrderAction extends ActionSupport {
         this.signDate = signDate;
     }
     
-    public String purchase_order_list() {
+    public String purchaseOrderList() {
         try {
             if (onlineUser == null) {
                 return ERROR;
@@ -271,24 +277,29 @@ public class PurchaseOrderAction extends ActionSupport {
             List<Map<String, Object>> poList = poDAO.findAllPoWithUser();
             request.setAttribute("poList", poList);
 
-            // --- Summary count ---
-            Map<String, Integer> summary = new HashMap<>();
-            summary.put("Draft", 0);
-            summary.put("Pending", 0);
-            summary.put("Approved", 0);
-            summary.put("In-Progress", 0);
-            summary.put("Return", 0);
-            summary.put("Rejected", 0);
-            summary.put("Closed", 0);
+            // --- Summary (อิง doc_status, group=po) ---
+            List<DocStatus> statuses = docStatusDAO.findByGroup("po");
 
+            // นับจำนวนตาม status_code
+            Map<String, Integer> summary = new HashMap<>();
+            for (DocStatus ds : statuses) {
+                summary.put(ds.getStatusCode(), 0);
+            }
             for (Map<String, Object> po : poList) {
-                String status = String.valueOf(po.get("status"));
-                String key = mapStatusToLabel(status);
-                if (key != null) {
-                    summary.put(key, summary.get(key) + 1);
+                String code = String.valueOf(po.get("status"));
+                if (summary.containsKey(code)) {
+                    summary.put(code, summary.get(code) + 1);
                 }
             }
-            request.setAttribute("poSummary", summary);
+
+            // ชื่อสถานะตาม code สำหรับแสดงผล
+            Map<String, String> statusNames = new HashMap<>();
+            for (DocStatus ds : statuses) {
+                statusNames.put(ds.getStatusCode(), ds.getStatusName());
+            }
+
+            request.setAttribute("poSummary", summary);       // key = status_code -> count
+            request.setAttribute("poStatusNames", statusNames); // key = status_code -> status_name
             request.setAttribute("poSummaryTotal", poList.size());
 
             return SUCCESS;
@@ -298,20 +309,20 @@ public class PurchaseOrderAction extends ActionSupport {
         }
     }
 
-    private String mapStatusToLabel(String status) {
-        switch (status) {
-            case "0": return "Draft";
-            case "1": return "In-Progress";
-            case "2": return "Pending";
-            case "3": return "Return";
-            case "4": return "Approved";
-            case "5": return "Rejected";
-            case "6": return "Closed";
-            default: return null;
-        }
-    }
+    // private String mapStatusToLabel(String status) {
+    //     switch (status) {
+    //         case "0": return "Draft";
+    //         case "1": return "In-Progress";
+    //         case "2": return "Pending";
+    //         case "3": return "Return";
+    //         case "4": return "Approved";
+    //         case "5": return "Rejected";
+    //         case "6": return "Cancel";
+    //         default: return null;
+    //     }
+    // }
     
-    public String purchase_order_add() {
+    public String purchaseOrderAdd() {
         try {
             if (onlineUser == null) {
                 return ERROR;
@@ -328,6 +339,7 @@ public class PurchaseOrderAction extends ActionSupport {
             request.setAttribute("imgPathSignature", signaturePath);
 
             request.setAttribute("loginUser", u);
+
             Date requestDate = new Date();
             request.setAttribute("requestDateTime", requestDate);
             
@@ -339,14 +351,14 @@ public class PurchaseOrderAction extends ActionSupport {
         }
     }
     
-    public String purchase_order_edit() {
+    public String purchaseOrderEdit() {
         try {
             if (onlineUser == null) {
                 return ERROR;
             }
-            
+            String logonUser = onlineUser.getId();
             Po poList = poDAO.findById(poId);
-            log.debug("--- poList ----- "+ poList);
+            // log.debug("--- poList ----- "+ poList);
             request.setAttribute("poList", poList);
             
             if(poList.getUserCreate() != null) {
@@ -354,15 +366,10 @@ public class PurchaseOrderAction extends ActionSupport {
                 // log.debug("--- userCreate ----- "+ userCreate);
                 request.setAttribute("userCreate", userCreate);
             }
-
-            // if("5".equals(poList.getStatus())) {
-            //     User userUpdate = userDAO.findById(poList.getUserUpdate());
-            //     log.debug("--- userUpdate ----- "+ userUpdate);
-            //     request.setAttribute("userUpdate", userUpdate);
-            // }
-            if (poList.getStatus() != null && ("5".equals(String.valueOf(poList.getStatus())) 
-            || "3".equals(String.valueOf(poList.getStatus())))) {
+            
+            if (Arrays.asList("4", "5", "6", "7").contains(poList.getStatus())) {
                 String userUpdateId = poList.getUserUpdate();
+
                 if (userUpdateId != null && !userUpdateId.trim().isEmpty()) {
                     User userUpdate = userDAO.findById(userUpdateId);
                     request.setAttribute("userUpdate", userUpdate);
@@ -374,7 +381,6 @@ public class PurchaseOrderAction extends ActionSupport {
             if (poList.getSignUser() != null) {
                 userSignUser = userDAO.findById(poList.getSignUser());
             } else {
-                String logonUser = onlineUser.getId();
                 userSignUser = userDAO.findById(logonUser);
             }
             request.setAttribute("userSignUser", userSignUser);
@@ -384,12 +390,10 @@ public class PurchaseOrderAction extends ActionSupport {
             //--- Get ApproveUser signature ---
             if (poList.getApproveUser() != null && !poList.getApproveUser().trim().isEmpty()) {
                 User userApproveUser = userDAO.findById(poList.getApproveUser());
-                log.debug("--- userApproveUser ----- " + userApproveUser);
                 request.setAttribute("userApproveUser", userApproveUser);
 
                 String imgPathApproveSignature = fileAttachmentService.getFileUrl(userApproveUser != null ? userApproveUser.getPathSignature() : null);
                 request.setAttribute("imgPathApproveSignature", imgPathApproveSignature);
-                log.debug("--- imgPathApproveSignature ----- " + imgPathApproveSignature);
             }
 
             List<Map<String, Object>> companyList = companyDAO.findAll();
@@ -431,10 +435,14 @@ public class PurchaseOrderAction extends ActionSupport {
             }
             // log.debug("--- poParentList ----- " + poParentList);
             request.setAttribute("poParentList", poParentList);
-            
-            String loginUser = onlineUser.getId();
-            User u = userDAO.findById(loginUser);
-           
+
+            Map<String, String> statusNames = new HashMap<>();
+            for (DocStatus ds : docStatusDAO.findByGroup("po")) {
+                statusNames.put(ds.getStatusCode(), ds.getStatusName());
+            }
+            request.setAttribute("poStatusNames", statusNames);
+
+            User u = userDAO.findById(logonUser);     
             request.setAttribute("loginUser", u);
             
             Date requestDate = new Date();
@@ -447,8 +455,8 @@ public class PurchaseOrderAction extends ActionSupport {
             return ERROR;
         }
     }
-    
- // --- generate poId ---
+
+    // --- generate poId ---
     private String generateNewPoId() throws Exception {
         String year = String.valueOf(java.time.Year.now().getValue());
         String prefix = "PO" + year;
@@ -485,7 +493,7 @@ public class PurchaseOrderAction extends ActionSupport {
         return map;
     }
 
-    public String save_po() {
+    public String savePo() {
         List<String> debugLog = new ArrayList<>();
         try {
             if (onlineUser == null) {
@@ -537,8 +545,8 @@ public class PurchaseOrderAction extends ActionSupport {
             po.setUserCreate(loginUserId);
             po.setTimeCreate(DateUtil.getCurrentTime());
             po.setPoTotal(grandTotal);
-            String poStatus = (status != null && !status.trim().isEmpty()) ? status : "0";
-            po.setStatus(poStatus); // 0 = Draft
+            String poStatus = (status != null && !status.trim().isEmpty()) ? status : "1";
+            po.setStatus(poStatus); // 1 = Draft
 
             poDAO.save(po);
 
@@ -641,7 +649,7 @@ public class PurchaseOrderAction extends ActionSupport {
     }
     
     
-    public String update_po() {
+    public String updatePo() {
         List<String> debugLog = new ArrayList<>();
 
         try {
@@ -847,7 +855,7 @@ public class PurchaseOrderAction extends ActionSupport {
         }
     }
 
-    public String delete_po_detail() {
+    public String deletePoDetail() {
         List<String> debugLog = new ArrayList<>();
         try {
             if (onlineUser == null) {
@@ -892,13 +900,13 @@ public class PurchaseOrderAction extends ActionSupport {
                 return NONE;
             }
 
-            if ("3".equals(status)) {
+            if ("4".equals(status)) { // Return
                 if (reason == null || reason.trim().length() < 10) {
                     debugLog.add("reason invalid for return");
                     writeJson(null, debugLog);
                     return NONE;
                 }
-            }else if ("5".equals(status)) {
+            }else if ("5".equals(status)) { // Rejected
                 if (reason == null || reason.trim().length() < 10) {
                     debugLog.add("reason invalid for reject");
                     writeJson(null, debugLog);
@@ -913,7 +921,7 @@ public class PurchaseOrderAction extends ActionSupport {
             if (reason != null) {
                 po.setReason(reason.trim());
             }
-            if ("4".equals(status)) {
+            if ("3".equals(status)) {
                 po.setApproveUser(loginUserId);
                 po.setApproveDate(DateUtil.getCurrentTime());
             }
@@ -1116,41 +1124,20 @@ public class PurchaseOrderAction extends ActionSupport {
         }
     }
     
-    public String po_perform_delete() {
+    public String poPerformDelete() {
         try {
-            if (onlineUser == null) {
+            if (onlineUser == null || poId == null || poId.trim().isEmpty()) {
                 return ERROR;
             }
-            if (poId == null || poId.trim().isEmpty()) {
-                return ERROR;
-            }
-
+            String loginUserId = onlineUser.getId();
             Po po = poDAO.findById(poId);
-            if (po == null) {
-                return ERROR;
-            }
+            if (po != null) {
+                po.setStatus("6");
+                po.setUserUpdate(loginUserId);
+                po.setTimeUpdate(DateUtil.getCurrentTime());
 
-            // อนุญาตให้ลบเฉพาะ PO สถานะ Draft (status = "0") เท่านั้น
-            if (!"0".equals(po.getStatus())) {
-                request.getSession().setAttribute("errorMessage",
-                        "ไม่สามารถลบ PO ที่ไม่ใช่สถานะ Draft ได้");
-                return "redirectList";
+                poDAO.update(po);
             }
-
-            // ลบ PoParent ที่ผูกกับ PoDetail ของ PO นี้ก่อน (child ต้องลบก่อน parent) แล้วค่อยลบ PoDetail ทีละรายการ
-            List<Map<String, Object>> poDetailList = poDetailDAO.findPoDetailByPoId(poId);
-            if (poDetailList != null) {
-                for (Map<String, Object> detail : poDetailList) {
-                    Object poDetailIdObj = detail.get("po_detail_id");
-                    if (poDetailIdObj != null) {
-                        poParentDAO.deleteByPoDetailId(String.valueOf(poDetailIdObj));
-                        poDetailDAO.deleteByPoIdAndPoDetailId(String.valueOf(poDetailIdObj), poId);
-                    }
-                }
-            }
-
-            // ลบ Po header (ใช้ entity ตาม signature ของ PoDAO)
-            poDAO.delete(po);
 
             return SUCCESS;
 
@@ -1160,7 +1147,7 @@ public class PurchaseOrderAction extends ActionSupport {
         }
     }
 
-    public String confirm_po_sign() {
+    public String confirmPoSign() {
         List<String> debugLog = new ArrayList<>();
         try {
             if (onlineUser == null) {

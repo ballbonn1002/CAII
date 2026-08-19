@@ -110,16 +110,23 @@ public class PoDAOImpl implements PoDAO {
 		List<Map<String, Object>> poList = null;
 		try {
 			String sql =
-				    "SELECT po.*, " +
-				    " uc.name_en AS user_create_name, " +
-				    " uu.name_en AS user_update_name, " +
-				    " (SELECT COUNT(*) " +
-				    " FROM po_detail pd " +
-				    " WHERE pd.po_id = po.po_id) AS detail_count " +
-				    "FROM po po " +
-				    "LEFT JOIN user uc ON po.user_create = uc.id " +
-				    "LEFT JOIN user uu ON po.user_update = uu.id " +
-				    "ORDER BY po.po_id ASC";
+				"SELECT po.*, " +
+				" uc.name_en AS user_create_name, " +
+				" uu.name_en AS user_update_name, " +
+				" ds.status_name AS status_name, " +
+				" (SELECT COUNT(*) " +
+				" FROM po_detail pd " +
+				" WHERE pd.po_id = po.po_id) AS detail_count, " +
+				" (SELECT COUNT(DISTINCT ppar.pr_id) " +
+				" FROM po_detail pd " +
+				" LEFT JOIN po_parent ppar ON ppar.po_detail_id = pd.po_detail_id " +
+				" WHERE pd.po_id = po.po_id " +
+				" AND ppar.pr_id IS NOT NULL AND ppar.pr_id != '') AS pr_ref_count " +
+				"FROM po po " +
+				"LEFT JOIN user uc ON po.user_create = uc.id " +
+				"LEFT JOIN user uu ON po.user_update = uu.id " +
+				"LEFT JOIN doc_status ds ON ds.status_code = po.status AND ds.`group` = 'po' " +
+				"ORDER BY po.time_create DESC";
 
 			SQLQuery query = session.createSQLQuery(sql);
 			query.setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
@@ -135,27 +142,29 @@ public class PoDAOImpl implements PoDAO {
 	
 	@Override
 	public Map<String, Object> findPoById(String poId) throws Exception {
-	    try {
-	        Session session = sessionFactory.getCurrentSession();
+		try {
+			Session session = sessionFactory.getCurrentSession();
 
-	        String sql = "SELECT po.*, " +
-	                "       uc.name_en AS user_create_name, " +
-	                "       uu.name_en AS user_update_name " +
-	                "FROM po po " +
-	                "LEFT JOIN user uc ON po.user_create = uc.id " +
-	                "LEFT JOIN user uu ON po.user_update = uu.id " +
-	                "WHERE po.po_id = :poId";
+			String sql = "SELECT po.*, " +
+					"       uc.name_en AS user_create_name, " +
+					"       uu.name_en AS user_update_name, " +
+					"       ds.status_name AS status_name " +
+					"FROM po po " +
+					"LEFT JOIN user uc ON po.user_create = uc.id " +
+					"LEFT JOIN user uu ON po.user_update = uu.id " +
+					"LEFT JOIN doc_status ds ON ds.status_code = po.status AND ds.`group` = 'po' " +
+					"WHERE po.po_id = :poId";
 
-	        SQLQuery query = session.createSQLQuery(sql);
-	        query.setParameter("poId", poId);
-	        query.setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
+			SQLQuery query = session.createSQLQuery(sql);
+			query.setParameter("poId", poId);
+			query.setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
 
-	        return (Map<String, Object>) query.uniqueResult();
+			return (Map<String, Object>) query.uniqueResult();
 
-	    } catch (Exception e) {
-	        e.printStackTrace();
-	        throw e;
-	    }
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw e;
+		}
 	}
 	
 	@Override

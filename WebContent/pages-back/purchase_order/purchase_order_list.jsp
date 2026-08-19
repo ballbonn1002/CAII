@@ -136,41 +136,41 @@
 									<span class="badge badge-primary fs-7">All</span>
 								</div>
 								
-								<div class="col-lg-3 col-md-4 col-6 d-flex align-items-center justify-content-center mb-5 summary-card border border-1 border-transparent rounded-3 p-3" data-status="Draft" data-border-color="border-gray-400" style="cursor: pointer;">
-									<span class="fs-2hx me-2 text-gray-600" id="summaryPODraft">${poSummary['Draft']}</span>
-									<span class="badge badge-light fs-7">Draft</span>
+								<div class="col-lg-3 col-md-4 col-6 d-flex align-items-center justify-content-center mb-5 summary-card border border-1 border-transparent rounded-3 p-3" data-status="${poStatusNames['1']}" data-border-color="border-gray-400" style="cursor: pointer;">
+									<span class="fs-2hx me-2 text-gray-600" id="summaryPODraft">${poSummary['1']}</span>
+									<span class="badge badge-light fs-7">${poStatusNames['1']}</span>
 								</div>
 								
-								<div class="col-lg-3 col-md-4 col-6 d-flex align-items-center justify-content-center mb-5 summary-card border border-1 border-transparent rounded-3 p-3" data-status="Pending" data-border-color="border-warning" style="cursor: pointer;">
-									<span class="fs-2hx me-2 text-warning" id="summaryPOPending">${poSummary['Pending']}</span>
-									<span class="badge badge-warning fs-7">Pending</span>
+								<div class="col-lg-3 col-md-4 col-6 d-flex align-items-center justify-content-center mb-5 summary-card border border-1 border-transparent rounded-3 p-3" data-status="${poStatusNames['2']}" data-border-color="border-warning" style="cursor: pointer;">
+									<span class="fs-2hx me-2 text-warning" id="summaryPOPending">${poSummary['2']}</span>
+									<span class="badge badge-warning fs-7">${poStatusNames['2']}</span>
 								</div>
 								
-								<div class="col-lg-3 col-md-4 col-6 d-flex align-items-center justify-content-center mb-5 summary-card border border-1 border-transparent rounded-3 p-3" data-status="Approved" data-border-color="border-success" style="cursor: pointer;">
-									<span class="fs-2hx me-2 text-success" id="summaryPOApproved">${poSummary['Approved']}</span>
-									<span class="badge badge-success fs-7">Approved</span>
+								
+								<div class="col-lg-3 col-md-4 col-6 d-flex align-items-center justify-content-center mb-5 summary-card border border-1 border-transparent rounded-3 p-3" data-status="${poStatusNames['3']}" data-border-color="border-success" style="cursor: pointer;">
+									<span class="fs-2hx me-2 text-success" id="summaryPOApproved">${poSummary['3']}</span>
+									<span class="badge badge-success fs-7">${poStatusNames['3']}</span>
 								</div>
 								
-								<div class="col-lg-3 col-md-4 col-6 d-flex align-items-center justify-content-center mb-5 summary-card border border-1 border-transparent rounded-3 p-3" data-status="In-Progress" data-border-color="border-cyan" style="cursor: pointer;">
-									<span class="fs-2hx me-2 text-cyan" id="summaryPOInProgress">${poSummary['In-Progress']}</span>
-									<span class="badge badge-cyan fs-7">In-Progress</span>
+								<div class="col-lg-3 col-md-4 col-6 d-flex align-items-center justify-content-center mb-5 summary-card border border-1 border-transparent rounded-3 p-3" data-status="${poStatusNames['4']}" data-border-color="border-info" style="cursor: pointer;">
+									<span class="fs-2hx me-2 text-info" id="summaryPOReturn">${poSummary['4']}</span>
+									<span class="badge badge-info fs-7 lh-base">${poStatusNames['4']}</span>
 								</div>
 								
-								<div class="col-lg-3 col-md-4 col-6 d-flex align-items-center justify-content-center mb-5 summary-card border border-1 border-transparent rounded-3 p-3" data-status="Return" data-border-color="border-info" style="cursor: pointer;">
-									<span class="fs-2hx me-2 text-info" id="summaryPOReturn">${poSummary['Return']}</span>
-									<span class="badge badge-info fs-7 lh-base">Return</span>
+								<div class="col-lg-3 col-md-4 col-6 d-flex align-items-center justify-content-center mb-5 summary-card border border-1 border-transparent rounded-3 p-3" data-status="${poStatusNames['5']}" data-border-color="border-danger" style="cursor: pointer;">
+									<span class="fs-2hx me-2 text-danger" id="summaryPORejected">${poSummary['5']}</span>
+									<span class="badge badge-danger fs-7">${poStatusNames['5']}</span>
 								</div>
 								
-								<div class="col-lg-3 col-md-4 col-6 d-flex align-items-center justify-content-center mb-5 summary-card border border-1 border-transparent rounded-3 p-3" data-status="Rejected" data-border-color="border-danger" style="cursor: pointer;">
-									<span class="fs-2hx me-2 text-danger" id="summaryPORejected">${poSummary['Rejected']}</span>
-									<span class="badge badge-danger fs-7">Rejected</span>
+								<div class="col-lg-3 col-md-4 col-6 d-flex align-items-center justify-content-center mb-5 summary-card border border-1 border-transparent rounded-3 p-3" data-status="${poStatusNames['6']}" data-border-color="border-dark" style="cursor: pointer;">
+									<span class="fs-2hx me-2 text-dark" id="summaryPOCancel">${poSummary['6']}</span>
+									<span class="badge badge-dark fs-7">${poStatusNames['6']}</span>
 								</div>
-								
-								<div class="col-lg-3 col-md-4 col-6 d-flex align-items-center justify-content-center mb-5 summary-card border border-1 border-transparent rounded-3 p-3" data-status="Closed" data-border-color="border-dark" style="cursor: pointer;">
-									<span class="fs-2hx me-2 text-dark" id="summaryPOClosed">${poSummary['Closed']}</span>
-									<span class="badge badge-dark fs-7">Closed</span>
+
+								<div class="col-lg-3 col-md-4 col-6 d-flex align-items-center justify-content-center mb-5 summary-card border border-1 border-transparent rounded-3 p-3" data-status="${poStatusNames['7']}" data-border-color="border-cyan" style="cursor: pointer;">
+									<span class="fs-2hx me-2 text-cyan" id="summaryPOInProgress">${poSummary['7']}</span>
+									<span class="badge badge-cyan fs-7">${poStatusNames['7']}</span>
 								</div>
-						
 							</div>
 						</div>
 							
@@ -180,10 +180,10 @@
 									<thead class="border-bottom-1 text-uppercase">
 										<tr class="fs-7 fw-bold text-gray-500">
 											<th class="min-w-50px text-center">#</th>
-											<th class="min-w-80px">PO ID</th>
-											<th class="min-w-80px">PR ID</th>
-											<th class="min-w-200px">Request Name</th>
-											<th class="min-w-150px">Request Date</th>
+											<th class="min-w-80px text-start">PO ID</th>
+											<th class="min-w-80px text-start">PR Ref</th>
+											<th class="min-w-200px text-start">Request Name</th>
+											<th class="min-w-150px text-start">Request Date</th>
 											<th class="min-w-130px text-end">Product Item</th>
 											<th class="min-w-130px text-end">Status</th>
 											<th class="min-w-130px text-end px-3">Actions</th>
@@ -194,16 +194,23 @@
 									<c:forEach var="poItem" items="${poList}">
 										<tr class="align-middle">
 											<td class="text-gray-900 fs-6 fw-normal text-center row-number"></td>
-											<td class="text-gray-900 fs-6 fw-normal">
+											<td class="text-gray-900 fs-6 fw-normal text-start">
 												${poItem.po_id}
 											</td>
-											<td class="text-gray-900 fs-6 fw-normal">
-												-
+											<td class="text-gray-900 fs-6 fw-normal text-start">
+												<c:choose>
+													<c:when test="${poItem.pr_ref_count > 0}">
+														${poItem.pr_ref_count}
+													</c:when>
+													<c:otherwise>
+														-
+													</c:otherwise>
+												</c:choose>
 											</td>
-											<td class="text-gray-900 fs-6 fw-normal">
+											<td class="text-gray-900 fs-6 fw-normal text-start">
 												${poItem.user_create_name}
 											</td>
-											<td class="text-gray-900 fs-6 fw-normal">
+											<td class="text-gray-900 fs-6 fw-normal text-start">
 												<fmt:formatDate value="${poItem.time_create}" pattern="dd MMM yyyy, HH:mm" />
 											</td>
 											<td class="text-gray-900 fs-6 fw-normal text-end">
@@ -211,30 +218,35 @@
 											</td>
 											<td class="text-gray-900 fs-6 fw-normal text-end">
 												<c:choose>
-													<c:when test="${poItem.status == '0'}">
-														<span class="badge badge-lg bg-light-secondary fw-semibold fs-7">Draft</span>
-													</c:when>
 													<c:when test="${poItem.status == '1'}">
-														<span class="badge badge-lg bg-cyan text-white fw-semibold fs-7">In-Progress</span>
+														<span class="badge badge-lg bg-light-secondary fw-semibold fs-7">${poItem.status_name}</span>
 													</c:when>
-													<c:when test="${poItem.status == '2'}">
-														<span class="badge badge-lg badge-warning text-whitefw-semibold fs-7">Pending</span>
-													</c:when>
+
 													<c:when test="${poItem.status == '3'}">
-														<span class="badge badge-lg badge-info text-whitefw-semibold fs-7">Return</span>
+														<span class="badge badge-lg bg-success text-white fw-semibold fs-7">${poItem.status_name}</span>
 													</c:when>
+
+													<c:when test="${poItem.status == '2'}">
+														<span class="badge badge-lg badge-warning text-white fw-semibold fs-7">${poItem.status_name}</span>
+													</c:when>
+
 													<c:when test="${poItem.status == '4'}">
-														<span class="badge badge-lg bg-success text-white fw-semibold fs-7">Approved</span>
+														<span class="badge badge-lg badge-info text-white fw-semibold fs-7">${poItem.status_name}</span>
 													</c:when>
+													
 													<c:when test="${poItem.status == '5'}">
-														<span class="badge badge-lg bg-danger text-white fw-semibold fs-7">Rejected</span>
+														<span class="badge badge-lg bg-danger text-white fw-semibold fs-7">${poItem.status_name}</span>
 													</c:when>
+
 													<c:when test="${poItem.status == '6'}">
-														<span class="badge badge-lg bg-dark text-white fw-semibold fs-7">Closed</span>
+														<span class="badge badge-lg bg-dark text-white fw-semibold fs-7">${poItem.status_name}</span>
 													</c:when>
-													<c:otherwise>
-														<span class="badge badge-lg bg-light-secondary fw-semibold fs-7">-</span>
-													</c:otherwise>
+
+													<c:when test="${poItem.status == '7'}">
+														<span class="badge badge-lg bg-cyan text-white fw-semibold fs-7">${poItem.status_name}</span>
+													</c:when>
+
+													<c:otherwise></c:otherwise>
 												</c:choose>
 											</td>
 											<td class="text-end px-3">
@@ -244,14 +256,35 @@
 														title="Edit"> <i class="ki-duotone ki-pencil fs-2"><span
 														class="path1"></span><span class="path2"></span></i>
 													</a> 
-														
-													<a href="po_perform_delete?poId=${poItem.po_id}" onclick="return confirmDelete(this.href);"
+													
+													<!-- <a href="po_perform_delete?poId=${poItem.po_id}" onclick="return confirmDelete(this.href);"
 														class="btn btn-icon btn-light-danger btn-sm" title="Delete">
 														<i class="ki-duotone ki-trash fs-2"><span
 															class="path1"></span><span class="path2"></span><span
 															class="path3"></span><span class="path4"></span><span
 															class="path5"></span></i>
-													</a>
+													</a> -->
+													<c:choose>
+														<c:when test="${poItem.status == '1' or poItem.status == '4'}">
+															<a href="po_perform_delete?poId=${poItem.po_id}" onclick="return confirmDelete(this.href);"
+																class="btn btn-icon btn-light-danger btn-sm" title="Delete">
+																<i class="ki-duotone ki-trash fs-2"><span
+																	class="path1"></span><span class="path2"></span><span
+																	class="path3"></span><span class="path4"></span><span
+																	class="path5"></span></i>
+															</a>
+														</c:when>
+														<c:otherwise>
+															<a class="btn btn-icon btn-light-danger btn-sm disabled"
+																title="Delete" style="pointer-events: none; opacity: 0.5; cursor: not-allowed;"
+																aria-disabled="true">
+																<i class="ki-duotone ki-trash fs-2"><span
+																	class="path1"></span><span class="path2"></span><span
+																	class="path3"></span><span class="path4"></span><span
+																	class="path5"></span></i>
+															</a>
+														</c:otherwise>
+													</c:choose>
 												</div>
 											</td>
 										</tr>

@@ -773,10 +773,6 @@
 								onclick="location.href='purchase_order_list'"
 								class="btn btn-lg btn-light fw-medium text-light-inverse px-6 py-4 me-4 border">Back
 							</button>
-							<button type="button" id="cancelFormBtn"
-								onclick="confirmLeaveForm('purchase_order_list')"
-								class="btn btn-lg btn-dark fw-medium px-6 py-4">Cancel
-							</button>
 						</div>
 						<div class="d-flex">
 							
@@ -1015,27 +1011,6 @@
 		    
 		    
 	});
-	
-	
-	function confirmLeaveForm(redirectUrl){
-	    Swal.fire({
-	        title: "Are you sure?!",
-	        text: "Closing will discard any unsaved data.",
-	        icon: "warning",
-	        showCancelButton: true,
-	        confirmButtonText: "Yes, discard it",
-	        cancelButtonText: "Cancel",
-	        buttonsStyling: false,
-	        customClass: {
-	            confirmButton: "btn btn-danger",
-	            cancelButton: "btn btn-secondary"
-	        }
-	    }).then((result) => {
-	        if (result.isConfirmed) {
-	            window.location.href = redirectUrl;
-	        }
-	    });
-	}
 	
 	// --- compressImage ---
 	async function compressImage(file, maxWidth = 1280, maxHeight = 1280, quality = 0.8) {

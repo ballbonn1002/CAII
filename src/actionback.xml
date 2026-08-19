@@ -2120,19 +2120,19 @@
 
 		<!-- PO - Purchase Order -->
 		<action name="purchase_order_list"
-			class="com.cubesofttech.action.PurchaseOrderAction" method="purchase_order_list">
+			class="com.cubesofttech.action.PurchaseOrderAction" method="purchaseOrderList">
 			<result name="success" type="tiles">purchaseOrderList</result>
 			<result name="error">/index.jsp</result>
 		</action>
 		
 		<action name="purchase_order_add"
-			class="com.cubesofttech.action.PurchaseOrderAction" method="purchase_order_add">
+			class="com.cubesofttech.action.PurchaseOrderAction" method="purchaseOrderAdd">
 			<result name="success" type="tiles">purchaseOrderAdd</result>
 			<result name="error">/index.jsp</result>
 		</action>
 		
 		<action name="purchase_order_edit"
-			class="com.cubesofttech.action.PurchaseOrderAction" method="purchase_order_edit">
+			class="com.cubesofttech.action.PurchaseOrderAction" method="purchaseOrderEdit">
 			<result name="success" type="tiles">purchaseOrderDetail</result>
 			<result name="error">/index.jsp</result>
 		</action>
@@ -2158,19 +2158,19 @@
 		</action>
 		
 		<action name="save_po"
-		    class="com.cubesofttech.action.PurchaseOrderAction" method="save_po">
+		    class="com.cubesofttech.action.PurchaseOrderAction" method="savePo">
 		    <result name="success" type="tiles">purchaseOrderList</result>
 		    <result name="error">/index.jsp</result>
 		</action>
 		
 		<action name="po_perform_delete"
-			class="com.cubesofttech.action.PurchaseOrderAction" method="po_perform_delete">
+			class="com.cubesofttech.action.PurchaseOrderAction" method="poPerformDelete">
 			<result name="success" type="redirect">purchase_order_list</result>
 		    <result name="error">/index.jsp</result>
 		</action>
 
 		<action name="update_po"
-		    class="com.cubesofttech.action.PurchaseOrderAction" method="update_po">
+		    class="com.cubesofttech.action.PurchaseOrderAction" method="updatePo">
 		    <result name="success" type="tiles">purchaseOrderList</result>
 		    <result name="error">/index.jsp</result>
 		</action>
@@ -2180,15 +2180,15 @@
 		</action>
 
 		<action name="delete_po_detail"
-			class="com.cubesofttech.action.PurchaseOrderAction" method="delete_po_detail">
+			class="com.cubesofttech.action.PurchaseOrderAction" method="deletePoDetail">
 		</action>
 
 		<action name="update_po_detail"
-			class="com.cubesofttech.action.PurchaseOrderAction" method="update_po_detail">
+			class="com.cubesofttech.action.PurchaseOrderAction" method="updatePoDetail">
 		</action>
 
 		<action name="confirm_po_sign"
-			class="com.cubesofttech.action.PurchaseOrderAction" method="confirm_po_sign">
+			class="com.cubesofttech.action.PurchaseOrderAction" method="confirmPoSign">
 		</action>
 		
 		<!-- Item Catalog -->
