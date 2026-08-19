@@ -728,3 +728,6 @@ INSERT INTO `doc_status` (`doc_status_id`, `status_code`, `status_name`, `group`
 ('5', '5', 'Rejected', 'po', NULL, 'cft.admin', 'cft.admin', '2026-08-19 09:54:00', '2026-08-19 09:54:00'),
 ('6', '6', 'Cancel', 'po', NULL, 'cft.admin', 'cft.admin', '2026-08-19 09:54:00', '2026-08-19 09:54:00'),
 ('7', '7', 'In-Progress', 'po', NULL, 'cft.admin', 'cft.admin', '2026-08-19 09:54:00', '2026-08-19 09:54:00');
+
+-- 19/08/2026 June: Delete Table Catalog_consumables.
+DROP TABLE catalog_equipment;

@@ -804,13 +804,6 @@
 			value="/pages-back/purchase_order/purchase_order_create.jsp" />
 	</definition>
 	
-	<!-- Item Catalog -->
-	<definition name="itemCatalog" extends="baseLayout">
-		<put-attribute name="title" value="Item Catalog" />
-		<put-attribute name="body"
-			value="/pages-back/item_catalog/item_catalog.jsp" />
-	</definition>
-	
 	<!-- Line OA -->
 	<definition name="bind_account" template="/pages-back/LineOA/BindAccountLineOA.jsp">
 		<put-attribute name="title" value="Bind Account" />
