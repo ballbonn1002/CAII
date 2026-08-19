@@ -705,3 +705,5 @@ CREATE TABLE `po_parent` (
   `time_create` timestamp NULL DEFAULT NULL,
   `time_update` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+ALTER TABLE mr MODIFY COLUMN request_date DATETIME DEFAULT CURRENT_TIMESTAMP;
+ 
