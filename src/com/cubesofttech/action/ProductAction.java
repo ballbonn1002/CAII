@@ -95,11 +95,8 @@ public class ProductAction extends ActionSupport {
     // ---- field รับค่าจาก dropdown Equipment Type ในหน้า add (เมื่อ productType = '1') ----
     private String equipmentType;
 
-    // ---- fields สำหรับ Equipment Detail (สเปคระดับรุ่น) ในหน้า stock_equ_edit เท่านั้น ----
-    private String specRam;
-    private String specSsd;
-    private String specProcess;
-    private String specWindows;
+    // ---- popup เลือกเครื่องมาผูกกับ catalog Equipment - ส่ง equipment_id คั่นด้วย comma ----
+    private String equipmentIds;
 
     public Integer getProductId() {
         return productId;
@@ -189,36 +186,12 @@ public class ProductAction extends ActionSupport {
         this.equipmentType = equipmentType;
     }
 
-    public String getSpecRam() {
-        return specRam;
+    public String getEquipmentIds() {
+        return equipmentIds;
     }
 
-    public void setSpecRam(String specRam) {
-        this.specRam = specRam;
-    }
-
-    public String getSpecSsd() {
-        return specSsd;
-    }
-
-    public void setSpecSsd(String specSsd) {
-        this.specSsd = specSsd;
-    }
-
-    public String getSpecProcess() {
-        return specProcess;
-    }
-
-    public void setSpecProcess(String specProcess) {
-        this.specProcess = specProcess;
-    }
-
-    public String getSpecWindows() {
-        return specWindows;
-    }
-
-    public void setSpecWindows(String specWindows) {
-        this.specWindows = specWindows;
+    public void setEquipmentIds(String equipmentIds) {
+        this.equipmentIds = equipmentIds;
     }
 
     public String getProductNo() {
@@ -404,10 +377,77 @@ public class ProductAction extends ActionSupport {
             request.setAttribute("units", units);
             request.setAttribute("subProducts", subProducts);
 
+            // Equipment เท่านั้นที่ต้องมีตัวเลือกผูกเครื่องจริงเข้ากับ catalog นี้
+            if (isEquipmentProduct(product)) {
+                List<Equipment> linkedEquipment = equipmentDAO.findByProductIds(
+                        Collections.singletonList(String.valueOf(productId)));
+                request.setAttribute("linkedEquipment", linkedEquipment);
+                // เครื่องที่ยังไม่ผูกกับ catalog ไหนเลย - ใช้เป็นตัวเลือกใน popup
+                request.setAttribute("unlinkedEquipment", equipmentDAO.findUnlinked());
+            }
+
             return SUCCESS;
         } catch (Exception e) {
             log.error("showStockEditPage failed, productId=" + productId, e);
             return ERROR;
+        }
+    }
+
+    /**
+     * ผูกเครื่องจริง (equipment) ที่เลือกจาก popup เข้ากับ catalog Equipment ที่กำลังแก้ไขอยู่
+     * ตั้งค่า equipment.product_id ให้แต่ละเครื่องที่เลือก แล้วตอบ JSON ให้ฝั่ง UI โชว์ SweetAlert
+     *
+     * ลิงก์ได้เฉพาะเครื่องที่ยัง "ว่าง" (product_id ยังไม่มีค่า) เท่านั้น กันไม่ให้แย่งเครื่อง
+     * ที่ผูกกับ catalog อื่นอยู่แล้วไปโดยไม่ตั้งใจ (เช่น เปิด popup ค้างไว้หลายแท็บ)
+     */
+    public String stockEquLinkSave() {
+        try {
+            User onlineUser = getOnlineUser();
+            if (onlineUser == null) {
+                log.warn("stockEquLinkSave: no online user in session");
+                return writeJson(false, "unauthorized");
+            }
+            if (productId == null) {
+                log.warn("stockEquLinkSave: productId is required");
+                return writeJson(false, "productId required");
+            }
+            Product product = productDAO.findById(productId);
+            if (product == null || !isEditableStockItem(product) || !isEquipmentProduct(product)) {
+                log.warn("stockEquLinkSave: invalid equipment catalog, productId=" + productId);
+                return writeJson(false, "ไม่พบข้อมูล catalog");
+            }
+
+            List<Integer> ids = parseIds(equipmentIds);
+            if (ids.isEmpty()) {
+                return writeJson(false, "กรุณาเลือกอย่างน้อย 1 รายการ");
+            }
+
+            String productIdText = String.valueOf(productId);
+            java.sql.Timestamp now = DateUtil.getCurrentTime();
+            int linked = 0;
+            for (Integer equipmentId : ids) {
+                Equipment equipment = equipmentDAO.getById(equipmentId.intValue());
+                // ข้ามเครื่องที่ไม่พบ หรือถูกผูกกับ catalog อื่นไปแล้วระหว่างที่ popup เปิดค้างอยู่
+                if (equipment == null || !isBlank(equipment.getProductId())) {
+                    continue;
+                }
+                equipment.setProductId(productIdText);
+                equipment.setUserUpdate(onlineUser.getId());
+                equipment.setTimeUpdate(now);
+                equipmentDAO.update(equipment);
+                linked++;
+            }
+
+            if (linked == 0) {
+                log.warn("stockEquLinkSave: nothing linked (already taken?), productId=" + productId
+                        + ", requestedIds=" + equipmentIds);
+                return writeJson(false, "รายการที่เลือกถูกผูกกับ catalog อื่นไปแล้ว กรุณาเลือกใหม่");
+            }
+
+            return writeJson(true, "เพิ่มเครื่องสำเร็จ " + linked + " รายการ");
+        } catch (Exception e) {
+            log.error("stockEquLinkSave failed, productId=" + productId, e);
+            return writeJson(false, "เกิดข้อผิดพลาด ไม่สามารถบันทึกได้");
         }
     }
 
@@ -1074,13 +1114,6 @@ public class ProductAction extends ActionSupport {
             product.setProductName(productName.trim());
             product.setProductType(productType.trim());
             product.setDescription(trimToNull(description));
-            // สเปคระดับรุ่น (การ์ด Equipment Detail) มีความหมายเฉพาะ productType = '1'
-            // แต่ปล่อยให้บันทึกตามที่ฟอร์มส่งมาตรงๆ เหมือน description - ฝั่ง UI ซ่อนช่องพวกนี้
-            // ไว้อยู่แล้วเมื่อไม่ใช่ Equipment จึงไม่มีทางส่งค่าเข้ามาโดยไม่ตั้งใจ
-            product.setSpecRam(trimToNull(specRam));
-            product.setSpecSsd(trimToNull(specSsd));
-            product.setSpecProcess(trimToNull(specProcess));
-            product.setSpecWindows(trimToNull(specWindows));
             // active มาจาก hidden ในฟอร์ม (toggle) - ส่งมาเสมอเป็น '1'/'0'
             if (active != null) {
                 product.setActive("1".equals(active) ? "1" : "0");
