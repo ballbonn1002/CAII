@@ -228,9 +228,34 @@ border: 0px;
 .text-pending{
 display : none
 }
+.btn-hide{
+display : none !important;
+}
 .height-only{
 height : 100% !important;
 }
+.btn-disabled{
+pointer-events: none !important;
+background-color : var(--bs-gray-300) !important;
+}
+.span-des{
+    display: block;
+    width: 100%;
+    word-break: break-word;
+    white-space: normal;
+    margin-left: 5px;
+  }
+   .input-amount{
+ width : 80%;border-top-right-radius: 0px !important;border-bottom-right-radius: 0px !important;
+ }   
+ .unit-style{
+ width: 20%;
+ text-align: center;
+ align-items: center !important;
+ display: inline-grid !important;
+ border-top-right-radius: 10px !important;
+ border-bottom-right-radius: 10px !important;
+ }
 </style>
 </head>
 
@@ -325,13 +350,13 @@ height : 100% !important;
 										<div class="col-md-12">
 											<label class="form-label required fw-semibold">User</label>
 											<div
-												class="d-flex align-items-center bg-gray-100 border border-gray-300 rounded px-3 py-3">
+												class="d-flex align-items-center bg-gray-100 border border-gray-300 rounded px-3 py-3 disabled">
 												<div class="w-100">
 													<input id="userId"
-														class="form-control bg-transparent border-0 shadow-none p-0 fw-medium text-gray-900"
-														value="${onlineUser.employeeId} - ${onlineUser.nameEN} - ${onlineUser.name} - ${onlineUser.departmentId}"
+														class="form-control bg-transparent border-0 shadow-none p-0 fw-medium text-gray-900 disabled"
+														value="${Equipmentload.employee_id} - ${Equipmentload.name_en} - ${Equipmentload.name} - ${Equipmentload.department_id}"
 														style="width: 100%; font-size: 1rem;" readonly /> <input
-														type="hidden" name="userId" value="${onlineUser.id}" />
+														type="hidden" name="userId" value="${Equipmentload.request_user}" />
 												</div>
 											</div>
 										</div>
@@ -342,7 +367,7 @@ height : 100% !important;
 										<div class="col-md-4">
 											<label class="form-label required fw-semibold">item</label>
 							        
-							            <select class="form-select ps-11" id="userSelect" name="userSelect" style="width: 100%;"
+							            <select class="form-select ps-11" id="itemSelect" name="itemSelect" style="width: 100%;"
 							            onchange="getdataitem()"  ${Equipmentload.status_id == '8' || Equipmentload.status_id == '2' ? 'disabled' : ''} >
 							               <!-- ช่องตั้งต้นเมื่อเคลียร์คำค้นหา -->
 							                <option value="All"> search </option>			
@@ -351,6 +376,8 @@ height : 100% !important;
 										    <option value="${itemEqptList.id}" data-type="${itemEqptList.type}"
 										    data-parent_product="${itemEqptList.parent_product_id}"
 										    data-items_type="${itemEqptList.items_type}"
+										    data-unit_name="${itemEqptList.unit_name}"
+										    data-unit_id="${itemEqptList.unit_id}"
 										    ${itemEqptList.id == Equipmentload.catalog_items_id ? 'selected="selected"' : ''}>
 										        ${itemEqptList.name}
 										    </option>
@@ -382,8 +409,9 @@ height : 100% !important;
 									<%-- Quantity --%>
 										<div class="col-md-4">
 											<label class="form-label required fw-semibold">Quantity</label>
+											<div class="d-flex">
 											<div
-												class="d-flex align-items-center border border-gray-300 rounded px-3 py-3
+												class="d-flex align-items-center border border-gray-300 rounded px-3 py-3 input-amount
 												 ${Equipmentload.status_id == '8' || Equipmentload.status_id == '2'  ? 'disabled' : ''}">
 												<input type="number"
 													class="form-control bg-transparent border-0 shadow-none p-0 fw-medium text-gray-900"
@@ -394,6 +422,10 @@ height : 100% !important;
 													 
 <%-- 													  <fmt:formatNumber value="${Equipmentload.amount}" pattern="#,##0" /> --%>
 											</div>
+											<div class="align-items-center d-flex badge-secondary unit-style border border-gray-300">
+												<span id="unit"></span>
+											</div>
+										</div>
 										</div>
 									</div>
 
@@ -428,7 +460,30 @@ height : 100% !important;
 										          required>${Equipmentload.url_ref}</textarea>
 											</div>
 										</div>
-
+										<div class="container">
+												<div class="col-xl-2">
+												<div class="mt-5">
+													<label
+														class="btn btn-primary btn-flex h-40px border-0 fw-medium w-100 d-flex justify-content-center align-items-center text-center mx-auto
+														 <c:choose>
+                    <c:when test="${Equipmentload.status_name == 'Pending' || Equipmentload.status_name == 'Cancel' }">btn-hide</c:when>
+                </c:choose>"
+														id="lbFile" for="myFile" style="height: 44px;">
+														Attach Files <input type="file" id="myFile" name="files"
+														multiple style="display: none;"
+														accept=".pdf, .doc, .docx, .xlsx, .pptx, .csv, .png, .jpg, .jpeg, .gif, .webp, .mp4" />
+														<input type="hidden" name="filesUploadFileName"
+														id="filesUploadFileName" /> <input type="hidden"
+														name="fileUploadId" id="fileUploadId" />
+													</label>	
+													</div>		
+													<div id="errorMsgAF" class="text-center text-danger mt-2"></div>
+												</div>
+												<div class="d-flex flex-column mt-3 gap-2">
+											<div id="oldFileList"></div>
+											<div id="newFileList" class="d-flex mt-3 flex-wrap gap-5"></div>
+												</div>
+										</div>
 									
 									</div>
 
@@ -445,9 +500,10 @@ height : 100% !important;
     
     <div class="row align-items-center">
         <!-- ฝั่งซ้าย: ข้อมูลผู้ขอและรูปโปรไฟล์ -->
-        <div class="col-md-6 d-flex align-items-center mb-3 mb-md-0">
+        <div class="col-md-6 align-self-start" style="height: 100%;margin-top: 7px;">
+        <div class="d-flex align-items-center mb-3 mb-md-0">
             <!-- รูปภาพโปรไฟล์วงกลม -->
-            <img src="${ctx}${userImgPath}" 
+            <img src="${ctx}${Equipmentload.path}" 
                  class="rounded-circle me-3" 
                  alt="Profile" 
                  style="width: 50px; height: 50px; object-fit: cover;">
@@ -455,7 +511,7 @@ height : 100% !important;
             <div>
                 <!-- ชื่อพนักงานและรหัส (สามารถเปลี่ยนตัวแปรตามจริงในระบบได้เลยครับ) -->
                 <div class="fw-semibold text-dark" style="font-size: 1.05rem;height: calc(1em + 1.55rem + 2px) !important;">
-                   ${Equipmentload.request_user}
+                   ${Equipmentload.employee_id} - ${Equipmentload.name_en} - ${Equipmentload.name} - ${Equipmentload.department_id}
                 </div>
                 <!-- วันที่และเวลา -->
         <%-- กำหนด Locale เป็นภาษาอังกฤษก่อน --%>
@@ -467,6 +523,7 @@ height : 100% !important;
 		
             </div>
         </div>
+       </div>
         <!-- ฝั่งขวา: รายละเอียดอุปกรณ์ที่ขอ -->
         <div class="col-md-6">
             <!-- บรรทัดบน: ประเภทอุปกรณ์ -->
@@ -481,9 +538,12 @@ height : 100% !important;
             </div>
             
             <!-- บรรทัดล่าง: รายละเอียดสเปกเพิ่มเติม -->
-            <div class="d-flex align-items-center text-muted high-icon" style="font-size: 0.9rem;">
+            <div class="d-flex align-items-center text-muted high-icon mb-2" style="font-size: 0.9rem;height : auto !important">
                         <a  class="btn btn-icon fs-3"><i class="ki-duotone ki-document fs-1"><span class="path1"></span><span class="path2"></span></i></a>
-                <span>${Equipmentload.description}</span>
+                <span class="span-des">${Equipmentload.description}</span>
+            </div>
+            <div class="d-flex align-items-center text-muted high-icon ms-15"> 
+            <a href="${Equipmentload.url_ref}" target="_blank" rel="noopener noreferrer">${Equipmentload.url_ref}</a>
             </div>
         </div>
     </div>
@@ -523,7 +583,7 @@ height : 100% !important;
 														    </span>
 														<div class="d-flex flex-column pt-4">
 															<span class="text-dark fw-semibold fs-7">${userObj.nameEN}</span>
-															<span class="text-muted fs-8 mb-2 mt-1"><fmt:formatDate
+															<span class="text-muted fs-8 mb-2 mt-1" id="request_date"><fmt:formatDate
 																	value="${Equipmentload.request_date}" pattern="d MMM yyyy, H:mm" /></span>
 														</div>
 														</div>
@@ -559,9 +619,9 @@ height : 100% !important;
 													ผู้ขอเบิก</span>
 												<div class="d-flex flex-column">
 													<span class="text-dark fw-semibold fs-7">${userObj.nameEN}</span>
-													<span class="text-muted fs-8 mb-2"><fmt:formatDate
+													<span class="text-muted fs-8 mb-2"data-raw-date="${Equipmentload.request_date}">
+													<fmt:formatDate
 															value="${Equipmentload.request_date}" pattern="d MMM yyyy, H:mm" /></span>
-
 												</div>
 											</div>
 										</div>
@@ -652,8 +712,15 @@ height : 100% !important;
 
 	<script>
 	const ctx             = "${pageContext.request.contextPath}";
+    var deletedFileIds = [];
+	 var selectedFiles = []; 
 	$(document).ready(function() {
-	 $('#userSelect').select2({
+		
+		<perm:permission object="admin">
+		$("#BtnCanccel").css("display", "none");
+		</perm:permission>
+		
+	 $('#itemSelect').select2({
 	        placeholder: "ค้นหา...",
 	        allowClear: true,
 	        width: '100%',
@@ -767,7 +834,7 @@ height : 100% !important;
 	 function submitData(id_btn) {
 		 console.log('id btn',id_btn.id)
 		    // เพิ่ม .trim() ป้องกันช่องว่าง \t \n หลุดไปกับค่า Value
-		    var item_catalog = $('#userSelect').val() ? $('#userSelect').val().trim() : '';
+		    var item_catalog = $('#itemSelect').val() ? $('#itemSelect').val().trim() : '';
 		    var quantity = $('#quantity').val() ? $('#quantity').val().trim() : '';
 		    
 		    // ดึงค่า Description มารอไว้ (ใช้ ID ให้ตรงกับที่ออกแบบไว้ใน HTML)
@@ -791,7 +858,45 @@ height : 100% !important;
 		        formData.append('filesFileName', '');
 		    }
 		    
-		   
+			 // ชุดที่ 2: ลิสต์ไฟล์แนบ (ยึดตามคีย์ระบบเดิมคือ fileUpload)
+			 var inputFile = document.getElementById("myFile");
+
+			 if (selectedFiles && selectedFiles.length > 0) {
+			     
+			     var dataTransfer = new DataTransfer();
+			     selectedFiles.forEach(file => dataTransfer.items.add(file));
+			     inputFile.files = dataTransfer.files;
+			     
+			     // วนลูปยัดกลุ่มไฟล์แนบเข้าคีย์ fileUpload (แมปเข้าลิสต์หลังบ้าน)
+			     selectedFiles.forEach(file => {
+			         formData.append('fileUpload', file); 
+			     });
+			     
+			     // แปลงชื่อไฟล์แนบเป็นสตริงก์ JSON
+			     var fileNames = selectedFiles.map(file => file.name);
+			     var filesUploadFileNameEl = document.getElementById("filesUploadFileName");
+			     if (filesUploadFileNameEl) {
+			         filesUploadFileNameEl.value = JSON.stringify(fileNames);
+			     }
+			     
+			     // ⚠️ ส่งชื่อไฟล์เป็น JSON String ผ่านคีย์ชื่อ 'filesUploadFileName' (ต้องตรงกับ Java)
+			     formData.append('filesUploadFileName', JSON.stringify(fileNames));
+			     
+			     var fileUploadIdEl = document.getElementById("fileUploadId");
+			     if (fileUploadIdEl) {
+			         if (!fileUploadIdEl.value || fileUploadIdEl.value.trim() === "") {
+			             fileUploadIdEl.value = "[]";
+			         }
+			         formData.append('fileUploadId', fileUploadIdEl.value);
+			     }
+			 }
+
+		    if(deletedFileIds.length > 0){
+			    const fileUploadId = JSON.stringify(deletedFileIds);
+			    console.log('id afther click delete btn ' , fileUploadId)
+			    formData.append('fileUploadId', fileUploadId);
+		    }
+
 // 		    2. ย้ายข้อมูลทั้งหมดจาก Object เดิม มา append เข้า formData ตรง ๆ
 		    formData.append('mr_id', $('#mr_id').text()); // ใช้ .text() ตามโค้ดเดิมของคุณ
 		    formData.append('catalog_items_id', item_catalog);
@@ -799,10 +904,12 @@ height : 100% !important;
 		    formData.append('description', $('#description').val());
 		    formData.append('request_user', $('#userId').val());
 		    formData.append('item_sub_id', $('#subItemSelect').val() == 'allType' ? '' : $('#subItemSelect').val());
-		    formData.append('items_type', $('#userSelect').find(':selected').attr('data-items_type'));
+		    formData.append('items_type', $('#itemSelect').find(':selected').attr('data-items_type'));
 		    formData.append('status', status);
+		    formData.append('request_date',  document.querySelector('[data-raw-date]').dataset.rawDate);
 		    formData.append('url_ref', $('#urlref').val());
 		    formData.append('action', "update");
+		    
 		    for (var pair of formData.entries()) {
 		        console.log(pair[0] + ' >> ', pair[1]);
 		    }
@@ -846,8 +953,8 @@ height : 100% !important;
 		  
 				   const filteredResult = dataList.filter(item => {
 				    // กรองเอาแถวเริ่มต้นติดมาด้วย และคัดเฉพาะตัวที่ idProduct ตรงกัน
-				    return item.parent_product == $('#userSelect').val()
-//	 			    && item.parent_product == $('#userSelect').find(':selected').attr('data-parent_product') 
+				    return item.parent_product == $('#itemSelect').val()
+//	 			    && item.parent_product == $('#itemSelect').find(':selected').attr('data-parent_product') 
 				    && item.parent_product != 0 && item.value != 'allType'
 					});
 		         console.log(filteredResult)
@@ -876,7 +983,198 @@ height : 100% !important;
 	            if (typeof subDropdown.trigger === 'function') {
 	                subDropdown.trigger('change'); 
 	            }
+	            $('#unit').text( $('#itemSelect').find(':selected').attr('data-unit_name'))
 		}
+	 
+	    function getFileIconPath(fileName) {
+	        var ext = fileName.split('.').pop().toLowerCase();
+	        switch (ext) {
+	            case 'pdf': return 'assets/media/svg/files/pdf.svg';
+	            case 'doc': case 'docx': return 'assets/media/svg/files/doc.svg';
+	            default: return 'assets/media/svg/files/folder-document.svg';
+	        }
+	    }
+
+	    async function processFiles(fileListInput) {
+	    	const maxSize = 2 * 1024 * 1024;
+	        var oversizedFiles = [];
+
+	        for (let i = 0; i < fileListInput.length; i++) {
+	            const file = fileListInput[i];
+	            const existing = selectedFiles.find(f => f.name === file.name && f.size === file.size);
+	            
+	            if (!existing) {
+	                
+	                if (file.type.match(/image\/(jpeg|jpg|png)/)) {
+	                    const processedFile = await compressImage(file);
+	                    selectedFiles.push(processedFile);
+	                } else {
+	                    if (file.size > maxSize) {
+	                        oversizedFiles.push(file.name);
+	                    } else {
+	                        selectedFiles.push(file);
+	                    }
+	                }
+	                const errorMsgAF = document.getElementById("errorMsgAF");
+	                if (oversizedFiles.length > 0) {
+	                    errorMsgAF.innerHTML = "Files exceed 2MB: <strong>" + oversizedFiles.join(", ") + "</strong>";
+	                } else {
+	                    errorMsgAF.textContent = "";
+	                }
+	            }
+	            
+	        }
+	        renderNewFileList();
+	        updateInputFiles();
+	    }
+	    function renderNewFileList() {
+	    	var fileListDiv = document.getElementById('newFileList');
+	    	fileListDiv.innerHTML = "";
+	        fileListDiv.innerHTML = ""; 
+
+// 	        fileListDiv.style.display = "flex";
+// 	        fileListDiv.style.flexDirection = "column"; 
+
+	        if (selectedFiles.length > 0) {
+	            selectedFiles.forEach(file => {
+	                const fileName = file.name;
+	                const lastDotIndex = fileName.lastIndexOf('.');
+	                const nameOnly = fileName.substring(0, lastDotIndex);
+	                const fileExt = fileName.substring(lastDotIndex); // .pdf
+	                const iconPath = getFileIconPath(fileName);
+
+	                const outerDiv = document.createElement('div');
+	                outerDiv.className = 'p-2 rounded border text-gray-800';
+
+	                outerDiv.innerHTML = `
+	                    <div class="d-flex p-2 rounded" style="width: 18rem">
+	                        <div class="d-flex text-decoration-none text-gray-800" style="flex-grow: 1;">
+	                            <img src="` + iconPath + `" class="w-25px h-25px me-3" alt="icon" />
+	                            <span class="fs-6 fw-medium">
+	                                ` + nameOnly + `
+	                                <span class="text-gray-800 fw-medium ms-1">` + fileExt + `</span>
+	                            </span>
+	                        </div>
+	                        
+	                        <span class="badge badge-light-danger bg-hover cursor-pointer delete-btn ms-3">
+	                            <i class="ki-duotone ki-trash text-danger fs-2">
+	                                <span class="path1"></span><span class="path2"></span>
+	                                <span class="path3"></span><span class="path4"></span><span class="path5"></span>
+	                            </i>
+	                        </span>
+	                    </div>
+	                `;
+
+	                outerDiv.querySelector('.delete-btn').addEventListener('click', function() {
+	                    selectedFiles = selectedFiles.filter(f => f.name !== fileName);
+	                    renderNewFileList(); 
+	                    updateInputFiles(); 
+	                });
+
+	                fileListDiv.appendChild(outerDiv);
+	            });
+	        }
+	    }
+	    function updateInputFiles() {
+	        var inputFile = document.getElementById("myFile");
+	        var dataTransfer = new DataTransfer();
+	        selectedFiles.forEach(file => dataTransfer.items.add(file));
+	        console.log('test uploadfile',selectedFiles)
+	        inputFile.files = dataTransfer.files;
+	    }
+	    
+	    document.getElementById('myFile').addEventListener('change', function(event) {
+	        processFiles(event.target.files);
+	    });
+	    
+	    
+	    
+	    document.addEventListener('DOMContentLoaded', function() {
+//	      document.getElementById("topic").value = "${announcement.topic}";
+//	      document.getElementById("kt_td_picker_basic_input").value = "<fmt:formatDate value='${announcement.announcement_date}' pattern='dd MMM yyyy'/>";
+//	      document.getElementById("status").checked = ${announcement.status == '1' ? 'true' : 'false'};
+//	      document.getElementById("highlight").checked = ${announcement.highlight == '1' ? 'true' : 'false'};
+
+	     const oldFileListDiv = document.getElementById("oldFileList");
+	     
+	     console.log('oldFileListDiv >>>>',oldFileListDiv)
+	     
+//	      if(oldFileListDiv) {
+//	          oldFileListDiv.style.display = "flex";
+//	          oldFileListDiv.style.flexDirection = "column";
+//	      }
+
+
+
+	     function getFileIconPathLocal(fileName) {
+	         var ext = fileName.split('.').pop().toLowerCase();
+	         switch (ext) {
+	             case 'pdf': return 'assets/media/svg/files/pdf.svg';
+	             case 'doc': case 'docx': return 'assets/media/svg/files/doc.svg';
+	             default: return 'assets/media/svg/files/folder-document.svg';
+	         }
+	     }
+
+	     <c:forEach var="file" items="${equipmentRequestMrFiles}">
+	         <c:if  test="${file.pageId == Equipmentload.mr_id}">
+	             (function(){
+	                 const fileId = "${file.fileId}";
+	                 const fileName = "${file.name}";
+	                 const fileType = "${file.type}";
+	                 const fullFileName = fileName + fileType;
+	                 const filePath = "${file.path}";
+	                 
+	                 const iconPath = getFileIconPathLocal(fullFileName);
+	                 
+	                 const oldFileListDiv = document.getElementById('oldFileList'); 
+	                 if (oldFileListDiv) {
+	                     // ✅ บังคับจัดการสไตล์ให้กล่องแม่ยืดหยุ่น ดีดขึ้นบรรทัดใหม่ทันทีเมื่อไอเท็มล้นจอ
+//	                      oldFileListDiv.classList.add('d-flex', 'flex-wrap', 'mt-3', 'gap-5');
+	                 }
+
+	                 const outerDiv = document.createElement('div');
+	                 outerDiv.className = 'd-flex p-2 rounded border text-gray-800';
+	                 outerDiv.style.width = '18rem';
+
+	                 outerDiv.innerHTML = `
+	                     <div class="d-flex p-2 rounded" style="width: 18rem">
+	                     <div class="d-flex text-decoration-none text-gray-800" style="flex-grow: 1;">
+	                         <img src="` + iconPath + `" class="w-25px h-25px me-3" alt="icon" />
+	                         <span class="fs-6 fw-medium">
+	                             ` + fileName + `
+	                             <span class="text-gray-800 fw-medium ms-1">` + fileType + `</span>
+	                         </span>
+	                     </div>
+	                     
+	                     <span class="badge badge-light-danger bg-hover cursor-pointer delete-btn ms-3 delete-old-btn
+	                        <c:choose>
+	                         <c:when test="${Equipmentload.status_name == 'Pending' || Equipmentload.status_name == 'Cancel' }">btn-hide</c:when>
+	                         </c:choose>">
+	                         <i class="ki-duotone ki-trash text-danger fs-2">
+	                             <span class="path1"></span><span class="path2"></span>
+	                             <span class="path3"></span><span class="path4"></span><span class="path5"></span>
+	                         </i>
+	                     </span>
+	                 </div>
+
+	                 `;
+	 $('#unit').text( $('#itemSelect').find(':selected').attr('data-unit_name'))
+	               outerDiv.querySelector('.delete-old-btn').onclick = function() {
+	                     outerDiv.remove(); // สั่งเตะการ์ดออกจากหน้าเว็บ
+	                     
+
+	                     deletedFileIds.push(fileId);
+	                     document.getElementById("fileUploadId").value = JSON.stringify(deletedFileIds);
+	                     console.log("รายการไอดีไฟล์ที่จะถูกลบส่งหลังบ้าน:", deletedFileIds);
+	                 };
+
+	                 if (oldFileListDiv) {
+	                     oldFileListDiv.appendChild(outerDiv);
+	                 }
+	             })();
+	         </c:if>
+	     </c:forEach>
+	 });
 </script>
 	
 </body>

@@ -1,7 +1,7 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
-
+<%@ taglib uri="/WEB-INF/tlds/permission.tld" prefix="perm"%>
 <fmt:setLocale value="en_US" />
 
 <!DOCTYPE html>
@@ -256,7 +256,7 @@ color: var(--bs-primary);
 											<div class="d-flex col-xl-6 gap-4" style="margin: auto;">Equipment Request List </div>
 											<div class="d-flex col-xl-6 gap-4 justify-content-end">
 												<a href="${createUrl}" class="btn btn-success btn-sm px-4"
-													data-route="my_travelA"> <i
+													data-route="my_travelA" id="btn_create"> <i
 													class="ki-duotone ki-plus fs-4 me-2"> <span
 														class="path1"></span><span class="path2"></span>
 												</i> Create
@@ -1684,6 +1684,10 @@ color: var(--bs-primary);
 	var fmEnd   = (serverEndDate && serverEndDate.trim().length > 0) ? moment(serverEndDate, 'D MMM YYYY') : moment('31 Dec ' + currentYear, 'D MMM YYYY');
 
 	$(document).ready(function() {
+		
+		<perm:permission object="admin">
+		$('#btn_create').attr('style', 'display: none !important')       
+		</perm:permission>
 		
 		
 		if ($('#kt_daterangepicker_fm').data('daterangepicker')) {

@@ -1,5 +1,4 @@
 async function processAndRemoveWhiteBg(file, maxWidth = 1280, maxHeight = 1280, quality = 0.8) {
-	console.log('checkkkkkkk')
     if (!file) throw new Error("No file provided");
 
     // 1. บีบอัดไฟล์ภาพก่อน (เรียกฟังก์ชัน compressImage เดิมของคุณ)

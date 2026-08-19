@@ -6,6 +6,7 @@ import java.util.Map;
 import com.cubesofttech.model.EquipmentRequestMr;
 import com.cubesofttech.model.DocStatus;
 import com.cubesofttech.model.Expense;
+import com.cubesofttech.model.FileUpload;
 
 public interface EquipmentRequestMrDAO {
 	List<Object[]> getAllEquopmentRequestMr(EquipmentRequestMr equipmentRequestMr) throws Exception;
@@ -16,4 +17,5 @@ public interface EquipmentRequestMrDAO {
 	String  getNextMrId() throws Exception;
 	 List<DocStatus> getDocStatus(DocStatus docStatus) throws Exception;
 	 public Map<String, Object> loaddataEquipment(String mr_id) throws Exception;
+	 List<FileUpload> findByPageAndPageId(String page, String pageId) throws Exception;
 }

@@ -212,8 +212,9 @@ public class ProductDAOImpl implements ProductDAO {
 	public List<Object[]> getArrayProduct(Product Product) throws Exception {
 	     Session session = this.sessionFactory.getCurrentSession();
 	     
-	     String sql = "SELECT pd.product_id, pd.product_name, pd.parent_product_id, pd.product_type " 
+	     String sql = "SELECT pd.product_id, pd.product_name, pd.parent_product_id, pd.product_type, um.unit_name, um.unit_id " 
 	                + "FROM product pd "
+	                + "left join unit_of_measure um on um.product_id = pd.product_id and um.sequence = 0 "
 	                + "WHERE pd.parent_product_id = 0";
 	        
 	     List<Object[]> mrgetall = (List<Object[]>) session.createSQLQuery(sql).list();

@@ -98,20 +98,104 @@ public class EquipmentRequestAction extends ActionSupport {
 	  private String status;
 	  private String url_ref;
 	  private String action;
+	  private String request_date;
 	  
 	  private java.io.File[] files;
 	  private String[] filesFileName;
 	  private String[] filesContentType;
 	  private String filesUploadFileName;
 	  private String fileUploadId;
-	
+	  
+	  
+		  private File fileUpload;
+		  private String fileUploadFileName;
+		  private List<String> fileUploadContentType;
+		private String fileUploadSize;
+		private FileUpload file;
+		private FileUpload filenoteimg;
+		private String sortOrder;
+	  
+		
+		
+	  public String getSortOrder() {
+			return sortOrder;
+		}
+
+		public void setSortOrder(String sortOrder) {
+			this.sortOrder = sortOrder;
+		}
+
+	  public FileUploadDAO getFileuploadDAO() {
+			return fileuploadDAO;
+		}
+
+		public void setFileuploadDAO(FileUploadDAO fileuploadDAO) {
+			this.fileuploadDAO = fileuploadDAO;
+		}
+
+		public String getFileUploadFileName() {
+			return fileUploadFileName;
+		}
+
+		public void setFileUploadFileName(String fileUploadFileName) {
+			this.fileUploadFileName = fileUploadFileName;
+		}
+
+		public List<String> getFileUploadContentType() {
+			return fileUploadContentType;
+		}
+
+		public void setFileUploadContentType(List<String> fileUploadContentType) {
+			this.fileUploadContentType = fileUploadContentType;
+		}
+
+		public String getFileUploadSize() {
+			return fileUploadSize;
+		}
+
+		public void setFileUploadSize(String fileUploadSize) {
+			this.fileUploadSize = fileUploadSize;
+		}
+
+		public FileUpload getFilenoteimg() {
+			return filenoteimg;
+		}
+
+		public void setFilenoteimg(FileUpload filenoteimg) {
+			this.filenoteimg = filenoteimg;
+		}
+
+	  public File getFileUpload() {
+		return fileUpload;
+	}
+
+	  public void setFileUpload(File fileUpload) {
+		  this.fileUpload = fileUpload;
+	  }
+
 	  private List<User> userList;
 	  private List<Product> Product; 
 	  private List<Object[]> catalogList; 
 	  private List<DocStatus> StatusList;  
+	  private List<FileUpload> fileUploadlist;
 	  
 	  
-	  
+	  public List<FileUpload> getFileUploadlist() {
+		return fileUploadlist;
+	}
+
+	  public void setFileUploadlist(List<FileUpload> fileUploadlist) {
+		  this.fileUploadlist = fileUploadlist;
+	  }
+
+	  public String getRequest_date() {
+		return request_date;
+	}
+
+	  public void setRequest_date(String request_date) {
+		  this.request_date = request_date;
+	  }
+
 	  public String getAction() {
 		return action;
 	}
@@ -328,8 +412,14 @@ public class EquipmentRequestAction extends ActionSupport {
                 if (currentPage < 1)
                     currentPage = 1;
             }
-
+            User onlineUser = (User) request.getSession().getAttribute("onlineUser");
+            
             EquipmentRequestMr equipmentRequestMr = new EquipmentRequestMr();
+            
+            if (onlineUser != null) {
+                equipmentRequestMr.setRequestUser(onlineUser.getId()); 
+            }
+            
          // 1. เรียกใช้งานข้อมูลจากฐานข้อมูลจริง
             List<Object[]> rawDataList = equipmentRequestMrDAO.getAllEquopmentRequestMr(equipmentRequestMr);
             List<Map<String, Object>> allList = new ArrayList<>();
@@ -578,19 +668,21 @@ public class EquipmentRequestAction extends ActionSupport {
 	        	request.setAttribute("ProductList", this.Product);
 	        	        	
 	    
-	        	 catalogEquipmentList = catalogEquipmentDAO.findAll();
+//	        	 catalogEquipmentList = catalogEquipmentDAO.findAll();
 	            
 	            List<Map<String, Object>> unionList = new ArrayList<>();
 	            
-	            for (CatalogEquipment eq : catalogEquipmentList) {
-	                Map<String, Object> item = new HashMap<>();
-	                item.put("id", eq.getCatalogEquipmentId());
-	                item.put("name", eq.getCatalogEquipmentName());
-	                item.put("type", "EQ");
-	                item.put("parent_product_id", "");
-	                item.put("items_type", eq.getItemsType());
-	                unionList.add(item);
-	            }
+//	            for (CatalogEquipment eq : catalogEquipmentList) {
+//	                Map<String, Object> item = new HashMap<>();
+//	                item.put("id", eq.getCatalogEquipmentId());
+//	                item.put("name", eq.getCatalogEquipmentName());
+//	                item.put("type", "EQ");
+//	                item.put("parent_product_id", "");
+//	                item.put("items_type", eq.getItemsType());
+//                    item.put("unit_name", "");	
+//                    item.put("unit_id", "");
+//	                unionList.add(item);
+//	            }
 
 	            Product product = new Product();
 	            // 1. เรียกใช้งานข้อมูลจากฐานข้อมูลจริง
@@ -607,10 +699,13 @@ public class EquipmentRequestAction extends ActionSupport {
 	                       item.put("type", "Cs");
 	                       item.put("parent_product_id", row[2]); // pd.parent_product_id
 	                       item.put("items_type", row[3]);  
-
+	                       item.put("unit_name", row[4]);	
+	                       item.put("unit_id", row[5]);
 	                       unionList.add(item);
 	                   }
 	               }
+	               log.debug("product ++++"+ unionList);
+	               
 	            request.setAttribute("catalogEqptList", unionList);
 	            getLatestAttachFile(request);
 	            
@@ -640,6 +735,7 @@ public class EquipmentRequestAction extends ActionSupport {
 //                return ERROR;
 //            }
 
+
 //            Long maxId = catalogEquipmentDAO.getMaxId() + 1;
             EquipmentRequestMr equipmentRequest;
 
@@ -651,19 +747,30 @@ public class EquipmentRequestAction extends ActionSupport {
 //                }
 //            } else {
                equipmentRequest = new EquipmentRequestMr();
-            	
-               equipmentRequest.setMrId(mr_id);
+               
+         		String nextMrId = equipmentRequestMrDAO.getNextMrId();
+                equipmentRequest.setMrId(nextMrId); 
+            
                equipmentRequest.setCatalogItemsId(catalog_items_id);
                equipmentRequest.setAmount(amount);
-               equipmentRequest.setRequestUser(onlineUser.getId());
-//                   equipmentRequest.setReceiveUser(onlineUser.getId());
-//                   equipmentRequest.setReceiveDate(new java.sql.Date(DateUtil.getCurrentTime().getTime()));
                equipmentRequest.setDescription(description);
                equipmentRequest.setItemType(items_type);
                equipmentRequest.setItemSubId(item_sub_id);
                equipmentRequest.setStatusId(status);
                equipmentRequest.setUrlRef(url_ref);
-               equipmentRequest.setRequestDate(DateUtil.getCurrentTime());
+               
+              String mrIduploadfile = null;
+               
+               if("insert".equals(currentAction)) { 
+                   equipmentRequest.setMrId(nextMrId);
+            	  equipmentRequest.setRequestDate(DateUtil.getCurrentTime());
+            	  mrIduploadfile = nextMrId;
+               }else {
+            	   equipmentRequest.setMrId(mr_id);
+            	   equipmentRequest.setRequestDate(java.sql.Timestamp.valueOf(request_date.trim()));
+            	   mrIduploadfile = mr_id;
+               }
+               equipmentRequest.setRequestUser(onlineUser.getId());
                equipmentRequest.setUserUpdate(DateUtil.getCurrentTime());
                equipmentRequest.setTimeCreate( DateUtil.getCurrentTime().toString());
 
@@ -724,6 +831,109 @@ public class EquipmentRequestAction extends ActionSupport {
 //					log.error("Error saving signature file", sigEx);
 //				}
 			}
+			
+           log.debug("fileUpload"+ fileUpload);
+        // ── ท่อนนี้ถอดแบบลอจิกจากบรรทัดล่างสุดของ announcement มาเลยครับ ──
+        // (ต่างกันแค่เราไปแกะเอาไฟล์ Array จาก multiWrapper มาใส่ เพื่อรองรับ AJAX JSON หน้าบ้าน)
+
+           // 💡 [แก้ปัญหาถาวร]: ใช้ ActionContext สกัดดึงไฟล์ออกมาเป็น Array ดั้งเดิม 
+           // โดยไม่ต้องผ่านเงื่อนไข check instanceof ให้พังอีกต่อไป
+           // 1. ดึงกลุ่มไฟล์ทั้งหมดผ่าน ActionContext ออกมาเป็น Array ตัวใหม่ (myFilesArray)
+           java.util.Map<String, Object> parameters = com.opensymphony.xwork2.ActionContext.getContext().getParameters();
+           
+           File[] myFilesArray = null;
+           if (parameters != null && parameters.containsKey("fileUpload")) {
+               Object fileObj = parameters.get("fileUpload");
+               if (fileObj instanceof File[]) {
+                   myFilesArray = (File[]) fileObj;
+               } else if (fileObj instanceof File) {
+                   myFilesArray = new File[] { (File) fileObj };
+               }
+           }
+
+           // ⚠️ [จุดสำคัญที่ต้องเพิ่ม]: สั่งเคลียร์ค่าตัวแปรเดี่ยวของระบบเดิมให้เป็น null ทันที
+           // เพื่อไม่ให้โค้ดเก่าดั้งเดิม (ถ้ามีอยู่ด้านล่าง) นำไปวนลูปเซฟซ้ำอีกรอบ
+           this.fileUpload = null; 
+           this.fileUploadFileName = null;
+
+           // 2. วนลูปบันทึกไฟล์กลุ่มตามสไตล์หน้า Announcement บรรทัดต่อบรรทัด
+           if (myFilesArray != null && myFilesArray.length > 0 && filesUploadFileName != null && !filesUploadFileName.isEmpty()) {
+               String[] fileNames = new com.google.gson.Gson().fromJson(filesUploadFileName, String[].class);
+               
+               for (int i = 0; i < myFilesArray.length; i++) {
+                   if (i >= fileNames.length) {
+                       log.warn("Mismatch between uploaded files and filenames. Skipping index: " + i);
+                       continue;
+                   }
+
+                   int maxId1 = fileuploadDAO.getMaxId() + 1;
+                   String fileName1 = fileNames[i];
+                   ServletContext context1 = request.getServletContext();
+                   String fileServerPath1 = context1.getRealPath("/");
+                   long fileSize = myFilesArray[i].length();
+
+                   FileUpload fileupload1 = new FileUpload();
+                   fileupload1.setSize(formatFileSize(fileSize));
+                   fileupload1.setPath("/upload/user/" + maxId1 + "_" + fileName1);
+                   
+                   // บันทึกไฟล์ลงดิสก์เครื่อง Server
+                   FileUtil.upload(myFilesArray[i], fileServerPath1 + "upload/user/", maxId1 + "_" + fileName1);
+
+                   int split1 = fileName1.lastIndexOf('.');
+                   String name1 = fileName1.substring(0, split1);
+                   String type1 = fileName1.substring(split1).toLowerCase();
+
+                   fileupload1.setName(name1);
+                   fileupload1.setType(type1);
+                   fileupload1.setFileId(maxId1);
+                   fileupload1.setUserId(onlineUser.getId());
+                   fileupload1.setUserCreate(onlineUser.getId());
+                   fileupload1.setPage("equipmentRequestFiles");
+                   fileupload1.setPageId(mrIduploadfile); // ผูกไอดีเอกสารหลักหน้า Equipment ของคุณ
+                   fileupload1.setUserUpdate(onlineUser.getId());
+                   fileupload1.setTimeCreate(DateUtil.getCurrentTime());
+                   
+                   fileuploadDAO.save(fileupload1);
+
+                   log.debug("Added file ID: " + fileupload1.getFileId());
+               }
+           } else {
+               log.debug("No new file to upload");
+           }
+
+        // ── ระบบแกะลบไฟล์ (Delete List) ปรับปรุงให้รองรับข้อมูลทุกรูปแบบ ──
+           String[] fileIdss = new String[0];
+
+           if (fileUploadId != null && !fileUploadId.isEmpty()) {
+               // ล้างเครื่องหมายวงเล็บเหลี่ยม [ ] ช่องว่าง และเครื่องหมายคำพูด " ออกให้หมด
+               String cleanIds = fileUploadId.replaceAll("[\\[\\]\\s\"]", "");
+               
+               // ถ้าล้างแล้วยังมีข้อมูลเหลืออยู่ ให้ทำการตัดด้วยเครื่องหมายจุลภาค (,)
+               if (!cleanIds.isEmpty()) {
+                   fileIdss = cleanIds.split(",");
+               }
+           }
+
+           log.debug("files to delete: " + java.util.Arrays.toString(fileIdss));
+
+           if (fileIdss != null && fileIdss.length > 0) {
+               for (String fileId : fileIdss) {
+                   // เพิ่ม try-catch ป้องกันกรณีหน้าบ้านเผลอส่งตัวอักษรที่ไม่ใช่ตัวเลขปนมา
+                   try {
+                       FileUpload file = fileuploadDAO.findById(Integer.parseInt(fileId.trim()));
+                       if (file != null) {
+                           fileuploadDAO.delete(file);
+                           log.debug("Deleted file ID: " + fileId.trim());
+                       }
+                   } catch (NumberFormatException e) {
+                       log.error("Invalid file ID format: " + fileId);
+                   }
+               }
+           } else {
+               log.debug("No file to delete");
+           }
+
+
 			// บันทึก Signature ใหม่ (ถ้ามี upload) End─────────────
          
 //            if (catalogEquipmentId != null) {
@@ -826,22 +1036,30 @@ public class EquipmentRequestAction extends ActionSupport {
         	this.Product = productDAO.getproductid(paramProduct);
         	log.debug("เข้า this.Product()"+this.Product);
         	
+        	fileUploadlist = equipmentRequestMrDAO.findByPageAndPageId("equipmentRequestFiles", String.valueOf(mr_id));
+			request.setAttribute("equipmentRequestMrFiles", fileUploadlist);
+	        
+	        if (fileUploadlist != null) {
+	            request.setAttribute("equipmentRequestMrfiles", new Gson().toJson(fileUploadlist));
+	        	log.debug("เข้า equipmentRequestMrfiles()"+new Gson().toJson(fileUploadlist));
+	        }
+	        
         	// ส่งออกไปหน้าบ้านเหมือนเดิม
         	request.setAttribute("ProductList", this.Product);
 	        
-        	 catalogEquipmentList = catalogEquipmentDAO.findAll();
+//        	 catalogEquipmentList = catalogEquipmentDAO.findAll();
 	            
 	            List<Map<String, Object>> unionList = new ArrayList<>();
 	            
-	            for (CatalogEquipment eq : catalogEquipmentList) {
-	                Map<String, Object> item = new HashMap<>();
-	                item.put("id", eq.getCatalogEquipmentId());
-	                item.put("name", eq.getCatalogEquipmentName());
-	                item.put("type", "EQ");
-	                item.put("parent_product_id", "");
-	                item.put("items_type", eq.getItemsType());
-	                unionList.add(item);
-	            }
+//	            for (CatalogEquipment eq : catalogEquipmentList) {
+//	                Map<String, Object> item = new HashMap<>();
+//	                item.put("id", eq.getCatalogEquipmentId());
+//	                item.put("name", eq.getCatalogEquipmentName());
+//	                item.put("type", "EQ");
+//	                item.put("parent_product_id", "");
+//	                item.put("items_type", eq.getItemsType());
+//	                unionList.add(item);
+//	            }
 
 	            Product product = new Product();
 	            // 1. เรียกใช้งานข้อมูลจากฐานข้อมูลจริง
@@ -858,18 +1076,16 @@ public class EquipmentRequestAction extends ActionSupport {
 	                       item.put("type", "Cs");
 	                       item.put("parent_product_id", row[2]); // pd.parent_product_id
 	                       item.put("items_type", row[3]);  
-
+	                       item.put("unit_name", row[4]);	
+	                       item.put("unit_id", row[5]);
 	                       unionList.add(item);
 	                   }
 	               }
 	            request.setAttribute("catalogEqptList", unionList);
-//	        
-//	        String[] ids = request.getParameterValues("id");
-	        
-	        // ── 1. ดึงไฟล์แนบโดยใช้ User ID ของคนที่ล็อกอิน ──────────────────────
-	        // อ้างอิงจากตาราง: page = "user_signature" และดึงตาม user_id ของผู้ใช้รายนั้น
+	            log.debug("unionList debug"+ unionList);
+        
 	        List<FileUpload> fileList = fileuploadDAO.findByPageAndPageId("user_signature", onlineUser.getId());
-	        // ยัดใส่ไว้ในโครงสร้างเพื่อส่งไปหน้าบ้าน (ปรับให้เข้ากับตัวแปรที่หน้า JSP เรียกใช้)
+
 	        List<Map<String, Object>> expenseListObj = new ArrayList<>();
 	        Map<String, Object> expMap = new HashMap<>();
 	        expMap.put("files", fileList != null ? fileList : new ArrayList<>());
@@ -901,28 +1117,6 @@ public class EquipmentRequestAction extends ActionSupport {
 	               
 	            } catch (Exception ignore) {}
 	        }
-	        
-	        String pathStr = dataload != null && dataload.get("path") != null ? dataload.get("path").toString() : null;
-
-	        String imgPath = null;
-	    	if (pathStr != null && pathStr.contains("_")) {
-			    try {
-			        String originalFileName = new File(pathStr).getName();
-			        String fileIdStr = originalFileName.substring(0, originalFileName.indexOf("_"));
-			        int fileId = Integer.parseInt(fileIdStr);
-			        String typeFile = originalFileName.substring(originalFileName.lastIndexOf("."));
-			        imgPath = "/upload/user/user_" + fileId + typeFile;
-
-//			        String server = request.getServletContext().getRealPath("/");
-//			        File f = new File(server + imgPath);
-//			        if (!f.exists()) {
-//			            imgPath = null;
-//			        }
-			    } catch (Exception e) {
-			        imgPath = null;
-			    }
-			}
-	    	request.setAttribute("userImgPath", imgPath);
 			
 	        boolean onlineUserSignature = false;
 	        if (onlineUser != null) {

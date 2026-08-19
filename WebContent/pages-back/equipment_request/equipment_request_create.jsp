@@ -187,13 +187,25 @@
 .receiver-confirmed {
 	border-color: #50CD89 !important;
 	background: #F6FFF9 !important;
-    padding-top: 5.1rem !important;
-    padding-bottom: 5.2rem !important;
+    padding-top: 5rem !important;
+    padding-bottom: 5rem !important;
 }
 .p-user-request{
 padding-top: 6rem;
     padding-bottom: 6rem;
     }
+    
+ .input-amount{
+ width : 80%;border-top-right-radius: 0px !important;border-bottom-right-radius: 0px !important;
+ }   
+ .unit-style{
+ width: 20%;
+ text-align: center;
+ align-items: center !important;
+ display: inline-grid !important;
+ border-top-right-radius: 10px !important;
+ border-bottom-right-radius: 10px !important;
+ }
 </style>
 </head>
 
@@ -227,8 +239,7 @@ padding-top: 6rem;
 <%-- 							<c:when test="${empty catalogList}"> --%>
 
 								<div class="row">
-									<div class="col-xl-9 fs-1 text-primary fw-bold">#<span id="mr_id"></span></div>
-									<div class="col-xl-3 ">
+									<div class="col-xl-12">
 										<div class="btn btn-primary btn-sm px-4" style="pointer-events: none;">New</div>
 									</div>
 								</div>
@@ -299,7 +310,7 @@ padding-top: 6rem;
 										<div class="col-md-4">
 											<label class="form-label required fw-semibold">item</label>
 							        
-							            <select class="form-select ps-11" id="userSelect" name="userSelect" style="width: 100%;"
+							            <select class="form-select ps-11" id="itemSelect" name="itemSelect" style="width: 100%;"
 							            onchange="getdataitem()">
 							               <!-- ช่องตั้งต้นเมื่อเคลียร์คำค้นหา -->
 							                <option value="All"> search </option>			
@@ -307,7 +318,9 @@ padding-top: 6rem;
 										<c:forEach var="itemEqptList" items="${catalogEqptList}">
 										    <option value="${itemEqptList.id}" data-type="${itemEqptList.type}"
 										    data-parent_product="${itemEqptList.parent_product_id}"
-										    data-items_type="${itemEqptList.items_type}">
+										    data-items_type="${itemEqptList.items_type}"
+										    data-unit_name="${itemEqptList.unit_name}"
+										    data-unit_id="${itemEqptList.unit_id}">
 										        ${itemEqptList.name}
 										    </option>
 										</c:forEach>
@@ -335,18 +348,24 @@ padding-top: 6rem;
 									<%-- Quantity --%>
 										<div class="col-md-4">
 											<label class="form-label required fw-semibold">Quantity</label>
-											<div
-												class="d-flex align-items-center border border-gray-300 rounded px-3 py-3">
-<input type="number"
-       class="form-control bg-transparent border-0 shadow-none p-0 fw-medium text-gray-900"
-       style="font-size: 1rem;" 
-       name="amount"
-       id="amount"
-       value="${param.amount}" 
-       required  
-       step="1"
-       onblur="if(this.value !== '') { this.value = Math.trunc(this.value); }" />
-
+											<div class="d-flex">
+												<div
+													class="d-flex align-items-center border border-gray-300 rounded px-3 py-3 input-amount" 
+													>
+												<input type="number"
+												       class="form-control bg-transparent border-0 shadow-none p-0 fw-medium text-gray-900"
+												       style="font-size: 1rem;" 
+												       name="amount"
+												       id="amount"
+												       value="${param.amount}" 
+												       required  
+												       step="1"
+												       onblur="if(this.value !== '') { this.value = Math.trunc(this.value); }" />
+													
+												</div>
+												<div class="align-items-center d-flex badge-secondary unit-style border border-gray-300">
+													<span id="unit"></span>
+												</div>
 											</div>
 										</div>
 									</div>
@@ -380,7 +399,27 @@ padding-top: 6rem;
 
 									
 									</div>
-
+										<div class="container">
+												<div class="col-xl-2">
+												<div>
+													<label
+														class="btn btn-primary btn-flex h-40px border-0 fw-medium w-100 d-flex justify-content-center align-items-center text-center mx-auto"
+														id="lbFile" for="myFile" style="height: 44px;">
+														Attach Files <input type="file" id="myFile" name="files"
+														multiple style="display: none;"
+														accept=".pdf, .doc, .docx, .xlsx, .pptx, .csv, .png, .jpg, .jpeg, .gif, .webp, .mp4" />
+														<input type="hidden" name="filesUploadFileName"
+														id="filesUploadFileName" /> <input type="hidden"
+														name="fileUploadId" id="fileUploadId" />
+													</label>	
+													</div>
+													<div id="oldFileList" class="d-flex flex-column mt-3 gap-2"></div>
+																
+													<div id="errorMsgAF" class="text-center text-danger mt-2"></div>
+												</div>
+											<div id="newFileList" class="d-flex mt-3 flex-wrap gap-5"></div>
+												
+										</div>
 								</div>
 							</div>
 							<!-- ===== Signature ===== -->
@@ -395,11 +434,17 @@ padding-top: 6rem;
 
 <div style="border: 1px solid #e4e6ef;border-radius: 20px;">
 										<!-- LEFT: Signature Image -->
-										<div class="d-flex  flex-column align-items-center gap-2 ps-15 pe-15 pt-4 pb-4">
+										<div class="d-flex  flex-column align-items-center gap-2 ps-15 pe-15 pt-3 pb-4
+										 <c:choose>
+        <c:when test="${not empty signaturePath}">pt-10 pb-11</c:when>
+    </c:choose>"> 
 											<c:choose>
 												<%-- ✅ มีรูปแล้ว → ล็อค ห้ามเปลี่ยน ไม่มี input file --%>
 												<c:when test="${not empty signaturePath}">
-													<div class="sig-box locked">
+													<div class="sig-box locked
+																 <c:choose>
+        <c:when test="${not empty signaturePath}">m-0</c:when>
+    </c:choose>">
 														<img src="${ctx}${signaturePath}"
 															style="max-height: 160px; max-width: 360px; object-fit: contain;" />
 														<div class="sig-lock-badge">
@@ -570,13 +615,16 @@ padding-top: 6rem;
 		// ── ติดตาม state ──────────────────────────────────────────
 		let confirmed1 = false;
 		let confirmed2 = false;
-		
+		 var selectedFiles = []; 
 		// ── เปิดใช้ Submit เมื่อทำครบ ──────────────────────────────
 		function checkSubmitReady() {
-// 		    const sigOk = hasSignature || document.getElementById('sigFileInput') &&
-// 		                  document.getElementById('sigFileInput').files.length > 0;
-// 		    const ready = confirmed1 && confirmed2 && sigOk;
-// 		    document.getElementById('btnSubmit').disabled = !ready;
+		    const sigOk = hasSignature || document.getElementById('sigFileInput') &&
+		                  document.getElementById('sigFileInput').files.length > 0;
+		    const amount = document.getElementById('amount').value != ''
+		    const itemSelect =	document.getElementById('itemSelect').value != ''  &&  document.getElementById('itemSelect').value != 'All'
+			const subItemSelect = (document.getElementById('subItemSelect').value != '' && document.getElementById('subItemSelect').disabled != true) || document.getElementById('subItemSelect').disabled 
+		    const ready = confirmed1 && sigOk && amount && itemSelect && subItemSelect;
+		    document.getElementById('BtnSubmit_Equipment_Request').disabled = !ready;
 		}
 		
 		// ── Upload Signature Preview ───────────────────────────────
@@ -588,9 +636,8 @@ padding-top: 6rem;
         if (!file) return;
 
         try {
-            // เรียกฟังก์ชันด้านบนได้ทันที ไม่เกิดปัญหา ReferenceError หรือ 404 แน่นอน
+       
             const processedFile = await processAndRemoveWhiteBg(file);
-            console.log('processedFile ทำสำเร็จแล้ว:', processedFile);
             
             const dt = new DataTransfer();
             dt.items.add(processedFile);
@@ -600,7 +647,6 @@ padding-top: 6rem;
             console.error("Image processing failed", error);
         }
 
-        // พรีวิวรูปภาพขึ้นหน้าจอตามปกติ
         const reader = new FileReader();
         reader.onload = function (e) {
             const box = document.getElementById('uploadSignatureBox');
@@ -636,16 +682,23 @@ padding-top: 6rem;
 		
 		    // เพิ่ม border เขียวให้ box
 		    document.getElementById('receiverBox' + slot).classList.add('receiver-confirmed');
-		
+		  
 		    if (slot === 1) confirmed1 = true;
-		    if (slot === 2) confirmed2 = true;
+// 		    if (slot === 2) confirmed2 = true;
 		
 		    checkSubmitReady();
 		}
 		
 		// ── เช็ค initial state (กรณีมี signature แล้ว) ────────────
 		checkSubmitReady();
-
+	    function getFileIconPathLocal(fileName) {
+	        var ext = fileName.split('.').pop().toLowerCase();
+	        switch (ext) {
+	            case 'pdf': return 'assets/media/svg/files/pdf.svg';
+	            case 'doc': case 'docx': return 'assets/media/svg/files/doc.svg';
+	            default: return 'assets/media/svg/files/folder-document.svg';
+	        }
+	    }
 		
 	// Image compression logic
 	async function compressImage(file, maxWidth = 1280, maxHeight = 1280, quality = 0.8) {
@@ -695,79 +748,205 @@ padding-top: 6rem;
 	}
 	
 	 function submitData(id_btn) {
-		 console.log('id btn',id_btn.id)
-		    // เพิ่ม .trim() ป้องกันช่องว่าง \t \n หลุดไปกับค่า Value
-		    var item_catalog = $('#userSelect').val() ? $('#userSelect').val().trim() : '';
-		    var quantity = $('#quantity').val() ? $('#quantity').val().trim() : '';
+		 console.log('id btn', id_btn.id);
+		 var item_catalog = $('#itemSelect').val() ? $('#itemSelect').val().trim() : '';
+		 var quantity = $('#quantity').val() ? $('#quantity').val().trim() : '';
+		 var description = $('#Description').val() ? $('#Description').val().trim() : '';
 		    
-		    // ดึงค่า Description มารอไว้ (ใช้ ID ให้ตรงกับที่ออกแบบไว้ใน HTML)
-		    var description = $('#Description').val() ? $('#Description').val().trim() : '';
-           
-		    var status
-		    if(id_btn.id == 'BtnSaveDraft'){
-		    	status = '0'
-		    }else{
-		    	status = '2'
-		    }
-		    const formData = new FormData();
-		    
-		    const fileInput = document.getElementById('sigFileInput');
-		    console.log('fileInput >>',fileInput)
-		 
-		    if (fileInput && fileInput.files.length > 0) {
-		        formData.append('files', fileInput.files[0]); 
-		        formData.append('filesFileName', fileInput.files[0].name);
-		    } else {
-		        formData.append('filesFileName', '');
-		    }
-		    
-		   
-// 		    2. ย้ายข้อมูลทั้งหมดจาก Object เดิม มา append เข้า formData ตรง ๆ
-		    formData.append('mr_id', $('#mr_id').text()); // ใช้ .text() ตามโค้ดเดิมของคุณ
-		    formData.append('catalog_items_id', item_catalog);
-		    formData.append('amount', $('#amount').val());
-		    formData.append('description', $('#description').val());
-		    formData.append('request_user', $('#userId').val());
-		    formData.append('item_sub_id', $('#subItemSelect').val());
-		    formData.append('items_type', $('#userSelect').find(':selected').attr('data-items_type'));
-		    formData.append('status', status);
-		    formData.append('url_ref', $('#urlref').val());
-		    formData.append('action', "insert");
-		    for (var pair of formData.entries()) {
-		        console.log(pair[0] + ' >> ', pair[1]);
-		    }
-		    
-		    $.ajax({
-		        url: ctx + '/equipment_request_save',
-		        method: 'POST',
-		        data: formData,
-		        processData: false,   // ⚠️ สำคัญมาก: ห้าม jQuery แปลงข้อมูล
-		        contentType: false,   // ⚠️ สำคัญมาก: ให้เบราว์เซอร์ตั้งค่า boundary เอง
-		        success: function (res) {
-		            $('#modal_equipment').modal('hide');
-		            Swal.fire({
-		                title: 'Success!',
-		                text: 'Item saved successfully!',
-		                icon: 'success',
-		                timer: 1000,
-		                timerProgressBar: true,
-		                showConfirmButton: false
-		            }).then(() => {
-		            	window.location.replace("equipment_request_list");	
-		            });
-		        },
-		        error: function (xhr) {
-		            // ดูรายละเอียดของ Error ที่เกิดขึ้นจริงใน Console (F12)
-		            console.error("HTTP Status:", xhr.status);
-		            console.error("Error Response:", xhr.responseText);
-		            Swal.fire('Error!', 'Failed to submit return request.', 'error');
-		        }
-		    });
+		 var status;
+		 if (id_btn.id == 'BtnSaveDraft') {
+		     status = '0';
+		 } else {
+		     status = '2';
+		 }
+		 const formData = new FormData();
+		     
+		 // ชุดที่ 1: ลายเซ็น ยึดคีย์ 'files' ตามโมเดลเดิมของคุณ
+		 const fileInput = document.getElementById('sigFileInput');
+		 if (fileInput && fileInput.files.length > 0) {
+		     formData.append('files', fileInput.files[0]); 
+		     formData.append('filesFileName', fileInput.files[0].name);
+		 } else {
+		     formData.append('filesFileName', '');
+		 }
+		     
+		 // ชุดที่ 2: ลิสต์ไฟล์แนบ (ยึดตามคีย์ระบบเดิมคือ fileUpload)
+		 var inputFile = document.getElementById("myFile");
+
+		 if (selectedFiles && selectedFiles.length > 0) {
+		     
+		     var dataTransfer = new DataTransfer();
+		     selectedFiles.forEach(file => dataTransfer.items.add(file));
+		     inputFile.files = dataTransfer.files;
+		     
+		     // วนลูปยัดกลุ่มไฟล์แนบเข้าคีย์ fileUpload (แมปเข้าลิสต์หลังบ้าน)
+		     selectedFiles.forEach(file => {
+		         formData.append('fileUpload', file); 
+		     });
+		     
+		     // แปลงชื่อไฟล์แนบเป็นสตริงก์ JSON
+		     var fileNames = selectedFiles.map(file => file.name);
+		     var filesUploadFileNameEl = document.getElementById("filesUploadFileName");
+		     if (filesUploadFileNameEl) {
+		         filesUploadFileNameEl.value = JSON.stringify(fileNames);
+		     }
+		     
+		     // ⚠️ ส่งชื่อไฟล์เป็น JSON String ผ่านคีย์ชื่อ 'filesUploadFileName' (ต้องตรงกับ Java)
+		     formData.append('filesUploadFileName', JSON.stringify(fileNames));
+		     
+		     var fileUploadIdEl = document.getElementById("fileUploadId");
+		     if (fileUploadIdEl) {
+		         if (!fileUploadIdEl.value || fileUploadIdEl.value.trim() === "") {
+		             fileUploadIdEl.value = "[]";
+		         }
+		         formData.append('fileUploadId', fileUploadIdEl.value);
+		     }
+		 }
+
+		 // ยัดฟิลด์ข้อมูลอื่น ๆ
+		 formData.append('catalog_items_id', item_catalog);
+		 formData.append('amount', $('#amount').val());
+		 formData.append('description', $('#description').val());
+		 formData.append('request_user', $('#userId').val());
+		 formData.append('item_sub_id', $('#subItemSelect').val());
+		 formData.append('items_type', $('#itemSelect').find(':selected').attr('data-items_type'));
+		 formData.append('status', status);
+		 formData.append('url_ref', $('#urlref').val());
+		 formData.append('action', "insert");
+
+		 $.ajax({
+		     url: ctx + '/equipment_request_save',
+		     method: 'POST',
+		     data: formData,
+		     processData: false,   
+		     contentType: false,   
+		     success: function (res) {
+		         $('#modal_equipment').modal('hide');
+		         Swal.fire({
+		             title: 'Success!',
+		             text: 'Item saved successfully!',
+		             icon: 'success',
+		             timer: 1000,
+		             timerProgressBar: true,
+		             showConfirmButton: false
+		         }).then(() => {
+		             window.location.replace("equipment_request_list");	
+		         });
+		     },
+		     error: function (xhr) {
+		         console.error("HTTP Status:", xhr.status);
+		         Swal.fire('Error!', 'Failed to submit return request.', 'error');
+		     }
+		 });
+
 		}
-	
+	 
+	   function renderNewFileList() {
+	    	var fileListDiv = document.getElementById('newFileList');
+	    	fileListDiv.innerHTML = "";
+	        fileListDiv.innerHTML = ""; 
+
+// 	        fileListDiv.style.display = "flex";
+// 	        fileListDiv.style.flexDirection = "column"; 
+
+	        if (selectedFiles.length > 0) {
+	            selectedFiles.forEach(file => {
+	                const fileName = file.name;
+	                const lastDotIndex = fileName.lastIndexOf('.');
+	                const nameOnly = fileName.substring(0, lastDotIndex);
+	                const fileExt = fileName.substring(lastDotIndex); // .pdf
+	                const iconPath = getFileIconPath(fileName);
+
+	                const outerDiv = document.createElement('div');
+	                outerDiv.className = 'p-2 rounded border text-gray-800';
+
+	                outerDiv.innerHTML = `
+	                    <div class="d-flex p-2 rounded" style="width: 18rem">
+	                        <div class="d-flex text-decoration-none text-gray-800" style="flex-grow: 1;">
+	                            <img src="` + iconPath + `" class="w-25px h-25px me-3" alt="icon" />
+	                            <span class="fs-6 fw-medium">
+	                                ` + nameOnly + `
+	                                <span class="text-gray-800 fw-medium ms-1">` + fileExt + `</span>
+	                            </span>
+	                        </div>
+	                        
+	                        <span class="badge badge-light-danger bg-hover cursor-pointer delete-btn ms-3">
+	                            <i class="ki-duotone ki-trash text-danger fs-2">
+	                                <span class="path1"></span><span class="path2"></span>
+	                                <span class="path3"></span><span class="path4"></span><span class="path5"></span>
+	                            </i>
+	                        </span>
+	                    </div>
+	                `;
+
+	                outerDiv.querySelector('.delete-btn').addEventListener('click', function() {
+	                    selectedFiles = selectedFiles.filter(f => f.name !== fileName);
+	                    renderNewFileList(); 
+	                    updateInputFiles(); 
+	                });
+
+	                fileListDiv.appendChild(outerDiv);
+	            });
+	        }
+	    }
+	   
+	    function getFileIconPath(fileName) {
+	        var ext = fileName.split('.').pop().toLowerCase();
+	        switch (ext) {
+	            case 'pdf': return 'assets/media/svg/files/pdf.svg';
+	            case 'doc': case 'docx': return 'assets/media/svg/files/doc.svg';
+	            default: return 'assets/media/svg/files/folder-document.svg';
+	        }
+	    }
+
+	    function updateInputFiles() {
+	        var inputFile = document.getElementById("myFile");
+	        var dataTransfer = new DataTransfer();
+	        selectedFiles.forEach(file => dataTransfer.items.add(file));
+	        inputFile.files = dataTransfer.files;
+	    }
+	 
+	   async function processFiles(fileListInput) {
+	    	const maxSize = 2 * 1024 * 1024;
+	        var oversizedFiles = [];
+
+	        for (let i = 0; i < fileListInput.length; i++) {
+	            const file = fileListInput[i];
+	            const existing = selectedFiles.find(f => f.name === file.name && f.size === file.size);
+	            
+	            if (!existing) {
+	                
+	                if (file.type.match(/image\/(jpeg|jpg|png)/)) {
+	                    const processedFile = await compressImage(file);
+	                    selectedFiles.push(processedFile);
+	                } else {
+	                    if (file.size > maxSize) {
+	                        oversizedFiles.push(file.name);
+	                    } else {
+	                        selectedFiles.push(file);
+	                    }
+	                }
+	                const errorMsgAF = document.getElementById("errorMsgAF");
+	                if (oversizedFiles.length > 0) {
+	                    errorMsgAF.innerHTML = "Files exceed 2MB: <strong>" + oversizedFiles.join(", ") + "</strong>";
+	                } else {
+	                    errorMsgAF.textContent = "";
+	                }
+	            }
+	            
+	        }
+	        renderNewFileList();
+	        updateInputFiles();
+	    }
+	 
+	 
 	var dropdown
 	var dataList
 	$(document).ready(function() {
+		
+		   document.getElementById('myFile').addEventListener('change', function(event) {
+		        processFiles(event.target.files);
+		    });
 		
 		$('#receiverBtn1').on('click', function() {
 			console.log('check data')
@@ -786,7 +965,6 @@ padding-top: 6rem;
 		    success: function (res) {
 		        // เอาเลขรหัสที่ได้จากหลังบ้าน ไปใส่ในช่องกรอกข้อมูล
 		        if (res && res.nextMrId) {
-		            $("#mr_id").text(res.nextMrId); 
 		            dropdown = document.getElementById('subItemSelect'); subItemSelect
 		            
 		          	 dataList = Array.from(dropdown.options).map(option => {
@@ -827,7 +1005,7 @@ padding-top: 6rem;
 	            }
 	        }}); 
 	
-	 $('#userSelect').select2({
+	 $('#itemSelect').select2({
 	        placeholder: "ค้นหา...",
 	        allowClear: true,
 	        width: '100%',
@@ -845,7 +1023,13 @@ padding-top: 6rem;
 	            }
 	        }
 	    });
-
+	    $('input, select, textarea').on('input change', function() {
+	        // $(this) คือ element ที่เกิดการเปลี่ยนแปลง
+	        console.log('ID ที่เปลี่ยน:', $(this).attr('id'));
+	        console.log('ค่าใหม่:', $(this).val());
+	        checkSubmitReady()
+	    });
+	    
 //     $('#BtnSubmit_Equipment_Request').on('click', function () {
 //     	submitData()
 	        /* var url = CTX + '/' + (id ? 'item_catalog_update' : 'item_catalog_add'); */
@@ -888,8 +1072,8 @@ padding-top: 6rem;
 	  
 			   const filteredResult = dataList.filter(item => {
 			    // กรองเอาแถวเริ่มต้นติดมาด้วย และคัดเฉพาะตัวที่ idProduct ตรงกัน
-			    return item.parent_product == $('#userSelect').val()
-// 			    && item.parent_product == $('#userSelect').find(':selected').attr('data-parent_product') 
+			    return item.parent_product == $('#itemSelect').val()
+// 			    && item.parent_product == $('#itemSelect').find(':selected').attr('data-parent_product') 
 			    && item.parent_product != 0 && item.value != 'allType'
 				});
 	         console.log(filteredResult)
@@ -918,6 +1102,8 @@ padding-top: 6rem;
             if (typeof subDropdown.trigger === 'function') {
                 subDropdown.trigger('change'); 
             }
+            
+            $('#unit').text( $('#itemSelect').find(':selected').attr('data-unit_name'))
 	}
 </script>
 	
