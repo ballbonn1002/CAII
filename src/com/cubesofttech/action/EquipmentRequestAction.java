@@ -25,7 +25,6 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.cubesofttech.dao.CatalogEquipmentDAO;
 import com.cubesofttech.dao.EquipmentRequestMrDAO;
 import com.cubesofttech.dao.ExpTravelTypeDAO;
 import com.cubesofttech.dao.ExpenseDAO;
@@ -34,7 +33,6 @@ import com.cubesofttech.dao.ExpenseGroupDAO;
 import com.cubesofttech.dao.FileUploadDAO;
 import com.cubesofttech.dao.ProductDAO;
 import com.cubesofttech.dao.UserDAO;
-import com.cubesofttech.model.CatalogEquipment;
 import com.cubesofttech.model.EquipmentRequestMr;
 import com.cubesofttech.model.DocStatus;
 import com.cubesofttech.model.ExpTravelType;
@@ -56,9 +54,6 @@ import org.json.JSONObject;
 
 
 public class EquipmentRequestAction extends ActionSupport {
-
-	  @Autowired
-	   private CatalogEquipmentDAO catalogEquipmentDAO;
 	  
 	  @Autowired
 	   private EquipmentRequestMrDAO equipmentRequestMrDAO;
@@ -324,14 +319,6 @@ public class EquipmentRequestAction extends ActionSupport {
 	  public void setSelectedCatalogId(long selectedCatalogId) {
 		  this.selectedCatalogId = selectedCatalogId;
 	  }
-	    
-	    public CatalogEquipmentDAO getCatalogEquipmentDAO() {
-		return catalogEquipmentDAO;
-	}
-
-	  public void setCatalogEquipmentDAO(CatalogEquipmentDAO catalogEquipmentDAO) {
-		  this.catalogEquipmentDAO = catalogEquipmentDAO;
-	  }   
 
 	HttpServletRequest request = ServletActionContext.getRequest();
 	HttpServletResponse response = ServletActionContext.getResponse();
@@ -646,7 +633,6 @@ public class EquipmentRequestAction extends ActionSupport {
         }
     }
     
-	 List<CatalogEquipment> catalogEquipmentList = null;
 	 List<Product> ProductList = null;
     
 	    public String initgetMaster() {
@@ -668,22 +654,9 @@ public class EquipmentRequestAction extends ActionSupport {
 	        	request.setAttribute("ProductList", this.Product);
 	        	        	
 	    
-//	        	 catalogEquipmentList = catalogEquipmentDAO.findAll();
 	            
 	            List<Map<String, Object>> unionList = new ArrayList<>();
 	            
-//	            for (CatalogEquipment eq : catalogEquipmentList) {
-//	                Map<String, Object> item = new HashMap<>();
-//	                item.put("id", eq.getCatalogEquipmentId());
-//	                item.put("name", eq.getCatalogEquipmentName());
-//	                item.put("type", "EQ");
-//	                item.put("parent_product_id", "");
-//	                item.put("items_type", eq.getItemsType());
-//                    item.put("unit_name", "");	
-//                    item.put("unit_id", "");
-//	                unionList.add(item);
-//	            }
-
 	            Product product = new Product();
 	            // 1. เรียกใช้งานข้อมูลจากฐานข้อมูลจริง
 	               List<Object[]> rawDataList = productDAO.getArrayProduct(product);
@@ -1046,20 +1019,9 @@ public class EquipmentRequestAction extends ActionSupport {
 	        
         	// ส่งออกไปหน้าบ้านเหมือนเดิม
         	request.setAttribute("ProductList", this.Product);
-	        
-//        	 catalogEquipmentList = catalogEquipmentDAO.findAll();
-	            
+	                   
 	            List<Map<String, Object>> unionList = new ArrayList<>();
 	            
-//	            for (CatalogEquipment eq : catalogEquipmentList) {
-//	                Map<String, Object> item = new HashMap<>();
-//	                item.put("id", eq.getCatalogEquipmentId());
-//	                item.put("name", eq.getCatalogEquipmentName());
-//	                item.put("type", "EQ");
-//	                item.put("parent_product_id", "");
-//	                item.put("items_type", eq.getItemsType());
-//	                unionList.add(item);
-//	            }
 
 	            Product product = new Product();
 	            // 1. เรียกใช้งานข้อมูลจากฐานข้อมูลจริง
