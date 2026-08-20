@@ -124,56 +124,6 @@
                             </div>
                         </div>
                     </div>
-
-                    <%-- ============ Equipment Detail (เฉพาะ Item Type = Equipment) ============
-                         นี่คือสเปค "ระดับรุ่น" (product.spec_ram/spec_ssd/...) ไม่ใช่สเปครายเครื่องจริง
-                         ที่มี serial (equipment.ram/hdd/process/windows ในหน้า equipment_edit.jsp)
-                         อยู่ในฟอร์มเดียวกับ Product Detail เพื่อบันทึกพร้อมกัน (stock_cons_update)
-                         แสดง/ซ่อนตาม Item Type แบบ realtime ด้วย JS (#toggleEquipmentDetail) --%>
-                    <div class="card mb-8 ${isEquipment ? '' : 'd-none'}" id="equipmentDetailWrap">
-                        <div class="card-border-radius">
-                            <div class="card-header border-0 pt-6 d-flex align-items-center justify-content-between">
-                                <h3 class="page-heading text-gray-900 fw-bold mb-0">Equipment Detail</h3>
-                                <div class="card-toolbar">
-                                    <div class="btn btn-sm btn-icon btn-active-light-primary" data-bs-toggle="collapse" data-bs-target="#equipmentDetailBody" aria-expanded="true">
-                                        <i class="ki-duotone ki-down fs-2" id="equipmentDetailChevron"><span class="path1"></span><span class="path2"></span></i>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="separator"></div>
-
-                            <div class="collapse show" id="equipmentDetailBody">
-                                <div class="card-body">
-                                    <div class="row g-6">
-                                        <div class="col-12 col-lg-6">
-                                            <label class="form-label fw-semibold text-gray-700" for="specRam">Ram</label>
-                                            <input type="text" id="specRam" name="specRam" maxlength="100"
-                                                   class="form-control text-gray-700" placeholder="เช่น 16GB"
-                                                   value="${fn:escapeXml(product.specRam)}" />
-                                        </div>
-                                        <div class="col-12 col-lg-6">
-                                            <label class="form-label fw-semibold text-gray-700" for="specSsd">SSD</label>
-                                            <input type="text" id="specSsd" name="specSsd" maxlength="100"
-                                                   class="form-control text-gray-700" placeholder="เช่น 512GB"
-                                                   value="${fn:escapeXml(product.specSsd)}" />
-                                        </div>
-                                        <div class="col-12 col-lg-6">
-                                            <label class="form-label fw-semibold text-gray-700" for="specProcess">Process (CPU)</label>
-                                            <input type="text" id="specProcess" name="specProcess" maxlength="100"
-                                                   class="form-control text-gray-700" placeholder="เช่น Intel Core i5"
-                                                   value="${fn:escapeXml(product.specProcess)}" />
-                                        </div>
-                                        <div class="col-12 col-lg-6">
-                                            <label class="form-label fw-semibold text-gray-700" for="specWindows">Windows</label>
-                                            <input type="text" id="specWindows" name="specWindows" maxlength="100"
-                                                   class="form-control text-gray-700" placeholder="เช่น Windows 11 Pro"
-                                                   value="${fn:escapeXml(product.specWindows)}" />
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
                 </form>
 
                 <%-- ============ Unit of Measure (UOM) ============ --%>
@@ -246,6 +196,83 @@
                         </div>
                     </div>
                 </div>
+
+                <%-- ============ Equipment List (เฉพาะ Item Type = Equipment) ============
+                     รายการเครื่องจริงที่ผูกกับ catalog นี้ (equipment.product_id) - เพิ่มเครื่องผ่าน
+                     popup ที่ดึงรายชื่อเครื่องที่ยังไม่ผูกกับ catalog ไหนเลย (EquipmentDAO.findUnlinked())
+                     กด Save ใน popup แล้วบันทึกลง DB ทันที ไม่ต้องกลับมากด Save ที่ฟอร์มหลักอีกที --%>
+                <c:if test="${isEquipment}">
+                <div class="card mb-8">
+                    <div class="card-border-radius">
+                        <div class="card-header border-0 pt-6 d-flex align-items-center justify-content-between">
+                            <h3 class="page-heading text-gray-900 fw-bold mb-0">Equipment List</h3>
+                            <button type="button" class="btn btn-success d-inline-flex align-items-center px-6 py-3"
+                                    data-bs-toggle="modal" data-bs-target="#equipmentPickerModal">
+                                <i class="ki-duotone ki-plus fs-3 me-2"><span class="path1"></span><span class="path2"></span></i>
+                                <span class="fw-bold">Add Equipment</span>
+                            </button>
+                        </div>
+                        <div class="separator"></div>
+
+                        <div class="card-body">
+                            <table id="linkedEquipmentTable" class="table align-middle fs-6 mb-0">
+                                <thead class="fs-7 text-gray-500 text-uppercase">
+                                    <tr class="fw-semibold">
+                                        <th class="min-w-150px text-nowrap">Item ID</th>
+                                        <th class="min-w-250px text-nowrap">ชื่อเครื่อง</th>
+                                        <th class="min-w-180px text-nowrap">Serial No</th>
+                                        <th class="min-w-120px text-nowrap text-center">Status</th>
+                                        <th class="min-w-180px text-nowrap">ที่ตั้ง</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <c:forEach var="equip" items="${linkedEquipment}">
+                                        <tr>
+                                            <td class="text-gray-900 fw-bold">
+                                                <c:choose>
+                                                    <c:when test="${not empty fn:trim(equip.itemNo)}">${fn:escapeXml(equip.itemNo)}</c:when>
+                                                    <c:otherwise><span class="text-muted">#${equip.equipmentId}</span></c:otherwise>
+                                                </c:choose>
+                                            </td>
+                                            <td class="text-gray-700 fw-normal">
+                                                <c:choose>
+                                                    <c:when test="${not empty fn:trim(equip.name)}">${fn:escapeXml(equip.name)}</c:when>
+                                                    <c:otherwise><span class="text-muted">(ไม่ระบุชื่อ)</span></c:otherwise>
+                                                </c:choose>
+                                            </td>
+                                            <td class="text-gray-700 fw-normal">
+                                                <c:choose>
+                                                    <c:when test="${not empty equip.serialNo}">${fn:escapeXml(equip.serialNo)}</c:when>
+                                                    <c:otherwise><span class="text-muted">-</span></c:otherwise>
+                                                </c:choose>
+                                            </td>
+                                            <td class="text-center">
+                                                <c:choose>
+                                                    <c:when test="${not empty equip.status}"><span class="badge badge-light-primary fw-semibold">${fn:escapeXml(equip.status)}</span></c:when>
+                                                    <c:otherwise><span class="text-muted">-</span></c:otherwise>
+                                                </c:choose>
+                                            </td>
+                                            <td class="text-gray-700 fw-normal">
+                                                <c:choose>
+                                                    <c:when test="${not empty equip.location}">${fn:escapeXml(equip.location)}</c:when>
+                                                    <c:otherwise><span class="text-muted">-</span></c:otherwise>
+                                                </c:choose>
+                                            </td>
+                                        </tr>
+                                    </c:forEach>
+                                    <c:if test="${empty linkedEquipment}">
+                                        <tr>
+                                            <td colspan="5" class="text-center text-muted py-10">
+                                                ยังไม่มีเครื่องผูกกับ item นี้ - กด "Add Equipment" เพื่อเลือกเครื่อง
+                                            </td>
+                                        </tr>
+                                    </c:if>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                </c:if>
 
                 <%-- Sub product card ซ่อนทั้งใบสำหรับ Equipment - รายละเอียดรายเครื่องเก็บที่ตาราง equipment แทน --%>
                 <c:if test="${not isEquipment}">
@@ -445,6 +472,90 @@
     </div>
 </div>
 
+<%-- ============ Modal: Add Equipment (เลือกเครื่องที่ยังไม่ผูก catalog ไหนเลย) ============
+     ต่างจาก modal อื่นในไฟล์นี้ - ไม่ใช่ <form> submit ปกติ เพราะบันทึกเป็น AJAX ตรง
+     (ปุ่ม Save อยู่ใน modal-footer เป็น type="button" ไม่ใช่ type="submit") --%>
+<c:if test="${isEquipment}">
+<div class="modal fade" id="equipmentPickerModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title fw-bold text-gray-900">เลือกเครื่องเพื่อเพิ่มเข้า Item นี้</h3>
+                <button type="button" class="btn btn-icon btn-sm btn-active-light-primary" data-bs-dismiss="modal" aria-label="Close">
+                    <i class="ki-duotone ki-cross fs-1"><span class="path1"></span><span class="path2"></span></i>
+                </button>
+            </div>
+
+            <div class="modal-body">
+                <div class="d-flex align-items-center position-relative mb-6">
+                    <i class="ki-duotone ki-magnifier fs-3 position-absolute ms-5"><span class="path1"></span><span class="path2"></span></i>
+                    <input type="text" id="equipmentPickerSearch" class="form-control form-control-solid ps-14 text-gray-700"
+                           placeholder="ค้นหา Item ID / ชื่อเครื่อง / Serial No" />
+                </div>
+
+                <table id="equipmentPickerTable" class="table align-middle fs-6 mb-0">
+                    <thead class="fs-7 text-gray-500 text-uppercase">
+                        <tr class="fw-semibold">
+                            <th class="w-40px"></th>
+                            <th class="min-w-150px text-nowrap">Item ID</th>
+                            <th class="min-w-250px text-nowrap">ชื่อเครื่อง</th>
+                            <th class="min-w-180px text-nowrap">Serial No</th>
+                            <th class="min-w-120px text-nowrap text-center">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <c:forEach var="equip" items="${unlinkedEquipment}">
+                            <tr>
+                                <td class="text-center">
+                                    <div class="form-check form-check-custom form-check-solid d-inline-flex">
+                                        <input class="form-check-input equipment-pick-checkbox" type="checkbox" value="${equip.equipmentId}" />
+                                    </div>
+                                </td>
+                                <td class="text-gray-900 fw-bold">
+                                    <c:choose>
+                                        <c:when test="${not empty fn:trim(equip.itemNo)}">${fn:escapeXml(equip.itemNo)}</c:when>
+                                        <c:otherwise><span class="text-muted">#${equip.equipmentId}</span></c:otherwise>
+                                    </c:choose>
+                                </td>
+                                <td class="text-gray-700 fw-normal">
+                                    <c:choose>
+                                        <c:when test="${not empty fn:trim(equip.name)}">${fn:escapeXml(equip.name)}</c:when>
+                                        <c:otherwise><span class="text-muted">(ไม่ระบุชื่อ)</span></c:otherwise>
+                                    </c:choose>
+                                </td>
+                                <td class="text-gray-700 fw-normal">
+                                    <c:choose>
+                                        <c:when test="${not empty equip.serialNo}">${fn:escapeXml(equip.serialNo)}</c:when>
+                                        <c:otherwise><span class="text-muted">-</span></c:otherwise>
+                                    </c:choose>
+                                </td>
+                                <td class="text-center">
+                                    <c:choose>
+                                        <c:when test="${not empty equip.status}"><span class="badge badge-light-primary fw-semibold">${fn:escapeXml(equip.status)}</span></c:when>
+                                        <c:otherwise><span class="text-muted">-</span></c:otherwise>
+                                    </c:choose>
+                                </td>
+                            </tr>
+                        </c:forEach>
+                    </tbody>
+                </table>
+                <c:if test="${empty unlinkedEquipment}">
+                    <div class="text-center text-muted py-10">ไม่มีเครื่องว่างให้เลือก - เครื่องทั้งหมดถูกผูกกับ catalog อื่นแล้ว</div>
+                </c:if>
+            </div>
+
+            <div class="modal-footer d-flex justify-content-between align-items-center">
+                <span class="text-gray-600 fs-7"><span id="equipmentPickerSelectedCount">0</span> รายการที่เลือก</span>
+                <div class="d-flex gap-3">
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" id="btnEquipmentPickerSave" class="btn btn-success">Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</c:if>
+
 <c:if test="${not isEquipment}">
 <%-- ทั้งสอง modal นี้เปิดจากปุ่มใน Sub product card ด้านบน ซ่อนคู่กันตามเงื่อนไขเดียวกัน --%>
 <%-- ============ Modal: Create Sub product ============ --%>
@@ -576,20 +687,6 @@
         var $editForm = $('#stockConsEditForm');
         var $editFooter = $('#stockConsEditFooter');
 
-        // ---- Equipment Detail: แสดง/ซ่อนตาม Item Type แบบ realtime (เหมือน stock_cons_add.jsp) ----
-        // ต้อง sync ก่อนจับ initialState ด้านล่าง ไม่งั้นถ้าเปิดหน้ามาด้วย type ที่ไม่ใช่ Equipment
-        // แต่ DB ยังมีค่า spec ค้างอยู่ (เช่น เคยเป็น Equipment มาก่อนแล้วเปลี่ยน type) การ clear ค่า
-        // ตรงนี้จะไปเกิด "หลัง" initialState ถูกจับไปแล้ว ทำให้ปุ่ม Cancel/Save โผล่มาเองทั้งที่ผู้ใช้ยังไม่ได้แก้อะไร
-        function toggleEquipmentDetail() {
-            var isEquipmentNow = $('#productType').val() === '1';
-            $('#equipmentDetailWrap').toggleClass('d-none', !isEquipmentNow);
-            if (!isEquipmentNow) {
-                // เคลียร์ค่าเมื่อสลับออกจาก Equipment กันสเปคเก่าติดไปกับ item type อื่นโดยไม่ตั้งใจ
-                $('#specRam, #specSsd, #specProcess, #specWindows').val('');
-            }
-        }
-        toggleEquipmentDetail(); // sync สถานะเริ่มต้นเผื่อ browser จำค่า select เดิมไว้ตอน refresh
-
         // เก็บค่าตั้งต้นของทุก field ไว้เทียบว่ามีการแก้จริงไหม (กันกรณีพิมพ์แล้วลบกลับเป็นค่าเดิม)
         var initialState = $editForm.serialize();
 
@@ -599,17 +696,6 @@
         }
 
         $editForm.on('input change', 'input, select, textarea', refreshEditFooter);
-
-        // refreshEditFooter ถูกเรียกอยู่แล้วจาก delegated 'change' handler ด้านบน ไม่ต้องผูกซ้ำที่นี่
-        $('#productType').on('change', toggleEquipmentDetail);
-
-        // ---- Equipment Detail: สลับไอคอนตอนกดย่อ/ขยาย ----
-        $('#equipmentDetailBody').on('show.bs.collapse', function () {
-            $('#equipmentDetailChevron').removeClass('ki-down').addClass('ki-up');
-        });
-        $('#equipmentDetailBody').on('hide.bs.collapse', function () {
-            $('#equipmentDetailChevron').removeClass('ki-up').addClass('ki-down');
-        });
 
         // toggle Active: sync ค่าเข้า hidden ก่อน แล้วค่อยเช็ค dirty (serialize อ่านจาก hidden)
         $('#activeToggle').on('change', function () {
@@ -622,9 +708,6 @@
             $editForm[0].reset();
             // reset คืนค่า checkbox แต่ไม่คืน hidden -> sync ตามสถานะ checkbox หลัง reset
             $('#activeValue').val($('#activeToggle').is(':checked') ? '1' : '0');
-            // reset คืนค่า <select> ให้แล้ว แต่ .d-none ของการ์ด Equipment Detail เป็น class ที่ตั้งเอง
-            // ต้อง sync ใหม่เอง ไม่งั้นถ้าเพิ่งสลับ Item Type ค้างไว้ การ์ดจะไม่โผล่กลับมาตามค่าที่ reset แล้ว
-            toggleEquipmentDetail();
             refreshEditFooter();
         });
 
@@ -664,6 +747,100 @@
                 },
                 error: function () {
                     notifyError('อัพเดทข้อมูลไม่สำเร็จ');
+                },
+                complete: function () {
+                    $btn.prop('disabled', false).removeAttr('data-kt-indicator');
+                }
+            });
+        });
+
+        // ==================== Equipment: main list (DataTables, ไม่ใช่ modal เลย init ได้ตรงๆ) ====================
+        if ($('#linkedEquipmentTable').length) {
+            $('#linkedEquipmentTable').DataTable({
+                dom: "<'table-responsive'tr>" +
+                     "<'row align-items-center mt-6'<'col-sm-auto mb-2 mb-sm-0'l><'col-sm d-flex justify-content-sm-end'p>>",
+                pageLength: 100,
+                lengthMenu: [10, 20, 50, 100],
+                info: false,
+                ordering: true,
+                autoWidth: false,
+                language: { lengthMenu: '_MENU_' }
+            });
+        }
+
+        // ==================== Equipment: popup เลือกเครื่องมาผูกกับ catalog ====================
+        // DataTables คำนวณความกว้างคอลัมน์ผิดถ้า init ตอน modal ยังซ่อนอยู่ (display:none)
+        // จึงต้อง init ตอน modal โชว์แล้วเท่านั้น (shown.bs.modal) และ init ครั้งเดียวพอ
+        $('#equipmentPickerModal').on('shown.bs.modal', function () {
+            if (!$.fn.dataTable.isDataTable('#equipmentPickerTable')) {
+                $('#equipmentPickerTable').DataTable({
+                    dom: "<'table-responsive'tr>" +
+                         "<'row align-items-center mt-6'<'col-sm-auto mb-2 mb-sm-0'l><'col-sm d-flex justify-content-sm-end'p>>",
+                    pageLength: 10,
+                    lengthMenu: [10, 20, 50, 100],
+                    info: false,
+                    ordering: true,
+                    autoWidth: false,
+                    language: { lengthMenu: '_MENU_' },
+                    columnDefs: [{ targets: 0, orderable: false }]
+                });
+            }
+        });
+
+        $('#equipmentPickerSearch').on('keyup', function () {
+            if ($.fn.dataTable.isDataTable('#equipmentPickerTable')) {
+                $('#equipmentPickerTable').DataTable().search(this.value).draw();
+            }
+        });
+
+        // นับจำนวนที่ติ๊กไว้ - checkbox render มาจาก server ตั้งแต่โหลดหน้า (delegate กันเหนียว)
+        $('#equipmentPickerTable').on('change', '.equipment-pick-checkbox', function () {
+            $('#equipmentPickerSelectedCount').text($('.equipment-pick-checkbox:checked').length);
+        });
+
+        // ปิด modal แล้วเคลียร์สถานะ กันเลือกค้างจากรอบก่อนโผล่มาอีกตอนเปิดใหม่
+        $('#equipmentPickerModal').on('hidden.bs.modal', function () {
+            $('.equipment-pick-checkbox').prop('checked', false);
+            $('#equipmentPickerSelectedCount').text('0');
+            $('#equipmentPickerSearch').val('');
+            if ($.fn.dataTable.isDataTable('#equipmentPickerTable')) {
+                $('#equipmentPickerTable').DataTable().search('').draw();
+            }
+        });
+
+        // กด Save ใน popup - บันทึกลง DB ทันทีแบบ AJAX แล้วรีโหลดหน้าให้ตาราง Equipment List
+        // กับรายการใน popup (ที่เหลือแค่เครื่องว่างจริง) อัปเดตพร้อมกันทั้งคู่
+        $('#btnEquipmentPickerSave').on('click', function () {
+            var ids = $('.equipment-pick-checkbox:checked').map(function () { return $(this).val(); }).get();
+            if (ids.length === 0) {
+                if (window.Swal) { Swal.fire('กรุณาเลือกรายการ', 'เลือกอย่างน้อย 1 เครื่อง', 'warning'); }
+                else { alert('กรุณาเลือกอย่างน้อย 1 เครื่อง'); }
+                return;
+            }
+
+            var $btn = $(this);
+            $btn.prop('disabled', true).attr('data-kt-indicator', 'on');
+
+            $.ajax({
+                url: CONTEXT + '/stock_equ_link_save',
+                type: 'POST',
+                dataType: 'json',
+                data: { productId: PRODUCT_ID, equipmentIds: ids.join(',') },
+                success: function (res) {
+                    if (res && res.success === true) {
+                        if (window.Swal) {
+                            Swal.fire({ icon: 'success', title: 'บันทึกสำเร็จ', text: res.message || 'เพิ่มเครื่องสำเร็จ' })
+                                .then(function () { window.location.reload(); });
+                        } else {
+                            alert(res.message || 'บันทึกสำเร็จ');
+                            window.location.reload();
+                        }
+                    } else {
+                        notifyError(res && res.message ? res.message : 'บันทึกไม่สำเร็จ');
+                    }
+                },
+                error: function () {
+                    notifyError('บันทึกไม่สำเร็จ กรุณาลองใหม่');
                 },
                 complete: function () {
                     $btn.prop('disabled', false).removeAttr('data-kt-indicator');

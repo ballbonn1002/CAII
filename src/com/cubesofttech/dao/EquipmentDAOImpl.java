@@ -469,8 +469,24 @@ public class EquipmentDAOImpl implements EquipmentDAO {
 		}
 		return (list != null) ? list : new ArrayList<Equipment>();
 	}
-	
-	
+
+	@Override
+	public List<Equipment> findUnlinked() throws Exception {
+		Session session = this.sessionFactory.getCurrentSession();
+		List<Equipment> list = null;
+		try {
+			// trim() กัน edge case product_id เป็น whitespace ล้วน (ตาม pattern เดียวกับ
+			// ProductDAOImpl ที่ join equipment - ดู skill product-module)
+			String hql = "from Equipment where productId is null or trim(productId) = '' order by itemNo asc";
+			Query query = session.createQuery(hql);
+			list = query.list();
+		} catch (HibernateException e) {
+			e.printStackTrace();
+		}
+		return (list != null) ? list : new ArrayList<Equipment>();
+	}
+
+
 //	@Override
 //	public Object[] getUserCreateByEquipmentId(int id){
 //		Session session = this.sessionFactory.getCurrentSession();

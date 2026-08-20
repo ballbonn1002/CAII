@@ -86,4 +86,12 @@ public interface EquipmentDAO {
 	 */
 	List<Equipment> findByProductIds(List<String> productIds) throws Exception;
 
+	/**
+	 * เครื่องที่ยังไม่ได้ผูกกับ catalog ไหนเลย (product_id ว่าง) - ใช้เป็นรายการให้เลือก
+	 * ในหน้า Settings ของ Equipment ตอนกด "เพิ่มเครื่อง" เรียงตาม item_no
+	 * ไม่กรอง status เพื่อให้ตรงกับพฤติกรรมของหน้า equipment_list เดิม (EquipmentAction.table()
+	 * ก็ไม่กรอง status เหมือนกัน)
+	 */
+	List<Equipment> findUnlinked() throws Exception;
+
 }
