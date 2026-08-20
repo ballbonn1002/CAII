@@ -16,6 +16,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
 import java.util.Base64;
 import java.util.Date;
 import java.util.HashMap;
@@ -56,6 +57,7 @@ import com.cubesofttech.model.LeaveType;
 import com.cubesofttech.model.Role;
 import com.cubesofttech.model.RoleAuthorizedObject;
 import com.cubesofttech.model.User;
+import com.cubesofttech.service.FileAttachmentService;
 import com.cubesofttech.service.LeaveService;
 import com.cubesofttech.service.LogService;
 import com.cubesofttech.service.NotificationService;
@@ -108,7 +110,10 @@ public class LeaveAction extends ActionSupport {
 
 	@Autowired
 	public FileUploadDAO fileuploadDAO;
-	
+
+	@Autowired
+	private FileAttachmentService fileAttachmentService;
+
 	@Autowired
     private LogService logService;
 
@@ -1676,63 +1681,19 @@ public class LeaveAction extends ActionSupport {
 			Timestamp endDate = DateUtil.dateFormatEdit(newDateTo);
 			Integer id = leaveDAO.getMaxId() + 1;
 
-			int maxId = fileuploadDAO.getMaxId() + 1;
-			FileUpload fileupload = new FileUpload();
+			String newLeaveFileId = null;
 			if (fileUpload != null) {
-				ServletContext context = request.getServletContext();
-				String fileServerPath = context.getRealPath("/");
-				String fileName = fileUploadFileName;
-				log.info("fileName = " + fileName);
-
-				int l = fileUploadFileName.length();
-				int split = fileUploadFileName.lastIndexOf('.');
-				String name = fileUploadFileName.substring(0, split);
-				String type = (String) fileUploadFileName.subSequence(split, l);
-
-				String serverFileName = maxId + type; // 101.jpg
-				String destFolder = fileServerPath + "upload/user/";
-				fileupload.setPath("/upload/user/" + serverFileName);
-				java.io.File directory = new java.io.File(destFolder);
-			    if (!directory.exists()) {
-			        directory.mkdirs(); 
-			    }
-			    
-				String ext = type.toLowerCase();
-				if (ext.equals(".jpg") || ext.equals(".jpeg") || ext.equals(".png")) {
-					log.info("Original image size = " + fileUploadSize);
-					
-					long limitSize = 500 * 1024;
-					if (fileUpload.length() > limitSize) {
-						try (java.io.FileInputStream fis = new java.io.FileInputStream(fileUpload);
-							java.io.FileOutputStream fos = new java.io.FileOutputStream(new java.io.File(destFolder, serverFileName))) {
-								log.info("Image size bigger than 500 KB");	
-								byte[] resizedBytes = FileUtil.resizeImage(fis, 800, 800, ext.replace(".", ""));
-								fos.write(resizedBytes);
-								fileupload.setSize(String.valueOf(resizedBytes.length));
-								log.info("Resized image size = " + resizedBytes.length);
-						}
-					} else {
-						FileUtil.upload(fileUpload, destFolder, serverFileName);
-						fileupload.setSize(fileUploadSize);
-					}
-					
-				} else {
-					FileUtil.upload(fileUpload, destFolder, serverFileName);
-					fileupload.setSize(fileUploadSize); 
-					log.info("Normal file size = " + fileUploadSize);
+				List<FileUpload> savedFiles = fileAttachmentService.attach(
+					Arrays.asList(fileUpload),
+					Arrays.asList(fileUploadFileName),
+					"leave",
+					String.valueOf(id),
+					onlineUser.getId(),
+					request.getServletContext().getRealPath("/")
+				);
+				if (savedFiles != null && !savedFiles.isEmpty()) {
+					newLeaveFileId = String.valueOf(savedFiles.get(0).getFileId());
 				}
-
-				fileupload.setFileId(maxId);
-				fileupload.setPage("leave");
-				fileupload.setPageId(String.valueOf(maxId));
-				fileupload.setUserId(user);
-				fileupload.setUserCreate(onlineUser.getId());
-				fileupload.setName(name);
-				fileupload.setType(type);
-				fileupload.setUserUpdate(onlineUser.getId());
-				fileupload.setTimeCreate(DateUtil.getCurrentTime());
-				fileupload.setTimeUpdate(DateUtil.getCurrentTime());
-				fileuploadDAO.save(fileupload);
 			}
 
 			// Data send mail
@@ -1754,11 +1715,7 @@ public class LeaveAction extends ActionSupport {
 			leave.setStartTime(time_from);
 			leave.setEndTime(time_to);
 			leave.setNoDay(noDay);
-			if (fileUpload != null) {
-				leave.setLeaveFile(Integer.toString(maxId));
-			} else {
-				leave.setLeaveFile(null);
-			}
+			leave.setLeaveFile(newLeaveFileId);
 			leave.setUserCreate(onlineUser.getId());
 			leave.setUserUpdate(onlineUser.getId());
 			leave.setTimeCreate(DateUtil.getCurrentTime());
@@ -1911,58 +1868,35 @@ public class LeaveAction extends ActionSupport {
 				}
 	            
 				// --- upload new file ---
-				int maxId = fileuploadDAO.getMaxId() + 1;
-				FileUpload fileupload = new FileUpload();
-				
-				ServletContext context = request.getServletContext();
-				String fileServerPath = context.getRealPath("/");
-				String fileName = fileUploadFileName;
-				
-				int l = fileUploadFileName.length();
-				int split = fileUploadFileName.lastIndexOf('.');
-				String name = fileUploadFileName.substring(0, split);
-				String type = (String) fileUploadFileName.subSequence(split, l); //.jpg
+				java.io.File toUpload = fileUpload;
+				int dotIdx = fileUploadFileName.lastIndexOf('.');
+				String ext = (dotIdx >= 0) ? fileUploadFileName.substring(dotIdx).toLowerCase() : "";
 
-				String serverFileName = maxId + type; //101.jpg
-				String destFolder = fileServerPath + "upload/user/";
-				fileupload.setPath("/upload/user/" + serverFileName);
-
-				String ext = type.toLowerCase();
 				if (ext.equals(".jpg") || ext.equals(".jpeg") || ext.equals(".png")) {
-					java.io.File directory = new java.io.File(destFolder);
-					if (!directory.exists()) {
-						directory.mkdirs();
-					}
-
+					log.info("Resizing image in Edit mode...");
+					java.io.File resizedTemp = java.io.File.createTempFile("leave_resized_", ext);
 					try (java.io.FileInputStream fis = new java.io.FileInputStream(fileUpload);
-						 java.io.FileOutputStream fos = new java.io.FileOutputStream(new java.io.File(destFolder, serverFileName))) {
-						
-						log.info("Resizing image in Edit mode...");
+						 java.io.FileOutputStream fos = new java.io.FileOutputStream(resizedTemp)) {
 						byte[] resizedBytes = FileUtil.resizeImage(fis, 800, 800, ext.replace(".", ""));
-						
 						fos.write(resizedBytes);
-						fileupload.setSize(String.valueOf(resizedBytes.length));
 						log.info("Resize Image Size = " + resizedBytes.length);
 					}
+					toUpload = resizedTemp;
 				} else {
-					FileUtil.upload(fileUpload, destFolder, serverFileName);
-					fileupload.setSize(fileUploadSize);
 					log.info("Normal Image Size = " + fileUploadSize);
 				}
 
-				// save on db
-				fileupload.setFileId(maxId);
-				fileupload.setPage("leave");
-				fileupload.setPageId(String.valueOf(maxId));
-				fileupload.setUserId(user); 
-				fileupload.setUserCreate(onlineUser.getId());
-				fileupload.setName(name);
-				fileupload.setType(type);
-				fileupload.setUserUpdate(onlineUser.getId());
-				fileupload.setTimeCreate(DateUtil.getCurrentTime());
-				fileupload.setTimeUpdate(DateUtil.getCurrentTime());
-				fileuploadDAO.save(fileupload);
-				leave.setLeaveFile(Integer.toString(maxId));
+				List<FileUpload> savedFiles = fileAttachmentService.attach(
+					Arrays.asList(toUpload),
+					Arrays.asList(fileUploadFileName),
+					"leave",
+					String.valueOf(id),
+					onlineUser.getId(),
+					request.getServletContext().getRealPath("/")
+				);
+				if (savedFiles != null && !savedFiles.isEmpty()) {
+					leave.setLeaveFile(String.valueOf(savedFiles.get(0).getFileId()));
+				}
 			}
 	        
 	        // Logic Manage File Attach

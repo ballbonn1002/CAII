@@ -1,7 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
-
+<fmt:setLocale value="en_US" />
 
 <input type="hidden" id="hasSignature" value="${hasSignature}" />
 <div class="app-main flex-column flex-row-fluid" id="kt_app_main">
@@ -36,8 +36,10 @@
 
                             <div class="card shadow-sm mb-5 mb-xl-10">
                                 <div class="card-header fs-4">
-                                    <div class="card-title m-0">
+                                    <div class="card-title m-0 m-0 d-flex justify-content-between align-items-center w-100">
                                         <h3 class="fw-semibold m-0 text-gray-900">Equipment</h3>
+
+                                        <span class="fs-6">Create By : ${userCreate.name}, <fmt:formatDate value='${userCreate.time_create}' pattern='d MMM YYYY HH:mm' /> </span>
                                     </div>
                                 </div>
 
@@ -49,7 +51,7 @@
                                                 <div id="errorMsg" class="text-center text-danger mb-3"></div>
                                                 <c:set var="imageSrc" value="" />
                                                 <c:if test="${not empty equipmentbyId.image}">
-                                                    <c:set var="imageSrc" value="${pageContext.request.contextPath}/${equipmentbyId.image}" />
+                                                    <c:set var="imageSrc" value="${pageContext.request.contextPath}${equipmentbyId.image}" />
                                                 </c:if>
 
                                                 <div class="border rounded-3 bg-light d-flex align-items-center justify-content-center mb-1" style="width: 200px; height: 200px; overflow: hidden;">
@@ -124,7 +126,6 @@
                                     <div class="row g-5">
                                         <div class="col-md-6">
                                             <label class="form-label fw-medium text-gray-800">Date of Purchase</label>
-                                            <fmt:setLocale value="en_US" />
                                             <fmt:formatDate value="${equipmentbyId.timeCreate}" pattern="dd MMM yyyy" var="fmtDatePurchase" />
                                             <div class="position-relative d-flex align-items-center">
                                                 <span class="svg-icon svg-icon-2 position-absolute mx-4">
