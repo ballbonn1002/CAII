@@ -8,7 +8,6 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
-import com.cubesofttech.model.CatalogEquipment;
 import com.cubesofttech.model.EquipmentRequestMr;
 import com.cubesofttech.model.DocStatus;
 import com.cubesofttech.model.Expense;
