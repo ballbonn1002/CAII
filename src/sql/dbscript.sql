@@ -731,3 +731,10 @@ INSERT INTO `doc_status` (`doc_status_id`, `status_code`, `status_name`, `group`
 
 -- 19/08/2026 June: Delete Table Catalog_consumables.
 DROP TABLE catalog_equipment;
+
+-- 20/08/2026 Phone: (www redesign) Add 'view_count' column to 'article' table for per-article view counter
+ALTER TABLE `article` ADD COLUMN `view_count` INT NOT NULL DEFAULT 0 AFTER `time_post`;
+
+-- 20/08/2026 Phone: (www redesign) Fix footer 'Software Development' link pointing at a blog post instead of the real service page
+UPDATE `footer` SET `footer_url` = 'https://www.cubesofttech.com/software-development'
+WHERE `footer_id` = 28 AND `footer_name` = 'Software Development';
