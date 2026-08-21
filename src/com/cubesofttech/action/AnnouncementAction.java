@@ -350,7 +350,18 @@ public class AnnouncementAction extends ActionSupport {
 			List<Map<String, Object>> announcement = announcementDAO.readcardannounce(Integer.parseInt(id));
 			request.setAttribute("announcement", announcement);
 			
-			fileUploadlist = fileAttachmentService.listAttachments("announcementFiles", String.valueOf(id));
+			fileUploadlist = fileAttachmentService.listAttachments("announcement", String.valueOf(id));
+			// กรองรูปปกออกจาก list ไฟล์แนบ (cover ผูกกับ announcement.file_id เดี่ยว ไม่ใช่รายการไฟล์แนบ)
+			String coverFileId = (announce != null) ? announce.getFile_id() : null;
+			if (fileUploadlist != null && coverFileId != null) {
+				List<FileUpload> filteredFiles = new ArrayList<>();
+				for (FileUpload f : fileUploadlist) {
+					if (!coverFileId.equals(String.valueOf(f.getFileId()))) {
+						filteredFiles.add(f);
+					}
+				}
+				fileUploadlist = filteredFiles;
+			}
 			request.setAttribute("announcementFiles", fileUploadlist);
 
 			try {
@@ -483,7 +494,7 @@ public class AnnouncementAction extends ActionSupport {
 				List<FileUpload> savedAttachFiles = fileAttachmentService.attach(
 					Arrays.asList(files).subList(0, n),
 					Arrays.asList(fileNames).subList(0, n),
-					"announcementFiles",
+					"announcement",
 					announcementIdStr,
 					onlineUser.getId(),
 					request.getServletContext().getRealPath("/")
@@ -546,7 +557,17 @@ public class AnnouncementAction extends ActionSupport {
 	        }
 
 	        log.debug("Editing Announcement ID: " + id);
-	        fileUploadlist = fileAttachmentService.listAttachments("announcementFiles", idStr);
+	        fileUploadlist = fileAttachmentService.listAttachments("announcement", idStr);
+	        // กรองรูปปกออกจาก list ไฟล์แนบ (cover ผูกกับ announcement.file_id เดี่ยว ไม่ใช่รายการไฟล์แนบ)
+	        if (fileUploadlist != null && fileIdStr != null && !fileIdStr.trim().isEmpty()) {
+	            List<FileUpload> filteredFiles = new ArrayList<>();
+	            for (FileUpload f : fileUploadlist) {
+	                if (!fileIdStr.equals(String.valueOf(f.getFileId()))) {
+	                    filteredFiles.add(f);
+	                }
+	            }
+	            fileUploadlist = filteredFiles;
+	        }
 	        for (FileUpload f : fileUploadlist) {
 	            f.setPath(fileAttachmentService.getFileUrl(f.getPath()));
 	        }
@@ -574,9 +595,14 @@ public class AnnouncementAction extends ActionSupport {
 			int announcementId = Integer.parseInt(announcement);
 			Announcement announcementdl = announcementDAO.findById(announcementId);
 
-			String serverRealPath = request.getServletContext().getRealPath("/");
-			fileAttachmentService.deleteAll("announcement", announcement, serverRealPath);
-			fileAttachmentService.deleteAll("announcementFiles", announcement, serverRealPath);
+			fileUploadlist = fileuploadDAO.findByPageAndPageId("announcement", announcement);
+			if (fileUploadlist != null) {
+				for (int i = 0; i < fileUploadlist.size(); i++) {
+					fileuploadDAO.delete(fileUploadlist.get(i));
+					log.debug(fileUploadlist.get(i));
+					log.debug("delete fileupload success");
+				}
+			}
 
 			announcementDAO.delete(announcementdl);
 
@@ -601,7 +627,7 @@ public class AnnouncementAction extends ActionSupport {
 				File file = files[0];
 				String fileName = fileNames[0];
 
-				String uploadPath = ServletActionContext.getServletContext().getRealPath("/upload/user/");
+				String uploadPath = ServletActionContext.getServletContext().getRealPath("/upload/announcement/");
 				File dir = new File(uploadPath);
 				if (!dir.exists())
 					dir.mkdirs();
@@ -618,7 +644,7 @@ public class AnnouncementAction extends ActionSupport {
 				File destFile = new File(dir, newFileName);
 				FileUtils.copyFile(file, destFile);
 
-				String fileUrl = request.getContextPath() + "/upload/user/" + newFileName;
+				String fileUrl = request.getContextPath() + "/upload/announcement/" + newFileName;
 
 				response.setContentType("application/json;charset=UTF-8");
 				response.getWriter().write("{\"uploaded\": true, \"url\": \"" + fileUrl + "\"}");
