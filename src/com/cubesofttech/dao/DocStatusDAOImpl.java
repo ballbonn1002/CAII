@@ -31,12 +31,12 @@ public class DocStatusDAOImpl implements DocStatusDAO {
     }
 
     @Override
-    public List<DocStatus> findByGroup(String group) throws Exception {
+    public List<DocStatus> findByStatusGroup(String statusGroup) throws Exception {
         Session session = sessionFactory.getCurrentSession();
         List<DocStatus> list = null;
         try {
             list = session.createCriteria(DocStatus.class)
-                    .add(Restrictions.eq("group", group))
+                    .add(Restrictions.eq("statusGroup", statusGroup))
                     .addOrder(Order.asc("docStatusId"))
                     .list();
         } catch (Exception e) {

@@ -143,6 +143,12 @@ pageEncoding="UTF-8"%>
                     class="btn btn-light-primary d-inline-flex align-items-center px-6 py-3"
                     >Warehouse</a
                   >
+
+                  <a
+                    href="doc_status_list"
+                    class="btn btn-light-success d-inline-flex align-items-center px-6 py-3"
+                    >Doc Status</a
+                  >
                 </div>
               </div>
             </div>

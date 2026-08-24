@@ -860,4 +860,12 @@
 			value="/pages-back/notification/notification_detail.jsp" />
 	</definition>
 
+
+	<!-- Doc Status -->
+	<definition name="docStatusList" extends="baseLayout">
+		<put-attribute name="title" value="Doc Status" />
+		<put-attribute name="body"
+			value="/pages-back/doc_status/doc_status_list.jsp" />
+	</definition>
+
 </tiles-definitions>

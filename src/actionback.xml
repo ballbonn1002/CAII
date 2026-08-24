@@ -1054,6 +1054,17 @@
 			<result name="error">/index.jsp</result>
 		</action>
 
+		<!-- Doc Status  -->
+		<action name="doc_status_list"
+			class="com.cubesofttech.action.DocStatusAction" method="list">
+			<result name="success" type="tiles">docStatusList</result>
+			<result name="error">/index.jsp</result>
+		</action>
+
+		<action name="doc_status_update"
+			class="com.cubesofttech.action.DocStatusAction" method="performEdit">
+		</action>
+
 		<!-- Employee Profile Edit User Security -->
 		<action name="admin_update_password"
 			class="com.cubesofttech.action.UserAction"

@@ -10,7 +10,7 @@ public interface DocStatusDAO {
 
 	List<DocStatus> findAll() throws Exception;
 
-	List<DocStatus> findByGroup(String group) throws Exception;
+	List<DocStatus> findByStatusGroup(String statusGroup) throws Exception;
 	
 	void save(DocStatus DocStatus) throws Exception;
 	
