@@ -53,9 +53,9 @@
 	margin-top: 4px;
 }
 
-.border-cyan {
+/* .border-cyan {
 	border-color: #0DCAF0 !important;
-} 
+}  */
 </style>
 
 </head>
@@ -128,7 +128,7 @@
 						</div>
 						<div class="card-body filter-card px-10 py-9 rounded-3">
 						<!-- Summary PO -->
-						<div class="d-flex flex-row justify-content-center mb-10">					
+						<!-- <div class="d-flex flex-row justify-content-center mb-10">					
 							<div class="row align-items-center mt-10 mx-5 fs-6 fw-bold">
 								
 								<div class="col-lg-3 col-md-4 col-6 d-flex align-items-center justify-content-center mb-5 summary-card border border-1 border-primary rounded-3 py-3 px-1" data-status="All" data-border-color="border-primary" style="cursor: pointer;">
@@ -172,8 +172,139 @@
 									<span class="badge badge-cyan fs-7">${poStatusNames['7']}</span>
 								</div>
 							</div>
-						</div>
-							
+						</div> -->
+						<!-- Summary PO -->
+							<div class="d-flex flex-row justify-content-center mb-10">
+								<div class="row align-items-center mt-10 mx-5 fs-6 fw-bold">
+
+									<!-- All -->
+									<div class="col-lg-3 col-md-4 col-6 d-flex align-items-center justify-content-center mb-5 summary-card border border-1 border-primary rounded-3 py-3 px-1"
+										data-status="All"
+										data-border-color="border-primary"
+										style="cursor: pointer;">
+
+										<span class="fs-2hx me-2 text-primary" id="summaryPOAll">
+											${poSummaryTotal}
+										</span>
+
+										<span class="badge badge-primary fs-7">All</span>
+									</div>
+
+									<!-- Draft -->
+									<div class="col-lg-3 col-md-4 col-6 d-flex align-items-center justify-content-center mb-5 summary-card border border-1 border-transparent rounded-3 p-3"
+										data-status="1"
+										data-border-color="${poStatusColors['1'] == 'secondary' ? 'border-gray-400' : 'border-'.concat(poStatusColors['1'])}"
+										style="cursor: pointer;">
+
+										<span class="fs-2hx me-2 ${poStatusColors['1'] == 'secondary' ? 'text-gray-600' : 'text-'.concat(poStatusColors['1'])}"
+											id="summaryPODraft">
+											${poSummary['1']}
+										</span>
+
+										<span class="badge badge-${poStatusColors['1']} fs-7">
+											${poStatusNames['1']}
+										</span>
+									</div>
+
+									<!-- Pending -->
+									<div class="col-lg-3 col-md-4 col-6 d-flex align-items-center justify-content-center mb-5 summary-card border border-1 border-transparent rounded-3 p-3"
+										data-status="2"
+										data-border-color="${poStatusColors['2'] == 'secondary' ? 'border-gray-400' : 'border-'.concat(poStatusColors['2'])}"
+										style="cursor: pointer;">
+
+										<span class="fs-2hx me-2 ${poStatusColors['2'] == 'secondary' ? 'text-gray-600' : 'text-'.concat(poStatusColors['2'])}"
+											id="summaryPOPending">
+											${poSummary['2']}
+										</span>
+
+										<span class="badge badge-${poStatusColors['2']} fs-7">
+											${poStatusNames['2']}
+										</span>
+									</div>
+
+									<!-- Approved -->
+									<div class="col-lg-3 col-md-4 col-6 d-flex align-items-center justify-content-center mb-5 summary-card border border-1 border-transparent rounded-3 p-3"
+										data-status="3"
+										data-border-color="${poStatusColors['3'] == 'secondary' ? 'border-gray-400' : 'border-'.concat(poStatusColors['3'])}"
+										style="cursor: pointer;">
+
+										<span class="fs-2hx me-2 ${poStatusColors['3'] == 'secondary' ? 'text-gray-600' : 'text-'.concat(poStatusColors['3'])}"
+											id="summaryPOApproved">
+											${poSummary['3']}
+										</span>
+
+										<span class="badge badge-${poStatusColors['3']} fs-7">
+											${poStatusNames['3']}
+										</span>
+									</div>
+
+									<!-- Return -->
+									<div class="col-lg-3 col-md-4 col-6 d-flex align-items-center justify-content-center mb-5 summary-card border border-1 border-transparent rounded-3 p-3"
+										data-status="4"
+										data-border-color="${poStatusColors['4'] == 'secondary' ? 'border-gray-400' : 'border-'.concat(poStatusColors['4'])}"
+										style="cursor: pointer;">
+
+										<span class="fs-2hx me-2 ${poStatusColors['4'] == 'secondary' ? 'text-gray-600' : 'text-'.concat(poStatusColors['4'])}"
+											id="summaryPOReturn">
+											${poSummary['4']}
+										</span>
+
+										<span class="badge badge-${poStatusColors['4']} fs-7 lh-base">
+											${poStatusNames['4']}
+										</span>
+									</div>
+
+									<!-- Rejected -->
+									<div class="col-lg-3 col-md-4 col-6 d-flex align-items-center justify-content-center mb-5 summary-card border border-1 border-transparent rounded-3 p-3"
+										data-status="5"
+										data-border-color="${poStatusColors['5'] == 'secondary' ? 'border-gray-400' : 'border-'.concat(poStatusColors['5'])}"
+										style="cursor: pointer;">
+
+										<span class="fs-2hx me-2 ${poStatusColors['5'] == 'secondary' ? 'text-gray-600' : 'text-'.concat(poStatusColors['5'])}"
+											id="summaryPORejected">
+											${poSummary['5']}
+										</span>
+
+										<span class="badge badge-${poStatusColors['5']} fs-7">
+											${poStatusNames['5']}
+										</span>
+									</div>
+
+									<!-- Cancel -->
+									<div class="col-lg-3 col-md-4 col-6 d-flex align-items-center justify-content-center mb-5 summary-card border border-1 border-transparent rounded-3 p-3"
+										data-status="6"
+										data-border-color="${poStatusColors['6'] == 'secondary' ? 'border-gray-400' : 'border-'.concat(poStatusColors['6'])}"
+										style="cursor: pointer;">
+
+										<span class="fs-2hx me-2 ${poStatusColors['6'] == 'secondary' ? 'text-gray-600' : 'text-'.concat(poStatusColors['6'])}"
+											id="summaryPOCancel">
+											${poSummary['6']}
+										</span>
+
+										<span class="badge badge-${poStatusColors['6']} fs-7">
+											${poStatusNames['6']}
+										</span>
+									</div>
+
+									<!-- In-Progress -->
+									<div class="col-lg-3 col-md-4 col-6 d-flex align-items-center justify-content-center mb-5 summary-card border border-1 border-transparent rounded-3 p-3"
+										data-status="7"
+										data-border-color="${poStatusColors['7'] == 'secondary' ? 'border-gray-400' : 'border-'.concat(poStatusColors['7'])}"
+										style="cursor: pointer;">
+
+										<span class="fs-2hx me-2 ${poStatusColors['7'] == 'secondary' ? 'text-gray-600' : 'text-'.concat(poStatusColors['7'])}"
+											id="summaryPOInProgress">
+											${poSummary['7']}
+										</span>
+
+										<span class="badge badge-${poStatusColors['7']} fs-7">
+											${poStatusNames['7']}
+										</span>
+									</div>
+
+								</div>
+							</div>
+														
 							<div class="table-responsive ">
 								<table id="purchaseOrderList"
 										class="table table-striped gy-7 gs-7 table-hover border-gray-300 table-row-bordered table-row-gray-200 ">
@@ -216,10 +347,10 @@
 											<td class="text-gray-900 fs-6 fw-normal text-end">
 												${poItem.detail_count}
 											</td>
-											<td class="text-gray-900 fs-6 fw-normal text-end">
+											<!-- <td class="text-gray-900 fs-6 fw-normal text-end">
 												<c:choose>
 													<c:when test="${poItem.status == '1'}">
-														<span class="badge badge-lg bg-light-secondary fw-semibold fs-7">${poItem.status_name}</span>
+														<span class="badge badge-lg bg-secondary fw-semibold fs-7">${poItem.status_name}</span>
 													</c:when>
 
 													<c:when test="${poItem.status == '3'}">
@@ -248,6 +379,11 @@
 
 													<c:otherwise></c:otherwise>
 												</c:choose>
+											</td> -->
+											<td class="text-gray-900 fs-6 fw-normal text-end" data-code="${poItem.status}">
+												<span class="badge badge-lg badge-${poItem.status_color} fw-semibold fs-7 ${poItem.status_color == 'secondary' ? 'text-dark' : 'text-white'}">
+													${poItem.status_name}
+												</span>
 											</td>
 											<td class="text-end px-3">
 												<div class="d-flex justify-content-end align-items-center gap-2">
@@ -352,21 +488,34 @@
 		    });
 			
 			/* ---- Summary Card Filter ---- */
+			// เดิม: filter ด้วย status_name ผ่าน table.column(6).search('^'+status+'$', true, false)
+			// ปัญหา: cell status ใน tbody render ${poItem.status_name} คนละบรรทัดกับ <span> ทำให้ text ที่ DataTables
+			// อ่านมามี whitespace/newline ล้อมรอบ regex ^...$ เลย match ไม่ติดทุก status (ไม่ใช่แค่ Draft)
+			// แก้โดยใช้ status code (เชื่อถือได้กว่า ไม่ผ่านการ format ข้อความ) เทียบกับ data-code บน <td> โดยตรง
+			var selectedStatusCode = null; // null = All
+			$.fn.dataTable.ext.search.push(function(settings, searchData, dataIndex) {
+				if (settings.nTable.id !== 'purchaseOrderList') {
+					return true;
+				}
+				if (selectedStatusCode === null) {
+					return true;
+				}
+				var cellCode = $(settings.aoData[dataIndex].anCells[6]).data('code');
+				return String(cellCode) === String(selectedStatusCode);
+			});
+
 			$('.summary-card').on('click', function() {
 			    $('.summary-card').each(function() {
 			        var colorClass = $(this).data('border-color');
 			        $(this).removeClass(colorClass).addClass('border-transparent');
 			    });
-			    
+
 			    var activeColor = $(this).data('border-color');
 			    $(this).removeClass('border-transparent').addClass(activeColor);
-			    
+
 			    var status = $(this).data('status');
-			    if (status === "All") {
-			        table.column(6).search('').draw();
-			    } else {
-			        table.column(6).search('^' + status + '$', true, false).draw();
-			    }
+			    selectedStatusCode = (status === "All") ? null : status;
+			    table.draw();
 			});
 			
 			

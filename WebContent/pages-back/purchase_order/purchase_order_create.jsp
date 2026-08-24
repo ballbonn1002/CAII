@@ -153,7 +153,7 @@
 					</div>
 			
 					<div class="d-flex align-items-center gap-2">
-						<span class="badge badge-lg bg-light-secondary fw-semibold fs-7 p-4">Draft</span>
+						<span class="badge badge-lg bg-secondary fw-semibold fs-7 p-4">Draft</span>
 					</div>
 			
 				</div>

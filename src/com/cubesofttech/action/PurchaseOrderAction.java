@@ -278,7 +278,7 @@ public class PurchaseOrderAction extends ActionSupport {
             request.setAttribute("poList", poList);
 
             // --- Summary (อิง doc_status, group=po) ---
-            List<DocStatus> statuses = docStatusDAO.findByGroup("po");
+            List<DocStatus> statuses = docStatusDAO.findByStatusGroup("po");
 
             // นับจำนวนตาม status_code
             Map<String, Integer> summary = new HashMap<>();
@@ -292,14 +292,18 @@ public class PurchaseOrderAction extends ActionSupport {
                 }
             }
 
-            // ชื่อสถานะตาม code สำหรับแสดงผล
+            // ชื่อสถานะและสีตาม code
             Map<String, String> statusNames = new HashMap<>();
+            Map<String, String> statusColors = new HashMap<>();
+
             for (DocStatus ds : statuses) {
                 statusNames.put(ds.getStatusCode(), ds.getStatusName());
+                statusColors.put(ds.getStatusCode(), ds.getColor());
             }
 
             request.setAttribute("poSummary", summary);       // key = status_code -> count
             request.setAttribute("poStatusNames", statusNames); // key = status_code -> status_name
+            request.setAttribute("poStatusColors", statusColors);
             request.setAttribute("poSummaryTotal", poList.size());
 
             return SUCCESS;
@@ -437,10 +441,14 @@ public class PurchaseOrderAction extends ActionSupport {
             request.setAttribute("poParentList", poParentList);
 
             Map<String, String> statusNames = new HashMap<>();
-            for (DocStatus ds : docStatusDAO.findByGroup("po")) {
+            Map<String, String> statusColors = new HashMap<>();
+
+            for (DocStatus ds : docStatusDAO.findByStatusGroup("po")) {
                 statusNames.put(ds.getStatusCode(), ds.getStatusName());
+                statusColors.put(ds.getStatusCode(), ds.getColor());
             }
             request.setAttribute("poStatusNames", statusNames);
+            request.setAttribute("poStatusColors", statusColors);
 
             User u = userDAO.findById(logonUser);     
             request.setAttribute("loginUser", u);

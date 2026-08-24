@@ -74,15 +74,6 @@
     padding-right: 0 !important;
 } */
 
-
-.text-orange{
-	color: #FD7E14 ;
-}
-.btn-cyan{
-	background-color: #0DCAF0 !important;
-}
-
-
 /* ===== Signature Box ===== */
 .sig-box {
 	width: 100%;
@@ -149,7 +140,7 @@
 						</ul>
 					</div>
 			
-					<div class="d-flex align-items-center gap-2">
+					<!-- <div class="d-flex align-items-center gap-2">
 						<span class="fs-2hx text-primary fw-bold" id="">#${poList.poId}</span>
 							<c:choose>
 								<c:when test="${poList.status == '1'}">
@@ -175,6 +166,13 @@
 								</c:when>
 								<c:otherwise></c:otherwise>
 							</c:choose>
+					</div> -->
+					<div class="d-flex align-items-center gap-2">
+						<span class="fs-2hx text-primary fw-bold" id="">#${poList.poId}</span>
+						<span class="badge badge-lg bg-${poStatusColors[poList.status]} fw-semibold fs-7 p-4
+									${poStatusColors[poList.status] == 'secondary' ? 'text-dark' : 'text-white'}">
+							${poStatusNames[poList.status]}
+						</span>
 					</div>
 			
 				</div>
