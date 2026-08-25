@@ -74,14 +74,13 @@ public class DocStatusAction extends ActionSupport {
 
 			Map<String, List<DocStatus>> statusGroupMap = new LinkedHashMap<>();
 			for (DocStatus d : allStatusList) {
-				statusGroupMap.computeIfAbsent(d.getStatusGroup(), k -> new ArrayList<>()).add(d);
+				statusGroupMap.computeIfAbsent(d.getPage(), k -> new ArrayList<>()).add(d);
 			}
 
 			for (List<DocStatus> groupList : statusGroupMap.values()) {
 				Collections.sort(groupList, BY_STATUS_CODE);
 			}
 
-			log.debug("statusGroupMap = "+ statusGroupMap);
 			request.setAttribute("statusGroupMap", statusGroupMap);
 
 			return SUCCESS;

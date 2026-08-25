@@ -278,7 +278,7 @@ public class PurchaseOrderAction extends ActionSupport {
             request.setAttribute("poList", poList);
 
             // --- Summary (อิง doc_status, group=po) ---
-            List<DocStatus> statuses = docStatusDAO.findByStatusGroup("po");
+            List<DocStatus> statuses = docStatusDAO.findByPage("po");
 
             // นับจำนวนตาม status_code
             Map<String, Integer> summary = new HashMap<>();
@@ -443,7 +443,7 @@ public class PurchaseOrderAction extends ActionSupport {
             Map<String, String> statusNames = new HashMap<>();
             Map<String, String> statusColors = new HashMap<>();
 
-            for (DocStatus ds : docStatusDAO.findByStatusGroup("po")) {
+            for (DocStatus ds : docStatusDAO.findByPage("po")) {
                 statusNames.put(ds.getStatusCode(), ds.getStatusName());
                 statusColors.put(ds.getStatusCode(), ds.getColor());
             }

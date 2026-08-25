@@ -23,8 +23,8 @@ public class DocStatus implements Serializable {
 	    @Column(name = "status_name")
 	    private String statusName;
 
-	    @Column(name = "status_group")
-	    private String statusGroup;
+	    @Column(name = "page")
+	    private String page;
 	    
 	    @Column(name = "description")
 	    private String description;
@@ -68,12 +68,12 @@ public class DocStatus implements Serializable {
 			this.statusName = statusName;
 		}
 
-		public String getStatusGroup() {
-			return statusGroup;
+		public String getPage() {
+			return page;
 		}
 
-		public void setStatusGroup(String statusGroup) {
-			this.statusGroup = statusGroup;
+		public void setPage(String page) {
+			this.page = page;
 		}
 
 		public String getDescription() {
@@ -127,7 +127,7 @@ public class DocStatus implements Serializable {
 		@Override
 		public String toString() {
 			return "DocStatus [docStatusId=" + docStatusId + ", statusCode=" + statusCode + ", statusName=" + statusName
-					+ ", statusGroup=" + statusGroup + ", description=" + description + ", color=" + color + ", timeCreate=" + timeCreate
+					+ ", page=" + page + ", description=" + description + ", color=" + color + ", timeCreate=" + timeCreate
 					+ ", timeUpdate=" + timeUpdate + ", userCreate=" + userCreate + ", userUpdate=" + userUpdate + "]";
 		}
 		

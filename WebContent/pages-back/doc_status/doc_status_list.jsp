@@ -58,7 +58,7 @@
 														<td class="text-truncate">${empty status.description ? '-' : status.description}</td>
 														<td class="text-end">
 															<button type="button" class="btn btn-icon btn-sm btn-light-primary btn-edit-docStatus" data-id="${status.docStatusId}"
-																data-code="${status.statusCode}" data-group="${status.statusGroup}" data-name="${status.statusName}" data-desc="${status.description}" data-color="${status.color}"
+																data-code="${status.statusCode}" data-group="${status.page}" data-name="${status.statusName}" data-desc="${status.description}" data-color="${status.color}"
 																data-bs-toggle="modal" data-bs-target="#editDocStatus" aria-label="Edit">
 																<i class="ki-duotone ki-pencil fs-5">
 																	<span class="path1"></span>

@@ -488,10 +488,6 @@
 		    });
 			
 			/* ---- Summary Card Filter ---- */
-			// เดิม: filter ด้วย status_name ผ่าน table.column(6).search('^'+status+'$', true, false)
-			// ปัญหา: cell status ใน tbody render ${poItem.status_name} คนละบรรทัดกับ <span> ทำให้ text ที่ DataTables
-			// อ่านมามี whitespace/newline ล้อมรอบ regex ^...$ เลย match ไม่ติดทุก status (ไม่ใช่แค่ Draft)
-			// แก้โดยใช้ status code (เชื่อถือได้กว่า ไม่ผ่านการ format ข้อความ) เทียบกับ data-code บน <td> โดยตรง
 			var selectedStatusCode = null; // null = All
 			$.fn.dataTable.ext.search.push(function(settings, searchData, dataIndex) {
 				if (settings.nTable.id !== 'purchaseOrderList') {

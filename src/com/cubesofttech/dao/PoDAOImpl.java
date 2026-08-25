@@ -126,7 +126,7 @@ public class PoDAOImpl implements PoDAO {
 				"FROM po po " +
 				"LEFT JOIN user uc ON po.user_create = uc.id " +
 				"LEFT JOIN user uu ON po.user_update = uu.id " +
-				"LEFT JOIN doc_status ds ON ds.status_code = po.status AND ds.status_group = 'po' " +
+				"LEFT JOIN doc_status ds ON ds.status_code = po.status AND ds.page = 'po' " +
 				"ORDER BY po.time_create DESC";
 
 			SQLQuery query = session.createSQLQuery(sql);
@@ -154,7 +154,7 @@ public class PoDAOImpl implements PoDAO {
 					"FROM po po " +
 					"LEFT JOIN user uc ON po.user_create = uc.id " +
 					"LEFT JOIN user uu ON po.user_update = uu.id " +
-					"LEFT JOIN doc_status ds ON ds.status_code = po.status AND ds.status_group = 'po' " +
+					"LEFT JOIN doc_status ds ON ds.status_code = po.status AND ds.page = 'po' " +
 					"WHERE po.po_id = :poId";
 
 			SQLQuery query = session.createSQLQuery(sql);

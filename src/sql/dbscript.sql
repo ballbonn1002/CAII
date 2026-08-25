@@ -759,11 +759,7 @@ INSERT INTO `doc_status` (`doc_status_id`, `status_code`, `status_name`, `status
 ('18', '5', 'Rejected', 'pr', NULL, 'danger', 'cft.admin', 'cft.admin', '2026-08-19 02:54:15', '2026-08-19 02:54:15'),
 ('19', '6', 'Cancel', 'pr', NULL, 'dark', 'cft.admin', 'cft.admin', '2026-08-19 02:54:15', '2026-08-19 02:54:15'),
 ('20', '7', 'In-Progress', 'pr', NULL, 'cyan', 'cft.admin', 'cft.admin', '2026-08-19 02:54:15', '2026-08-19 02:54:15');
--- 21/08/2026
-ALTER TABLE `doc_status` 
-CHANGE `decscription` `description` TEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL;
-
-
+-- 25/08/2026 Chaiwit: Create table delivered_detail
 CREATE TABLE delivered_detail (
     delivered_detail_id INT NOT NULL AUTO_INCREMENT,
     mr_id varchar(16) DEFAULT NULL,
@@ -781,3 +777,6 @@ CREATE TABLE delivered_detail (
     equipment_id varchar(32) DEFAULT NULL,
     PRIMARY KEY (delivered_detail_id)
 );
+
+-- 25/08/2026 June: Rename 'status_group' to 'page' in 'doc_status' table
+ALTER TABLE `doc_status` CHANGE `status_group` `page` VARCHAR(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL;
