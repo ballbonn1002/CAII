@@ -14,6 +14,7 @@ public interface EquipmentRequestMrDAO {
 	void save(EquipmentRequestMr equipmentRequest) throws Exception;
 	void update(EquipmentRequestMr EquipmentRequest) throws Exception;
 	void deleteMr(EquipmentRequestMr equipmentRequest) throws Exception;
+    void updateStatus(String mr_id, String status,String user_create) throws Exception;
 	String  getNextMrId() throws Exception;
 	 List<DocStatus> getDocStatus(DocStatus docStatus) throws Exception;
 	 public Map<String, Object> loaddataEquipment(String mr_id) throws Exception;

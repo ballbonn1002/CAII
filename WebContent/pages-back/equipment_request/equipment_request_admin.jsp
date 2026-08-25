@@ -130,7 +130,19 @@
 /* ===== Signature Box ===== */
 .sig-box {
 	width: 400px;
-	height: 200px;
+	height: 250px;
+	border-radius: 10px;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	position: relative;
+	overflow: hidden;
+}
+
+.sig-box2 {
+	width: 400px;
+	height: 250px;
 	border-radius: 10px;
 	display: flex;
 	flex-direction: column;
@@ -308,7 +320,7 @@ background-color : var(--bs-gray-300) !important;
 										<div class="btn    <c:choose>
         <c:when test="${Equipmentload.status_name == 'Approved'}">btn-success</c:when>
         <c:when test="${Equipmentload.status_name == 'Pending'}">btn-warning</c:when>
-        <c:when test="${Equipmentload.status_name == 'Reject'}">btn-danger</c:when>
+        <c:when test="${Equipmentload.status_name == 'Rejected'}">btn-danger</c:when>
         <c:when test="${Equipmentload.status_name == 'Cancel'}">btn-dark</c:when>
         <c:otherwise>btn-secondary</c:otherwise>
     </c:choose>  btn-sm px-4" style="pointer-events: none;">${Equipmentload.status_name}</div>
@@ -346,7 +358,7 @@ background-color : var(--bs-gray-300) !important;
 
 							<input type="hidden" id="grandTotalInput" name="amount"
 								value="0.00" />
-	<c:if test="${Equipmentload.status_name != 'Pending'}">
+	<c:if test="${Equipmentload.status_name == 'Draft'}">
 							<div class="card card-flush mb-7">
 								<div class="card-header">
 									<div class="card-title">
@@ -532,54 +544,54 @@ background-color : var(--bs-gray-300) !important;
 							</div>
 					</c:if>
 
-					<c:if test="${Equipmentload.status_name == 'Pending'}">
-												<!-- การ์ดหลักครอบทั้งหมด -->
-					<div class="card shadow-sm border-0 rounded-3 p-10 mb-4" style="background-color: #ffffff;">
-					    
-					    <!-- ส่วนหัวข้อหลัก -->
-					    <h5 class="fw-bold mb-4" style="color: #2c3e50;">Equipment Request - Detail</h5>
-					    
-					    <div class="row align-items-center">
-					        <!-- ฝั่งซ้าย: ข้อมูลผู้ขอและรูปโปรไฟล์ -->
-					        <div class="col-md-6 align-self-start" style="height: 100%;margin-top: 7px;">
-					        <div class="d-flex align-items-center mb-3 mb-md-0">
-					            <!-- รูปภาพโปรไฟล์วงกลม -->
-					            <img src="${ctx}${Equipmentload.path}" 
-					                 class="rounded-circle me-3" 
-					                 alt="Profile" 
-					                 style="width: 50px; height: 50px; object-fit: cover;">
-					            
-					            <div>
-					                <!-- ชื่อพนักงานและรหัส (สามารถเปลี่ยนตัวแปรตามจริงในระบบได้เลยครับ) -->
-					                <div class="fw-semibold text-dark" style="font-size: 1.05rem;height: calc(1em + 1.55rem + 2px) !important;">
-					                   ${Equipmentload.employee_id} - ${Equipmentload.name_en} - ${Equipmentload.name} - ${Equipmentload.department_id}
-					                </div>
-					                <!-- วันที่และเวลา -->
-					        <%-- กำหนด Locale เป็นภาษาอังกฤษก่อน --%>
-							<fmt:setLocale value="en_US" />
-							
-							<small class="text-muted" style="font-size: 0.85rem;">
-							    <fmt:formatDate value="${Equipmentload.request_date}" pattern="d MMM yyyy, H:mm" />
-							</small>
-							
-					            </div>
-					        </div>
-					            <c:choose>
-									<c:when test="${not empty fn:trim(Equipmentload.description)}">
-					                    <div class="d-flex align-items-center text-muted high-icon mt-9"> 
-					                     <a  class="btn btn-icon fs-3">  <i class="ki-duotone ki-fasten fs-1 text-primary fs-1">
-									 <span class="path1"></span>
-									 <span class="path2"></span>
-									</i> </a>
-									
-					            <a class="url-ref" href="${Equipmentload.url_ref}" target="_blank" rel="noopener noreferrer">${Equipmentload.url_ref}</a>
-					            </div>
-					             </c:when>
-					            </c:choose> 
-					       </div>
-					        <!-- ฝั่งขวา: รายละเอียดอุปกรณ์ที่ขอ -->
-					        <div class="col-md-6">
-					            <!-- บรรทัดบน: ประเภทอุปกรณ์ -->
+<c:if test="${Equipmentload.status_name == 'Pending' ||  Equipmentload.status_name == 'Approved' || Equipmentload.status_name == 'Rejected'	}">
+							<!-- การ์ดหลักครอบทั้งหมด -->
+<div class="card shadow-sm border-0 rounded-3 p-10 mb-4" style="background-color: #ffffff;">
+    
+    <!-- ส่วนหัวข้อหลัก -->
+    <h5 class="fw-bold mb-4" style="color: #2c3e50;">Equipment Request - Detail</h5>
+    
+    <div class="row align-items-center">
+        <!-- ฝั่งซ้าย: ข้อมูลผู้ขอและรูปโปรไฟล์ -->
+        <div class="col-md-6 align-self-start" style="height: 100%;margin-top: 7px;">
+        <div class="d-flex align-items-center mb-3 mb-md-0">
+            <!-- รูปภาพโปรไฟล์วงกลม -->
+            <img src="${ctx}${Equipmentload.path}" 
+                 class="rounded-circle me-3" 
+                 alt="Profile" 
+                 style="width: 50px; height: 50px; object-fit: cover;">
+            
+            <div>
+                <!-- ชื่อพนักงานและรหัส (สามารถเปลี่ยนตัวแปรตามจริงในระบบได้เลยครับ) -->
+                <div class="fw-semibold text-dark" style="font-size: 1.05rem;height: calc(1em + 1.55rem + 2px) !important;">
+                   ${Equipmentload.employee_id} - ${Equipmentload.name_en} - ${Equipmentload.name} - ${Equipmentload.department_id}
+                </div>
+                <!-- วันที่และเวลา -->
+        <%-- กำหนด Locale เป็นภาษาอังกฤษก่อน --%>
+		<fmt:setLocale value="en_US" />
+		
+		<small class="text-muted" style="font-size: 0.85rem;">
+		    <fmt:formatDate value="${Equipmentload.request_date}" pattern="d MMM yyyy, H:mm" />
+		</small>
+		
+            </div>
+        </div>
+            <c:choose>
+				<c:when test="${not empty fn:trim(Equipmentload.description)}">
+                    <div class="d-flex align-items-center text-muted high-icon mt-9"> 
+                     <a  class="btn btn-icon fs-3">  <i class="ki-duotone ki-fasten fs-1 text-primary fs-1">
+				 <span class="path1"></span>
+				 <span class="path2"></span>
+				</i> </a>
+				
+            <a class="url-ref" href="${Equipmentload.url_ref}" target="_blank" rel="noopener noreferrer">${Equipmentload.url_ref}</a>
+            </div>
+             </c:when>
+            </c:choose> 
+       </div>
+        <!-- ฝั่งขวา: รายละเอียดอุปกรณ์ที่ขอ -->
+        <div class="col-md-6">
+            <!-- บรรทัดบน: ประเภทอุปกรณ์ -->
 					            <div class="d-flex align-items-center high-icon" style="font-size: 0.95rem;">
 					              <a  class="btn btn-icon fs-3">  
 					              
@@ -603,25 +615,25 @@ background-color : var(--bs-gray-300) !important;
 					                <span class="fw-medium text-dark" >${Equipmentload.parent_product_id == 0 ?  Equipmentload.product_name : Equipmentload.equipment_name  } : <fmt:formatNumber value="${Equipmentload.amount} " pattern="#,##0" />&nbsp;</span>
 					                <span>${Equipmentload.unit_name}</span>
 					            </div>
-					            
-					            <!-- บรรทัดล่าง: รายละเอียดสเปกเพิ่มเติม -->
-					            <c:choose>
-					            <c:when test="${not empty fn:trim(Equipmentload.description)}">
-							            <div class="d-flex align-items-center text-muted high-icon mb-2" style="font-size: 0.9rem;height : auto !important">
-							                        <a  class="btn btn-icon fs-3 ms-1">
-							                        <i class="ki-duotone ki-document fs-1"><span class="path1"></span>
-							                        <span class="path2"></span></i></a>
-							                <span class="span-des">${Equipmentload.description}</span>
-							            </div>
-					            </c:when>
-					            </c:choose> 
-					              <div class="d-flex align-items-center text-muted high-icon mt-3 ms-3"> 
-					            <div id="newFileList" class="d-flex"></div>
-					            </div>
-					        </div>
-					    </div>
-					</div>
-					</c:if>					
+            
+            <!-- บรรทัดล่าง: รายละเอียดสเปกเพิ่มเติม -->
+            <c:choose>
+            <c:when test="${not empty fn:trim(Equipmentload.description)}">
+		            <div class="d-flex align-items-center text-muted high-icon mb-2" style="font-size: 0.9rem;height : auto !important">
+		                        <a  class="btn btn-icon fs-3 ms-1">
+		                        <i class="ki-duotone ki-document fs-1"><span class="path1"></span>
+		                        <span class="path2"></span></i></a>
+		                <span class="span-des">${Equipmentload.description}</span>
+		            </div>
+            </c:when>
+            </c:choose> 
+              <div class="d-flex align-items-center text-muted high-icon mt-3 ms-3"> 
+            <div id="newFileList" class="d-flex"></div>
+            </div>
+        </div>
+    </div>
+</div>
+</c:if>					
 								<!-- ===== Signature ===== -->
 							<div class="card card-flush mb-6">
 								<div class="card-header">
@@ -631,37 +643,25 @@ background-color : var(--bs-gray-300) !important;
 								</div>
 								<div class="card-body py-5">
 									<div class="d-flex align-items-start gap-8 flex-wrap">
-									<div class="border-Signature <c:choose>
-									        <c:when test="${Equipmentload.status_name == 'Pending'}">style-pending</c:when>
-									    </c:choose>">
+									<div class="border-Signature flex-fill w-45">
 										<!-- LEFT: Signature Image -->
-										<div class="d-flex flex-column align-items-center gap-2 ps-15 pe-15 
-										 <c:choose>
-									        <c:when test="${Equipmentload.status_name == 'Pending'}">height-only</c:when>
-									    </c:choose>">
+										<div class="d-flex flex-column align-items-center gap-2 ps-15 pe-15">
 											<c:choose>
 												<%-- มีรูปแล้ว → ล็อค ห้ามเปลี่ยน ไม่มี input file --%>
 												<c:when test="${not empty signaturePath}">
-													<div class="sig-box locked <c:choose>
-												        <c:when test="${Equipmentload.status_name == 'Pending'}">height-only</c:when>
-												    </c:choose>">
+													<div class="sig-box locked">
 														<img src="${ctx}${signaturePath}"
 															style="max-height: 160px; max-width: 360px; object-fit: contain;" />
-															
-														<div class="text-center 
-														<c:choose>
-													        <c:when test="${Equipmentload.status_name != 'Pending'}">text-pending</c:when>
-													    </c:choose>">	
-														    <span class="text-primary fs-7" id="receiverLabel1">ชื่อผู้ขอเบิก
-														    </span>
-														<div class="d-flex flex-column pt-4">
-															<span class="text-dark fw-semibold fs-7">${userObj.nameEN}</span>
-															<span class="text-muted fs-8 mb-2 mt-1" id="request_date"><fmt:formatDate
-																	value="${Equipmentload.request_date}" pattern="d MMM yyyy, H:mm" /></span>
-														</div>
-														</div>
-														<div class="sig-lock-badge
-														<c:choose><c:when test="${Equipmentload.status_name == 'Pending'}">text-pending height-only</c:when></c:choose>">
+															<div class="text-center">	
+																    <span class="text-primary fs-7" id="receiverLabel1">ชื่อผู้ขอเบิก
+																    </span>
+																<div class="d-flex flex-column pt-4">
+																	<span class="text-dark fw-semibold fs-7">${userObj.nameEN}</span>
+																	<span class="text-muted fs-8 mb-2 mt-1" id="request_date"><fmt:formatDate
+																			value="${Equipmentload.request_date}" pattern="d MMM yyyy, H:mm" /></span>
+																</div>
+															</div>
+														<div class="sig-lock-badge">
 															<i class="ki-duotone ki-lock fs-7"> <span
 																class="path1"></span><span class="path2"></span>
 															</i> Signature on file
@@ -682,7 +682,7 @@ background-color : var(--bs-gray-300) !important;
 										</div>
 									</div>
 										<!-- MIDDLE: Receiver 1 = ผู้ขอเบิก -->
-										<c:if test="${Equipmentload.status_name != 'Pending'}">
+										<c:if test="${Equipmentload.status_name == 'Draft'}">
 										<div
 											class="receiver-box d-flex flex-fill flex-column align-items-center gap-2 border-requetuser "
 											id="receiverBox1">
@@ -699,18 +699,77 @@ background-color : var(--bs-gray-300) !important;
 											</div>
 										</div>
 										</c:if>
-										<!-- RIGHT: Receiver 2 = ผู้รับเงิน -->
-<!-- 										<div -->
-<!-- 											class="receiver-box d-flex flex-fill flex-column align-items-center gap-2" -->
-<!-- 											id="receiverBox2"> -->
-<!-- 											<div id="receiverPreview2" -->
-<!-- 												style="min-height: 44px; display: flex; flex-direction: column; align-items: center;"> -->
-<!-- 												<span class="text-primary pb-7 fs-7" id="receiverLabel1">ชื่อ -->
-<%-- 													ผู้รับเงิน</span> <span class="text-dark fw-semibold fs-7">${userObj.nameEN}</span> --%>
-<%-- 												<span class="text-muted fs-8"><fmt:formatDate --%>
-<%-- 														value="${requestAt}" pattern="d MMM yyyy, H:mm" /></span> --%>
-<!-- 											</div> -->
-<!-- 										</div> -->
+
+
+										<!-- รายเซ็นที่ 2-->
+
+													<div class="border-Signature flex-fill w-45">
+										<!-- LEFT: Signature Image -->
+										<div class="d-flex flex-column align-items-center gap-2 ps-15 pe-15 
+										 <c:choose>
+									        <c:when test="${(Equipmentload.status_name == 'Pending' 
+									        || Equipmentload.status_name == 'Approved' 
+									        || Equipmentload.status_name == 'Rejected') && onlineUser.roleId != 'admin'
+									         }">height-only</c:when>
+									    </c:choose>">
+											<c:choose>
+												<%-- มีรูปแล้ว → ล็อค ห้ามเปลี่ยน ไม่มี input file --%>
+												<c:when test="${not empty signaturePath2}">
+													<div class="sig-box2 locked">
+														<img src="${ctx}${signaturePath2}"
+															style="max-height: 160px; max-width: 360px; object-fit: contain;" />
+														<c:if test="${Equipmentload.status_name == 'Pending' && onlineUser.roleId == 'admin' }">	
+															<div class="text-center ">	
+																    <span class="text-primary fs-7" id="receiverLabel2">ชื่อผู้ขอเบิก
+																    </span>
+																<div class="d-flex flex-column">
+																	<span class="text-dark fw-semibold fs-7">${userObj.nameEN}</span>
+																	<span class="text-muted fs-8 mb-2 mt-1" id="request_date"><fmt:formatDate
+																			value="${Equipmentload.request_date}" pattern="d MMM yyyy, H:mm" /></span>
+																</div>
+															</div>
+														</c:if>
+														<div class="sig-lock-badge
+														<c:choose><c:when test="${Equipmentload.status_name == 'Pending' && onlineUser.roleId == 'admin' }">text-pending height-only</c:when></c:choose>">
+															<i class="ki-duotone ki-lock fs-7"> <span
+																class="path1"></span><span class="path2"></span>
+															</i> Signature on file
+														</div>
+													</div>
+												</c:when>
+
+												<%-- ไม่มีรูป --%>
+												<c:otherwise>
+		<c:choose>
+														<c:when test="${empty statusActiveSafe}">
+															<div class="sig-box uploadable" id="uploadSignatureBox"
+																onclick="document.getElementById('sigFileInput').click()">
+																<i class="ki-duotone ki-cloud-add fs-2x text-muted">
+																	<span class="path1"></span><span class="path2"></span>
+																</i> <span class="text-muted fs-8 mt-2">Click to
+																	upload Signature</span>
+															</div>
+															<span class="text-muted fs-8">Allowed: png, jpg,
+																jpeg</span>
+															<%-- ✅ name="files" ตรงกับ Struts2 field files[] ใน TravelAction --%>
+															<input type="file" id="sigFileInput" name="files"
+																accept=".png,.jpg,.jpeg" style="display: none;" />
+														</c:when>
+														<c:otherwise>
+															<div class="sig-box unuploadable" id="uploadSignatureBox">
+																<i class="ki-duotone ki-cloud-add fs-2x text-muted">
+																	<span class="path1"></span><span class="path2"></span>
+																</i> <span class="text-muted fs-8 mt-2">The signature
+																	has not been uploaded yet</span>
+															</div>
+														</c:otherwise>
+													</c:choose>
+												</c:otherwise>
+											</c:choose>
+										</div>
+									</div>
+											<!-- รายเซ็นที่ 2 end-->
+										
 									</div>
 								</div>
 							</div>
@@ -752,20 +811,13 @@ background-color : var(--bs-gray-300) !important;
 								</div>
 						<div>
 
-							<c:if test="${Equipmentload.status_name != 'Cancel' && Equipmentload.status_name != 'Pending'}">
-								<button type="button" id="BtnSaveDraft" onclick="submitData(this)"  class="btn btn-secondary px-6 ms-5">
-									    Save Draft
-								</button>		
-								<button type="button" id="BtnSubmit_Equipment_Request" onclick="submitData(this)"  class="btn btn-success px-6 ms-5">
-									    Submit PR
-								</button>
-
-							</c:if>
 							<c:if test="${Equipmentload.status_name == 'Pending' && onlineUser.roleId == 'admin'}">
-									<button type="button" id="BtnRejected_Equipment_Request" onclick="submitData(this)"  class="btn btn-danger px-6 ms-5">
+									<button type="button" id="BtnRejected_Equipment_Request" onclick="updatestatus(this)" 
+									class="btn btn-danger px-6 ms-5 update-status">
 									    Rejected
 								</button>
-								<button type="button" id="BtnApprove_Equipment_Request" onclick="submitData(this)"  class="btn btn-success px-6 ms-5">
+								<button type="button" id="BtnApprove_Equipment_Request" onclick="updatestatus(this)"  
+								class="btn btn-success px-6 ms-5 update-status">
 									    Approve
 									    </button>
 							</c:if>
@@ -1166,6 +1218,77 @@ background-color : var(--bs-gray-300) !important;
 				 $('#iconConsumables').css('display','flex') 
 			 }
 	    }
+	    
+	    function updatestatus(status) {	
+	    	  document.addEventListener('click', function (e) {
+	    	  const btn = e.target.closest('.update-status');
+		        if (!btn) return;
+		        
+	    	   var statusupdate
+	    		if(status.id == 'BtnRejected_Equipment_Request'){
+	    			statusupdate = '3'
+	    		}else{
+	    			statusupdate = '5'
+	    		}
+
+		        Swal.fire({
+		            title: 'ต้องการ update รายการนี้?',
+		            html: 'Expense <strong>#' + $('#mr_id').text() + '</strong> ',
+		            icon: 'warning',
+		            showCancelButton: true,
+		            confirmButtonText: 'ตกลง',
+		            cancelButtonText: 'ยกเลิก',
+		            confirmButtonColor: '#F64E60',
+		            reverseButtons: true
+		        }).then(function (result) {
+		            if (!result.isConfirmed) return;
+
+		            fetch(ctx + '/equipment_request_updatestatus?id=' + $('#mr_id').text() + '&status='+ statusupdate, {
+		                method: 'POST',
+		                headers: { 'X-Requested-With': 'XMLHttpRequest' }
+		            })
+		            .then(function (res) { return res.json(); })
+		            .then(function (data) {
+		                if (data.success) {
+		                    Swal.fire({
+		                        icon: 'success',
+		                        title: 'update แล้ว',
+		                        text: 'Expense #' + $('#mr_id').text() + ' ถูกลบเรียบร้อย',
+		                        timer: 1500,
+		                        showConfirmButton: false
+		                    }).then(function () {
+		                    	window.location.reload();
+		                    });
+		                } else {
+		                    // คืนค่า icon ให้ button
+// 		                    btn.disabled = false;
+// 		                    btn.innerHTML =
+// 		                        '<i class="ki-duotone ki-trash fs-1">' +
+// 		                        '<span class="path1"></span><span class="path2"></span>' +
+// 		                        '<span class="path3"></span><span class="path4"></span></i>';
+		                    Swal.fire({
+		                        icon: 'error',
+		                        title: 'ไม่สามารถ update ได้',
+		                        text: data.message || 'เกิดข้อผิดพลาด'
+		                    });
+		                }
+		            })
+		            .catch(function (err) {
+		                console.error('Delete error:', err);
+		                btn.disabled = false;
+		                btn.innerHTML =
+		                    '<i class="ki-duotone ki-trash fs-1">' +
+		                    '<span class="path1"></span><span class="path2"></span>' +
+		                    '<span class="path3"></span><span class="path4"></span></i>';
+		                Swal.fire({
+		                    icon: 'error',
+		                    title: 'Network error',
+		                    text: 'กรุณาลองใหม่อีกครั้ง'
+		                });
+		            });
+		        });
+	    	  });
+		}
 
 	    document.addEventListener('DOMContentLoaded', function() {
 	     const oldFileListDiv = document.getElementById("newFileList");
@@ -1178,6 +1301,49 @@ background-color : var(--bs-gray-300) !important;
 	             default: return 'assets/media/svg/files/folder-document.svg';
 	         }
 	     }
+	     
+	     
+// 	    สำหรับ attach file ของ admin
+		const hasSignature    = ${not empty signaturePath2 ? 'true' : 'false'};
+	     var selectedFiles = []; 
+		function checkSubmitReady() {
+		    const sigOk = hasSignature || document.getElementById('sigFileInput') &&
+		                  document.getElementById('sigFileInput').files.length > 0;
+		    const amount = document.getElementById('amount').value != ''
+		    const itemSelect =	document.getElementById('itemSelect').value != ''  &&  document.getElementById('itemSelect').value != 'All'
+			const subItemSelect = (document.getElementById('subItemSelect').value != '' && document.getElementById('subItemSelect').disabled != true) || document.getElementById('subItemSelect').disabled 
+		    const ready = confirmed1 && sigOk && amount && itemSelect && subItemSelect;
+		    document.getElementById('BtnSubmit_Equipment_Request').disabled = !ready;
+		}
+		
+		if (!hasSignature) {
+		    document.getElementById('sigFileInput').addEventListener('change', async function () { 
+		        console.log('เข้า uploadfile js');
+		        let file = this.files[0];
+		        if (!file) return;
+
+		        try {
+		       
+		            const processedFile = await processAndRemoveWhiteBg(file);
+		            
+		            const dt = new DataTransfer();
+		            dt.items.add(processedFile);
+		            this.files = dt.files;
+		            file = this.files[0];
+		        } catch (error) {
+		            console.error("Image processing failed", error);
+		        }
+
+		        const reader = new FileReader();
+		        reader.onload = function (e) {
+		            const box = document.getElementById('uploadSignatureBox');
+		            box.innerHTML = '<img src="' + e.target.result + '" style="max-height:160px;max-width:360px;object-fit:contain;" />';
+		        };
+		        reader.readAsDataURL(file);
+		    });
+		}
+		
+// 	    สำหรับ attach file ของ admin end
 
 	     <c:forEach var="file" items="${equipmentRequestMrFiles}">
 	         <c:if  test="${file.pageId == Equipmentload.mr_id}">
@@ -1201,10 +1367,10 @@ background-color : var(--bs-gray-300) !important;
 
 	                 const outerDiv = document.createElement('div');
 	                 outerDiv.className = 'd-flex p-2 rounded border text-gray-800';
-// 	                 outerDiv.style.width = '18rem';
+	                 outerDiv.style.width = '18rem';
 
 	                 outerDiv.innerHTML = `
-	                     <div class="d-flex p-2 rounded" style="width: auto">
+	                     <div class="d-flex p-2 rounded" style="width: 18rem">
 	                     <div class="d-flex text-decoration-none text-gray-800" style="flex-grow: 1;">
 	                         <img src="` + iconPath + `" class="w-25px h-25px me-3" alt="icon" />
 	                         <span class="fs-6 fw-medium">
@@ -1213,10 +1379,10 @@ background-color : var(--bs-gray-300) !important;
 	                         </span>
 	                     </div>
 	                     
-	                     <span class="badge badge-light-danger bg-hover cursor-pointer delete-btn ms-10 delete-old-btn
+	                     <span class="badge badge-light-danger bg-hover cursor-pointer delete-btn ms-3 delete-old-btn
 	                        <c:choose>
 	                         <c:when test="${Equipmentload.status_name == 'Pending' || Equipmentload.status_name == 'Cancel' }">btn-hide</c:when>
-	                         </c:choose>" style="height: 26px;">
+	                         </c:choose>">
 	                         <i class="ki-duotone ki-trash text-danger fs-2">
 	                             <span class="path1"></span><span class="path2"></span>
 	                             <span class="path3"></span><span class="path4"></span><span class="path5"></span>
