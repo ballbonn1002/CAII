@@ -880,7 +880,7 @@ color: var(--bs-primary);
 																	</c:choose></td>
 																<td class="text-end">
 																	<div class="d-flex justify-content-end gap-2">
-																	<button  data-note="btn edit" onclick="gotoeditpage(`${row.mr_id}`)" title="Edit" class="btn btn-icon btn-sm btn-light-primary">
+																	<button  data-note="btn edit" onclick="gotoeditpage(`${row.mr_id}`,`${onlineUser.roleId}`)" title="Edit" class="btn btn-icon btn-sm btn-light-primary">
 																			<i class="ki-duotone ki-pencil fs-5">
 																				<span class="path1"></span>
 																				<span class="path2"></span>
@@ -1608,8 +1608,12 @@ color: var(--bs-primary);
 	    });
 	}
 	
-	function gotoeditpage(id){
-		window.location.replace("equipment_request_update?id="+id);
+	function gotoeditpage(id,role){
+		if(role == 'admin'){
+			window.location.replace("equipment_request_admin?id="+id);
+		}else{
+			window.location.replace("equipment_request_update?id="+id);
+		}
 	}
 
 	document.addEventListener('DOMContentLoaded', function () {

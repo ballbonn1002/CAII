@@ -410,7 +410,7 @@ public class EquipmentRequestAction extends ActionSupport {
          // 1. เรียกใช้งานข้อมูลจากฐานข้อมูลจริง
             List<Object[]> rawDataList = equipmentRequestMrDAO.getAllEquopmentRequestMr(equipmentRequestMr);
             List<Map<String, Object>> allList = new ArrayList<>();
-            log.debug("allList 01"+allList);
+
             if (rawDataList != null) {
             	int i = 0;
                 for (Object[] row : rawDataList) {
@@ -438,8 +438,6 @@ public class EquipmentRequestAction extends ActionSupport {
                     allList.add(map);
                 }
             }
-
-           log.debug("allList"+allList);
 
             List<Map<String, Object>> filteredList = new ArrayList<>();
             if (allList != null) {
@@ -593,6 +591,37 @@ public class EquipmentRequestAction extends ActionSupport {
 			return null;
 		}
 	}
+	
+	public String updateStatus() {
+
+		try {
+			User onlineUser = (User) request.getSession().getAttribute("onlineUser");
+   
+      		if (onlineUser == null)
+  				return ERROR;
+      		
+      		   log.debug("onlineUser.getId() !!!!"+onlineUser.getId());
+			
+			   String id = request.getParameter("id"); 
+			   String status = request.getParameter("status");
+			   log.debug("status >>>"+status);
+		        // เรียกผ่าน Service -> DAO
+			   equipmentRequestMrDAO.updateStatus(id,status,onlineUser.getId()); 
+			
+			response.setContentType("application/json;charset=UTF-8");
+			writeJson("{\"success\":true}", response); 
+			
+			return null;
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			try {
+				writeJson("{\"success\":false,\"message\":\"" + e.getMessage() + "\"}", response);
+			} catch (Exception ignore) {
+			}
+			return null;
+		}
+	}
 
 	private void writeJson(String json, HttpServletResponse response) throws Exception {
 		response.setContentType("application/json;charset=UTF-8");
@@ -643,12 +672,9 @@ public class EquipmentRequestAction extends ActionSupport {
 	        	this.StatusList = equipmentRequestMrDAO.getDocStatus(paramStatusdoc);
 	        	request.setAttribute("StatusList", this.StatusList); 
 	        	
-	        	log.debug("เข้า StatusList()"+this.StatusList);
-	        	
 	        	Product paramProduct = new Product();
 	    
 	        	this.Product = productDAO.getproductid(paramProduct);
-	        	log.debug("เข้า this.Product()"+this.Product);
 	        	
 	        	// ส่งออกไปหน้าบ้านเหมือนเดิม
 	        	request.setAttribute("ProductList", this.Product);
@@ -677,7 +703,6 @@ public class EquipmentRequestAction extends ActionSupport {
 	                       unionList.add(item);
 	                   }
 	               }
-	               log.debug("product ++++"+ unionList);
 	               
 	            request.setAttribute("catalogEqptList", unionList);
 	            getLatestAttachFile(request);
@@ -703,7 +728,6 @@ public class EquipmentRequestAction extends ActionSupport {
       		if (onlineUser == null)
   				return ERROR;
       			
-      		log.debug("action >>>"+ currentAction);
 //            if (catalogEquipmentName == null || catalogEquipmentName.trim().isEmpty()) {
 //                return ERROR;
 //            }
@@ -805,12 +829,9 @@ public class EquipmentRequestAction extends ActionSupport {
 //				}
 			}
 			
-           log.debug("fileUpload"+ fileUpload);
         // ── ท่อนนี้ถอดแบบลอจิกจากบรรทัดล่างสุดของ announcement มาเลยครับ ──
         // (ต่างกันแค่เราไปแกะเอาไฟล์ Array จาก multiWrapper มาใส่ เพื่อรองรับ AJAX JSON หน้าบ้าน)
 
-           // 💡 [แก้ปัญหาถาวร]: ใช้ ActionContext สกัดดึงไฟล์ออกมาเป็น Array ดั้งเดิม 
-           // โดยไม่ต้องผ่านเงื่อนไข check instanceof ให้พังอีกต่อไป
            // 1. ดึงกลุ่มไฟล์ทั้งหมดผ่าน ActionContext ออกมาเป็น Array ตัวใหม่ (myFilesArray)
            java.util.Map<String, Object> parameters = com.opensymphony.xwork2.ActionContext.getContext().getParameters();
            
@@ -867,8 +888,6 @@ public class EquipmentRequestAction extends ActionSupport {
                    fileupload1.setTimeCreate(DateUtil.getCurrentTime());
                    
                    fileuploadDAO.save(fileupload1);
-
-                   log.debug("Added file ID: " + fileupload1.getFileId());
                }
            } else {
                log.debug("No new file to upload");
@@ -887,8 +906,6 @@ public class EquipmentRequestAction extends ActionSupport {
                }
            }
 
-           log.debug("files to delete: " + java.util.Arrays.toString(fileIdss));
-
            if (fileIdss != null && fileIdss.length > 0) {
                for (String fileId : fileIdss) {
                    // เพิ่ม try-catch ป้องกันกรณีหน้าบ้านเผลอส่งตัวอักษรที่ไม่ใช่ตัวเลขปนมา
@@ -896,7 +913,6 @@ public class EquipmentRequestAction extends ActionSupport {
                        FileUpload file = fileuploadDAO.findById(Integer.parseInt(fileId.trim()));
                        if (file != null) {
                            fileuploadDAO.delete(file);
-                           log.debug("Deleted file ID: " + fileId.trim());
                        }
                    } catch (NumberFormatException e) {
                        log.error("Invalid file ID format: " + fileId);
@@ -992,39 +1008,33 @@ public class EquipmentRequestAction extends ActionSupport {
 	    try {
 	        User onlineUser = (User) request.getSession().getAttribute("onlineUser");
 	        
-//	        log.debug("onlineUser"+onlineUser);
-	        
 	        if (onlineUser == null)
 	            return ERROR;
-	        
+
 	        String mr_id = request.getParameter("id");
-	        log.debug("mr_id" + mr_id);
+
 	        Map<String, Object> dataload = equipmentRequestMrDAO.loaddataEquipment(mr_id);
 
-	        log.debug("dataload" + dataload);
 	        request.setAttribute("Equipmentload", dataload);
 	        
         	Product paramProduct = new Product();
     	    
         	this.Product = productDAO.getproductid(paramProduct);
-        	log.debug("เข้า this.Product()"+this.Product);
         	
         	fileUploadlist = equipmentRequestMrDAO.findByPageAndPageId("equipmentRequestFiles", String.valueOf(mr_id));
 			request.setAttribute("equipmentRequestMrFiles", fileUploadlist);
 	        
 	        if (fileUploadlist != null) {
 	            request.setAttribute("equipmentRequestMrfiles", new Gson().toJson(fileUploadlist));
-	        	log.debug("เข้า equipmentRequestMrfiles()"+new Gson().toJson(fileUploadlist));
 	        }
 	        
-        	// ส่งออกไปหน้าบ้านเหมือนเดิม
         	request.setAttribute("ProductList", this.Product);
 	                   
 	            List<Map<String, Object>> unionList = new ArrayList<>();
 	            
 
 	            Product product = new Product();
-	            // 1. เรียกใช้งานข้อมูลจากฐานข้อมูลจริง
+
 	               List<Object[]> rawDataList = productDAO.getArrayProduct(product);
 	               List<Map<String, Object>> allList = new ArrayList<>();
 
@@ -1044,7 +1054,6 @@ public class EquipmentRequestAction extends ActionSupport {
 	                   }
 	               }
 	            request.setAttribute("catalogEqptList", unionList);
-	            log.debug("unionList debug"+ unionList);
         
 	        List<FileUpload> fileList = fileuploadDAO.findByPageAndPageId("user_signature", onlineUser.getId());
 
@@ -1057,9 +1066,15 @@ public class EquipmentRequestAction extends ActionSupport {
 	        request.setAttribute("expenseListObj", expenseListObj);
 	        
 	        Map<String, Object> EquipmentMap = new HashMap<>();
-	        EquipmentMap.put("amount", EquipmentMap);
+	        EquipmentMap.put("amount", EquipmentMap);       
 	        
-	        User userObj = userDAO.findById(onlineUser.getId());
+	        User userObj = null;
+	        if("admin".equals(onlineUser.getRoleId())) {
+	        	 userObj =  userDAO.findById(String.valueOf(dataload.get("request_user")));
+	        }else {
+	        	 userObj = userDAO.findById(onlineUser.getId());
+	        }
+	      
 	        
 	        request.setAttribute("userObj", userObj);
 	        request.setAttribute("selectedIds", mr_id != null ? Arrays.asList(mr_id) : java.util.Collections.emptyList());
@@ -1074,9 +1089,8 @@ public class EquipmentRequestAction extends ActionSupport {
 
 	                if (f.exists()) {
 	                    request.setAttribute("signaturePath", imgPathSignature);
-	                    log.debug("signaturePath"+imgPathSignature);
 	                }
-	               
+	               	request.setAttribute("signaturePath2", "");
 	            } catch (Exception ignore) {}
 	        }
 			

@@ -759,3 +759,25 @@ INSERT INTO `doc_status` (`doc_status_id`, `status_code`, `status_name`, `status
 ('18', '5', 'Rejected', 'pr', NULL, 'danger', 'cft.admin', 'cft.admin', '2026-08-19 02:54:15', '2026-08-19 02:54:15'),
 ('19', '6', 'Cancel', 'pr', NULL, 'dark', 'cft.admin', 'cft.admin', '2026-08-19 02:54:15', '2026-08-19 02:54:15'),
 ('20', '7', 'In-Progress', 'pr', NULL, 'cyan', 'cft.admin', 'cft.admin', '2026-08-19 02:54:15', '2026-08-19 02:54:15');
+-- 21/08/2026
+ALTER TABLE `doc_status` 
+CHANGE `decscription` `description` TEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL;
+
+
+CREATE TABLE delivered_detail (
+    delivered_detail_id INT NOT NULL AUTO_INCREMENT,
+    mr_id varchar(16) DEFAULT NULL,
+    product_id varchar(32) DEFAULT NULL,
+    product_sub_id varchar(32) DEFAULT NULL,
+    amount double DEFAULT NULL,
+    unit varchar(16) DEFAULT NULL,
+    product_type varchar(32) DEFAULT NULL,
+    description text DEFAULT NULL,
+    user_create varchar(32) DEFAULT NULL,
+    user_update varchar(32) DEFAULT NULL,
+    time_create timestamp NULL DEFAULT NULL,
+    time_update timestamp NULL DEFAULT NULL,
+    type varchar(32) DEFAULT NULL,
+    equipment_id varchar(32) DEFAULT NULL,
+    PRIMARY KEY (delivered_detail_id)
+);

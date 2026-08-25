@@ -308,7 +308,35 @@ padding-top: 6rem;
 									<div class="row g-5 mb-5">
 										<%-- Day of departure --%>
 										<div class="col-md-4">
+											<div class="d-flex justify-content-between">
 											<label class="form-label required fw-semibold">item</label>
+							        	<div>
+							        	<div id="iconEquipment" style="display : none">							        	
+								        	<div>
+									        	<i class="ki-duotone ki-monitor-mobile text-primary fs-1"><span class="path1"></span><span class="path2"></span>
+								                     <span class="path3"></span><span class="path4"></span>
+								                     <span class="path5"></span><span class="path6"></span>
+								                     <span class="path7"></span><span class="path8"></span>
+							                     </i>
+						                     </div>
+						                    <div class="ms-2"> 
+						                    	<span>Equipment</span>
+						                    </div>
+					                     </div>
+					                     <div id="iconConsumables" style="display : none">
+					                     	<div>
+				                     			<i class="ki-duotone ki-lots-shopping fs-2 text-orange"><span class="path1"></span><span class="path2"></span>
+								                     <span class="path3"></span><span class="path4"></span>
+								                     <span class="path5"></span><span class="path6"></span>
+								                     <span class="path7"></span><span class="path8"></span>
+							                     </i>
+							                </div>
+							                <div class="ms-2">
+							                     <span>Consumables</span>
+							                 </div>
+										 </div>
+					                     </div>
+					                     </div>
 							        
 							            <select class="form-select ps-11" id="itemSelect" name="itemSelect" style="width: 100%;"
 							            onchange="getdataitem()">
@@ -432,19 +460,19 @@ padding-top: 6rem;
 								<div class="card-body">
 									<div class="d-flex gap-8 flex-wrap align-items-start">
 
-<div style="border: 1px solid #e4e6ef;border-radius: 20px;">
+										<div style="border: 1px solid #e4e6ef;border-radius: 20px;">
 										<!-- LEFT: Signature Image -->
 										<div class="d-flex  flex-column align-items-center gap-2 ps-15 pe-15 pt-3 pb-4
 										 <c:choose>
-        <c:when test="${not empty signaturePath}">pt-10 pb-11</c:when>
-    </c:choose>"> 
+									        <c:when test="${not empty signaturePath}">pt-10 pb-11</c:when>
+									    </c:choose>"> 
 											<c:choose>
 												<%-- ✅ มีรูปแล้ว → ล็อค ห้ามเปลี่ยน ไม่มี input file --%>
 												<c:when test="${not empty signaturePath}">
 													<div class="sig-box locked
 																 <c:choose>
-        <c:when test="${not empty signaturePath}">m-0</c:when>
-    </c:choose>">
+													        <c:when test="${not empty signaturePath}">m-0</c:when>
+													    </c:choose>">
 														<img src="${ctx}${signaturePath}"
 															style="max-height: 160px; max-width: 360px; object-fit: contain;" />
 														<div class="sig-lock-badge">
@@ -748,7 +776,6 @@ padding-top: 6rem;
 	}
 	
 	 function submitData(id_btn) {
-		 console.log('id btn', id_btn.id);
 		 var item_catalog = $('#itemSelect').val() ? $('#itemSelect').val().trim() : '';
 		 var quantity = $('#quantity').val() ? $('#quantity').val().trim() : '';
 		 var description = $('#Description').val() ? $('#Description').val().trim() : '';
@@ -949,7 +976,6 @@ padding-top: 6rem;
 		    });
 		
 		$('#receiverBtn1').on('click', function() {
-			console.log('check data')
 			$('#receiverBtn1').prev().css('display','flex')
 		})
 		
@@ -1024,9 +1050,6 @@ padding-top: 6rem;
 	        }
 	    });
 	    $('input, select, textarea').on('input change', function() {
-	        // $(this) คือ element ที่เกิดการเปลี่ยนแปลง
-	        console.log('ID ที่เปลี่ยน:', $(this).attr('id'));
-	        console.log('ค่าใหม่:', $(this).val());
 	        checkSubmitReady()
 	    });
 	    
@@ -1068,15 +1091,12 @@ padding-top: 6rem;
 	        // ตัวแปรไว้เช็คสถานะการปลดล็อค
 	        var shouldUnlock = false;
 	        
-// 			console.log('dataList >>>>>>>>>>>>',dataList)
-	  
 			   const filteredResult = dataList.filter(item => {
 			    // กรองเอาแถวเริ่มต้นติดมาด้วย และคัดเฉพาะตัวที่ idProduct ตรงกัน
 			    return item.parent_product == $('#itemSelect').val()
 // 			    && item.parent_product == $('#itemSelect').find(':selected').attr('data-parent_product') 
 			    && item.parent_product != 0 && item.value != 'allType'
 				});
-	         console.log(filteredResult)
 	         
 		         if(filteredResult.length != 0){
 		        	 shouldUnlock = true
@@ -1094,7 +1114,6 @@ padding-top: 6rem;
 	          
 	        if (shouldUnlock) {
 	            subDropdown.prop('disabled', false); // ปลดล็อคกล่อง (ลบ disabled ออก) ให้กดได้ปกติ
-	            console.log("ข้อมูลตรงเงื่อนไข -> ปลดล็อคช่อง Sub item เรียบร้อย");
 	        } else {
 	            subDropdown.prop('disabled', true);  // หากไม่ตรงเงื่อนไข ให้ล็อคไว้ตามเดิม
 	        }
@@ -1104,7 +1123,17 @@ padding-top: 6rem;
             }
             
             $('#unit').text( $('#itemSelect').find(':selected').attr('data-unit_name'))
+            setTypeProduct()
 	}
+    function setTypeProduct(){
+   	 if($('#itemSelect').find(':selected').attr('data-items_type') == '1'){
+			 $('#iconEquipment').css('display','flex')
+			 $('#iconConsumables').css('display','none')
+		 }else{
+			 $('#iconEquipment').css('display','none')
+			 $('#iconConsumables').css('display','flex') 
+		 }
+   }
 </script>
 	
 </body>
