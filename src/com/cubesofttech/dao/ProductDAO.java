@@ -41,4 +41,22 @@ public interface ProductDAO {
      * ต้องเรียก countReferences() เช็คก่อนเสมอ - เมธอดนี้ไม่ตรวจซ้ำให้
      */
     void deleteWithChildren(Integer productId) throws Exception;
+
+    /**
+     * เช็คว่ามี product ตัวอื่นใช้ product_no (Item ID) นี้ซ้ำอยู่หรือไม่ (ไม่สนตัวพิมพ์เล็ก/ใหญ่)
+     *
+     * @param excludeProductId ตอนแก้ไขให้ส่ง productId ของตัวเองมา กันเช็คซ้ำกับตัวมันเอง / ตอน add ส่ง null
+     */
+    boolean existsByProductNo(String productNo, Integer excludeProductId) throws Exception;
+
+    /**
+     * นับจำนวนเครื่องจริง (equipment) ที่ยังนับเป็นของคงเหลือ (ไม่รวม EquipmentDAO.RETIRED_STATUSES)
+     * ของตัวแม่ + sub product ทุกตัวในคำสั่งเดียว - ใช้กับ badge จำนวนเครื่องในการ์ด Sub product
+     * นับด้วย subquery COUNT(*) GROUP BY product_id ก่อนค่อย join กับตาราง product กันยอดคูณ
+     * (ดู skill product-module: join equipment กับ product ต้อง CAST ฝั่ง varchar เท่านั้น)
+     *
+     * @param parentId product_id ของตัวแม่
+     * @return map: product_id (ของตัวแม่หรือ sub product) -> จำนวนเครื่อง (ไม่มี key = 0 เครื่อง)
+     */
+    Map<Integer, Integer> countEquipmentByParentAndSubProducts(Integer parentId) throws Exception;
 }

@@ -118,7 +118,17 @@ pageEncoding="UTF-8"%>
                   <a
                     href="stock_cons_list"
                     class="btn btn-light-warning d-inline-flex align-items-center px-6 py-3"
-                    >Stock - Product</a
+                    >Product</a
+                  >
+                  <a
+                    href="stock_by_product_list"
+                    class="btn btn-light-primary d-inline-flex align-items-center px-6 py-3"
+                    >Stock By Product</a
+                  >
+                  <a
+                    href="stock_by_location_list"
+                    class="btn btn-light-info d-inline-flex align-items-center px-6 py-3"
+                    >Stock By Location</a
                   >
                 </div>
               </div>

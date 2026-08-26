@@ -29,10 +29,10 @@
                 <div class="d-flex align-items-center gap-3">
                     <a href="stock_cons_edit?productId=${product.productId}" class="btn btn-light d-inline-flex align-items-center px-5 py-3">
                         <i class="ki-duotone ki-setting-2 fs-3 me-2 text-gray-500"><span class="path1"></span><span class="path2"></span></i>
-                        <span class="fw-semibold text-gray-700">Settings</span>
+                        <span class="fw-semibold text-gray-700">Product</span>
                     </a>
                     <a href="stock_cons_balance?productId=${product.productId}" class="btn btn-light-primary d-inline-flex align-items-center px-5 py-3 active">
-                        <i class="ki-duotone ki-package fs-3 me-2"><span class="path1"></span><span class="path2"></span><span class="path3"></span></i>
+                        <i class="ki-duotone ki-cube-2 fs-3 me-2"><span class="path1"></span><span class="path2"></span><span class="path3"></span></i>
                         <span class="fw-semibold">Stock Balance</span>
                     </a>
                 </div>
@@ -231,7 +231,6 @@
 <div class="modal fade" id="addStockModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered mw-650px">
         <div class="modal-content">
-            <%-- TODO: ยังไม่มี action stock_cons_stock_add - ต่อ backend (บันทึกรับเข้า/Good Receipt) ภายหลัง --%>
             <form id="addStockForm" method="POST" action="stock_cons_stock_add" class="form">
                 <input type="hidden" name="productId" value="${product.productId}" />
 
@@ -260,7 +259,8 @@
                         </div>
                         <div class="col-12 col-md-6">
                             <label class="form-label fw-semibold text-gray-700" for="addStockDate">Date</label>
-                            <input type="date" id="addStockDate" name="receiveDate" class="form-control text-gray-700" />
+                            <input type="text" id="addStockDate" name="receiveDate"
+                                   class="form-control text-gray-700" placeholder="Select date" />
                         </div>
                         <div class="col-12 col-md-6">
                             <label class="form-label fw-semibold text-gray-700" for="addStockUnit">
@@ -298,7 +298,20 @@
                             </div>
                         </c:when>
                         <c:otherwise>
-                            <div class="text-muted">ยังไม่มี sub product - เพิ่มได้ที่หน้า Settings</div>
+                            <%-- ไม่มี sub product - รับเข้าเป็นบรรทัดเดียวผูกกับตัวแม่โดยตรง (ดู stockConsStockAdd) --%>
+                            <div class="row g-4">
+                                <div class="col-12 col-md-6">
+                                    <div class="input-group">
+                                        <span class="input-group-text fw-semibold text-gray-700" style="min-width: 80px;">
+                                            ${fn:escapeXml(product.productName)}
+                                        </span>
+                                        <input type="number" min="0" step="1" value="0"
+                                               name="amount_${product.productId}"
+                                               class="form-control text-gray-700" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="text-muted fs-7 mt-2">ยังไม่มี sub product - เพิ่มได้ที่หน้า Settings</div>
                         </c:otherwise>
                     </c:choose>
                 </div>
@@ -321,6 +334,16 @@
                    .prop('disabled', true)
                    .attr('data-kt-indicator', 'on');
         });
+
+        // ---- datepicker ของ addStockDate ใช้แพทเทิร์นเดียวกับหน้าอื่นในโปรเจกต์ (เช่น equipment_add.jsp) ----
+        // dateFormat = ค่าที่ submit จริง, altFormat = ค่าที่โชว์ให้ผู้ใช้เห็น (1 Jan 2026)
+        if (typeof flatpickr !== 'undefined') {
+            $('#addStockDate').flatpickr({
+                dateFormat: 'Y-m-d',
+                altInput: true,
+                altFormat: 'j M Y'
+            });
+        }
 
         // ---- เติม dropdown Warehouse แบบ tree (อ้างอิงโครงสร้างจากหน้า warehouse_list) ----
         var warehouseData = [

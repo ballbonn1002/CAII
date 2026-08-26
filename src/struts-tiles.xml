@@ -745,6 +745,19 @@
 			value="/pages-back/stock/stock_cons_add.jsp" />
 	</definition>
 
+	<!-- UI mockup เท่านั้น - ยังไม่ต่อ backend จริง -->
+	<definition name="stockByProductList" extends="baseLayout">
+		<put-attribute name="title" value="Stock By Product" />
+		<put-attribute name="body"
+			value="/pages-back/stock/stock_by_product_list.jsp" />
+	</definition>
+
+	<definition name="stockByLocationList" extends="baseLayout">
+		<put-attribute name="title" value="Stock By Location" />
+		<put-attribute name="body"
+			value="/pages-back/stock/stock_by_location_list.jsp" />
+	</definition>
+
 	<definition name="stockConsEdit" extends="baseLayout">
 		<put-attribute name="title" value="Stock - Consumables" />
 		<put-attribute name="body"

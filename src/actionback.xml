@@ -2242,6 +2242,19 @@
 			<result name="error">/index.jsp</result>
 		</action>
 
+		<!-- Stock By Product / Stock By Location - UI mockup เท่านั้น (ดู CLAUDE.md skill product-module) -->
+		<action name="stock_by_product_list"
+			class="com.cubesofttech.action.ProductAction" method="showStockByProductPage">
+			<result name="success" type="tiles">stockByProductList</result>
+			<result name="error">/index.jsp</result>
+		</action>
+
+		<action name="stock_by_location_list"
+			class="com.cubesofttech.action.ProductAction" method="showStockByLocationPage">
+			<result name="success" type="tiles">stockByLocationList</result>
+			<result name="error">/index.jsp</result>
+		</action>
+
 		<action name="stock_cons_edit"
 			class="com.cubesofttech.action.ProductAction" method="showStockEditPage">
 			<result name="success" type="tiles">stockConsEdit</result>
@@ -2263,6 +2276,14 @@
 		<action name="stock_cons_balance"
 			class="com.cubesofttech.action.ProductAction" method="showStockBalancePage">
 			<result name="success" type="tiles">stockConsBalance</result>
+			<result name="error">/index.jsp</result>
+		</action>
+
+		<!-- Add Stock (บันทึกรับเข้า/Good Receipt) จากหน้า Stock Balance -->
+		<action name="stock_cons_stock_add"
+			class="com.cubesofttech.action.ProductAction" method="stockConsStockAdd">
+			<!-- PRG: redirect กลับหน้า Stock Balance กัน refresh แล้ว submit ซ้ำ -->
+			<result name="success" type="redirect">stock_cons_balance?productId=${productId}</result>
 			<result name="error">/index.jsp</result>
 		</action>
 
@@ -2338,6 +2359,21 @@
 			<result name="error">/index.jsp</result>
 		</action>
 
+		<!-- Stock: Equipment - popup เลือกเครื่องมาผูกกับ catalog (AJAX, ตอบ JSON) -->
+		<action name="stock_equ_link_save"
+			class="com.cubesofttech.action.ProductAction" method="stockEquLinkSave">
+		</action>
+
+		<!-- Stock: Equipment - เอาเครื่องออกจาก catalog (AJAX, ตอบ JSON) -->
+		<action name="stock_equ_unlink_save"
+			class="com.cubesofttech.action.ProductAction" method="stockEquUnlinkSave">
+		</action>
+
+		<!-- Stock: เช็ค Item ID (product_no) ซ้ำ ใช้ทั้งหน้า add/edit ของ Consumables และ Equipment (AJAX, ตอบ JSON) -->
+		<action name="stock_cons_check_duplicate"
+			class="com.cubesofttech.action.ProductAction" method="stockCheckProductNoDuplicate">
+		</action>
+
 		<action name="stock_equ_uom_add"
 			class="com.cubesofttech.action.ProductAction" method="stockConsUomSave">
 			<result name="success" type="redirect">stock_equ_edit?productId=${productId}</result>
@@ -2351,6 +2387,25 @@
 		<action name="stock_equ_uom_delete"
 			class="com.cubesofttech.action.ProductAction" method="stockConsUomDelete">
 			<result name="success" type="redirect">stock_equ_edit?productId=${productId}</result>
+			<result name="error">/index.jsp</result>
+		</action>
+
+		<!-- Stock: Equipment - Sub product (ใช้ method เดียวกับฝั่ง consumables เหมือน uom ด้านบน
+		     ต้องมี action name แยกเพราะ redirect กลับไปต้องเป็น stock_equ_edit ไม่ใช่ stock_cons_edit
+		     ส่วน stock_cons_sub_reorder ตอบ JSON ไม่มี redirect ใช้ร่วมกันได้เลย ไม่ต้องมี stock_equ_sub_reorder -->
+		<action name="stock_equ_sub_add"
+			class="com.cubesofttech.action.ProductAction" method="stockConsSubSave">
+			<result name="success" type="redirect">stock_equ_edit?productId=${parentProductId}</result>
+			<result name="error">/index.jsp</result>
+		</action>
+		<action name="stock_equ_sub_edit"
+			class="com.cubesofttech.action.ProductAction" method="stockConsSubUpdate">
+			<result name="success" type="redirect">stock_equ_edit?productId=${parentProductId}</result>
+			<result name="error">/index.jsp</result>
+		</action>
+		<action name="stock_equ_sub_delete"
+			class="com.cubesofttech.action.ProductAction" method="stockConsSubDelete">
+			<result name="success" type="redirect">stock_equ_edit?productId=${parentProductId}</result>
 			<result name="error">/index.jsp</result>
 		</action>
 

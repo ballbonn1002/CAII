@@ -321,4 +321,70 @@ public class ProductDAOImpl implements ProductDAO {
         session.flush();
     }
 
+    @Override
+    public boolean existsByProductNo(String productNo, Integer excludeProductId) throws Exception {
+        if (productNo == null || productNo.trim().isEmpty()) {
+            return false;
+        }
+        Session session = this.sessionFactory.getCurrentSession();
+        StringBuilder hql = new StringBuilder(
+                "select count(*) from Product where lower(trim(productNo)) = :productNo");
+        if (excludeProductId != null) {
+            hql.append(" and productId != :excludeProductId");
+        }
+        org.hibernate.Query query = session.createQuery(hql.toString());
+        query.setParameter("productNo", productNo.trim().toLowerCase());
+        if (excludeProductId != null) {
+            query.setParameter("excludeProductId", excludeProductId);
+        }
+        Long count = (Long) query.uniqueResult();
+        return count != null && count > 0;
+    }
+
+    @Override
+    public Map<Integer, Integer> countEquipmentByParentAndSubProducts(Integer parentId) throws Exception {
+        Map<Integer, Integer> counts = new LinkedHashMap<Integer, Integer>();
+        if (parentId == null) {
+            return counts;
+        }
+        Session session = this.sessionFactory.getCurrentSession();
+
+        StringBuilder sql = new StringBuilder();
+        sql.append("SELECT p.product_id AS product_id, COALESCE(ec.qty, 0) AS qty ");
+        sql.append("FROM product p ");
+        // นับเครื่องด้วย subquery แยกก่อน ค่อย join - กันยอดคูณตามจำนวนแถวที่ join (ดู skill product-module)
+        sql.append("LEFT JOIN ( ");
+        sql.append("    SELECT eq.product_id AS product_id, COUNT(*) AS qty ");
+        sql.append("    FROM equipment eq ");
+        //           product_id เป็น varchar ค่าว่างจึงไม่ใช่ NULL ต้องกันแยกอีกชั้น
+        sql.append("    WHERE eq.product_id IS NOT NULL AND TRIM(eq.product_id) <> '' ");
+        //           status NULL ต้องนับด้วย - NULL NOT IN (...) ได้ NULL ซึ่งถูกตัดทิ้ง
+        sql.append("      AND (eq.status IS NULL OR eq.status NOT IN (:retiredStatuses)) ");
+        sql.append("    GROUP BY eq.product_id ");
+        sql.append(") ec ");
+        // equipment.product_id เป็น varchar(32) ส่วน product.product_id เป็น int - CAST ฝั่ง varchar เท่านั้น
+        sql.append("  ON CAST(ec.product_id AS UNSIGNED) = p.product_id ");
+        sql.append("WHERE p.product_id = :parentId OR p.parent_product_id = :parentIdText");
+
+        SQLQuery query = session.createSQLQuery(sql.toString());
+        query.setParameterList("retiredStatuses", EquipmentDAO.RETIRED_STATUSES);
+        query.setParameter("parentId", parentId);
+        query.setParameter("parentIdText", String.valueOf(parentId));
+        query.setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
+
+        List<Map<String, Object>> rows = query.list();
+        if (rows != null) {
+            for (Map<String, Object> row : rows) {
+                Object idObj = row.get("product_id");
+                Object qtyObj = row.get("qty");
+                if (idObj == null) {
+                    continue;
+                }
+                counts.put(Integer.valueOf(((Number) idObj).intValue()),
+                        Integer.valueOf(qtyObj == null ? 0 : ((Number) qtyObj).intValue()));
+            }
+        }
+        return counts;
+    }
+
 }

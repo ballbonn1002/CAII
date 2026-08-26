@@ -27,4 +27,7 @@ public interface StockDAO {
 
     /** ผลรวม amount_convert ของ product (ยอดสุทธิจากความเคลื่อนไหวทั้งหมด) */
     public Double sumConvertByProductId(String productId) throws Exception;
+
+    /** ค่า stock_id สูงสุด (ตัวเลขล้วน) ใช้ generate id ถัดไป (pattern เดียวกับ po_detail_id) */
+    public Long getMaxId() throws Exception;
 }

@@ -31,13 +31,24 @@
                 </div>
 
                 <div class="d-flex align-items-center gap-3">
-                    <a href="${urlPrefix}_balance?productId=${product.productId}" class="btn btn-light d-inline-flex align-items-center px-5 py-3">
-                        <i class="ki-duotone ki-package fs-3 me-2 text-gray-500"><span class="path1"></span><span class="path2"></span><span class="path3"></span></i>
-                        <span class="fw-semibold text-gray-700">Stock Balance</span>
-                    </a>
                     <a href="${urlPrefix}_edit?productId=${product.productId}" class="btn btn-light-primary d-inline-flex align-items-center px-5 py-3 active">
                         <i class="ki-duotone ki-setting-2 fs-3 me-2"><span class="path1"></span><span class="path2"></span></i>
-                        <span class="fw-semibold">Settings</span>
+                        <span class="fw-semibold">Product</span>
+                    </a>
+                    <a href="${pageContext.request.contextPath}/stock_by_product_list" class="btn btn-light d-inline-flex align-items-center px-5 py-3">
+                        <i class="ki-duotone ki-barcode fs-3 me-2 text-gray-500">
+                            <span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span>
+                            <span class="path5"></span><span class="path6"></span><span class="path7"></span><span class="path8"></span>
+                        </i>
+                        <span class="fw-semibold text-gray-700">Stock By Product</span>
+                    </a>
+                    <a href="${pageContext.request.contextPath}/stock_by_location_list" class="btn btn-light d-inline-flex align-items-center px-5 py-3">
+                        <i class="ki-duotone ki-home-2 fs-3 me-2 text-gray-500"><span class="path1"></span><span class="path2"></span></i>
+                        <span class="fw-semibold text-gray-700">Stock By Location</span>
+                    </a>
+                    <a href="${urlPrefix}_balance?productId=${product.productId}" class="btn btn-light d-inline-flex align-items-center px-5 py-3">
+                        <i class="ki-duotone ki-cube-2 fs-3 me-2 text-gray-500"><span class="path1"></span><span class="path2"></span><span class="path3"></span></i>
+                        <span class="fw-semibold text-gray-700">Stock Balance</span>
                     </a>
                 </div>
             </div>
@@ -72,7 +83,8 @@
                                         </label>
                                         <input type="text" id="productNo" name="productNo" required maxlength="100"
                                                class="form-control text-gray-700"
-                                               value="${fn:escapeXml(product.productNo)}" />
+                                               value="${fn:escapeXml(product.productNo)}" autocomplete="off" />
+                                        <div class="invalid-feedback" id="productNoFeedback"></div>
                                     </div>
 
                                     <div class="col-12 col-lg-6">
@@ -103,8 +115,24 @@
                                                     <option value="1" <c:if test="${product.productType eq '1'}">selected</c:if>>Equipment</option>
                                                     <option value="2" <c:if test="${product.productType eq '2'}">selected</c:if>>Consumables</option>
                                                     <option value="3" <c:if test="${product.productType eq '3'}">selected</c:if>>Accessories</option>
+                                                    <option value="4" <c:if test="${product.productType eq '4'}">selected</c:if>>Office Supplies</option>
                                                 </c:otherwise>
                                             </c:choose>
+                                        </select>
+                                    </div>
+
+                                    <%-- แสดงเฉพาะตอน Item Type = Equipment (value '1') - คุมด้วย JS ด้านล่าง (#toggleEquipmentType) --%>
+                                    <div class="col-12 col-lg-6 d-none" id="equipmentTypeWrap">
+                                        <label class="form-label fw-semibold text-gray-700" for="equipmentType">
+                                            Equipment Type <span class="text-danger">*</span>
+                                        </label>
+                                        <%-- ดึงจากตาราง equipment_type ผ่าน EquipmentTypeDAO.getall() --%>
+                                        <select id="equipmentType" name="equipmentType" class="form-select text-gray-700">
+                                            <option value="">- เลือก Equipment Type -</option>
+                                            <c:forEach var="eqType" items="${equipmentTypes}">
+                                                <option value="${fn:escapeXml(eqType.typeID)}"
+                                                    <c:if test="${eqType.typeID eq product.equipmentType}">selected</c:if>>${fn:escapeXml(eqType.description)}</option>
+                                            </c:forEach>
                                         </select>
                                     </div>
 
@@ -197,86 +225,15 @@
                     </div>
                 </div>
 
-                <%-- ============ Equipment List (เฉพาะ Item Type = Equipment) ============
-                     รายการเครื่องจริงที่ผูกกับ catalog นี้ (equipment.product_id) - เพิ่มเครื่องผ่าน
-                     popup ที่ดึงรายชื่อเครื่องที่ยังไม่ผูกกับ catalog ไหนเลย (EquipmentDAO.findUnlinked())
-                     กด Save ใน popup แล้วบันทึกลง DB ทันที ไม่ต้องกลับมากด Save ที่ฟอร์มหลักอีกที --%>
-                <c:if test="${isEquipment}">
-                <div class="card mb-8">
-                    <div class="card-border-radius">
-                        <div class="card-header border-0 pt-6 d-flex align-items-center justify-content-between">
-                            <h3 class="page-heading text-gray-900 fw-bold mb-0">Equipment List</h3>
-                            <button type="button" class="btn btn-success d-inline-flex align-items-center px-6 py-3"
-                                    data-bs-toggle="modal" data-bs-target="#equipmentPickerModal">
-                                <i class="ki-duotone ki-plus fs-3 me-2"><span class="path1"></span><span class="path2"></span></i>
-                                <span class="fw-bold">Add Equipment</span>
-                            </button>
-                        </div>
-                        <div class="separator"></div>
-
-                        <div class="card-body">
-                            <table id="linkedEquipmentTable" class="table align-middle fs-6 mb-0">
-                                <thead class="fs-7 text-gray-500 text-uppercase">
-                                    <tr class="fw-semibold">
-                                        <th class="min-w-150px text-nowrap">Item ID</th>
-                                        <th class="min-w-250px text-nowrap">ชื่อเครื่อง</th>
-                                        <th class="min-w-180px text-nowrap">Serial No</th>
-                                        <th class="min-w-120px text-nowrap text-center">Status</th>
-                                        <th class="min-w-180px text-nowrap">ที่ตั้ง</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <c:forEach var="equip" items="${linkedEquipment}">
-                                        <tr>
-                                            <td class="text-gray-900 fw-bold">
-                                                <c:choose>
-                                                    <c:when test="${not empty fn:trim(equip.itemNo)}">${fn:escapeXml(equip.itemNo)}</c:when>
-                                                    <c:otherwise><span class="text-muted">#${equip.equipmentId}</span></c:otherwise>
-                                                </c:choose>
-                                            </td>
-                                            <td class="text-gray-700 fw-normal">
-                                                <c:choose>
-                                                    <c:when test="${not empty fn:trim(equip.name)}">${fn:escapeXml(equip.name)}</c:when>
-                                                    <c:otherwise><span class="text-muted">(ไม่ระบุชื่อ)</span></c:otherwise>
-                                                </c:choose>
-                                            </td>
-                                            <td class="text-gray-700 fw-normal">
-                                                <c:choose>
-                                                    <c:when test="${not empty equip.serialNo}">${fn:escapeXml(equip.serialNo)}</c:when>
-                                                    <c:otherwise><span class="text-muted">-</span></c:otherwise>
-                                                </c:choose>
-                                            </td>
-                                            <td class="text-center">
-                                                <c:choose>
-                                                    <c:when test="${not empty equip.status}"><span class="badge badge-light-primary fw-semibold">${fn:escapeXml(equip.status)}</span></c:when>
-                                                    <c:otherwise><span class="text-muted">-</span></c:otherwise>
-                                                </c:choose>
-                                            </td>
-                                            <td class="text-gray-700 fw-normal">
-                                                <c:choose>
-                                                    <c:when test="${not empty equip.location}">${fn:escapeXml(equip.location)}</c:when>
-                                                    <c:otherwise><span class="text-muted">-</span></c:otherwise>
-                                                </c:choose>
-                                            </td>
-                                        </tr>
-                                    </c:forEach>
-                                    <c:if test="${empty linkedEquipment}">
-                                        <tr>
-                                            <td colspan="5" class="text-center text-muted py-10">
-                                                ยังไม่มีเครื่องผูกกับ item นี้ - กด "Add Equipment" เพื่อเลือกเครื่อง
-                                            </td>
-                                        </tr>
-                                    </c:if>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-                </c:if>
-
-                <%-- Sub product card ซ่อนทั้งใบสำหรับ Equipment - รายละเอียดรายเครื่องเก็บที่ตาราง equipment แทน --%>
-                <c:if test="${not isEquipment}">
-                <%-- ============ Sub product ============ --%>
+                <%-- ============ Sub product (รวมกับ Equipment เข้าการ์ดเดียว 25/08/2026) ============
+                     ใช้ร่วมกันทุก Item Type - สำหรับ Equipment ตารางนี้ "adaptive" ตามว่ามี sub product
+                     หรือยัง (ดู ProductAction.showStockEditPage() / buildEquipmentGroupsForCatalog()):
+                       - มี sub product      -> ตาราง sub product ปกติ + คอลัมน์ Equipment (badge/expand/link)
+                                                 บวกแถวท้าย "ไม่ระบุ sub" สำหรับเครื่องที่ยังผูกกับตัวแม่ตรงๆ
+                       - ไม่มี sub product   -> ถ้ามีเครื่องผูกกับตัวแม่ตรงๆ (ข้อมูลเก่า) โชว์ตาราง equipment
+                                                 ตรงๆ แทน / ถ้าไม่มีเลยโชว่ข้อความชวนสร้าง sub product ก่อน
+                     Equipment column ใช้ DataTables เฉพาะ child-row API (ordering/paging/searching ปิดหมด
+                     dom:'t') เพื่อไม่ชนกับ SortableJS ที่คุมการลากจัดลำดับ #subTableBody อยู่ --%>
                 <div class="card">
                     <div class="card-border-radius">
                         <div class="card-header border-0 pt-6 d-flex align-items-center justify-content-between">
@@ -292,63 +249,356 @@
                         <div class="separator"></div>
 
                         <div class="card-body">
-                            <div class="d-flex justify-content-end mb-6">
-                                <button type="button" class="btn btn-success d-inline-flex align-items-center px-6 py-3"
-                                        data-bs-toggle="modal" data-bs-target="#subCreateModal">
-                                    <i class="ki-duotone ki-plus fs-3 me-2"><span class="path1"></span><span class="path2"></span></i>
-                                    <span class="fw-bold">Create</span>
-                                </button>
-                            </div>
+                            <c:choose>
+                                <%-- Equipment, ไม่มี sub product เลย, ไม่มีเครื่องผูกกับตัวแม่ตรงๆ ด้วย = ว่างเปล่าจริงๆ --%>
+                                <c:when test="${isEquipment and empty subProducts and parentEquipmentCount == 0}">
+                                    <div class="text-center text-muted py-10">
+                                        <div class="mb-4">ยังไม่มี sub product - สร้าง sub product ก่อน หรือผูกเครื่องเข้า item นี้ตรงๆ ก็ได้</div>
+                                        <div class="d-flex flex-wrap justify-content-center gap-3">
+                                            <button type="button" class="btn btn-success d-inline-flex align-items-center px-6 py-3"
+                                                    data-bs-toggle="modal" data-bs-target="#subCreateModal">
+                                                <i class="ki-duotone ki-plus fs-3 me-2"><span class="path1"></span><span class="path2"></span></i>
+                                                <span class="fw-bold">Create Sub product</span>
+                                            </button>
+                                            <button type="button" class="btn btn-success d-inline-flex align-items-center px-6 py-3 sub-equ-add"
+                                                    data-target-id="${product.productId}" data-target-name="${fn:escapeXml(product.productName)}"
+                                                    data-bs-toggle="modal" data-bs-target="#equipmentPickerModal">
+                                                <i class="ki-duotone ki-plus fs-3 me-2"><span class="path1"></span><span class="path2"></span></i>
+                                                <span class="fw-bold">Add Equipment</span>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </c:when>
 
-                            <table id="subProductTable" class="table align-middle fs-6 mb-0">
-                                <thead class="fs-7 text-gray-500 text-uppercase">
-                                    <tr class="fw-semibold">
-                                        <th class="w-40px"></th>
-                                        <th class="min-w-100px text-nowrap">Sequence</th>
-                                        <th class="min-w-250px text-nowrap">Sub Product ID</th>
-                                        <th class="min-w-200px text-nowrap">Sub Product Name</th>
-                                        <th class="min-w-250px text-nowrap">Description</th>
-                                        <th class="min-w-120px text-nowrap text-end">Action</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="subTableBody">
-                                    <c:forEach var="sub" items="${subProducts}">
-                                        <tr data-id="${sub.productId}"
-                                            data-product-no="${fn:escapeXml(sub.productNo)}"
-                                            data-product-name="${fn:escapeXml(sub.productName)}"
-                                            data-description="${fn:escapeXml(sub.description)}">
-                                            <td class="text-center">
-                                                <i class="ki-duotone ki-maximize fs-4 text-gray-400 sub-drag-handle" style="cursor: grab;"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span></i>
-                                            </td>
-                                            <td class="text-gray-900 fw-bold"><span class="sub-seq">${fn:escapeXml(sub.sequence)}</span></td>
-                                            <td class="text-gray-900 fw-bold">${fn:escapeXml(sub.productNo)}</td>
-                                            <td class="text-gray-700 fw-normal">${fn:escapeXml(sub.productName)}</td>
-                                            <td class="text-gray-700 fw-normal">
-                                                <c:choose>
-                                                    <c:when test="${not empty sub.description}">${fn:escapeXml(sub.description)}</c:when>
-                                                    <c:otherwise><span class="text-muted">-</span></c:otherwise>
-                                                </c:choose>
-                                            </td>
-                                            <td class="text-end text-nowrap">
-                                                <button type="button" class="btn btn-icon btn-sm btn-light-primary me-1 btn-edit-sub" title="Edit">
-                                                    <i class="ki-duotone ki-pencil fs-3"><span class="path1"></span><span class="path2"></span></i>
-                                                </button>
-                                                <button type="button" class="btn btn-icon btn-sm btn-light-danger btn-delete-sub"
-                                                        data-id="${sub.productId}" data-name="${fn:escapeXml(sub.productName)}" title="Delete">
-                                                    <i class="ki-duotone ki-trash fs-3">
-                                                        <span class="path1"></span><span class="path2"></span>
-                                                        <span class="path3"></span><span class="path4"></span><span class="path5"></span>
-                                                    </i>
-                                                </button>
-                                            </td>
-                                        </tr>
-                                    </c:forEach>
-                                </tbody>
-                            </table>
+                                <%-- Equipment, ไม่มี sub product แต่มีเครื่องผูกกับตัวแม่ตรงๆ อยู่ (ข้อมูลเก่า) - โชว์ตาราง equipment ตรงๆ --%>
+                                <c:when test="${isEquipment and empty subProducts}">
+                                    <c:set var="parentGroup" value="${equipmentDetailByProductId[product.productId]}" />
+                                    <div class="d-flex justify-content-end mb-6">
+                                        <button type="button" class="btn btn-success d-inline-flex align-items-center px-6 py-3 sub-equ-add"
+                                                data-target-id="${product.productId}" data-target-name="${fn:escapeXml(product.productName)}"
+                                                data-bs-toggle="modal" data-bs-target="#equipmentPickerModal">
+                                            <i class="ki-duotone ki-plus fs-3 me-2"><span class="path1"></span><span class="path2"></span></i>
+                                            <span class="fw-bold">Add Equipment</span>
+                                        </button>
+                                    </div>
+                                    <table id="equipmentFlatTable" class="table align-middle fs-6 mb-0">
+                                        <thead class="fs-7 text-gray-500 text-uppercase">
+                                            <tr class="fw-semibold">
+                                                <th class="min-w-150px text-nowrap">Item ID</th>
+                                                <th class="min-w-250px text-nowrap">ชื่อเครื่อง</th>
+                                                <th class="min-w-180px text-nowrap">Serial No</th>
+                                                <th class="min-w-120px text-nowrap text-center">Status</th>
+                                                <th class="min-w-180px text-nowrap">Location</th>
+                                                <th class="min-w-80px text-nowrap text-end">Action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <c:forEach var="equip" items="${parentGroup.rows}">
+                                                <c:set var="equipLabel">
+                                                    <c:choose>
+                                                        <c:when test="${not empty fn:trim(equip.itemNo)}">${fn:escapeXml(equip.itemNo)}</c:when>
+                                                        <c:when test="${not empty fn:trim(equip.name)}">${fn:escapeXml(equip.name)}</c:when>
+                                                        <c:otherwise>#${equip.equipmentId}</c:otherwise>
+                                                    </c:choose>
+                                                </c:set>
+                                                <tr>
+                                                    <td class="text-gray-900 fw-bold">
+                                                        <c:choose>
+                                                            <c:when test="${not empty fn:trim(equip.itemNo)}">${fn:escapeXml(equip.itemNo)}</c:when>
+                                                            <c:otherwise><span class="text-muted">#${equip.equipmentId}</span></c:otherwise>
+                                                        </c:choose>
+                                                    </td>
+                                                    <td class="text-gray-700 fw-normal">
+                                                        <c:choose>
+                                                            <c:when test="${not empty fn:trim(equip.name)}">${fn:escapeXml(equip.name)}</c:when>
+                                                            <c:otherwise><span class="text-muted">(ไม่ระบุชื่อ)</span></c:otherwise>
+                                                        </c:choose>
+                                                    </td>
+                                                    <td class="text-gray-700 fw-normal">
+                                                        <c:choose>
+                                                            <c:when test="${not empty equip.serialNo}">${fn:escapeXml(equip.serialNo)}</c:when>
+                                                            <c:otherwise><span class="text-muted">-</span></c:otherwise>
+                                                        </c:choose>
+                                                    </td>
+                                                    <td class="text-center">
+                                                        <c:choose>
+                                                            <c:when test="${not empty equip.status}"><span class="badge badge-light-primary fw-semibold">${fn:escapeXml(equip.status)}</span></c:when>
+                                                            <c:otherwise><span class="text-muted">-</span></c:otherwise>
+                                                        </c:choose>
+                                                    </td>
+                                                    <td class="text-gray-700 fw-normal">
+                                                        <c:choose>
+                                                            <c:when test="${not empty equip.location}">${fn:escapeXml(equip.location)}</c:when>
+                                                            <c:otherwise><span class="text-muted">-</span></c:otherwise>
+                                                        </c:choose>
+                                                    </td>
+                                                    <td class="text-end">
+                                                        <button type="button" class="btn btn-icon btn-sm btn-light-danger btn-unlink-equipment"
+                                                                data-id="${equip.equipmentId}"
+                                                                data-name="${fn:trim(equipLabel)}"
+                                                                data-target-id="${product.productId}"
+                                                                title="เอาออกจาก item นี้">
+                                                            <i class="ki-duotone ki-cross-circle fs-3"><span class="path1"></span><span class="path2"></span></i>
+                                                        </button>
+                                                    </td>
+                                                </tr>
+                                            </c:forEach>
+                                        </tbody>
+                                    </table>
+                                </c:when>
+
+                                <%-- ปกติ: ตาราง sub product (ทุก Item Type) + คอลัมน์ Equipment ถ้าเป็น Equipment --%>
+                                <c:otherwise>
+                                    <div class="d-flex justify-content-end mb-6">
+                                        <button type="button" class="btn btn-success d-inline-flex align-items-center px-6 py-3"
+                                                data-bs-toggle="modal" data-bs-target="#subCreateModal">
+                                            <i class="ki-duotone ki-plus fs-3 me-2"><span class="path1"></span><span class="path2"></span></i>
+                                            <span class="fw-bold">Create</span>
+                                        </button>
+                                    </div>
+
+                                    <%-- มี sub product แล้วแต่ยังไม่มีเครื่องผูกที่ไหนเลย (รวมตัวแม่) - เตือน + ปุ่ม Link ตรงตัวแม่ --%>
+                                    <c:if test="${isEquipment and totalEquipmentCount == 0}">
+                                        <div class="alert alert-warning d-flex align-items-center justify-content-between flex-wrap gap-3 mb-6">
+                                            <span class="fw-semibold">ยังไม่มีเครื่องใน item นี้</span>
+                                            <button type="button" class="btn btn-sm btn-warning sub-equ-add"
+                                                    data-target-id="${product.productId}" data-target-name="${fn:escapeXml(product.productName)}"
+                                                    data-bs-toggle="modal" data-bs-target="#equipmentPickerModal">
+                                                Link Equipment
+                                            </button>
+                                        </div>
+                                    </c:if>
+
+                                    <div class="table-responsive">
+                                        <table id="subProductTable" class="table align-middle fs-6 mb-0">
+                                            <thead class="fs-7 text-gray-500 text-uppercase">
+                                                <tr class="fw-semibold">
+                                                    <th class="w-40px"></th>
+                                                    <th class="min-w-100px text-nowrap">Sequence</th>
+                                                    <th class="min-w-250px text-nowrap">Sub Product ID</th>
+                                                    <th class="min-w-200px text-nowrap">Sub Product Name</th>
+                                                    <th class="min-w-250px text-nowrap">Description</th>
+                                                    <c:if test="${isEquipment}"><th class="min-w-150px text-nowrap text-center">Equipment</th></c:if>
+                                                    <th class="min-w-120px text-nowrap text-end">Action</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="subTableBody">
+                                                <c:forEach var="sub" items="${subProducts}">
+                                                    <tr data-id="${sub.productId}"
+                                                        data-product-no="${fn:escapeXml(sub.productNo)}"
+                                                        data-product-name="${fn:escapeXml(sub.productName)}"
+                                                        data-description="${fn:escapeXml(sub.description)}">
+                                                        <td class="text-center">
+                                                            <i class="ki-duotone ki-maximize fs-4 text-gray-400 sub-drag-handle" style="cursor: grab;"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span></i>
+                                                        </td>
+                                                        <td class="text-gray-900 fw-bold"><span class="sub-seq">${fn:escapeXml(sub.sequence)}</span></td>
+                                                        <td class="text-gray-900 fw-bold">${fn:escapeXml(sub.productNo)}</td>
+                                                        <td class="text-gray-700 fw-normal">${fn:escapeXml(sub.productName)}</td>
+                                                        <td class="text-gray-700 fw-normal">
+                                                            <c:choose>
+                                                                <c:when test="${not empty sub.description}">${fn:escapeXml(sub.description)}</c:when>
+                                                                <c:otherwise><span class="text-muted">-</span></c:otherwise>
+                                                            </c:choose>
+                                                        </td>
+                                                        <c:if test="${isEquipment}">
+                                                            <c:set var="subCount" value="${empty equipmentCounts[sub.productId] ? 0 : equipmentCounts[sub.productId]}" />
+                                                            <c:set var="subGroup" value="${equipmentDetailByProductId[sub.productId]}" />
+                                                            <%-- child-row content: mini ตาราง serial/status ของเครื่องใน sub นี้ escape ทั้งก้อนเก็บไว้ใน data attribute
+                                                                 ให้ browser decode คืนตอน parse HTML แล้ว JS ค่อยส่งให้ DataTables row.child() แสดงตอนกด badge --%>
+                                                            <c:set var="childHtml">
+                                                                <div class="p-4">
+                                                                    <table class="table table-sm align-middle fs-7 mb-0">
+                                                                        <thead class="text-gray-500 text-uppercase">
+                                                                            <tr>
+                                                                                <th>Item ID</th>
+                                                                                <th>ชื่อเครื่อง</th>
+                                                                                <th>Serial No</th>
+                                                                                <th class="text-center">Status</th>
+                                                                                <th>Location</th>
+                                                                                <th class="text-end">Action</th>
+                                                                            </tr>
+                                                                        </thead>
+                                                                        <tbody>
+                                                                            <c:forEach var="equip" items="${subGroup.rows}">
+                                                                                <c:set var="equipLabel">
+                                                                                    <c:choose>
+                                                                                        <c:when test="${not empty fn:trim(equip.itemNo)}">${fn:escapeXml(equip.itemNo)}</c:when>
+                                                                                        <c:when test="${not empty fn:trim(equip.name)}">${fn:escapeXml(equip.name)}</c:when>
+                                                                                        <c:otherwise>#${equip.equipmentId}</c:otherwise>
+                                                                                    </c:choose>
+                                                                                </c:set>
+                                                                                <tr>
+                                                                                    <td class="text-gray-900 fw-bold">
+                                                                                        <c:choose>
+                                                                                            <c:when test="${not empty fn:trim(equip.itemNo)}">${fn:escapeXml(equip.itemNo)}</c:when>
+                                                                                            <c:otherwise><span class="text-muted">#${equip.equipmentId}</span></c:otherwise>
+                                                                                        </c:choose>
+                                                                                    </td>
+                                                                                    <td class="text-gray-700">
+                                                                                        <c:choose>
+                                                                                            <c:when test="${not empty fn:trim(equip.name)}">${fn:escapeXml(equip.name)}</c:when>
+                                                                                            <c:otherwise><span class="text-muted">(ไม่ระบุชื่อ)</span></c:otherwise>
+                                                                                        </c:choose>
+                                                                                    </td>
+                                                                                    <td class="text-gray-700">
+                                                                                        <c:choose>
+                                                                                            <c:when test="${not empty equip.serialNo}">${fn:escapeXml(equip.serialNo)}</c:when>
+                                                                                            <c:otherwise><span class="text-muted">-</span></c:otherwise>
+                                                                                        </c:choose>
+                                                                                    </td>
+                                                                                    <td class="text-center">
+                                                                                        <c:choose>
+                                                                                            <c:when test="${not empty equip.status}"><span class="badge badge-light-primary fw-semibold">${fn:escapeXml(equip.status)}</span></c:when>
+                                                                                            <c:otherwise><span class="text-muted">-</span></c:otherwise>
+                                                                                        </c:choose>
+                                                                                    </td>
+                                                                                    <td class="text-gray-700">
+                                                                                        <c:choose>
+                                                                                            <c:when test="${not empty equip.location}">${fn:escapeXml(equip.location)}</c:when>
+                                                                                            <c:otherwise><span class="text-muted">-</span></c:otherwise>
+                                                                                        </c:choose>
+                                                                                    </td>
+                                                                                    <td class="text-end">
+                                                                                        <button type="button" class="btn btn-icon btn-sm btn-light-danger btn-unlink-equipment"
+                                                                                                data-id="${equip.equipmentId}"
+                                                                                                data-name="${fn:trim(equipLabel)}"
+                                                                                                data-target-id="${sub.productId}"
+                                                                                                title="เอาออกจาก sub product นี้">
+                                                                                            <i class="ki-duotone ki-cross-circle fs-3"><span class="path1"></span><span class="path2"></span></i>
+                                                                                        </button>
+                                                                                    </td>
+                                                                                </tr>
+                                                                            </c:forEach>
+                                                                            <c:if test="${empty subGroup.rows}">
+                                                                                <tr><td colspan="6" class="text-center text-muted py-4">ยังไม่มีเครื่องผูกกับ sub product นี้</td></tr>
+                                                                            </c:if>
+                                                                        </tbody>
+                                                                    </table>
+                                                                </div>
+                                                            </c:set>
+                                                            <td class="text-center">
+                                                                <span class="badge badge-primary fw-bold equ-count-badge" role="button"
+                                                                      data-child-html="${fn:escapeXml(childHtml)}">${subCount} เครื่อง</span>
+                                                                <button type="button" class="btn btn-icon btn-sm btn-active-light-success sub-equ-add ms-1"
+                                                                        data-target-id="${sub.productId}" data-target-name="${fn:escapeXml(sub.productName)}"
+                                                                        data-bs-toggle="modal" data-bs-target="#equipmentPickerModal" title="Link Equipment">
+                                                                    <i class="ki-duotone ki-plus fs-3"><span class="path1"></span><span class="path2"></span></i>
+                                                                </button>
+                                                            </td>
+                                                        </c:if>
+                                                        <td class="text-end text-nowrap">
+                                                            <button type="button" class="btn btn-icon btn-sm btn-light-primary me-1 btn-edit-sub" title="Edit">
+                                                                <i class="ki-duotone ki-pencil fs-3"><span class="path1"></span><span class="path2"></span></i>
+                                                            </button>
+                                                            <button type="button" class="btn btn-icon btn-sm btn-light-danger btn-delete-sub"
+                                                                    data-id="${sub.productId}" data-name="${fn:escapeXml(sub.productName)}" title="Delete">
+                                                                <i class="ki-duotone ki-trash fs-3">
+                                                                    <span class="path1"></span><span class="path2"></span>
+                                                                    <span class="path3"></span><span class="path4"></span><span class="path5"></span>
+                                                                </i>
+                                                            </button>
+                                                        </td>
+                                                    </tr>
+                                                </c:forEach>
+
+                                                <%-- แถวพิเศษ "ไม่ระบุ sub" - เครื่องที่ยังผูกกับตัวแม่ตรงๆ ไม่ได้อยู่ใต้ sub product ไหนเลย
+                                                     ไม่ใช่ sub product จริง จึงไม่มีปุ่ม Edit/Delete และไม่ให้ลาก reorder (ดู JS: initSortable filter) --%>
+                                                <c:if test="${isEquipment and parentEquipmentCount > 0}">
+                                                    <c:set var="parentGroup" value="${equipmentDetailByProductId[product.productId]}" />
+                                                    <c:set var="parentChildHtml">
+                                                        <div class="p-4">
+                                                            <table class="table table-sm align-middle fs-7 mb-0">
+                                                                <thead class="text-gray-500 text-uppercase">
+                                                                    <tr>
+                                                                        <th>Item ID</th>
+                                                                        <th>ชื่อเครื่อง</th>
+                                                                        <th>Serial No</th>
+                                                                        <th class="text-center">Status</th>
+                                                                        <th>Location</th>
+                                                                        <th class="text-end">Action</th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody>
+                                                                    <c:forEach var="equip" items="${parentGroup.rows}">
+                                                                        <c:set var="equipLabel">
+                                                                            <c:choose>
+                                                                                <c:when test="${not empty fn:trim(equip.itemNo)}">${fn:escapeXml(equip.itemNo)}</c:when>
+                                                                                <c:when test="${not empty fn:trim(equip.name)}">${fn:escapeXml(equip.name)}</c:when>
+                                                                                <c:otherwise>#${equip.equipmentId}</c:otherwise>
+                                                                            </c:choose>
+                                                                        </c:set>
+                                                                        <tr>
+                                                                            <td class="text-gray-900 fw-bold">
+                                                                                <c:choose>
+                                                                                    <c:when test="${not empty fn:trim(equip.itemNo)}">${fn:escapeXml(equip.itemNo)}</c:when>
+                                                                                    <c:otherwise><span class="text-muted">#${equip.equipmentId}</span></c:otherwise>
+                                                                                </c:choose>
+                                                                            </td>
+                                                                            <td class="text-gray-700">
+                                                                                <c:choose>
+                                                                                    <c:when test="${not empty fn:trim(equip.name)}">${fn:escapeXml(equip.name)}</c:when>
+                                                                                    <c:otherwise><span class="text-muted">(ไม่ระบุชื่อ)</span></c:otherwise>
+                                                                                </c:choose>
+                                                                            </td>
+                                                                            <td class="text-gray-700">
+                                                                                <c:choose>
+                                                                                    <c:when test="${not empty equip.serialNo}">${fn:escapeXml(equip.serialNo)}</c:when>
+                                                                                    <c:otherwise><span class="text-muted">-</span></c:otherwise>
+                                                                                </c:choose>
+                                                                            </td>
+                                                                            <td class="text-center">
+                                                                                <c:choose>
+                                                                                    <c:when test="${not empty equip.status}"><span class="badge badge-light-primary fw-semibold">${fn:escapeXml(equip.status)}</span></c:when>
+                                                                                    <c:otherwise><span class="text-muted">-</span></c:otherwise>
+                                                                                </c:choose>
+                                                                            </td>
+                                                                            <td class="text-gray-700">
+                                                                                <c:choose>
+                                                                                    <c:when test="${not empty equip.location}">${fn:escapeXml(equip.location)}</c:when>
+                                                                                    <c:otherwise><span class="text-muted">-</span></c:otherwise>
+                                                                                </c:choose>
+                                                                            </td>
+                                                                            <td class="text-end">
+                                                                                <button type="button" class="btn btn-icon btn-sm btn-light-danger btn-unlink-equipment"
+                                                                                        data-id="${equip.equipmentId}"
+                                                                                        data-name="${fn:trim(equipLabel)}"
+                                                                                        data-target-id="${product.productId}"
+                                                                                        title="เอาออกจาก item นี้">
+                                                                                    <i class="ki-duotone ki-cross-circle fs-3"><span class="path1"></span><span class="path2"></span></i>
+                                                                                </button>
+                                                                            </td>
+                                                                        </tr>
+                                                                    </c:forEach>
+                                                                </tbody>
+                                                            </table>
+                                                        </div>
+                                                    </c:set>
+                                                    <tr class="equ-unassigned-row" data-id="">
+                                                        <td></td>
+                                                        <td class="text-muted">-</td>
+                                                        <td class="text-muted">-</td>
+                                                        <td class="text-gray-500 fst-italic">(ไม่ระบุ sub product)</td>
+                                                        <td class="text-muted">-</td>
+                                                        <td class="text-center">
+                                                            <span class="badge badge-secondary fw-bold equ-count-badge" role="button"
+                                                                  data-child-html="${fn:escapeXml(parentChildHtml)}">${parentEquipmentCount} เครื่อง</span>
+                                                            <button type="button" class="btn btn-icon btn-sm btn-active-light-success sub-equ-add ms-1"
+                                                                    data-target-id="${product.productId}" data-target-name="${fn:escapeXml(product.productName)}"
+                                                                    data-bs-toggle="modal" data-bs-target="#equipmentPickerModal" title="Link Equipment">
+                                                                <i class="ki-duotone ki-plus fs-3"><span class="path1"></span><span class="path2"></span></i>
+                                                            </button>
+                                                        </td>
+                                                        <td></td>
+                                                    </tr>
+                                                </c:if>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </c:otherwise>
+                            </c:choose>
                         </div>
                     </div>
                 </div>
-                </c:if>
 
                 <%-- ปุ่ม Back กลับไปหน้ารายการ Product --%>
                 <div class="d-flex justify-content-start mt-8">
@@ -480,7 +730,7 @@
     <div class="modal-dialog modal-dialog-centered modal-xl">
         <div class="modal-content">
             <div class="modal-header">
-                <h3 class="modal-title fw-bold text-gray-900">เลือกเครื่องเพื่อเพิ่มเข้า Item นี้</h3>
+                <h3 class="modal-title fw-bold text-gray-900" id="equipmentPickerModalTitle">เลือกเครื่องเพื่อเพิ่มเข้า Item นี้</h3>
                 <button type="button" class="btn btn-icon btn-sm btn-active-light-primary" data-bs-dismiss="modal" aria-label="Close">
                     <i class="ki-duotone ki-cross fs-1"><span class="path1"></span><span class="path2"></span></i>
                 </button>
@@ -539,9 +789,8 @@
                         </c:forEach>
                     </tbody>
                 </table>
-                <c:if test="${empty unlinkedEquipment}">
-                    <div class="text-center text-muted py-10">ไม่มีเครื่องว่างให้เลือก - เครื่องทั้งหมดถูกผูกกับ catalog อื่นแล้ว</div>
-                </c:if>
+                <%-- ตอนตารางว่าง ปล่อยให้ DataTables โชว์ข้อความเอง (language.emptyTable ด้านล่าง)
+                     ไม่ใส่ div ซ้ำตรงนี้ ไม่งั้นจะขึ้นข้อความซ้อนกัน 2 อัน --%>
             </div>
 
             <div class="modal-footer d-flex justify-content-between align-items-center">
@@ -556,8 +805,7 @@
 </div>
 </c:if>
 
-<c:if test="${not isEquipment}">
-<%-- ทั้งสอง modal นี้เปิดจากปุ่มใน Sub product card ด้านบน ซ่อนคู่กันตามเงื่อนไขเดียวกัน --%>
+<%-- ทั้งสอง modal นี้เปิดจากปุ่มใน Sub product card ด้านบน (ใช้ร่วมกันทุก Item Type รวม Equipment) --%>
 <%-- ============ Modal: Create Sub product ============ --%>
 <div class="modal fade" id="subCreateModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered mw-600px">
@@ -580,7 +828,8 @@
                                 Sub Product ID <span class="text-danger">*</span>
                             </label>
                             <input type="text" id="subProductNo" name="productNo" required maxlength="100"
-                                   class="form-control text-gray-700" />
+                                   class="form-control text-gray-700" autocomplete="off" />
+                            <div class="invalid-feedback" id="subProductNoFeedback"></div>
                         </div>
                         <div class="col-12 col-md-6">
                             <label class="form-label fw-semibold text-gray-700" for="subProductName">
@@ -628,7 +877,8 @@
                                 Sub Product ID <span class="text-danger">*</span>
                             </label>
                             <input type="text" id="editSubProductNo" name="productNo" required maxlength="100"
-                                   class="form-control text-gray-700" />
+                                   class="form-control text-gray-700" autocomplete="off" />
+                            <div class="invalid-feedback" id="editSubProductNoFeedback"></div>
                         </div>
                         <div class="col-12 col-md-6">
                             <label class="form-label fw-semibold text-gray-700" for="editSubProductName">
@@ -653,18 +903,19 @@
         </div>
     </div>
 </div>
-</c:if>
 
 <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
 <script>
     $(document).ready(function () {
         // NOTE: ตาราง UOM / Sub product ไม่ใช้ DataTables เพราะชนกับ SortableJS (การจัดลำดับแถว)
-        //       ทั้งสองเป็นตารางลูกที่มีไม่กี่แถว จึงไม่จำเป็นต้องมี paging/search
+        //       ยกเว้น #subProductTable ตอนเป็น Equipment ที่ init DataTables แบบปิด ordering/paging/
+        //       searching หมด (dom:'t') ใช้แค่ child-row API จึงไม่ชนกับ SortableJS (ดูท้ายไฟล์)
 
         var CONTEXT = '${pageContext.request.contextPath}';
         var PRODUCT_ID = '${product.productId}';
         // prefix ของ action ที่ต้อง redirect กลับหน้านี้ (stock_cons / stock_equ)
         var URL_PREFIX = '${urlPrefix}';
+        var IS_EQUIPMENT = ${isEquipment};
 
         function notifyError(msg) {
             if (window.Swal) {
@@ -682,6 +933,20 @@
             });
             $form.submit();
         }
+
+        // ---- แสดง/ซ่อน Equipment Type ตาม Item Type (เหมือนหน้า stock_cons_add.jsp) ----
+        // product_type '1' = Equipment เท่านั้นที่ต้องเลือก Equipment Type ต่อ
+        function toggleEquipmentType() {
+            var isEquipment = $('#productType').val() === '1';
+            $('#equipmentTypeWrap').toggleClass('d-none', !isEquipment);
+            // ไม่ให้ required ค้างตอนซ่อน ไม่งั้น browser จะ block submit เงียบๆ
+            $('#equipmentType').prop('required', isEquipment);
+            if (!isEquipment) {
+                $('#equipmentType').val('');
+            }
+        }
+        $('#productType').on('change', toggleEquipmentType);
+        toggleEquipmentType(); // ตั้งค่าเริ่มต้นตาม productType ปัจจุบันของ item นี้
 
         // ---- แสดงปุ่ม Cancel/Save เฉพาะเมื่อมีการแก้ไขค่าในฟอร์ม Product Detail ----
         var $editForm = $('#stockConsEditForm');
@@ -717,6 +982,54 @@
                    .prop('disabled', true)
                    .attr('data-kt-indicator', 'on');
         });
+
+        // ---- เช็ค Item ID / Sub Product ID ซ้ำ ทุกครั้งที่พิมพ์ (keyup) - debounce กันยิง request ถี่เกินไป
+        //      getExcludeId เป็น function เพราะ id ที่จะ exclude (เช่น editSubProductId) อ่านค่าตอนพิมพ์ ไม่ใช่ตอน bind ----
+        function bindProductNoDuplicateCheck(inputSelector, feedbackSelector, getExcludeId) {
+            var timer = null;
+            var seqCounter = 0;
+            $(inputSelector).on('keyup', function () {
+                var $input = $(this);
+                var val = $input.val().trim();
+                var $feedback = $(feedbackSelector);
+                clearTimeout(timer);
+
+                if (!val) {
+                    $input.removeClass('is-invalid')[0].setCustomValidity('');
+                    $feedback.text('');
+                    return;
+                }
+
+                timer = setTimeout(function () {
+                    var seq = ++seqCounter;
+                    var params = { productNo: val };
+                    var excludeId = getExcludeId ? getExcludeId() : null;
+                    if (excludeId) { params.productId = excludeId; }
+                    $.ajax({
+                        url: CONTEXT + '/stock_cons_check_duplicate',
+                        type: 'GET',
+                        dataType: 'json',
+                        data: params,
+                        success: function (res) {
+                            if (seq !== seqCounter) { return; } // ผลลัพธ์เก่ามาช้า ไม่ต้องสนใจ
+                            if (res && res.success === false) {
+                                $input.addClass('is-invalid');
+                                $input[0].setCustomValidity('duplicate');
+                                $feedback.text(res.message || 'Item ID นี้มีอยู่แล้ว');
+                            } else {
+                                $input.removeClass('is-invalid');
+                                $input[0].setCustomValidity('');
+                                $feedback.text('');
+                            }
+                        }
+                    });
+                }, 400);
+            });
+        }
+
+        bindProductNoDuplicateCheck('#productNo', '#productNoFeedback', function () { return PRODUCT_ID; });
+        bindProductNoDuplicateCheck('#subProductNo', '#subProductNoFeedback', null);
+        bindProductNoDuplicateCheck('#editSubProductNo', '#editSubProductNoFeedback', function () { return $('#editSubProductId').val(); });
 
         // ---- บันทึก Product Detail แบบ AJAX เพื่อโชว์ SweetAlert โดยไม่ reload ----
         $editForm.on('submit', function (e) {
@@ -754,19 +1067,97 @@
             });
         });
 
-        // ==================== Equipment: main list (DataTables, ไม่ใช่ modal เลย init ได้ตรงๆ) ====================
-        if ($('#linkedEquipmentTable').length) {
-            $('#linkedEquipmentTable').DataTable({
-                dom: "<'table-responsive'tr>" +
-                     "<'row align-items-center mt-6'<'col-sm-auto mb-2 mb-sm-0'l><'col-sm d-flex justify-content-sm-end'p>>",
-                pageLength: 100,
-                lengthMenu: [10, 20, 50, 100],
+        // ==================== Equipment: DataTables ใช้เฉพาะ child-row API (กด badge เพื่อดู serial/status) ====================
+        // ปิด ordering/paging/searching หมด (dom:'t') และไม่เรียก .draw() ที่ไหนเลยในไฟล์นี้ - กันชนกับ
+        // SortableJS ที่คุมการลากจัดลำดับ #subTableBody อยู่ (initSortable ท้ายไฟล์อัปเดตแค่ text/attr ไม่ draw)
+        var subEquTable = null;
+        if (IS_EQUIPMENT && $('#subProductTable').length) {
+            subEquTable = $('#subProductTable').DataTable({
+                ordering: false,
+                paging: false,
                 info: false,
-                ordering: true,
-                autoWidth: false,
-                language: { lengthMenu: '_MENU_' }
+                searching: false,
+                dom: 't'
             });
         }
+
+        $('#subProductTable').on('click', '.equ-count-badge', function () {
+            if (!subEquTable) { return; }
+            var $badge = $(this);
+            var tr = $badge.closest('tr');
+            var row = subEquTable.row(tr);
+
+            if (row.child.isShown()) {
+                row.child.hide();
+                tr.removeClass('shown');
+            } else {
+                row.child($badge.data('child-html') || '').show();
+                tr.addClass('shown');
+            }
+        });
+
+        // ==================== Equipment: จำ sub product/ตัวแม่เป้าหมายไว้ก่อนเปิด popup Add/Link Equipment ====================
+        // ปุ่มนี้อยู่ได้หลายที่ (หัวตาราง, ต่อแถว sub product, แถว "ไม่ระบุ sub", แบนเนอร์เตือน) ใช้ class เดียวกันหมด
+        var currentEquipmentTargetId = null;
+        $(document).on('click', '.sub-equ-add', function () {
+            currentEquipmentTargetId = $(this).data('target-id');
+            var targetName = $(this).data('target-name') || '';
+            $('#equipmentPickerModalTitle').text('เลือกเครื่องเพื่อเพิ่มเข้า "' + targetName + '"');
+        });
+
+        // ==================== Equipment: unlink ปุ่มเอาเครื่องออกจาก sub product / ตัวแม่ ====================
+        // delegate ที่ document เพราะปุ่มบางส่วนอยู่ใน DataTables child-row ที่ inject เข้ามาทีหลัง
+        $(document).on('click', '.btn-unlink-equipment', function () {
+            var $btn = $(this);
+            var id = $btn.data('id');
+            var name = $btn.data('name') || '';
+            var targetId = $btn.data('target-id');
+            if (!id || !targetId) { return; }
+
+            function doUnlink() {
+                $btn.prop('disabled', true);
+                $.ajax({
+                    url: CONTEXT + '/stock_equ_unlink_save',
+                    type: 'POST',
+                    dataType: 'json',
+                    data: { productId: targetId, equipmentIds: id },
+                    success: function (res) {
+                        if (res && res.success === true) {
+                            if (window.Swal) {
+                                Swal.fire({ icon: 'success', title: 'สำเร็จ', text: res.message || 'เอาเครื่องออกแล้ว' })
+                                    .then(function () { window.location.reload(); });
+                            } else {
+                                alert(res.message || 'เอาเครื่องออกแล้ว');
+                                window.location.reload();
+                            }
+                        } else {
+                            notifyError(res && res.message ? res.message : 'เอาเครื่องออกไม่สำเร็จ');
+                            $btn.prop('disabled', false);
+                        }
+                    },
+                    error: function () {
+                        notifyError('เอาเครื่องออกไม่สำเร็จ กรุณาลองใหม่');
+                        $btn.prop('disabled', false);
+                    }
+                });
+            }
+
+            if (window.Swal) {
+                Swal.fire({
+                    title: 'เอาเครื่อง "' + name + '" ออกจาก sub product นี้?',
+                    text: 'เครื่องจะยังอยู่ในระบบ แต่ไม่ผูกกับ sub product นี้แล้ว',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'เอาออก',
+                    cancelButtonText: 'ยกเลิก',
+                    reverseButtons: true
+                }).then(function (result) {
+                    if (result.isConfirmed) { doUnlink(); }
+                });
+            } else if (confirm('ต้องการเอาเครื่อง "' + name + '" ออกจาก sub product นี้ใช่หรือไม่?')) {
+                doUnlink();
+            }
+        });
 
         // ==================== Equipment: popup เลือกเครื่องมาผูกกับ catalog ====================
         // DataTables คำนวณความกว้างคอลัมน์ผิดถ้า init ตอน modal ยังซ่อนอยู่ (display:none)
@@ -781,7 +1172,10 @@
                     info: false,
                     ordering: true,
                     autoWidth: false,
-                    language: { lengthMenu: '_MENU_' },
+                    language: {
+                        lengthMenu: '_MENU_',
+                        emptyTable: 'ไม่มีเครื่องว่างให้เลือก - เครื่องทั้งหมดถูกผูกกับ catalog อื่นแล้ว'
+                    },
                     columnDefs: [{ targets: 0, orderable: false }]
                 });
             }
@@ -803,18 +1197,24 @@
             $('.equipment-pick-checkbox').prop('checked', false);
             $('#equipmentPickerSelectedCount').text('0');
             $('#equipmentPickerSearch').val('');
+            currentEquipmentTargetId = null;
             if ($.fn.dataTable.isDataTable('#equipmentPickerTable')) {
                 $('#equipmentPickerTable').DataTable().search('').draw();
             }
         });
 
-        // กด Save ใน popup - บันทึกลง DB ทันทีแบบ AJAX แล้วรีโหลดหน้าให้ตาราง Equipment List
+        // กด Save ใน popup - บันทึกลง DB ทันทีแบบ AJAX แล้วรีโหลดหน้าให้ตาราง Sub product / Equipment
         // กับรายการใน popup (ที่เหลือแค่เครื่องว่างจริง) อัปเดตพร้อมกันทั้งคู่
+        // productId ที่ผูกคือ sub product หรือตัวแม่เป้าหมาย (currentEquipmentTargetId)
         $('#btnEquipmentPickerSave').on('click', function () {
             var ids = $('.equipment-pick-checkbox:checked').map(function () { return $(this).val(); }).get();
             if (ids.length === 0) {
                 if (window.Swal) { Swal.fire('กรุณาเลือกรายการ', 'เลือกอย่างน้อย 1 เครื่อง', 'warning'); }
                 else { alert('กรุณาเลือกอย่างน้อย 1 เครื่อง'); }
+                return;
+            }
+            if (!currentEquipmentTargetId) {
+                notifyError('ไม่พบ sub product เป้าหมาย กรุณาปิดหน้าต่างแล้วกด Add Equipment ใหม่');
                 return;
             }
 
@@ -825,7 +1225,7 @@
                 url: CONTEXT + '/stock_equ_link_save',
                 type: 'POST',
                 dataType: 'json',
-                data: { productId: PRODUCT_ID, equipmentIds: ids.join(',') },
+                data: { productId: currentEquipmentTargetId, equipmentIds: ids.join(',') },
                 success: function (res) {
                     if (res && res.success === true) {
                         if (window.Swal) {
@@ -929,7 +1329,9 @@
             }
         }
 
-        function initSortable(tbodyId, handleClass, reorderUrl, extraData) {
+        // excludeSelector: กันแถวพิเศษที่ไม่ใช่แถวจัดลำดับจริง (เช่น .equ-unassigned-row "ไม่ระบุ sub")
+        // ไม่ให้ลากได้และไม่ถูกนับเข้า ids ที่ส่งไป backend - ดันกลับไปท้ายสุดเสมอหลังบันทึกสำเร็จ
+        function initSortable(tbodyId, handleClass, reorderUrl, extraData, excludeSelector) {
             var el = document.getElementById(tbodyId);
             if (!el || typeof Sortable === 'undefined') { return; }
 
@@ -937,12 +1339,17 @@
                 handle: handleClass,
                 animation: 150,
                 ghostClass: 'bg-light-primary',
+                filter: excludeSelector || undefined,
+                preventOnFilter: true,
                 onEnd: function (evt) {
                     // ไม่ได้ขยับตำแหน่งจริง -> ไม่ต้องทำอะไร
                     if (evt.oldIndex === evt.newIndex) { return; }
 
+                    var $rows = $('#' + tbodyId + ' tr');
+                    if (excludeSelector) { $rows = $rows.not(excludeSelector); }
+
                     var ids = [];
-                    $('#' + tbodyId + ' tr').each(function () {
+                    $rows.each(function () {
                         ids.push($(this).data('id'));
                     });
 
@@ -955,10 +1362,14 @@
                             success: function (res) {
                                 if (res && res.success === true) {
                                     // อัปเดตเลข sequence ที่โชว์ (UOM ใช้ .uom-seq, Sub product ใช้ .sub-seq)
-                                    $('#' + tbodyId + ' tr').each(function (index) {
+                                    $rows.each(function (index) {
                                         $(this).find('.uom-seq, .sub-seq').text(index);
                                         $(this).attr('data-sequence', index);
                                     });
+                                    // เผื่อแถวพิเศษหลุดตำแหน่งจากการลากของแถวอื่นรอบๆ - ดันกลับไปท้ายสุดเสมอ
+                                    if (excludeSelector) {
+                                        $('#' + tbodyId).append($('#' + tbodyId + ' ' + excludeSelector));
+                                    }
                                     notifySuccess('เปลี่ยนตำแหน่งเรียบร้อยแล้ว');
                                 } else {
                                     notifyError('จัดลำดับไม่สำเร็จ');
@@ -1001,6 +1412,6 @@
         }
 
         initSortable('uomTableBody', '.uom-drag-handle', 'stock_cons_uom_reorder', { productId: PRODUCT_ID });
-        initSortable('subTableBody', '.sub-drag-handle', 'stock_cons_sub_reorder', { parentProductId: PRODUCT_ID });
+        initSortable('subTableBody', '.sub-drag-handle', 'stock_cons_sub_reorder', { parentProductId: PRODUCT_ID }, '.equ-unassigned-row');
     });
 </script>

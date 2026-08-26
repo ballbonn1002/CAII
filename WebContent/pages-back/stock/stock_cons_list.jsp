@@ -7,7 +7,7 @@
         <div id="kt_app_toolbar" class="app-toolbar py-3 py-lg-6">
             <div id="kt_app_toolbar_container" class="app-container container-fluid d-flex flex-stack">
                 <div class="page-title d-flex flex-column justify-content-center flex-wrap me-3">
-                    <h1 class="page-heading d-flex text-gray-700 fw-semibold my-0">Stock - Product</h1>
+                    <h1 class="page-heading d-flex text-gray-700 fw-semibold my-0">Product</h1>
                     <ul class="breadcrumb breadcrumb-separatorless fw-semibold fs-7 my-0 pt-1">
                         <li class="breadcrumb-item text-muted"><a href="${pageContext.request.contextPath}/check_in_out" class="text-muted text-hover-primary fw-medium fs-7">Home</a></li>
                         <li class="breadcrumb-item"><span class="bullet bg-gray-500 fw-medium fs-7 w-5px h-2px"></span></li>
@@ -41,7 +41,7 @@
                                  จำนวนนับมาจาก backend (${typeCounts}) ไม่ใช่จาก DOM
                                  เพราะ DataTables จะเหลือแถวแค่หน้าปัจจุบัน --%>
                             <div class="row g-4 mb-6">
-                                <div class="col-12 col-md-4">
+                                <div class="col-12 col-md-3">
                                     <div class="card card-bordered h-100 cursor-pointer type-filter-card" data-type="1">
                                         <div class="card-body d-flex align-items-center gap-3 py-4 px-5">
                                             <i class="ki-duotone ki-laptop fs-2x text-primary"><span class="path1"></span><span class="path2"></span></i>
@@ -50,7 +50,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="col-12 col-md-4">
+                                <div class="col-12 col-md-3">
                                     <div class="card card-bordered h-100 cursor-pointer type-filter-card" data-type="2">
                                         <div class="card-body d-flex align-items-center gap-3 py-4 px-5">
                                             <i class="ki-duotone ki-element-11 fs-2x text-warning"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span></i>
@@ -59,12 +59,21 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="col-12 col-md-4">
+                                <div class="col-12 col-md-3">
                                     <div class="card card-bordered h-100 cursor-pointer type-filter-card" data-type="3">
                                         <div class="card-body d-flex align-items-center gap-3 py-4 px-5">
-                                            <i class="ki-duotone ki-award fs-2x text-success"><span class="path1"></span><span class="path2"></span><span class="path3"></span></i>
+                                            <i class="ki-duotone ki-medal-star fs-2x text-success"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span></i>
                                             <span class="text-gray-600 fw-semibold fs-6">Accessories</span>
                                             <span class="text-gray-900 fw-bold fs-4 ms-auto">${empty typeCounts['3'] ? 0 : typeCounts['3']} <span class="fs-7 fw-semibold text-gray-500">items</span></span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-12 col-md-3">
+                                    <div class="card card-bordered h-100 cursor-pointer type-filter-card" data-type="4">
+                                        <div class="card-body d-flex align-items-center gap-3 py-4 px-5">
+                                            <i class="ki-duotone ki-parcel fs-2x text-info"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span><span class="path5"></span></i>
+                                            <span class="text-gray-600 fw-semibold fs-6">Office Supplies</span>
+                                            <span class="text-gray-900 fw-bold fs-4 ms-auto">${empty typeCounts['4'] ? 0 : typeCounts['4']} <span class="fs-7 fw-semibold text-gray-500">items</span></span>
                                         </div>
                                     </div>
                                 </div>
@@ -98,8 +107,12 @@
                                                             <span>Consumables</span>
                                                         </c:when>
                                                         <c:when test="${product.product_type eq '3'}">
-                                                            <i class="ki-duotone ki-award fs-2 text-success"><span class="path1"></span><span class="path2"></span><span class="path3"></span></i>
+                                                            <i class="ki-duotone ki-medal-star fs-2 text-success"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span></i>
                                                             <span>Accessories</span>
+                                                        </c:when>
+                                                        <c:when test="${product.product_type eq '4'}">
+                                                            <i class="ki-duotone ki-parcel fs-2 text-info"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span><span class="path5"></span></i>
+                                                            <span>Office Supplies</span>
                                                         </c:when>
                                                         <c:otherwise><span class="text-muted">-</span></c:otherwise>
                                                     </c:choose>

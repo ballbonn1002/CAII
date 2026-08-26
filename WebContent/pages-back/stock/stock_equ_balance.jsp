@@ -12,8 +12,13 @@
   attribute จาก ProductAction.showEquipmentBalancePage():
     product      : Product (catalog item ที่กำลังดู)
     groups       : List<Map> {label, productId, total, retired, rows:List<Equipment>}
-    totalOnHand  : จำนวนเครื่องที่นับเป็นของคงเหลือ
-    totalRetired : จำนวนเครื่องที่ปลดระวาง/บริจาคไปแล้ว
+                   1 กลุ่มต่อ 1 sub product (เครื่องผูกกับ sub product เป็นหลัก 25/08/2026)
+                   บวกกลุ่มของตัวแม่เองถ้ามีเครื่องผูกตรงแบบเก่า หรือยังไม่มี sub product เลย
+                   ใช้ทำแถบสรุป All + ปุ่มต่อ sub product (data-group=g.productId) แทนปุ่ม Available/Borrowed เดิม
+    totalOnHand      : จำนวนเครื่องที่นับเป็นของคงเหลือ (รวมทุกกลุ่ม)
+    totalAvailable   : จำนวนเครื่อง status Available (รวมทุกกลุ่ม) - action ยังส่งมาให้ แต่หน้านี้ไม่ได้ใช้แสดงแล้ว
+    totalBorrowed    : จำนวนเครื่อง status Borrowed (รวมทุกกลุ่ม) - action ยังส่งมาให้ แต่หน้านี้ไม่ได้ใช้แสดงแล้ว
+    totalRetired     : จำนวนเครื่องที่ปลดระวาง/บริจาคไปแล้ว (รวมทุกกลุ่ม) - action ยังส่งมาให้ แต่หน้านี้ไม่ได้ใช้แสดงแล้ว
 --%>
 
 <div class="app-main flex-column flex-row-fluid" id="kt_app_main">
@@ -32,10 +37,10 @@
                 <div class="d-flex align-items-center gap-3">
                     <a href="stock_equ_edit?productId=${product.productId}" class="btn btn-light d-inline-flex align-items-center px-5 py-3">
                         <i class="ki-duotone ki-setting-2 fs-3 me-2 text-gray-500"><span class="path1"></span><span class="path2"></span></i>
-                        <span class="fw-semibold text-gray-700">Settings</span>
+                        <span class="fw-semibold text-gray-700">Product</span>
                     </a>
                     <a href="stock_equ_balance?productId=${product.productId}" class="btn btn-light-primary d-inline-flex align-items-center px-5 py-3 active">
-                        <i class="ki-duotone ki-package fs-3 me-2"><span class="path1"></span><span class="path2"></span><span class="path3"></span></i>
+                        <i class="ki-duotone ki-cube-2 fs-3 me-2"><span class="path1"></span><span class="path2"></span><span class="path3"></span></i>
                         <span class="fw-semibold">Stock Balance</span>
                     </a>
                 </div>
@@ -52,19 +57,25 @@
                                 <h3 class="page-heading text-gray-900 fw-bold mb-1">Stock Balance</h3>
                                 <span class="text-gray-500 fs-7">${fn:escapeXml(product.productName)}</span>
                             </div>
-                            <div class="d-flex align-items-center gap-8">
-                                <div class="text-center">
-                                    <div class="text-gray-500 fw-semibold fs-7 text-uppercase">On hand</div>
-                                    <div class="fw-bold fs-2 text-gray-900">${totalOnHand}</div>
-                                </div>
-                                <div class="text-center">
-                                    <div class="text-gray-500 fw-semibold fs-7 text-uppercase">ปลดระวาง</div>
-                                    <div class="fw-bold fs-2 text-gray-500">${totalRetired}</div>
-                                </div>
-                            </div>
                         </div>
 
                         <div class="card-body">
+                            <%-- ---- แถบสรุป All / sub product - กดกรองตารางด้านล่าง (กดซ้ำ = ยกเลิก) ----
+                                 ยอดคำนวณฝั่ง server จาก showEquipmentBalancePage() (totalOnHand/groups[].total)
+                                 ไม่นับ equipment ที่ปลดระวางแล้ว (ดู EquipmentDAO.RETIRED_STATUSES) --%>
+                            <div class="d-flex flex-wrap justify-content-center gap-6 gap-lg-10 mb-8">
+                                <div class="text-center">
+                                    <button type="button" class="btn btn-light-success fw-bold fs-5 px-6 py-3 equ-group-filter active" data-group="ALL">All</button>
+                                    <div class="fw-bold fs-4 text-gray-900 mt-3">${totalOnHand}</div>
+                                </div>
+                                <c:forEach var="g" items="${groups}">
+                                    <div class="text-center">
+                                        <button type="button" class="btn btn-light-primary fw-bold fs-5 px-6 py-3 equ-group-filter" data-group="${g.productId}">${fn:escapeXml(g.label)}</button>
+                                        <div class="fw-bold fs-4 text-gray-900 mt-3">${g.total}</div>
+                                    </div>
+                                </c:forEach>
+                            </div>
+
                             <div class="d-flex align-items-center position-relative mb-6">
                                 <i class="ki-duotone ki-magnifier fs-3 position-absolute ms-5"><span class="path1"></span><span class="path2"></span></i>
                                 <input type="text" id="equipmentSearch" class="form-control form-control-solid ps-14 text-gray-700"
@@ -191,13 +202,16 @@
             $icon.removeClass('ki-up ki-down').addClass(willOpen ? 'ki-up' : 'ki-down');
         });
 
-        // ---- ค้นหาข้ามทุกกลุ่ม ----
+        // ---- ค้นหา + กรองกลุ่ม (All / sub product) ข้ามทุกกลุ่มพร้อมกัน ----
         // ไม่ใช้ DataTables เพราะตารางมีแถวหัวกลุ่มปนอยู่ ซึ่ง DataTables จะ sort/paging รวมไปด้วย
-        $('#equipmentSearch').on('keyup', function () {
-            var keyword = $.trim($(this).val()).toLowerCase();
+        var selectedGroup = 'ALL';
 
-            if (!keyword) {
-                // คืนสถานะขยาย/ยุบเดิมของแต่ละกลุ่ม
+        function applyEquipmentFilters() {
+            var keyword = $.trim($('#equipmentSearch').val()).toLowerCase();
+            var filtering = !!keyword || selectedGroup !== 'ALL';
+
+            if (!filtering) {
+                // ไม่มีตัวกรองเลย - คืนสถานะขยาย/ยุบเดิมของแต่ละกลุ่ม
                 $('#equipmentBalanceTable .equ-total').removeClass('d-none').each(function () {
                     var group = $(this).data('group');
                     var collapsed = $(this).hasClass('collapsed');
@@ -206,16 +220,31 @@
                 return;
             }
 
-            // ระหว่างค้นหา: ซ่อนหัวกลุ่มที่ไม่มีแถวตรงเงื่อนไข และกางกลุ่มที่เหลือให้เห็นเลย
+            // ระหว่างกรอง: ซ่อนแถวที่ไม่ตรงเงื่อนไข (กลุ่ม + คำค้นหา) แล้วกางทุกกลุ่มที่ยังเหลือแถวให้เห็นเลย
+            // (ไม่สนสถานะ collapsed เดิมของกลุ่มนั้น)
             $('#equipmentBalanceTable .equ-detail').each(function () {
-                var matched = $(this).text().toLowerCase().indexOf(keyword) !== -1;
-                $(this).toggleClass('d-none', !matched);
+                var $row = $(this);
+                var matchesGroup = selectedGroup === 'ALL' || $row.data('group') === selectedGroup;
+                var matchesKeyword = !keyword || $row.text().toLowerCase().indexOf(keyword) !== -1;
+                $row.toggleClass('d-none', !(matchesGroup && matchesKeyword));
             });
             $('#equipmentBalanceTable .equ-total').each(function () {
                 var group = $(this).data('group');
-                var visible = $('#equipmentBalanceTable .equ-detail[data-group="' + group + '"]').not('.d-none').length;
-                $(this).toggleClass('d-none', visible === 0);
+                var matchesGroup = selectedGroup === 'ALL' || group === selectedGroup;
+                var visible = matchesGroup
+                        && $('#equipmentBalanceTable .equ-detail[data-group="' + group + '"]').not('.d-none').length > 0;
+                $(this).toggleClass('d-none', !visible);
             });
+        }
+
+        $('#equipmentSearch').on('keyup', applyEquipmentFilters);
+
+        $('.equ-group-filter').on('click', function () {
+            var group = $(this).data('group');
+            selectedGroup = (selectedGroup === group) ? 'ALL' : group; // กดซ้ำ = ยกเลิก filter
+            $('.equ-group-filter').removeClass('active');
+            $('.equ-group-filter[data-group="' + selectedGroup + '"]').addClass('active');
+            applyEquipmentFilters();
         });
     });
 </script>

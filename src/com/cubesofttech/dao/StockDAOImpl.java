@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.hibernate.Query;
+import org.hibernate.SQLQuery;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -110,5 +111,23 @@ public class StockDAOImpl implements StockDAO {
         Object result = query.uniqueResult();
         // coalesce กัน null ระดับ SQL แล้ว แต่ยัง null-check ฝั่ง Java กัน NPE ตอน unbox
         return (result != null) ? ((Number) result).doubleValue() : 0d;
+    }
+
+    @Override
+    public Long getMaxId() throws Exception {
+        Session session = this.sessionFactory.getCurrentSession();
+        Long maxId = 0L;
+        try {
+            String sql = "SELECT MAX(CAST(stock_id AS UNSIGNED)) FROM stock";
+            SQLQuery query = session.createSQLQuery(sql);
+            Object result = query.uniqueResult();
+            if (result != null) {
+                maxId = ((Number) result).longValue();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw e;
+        }
+        return maxId;
     }
 }
