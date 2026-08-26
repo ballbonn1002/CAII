@@ -23,11 +23,14 @@ public class DocStatus implements Serializable {
 	    @Column(name = "status_name")
 	    private String statusName;
 
-	    @Column(name = "group")
-	    private String group;
+	    @Column(name = "page")
+	    private String page;
 	    
 	    @Column(name = "description")
 	    private String description;
+
+	    @Column(name = "color")
+	    private String color;
 
 	    @Column(name = "time_create")
 		private java.sql.Timestamp timeCreate;
@@ -65,12 +68,12 @@ public class DocStatus implements Serializable {
 			this.statusName = statusName;
 		}
 
-		public String getGroup() {
-			return group;
+		public String getPage() {
+			return page;
 		}
 
-		public void setGroup(String group) {
-			this.group = group;
+		public void setPage(String page) {
+			this.page = page;
 		}
 
 		public String getDescription() {
@@ -79,6 +82,14 @@ public class DocStatus implements Serializable {
 
 		public void setDescription(String description) {
 			this.description = description;
+		}
+
+		public String getColor() {
+			return color;
+		}
+
+		public void setColor(String color) {
+			this.color = color;
 		}
 
 		public java.sql.Timestamp getTimeCreate() {
@@ -116,10 +127,8 @@ public class DocStatus implements Serializable {
 		@Override
 		public String toString() {
 			return "DocStatus [docStatusId=" + docStatusId + ", statusCode=" + statusCode + ", statusName=" + statusName
-					+ ", group=" + group + ", description=" + description + ", timeCreate=" + timeCreate
+					+ ", page=" + page + ", description=" + description + ", color=" + color + ", timeCreate=" + timeCreate
 					+ ", timeUpdate=" + timeUpdate + ", userCreate=" + userCreate + ", userUpdate=" + userUpdate + "]";
 		}
-	    
-	    
 		
 }

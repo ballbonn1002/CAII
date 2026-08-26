@@ -153,7 +153,7 @@
 					</div>
 			
 					<div class="d-flex align-items-center gap-2">
-						<span class="badge badge-lg bg-light-secondary fw-semibold fs-7 p-4">Draft</span>
+						<span class="badge badge-lg bg-secondary fw-semibold fs-7 p-4">Draft</span>
 					</div>
 			
 				</div>
@@ -415,6 +415,7 @@
 												<select name="items_type" id="items_type" class="form-select h-45px" data-control="select2">
 													<option value="equipment" selected>Equipment</option>
 						                            <option value="consumables">Consumables</option>
+													<option value="accessory">Accessory</option>
 						                            <option value="office">Office supplies</option>
 												</select>
 											</div>
@@ -1516,6 +1517,16 @@ function createPoCard(item,index){
                     <span class="path3"></span><span class="path4"></span>
                     <span class="path5"></span><span class="path6"></span>
                     <span class="path7"></span><span class="path8"></span>
+                </i>
+            </div>
+        `;
+    }else if(item.itemsType=="accessory" || item.itemsType=="3"){
+        category="Accessory";
+        icon=`
+            <div class="symbol symbol-40px me-4">
+                <i class="ki-duotone ki-medal-star fs-2 text-teal">
+                    <span class="path1"></span><span class="path2"></span>
+                    <span class="path3"></span><span class="path4"></span>
                 </i>
             </div>
         `;

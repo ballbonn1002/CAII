@@ -738,3 +738,45 @@ ALTER TABLE `article` ADD COLUMN `view_count` INT NOT NULL DEFAULT 0 AFTER `time
 -- 20/08/2026 Phone: (www redesign) Fix footer 'Software Development' link pointing at a blog post instead of the real service page
 UPDATE `footer` SET `footer_url` = 'https://www.cubesofttech.com/software-development'
 WHERE `footer_id` = 28 AND `footer_name` = 'Software Development';
+
+-- 24/08/2026 June: Add 'color' column and rename 'group' to 'status_group' in 'doc_status' table
+ALTER TABLE `doc_status`
+    ADD `color` VARCHAR(50) NULL AFTER `description`,
+    CHANGE `group` `status_group` VARCHAR(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL;
+
+-- 24/08/2026 June: Insert initial document status master data for PR and MR groups
+INSERT INTO `doc_status` (`doc_status_id`, `status_code`, `status_name`, `status_group`, `description`, `color`, `user_create`, `user_update`, `time_create`, `time_update`) VALUES
+('8', '1', 'Draft', 'mr', 'ร่าง', 'secondary', 'cft.admin', 'cft.admin', '2026-08-19 02:54:05', '2026-08-19 02:54:05'),
+('9', '2', 'Pending', 'mr', 'รอดำเนินการ', 'warning', 'cft.admin', 'cft.admin', '2026-08-19 02:54:05', '2026-08-19 02:54:05'),
+('10', '3', 'Approved', 'mr', 'อนุมัติ', 'success', 'cft.admin', 'cft.admin', '2026-08-19 02:54:05', '2026-08-19 02:54:05'),
+('11', '4', 'Delivered', 'mr', NULL, 'cyan', 'cft.admin', 'cft.admin', '2026-08-19 02:54:05', '2026-08-19 02:54:05'),
+('12', '5', 'Rejected', 'mr', NULL, 'danger', 'cft.admin', 'cft.admin', '2026-08-19 02:54:05', '2026-08-19 02:54:05'),
+('13', '6', 'Cancel', 'mr', NULL, 'dark', 'cft.admin', 'cft.admin', '2026-08-19 02:54:05', '2026-08-19 02:54:05'),
+('14', '1', 'Draft', 'pr', 'ร่าง', 'secondary', 'cft.admin', 'cft.admin', '2026-08-19 02:54:15', '2026-08-19 02:54:15'),
+('15', '2', 'Pending', 'pr', 'รอดำเนินการ', 'warning', 'cft.admin', 'cft.admin', '2026-08-19 02:54:15', '2026-08-19 02:54:15'),
+('16', '3', 'Approved', 'pr', 'อนุมัติ', 'success', 'cft.admin', 'cft.admin', '2026-08-19 02:54:15', '2026-08-19 02:54:15'),
+('17', '4', 'Return', 'pr', NULL, 'info', 'cft.admin', 'cft.admin', '2026-08-19 02:54:15', '2026-08-19 02:54:15'),
+('18', '5', 'Rejected', 'pr', NULL, 'danger', 'cft.admin', 'cft.admin', '2026-08-19 02:54:15', '2026-08-19 02:54:15'),
+('19', '6', 'Cancel', 'pr', NULL, 'dark', 'cft.admin', 'cft.admin', '2026-08-19 02:54:15', '2026-08-19 02:54:15'),
+('20', '7', 'In-Progress', 'pr', NULL, 'cyan', 'cft.admin', 'cft.admin', '2026-08-19 02:54:15', '2026-08-19 02:54:15');
+-- 25/08/2026 Chaiwit: Create table delivered_detail
+CREATE TABLE delivered_detail (
+    delivered_detail_id INT NOT NULL AUTO_INCREMENT,
+    mr_id varchar(16) DEFAULT NULL,
+    product_id varchar(32) DEFAULT NULL,
+    product_sub_id varchar(32) DEFAULT NULL,
+    amount double DEFAULT NULL,
+    unit varchar(16) DEFAULT NULL,
+    product_type varchar(32) DEFAULT NULL,
+    description text DEFAULT NULL,
+    user_create varchar(32) DEFAULT NULL,
+    user_update varchar(32) DEFAULT NULL,
+    time_create timestamp NULL DEFAULT NULL,
+    time_update timestamp NULL DEFAULT NULL,
+    type varchar(32) DEFAULT NULL,
+    equipment_id varchar(32) DEFAULT NULL,
+    PRIMARY KEY (delivered_detail_id)
+);
+
+-- 25/08/2026 June: Rename 'status_group' to 'page' in 'doc_status' table
+ALTER TABLE `doc_status` CHANGE `status_group` `page` VARCHAR(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL;

@@ -74,15 +74,6 @@
     padding-right: 0 !important;
 } */
 
-
-.text-orange{
-	color: #FD7E14 ;
-}
-.btn-cyan{
-	background-color: #0DCAF0 !important;
-}
-
-
 /* ===== Signature Box ===== */
 .sig-box {
 	width: 100%;
@@ -149,7 +140,7 @@
 						</ul>
 					</div>
 			
-					<div class="d-flex align-items-center gap-2">
+					<!-- <div class="d-flex align-items-center gap-2">
 						<span class="fs-2hx text-primary fw-bold" id="">#${poList.poId}</span>
 							<c:choose>
 								<c:when test="${poList.status == '1'}">
@@ -175,6 +166,13 @@
 								</c:when>
 								<c:otherwise></c:otherwise>
 							</c:choose>
+					</div> -->
+					<div class="d-flex align-items-center gap-2">
+						<span class="fs-2hx text-primary fw-bold" id="">#${poList.poId}</span>
+						<span class="badge badge-lg bg-${poStatusColors[poList.status]} fw-semibold fs-7 p-4
+									${poStatusColors[poList.status] == 'secondary' ? 'text-dark' : 'text-white'}">
+							${poStatusNames[poList.status]}
+						</span>
 					</div>
 			
 				</div>
@@ -610,6 +608,7 @@
 												<select name="items_type" id="items_type" class="form-select h-45px" data-control="select2">
 													<option value="equipment" selected>Equipment</option>
 						                            <option value="consumables">Consumables</option>
+													<option value="accessory">Accessory</option>
 						                            <option value="office">Office supplies</option>
 												</select>
 											</div>
@@ -1316,7 +1315,8 @@ function mapDbItemsTypeToSelect(val){
     switch(String(val)){
         case '1': return 'equipment';
         case '2': return 'consumables';
-        case '3': return 'office';
+		case '3': return 'accessory';
+        case '4': return 'office';
         default:  return val; // เผื่อเป็น 'equipment'/'consumables'/'office' อยู่แล้ว
     }
 }
@@ -1486,6 +1486,16 @@ function createPoCard(item,index,poDetailId){
                     <span class="path3"></span><span class="path4"></span>
                     <span class="path5"></span><span class="path6"></span>
                     <span class="path7"></span><span class="path8"></span>
+                </i>
+            </div>
+        `;
+    }else if(item.itemsType=="accessory" || item.itemsType=="3"){
+        category="Accessory";
+        icon=`
+            <div class="symbol symbol-40px me-4">
+                <i class="ki-duotone ki-medal-star fs-2 text-teal">
+                    <span class="path1"></span><span class="path2"></span>
+                    <span class="path3"></span><span class="path4"></span>
                 </i>
             </div>
         `;

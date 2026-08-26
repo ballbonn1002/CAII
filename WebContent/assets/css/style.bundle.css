@@ -3832,6 +3832,23 @@ fieldset:disabled .btn {
     --bs-btn-disabled-border-color: #7239EA
 }
 
+.btn-cyan {
+    --bs-btn-color: #ffffff;
+    --bs-btn-bg: #0dcaf0;
+    --bs-btn-border-color: #0dcaf0;
+    --bs-btn-hover-color: #ffffff;
+    --bs-btn-hover-bg: #0baccc;
+    --bs-btn-hover-border-color: #0aa2c0;
+    --bs-btn-focus-shadow-rgb: 49, 210, 242;
+    --bs-btn-active-color: #ffffff;
+    --bs-btn-active-bg: #0aa2c0;
+    --bs-btn-active-border-color: #0a98b4;
+    --bs-btn-active-shadow: none;
+    --bs-btn-disabled-color: #ffffff;
+    --bs-btn-disabled-bg: #0dcaf0;
+    --bs-btn-disabled-border-color: #0dcaf0
+}
+
 .btn-warning {
     --bs-btn-color: #000000;
     --bs-btn-bg: #F6C000;
@@ -8768,6 +8785,11 @@ fieldset:disabled .btn {
 .border-info {
     --bs-border-opacity: 1;
     border-color: rgba(var(--bs-info-rgb), var(--bs-border-opacity)) !important
+}
+
+.border-cyan {
+    --bs-border-opacity: 1;
+    border-color: rgba(var(--bs-cyan-rgb), var(--bs-border-opacity)) !important
 }
 
 .border-warning {
@@ -34696,6 +34718,7 @@ fieldset:disabled .btn {
     --bs-dark-inverse: #ffffff;
     --bs-green-inverse: #ffffff;
     --bs-cyan-inverse: #ffffff;
+    --bs-cyan-active: #0aa2c0;
     --bs-primary-clarity: rgba(27, 132, 255, 0.2);
     --bs-secondary-clarity: rgba(249, 249, 249, 0.2);
     --bs-success-clarity: rgba(23, 198, 83, 0.2);
@@ -42460,6 +42483,64 @@ h6 {
 .btn.btn-info:hover:not(.btn-active).dropdown-toggle:after,
 .show>.btn.btn-info.dropdown-toggle:after {
     color: var(--bs-info-inverse)
+}
+
+.btn.btn-cyan {
+    color: var(--bs-cyan-inverse);
+    border-color: var(--bs-cyan);
+    background-color: var(--bs-cyan)
+}
+
+.btn.btn-cyan .svg-icon,
+.btn.btn-cyan i {
+    color: var(--bs-cyan-inverse)
+}
+
+.btn.btn-cyan.dropdown-toggle:after {
+    color: var(--bs-cyan-inverse)
+}
+
+.btn-check:active+.btn.btn-cyan,
+.btn-check:checked+.btn.btn-cyan,
+.btn.btn-cyan.active,
+.btn.btn-cyan.show,
+.btn.btn-cyan:active:not(.btn-active),
+.btn.btn-cyan:focus:not(.btn-active),
+.btn.btn-cyan:hover:not(.btn-active),
+.show>.btn.btn-cyan {
+    color: var(--bs-cyan-inverse);
+    border-color: var(--bs-cyan-active);
+    background-color: var(--bs-cyan-active) !important
+}
+
+.btn-check:active+.btn.btn-cyan .svg-icon,
+.btn-check:active+.btn.btn-cyan i,
+.btn-check:checked+.btn.btn-cyan .svg-icon,
+.btn-check:checked+.btn.btn-cyan i,
+.btn.btn-cyan.active .svg-icon,
+.btn.btn-cyan.active i,
+.btn.btn-cyan.show .svg-icon,
+.btn.btn-cyan.show i,
+.btn.btn-cyan:active:not(.btn-active) .svg-icon,
+.btn.btn-cyan:active:not(.btn-active) i,
+.btn.btn-cyan:focus:not(.btn-active) .svg-icon,
+.btn.btn-cyan:focus:not(.btn-active) i,
+.btn.btn-cyan:hover:not(.btn-active) .svg-icon,
+.btn.btn-cyan:hover:not(.btn-active) i,
+.show>.btn.btn-cyan .svg-icon,
+.show>.btn.btn-cyan i {
+    color: var(--bs-cyan-inverse)
+}
+
+.btn-check:active+.btn.btn-cyan.dropdown-toggle:after,
+.btn-check:checked+.btn.btn-cyan.dropdown-toggle:after,
+.btn.btn-cyan.active.dropdown-toggle:after,
+.btn.btn-cyan.show.dropdown-toggle:after,
+.btn.btn-cyan:active:not(.btn-active).dropdown-toggle:after,
+.btn.btn-cyan:focus:not(.btn-active).dropdown-toggle:after,
+.btn.btn-cyan:hover:not(.btn-active).dropdown-toggle:after,
+.show>.btn.btn-cyan.dropdown-toggle:after {
+    color: var(--bs-cyan-inverse)
 }
 
 .btn.btn-light-info {

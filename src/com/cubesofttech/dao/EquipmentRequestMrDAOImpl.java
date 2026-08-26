@@ -65,6 +65,27 @@ public class EquipmentRequestMrDAOImpl  implements EquipmentRequestMrDAO{
 	            .setParameter("mrId", equipmentRequestMr.getMrId()) // สมมติว่า getMrId() คืนค่าไอดีกลับมา
 	            .executeUpdate(); // 💡 ต้องใช้ executeUpdate() สำหรับ INSERT, UPDATE, DELETE
 	}
+	
+	@Override
+	public void updateStatus(String mr_id, String status ,String user_create ) throws Exception {
+	     Session session = this.sessionFactory.getCurrentSession();
+	     
+	     // 1. เปลี่ยน '${status}' ให้เป็น :status เพื่อความปลอดภัยและถูกต้องตามหลัก SQL
+	     String sql = "UPDATE mr SET status_id = :status WHERE mr_id = :mrId";
+	        
+	     // 2. ผูกค่า Parameter จากตัวแปร mr_id และ status ที่รับมาจากหัว Method ตัวเอง
+	     session.createSQLQuery(sql)
+	            .setParameter("status", status)  // ผูกค่า status
+	            .setParameter("mrId", mr_id)     // ผูกค่า mr_id (จากตัวแปรที่รับเข้า Method)
+	            .executeUpdate(); 
+	     
+	     String sqlInsert = "INSERT INTO delivered_detail (mr_id, user_create, time_create) VALUES (:mrId, :user_create, NOW())";
+	     session.createSQLQuery(sqlInsert)
+	            .setParameter("mrId", mr_id)
+	            .setParameter("user_create", user_create)
+	            .executeUpdate(); // 💡 ใช้ executeUpdate() เหมือนเดิมเพราะเป็นคำสั่ง INSERT
+	}
+	
 	@Override
 	public Map<String, Object> loaddataEquipment(String mr_id) throws Exception {
 	    Session session = this.sessionFactory.getCurrentSession();
@@ -76,19 +97,20 @@ public class EquipmentRequestMrDAOImpl  implements EquipmentRequestMrDAO{
 	        sql.append("ds.status_name AS status_name, ");
 	        sql.append("ds.doc_status_id AS doc_status_id, "); // อยากได้ค่าไหนเพิ่มจากตาราง ds สามารถ .append ต่อตรงนี้ได้เลย
 	        sql.append("pd.product_name, ");
-	        sql.append("cq.equipment_name, ");
 	        sql.append("pd.sequence, ");
 	        sql.append("pd.parent_product_id, ");
 	        sql.append("ur.path, ");
 	        sql.append("ur.name, ");
 	        sql.append("ur.name_en, ");
 	        sql.append("ur.employee_id, ");
-	        sql.append("ur.department_id ");
+	        sql.append("ur.department_id, ");
+	        sql.append("pd.product_type, ");
+	        sql.append("un.unit_name ");
 	        sql.append("FROM mr mr ");
 	        sql.append("LEFT JOIN doc_status ds ON mr.status_id = ds.doc_status_id ");
-	        sql.append("LEFT JOIN catalog_equipment cq ON cq.catalog_equipment_id = mr.catalog_items_id AND mr.item_type = 1 ");
-	        sql.append("LEFT JOIN product pd ON pd.product_id = mr.catalog_items_id and mr.item_type = 2 ");
+	        sql.append("LEFT JOIN product pd ON pd.product_id = mr.catalog_items_id ");
 	        sql.append("LEFT JOIN user ur ON ur.id = mr.request_user ");
+	        sql.append("LEFT JOIN unit_of_measure un ON un.product_id = pd.product_id  and un.sequence = 0 ");
 	        sql.append("WHERE mr.mr_id = :mr_id");
 
 	        // 2. ใช้ SQLQuery และแปลงผลลัพธ์ให้ออกมาเป็น Map ด้วย AliasToEntityMapResultTransformer

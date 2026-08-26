@@ -278,7 +278,7 @@ public class PurchaseOrderAction extends ActionSupport {
             request.setAttribute("poList", poList);
 
             // --- Summary (อิง doc_status, group=po) ---
-            List<DocStatus> statuses = docStatusDAO.findByGroup("po");
+            List<DocStatus> statuses = docStatusDAO.findByPage("po");
 
             // นับจำนวนตาม status_code
             Map<String, Integer> summary = new HashMap<>();
@@ -292,14 +292,18 @@ public class PurchaseOrderAction extends ActionSupport {
                 }
             }
 
-            // ชื่อสถานะตาม code สำหรับแสดงผล
+            // ชื่อสถานะและสีตาม code
             Map<String, String> statusNames = new HashMap<>();
+            Map<String, String> statusColors = new HashMap<>();
+
             for (DocStatus ds : statuses) {
                 statusNames.put(ds.getStatusCode(), ds.getStatusName());
+                statusColors.put(ds.getStatusCode(), ds.getColor());
             }
 
             request.setAttribute("poSummary", summary);       // key = status_code -> count
             request.setAttribute("poStatusNames", statusNames); // key = status_code -> status_name
+            request.setAttribute("poStatusColors", statusColors);
             request.setAttribute("poSummaryTotal", poList.size());
 
             return SUCCESS;
@@ -437,10 +441,14 @@ public class PurchaseOrderAction extends ActionSupport {
             request.setAttribute("poParentList", poParentList);
 
             Map<String, String> statusNames = new HashMap<>();
-            for (DocStatus ds : docStatusDAO.findByGroup("po")) {
+            Map<String, String> statusColors = new HashMap<>();
+
+            for (DocStatus ds : docStatusDAO.findByPage("po")) {
                 statusNames.put(ds.getStatusCode(), ds.getStatusName());
+                statusColors.put(ds.getStatusCode(), ds.getColor());
             }
             request.setAttribute("poStatusNames", statusNames);
+            request.setAttribute("poStatusColors", statusColors);
 
             User u = userDAO.findById(logonUser);     
             request.setAttribute("loginUser", u);
@@ -575,22 +583,23 @@ public class PurchaseOrderAction extends ActionSupport {
                 String dbItemsType = null;
                 String itemsTypeVal = String.valueOf(item.get("itemsType"));
 
-                if ("equipment".equals(itemsTypeVal)) {
-                    dbItemsType = "1";
-                    Product p = productDAO.findById(Integer.valueOf(productId));
-                    dbProductId = p.getProductId().toString();
-                    dbParentId = null;
-                } else if ("consumables".equals(itemsTypeVal)) {
-                    dbItemsType = "2";
-                    Product p = productDAO.findById(Integer.valueOf(productId));
-                    dbProductId = p.getProductId().toString();
-                    dbParentId = String.valueOf(p.getParentProductId());
-                } else if ("office".equals(itemsTypeVal)) {
-                    dbItemsType = "3";
+                if(itemsTypeVal != null){
+                    if ("equipment".equals(itemsTypeVal)) {
+                        dbItemsType = "1";
+                    } else if ("consumables".equals(itemsTypeVal)) {
+                        dbItemsType = "2";
+                        
+                    } else if ("accessory".equals(itemsTypeVal)) {
+                        dbItemsType = "3";
+                    }else if ("office".equals(itemsTypeVal)) {
+                        dbItemsType = "4";
+                    }
+
                     Product p = productDAO.findById(Integer.valueOf(productId));
                     dbProductId = p.getProductId().toString();
                     dbParentId = String.valueOf(p.getParentProductId());
                 }
+                
 //                String itemsTypeVal = item.get("items_type") != null ? String.valueOf(item.get("items_type")) : null;
                 
                 // --- PoDetail ---
@@ -727,23 +736,38 @@ public class PurchaseOrderAction extends ActionSupport {
                 String dbParentId = null;
                 String dbItemsType = null;
                 String itemsTypeVal = String.valueOf(item.get("itemsType"));
-
-                if ("equipment".equals(itemsTypeVal)) {
-                    dbItemsType = "1";
-                    Product p = productDAO.findById(Integer.valueOf(productId));
-                    dbProductId = p.getProductId().toString();
-                    dbParentId = null;
-                } else if ("consumables".equals(itemsTypeVal)) {
-                    dbItemsType = "2";
-                    Product p = productDAO.findById(Integer.valueOf(productId));
-                    dbProductId = p.getProductId().toString();
-                    dbParentId = String.valueOf(p.getParentProductId());
-                } else if ("office".equals(itemsTypeVal)) {
-                    dbItemsType = "3";
+                
+                if(itemsTypeVal != null){
+                    if ("equipment".equals(itemsTypeVal)) {
+                        dbItemsType = "1";
+                    } else if ("consumables".equals(itemsTypeVal)) {
+                        dbItemsType = "2";
+                    } else if ("accessory".equals(itemsTypeVal)) {
+                        dbItemsType = "3";
+                    }else if ("office".equals(itemsTypeVal)) {
+                        dbItemsType = "4";
+                    }
+                    
                     Product p = productDAO.findById(Integer.valueOf(productId));
                     dbProductId = p.getProductId().toString();
                     dbParentId = String.valueOf(p.getParentProductId());
                 }
+                // if ("equipment".equals(itemsTypeVal)) {
+                //     dbItemsType = "1";
+                //     Product p = productDAO.findById(Integer.valueOf(productId));
+                //     dbProductId = p.getProductId().toString();
+                //     dbParentId = null;
+                // } else if ("consumables".equals(itemsTypeVal)) {
+                //     dbItemsType = "2";
+                //     Product p = productDAO.findById(Integer.valueOf(productId));
+                //     dbProductId = p.getProductId().toString();
+                //     dbParentId = String.valueOf(p.getParentProductId());
+                // } else if ("office".equals(itemsTypeVal)) {
+                //     dbItemsType = "3";
+                //     Product p = productDAO.findById(Integer.valueOf(productId));
+                //     dbProductId = p.getProductId().toString();
+                //     dbParentId = String.valueOf(p.getParentProductId());
+                // }
 
                 // --- PoDetail ---
                 PoDetail detail = new PoDetail();
@@ -996,8 +1020,10 @@ public class PurchaseOrderAction extends ActionSupport {
                     dbItemsType = "1";
                 } else if ("consumables".equals(itemsType)) {
                     dbItemsType = "2";
-                } else if ("office".equals(itemsType)) {
+                } else if ("accessory".equals(itemsType)) {
                     dbItemsType = "3";
+                } else if ("office".equals(itemsType)) {
+                    dbItemsType = "4";
                 }
 
                 if (dbItemsType != null) {

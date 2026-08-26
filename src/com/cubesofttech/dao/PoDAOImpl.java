@@ -114,6 +114,7 @@ public class PoDAOImpl implements PoDAO {
 				" uc.name_en AS user_create_name, " +
 				" uu.name_en AS user_update_name, " +
 				" ds.status_name AS status_name, " +
+				" ds.color AS status_color, " +
 				" (SELECT COUNT(*) " +
 				" FROM po_detail pd " +
 				" WHERE pd.po_id = po.po_id) AS detail_count, " +
@@ -125,7 +126,7 @@ public class PoDAOImpl implements PoDAO {
 				"FROM po po " +
 				"LEFT JOIN user uc ON po.user_create = uc.id " +
 				"LEFT JOIN user uu ON po.user_update = uu.id " +
-				"LEFT JOIN doc_status ds ON ds.status_code = po.status AND ds.`group` = 'po' " +
+				"LEFT JOIN doc_status ds ON ds.status_code = po.status AND ds.page = 'po' " +
 				"ORDER BY po.time_create DESC";
 
 			SQLQuery query = session.createSQLQuery(sql);
@@ -146,13 +147,14 @@ public class PoDAOImpl implements PoDAO {
 			Session session = sessionFactory.getCurrentSession();
 
 			String sql = "SELECT po.*, " +
-					"       uc.name_en AS user_create_name, " +
-					"       uu.name_en AS user_update_name, " +
-					"       ds.status_name AS status_name " +
+					" uc.name_en AS user_create_name, " +
+					" uu.name_en AS user_update_name, " +
+					" ds.status_name AS status_name " +
+					" ds.color AS status_color, " +
 					"FROM po po " +
 					"LEFT JOIN user uc ON po.user_create = uc.id " +
 					"LEFT JOIN user uu ON po.user_update = uu.id " +
-					"LEFT JOIN doc_status ds ON ds.status_code = po.status AND ds.`group` = 'po' " +
+					"LEFT JOIN doc_status ds ON ds.status_code = po.status AND ds.page = 'po' " +
 					"WHERE po.po_id = :poId";
 
 			SQLQuery query = session.createSQLQuery(sql);

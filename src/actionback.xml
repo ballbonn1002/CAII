@@ -1054,6 +1054,17 @@
 			<result name="error">/index.jsp</result>
 		</action>
 
+		<!-- Doc Status  -->
+		<action name="doc_status_list"
+			class="com.cubesofttech.action.DocStatusAction" method="list">
+			<result name="success" type="tiles">docStatusList</result>
+			<result name="error">/index.jsp</result>
+		</action>
+
+		<action name="doc_status_update"
+			class="com.cubesofttech.action.DocStatusAction" method="performEdit">
+		</action>
+
 		<!-- Employee Profile Edit User Security -->
 		<action name="admin_update_password"
 			class="com.cubesofttech.action.UserAction"
@@ -2203,6 +2214,12 @@
 		    <result name="error">/index.jsp</result>
 		    <result name="login" type="redirect">/index.jsp</result>
 		</action>
+		<action name="equipment_request_updatestatus" 
+		class="com.cubesofttech.action.EquipmentRequestAction" method="updateStatus">
+		    <result name="success" type="tiles">equipment_request_updatestatus</result>
+		    <result name="error">/index.jsp</result>
+		    <result name="login" type="redirect">/index.jsp</result>
+		</action>
 		
 		<action name="equipment_request_create"
 		    class="com.cubesofttech.action.EquipmentRequestAction" method="initgetMaster">
@@ -2214,6 +2231,13 @@
 			class="com.cubesofttech.action.EquipmentRequestAction"
 			method="EquipmentPreview">
 			<result name="success" type="tiles">equipment_request_update</result>
+			<result name="error">/index.jsp</result>
+		</action>
+		
+		<action name="equipment_request_admin"
+			class="com.cubesofttech.action.EquipmentRequestAction"
+			method="EquipmentPreview">
+			<result name="success" type="tiles">equipment_request_admin</result>
 			<result name="error">/index.jsp</result>
 		</action>
 		

@@ -880,12 +880,26 @@ color: var(--bs-primary);
 																	</c:choose></td>
 																<td class="text-end">
 																	<div class="d-flex justify-content-end gap-2">
-																	<button  data-note="btn edit" onclick="gotoeditpage(`${row.mr_id}`)" title="Edit" class="btn btn-icon btn-sm btn-light-primary">
+																	
+																	<c:if test="${onlineUser.roleId == 'admin'}">
+																		<button  data-note="btn edit" onclick="gotoeditpage(`${row.mr_id}`,`${onlineUser.roleId}`)" title="Edit" class="btn btn-icon btn-sm btn-light-info">
+																			<i class="ki-duotone ki-document fs-5">
+																				<span class="path1"></span>
+																				<span class="path2"></span>
+																			</i>
+																		</button >
+																	</c:if>
+																	
+																	<c:if test="${onlineUser.roleId != 'admin'}">
+																	<button  data-note="btn edit" onclick="gotoeditpage(`${row.mr_id}`,`${onlineUser.roleId}`)" title="Edit" class="btn btn-icon btn-sm btn-light-primary">
 																			<i class="ki-duotone ki-pencil fs-5">
 																				<span class="path1"></span>
 																				<span class="path2"></span>
 																			</i>
-																		</button >										
+																		</button>	
+																	</c:if>		
+																	
+																	<c:if test="${onlineUser.roleId != 'admin'}">							
 																		<button type="button"
 																			class="btn btn-icon btn-sm btn-light-danger btn-delete-expense"
 																			data-id="${row.mr_id}" title="Delete">
@@ -894,6 +908,8 @@ color: var(--bs-primary);
 																				class="path3"></span><span class="path4"></span>
 																			</i>
 																		</button>
+																	</c:if>	
+																	
 																	</div>
 																</td>
 															</tr>
@@ -1608,8 +1624,12 @@ color: var(--bs-primary);
 	    });
 	}
 	
-	function gotoeditpage(id){
-		window.location.replace("equipment_request_update?id="+id);
+	function gotoeditpage(id,role){
+		if(role == 'admin'){
+			window.location.replace("equipment_request_admin?id="+id);
+		}else{
+			window.location.replace("equipment_request_update?id="+id);
+		}
 	}
 
 	document.addEventListener('DOMContentLoaded', function () {
