@@ -777,7 +777,7 @@ background-color : var(--bs-gray-300) !important;
 			</div>
 		</div>
 	</div>
-
+<script src="${pageContext.request.contextPath}/assets/js/custom/utilities/attachFile/attcahfile.js"></script>
 	<script>
 	const ctx             = "${pageContext.request.contextPath}";
     var deletedFileIds = [];
@@ -1094,6 +1094,53 @@ background-color : var(--bs-gray-300) !important;
 	        renderNewFileList();
 	        updateInputFiles();
 	    }
+	    
+		async function compressImage(file, maxWidth = 1280, maxHeight = 1280, quality = 0.8) {
+			if (!file.type.match(/image\/(jpeg|jpg|png)/)) {
+				return file;
+			}
+
+			return new Promise((resolve, reject) => {
+				const reader = new FileReader();
+				reader.readAsDataURL(file);
+				reader.onload = event => {
+					const img = new Image();
+					img.src = event.target.result;
+					img.onload = () => {
+						let width = img.width;
+						let height = img.height;
+
+						if (width > maxWidth || height > maxHeight) {
+							const ratio = Math.min(maxWidth / width, maxHeight / height);
+							width = width * ratio;
+							height = height * ratio;
+						}
+
+						const canvas = document.createElement('canvas');
+						canvas.width = width;
+						canvas.height = height;
+						const ctx = canvas.getContext('2d');
+						ctx.drawImage(img, 0, 0, width, height);
+
+						canvas.toBlob((blob) => {
+							if (blob) {
+								const newFileName = file.name.replace(/\.[^/.]+$/, ".jpg");
+								const newFile = new File([blob], newFileName, {
+									type: 'image/jpeg',
+									lastModified: Date.now()
+								});
+								resolve(newFile);
+							} else {
+								resolve(file);
+							}
+						}, 'image/jpeg', quality);
+					};
+					img.onerror = error => reject(error);
+				};
+				reader.onerror = error => reject(error);
+			});
+		}
+		
 	    function renderNewFileList() {
 	    	var fileListDiv = document.getElementById('newFileList');
 	    	fileListDiv.innerHTML = "";

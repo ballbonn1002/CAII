@@ -130,7 +130,7 @@
 /* ===== Signature Box ===== */
 .sig-box {
 	width: 400px;
-	height: 250px;
+	height: 300px;
 	border-radius: 10px;
 	display: flex;
 	flex-direction: column;
@@ -142,7 +142,7 @@
 
 .sig-box2 {
 	width: 400px;
-	height: 250px;
+	height: 300px;
 	border-radius: 10px;
 	display: flex;
 	flex-direction: column;
@@ -666,6 +666,13 @@ background-color : var(--bs-gray-300) !important;
 																class="path1"></span><span class="path2"></span>
 															</i> Signature on file
 														</div>
+														<c:if test="${Equipmentload.status_name == 'Approved'}">
+														<div class="d-flex align-items-center text-muted high-icon mb-2" style="font-size: 0.9rem;height : auto !important">
+											                        <a class="btn btn-icon fs-3 ms-1">
+											                        </a>
+											                
+											            </div>
+											            </c:if>
 													</div>
 												</c:when>
 
@@ -718,23 +725,28 @@ background-color : var(--bs-gray-300) !important;
 													<div class="sig-box2 locked">
 														<img src="${ctx}${signaturePath2}"
 															style="max-height: 160px; max-width: 360px; object-fit: contain;" />
-														<c:if test="${Equipmentload.status_name == 'Pending' && onlineUser.roleId == 'admin' }">	
 															<div class="text-center ">	
 																    <span class="text-primary fs-7" id="receiverLabel2">ชื่อผู้ขอเบิก
 																    </span>
-																<div class="d-flex flex-column">
-																	<span class="text-dark fw-semibold fs-7">${userObj.nameEN}</span>
+																<div class="d-flex flex-column pt-4">
+																	<span class="text-dark fw-semibold fs-7">${userObjAdmin.nameEN}</span>
 																	<span class="text-muted fs-8 mb-2 mt-1" id="request_date"><fmt:formatDate
 																			value="${Equipmentload.request_date}" pattern="d MMM yyyy, H:mm" /></span>
 																</div>
 															</div>
-														</c:if>
-														<div class="sig-lock-badge
-														<c:choose><c:when test="${Equipmentload.status_name == 'Pending' && onlineUser.roleId == 'admin' }">text-pending height-only</c:when></c:choose>">
+														<div class="sig-lock-badge">
 															<i class="ki-duotone ki-lock fs-7"> <span
 																class="path1"></span><span class="path2"></span>
 															</i> Signature on file
 														</div>
+					<c:if test="${Equipmentload.status_name == 'Approved'}">
+					<div class="d-flex align-items-center text-muted high-icon mb-2" style="font-size: 0.9rem;height : auto !important">
+		                        <a class="btn btn-icon fs-3 ms-1">
+		                        <i class="ki-duotone ki-document fs-1"><span class="path1"></span>
+		                        <span class="path2"></span></i></a>
+		                <span class="span-des">อนุมัติ</span>
+		            </div>
+		            </c:if>
 													</div>
 												</c:when>
 
@@ -829,7 +841,7 @@ background-color : var(--bs-gray-300) !important;
 			</div>
 		</div>
 	</div>
-
+<script src="${pageContext.request.contextPath}/assets/js/custom/utilities/attachFile/attcahfile.js"></script>
 	<script>
 	const ctx             = "${pageContext.request.contextPath}";
     var deletedFileIds = [];
@@ -883,7 +895,6 @@ background-color : var(--bs-gray-300) !important;
 	
 	function initDeleteExpense() {
 	    document.addEventListener('click', function (e) {
-	    	console.log("btn calcel")
 	        const btn = e.target.closest('.btn-cancel');
 	        if (!btn) return;
 
@@ -1146,6 +1157,53 @@ background-color : var(--bs-gray-300) !important;
 	        renderNewFileList();
 	        updateInputFiles();
 	    }
+	    
+		async function compressImage(file, maxWidth = 1280, maxHeight = 1280, quality = 0.8) {
+			if (!file.type.match(/image\/(jpeg|jpg|png)/)) {
+				return file;
+			}
+
+			return new Promise((resolve, reject) => {
+				const reader = new FileReader();
+				reader.readAsDataURL(file);
+				reader.onload = event => {
+					const img = new Image();
+					img.src = event.target.result;
+					img.onload = () => {
+						let width = img.width;
+						let height = img.height;
+
+						if (width > maxWidth || height > maxHeight) {
+							const ratio = Math.min(maxWidth / width, maxHeight / height);
+							width = width * ratio;
+							height = height * ratio;
+						}
+
+						const canvas = document.createElement('canvas');
+						canvas.width = width;
+						canvas.height = height;
+						const ctx = canvas.getContext('2d');
+						ctx.drawImage(img, 0, 0, width, height);
+
+						canvas.toBlob((blob) => {
+							if (blob) {
+								const newFileName = file.name.replace(/\.[^/.]+$/, ".jpg");
+								const newFile = new File([blob], newFileName, {
+									type: 'image/jpeg',
+									lastModified: Date.now()
+								});
+								resolve(newFile);
+							} else {
+								resolve(file);
+							}
+						}, 'image/jpeg', quality);
+					};
+					img.onerror = error => reject(error);
+				};
+				reader.onerror = error => reject(error);
+			});
+		}
+		
 	    function renderNewFileList() {
 	    	var fileListDiv = document.getElementById('newFileList');
 	    	fileListDiv.innerHTML = "";
@@ -1175,21 +1233,9 @@ background-color : var(--bs-gray-300) !important;
 	                            </span>
 	                        </div>
 	                        
-	                        <span class="badge badge-light-danger bg-hover cursor-pointer delete-btn ms-3">
-	                            <i class="ki-duotone ki-trash text-danger fs-2">
-	                                <span class="path1"></span><span class="path2"></span>
-	                                <span class="path3"></span><span class="path4"></span><span class="path5"></span>
-	                            </i>
-	                        </span>
 	                    </div>
 	                `;
 
-	                outerDiv.querySelector('.delete-btn').addEventListener('click', function() {
-	                    selectedFiles = selectedFiles.filter(f => f.name !== fileName);
-
-	                    renderNewFileList(); 
-	                    updateInputFiles(); 
-	                });
 
 	                fileListDiv.appendChild(outerDiv);
 	            });
@@ -1230,6 +1276,17 @@ background-color : var(--bs-gray-300) !important;
 	    		}else{
 	    			statusupdate = '5'
 	    		}
+	    	   const formData = new FormData();
+	    	   
+	    	   const fileInput = document.getElementById('sigFileInput');
+			    console.log('fileInput >>',fileInput)
+			 
+			    if (fileInput && fileInput.files.length > 0) {
+			        formData.append('files', fileInput.files[0]); 
+			        formData.append('filesFileName', fileInput.files[0].name);
+			    } else {
+			        formData.append('filesFileName', '');
+			    }
 
 		        Swal.fire({
 		            title: 'ต้องการ update รายการนี้?',
@@ -1245,7 +1302,8 @@ background-color : var(--bs-gray-300) !important;
 
 		            fetch(ctx + '/equipment_request_updatestatus?id=' + $('#mr_id').text() + '&status='+ statusupdate, {
 		                method: 'POST',
-		                headers: { 'X-Requested-With': 'XMLHttpRequest' }
+		                headers: { 'X-Requested-With': 'XMLHttpRequest' },
+		                body: formData 
 		            })
 		            .then(function (res) { return res.json(); })
 		            .then(function (data) {
@@ -1379,15 +1437,6 @@ background-color : var(--bs-gray-300) !important;
 	                         </span>
 	                     </div>
 	                     
-	                     <span class="badge badge-light-danger bg-hover cursor-pointer delete-btn ms-3 delete-old-btn
-	                        <c:choose>
-	                         <c:when test="${Equipmentload.status_name == 'Pending' || Equipmentload.status_name == 'Cancel' }">btn-hide</c:when>
-	                         </c:choose>">
-	                         <i class="ki-duotone ki-trash text-danger fs-2">
-	                             <span class="path1"></span><span class="path2"></span>
-	                             <span class="path3"></span><span class="path4"></span><span class="path5"></span>
-	                         </i>
-	                     </span>
 	                     <a href="/upload/user/`+ fileId +`_`+ fullFileName +`" download="`+fileName +`" class="ms-3" title="Download">
 		                     <i class="ki-duotone ki-file-down fs-1 text-primary"> 
 		                     <span class="path1"></span> <span class="path2"></span>
@@ -1397,12 +1446,6 @@ background-color : var(--bs-gray-300) !important;
 
 	                 `;
 					 
-	               outerDiv.querySelector('.delete-old-btn').onclick = function() {
-	                     outerDiv.remove(); 
-	                     selectedFiles = selectedFiles.filter(f => f.fileId !== fileId);
-	                     deletedFileIds.push(fileId);
-	                     document.getElementById("fileUploadId").value = JSON.stringify(deletedFileIds);
-	                 };
 
 	                 if (oldFileListDiv) {
 	                     oldFileListDiv.appendChild(outerDiv);

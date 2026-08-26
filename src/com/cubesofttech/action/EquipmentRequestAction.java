@@ -607,7 +607,57 @@ public class EquipmentRequestAction extends ActionSupport {
 			   log.debug("status >>>"+status);
 		        // เรียกผ่าน Service -> DAO
 			   equipmentRequestMrDAO.updateStatus(id,status,onlineUser.getId()); 
-			
+			   
+	        	// ── 5. บันทึก Signature ใหม่ (ถ้ามี upload) ─────────────
+				if (files != null && files.length > 0 && filesFileName != null && filesFileName.length > 0) {
+					 System.out.println("เข้า uploadfile() ใน if");
+//					try {
+						Timestamp now = DateUtil.getCurrentTime();
+						String sigOrigName = filesFileName[0];
+						 System.out.println("sigOrigName()"+ sigOrigName);
+						long sigSize = files[0].length();
+						 System.out.println("sigSize()"+ sigSize);
+						int newFileId = fileuploadDAO.getMaxId() + 1;
+
+						int dotIdx = sigOrigName.lastIndexOf('.');
+						String nameOnly = dotIdx > 0 ? sigOrigName.substring(0, dotIdx) : sigOrigName;
+						String ext = dotIdx > 0 ? sigOrigName.substring(dotIdx) : "";
+
+						String serverFileName = "user_signature_" + newFileId + ext;
+						 System.out.println("serverFileName()"+ serverFileName);
+						String newFileName = newFileId + "_" + nameOnly + ext;
+						 System.out.println("newFileName()"+ newFileName);
+						String savePath = "/upload/user/" + newFileName;
+						 System.out.println("savePath()"+ savePath);
+						String serverRoot = ServletActionContext.getServletContext().getRealPath("/");
+						FileUtil.upload(files[0], serverRoot + "upload/user/", serverFileName);
+						// ── บันทึก FileUpload record ──────────────────────────────────
+						FileUpload fu = new FileUpload();
+						fu.setFileId(newFileId);
+						fu.setName(nameOnly);
+						fu.setType(ext);
+						fu.setPath(savePath);
+						fu.setSize(formatFileSize(sigSize));
+						fu.setPage("admin_signature");
+						fu.setPageId(onlineUser.getId());
+						fu.setUserId(onlineUser.getId());
+						fu.setUserCreate(onlineUser.getId());
+						fu.setUserUpdate(onlineUser.getId());
+						fu.setTimeCreate(now);
+						fu.setTimeUpdate(now);
+						fileuploadDAO.save(fu);
+					
+						// ── อัปเดต path_signature ใน User ────────────────────────────
+						User u = userDAO.findById(onlineUser.getId());
+						if (u != null) {
+							u.setPathSignature(savePath);
+							u.setTimeUpdate(now);
+							userDAO.update(u);
+
+							onlineUser.setPathSignature(savePath);
+							request.getSession().setAttribute("onlineUser", onlineUser);
+						}
+				}
 			response.setContentType("application/json;charset=UTF-8");
 			writeJson("{\"success\":true}", response); 
 			
@@ -805,7 +855,7 @@ public class EquipmentRequestAction extends ActionSupport {
 					fu.setPath(savePath);
 					fu.setSize(formatFileSize(sigSize));
 					fu.setPage("user_signature");
-					fu.setPageId(null);
+					fu.setPageId(onlineUser.getId());
 					fu.setUserId(onlineUser.getId());
 					fu.setUserCreate(onlineUser.getId());
 					fu.setUserUpdate(onlineUser.getId());
@@ -1055,27 +1105,29 @@ public class EquipmentRequestAction extends ActionSupport {
 	               }
 	            request.setAttribute("catalogEqptList", unionList);
         
-	        List<FileUpload> fileList = fileuploadDAO.findByPageAndPageId("user_signature", onlineUser.getId());
-
+	        List<FileUpload> fileList = fileuploadDAO.findByPageAndPageId("user_signature", String.valueOf(dataload.get("request_user")));
+	       
 	        List<Map<String, Object>> expenseListObj = new ArrayList<>();
 	        Map<String, Object> expMap = new HashMap<>();
 	        expMap.put("files", fileList != null ? fileList : new ArrayList<>());
 	        expenseListObj.add(expMap);
-	        
-	  
+	 
 	        request.setAttribute("expenseListObj", expenseListObj);
 	        
 	        Map<String, Object> EquipmentMap = new HashMap<>();
 	        EquipmentMap.put("amount", EquipmentMap);       
 	        
 	        User userObj = null;
+	        User userObjAdmin = null;
 	        if("admin".equals(onlineUser.getRoleId())) {
 	        	 userObj =  userDAO.findById(String.valueOf(dataload.get("request_user")));
+	        	 userObjAdmin = userDAO.findById(onlineUser.getId());
+	        	 request.setAttribute("userObjAdmin", userObjAdmin);
+	        	 log.debug("userObjAdmin >>"+userObjAdmin);
 	        }else {
 	        	 userObj = userDAO.findById(onlineUser.getId());
 	        }
 	      
-	        
 	        request.setAttribute("userObj", userObj);
 	        request.setAttribute("selectedIds", mr_id != null ? Arrays.asList(mr_id) : java.util.Collections.emptyList());
 	       
@@ -1090,10 +1142,23 @@ public class EquipmentRequestAction extends ActionSupport {
 	                if (f.exists()) {
 	                    request.setAttribute("signaturePath", imgPathSignature);
 	                }
-	               	request.setAttribute("signaturePath2", "");
 	            } catch (Exception ignore) {}
 	        }
-			
+
+	        if (userObjAdmin != null) {
+	        	  try {
+			            String originalFileNameAdmin = new java.io.File(userObjAdmin.getPathSignature()).getName();
+			            String fileIdStrAdmin = originalFileNameAdmin.substring(0, originalFileNameAdmin.indexOf("_"));
+			            String typeFileAdmin = originalFileNameAdmin.substring(originalFileNameAdmin.lastIndexOf("."));
+			            String imgPathSignatureAdmin = "/upload/user/user_signature_" + fileIdStrAdmin + typeFileAdmin;
+			            java.io.File fAdmin = new java.io.File(request.getServletContext().getRealPath("/") + imgPathSignatureAdmin);
+	            
+			            if (fAdmin.exists()) {
+			             	request.setAttribute("signaturePath2", imgPathSignatureAdmin);
+			            }
+	        	 } catch (Exception ignore) {}
+	        }
+
 	        boolean onlineUserSignature = false;
 	        if (onlineUser != null) {
 	            User u = userDAO.findById(onlineUser.getId()); 
