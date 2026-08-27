@@ -780,3 +780,5 @@ CREATE TABLE delivered_detail (
 
 -- 25/08/2026 June: Rename 'status_group' to 'page' in 'doc_status' table
 ALTER TABLE `doc_status` CHANGE `status_group` `page` VARCHAR(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL;
+
+-- PROD 
