@@ -76,10 +76,30 @@
                                 </c:forEach>
                             </div>
 
-                            <div class="d-flex align-items-center position-relative mb-6">
-                                <i class="ki-duotone ki-magnifier fs-3 position-absolute ms-5"><span class="path1"></span><span class="path2"></span></i>
-                                <input type="text" id="equipmentSearch" class="form-control form-control-solid ps-14 text-gray-700"
-                                       placeholder="ค้นหา Item ID / Serial No / ชื่อเครื่อง / ที่ตั้ง" />
+                            <div class="d-flex flex-wrap align-items-center gap-3 mb-6">
+                                <div class="d-flex align-items-center position-relative flex-grow-1" style="min-width: 240px;">
+                                    <i class="ki-duotone ki-magnifier fs-3 position-absolute ms-5"><span class="path1"></span><span class="path2"></span></i>
+                                    <input type="text" id="equipmentSearch" class="form-control form-control-solid ps-14 text-gray-700"
+                                           placeholder="ค้นหา Item ID / Serial No / ชื่อเครื่อง / ที่ตั้ง" />
+                                </div>
+
+                                <%-- Checkbox dropdown filter ตาม status (เลือกได้หลายค่าพร้อมกัน) - default ติ๊ก Available (A) + Borrowed (B)
+                                     รายชื่อ status ดึงจาก request attribute equipmentStatusList (ProductAction.showEquipmentBalancePage)
+                                     ไม่ใช้ DataTables filter เพราะหน้านี้ไม่ได้ใช้ DataTables --%>
+                                <div class="dropdown" style="min-width: 220px;">
+                                    <button class="btn btn-white border border-gray-300 rounded-3 d-flex justify-content-between align-items-center w-100 px-4 py-3"
+                                            type="button" data-bs-toggle="dropdown" id="equipmentStatusFilterBtn">
+                                        <span>All Status</span>
+                                        <i class="ki-duotone ki-down fs-4"><span class="path1"></span><span class="path2"></span></i>
+                                    </button>
+                                    <div class="dropdown-menu dropdown-menu-end p-4 shadow rounded-4" id="equipmentStatusFilterMenu" style="min-width: 254px;">
+                                        <div class="mb-4" id="statusFilterContainer"></div>
+                                        <div class="d-flex justify-content-between pt-3 border-top">
+                                            <button type="button" class="btn btn-light" id="equipmentStatusDeselectAll">Deselect All</button>
+                                            <button type="button" class="btn btn-primary" id="equipmentStatusSelectAll">Select All</button>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
 
                             <div class="table-responsive">
@@ -115,7 +135,7 @@
                                             <%-- เครื่องที่ปลดระวางแล้วยังโชว์อยู่ แต่ทำให้จางลงและไม่ถูกนับในยอด
                                                  flag e.retired คำนวณมาจาก action แล้ว (อิง EquipmentDAO.RETIRED_STATUSES) --%>
                                             <c:forEach var="e" items="${g.rows}">
-                                                <tr class="equ-detail${gs.first ? '' : ' d-none'}${e.retired ? ' opacity-50' : ''}" data-group="${g.productId}">
+                                                <tr class="equ-detail${gs.first ? '' : ' d-none'}${e.retired ? ' opacity-50' : ''}" data-group="${g.productId}" data-status="${fn:escapeXml(e.status)}">
                                                     <%-- ข้อมูลเก่าบางแถว item_no / name ว่าง (8 และ 13 แถว ณ 10/08/2026)
                                                          โชว์ #equipment_id แทนจะได้ยังอ้างอิงเครื่องได้ --%>
                                                     <td class="text-gray-900 fw-bold">
@@ -202,13 +222,89 @@
             $icon.removeClass('ki-up ki-down').addClass(willOpen ? 'ki-up' : 'ki-down');
         });
 
-        // ---- ค้นหา + กรองกลุ่ม (All / sub product) ข้ามทุกกลุ่มพร้อมกัน ----
+        // ==================== Filter: Status (checkbox dropdown, multi-select) ====================
+        // pattern เดียวกับ dbStatusList ใน equipment_list.jsp - ข้อมูลถูกดึงมาครบทุก status อยู่แล้ว
+        // จาก EquipmentDAO.findByProductIds() ฝั่งนี้แค่กรองที่ DOM
+        var dbStatusList = ${equipmentStatusList != null ? equipmentStatusList : '[]'};
+        var selectedStatuses = [];
+
+        (function buildStatusFilter() {
+            var html = '';
+            $.each(dbStatusList, function (i, st) {
+                // default: ติ๊ก Available (A) และ Borrowed (B) ไว้ตั้งแต่โหลดหน้า
+                var checked = (st.statusId === 'A' || st.statusId === 'B') ? ' checked' : '';
+                html += '<label class="form-check form-check-custom form-check-solid mb-3">'
+                    + '<input class="form-check-input filter-status" type="checkbox" value="' + st.statusId + '"' + checked + '>'
+                    + '<span class="form-check-label text-gray-600 fw-normal">'
+                    + (st.description || st.statusId)
+                    + '</span></label>';
+            });
+            $('#statusFilterContainer').html(html);
+            selectedStatuses = readSelectedStatuses();
+            updateStatusFilterLabel();
+        })();
+
+        function readSelectedStatuses() {
+            var vals = [];
+            $('#statusFilterContainer input[type="checkbox"]:checked').each(function () {
+                vals.push($(this).val());
+            });
+            return vals;
+        }
+
+        function updateStatusFilterLabel() {
+            var $label = $('#equipmentStatusFilterBtn span').first();
+            var total = $('#statusFilterContainer input[type="checkbox"]').length;
+            if (selectedStatuses.length === 0 || selectedStatuses.length === total) {
+                $label.text('All Status');
+                return;
+            }
+            if (selectedStatuses.length <= 2) {
+                var labels = [];
+                $('#statusFilterContainer input[type="checkbox"]:checked').each(function () {
+                    labels.push($(this).parent().find('span').text().trim());
+                });
+                $label.text(labels.join(', '));
+            } else {
+                $label.text(selectedStatuses.length + ' Selected');
+            }
+        }
+
+        // กันไม่ให้ dropdown ปิดตอนคลิกข้างในเมนู (ติ๊ก checkbox / กด Select-Deselect All)
+        $('#equipmentStatusFilterMenu').on('click', function (e) {
+            e.stopPropagation();
+        });
+
+        $('#statusFilterContainer').on('change', '.filter-status', function () {
+            selectedStatuses = readSelectedStatuses();
+            updateStatusFilterLabel();
+            applyEquipmentFilters();
+        });
+
+        $('#equipmentStatusSelectAll').on('click', function () {
+            $('#statusFilterContainer input[type="checkbox"]').prop('checked', true);
+            selectedStatuses = readSelectedStatuses();
+            updateStatusFilterLabel();
+            applyEquipmentFilters();
+        });
+
+        $('#equipmentStatusDeselectAll').on('click', function () {
+            $('#statusFilterContainer input[type="checkbox"]').prop('checked', false);
+            selectedStatuses = [];
+            updateStatusFilterLabel();
+            applyEquipmentFilters();
+        });
+
+        // ---- ค้นหา + กรองกลุ่ม (All / sub product) + กรอง status ข้ามทุกกลุ่มพร้อมกัน ----
         // ไม่ใช้ DataTables เพราะตารางมีแถวหัวกลุ่มปนอยู่ ซึ่ง DataTables จะ sort/paging รวมไปด้วย
         var selectedGroup = 'ALL';
 
         function applyEquipmentFilters() {
             var keyword = $.trim($('#equipmentSearch').val()).toLowerCase();
-            var filtering = !!keyword || selectedGroup !== 'ALL';
+            var totalStatusCount = $('#statusFilterContainer input[type="checkbox"]').length;
+            // selectedStatuses ว่าง หรือติ๊กครบทุก status = ไม่ได้กรอง (เหมือน DataTables regex ว่าง = แสดงทุกแถว)
+            var statusFiltering = selectedStatuses.length > 0 && selectedStatuses.length < totalStatusCount;
+            var filtering = !!keyword || selectedGroup !== 'ALL' || statusFiltering;
 
             if (!filtering) {
                 // ไม่มีตัวกรองเลย - คืนสถานะขยาย/ยุบเดิมของแต่ละกลุ่ม
@@ -220,13 +316,14 @@
                 return;
             }
 
-            // ระหว่างกรอง: ซ่อนแถวที่ไม่ตรงเงื่อนไข (กลุ่ม + คำค้นหา) แล้วกางทุกกลุ่มที่ยังเหลือแถวให้เห็นเลย
+            // ระหว่างกรอง: ซ่อนแถวที่ไม่ตรงเงื่อนไข (กลุ่ม + คำค้นหา + status) แล้วกางทุกกลุ่มที่ยังเหลือแถวให้เห็นเลย
             // (ไม่สนสถานะ collapsed เดิมของกลุ่มนั้น)
             $('#equipmentBalanceTable .equ-detail').each(function () {
                 var $row = $(this);
                 var matchesGroup = selectedGroup === 'ALL' || $row.data('group') === selectedGroup;
                 var matchesKeyword = !keyword || $row.text().toLowerCase().indexOf(keyword) !== -1;
-                $row.toggleClass('d-none', !(matchesGroup && matchesKeyword));
+                var matchesStatus = selectedStatuses.length === 0 || selectedStatuses.indexOf(String($row.data('status'))) !== -1;
+                $row.toggleClass('d-none', !(matchesGroup && matchesKeyword && matchesStatus));
             });
             $('#equipmentBalanceTable .equ-total').each(function () {
                 var group = $(this).data('group');
@@ -246,5 +343,8 @@
             $('.equ-group-filter[data-group="' + selectedGroup + '"]').addClass('active');
             applyEquipmentFilters();
         });
+
+        // ---- เรียกครั้งแรกตอนโหลดหน้า ให้ default filter status (A+B) มีผลทันที ----
+        applyEquipmentFilters();
     });
 </script>

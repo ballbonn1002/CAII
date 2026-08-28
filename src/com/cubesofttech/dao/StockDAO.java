@@ -19,6 +19,13 @@ public interface StockDAO {
     /** ความเคลื่อนไหวสต็อกทั้งหมดของ product เรียงล่าสุดก่อน */
     public List<Stock> findByProductId(String productId) throws Exception;
 
+    /**
+     * ความเคลื่อนไหวสต็อกของ product หลายตัว (ตัวแม่ + sub product) รวมกัน เรียงล่าสุดก่อน
+     * ใช้กับหน้า Stock Balance (History Stock IN + รายการแยกคลัง) อ่านจาก stock โดยตรง
+     * ไม่ผ่าน good_receipt - ต้องเช็ค list ว่างก่อนเสมอ กัน SQL "IN ()" syntax error
+     */
+    public List<Stock> findByProductIds(List<String> productIds) throws Exception;
+
     /** ความเคลื่อนไหวที่อ้างอิงเอกสารเดียวกัน (action_ref) */
     public List<Stock> findByActionRef(String actionRef) throws Exception;
 

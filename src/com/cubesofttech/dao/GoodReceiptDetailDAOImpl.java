@@ -23,18 +23,21 @@ public class GoodReceiptDetailDAOImpl implements GoodReceiptDetailDAO {
     public void save(GoodReceiptDetail goodReceiptDetail) throws Exception {
         Session session = this.sessionFactory.getCurrentSession();
         session.save(goodReceiptDetail);
+        session.flush();
     }
 
     @Override
     public void update(GoodReceiptDetail goodReceiptDetail) throws Exception {
         Session session = this.sessionFactory.getCurrentSession();
         session.update(goodReceiptDetail);
+        session.flush();
     }
 
     @Override
     public void delete(GoodReceiptDetail goodReceiptDetail) throws Exception {
         Session session = this.sessionFactory.getCurrentSession();
         session.delete(goodReceiptDetail);
+        session.flush();
     }
 
     @Override

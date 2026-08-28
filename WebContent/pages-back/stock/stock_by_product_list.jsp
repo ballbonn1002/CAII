@@ -3,15 +3,15 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
 
 <%--
-  Stock By Product - UI mockup เท่านั้น (ยังไม่ต่อ backend จริง)
-  หมายเหตุ: ทุกแถวในตาราง + การ์ดสรุปด้านบนเป็น static demo data พิมพ์ไว้ตรงๆ ในไฟล์นี้
-  ไม่ได้ผูกกับ ${...} จาก Action เลย - รอ requirement เรื่องคอลัมน์/filter นิ่งก่อนค่อยต่อจริง
-  (ProductAction.showStockByProductPage() ตอนนี้แค่เช็ค session แล้ว return SUCCESS เฉยๆ)
+  Stock By Product - สรุปยอดคงเหลือรวม (ตัวแม่ + sub product) ต่อ 1 catalog item
+  ข้อมูลมาจาก ProductAction.showStockByProductPage() ทั้งหมด:
+    - products      : ${products} จาก ProductDAO.findAllWithSubProducts() + on_hand/warehouse_count ที่คำนวณเพิ่ม
+    - typeCounts     : จำนวน item ต่อ type (เหมือนหน้า Product List)
+    - totalOnHand    : ผลรวม on_hand ของทุก item
+    - totalWarehouses: จำนวนคลังทั้งหมดในระบบ (ตาราง warehouse)
 
-  แนวทางที่คาดว่าจะต้องต่อจริงภายหลัง (ดู skill product-module):
-    - On Hand ของ type '1' (Equipment) นับจากตาราง equipment ไม่ใช่ stock
-    - On Hand ของ type '2','3' นับจากตาราง stock (reconcile ล่าสุดต่อ product/warehouse)
-    - ต้องกัน EquipmentDAO.RETIRED_STATUSES ออกจากยอด Equipment เหมือนหน้า stock_equ_balance
+  On Hand: type 1 (Equipment) = จำนวนเครื่องจริง / type 2,3,4 = stock.reconcile ล่าสุดรวมทุก sub product
+  Warehouses: จำนวนคลัง (2,3,4) หรือ location (1) ที่ "มียอดคงเหลือจริง" ไม่ใช่จำนวนคลังทั้งหมด
 --%>
 
 <div class="app-main flex-column flex-row-fluid" id="kt_app_main">
@@ -34,14 +34,14 @@
         <div id="kt_app_content" class="app-content flex-column-fluid">
             <div id="kt_app_content_container" class="app-container container-fluid">
 
-                <%-- ---- การ์ดสรุปด้านบน (mockup - เลขนิ่งๆ ไม่ได้คำนวณจริง) ---- --%>
+                <%-- ---- การ์ดสรุปด้านบน ---- --%>
                 <div class="row g-4 mb-6">
                     <div class="col-12 col-md-4">
                         <div class="card card-bordered h-100">
                             <div class="card-body d-flex align-items-center gap-3 py-4 px-5">
                                 <i class="ki-duotone ki-abstract-26 fs-2x text-primary"><span class="path1"></span><span class="path2"></span></i>
                                 <span class="text-gray-600 fw-semibold fs-6">Total Products</span>
-                                <span class="text-gray-900 fw-bold fs-4 ms-auto">12 <span class="fs-7 fw-semibold text-gray-500">items</span></span>
+                                <span class="text-gray-900 fw-bold fs-4 ms-auto">${fn:length(products)} <span class="fs-7 fw-semibold text-gray-500">items</span></span>
                             </div>
                         </div>
                     </div>
@@ -50,7 +50,7 @@
                             <div class="card-body d-flex align-items-center gap-3 py-4 px-5">
                                 <i class="ki-duotone ki-package fs-2x text-success"><span class="path1"></span><span class="path2"></span><span class="path3"></span></i>
                                 <span class="text-gray-600 fw-semibold fs-6">Total On Hand</span>
-                                <span class="text-gray-900 fw-bold fs-4 ms-auto">612 <span class="fs-7 fw-semibold text-gray-500">units</span></span>
+                                <span class="text-gray-900 fw-bold fs-4 ms-auto">${empty totalOnHand ? 0 : totalOnHand} <span class="fs-7 fw-semibold text-gray-500">units</span></span>
                             </div>
                         </div>
                     </div>
@@ -59,7 +59,7 @@
                             <div class="card-body d-flex align-items-center gap-3 py-4 px-5">
                                 <i class="ki-duotone ki-home-2 fs-2x text-warning"><span class="path1"></span><span class="path2"></span></i>
                                 <span class="text-gray-600 fw-semibold fs-6">Warehouses</span>
-                                <span class="text-gray-900 fw-bold fs-4 ms-auto">6 <span class="fs-7 fw-semibold text-gray-500">locations</span></span>
+                                <span class="text-gray-900 fw-bold fs-4 ms-auto">${empty totalWarehouses ? 0 : totalWarehouses} <span class="fs-7 fw-semibold text-gray-500">locations</span></span>
                             </div>
                         </div>
                     </div>
@@ -78,42 +78,46 @@
                                 <input type="text" id="searchInput" class="form-control form-control-solid ps-14 text-gray-700" placeholder="Search" />
                             </div>
 
-                            <%-- ---- การ์ด filter ตาม type (mockup - ตัวเลขไม่ได้นับจากตารางจริง) ---- --%>
+                            <%-- ---- การ์ด filter ตาม type - จำนวนนับจาก backend (${typeCounts}) ไม่ใช่จาก DOM ---- --%>
                             <div class="row g-4 mb-6">
-                                <div class="col-12 col-md-4">
+                                <div class="col-12 col-md-3">
                                     <div class="card card-bordered h-100 cursor-pointer type-filter-card" data-type="1">
                                         <div class="card-body d-flex align-items-center gap-3 py-4 px-5">
                                             <i class="ki-duotone ki-laptop fs-2x text-primary"><span class="path1"></span><span class="path2"></span></i>
                                             <span class="text-gray-600 fw-semibold fs-6">Equipment</span>
-                                            <span class="text-gray-900 fw-bold fs-4 ms-auto">7 <span class="fs-7 fw-semibold text-gray-500">items</span></span>
+                                            <span class="text-gray-900 fw-bold fs-4 ms-auto">${empty typeCounts['1'] ? 0 : typeCounts['1']} <span class="fs-7 fw-semibold text-gray-500">items</span></span>
                                         </div>
                                     </div>
                                 </div>
-                                <div class="col-12 col-md-4">
+                                <div class="col-12 col-md-3">
                                     <div class="card card-bordered h-100 cursor-pointer type-filter-card" data-type="2">
                                         <div class="card-body d-flex align-items-center gap-3 py-4 px-5">
                                             <i class="ki-duotone ki-element-11 fs-2x text-warning"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span></i>
                                             <span class="text-gray-600 fw-semibold fs-6">Consumables</span>
-                                            <span class="text-gray-900 fw-bold fs-4 ms-auto">4 <span class="fs-7 fw-semibold text-gray-500">items</span></span>
+                                            <span class="text-gray-900 fw-bold fs-4 ms-auto">${empty typeCounts['2'] ? 0 : typeCounts['2']} <span class="fs-7 fw-semibold text-gray-500">items</span></span>
                                         </div>
                                     </div>
                                 </div>
-                                <div class="col-12 col-md-4">
+                                <div class="col-12 col-md-3">
                                     <div class="card card-bordered h-100 cursor-pointer type-filter-card" data-type="3">
                                         <div class="card-body d-flex align-items-center gap-3 py-4 px-5">
-                                            <i class="ki-duotone ki-award fs-2x text-success"><span class="path1"></span><span class="path2"></span><span class="path3"></span></i>
+                                            <i class="ki-duotone ki-medal-star fs-2x text-success"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span></i>
                                             <span class="text-gray-600 fw-semibold fs-6">Accessories</span>
-                                            <span class="text-gray-900 fw-bold fs-4 ms-auto">1 <span class="fs-7 fw-semibold text-gray-500">items</span></span>
+                                            <span class="text-gray-900 fw-bold fs-4 ms-auto">${empty typeCounts['3'] ? 0 : typeCounts['3']} <span class="fs-7 fw-semibold text-gray-500">items</span></span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-12 col-md-3">
+                                    <div class="card card-bordered h-100 cursor-pointer type-filter-card" data-type="4">
+                                        <div class="card-body d-flex align-items-center gap-3 py-4 px-5">
+                                            <i class="ki-duotone ki-parcel fs-2x text-info"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span><span class="path5"></span></i>
+                                            <span class="text-gray-600 fw-semibold fs-6">Office Supplies</span>
+                                            <span class="text-gray-900 fw-bold fs-4 ms-auto">${empty typeCounts['4'] ? 0 : typeCounts['4']} <span class="fs-7 fw-semibold text-gray-500">items</span></span>
                                         </div>
                                     </div>
                                 </div>
                             </div>
 
-                            <%-- ============================================================
-                                 ตารางด้านล่างทั้งหมดเป็น static demo data (พิมพ์ตรงๆ ไม่ใช่ c:forEach
-                                 จาก backend) ใช้ชื่อสินค้าจริงจากระบบเพื่อให้ดูสมจริง แต่ตัวเลขยอด
-                                 เป็นค่าจำลองล้วนๆ
-                                 ============================================================ --%>
                             <table id="stockByProductTable" class="table align-middle fs-6 mb-0">
                                 <thead class="fs-7 text-gray-500 text-uppercase">
                                     <tr class="fw-semibold">
@@ -127,114 +131,51 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr data-type="1">
-                                        <td class="text-gray-900 fw-bold">1</td>
-                                        <td><i class="ki-duotone ki-laptop fs-2 text-primary me-2"><span class="path1"></span><span class="path2"></span></i>Equipment</td>
-                                        <td class="text-gray-900 fw-normal">Computer</td>
-                                        <td class="text-gray-700">เครื่อง</td>
-                                        <td class="text-end fw-bold">261</td>
-                                        <td class="text-center"><span class="badge badge-light-primary fw-semibold">3 คลัง</span></td>
-                                        <td class="text-end"><a href="stock_equ_balance?productId=19" class="btn btn-icon btn-sm btn-light-primary" title="View"><i class="ki-duotone ki-eye fs-3"><span class="path1"></span><span class="path2"></span><span class="path3"></span></i></a></td>
-                                    </tr>
-                                    <tr data-type="1">
-                                        <td class="text-gray-900 fw-bold">2</td>
-                                        <td><i class="ki-duotone ki-laptop fs-2 text-primary me-2"><span class="path1"></span><span class="path2"></span></i>Equipment</td>
-                                        <td class="text-gray-900 fw-normal">instument</td>
-                                        <td class="text-gray-700">เครื่อง</td>
-                                        <td class="text-end fw-bold">31</td>
-                                        <td class="text-center"><span class="badge badge-light-primary fw-semibold">2 คลัง</span></td>
-                                        <td class="text-end"><a href="#" class="btn btn-icon btn-sm btn-light-primary" title="View"><i class="ki-duotone ki-eye fs-3"><span class="path1"></span><span class="path2"></span><span class="path3"></span></i></a></td>
-                                    </tr>
-                                    <tr data-type="1">
-                                        <td class="text-gray-900 fw-bold">3</td>
-                                        <td><i class="ki-duotone ki-laptop fs-2 text-primary me-2"><span class="path1"></span><span class="path2"></span></i>Equipment</td>
-                                        <td class="text-gray-900 fw-normal">Software License (L)</td>
-                                        <td class="text-gray-700">license</td>
-                                        <td class="text-end fw-bold">23</td>
-                                        <td class="text-center"><span class="badge badge-light-primary fw-semibold">1 คลัง</span></td>
-                                        <td class="text-end"><a href="#" class="btn btn-icon btn-sm btn-light-primary" title="View"><i class="ki-duotone ki-eye fs-3"><span class="path1"></span><span class="path2"></span><span class="path3"></span></i></a></td>
-                                    </tr>
-                                    <tr data-type="1">
-                                        <td class="text-gray-900 fw-bold">4</td>
-                                        <td><i class="ki-duotone ki-laptop fs-2 text-primary me-2"><span class="path1"></span><span class="path2"></span></i>Equipment</td>
-                                        <td class="text-gray-900 fw-normal">Mobile</td>
-                                        <td class="text-gray-700">เครื่อง</td>
-                                        <td class="text-end fw-bold">8</td>
-                                        <td class="text-center"><span class="badge badge-light-primary fw-semibold">2 คลัง</span></td>
-                                        <td class="text-end"><a href="#" class="btn btn-icon btn-sm btn-light-primary" title="View"><i class="ki-duotone ki-eye fs-3"><span class="path1"></span><span class="path2"></span><span class="path3"></span></i></a></td>
-                                    </tr>
-                                    <tr data-type="1">
-                                        <td class="text-gray-900 fw-bold">5</td>
-                                        <td><i class="ki-duotone ki-laptop fs-2 text-primary me-2"><span class="path1"></span><span class="path2"></span></i>Equipment</td>
-                                        <td class="text-gray-900 fw-normal">Pocket WIFI</td>
-                                        <td class="text-gray-700">เครื่อง</td>
-                                        <td class="text-end fw-bold">5</td>
-                                        <td class="text-center"><span class="badge badge-light-primary fw-semibold">1 คลัง</span></td>
-                                        <td class="text-end"><a href="#" class="btn btn-icon btn-sm btn-light-primary" title="View"><i class="ki-duotone ki-eye fs-3"><span class="path1"></span><span class="path2"></span><span class="path3"></span></i></a></td>
-                                    </tr>
-                                    <tr data-type="1">
-                                        <td class="text-gray-900 fw-bold">6</td>
-                                        <td><i class="ki-duotone ki-laptop fs-2 text-primary me-2"><span class="path1"></span><span class="path2"></span></i>Equipment</td>
-                                        <td class="text-gray-900 fw-normal">Other</td>
-                                        <td class="text-gray-700">เครื่อง</td>
-                                        <td class="text-end fw-bold">7</td>
-                                        <td class="text-center"><span class="badge badge-light-primary fw-semibold">1 คลัง</span></td>
-                                        <td class="text-end"><a href="#" class="btn btn-icon btn-sm btn-light-primary" title="View"><i class="ki-duotone ki-eye fs-3"><span class="path1"></span><span class="path2"></span><span class="path3"></span></i></a></td>
-                                    </tr>
-                                    <tr data-type="1">
-                                        <td class="text-gray-900 fw-bold">7</td>
-                                        <td><i class="ki-duotone ki-laptop fs-2 text-primary me-2"><span class="path1"></span><span class="path2"></span></i>Equipment</td>
-                                        <td class="text-gray-900 fw-normal">Software License (sl)</td>
-                                        <td class="text-gray-700">license</td>
-                                        <td class="text-end fw-bold">3</td>
-                                        <td class="text-center"><span class="badge badge-light-primary fw-semibold">1 คลัง</span></td>
-                                        <td class="text-end"><a href="#" class="btn btn-icon btn-sm btn-light-primary" title="View"><i class="ki-duotone ki-eye fs-3"><span class="path1"></span><span class="path2"></span><span class="path3"></span></i></a></td>
-                                    </tr>
-                                    <tr data-type="2">
-                                        <td class="text-gray-900 fw-bold">8</td>
-                                        <td><i class="ki-duotone ki-element-11 fs-2 text-warning me-2"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span></i>Consumables</td>
-                                        <td class="text-gray-900 fw-normal">เสื้อบริษัท 2026 (สีดำ)</td>
-                                        <td class="text-gray-700">ตัว</td>
-                                        <td class="text-end fw-bold">184</td>
-                                        <td class="text-center"><span class="badge badge-light-primary fw-semibold">2 คลัง</span></td>
-                                        <td class="text-end"><a href="stock_cons_balance?productId=1" class="btn btn-icon btn-sm btn-light-primary" title="View"><i class="ki-duotone ki-eye fs-3"><span class="path1"></span><span class="path2"></span><span class="path3"></span></i></a></td>
-                                    </tr>
-                                    <tr data-type="2">
-                                        <td class="text-gray-900 fw-bold">9</td>
-                                        <td><i class="ki-duotone ki-element-11 fs-2 text-warning me-2"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span></i>Consumables</td>
-                                        <td class="text-gray-900 fw-normal">ถุงขยะสีดำ</td>
-                                        <td class="text-gray-700">ใบ</td>
-                                        <td class="text-end fw-bold">75</td>
-                                        <td class="text-center"><span class="badge badge-light-primary fw-semibold">3 คลัง</span></td>
-                                        <td class="text-end"><a href="#" class="btn btn-icon btn-sm btn-light-primary" title="View"><i class="ki-duotone ki-eye fs-3"><span class="path1"></span><span class="path2"></span><span class="path3"></span></i></a></td>
-                                    </tr>
-                                    <tr data-type="2">
-                                        <td class="text-gray-900 fw-bold">10</td>
-                                        <td><i class="ki-duotone ki-element-11 fs-2 text-warning me-2"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span></i>Consumables</td>
-                                        <td class="text-gray-900 fw-normal">กระดาษ A4 Double A</td>
-                                        <td class="text-gray-700">รีม</td>
-                                        <td class="text-end fw-bold">42</td>
-                                        <td class="text-center"><span class="badge badge-light-primary fw-semibold">1 คลัง</span></td>
-                                        <td class="text-end"><a href="#" class="btn btn-icon btn-sm btn-light-primary" title="View"><i class="ki-duotone ki-eye fs-3"><span class="path1"></span><span class="path2"></span><span class="path3"></span></i></a></td>
-                                    </tr>
-                                    <tr data-type="2">
-                                        <td class="text-gray-900 fw-bold">11</td>
-                                        <td><i class="ki-duotone ki-element-11 fs-2 text-warning me-2"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span></i>Consumables</td>
-                                        <td class="text-gray-900 fw-normal">ถ่านพานาโซนิค</td>
-                                        <td class="text-gray-700">ก้อน</td>
-                                        <td class="text-end fw-bold">120</td>
-                                        <td class="text-center"><span class="badge badge-light-primary fw-semibold">2 คลัง</span></td>
-                                        <td class="text-end"><a href="#" class="btn btn-icon btn-sm btn-light-primary" title="View"><i class="ki-duotone ki-eye fs-3"><span class="path1"></span><span class="path2"></span><span class="path3"></span></i></a></td>
-                                    </tr>
-                                    <tr data-type="3">
-                                        <td class="text-gray-900 fw-bold">12</td>
-                                        <td><i class="ki-duotone ki-award fs-2 text-success me-2"><span class="path1"></span><span class="path2"></span><span class="path3"></span></i>Accessories</td>
-                                        <td class="text-gray-900 fw-normal">ริบบิ้นสีแดง</td>
-                                        <td class="text-gray-700">ม้วน</td>
-                                        <td class="text-end fw-bold">18</td>
-                                        <td class="text-center"><span class="badge badge-light-primary fw-semibold">1 คลัง</span></td>
-                                        <td class="text-end"><a href="#" class="btn btn-icon btn-sm btn-light-primary" title="View"><i class="ki-duotone ki-eye fs-3"><span class="path1"></span><span class="path2"></span><span class="path3"></span></i></a></td>
-                                    </tr>
+                                    <c:forEach var="product" items="${products}" varStatus="st">
+                                        <tr data-type="${fn:escapeXml(product.product_type)}">
+                                            <td class="text-gray-900 fw-bold">${st.index + 1}</td>
+                                            <td class="text-gray-700 fw-normal">
+                                                <div class="d-flex align-items-center gap-2">
+                                                    <c:choose>
+                                                        <c:when test="${product.product_type eq '1'}">
+                                                            <i class="ki-duotone ki-laptop fs-2 text-primary"><span class="path1"></span><span class="path2"></span></i>
+                                                            <span>Equipment</span>
+                                                        </c:when>
+                                                        <c:when test="${product.product_type eq '2'}">
+                                                            <i class="ki-duotone ki-element-11 fs-2 text-warning"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span></i>
+                                                            <span>Consumables</span>
+                                                        </c:when>
+                                                        <c:when test="${product.product_type eq '3'}">
+                                                            <i class="ki-duotone ki-medal-star fs-2 text-success"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span></i>
+                                                            <span>Accessories</span>
+                                                        </c:when>
+                                                        <c:when test="${product.product_type eq '4'}">
+                                                            <i class="ki-duotone ki-parcel fs-2 text-info"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span><span class="path5"></span></i>
+                                                            <span>Office Supplies</span>
+                                                        </c:when>
+                                                        <c:otherwise><span class="text-muted">-</span></c:otherwise>
+                                                    </c:choose>
+                                                </div>
+                                            </td>
+                                            <td class="text-gray-900 fw-normal">${fn:escapeXml(product.product_name)}</td>
+                                            <td class="text-gray-700">${not empty product.unit_name ? fn:escapeXml(product.unit_name) : '-'}</td>
+                                            <td class="text-end fw-bold">${product.on_hand}</td>
+                                            <td class="text-center">
+                                                <c:choose>
+                                                    <c:when test="${product.warehouse_count > 0}">
+                                                        <span class="badge badge-light-primary fw-semibold">${product.warehouse_count} คลัง</span>
+                                                    </c:when>
+                                                    <c:otherwise><span class="text-muted">-</span></c:otherwise>
+                                                </c:choose>
+                                            </td>
+                                            <c:set var="viewUrl" value="${product.product_type eq '1' ? 'stock_equ_balance' : 'stock_cons_balance'}" />
+                                            <td class="text-end">
+                                                <a href="${viewUrl}?productId=${product.product_id}" class="btn btn-icon btn-sm btn-light-primary" title="View">
+                                                    <i class="ki-duotone ki-eye fs-3"><span class="path1"></span><span class="path2"></span><span class="path3"></span></i>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    </c:forEach>
                                 </tbody>
                             </table>
 

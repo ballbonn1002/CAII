@@ -22,6 +22,9 @@ public class StockDAOImpl implements StockDAO {
     public void save(Stock stock) throws Exception {
         Session session = this.sessionFactory.getCurrentSession();
         session.save(stock);
+        // stockId เป็น assigned id (ไม่มี @GeneratedValue) - flush ทันทีกัน Hibernate เลื่อน
+        // insert ไปจนจบ request แล้วไม่มีอะไร trigger auto-flush ให้ (ดูเหตุผลเต็มใน GoodReceiptDAOImpl.save)
+        session.flush();
     }
 
     @Override
@@ -63,6 +66,21 @@ public class StockDAOImpl implements StockDAO {
         Query query = session.createQuery(
                 "from Stock where productId = :productId order by timeCreate desc");
         query.setParameter("productId", productId.trim());
+
+        List<Stock> stocks = query.list();
+        return stocks != null ? stocks : new ArrayList<Stock>();
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public List<Stock> findByProductIds(List<String> productIds) throws Exception {
+        if (productIds == null || productIds.isEmpty()) {
+            return new ArrayList<Stock>();
+        }
+        Session session = this.sessionFactory.getCurrentSession();
+        Query query = session.createQuery(
+                "from Stock where productId in (:productIds) order by timeCreate desc, stockId desc");
+        query.setParameterList("productIds", productIds);
 
         List<Stock> stocks = query.list();
         return stocks != null ? stocks : new ArrayList<Stock>();

@@ -7,10 +7,12 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -20,22 +22,21 @@ import org.apache.struts2.ServletActionContext;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cubesofttech.dao.EquipmentDAO;
+import com.cubesofttech.dao.EquipmentStatusDAO;
 import com.cubesofttech.dao.EquipmentTypeDAO;
-import com.cubesofttech.dao.GoodReceiptDAO;
-import com.cubesofttech.dao.GoodReceiptDetailDAO;
 import com.cubesofttech.dao.ProductDAO;
 import com.cubesofttech.dao.StockDAO;
 import com.cubesofttech.dao.UnitOfMeasureDAO;
 import com.cubesofttech.dao.UserDAO;
 import com.cubesofttech.dao.WarehouseDAO;
 import com.cubesofttech.model.Equipment;
-import com.cubesofttech.model.GoodReceipt;
-import com.cubesofttech.model.GoodReceiptDetail;
+import com.cubesofttech.model.EquipmentStatus;
 import com.cubesofttech.model.Product;
 import com.cubesofttech.model.Stock;
 import com.cubesofttech.model.UnitOfMeasure;
 import com.cubesofttech.model.User;
 import com.cubesofttech.model.Warehouse;
+import com.google.gson.Gson;
 import com.cubesofttech.util.DateUtil;
 import com.opensymphony.xwork2.ActionSupport;
 
@@ -57,12 +58,6 @@ public class ProductAction extends ActionSupport {
     private UnitOfMeasureDAO unitOfMeasureDAO;
 
     @Autowired
-    private GoodReceiptDAO goodReceiptDAO;
-
-    @Autowired
-    private GoodReceiptDetailDAO goodReceiptDetailDAO;
-
-    @Autowired
     private WarehouseDAO warehouseDAO;
 
     @Autowired
@@ -76,6 +71,9 @@ public class ProductAction extends ActionSupport {
 
     @Autowired
     private EquipmentTypeDAO equipmentTypeDAO;
+
+    @Autowired
+    private EquipmentStatusDAO equipmentStatusDAO;
 
     private Integer productId;
     private String productNo;
@@ -361,8 +359,12 @@ public class ProductAction extends ActionSupport {
     }
 
     /**
-     * หน้า Stock By Product - ตอนนี้เป็น UI mockup อย่างเดียว (ข้อมูลในตาราง static demo)
-     * TODO: ต่อ query สรุปยอดคงเหลือต่อสินค้าจริงเมื่อ requirement คอลัมน์/filter นิ่งแล้ว
+     * หน้า Stock By Product - สรุปยอดคงเหลือรวม (ตัวแม่ + sub product) ต่อ 1 catalog item
+     *  - On Hand ของ type '1' (Equipment) นับจำนวนเครื่องจริงในตาราง equipment (ไม่นับ EquipmentDAO.RETIRED_STATUSES)
+     *  - On Hand ของ type '2','3','4' รวม stock.reconcile แถวล่าสุดของแต่ละ sub product (reconcile คือยอดสะสม
+     *    ทุกคลังรวมกันอยู่แล้ว - ดู stockConsStockAdd)
+     *  - Warehouses = จำนวนคลัง (type 2/3/4) หรือจำนวน location ที่ต่างกัน (type 1) ที่ "มียอดคงเหลือจริง"
+     *    ไม่ใช่จำนวนคลังทั้งหมดในระบบ
      */
     public String showStockByProductPage() {
         try {
@@ -370,6 +372,144 @@ public class ProductAction extends ActionSupport {
                 log.warn("showStockByProductPage: no online user in session");
                 return ERROR;
             }
+
+            List<Map<String, Object>> products = productDAO.findAllWithSubProducts(null);
+            if (products == null) {
+                products = new ArrayList<Map<String, Object>>();
+            }
+            fillMainUnits(products);
+
+            List<String> parentIds = new ArrayList<String>();
+            for (Map<String, Object> p : products) {
+                Object pid = (p != null) ? p.get("product_id") : null;
+                if (pid != null) {
+                    parentIds.add(String.valueOf(pid));
+                }
+            }
+
+            Map<String, List<String>> familyIdsByParent = buildFamilyIdsByParent(parentIds);
+            Map<String, String> parentIdBySubId = buildParentIdBySubId(familyIdsByParent);
+
+            List<String> equipmentFamilyIds = new ArrayList<String>();
+            List<String> stockFamilyIds = new ArrayList<String>();
+            for (Map<String, Object> p : products) {
+                Object pid = (p != null) ? p.get("product_id") : null;
+                if (pid == null) {
+                    continue;
+                }
+                List<String> familyIds = familyIdsByParent.get(String.valueOf(pid));
+                if (familyIds == null) {
+                    continue;
+                }
+                if ("1".equals(str(p.get("product_type")).trim())) {
+                    equipmentFamilyIds.addAll(familyIds);
+                } else {
+                    stockFamilyIds.addAll(familyIds);
+                }
+            }
+
+            // ---- Equipment: จำนวนเครื่อง (ไม่รวมปลดระวาง) + จำนวน location ที่ต่างกัน รวมขึ้นตัวแม่ ----
+            Map<String, Integer> equOnHandByParent = new HashMap<String, Integer>();
+            Map<String, Set<String>> equLocationsByParent = new HashMap<String, Set<String>>();
+            List<Equipment> equipmentRows = equipmentDAO.findByProductIds(equipmentFamilyIds);
+            if (equipmentRows != null) {
+                for (Equipment eq : equipmentRows) {
+                    if (eq == null || isBlank(eq.getProductId()) || isRetiredEquipment(eq)) {
+                        continue;
+                    }
+                    String parentId = firstNonBlank(parentIdBySubId.get(eq.getProductId().trim()), eq.getProductId().trim());
+                    Integer cur = equOnHandByParent.get(parentId);
+                    equOnHandByParent.put(parentId, Integer.valueOf((cur != null ? cur.intValue() : 0) + 1));
+                    if (!isBlank(eq.getLocation())) {
+                        Set<String> locs = equLocationsByParent.get(parentId);
+                        if (locs == null) {
+                            locs = new HashSet<String>();
+                            equLocationsByParent.put(parentId, locs);
+                        }
+                        locs.add(eq.getLocation().trim());
+                    }
+                }
+            }
+
+            // ---- Consumable/Accessory/Office: reconcile ล่าสุดต่อ sub product รวมขึ้นตัวแม่
+            //      + ผลรวม amount_unit ต่อคลัง (!= 0 = คลังนั้นมียอดคงเหลือจริง) ----
+            Map<String, Double> stockOnHandByParent = new HashMap<String, Double>();
+            Map<String, Map<String, Double>> stockByParentWarehouse = new HashMap<String, Map<String, Double>>();
+            List<Stock> stockRows = stockDAO.findByProductIds(stockFamilyIds);
+            Set<String> seenLatestSub = new HashSet<String>();
+            if (stockRows != null) {
+                // stockRows เรียง time_create desc, stock_id desc มาจาก DAO แล้ว -> แถวแรกที่เจอของแต่ละ
+                // sub product คือแถวล่าสุด (reconcile ล่าสุด) - seenLatestSub กันบวกซ้ำ
+                for (Stock row : stockRows) {
+                    if (row == null || isBlank(row.getProductId())) {
+                        continue;
+                    }
+                    String subId = row.getProductId().trim();
+                    String parentId = firstNonBlank(parentIdBySubId.get(subId), subId);
+
+                    if (seenLatestSub.add(subId)) {
+                        double reconcile = (row.getReconcile() != null) ? row.getReconcile().doubleValue() : 0d;
+                        Double cur = stockOnHandByParent.get(parentId);
+                        stockOnHandByParent.put(parentId, Double.valueOf((cur != null ? cur.doubleValue() : 0d) + reconcile));
+                    }
+
+                    if (!isBlank(row.getWarehouseId())) {
+                        double amt = (row.getAmountUnit() != null) ? row.getAmountUnit().doubleValue() : 0d;
+                        Map<String, Double> whMap = stockByParentWarehouse.get(parentId);
+                        if (whMap == null) {
+                            whMap = new HashMap<String, Double>();
+                            stockByParentWarehouse.put(parentId, whMap);
+                        }
+                        String whKey = row.getWarehouseId().trim();
+                        Double prev = whMap.get(whKey);
+                        whMap.put(whKey, Double.valueOf((prev != null ? prev.doubleValue() : 0d) + amt));
+                    }
+                }
+            }
+
+            double grandOnHand = 0d;
+            for (Map<String, Object> product : products) {
+                if (product == null) {
+                    continue;
+                }
+                Object pid = product.get("product_id");
+                if (pid == null) {
+                    continue;
+                }
+                String pidStr = String.valueOf(pid);
+                boolean isEquipment = "1".equals(str(product.get("product_type")).trim());
+
+                double onHand;
+                int warehouseCount;
+                if (isEquipment) {
+                    Integer qty = equOnHandByParent.get(pidStr);
+                    onHand = (qty != null) ? qty.doubleValue() : 0d;
+                    Set<String> locs = equLocationsByParent.get(pidStr);
+                    warehouseCount = (locs != null) ? locs.size() : 0;
+                } else {
+                    Double qty = stockOnHandByParent.get(pidStr);
+                    onHand = (qty != null) ? qty.doubleValue() : 0d;
+                    warehouseCount = 0;
+                    Map<String, Double> whMap = stockByParentWarehouse.get(pidStr);
+                    if (whMap != null) {
+                        for (Double v : whMap.values()) {
+                            if (v != null && v.doubleValue() != 0d) {
+                                warehouseCount++;
+                            }
+                        }
+                    }
+                }
+                grandOnHand += onHand;
+                product.put("on_hand", formatQty(onHand));
+                product.put("warehouse_count", Integer.valueOf(warehouseCount));
+            }
+
+            request.setAttribute("products", products);
+            request.setAttribute("typeCounts", countByType(products));
+            request.setAttribute("totalOnHand", formatQty(grandOnHand));
+            List<Warehouse> allWarehouses = warehouseDAO.findAll();
+            request.setAttribute("totalWarehouses", Integer.valueOf(allWarehouses != null ? allWarehouses.size() : 0));
+
             return SUCCESS;
         } catch (Exception e) {
             log.error("showStockByProductPage failed", e);
@@ -378,8 +518,15 @@ public class ProductAction extends ActionSupport {
     }
 
     /**
-     * หน้า Stock By Location - ตอนนี้เป็น UI mockup อย่างเดียว (ข้อมูลในตาราง static demo)
-     * TODO: ต่อ query สรุปยอดคงเหลือต่อคลัง (warehouse, รองรับ parent/child) เมื่อ requirement นิ่งแล้ว
+     * หน้า Stock By Location - แสดงเป็น tree ต้นไม้ของ warehouse จริง (คล้าย warehouse_list.jsp)
+     *  - เข้าหน้าแรกเห็นเฉพาะคลังที่ parent = 0 (ราก) กดขยายทีละชั้นเพื่อไล่ดูคลังลูกได้เรื่อยๆ
+     *  - แต่ละ node (ทุกระดับ) ค่า Products/On Hand เป็นยอด roll-up รวมทุกคลังลูกในสายของมัน
+     *  - คลัง "ใบล่าสุด" (ไม่มีลูกแล้ว) ที่มีของอยู่จริง กดขยายต่อได้อีกชั้นเพื่อดูรายชื่อสินค้าทีละตัว
+     *    (แสดงเป็น node ประเภท "product" ซึ่งไม่มีลูกของตัวเอง ใช้กลไก expand/collapse เดียวกันทั้งหมด)
+     *  - Equipment (type 1) ไม่แสดงในหน้านี้: equipment.location เป็น free text ที่ผู้ใช้พิมพ์เอง
+     *    (ตัวอย่างข้อมูลจริงมีทั้งเบอร์โทร/วันที่/ชื่อโปรเจกต์) ไม่ได้ผูกกับตาราง warehouse จริง
+     *    ถ้าเอามากรุ๊ปตรงๆ จะได้ "คลัง" ที่เป็นขยะ ไม่ใช่ข้อมูลที่ใช้งานได้ - ดูยอด Equipment แยกตาม
+     *    location ได้จากหน้า Stock Balance ของแต่ละ item แทน (ตาราง subProductTable คอลัมน์ Location)
      */
     public String showStockByLocationPage() {
         try {
@@ -387,10 +534,286 @@ public class ProductAction extends ActionSupport {
                 log.warn("showStockByLocationPage: no online user in session");
                 return ERROR;
             }
+
+            List<Warehouse> warehouses = warehouseDAO.findAll();
+            if (warehouses == null) {
+                warehouses = new ArrayList<Warehouse>();
+            }
+            Map<Long, Warehouse> warehouseById = new HashMap<Long, Warehouse>();
+            Map<Long, List<Warehouse>> childrenByParent = new HashMap<Long, List<Warehouse>>();
+            for (Warehouse wh : warehouses) {
+                if (wh == null || wh.getWarehouseId() == null) {
+                    continue;
+                }
+                warehouseById.put(wh.getWarehouseId(), wh);
+                Long parent = wh.getParent();
+                if (parent != null) {
+                    List<Warehouse> children = childrenByParent.get(parent);
+                    if (children == null) {
+                        children = new ArrayList<Warehouse>();
+                        childrenByParent.put(parent, children);
+                    }
+                    children.add(wh);
+                }
+            }
+            // ใบล่าสุด = ไม่มีลูกเลย - สต็อกควรผูกกับระดับนี้เท่านั้น กันยอดนับซ้ำระหว่างชั้น
+            Set<Long> leafIds = new HashSet<Long>();
+            for (Warehouse wh : warehouses) {
+                if (wh == null || wh.getWarehouseId() == null) {
+                    continue;
+                }
+                List<Warehouse> children = childrenByParent.get(wh.getWarehouseId());
+                if (children == null || children.isEmpty()) {
+                    leafIds.add(wh.getWarehouseId());
+                }
+            }
+
+            // ---- product ตัวแม่ type 2/3/4 เท่านั้น (Equipment ไม่ผูกกับ warehouse จริง - ดู javadoc) ----
+            List<Map<String, Object>> catalogProducts = productDAO.findAllWithSubProducts(null);
+            if (catalogProducts == null) {
+                catalogProducts = new ArrayList<Map<String, Object>>();
+            }
+            List<String> stockParentIds = new ArrayList<String>();
+            Map<String, String> productNameByParent = new HashMap<String, String>();
+            for (Map<String, Object> p : catalogProducts) {
+                Object pid = (p != null) ? p.get("product_id") : null;
+                if (pid == null || "1".equals(str(p.get("product_type")).trim())) {
+                    continue;
+                }
+                String pidStr = String.valueOf(pid);
+                stockParentIds.add(pidStr);
+                productNameByParent.put(pidStr, str(p.get("product_name")));
+            }
+
+            Map<String, List<String>> familyIdsByParent = buildFamilyIdsByParent(stockParentIds);
+            Map<String, String> parentIdBySubId = buildParentIdBySubId(familyIdsByParent);
+            List<String> stockFamilyIds = new ArrayList<String>();
+            for (List<String> ids : familyIdsByParent.values()) {
+                stockFamilyIds.addAll(ids);
+            }
+
+            // warehouseId จริง -> (parentProductId -> ผลรวม amount_unit) ของคลังนั้นโดยตรง (ไม่ roll-up)
+            Map<Long, Map<String, Double>> ownAmountByWarehouseId = new HashMap<Long, Map<String, Double>>();
+            // warehouse_id ใน stock ที่ไม่พบในตาราง warehouse จริง (ข้อมูลตกหล่น) - ยังต้องโชว์ไม่ทิ้งยอดไปเงียบๆ
+            Set<Long> orphanWarehouseIds = new HashSet<Long>();
+
+            List<Stock> stockRows = stockDAO.findByProductIds(stockFamilyIds);
+            if (stockRows != null) {
+                for (Stock row : stockRows) {
+                    if (row == null || isBlank(row.getProductId()) || isBlank(row.getWarehouseId())) {
+                        continue;
+                    }
+                    String subId = row.getProductId().trim();
+                    String parentId = firstNonBlank(parentIdBySubId.get(subId), subId);
+                    Long whId = parseLongOrNull(row.getWarehouseId().trim());
+                    if (whId == null) {
+                        continue;
+                    }
+                    if (!warehouseById.containsKey(whId)) {
+                        orphanWarehouseIds.add(whId);
+                    }
+
+                    double amt = (row.getAmountUnit() != null) ? row.getAmountUnit().doubleValue() : 0d;
+                    Map<String, Double> byParent = ownAmountByWarehouseId.get(whId);
+                    if (byParent == null) {
+                        byParent = new HashMap<String, Double>();
+                        ownAmountByWarehouseId.put(whId, byParent);
+                    }
+                    Double prev = byParent.get(parentId);
+                    byParent.put(parentId, Double.valueOf((prev != null ? prev.doubleValue() : 0d) + amt));
+                }
+            }
+
+            // ---- ประกอบ node ทุกใบของ tree (ทุกระดับ) + แตก node ลูกแบบ "product" ให้คลังใบล่าสุดที่มีของ ----
+            List<Map<String, Object>> nodes = new ArrayList<Map<String, Object>>();
+            for (Warehouse wh : warehouses) {
+                if (wh == null || wh.getWarehouseId() == null) {
+                    continue;
+                }
+                appendLocationNode(nodes, wh.getWarehouseId(),
+                        (wh.getParent() != null) ? wh.getParent() : Long.valueOf(0L),
+                        wh.getWarehouseName(), leafIds, childrenByParent, ownAmountByWarehouseId, productNameByParent);
+            }
+            // คลังที่มีข้อมูลใน stock แต่ไม่มีในตาราง warehouse จริง - แสดงเป็น root เสมือนแยกไว้
+            for (Long orphanId : orphanWarehouseIds) {
+                appendLocationNode(nodes, orphanId, Long.valueOf(0L), "คลัง #" + orphanId + " (ไม่พบในระบบ)",
+                        leafIds, childrenByParent, ownAmountByWarehouseId, productNameByParent);
+            }
+
+            // ---- สรุปยอดรวม: รวมเฉพาะจาก node รากเท่านั้น (กันบวกซ้ำ เพราะยอด roll-up รวมลูกไว้แล้ว) ----
+            List<Long> rootIds = new ArrayList<Long>();
+            for (Warehouse wh : warehouses) {
+                if (wh == null || wh.getWarehouseId() == null) {
+                    continue;
+                }
+                Long parent = wh.getParent();
+                if (parent == null || parent.longValue() == 0L) {
+                    rootIds.add(wh.getWarehouseId());
+                }
+            }
+            rootIds.addAll(orphanWarehouseIds);
+
+            double grandOnHand = 0d;
+            Set<String> distinctProductIds = new HashSet<String>();
+            for (Long rootId : rootIds) {
+                grandOnHand += rollupOnHand(rootId, childrenByParent, ownAmountByWarehouseId);
+                distinctProductIds.addAll(rollupProductIds(rootId, childrenByParent, ownAmountByWarehouseId));
+            }
+
+            request.setAttribute("locationNodes", nodes);
+            request.setAttribute("totalLocations", Integer.valueOf(leafIds.size() + orphanWarehouseIds.size()));
+            request.setAttribute("totalOnHand", formatQty(grandOnHand));
+            request.setAttribute("totalDistinctProducts", Integer.valueOf(distinctProductIds.size()));
+
             return SUCCESS;
         } catch (Exception e) {
             log.error("showStockByLocationPage failed", e);
             return ERROR;
+        }
+    }
+
+    /**
+     * เพิ่ม node คลัง 1 ใบเข้า list (พร้อมยอด roll-up ของทั้งสายลูก) และถ้าเป็นใบล่าสุดที่มีของอยู่จริง
+     * จะแตกเป็น node ลูกประเภท "product" ต่อท้ายทันที (1 รายการต่อ 1 product ที่มียอด != 0 ในคลังนั้น)
+     * ใช้กลไก expand/collapse เดียวกับ node คลังฝั่ง JS เพราะ node "product" ก็คือ node ที่ไม่มีลูกเหมือนกัน
+     */
+    private void appendLocationNode(List<Map<String, Object>> nodes, Long warehouseId, Long parentId, String name,
+            Set<Long> leafIds, Map<Long, List<Warehouse>> childrenByParent,
+            Map<Long, Map<String, Double>> ownAmountByWarehouseId, Map<String, String> productNameByParent) {
+
+        double onHand = rollupOnHand(warehouseId, childrenByParent, ownAmountByWarehouseId);
+        int productCount = rollupProductIds(warehouseId, childrenByParent, ownAmountByWarehouseId).size();
+
+        Map<String, Object> node = new LinkedHashMap<String, Object>();
+        node.put("id", String.valueOf(warehouseId));
+        node.put("parentId", String.valueOf(parentId));
+        node.put("type", "warehouse");
+        node.put("name", name);
+        node.put("productCount", Integer.valueOf(productCount));
+        node.put("onHand", formatQty(onHand));
+        nodes.add(node);
+
+        if (!leafIds.contains(warehouseId)) {
+            return;
+        }
+        Map<String, Double> own = ownAmountByWarehouseId.get(warehouseId);
+        if (own == null) {
+            return;
+        }
+        int pIdx = 0;
+        for (Map.Entry<String, Double> e : own.entrySet()) {
+            double amt = (e.getValue() != null) ? e.getValue().doubleValue() : 0d;
+            if (amt == 0d) {
+                continue;
+            }
+            Map<String, Object> productNode = new LinkedHashMap<String, Object>();
+            productNode.put("id", "p" + warehouseId + "_" + (pIdx++));
+            productNode.put("parentId", String.valueOf(warehouseId));
+            productNode.put("type", "product");
+            productNode.put("name", firstNonBlank(productNameByParent.get(e.getKey()), e.getKey()));
+            productNode.put("productCount", Integer.valueOf(0));
+            productNode.put("onHand", formatQty(amt));
+            nodes.add(productNode);
+        }
+    }
+
+    /** ยอดคงเหลือรวมของคลังหนึ่ง = ของคลังนั้นเอง + roll-up จากคลังลูกทุกชั้นแบบ recursive */
+    private double rollupOnHand(Long warehouseId, Map<Long, List<Warehouse>> childrenByParent,
+            Map<Long, Map<String, Double>> ownAmountByWarehouseId) {
+        double total = 0d;
+        Map<String, Double> own = ownAmountByWarehouseId.get(warehouseId);
+        if (own != null) {
+            for (Double v : own.values()) {
+                if (v != null) {
+                    total += v.doubleValue();
+                }
+            }
+        }
+        List<Warehouse> children = childrenByParent.get(warehouseId);
+        if (children != null) {
+            for (Warehouse child : children) {
+                if (child != null && child.getWarehouseId() != null) {
+                    total += rollupOnHand(child.getWarehouseId(), childrenByParent, ownAmountByWarehouseId);
+                }
+            }
+        }
+        return total;
+    }
+
+    /** product_id ที่ต่างกันทั้งหมดของคลังหนึ่ง = ของคลังนั้นเอง + roll-up จากคลังลูกทุกชั้นแบบ recursive */
+    private Set<String> rollupProductIds(Long warehouseId, Map<Long, List<Warehouse>> childrenByParent,
+            Map<Long, Map<String, Double>> ownAmountByWarehouseId) {
+        Set<String> ids = new HashSet<String>();
+        Map<String, Double> own = ownAmountByWarehouseId.get(warehouseId);
+        if (own != null) {
+            for (Map.Entry<String, Double> e : own.entrySet()) {
+                if (e.getValue() != null && e.getValue().doubleValue() != 0d) {
+                    ids.add(e.getKey());
+                }
+            }
+        }
+        List<Warehouse> children = childrenByParent.get(warehouseId);
+        if (children != null) {
+            for (Warehouse child : children) {
+                if (child != null && child.getWarehouseId() != null) {
+                    ids.addAll(rollupProductIds(child.getWarehouseId(), childrenByParent, ownAmountByWarehouseId));
+                }
+            }
+        }
+        return ids;
+    }
+
+    /**
+     * map: product_id ของตัวแม่ (String) -> id ของตัวแม่ + sub product ทั้งหมดในตระกูลนั้น (ตัวแม่เป็นตัวแรก)
+     * ใช้ query ความเคลื่อนไหวใน stock/equipment ของทั้งตระกูลในคำสั่งเดียว (กัน N+1)
+     */
+    private Map<String, List<String>> buildFamilyIdsByParent(List<String> parentIds) throws Exception {
+        Map<String, List<String>> familyIdsByParent = new HashMap<String, List<String>>();
+        if (parentIds == null || parentIds.isEmpty()) {
+            return familyIdsByParent;
+        }
+        for (String pid : parentIds) {
+            List<String> ids = new ArrayList<String>();
+            ids.add(pid);
+            familyIdsByParent.put(pid, ids);
+        }
+        List<Product> subProducts = productDAO.findByParentProductIds(parentIds);
+        if (subProducts != null) {
+            for (Product sub : subProducts) {
+                if (sub == null || isBlank(sub.getParentProductId()) || sub.getProductId() == null) {
+                    continue;
+                }
+                List<String> ids = familyIdsByParent.get(sub.getParentProductId().trim());
+                if (ids != null) {
+                    ids.add(String.valueOf(sub.getProductId()));
+                }
+            }
+        }
+        return familyIdsByParent;
+    }
+
+    /** map: sub product id -> product_id ของตัวแม่ (ใช้ roll up ยอด/คลังของ sub product ขึ้นตัวแม่) */
+    private Map<String, String> buildParentIdBySubId(Map<String, List<String>> familyIdsByParent) {
+        Map<String, String> map = new HashMap<String, String>();
+        for (Map.Entry<String, List<String>> entry : familyIdsByParent.entrySet()) {
+            String parentId = entry.getKey();
+            for (String id : entry.getValue()) {
+                if (!parentId.equals(id)) {
+                    map.put(id, parentId);
+                }
+            }
+        }
+        return map;
+    }
+
+    private Long parseLongOrNull(String value) {
+        if (isBlank(value)) {
+            return null;
+        }
+        try {
+            return Long.valueOf(value.trim());
+        } catch (NumberFormatException e) {
+            return null;
         }
     }
 
@@ -624,7 +1047,7 @@ public class ProductAction extends ActionSupport {
 
     /**
      * หน้า Stock Balance ของ consumable หนึ่งตัว
-     *  - historiesIn : ประวัติรับเข้า (IN) จากตาราง good_receipt (+ good_receipt_detail)
+     *  - historiesIn : ประวัติรับเข้า (IN) จากตาราง stock โดยตรง (ไม่ผ่าน good_receipt แล้ว)
      *  - subProducts : รายการ sub product จากตาราง product
      *  - warehouses  : คลังจากตาราง warehouse
      *  - balances / sizeSummaries : ยอดรับเข้าสรุปตาม sub product x warehouse (คำนวณจาก IN)
@@ -685,8 +1108,17 @@ public class ProductAction extends ActionSupport {
             // (3) จำนวนคงเหลือต่อ sub product ดึงจาก stock.reconcile (แถวล่าสุด)
             Map<String, Double> reconcileBySub = buildReconcileBySubProduct(balanceGroups);
 
-            // ประวัติรับเข้า (IN) จาก good_receipt (ใช้กับ History + รายการแยกคลัง)
-            List<Map<String, Object>> inRows = goodReceiptDAO.findInHistoryByParentProductId(productIdStr);
+            // product_id ของทุกกลุ่ม (ตัวแม่ + sub product) ไว้ query ความเคลื่อนไหวใน stock ทีเดียว
+            List<String> balanceGroupIds = new ArrayList<String>();
+            for (Product g : balanceGroups) {
+                if (g != null && g.getProductId() != null) {
+                    balanceGroupIds.add(String.valueOf(g.getProductId()));
+                }
+            }
+
+            // ความเคลื่อนไหว "รับเข้า" (IN) จากตาราง stock โดยตรง (ใช้กับ History + รายการแยกคลัง)
+            // ไม่ผ่าน good_receipt แล้ว (เปลี่ยนจากเดิม 26/08/2026 - ดู stockConsStockAdd)
+            List<Stock> inRows = stockDAO.findByProductIds(balanceGroupIds);
 
             Map<String, String> subNameById = buildSubProductNameMap(balanceGroups);
             Map<String, String> whNameById = buildWarehouseNameMap(warehouses);
@@ -715,9 +1147,8 @@ public class ProductAction extends ActionSupport {
 
     /**
      * บันทึกรับเข้าสต็อก (ปุ่ม Add Stock ในหน้า Stock Balance ของ consumable/accessory/office supply)
-     * สร้างเอกสาร good_receipt (หัวใบ) + good_receipt_detail (1 แถวต่อ sub product ที่กรอกจำนวน)
-     * แล้วค่อยลงบัญชีใน stock (action_type = gr_issue) ตามเอกสารนั้น
-     * - ห้าม UPDATE ตาราง stock ตรงๆ นอกเอกสาร (ดู skill product-module) ทุกความเคลื่อนไหวต้องมาจากการ insert นี้เท่านั้น
+     * ลงบัญชีตรงที่ตาราง stock เท่านั้น (action_type = direct_issue) - ไม่สร้างเอกสาร good_receipt /
+     * good_receipt_detail แล้ว (เปลี่ยนจากเดิม 26/08/2026 ตามที่ระบุว่าให้บันทึกลงแค่ตาราง stock)
      * - รองรับทั้งกรณีมี sub product (amount_&lt;subProductId&gt; ต่อแถว) และไม่มี sub product
      *   (amount_&lt;productId&gt; ของตัวแม่เอง - ดู fallback ในหน้า stock_cons_balance.jsp และ showStockBalancePage)
      */
@@ -800,43 +1231,19 @@ public class ProductAction extends ActionSupport {
                 }
             }
 
-            // ---- (1) หัวใบ good_receipt ----
-            Integer newGrId = Integer.valueOf(goodReceiptDAO.getMaxId().intValue() + 1);
-            GoodReceipt gr = new GoodReceipt();
-            gr.setGoodReceiptId(newGrId);
-            gr.setGrRef(trimToNull(refNo));
-            gr.setReceiveDate(receiveTs);
-            gr.setRecipientUser(onlineUser.getId());
-            gr.setWarehouseId(warehouseId.trim());
-            gr.setUserCreate(onlineUser.getId());
-            gr.setTimeCreate(now);
-            gr.setUserUpdate(onlineUser.getId());
-            gr.setTimeUpdate(now);
-            goodReceiptDAO.save(gr);
+            // stock.action_ref มาจากช่อง "Reference No." (refNo) ที่ user กรอกเอง - ไม่มีการกรอก = บันทึกเป็นค่าว่าง
+            String stockActionRef = isBlank(refNo) ? "" : refNo.trim();
+            if (stockActionRef.length() > 32) {
+                stockActionRef = stockActionRef.substring(0, 32);
+            }
 
-            // ---- (2) รายการ good_receipt_detail + (3) ลงบัญชี stock ต่อบรรทัด ----
-            long nextDetailId = goodReceiptDetailDAO.getMaxId().longValue() + 1;
+            // ---- ลงบัญชี stock ต่อบรรทัด (direct_issue) ไม่มีเอกสาร good_receipt/good_receipt_detail แล้ว ----
             long nextStockId = stockDAO.getMaxId().longValue() + 1;
 
             for (Map.Entry<String, Double> entry : amountByTargetId.entrySet()) {
                 String targetProductId = entry.getKey();
                 double amount = entry.getValue().doubleValue();
                 double amountConvert = amount * conversionRateVal;
-
-                GoodReceiptDetail detail = new GoodReceiptDetail();
-                detail.setGoodReceiptDetailId(Integer.valueOf((int) nextDetailId));
-                detail.setGoodReceiptId(String.valueOf(newGrId));
-                detail.setProductId(targetProductId);
-                detail.setParent(productIdStr);
-                detail.setAmount(Double.valueOf(amount));
-                detail.setUnit(String.valueOf(unitId));
-                detail.setWarehouseId(warehouseId.trim());
-                detail.setUserCreate(onlineUser.getId());
-                detail.setTimeCreate(now);
-                detail.setUserUpdate(onlineUser.getId());
-                detail.setTimeUpdate(now);
-                goodReceiptDetailDAO.save(detail);
-                nextDetailId++;
 
                 // reconcile = ผลรวมกระทบยอดล่าสุดของ product นั้น + จำนวนที่รับเข้ารอบนี้ (คิดเป็น unit หลัก)
                 Stock latest = stockDAO.findLatestByProductId(targetProductId);
@@ -846,15 +1253,17 @@ public class ProductAction extends ActionSupport {
                 Stock stock = new Stock();
                 stock.setStockId(String.valueOf(nextStockId));
                 stock.setProductId(targetProductId);
-                stock.setActionType("gr_issue");
-                stock.setActionRef(String.valueOf(newGrId));
+                stock.setActionType("direct_issue");
+                stock.setActionRef(stockActionRef);
                 stock.setUnit(String.valueOf(unitId));
                 stock.setAmountUnit(Double.valueOf(amount));
                 stock.setAmountConvert(Double.valueOf(amountConvert));
                 stock.setReconcile(Double.valueOf(previousReconcile + amountConvert));
                 stock.setWarehouseId(warehouseId.trim());
                 stock.setUserCreate(onlineUser.getId());
-                stock.setTimeCreate(now);
+                // time_create ใช้วันที่ user เลือกจากช่อง "Date" (receiveTs) แทน now เฉยๆ
+                // เพราะไม่มี good_receipt.receive_date ให้เก็บวันที่นี้แล้ว
+                stock.setTimeCreate(receiveTs);
                 stock.setUserUpdate(onlineUser.getId());
                 stock.setTimeUpdate(now);
                 stockDAO.save(stock);
@@ -947,6 +1356,12 @@ public class ProductAction extends ActionSupport {
             request.setAttribute("totalAvailable", Integer.valueOf(totalAvailable));
             request.setAttribute("totalBorrowed", Integer.valueOf(totalBorrowed));
             request.setAttribute("totalRetired", Integer.valueOf(totalRetired));
+
+            // รายชื่อ status ทั้งหมด (statusId, description, ...) ส่งเป็น JSON ให้ JS ทำ checkbox filter
+            // เหมือน pattern ใน EquipmentAction.eAdd() - ข้อมูลเครื่องถูกดึงมาครบทุก status อยู่แล้วจาก
+            // buildEquipmentGroupsForCatalog() ไม่ต้องแก้ query ฝั่ง DAO
+            List<EquipmentStatus> statuses = equipmentStatusDAO.getall();
+            request.setAttribute("equipmentStatusList", new Gson().toJson(statuses));
 
             return SUCCESS;
         } catch (Exception e) {
@@ -1079,19 +1494,19 @@ public class ProductAction extends ActionSupport {
     }
 
     /**
-     * map: recipient_user id -> "id - ชื่อ" สำหรับแสดงในประวัติ
-     * ดึงเฉพาะ id ที่ไม่ซ้ำจาก inRows (findById รายตัว) เพื่อจำกัดจำนวน query
+     * map: user_create id -> "id - ชื่อ" สำหรับแสดงในประวัติ
+     * ดึงเฉพาะ id ที่ไม่ซ้ำจาก stockRows (findById รายตัว) เพื่อจำกัดจำนวน query
      */
-    private Map<String, String> buildUserDisplayMap(List<Map<String, Object>> inRows) throws Exception {
+    private Map<String, String> buildUserDisplayMap(List<Stock> stockRows) throws Exception {
         Map<String, String> map = new HashMap<String, String>();
-        if (inRows == null) {
+        if (stockRows == null) {
             return map;
         }
-        for (Map<String, Object> row : inRows) {
+        for (Stock row : stockRows) {
             if (row == null) {
                 continue;
             }
-            String userId = str(row.get("recipient_user"));
+            String userId = str(row.getUserCreate());
             if (isBlank(userId) || map.containsKey(userId)) {
                 continue;
             }
@@ -1118,44 +1533,48 @@ public class ProductAction extends ActionSupport {
         return map;
     }
 
-    /** group แถว detail ตาม good_receipt_id เป็น 1 การ์ดต่อ 1 ใบรับ */
-    private List<Map<String, Object>> buildHistoriesIn(List<Map<String, Object>> inRows,
+    /**
+     * group แถว stock เป็น 1 การ์ดต่อ 1 ครั้งที่กด Add Stock (ไม่มีเอกสาร good_receipt ให้ group ตามแล้ว)
+     * แถวที่มาจากการกด Add Stock ครั้งเดียวกันจะมี warehouseId/timeCreate/actionRef ตรงกันทุกแถวเสมอ
+     * เพราะ stockConsStockAdd() คำนวณค่าพวกนี้ครั้งเดียวก่อน loop ต่อ sub product จึงใช้ 3 ค่านี้รวมกันเป็น key ได้
+     */
+    private List<Map<String, Object>> buildHistoriesIn(List<Stock> stockRows,
             Map<String, String> subNameById, Map<String, String> whNameById,
             Map<String, String> userNameById) {
 
-        // LinkedHashMap รักษาลำดับใบล่าสุดก่อน (rows เรียงมาจาก SQL แล้ว)
-        Map<String, Map<String, Object>> byReceipt = new LinkedHashMap<String, Map<String, Object>>();
-        if (inRows == null) {
+        // LinkedHashMap รักษาลำดับล่าสุดก่อน (rows เรียงมาจาก DAO แล้ว)
+        Map<String, Map<String, Object>> byBatch = new LinkedHashMap<String, Map<String, Object>>();
+        if (stockRows == null) {
             return new ArrayList<Map<String, Object>>();
         }
 
-        for (Map<String, Object> row : inRows) {
+        for (Stock row : stockRows) {
             if (row == null) {
                 continue;
             }
-            String receiptKey = str(row.get("good_receipt_id"));
-            Map<String, Object> entry = byReceipt.get(receiptKey);
+            String batchKey = str(row.getWarehouseId()) + "|" + str(row.getTimeCreate()) + "|" + str(row.getActionRef());
+            Map<String, Object> entry = byBatch.get(batchKey);
             if (entry == null) {
                 entry = new HashMap<String, Object>();
-                entry.put("doc_no", str(row.get("gr_ref")));
-                entry.put("date", formatDateTime(row.get("receive_date")));
-                String userId = str(row.get("recipient_user"));
+                entry.put("doc_no", str(row.getActionRef()));
+                entry.put("date", formatDateTime(row.getTimeCreate()));
+                String userId = str(row.getUserCreate());
                 entry.put("user", resolveName(userNameById, userId));
-                String whKey = str(row.get("warehouse_id"));
+                String whKey = str(row.getWarehouseId());
                 entry.put("warehouse", resolveName(whNameById, whKey));
-                entry.put("unit", str(row.get("unit")));
+                entry.put("unit", str(row.getUnit()));
                 entry.put("details", new ArrayList<Map<String, Object>>());
                 entry.put("_total", Double.valueOf(0d));
-                byReceipt.put(receiptKey, entry);
+                byBatch.put(batchKey, entry);
             }
 
-            double amt = toDouble(row.get("amount"));
+            double amt = (row.getAmountUnit() != null) ? row.getAmountUnit().doubleValue() : 0d;
             entry.put("_total", Double.valueOf(toDouble(entry.get("_total")) + amt));
-            if (isBlank(str(entry.get("unit"))) && !isBlank(str(row.get("unit")))) {
-                entry.put("unit", str(row.get("unit")));
+            if (isBlank(str(entry.get("unit"))) && !isBlank(str(row.getUnit()))) {
+                entry.put("unit", str(row.getUnit()));
             }
 
-            String subKey = str(row.get("sub_product_id"));
+            String subKey = str(row.getProductId());
             Map<String, Object> detail = new HashMap<String, Object>();
             detail.put("size", resolveName(subNameById, subKey));
             detail.put("amount", formatQty(amt));
@@ -1164,7 +1583,7 @@ public class ProductAction extends ActionSupport {
 
         // แปลงยอดรวมเป็น string สวยๆ แล้วลบ field ชั่วคราวออก
         List<Map<String, Object>> result = new ArrayList<Map<String, Object>>();
-        for (Map<String, Object> entry : byReceipt.values()) {
+        for (Map<String, Object> entry : byBatch.values()) {
             entry.put("amount", formatQty(toDouble(entry.get("_total"))));
             entry.remove("_total");
             result.add(entry);
@@ -1175,22 +1594,22 @@ public class ProductAction extends ActionSupport {
     /**
      * ยอดคงเหลือเป็นกลุ่มตาม sub product (ไซซ์) เรียงตาม sequence
      *  - total : ยอดคงเหลือจริง ดึงจาก stock.reconcile (แถวล่าสุด)
-     *  - rows  : รายการแยกคลังจากประวัติรับเข้า (good_receipt) - warehouse จาก WarehouseDAO เหมือนเดิม
+     *  - rows  : รายการแยกคลังจากตาราง stock โดยตรง (ผลรวม amount_unit ต่อคลัง) - warehouse จาก WarehouseDAO เหมือนเดิม
      * โครงสร้าง: [{ key, label, total, rows:[{warehouse, amount}] }]
      */
     private List<Map<String, Object>> buildBalances(List<Product> subProducts, List<Warehouse> warehouses,
-            List<Map<String, Object>> inRows, Map<String, String> whNameById, Map<String, Double> reconcileBySub) {
+            List<Stock> stockRows, Map<String, String> whNameById, Map<String, Double> reconcileBySub) {
 
         // subKey -> (whKey -> ยอดรับเข้ารวม) สำหรับรายการแยกคลัง
         Map<String, Map<String, Double>> bySubWh = new HashMap<String, Map<String, Double>>();
-        if (inRows != null) {
-            for (Map<String, Object> row : inRows) {
+        if (stockRows != null) {
+            for (Stock row : stockRows) {
                 if (row == null) {
                     continue;
                 }
-                String subKey = str(row.get("sub_product_id"));
-                String whKey = str(row.get("warehouse_id"));
-                double amt = toDouble(row.get("amount"));
+                String subKey = str(row.getProductId());
+                String whKey = str(row.getWarehouseId());
+                double amt = (row.getAmountUnit() != null) ? row.getAmountUnit().doubleValue() : 0d;
 
                 Map<String, Double> whMap = bySubWh.get(subKey);
                 if (whMap == null) {
