@@ -2247,6 +2247,12 @@
 		    <result name="success" type="tiles">equipment_request_save</result>
 		    <result name="error">/index.jsp</result>
 		</action>
+		
+		<action name="equipment_request_signature"
+		    class="com.cubesofttech.action.UserAction" method="update_my_profile">
+		    <result name="error">/index.jsp</result>
+		</action>
+		
 		<action name="getauto_id_load"
 		    class="com.cubesofttech.action.EquipmentRequestAction" method="getauto_id_load">
 		    <result name="success" type="tiles">getauto_id_load</result>

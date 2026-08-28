@@ -464,16 +464,16 @@ padding-top: 6rem;
 										<!-- LEFT: Signature Image -->
 										<div class="d-flex  flex-column align-items-center gap-2 ps-15 pe-15 pt-3 pb-4
 										 <c:choose>
-									        <c:when test="${not empty signaturePath}">pt-10 pb-11</c:when>
+									        <c:when test="${not empty userObj.pathSignature}">pt-10 pb-11</c:when>
 									    </c:choose>"> 
 											<c:choose>
 												<%-- ✅ มีรูปแล้ว → ล็อค ห้ามเปลี่ยน ไม่มี input file --%>
-												<c:when test="${not empty signaturePath}">
+												<c:when test="${not empty userObj.pathSignature}">
 													<div class="sig-box locked
 																 <c:choose>
-													        <c:when test="${not empty signaturePath}">m-0</c:when>
+													        <c:when test="${not empty userObj.pathSignature}">m-0</c:when>
 													    </c:choose>">
-														<img src="${ctx}${signaturePath}"
+														<img src="${ctx}${userObj.pathSignature}"
 															style="max-height: 160px; max-width: 360px; object-fit: contain;" />
 														<div class="sig-lock-badge">
 															<i class="ki-duotone ki-lock fs-7"> <span
@@ -638,7 +638,7 @@ padding-top: 6rem;
 	<script>
 		const ctx             = "${pageContext.request.contextPath}";
 		const currentUserName = "${userObj.nameEN}";
-		const hasSignature    = ${not empty signaturePath ? 'true' : 'false'};
+		const hasSignature    = ${not empty userObj.pathSignature ? 'true' : 'false'};
 		
 		// ── ติดตาม state ──────────────────────────────────────────
 		let confirmed1 = false;
@@ -681,6 +681,7 @@ padding-top: 6rem;
             box.innerHTML = '<img src="' + e.target.result + '" style="max-height:160px;max-width:360px;object-fit:contain;" />';
         };
         reader.readAsDataURL(file);
+        attachfilecallApi() 
     });
 }
 		
@@ -973,10 +974,13 @@ padding-top: 6rem;
 		
 		   document.getElementById('myFile').addEventListener('change', function(event) {
 		        processFiles(event.target.files);
+		        console.log('stap1')
 		    });
 		
 		$('#receiverBtn1').on('click', function() {
 			$('#receiverBtn1').prev().css('display','flex')
+			$('#receiverPreview1').css('display','flex')
+			
 		})
 		
 		<perm:permission object="admin">
@@ -1134,6 +1138,39 @@ padding-top: 6rem;
 			 $('#iconConsumables').css('display','flex') 
 		 }
    }
+    
+    function attachfilecallApi() {	
+    	const formData = new FormData();
+    	const fileInput = document.getElementById('sigFileInput');
+
+    	if (fileInput && fileInput.files.length > 0) {
+    	    // ส่งคีย์เป็น fileUpload ตามโครงสร้างของ Java Struts2
+    	    formData.append('fileUpload', fileInput.files[0]); 
+    	    formData.append('fileUploadFileName', fileInput.files[0].name);
+    	} else {
+    	    formData.append('fileUploadFileName', '');
+    	}
+
+    	fetch(ctx + '/update_signature', {
+    	    method: 'POST',
+    	    headers: { 'X-Requested-With': 'XMLHttpRequest' },
+    	    body: formData 
+    	})
+    	.then(function (res) { return res.json(); })
+    	.then(function (data) {
+    	    if (data.success) {
+    	        // อัปเดตและอัปโหลดไฟล์สำเร็จ -> รีโหลดหน้าเว็บทันที
+    	        window.location.reload();
+    	    } else {
+    	        console.error('Update failed:', data.message);
+    	        alert(data.message || 'เกิดข้อผิดพลาดจากระบบ');
+    	    }
+    	})
+//     	.catch(function (err) {
+//     	    console.error('Update error:', err);
+//     	    alert('ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ได้');
+//     	});
+	}
 </script>
 	
 </body>

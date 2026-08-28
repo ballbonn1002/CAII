@@ -1764,7 +1764,7 @@ public class UserAction extends ActionSupport {
 			String logonUser = ur.getId();
 
 			User u = userDAO.findById(logonUser);
-
+			
 			if (u != null) {
 				if (avatar_remove != null && avatar_remove.equalsIgnoreCase("true")) {
 					u.setPath(null);

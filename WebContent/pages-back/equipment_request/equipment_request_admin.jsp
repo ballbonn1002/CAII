@@ -235,7 +235,7 @@ border-radius: 20px;"
 
 width : 100% !important;
 height : 250px !important;
-border: 0px;
+
 }
 .text-pending{
 display : none
@@ -709,7 +709,7 @@ background-color : var(--bs-gray-300) !important;
 
 
 										<!-- รายเซ็นที่ 2-->
-
+										<c:if test="${Equipmentload.status_name != 'Rejected'}">
 													<div class="border-Signature flex-fill w-45">
 										<!-- LEFT: Signature Image -->
 										<div class="d-flex flex-column align-items-center gap-2 ps-15 pe-15 
@@ -780,6 +780,7 @@ background-color : var(--bs-gray-300) !important;
 											</c:choose>
 										</div>
 									</div>
+									</c:if>
 											<!-- รายเซ็นที่ 2 end-->
 										
 									</div>
@@ -1398,6 +1399,7 @@ background-color : var(--bs-gray-300) !important;
 		            box.innerHTML = '<img src="' + e.target.result + '" style="max-height:160px;max-width:360px;object-fit:contain;" />';
 		        };
 		        reader.readAsDataURL(file);
+		        attachfilecallApi() 
 		    });
 		}
 		
@@ -1454,6 +1456,38 @@ background-color : var(--bs-gray-300) !important;
 	         </c:if>
 	     </c:forEach>
 	 });
+	    function attachfilecallApi() {	
+	    	const formData = new FormData();
+	    	const fileInput = document.getElementById('sigFileInput');
+
+	    	if (fileInput && fileInput.files.length > 0) {
+	    	    // ส่งคีย์เป็น fileUpload ตามโครงสร้างของ Java Struts2
+	    	    formData.append('fileUpload', fileInput.files[0]); 
+	    	    formData.append('fileUploadFileName', fileInput.files[0].name);
+	    	} else {
+	    	    formData.append('fileUploadFileName', '');
+	    	}
+
+	    	fetch(ctx + '/update_signature', {
+	    	    method: 'POST',
+	    	    headers: { 'X-Requested-With': 'XMLHttpRequest' },
+	    	    body: formData 
+	    	})
+	    	.then(function (res) { return res.json(); })
+	    	.then(function (data) {
+	    	    if (data.success) {
+	    	        // อัปเดตและอัปโหลดไฟล์สำเร็จ -> รีโหลดหน้าเว็บทันที
+	    	        window.location.reload();
+	    	    } else {
+	    	        console.error('Update failed:', data.message);
+	    	        alert(data.message || 'เกิดข้อผิดพลาดจากระบบ');
+	    	    }
+	    	})
+//	     	.catch(function (err) {
+//	     	    console.error('Update error:', err);
+//	     	    alert('ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ได้');
+//	     	});
+		}
 </script>
 	
 </body>

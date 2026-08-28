@@ -199,8 +199,8 @@ border: 1px solid #e4e6ef;
 border-radius: 20px;"
 }
 .border-requetuser{
-    padding-top: 2rem !important;
-    padding-bottom: 7rem !important;
+    padding-top: 4rem !important;
+    padding-bottom: 5rem !important;
     }
     
 .form-control:disabled {
@@ -223,7 +223,6 @@ border-radius: 20px;"
 
 width : 100% !important;
 height : 250px !important;
-border: 0px;
 }
 .text-pending{
 display : none
@@ -308,7 +307,7 @@ background-color : var(--bs-gray-300) !important;
 										<div class="btn    <c:choose>
         <c:when test="${Equipmentload.status_name == 'Approved'}">btn-success</c:when>
         <c:when test="${Equipmentload.status_name == 'Pending'}">btn-warning</c:when>
-        <c:when test="${Equipmentload.status_name == 'Reject'}">btn-danger</c:when>
+        <c:when test="${Equipmentload.status_name == 'Rejected'}">btn-danger</c:when>
         <c:when test="${Equipmentload.status_name == 'Cancel'}">btn-dark</c:when>
         <c:otherwise>btn-secondary</c:otherwise>
     </c:choose>  btn-sm px-4" style="pointer-events: none;">${Equipmentload.status_name}</div>
@@ -346,7 +345,7 @@ background-color : var(--bs-gray-300) !important;
 
 							<input type="hidden" id="grandTotalInput" name="amount"
 								value="0.00" />
-	<c:if test="${Equipmentload.status_name != 'Pending'}">
+	<c:if test="${Equipmentload.status_name != 'Pending' && Equipmentload.status_name != 'Approved' && Equipmentload.status_name != 'Rejected'}">
 							<div class="card card-flush mb-7">
 								<div class="card-header">
 									<div class="card-title">
@@ -507,7 +506,7 @@ background-color : var(--bs-gray-300) !important;
 													<label
 														class="btn btn-primary btn-flex h-40px border-0 fw-medium w-100 d-flex justify-content-center align-items-center text-center mx-auto
 														 <c:choose>
-                    <c:when test="${Equipmentload.status_name == 'Pending' || Equipmentload.status_name == 'Cancel' }">btn-hide</c:when>
+                    <c:when test="${Equipmentload.status_name == 'Pending' || Equipmentload.status_name == 'Cancel' || Equipmentload.status_name == 'Approved' || Equipmentload.status_name == 'Rejected' }">btn-hide</c:when>
                 </c:choose>"
 														id="lbFile" for="myFile" style="height: 44px;">
 														Attach Files <input type="file" id="myFile" name="files"
@@ -532,7 +531,7 @@ background-color : var(--bs-gray-300) !important;
 							</div>
 					</c:if>
 
-					<c:if test="${Equipmentload.status_name == 'Pending'}">
+					<c:if test="${Equipmentload.status_name == 'Pending' || Equipmentload.status_name == 'Approved' || Equipmentload.status_name == 'Rejected'}">
 												<!-- การ์ดหลักครอบทั้งหมด -->
 					<div class="card shadow-sm border-0 rounded-3 p-10 mb-4" style="background-color: #ffffff;">
 					    
@@ -631,26 +630,29 @@ background-color : var(--bs-gray-300) !important;
 								</div>
 								<div class="card-body py-5">
 									<div class="d-flex align-items-start gap-8 flex-wrap">
-									<div class="border-Signature <c:choose>
-									        <c:when test="${Equipmentload.status_name == 'Pending'}">style-pending</c:when>
+									<div class="border-Signature
+									 <c:choose>
+									 	<c:when test="${Equipmentload.status_name == 'Approved'}" >flex-fill  w-45</c:when>
+									        <c:when test="${Equipmentload.status_name == 'Pending' || Equipmentload.status_name == 'Rejected'}">style-pending</c:when>
 									    </c:choose>">
 										<!-- LEFT: Signature Image -->
 										<div class="d-flex flex-column align-items-center gap-2 ps-15 pe-15 
 										 <c:choose>
-									        <c:when test="${Equipmentload.status_name == 'Pending'}">height-only</c:when>
+									        <c:when test="${Equipmentload.status_name == 'Pending' || Equipmentload.status_name == 'Approved' || Equipmentload.status_name == 'Rejected' }">height-only</c:when>
 									    </c:choose>">
 											<c:choose>
 												<%-- มีรูปแล้ว → ล็อค ห้ามเปลี่ยน ไม่มี input file --%>
 												<c:when test="${not empty signaturePath}">
-													<div class="sig-box locked <c:choose>
-												        <c:when test="${Equipmentload.status_name == 'Pending'}">height-only</c:when>
+													<div class="sig-box locked  <c:choose> <c:when test="${Equipmentload.status_name != 'Approved' }">pt-15 </c:when></c:choose>
+													<c:choose>
+												        <c:when test="${Equipmentload.status_name == 'Pending' || Equipmentload.status_name == 'Approved' || Equipmentload.status_name == 'Rejected' }">height-only</c:when>
 												    </c:choose>">
 														<img src="${ctx}${signaturePath}"
 															style="max-height: 160px; max-width: 360px; object-fit: contain;" />
 															
 														<div class="text-center 
 														<c:choose>
-													        <c:when test="${Equipmentload.status_name != 'Pending'}">text-pending</c:when>
+													        <c:when test="${Equipmentload.status_name != 'Pending' && Equipmentload.status_name != 'Approved' && Equipmentload.status_name != 'Rejected'}">text-pending</c:when>
 													    </c:choose>">	
 														    <span class="text-primary fs-7" id="receiverLabel1">ชื่อผู้ขอเบิก
 														    </span>
@@ -660,12 +662,16 @@ background-color : var(--bs-gray-300) !important;
 																	value="${Equipmentload.request_date}" pattern="d MMM yyyy, H:mm" /></span>
 														</div>
 														</div>
-														<div class="sig-lock-badge
-														<c:choose><c:when test="${Equipmentload.status_name == 'Pending'}">text-pending height-only</c:when></c:choose>">
+														<div class="sig-lock-badge">
 															<i class="ki-duotone ki-lock fs-7"> <span
 																class="path1"></span><span class="path2"></span>
 															</i> Signature on file
 														</div>
+														<div class="d-flex align-items-center text-muted high-icon mb-2" style="font-size: 0.9rem;height : auto !important">
+											                        <a class="btn btn-icon fs-3 ms-1">
+											                        </a>
+											                
+											            </div>
 													</div>
 												</c:when>
 
@@ -682,9 +688,9 @@ background-color : var(--bs-gray-300) !important;
 										</div>
 									</div>
 										<!-- MIDDLE: Receiver 1 = ผู้ขอเบิก -->
-										<c:if test="${Equipmentload.status_name != 'Pending'}">
+										<c:if test="${Equipmentload.status_name != 'Pending' && Equipmentload.status_name != 'Approved' && Equipmentload.status_name != 'Rejected'}">
 										<div
-											class="receiver-box d-flex flex-fill flex-column align-items-center gap-2 border-requetuser "
+											class="receiver-box d-flex flex-fill flex-column align-items-center gap-2 border-requetuser <c:choose> <c:when test="${Equipmentload.status_name != 'Approved' }">pt-15 </c:when></c:choose>"
 											id="receiverBox1">
 											<div id="receiverPreview1"
 												style="min-height: 44px; display: flex; flex-direction: column; align-items: center;">
@@ -699,18 +705,82 @@ background-color : var(--bs-gray-300) !important;
 											</div>
 										</div>
 										</c:if>
-										<!-- RIGHT: Receiver 2 = ผู้รับเงิน -->
-<!-- 										<div -->
-<!-- 											class="receiver-box d-flex flex-fill flex-column align-items-center gap-2" -->
-<!-- 											id="receiverBox2"> -->
-<!-- 											<div id="receiverPreview2" -->
-<!-- 												style="min-height: 44px; display: flex; flex-direction: column; align-items: center;"> -->
-<!-- 												<span class="text-primary pb-7 fs-7" id="receiverLabel1">ชื่อ -->
-<%-- 													ผู้รับเงิน</span> <span class="text-dark fw-semibold fs-7">${userObj.nameEN}</span> --%>
-<%-- 												<span class="text-muted fs-8"><fmt:formatDate --%>
-<%-- 														value="${requestAt}" pattern="d MMM yyyy, H:mm" /></span> --%>
-<!-- 											</div> -->
-<!-- 										</div> -->
+										
+														<!-- รายเซ็นที่ 2-->
+										<c:if test="${Equipmentload.status_name == 'Approved'}">
+													<div class="border-Signature flex-fill w-50">
+										<!-- LEFT: Signature Image -->
+										<div class="d-flex flex-column align-items-center gap-2 ps-15 pe-15 
+										 <c:choose>
+									        <c:when test="${ Equipmentload.status_name == 'Approved'}">height-only</c:when>
+									    </c:choose>" style="position:relative">
+											<c:choose>
+												<%-- มีรูปแล้ว → ล็อค ห้ามเปลี่ยน ไม่มี input file --%>
+												<c:when test="${not empty signaturePath2}">
+													<div class="sig-box2 locked">
+														<img src="${ctx}${signaturePath2}"
+															style="max-height: 160px; max-width: 360px; object-fit: contain;" />
+															<div class="text-center ">	
+																    <span class="text-primary fs-7" id="receiverLabel2">ชื่อผู้ขอเบิก
+																    </span>
+																<div class="d-flex flex-column pt-4">
+																	<span class="text-dark fw-semibold fs-7">${userObjAdmin.nameEN}</span>
+																	<span class="text-muted fs-8 mb-2 mt-1" id="request_date"><fmt:formatDate
+																			value="${Equipmentload.request_date}" pattern="d MMM yyyy, H:mm" /></span>
+																</div>
+															</div>
+														<div class="sig-lock-badge">
+															<i class="ki-duotone ki-lock fs-7"> <span
+																class="path1"></span><span class="path2"></span>
+															</i> Signature on file
+														</div>
+												<c:if test="${Equipmentload.status_name == 'Approved'}">
+												<div class="">
+													<div class="d-flex align-items-center text-muted high-icon mb-2 w-50" 
+													style="font-size: 0.9rem;height : auto !important;width: 62px !important;margin: auto;">
+										                        <a class="btn btn-icon fs-3 ms-1">
+										                        <i class="ki-duotone ki-document fs-1"><span class="path1"></span>
+										                        <span class="path2"></span></i></a>
+										                <span class="span-des">อนุมัติ</span>
+										            </div>
+									            </div>
+									            </c:if>
+													</div>
+												</c:when>
+
+												<%-- ไม่มีรูป --%>
+												<c:otherwise>
+											<c:choose>
+														<c:when test="${empty statusActiveSafe}">
+															<div class="sig-box uploadable" id="uploadSignatureBox2"
+																onclick="document.getElementById('sigFileInput').click()">
+																<i class="ki-duotone ki-cloud-add fs-2x text-muted">
+																	<span class="path1"></span><span class="path2"></span>
+																</i> <span class="text-muted fs-8 mt-2">Click to
+																	upload Signature</span>
+															</div>
+															<span class="text-muted fs-8">Allowed: png, jpg,
+																jpeg</span>
+															<%-- ✅ name="files" ตรงกับ Struts2 field files[] ใน TravelAction --%>
+															<input type="file" id="sigFileInput" name="files"
+																accept=".png,.jpg,.jpeg" style="display: none;" />
+														</c:when>
+														<c:otherwise>
+															<div class="sig-box unuploadable" id="uploadSignatureBox2">
+																<i class="ki-duotone ki-cloud-add fs-2x text-muted">
+																	<span class="path1"></span><span class="path2"></span>
+																</i> <span class="text-muted fs-8 mt-2">The signature
+																	has not been uploaded yet</span>
+															</div>
+														</c:otherwise>
+													</c:choose>
+												</c:otherwise>
+											</c:choose>
+										</div>
+									</div>
+									</c:if>
+											<!-- รายเซ็นที่ 2 end-->
+											
 									</div>
 								</div>
 							</div>
@@ -744,7 +814,7 @@ background-color : var(--bs-gray-300) !important;
 									class="ki-duotone ki-arrow-left fs-2"> <span class="path1"></span>
 										<span class="path2"></span>
 								</i>Back </a>
-								<c:if test="${Equipmentload.status_name != 'Cancel' && onlineUser.roleId != 'admin'}">
+								<c:if test="${Equipmentload.status_name != 'Cancel' && onlineUser.roleId != 'admin' && Equipmentload.status_name != 'Approved' && Equipmentload.status_name != 'Rejected'}">
 									<button type="button" id="BtnCanccel"  class="btn btn-dark px-6 btn-cancel ms-5" data-id="${Equipmentload.mr_id}">
 											    Cancel
 									</button> 
@@ -752,7 +822,7 @@ background-color : var(--bs-gray-300) !important;
 								</div>
 						<div>
 
-							<c:if test="${Equipmentload.status_name != 'Cancel' && Equipmentload.status_name != 'Pending'}">
+							<c:if test="${Equipmentload.status_name != 'Cancel' && Equipmentload.status_name != 'Pending' && Equipmentload.status_name != 'Approved' && Equipmentload.status_name != 'Rejected'}">
 								<button type="button" id="BtnSaveDraft" onclick="submitData(this)"  class="btn btn-secondary px-6 ms-5">
 									    Save Draft
 								</button>		
@@ -1262,7 +1332,7 @@ background-color : var(--bs-gray-300) !important;
 	                     
 	                     <span class="badge badge-light-danger bg-hover cursor-pointer delete-btn ms-10 delete-old-btn
 	                        <c:choose>
-	                         <c:when test="${Equipmentload.status_name == 'Pending' || Equipmentload.status_name == 'Cancel' }">btn-hide</c:when>
+	                         <c:when test="${Equipmentload.status_name == 'Pending' || Equipmentload.status_name == 'Cancel' || Equipmentload.status_name == 'Approved' || Equipmentload.status_name == 'Rejected' }">btn-hide</c:when>
 	                         </c:choose>" style="height: 26px;">
 	                         <i class="ki-duotone ki-trash text-danger fs-2">
 	                             <span class="path1"></span><span class="path2"></span>

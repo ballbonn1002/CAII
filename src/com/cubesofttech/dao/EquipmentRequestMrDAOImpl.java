@@ -105,12 +105,14 @@ public class EquipmentRequestMrDAOImpl  implements EquipmentRequestMrDAO{
 	        sql.append("ur.employee_id, ");
 	        sql.append("ur.department_id, ");
 	        sql.append("pd.product_type, ");
-	        sql.append("un.unit_name ");
+	        sql.append("un.unit_name, ");
+	        sql.append("dd.user_create ");
 	        sql.append("FROM mr mr ");
 	        sql.append("LEFT JOIN doc_status ds ON mr.status_id = ds.doc_status_id ");
 	        sql.append("LEFT JOIN product pd ON pd.product_id = mr.catalog_items_id ");
 	        sql.append("LEFT JOIN user ur ON ur.id = mr.request_user ");
 	        sql.append("LEFT JOIN unit_of_measure un ON un.product_id = pd.product_id  and un.sequence = 0 ");
+	        sql.append("LEFT JOIN delivered_detail dd ON CONVERT(dd.mr_id USING utf8mb4) = CONVERT(mr.mr_id USING utf8mb4) ");
 	        sql.append("WHERE mr.mr_id = :mr_id");
 
 	        // 2. ใช้ SQLQuery และแปลงผลลัพธ์ให้ออกมาเป็น Map ด้วย AliasToEntityMapResultTransformer
