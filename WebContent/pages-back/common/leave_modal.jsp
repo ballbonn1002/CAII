@@ -68,12 +68,13 @@
 							<span id="stime"></span> - <span id="etime"></span>
 						</div>
 
-						<div class="d-flex align-items-center text-gray-700 mb-2 fs-6">
-							<i class="ki-duotone ki-document me-2">
+						<div class="d-flex align-items-start text-gray-700 mb-2 fs-6">
+							<i class="ki-duotone ki-document me-2 mt-1">
 								 <span class="path1"></span>
 								 <span class="path2"></span>
 							</i>
 							<a id="file" href="#" target="_blank" class="text-primary text-hover-underline"></a>
+							<span id="fileList" class="d-flex flex-wrap gap-2 align-items-center"></span>
 						</div>
 						<div>
 							Request By: <span id="ucEmpId"></span> <span id="ucName"></span> , <span id="timecreate"></span>
@@ -225,6 +226,35 @@
 <!--end::Modal - Leave Detail-->
 
 <script>
+// แสดงไฟล์แนบทั้งหมดของ leave
+function renderLeaveModalFiles(obj) {
+	var $list = $('#fileList').empty();
+	$('#file').empty();
+
+	var files = (obj && Array.isArray(obj.files)) ? obj.files.slice() : [];
+
+	if (files.length === 0 && obj && obj.leave_file_name && obj.leave_file_name !== 'null' && obj.leave_file_id) {
+		files = [{ id: obj.leave_file_id, name: obj.leave_file_name, type: obj.leave_file_type || '' }];
+	}
+
+	if (files.length === 0) {
+		$list.append($('<span class="text-muted">No file attached</span>'));
+		return;
+	}
+
+	files.forEach(function (f, i) {
+		var full = (f.name || '') + (f.type || '');
+		$list.append(
+			$('<a target="_blank" class="text-primary text-hover-underline text-truncate d-inline-block align-bottom"></a>')
+				.attr('href', 'preview_File?id=' + f.id)
+				.css('max-width', '160px')
+				.attr('title', full)
+				.text(full)
+		);
+		if (i < files.length - 1) $list.append($('<span class="text-muted">,</span>'));
+	});
+}
+
 function setApproveMode(isWaiting) {
 
 	if (isWaiting) {
@@ -273,20 +303,8 @@ function leaveStatus(id) {
 			$('#ucEmpId').html(obj.ucEmpId);
 			$('#ucName').html(obj.ucName);
 			
-			// validate file name is empty
-			if (obj.leave_file_name && obj.leave_file_name !== "null") {
-			    $('#file')
-			        .html(obj.leave_file_name + (obj.leave_file_type || ''))
-			        .attr('href', 'preview_File?id=' + obj.leave_file_id)
-			        .attr('target', '_blank')
-			        .show();
-			} else {
-			    $('#file')
-			        .html('No file attached')
-			        .removeAttr('href')
-			        .removeAttr('target')
-			        .removeClass('text-primary text-hover-underline');
-			}
+			// ไฟล์แนบ
+			renderLeaveModalFiles(obj);
 
 	      // leave type name
 			if (obj.leave_type_id == 1) { $('#leavetype').html("ลาพักร้อน"); }
@@ -411,11 +429,8 @@ function leaveApproveStatus(id) {
 			$('#desc').html(obj.description);
 			$('#ucEmpId').html(obj.ucEmpId);
 			$('#ucName').html(obj.ucName);
-			if(obj.leave_file_name == null){
-				$('#file').html("-");
-			}else{
-				$('#file').html(obj.leave_file_name + obj.leave_file_type).attr('href', 'preview_File?id=' + obj.leave_file_id).attr('target', '_blank');
-			}
+			// ไฟล์แนบ (รองรับหลายไฟล์)
+			renderLeaveModalFiles(obj);
 			// leave type name
 			if (obj.leave_type_id == 1) {
 				$('#leavetype').html("ลาพักร้อน");

@@ -181,10 +181,10 @@ public class DateUtil {
 	}
 
 	public static int getYear() {
-		Date year = new Date();
-		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy");
-		return Integer.parseInt(dateFormat.format(year));
-	}
+    Date year = new Date();
+    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy", Locale.ENGLISH);
+    return Integer.parseInt(dateFormat.format(year));
+}
 
 	public static Timestamp dateToTimestamp(String date, String time) throws ParseException {
 		Timestamp ts;

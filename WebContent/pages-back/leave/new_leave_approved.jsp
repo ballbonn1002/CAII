@@ -619,18 +619,20 @@
 												 ${leave.start_time} - ${leave.end_time}
 											</div>
 											
-										    <c:if test="${not empty leave.leave_file}">
-											    <div class="d-flex align-items-center">
-											        <i class="ki-duotone ki-document me-2">
+										    <c:set var="leaveFiles" value="${leaveFilesMap[leave.leave_id.toString()]}" />
+											<c:if test="${not empty leaveFiles}">
+											    <div class="d-flex align-items-center flex-wrap gap-2">
+											        <i class="ki-duotone ki-document me-1">
 											            <span class="path1"></span>
 											            <span class="path2"></span>
 											        </i>
-											
-											        <a href="preview_File?id=${leave.leave_file}"
-											           target="_blank"
-											           class="text-primary text-hover-underline">
-											            ${leave.file_name}${leave.type}
-											        </a>
+											        <c:forEach var="f" items="${leaveFiles}" varStatus="fst">
+											            <a href="preview_File?id=${f.fileId}"
+											               target="_blank"
+											               class="text-primary text-hover-underline text-truncate d-inline-block align-bottom"
+											               style="max-width: 160px;"
+											               title="${f.name}${f.type}">${f.name}${f.type}</a><c:if test="${not fst.last}"><span class="text-muted">,</span></c:if>
+											        </c:forEach>
 											    </div>
 											</c:if>
 										
