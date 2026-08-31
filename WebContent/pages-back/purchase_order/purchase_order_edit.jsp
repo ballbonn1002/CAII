@@ -572,7 +572,7 @@
 							<div class="card-body filter-card px-10 py-9 rounded-3">
 								<div class="d-flex align-items-center fs-6">
 									<span>${actionLabel} : ${userUpdate.employeeId} ${userUpdate.nameEN},
-										<fmt:formatDate value="${userUpdate.timeUpdate}" pattern="d MMM YYYY HH:mm" />
+										<fmt:formatDate value="${poList.timeUpdate}" pattern="d MMM YYYY HH:mm" />
 									</span>
 
 									<c:if test="${(poList.status == '4' || poList.status == '5' || poList.status == '7') and not empty poList.reason}">

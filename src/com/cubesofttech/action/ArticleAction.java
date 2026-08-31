@@ -974,11 +974,24 @@ public class ArticleAction extends ActionSupport {
 				articleTagDAO.deleteByArticleId(id);
 				articleRelatedDAO.deleteByArticleId(id);
 				pageUriDAO.deleteByModelAndModelId("article",id);
-				//delete file
+				//delete file (cover) - ลบทั้ง record ในตาราง file และไฟล์จริงบน disk
 				if (article.getFileId() != null) {
 					Integer fileId = Integer.parseInt(article.getFileId());
 				    FileUpload file = fileuploadDAO.findById(fileId);
 					if (file != null) {
+						if (file.getPath() != null) {
+							try {
+								String fileServerPath = request.getServletContext().getRealPath("/");
+								String relativePath = file.getPath().startsWith("/") ? file.getPath().substring(1) : file.getPath();
+								Path coverPath = Paths.get(fileServerPath + relativePath);
+
+								if (Files.exists(coverPath)) {
+									Files.delete(coverPath);
+								}
+							} catch (Exception e) {
+								log.error("Error while deleting cover file: " + file.getPath(), e);
+							}
+						}
 						fileuploadDAO.delete(file);
 					}
 				}

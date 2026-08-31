@@ -826,7 +826,7 @@ public class PurchaseOrderAction extends ActionSupport {
         }
     }
 
-    public String update_po_detail() {
+    public String updatePoDetail() {
         List<String> debugLog = new ArrayList<>();
         try {
             if (onlineUser == null) {
