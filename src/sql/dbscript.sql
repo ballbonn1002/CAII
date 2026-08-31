@@ -782,3 +782,143 @@ CREATE TABLE delivered_detail (
 ALTER TABLE `doc_status` CHANGE `status_group` `page` VARCHAR(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL;
 
 -- PROD 
+
+-- 31/08/2026 Best(Intern): Add tables related to the Cube Token module.
+CREATE TABLE `token_action_type` (
+  `action_type_id` int(11) NOT NULL,
+  `action_type_name` varchar(32) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `active_status` char(1) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'N',
+  `description` varchar(1024) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `user_create` varchar(32) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `user_update` varchar(32) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `time_create` timestamp NULL DEFAULT NULL,
+  `time_update` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`action_type_id`)
+) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci;
+
+INSERT INTO token_action_type
+(
+    action_type_id,
+    action_type_name,
+    active_status,
+    description,
+    user_create,
+    user_update,
+    time_create,
+    time_update
+)
+VALUES
+(1, 'Gift',     'N', 'ให้รายเดือน',       'cft.admin', 'cft.admin', NOW(), NOW()),
+(2, 'Deduct',   'N', 'หัก token',         'cft.admin', 'cft.admin', NOW(), NOW()),
+(3, 'Return',   'Y', 'คืน token',         'cft.admin', 'cft.admin', NOW(), NOW()),
+(4, 'Reward',   'Y', 'ให้รางวัลเป็น token',      'cft.admin', 'cft.admin', NOW(), NOW()),
+(5, 'Add In Reconcile',   'Y', 'สะสมสิ้นเดือน',       'cft.admin', 'cft.admin', NOW(), NOW()),
+(6, 'Exchange',   'Y', 'หักสะสมมาเพิ่มรายเดือน',       'cft.admin', 'cft.admin', NOW(), NOW()),
+(7, 'Redeem', 'Y', 'หักสะสมไปแลกของรางวัล',         'cft.admin', 'cft.admin', NOW(), NOW()),
+(8, 'Void',   'Y', 'โมฆะ trancsaction นั้น',       'cft.admin', 'cft.admin', NOW(), NOW());
+
+CREATE TABLE `token_action_point` (
+  `action_point_id` int(11) NOT NULL AUTO_INCREMENT,
+  `action_type_id` int(11) NOT NULL,
+  `action_point_type` varchar(64) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `point` double NOT NULL DEFAULT '0',
+  `action_point_name_th` varchar(64) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `active_status` char(1) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'N',
+  `description` varchar(1024) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `user_create` varchar(32) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `user_update` varchar(32) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `time_create` timestamp NULL DEFAULT NULL,
+  `time_update` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`action_point_id`)
+) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci;
+
+INSERT INTO token_action_point
+(
+    action_type_id,
+    action_point_type,
+    point,
+    action_point_name_th,
+    active_status,
+    description,
+    user_create,
+    user_update,
+    time_create,
+    time_update
+)
+VALUES
+-- =========================================
+-- Gift (1)
+-- =========================================
+(1, 'Permanent Employee', 0, 'พนักงานประจำ',
+ 'N', 'Token สำหรับพนักงานประจำ',
+ 'cft.admin', 'cft.admin', NOW(), NOW()),
+
+(1, 'Contract Employee', 0, 'พนักงานสัญญาจ้าง',
+ 'N', 'Token สำหรับพนักงานสัญญาจ้าง',
+ 'cft.admin', 'cft.admin', NOW(), NOW()),
+
+(1, 'Intern', 0, 'นักศึกษาฝึกงาน',
+ 'N', 'Token สำหรับนักศึกษาฝึกงาน',
+ 'cft.admin', 'cft.admin', NOW(), NOW()),
+
+
+-- =========================================
+-- Deduct (2)
+-- =========================================
+(2, 'Late', 0, 'เข้างานสาย',
+ 'N', 'หัก Token กรณีเข้างานสาย',
+ 'cft.admin', 'cft.admin', NOW(), NOW()),
+
+(2, 'Early Out', 0, 'ออกก่อนเวลา',
+ 'N', 'หัก Token กรณีออกก่อนเวลา',
+ 'cft.admin', 'cft.admin', NOW(), NOW()),
+
+(2, 'Leave', 0, 'ลา',
+ 'N', 'หัก Token กรณีลา',
+ 'cft.admin', 'cft.admin', NOW(), NOW()),
+
+(2, 'Backdate', 0, 'ย้อนหลัง',
+ 'N', 'หัก Token กรณีทำรายการย้อนหลัง',
+ 'cft.admin', 'cft.admin', NOW(), NOW()),
+  
+(2, 'No Record', 0, 'ไม่ลงเวลา',
+ 'N', 'หัก Token กรณีลืมลงเวลา',
+ 'cft.admin', 'cft.admin', NOW(), NOW());
+
+-- Token Setting 
+CREATE TABLE `token_setting` (
+  `setting_id` int(11) NOT NULL AUTO_INCREMENT,
+  `type` char(32) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `type_name` varchar(64) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `status` varchar(10) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `description` varchar(1024) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `user_create` varchar(32) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `user_update` varchar(32) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `time_create` timestamp NULL DEFAULT NULL,
+  `time_update` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`setting_id`)
+) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci;
+
+INSERT INTO `token_setting` (`type`,`type_name`,`status`,`description`,`user_create`,`user_update`,`time_create`,`time_update`) VALUES ('user_status','Active','Disable','For Active Employee','cft.admin',NULL, current_timestamp(),NULL);
+INSERT INTO `token_setting` (`type`,`type_name`,`status`,`description`,`user_create`,`user_update`,`time_create`,`time_update`) VALUES ('user_status','Probation','Disable','For Probation Employee','cft.admin',NULL,current_timestamp(),NULL);
+INSERT INTO `token_setting` (`type`,`type_name`,`status`,`description`,`user_create`,`user_update`,`time_create`,`time_update`) VALUES ('user_status','Excluded','Disable','For Excluded Employee','cft.admin',NULL,current_timestamp(),NULL);
+INSERT INTO `token_setting` (`type`,`type_name`,`status`,`description`,`user_create`,`user_update`,`time_create`,`time_update`) VALUES ('user_status','Intern','Disable','For Status Intern Employee','cft.admin',NULL,current_timestamp(),NULL);
+INSERT INTO `token_setting` (`type`,`type_name`,`status`,`description`,`user_create`,`user_update`,`time_create`,`time_update`) VALUES ('system_status','Enable','Disable','For Enable Employee','cft.admin',NULL,current_timestamp(),NULL);
+INSERT INTO `token_setting` (`type`,`type_name`,`status`,`description`,`user_create`,`user_update`,`time_create`,`time_update`) VALUES ('system_status','Disable','Disable','For Disable Employee','cft.admin',NULL,current_timestamp(),NULL);
+INSERT INTO `token_setting` (`type`,`type_name`,`status`,`description`,`user_create`,`user_update`,`time_create`,`time_update`) VALUES ('activate_date','Day','1','Activate Monthly Token Date','cft.admin',NULL,current_timestamp(),NULL);
+
+CREATE TABLE `token_usage` (
+  `token_usage_id` int(11) NOT NULL AUTO_INCREMENT,
+  `user_id` varchar(32) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `action_type_id` int(11) NOT NULL,
+  `action_point_id` int(11) DEFAULT NULL,
+  `value` double DEFAULT NULL,
+  `reconcile` double DEFAULT NULL,
+  `re_flag` char(1) COLLATE utf8mb4_unicode_ci DEFAULT 'N',
+  `description` varchar(1024) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `user_create` varchar(32) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `user_update` varchar(32) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `time_create` timestamp NULL DEFAULT NULL,
+  `time_update` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`token_usage_id`)
+) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci;

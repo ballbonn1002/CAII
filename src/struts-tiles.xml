@@ -494,6 +494,31 @@
 		<put-attribute name="body"
 			value="/pages-back/warehouse/warehouse_list.jsp" />
 	</definition>
+	
+	<!-- Cube Token -->
+	<definition name="cubeTokenSetting" extends="baseLayout">
+		<put-attribute name="title" value="Cube Token Settings" />
+		<put-attribute name="body"
+			value="/pages-back/cube_token/cube_token_setting.jsp" />
+	</definition>
+	
+	<definition name="myCubeToken" extends="baseLayout">
+		<put-attribute name="title" value="My Cube Token" />
+		<put-attribute name="body"
+			value="/pages-back/cube_token/my_cube_token.jsp" />
+	</definition>
+	
+	<definition name="cubeTokenMangement" extends="baseLayout">
+		<put-attribute name="title" value="Cube Token Management" />
+		<put-attribute name="body"
+			value="/pages-back/cube_token/cube_token_management.jsp" />
+	</definition>
+	
+	<definition name="returnCubeToken" extends="baseLayout">
+		<put-attribute name="title" value="Return Cube Token" />
+		<put-attribute name="body"
+			value="/pages-back/cube_token/return_cube_token.jsp" />
+	</definition>
 
 
 	<!-- Work Log -->

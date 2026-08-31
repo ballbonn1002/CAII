@@ -1821,6 +1821,76 @@
 			class="com.cubesofttech.action.WarehouseAction" method="delete">
 			<result name="success" type="json"/>
 		</action>
+		
+		<!-- ========================== Cube Token ============================== -->
+		
+		<!-- Cube Token Setting -->
+		<action name="tokenSettings"
+			class="com.cubesofttech.action.CubeTokenAction" method="cubeTokenSettingPage">
+			<result name="success" type="tiles">cubeTokenSetting</result>
+			<result name="login">/index.jsp</result>
+			<result name="error">/pages-back/common/error/error_500.jsp</result>
+		</action>
+		
+		<action name="updateTokenSetting"
+        	class="com.cubesofttech.action.CubeTokenAction" method="updateTokenSetting">
+		    <result type="json">
+		        <param name="root">result</param>
+		    </result>
+		</action>
+        
+        <!-- My Cube Token -->
+		<action name="myCubeToken"
+			class="com.cubesofttech.action.CubeTokenAction" method="myCubeTokenPage">
+			<result name="success" type="tiles">myCubeToken</result>
+			<result name="login" type="redirect">/index.jsp</result>
+			<result name="error">/pages-back/common/error/error_500.jsp</result>
+		</action>
+		
+		<action name="getTokenAvailableYears"
+        class="com.cubesofttech.action.CubeTokenAction"
+        method="getTokenAvailableYears"/>
+        
+        <action name="tokenSummary"
+        class="com.cubesofttech.action.CubeTokenAction"
+        method="getTokenSummary"/>
+        
+        <action name="tokenTransaction"
+        class="com.cubesofttech.action.CubeTokenAction"
+        method="listTokenHistory" />
+        
+        <action name="exchangeMonthlyToken"
+        class="com.cubesofttech.action.CubeTokenAction"
+        method="exchangeMonthlyToken" />
+        
+         <!-- Cube Token Management -->
+		<action name="cubeTokenManagement"
+			class="com.cubesofttech.action.CubeTokenAction" method="cubetokenManagementPage">
+			<result name="success" type="tiles">cubeTokenMangement</result>
+			<result name="login" type="redirect">/index.jsp</result>
+			<result name="error">/pages-back/common/error/error_500.jsp</result>
+		</action>
+		
+		<action name="returnCubeTokenPage"
+			class="com.cubesofttech.action.CubeTokenAction" method="returnCubeTokenPage">
+			<result name="success" type="tiles">returnCubeToken</result>
+			<result name="login" type="redirect">/index.jsp</result>
+			<result name="error">/pages-back/common/error/error_500.jsp</result>
+		</action>
+		
+		<action name="getTokenSummaryForAllUsers"
+        class="com.cubesofttech.action.CubeTokenAction"
+        method="getTokenSummaryForAllUsers" />
+        
+        <action name="rewardCubeToken"
+        class="com.cubesofttech.action.CubeTokenAction"
+        method="rewardCubeToken" />
+        
+        <action name="returnCubeToken"
+        class="com.cubesofttech.action.CubeTokenAction"
+        method="returnCubeToken" />
+        
+        
 
 		<!-- ========================== Work Log ============================== -->
 		<action name="work_log"

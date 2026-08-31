@@ -58,6 +58,7 @@ import com.cubesofttech.model.Role;
 import com.cubesofttech.model.RoleAuthorizedObject;
 import com.cubesofttech.model.User;
 import com.cubesofttech.service.FileAttachmentService;
+import com.cubesofttech.service.CubeTokenService;
 import com.cubesofttech.service.LeaveService;
 import com.cubesofttech.service.LogService;
 import com.cubesofttech.service.NotificationService;
@@ -116,6 +117,9 @@ public class LeaveAction extends ActionSupport {
 
 	@Autowired
     private LogService logService;
+	
+	@Autowired
+	private CubeTokenService cubeTokenService;
 
 	@Autowired
 	private NotificationService notificationService;
@@ -1722,6 +1726,7 @@ public class LeaveAction extends ActionSupport {
 			leave.setTimeUpdate(DateUtil.getCurrentTime());
 			if (!noDay.equals(BigDecimal.ZERO)) {
 				leaveDAO.save(leave);
+				log.info("Leave saved successfully: " + leave.getLeaveId());
 			}
 			log.debug("new_leaveAdd_Do Success!!");
 
@@ -2160,6 +2165,9 @@ public class LeaveAction extends ActionSupport {
 			leave.setUserUpdate(onlineUser.getId());
 			leaveDAO.save(leave);
 			log.debug(leave);
+			
+			cubeTokenService.deductUserCubeTokenForLeave(leave.getUserId(), leave);
+			
 			notifyLeaveStatusChange(leave, oldStatus, status, onlineUser.getId());
 			return SUCCESS;
 		} catch (Exception e) {

@@ -403,7 +403,32 @@ public class HolidayDAOImpl implements HolidayDAO {
 		}
 		return result;
 	}
+
 	
+	@Override
+	public boolean isHoliday(java.util.Date targetDate) throws Exception {
+		
+	    if (targetDate == null) {
+	        throw new IllegalArgumentException("Target date is required.");
+	    }
+
+	    String sql =
+	            "SELECT EXISTS ( " +
+	            "    SELECT 1 " +
+	            "    FROM holiday h " +
+	            "    WHERE :targetDate BETWEEN h.start_date AND h.end_date " +
+	            ")";
+
+	    SQLQuery query = sessionFactory
+	            .getCurrentSession()
+	            .createSQLQuery(sql);
+
+	    query.setParameter("targetDate", targetDate);
+
+	    Number result = (Number) query.uniqueResult();
+
+	    return result != null && result.intValue() == 1;
+	}
 
 
 }

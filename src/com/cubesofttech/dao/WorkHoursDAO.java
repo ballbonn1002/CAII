@@ -304,5 +304,7 @@ public interface WorkHoursDAO {
 
 	public List<Map<String, Object>> findForDailyReport(String userId, String jobSiteId, String selectDate)
 			throws Exception;
+	
+	public List<Object[]> findUserEnableWorkHoursByDate(Date targetDate) throws Exception;
 
 }

@@ -50,6 +50,22 @@ public class WarehouseAction extends ActionSupport {
 
 	public String list() {
 		try {
+			
+			User user = (User) request.getSession().getAttribute("user");
+
+			if (user == null) {
+				log.error("User session is null. Session timeout or user not logged in.");
+
+				response.setContentType("application/json;charset=UTF-8");
+				response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+
+				Map<String, Object> error = new HashMap<>();
+				error.put("message", "Session timeout,  Please login again.");
+
+				new ObjectMapper().writeValue(response.getWriter(), error);
+				return ERROR;
+			}
+			
 			List<Warehouse> warehouses = warehouseDAO.findAll();
 			request.setAttribute("warehouseList", warehouses);
 			log.info("Retrieved " + warehouses.size() + " warehouses.");
@@ -68,7 +84,7 @@ public class WarehouseAction extends ActionSupport {
 
 			if (user == null) {
 				log.error("User session is null. Session timeout or user not logged in.");
-				
+
 				response.setContentType("application/json;charset=UTF-8");
 				response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 
@@ -81,7 +97,7 @@ public class WarehouseAction extends ActionSupport {
 
 			if (warehouseName == null || warehouseName.isEmpty()) {
 				log.error("Warehouse name is null or empty.");
-				
+
 				response.setContentType("application/json;charset=UTF-8");
 				response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 
@@ -101,7 +117,7 @@ public class WarehouseAction extends ActionSupport {
 			warehouse.setTimeCreate(DateUtil.getCurrentTime());
 
 			warehouseDAO.save(warehouse);
-			
+
 			log.info("Warehouse saved successfully with ID: " + warehouse.getWarehouseId());
 
 			response.setContentType("application/json;charset=UTF-8");
@@ -114,11 +130,11 @@ public class WarehouseAction extends ActionSupport {
 			result.put("parentId", warehouse.getParent());
 
 			new ObjectMapper().writeValue(response.getWriter(), result);
-			
+
 			return NONE;
 		} catch (Exception e) {
 			log.error("Error occurred while saving warehouse: " + e.getMessage(), e);
-			
+
 			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 			response.setContentType("application/json;charset=UTF-8");
 
@@ -134,13 +150,13 @@ public class WarehouseAction extends ActionSupport {
 	public String update() throws Exception {
 
 		try {
-			
+
 			User user = (User) request.getSession().getAttribute("user");
 			response.setContentType("application/json;charset=UTF-8");
 
 			if (user == null) {
 				log.error("User session is null. Session timeout or user not logged in.");
-				
+
 				response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 				Map<String, Object> error = new HashMap<>();
 				error.put("message", "Session timeout, Please login again.");
@@ -148,10 +164,10 @@ public class WarehouseAction extends ActionSupport {
 				new ObjectMapper().writeValue(response.getWriter(), error);
 				return ERROR;
 			}
-			
+
 			if (warehouseId == null || warehouseId <= 0) {
 				log.error("Warehouse id is null or invalid.");
-				
+
 				response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 				Map<String, Object> error = new HashMap<>();
 				error.put("message", "Warehouse id is required.");
@@ -159,10 +175,10 @@ public class WarehouseAction extends ActionSupport {
 				new ObjectMapper().writeValue(response.getWriter(), error);
 				return ERROR;
 			}
-			
+
 			if (warehouseName == null || warehouseName.isEmpty()) {
 				log.error("Warehouse name is null or empty.");
-				
+
 				response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 
 				Map<String, Object> error = new HashMap<>();
@@ -172,43 +188,43 @@ public class WarehouseAction extends ActionSupport {
 
 				return ERROR;
 			}
-			
+
 			Warehouse warehouse = warehouseDAO.findById(warehouseId);
-			
+
 			if (warehouse == null) {
 				log.error("Warehouse not found for id: " + warehouseId);
 				response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-				
+
 				Map<String, Object> error = new HashMap<>();
 				error.put("message", "Warehouse not found.");
 
 				new ObjectMapper().writeValue(response.getWriter(), error);
 				return ERROR;
 			}
-			
+
 			warehouse.setWarehouseName(warehouseName);
 			warehouse.setDescription(warehouseDescription);
 			warehouse.setUserUpdate(user.getId());
 			warehouse.setTimeUpdate(DateUtil.getCurrentTime());
-			
+
 			warehouseDAO.update(warehouse);
-			
+
 			log.info("Warehouse updated successfully with ID: " + warehouse.getWarehouseId());
-			
+
 			Map<String, Object> result = new HashMap<>();
 			result.put("id", warehouse.getWarehouseId());
 			result.put("parentId", warehouse.getParent());
 			result.put("name", warehouse.getWarehouseName());
 			result.put("description", warehouse.getDescription());
-			
+
 			response.setStatus(HttpServletResponse.SC_OK);
 			new ObjectMapper().writeValue(response.getWriter(), result);
-			
+
 			return NONE;
-			
+
 		} catch (Exception e) {
 			log.error("Error occurred while updating warehouse: " + e.getMessage(), e);
-			
+
 			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 			response.setContentType("application/json;charset=UTF-8");
 
@@ -221,7 +237,7 @@ public class WarehouseAction extends ActionSupport {
 		}
 
 	}
-	
+
 	public String delete() throws Exception {
 		try {
 			User user = (User) request.getSession().getAttribute("user");
@@ -235,7 +251,7 @@ public class WarehouseAction extends ActionSupport {
 				new ObjectMapper().writeValue(response.getWriter(), error);
 				return ERROR;
 			}
-			
+
 			Long warehouseId = Long.parseLong(request.getParameter("id"));
 
 			if (warehouseId == null || warehouseId <= 0) {
@@ -258,9 +274,9 @@ public class WarehouseAction extends ActionSupport {
 				new ObjectMapper().writeValue(response.getWriter(), error);
 				return ERROR;
 			}
-			
+
 			List<Warehouse> childWarehouses = warehouseDAO.findByParentId(warehouseId);
-			
+
 			for (Warehouse child : childWarehouses) {
 				warehouseDAO.delete(child);
 			}
