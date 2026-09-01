@@ -922,3 +922,7 @@ CREATE TABLE `token_usage` (
   `time_update` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`token_usage_id`)
 ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci;
+
+-- PROD
+
+
