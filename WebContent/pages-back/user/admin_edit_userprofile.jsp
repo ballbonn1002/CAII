@@ -21,9 +21,6 @@
 	src="${pageContext.request.contextPath}/assets/plugins/global/plugins.bundle.js"></script>
 <script
 	src="${pageContext.request.contextPath}/assets/js/scripts.bundle.js"></script>
-	
-<script
-	src="${pageContext.request.contextPath}/assets/js/custom/utilities/attachFile/attcahfile.js"></script>
 
 <style>
 .form-check-success .form-check-input {
@@ -1576,6 +1573,9 @@
 
 	</div>
 
+	<script
+	src="${pageContext.request.contextPath}/assets/js/custom/utilities/attachFile/attcahfile.js"></script>
+
 	<script>
 	document.addEventListener("DOMContentLoaded", function() {
 		
@@ -2383,7 +2383,7 @@ document.addEventListener("DOMContentLoaded", function () {
 	        }
 	
 			try {
-				const processedFile = await processAndRemoveWhiteBg(file, 1280, 1280, 0.8);
+				const processedFile = await processAndRemoveWhiteBg(file);
 				const dt = new DataTransfer();
 				dt.items.add(processedFile);
 				this.files = dt.files;
