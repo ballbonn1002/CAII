@@ -75,20 +75,31 @@
 	width: 1px !important;
 }
 
+.responsive-button {
+	padding: 0.775rem 1.5rem !important;
+	font-size: 1.1rem !important;
+	border-radius: 0.475rem !important;
+}
+
 /* Mobile */
 @media ( max-width : 767.98px) {
 	.token-summary-add .row>.col::before, .token-summary-deduct .row>.col::before
 		{
 		display: none;
 	}
-	
 	.token-summary-item {
 		justify-content: flex-start !important;
 	}
-	
 	.token-monthly-separator::before {
-        display: none;
-    }
+		display: none;
+	}
+	.responsive-button {
+		padding: 0.7rem 1rem !important;
+		font-size: 0.95rem !important;
+		border-radius: 0.425rem !important;
+		font-weight: 500 !important;
+		line-height: 1.5 !important;
+	}
 }
 
 /* Laptop */
@@ -115,7 +126,6 @@
 		font-size: 1rem !important;
 	}
 }
-
 
 /* @media ( max-width : 767.98px) {
 	.token-summary-item {
@@ -190,13 +200,15 @@
 							<div class="employee-personal-info">
 
 								<!-- Name + Employee Type + Status -->
-								<div class="d-flex align-items-center gap-3">
+								<div class="d-flex align-items-center gap-3 flex-wrap">
 
 									<div class="fw-bold fs-2 text-gray-900">
 										${userInfo.name_en}</div>
 
-									<!-- Employee Type -->
-									<span class="badge
+									<div>
+										<!-- Employee Type -->
+										<span
+											class="badge
 										<c:choose>
 											<c:when test="${userInfo.employee_type == '1'}">
 												badge-light-primary py-2
@@ -212,25 +224,26 @@
 											</c:otherwise>
 										</c:choose>">
 
-										<c:choose>
-											<c:when test="${userInfo.employee_type == '1'}">
+											<c:choose>
+												<c:when test="${userInfo.employee_type == '1'}">
 												พนักงานประจำ
 											</c:when>
-											<c:when test="${userInfo.employee_type == '2'}">
+												<c:when test="${userInfo.employee_type == '2'}">
 												พนักงานอัตราจ้าง
 											</c:when>
-											<c:when test="${userInfo.employee_type == '3'}">
+												<c:when test="${userInfo.employee_type == '3'}">
 												นักศึกษาฝึกงาน
 											</c:when>
-											<c:otherwise>
+												<c:otherwise>
 												Unknown
 											</c:otherwise>
-										</c:choose>
+											</c:choose>
 
-									</span>
+										</span>
 
-									<!-- Employee Status -->
-									<span class="badge
+										<!-- Employee Status -->
+										<span
+											class="badge
 									<c:choose>
 										<c:when test="${userInfo.employee_status == '1'}">
 											badge-light-success py-2
@@ -248,32 +261,32 @@
 											badge-light-secondary
 										</c:otherwise>
 									</c:choose>">
-										<c:choose>
-											<c:when test="${userInfo.employee_status == '1'}">
+											<c:choose>
+												<c:when test="${userInfo.employee_status == '1'}">
 												Active
 											</c:when>
-											<c:when test="${userInfo.employee_status == '2'}">
+												<c:when test="${userInfo.employee_status == '2'}">
 												Probation
 											</c:when>
-											<c:when test="${userInfo.employee_status == '0'}">
+												<c:when test="${userInfo.employee_status == '0'}">
 												Excluded
 											</c:when>
-											<c:when test="${userInfo.employee_status == '3'}">
+												<c:when test="${userInfo.employee_status == '3'}">
 												Intern
 											</c:when>
-											<c:otherwise>
+												<c:otherwise>
 												Unknown
 											</c:otherwise>
-										</c:choose>
+											</c:choose>
 
-									</span>
-
+										</span>
+									</div>
 								</div>
 
 
 								<!-- Employee ID + Name -->
 								<div
-									class="d-flex align-items-center gap-3 fw-normal mt-1 fs-4 text-gray-900">
+									class="d-flex align-items-center gap-3 fw-normal mt-3 mt-md-1 fs-6 fs-md-4 text-gray-900">
 
 									<div id="employeeId">${userInfo.employee_id}</div>
 
@@ -289,7 +302,8 @@
 								<div class="row g-5">
 									<!-- Position -->
 									<div class="col-md-4">
-										<div class="employee-position
+										<div
+											class="employee-position
 													d-flex flex-column
 													px-4 py-3
 													border border-gray-300 border-dashed
@@ -306,7 +320,8 @@
 
 									<!-- Department -->
 									<div class="col-md-4">
-										<div class="employee-department
+										<div
+											class="employee-department
 													d-flex flex-column
 													px-4 py-3
 													border border-gray-300 border-dashed
@@ -321,16 +336,17 @@
 
 									<!-- Site -->
 									<div class="col-md-4">
-										<div class="employee-site
+										<div
+											class="employee-site
 													d-flex flex-column
 													px-4 py-3
 													border border-gray-300 border-dashed
 													rounded h-100">
 
-											<span class="fw-bold fs-4 text-gray-900"> 
-												<c:choose>
+											<span class="fw-bold fs-4 text-gray-900"> <c:choose>
 													<c:when test="${not empty userInfo.jobsiteList}">
-														<c:forEach var="site" items="${userInfo.jobsiteList}" varStatus="status">
+														<c:forEach var="site" items="${userInfo.jobsiteList}"
+															varStatus="status">
 															${site.name_site}
 															<c:if test="${!status.last}">
 																,
@@ -343,9 +359,7 @@
 													</c:otherwise>
 												</c:choose>
 
-											</span> 
-											
-											<span class="fw-bold fs-6 text-gray-600"> Site </span>
+											</span> <span class="fw-bold fs-6 text-gray-600"> Site </span>
 										</div>
 									</div>
 								</div>
@@ -370,8 +384,8 @@
 
 										<!-- Icon -->
 										<div>
-											<i class="ki-duotone ki-cube-2 fs-4x text-primary">
-												<span class="path1"></span> <span class="path2"></span> <span
+											<i class="ki-duotone ki-cube-2 fs-4x text-primary"> <span
+												class="path1"></span> <span class="path2"></span> <span
 												class="path3"></span>
 											</i>
 										</div>
@@ -400,14 +414,15 @@
 
 								<div class="card card-flush mt-6 w-100 h-100">
 
-									<div class="d-flex flex-column
+									<div
+										class="d-flex flex-column
 												align-items-center
 												justify-content-center
 												h-100 gap-1">
 										<!-- Icon -->
 										<div>
-											<i class="ki-duotone ki-cube-3 fs-4x text-primary">
-												<span class="path1"></span> <span class="path2"></span> <span
+											<i class="ki-duotone ki-cube-3 fs-4x text-primary"> <span
+												class="path1"></span> <span class="path2"></span> <span
 												class="path3"></span>
 											</i>
 										</div>
@@ -422,7 +437,9 @@
 											<span class="fw-bold fs-2qx text-gray-800 token-value"
 												data-field="yearlyCubeToken"> - </span> <span
 												class="fs-4 fw-bold text-primary"> Cube Token </span> <span
-												class="fs-6 fw-semibold text-gray-600"> สะสมรายปี <span id="yearlyCubeToken-year">2026</span> </span>
+												class="fs-6 fw-semibold text-gray-600"> สะสมรายปี <span
+												id="yearlyCubeToken-year">2026</span>
+											</span>
 										</div>
 
 									</div>
@@ -694,11 +711,11 @@
 					<h3 class="fw-medium text-gray-900">Transaction History</h3>
 					<div>
 						<button
-							class="d-flex align-items-center justify-content-center gap-3 btn btn-light-primary"
+							class="d-flex align-items-center justify-content-center gap-3 btn btn-light-primary responsive-button"
 							type="button" onClick="openExchangeTokenModal()">
 							<i class="ki-duotone ki-arrow-right-left fs-1"> <span
 								class="path1"></span> <span class="path2"></span>
-							</i> <span class=""> Exchange Cube Token </span>
+							</i> <span> Exchange Cube Token </span>
 						</button>
 					</div>
 				</div>
@@ -1182,7 +1199,7 @@
 																</td>
 
 																<td class="text-gray-700 fs-6">
-																	\${escapeHtml(tx.description || "-")}
+																	\${renderDescription(tx.description || "-")}
 																</td>
 
 																<td class="fs-6 \${getToken === '-' ? 'text-muted' : 'text-gray-800'} fw-normal text-end pe-0">
@@ -1250,6 +1267,61 @@
 					`);
 				}
 			});
+		}
+		
+		function renderDescription(description) {
+
+			if (!description) return "-";
+			
+			let data = description;
+			
+			try {
+                data = JSON.parse(description);
+            } catch (e) {
+                return escapeHtml(description);
+            }
+			
+            const type = data.type || "";
+            const action = data.action || "";
+			const reason = data.reason || "-";
+			const referenceId = data.referenceId || null;
+			const eventDate = data.date || null;
+			
+			console.log(action);
+			
+			switch (type) {
+                case "add":
+                    return `<div class="d-flex flex-column gap-3">
+                    			<div class="fw-normal text-gray-700 fs-6">
+                    				<span class="\${action === 'return' ? 'text-info' : 'text-success'}">\${action === 'return' ? 'ยกเลิก' : 'ได้รับ'}</span> \${reason}
+                    			</div>
+                    			\${referenceId ? `<div><span class="badge badge-lg badge-light badge-light-primary p-2">#\${referenceId}</span></div>` : ''}
+                    		</div>
+                    	`;	
+                    
+                case "deduct":
+                    return `<div class="d-flex flex-column gap-2">
+			        			<div class="fw-normal text-gray-700 fs-6">
+				    				<span class="text-danger">หัก</span> \${reason}
+				    			</div>
+				    			\${referenceId ? `<div><span class="badge badge-lg badge-light-primary p-2">#\${referenceId}</span></div>` : ''}
+				    			\${eventDate ? `<div><span class="fw-normal fs-6 text-gray-700">\${eventDate}</span></div>` : ''}
+				    		</div>
+				    	`;	
+				    	
+                case "void":
+                    return `<div class="d-flex flex-column gap-3">
+			        			<div>
+				    				<span class="text-info">ยกเลิก</span> การแจกแต้ม \${reason}
+				    			</div>
+				    			\${referenceId ? `<div><span class="badge badge-lg badge-light-primary p-2">#\${referenceId}</span></div>` : ''}
+				    		</div>
+				    	`;
+                    
+                default:
+                    return "-";
+            }
+			
 		}
 		
 		function renderTokenSummary(summary) {

@@ -26,17 +26,21 @@ import com.cubesofttech.dao.ActionPointDAO;
 import com.cubesofttech.dao.ActionTypeDAO;
 import com.cubesofttech.dao.HolidayDAO;
 import com.cubesofttech.dao.JobsiteDAO;
+import com.cubesofttech.dao.LeaveTypeDAO;
 import com.cubesofttech.dao.TokenSettingDAO;
 import com.cubesofttech.dao.TokenUsageDAO;
 import com.cubesofttech.dao.UserDAO;
 import com.cubesofttech.dao.WorkHoursDAO;
 import com.cubesofttech.model.ActionPoint;
 import com.cubesofttech.model.ActionType;
+import com.cubesofttech.model.LeaveType;
 import com.cubesofttech.model.Leaves;
 import com.cubesofttech.model.TokenSetting;
 import com.cubesofttech.model.TokenUsage;
 import com.cubesofttech.model.User;
 import com.cubesofttech.util.DateUtil;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 @Service
 public class CubeTokenService {
@@ -66,6 +70,9 @@ public class CubeTokenService {
 	
 	@Autowired
 	private HolidayDAO holidayDAO;
+	
+	@Autowired
+	private LeaveTypeDAO leaveTypeDAO;
 
 	private static final Integer ACTION_TYPE_GIFT = 1;
 	private static final Integer ACTION_TYPE_DUDUCT = 2;
@@ -82,9 +89,10 @@ public class CubeTokenService {
 	private static final Integer ACTION_POINT_BACKDATE = 7;
 	private static final Integer ACTION_POINT_NO_RECORD = 8;
 
-	private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("dd MMM, HH:mm", Locale.ENGLISH);;
+	private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("dd MMM, HH:mm", Locale.ENGLISH);
+	private static final ObjectMapper MAPPER = new ObjectMapper();
 
-	@Scheduled(cron = "0 0 2 1 * ?")
+	@Scheduled(cron = "0 0 2 * * ?")
 //	@Scheduled(fixedRate = 5000)
 	@Transactional
 	public void distributeMonthlyToken() {
@@ -200,7 +208,13 @@ public class CubeTokenService {
 					usage.setActionPointId(point.getActionPointId());
 					usage.setValue(point.getPoint());
 					usage.setReconcile(null);
-					usage.setDescription("รายเดือน");
+					
+					ObjectNode jsonData = MAPPER.createObjectNode();
+					
+					jsonData.put("type", "add");
+					jsonData.put("reason", "รายเดือน");
+					
+					usage.setDescription(MAPPER.writeValueAsString(jsonData));
 					usage.setReFlag("N");
 					usage.setUserCreate("system");
 					usage.setTimeCreate(DateUtil.getCurrentTime());
@@ -756,17 +770,10 @@ public class CubeTokenService {
 		for (Map<String, Object> row : summaryList) {
 
 			if (row.get("file_path") != null) {
-
 				String filePath = row.get("file_path").toString();
-
-				String fileName = filePath.substring(filePath.lastIndexOf("/") + 1);
-
-				String fileId = fileName.substring(0, fileName.indexOf("_"));
-
-				String fileExt = fileName.substring(fileName.lastIndexOf(".") + 1);
-
-				row.put("file_path", String.format("/upload/user/user_%s.%s", fileId, fileExt));
+				row.put("file_path", filePath);
 			}
+			
 		}
 
 		return summaryList;
@@ -851,16 +858,26 @@ public class CubeTokenService {
 			log.info("Leave action is inactive or has zero points. No deduction will be made.");
 			return;
 		}
+		
 
 		TokenUsage tokenUsage = new TokenUsage();
-
+		
+		LeaveType leaveType = leaveTypeDAO.findById(leave.getLeaveTypeId());
+		
 		tokenUsage.setUserId(userId);
 		tokenUsage.setActionTypeId(ACTION_TYPE_DUDUCT);
 		tokenUsage.setActionPointId(ACTION_POINT_LEAVE);
 		tokenUsage.setValue(leaveActionPoint.getPoint());
 		tokenUsage.setReconcile(null);
 		tokenUsage.setReFlag("Y");
-		tokenUsage.setDescription(leave.getReason());
+		
+		ObjectNode jsonNode = MAPPER.createObjectNode();
+		
+		jsonNode.put("type", "deduct");
+		jsonNode.put("reason", leaveType.getLeaveTypeName());
+		jsonNode.put("referenceId", leave.getLeaveId());
+		
+		tokenUsage.setDescription(MAPPER.writeValueAsString(jsonNode));
 		tokenUsage.setUserCreate("system");
 		tokenUsage.setTimeCreate(DateUtil.getCurrentTime());
 
@@ -912,25 +929,30 @@ public class CubeTokenService {
 		 *
 		 * Result: 5 Aug, 9:00
 		 */
-		String description = targetDate.format(DateTimeFormatter.ofPattern("d MMM", Locale.ENGLISH)) + ", "
-				+ workTimeStart;
+		String eventDate = targetDate.format(DateTimeFormatter.ofPattern("d MMM", Locale.ENGLISH)) + ", " + workTimeStart;
 
 		TokenUsage tokenUsage = new TokenUsage();
-
+		
+		ObjectNode jsonNode = MAPPER.createObjectNode();
+		
+		jsonNode.put("type", "deduct");
+		jsonNode.put("reason", "ไม่พบประวัติ Check-In");
+		jsonNode.put("date", eventDate);
+		
 		tokenUsage.setUserId(userId);
 		tokenUsage.setActionTypeId(ACTION_TYPE_DUDUCT);
 		tokenUsage.setActionPointId(ACTION_POINT_NO_RECORD);
 		tokenUsage.setValue(noRecordActionPoint.getPoint());
 		tokenUsage.setReconcile(null);
 		tokenUsage.setReFlag("Y");
-		tokenUsage.setDescription(description);
+		tokenUsage.setDescription(MAPPER.writeValueAsString(jsonNode));
 		tokenUsage.setUserCreate("system");
 		tokenUsage.setTimeCreate(DateUtil.getCurrentTime());
 
 		usageTokenDAO.save(tokenUsage);
 
 		log.info("Deducted " + noRecordActionPoint.getPoint() + " tokens for no record - morning" + " for user: "
-				+ userId + ", date: " + description);
+				+ userId + ", date: " + targetDate + ", work time start: " + workTimeStart);
 
 	}
 
@@ -975,10 +997,16 @@ public class CubeTokenService {
 		 *
 		 * Result: 5 Aug, 18:00
 		 */
-		String description = targetDate.format(DateTimeFormatter.ofPattern("d MMM", Locale.ENGLISH)) + ", "
+		String eventDate = targetDate.format(DateTimeFormatter.ofPattern("d MMM", Locale.ENGLISH)) + ", "
 				+ workTimeEnd;
 
 		TokenUsage tokenUsage = new TokenUsage();
+		
+		ObjectNode jsonNode = MAPPER.createObjectNode();
+		
+		jsonNode.put("type", "deduct");
+		jsonNode.put("reason", "ไม่พบประวัติ Check-Out");
+		jsonNode.put("date", eventDate);
 
 		tokenUsage.setUserId(userId);
 		tokenUsage.setActionTypeId(ACTION_TYPE_DUDUCT);
@@ -986,14 +1014,14 @@ public class CubeTokenService {
 		tokenUsage.setValue(noRecordActionPoint.getPoint());
 		tokenUsage.setReconcile(null);
 		tokenUsage.setReFlag("Y");
-		tokenUsage.setDescription(description);
+		tokenUsage.setDescription(MAPPER.writeValueAsString(jsonNode));
 		tokenUsage.setUserCreate("system");
 		tokenUsage.setTimeCreate(DateUtil.getCurrentTime());
 
 		usageTokenDAO.save(tokenUsage);
 
 		log.info("Deducted " + noRecordActionPoint.getPoint() + " tokens for no record - afternoon" + " for user: "
-				+ userId + ", date: " + description);
+				+ userId + ", date: " + targetDate + ", work time end: " + workTimeEnd);
 	}
 
 	private void deductUserCubeTokenForLate(String userId, Timestamp checkIn) throws Exception {
@@ -1021,6 +1049,12 @@ public class CubeTokenService {
 		}
 
 		TokenUsage tokenUsage = new TokenUsage();
+		
+		ObjectNode jsonNode = MAPPER.createObjectNode();
+		
+		jsonNode.put("type", "deduct");
+		jsonNode.put("reason", "เข้างานสาย");
+		jsonNode.put("date", checkIn.toLocalDateTime().format(FORMATTER));
 
 		tokenUsage.setUserId(userId);
 		tokenUsage.setActionTypeId(ACTION_TYPE_DUDUCT);
@@ -1028,7 +1062,7 @@ public class CubeTokenService {
 		tokenUsage.setValue(lateActionPoint.getPoint());
 		tokenUsage.setReconcile(null);
 		tokenUsage.setReFlag("Y");
-		tokenUsage.setDescription(checkIn.toLocalDateTime().format(FORMATTER));
+		tokenUsage.setDescription(MAPPER.writeValueAsString(jsonNode));
 		tokenUsage.setUserCreate("system");
 		tokenUsage.setTimeCreate(DateUtil.getCurrentTime());
 
@@ -1063,6 +1097,12 @@ public class CubeTokenService {
 		}
 
 		TokenUsage tokenUsage = new TokenUsage();
+		
+		ObjectNode jsonNode = MAPPER.createObjectNode();
+		
+		jsonNode.put("type", "deduct");
+		jsonNode.put("reason", "ออกก่อนเวลา");
+		jsonNode.put("date", checkOut.toLocalDateTime().format(FORMATTER));
 
 		tokenUsage.setUserId(userId);
 		tokenUsage.setActionTypeId(ACTION_TYPE_DUDUCT);
@@ -1070,7 +1110,7 @@ public class CubeTokenService {
 		tokenUsage.setValue(earlyOutActionPoint.getPoint());
 		tokenUsage.setReconcile(null);
 		tokenUsage.setReFlag("Y");
-		tokenUsage.setDescription(checkOut.toLocalDateTime().format(FORMATTER));
+		tokenUsage.setDescription(MAPPER.writeValueAsString(jsonNode));
 		tokenUsage.setUserCreate("system");
 		tokenUsage.setTimeCreate(DateUtil.getCurrentTime());
 
@@ -1113,6 +1153,12 @@ public class CubeTokenService {
 		}
 
 		TokenUsage tokenUsage = new TokenUsage();
+		
+		ObjectNode jsonNode = MAPPER.createObjectNode();
+		
+		jsonNode.put("type", "deduct");
+		jsonNode.put("reason", "ลงเวลาย้อนหลัง");
+		jsonNode.put("date", checkIn.toLocalDateTime().format(FORMATTER));
 
 		tokenUsage.setUserId(userId);
 		tokenUsage.setActionTypeId(ACTION_TYPE_DUDUCT);
@@ -1120,7 +1166,7 @@ public class CubeTokenService {
 		tokenUsage.setValue(backDateActionPoint.getPoint());
 		tokenUsage.setReconcile(null);
 		tokenUsage.setReFlag("Y");
-		tokenUsage.setDescription(checkIn.toLocalDateTime().format(FORMATTER));
+		tokenUsage.setDescription(MAPPER.writeValueAsString(jsonNode));
 		tokenUsage.setUserCreate("system");
 		tokenUsage.setTimeCreate(DateUtil.getCurrentTime());
 
@@ -1163,6 +1209,12 @@ private void deductUserCubeTokenForBackDateCheckOut(String userId, Timestamp che
 		}
 
 		TokenUsage tokenUsage = new TokenUsage();
+		
+		ObjectNode jsonNode = MAPPER.createObjectNode();
+		
+		jsonNode.put("type", "deduct");
+		jsonNode.put("reason", "ลงเวลาย้อนหลัง");
+		jsonNode.put("date", checkOut.toLocalDateTime().format(FORMATTER));
 
 		tokenUsage.setUserId(userId);
 		tokenUsage.setActionTypeId(ACTION_TYPE_DUDUCT);
@@ -1170,7 +1222,7 @@ private void deductUserCubeTokenForBackDateCheckOut(String userId, Timestamp che
 		tokenUsage.setValue(backDateActionPoint.getPoint());
 		tokenUsage.setReconcile(null);
 		tokenUsage.setReFlag("Y");
-		tokenUsage.setDescription(checkOut.toLocalDateTime().format(FORMATTER));
+		tokenUsage.setDescription(MAPPER.writeValueAsString(jsonNode));
 		tokenUsage.setUserCreate("system");
 		tokenUsage.setTimeCreate(DateUtil.getCurrentTime());
 
@@ -1258,12 +1310,22 @@ private void deductUserCubeTokenForBackDateCheckOut(String userId, Timestamp che
 		usage.setActionTypeId(ACTION_TYPE_REWARD); // Reward
 		usage.setValue(value);
 		usage.setReconcile(null);
-		usage.setDescription(reason);
+		usage.setDescription(null);
 		usage.setReFlag("Y");
 		usage.setUserCreate(givenBy);
 		usage.setTimeCreate(DateUtil.getCurrentTime());
 
 		usageTokenDAO.save(usage);
+		
+		ObjectNode jsonNode = MAPPER.createObjectNode();
+		
+		jsonNode.put("type", "add");
+		jsonNode.put("reason", "การแจกแต้ม " + reason);
+		jsonNode.put("referenceId", usage.getTokenUsageId());
+
+		usage.setDescription(MAPPER.writeValueAsString(jsonNode));
+		
+		usageTokenDAO.update(usage);
 	}
 
 	@Transactional
@@ -1279,13 +1341,34 @@ private void deductUserCubeTokenForBackDateCheckOut(String userId, Timestamp che
 
 		TokenUsage usage = new TokenUsage();
 		Integer targetActionTypeId = originalTransaction.getActionTypeId() == ACTION_TYPE_REWARD ? ACTION_TYPE_VOID : ACTION_TYPE_RETURN;
+		
+		Integer referenceId = null;
+		
+		if (originalTransaction.getActionPointId() == ACTION_POINT_LEAVE) {
+			
+			ObjectNode descriptionNode =  (ObjectNode) MAPPER.readTree(originalTransaction.getDescription());
+			referenceId = descriptionNode.has("referenceId") ? descriptionNode.get("referenceId").asInt() : null;
+			
+		} else {
+			referenceId = originalTransaction.getTokenUsageId();
+		}
 
 		usage.setUserId(userId);
 		usage.setActionTypeId(targetActionTypeId); // Return or Void
 		usage.setValue(returnValue);
 		usage.setReconcile(null);
 		usage.setReFlag("N");
-		usage.setDescription(reason);
+		
+		ObjectNode jsonNode = MAPPER.createObjectNode();
+		jsonNode.put("type", targetActionTypeId == ACTION_TYPE_VOID ? "void" : "add");
+		jsonNode.put("action", targetActionTypeId == ACTION_TYPE_VOID ? "cancel" : "return");
+		jsonNode.put("reason", reason);
+		
+		if (referenceId != null) {
+			jsonNode.put("referenceId", referenceId);
+		}
+		
+		usage.setDescription(MAPPER.writeValueAsString(jsonNode));
 		usage.setUserCreate(givenBy);
 		usage.setTimeCreate(DateUtil.getCurrentTime());
 
@@ -1309,7 +1392,13 @@ private void deductUserCubeTokenForBackDateCheckOut(String userId, Timestamp che
 		usage.setActionTypeId(ACTION_TYPE_EXCHANGE); // Exchange
 		usage.setValue(value);
 		usage.setReconcile(null);
-		usage.setDescription("เบิกแต้มบุญ");
+		
+		ObjectNode jsonNode = MAPPER.createObjectNode();
+		
+		jsonNode.put("type", "add");
+		jsonNode.put("reason", "เบิกแต้มบุญ");
+		
+		usage.setDescription(MAPPER.writeValueAsString(jsonNode));
 		usage.setReFlag("N");
 		usage.setUserCreate(userId);
 		usage.setTimeCreate(DateUtil.getCurrentTime());

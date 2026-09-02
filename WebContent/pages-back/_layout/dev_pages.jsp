@@ -271,8 +271,9 @@ pageEncoding="UTF-8"%>
               </div>
             </div>
           </div>
-                
-                 <div class="row mt-8">
+        </div>
+        
+         <div class="row mt-8">
                     <div class="col-12">
                         <div class="card">
                             <div class="card-header border-0 pt-6 align-items-start">
@@ -290,7 +291,6 @@ pageEncoding="UTF-8"%>
                         </div>
                     </div>
                 </div>
-        </div>
       </div>
     </div>
   </div>

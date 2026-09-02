@@ -32,6 +32,23 @@
 #kt_datatable_zero_configuration thead th .dt-column-order {
 	margin: 0 !important;
 }
+
+#filterBtn {
+	width: 61px !important;
+	height: 44px !important;
+	border: 1px solid var(--bs-primary-border-subtle) !important;
+}
+
+#filterBtn.active {
+	background-color: var(--bs-primary) !important;
+}
+
+@media ( max-width : 768px) {
+	#filterBtn {
+		width: 44px !important;
+		height: 40px !important;
+	}
+}
 </style>
 </head>
 <body>
@@ -65,14 +82,73 @@
 
 				<div class="card mb-5">
 					<div class="card-body">
-						<div class="position-relative">
-							<i
-								class="ki-outline ki-magnifier position-absolute top-50 translate-middle-y ms-4 text-gray-500 fs-4 z-index-1"></i>
+						<div
+							class="d-flex aling-items-center gap-3 justify-content-between">
+							<div class="position-relative flex-grow-1">
+								<i
+									class="ki-outline ki-magnifier position-absolute top-50 translate-middle-y ms-4 text-gray-500 fs-4 z-index-1"></i>
 
-							<select id="employeeSearch" class="form-select ps-12"
-								data-control="select2" data-placeholder="All"
-								data-allow-clear="false">
-							</select>
+								<select id="employeeSearch" class="form-select ps-12" 
+									data-control="select2" data-placeholder="All"
+									data-allow-clear="true">
+								</select>
+							</div>
+
+							<div
+								class="d-flex align-items-center ms-3 collapsible cursor-pointer"
+								data-bs-toggle="collapse" data-bs-target="#employeeFilter">
+								<button type="button"
+									class="btn btn-light-primary border-primary btn-sm"
+									id="filterBtn">
+
+									<i class="ki-duotone ki-filter fs-2"> <span class="path1"></span>
+										<span class="path2"></span>
+									</i>
+								</button>
+							</div>
+
+						</div>
+
+						<div id="employeeFilter" class="collapse">
+							<div class="separator separator-dotted my-10 mb-5"></div>
+
+							<div class="row g-5">
+								<div class="col-12 col-md-4">
+									<label for="Acttive Status"
+										class=" form-label">Active</label> <select id="employeeActiveFilter" 
+										class="form-select" data-control="select2"
+										data-placeholder="All" data-hide-search="true">
+										<option>All</option>
+										<option value="1">Active</option>
+										<option value="0">Inactive</option>
+									</select>
+								</div>
+								
+								<div class="col-12 col-md-4">
+									<label for="Employee Type"
+										class=" form-label">Employee Type</label> <select id="employeeTypeFilter" 
+										class="form-select" data-control="select2"
+										data-placeholder="All" data-hide-search="true">
+										<option>All</option>
+										<option value="1">พนักงานประจำ</option>
+										<option value="2">พนักงานอัตราจ้าง</option>
+										<option value="3">นักศึกษาฝึกงาน</option>
+									</select>
+								</div>
+								
+								<div class="col-12 col-md-4">
+									<label for="Employee Status"
+										class="form-label">Employee Status</label> <select id="employeeStatusFilter" 
+										class="form-select" data-control="select2"
+										data-placeholder="All" data-hide-search="true">
+										<option>All</option>
+										<option value="1">Active</option>
+										<option value="2">Probation</option>
+										<option value="0">Excluded</option>
+										<option value="3">Intern</option>
+									</select>
+								</div>
+							</div>
 						</div>
 
 					</div>
@@ -118,13 +194,21 @@
 
 	<script>
 		let table = null;
+		
 		let selectedUserId = "All";
+		let selectedActive = "All";
+		let selectedEmployeeType = "All";
+		let selectedEmployeeStatus = "All";
 		
 		$(document).ready(function() {
 
             const currentYear = new Date().getFullYear();
             
             loadTokenSummary(currentYear);
+            
+            $("#filterBtn").click(function() {
+                $(this).toggleClass("active");
+            });
             
             $("#employeeSearch").on("change", function() {
 
@@ -136,30 +220,111 @@
                 }
             });
             
+            $("#employeeActiveFilter").on("change", function() {
+
+                selectedActive = $(this).val() || "All";
+
+                if (table) {
+                    table.draw();
+                    updateCounter();
+                }
+            });
+            
+            $("#employeeTypeFilter").on("change", function() {
+
+                selectedEmployeeType = $(this).val() || "All";
+
+                if (table) {
+                    table.draw();
+                    updateCounter();
+                }
+            });
+            
+            $("#employeeStatusFilter").on("change", function() {
+
+                selectedEmployeeStatus = $(this).val() || "All";
+
+                if (table) {
+                    table.draw();
+                    updateCounter();
+                }
+            });
+            
         });
 		
 		$.fn.dataTable.ext.search.push(function(settings, data, dataIndex) {
 
-		    // ใช้เฉพาะ table ของเรา
 		    if (settings.nTable.id !== "kt_datatable_zero_configuration") {
 		        return true;
 		    }
 
-		    // All Employee
-		    if (selectedUserId === "All") {
-		        return true;
-		    }
-
-		    // หา row ที่ DataTables กำลังตรวจสอบ
-		    const rowNode = table.row(dataIndex).node();
+		    // ใช้ DataTable instance จาก settings
+		    const currentTable = $(settings.nTable).DataTable();
+		    const rowNode = currentTable.row(dataIndex).node();
 
 		    if (!rowNode) {
 		        return false;
 		    }
 
+		    // ==========================================
+		    // User ID
+		    // ==========================================
+
 		    const rowUserId = $(rowNode).attr("data-user-id") || "";
-		    
-		    return rowUserId === encodeURIComponent(selectedUserId);
+
+		    if (
+		        selectedUserId !== "All" &&
+		        rowUserId !== selectedUserId
+		    ) {
+		        return false;
+		    }
+
+
+		    // ==========================================
+		    // Active
+		    // ==========================================
+
+		    const rowActive = $(rowNode).attr("data-active") || "";
+
+		    if (
+		        selectedActive !== "All" &&
+		        rowActive !== selectedActive
+		    ) {
+		        return false;
+		    }
+
+
+		    // ==========================================
+		    // Employee Type
+		    // ==========================================
+
+		    const rowEmployeeType =
+		        $(rowNode).attr("data-employee-type") || "";
+
+		    if (
+		        selectedEmployeeType !== "All" &&
+		        rowEmployeeType !== selectedEmployeeType
+		    ) {
+		        return false;
+		    }
+
+
+		    // ==========================================
+		    // Employee Status
+		    // ==========================================
+
+		    const rowEmployeeStatus =
+		        $(rowNode).attr("data-employee-status") || "";
+
+		    if (
+		        selectedEmployeeStatus !== "All" &&
+		        rowEmployeeStatus !== selectedEmployeeStatus
+		    ) {
+		        return false;
+		    }
+
+
+		    return true;
 		});
 		
 		function escapeHtml(value) {
@@ -514,7 +679,11 @@
 						// ==========================================
 							
 						tbody.append(`
-							<tr data-user-id="\${encodeURIComponent(user.user_id || '')}">
+							<tr data-user-id="\${encodeURIComponent(user.user_id || '')}"
+								data-active="\${escapeHtml(user.enable || '')}"
+								data-employee-type="\${escapeHtml(user.employee_type_id || '')}"
+								data-employee-status="\${escapeHtml(user.employee_status || '')}"
+						    >
 
 								<!-- # -->
 								<td class="text-center">

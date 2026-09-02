@@ -925,4 +925,8 @@ CREATE TABLE `token_usage` (
 
 -- PROD
 
+-- 02/09/2026 Best(Intern)
+ALTER TABLE `token_usage`
+MODIFY `description` TEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL;
+
 
