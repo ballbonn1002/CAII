@@ -87,6 +87,15 @@
                                         </select>
                                     </div>
 
+                                    <div class="col-12 col-lg-6">
+                                        <label class="form-label fw-semibold text-gray-700" for="icon">Product Icon</label>
+                                        <%-- TODO: ตอนนี้เป็น frontend เปล่าๆ ยังไม่ผูก backend (ถอดออกชั่วคราวตาม requirement ใหม่)
+                                             รายชื่อไอคอนด้านล่าง hardcode ไว้ในหน้านี้เอง ไม่ได้ผูกกับคอลัมน์ product.icon/DAO/Action ใดๆ --%>
+                                        <select id="icon" name="icon" class="form-select text-gray-700" data-control="select2" data-placeholder="Select or Search Icon...">
+                                            <option></option>
+                                        </select>
+                                    </div>
+
                                     <div class="col-12">
                                         <label class="form-label fw-semibold text-gray-700" for="description">Description</label>
                                         <input type="text" id="description" name="description" maxlength="255"
@@ -112,7 +121,36 @@
 <script>
     var CONTEXT = '${pageContext.request.contextPath}';
 
+    // TODO: frontend เปล่าๆ ก่อน - รายชื่อไฟล์ hardcode ไว้ตรงนี้ชั่วคราว (ยังไม่ได้สแกนจาก backend/DB)
+    // ไฟล์จริงอยู่ใน assets/media/product-icons/ (มี placeholder แค่ box.svg, tag.svg ตอนนี้)
+    var productIconOptions = [
+        { id: 'box.svg', text: 'box.svg' },
+        { id: 'tag.svg', text: 'tag.svg' }
+    ];
+
     $(document).ready(function () {
+        // ---- Product Icon picker (Select2 + รูปพรีวิว) ----
+        function formatProductIcon(opt) {
+            if (!opt.id) { return opt.text; }
+            // ตั้งใจใช้ string concatenation แทน JS template literal เพราะไฟล์นี้เป็น .jsp
+            // (dollar-brace แบบ JS interpolation ในไฟล์ .jsp จะถูก JSP EL ตีความ/กลืนหายไปก่อนถึงมือ browser)
+            return '<span class="d-flex align-items-center">'
+                + '<img src="' + CONTEXT + '/assets/media/product-icons/' + opt.id + '" class="w-20px h-20px me-2" />'
+                + '<span>' + opt.text + '</span>'
+                + '</span>';
+        }
+
+        $('#icon').select2({
+            data: productIconOptions,
+            placeholder: 'Select or Search Icon...',
+            allowClear: true,
+            minimumInputLength: 0,
+            escapeMarkup: function (markup) { return markup; },
+            templateResult: formatProductIcon,
+            templateSelection: formatProductIcon
+        });
+
+
         // กันกด Save ซ้ำระหว่างรอ response
         $('#stockConsAddForm').on('submit', function (e) {
             if ($('#productNo').hasClass('is-invalid')) {

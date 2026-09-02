@@ -101,7 +101,10 @@ public class PurchaseOrderAction extends ActionSupport {
     
     private String poId;
     private String itemsType;
-   
+    // true = getItemsCatalog() ดึงทั้ง parent + sub product (ใช้กับ Equipment Reference Product)
+    // ไม่ส่งมา/false = พฤติกรรมเดิม เฉพาะ parent (ใช้กับ Purchase Order)
+    private String includeSubProducts;
+
     public String getPoId() {
         return poId;
     }
@@ -116,6 +119,14 @@ public class PurchaseOrderAction extends ActionSupport {
 
     public void setItemsType(String itemsType) {
         this.itemsType = itemsType;
+    }
+
+    public String getIncludeSubProducts() {
+        return includeSubProducts;
+    }
+
+    public void setIncludeSubProducts(String includeSubProducts) {
+        this.includeSubProducts = includeSubProducts;
     }
 
     private String companyId;
@@ -1027,7 +1038,10 @@ public class PurchaseOrderAction extends ActionSupport {
                 }
 
                 if (dbItemsType != null) {
-                    List<Map<String, Object>> itemCatalog = productDAO.findByItemsType(dbItemsType);
+                    boolean withSubProducts = "true".equals(includeSubProducts);
+                    List<Map<String, Object>> itemCatalog = withSubProducts
+                            ? productDAO.findByItemsTypeIncludingSubProducts(dbItemsType)
+                            : productDAO.findByItemsType(dbItemsType);
 
                     for (Map<String, Object> p : itemCatalog) {
                         Map<String, Object> item = new HashMap<>();

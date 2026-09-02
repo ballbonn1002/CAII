@@ -155,7 +155,33 @@ public class ProductDAOImpl implements ProductDAO {
 
 	    return query.list();
 	}
-    
+
+	@Override
+	public List<Map<String, Object>> findByItemsTypeIncludingSubProducts(String itemsType) throws Exception {
+	    Session session = sessionFactory.getCurrentSession();
+
+	    // parent_product_id เป็น varchar ส่วน product_id เป็น int - cast ฝั่ง varchar เท่านั้น (ดู skill product-module)
+	    // ชื่อ sub product แสดงเป็น "ชื่อตัวแม่ > ชื่อ sub product" ให้แยกออกจากตัวแม่ได้ใน dropdown เดียวกัน
+	    String sql = "SELECT p.product_id, p.sequence, p.product_no, p.product_type, " +
+	                 "       CASE WHEN p.parent_product_id = '0' THEN p.product_name " +
+	                 "            ELSE CONCAT(parent.product_name, ' > ', p.product_name) END AS product_name " +
+	                 "FROM product p " +
+	                 "LEFT JOIN product parent " +
+	                 "       ON p.parent_product_id <> '0' " +
+	                 "      AND CAST(p.parent_product_id AS UNSIGNED) = parent.product_id " +
+	                 "WHERE p.product_type = :itemsType " +
+	                 "ORDER BY CASE WHEN p.parent_product_id = '0' THEN p.product_id " +
+	                 "              ELSE CAST(p.parent_product_id AS UNSIGNED) END, " +
+	                 "         CASE WHEN p.parent_product_id = '0' THEN 0 ELSE 1 END, " +
+	                 "         p.sequence";
+
+	    SQLQuery query = session.createSQLQuery(sql);
+	    query.setParameter("itemsType", itemsType);
+	    query.setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
+
+	    return query.list();
+	}
+
 	@Override
 	public void updateActiveByParentId(Integer parentId, String active, String userUpdateId) throws Exception {
 	    try {

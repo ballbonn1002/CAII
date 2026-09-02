@@ -20,6 +20,16 @@ public interface ProductDAO {
     public List<Map<String, Object>> findAllWithSubProducts(String productType) throws Exception;
     List<Map<String, Object>> findCatalogItemsWithSubProducts() throws Exception;
 	List<Map<String, Object>> findByItemsType(String itemsType) throws Exception;
+
+	/**
+	 * เหมือน findByItemsType() แต่ดึงทั้ง product ตัวแม่ (parent_product_id = '0')
+	 * และ sub product (parent_product_id != '0') ของ type นั้นๆ มาด้วย
+	 * ใช้กับ dropdown ที่ต้องเลือก reference product แบบละเอียดถึงระดับ sub product
+	 * (ต่างจาก findByItemsType เดิมที่ใช้กับ PO ซึ่งอ้างอิงเฉพาะตัวแม่)
+	 *
+	 * sub product จะแสดงชื่อแบบ "ชื่อตัวแม่ > ชื่อ sub product" เพื่อให้แยกจากตัวแม่ได้
+	 */
+	List<Map<String, Object>> findByItemsTypeIncludingSubProducts(String itemsType) throws Exception;
 	void updateActiveByParentId(Integer parentId, String active, String userUpdateId) throws Exception;
 	void updateSubProductActiveByParentId(Integer parentId, String subProductActive, String userUpdateId) throws Exception;
 	List<Product> getproductid(Product product) throws Exception;

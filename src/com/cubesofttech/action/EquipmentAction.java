@@ -79,6 +79,8 @@ public class EquipmentAction extends ActionSupport {
 	
 	private String itemNo;
 	private String type;
+	// ---- product ที่เครื่องนี้อ้างอิงเป็น catalog item (FK ไป product.product_id, N equipment : 1 product) ----
+	private String productId;
 	private String name;
 	private String serialNo;
 	private int amount;
@@ -253,6 +255,7 @@ public class EquipmentAction extends ActionSupport {
 	            e.setTimeCreate(timestamp);
 	        }
 			e.setType(type);
+			e.setProductId((productId != null && !productId.trim().isEmpty()) ? productId.trim() : null);
 			e.setUserCreate(user.getId());
 			e.setUserUpdate(user.getId());
 			e.setTimeUpdate(DateUtil.getCurrentTime());
@@ -354,6 +357,7 @@ public class EquipmentAction extends ActionSupport {
 	            e.setTimeCreate(oldTimeCreate);
 	        }
 			e.setType(type);
+			e.setProductId((productId != null && !productId.trim().isEmpty()) ? productId.trim() : null);
 			e.setWifiaddress(wifiaddress);
 			e.setLanaddress(lanaddress);
 			e.setUserCreate(user.getId());
@@ -857,6 +861,14 @@ public class EquipmentAction extends ActionSupport {
 
 	public void setType(String type) {
 		this.type = type;
+	}
+
+	public String getProductId() {
+		return productId;
+	}
+
+	public void setProductId(String productId) {
+		this.productId = productId;
 	}
 
 	public String getName() {

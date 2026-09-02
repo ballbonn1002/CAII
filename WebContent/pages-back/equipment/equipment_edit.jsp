@@ -96,6 +96,20 @@
                                     </div>
 
                                     <div class="row g-5 mb-5">
+                                        <div class="col-12">
+                                            <label class="form-label fw-medium text-gray-800" for="productSelect">
+                                                Reference Product
+                                                <span class="text-muted fw-normal">(Equipment Catalog)</span>
+                                            </label>
+                                            <%-- อ้างอิงไปตาราง product (product_type = '1' Equipment) - ไม่บังคับเลือก
+                                                 ดึงรายการผ่าน action ที่มีอยู่แล้ว get_items_catalog (PurchaseOrderAction.getItemsCatalog) --%>
+                                            <select class="form-select" name="productId" id="productSelect" data-control="select2" data-placeholder="Select Product">
+                                                <option></option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div class="row g-5 mb-5">
                                         <div class="col-md-6">
                                             <label class="required form-label fw-medium text-gray-800">Item Name</label>
                                             <input type="text" name="name" class="form-control" placeholder="Item name" value="${equipmentbyId.name}" />
@@ -725,6 +739,7 @@
 		var statusList = ${status != null ? status : '[]'};
         var savedTypeID = "${equipmentbyId.type}";
         var savedStatusID = "${equipmentbyId.status}";
+        var savedProductId = "${equipmentbyId.productId}";
 
         /* try {
             if (rawType) typeList = JSON.parse(rawType);
@@ -830,6 +845,31 @@
 
         // Init Components
         $('#typeSelect, #statusSelect').select2({ minimumResultsForSearch: Infinity });
+        $('#productSelect').select2({ placeholder: 'Select Product', allowClear: true });
+
+        // ---- Reference Product (Equipment Catalog) ----
+        // ใช้ endpoint เดิม get_items_catalog (PurchaseOrderAction.getItemsCatalog) แทนการทำ action ใหม่
+        // includeSubProducts: true = ดึงทั้ง product ตัวแม่และ sub product มาให้เลือกด้วย
+        // (ต่างจากหน้า Purchase Order ที่ไม่ส่ง flag นี้ จึงยังได้เฉพาะตัวแม่เหมือนเดิม)
+        $.ajax({
+            url: 'get_items_catalog',
+            type: 'POST',
+            dataType: 'json',
+            data: { itemsType: 'equipment', includeSubProducts: 'true' },
+            success: function (resp) {
+                var data = resp.data;
+                var list = (data && data.productList) || [];
+                var options = '<option></option>';
+                $.each(list, function (index, item) {
+                    var isSelected = (String(item.id) === savedProductId) ? 'selected' : '';
+                    options += '<option value="' + item.id + '" ' + isSelected + '>' + item.name + '</option>';
+                });
+                $('#productSelect').html(options).trigger('change');
+            },
+            error: function () {
+                console.error('Error loading product catalog.');
+            }
+        });
         $("#kt_datepicker_1").flatpickr({ dateFormat: "d M Y" });
 
         // Toggle More Detail

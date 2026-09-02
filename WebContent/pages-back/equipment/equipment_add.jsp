@@ -161,6 +161,27 @@
                   </div>
 
                   <div class="row g-5 mb-5">
+                    <div class="col-12">
+                      <label class="form-label" for="productSelect">
+                        Reference Product
+                        <span class="text-muted fw-normal">(Equipment Catalog)</span>
+                      </label>
+                      <%-- อ้างอิงไปตาราง product (product_type = '1' Equipment) - ไม่บังคับเลือก
+                           ดึงรายการผ่าน action ที่มีอยู่แล้ว get_items_catalog (PurchaseOrderAction.getItemsCatalog)
+                           แทนการทำ endpoint ใหม่ เพราะคืนค่า {id, name} ตรงตาม pattern ที่ต้องใช้อยู่แล้ว --%>
+                      <select
+                        class="form-select"
+                        name="productId"
+                        id="productSelect"
+                        data-control="select2"
+                        data-placeholder="Select Product"
+                      >
+                        <option></option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <div class="row g-5 mb-5">
                     <div class="col-md-6">
                       <label class="required form-label">Item Name</label>
                       <input
@@ -492,6 +513,33 @@
     // Init Select2
     $("#typeSelect, #statusSelect").select2({
       minimumResultsForSearch: Infinity,
+    });
+    $("#productSelect").select2({
+      placeholder: "Select Product",
+      allowClear: true,
+    });
+
+    // ---- Reference Product (Equipment Catalog) ----
+    // ใช้ endpoint เดิม get_items_catalog (PurchaseOrderAction.getItemsCatalog) แทนการทำ action ใหม่
+    // includeSubProducts: true = ดึงทั้ง product ตัวแม่และ sub product มาให้เลือกด้วย
+    // (ต่างจากหน้า Purchase Order ที่ไม่ส่ง flag นี้ จึงยังได้เฉพาะตัวแม่เหมือนเดิม)
+    $.ajax({
+      url: "get_items_catalog",
+      type: "POST",
+      dataType: "json",
+      data: { itemsType: "equipment", includeSubProducts: "true" },
+      success: function (resp) {
+        var data = resp.data;
+        var list = (data && data.productList) || [];
+        var options = "<option></option>";
+        $.each(list, function (index, item) {
+          options += '<option value="' + item.id + '">' + item.name + "</option>";
+        });
+        $("#productSelect").html(options).trigger("change");
+      },
+      error: function () {
+        console.error("Error loading product catalog.");
+      },
     });
 
     // Init Components

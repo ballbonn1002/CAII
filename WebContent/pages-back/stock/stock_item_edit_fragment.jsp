@@ -137,6 +137,15 @@
                                     </div>
 
                                     <div class="col-12 col-lg-6">
+                                        <label class="form-label fw-semibold text-gray-700" for="icon">Product Icon</label>
+                                        <%-- TODO: ตอนนี้เป็น frontend เปล่าๆ ยังไม่ผูก backend (ถอดออกชั่วคราวตาม requirement ใหม่)
+                                             product ไม่มีคอลัมน์ icon แล้ว จึงยังไม่ preselect ค่าเดิมตอนเปิดหน้า edit --%>
+                                        <select id="icon" name="icon" class="form-select text-gray-700" data-control="select2" data-placeholder="Select or Search Icon...">
+                                            <option></option>
+                                        </select>
+                                    </div>
+
+                                    <div class="col-12 col-lg-6">
                                         <label class="form-label fw-semibold text-gray-700" for="description">Description</label>
                                         <input type="text" id="description" name="description" maxlength="255"
                                                class="form-control text-gray-700"
@@ -917,6 +926,13 @@
         var URL_PREFIX = '${urlPrefix}';
         var IS_EQUIPMENT = ${isEquipment};
 
+        // TODO: frontend เปล่าๆ ก่อน - รายชื่อไฟล์ hardcode ไว้ตรงนี้ชั่วคราว (ยังไม่ได้สแกนจาก backend/DB)
+        // ไฟล์จริงอยู่ใน assets/media/product-icons/ (มี placeholder แค่ box.svg, tag.svg ตอนนี้)
+        var productIconOptions = [
+            { id: 'box.svg', text: 'box.svg' },
+            { id: 'tag.svg', text: 'tag.svg' }
+        ];
+
         function notifyError(msg) {
             if (window.Swal) {
                 Swal.fire('Error', msg || 'เกิดข้อผิดพลาด', 'error');
@@ -947,6 +963,28 @@
         }
         $('#productType').on('change', toggleEquipmentType);
         toggleEquipmentType(); // ตั้งค่าเริ่มต้นตาม productType ปัจจุบันของ item นี้
+
+        // ---- Product Icon picker (Select2 + รูปพรีวิว) - เหมือนหน้า stock_cons_add.jsp ----
+        function formatProductIcon(opt) {
+            if (!opt.id) { return opt.text; }
+            // ตั้งใจใช้ string concatenation แทน JS template literal เพราะไฟล์นี้เป็น .jsp
+            // (dollar-brace แบบ JS interpolation ในไฟล์ .jsp จะถูก JSP EL ตีความ/กลืนหายไปก่อนถึงมือ browser)
+            return '<span class="d-flex align-items-center">'
+                + '<img src="' + CONTEXT + '/assets/media/product-icons/' + opt.id + '" class="w-20px h-20px me-2" />'
+                + '<span>' + opt.text + '</span>'
+                + '</span>';
+        }
+
+        $('#icon').select2({
+            data: productIconOptions,
+            placeholder: 'Select or Search Icon...',
+            allowClear: true,
+            minimumInputLength: 0,
+            escapeMarkup: function (markup) { return markup; },
+            templateResult: formatProductIcon,
+            templateSelection: formatProductIcon
+        });
+        // TODO: frontend เปล่าๆ ก่อน - product ไม่มีคอลัมน์ icon แล้ว จึงยังไม่ preselect ค่าเดิม
 
         // ---- แสดงปุ่ม Cancel/Save เฉพาะเมื่อมีการแก้ไขค่าในฟอร์ม Product Detail ----
         var $editForm = $('#stockConsEditForm');
