@@ -9,7 +9,7 @@
                 <div class="page-title d-flex flex-column justify-content-center flex-wrap me-3">
                     <h1 class="page-heading d-flex text-gray-700 fw-semibold my-0">Stock - Consumables</h1>
                     <ul class="breadcrumb breadcrumb-separatorless fw-semibold fs-7 my-0 pt-1">
-                        <li class="breadcrumb-item text-muted"><a href="${pageContext.request.contextPath}/demo_dashboard" class="text-muted text-hover-primary fw-medium fs-7">Home</a></li>
+                        <li class="breadcrumb-item text-muted"><a href="${pageContext.request.contextPath}/check_in_out" class="text-muted text-hover-primary fw-medium fs-7">Home</a></li>
                         <li class="breadcrumb-item"><span class="bullet bg-gray-500 fw-medium fs-7 w-5px h-2px"></span></li>
                         <li class="breadcrumb-item text-muted fw-medium fs-7">Product</li>
                     </ul>
@@ -65,7 +65,7 @@
                                                 <c:otherwise>
                                                     <%-- TODO: ยังไม่มีตาราง master ของ product_type --%>
                                                     <option value="1">Equipment</option>
-                                                    <option value="2" selected>Consumable</option>
+                                                    <option value="2" selected>Consumables</option>
                                                     <option value="3">Accessories</option>
                                                     <option value="4">Office Supplies</option>
                                                 </c:otherwise>

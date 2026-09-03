@@ -4,13 +4,15 @@
 
 <%--
   Stock - Consumables : Stock Balance
-  หมายเหตุ: ตอนนี้ทำเฉพาะฝั่งหน้าบ้าน (UI) ข้อมูลในตาราง/history เป็น static demo
-  รอ backend (showStockBalancePage) ส่ง attribute ต่อไปนี้เข้ามาแทน:
-    - product          : Product (ชื่อ/รหัสสินค้าที่กำลังดู)
-    - sizeSummaries    : List<Map> {size, amount}            -> ปุ่มกรองไซซ์ + ยอดรวม
-    - balances         : List<Map> {sub_product, warehouse, amount, is_total}
-    - historiesIn      : List<Map> {amount, unit, user, doc_no, time_create, details:[{size, amount}]}
-    - historiesOut     : เหมือน historiesIn แต่เป็นฝั่งเบิกออก
+  ข้อมูลมาจาก ProductAction.showStockBalancePage() ทั้งหมด (Equipment จะถูก reject ตั้งแต่ action):
+    - product        : Product (ชื่อ/รหัสสินค้าที่กำลังดู)
+    - subProducts    : List<Product> เรียงตาม sequence
+    - warehouses     : List<Warehouse> ใช้เติม dropdown ใน modal Add Stock
+    - units          : List<UnitOfMeasure> เรียงตาม sequence (ตัวแรก = unit หลัก)
+    - sizeSummaries  : List<Map> {key, label, amount}  -> ปุ่มกรองไซซ์ + ยอดรวม (ตัวแรก key="ALL")
+    - balances       : List<Map> {key, label, total, rows:[{warehouse, amount}]}  -> ตารางยอดคงเหลือ group ตามไซซ์
+    - historiesIn    : List<Map> {amount, unit, user, warehouse, date, doc_no, details:[{size, amount}]}
+    - historiesOut   : ยังไม่มีแหล่งข้อมูลฝั่งเบิกออก - action ส่ง list ว่างมาก่อน (ดู TODO ในแท็บ OUT)
 --%>
 
 <div class="app-main flex-column flex-row-fluid" id="kt_app_main">
@@ -20,7 +22,7 @@
                 <div class="page-title d-flex flex-column justify-content-center flex-wrap me-3">
                     <h1 class="page-heading d-flex text-gray-700 fw-semibold my-0">Stock - Consumables</h1>
                     <ul class="breadcrumb breadcrumb-separatorless fw-semibold fs-7 my-0 pt-1">
-                        <li class="breadcrumb-item text-muted"><a href="${pageContext.request.contextPath}/demo_dashboard" class="text-muted text-hover-primary fw-medium fs-7">Home</a></li>
+                        <li class="breadcrumb-item text-muted"><a href="${pageContext.request.contextPath}/check_in_out" class="text-muted text-hover-primary fw-medium fs-7">Home</a></li>
                         <li class="breadcrumb-item"><span class="bullet bg-gray-500 fw-medium fs-7 w-5px h-2px"></span></li>
                         <li class="breadcrumb-item text-muted fw-medium fs-7">Product</li>
                     </ul>
