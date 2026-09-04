@@ -225,6 +225,7 @@ public class AnnouncementAction extends ActionSupport {
 				return ERROR;
 			}
 	    	
+
 	    	request.setCharacterEncoding("UTF-8");
 	        response.setCharacterEncoding("UTF-8");
 	        
@@ -434,9 +435,8 @@ public class AnnouncementAction extends ActionSupport {
 			if (fileUpload != null) {
 				// If edit delete old file
 				if (isEdit && announcement.getFile_id() != null) {
-					FileUpload oldFile = fileuploadDAO.findById(Integer.parseInt(announcement.getFile_id()));
-					if (oldFile != null)
-						fileuploadDAO.delete(oldFile);
+					fileAttachmentService.deleteById(announcement.getFile_id(),
+						request.getServletContext().getRealPath("/"));
 				}
 
 				List<FileUpload> savedCoverFiles = fileAttachmentService.attach(
@@ -597,8 +597,9 @@ public class AnnouncementAction extends ActionSupport {
 
 			fileUploadlist = fileuploadDAO.findByPageAndPageId("announcement", announcement);
 			if (fileUploadlist != null) {
+				String realPath = request.getServletContext().getRealPath("/");
 				for (int i = 0; i < fileUploadlist.size(); i++) {
-					fileuploadDAO.delete(fileUploadlist.get(i));
+					fileAttachmentService.deleteById(String.valueOf(fileUploadlist.get(i).getFileId()), realPath);
 					log.debug(fileUploadlist.get(i));
 					log.debug("delete fileupload success");
 				}

@@ -204,7 +204,7 @@
 											class="ki-duotone ki-pencil fs-6"><span class="path1"></span><span
 												class="path2"></span></i> <!--begin::Inputs--> <input id="imageInputFile"
 											type="file" name="fileUpload" accept=".png, .jpg, .jpeg" />
-											<input type="hidden" name="avatar_remove" /> <!--end::Inputs-->
+											 <!--end::Inputs-->
 										</label>
 										<!--end::Edit button-->
 
@@ -217,16 +217,7 @@
 										</span>
 										<!--end::Cancel button-->
 
-										<!--begin::Remove button-->
-										<c:if test="${not empty announcement}">
-											<span
-												class="btn btn-icon btn-circle btn-color-muted btn-active-color-primary w-25px h-25px bg-body shadow"
-												data-kt-image-input-action="remove" data-bs-toggle="tooltip"
-												data-bs-dismiss="click" title="Remove avatar"> <i
-												class="ki-outline ki-cross fs-3"></i>
-											</span>
-										</c:if>
-										<!--end::Remove button-->
+										
 									</div>
 									<!--end::Image input-->
 								</div>

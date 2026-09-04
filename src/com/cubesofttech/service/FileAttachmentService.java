@@ -138,6 +138,30 @@ public class FileAttachmentService {
         }
     }
 
+    /**
+     * ลบไฟล์แนบเดี่ยวตาม id (ใช้ตอนแทนที่รูปปก/cover — ลบตัวเก่าก่อน attach ตัวใหม่)
+     * ลบทั้งแถวใน DB และไฟล์จริงบนดิสก์
+     */
+    public void deleteById(String fileId, String serverRealPath) throws Exception {
+        if (isBlank(fileId)) {
+            return;
+        }
+        Integer id;
+        try {
+            id = Integer.valueOf(fileId.trim());
+        } catch (NumberFormatException e) {
+            log.warn("deleteById: bad file id=" + fileId);
+            return;
+        }
+        FileUpload fu = fileUploadDAO.findById(id);
+        if (fu == null) {
+            return;
+        }
+        deletePhysicalFile(fu, serverRealPath);
+        fileUploadDAO.delete(fu);
+        log.debug("deleted attachment id=" + id);
+    }
+
     /** ลบไฟล์แนบทั้งหมดของ record (ใช้ตอนลบหัว record) */
     public void deleteAll(String page, String pageId, String serverRealPath) throws Exception {
         List<FileUpload> list = listAttachments(page, pageId);
