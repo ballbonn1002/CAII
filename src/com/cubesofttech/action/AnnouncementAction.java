@@ -435,8 +435,25 @@ public class AnnouncementAction extends ActionSupport {
 			if (fileUpload != null) {
 				// If edit delete old file
 				if (isEdit && announcement.getFile_id() != null) {
-					fileAttachmentService.deleteById(announcement.getFile_id(),
-						request.getServletContext().getRealPath("/"));
+
+					Integer oldFileId = Integer.valueOf(announcement.getFile_id());
+					FileUpload oldFile = fileuploadDAO.findById(oldFileId);
+
+					if (oldFile != null) {
+
+						// Delete physical file
+						String realPath = request.getServletContext().getRealPath("/");
+						File physicalFile = new File(realPath + oldFile.getPath());
+
+						if (physicalFile.exists()) {
+							physicalFile.delete();
+						}
+
+						// Delete DB record
+						fileuploadDAO.delete(oldFile);
+
+						log.debug("Deleted old announcement cover file: " + oldFileId);
+					}
 				}
 
 				List<FileUpload> savedCoverFiles = fileAttachmentService.attach(
@@ -483,6 +500,7 @@ public class AnnouncementAction extends ActionSupport {
 			} else {
 				log.debug("No file to delete");
 			}
+			
 
 			if (files != null && files.length > 0 && filesUploadFileName != null && !filesUploadFileName.isEmpty()) {
 				String[] fileNames = new Gson().fromJson(filesUploadFileName, String[].class);
@@ -596,18 +614,25 @@ public class AnnouncementAction extends ActionSupport {
 			Announcement announcementdl = announcementDAO.findById(announcementId);
 
 			fileUploadlist = fileuploadDAO.findByPageAndPageId("announcement", announcement);
-			if (fileUploadlist != null) {
+
+			if (fileUploadlist != null && !fileUploadlist.isEmpty()) {
 				String realPath = request.getServletContext().getRealPath("/");
-				for (int i = 0; i < fileUploadlist.size(); i++) {
-					fileAttachmentService.deleteById(String.valueOf(fileUploadlist.get(i).getFileId()), realPath);
-					log.debug(fileUploadlist.get(i));
-					log.debug("delete fileupload success");
+
+				List<String> fileIds = new ArrayList<String>();
+
+				for (FileUpload fileUpload : fileUploadlist) {
+					fileIds.add(String.valueOf(fileUpload.getFileId()));
 				}
+
+				fileAttachmentService.deleteByIds(fileIds, realPath);
+
+				log.debug("Deleted file IDs: " + fileIds);
 			}
 
 			announcementDAO.delete(announcementdl);
 
 			return SUCCESS;
+
 		} catch (Exception e) {
 			log.error("Error deleting announcement", e);
 			return ERROR;
