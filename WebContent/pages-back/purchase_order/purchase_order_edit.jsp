@@ -27,7 +27,8 @@
 <script
 	src="${pageContext.request.contextPath}/assets/plugins/custom/datatables/datatables.bundle.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/signature_pad@4.1.7/dist/signature_pad.umd.min.js"></script>
-
+<script
+	src="${pageContext.request.contextPath}/assets/js/custom/utilities/attachFile/attcahfile.js"></script>
 <style>
 /* Table MR */
 /* [data-bs-theme="light"] #mrResultTable.table.table-striped > tbody > tr:nth-of-type(odd) > * {
@@ -208,22 +209,99 @@
 									<span class="fs-6 fw-medium text-gray-800"><fmt:formatDate value="${requestDateTime}" pattern="d MMM yyyy" /></span>
 								</div>
 								<c:choose>
-									<c:when test="${poList.status == '1'}">
-										<div class="col-12 mt-9">
+								    <%-- Draft: อัปโหลดเพิ่มได้ + ลบได้ --%>
+								    <c:when test="${poList.status == '1'}">
+								    	<div class="col-12 mt-9">
 											<label class="required fw-medium text-gray-800 mb-2">Description</label>
 											<textarea class="form-control text-gray-700" id="description" name="description"
 												placeholder="Description" rows="3">${poList.description}</textarea>
 										</div>
+								        <div class="col-12 mt-5">
+								            <label for="myFile" id="lbFile" class="btn btn-primary d-inline-flex align-items-center justify-content-center gap-2 fw-medium">
+								                Attach files
+								                <input type="file" id="myFile" name="files" style="display:none;"
+								                    accept="image/*,application/pdf,application/zip,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document" multiple>
+								            </label>
+								
+								            <!-- ไฟล์เดิมที่มีอยู่ใน DB -->
+								            <div id="attachFileList" class="d-flex flex-wrap gap-2 mt-3">
+											    <c:forEach var="af" items="${attachmentList}">
+											        <c:set var="fType" value="${fn:toLowerCase(af.type)}" />
+											        <div class="d-inline-flex align-items-center p-2 border border-gray-200 rounded bg-white" data-file-id="${af.fileId}">
+											            <a href="${pageContext.request.contextPath}${af.path}" target="_blank"
+											               class="d-flex align-items-center text-gray-800 fw-medium text-decoration-none"
+											               title="Click to open">
+											                <c:choose>
+											                    <c:when test="${fType == '.pdf'}">
+											                        <img src="${pageContext.request.contextPath}/assets/media/svg/files/pdf.svg" class="w-25px h-25px me-3 flex-shrink-0" alt="icon" />
+											                    </c:when>
+											                    <c:when test="${fType == '.doc' or fType == '.docx'}">
+											                        <img src="${pageContext.request.contextPath}/assets/media/svg/files/doc.svg" class="w-25px h-25px me-3 flex-shrink-0" alt="icon" />
+											                    </c:when>
+											                    <c:when test="${fType == '.png' or fType == '.jpg' or fType == '.jpeg' or fType == '.gif' or fType == '.webp'}">
+											                        <img src="${pageContext.request.contextPath}/assets/media/svg/files/image.svg" class="w-25px h-25px me-3 flex-shrink-0" alt="icon" />
+											                    </c:when>
+											                    <c:otherwise>
+											                        <img src="${pageContext.request.contextPath}/assets/media/svg/files/folder-document.svg" class="w-25px h-25px me-3 flex-shrink-0" alt="icon" />
+											                    </c:otherwise>
+											                </c:choose>
+											                <span class="text-truncate" style="max-width:220px;">${af.name}${af.type}</span>
+											            </a>
+											            <span class="btn btn-icon btn-sm btn-light-danger ms-2 cursor-pointer"
+											                  title="Delete" onclick="removeExistingAttachment('${af.fileId}', this)">
+											                <i class="ki-duotone ki-trash fs-3">
+											                    <span class="path1"></span><span class="path2"></span>
+											                    <span class="path3"></span><span class="path4"></span><span class="path5"></span>
+											                </i>
+											            </span>
+											        </div>
+											    </c:forEach>
+											   
+											</div>
+									
+									        <div id="errorMsgAF" class="text-danger fs-8 mt-1"></div>
+									    </div>
 									</c:when>
-									<c:otherwise>
-										<div class="col-12 mt-9 d-flex align-items-center">
+								
+								    <%-- Status อื่น: แสดงเฉพาะไฟล์ใน DB, คลิกเปิดได้ ไม่มีปุ่มลบ/อัป --%>
+								    <c:otherwise>
+								    	<div class="col-12 mt-9 d-flex align-items-center">
 											<i class="ki-duotone ki-document fs-3 me-3">
 												<span class="path1"></span>
 												<span class="path2"></span>
 											</i>
 											<span class="fs-6 fw-medium text-gray-800">${empty poList.description ? '-' : poList.description}</span>
 										</div>
-									</c:otherwise>
+								        <c:if test="${not empty attachmentList}">
+										    <div class="col-12 mt-5">
+										        <h3 class="fw-semibold text-gray-900 mt-10 mb-7">Attached files</h3>
+										        <div class="d-flex flex-wrap gap-2">
+										            <c:forEach var="af" items="${attachmentList}">
+										                <c:set var="fType" value="${fn:toLowerCase(af.type)}" />
+										                <a href="${pageContext.request.contextPath}${af.path}" target="_blank"
+										                   class="d-inline-flex align-items-center p-2 border border-gray-200 rounded bg-white text-gray-800 fw-medium text-decoration-none"
+										                   title="Click to open">
+										                    <c:choose>
+										                        <c:when test="${fType == '.pdf'}">
+										                            <img src="${pageContext.request.contextPath}/assets/media/svg/files/pdf.svg" class="w-25px h-25px me-3 flex-shrink-0" alt="icon" />
+										                        </c:when>
+										                        <c:when test="${fType == '.doc' or fType == '.docx'}">
+										                            <img src="${pageContext.request.contextPath}/assets/media/svg/files/doc.svg" class="w-25px h-25px me-3 flex-shrink-0" alt="icon" />
+										                        </c:when>
+										                        <c:when test="${fType == '.png' or fType == '.jpg' or fType == '.jpeg' or fType == '.gif' or fType == '.webp'}">
+										                            <img src="${pageContext.request.contextPath}/assets/media/svg/files/image.svg" class="w-25px h-25px me-3 flex-shrink-0" alt="icon" />
+										                        </c:when>
+										                        <c:otherwise>
+										                            <img src="${pageContext.request.contextPath}/assets/media/svg/files/folder-document.svg" class="w-25px h-25px me-3 flex-shrink-0" alt="icon" />
+										                        </c:otherwise>
+										                    </c:choose>
+										                    <span class="text-truncate" style="max-width:220px;">${af.name}${af.type}</span>
+										                </a>
+										            </c:forEach>
+										        </div>
+										    </div>
+										</c:if>
+								    </c:otherwise>
 								</c:choose>
 								
 							</div>
@@ -1025,6 +1103,150 @@
 			reader.onerror = error => reject(error);
 		});
 	}
+	
+	// --- Multi-file Attach ---
+	var selectedFiles = [];
+
+	function getFileIconPath(fileName) {
+	    var ext = fileName.split('.').pop().toLowerCase();
+	    switch (ext) {
+	        case 'pdf': return ctx + '/assets/media/svg/files/pdf.svg';
+	        case 'doc': case 'docx': return ctx + '/assets/media/svg/files/doc.svg';
+	        case 'png': case 'jpg': case 'jpeg': case 'gif': case 'webp':
+	            return ctx + '/assets/media/svg/files/image.svg';
+	        default: return ctx + '/assets/media/svg/files/folder-document.svg';
+	    }
+	}
+
+	async function processFiles(fileListInput) {
+	    var maxSize = 5 * 1024 * 1024;
+	    var oversizedFiles = [];
+	    var errorMsgAF = document.getElementById('errorMsgAF');
+
+	    for (let i = 0; i < fileListInput.length; i++) {
+	        const file = fileListInput[i];
+	        const existing = selectedFiles.find(f => f.name === file.name && f.size === file.size);
+	        if (existing) continue;
+
+	        if (file.type.match(/image\/(jpeg|jpg|png)/)) {
+	            const processedFile = await compressImage(file);
+	            selectedFiles.push(processedFile);
+	        } else if (file.size > maxSize) {
+	            oversizedFiles.push(file.name);
+	        } else {
+	            selectedFiles.push(file);
+	        }
+	    }
+	    if (errorMsgAF) {
+	        errorMsgAF.innerHTML = oversizedFiles.length > 0
+	            ? 'Files exceed 5MB: <strong>' + oversizedFiles.join(', ') + '</strong>' : '';
+	    }
+	    renderNewFileList();
+	    updateInputFiles();
+	}
+
+	function renderNewFileList() {
+	    var container = document.getElementById('attachFileList');
+	    if (!container) return;
+
+	    container.querySelectorAll('.new-attach-item').forEach(function (el) { el.remove(); });
+
+	    selectedFiles.forEach(function (file) {
+	        const fileName = file.name;
+	        const iconPath = getFileIconPath(fileName);
+
+	        const wrapper = document.createElement('div');
+	        wrapper.className = 'd-inline-flex align-items-center p-2 border border-gray-200 rounded bg-white new-attach-item';
+	        wrapper.style.maxWidth = '100%';
+
+	        const leftGroup = document.createElement('div');
+	        leftGroup.className = 'd-flex align-items-center overflow-hidden me-2';
+
+	        const icon = document.createElement('img');
+	        icon.src = iconPath;
+	        icon.className = 'w-25px h-25px me-3 flex-shrink-0';
+	        icon.alt = 'icon';
+
+	        const nameSpan = document.createElement('span');
+	        nameSpan.className = 'text-gray-800 fw-medium text-truncate';
+	        nameSpan.textContent = fileName;
+	        nameSpan.style.maxWidth = '220px';
+
+	        leftGroup.appendChild(icon);
+	        leftGroup.appendChild(nameSpan);
+
+	        const badge = document.createElement('span');
+	        badge.className = 'badge badge-light-success ms-2';
+	        badge.textContent = 'New';
+
+	        const removeBtn = document.createElement('span');
+	        removeBtn.className = 'btn btn-icon btn-sm btn-light-danger ms-2 cursor-pointer';
+	        removeBtn.innerHTML =
+	            '<i class="ki-duotone ki-trash fs-3">' +
+	                '<span class="path1"></span><span class="path2"></span>' +
+	                '<span class="path3"></span><span class="path4"></span><span class="path5"></span>' +
+	            '</i>';
+	        removeBtn.addEventListener('click', function () {
+	            selectedFiles = selectedFiles.filter(f => f.name !== fileName);
+	            renderNewFileList();
+	            updateInputFiles();
+	        });
+
+	        wrapper.appendChild(leftGroup);
+	        wrapper.appendChild(badge);
+	        wrapper.appendChild(removeBtn);
+	        container.appendChild(wrapper);
+	    });
+
+	}
+
+	function updateInputFiles() {
+	    var inputFile = document.getElementById('myFile');
+	    if (!inputFile) return;
+	    var dataTransfer = new DataTransfer();
+	    selectedFiles.forEach(file => dataTransfer.items.add(file));
+	    inputFile.files = dataTransfer.files;
+	}
+
+	(function initAttach() {
+	    var input = document.getElementById('myFile');
+	    if (input) input.addEventListener('change', function (event) { processFiles(event.target.files); });
+	})();
+	
+	function removeExistingAttachment(fileId, el){
+	    Swal.fire({
+	        title: "Are you sure?!",
+	        text: "Are you sure you want to delete this file?",
+	        icon: "warning",
+	        showCancelButton: true,
+	        confirmButtonText: "Yes, delete it",
+	        cancelButtonText: "Cancel",
+	        buttonsStyling: false,
+	        customClass: {
+	            confirmButton: "btn btn-danger",
+	            cancelButton: "btn btn-secondary"
+	        }
+	    }).then((result) => {
+	        if (!result.isConfirmed) return;
+
+	        $.ajax({
+	            url: ctx + '/delete_po_attachment',
+	            type: 'POST',
+	            dataType: 'json',
+	            data: { fileId: fileId },
+	            success: function (resp) {
+	                if (resp.data && resp.data.success) {
+	                    $(el).closest('[data-file-id]').remove();
+	                } else {
+	                    Swal.fire('Error', 'ไม่สามารถลบไฟล์ได้', 'error');
+	                }
+	            },
+	            error: function () {
+	                Swal.fire('Error', 'เกิดข้อผิดพลาดในการลบไฟล์', 'error');
+	            }
+	        });
+	    });
+	}
 
 	// --- Signature Upload ---
 	(function initSignatureUpload() {
@@ -1057,7 +1279,7 @@
 
 			let finalFile;
 			try {
-				finalFile = await compressImage(file);
+				finalFile = await processAndRemoveWhiteBg(file);
 			} catch (e) {
 				finalFile = file;
 			}
@@ -1879,31 +2101,34 @@ function saveDraftForm(){
         referenceDate: $('#kt_reference_datepicker').val() || '',
         poDetailCartJson: JSON.stringify(poDetailCart)
     };
+    const fd = new FormData();
+    Object.keys(payload).forEach(function (k) { fd.append(k, payload[k]); });
+    if (typeof selectedFiles !== 'undefined') {
+        selectedFiles.forEach(function (file) { fd.append('files', file, file.name); });
+    }
+    
  	$('#saveDraft').prop('disabled', true);
  
     $.ajax({
     	url: ctx + (EDIT_PO_ID ? '/update_po' : '/save_po'),
         type: 'POST',
         dataType: 'json',
-        data: payload,
+        data: fd,
+        processData: false,
+        contentType: false,
         success: function (resp) {
-            // if (resp.debug) console.log('[save_po debug]', resp.debug);
             if (resp.data && resp.data.poId) {
                 sessionStorage.removeItem(PO_CART_STORAGE_KEY);
-                Swal.fire({
-                    title: 'Success!',
-                    text: 'Po saved draft successfully!',
-                    icon: 'success'
-                }).then(() => {
-                    window.location.href = ctx + '/purchase_order_list';
-                });
+                Swal.fire({ title: 'Success!', text: 'Po saved draft successfully!', icon: 'success' })
+                    .then(() => { window.location.href = ctx + '/purchase_order_list'; });
             } else {
                 Swal.fire('Error', 'ไม่สามารถบันทึก Draft ได้', 'error');
             }
         },
         error: function () {
             Swal.fire('Error', 'เกิดข้อผิดพลาดในการบันทึก', 'error');
-        }
+        },
+        complete: function(){ $('#saveDraft').prop('disabled', false); }
     });
 }
 
@@ -1938,7 +2163,7 @@ function submitPO(){
         });
         return;
     }
-
+    
     Swal.fire({
     	title: "Are you sure?!",
         text: "Do you want to save the changes?",
@@ -1966,6 +2191,12 @@ function submitPO(){
             poDetailCartJson: JSON.stringify(poDetailCart),
             status: '2'
         };
+        
+        const fd = new FormData();
+        Object.keys(payload).forEach(function (k) { fd.append(k, payload[k]); });
+        if (typeof selectedFiles !== 'undefined') {
+            selectedFiles.forEach(function (file) { fd.append('files', file, file.name); });
+        }
 
         $('#savePOFormBtn').prop('disabled', true);
 
@@ -1973,9 +2204,10 @@ function submitPO(){
         	url: ctx + (EDIT_PO_ID ? '/update_po' : '/save_po'),
             type: 'POST',
             dataType: 'json',
-            data: payload,
+            data: fd,
+            processData: false,
+            contentType: false,
             success: function (resp) {
-                // if (resp.debug) console.log('[save_po debug]', resp.debug);
                 if (resp.data && resp.data.poId) {
                     sessionStorage.removeItem(PO_CART_STORAGE_KEY);
                     Swal.fire({

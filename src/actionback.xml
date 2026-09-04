@@ -2271,6 +2271,11 @@
 		<action name="confirm_po_sign"
 			class="com.cubesofttech.action.PurchaseOrderAction" method="confirmPoSign">
 		</action>
+		
+		<action name="delete_po_attachment"
+		    class="com.cubesofttech.action.PurchaseOrderAction" method="deletePoAttachment">
+		</action>
+		
 
 		<action name="equipment_request_list" 
 		class="com.cubesofttech.action.EquipmentRequestAction" method="myEquipmentRequest">

@@ -139,6 +139,7 @@ public class PurchaseOrderAction extends ActionSupport {
     private String poDetailCartJson;
     private String status;
     private String reason;
+    private String fileId;
 
     public String getCompanyId() {
         return companyId;
@@ -214,6 +215,14 @@ public class PurchaseOrderAction extends ActionSupport {
     public void setReason(String reason) {
         this.reason = reason;
     }
+    
+    public String getFileId() {
+        return fileId;
+    }
+
+    public void setFileId(String fileId) {
+        this.fileId = fileId;
+    }
 
     private String poDetailId;
     private String productId;
@@ -278,7 +287,27 @@ public class PurchaseOrderAction extends ActionSupport {
     public void setSignDate(String signDate) {
         this.signDate = signDate;
     }
-    
+
+    // --- Multi-file attach ---
+    private List<File> files;
+    private List<String> filesFileName;
+
+    public List<File> getFiles() {
+        return files;
+    }
+
+    public void setFiles(List<File> files) {
+        this.files = files;
+    }
+
+    public List<String> getFilesFileName() {
+        return filesFileName;
+    }
+
+    public void setFilesFileName(List<String> filesFileName) {
+        this.filesFileName = filesFileName;
+    }
+
     public String purchaseOrderList() {
         try {
             if (onlineUser == null) {
@@ -460,6 +489,10 @@ public class PurchaseOrderAction extends ActionSupport {
             }
             request.setAttribute("poStatusNames", statusNames);
             request.setAttribute("poStatusColors", statusColors);
+            
+            List<FileUpload> attachmentList = fileAttachmentService.listAttachments("po", String.valueOf(poList.getPoId()));
+            request.setAttribute("attachmentList", attachmentList);
+            
 
             User u = userDAO.findById(logonUser);     
             request.setAttribute("loginUser", u);
@@ -655,6 +688,13 @@ public class PurchaseOrderAction extends ActionSupport {
                 seq++;
             }
 
+            // --- Attach files (page='po', pageId=newPoId) ---
+            log.debug("files = " + (files == null ? "null" : files.size()) 
+                + ", filesFileName = " + (filesFileName == null ? "null" : filesFileName));
+
+            fileAttachmentService.attach(files, filesFileName, "po", newPoId, loginUserId,
+                request.getServletContext().getRealPath("/"));
+
             Map<String, Object> result = new HashMap<>();
             result.put("poId", newPoId);
             writeJson(result, debugLog);
@@ -817,6 +857,10 @@ public class PurchaseOrderAction extends ActionSupport {
                 poParentDAO.save(parent);
                 seq++;
             }
+
+            // --- Attach files (page='po', pageId=poId) ---
+            String serverRealPath = ServletActionContext.getServletContext().getRealPath("/");
+            fileAttachmentService.attach(files, filesFileName, "po", poId, loginUserId, serverRealPath);
 
             // รวมยอดจาก po_detail จริงใน DB (รายการเดิม + รายการใหม่ที่เพิ่งเพิ่ม) แทนการคำนวณจาก cart
             double total = poDetailDAO.getTotalByPoId(poId);
@@ -1269,6 +1313,35 @@ public class PurchaseOrderAction extends ActionSupport {
             data.put("unitList", unitList);
 
             writeJson(data, debugLog);
+            return NONE;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            debugLog.add("EXCEPTION: " + e.toString());
+            writeJson(null, debugLog);
+            return NONE;
+        }
+    }
+    
+    public String deletePoAttachment() {
+        List<String> debugLog = new ArrayList<>();
+        try {
+            if (onlineUser == null) {
+                writeJsonError();
+                return NONE;
+            }
+            if (fileId == null || fileId.trim().isEmpty()) {
+                debugLog.add("fileId missing");
+                writeJson(null, debugLog);
+                return NONE;
+            }
+
+            String serverRealPath = ServletActionContext.getServletContext().getRealPath("/");
+            fileAttachmentService.deleteByIds(java.util.Collections.singletonList(fileId), serverRealPath);
+
+            Map<String, Object> result = new HashMap<>();
+            result.put("success", true);
+            writeJson(result, debugLog);
             return NONE;
 
         } catch (Exception e) {
