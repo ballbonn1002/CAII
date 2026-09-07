@@ -1856,11 +1856,11 @@ public class ProductAction extends ActionSupport {
             // product แม่ (top-level) ให้ parent_product_id = '0' สอดคล้องกับ findAllConsWithSubProducts()
             product.setParentProductId("0");
             product.setSequence("0");
-            // สร้างใหม่ให้ active โดยปริยาย (หน้า add ยังไม่มี toggle)
-            product.setActive("0".equals(active) ? "0" : "1");
-            // เปิด sub product ไว้ให้เลยทุก type (Equipment กลับมาใช้ sub product อีกครั้ง 25/08/2026
-            // เพื่อผูกเครื่องจริงแยกตามรุ่น/sub product แทนที่จะผูกกับตัวแม่ตรงๆ)
-            product.setSubProductActive("1");
+            // สร้างใหม่ให้ active/sub_product_active default = "0" เสมอ (หน้า add ยังไม่มี toggle ให้เลือก
+            // ต้องมาเปิดทีหลังจากหน้า stock_cons_list/stock_item_edit_fragment เอง)
+            // ใช้ pattern เดียวกับ stockConsUpdate() ("1".equals(x) ? "1" : "0") กันพลาดค่า default สลับกัน
+            product.setActive("1".equals(active) ? "1" : "0");
+            product.setSubProductActive("1".equals(subProductActive) ? "1" : "0");
             product.setUserCreate(onlineUser.getId());
             product.setTimeCreate(now);
             product.setUserUpdate(onlineUser.getId());
