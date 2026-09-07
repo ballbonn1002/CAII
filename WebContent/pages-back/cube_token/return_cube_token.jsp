@@ -780,16 +780,26 @@
 
 
 										<!--begin::Description-->
-										<div class="d-flex align-items-start">
+										<div class="d-flex flex-wrap align-items-center">
 											<i class="ki-duotone ki-notepad fs-2 text-gray-400 me-4 mt-1">
 												<span class="path1"></span> <span class="path2"></span> <span
 												class="path3"></span> <span class="path4"></span>
 											</i>
 
 											<div class="fw-medium text-gray-800 fs-6 lh-lg">
-												Description: <span class="text-danger fw-semibold"> </span>
+												Description: <span id="actionType"></span>
 												<span id="returnTokenDescription"></span>
 											</div>
+
+											<div class="ms-2">
+												<span class="badge p-2 badge-light-primary d-none"
+													id="referenceBadge"></span>
+											</div>
+											
+											<div class="d-flex align-items-center ms-2 fs-6 fw-normal text-gray-700" id="eventDate">
+												
+											</div>
+
 										</div>
 										<!--end::Description-->
 
@@ -1132,7 +1142,23 @@
 		        toastr.error("Transaction not found.");
 		        return;
 		    }
-
+		    
+		    let description = transaction.description || null;
+		    
+		    try {
+		    	description = JSON.parse(description);
+		    } catch (error) {
+		    	description = transaction.description;
+            }
+		    
+		    const actionName = transaction.actionName.toLowerCase().replace(/\s+/g, '');
+		    
+		    if (actionName === "reward") {
+		    	$("#actionType").text("ได้รับ").attr("class", "fw-semibold text-success");
+		    } else {
+		    	$("#actionType").text("หัก").attr("class", "fw-semibold text-danger");
+		    }
+		    
 		    $("#employeeInfo").text("${userInfo.employee_id} - ${userInfo.name_en}");
 
 		    $("#transactionId").val(transaction.id);
@@ -1145,7 +1171,26 @@
 
 		    $("#returnTokenDate").text(transaction.date);
 
-		    $("#returnTokenDescription").html(renderDescription(transaction.description));
+		    $("#returnTokenDescription").text(description?.reason || "-");
+		    
+
+		    const referenceBadge = $("#referenceBadge");
+
+		    referenceBadge.addClass("d-none").text("");
+
+		    if (description?.referenceId) {
+		        referenceBadge.text(`#\${description.referenceId}`).removeClass("d-none");
+		    }
+		    
+		    const eventDate = $("#eventDate");
+		    
+		    eventDate.addClass("d-none").text("");
+
+		    if (description?.date) {
+		        eventDate
+		            .text(`\${description.date}`)
+		            .removeClass("d-none");
+		    }
 
 		    $("#returnTokenValue").text(`\${transaction.value}`);
 		    
@@ -1555,14 +1600,13 @@
 			const referenceId = data.referenceId || null;
 			const eventDate = data.date || null;
 			
-			console.log(action)
-			
 			switch (type) {
                 case "add":
                     return `<div class="d-flex flex-column gap-2">
                     			<div class="fw-normal text-gray-700 fs-6">
                     				<span class="\${action === 'return' ? 'text-info' : 'text-success'}">\${action === 'return' ? 'คืนแต้ม' : 'ได้รับ'}</span> \${reason}
                     			</div>
+                    			\${eventDate ? `<div><span class="fw-normal fs-6 text-gray-700">\${eventDate}</span></div>` : ''}
                     			\${referenceId ? `<div><span class="badge badge-lg badge-light badge-light-primary p-2">#\${referenceId}</span></div>` : ''}
                     		</div>
                     	`;	

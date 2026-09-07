@@ -1,5 +1,6 @@
 package com.cubesofttech.action;
 
+import java.io.File;
 import java.time.LocalDate;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -14,6 +15,7 @@ import org.apache.log4j.Logger;
 import org.apache.struts2.ServletActionContext;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.cubesofttech.model.ItemPrivilege;
 import com.cubesofttech.model.User;
 import com.cubesofttech.service.CubeTokenService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -27,9 +29,6 @@ public class CubeTokenAction extends ActionSupport {
 	HttpServletResponse response = ServletActionContext.getResponse();
 	HttpSession session = request.getSession();
 
-	@Autowired
-	private CubeTokenService cubeTokenService;
-
 	private String target;
 	private Integer id;
 	private String field;
@@ -40,7 +39,35 @@ public class CubeTokenAction extends ActionSupport {
 
 	private Map<String, Object> result;
 	private Map<String, Object> userInfo;
+	
+	private Integer itemId;
+	private String itemName;
+	private Double itemToken;
+	private Double itemAddedMoney;
+	private Integer itemQuantity;
+	private String itemDescription;
 
+	private String effectiveDate;
+
+	private String activeFlag;
+	
+	private File cover;
+	private String coverContentType;
+	private String coverFileName;
+
+	private File[] additionalImages;
+	private String[] additionalImagesContentType;
+	private String[] additionalImagesFileName;
+	
+	private String removedAdditionalImages;
+	
+	private List<ItemPrivilege> itemPrivileges;
+	private ItemPrivilege item;
+	
+
+	@Autowired
+	private CubeTokenService cubeTokenService;
+	
 	public String cubetokenManagementPage() {
 
 		try {
@@ -50,10 +77,6 @@ public class CubeTokenAction extends ActionSupport {
 				log.error("User not logged in");
 				return LOGIN;
 			}
-
-			Integer currentYear = LocalDate.now().getYear();
-
-			request.setAttribute("tokenSummary", cubeTokenService.getTokenSummaryForAllUsers(currentYear));
 
 			return SUCCESS;
 
@@ -107,6 +130,55 @@ public class CubeTokenAction extends ActionSupport {
 
 			return ERROR;
 		}
+	}
+	
+	public String privilegeMangementPage() {
+		
+		try {
+			
+			itemPrivileges = cubeTokenService.getAllRewardItems();
+			
+			return SUCCESS;
+			
+		} catch (Exception e) {
+			
+			log.error("Error in privilegeMangementPage: " + e.getMessage(), e);
+			
+			return ERROR;
+			
+		}
+	}
+	
+	public String createRewardItem() {
+		return SUCCESS;
+	}
+	
+	public String editRewardItem() {
+		
+		try {
+			
+			Integer itemId = Integer.valueOf(request.getParameter("itemId"));
+			
+			item = cubeTokenService.getRewardItemById(itemId);
+			
+			return SUCCESS;
+			
+		} catch (NumberFormatException e) {
+			
+			log.error("Invalid itemId parameter: " + request.getParameter("itemId"), e);
+			
+			return ERROR;
+		} 
+		
+		
+		catch (Exception e) {
+			
+			log.error("Error in editRewardItem: " + e.getMessage(), e);
+			
+			return ERROR;
+			
+		}
+		
 	}
 
 	public String myCubeTokenPage() {
@@ -533,7 +605,7 @@ public class CubeTokenAction extends ActionSupport {
 
 		Set<String> userAuthority = (Set<String>) session.getAttribute("userAuthority");
 
-		boolean canViewAll = userAuthority != null && userAuthority.contains("cubetoken.viewall");
+		boolean canViewAll = userAuthority != null && userAuthority.contains("cubetoken.history.viewall");
 
 		String userIdParam = request.getParameter("userId");
 
@@ -760,6 +832,260 @@ public class CubeTokenAction extends ActionSupport {
 
 		}
 	}
+	
+	public String reloadRewardItemTable() {
+	    try {
+
+	        itemPrivileges = cubeTokenService.getAllRewardItems();
+
+	        return SUCCESS;
+
+	    } catch (Exception e) {
+
+	        log.error(
+	            "Error loading reward item table",
+	            e
+	        );
+
+	        return ERROR;
+	    }
+	}
+	
+	
+	public String saveRewardItem() {
+
+	    try {
+	        response.setContentType("application/json;charset=UTF-8");
+
+	        User user = (User) session.getAttribute("user");
+	        
+	        cubeTokenService.createRewardItem(
+	            itemName,
+	            itemToken,
+	            itemAddedMoney,
+	            itemQuantity,
+	            itemDescription,
+	            effectiveDate,
+	            cover,
+	            activeFlag,
+	            coverFileName,
+	            additionalImages,
+	            additionalImagesFileName,
+	            user.getId(),
+	            request.getServletContext().getRealPath("/")
+	        );
+
+	        response.setStatus(HttpServletResponse.SC_CREATED);
+
+	        Map<String, Object> result = new LinkedHashMap<>();
+	        result.put("success", true);
+	        result.put("message", "Reward item created successfully");
+
+	        new ObjectMapper().writeValue(response.getWriter(), result);
+
+	    } catch (IllegalArgumentException e) {
+	    	
+	    	log.error("Invalid input: " + e.getMessage(), e);
+
+	        writeErrorResponse(
+	            HttpServletResponse.SC_BAD_REQUEST,
+	            e.getMessage()
+	        );
+
+	    } catch (Exception e) {
+
+	        log.error("Error creating reward item", e);
+
+	        writeErrorResponse(
+	            HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
+	            "Unable to create reward item"
+	        );
+	    }
+
+	    return NONE;
+	}
+	
+	public String updateRewardItem() {
+	    try {
+	        response.setContentType("application/json;charset=UTF-8");
+
+	        User user = (User) session.getAttribute("user");
+
+	        cubeTokenService.updateRewardItem(
+	            itemId,
+	            itemName,
+	            itemToken,
+	            itemAddedMoney,
+	            itemQuantity,
+	            itemDescription,
+	            effectiveDate,
+	            activeFlag,
+	            cover,
+	            coverFileName,
+	            additionalImages,
+	            additionalImagesFileName,
+	            removedAdditionalImages,
+	            user.getId(),
+	            request.getServletContext().getRealPath("/")
+	        );
+
+	        response.setStatus(HttpServletResponse.SC_OK);
+
+	        Map<String, Object> result = new LinkedHashMap<>();
+	        result.put("success", true);
+	        result.put("message", "Reward item updated successfully");
+
+	        new ObjectMapper().writeValue(
+	            response.getWriter(),
+	            result
+	        );
+
+	    } catch (IllegalArgumentException e) {
+
+	        log.error("Invalid input: " + e.getMessage(), e);
+
+	        writeErrorResponse(
+	            HttpServletResponse.SC_BAD_REQUEST,
+	            e.getMessage()
+	        );
+
+	    } catch (Exception e) {
+
+	        log.error("Error updating reward item", e);
+
+	        writeErrorResponse(
+	            HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
+	            "Unable to update reward item"
+	        );
+	    }
+
+	    return NONE;
+	}
+	
+	public String updateRewardItemActiveFlag() {
+		
+		try {
+			
+			response.setContentType("application/json;charset=UTF-8");
+			User user = (User) session.getAttribute("user");
+			
+			ItemPrivilege itemPrivilege =  cubeTokenService.updateRewardItemActiveFlag(itemId, activeFlag, user.getId());
+			
+			Map<String, Object> data = new LinkedHashMap<>();
+			
+			data.put("itemId", itemPrivilege.getItemId());
+			data.put("activeFlag", "Y".equalsIgnoreCase(itemPrivilege.getActiveFlag()));
+			
+			writeSuccessResponse(
+			    data,
+			    HttpServletResponse.SC_OK,
+			    "Reward item active flag updated successfully"
+			);
+			
+			
+		} catch (IllegalArgumentException e) {
+
+	        log.error("Invalid input: " + e.getMessage(), e);
+
+	        writeErrorResponse(
+	            HttpServletResponse.SC_BAD_REQUEST,
+	            e.getMessage()
+	        );
+
+	    } catch (Exception e) {
+
+	        log.error("Error updating reward item", e);
+
+	        writeErrorResponse(
+	            HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
+	            "Unable to update reward item"
+	        );
+	    }
+		
+		return NONE;
+		
+	}
+	
+	public String deleteRewardItem() {
+	    try {
+	        response.setContentType("application/json;charset=UTF-8");
+
+	        User user = (User) session.getAttribute("user");
+
+	        cubeTokenService.deleteRewardItem(
+	            itemId,
+	            user.getId(),
+	            request.getServletContext().getRealPath("/")
+	        );
+
+	        response.setStatus(HttpServletResponse.SC_OK);
+
+	        Map<String, Object> result = new LinkedHashMap<>();
+	        result.put("success", true);
+	        result.put("message", "Reward item deleted successfully");
+
+	        new ObjectMapper().writeValue(
+	            response.getWriter(),
+	            result
+	        );
+
+	    } catch (IllegalArgumentException e) {
+
+	        log.error("Invalid input: " + e.getMessage(), e);
+
+	        writeErrorResponse(
+	            HttpServletResponse.SC_BAD_REQUEST,
+	            e.getMessage()
+	        );
+
+	    } catch (Exception e) {
+
+	        log.error("Error deleting reward item", e);
+
+	        writeErrorResponse(
+	            HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
+	            "Unable to delete reward item"
+	        );
+	    }
+
+	    return NONE;
+	}
+	
+	private void writeSuccessResponse(Map<String, Object> data, int status, String message) {
+
+	    try {
+	        response.setContentType("application/json;charset=UTF-8");
+	        response.setStatus(status);
+
+	        Map<String, Object> result = new LinkedHashMap<>();
+	        result.put("success", true);
+	        result.put("data", data);
+	        result.put("message", message);
+
+	        new ObjectMapper().writeValue(response.getWriter(), result);
+
+	    } catch (Exception e) {
+	        log.error("Error writing JSON response", e);
+	    }
+	}
+	
+	
+	private void writeErrorResponse(int status, String message) {
+
+	    try {
+	        response.setContentType("application/json;charset=UTF-8");
+	        response.setStatus(status);
+
+	        Map<String, Object> result = new LinkedHashMap<>();
+	        result.put("success", false);
+	        result.put("message", message);
+
+	        new ObjectMapper().writeValue(response.getWriter(), result);
+
+	    } catch (Exception e) {
+	        log.error("Error writing JSON response", e);
+	    }
+	}
 
 	public String getTarget() {
 		return target;
@@ -823,6 +1149,130 @@ public class CubeTokenAction extends ActionSupport {
 
 	public void setTransactionId(String transactionId) {
 		this.transactionId = transactionId;
+	}
+	
+	public File getCover() {
+		return cover;
+	}
+
+	public void setCover(File cover) {
+		this.cover = cover;
+	}
+
+	public String getCoverContentType() {
+		return coverContentType;
+	}
+
+	public void setCoverContentType(String coverContentType) {
+		this.coverContentType = coverContentType;
+	}
+
+	public String getCoverFileName() {
+		return coverFileName;
+	}
+
+	public void setCoverFileName(String coverFileName) {
+		this.coverFileName = coverFileName;
+	}
+
+	public File[] getAdditionalImages() {
+		return additionalImages;
+	}
+
+	public void setAdditionalImages(File[] additionalImages) {
+		this.additionalImages = additionalImages;
+	}
+
+	public String[] getAdditionalImagesContentType() {
+		return additionalImagesContentType;
+	}
+
+	public void setAdditionalImagesContentType(String[] additionalImagesContentType) {
+		this.additionalImagesContentType = additionalImagesContentType;
+	}
+
+	public String[] getAdditionalImagesFileName() {
+		return additionalImagesFileName;
+	}
+
+	public void setAdditionalImagesFileName(String[] additionalImagesFileName) {
+		this.additionalImagesFileName = additionalImagesFileName;
+	}
+
+	public String getItemName() {
+		return itemName;
+	}
+
+	public void setItemName(String itemName) {
+		this.itemName = itemName;
+	}
+
+	public Double getItemToken() {
+		return itemToken;
+	}
+
+	public void setItemToken(Double itemToken) {
+		this.itemToken = itemToken;
+	}
+
+	public Integer getItemQuantity() {
+		return itemQuantity;
+	}
+
+	public void setItemQuantity(Integer itemQuantity) {
+		this.itemQuantity = itemQuantity;
+	}
+
+	public String getItemDescription() {
+		return itemDescription;
+	}
+
+	public void setItemDescription(String itemDescription) {
+		this.itemDescription = itemDescription;
+	}
+
+	public String getEffectiveDate() {
+		return effectiveDate;
+	}
+
+	public void setEffectiveDate(String effectiveDate) {
+		this.effectiveDate = effectiveDate;
+	}
+
+	public String getActiveFlag() {
+		return activeFlag;
+	}
+
+	public void setActiveFlag(String activeFlag) {
+		this.activeFlag = activeFlag;
+	}
+	
+	public void setItemId(Integer itemId) {
+		this.itemId = itemId;
+	}
+
+	public List<ItemPrivilege> getItemPrivileges() {
+		return itemPrivileges;
+	}
+	
+	public ItemPrivilege getItem() {
+		return item;
+	}
+
+	public String getRemovedAdditionalImages() {
+		return removedAdditionalImages;
+	}
+
+	public void setRemovedAdditionalImages(String removedAdditionalImages) {
+		this.removedAdditionalImages = removedAdditionalImages;
+	}
+
+	public Double getItemAddedMoney() {
+		return itemAddedMoney;
+	}
+
+	public void setItemAddedMoney(Double itemAddedMoney) {
+		this.itemAddedMoney = itemAddedMoney;
 	}
 
 }

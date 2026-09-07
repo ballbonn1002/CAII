@@ -519,7 +519,26 @@
 		<put-attribute name="body"
 			value="/pages-back/cube_token/return_cube_token.jsp" />
 	</definition>
+	
 
+	<definition name="privilegeMangement" extends="baseLayout">
+		<put-attribute name="title" value="Privilege Management" />
+		<put-attribute name="body"
+			value="/pages-back/cube_token/privilege_management.jsp" />
+	</definition>
+	
+	<definition name="createRewardItem" extends="baseLayout">
+		<put-attribute name="title" value="Add Item" />
+		<put-attribute name="body"
+			value="/pages-back/cube_token/create_reward_item.jsp" />
+	</definition>
+
+
+	<definition name="editRewardItem" extends="baseLayout">
+			<put-attribute name="title" value="Edit Item" />
+			<put-attribute name="body"
+				value="/pages-back/cube_token/edit_reward_item.jsp" />
+	</definition>
 
 	<!-- Work Log -->
 	<definition name="workLog" extends="baseLayout">

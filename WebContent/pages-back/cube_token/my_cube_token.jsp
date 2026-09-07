@@ -76,9 +76,57 @@
 }
 
 .responsive-button {
-	padding: 0.775rem 1.5rem !important;
-	font-size: 1.1rem !important;
-	border-radius: 0.475rem !important;
+    padding: 0.775rem 1.5rem !important;
+    font-size: 1.1rem !important;
+    border-radius: 0.475rem !important;
+
+    /* Light theme */
+    background-color: var(--bs-white) !important;
+    color: var(--bs-primary) !important;
+    border: 1px solid var(--bs-primary) !important;
+
+    transition:
+        background-color 0.2s ease-in-out,
+        color 0.2s ease-in-out,
+        border-color 0.2s ease-in-out,
+        box-shadow 0.2s ease-in-out !important;
+}
+
+/* Icon */
+.responsive-button i {
+    color: var(--bs-primary) !important;
+    transition: color 0.2s ease-in-out !important;
+}
+
+/* Hover */
+.responsive-button:hover {
+    background-color: var(--bs-primary) !important;
+    color: var(--bs-white) !important;
+    border-color: var(--bs-primary) !important;
+}
+
+.responsive-button:hover i {
+    color: var(--bs-white) !important;
+}
+
+[data-bs-theme="dark"] .responsive-button {
+    background-color: transparent !important;
+    color: var(--bs-primary) !important;
+    border-color: var(--bs-primary) !important;
+}
+
+[data-bs-theme="dark"] .responsive-button i {
+    color: var(--bs-primary) !important;
+}
+
+[data-bs-theme="dark"] .responsive-button:hover {
+    background-color: var(--bs-primary) !important;
+    color: var(--bs-white) !important;
+    border-color: var(--bs-primary) !important;
+}
+
+[data-bs-theme="dark"] .responsive-button:hover i {
+    color: var(--bs-white) !important;
 }
 
 /* Mobile */
@@ -709,15 +757,32 @@
 				<div
 					class="d-flex align-items-center justify-content-between mt-6 py-3">
 					<h3 class="fw-medium text-gray-900">Transaction History</h3>
-					<div>
-						<button
-							class="d-flex align-items-center justify-content-center gap-3 btn btn-light-primary responsive-button"
-							type="button" onClick="openExchangeTokenModal()">
-							<i class="ki-duotone ki-arrow-right-left fs-1"> <span
-								class="path1"></span> <span class="path2"></span>
-							</i> <span> Exchange Cube Token </span>
-						</button>
+
+					<div class="d-flex flex-column flex-md-row gap-3">
+						<div>
+							<button
+								class="d-flex align-items-center justify-content-start gap-3
+							           btn 
+							           responsive-button w-100"
+								type="button" onClick="openExchangeTokenModal()">
+
+								<i class="ki-duotone ki-handcart fs-1"></i> <span class="fs-6">
+									Privilege History </span>
+
+							</button>
+						</div>
+
+						<div>
+							<button
+								class="d-flex align-items-center justify-content-start gap-3 btn responsive-button"
+								type="button" onClick="openExchangeTokenModal()">
+								<i class="ki-duotone ki-arrow-right-left fs-1"> <span
+									class="path1"></span> <span class="path2"></span>
+								</i> <span class="fs-6"> Exchange Cube Token </span>
+							</button>
+						</div>
 					</div>
+
 				</div>
 
 				<!--begin::Exchange Cube Token Modal-->
@@ -1295,6 +1360,7 @@
                     			<div class="fw-normal text-gray-700 fs-6">
                     				<span class="\${action === 'return' ? 'text-info' : 'text-success'}">\${action === 'return' ? 'ยกเลิก' : 'ได้รับ'}</span> \${reason}
                     			</div>
+                    			\${eventDate ? `<div><span class="fw-normal fs-6 text-gray-700">\${eventDate}</span></div>` : ''}
                     			\${referenceId ? `<div><span class="badge badge-lg badge-light badge-light-primary p-2">#\${referenceId}</span></div>` : ''}
                     		</div>
                     	`;	

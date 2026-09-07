@@ -1,6 +1,9 @@
 package com.cubesofttech.service;
 
+import java.io.File;
 import java.sql.Timestamp;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -10,6 +13,7 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.format.TextStyle;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -25,21 +29,29 @@ import org.springframework.transaction.annotation.Transactional;
 import com.cubesofttech.dao.ActionPointDAO;
 import com.cubesofttech.dao.ActionTypeDAO;
 import com.cubesofttech.dao.HolidayDAO;
+import com.cubesofttech.dao.ItemPrivilegeDAO;
 import com.cubesofttech.dao.JobsiteDAO;
+import com.cubesofttech.dao.LeaveDAO;
 import com.cubesofttech.dao.LeaveTypeDAO;
 import com.cubesofttech.dao.TokenSettingDAO;
 import com.cubesofttech.dao.TokenUsageDAO;
+import com.cubesofttech.dao.TokenUsageSummaryDAO;
 import com.cubesofttech.dao.UserDAO;
 import com.cubesofttech.dao.WorkHoursDAO;
 import com.cubesofttech.model.ActionPoint;
 import com.cubesofttech.model.ActionType;
+import com.cubesofttech.model.FileUpload;
+import com.cubesofttech.model.ItemPrivilege;
 import com.cubesofttech.model.LeaveType;
 import com.cubesofttech.model.Leaves;
 import com.cubesofttech.model.TokenSetting;
 import com.cubesofttech.model.TokenUsage;
+import com.cubesofttech.model.TokenUsageSummary;
 import com.cubesofttech.model.User;
 import com.cubesofttech.util.DateUtil;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 @Service
@@ -63,16 +75,28 @@ public class CubeTokenService {
 	private TokenUsageDAO usageTokenDAO;
 
 	@Autowired
+	private TokenUsageSummaryDAO tokenUsageSummaryDAO;
+
+	@Autowired
 	private JobsiteDAO jobsiteDAO;
 
 	@Autowired
 	private WorkHoursDAO workHoursDAO;
-	
+
+	@Autowired
+	private LeaveDAO leaveDAO;
+
 	@Autowired
 	private HolidayDAO holidayDAO;
-	
+
 	@Autowired
 	private LeaveTypeDAO leaveTypeDAO;
+
+	@Autowired
+	private ItemPrivilegeDAO itemPrivilegeDAO;
+
+	@Autowired
+	private FileAttachmentService fileAttachmentService;
 
 	private static final Integer ACTION_TYPE_GIFT = 1;
 	private static final Integer ACTION_TYPE_DUDUCT = 2;
@@ -92,10 +116,12 @@ public class CubeTokenService {
 	private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("dd MMM, HH:mm", Locale.ENGLISH);
 	private static final ObjectMapper MAPPER = new ObjectMapper();
 
-	@Scheduled(cron = "0 0 2 * * ?")
+	@Scheduled(cron = "0 30 1 * * ?", zone = "Asia/Bangkok")
 //	@Scheduled(fixedRate = 5000)
 	@Transactional
 	public void distributeMonthlyToken() {
+
+		log.info("Start distributeMonthlyToken");
 
 		LocalDate today = LocalDate.now();
 
@@ -208,12 +234,12 @@ public class CubeTokenService {
 					usage.setActionPointId(point.getActionPointId());
 					usage.setValue(point.getPoint());
 					usage.setReconcile(null);
-					
+
 					ObjectNode jsonData = MAPPER.createObjectNode();
-					
+
 					jsonData.put("type", "add");
 					jsonData.put("reason", "รายเดือน");
-					
+
 					usage.setDescription(MAPPER.writeValueAsString(jsonData));
 					usage.setReFlag("N");
 					usage.setUserCreate("system");
@@ -235,10 +261,10 @@ public class CubeTokenService {
 		}
 	}
 
-	@Scheduled(cron = "0 0 0 1 * ?")
+	@Scheduled(cron = "0 0 0 1 * ?", zone = "Asia/Bangkok")
 //	@Scheduled(fixedRate = 10000)
 	@Transactional
-	public void calculateAccumulatedToken() throws Exception {
+	public void calculateAccumulatedToken() throws Exception { // คํานวณยอดสะสม Token ของพนักงานทุกคนในแต่ละเดือน
 
 		try {
 
@@ -278,17 +304,6 @@ public class CubeTokenService {
 					monthlyBalance = 0D;
 				}
 
-				// ไม่มี token เหลือ ไม่ต้องสร้าง transaction
-//				if (monthlyBalance <= 0D) {
-//
-//					skippedCount++;
-//
-//					log.debug(String.format("Skip annual token: user=%s, month=%s, balance=0", userId,
-//							previousMonth.getMonth().toString()));
-//
-//					continue;
-//				}
-
 				double value = monthlyBalance;
 
 				String description = "Accumulated token from " + previousMonth;
@@ -297,17 +312,17 @@ public class CubeTokenService {
 				 * ป้องกัน scheduler รันซ้ำ
 				 */
 
-				boolean exists = usageTokenDAO.existsAccumulatedToken(userId, YearMonth.from(today));
-
-				if (exists) {
-
-					log.info("Skip annual token: user=" + userId + ", month=" + previousMonth.toString());
-
-					skippedCount++;
-
-					continue;
-
-				}
+//				boolean exists = usageTokenDAO.existsAccumulatedToken(userId, YearMonth.from(today));
+//
+//				if (exists) {
+//
+//					log.info("Skip annual token: user=" + userId + ", month=" + previousMonth.toString());
+//
+//					skippedCount++;
+//
+//					continue;
+//
+//				}
 
 				/*
 				 * Insert Accumulated Token
@@ -329,6 +344,33 @@ public class CubeTokenService {
 				log.info(String.format(
 						"Accumulated token processed: user=%s, month=%s, balance=%.2f, actionType=%d, value=%.2f, timeCreate=%s",
 						userId, previousMonth.toString(), monthlyBalance, 5, value, annualTimeCreate.toString()));
+
+				TokenUsageSummary summary = new TokenUsageSummary();
+				TokenUsageSummary latestSummary = tokenUsageSummaryDAO.findLatestByUserId(userId);
+
+				if (latestSummary != null) {
+					summary.setUserId(userId);
+					summary.setTotalToken(latestSummary.getTotalToken() + Math.max(monthlyBalance, 0));
+				} else {
+					summary.setUserId(userId);
+					summary.setTotalToken(Math.max(monthlyBalance, 0));
+				}
+
+				summary.setUserId(userId);
+				summary.setActionTypeId(ACTION_TYPE_ADD_RECONCILE);
+				summary.setYear(String.valueOf(previousMonth.getYear()));
+				summary.setMonth(String.format("%02d", previousMonth.getMonthValue()));
+				summary.setMonthlyToken(Math.max(monthlyBalance, 0));
+				summary.setDescription("Accumulated token from " + previousMonth.toString());
+				summary.setUserCreate("system");
+				summary.setTimeCreate(DateUtil.getCurrentTime());
+
+				tokenUsageSummaryDAO.save(summary);
+
+				log.info(String.format(
+						"TokenUsageSummary updated: user=%s, year=%s, month=%s, monthlyToken=%.2f, totalToken=%.2f",
+						userId, previousMonth.getYear(), previousMonth.getMonthValue(), monthlyBalance,
+						summary.getTotalToken()));
 			}
 
 			log.info(String.format("Accumulated token calculation completed: month=%s, processed=%d, skipped=%d",
@@ -341,7 +383,7 @@ public class CubeTokenService {
 		}
 	}
 
-	@Scheduled(cron = "0 0 1 * * *")
+	@Scheduled(cron = "0 0 1 * * *", zone = "Asia/Bangkok")
 //	@Scheduled(fixedRate = 10000)
 	@Transactional
 	public void checkWorkHoursForToken() {
@@ -352,99 +394,197 @@ public class CubeTokenService {
 
 			DayOfWeek dayOfWeek = targetDate.getDayOfWeek();
 
+			// =========================
+			// Weekend
+			// =========================
 			if (dayOfWeek == DayOfWeek.SATURDAY || dayOfWeek == DayOfWeek.SUNDAY) {
+
 				log.info("Target date " + targetDate + " is a weekend. Skipping work hours check.");
+
 				return;
 			}
 
-			if (holidayDAO.isHoliday(Date.from(targetDate.atStartOfDay(ZoneId.systemDefault()).toInstant()))) {
-			    log.info("Target date " + targetDate + " is holiday. Skip work hours check.");
-			    return;
+			// =========================
+			// Holiday
+			// =========================
+			Date targetDateObj = Date.from(targetDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
+
+			if (holidayDAO.isHoliday(targetDateObj)) {
+
+				log.info("Target date " + targetDate + " is holiday. Skip work hours check.");
+
+				return;
 			}
 
-			List<Object[]> workHoursList = workHoursDAO.findUserEnableWorkHoursByDate(
-					Date.from(targetDate.atStartOfDay(ZoneId.systemDefault()).toInstant()));
+			// =========================
+			// Get work hours
+			// =========================
+			List<Object[]> workHoursList = workHoursDAO.findUserEnableWorkHoursByDate(targetDateObj);
 
 			for (Object[] row : workHoursList) {
 
 				String userId = (String) row[0];
+
 				String workTimeStart = (String) row[1];
+
 				String workTimeEnd = (String) row[2];
 
 				Timestamp checkin = (Timestamp) row[3];
+
 				Timestamp checkinTimeCreate = (Timestamp) row[4];
 
-				Timestamp checkout = (Timestamp) row[5];
-				Timestamp checkoutTimeCreate = (Timestamp) row[6];
+				String checkinDescription = (String) row[5];
 
-				/*
-				 * ========================= No Record =========================
-				 */
+				Timestamp checkout = (Timestamp) row[6];
 
-				// ช่วงเช้า
-				if (checkin == null) {
+				Timestamp checkoutTimeCreate = (Timestamp) row[7];
+
+				String checkoutDescription = (String) row[8];
+
+				// =====================================================
+				// Approved Leave
+				// =====================================================
+
+				boolean skipMorning = false;
+				boolean skipAfternoon = false;
+
+				List<Object[]> leaveList = leaveDAO.findApprovedLeaveByUserAndDate(userId, targetDate);
+
+				for (Object[] leave : leaveList) {
+
+					String halfDay = leave[0] != null ? leave[0].toString() : null;
+
+					String startTime = leave[1] != null ? leave[1].toString() : null;
+
+					String endTime = leave[2] != null ? leave[2].toString() : null;
+
+					// =========================
+					// Full Day
+					// =========================
+					if ("0".equals(halfDay)) {
+						skipMorning = true;
+						skipAfternoon = true;
+					}
+
+					// =========================
+					// Morning
+					// =========================
+					else if ("1".equals(halfDay)) {
+						skipMorning = true;
+					}
+
+					// =========================
+					// Afternoon
+					// =========================
+					else if ("2".equals(halfDay)) {
+						skipAfternoon = true;
+					}
+
+					// =========================
+					// Custom Time
+					// =========================
+					else if ("3".equals(halfDay) && startTime != null && endTime != null) {
+
+						LocalTime leaveStart = LocalTime.parse(startTime);
+
+						LocalTime leaveEnd = LocalTime.parse(endTime);
+
+						LocalTime workStart = LocalTime.parse(workTimeStart);
+
+						LocalTime workEnd = LocalTime.parse(workTimeEnd);
+
+						LocalTime morningEnd = LocalTime.of(12, 0);
+
+						LocalTime afternoonStart = LocalTime.of(13, 0);
+
+						// =========================
+						// Morning overlap
+						// =========================
+						if (leaveStart.isBefore(morningEnd) && leaveEnd.isAfter(workStart)) {
+							skipMorning = true;
+						}
+
+						// =========================
+						// Afternoon overlap
+						// =========================
+						if (leaveStart.isBefore(workEnd) && leaveEnd.isAfter(afternoonStart)) {
+							skipAfternoon = true;
+						}
+					}
+				}
+
+				// =====================================================
+				// No Record - Morning
+				// =====================================================
+
+				if (!skipMorning && checkin == null) {
 
 					log.info("User " + userId + " : NO RECORD - MORNING");
 
 					deductUserCubeTokenForNoRecordMorning(userId, targetDate, workTimeStart);
-
 				}
 
-				// ช่วงบ่าย
-				if (checkout == null) {
+				// =====================================================
+				// No Record - Afternoon
+				// =====================================================
+
+				if (!skipAfternoon && checkout == null) {
 
 					log.info("User " + userId + " : NO RECORD - AFTERNOON");
 
 					deductUserCubeTokenForNoRecordAfternoon(userId, targetDate, workTimeEnd);
-
 				}
 
-				/*
-				 * ========================= Late =========================
-				 */
-				if (checkin != null && isLate(checkin, workTimeStart)) {
+				// =====================================================
+				// Late
+				// =====================================================
+
+				if (!skipMorning && checkin != null && isLate(checkin, workTimeStart)) {
 
 					log.info("User " + userId + " : LATE");
 
 					deductUserCubeTokenForLate(userId, checkin);
 				}
 
-				/*
-				 * ========================= Early Out =========================
-				 */
-				if (checkout != null && isEarlyOut(checkout, workTimeEnd)) {
+				// =====================================================
+				// Early Out
+				// =====================================================
+
+				if (!skipAfternoon && checkout != null && isEarlyOut(checkout, workTimeEnd)) {
 
 					log.info("User " + userId + " : EARLY OUT");
 
 					deductUserCubeTokenForEarlyOut(userId, checkout);
 				}
 
-				boolean checkinBackdate = checkin != null && checkinTimeCreate != null
-						&& !checkin.equals(checkinTimeCreate);
+				// =====================================================
+				// Backdate - Checkin
+				// =====================================================
 
-				boolean checkoutBackdate = checkout != null && checkoutTimeCreate != null
-						&& !checkout.equals(checkoutTimeCreate);
-
-				if (checkinBackdate) {
+				if (isBackdated(checkin, checkinTimeCreate, checkinDescription, targetDate)) {
 
 					log.info("User " + userId + " : BACKDATE - CHECKIN");
 
 					deductUserCubeTokenForBackDateCheckIn(userId, checkin, checkinTimeCreate);
 				}
 
-				if (checkoutBackdate) {
+				// =====================================================
+				// Backdate - Checkout
+				// =====================================================
+
+				if (isBackdated(checkout, checkoutTimeCreate, checkoutDescription, targetDate)) {
 
 					log.info("User " + userId + " : BACKDATE - CHECKOUT");
 
 					deductUserCubeTokenForBackDateCheckOut(userId, checkout, checkoutTimeCreate);
 				}
 			}
-			
+
 			log.info("Work hours check completed for date: " + targetDate);
 
 		} catch (Exception e) {
 
-			log.error("Error checking work hours for token" + e.getMessage(), e);
+			log.error("Error checking work hours for token: " + e.getMessage(), e);
 		}
 	}
 
@@ -726,7 +866,7 @@ public class CubeTokenService {
 		}
 
 		Map<String, Object> row = usageTokenDAO.findTokenSummaryByUserId(userId, year);
-		
+
 		Map<String, Object> result = new LinkedHashMap<>();
 
 		result.put("accumulatedToken", getDouble(row, "token"));
@@ -770,10 +910,10 @@ public class CubeTokenService {
 		for (Map<String, Object> row : summaryList) {
 
 			if (row.get("file_path") != null) {
-				String filePath = row.get("file_path").toString();
+				String filePath = fileAttachmentService.getFileUrl(row.get("file_path").toString());
 				row.put("file_path", filePath);
 			}
-			
+
 		}
 
 		return summaryList;
@@ -840,44 +980,86 @@ public class CubeTokenService {
 			return;
 		}
 
+		// ========================================
+		// ลาพักร้อน
+		// ========================================
+		if ("1".equals(leave.getLeaveTypeId())) {
+
+			if (leave.getTimeCreate() == null || leave.getStartDate() == null) {
+
+				log.warn("Cannot calculate advance leave days because " + "timeCreate or startDate is null. Leave ID: "
+						+ leave.getLeaveId());
+
+			} else {
+
+				LocalDate requestDate = leave.getTimeCreate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+
+				LocalDate leaveStartDate = leave.getStartDate().toInstant().atZone(ZoneId.systemDefault())
+						.toLocalDate();
+
+				int businessDays = countBusinessDays(requestDate, leaveStartDate);
+
+				log.info("Annual leave ID: " + leave.getLeaveId() + ", requestDate: " + requestDate
+						+ ", leaveStartDate: " + leaveStartDate + ", advance business days: " + businessDays);
+
+				// ลาล่วงหน้าอย่างน้อย 5 วันทำการ
+				if (businessDays >= 5) {
+
+					log.info("Annual leave was requested at least 5 business days "
+							+ "in advance. No token deduction will be made. " + "Leave ID: " + leave.getLeaveId());
+
+					return;
+				}
+			}
+		}
+
+		// ========================================
+		// Check deduct action
+		// ========================================
 		ActionType deductType = actionTypeDAO.findById(ACTION_TYPE_DUDUCT);
 
 		if (deductType == null || !"Y".equals(deductType.getActiveStatus())) {
-			log.info("Deduct action type is not active. No token deduction will be made for leave ID: "
+
+			log.info("Deduct action type is not active. " + "No token deduction will be made for leave ID: "
 					+ leave.getLeaveId());
+
 			return;
 		}
 
+		// ========================================
+		// Deduct token
+		// ========================================
 		ActionPoint leaveActionPoint = actionPointDAO.findById(ACTION_POINT_LEAVE);
 
 		if (leaveActionPoint == null) {
 			throw new IllegalStateException("Leave action point not found.");
 		}
 
-		if (leaveActionPoint.getActiveStatus().equals("N") || leaveActionPoint.getPoint() == 0D) {
-			log.info("Leave action is inactive or has zero points. No deduction will be made.");
+		if ("N".equals(leaveActionPoint.getActiveStatus()) || leaveActionPoint.getPoint() == 0D) {
+
+			log.info("Leave action is inactive or has zero points. " + "No deduction will be made.");
+
 			return;
 		}
-		
+
+		LeaveType leaveType = leaveTypeDAO.findById(leave.getLeaveTypeId());
 
 		TokenUsage tokenUsage = new TokenUsage();
-		
-		LeaveType leaveType = leaveTypeDAO.findById(leave.getLeaveTypeId());
-		
+
 		tokenUsage.setUserId(userId);
 		tokenUsage.setActionTypeId(ACTION_TYPE_DUDUCT);
 		tokenUsage.setActionPointId(ACTION_POINT_LEAVE);
 		tokenUsage.setValue(leaveActionPoint.getPoint());
 		tokenUsage.setReconcile(null);
 		tokenUsage.setReFlag("Y");
-		
+
 		ObjectNode jsonNode = MAPPER.createObjectNode();
-		
 		jsonNode.put("type", "deduct");
 		jsonNode.put("reason", leaveType.getLeaveTypeName());
 		jsonNode.put("referenceId", leave.getLeaveId());
-		
+
 		tokenUsage.setDescription(MAPPER.writeValueAsString(jsonNode));
+
 		tokenUsage.setUserCreate("system");
 		tokenUsage.setTimeCreate(DateUtil.getCurrentTime());
 
@@ -885,7 +1067,6 @@ public class CubeTokenService {
 
 		log.info("Deducted " + leaveActionPoint.getPoint() + " tokens for leave ID: " + leave.getLeaveId()
 				+ " for user: " + userId);
-
 	}
 
 	private void deductUserCubeTokenForNoRecordMorning(String userId, LocalDate targetDate, String workTimeStart)
@@ -929,16 +1110,17 @@ public class CubeTokenService {
 		 *
 		 * Result: 5 Aug, 9:00
 		 */
-		String eventDate = targetDate.format(DateTimeFormatter.ofPattern("d MMM", Locale.ENGLISH)) + ", " + workTimeStart;
+		String eventDate = targetDate.format(DateTimeFormatter.ofPattern("d MMM", Locale.ENGLISH)) + ", "
+				+ workTimeStart;
 
 		TokenUsage tokenUsage = new TokenUsage();
-		
+
 		ObjectNode jsonNode = MAPPER.createObjectNode();
-		
+
 		jsonNode.put("type", "deduct");
 		jsonNode.put("reason", "ไม่พบประวัติ Check-In");
 		jsonNode.put("date", eventDate);
-		
+
 		tokenUsage.setUserId(userId);
 		tokenUsage.setActionTypeId(ACTION_TYPE_DUDUCT);
 		tokenUsage.setActionPointId(ACTION_POINT_NO_RECORD);
@@ -997,13 +1179,12 @@ public class CubeTokenService {
 		 *
 		 * Result: 5 Aug, 18:00
 		 */
-		String eventDate = targetDate.format(DateTimeFormatter.ofPattern("d MMM", Locale.ENGLISH)) + ", "
-				+ workTimeEnd;
+		String eventDate = targetDate.format(DateTimeFormatter.ofPattern("d MMM", Locale.ENGLISH)) + ", " + workTimeEnd;
 
 		TokenUsage tokenUsage = new TokenUsage();
-		
+
 		ObjectNode jsonNode = MAPPER.createObjectNode();
-		
+
 		jsonNode.put("type", "deduct");
 		jsonNode.put("reason", "ไม่พบประวัติ Check-Out");
 		jsonNode.put("date", eventDate);
@@ -1049,9 +1230,9 @@ public class CubeTokenService {
 		}
 
 		TokenUsage tokenUsage = new TokenUsage();
-		
+
 		ObjectNode jsonNode = MAPPER.createObjectNode();
-		
+
 		jsonNode.put("type", "deduct");
 		jsonNode.put("reason", "เข้างานสาย");
 		jsonNode.put("date", checkIn.toLocalDateTime().format(FORMATTER));
@@ -1097,9 +1278,9 @@ public class CubeTokenService {
 		}
 
 		TokenUsage tokenUsage = new TokenUsage();
-		
+
 		ObjectNode jsonNode = MAPPER.createObjectNode();
-		
+
 		jsonNode.put("type", "deduct");
 		jsonNode.put("reason", "ออกก่อนเวลา");
 		jsonNode.put("date", checkOut.toLocalDateTime().format(FORMATTER));
@@ -1119,17 +1300,18 @@ public class CubeTokenService {
 		log.info("Deducted " + earlyOutActionPoint.getPoint() + " tokens for early out" + " for user: " + userId + ".");
 
 	}
-	
-	private void deductUserCubeTokenForBackDateCheckIn(String userId, Timestamp checkIn, Timestamp checkInTimeCreate) throws Exception {
-		
+
+	private void deductUserCubeTokenForBackDateCheckIn(String userId, Timestamp checkIn, Timestamp checkInTimeCreate)
+			throws Exception {
+
 		if (userId == null || userId.trim().isEmpty()) {
 			throw new IllegalArgumentException("User ID is required.");
 		}
-		
+
 		if (checkIn == null) {
 			throw new IllegalArgumentException("Check-in timestamp is required.");
 		}
-		
+
 		if (checkInTimeCreate == null) {
 			throw new IllegalArgumentException("Check-in time create timestamp is required.");
 		}
@@ -1153,9 +1335,9 @@ public class CubeTokenService {
 		}
 
 		TokenUsage tokenUsage = new TokenUsage();
-		
+
 		ObjectNode jsonNode = MAPPER.createObjectNode();
-		
+
 		jsonNode.put("type", "deduct");
 		jsonNode.put("reason", "ลงเวลาย้อนหลัง");
 		jsonNode.put("date", checkIn.toLocalDateTime().format(FORMATTER));
@@ -1172,20 +1354,22 @@ public class CubeTokenService {
 
 		usageTokenDAO.save(tokenUsage);
 
-		log.info("Deducted " + backDateActionPoint.getPoint() + " tokens for backdate check-in" + " for user: " + userId);
-		
+		log.info("Deducted " + backDateActionPoint.getPoint() + " tokens for backdate check-in" + " for user: "
+				+ userId);
+
 	}
-	
-private void deductUserCubeTokenForBackDateCheckOut(String userId, Timestamp checkOut, Timestamp checkOutTimeCreate) throws Exception {
-		
+
+	private void deductUserCubeTokenForBackDateCheckOut(String userId, Timestamp checkOut, Timestamp checkOutTimeCreate)
+			throws Exception {
+
 		if (userId == null || userId.trim().isEmpty()) {
 			throw new IllegalArgumentException("User ID is required.");
 		}
-		
+
 		if (checkOut == null) {
 			throw new IllegalArgumentException("Check-out timestamp is required.");
 		}
-		
+
 		if (checkOutTimeCreate == null) {
 			throw new IllegalArgumentException("Check-out time create timestamp is required.");
 		}
@@ -1209,9 +1393,9 @@ private void deductUserCubeTokenForBackDateCheckOut(String userId, Timestamp che
 		}
 
 		TokenUsage tokenUsage = new TokenUsage();
-		
+
 		ObjectNode jsonNode = MAPPER.createObjectNode();
-		
+
 		jsonNode.put("type", "deduct");
 		jsonNode.put("reason", "ลงเวลาย้อนหลัง");
 		jsonNode.put("date", checkOut.toLocalDateTime().format(FORMATTER));
@@ -1228,8 +1412,9 @@ private void deductUserCubeTokenForBackDateCheckOut(String userId, Timestamp che
 
 		usageTokenDAO.save(tokenUsage);
 
-		log.info("Deducted " + backDateActionPoint.getPoint() + " tokens for backdate check-out" + " for user: " + userId);
-		
+		log.info("Deducted " + backDateActionPoint.getPoint() + " tokens for backdate check-out" + " for user: "
+				+ userId);
+
 	}
 
 	public Double getUserCurrentMonthlyBalance(String userId) throws Exception {
@@ -1316,15 +1501,15 @@ private void deductUserCubeTokenForBackDateCheckOut(String userId, Timestamp che
 		usage.setTimeCreate(DateUtil.getCurrentTime());
 
 		usageTokenDAO.save(usage);
-		
+
 		ObjectNode jsonNode = MAPPER.createObjectNode();
-		
+
 		jsonNode.put("type", "add");
 		jsonNode.put("reason", "การแจกแต้ม " + reason);
 		jsonNode.put("referenceId", usage.getTokenUsageId());
 
 		usage.setDescription(MAPPER.writeValueAsString(jsonNode));
-		
+
 		usageTokenDAO.update(usage);
 	}
 
@@ -1340,17 +1525,20 @@ private void deductUserCubeTokenForBackDateCheckOut(String userId, Timestamp che
 		Double returnValue = originalTransaction.getValue();
 
 		TokenUsage usage = new TokenUsage();
-		Integer targetActionTypeId = originalTransaction.getActionTypeId() == ACTION_TYPE_REWARD ? ACTION_TYPE_VOID : ACTION_TYPE_RETURN;
+		Integer targetActionTypeId = originalTransaction.getActionTypeId() == ACTION_TYPE_REWARD ? ACTION_TYPE_VOID
+				: ACTION_TYPE_RETURN;
+
+		ObjectNode jsonNode = MAPPER.createObjectNode();
+		ObjectNode descriptionNode = (ObjectNode) MAPPER.readTree(originalTransaction.getDescription());
+
+		if (descriptionNode.has("referenceId")) {
+			Integer referenceId = descriptionNode.get("referenceId").asInt();
+			jsonNode.put("referenceId", referenceId);
+		}
 		
-		Integer referenceId = null;
-		
-		if (originalTransaction.getActionPointId() == ACTION_POINT_LEAVE) {
-			
-			ObjectNode descriptionNode =  (ObjectNode) MAPPER.readTree(originalTransaction.getDescription());
-			referenceId = descriptionNode.has("referenceId") ? descriptionNode.get("referenceId").asInt() : null;
-			
-		} else {
-			referenceId = originalTransaction.getTokenUsageId();
+		if (descriptionNode.has("date")) {
+			String evetnDate = descriptionNode.get("date").asText();
+			jsonNode.put("date", evetnDate);
 		}
 
 		usage.setUserId(userId);
@@ -1358,16 +1546,11 @@ private void deductUserCubeTokenForBackDateCheckOut(String userId, Timestamp che
 		usage.setValue(returnValue);
 		usage.setReconcile(null);
 		usage.setReFlag("N");
-		
-		ObjectNode jsonNode = MAPPER.createObjectNode();
+
 		jsonNode.put("type", targetActionTypeId == ACTION_TYPE_VOID ? "void" : "add");
 		jsonNode.put("action", targetActionTypeId == ACTION_TYPE_VOID ? "cancel" : "return");
-		jsonNode.put("reason", reason);
-		
-		if (referenceId != null) {
-			jsonNode.put("referenceId", referenceId);
-		}
-		
+		jsonNode.put("reason", targetActionTypeId == ACTION_TYPE_VOID ? reason : "ยกเลิก " + reason);
+
 		usage.setDescription(MAPPER.writeValueAsString(jsonNode));
 		usage.setUserCreate(givenBy);
 		usage.setTimeCreate(DateUtil.getCurrentTime());
@@ -1392,12 +1575,12 @@ private void deductUserCubeTokenForBackDateCheckOut(String userId, Timestamp che
 		usage.setActionTypeId(ACTION_TYPE_EXCHANGE); // Exchange
 		usage.setValue(value);
 		usage.setReconcile(null);
-		
+
 		ObjectNode jsonNode = MAPPER.createObjectNode();
-		
+
 		jsonNode.put("type", "add");
 		jsonNode.put("reason", "เบิกแต้มบุญ");
-		
+
 		usage.setDescription(MAPPER.writeValueAsString(jsonNode));
 		usage.setReFlag("N");
 		usage.setUserCreate(userId);
@@ -1416,6 +1599,469 @@ private void deductUserCubeTokenForBackDateCheckOut(String userId, Timestamp che
 		usageAccDeduct.setTimeCreate(DateUtil.getCurrentTime());
 
 		usageTokenDAO.save(usageAccDeduct);
+
+	}
+
+	@Transactional
+	public void createRewardItem(String itemName, Double itemToken, Double itemAddedMoney, Integer itemQuantity, String itemDescription,
+			String effectiveDate, File cover, String activeFlag, String coverFileName, File[] additionalImages,
+			String[] additionalImagesFileName, String userId, String realPath) throws Exception {
+
+		// =========================
+		// Validation
+		// =========================
+
+		if (itemName == null || itemName.trim().isEmpty()) {
+			throw new IllegalArgumentException("Item name is required.");
+		}
+
+		if (itemToken == null || itemToken <= 0) {
+			throw new IllegalArgumentException("Item token value must be greater than zero.");
+		}
+		
+		if (itemAddedMoney == null || itemAddedMoney < 0) {
+			throw new IllegalArgumentException("Item added money must be zero or greater.");
+		}
+
+		if (itemQuantity == null || itemQuantity <= 0) {
+			throw new IllegalArgumentException("Item quantity must be greater than zero.");
+		}
+
+		if (itemDescription == null || itemDescription.trim().isEmpty()) {
+			throw new IllegalArgumentException("Item description is required.");
+		}
+
+		if (effectiveDate == null || effectiveDate.trim().isEmpty()) {
+			throw new IllegalArgumentException("Effective date is required.");
+		}
+
+		if (cover == null || !cover.exists()) {
+			throw new IllegalArgumentException("Cover image file is required.");
+		}
+
+		if (userId == null || userId.trim().isEmpty()) {
+			throw new IllegalArgumentException("User ID is required.");
+		}
+
+		log.debug(activeFlag);
+		if (!"Y".equals(activeFlag) && !"N".equals(activeFlag)) {
+			throw new IllegalArgumentException("Active flag must be either 'Y' or 'N'.");
+		}
+
+		// =========================
+		// Parse effective date
+		// =========================
+
+		String[] dates = effectiveDate.split("\\s+-\\s+");
+
+		if (dates.length != 2) {
+			throw new IllegalArgumentException("Invalid effective date format.");
+		}
+
+		Date startDate;
+		Date endDate;
+
+		try {
+
+			SimpleDateFormat sdf = new SimpleDateFormat("dd MMM yyyy", Locale.ENGLISH);
+			sdf.setLenient(false);
+
+			startDate = sdf.parse(dates[0].trim());
+			endDate = sdf.parse(dates[1].trim());
+
+		} catch (ParseException e) {
+			throw new IllegalArgumentException("Invalid effective date format.");
+		}
+
+		if (startDate.after(endDate)) {
+			throw new IllegalArgumentException("Start date must not be after end date.");
+		}
+
+		// =========================
+		// Create ItemPrivilege
+		// =========================
+
+		ItemPrivilege item = new ItemPrivilege();
+
+		item.setItemName(itemName.trim());
+		item.setToken(itemToken);
+		item.setAddedMoney(itemAddedMoney);
+		item.setQuantity(itemQuantity);
+		item.setDetails(itemDescription.trim());
+
+		item.setStartDate(startDate);
+		item.setEndDate(endDate);
+
+		item.setActiveFlag(activeFlag);
+
+		item.setUserCreate(userId);
+
+		item.setTimeCreate(DateUtil.getCurrentTime());
+
+		// =========================
+		// Save first
+		// Get item_id
+		// =========================
+
+		itemPrivilegeDAO.save(item);
+
+		Integer itemId = item.getItemId();
+
+		// =========================
+		// Upload cover
+		// =========================
+
+		List<File> coverFiles = new ArrayList<File>();
+		coverFiles.add(cover);
+
+		List<String> coverFileNames = new ArrayList<String>();
+		coverFileNames.add(coverFileName);
+
+		List<FileUpload> coverSaved = fileAttachmentService.attach(coverFiles, coverFileNames, "privilegeManagement",
+				String.valueOf(itemId), userId, realPath);
+
+		if (coverSaved.isEmpty()) {
+			throw new IllegalStateException("Unable to upload cover image.");
+		}
+
+		item.setCoverPath(coverSaved.get(0).getPath());
+
+		// =========================
+		// Upload additional images
+		// =========================
+
+		ArrayNode images = MAPPER.createArrayNode();
+
+		if (additionalImages != null && additionalImages.length > 0) {
+
+			List<File> additionalFiles = Arrays.asList(additionalImages);
+
+			List<String> additionalFileNames = additionalImagesFileName != null
+					? Arrays.asList(additionalImagesFileName)
+					: new ArrayList<String>();
+
+			List<FileUpload> additionalSaved = fileAttachmentService.attach(additionalFiles, additionalFileNames,
+					"privilegeManagement", String.valueOf(itemId), userId, realPath);
+
+			for (FileUpload fileUpload : additionalSaved) {
+				images.add(fileUpload.getPath());
+			}
+		}
+
+		// =========================
+		// Save image paths
+		// =========================
+
+		item.setImgPath(images.toString());
+
+		item.setTimeUpdate(DateUtil.getCurrentTime());
+
+		itemPrivilegeDAO.update(item);
+	}
+
+	@Transactional
+	public void updateRewardItem(Integer itemId, String itemName, Double itemToken, Double itemAddedMoney, Integer itemQuantity,
+			String itemDescription, String effectiveDate, String activeFlag, File cover, String coverFileName,
+			File[] additionalImages, String[] additionalImagesFileName, String removedAdditionalImages, String userId,
+			String realPath) throws Exception {
+
+		// =========================
+		// Validation
+		// =========================
+
+		if (itemId == null) {
+			throw new IllegalArgumentException("Item ID is required.");
+		}
+
+		if (itemName == null || itemName.trim().isEmpty()) {
+			throw new IllegalArgumentException("Item name is required.");
+		}
+
+		if (itemToken == null || itemToken <= 0) {
+			throw new IllegalArgumentException("Item token value must be greater than zero.");
+		}
+		
+		if (itemAddedMoney == null || itemAddedMoney < 0) {
+			throw new IllegalArgumentException("Item added money must be zero or greater.");
+		}
+
+		if (itemQuantity == null || itemQuantity <= 0) {
+			throw new IllegalArgumentException("Item quantity must be greater than zero.");
+		}
+
+		if (itemDescription == null || itemDescription.trim().isEmpty()) {
+			throw new IllegalArgumentException("Item description is required.");
+		}
+
+		if (effectiveDate == null || effectiveDate.trim().isEmpty()) {
+			throw new IllegalArgumentException("Effective date is required.");
+		}
+
+		if (!"Y".equals(activeFlag) && !"N".equals(activeFlag)) {
+			throw new IllegalArgumentException("Active flag must be either 'Y' or 'N'.");
+		}
+
+		if (userId == null || userId.trim().isEmpty()) {
+			throw new IllegalArgumentException("User ID is required.");
+		}
+
+		// =========================
+		// Get existing item
+		// =========================
+
+		ItemPrivilege item = itemPrivilegeDAO.findById(itemId);
+
+		if (item == null) {
+			throw new IllegalArgumentException("Reward item not found.");
+		}
+
+		// =========================
+		// Parse effective date
+		// =========================
+
+		String[] dates = effectiveDate.split("\\s+-\\s+");
+
+		if (dates.length != 2) {
+			throw new IllegalArgumentException("Invalid effective date format.");
+		}
+
+		Date startDate;
+		Date endDate;
+
+		try {
+
+			SimpleDateFormat sdf = new SimpleDateFormat("dd MMM yyyy", Locale.ENGLISH);
+
+			sdf.setLenient(false);
+
+			startDate = sdf.parse(dates[0].trim());
+			endDate = sdf.parse(dates[1].trim());
+
+		} catch (ParseException e) {
+
+			throw new IllegalArgumentException("Invalid effective date format.");
+		}
+
+		if (startDate.after(endDate)) {
+			throw new IllegalArgumentException("Start date must not be after end date.");
+		}
+
+		// =========================
+		// Update basic information
+		// =========================
+
+		item.setItemName(itemName.trim());
+		item.setToken(itemToken);
+		item.setAddedMoney(itemAddedMoney);
+		item.setQuantity(itemQuantity);
+		item.setDetails(itemDescription.trim());
+		item.setStartDate(startDate);
+		item.setEndDate(endDate);
+		item.setActiveFlag(activeFlag);
+		item.setUserUpdate(userId);
+		item.setTimeUpdate(DateUtil.getCurrentTime());
+
+		// =========================
+		// Update Cover Image
+		// =========================
+
+		if (cover != null && cover.exists()) {
+
+			List<File> coverFiles = new ArrayList<>();
+			coverFiles.add(cover);
+
+			List<String> coverFileNames = new ArrayList<>();
+			coverFileNames.add(coverFileName);
+
+			List<FileUpload> coverSaved = fileAttachmentService.attach(coverFiles, coverFileNames,
+					"privilegeManagement", String.valueOf(itemId), userId, realPath);
+
+			if (coverSaved.isEmpty()) {
+				throw new IllegalStateException("Unable to upload cover image.");
+			}
+
+//	        String oldCoverPath = item.getCoverPath();
+
+			item.setCoverPath(coverSaved.get(0).getPath());
+
+			// ถ้ามีระบบลบไฟล์เก่า ค่อยจัดการตรงนี้
+			// deleteFile(oldCoverPath, realPath);
+		}
+
+		// =========================
+		// Existing Additional Images
+		// =========================
+
+		List<String> existingImages = new ArrayList<>();
+
+		String imgPath = item.getImgPath();
+
+		if (imgPath != null && !imgPath.trim().isEmpty()) {
+
+			try {
+
+				JsonNode node = MAPPER.readTree(imgPath);
+
+				if (node.isArray()) {
+
+					for (JsonNode image : node) {
+
+						if (image.isTextual()) {
+							existingImages.add(image.asText());
+						}
+					}
+				}
+
+			} catch (Exception e) {
+
+				log.error("Invalid imgPath JSON for itemId=" + itemId, e);
+
+				throw new IllegalStateException("Invalid additional image data.");
+			}
+		}
+
+		// =========================
+		// Remove Additional Images
+		// =========================
+
+		if (removedAdditionalImages != null && !removedAdditionalImages.trim().isEmpty()) {
+
+			try {
+
+				JsonNode removedNode = MAPPER.readTree(removedAdditionalImages);
+
+				if (removedNode.isArray()) {
+
+					for (JsonNode removed : removedNode) {
+
+						if (!removed.isTextual()) {
+							continue;
+						}
+
+						String removedPath = removed.asText();
+
+						existingImages.remove(removedPath);
+
+						// ถ้ามีระบบลบไฟล์จริง
+						// deleteFile(removedPath, realPath);
+					}
+				}
+
+			} catch (Exception e) {
+
+				log.error("Invalid removedAdditionalImages for itemId=" + itemId, e);
+
+				throw new IllegalArgumentException("Invalid removed additional image data.");
+			}
+		}
+
+		// =========================
+		// Upload New Additional Images
+		// =========================
+
+		if (additionalImages != null && additionalImages.length > 0) {
+
+			List<File> additionalFiles = Arrays.asList(additionalImages);
+
+			List<String> additionalFileNames = additionalImagesFileName != null
+					? Arrays.asList(additionalImagesFileName)
+					: new ArrayList<String>();
+
+			List<FileUpload> additionalSaved = fileAttachmentService.attach(additionalFiles, additionalFileNames,
+					"privilegeManagement", String.valueOf(itemId), userId, realPath);
+
+			for (FileUpload fileUpload : additionalSaved) {
+
+				existingImages.add(fileUpload.getPath());
+			}
+		}
+
+		// =========================
+		// Save Additional Images
+		// =========================
+
+		ArrayNode images = MAPPER.createObjectNode().arrayNode();
+
+		for (String path : existingImages) {
+			images.add(path);
+		}
+
+		item.setImgPath(images.toString());
+
+		// =========================
+		// Save
+		// =========================
+
+		itemPrivilegeDAO.update(item);
+	}
+
+	@Transactional
+	public void deleteRewardItem(Integer itemId, String userId, String realPath) throws Exception {
+
+		if (itemId == null || itemId <= 0) {
+			throw new IllegalArgumentException("Invalid itemId.");
+		}
+
+		if (userId == null || userId.trim().isEmpty()) {
+			throw new IllegalArgumentException("User ID is required.");
+		}
+
+		ItemPrivilege item = itemPrivilegeDAO.findById(itemId);
+
+		if (item == null) {
+			throw new IllegalArgumentException("Item not found.");
+		}
+
+		itemPrivilegeDAO.delete(item);
+	}
+
+	public List<ItemPrivilege> getAllRewardItems() throws Exception {
+
+		return itemPrivilegeDAO.findAll();
+	}
+
+	public ItemPrivilege getRewardItemById(Integer id) throws Exception {
+
+		ItemPrivilege item = itemPrivilegeDAO.findById(id);
+
+		if (id == null || id <= 0) {
+			throw new IllegalArgumentException("Invalid item ID.");
+		}
+
+		if (item == null) {
+			throw new IllegalArgumentException("Item with ID " + id + " not found.");
+		}
+
+		return item;
+	}
+
+	public ItemPrivilege updateRewardItemActiveFlag(Integer itemId, String activeFlag, String userId) throws Exception {
+
+		if (!"Y".equals(activeFlag) && !"N".equals(activeFlag)) {
+			throw new IllegalArgumentException("Active flag must be either 'Y' or 'N'.");
+		}
+
+		if (itemId == null || itemId <= 0) {
+			throw new IllegalArgumentException("Invalid item ID.");
+		}
+
+		if (userId == null || userId.trim().isEmpty()) {
+			throw new IllegalArgumentException("User ID is required.");
+		}
+
+		ItemPrivilege item = itemPrivilegeDAO.findById(itemId);
+
+		if (item == null) {
+			throw new IllegalArgumentException("Item with ID " + itemId + " not found.");
+		}
+
+		item.setActiveFlag(activeFlag);
+		item.setUserUpdate(userId);
+		item.setTimeUpdate(DateUtil.getCurrentTime());
+
+		itemPrivilegeDAO.update(item);
+
+		return item;
 
 	}
 
@@ -1696,6 +2342,82 @@ private void deductUserCubeTokenForBackDateCheckOut(String userId, Timestamp che
 		return workEnd != null && actualCheckOut.isBefore(workEnd);
 	}
 
+	private boolean isBackdated(Timestamp workTime, Timestamp timeCreate, String description, LocalDate targetDate)
+			throws Exception {
+
+		// ไม่มี record
+		if (workTime == null) {
+			return false;
+		}
+
+		// ไม่มี create time
+		if (timeCreate == null) {
+			return false;
+		}
+
+		// ต้องมี description
+		if (description == null || description.trim().isEmpty()) {
+
+			return false;
+		}
+
+		// เวลา work กับเวลาที่สร้างต้องไม่ตรงกัน
+		if (workTime.equals(timeCreate)) {
+			return false;
+		}
+
+		LocalDate createDate = timeCreate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+
+		/*
+		 * จำนวนวันทำการที่ผ่านไประหว่าง targetDate -> createDate
+		 */
+		int businessDays = countBusinessDays(targetDate, createDate);
+
+		/*
+		 * ลงย้อนหลัง 0 หรือ 1 วันทำการ ไม่ถือเป็น Backdate ที่ต้องหัก Token
+		 */
+		if (businessDays <= 1) {
+
+			log.info("Backdate ignored. " + "workDate=" + targetDate + ", createDate=" + createDate + ", businessDays="
+					+ businessDays);
+
+			return false;
+		}
+
+		return true;
+	}
+
+	private int countBusinessDays(LocalDate from, LocalDate to) throws Exception {
+
+		if (!from.isBefore(to)) {
+			return 0;
+		}
+
+		int count = 0;
+
+		LocalDate current = from.plusDays(1);
+
+		while (!current.isAfter(to)) {
+
+			DayOfWeek dayOfWeek = current.getDayOfWeek();
+
+			// ข้าม Saturday / Sunday
+			if (dayOfWeek != DayOfWeek.SATURDAY && dayOfWeek != DayOfWeek.SUNDAY) {
+
+				Date currentDate = Date.from(current.atStartOfDay(ZoneId.systemDefault()).toInstant());
+
+				// ข้าม Holiday
+				if (!holidayDAO.isHoliday(currentDate)) {
+					count++;
+				}
+			}
+
+			current = current.plusDays(1);
+		}
+
+		return count;
+	}
+
 	private LocalTime parseTime(String time) {
 
 		if (time == null || time.trim().isEmpty()) {
@@ -1709,4 +2431,5 @@ private void deductUserCubeTokenForBackDateCheckOut(String userId, Timestamp che
 
 		return LocalTime.of(hour, minute);
 	}
+
 }

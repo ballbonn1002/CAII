@@ -2179,7 +2179,7 @@
 			    position: false,
 			    phoneNumber: false,
 			    email: false
-			};
+		};
 		
 		function bindContactValidation(selector, errMsg, key) {
 		    $(selector).on(

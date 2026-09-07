@@ -931,4 +931,44 @@ MODIFY `description` TEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL;
 
 -- PROD 4 SEP 2026
 
+-- 07/09/2026 Best(Intern) Add permission | Create table usage_summary, item_privilege 
+insert into `role_authorized_object` (`authorized_object_id`, `role_id`, `time_create`, `time_update`) 
+values ('cubetoken.history.viewall', 'admin', NOW(), NOW());
+
+CREATE TABLE `usage_summary` (
+  `usage_summary_id` int(11) NOT NULL AUTO_INCREMENT,
+  `user_id` varchar(32) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `action_type_id` int(11) NOT NULL,
+  `year` varchar(5) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `month` varchar(5) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `token` double NOT NULL,
+  `reconcile` double NOT NULL,
+  `description` varchar(1024) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `user_create` varchar(32) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `user_update` varchar(32) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `time_create` timestamp NULL DEFAULT NULL,
+  `time_update` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`usage_summary_id`)
+) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci;
+
+CREATE TABLE `item_privilege` (
+  `item_id` int(11) NOT NULL AUTO_INCREMENT,
+  `item_name` varchar(128) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `details` varchar(1024) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `token` double NOT NULL DEFAULT '0',
+  `quantity` int(11) NOT NULL DEFAULT '0',
+  `added_money` double NULL,
+  `start_date` date NOT NULL,
+  `end_date` date NOT NULL,
+  `cover_path` varchar(500) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `img_path` text COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `active_flag` char(1) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'Y',
+  `description` varchar(1024) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `user_create` varchar(32) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `user_update` varchar(32) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `time_create` timestamp NULL DEFAULT NULL,
+  `time_update` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`item_id`)
+) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci;
+
 

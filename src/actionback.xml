@@ -1891,6 +1891,55 @@
         method="returnCubeToken" />
         
         
+        <!-- Privilege Management -->
+		<action name="privilegeMangementPage"
+			class="com.cubesofttech.action.CubeTokenAction" method="privilegeMangementPage">
+			<result name="success" type="tiles">privilegeMangement</result>
+			<result name="error">/pages-back/common/error/error_500.jsp</result>
+		</action>
+		
+		<action name="reloadRewardItemTable"
+	        class="com.cubesofttech.action.CubeTokenAction"
+	        method="reloadRewardItemTable">
+	
+		    <result name="success" type="dispatcher">
+		        /pages-back/cube_token/itemTableBody.jsp
+		    </result>
+		
+		    <result name="error">
+		        /pages-back/common/error/error_500.jsp
+		    </result>
+		
+		</action>
+		
+		<!-- Create Reward Item -->
+		<action name="createRewardItem"
+			class="com.cubesofttech.action.CubeTokenAction" method="createRewardItem">
+			<result name="success" type="tiles">createRewardItem</result>
+			<result name="error">/pages-back/common/error/error_500.jsp</result>
+		</action>
+		
+		<action name="saveRewardItem"
+        class="com.cubesofttech.action.CubeTokenAction"
+        method="saveRewardItem" />
+        
+        <action name="editRewardItem"
+			class="com.cubesofttech.action.CubeTokenAction" method="editRewardItem">
+			<result name="success" type="tiles">editRewardItem</result>
+			<result name="error">/pages-back/common/error/error_500.jsp</result>
+		</action>
+		
+		<action name="updateRewardItem"
+        class="com.cubesofttech.action.CubeTokenAction"
+        method="updateRewardItem" />
+        
+        <action name="updateRewardItemActiveFlag"
+        class="com.cubesofttech.action.CubeTokenAction"
+        method="updateRewardItemActiveFlag" />
+        
+        <action name="deleteRewardItem"
+        class="com.cubesofttech.action.CubeTokenAction"
+        method="deleteRewardItem" />
 
 		<!-- ========================== Work Log ============================== -->
 		<action name="work_log"

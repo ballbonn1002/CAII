@@ -3108,6 +3108,7 @@ public class WorkHoursDAOImpl implements WorkHoursDAO {
 	            "    u.work_time_start, " +
 	            "    u.work_time_end, " +
 
+	            // CHECKIN
 	            "    ( " +
 	            "        SELECT wh.work_hours_time_work " +
 	            "        FROM work_hours wh " +
@@ -3129,6 +3130,17 @@ public class WorkHoursDAOImpl implements WorkHoursDAO {
 	            "    ) AS checkin_time_create, " +
 
 	            "    ( " +
+	            "        SELECT wh.description " +
+	            "        FROM work_hours wh " +
+	            "        WHERE wh.user_create = u.id " +
+	            "          AND wh.work_hours_type = '1' " +
+	            "          AND DATE(wh.work_hours_time_work) = :date " +
+	            "        ORDER BY wh.work_hours_id DESC " +
+	            "        LIMIT 1 " +
+	            "    ) AS checkin_description, " +
+
+	            // CHECKOUT
+	            "    ( " +
 	            "        SELECT wh.work_hours_time_work " +
 	            "        FROM work_hours wh " +
 	            "        WHERE wh.user_create = u.id " +
@@ -3146,7 +3158,17 @@ public class WorkHoursDAOImpl implements WorkHoursDAO {
 	            "          AND DATE(wh.work_hours_time_work) = :date " +
 	            "        ORDER BY wh.work_hours_id DESC " +
 	            "        LIMIT 1 " +
-	            "    ) AS checkout_time_create " +
+	            "    ) AS checkout_time_create, " +
+
+	            "    ( " +
+	            "        SELECT wh.description " +
+	            "        FROM work_hours wh " +
+	            "        WHERE wh.user_create = u.id " +
+	            "          AND wh.work_hours_type = '2' " +
+	            "          AND DATE(wh.work_hours_time_work) = :date " +
+	            "        ORDER BY wh.work_hours_id DESC " +
+	            "        LIMIT 1 " +
+	            "    ) AS checkout_description " +
 
 	            "FROM user u " +
 	            "WHERE u.enable = '1'";

@@ -286,6 +286,7 @@ pageEncoding="UTF-8"%>
 	                                <a href="myCubeToken" class="btn btn-light-primary d-inline-flex align-items-center px-6 py-3">My Cube Token</a>
 	                                <a href="tokenSettings" class="btn btn-light-info d-inline-flex align-items-center px-6 py-3">Cube Token Setting</a>
 	                                <a href="cubeTokenManagement" class="btn btn-light-success d-inline-flex align-items-center px-6 py-3">Cube Token Management</a>
+	                                <a href="privilegeMangementPage" class="btn btn-light-danger d-inline-flex align-items-center px-6 py-3">Privilege Management </a>
                                 </div>
                             </div>
                         </div>
