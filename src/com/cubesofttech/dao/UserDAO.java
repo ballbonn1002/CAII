@@ -3,6 +3,8 @@ package com.cubesofttech.dao;
 import java.util.List;
 import java.util.Map;
 
+import org.hibernate.type.IntegerType;
+
 import com.cubesofttech.model.User;
 
 public interface UserDAO {
@@ -10,7 +12,7 @@ public interface UserDAO {
 	public void save(User user) throws Exception;
 
 	public List<User> findAll() throws Exception;
-	
+
 	public User findById(String id) throws Exception;
 
 //	/*
@@ -40,7 +42,7 @@ public interface UserDAO {
 	public String userListJSON();
 
 	public List<Map<String, Object>> UserEnable(String enable);
-	
+
 	List<Map<String, Object>> findRoleNameById(String id);
 
 	public List<Map<String, Object>> test_birthdaysummary() throws Exception;
@@ -52,21 +54,27 @@ public interface UserDAO {
 	public List<Map<String, Object>> updateGender(String[] setgender) throws Exception;
 
 	public List<Map<String, Object>> findTimeUserWork(String user) throws Exception;
-	
+
 	public List<Map<String, Object>> getManagerIdAndManagerNameByUserId(String reqUserId) throws Exception;
-	
-    List<Map<String, Object>> findUsersByEmail(String email) throws Exception;
-    Map<String, Object> findUserById(String id) throws Exception;
-    
-    String findEmployeeIdByName(String nameEn, String nameTh) throws Exception;
+
+	List<Map<String, Object>> findUsersByEmail(String email) throws Exception;
+
+	Map<String, Object> findUserById(String id) throws Exception;
+
+	String findEmployeeIdByName(String nameEn, String nameTh) throws Exception;
 
 	List<Map<String, Object>> sequense2() throws Exception;
 
 	List<Map<String, Object>> findUserActive() throws Exception;
 
 	public List<Map<String, Object>> findByLineId(String id) throws Exception;
-	
+
 	public User findByLine(String line_id) throws Exception;
-	
+
 	public User findByUid(String uid) throws Exception;
+
+	List<User> findEligibleUsers(String employeeType, boolean allowActive, boolean allowProbation,
+			boolean allowExcluded, boolean allowIntern, boolean allowEnable, boolean allowDisable) throws Exception;
+	
+	public String findStartYear(String userId) throws Exception;
 }

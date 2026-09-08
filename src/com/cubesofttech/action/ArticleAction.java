@@ -510,8 +510,14 @@ public class ArticleAction extends ActionSupport {
 					fileName = fileName.trim().replaceAll(" ", "_");
 				}
 
-				String newFileName = maxId + "_" + fileName + typeFile;
-				String serverFileName = "article_" + maxId + typeFile;
+				String safeFileName;
+				if (fileName.matches("^[a-zA-Z0-9._-]+$")) {
+					safeFileName = fileName;
+				} else {
+					safeFileName = "articleCover";
+				}
+
+				String newFileName = maxId + "_" + safeFileName + typeFile;
 
 				long fileSize = fileUpload.length(); // byte
 				double sizeKB = fileSize / 1024.0;
@@ -525,7 +531,7 @@ public class ArticleAction extends ActionSupport {
 					sizeText = String.format("%.2f MB", sizeMB);
 				}
 
-				FileUtil.upload(fileUpload, fileServerPath + "upload/user/", serverFileName);
+				FileUtil.upload(fileUpload, fileServerPath + "/upload/user/", newFileName);
 
 				FileUpload file = new FileUpload();
 				file.setFileId(maxId);
@@ -535,7 +541,6 @@ public class ArticleAction extends ActionSupport {
 				file.setPageId(String.valueOf(articleMaxId));
 				file.setType(typeFile);
 				file.setSize(sizeText);
-				file.setAltName(null);
 				file.setUserCreate(logonUser);
 				file.setUserUpdate(logonUser);
 				file.setAltName(cover_alt);
@@ -574,6 +579,7 @@ public class ArticleAction extends ActionSupport {
 
 			article.setTimePost(Timestamp.valueOf(dateTime));
 			articleDAO.save(article);
+			
 			String articleIdStr = String.valueOf(article.getArticleId());
 
 			if (tempKey != null && !tempKey.trim().isEmpty()) {
@@ -706,8 +712,7 @@ public class ArticleAction extends ActionSupport {
 			if (article.getFileId() != null) {
 			    FileUpload file = fileuploadDAO.findById(Integer.parseInt(article.getFileId()));
 			    if (file != null) {
-			        String type = file.getType();
-			        imgPath = "/upload/user/article_" + file.getFileId()+ type;
+			        imgPath = file.getPath();
 			        imgAlt = file.getAltName();
 			    }
 			}
@@ -722,6 +727,7 @@ public class ArticleAction extends ActionSupport {
 			request.setAttribute("publicDate", publicDate);
 			request.setAttribute("publicTime", publicTime);
 			
+			log.debug("imgPath "+ imgPath);
 			request.setAttribute("fileImgPath", imgPath);
 			request.setAttribute("fileImgAlt", imgAlt);
 			
@@ -762,8 +768,7 @@ public class ArticleAction extends ActionSupport {
 			if (article.getFileId() != null) {
 			    FileUpload file = fileuploadDAO.findById(Integer.parseInt(article.getFileId()));
 			    if (file != null) {
-			        String type = file.getType();
-			        imgPath = "/upload/user/article_" + file.getFileId()+ type;
+			        imgPath = file.getPath();
 			        imgAlt = file.getAltName();
 			    }
 			}
@@ -820,9 +825,23 @@ public class ArticleAction extends ActionSupport {
 
 			article.setTimePost(Timestamp.valueOf(dateTime));
 			
-			
 			// Upload file
 			if (fileUpload != null) {
+				//ไม่ลบไฟล์เก่าออกจากserver ถ้ามีการอัปโหลดไฟล์ใหม่ จะทำการอัปเดตไฟล์ใหม่แทน
+				if (article.getFileId() != null) {
+					try {
+						FileUpload oldFile = fileuploadDAO.findById(Integer.parseInt(article.getFileId()));
+						if (oldFile != null) {
+							oldFile.setPageId(null);
+							oldFile.setUserUpdate(logonUser);
+							oldFile.setTimeUpdate(DateUtil.getCurrentTime());
+							fileuploadDAO.update(oldFile);
+						}
+					} catch (Exception e) {
+						log.error("Error unlinking old cover file: " + article.getFileId(), e);
+					}
+				}
+				
 				int maxId = fileuploadDAO.getMaxId() + 1;
 				String fileServerPath = request.getServletContext().getRealPath("/");
 				String originalName = fileUploadFileName;
@@ -833,8 +852,14 @@ public class ArticleAction extends ActionSupport {
 					fileName = fileName.trim().replaceAll(" ", "_");
 				}
 
-				String newFileName = maxId + "_" + fileName + typeFile;
-				String serverFileName = "article_" + maxId + typeFile;
+				String safeFileName;
+				if (fileName.matches("^[a-zA-Z0-9._-]+$")) {
+					safeFileName = fileName;
+				} else {
+					safeFileName = "articleCover";
+				}
+
+				String newFileName = maxId + "_" + safeFileName + typeFile;
 
 				long fileSize = fileUpload.length(); // byte
 				double sizeKB = fileSize / 1024.0;
@@ -848,7 +873,7 @@ public class ArticleAction extends ActionSupport {
 					sizeText = String.format("%.2f MB", sizeMB);
 				}
 
-				FileUtil.upload(fileUpload, fileServerPath + "upload/user/", serverFileName);
+				FileUtil.upload(fileUpload, fileServerPath + "/upload/user/", newFileName);
 
 				FileUpload file = new FileUpload();
 				file.setFileId(maxId);
@@ -858,7 +883,6 @@ public class ArticleAction extends ActionSupport {
 				file.setPageId(String.valueOf(articleId));
 				file.setType(typeFile);
 				file.setSize(sizeText);
-				file.setAltName(null);
 				file.setUserCreate(logonUser);
 				file.setUserUpdate(logonUser);
 				file.setAltName(cover_alt);
@@ -913,7 +937,6 @@ public class ArticleAction extends ActionSupport {
 			}
 
 			// Update article_related
-			log.debug(article_related);
 			articleRelatedDAO.deleteByArticleId(String.valueOf(articleId));
 			if (article_related != null) {
 			    for (String rid : article_related) {
@@ -980,11 +1003,24 @@ public class ArticleAction extends ActionSupport {
 				articleTagDAO.deleteByArticleId(id);
 				articleRelatedDAO.deleteByArticleId(id);
 				pageUriDAO.deleteByModelAndModelId("article",id);
-				//delete file
+				//delete file (cover) - ลบทั้ง record ในตาราง file และไฟล์จริงบน disk
 				if (article.getFileId() != null) {
 					Integer fileId = Integer.parseInt(article.getFileId());
 				    FileUpload file = fileuploadDAO.findById(fileId);
 					if (file != null) {
+						if (file.getPath() != null) {
+							try {
+								String fileServerPath = request.getServletContext().getRealPath("/");
+								String relativePath = file.getPath().startsWith("/") ? file.getPath().substring(1) : file.getPath();
+								Path coverPath = Paths.get(fileServerPath + relativePath);
+
+								if (Files.exists(coverPath)) {
+									Files.delete(coverPath);
+								}
+							} catch (Exception e) {
+								log.error("Error while deleting cover file: " + file.getPath(), e);
+							}
+						}
 						fileuploadDAO.delete(file);
 					}
 				}
@@ -1063,12 +1099,12 @@ public class ArticleAction extends ActionSupport {
 
 	        	if (pureFileName != null && !pureFileName.isEmpty()) {
 	        	    if (pureFileName.matches("^[a-zA-Z0-9._-]+$")) {
-	        	        finalNameForSystem = imgMaxId + "_article_" + pureFileName;
+	        	        finalNameForSystem = imgMaxId + "_atc_" + pureFileName;
 	        	    } else {
-	        	        finalNameForSystem = imgMaxId + "_article_" + imgMaxId;
+	        	        finalNameForSystem = imgMaxId + "_atc_" + imgMaxId;
 	        	    }
 	        	} else {
-	        	    finalNameForSystem = imgMaxId + "_article_" + imgMaxId;
+	        	    finalNameForSystem = imgMaxId + "_atc_" + imgMaxId;
 	        	}
 	        	String newFileName = finalNameForSystem + typeFile;
 
@@ -1076,9 +1112,9 @@ public class ArticleAction extends ActionSupport {
 
 	            FileUtil.upload(articleImageFile, fileServerPath + "upload/article/", newFileName);
 
-	            String contextPath = request.getContextPath();
+	            String contextPath = constant.getWebPath();
 	            locationFile = "/upload/article/" + newFileName;
-	            String filePath = "/upload/article/" +finalNameForSystem+typeFile;
+	            String filePath = contextPath +"/upload/article/" +finalNameForSystem+typeFile;
 	            
 	            long fileSize = articleImageFile.length();
 	            String sizeText = (fileSize < 1024 * 1024) 
@@ -1100,7 +1136,7 @@ public class ArticleAction extends ActionSupport {
 	            int maxFileId = fileuploadDAO.getMaxId() + 1;
 	            FileUpload file = new FileUpload();
 	            file.setFileId(maxFileId);
-	            String article_Id = String.valueOf(articleId);
+	            String article_Id = (articleId != null) ? String.valueOf(articleId) : null;
 	            if(article_Id != null && !article_Id.trim().isEmpty()) {
 	                file.setPage("article");
 	                file.setPageId(article_Id);
@@ -1156,7 +1192,7 @@ public class ArticleAction extends ActionSupport {
 		                log.debug("File NOT found : " + path.toString());
 		            }
 	
-		            String dbPath = "/upload/article/" + fileImage.getName();
+		            String dbPath = constant.getWebPath() + "/upload/article/" + fileImage.getName();
 	
 		            articleImageDAO.deleteByPath(dbPath);
 		            fileuploadDAO.deleteByPathAtc(dbPath);
@@ -1172,5 +1208,43 @@ public class ArticleAction extends ActionSupport {
 	    }
 	}
 
+	public void checkPageUrl() {
+		try {
+			response.setContentType("application/json");
+			response.setCharacterEncoding("UTF-8");
+
+			JSONObject result = new JSONObject();
+
+			if (pageUriId == null || pageUriId.trim().isEmpty()) {
+				result.put("duplicate", false);
+				response.getWriter().write(result.toString());
+				return;
+			}
+
+			PageUri existing = pageUriDAO.findById(pageUriId.trim());
+
+			boolean duplicate = false;
+			if (existing != null) {
+				// ถ้า URL นี้เป็นของ article ตัวเองอยู่แล้ว ไม่ถือว่าซ้ำ
+				boolean belongsToSameArticle = "article".equals(existing.getModel())
+						&& articleId != null
+						&& String.valueOf(articleId).equals(existing.getModelId());
+
+				if (!belongsToSameArticle) {
+					duplicate = true;
+				}
+			}
+
+			result.put("duplicate", duplicate);
+			response.getWriter().write(result.toString());
+			response.getWriter().flush();
+
+		} catch (Exception e) {
+			log.error("checkPageUri error: ", e);
+			try {
+				response.getWriter().write("{\"duplicate\":false,\"error\":true}");
+			} catch (IOException ignored) {}
+		}
+	}
 
 }

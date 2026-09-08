@@ -1,7 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
-
+<fmt:setLocale value="en_US" />
 
 <input type="hidden" id="hasSignature" value="${hasSignature}" />
 <div class="app-main flex-column flex-row-fluid" id="kt_app_main">
@@ -36,8 +36,10 @@
 
                             <div class="card shadow-sm mb-5 mb-xl-10">
                                 <div class="card-header fs-4">
-                                    <div class="card-title m-0">
+                                    <div class="card-title m-0 m-0 d-flex justify-content-between align-items-center w-100">
                                         <h3 class="fw-semibold m-0 text-gray-900">Equipment</h3>
+
+                                        <span class="fs-6">Create By : ${userCreate.name}, <fmt:formatDate value='${userCreate.time_create}' pattern='d MMM YYYY HH:mm' /> </span>
                                     </div>
                                 </div>
 
@@ -49,7 +51,7 @@
                                                 <div id="errorMsg" class="text-center text-danger mb-3"></div>
                                                 <c:set var="imageSrc" value="" />
                                                 <c:if test="${not empty equipmentbyId.image}">
-                                                    <c:set var="imageSrc" value="${pageContext.request.contextPath}/${equipmentbyId.image}" />
+                                                    <c:set var="imageSrc" value="${pageContext.request.contextPath}${equipmentbyId.image}" />
                                                 </c:if>
 
                                                 <div class="border rounded-3 bg-light d-flex align-items-center justify-content-center mb-1" style="width: 200px; height: 200px; overflow: hidden;">
@@ -94,6 +96,20 @@
                                     </div>
 
                                     <div class="row g-5 mb-5">
+                                        <div class="col-12">
+                                            <label class="form-label fw-medium text-gray-800" for="productSelect">
+                                                Reference Product
+                                                <span class="text-muted fw-normal">(Equipment Catalog)</span>
+                                            </label>
+                                            <%-- อ้างอิงไปตาราง product (product_type = '1' Equipment) - ไม่บังคับเลือก
+                                                 ดึงรายการผ่าน action ที่มีอยู่แล้ว get_items_catalog (PurchaseOrderAction.getItemsCatalog) --%>
+                                            <select class="form-select" name="productId" id="productSelect" data-control="select2" data-placeholder="Select Product">
+                                                <option></option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div class="row g-5 mb-5">
                                         <div class="col-md-6">
                                             <label class="required form-label fw-medium text-gray-800">Item Name</label>
                                             <input type="text" name="name" class="form-control" placeholder="Item name" value="${equipmentbyId.name}" />
@@ -124,7 +140,6 @@
                                     <div class="row g-5">
                                         <div class="col-md-6">
                                             <label class="form-label fw-medium text-gray-800">Date of Purchase</label>
-                                            <fmt:setLocale value="en_US" />
                                             <fmt:formatDate value="${equipmentbyId.timeCreate}" pattern="dd MMM yyyy" var="fmtDatePurchase" />
                                             <div class="position-relative d-flex align-items-center">
                                                 <span class="svg-icon svg-icon-2 position-absolute mx-4">
@@ -724,6 +739,7 @@
 		var statusList = ${status != null ? status : '[]'};
         var savedTypeID = "${equipmentbyId.type}";
         var savedStatusID = "${equipmentbyId.status}";
+        var savedProductId = "${equipmentbyId.productId}";
 
         /* try {
             if (rawType) typeList = JSON.parse(rawType);
@@ -829,6 +845,31 @@
 
         // Init Components
         $('#typeSelect, #statusSelect').select2({ minimumResultsForSearch: Infinity });
+        $('#productSelect').select2({ placeholder: 'Select Product', allowClear: true });
+
+        // ---- Reference Product (Equipment Catalog) ----
+        // ใช้ endpoint เดิม get_items_catalog (PurchaseOrderAction.getItemsCatalog) แทนการทำ action ใหม่
+        // includeSubProducts: true = ดึงทั้ง product ตัวแม่และ sub product มาให้เลือกด้วย
+        // (ต่างจากหน้า Purchase Order ที่ไม่ส่ง flag นี้ จึงยังได้เฉพาะตัวแม่เหมือนเดิม)
+        $.ajax({
+            url: 'get_items_catalog',
+            type: 'POST',
+            dataType: 'json',
+            data: { itemsType: 'equipment', includeSubProducts: 'true' },
+            success: function (resp) {
+                var data = resp.data;
+                var list = (data && data.productList) || [];
+                var options = '<option></option>';
+                $.each(list, function (index, item) {
+                    var isSelected = (String(item.id) === savedProductId) ? 'selected' : '';
+                    options += '<option value="' + item.id + '" ' + isSelected + '>' + item.name + '</option>';
+                });
+                $('#productSelect').html(options).trigger('change');
+            },
+            error: function () {
+                console.error('Error loading product catalog.');
+            }
+        });
         $("#kt_datepicker_1").flatpickr({ dateFormat: "d M Y" });
 
         // Toggle More Detail

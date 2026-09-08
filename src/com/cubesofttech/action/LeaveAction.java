@@ -16,6 +16,8 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Base64;
 import java.util.Date;
 import java.util.HashMap;
@@ -56,6 +58,8 @@ import com.cubesofttech.model.LeaveType;
 import com.cubesofttech.model.Role;
 import com.cubesofttech.model.RoleAuthorizedObject;
 import com.cubesofttech.model.User;
+import com.cubesofttech.service.FileAttachmentService;
+import com.cubesofttech.service.CubeTokenService;
 import com.cubesofttech.service.LeaveService;
 import com.cubesofttech.service.LogService;
 import com.cubesofttech.service.NotificationService;
@@ -108,9 +112,15 @@ public class LeaveAction extends ActionSupport {
 
 	@Autowired
 	public FileUploadDAO fileuploadDAO;
-	
+
+	@Autowired
+	private FileAttachmentService fileAttachmentService;
+
 	@Autowired
     private LogService logService;
+	
+	@Autowired
+	private CubeTokenService cubeTokenService;
 
 	@Autowired
 	private NotificationService notificationService;
@@ -260,11 +270,11 @@ public class LeaveAction extends ActionSupport {
 
 	private String amount_sub_hidden;
 
-	private File fileUpload;
+	private List<File> fileUpload;
 
 	private String fileUploadSize;
 
-	private String fileUploadFileName;
+	private List<String> fileUploadFileName;
 
 	private String fileUploadId;
 
@@ -296,11 +306,11 @@ public class LeaveAction extends ActionSupport {
 		this.excelFileName = excelFileName;
 	}
 
-	public File getFileUpload() {
+	public List<File> getFileUpload() {
 		return fileUpload;
 	}
 
-	public void setFileUpload(File fileUpload) {
+	public void setFileUpload(List<File> fileUpload) {
 		this.fileUpload = fileUpload;
 	}
 
@@ -312,11 +322,11 @@ public class LeaveAction extends ActionSupport {
 		this.fileUploadSize = fileUploadSize;
 	}
 
-	public String getFileUploadFileName() {
+	public List<String> getFileUploadFileName() {
 		return fileUploadFileName;
 	}
 
-	public void setFileUploadFileName(String fileUploadFileName) {
+	public void setFileUploadFileName(List<String> fileUploadFileName) {
 		this.fileUploadFileName = fileUploadFileName;
 	}
 
@@ -499,7 +509,8 @@ public class LeaveAction extends ActionSupport {
 			log.info(user_role);
 			request.setAttribute("user_role", user_role);
 			List<RoleAuthorizedObject> role_authorized = roleAuthorizedObjectDAO.findLeaveViewAllByRoleId(user_role);
-			
+			log.info("roleAuth=" + (role_authorized == null ? "null" : role_authorized.size()));
+
 			String userSelect = request.getParameter("name1");
 			String userSelect2 = request.getParameter("name2");
 			String leaveStatus = request.getParameter("appr");
@@ -546,6 +557,10 @@ public class LeaveAction extends ActionSupport {
 				request.setAttribute("leaveList", leaveDAO.findLeaveInTeamByManager(start_date, end_date, userLogin));
 
 			}
+			Object ll = request.getAttribute("leaveList");
+			log.info("leaveList=" + (ll == null ? "null" : ((java.util.List) ll).size()));
+			setLeaveFilesMap((List<Map<String, Object>>) ll);
+
 			//log.debug(request.getAttribute("leaveList"));
 			request.setAttribute("userleave", userleave);
 			BigDecimal LeavenumT1 = new BigDecimal(0);
@@ -656,8 +671,9 @@ public class LeaveAction extends ActionSupport {
 			request.setAttribute("logonUser", userLogin);
 			request.setAttribute("userS", userLogin);
 			request.setAttribute("flag_search", "0");
-
+			
 			List<LeaveType> type_leave = leavetypeDAO.findAll();
+			log.info("type_leave.size=" + (type_leave == null ? "null" : type_leave.size()));
 			request.setAttribute("leavetypelistChoice", type_leave);
 			request.setAttribute("type_1", type_leave.get(0).getLeaveTypeName());
 			request.setAttribute("type_2", type_leave.get(1).getLeaveTypeName());
@@ -679,6 +695,7 @@ public class LeaveAction extends ActionSupport {
 			
 			return SUCCESS;
 		} catch (Exception e) {
+			log.error("New_list FAILED", e);
 			e.printStackTrace();
 			return ERROR;
 		}
@@ -749,7 +766,8 @@ public class LeaveAction extends ActionSupport {
 
 			}
 			request.setAttribute("leaveList", leaveList);
-			
+			setLeaveFilesMap(leaveList);
+
 			log.debug(leaveStatus);
 			log.debug(startdate + "/" + enddate);
 			log.debug(userSelect + "/" + userSelect2);
@@ -995,7 +1013,8 @@ public class LeaveAction extends ActionSupport {
 			List<Map<String, Object>> leavelist = null;
 			leavelist = leaveDAO.findUserLeaveByTypeAndStatus(start_date, end_date, userLogin, type, leaveType);
 			request.setAttribute("leavelist", leavelist);
-			
+			setLeaveFilesMap(leavelist);
+
 			List LeaveID = leaveDAO.findLeaveId(userLogin, start_date, end_date, "1");
 
 			Double leave_1 = 0.000, leave_2 = 0.000, leave_3 = 0.000, leave_4 = 0.000, leave_5 = 0.000, leave_6 = 0.000,
@@ -1584,7 +1603,10 @@ public class LeaveAction extends ActionSupport {
 				FileUpload fileLeave = fileuploadDAO.findById(Integer.parseInt(leave.getLeaveFile()));
 				request.setAttribute("fileLeave", new Gson().toJson(fileLeave));
 			}
-			
+	
+			request.setAttribute("fileLeaveList",
+					new Gson().toJson(fileuploadDAO.findByPageAndPageId("leave", id)));
+
 			List<LeaveType> type_leave = leavetypeDAO.findAll();
 			for (int i = 0; i < type_leave.size(); i++) {
 				LeaveType leavetype = type_leave.get(i);
@@ -1676,63 +1698,20 @@ public class LeaveAction extends ActionSupport {
 			Timestamp endDate = DateUtil.dateFormatEdit(newDateTo);
 			Integer id = leaveDAO.getMaxId() + 1;
 
-			int maxId = fileuploadDAO.getMaxId() + 1;
-			FileUpload fileupload = new FileUpload();
-			if (fileUpload != null) {
-				ServletContext context = request.getServletContext();
-				String fileServerPath = context.getRealPath("/");
-				String fileName = fileUploadFileName;
-				log.info("fileName = " + fileName);
-
-				int l = fileUploadFileName.length();
-				int split = fileUploadFileName.lastIndexOf('.');
-				String name = fileUploadFileName.substring(0, split);
-				String type = (String) fileUploadFileName.subSequence(split, l);
-
-				String serverFileName = maxId + type; // 101.jpg
-				String destFolder = fileServerPath + "upload/user/";
-				fileupload.setPath("/upload/user/" + serverFileName);
-				java.io.File directory = new java.io.File(destFolder);
-			    if (!directory.exists()) {
-			        directory.mkdirs(); 
-			    }
-			    
-				String ext = type.toLowerCase();
-				if (ext.equals(".jpg") || ext.equals(".jpeg") || ext.equals(".png")) {
-					log.info("Original image size = " + fileUploadSize);
-					
-					long limitSize = 500 * 1024;
-					if (fileUpload.length() > limitSize) {
-						try (java.io.FileInputStream fis = new java.io.FileInputStream(fileUpload);
-							java.io.FileOutputStream fos = new java.io.FileOutputStream(new java.io.File(destFolder, serverFileName))) {
-								log.info("Image size bigger than 500 KB");	
-								byte[] resizedBytes = FileUtil.resizeImage(fis, 800, 800, ext.replace(".", ""));
-								fos.write(resizedBytes);
-								fileupload.setSize(String.valueOf(resizedBytes.length));
-								log.info("Resized image size = " + resizedBytes.length);
-						}
-					} else {
-						FileUtil.upload(fileUpload, destFolder, serverFileName);
-						fileupload.setSize(fileUploadSize);
-					}
-					
-				} else {
-					FileUtil.upload(fileUpload, destFolder, serverFileName);
-					fileupload.setSize(fileUploadSize); 
-					log.info("Normal file size = " + fileUploadSize);
+			String newLeaveFileId = null;
+			if (fileUpload != null && !fileUpload.isEmpty()) {
+				List<FileUpload> savedFiles = fileAttachmentService.attach(
+					fileUpload,
+					fileUploadFileName,
+					"leave",
+					String.valueOf(id),
+					onlineUser.getId(),
+					request.getServletContext().getRealPath("/")
+				);
+				if (savedFiles != null && !savedFiles.isEmpty()) {
+					// leave_file = ไฟล์แรกที่อัปเข้า
+					newLeaveFileId = String.valueOf(savedFiles.get(0).getFileId());
 				}
-
-				fileupload.setFileId(maxId);
-				fileupload.setPage("leave");
-				fileupload.setPageId(String.valueOf(maxId));
-				fileupload.setUserId(user);
-				fileupload.setUserCreate(onlineUser.getId());
-				fileupload.setName(name);
-				fileupload.setType(type);
-				fileupload.setUserUpdate(onlineUser.getId());
-				fileupload.setTimeCreate(DateUtil.getCurrentTime());
-				fileupload.setTimeUpdate(DateUtil.getCurrentTime());
-				fileuploadDAO.save(fileupload);
 			}
 
 			// Data send mail
@@ -1754,17 +1733,14 @@ public class LeaveAction extends ActionSupport {
 			leave.setStartTime(time_from);
 			leave.setEndTime(time_to);
 			leave.setNoDay(noDay);
-			if (fileUpload != null) {
-				leave.setLeaveFile(Integer.toString(maxId));
-			} else {
-				leave.setLeaveFile(null);
-			}
+			leave.setLeaveFile(newLeaveFileId);
 			leave.setUserCreate(onlineUser.getId());
 			leave.setUserUpdate(onlineUser.getId());
 			leave.setTimeCreate(DateUtil.getCurrentTime());
 			leave.setTimeUpdate(DateUtil.getCurrentTime());
 			if (!noDay.equals(BigDecimal.ZERO)) {
 				leaveDAO.save(leave);
+				log.info("Leave saved successfully: " + leave.getLeaveId());
 			}
 			log.debug("new_leaveAdd_Do Success!!");
 
@@ -1851,120 +1827,57 @@ public class LeaveAction extends ActionSupport {
 	        Timestamp startDate = DateUtil.dateFormatEdit(newDateFrom);
 	        Timestamp endDate = DateUtil.dateFormatEdit(newDateTo);
 
-	        // Logic Manage File Attach
-	        String oldFileIdStr = leave.getLeaveFile();
-	        
-	        // logic delete file from bin icon
-	        if (deleteFileId != null && !deleteFileId.isEmpty()) {
-	            try {
-	                int delFileId = Integer.parseInt(deleteFileId);
-	                FileUpload fileuploadDel = fileuploadDAO.findById(delFileId);
-	                if (fileuploadDel != null) {
-	                    ServletContext context = request.getServletContext();
-	                    String fileServerPath = context.getRealPath("/");
-	                    File file = new File(fileServerPath + fileuploadDel.getPath());
-	                    if (file.delete()) {
-	                        log.info("Successfully deleted file on server (Trash Icon): " + delFileId);
-	                    } else {
-	                        log.info("Cannot delete file on server (Trash Icon): " + delFileId);
-	                    }
-	                    
-	                    fileuploadDAO.delete(fileuploadDel);
-	                    log.info("Successfully deleted file record from DB (Trash Icon): " + delFileId);
-	                    // Clear the file link on the server object
-	                    oldFileIdStr = null; 
+	        String fileServerRealPath = request.getServletContext().getRealPath("/");
+
+	        //ลบไฟล์ที่ผู้ใช้กดถังขยะ
+	        if (deleteFileId != null && !deleteFileId.trim().isEmpty()) {
+	            fileAttachmentService.deleteByIds(Arrays.asList(deleteFileId.split(",")), fileServerRealPath);
+	            log.info("Deleted leave attachment ids: " + deleteFileId);
+	        }
+
+	        //แนบไฟล์ใหม่ (append ไม่ทับของเดิม) + resize เฉพาะรูป
+	        if (fileUpload != null && !fileUpload.isEmpty()) {
+	            List<File> toUploadList = new ArrayList<File>();
+	            List<String> toUploadNames = new ArrayList<String>();
+	            for (int fi = 0; fi < fileUpload.size(); fi++) {
+	                File src = fileUpload.get(fi);
+	                if (src == null) {
+	                    continue;
 	                }
-	                
-	                // update leave file to null
-	                leave.setLeaveFile(null); 
-	                
-	            } catch (NumberFormatException e) {
-	                log.error("Invalid deleteFileId format: " + deleteFileId, e);
+	                String origName = (fileUploadFileName != null && fi < fileUploadFileName.size()
+	                        && fileUploadFileName.get(fi) != null) ? fileUploadFileName.get(fi) : ("file" + fi);
+	                int dotIdx = origName.lastIndexOf('.');
+	                String ext = (dotIdx >= 0) ? origName.substring(dotIdx).toLowerCase() : "";
+
+	                File toUpload = src;
+	                if (ext.equals(".jpg") || ext.equals(".jpeg") || ext.equals(".png")) {
+	                    log.info("Resizing image in Edit mode: " + origName);
+	                    File resizedTemp = File.createTempFile("leave_resized_", ext);
+	                    try (java.io.FileInputStream fis = new java.io.FileInputStream(src);
+	                         java.io.FileOutputStream fos = new java.io.FileOutputStream(resizedTemp)) {
+	                        byte[] resizedBytes = FileUtil.resizeImage(fis, 800, 800, ext.replace(".", ""));
+	                        fos.write(resizedBytes);
+	                        log.info("Resize Image Size = " + resizedBytes.length);
+	                    }
+	                    toUpload = resizedTemp;
+	                } else {
+	                    log.info("Normal Image Size = " + fileUploadSize);
+	                }
+	                toUploadList.add(toUpload);
+	                toUploadNames.add(origName);
+	            }
+	            if (!toUploadList.isEmpty()) {
+	                fileAttachmentService.attach(toUploadList, toUploadNames, "leave",
+	                        String.valueOf(id), onlineUser.getId(), fileServerRealPath);
 	            }
 	        }
 
-	        // logic manage file on update file attach
-			if (fileUpload != null) {
-				log.info("New file uploaded. Processing replacement/upload.");
-				// delete old file
-				if (oldFileIdStr != null && !oldFileIdStr.isEmpty()) {
-					try {
-						int oldFileId = Integer.parseInt(oldFileIdStr);
-						FileUpload fileuploadDel = fileuploadDAO.findById(oldFileId);
-						
-						if (fileuploadDel != null) {
-							ServletContext context = request.getServletContext();
-							String fileServerPath = context.getRealPath("/");
-							File file = new File(fileServerPath + fileuploadDel.getPath());
-							
-							if (file.delete()) {
-								log.info("Successfully deleted OLD file during replacement: " + oldFileId);
-							} else {
-								log.info("Cannot delete OLD file during replacement: " + oldFileId);
-							}
-							fileuploadDAO.delete(fileuploadDel);
-							log.info("Successfully deleted OLD file record from DB: " + oldFileId);
-						}
-					} catch (NumberFormatException e) {
-						log.error("Invalid oldFileId format in Leaves object during replacement: " + oldFileIdStr, e);
-					}
-				}
-	            
-				// --- upload new file ---
-				int maxId = fileuploadDAO.getMaxId() + 1;
-				FileUpload fileupload = new FileUpload();
-				
-				ServletContext context = request.getServletContext();
-				String fileServerPath = context.getRealPath("/");
-				String fileName = fileUploadFileName;
-				
-				int l = fileUploadFileName.length();
-				int split = fileUploadFileName.lastIndexOf('.');
-				String name = fileUploadFileName.substring(0, split);
-				String type = (String) fileUploadFileName.subSequence(split, l); //.jpg
-
-				String serverFileName = maxId + type; //101.jpg
-				String destFolder = fileServerPath + "upload/user/";
-				fileupload.setPath("/upload/user/" + serverFileName);
-
-				String ext = type.toLowerCase();
-				if (ext.equals(".jpg") || ext.equals(".jpeg") || ext.equals(".png")) {
-					java.io.File directory = new java.io.File(destFolder);
-					if (!directory.exists()) {
-						directory.mkdirs();
-					}
-
-					try (java.io.FileInputStream fis = new java.io.FileInputStream(fileUpload);
-						 java.io.FileOutputStream fos = new java.io.FileOutputStream(new java.io.File(destFolder, serverFileName))) {
-						
-						log.info("Resizing image in Edit mode...");
-						byte[] resizedBytes = FileUtil.resizeImage(fis, 800, 800, ext.replace(".", ""));
-						
-						fos.write(resizedBytes);
-						fileupload.setSize(String.valueOf(resizedBytes.length));
-						log.info("Resize Image Size = " + resizedBytes.length);
-					}
-				} else {
-					FileUtil.upload(fileUpload, destFolder, serverFileName);
-					fileupload.setSize(fileUploadSize);
-					log.info("Normal Image Size = " + fileUploadSize);
-				}
-
-				// save on db
-				fileupload.setFileId(maxId);
-				fileupload.setPage("leave");
-				fileupload.setPageId(String.valueOf(maxId));
-				fileupload.setUserId(user); 
-				fileupload.setUserCreate(onlineUser.getId());
-				fileupload.setName(name);
-				fileupload.setType(type);
-				fileupload.setUserUpdate(onlineUser.getId());
-				fileupload.setTimeCreate(DateUtil.getCurrentTime());
-				fileupload.setTimeUpdate(DateUtil.getCurrentTime());
-				fileuploadDAO.save(fileupload);
-				leave.setLeaveFile(Integer.toString(maxId));
-			}
-	        
+	        List<FileUpload> leaveFilesNow = fileuploadDAO.findByPageAndPageId("leave", String.valueOf(id));
+	        if (leaveFilesNow != null && !leaveFilesNow.isEmpty()) {
+	            leave.setLeaveFile(String.valueOf(leaveFilesNow.get(0).getFileId()));
+	        } else {
+	            leave.setLeaveFile(null);
+	        }
 	        // Logic Manage File Attach
 	        
 	        // Update Leave
@@ -2030,11 +1943,24 @@ public class LeaveAction extends ActionSupport {
 				log.debug("File URL: " + fileUrl.toString());
 				if (imgFile.exists()) {
 					byte[] fileContent = Files.readAllBytes(imgFile.toPath());
-					String base64Encoded = Base64.getEncoder().encodeToString(fileContent);
 					String mimeType = Files.probeContentType(imgFile.toPath());
 					if (mimeType == null) {
 						mimeType = "image/png"; //default value
 					}
+
+					//เป็น PDF ให้ส่งไฟล์ตรง ๆ ไม่ wrap เป็น HTML
+					if ("application/pdf".equals(mimeType)) {
+						response.setContentType("application/pdf");
+						response.setHeader("Content-Disposition", "inline; filename=\"" + imgFile.getName() + "\"");
+						response.setContentLength(fileContent.length);
+						response.getOutputStream().write(fileContent);
+						response.getOutputStream().flush();
+						response.getOutputStream().close();
+						return null;
+					}
+
+					//กรณีเป็นรูปภาพ ใช้ HTML + <img>
+					String base64Encoded = Base64.getEncoder().encodeToString(fileContent);
 					String htmlResponse = "<!DOCTYPE html>"
 							+ "<html><head><title>Preview Image</title>"
 							+ "<style>"
@@ -2141,6 +2067,20 @@ public class LeaveAction extends ActionSupport {
 			json.put("leave_file_name", leaveFileName);
 			json.put("leave_file_type", leaveFileType);
 
+			// ไฟล์แนบทั้งหมด
+			JSONArray filesArr = new JSONArray();
+			List<FileUpload> leaveFiles = fileuploadDAO.findByPageAndPageId("leave", String.valueOf(leaveId));
+			if (leaveFiles != null) {
+				for (FileUpload fu : leaveFiles) {
+					JSONObject fj = new JSONObject();
+					fj.put("id", fu.getFileId());
+					fj.put("name", fu.getName() == null ? "" : fu.getName());
+					fj.put("type", fu.getType() == null ? "" : fu.getType());
+					filesArr.put(fj);
+				}
+			}
+			json.put("files", filesArr);
+
 			out.print(json);
 			out.flush();
 			out.close();
@@ -2151,6 +2091,27 @@ public class LeaveAction extends ActionSupport {
 			e.printStackTrace();
 			return ERROR;
 		}
+	}
+
+	private void setLeaveFilesMap(List<Map<String, Object>> list) {
+		Map<String, List<FileUpload>> leaveFilesMap = new HashMap<String, List<FileUpload>>();
+		if (list != null) {
+			for (Map<String, Object> row : list) {
+				Object lid = row.get("leave_id");
+				if (lid == null) {
+					continue;
+				}
+				String leaveIdStr = String.valueOf(lid);
+				if (!leaveFilesMap.containsKey(leaveIdStr)) {
+					try {
+						leaveFilesMap.put(leaveIdStr, fileuploadDAO.findByPageAndPageId("leave", leaveIdStr));
+					} catch (Exception e) {
+						log.error("setLeaveFilesMap: " + leaveIdStr, e);
+					}
+				}
+			}
+		}
+		request.setAttribute("leaveFilesMap", leaveFilesMap);
 	}
 
 	private void notifyLeaveStatusChange(Leaves leave, String oldStatus, String newStatus, String actorId) {
@@ -2225,6 +2186,9 @@ public class LeaveAction extends ActionSupport {
 			leave.setUserUpdate(onlineUser.getId());
 			leaveDAO.save(leave);
 			log.debug(leave);
+			
+			cubeTokenService.deductUserCubeTokenForLeave(leave.getUserId(), leave);
+			
 			notifyLeaveStatusChange(leave, oldStatus, status, onlineUser.getId());
 			return SUCCESS;
 		} catch (Exception e) {

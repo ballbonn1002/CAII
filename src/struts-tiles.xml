@@ -491,7 +491,51 @@
 		<put-attribute name="body"
 			value="/pages-back/warehouse/warehouse_list.jsp" />
 	</definition>
+	
+	<!-- Cube Token -->
+	<definition name="cubeTokenSetting" extends="baseLayout">
+		<put-attribute name="title" value="Cube Token Settings" />
+		<put-attribute name="body"
+			value="/pages-back/cube_token/cube_token_setting.jsp" />
+	</definition>
+	
+	<definition name="myCubeToken" extends="baseLayout">
+		<put-attribute name="title" value="My Cube Token" />
+		<put-attribute name="body"
+			value="/pages-back/cube_token/my_cube_token.jsp" />
+	</definition>
+	
+	<definition name="cubeTokenMangement" extends="baseLayout">
+		<put-attribute name="title" value="Cube Token Management" />
+		<put-attribute name="body"
+			value="/pages-back/cube_token/cube_token_management.jsp" />
+	</definition>
+	
+	<definition name="returnCubeToken" extends="baseLayout">
+		<put-attribute name="title" value="Return Cube Token" />
+		<put-attribute name="body"
+			value="/pages-back/cube_token/return_cube_token.jsp" />
+	</definition>
+	
 
+	<definition name="privilegeMangement" extends="baseLayout">
+		<put-attribute name="title" value="Privilege Management" />
+		<put-attribute name="body"
+			value="/pages-back/cube_token/privilege_management.jsp" />
+	</definition>
+	
+	<definition name="createRewardItem" extends="baseLayout">
+		<put-attribute name="title" value="Add Item" />
+		<put-attribute name="body"
+			value="/pages-back/cube_token/create_reward_item.jsp" />
+	</definition>
+
+
+	<definition name="editRewardItem" extends="baseLayout">
+			<put-attribute name="title" value="Edit Item" />
+			<put-attribute name="body"
+				value="/pages-back/cube_token/edit_reward_item.jsp" />
+	</definition>
 
 	<!-- Work Log -->
 	<definition name="workLog" extends="baseLayout">
@@ -729,8 +773,9 @@
 	</definition>
 
 	<!-- Stock -->
+	<!-- หน้า list เดียวแสดงรวมทั้ง Equipment / Consumables / Accessory -->
 	<definition name="stockConsList" extends="baseLayout">
-		<put-attribute name="title" value="Stock - Consumables" />
+		<put-attribute name="title" value="Stock - Product" />
 		<put-attribute name="body"
 			value="/pages-back/stock/stock_cons_list.jsp" />
 	</definition>
@@ -739,6 +784,19 @@
 		<put-attribute name="title" value="Stock - Consumables" />
 		<put-attribute name="body"
 			value="/pages-back/stock/stock_cons_add.jsp" />
+	</definition>
+
+	<!-- UI mockup เท่านั้น - ยังไม่ต่อ backend จริง -->
+	<definition name="stockByProductList" extends="baseLayout">
+		<put-attribute name="title" value="Stock By Product" />
+		<put-attribute name="body"
+			value="/pages-back/stock/stock_by_product_list.jsp" />
+	</definition>
+
+	<definition name="stockByLocationList" extends="baseLayout">
+		<put-attribute name="title" value="Stock By Location" />
+		<put-attribute name="body"
+			value="/pages-back/stock/stock_by_location_list.jsp" />
 	</definition>
 
 	<definition name="stockConsEdit" extends="baseLayout">
@@ -751,6 +809,20 @@
 		<put-attribute name="title" value="Stock - Consumables" />
 		<put-attribute name="body"
 			value="/pages-back/stock/stock_cons_balance.jsp" />
+	</definition>
+
+	<!-- Equipment ใช้หน้า settings คนละไฟล์กับ Consumables เพราะยอดคงเหลือ
+	     คิดจากเครื่องจริงในตาราง equipment ไม่ได้คิดจากตาราง stock -->
+	<definition name="stockEquEdit" extends="baseLayout">
+		<put-attribute name="title" value="Stock - Equipment" />
+		<put-attribute name="body"
+			value="/pages-back/stock/stock_equ_edit.jsp" />
+	</definition>
+
+	<definition name="stockEquBalance" extends="baseLayout">
+		<put-attribute name="title" value="Stock - Equipment" />
+		<put-attribute name="body"
+			value="/pages-back/stock/stock_equ_balance.jsp" />
 	</definition>
 
 	<definition name="stockOffsList" extends="baseLayout">
@@ -784,13 +856,6 @@
 		<put-attribute name="title" value="Purchase Order Add" />
 		<put-attribute name="body"
 			value="/pages-back/purchase_order/purchase_order_create.jsp" />
-	</definition>
-	
-	<!-- Item Catalog -->
-	<definition name="itemCatalog" extends="baseLayout">
-		<put-attribute name="title" value="Item Catalog" />
-		<put-attribute name="body"
-			value="/pages-back/item_catalog/item_catalog.jsp" />
 	</definition>
 	
 	<!-- Line OA -->
@@ -835,6 +900,11 @@
 			value="/pages-back/equipment_request/equipment_request_update.jsp" />
 	</definition>
 
+		<definition name="equipment_request_admin" extends="baseLayout">
+		<put-attribute name="title" value="Equipment Request Admin" />
+		<put-attribute name="body"
+			value="/pages-back/equipment_request/equipment_request_admin.jsp" />
+	</definition>
 
 	<!-- Notification -->
 	<definition name="my_notification" extends="baseLayout">
@@ -847,6 +917,14 @@
 		<put-attribute name="title" value="Notification Detail" />
 		<put-attribute name="body"
 			value="/pages-back/notification/notification_detail.jsp" />
+	</definition>
+
+
+	<!-- Doc Status -->
+	<definition name="docStatusList" extends="baseLayout">
+		<put-attribute name="title" value="Doc Status" />
+		<put-attribute name="body"
+			value="/pages-back/doc_status/doc_status_list.jsp" />
 	</definition>
 
 </tiles-definitions>

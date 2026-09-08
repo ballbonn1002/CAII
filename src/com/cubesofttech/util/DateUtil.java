@@ -42,13 +42,6 @@ public class DateUtil {
 		return c.get(Calendar.YEAR);
 	}
 
-	public static Timestamp dateToTimestamp2(String date, String time) throws ParseException {
-		Timestamp ts;
-		SimpleDateFormat sdf1 = new SimpleDateFormat("dd-MM-yyyy HH:mm");
-		ts = new Timestamp(sdf1.parse(date + " " + time).getTime());
-		return ts;
-	}
-
 	public static String changePstocs(String date) {
 		String ps = date.substring(6, 10);
 		Integer psi = Integer.parseInt(ps);
@@ -188,14 +181,15 @@ public class DateUtil {
 	}
 
 	public static int getYear() {
-		Date year = new Date();
-		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy");
-		return Integer.parseInt(dateFormat.format(year));
-	}
+    Date year = new Date();
+    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy", Locale.ENGLISH);
+    return Integer.parseInt(dateFormat.format(year));
+}
 
 	public static Timestamp dateToTimestamp(String date, String time) throws ParseException {
 		Timestamp ts;
-		SimpleDateFormat sdf1 = new SimpleDateFormat("dd-MM-yyyy HH:mm");
+		SimpleDateFormat sdf1 = new SimpleDateFormat("dd-MM-yyyy HH:mm", Locale.ENGLISH);
+    	sdf1.setCalendar(new GregorianCalendar());
 		ts = new Timestamp(sdf1.parse(date + " " + time).getTime());
 		return ts;
 	}

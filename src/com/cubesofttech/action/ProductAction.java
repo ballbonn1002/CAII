@@ -7,10 +7,12 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -19,17 +21,22 @@ import org.apache.log4j.Logger;
 import org.apache.struts2.ServletActionContext;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.cubesofttech.dao.GoodReceiptDAO;
+import com.cubesofttech.dao.EquipmentDAO;
+import com.cubesofttech.dao.EquipmentStatusDAO;
+import com.cubesofttech.dao.EquipmentTypeDAO;
 import com.cubesofttech.dao.ProductDAO;
 import com.cubesofttech.dao.StockDAO;
 import com.cubesofttech.dao.UnitOfMeasureDAO;
 import com.cubesofttech.dao.UserDAO;
 import com.cubesofttech.dao.WarehouseDAO;
+import com.cubesofttech.model.Equipment;
+import com.cubesofttech.model.EquipmentStatus;
 import com.cubesofttech.model.Product;
 import com.cubesofttech.model.Stock;
 import com.cubesofttech.model.UnitOfMeasure;
 import com.cubesofttech.model.User;
 import com.cubesofttech.model.Warehouse;
+import com.google.gson.Gson;
 import com.cubesofttech.util.DateUtil;
 import com.opensymphony.xwork2.ActionSupport;
 
@@ -40,17 +47,15 @@ public class ProductAction extends ActionSupport {
     private final HttpServletRequest request = ServletActionContext.getRequest();
     private final HttpServletResponse response = ServletActionContext.getResponse();
     
-    /** product_type ของ consumables - อ้างอิงเดียวกับ findAllConsWithSubProducts() */
-    private static final String PRODUCT_TYPE_CONSUMABLES = "2";
+    /** ประเภท item ที่บริหารในหน้า stock: 1=Equipment, 2=Consumable, 3=Accessories, 4=Office Supplies */
+    private static final java.util.Set<String> STOCK_ITEM_TYPES =
+            new java.util.HashSet<String>(java.util.Arrays.asList("1", "2", "3", "4"));
 
     @Autowired
     private ProductDAO productDAO;
 
     @Autowired
     private UnitOfMeasureDAO unitOfMeasureDAO;
-
-    @Autowired
-    private GoodReceiptDAO goodReceiptDAO;
 
     @Autowired
     private WarehouseDAO warehouseDAO;
@@ -60,6 +65,15 @@ public class ProductAction extends ActionSupport {
 
     @Autowired
     private StockDAO stockDAO;
+
+    @Autowired
+    private EquipmentDAO equipmentDAO;
+
+    @Autowired
+    private EquipmentTypeDAO equipmentTypeDAO;
+
+    @Autowired
+    private EquipmentStatusDAO equipmentStatusDAO;
 
     private Integer productId;
     private String productNo;
@@ -81,6 +95,17 @@ public class ProductAction extends ActionSupport {
 
     // ---- reorder (SortableJS ส่ง id คั่นด้วย comma) ----
     private String orderedIds;
+
+    // ---- field รับค่าจาก dropdown Equipment Type ในหน้า add (เมื่อ productType = '1') ----
+    private String equipmentType;
+
+    // ---- popup เลือกเครื่องมาผูกกับ catalog Equipment - ส่ง equipment_id คั่นด้วย comma ----
+    private String equipmentIds;
+
+    // ---- fields สำหรับ Add Stock (บันทึกรับเข้า/Good Receipt) ในหน้า Stock Balance ----
+    private String warehouseId;
+    private String refNo;
+    private String receiveDate;
 
     public Integer getProductId() {
         return productId;
@@ -162,6 +187,22 @@ public class ProductAction extends ActionSupport {
         this.orderedIds = orderedIds;
     }
 
+    public String getEquipmentType() {
+        return equipmentType;
+    }
+
+    public void setEquipmentType(String equipmentType) {
+        this.equipmentType = equipmentType;
+    }
+
+    public String getEquipmentIds() {
+        return equipmentIds;
+    }
+
+    public void setEquipmentIds(String equipmentIds) {
+        this.equipmentIds = equipmentIds;
+    }
+
     public String getProductNo() {
         return productNo;
     }
@@ -194,9 +235,34 @@ public class ProductAction extends ActionSupport {
         this.description = description;
     }
 
+    public String getWarehouseId() {
+        return warehouseId;
+    }
+
+    public void setWarehouseId(String warehouseId) {
+        this.warehouseId = warehouseId;
+    }
+
+    public String getRefNo() {
+        return refNo;
+    }
+
+    public void setRefNo(String refNo) {
+        this.refNo = refNo;
+    }
+
+    public String getReceiveDate() {
+        return receiveDate;
+    }
+
+    public void setReceiveDate(String receiveDate) {
+        this.receiveDate = receiveDate;
+    }
+
     public String stockConsList() {
         try {
-            List<Map<String, Object>> products = productDAO.findAllConsWithSubProducts();
+            // null = เอาทุก type (1 Equipment / 2 Consumables / 3 Accessory) มาแสดงรวมในตารางเดียว
+            List<Map<String, Object>> products = productDAO.findAllWithSubProducts(null);
             if (products == null) {
                 products = new ArrayList<Map<String, Object>>();
             }
@@ -205,12 +271,44 @@ public class ProductAction extends ActionSupport {
 
             //log.debug(products);
             request.setAttribute("products", products);
+            request.setAttribute("typeCounts", countByType(products));
 
             return SUCCESS;
         } catch (Exception e) {
             log.error("stockConsList failed", e);
             return ERROR;
         }
+    }
+
+    /**
+     * นับจำนวน product แยกตาม type ฝั่ง server สำหรับการ์ดสรุปด้านบนหน้า list
+     * (เดิม JSP นับจาก DOM ซึ่งจะผิดทันทีที่เปลี่ยนไปทำ paging ฝั่ง server)
+     * คืน map ที่มี key ครบทุก type เสมอ JSP จะได้ไม่ต้องเช็ค null
+     */
+    private Map<String, Integer> countByType(List<Map<String, Object>> products) {
+        Map<String, Integer> counts = new HashMap<String, Integer>();
+        for (String type : STOCK_ITEM_TYPES) {
+            counts.put(type, Integer.valueOf(0));
+        }
+        if (products == null) {
+            return counts;
+        }
+
+        for (Map<String, Object> product : products) {
+            if (product == null) {
+                continue;
+            }
+            Object rawType = product.get("product_type");
+            if (rawType == null) {
+                continue;
+            }
+            Integer current = counts.get(String.valueOf(rawType).trim());
+            if (current != null) {
+                // type ที่ไม่รู้จักปล่อยผ่าน - ยังโชว์ในตารางแต่ไม่นับเข้าการ์ดใบไหน
+                counts.put(String.valueOf(rawType).trim(), Integer.valueOf(current.intValue() + 1));
+            }
+        }
+        return counts;
     }
 
     /**
@@ -260,12 +358,474 @@ public class ProductAction extends ActionSupport {
         }
     }
 
+    /**
+     * หน้า Stock By Product - สรุปยอดคงเหลือรวม (ตัวแม่ + sub product) ต่อ 1 catalog item
+     *  - On Hand ของ type '1' (Equipment) นับจำนวนเครื่องจริงในตาราง equipment (ไม่นับ EquipmentDAO.RETIRED_STATUSES)
+     *  - On Hand ของ type '2','3','4' รวม stock.reconcile แถวล่าสุดของแต่ละ sub product (reconcile คือยอดสะสม
+     *    ทุกคลังรวมกันอยู่แล้ว - ดู stockConsStockAdd)
+     *  - Warehouses = จำนวนคลัง (type 2/3/4) หรือจำนวน location ที่ต่างกัน (type 1) ที่ "มียอดคงเหลือจริง"
+     *    ไม่ใช่จำนวนคลังทั้งหมดในระบบ
+     */
+    public String showStockByProductPage() {
+        try {
+            if (getOnlineUser() == null) {
+                log.warn("showStockByProductPage: no online user in session");
+                return ERROR;
+            }
+
+            List<Map<String, Object>> products = productDAO.findAllWithSubProducts(null);
+            if (products == null) {
+                products = new ArrayList<Map<String, Object>>();
+            }
+            fillMainUnits(products);
+
+            List<String> parentIds = new ArrayList<String>();
+            for (Map<String, Object> p : products) {
+                Object pid = (p != null) ? p.get("product_id") : null;
+                if (pid != null) {
+                    parentIds.add(String.valueOf(pid));
+                }
+            }
+
+            Map<String, List<String>> familyIdsByParent = buildFamilyIdsByParent(parentIds);
+            Map<String, String> parentIdBySubId = buildParentIdBySubId(familyIdsByParent);
+
+            List<String> equipmentFamilyIds = new ArrayList<String>();
+            List<String> stockFamilyIds = new ArrayList<String>();
+            for (Map<String, Object> p : products) {
+                Object pid = (p != null) ? p.get("product_id") : null;
+                if (pid == null) {
+                    continue;
+                }
+                List<String> familyIds = familyIdsByParent.get(String.valueOf(pid));
+                if (familyIds == null) {
+                    continue;
+                }
+                if ("1".equals(str(p.get("product_type")).trim())) {
+                    equipmentFamilyIds.addAll(familyIds);
+                } else {
+                    stockFamilyIds.addAll(familyIds);
+                }
+            }
+
+            // ---- Equipment: จำนวนเครื่อง (ไม่รวมปลดระวาง) + จำนวน location ที่ต่างกัน รวมขึ้นตัวแม่ ----
+            Map<String, Integer> equOnHandByParent = new HashMap<String, Integer>();
+            Map<String, Set<String>> equLocationsByParent = new HashMap<String, Set<String>>();
+            List<Equipment> equipmentRows = equipmentDAO.findByProductIds(equipmentFamilyIds);
+            if (equipmentRows != null) {
+                for (Equipment eq : equipmentRows) {
+                    if (eq == null || isBlank(eq.getProductId()) || isRetiredEquipment(eq)) {
+                        continue;
+                    }
+                    String parentId = firstNonBlank(parentIdBySubId.get(eq.getProductId().trim()), eq.getProductId().trim());
+                    Integer cur = equOnHandByParent.get(parentId);
+                    equOnHandByParent.put(parentId, Integer.valueOf((cur != null ? cur.intValue() : 0) + 1));
+                    if (!isBlank(eq.getLocation())) {
+                        Set<String> locs = equLocationsByParent.get(parentId);
+                        if (locs == null) {
+                            locs = new HashSet<String>();
+                            equLocationsByParent.put(parentId, locs);
+                        }
+                        locs.add(eq.getLocation().trim());
+                    }
+                }
+            }
+
+            // ---- Consumable/Accessory/Office: reconcile ล่าสุดต่อ sub product รวมขึ้นตัวแม่
+            //      + ผลรวม amount_unit ต่อคลัง (!= 0 = คลังนั้นมียอดคงเหลือจริง) ----
+            Map<String, Double> stockOnHandByParent = new HashMap<String, Double>();
+            Map<String, Map<String, Double>> stockByParentWarehouse = new HashMap<String, Map<String, Double>>();
+            List<Stock> stockRows = stockDAO.findByProductIds(stockFamilyIds);
+            Set<String> seenLatestSub = new HashSet<String>();
+            if (stockRows != null) {
+                // stockRows เรียง time_create desc, stock_id desc มาจาก DAO แล้ว -> แถวแรกที่เจอของแต่ละ
+                // sub product คือแถวล่าสุด (reconcile ล่าสุด) - seenLatestSub กันบวกซ้ำ
+                for (Stock row : stockRows) {
+                    if (row == null || isBlank(row.getProductId())) {
+                        continue;
+                    }
+                    String subId = row.getProductId().trim();
+                    String parentId = firstNonBlank(parentIdBySubId.get(subId), subId);
+
+                    if (seenLatestSub.add(subId)) {
+                        double reconcile = (row.getReconcile() != null) ? row.getReconcile().doubleValue() : 0d;
+                        Double cur = stockOnHandByParent.get(parentId);
+                        stockOnHandByParent.put(parentId, Double.valueOf((cur != null ? cur.doubleValue() : 0d) + reconcile));
+                    }
+
+                    if (!isBlank(row.getWarehouseId())) {
+                        double amt = (row.getAmountUnit() != null) ? row.getAmountUnit().doubleValue() : 0d;
+                        Map<String, Double> whMap = stockByParentWarehouse.get(parentId);
+                        if (whMap == null) {
+                            whMap = new HashMap<String, Double>();
+                            stockByParentWarehouse.put(parentId, whMap);
+                        }
+                        String whKey = row.getWarehouseId().trim();
+                        Double prev = whMap.get(whKey);
+                        whMap.put(whKey, Double.valueOf((prev != null ? prev.doubleValue() : 0d) + amt));
+                    }
+                }
+            }
+
+            double grandOnHand = 0d;
+            for (Map<String, Object> product : products) {
+                if (product == null) {
+                    continue;
+                }
+                Object pid = product.get("product_id");
+                if (pid == null) {
+                    continue;
+                }
+                String pidStr = String.valueOf(pid);
+                boolean isEquipment = "1".equals(str(product.get("product_type")).trim());
+
+                double onHand;
+                int warehouseCount;
+                if (isEquipment) {
+                    Integer qty = equOnHandByParent.get(pidStr);
+                    onHand = (qty != null) ? qty.doubleValue() : 0d;
+                    Set<String> locs = equLocationsByParent.get(pidStr);
+                    warehouseCount = (locs != null) ? locs.size() : 0;
+                } else {
+                    Double qty = stockOnHandByParent.get(pidStr);
+                    onHand = (qty != null) ? qty.doubleValue() : 0d;
+                    warehouseCount = 0;
+                    Map<String, Double> whMap = stockByParentWarehouse.get(pidStr);
+                    if (whMap != null) {
+                        for (Double v : whMap.values()) {
+                            if (v != null && v.doubleValue() != 0d) {
+                                warehouseCount++;
+                            }
+                        }
+                    }
+                }
+                grandOnHand += onHand;
+                product.put("on_hand", formatQty(onHand));
+                product.put("warehouse_count", Integer.valueOf(warehouseCount));
+            }
+
+            request.setAttribute("products", products);
+            request.setAttribute("typeCounts", countByType(products));
+            request.setAttribute("totalOnHand", formatQty(grandOnHand));
+            List<Warehouse> allWarehouses = warehouseDAO.findAll();
+            request.setAttribute("totalWarehouses", Integer.valueOf(allWarehouses != null ? allWarehouses.size() : 0));
+
+            return SUCCESS;
+        } catch (Exception e) {
+            log.error("showStockByProductPage failed", e);
+            return ERROR;
+        }
+    }
+
+    /**
+     * หน้า Stock By Location - แสดงเป็น tree ต้นไม้ของ warehouse จริง (คล้าย warehouse_list.jsp)
+     *  - เข้าหน้าแรกเห็นเฉพาะคลังที่ parent = 0 (ราก) กดขยายทีละชั้นเพื่อไล่ดูคลังลูกได้เรื่อยๆ
+     *  - แต่ละ node (ทุกระดับ) ค่า Products/On Hand เป็นยอด roll-up รวมทุกคลังลูกในสายของมัน
+     *  - คลัง "ใบล่าสุด" (ไม่มีลูกแล้ว) ที่มีของอยู่จริง กดขยายต่อได้อีกชั้นเพื่อดูรายชื่อสินค้าทีละตัว
+     *    (แสดงเป็น node ประเภท "product" ซึ่งไม่มีลูกของตัวเอง ใช้กลไก expand/collapse เดียวกันทั้งหมด)
+     *  - Equipment (type 1) ไม่แสดงในหน้านี้: equipment.location เป็น free text ที่ผู้ใช้พิมพ์เอง
+     *    (ตัวอย่างข้อมูลจริงมีทั้งเบอร์โทร/วันที่/ชื่อโปรเจกต์) ไม่ได้ผูกกับตาราง warehouse จริง
+     *    ถ้าเอามากรุ๊ปตรงๆ จะได้ "คลัง" ที่เป็นขยะ ไม่ใช่ข้อมูลที่ใช้งานได้ - ดูยอด Equipment แยกตาม
+     *    location ได้จากหน้า Stock Balance ของแต่ละ item แทน (ตาราง subProductTable คอลัมน์ Location)
+     */
+    public String showStockByLocationPage() {
+        try {
+            if (getOnlineUser() == null) {
+                log.warn("showStockByLocationPage: no online user in session");
+                return ERROR;
+            }
+
+            List<Warehouse> warehouses = warehouseDAO.findAll();
+            if (warehouses == null) {
+                warehouses = new ArrayList<Warehouse>();
+            }
+            Map<Long, Warehouse> warehouseById = new HashMap<Long, Warehouse>();
+            Map<Long, List<Warehouse>> childrenByParent = new HashMap<Long, List<Warehouse>>();
+            for (Warehouse wh : warehouses) {
+                if (wh == null || wh.getWarehouseId() == null) {
+                    continue;
+                }
+                warehouseById.put(wh.getWarehouseId(), wh);
+                Long parent = wh.getParent();
+                if (parent != null) {
+                    List<Warehouse> children = childrenByParent.get(parent);
+                    if (children == null) {
+                        children = new ArrayList<Warehouse>();
+                        childrenByParent.put(parent, children);
+                    }
+                    children.add(wh);
+                }
+            }
+            // ใบล่าสุด = ไม่มีลูกเลย - สต็อกควรผูกกับระดับนี้เท่านั้น กันยอดนับซ้ำระหว่างชั้น
+            Set<Long> leafIds = new HashSet<Long>();
+            for (Warehouse wh : warehouses) {
+                if (wh == null || wh.getWarehouseId() == null) {
+                    continue;
+                }
+                List<Warehouse> children = childrenByParent.get(wh.getWarehouseId());
+                if (children == null || children.isEmpty()) {
+                    leafIds.add(wh.getWarehouseId());
+                }
+            }
+
+            // ---- product ตัวแม่ type 2/3/4 เท่านั้น (Equipment ไม่ผูกกับ warehouse จริง - ดู javadoc) ----
+            List<Map<String, Object>> catalogProducts = productDAO.findAllWithSubProducts(null);
+            if (catalogProducts == null) {
+                catalogProducts = new ArrayList<Map<String, Object>>();
+            }
+            List<String> stockParentIds = new ArrayList<String>();
+            Map<String, String> productNameByParent = new HashMap<String, String>();
+            for (Map<String, Object> p : catalogProducts) {
+                Object pid = (p != null) ? p.get("product_id") : null;
+                if (pid == null || "1".equals(str(p.get("product_type")).trim())) {
+                    continue;
+                }
+                String pidStr = String.valueOf(pid);
+                stockParentIds.add(pidStr);
+                productNameByParent.put(pidStr, str(p.get("product_name")));
+            }
+
+            Map<String, List<String>> familyIdsByParent = buildFamilyIdsByParent(stockParentIds);
+            Map<String, String> parentIdBySubId = buildParentIdBySubId(familyIdsByParent);
+            List<String> stockFamilyIds = new ArrayList<String>();
+            for (List<String> ids : familyIdsByParent.values()) {
+                stockFamilyIds.addAll(ids);
+            }
+
+            // warehouseId จริง -> (parentProductId -> ผลรวม amount_unit) ของคลังนั้นโดยตรง (ไม่ roll-up)
+            Map<Long, Map<String, Double>> ownAmountByWarehouseId = new HashMap<Long, Map<String, Double>>();
+            // warehouse_id ใน stock ที่ไม่พบในตาราง warehouse จริง (ข้อมูลตกหล่น) - ยังต้องโชว์ไม่ทิ้งยอดไปเงียบๆ
+            Set<Long> orphanWarehouseIds = new HashSet<Long>();
+
+            List<Stock> stockRows = stockDAO.findByProductIds(stockFamilyIds);
+            if (stockRows != null) {
+                for (Stock row : stockRows) {
+                    if (row == null || isBlank(row.getProductId()) || isBlank(row.getWarehouseId())) {
+                        continue;
+                    }
+                    String subId = row.getProductId().trim();
+                    String parentId = firstNonBlank(parentIdBySubId.get(subId), subId);
+                    Long whId = parseLongOrNull(row.getWarehouseId().trim());
+                    if (whId == null) {
+                        continue;
+                    }
+                    if (!warehouseById.containsKey(whId)) {
+                        orphanWarehouseIds.add(whId);
+                    }
+
+                    double amt = (row.getAmountUnit() != null) ? row.getAmountUnit().doubleValue() : 0d;
+                    Map<String, Double> byParent = ownAmountByWarehouseId.get(whId);
+                    if (byParent == null) {
+                        byParent = new HashMap<String, Double>();
+                        ownAmountByWarehouseId.put(whId, byParent);
+                    }
+                    Double prev = byParent.get(parentId);
+                    byParent.put(parentId, Double.valueOf((prev != null ? prev.doubleValue() : 0d) + amt));
+                }
+            }
+
+            // ---- ประกอบ node ทุกใบของ tree (ทุกระดับ) + แตก node ลูกแบบ "product" ให้คลังใบล่าสุดที่มีของ ----
+            List<Map<String, Object>> nodes = new ArrayList<Map<String, Object>>();
+            for (Warehouse wh : warehouses) {
+                if (wh == null || wh.getWarehouseId() == null) {
+                    continue;
+                }
+                appendLocationNode(nodes, wh.getWarehouseId(),
+                        (wh.getParent() != null) ? wh.getParent() : Long.valueOf(0L),
+                        wh.getWarehouseName(), leafIds, childrenByParent, ownAmountByWarehouseId, productNameByParent);
+            }
+            // คลังที่มีข้อมูลใน stock แต่ไม่มีในตาราง warehouse จริง - แสดงเป็น root เสมือนแยกไว้
+            for (Long orphanId : orphanWarehouseIds) {
+                appendLocationNode(nodes, orphanId, Long.valueOf(0L), "คลัง #" + orphanId + " (ไม่พบในระบบ)",
+                        leafIds, childrenByParent, ownAmountByWarehouseId, productNameByParent);
+            }
+
+            // ---- สรุปยอดรวม: รวมเฉพาะจาก node รากเท่านั้น (กันบวกซ้ำ เพราะยอด roll-up รวมลูกไว้แล้ว) ----
+            List<Long> rootIds = new ArrayList<Long>();
+            for (Warehouse wh : warehouses) {
+                if (wh == null || wh.getWarehouseId() == null) {
+                    continue;
+                }
+                Long parent = wh.getParent();
+                if (parent == null || parent.longValue() == 0L) {
+                    rootIds.add(wh.getWarehouseId());
+                }
+            }
+            rootIds.addAll(orphanWarehouseIds);
+
+            double grandOnHand = 0d;
+            Set<String> distinctProductIds = new HashSet<String>();
+            for (Long rootId : rootIds) {
+                grandOnHand += rollupOnHand(rootId, childrenByParent, ownAmountByWarehouseId);
+                distinctProductIds.addAll(rollupProductIds(rootId, childrenByParent, ownAmountByWarehouseId));
+            }
+
+            request.setAttribute("locationNodes", nodes);
+            request.setAttribute("totalLocations", Integer.valueOf(leafIds.size() + orphanWarehouseIds.size()));
+            request.setAttribute("totalOnHand", formatQty(grandOnHand));
+            request.setAttribute("totalDistinctProducts", Integer.valueOf(distinctProductIds.size()));
+
+            return SUCCESS;
+        } catch (Exception e) {
+            log.error("showStockByLocationPage failed", e);
+            return ERROR;
+        }
+    }
+
+    /**
+     * เพิ่ม node คลัง 1 ใบเข้า list (พร้อมยอด roll-up ของทั้งสายลูก) และถ้าเป็นใบล่าสุดที่มีของอยู่จริง
+     * จะแตกเป็น node ลูกประเภท "product" ต่อท้ายทันที (1 รายการต่อ 1 product ที่มียอด != 0 ในคลังนั้น)
+     * ใช้กลไก expand/collapse เดียวกับ node คลังฝั่ง JS เพราะ node "product" ก็คือ node ที่ไม่มีลูกเหมือนกัน
+     */
+    private void appendLocationNode(List<Map<String, Object>> nodes, Long warehouseId, Long parentId, String name,
+            Set<Long> leafIds, Map<Long, List<Warehouse>> childrenByParent,
+            Map<Long, Map<String, Double>> ownAmountByWarehouseId, Map<String, String> productNameByParent) {
+
+        double onHand = rollupOnHand(warehouseId, childrenByParent, ownAmountByWarehouseId);
+        int productCount = rollupProductIds(warehouseId, childrenByParent, ownAmountByWarehouseId).size();
+
+        Map<String, Object> node = new LinkedHashMap<String, Object>();
+        node.put("id", String.valueOf(warehouseId));
+        node.put("parentId", String.valueOf(parentId));
+        node.put("type", "warehouse");
+        node.put("name", name);
+        node.put("productCount", Integer.valueOf(productCount));
+        node.put("onHand", formatQty(onHand));
+        nodes.add(node);
+
+        if (!leafIds.contains(warehouseId)) {
+            return;
+        }
+        Map<String, Double> own = ownAmountByWarehouseId.get(warehouseId);
+        if (own == null) {
+            return;
+        }
+        int pIdx = 0;
+        for (Map.Entry<String, Double> e : own.entrySet()) {
+            double amt = (e.getValue() != null) ? e.getValue().doubleValue() : 0d;
+            if (amt == 0d) {
+                continue;
+            }
+            Map<String, Object> productNode = new LinkedHashMap<String, Object>();
+            productNode.put("id", "p" + warehouseId + "_" + (pIdx++));
+            productNode.put("parentId", String.valueOf(warehouseId));
+            productNode.put("type", "product");
+            productNode.put("name", firstNonBlank(productNameByParent.get(e.getKey()), e.getKey()));
+            productNode.put("productCount", Integer.valueOf(0));
+            productNode.put("onHand", formatQty(amt));
+            nodes.add(productNode);
+        }
+    }
+
+    /** ยอดคงเหลือรวมของคลังหนึ่ง = ของคลังนั้นเอง + roll-up จากคลังลูกทุกชั้นแบบ recursive */
+    private double rollupOnHand(Long warehouseId, Map<Long, List<Warehouse>> childrenByParent,
+            Map<Long, Map<String, Double>> ownAmountByWarehouseId) {
+        double total = 0d;
+        Map<String, Double> own = ownAmountByWarehouseId.get(warehouseId);
+        if (own != null) {
+            for (Double v : own.values()) {
+                if (v != null) {
+                    total += v.doubleValue();
+                }
+            }
+        }
+        List<Warehouse> children = childrenByParent.get(warehouseId);
+        if (children != null) {
+            for (Warehouse child : children) {
+                if (child != null && child.getWarehouseId() != null) {
+                    total += rollupOnHand(child.getWarehouseId(), childrenByParent, ownAmountByWarehouseId);
+                }
+            }
+        }
+        return total;
+    }
+
+    /** product_id ที่ต่างกันทั้งหมดของคลังหนึ่ง = ของคลังนั้นเอง + roll-up จากคลังลูกทุกชั้นแบบ recursive */
+    private Set<String> rollupProductIds(Long warehouseId, Map<Long, List<Warehouse>> childrenByParent,
+            Map<Long, Map<String, Double>> ownAmountByWarehouseId) {
+        Set<String> ids = new HashSet<String>();
+        Map<String, Double> own = ownAmountByWarehouseId.get(warehouseId);
+        if (own != null) {
+            for (Map.Entry<String, Double> e : own.entrySet()) {
+                if (e.getValue() != null && e.getValue().doubleValue() != 0d) {
+                    ids.add(e.getKey());
+                }
+            }
+        }
+        List<Warehouse> children = childrenByParent.get(warehouseId);
+        if (children != null) {
+            for (Warehouse child : children) {
+                if (child != null && child.getWarehouseId() != null) {
+                    ids.addAll(rollupProductIds(child.getWarehouseId(), childrenByParent, ownAmountByWarehouseId));
+                }
+            }
+        }
+        return ids;
+    }
+
+    /**
+     * map: product_id ของตัวแม่ (String) -> id ของตัวแม่ + sub product ทั้งหมดในตระกูลนั้น (ตัวแม่เป็นตัวแรก)
+     * ใช้ query ความเคลื่อนไหวใน stock/equipment ของทั้งตระกูลในคำสั่งเดียว (กัน N+1)
+     */
+    private Map<String, List<String>> buildFamilyIdsByParent(List<String> parentIds) throws Exception {
+        Map<String, List<String>> familyIdsByParent = new HashMap<String, List<String>>();
+        if (parentIds == null || parentIds.isEmpty()) {
+            return familyIdsByParent;
+        }
+        for (String pid : parentIds) {
+            List<String> ids = new ArrayList<String>();
+            ids.add(pid);
+            familyIdsByParent.put(pid, ids);
+        }
+        List<Product> subProducts = productDAO.findByParentProductIds(parentIds);
+        if (subProducts != null) {
+            for (Product sub : subProducts) {
+                if (sub == null || isBlank(sub.getParentProductId()) || sub.getProductId() == null) {
+                    continue;
+                }
+                List<String> ids = familyIdsByParent.get(sub.getParentProductId().trim());
+                if (ids != null) {
+                    ids.add(String.valueOf(sub.getProductId()));
+                }
+            }
+        }
+        return familyIdsByParent;
+    }
+
+    /** map: sub product id -> product_id ของตัวแม่ (ใช้ roll up ยอด/คลังของ sub product ขึ้นตัวแม่) */
+    private Map<String, String> buildParentIdBySubId(Map<String, List<String>> familyIdsByParent) {
+        Map<String, String> map = new HashMap<String, String>();
+        for (Map.Entry<String, List<String>> entry : familyIdsByParent.entrySet()) {
+            String parentId = entry.getKey();
+            for (String id : entry.getValue()) {
+                if (!parentId.equals(id)) {
+                    map.put(id, parentId);
+                }
+            }
+        }
+        return map;
+    }
+
+    private Long parseLongOrNull(String value) {
+        if (isBlank(value)) {
+            return null;
+        }
+        try {
+            return Long.valueOf(value.trim());
+        } catch (NumberFormatException e) {
+            return null;
+        }
+    }
+
     public String showStockAddPage() {
         try {
             if (getOnlineUser() == null) {
                 log.warn("showStockAddPage: no online user in session");
                 return ERROR;
             }
+
+            // ใช้เติม dropdown Equipment Type ที่โผล่เมื่อเลือก Item Type = Equipment (type '1')
+            request.setAttribute("equipmentTypes", equipmentTypeDAO.getall());
 
             return SUCCESS;
         } catch (Exception e) {
@@ -291,7 +851,7 @@ public class ProductAction extends ActionSupport {
                 return ERROR;
             }
             // กันการยิง id ของ product ประเภทอื่น หรือ sub-product เข้ามาที่หน้านี้
-            if (!PRODUCT_TYPE_CONSUMABLES.equals(product.getProductType())) {
+            if (!isEditableStockItem(product)) {
                 log.warn("showStockEditPage: not a consumable, productId=" + productId
                         + ", productType=" + product.getProductType());
                 return ERROR;
@@ -308,6 +868,39 @@ public class ProductAction extends ActionSupport {
             request.setAttribute("product", product);
             request.setAttribute("units", units);
             request.setAttribute("subProducts", subProducts);
+            // ใช้เติม dropdown Equipment Type - โผล่เฉพาะตอน Item Type = Equipment (type '1')
+            request.setAttribute("equipmentTypes", equipmentTypeDAO.getall());
+
+            // Equipment เท่านั้นที่ต้องมีตัวเลือกผูกเครื่องจริง - รองรับทั้งมี sub product (ผูกแยกตามรุ่น)
+            // และไม่มี sub product เลย (ผูกตรงกับตัวแม่ได้เหมือนเดิม) แสดงรวมในการ์ด "Sub product"
+            // เดียวกัน (badge จำนวนเครื่อง + expand ดู serial/status ต่อแถว)
+            if (isEquipmentProduct(product)) {
+                // จำนวนเครื่องต่อแถว (ตัวแม่ + sub product ทุกตัว) - นับด้วย SQL subquery ฝั่ง server
+                Map<Integer, Integer> equipmentCounts = productDAO.countEquipmentByParentAndSubProducts(productId);
+                request.setAttribute("equipmentCounts", equipmentCounts);
+
+                int totalEquipmentCount = 0;
+                for (Integer count : equipmentCounts.values()) {
+                    totalEquipmentCount += (count != null) ? count.intValue() : 0;
+                }
+                request.setAttribute("totalEquipmentCount", Integer.valueOf(totalEquipmentCount));
+                // ดึงแยกไว้ตัวเดียวกันความยุ่งยากของ EL เวลาต้อง fallback ค่า null เป็น 0 ซ้ำๆ ใน JSP
+                Integer parentCount = equipmentCounts.get(productId);
+                request.setAttribute("parentEquipmentCount", parentCount != null ? parentCount : Integer.valueOf(0));
+
+                // ข้อมูลรายเครื่อง (serial/status) ต่อแถว ใช้ตอน expand ดูรายละเอียด - reuse ตัวเดียวกับ
+                // หน้า Stock Balance (buildEquipmentGroupsForCatalog) แค่แปลงเป็น map key productId ให้ lookup ง่าย
+                Map<Integer, Map<String, Object>> equipmentDetailByProductId =
+                        new LinkedHashMap<Integer, Map<String, Object>>();
+                for (Map<String, Object> group : buildEquipmentGroupsForCatalog(product, subProducts)) {
+                    Integer key = Integer.valueOf((String) group.get("productId"));
+                    equipmentDetailByProductId.put(key, group);
+                }
+                request.setAttribute("equipmentDetailByProductId", equipmentDetailByProductId);
+
+                // เครื่องที่ยังไม่ผูกกับ catalog ไหนเลย - ใช้เป็นตัวเลือกใน popup
+                request.setAttribute("unlinkedEquipment", equipmentDAO.findUnlinked());
+            }
 
             return SUCCESS;
         } catch (Exception e) {
@@ -317,8 +910,144 @@ public class ProductAction extends ActionSupport {
     }
 
     /**
+     * ผูกเครื่องจริง (equipment) ที่เลือกจาก popup เข้ากับ catalog Equipment ที่กำลังแก้ไขอยู่
+     * ตั้งค่า equipment.product_id ให้แต่ละเครื่องที่เลือก แล้วตอบ JSON ให้ฝั่ง UI โชว์ SweetAlert
+     *
+     * ลิงก์ได้เฉพาะเครื่องที่ยัง "ว่าง" (product_id ยังไม่มีค่า) เท่านั้น กันไม่ให้แย่งเครื่อง
+     * ที่ผูกกับ catalog อื่นอยู่แล้วไปโดยไม่ตั้งใจ (เช่น เปิด popup ค้างไว้หลายแท็บ)
+     */
+    public String stockEquLinkSave() {
+        try {
+            User onlineUser = getOnlineUser();
+            if (onlineUser == null) {
+                log.warn("stockEquLinkSave: no online user in session");
+                return writeJson(false, "unauthorized");
+            }
+            if (productId == null) {
+                log.warn("stockEquLinkSave: productId is required");
+                return writeJson(false, "productId required");
+            }
+            // ผูกได้ทั้งตัวแม่หรือ sub product ของ Equipment (เครื่องผูกกับ sub product เป็นหลักตั้งแต่ 25/08/2026)
+            Product product = productDAO.findById(productId);
+            if (product == null || !isEquipmentProduct(product)) {
+                log.warn("stockEquLinkSave: invalid equipment catalog, productId=" + productId);
+                return writeJson(false, "ไม่พบข้อมูล catalog");
+            }
+
+            List<Integer> ids = parseIds(equipmentIds);
+            if (ids.isEmpty()) {
+                return writeJson(false, "กรุณาเลือกอย่างน้อย 1 รายการ");
+            }
+
+            String productIdText = String.valueOf(productId);
+            java.sql.Timestamp now = DateUtil.getCurrentTime();
+            int linked = 0;
+            for (Integer equipmentId : ids) {
+                Equipment equipment = equipmentDAO.getById(equipmentId.intValue());
+                // ข้ามเครื่องที่ไม่พบ หรือถูกผูกกับ catalog อื่นไปแล้วระหว่างที่ popup เปิดค้างอยู่
+                if (equipment == null || !isBlank(equipment.getProductId())) {
+                    continue;
+                }
+                equipment.setProductId(productIdText);
+                equipment.setUserUpdate(onlineUser.getId());
+                equipment.setTimeUpdate(now);
+                equipmentDAO.update(equipment);
+                linked++;
+            }
+
+            if (linked == 0) {
+                log.warn("stockEquLinkSave: nothing linked (already taken?), productId=" + productId
+                        + ", requestedIds=" + equipmentIds);
+                return writeJson(false, "รายการที่เลือกถูกผูกกับ catalog อื่นไปแล้ว กรุณาเลือกใหม่");
+            }
+
+            return writeJson(true, "เพิ่มเครื่องสำเร็จ " + linked + " รายการ");
+        } catch (Exception e) {
+            log.error("stockEquLinkSave failed, productId=" + productId, e);
+            return writeJson(false, "เกิดข้อผิดพลาด ไม่สามารถบันทึกได้");
+        }
+    }
+
+    /**
+     * ยกเลิกการผูกเครื่อง (equipment) ออกจาก catalog - เคลียร์ equipment.product_id
+     * เครื่องไม่ได้ถูกลบ แค่เอาออกจาก catalog นี้ จะกลับไปเป็นเครื่องที่ยังไม่ผูก
+     * รองรับ equipmentIds หลายค่าคั่นด้วย comma (reuse field เดียวกับ stockEquLinkSave)
+     */
+    public String stockEquUnlinkSave() {
+        try {
+            User onlineUser = getOnlineUser();
+            if (onlineUser == null) {
+                log.warn("stockEquUnlinkSave: no online user in session");
+                return writeJson(false, "unauthorized");
+            }
+            if (productId == null) {
+                log.warn("stockEquUnlinkSave: productId is required");
+                return writeJson(false, "productId required");
+            }
+            // เอาออกได้ทั้งจากตัวแม่หรือ sub product ของ Equipment (เหมือน stockEquLinkSave)
+            Product product = productDAO.findById(productId);
+            if (product == null || !isEquipmentProduct(product)) {
+                log.warn("stockEquUnlinkSave: invalid equipment catalog, productId=" + productId);
+                return writeJson(false, "ไม่พบข้อมูล catalog");
+            }
+
+            List<Integer> ids = parseIds(equipmentIds);
+            if (ids.isEmpty()) {
+                return writeJson(false, "กรุณาเลือกอย่างน้อย 1 รายการ");
+            }
+
+            String productIdText = String.valueOf(productId);
+            java.sql.Timestamp now = DateUtil.getCurrentTime();
+            int unlinked = 0;
+            for (Integer equipmentId : ids) {
+                Equipment equipment = equipmentDAO.getById(equipmentId.intValue());
+                if (equipment == null || !productIdText.equals(equipment.getProductId())) {
+                    continue;
+                }
+                equipment.setProductId(null);
+                equipment.setUserUpdate(onlineUser.getId());
+                equipment.setTimeUpdate(now);
+                equipmentDAO.update(equipment);
+                unlinked++;
+            }
+
+            if (unlinked == 0) {
+                log.warn("stockEquUnlinkSave: nothing unlinked, productId=" + productId
+                        + ", requestedIds=" + equipmentIds);
+                return writeJson(false, "ไม่พบเครื่องที่จะเอาออก");
+            }
+
+            return writeJson(true, "เอาเครื่องออกแล้ว " + unlinked + " รายการ");
+        } catch (Exception e) {
+            log.error("stockEquUnlinkSave failed, productId=" + productId, e);
+            return writeJson(false, "เกิดข้อผิดพลาด ไม่สามารถบันทึกได้");
+        }
+    }
+
+    /**
+     * เช็ค Item ID (product_no) ซ้ำ ใช้ตอนกรอกฟอร์มในหน้า add/edit (AJAX)
+     * ตอน edit ต้องส่ง productId ของตัวเองมาด้วย กันเช็คซ้ำกับตัวมันเอง
+     * success = true หมายถึง "ไม่ซ้ำ ใช้ได้" / false หมายถึง "ซ้ำ" หรือเกิด error
+     */
+    public String stockCheckProductNoDuplicate() {
+        try {
+            if (isBlank(productNo)) {
+                return writeJson(false, "กรุณากรอก Item ID");
+            }
+            boolean duplicate = productDAO.existsByProductNo(productNo, productId);
+            if (duplicate) {
+                return writeJson(false, "Item ID นี้มีอยู่แล้วในระบบ กรุณาใช้ชื่ออื่น");
+            }
+            return writeJson(true, null);
+        } catch (Exception e) {
+            log.error("stockCheckProductNoDuplicate failed, productNo=" + productNo, e);
+            return writeJson(false, "เกิดข้อผิดพลาด ไม่สามารถตรวจสอบได้");
+        }
+    }
+
+    /**
      * หน้า Stock Balance ของ consumable หนึ่งตัว
-     *  - historiesIn : ประวัติรับเข้า (IN) จากตาราง good_receipt (+ good_receipt_detail)
+     *  - historiesIn : ประวัติรับเข้า (IN) จากตาราง stock โดยตรง (ไม่ผ่าน good_receipt แล้ว)
      *  - subProducts : รายการ sub product จากตาราง product
      *  - warehouses  : คลังจากตาราง warehouse
      *  - balances / sizeSummaries : ยอดรับเข้าสรุปตาม sub product x warehouse (คำนวณจาก IN)
@@ -339,9 +1068,15 @@ public class ProductAction extends ActionSupport {
                 log.warn("showStockBalancePage: product not found, productId=" + productId);
                 return ERROR;
             }
-            if (!PRODUCT_TYPE_CONSUMABLES.equals(product.getProductType())) {
+            if (!isEditableStockItem(product)) {
                 log.warn("showStockBalancePage: not a consumable, productId=" + productId
                         + ", productType=" + product.getProductType());
+                return ERROR;
+            }
+            // Equipment ยอดคงเหลือคิดจากเครื่องจริง ไม่ใช่จากตาราง stock - ต้องไป stock_equ_balance
+            // ถ้าปล่อยผ่าน หน้านี้จะโชว์ยอด 0 ทั้งที่มีเครื่องอยู่ ซึ่งทำให้เข้าใจผิด
+            if ("1".equals(product.getProductType().trim())) {
+                log.warn("showStockBalancePage: equipment must use stock_equ_balance, productId=" + productId);
                 return ERROR;
             }
 
@@ -360,23 +1095,43 @@ public class ProductAction extends ActionSupport {
             // (1)(2) เรียง sub product ตาม sequence ให้ทั้งปุ่มกรองไซซ์และตารางยอดคงเหลือเรียงตรงกัน
             sortSubProductsBySequence(subProducts);
 
+            // หน่วยนับ (unit) ของ product นี้ เรียงตาม sequence (ตัวแรก = unit หลัก) ใช้กับ dropdown ใน modal Add Stock
+            List<UnitOfMeasure> units = unitOfMeasureDAO.findByProductId(productIdStr);
+            if (units == null) {
+                units = new ArrayList<UnitOfMeasure>();
+            }
+
+            // ไม่มี sub product จริง -> ใช้ตัวแม่เองเป็นกลุ่มเดียวแทน กันยอด/ประวัติรับเข้าหายไปจากหน้านี้
+            // (สอดคล้องกับ stockConsStockAdd ที่ fallback ไปผูกกับตัวแม่โดยตรงเมื่อไม่มี sub product)
+            List<Product> balanceGroups = subProducts.isEmpty() ? Collections.singletonList(product) : subProducts;
+
             // (3) จำนวนคงเหลือต่อ sub product ดึงจาก stock.reconcile (แถวล่าสุด)
-            Map<String, Double> reconcileBySub = buildReconcileBySubProduct(subProducts);
+            Map<String, Double> reconcileBySub = buildReconcileBySubProduct(balanceGroups);
 
-            // ประวัติรับเข้า (IN) จาก good_receipt (ใช้กับ History + รายการแยกคลัง)
-            List<Map<String, Object>> inRows = goodReceiptDAO.findInHistoryByParentProductId(productIdStr);
+            // product_id ของทุกกลุ่ม (ตัวแม่ + sub product) ไว้ query ความเคลื่อนไหวใน stock ทีเดียว
+            List<String> balanceGroupIds = new ArrayList<String>();
+            for (Product g : balanceGroups) {
+                if (g != null && g.getProductId() != null) {
+                    balanceGroupIds.add(String.valueOf(g.getProductId()));
+                }
+            }
 
-            Map<String, String> subNameById = buildSubProductNameMap(subProducts);
+            // ความเคลื่อนไหว "รับเข้า" (IN) จากตาราง stock โดยตรง (ใช้กับ History + รายการแยกคลัง)
+            // ไม่ผ่าน good_receipt แล้ว (เปลี่ยนจากเดิม 26/08/2026 - ดู stockConsStockAdd)
+            List<Stock> inRows = stockDAO.findByProductIds(balanceGroupIds);
+
+            Map<String, String> subNameById = buildSubProductNameMap(balanceGroups);
             Map<String, String> whNameById = buildWarehouseNameMap(warehouses);
             Map<String, String> userNameById = buildUserDisplayMap(inRows);
 
             List<Map<String, Object>> historiesIn = buildHistoriesIn(inRows, subNameById, whNameById, userNameById);
-            List<Map<String, Object>> balances = buildBalances(subProducts, warehouses, inRows, whNameById, reconcileBySub);
-            List<Map<String, Object>> sizeSummaries = buildSizeSummaries(subProducts, reconcileBySub);
+            List<Map<String, Object>> balances = buildBalances(balanceGroups, warehouses, inRows, whNameById, reconcileBySub);
+            List<Map<String, Object>> sizeSummaries = buildSizeSummaries(balanceGroups, reconcileBySub);
 
             request.setAttribute("product", product);
             request.setAttribute("subProducts", subProducts);
             request.setAttribute("warehouses", warehouses);
+            request.setAttribute("units", units);
             request.setAttribute("historiesIn", historiesIn);
             // ยังไม่มีแหล่งข้อมูลฝั่งเบิกออก (OUT) - ส่ง list ว่างไปก่อน
             request.setAttribute("historiesOut", new ArrayList<Map<String, Object>>());
@@ -388,6 +1143,336 @@ public class ProductAction extends ActionSupport {
             log.error("showStockBalancePage failed, productId=" + productId, e);
             return ERROR;
         }
+    }
+
+    /**
+     * บันทึกรับเข้าสต็อก (ปุ่ม Add Stock ในหน้า Stock Balance ของ consumable/accessory/office supply)
+     * ลงบัญชีตรงที่ตาราง stock เท่านั้น (action_type = direct_issue) - ไม่สร้างเอกสาร good_receipt /
+     * good_receipt_detail แล้ว (เปลี่ยนจากเดิม 26/08/2026 ตามที่ระบุว่าให้บันทึกลงแค่ตาราง stock)
+     * - รองรับทั้งกรณีมี sub product (amount_&lt;subProductId&gt; ต่อแถว) และไม่มี sub product
+     *   (amount_&lt;productId&gt; ของตัวแม่เอง - ดู fallback ในหน้า stock_cons_balance.jsp และ showStockBalancePage)
+     */
+    public String stockConsStockAdd() {
+        try {
+            User onlineUser = getOnlineUser();
+            if (onlineUser == null) {
+                log.warn("stockConsStockAdd: no online user in session");
+                return ERROR;
+            }
+            if (productId == null || isBlank(warehouseId) || unitId == null) {
+                log.warn("stockConsStockAdd: productId/warehouseId/unitId is required");
+                return ERROR;
+            }
+
+            Product product = productDAO.findById(productId);
+            if (product == null || !isEditableStockItem(product) || isEquipmentProduct(product)) {
+                log.warn("stockConsStockAdd: product not found or not a consumable/accessory/office item, productId="
+                        + productId);
+                return ERROR;
+            }
+
+            // unit ต้องเป็นของ product นี้จริง กัน unitId ปลอมจาก client + เอา conversionRate มาคำนวณ amount_convert
+            List<UnitOfMeasure> units = unitOfMeasureDAO.findByProductId(String.valueOf(productId));
+            UnitOfMeasure selectedUnit = null;
+            if (units != null) {
+                for (UnitOfMeasure u : units) {
+                    if (u != null && unitId.equals(u.getUnitId())) {
+                        selectedUnit = u;
+                        break;
+                    }
+                }
+            }
+            if (selectedUnit == null) {
+                log.warn("stockConsStockAdd: unitId does not belong to product, productId=" + productId
+                        + ", unitId=" + unitId);
+                return ERROR;
+            }
+            int conversionRateVal = (selectedUnit.getConversionRate() != null)
+                    ? selectedUnit.getConversionRate().intValue() : 1;
+
+            String productIdStr = String.valueOf(productId);
+            List<Product> subProducts = productDAO.findByParentProductIds(Collections.singletonList(productIdStr));
+            if (subProducts == null) {
+                subProducts = new ArrayList<Product>();
+            }
+
+            // target product id -> จำนวนที่กรอก (เฉพาะแถวที่กรอกมากกว่า 0)
+            // มี sub product = แยกจำนวนต่อ sub / ไม่มี sub = ใช้ตัวแม่เป็นบรรทัดเดียว (amount_<parentProductId>)
+            LinkedHashMap<String, Double> amountByTargetId = new LinkedHashMap<String, Double>();
+            if (!subProducts.isEmpty()) {
+                for (Product sub : subProducts) {
+                    if (sub == null || sub.getProductId() == null) {
+                        continue;
+                    }
+                    String key = String.valueOf(sub.getProductId());
+                    double amount = toDouble(request.getParameter("amount_" + key));
+                    if (amount > 0) {
+                        amountByTargetId.put(key, Double.valueOf(amount));
+                    }
+                }
+            } else {
+                double amount = toDouble(request.getParameter("amount_" + productIdStr));
+                if (amount > 0) {
+                    amountByTargetId.put(productIdStr, Double.valueOf(amount));
+                }
+            }
+
+            if (amountByTargetId.isEmpty()) {
+                log.warn("stockConsStockAdd: no positive amount entered, productId=" + productId);
+                return ERROR;
+            }
+
+            java.sql.Timestamp now = DateUtil.getCurrentTime();
+            java.sql.Timestamp receiveTs = now;
+            if (!isBlank(receiveDate)) {
+                Date parsed = DateUtil.stringToDate(receiveDate.trim(), "yyyy-MM-dd", Locale.ENGLISH);
+                if (parsed != null) {
+                    receiveTs = new java.sql.Timestamp(parsed.getTime());
+                }
+            }
+
+            // stock.action_ref มาจากช่อง "Reference No." (refNo) ที่ user กรอกเอง - ไม่มีการกรอก = บันทึกเป็นค่าว่าง
+            String stockActionRef = isBlank(refNo) ? "" : refNo.trim();
+            if (stockActionRef.length() > 32) {
+                stockActionRef = stockActionRef.substring(0, 32);
+            }
+
+            // ---- ลงบัญชี stock ต่อบรรทัด (direct_issue) ไม่มีเอกสาร good_receipt/good_receipt_detail แล้ว ----
+            long nextStockId = stockDAO.getMaxId().longValue() + 1;
+
+            for (Map.Entry<String, Double> entry : amountByTargetId.entrySet()) {
+                String targetProductId = entry.getKey();
+                double amount = entry.getValue().doubleValue();
+                double amountConvert = amount * conversionRateVal;
+
+                // reconcile = ผลรวมกระทบยอดล่าสุดของ product นั้น + จำนวนที่รับเข้ารอบนี้ (คิดเป็น unit หลัก)
+                Stock latest = stockDAO.findLatestByProductId(targetProductId);
+                double previousReconcile = (latest != null && latest.getReconcile() != null)
+                        ? latest.getReconcile().doubleValue() : 0d;
+
+                Stock stock = new Stock();
+                stock.setStockId(String.valueOf(nextStockId));
+                stock.setProductId(targetProductId);
+                stock.setActionType("direct_issue");
+                stock.setActionRef(stockActionRef);
+                stock.setUnit(String.valueOf(unitId));
+                stock.setAmountUnit(Double.valueOf(amount));
+                stock.setAmountConvert(Double.valueOf(amountConvert));
+                stock.setReconcile(Double.valueOf(previousReconcile + amountConvert));
+                stock.setWarehouseId(warehouseId.trim());
+                stock.setUserCreate(onlineUser.getId());
+                // time_create ใช้วันที่ user เลือกจากช่อง "Date" (receiveTs) แทน now เฉยๆ
+                // เพราะไม่มี good_receipt.receive_date ให้เก็บวันที่นี้แล้ว
+                stock.setTimeCreate(receiveTs);
+                stock.setUserUpdate(onlineUser.getId());
+                stock.setTimeUpdate(now);
+                stockDAO.save(stock);
+                nextStockId++;
+            }
+
+            return SUCCESS;
+        } catch (Exception e) {
+            log.error("stockConsStockAdd failed, productId=" + productId, e);
+            return ERROR;
+        }
+    }
+
+    /**
+     * หน้า Stock Balance ฝั่ง Equipment
+     *
+     * ไม่ใช้ showStockBalancePage() ร่วมกัน เพราะยอดคงเหลือของ equipment คือ
+     * "จำนวนเครื่องจริง" ที่ผูก product_id ไว้ ไม่ได้มาจากตาราง stock / good_receipt
+     * เหมือน consumable
+     *
+     * Equipment ไม่ใช้ sub product แล้ว (19/08/2026) - เครื่องทุกตัวของ catalog นี้
+     * จึงถูกจัดเป็นกลุ่มเดียวเสมอ ใช้ product.getProductName() เป็น label
+     *
+     *  - product        : catalog item ที่กำลังดู
+     *  - groups         : List&lt;Map&gt; {label, productId, total, retired, rows:List&lt;Equipment&gt;} - มีสมาชิกเดียวเสมอ
+     *  - totalOnHand    : จำนวนเครื่องที่ยังนับเป็นของคงเหลือ
+     *  - totalRetired   : จำนวนเครื่องที่ปลดระวาง/บริจาคไปแล้ว (ผูกไว้แต่ไม่นับยอด)
+     */
+    public String showEquipmentBalancePage() {
+        try {
+            if (getOnlineUser() == null) {
+                log.warn("showEquipmentBalancePage: no online user in session");
+                return ERROR;
+            }
+            if (productId == null) {
+                log.warn("showEquipmentBalancePage: productId is required");
+                return ERROR;
+            }
+
+            Product product = productDAO.findById(productId);
+            if (product == null) {
+                log.warn("showEquipmentBalancePage: product not found, productId=" + productId);
+                return ERROR;
+            }
+            // หน้านี้รับเฉพาะ catalog ฝั่ง Equipment (type '1') - type อื่นให้ไป stock_cons_balance
+            if (!isEditableStockItem(product) || !isEquipmentProduct(product)) {
+                log.warn("showEquipmentBalancePage: not an equipment catalog, productId=" + productId
+                        + ", productType=" + product.getProductType());
+                return ERROR;
+            }
+
+            // เครื่องจริงผูกกับ sub product เป็นหลัก (25/08/2026) แต่ยังรองรับกรณีไม่มี sub product เลยด้วย
+            // ดู buildEquipmentGroupsForCatalog() - ใช้ตัวเดียวกับหน้า Settings
+            List<Product> subProducts = productDAO.findByParentProductIds(
+                    Collections.singletonList(String.valueOf(productId)));
+            sortBySequence(subProducts);
+
+            List<Map<String, Object>> groups = buildEquipmentGroupsForCatalog(product, subProducts);
+
+            int totalOnHand = 0;
+            int totalRetired = 0;
+            for (Map<String, Object> group : groups) {
+                totalOnHand += ((Integer) group.get("total")).intValue();
+                totalRetired += ((Integer) group.get("retired")).intValue();
+            }
+
+            // นับแยก Available / Borrowed สำหรับแถบสรุป All/Available/Borrowed ด้านบนตาราง
+            // (ดู EquipmentDAO status code: A=Available, B=Borrowed) - นับจากทุกกลุ่มรวมกัน
+            int totalAvailable = 0;
+            int totalBorrowed = 0;
+            for (Map<String, Object> group : groups) {
+                @SuppressWarnings("unchecked")
+                List<Map<String, Object>> rows = (List<Map<String, Object>>) group.get("rows");
+                if (rows == null) {
+                    continue;
+                }
+                for (Map<String, Object> row : rows) {
+                    Object status = row.get("status");
+                    if ("A".equals(status)) {
+                        totalAvailable++;
+                    } else if ("B".equals(status)) {
+                        totalBorrowed++;
+                    }
+                }
+            }
+
+            request.setAttribute("product", product);
+            request.setAttribute("groups", groups);
+            request.setAttribute("totalOnHand", Integer.valueOf(totalOnHand));
+            request.setAttribute("totalAvailable", Integer.valueOf(totalAvailable));
+            request.setAttribute("totalBorrowed", Integer.valueOf(totalBorrowed));
+            request.setAttribute("totalRetired", Integer.valueOf(totalRetired));
+
+            // รายชื่อ status ทั้งหมด (statusId, description, ...) ส่งเป็น JSON ให้ JS ทำ checkbox filter
+            // เหมือน pattern ใน EquipmentAction.eAdd() - ข้อมูลเครื่องถูกดึงมาครบทุก status อยู่แล้วจาก
+            // buildEquipmentGroupsForCatalog() ไม่ต้องแก้ query ฝั่ง DAO
+            List<EquipmentStatus> statuses = equipmentStatusDAO.getall();
+            request.setAttribute("equipmentStatusList", new Gson().toJson(statuses));
+
+            return SUCCESS;
+        } catch (Exception e) {
+            log.error("showEquipmentBalancePage failed, productId=" + productId, e);
+            return ERROR;
+        }
+    }
+
+    /** จัดกลุ่มเครื่องตาม product_id ที่ผูกไว้ (เครื่องที่ product_id ว่างถูกข้าม) */
+    private Map<String, List<Equipment>> groupEquipmentByProductId(List<Equipment> equipments) {
+        Map<String, List<Equipment>> byCatalogId = new HashMap<String, List<Equipment>>();
+        if (equipments == null) {
+            return byCatalogId;
+        }
+        for (Equipment equipment : equipments) {
+            if (equipment == null || isBlank(equipment.getProductId())) {
+                continue;
+            }
+            String key = equipment.getProductId().trim();
+            List<Equipment> rows = byCatalogId.get(key);
+            if (rows == null) {
+                rows = new ArrayList<Equipment>();
+                byCatalogId.put(key, rows);
+            }
+            rows.add(equipment);
+        }
+        return byCatalogId;
+    }
+
+    /**
+     * สร้าง 1 กลุ่มของหน้า balance พร้อมนับยอด
+     * total = เครื่องที่ยังนับเป็นของคงเหลือ, retired = ปลดระวาง/บริจาค (ยังโชว์ในตารางแต่ไม่นับ)
+     *
+     * แต่ละแถวแปลงเป็น map พร้อม flag retired มาจากที่นี่เลย เพื่อไม่ให้ JSP
+     * ต้องไป hardcode รหัส status ซ้ำกับ EquipmentDAO.RETIRED_STATUSES
+     */
+    private Map<String, Object> buildEquipmentGroup(String label, String catalogId, List<Equipment> equipments) {
+        int onHand = 0;
+        int retired = 0;
+        List<Map<String, Object>> rows = new ArrayList<Map<String, Object>>();
+
+        if (equipments != null) {
+            for (Equipment equipment : equipments) {
+                if (equipment == null) {
+                    continue;
+                }
+                boolean isRetired = isRetiredEquipment(equipment);
+                if (isRetired) {
+                    retired++;
+                } else {
+                    onHand++;
+                }
+
+                Map<String, Object> row = new LinkedHashMap<String, Object>();
+                row.put("equipmentId", equipment.getEquipmentId());
+                row.put("itemNo", equipment.getItemNo());
+                row.put("name", equipment.getName());
+                row.put("serialNo", equipment.getSerialNo());
+                row.put("status", equipment.getStatus());
+                row.put("location", equipment.getLocation());
+                row.put("retired", Boolean.valueOf(isRetired));
+                rows.add(row);
+            }
+        }
+
+        Map<String, Object> group = new LinkedHashMap<String, Object>();
+        group.put("label", label);
+        group.put("productId", catalogId);
+        group.put("total", Integer.valueOf(onHand));
+        group.put("retired", Integer.valueOf(retired));
+        group.put("rows", rows);
+        return group;
+    }
+
+    /**
+     * สร้างรายการกลุ่มเครื่องจริงของ catalog Equipment หนึ่งตัว - ใช้ร่วมกันทั้งหน้า Settings
+     * (การ์ด "Equipment by Sub Product") และหน้า Stock Balance รองรับทั้ง 2 กรณี:
+     *  - มี sub product: 1 กลุ่มต่อ 1 sub product
+     *  - ไม่มี sub product เลย: 1 กลุ่มของตัวแม่เอง (ผูกเครื่องตรงกับตัวแม่ได้เหมือนเดิม)
+     * เผื่อกรณีมี sub product แล้วแต่ตัวแม่ยังมีเครื่องผูกตรงค้างจากข้อมูลเก่า ก็ยังโชว์กลุ่มของตัวแม่เพิ่มด้วย
+     */
+    private List<Map<String, Object>> buildEquipmentGroupsForCatalog(Product product, List<Product> subProducts) throws Exception {
+        List<Map<String, Object>> groups = new ArrayList<Map<String, Object>>();
+        if (subProducts == null) {
+            subProducts = new ArrayList<Product>();
+        }
+
+        List<String> allTargetIds = new ArrayList<String>();
+        allTargetIds.add(String.valueOf(product.getProductId()));
+        for (Product sub : subProducts) {
+            allTargetIds.add(String.valueOf(sub.getProductId()));
+        }
+        Map<String, List<Equipment>> byCatalogId = groupEquipmentByProductId(equipmentDAO.findByProductIds(allTargetIds));
+
+        List<Equipment> parentDirect = byCatalogId.get(String.valueOf(product.getProductId()));
+        // โชว์กลุ่มของตัวแม่เฉพาะตอนมีเครื่องผูกตรงแบบเก่า หรือยังไม่มี sub product เลย
+        if ((parentDirect != null && !parentDirect.isEmpty()) || subProducts.isEmpty()) {
+            groups.add(buildEquipmentGroup(product.getProductName(), String.valueOf(product.getProductId()), parentDirect));
+        }
+        for (Product sub : subProducts) {
+            String key = String.valueOf(sub.getProductId());
+            groups.add(buildEquipmentGroup(sub.getProductName(), key, byCatalogId.get(key)));
+        }
+        return groups;
+    }
+
+    /** เครื่องที่ปลดระวาง/บริจาคไปแล้ว - ยังผูก product_id ไว้ แต่ไม่นับเป็นของคงเหลือ */
+    private boolean isRetiredEquipment(Equipment equipment) {
+        return equipment != null
+                && equipment.getStatus() != null
+                && EquipmentDAO.RETIRED_STATUSES.contains(equipment.getStatus().trim());
     }
 
     /** map: sub product id (String) -> ชื่อ sub product (ใช้เป็น label ของไซซ์) */
@@ -409,19 +1494,19 @@ public class ProductAction extends ActionSupport {
     }
 
     /**
-     * map: recipient_user id -> "id - ชื่อ" สำหรับแสดงในประวัติ
-     * ดึงเฉพาะ id ที่ไม่ซ้ำจาก inRows (findById รายตัว) เพื่อจำกัดจำนวน query
+     * map: user_create id -> "id - ชื่อ" สำหรับแสดงในประวัติ
+     * ดึงเฉพาะ id ที่ไม่ซ้ำจาก stockRows (findById รายตัว) เพื่อจำกัดจำนวน query
      */
-    private Map<String, String> buildUserDisplayMap(List<Map<String, Object>> inRows) throws Exception {
+    private Map<String, String> buildUserDisplayMap(List<Stock> stockRows) throws Exception {
         Map<String, String> map = new HashMap<String, String>();
-        if (inRows == null) {
+        if (stockRows == null) {
             return map;
         }
-        for (Map<String, Object> row : inRows) {
+        for (Stock row : stockRows) {
             if (row == null) {
                 continue;
             }
-            String userId = str(row.get("recipient_user"));
+            String userId = str(row.getUserCreate());
             if (isBlank(userId) || map.containsKey(userId)) {
                 continue;
             }
@@ -448,44 +1533,48 @@ public class ProductAction extends ActionSupport {
         return map;
     }
 
-    /** group แถว detail ตาม good_receipt_id เป็น 1 การ์ดต่อ 1 ใบรับ */
-    private List<Map<String, Object>> buildHistoriesIn(List<Map<String, Object>> inRows,
+    /**
+     * group แถว stock เป็น 1 การ์ดต่อ 1 ครั้งที่กด Add Stock (ไม่มีเอกสาร good_receipt ให้ group ตามแล้ว)
+     * แถวที่มาจากการกด Add Stock ครั้งเดียวกันจะมี warehouseId/timeCreate/actionRef ตรงกันทุกแถวเสมอ
+     * เพราะ stockConsStockAdd() คำนวณค่าพวกนี้ครั้งเดียวก่อน loop ต่อ sub product จึงใช้ 3 ค่านี้รวมกันเป็น key ได้
+     */
+    private List<Map<String, Object>> buildHistoriesIn(List<Stock> stockRows,
             Map<String, String> subNameById, Map<String, String> whNameById,
             Map<String, String> userNameById) {
 
-        // LinkedHashMap รักษาลำดับใบล่าสุดก่อน (rows เรียงมาจาก SQL แล้ว)
-        Map<String, Map<String, Object>> byReceipt = new LinkedHashMap<String, Map<String, Object>>();
-        if (inRows == null) {
+        // LinkedHashMap รักษาลำดับล่าสุดก่อน (rows เรียงมาจาก DAO แล้ว)
+        Map<String, Map<String, Object>> byBatch = new LinkedHashMap<String, Map<String, Object>>();
+        if (stockRows == null) {
             return new ArrayList<Map<String, Object>>();
         }
 
-        for (Map<String, Object> row : inRows) {
+        for (Stock row : stockRows) {
             if (row == null) {
                 continue;
             }
-            String receiptKey = str(row.get("good_receipt_id"));
-            Map<String, Object> entry = byReceipt.get(receiptKey);
+            String batchKey = str(row.getWarehouseId()) + "|" + str(row.getTimeCreate()) + "|" + str(row.getActionRef());
+            Map<String, Object> entry = byBatch.get(batchKey);
             if (entry == null) {
                 entry = new HashMap<String, Object>();
-                entry.put("doc_no", str(row.get("gr_ref")));
-                entry.put("date", formatDateTime(row.get("receive_date")));
-                String userId = str(row.get("recipient_user"));
+                entry.put("doc_no", str(row.getActionRef()));
+                entry.put("date", formatDateTime(row.getTimeCreate()));
+                String userId = str(row.getUserCreate());
                 entry.put("user", resolveName(userNameById, userId));
-                String whKey = str(row.get("warehouse_id"));
+                String whKey = str(row.getWarehouseId());
                 entry.put("warehouse", resolveName(whNameById, whKey));
-                entry.put("unit", str(row.get("unit")));
+                entry.put("unit", str(row.getUnit()));
                 entry.put("details", new ArrayList<Map<String, Object>>());
                 entry.put("_total", Double.valueOf(0d));
-                byReceipt.put(receiptKey, entry);
+                byBatch.put(batchKey, entry);
             }
 
-            double amt = toDouble(row.get("amount"));
+            double amt = (row.getAmountUnit() != null) ? row.getAmountUnit().doubleValue() : 0d;
             entry.put("_total", Double.valueOf(toDouble(entry.get("_total")) + amt));
-            if (isBlank(str(entry.get("unit"))) && !isBlank(str(row.get("unit")))) {
-                entry.put("unit", str(row.get("unit")));
+            if (isBlank(str(entry.get("unit"))) && !isBlank(str(row.getUnit()))) {
+                entry.put("unit", str(row.getUnit()));
             }
 
-            String subKey = str(row.get("sub_product_id"));
+            String subKey = str(row.getProductId());
             Map<String, Object> detail = new HashMap<String, Object>();
             detail.put("size", resolveName(subNameById, subKey));
             detail.put("amount", formatQty(amt));
@@ -494,7 +1583,7 @@ public class ProductAction extends ActionSupport {
 
         // แปลงยอดรวมเป็น string สวยๆ แล้วลบ field ชั่วคราวออก
         List<Map<String, Object>> result = new ArrayList<Map<String, Object>>();
-        for (Map<String, Object> entry : byReceipt.values()) {
+        for (Map<String, Object> entry : byBatch.values()) {
             entry.put("amount", formatQty(toDouble(entry.get("_total"))));
             entry.remove("_total");
             result.add(entry);
@@ -505,22 +1594,22 @@ public class ProductAction extends ActionSupport {
     /**
      * ยอดคงเหลือเป็นกลุ่มตาม sub product (ไซซ์) เรียงตาม sequence
      *  - total : ยอดคงเหลือจริง ดึงจาก stock.reconcile (แถวล่าสุด)
-     *  - rows  : รายการแยกคลังจากประวัติรับเข้า (good_receipt) - warehouse จาก WarehouseDAO เหมือนเดิม
+     *  - rows  : รายการแยกคลังจากตาราง stock โดยตรง (ผลรวม amount_unit ต่อคลัง) - warehouse จาก WarehouseDAO เหมือนเดิม
      * โครงสร้าง: [{ key, label, total, rows:[{warehouse, amount}] }]
      */
     private List<Map<String, Object>> buildBalances(List<Product> subProducts, List<Warehouse> warehouses,
-            List<Map<String, Object>> inRows, Map<String, String> whNameById, Map<String, Double> reconcileBySub) {
+            List<Stock> stockRows, Map<String, String> whNameById, Map<String, Double> reconcileBySub) {
 
         // subKey -> (whKey -> ยอดรับเข้ารวม) สำหรับรายการแยกคลัง
         Map<String, Map<String, Double>> bySubWh = new HashMap<String, Map<String, Double>>();
-        if (inRows != null) {
-            for (Map<String, Object> row : inRows) {
+        if (stockRows != null) {
+            for (Stock row : stockRows) {
                 if (row == null) {
                     continue;
                 }
-                String subKey = str(row.get("sub_product_id"));
-                String whKey = str(row.get("warehouse_id"));
-                double amt = toDouble(row.get("amount"));
+                String subKey = str(row.getProductId());
+                String whKey = str(row.getWarehouseId());
+                double amt = (row.getAmountUnit() != null) ? row.getAmountUnit().doubleValue() : 0d;
 
                 Map<String, Double> whMap = bySubWh.get(subKey);
                 if (whMap == null) {
@@ -746,23 +1835,32 @@ public class ProductAction extends ActionSupport {
                 log.warn("stockConsSave: missing required fields");
                 return ERROR;
             }
+            // Item Type = Equipment ('1') บังคับเลือก Equipment Type ต่อ (เหมือน required ฝั่ง client)
+            boolean isEquipmentType = "1".equals(productType.trim());
+            if (isEquipmentType && isBlank(equipmentType)) {
+                log.warn("stockConsSave: equipmentType is required when productType=1");
+                return ERROR;
+            }
 
             java.sql.Timestamp now = DateUtil.getCurrentTime();
-            Integer newProductId = productDAO.getMaxId() + 1;
 
             Product product = new Product();
-            log.debug(newProductId);
-            product.setProductId(newProductId);
+            // ไม่ต้องตั้ง productId เอง - product_id เป็น AUTO_INCREMENT แล้ว (10/08/2026)
+            // Hibernate จะได้ค่าที่ DB ออกให้กลับมาทันทีหลัง save() (GenerationType.IDENTITY)
             product.setProductNo(productNo.trim());
             product.setProductName(productName.trim());
             product.setProductType(productType.trim());
+            // ค่า default ของ equipment type - มีความหมายเฉพาะตอน productType = '1' เท่านั้น
+            product.setEquipmentType(isEquipmentType ? equipmentType.trim() : null);
             product.setDescription(trimToNull(description));
             // product แม่ (top-level) ให้ parent_product_id = '0' สอดคล้องกับ findAllConsWithSubProducts()
             product.setParentProductId("0");
             product.setSequence("0");
-            // สร้างใหม่ให้ active โดยปริยาย (หน้า add ยังไม่มี toggle)
-            product.setActive("0".equals(active) ? "0" : "1");
-            product.setSubProductActive("1");
+            // สร้างใหม่ให้ active/sub_product_active default = "0" เสมอ (หน้า add ยังไม่มี toggle ให้เลือก
+            // ต้องมาเปิดทีหลังจากหน้า stock_cons_list/stock_item_edit_fragment เอง)
+            // ใช้ pattern เดียวกับ stockConsUpdate() ("1".equals(x) ? "1" : "0") กันพลาดค่า default สลับกัน
+            product.setActive("1".equals(active) ? "1" : "0");
+            product.setSubProductActive("1".equals(subProductActive) ? "1" : "0");
             product.setUserCreate(onlineUser.getId());
             product.setTimeCreate(now);
             product.setUserUpdate(onlineUser.getId());
@@ -771,7 +1869,8 @@ public class ProductAction extends ActionSupport {
             productDAO.save(product);
 
             // ตั้งค่าให้ result redirect ไป stock_cons_edit?productId=${productId} ได้
-            this.productId = newProductId;
+            // (product.getProductId() มีค่าแล้วหลัง save เพราะใช้ IDENTITY generator)
+            this.productId = product.getProductId();
 
             return SUCCESS;
         } catch (Exception e) {
@@ -800,6 +1899,12 @@ public class ProductAction extends ActionSupport {
                 log.warn("stockConsUpdate: missing required fields, productId=" + productId);
                 return writeJson(false, "missing required fields");
             }
+            // Item Type = Equipment ('1') บังคับเลือก Equipment Type ต่อ (เหมือน stockConsSave)
+            boolean isEquipmentType = "1".equals(productType.trim());
+            if (isEquipmentType && isBlank(equipmentType)) {
+                log.warn("stockConsUpdate: equipmentType is required when productType=1, productId=" + productId);
+                return writeJson(false, "กรุณาเลือก Equipment Type");
+            }
 
             Product product = productDAO.findById(productId);
             if (product == null) {
@@ -807,7 +1912,7 @@ public class ProductAction extends ActionSupport {
                 return writeJson(false, "product not found");
             }
             // กันการยิง id ของ product ประเภทอื่น หรือ sub-product เข้ามาแก้ที่หน้านี้
-            if (!PRODUCT_TYPE_CONSUMABLES.equals(product.getProductType())) {
+            if (!isEditableStockItem(product)) {
                 log.warn("stockConsUpdate: not a consumable, productId=" + productId
                         + ", productType=" + product.getProductType());
                 return writeJson(false, "invalid product");
@@ -816,6 +1921,8 @@ public class ProductAction extends ActionSupport {
             product.setProductNo(productNo.trim());
             product.setProductName(productName.trim());
             product.setProductType(productType.trim());
+            // ค่ามีความหมายเฉพาะตอน productType = '1' เท่านั้น (เหมือน stockConsSave)
+            product.setEquipmentType(isEquipmentType ? equipmentType.trim() : null);
             product.setDescription(trimToNull(description));
             // active มาจาก hidden ในฟอร์ม (toggle) - ส่งมาเสมอเป็น '1'/'0'
             if (active != null) {
@@ -830,6 +1937,76 @@ public class ProductAction extends ActionSupport {
         } catch (Exception e) {
             log.error("stockConsUpdate failed, productId=" + productId, e);
             return writeJson(false, "error");
+        }
+    }
+
+    /**
+     * ลบ product ตัวแม่พร้อม sub product / UOM ของมัน (ยิงจากปุ่มถังขยะในหน้า stock_cons_list)
+     * ใช้ได้ทั้ง Consumables / Accessory / Equipment เพราะเช็คแค่ product_type อยู่ใน STOCK_ITEM_TYPES
+     *
+     * ก่อนลบต้องเช็คว่ามีใครอ้างถึงอยู่ไหม (กันข้อมูลกำพร้า) - ถ้ามีให้ตอบ JSON แจ้งแหล่งที่อ้างถึง
+     * แหล่งที่เช็ค: mr (Material Request), stock (ประวัติเบิก-รับ), good_receipt_detail (ใบรับของ),
+     * equipment (เครื่องจริงที่ผูก product_id ไว้ - เฉพาะฝั่ง Equipment)
+     * ตอบกลับเป็น JSON เพื่อโชว์ SweetAlert โดยไม่ redirect หนีออกจากหน้า list
+     */
+    public String stockConsDelete() {
+        try {
+            User onlineUser = getOnlineUser();
+            if (onlineUser == null) {
+                log.warn("stockConsDelete: no online user in session");
+                return writeJson(false, "unauthorized");
+            }
+            if (productId == null) {
+                log.warn("stockConsDelete: productId is required");
+                return writeJson(false, "productId required");
+            }
+
+            Product product = productDAO.findById(productId);
+            if (product == null) {
+                log.warn("stockConsDelete: product not found, productId=" + productId);
+                return writeJson(false, "ไม่พบข้อมูลที่ต้องการลบ");
+            }
+            // กันการยิง id ของ sub-product หรือ product ประเภทอื่นเข้ามาลบผ่านปุ่มนี้
+            if (!isEditableStockItem(product)) {
+                log.warn("stockConsDelete: not deletable from this page, productId=" + productId
+                        + ", productType=" + product.getProductType());
+                return writeJson(false, "ไม่สามารถลบรายการนี้ได้");
+            }
+
+            List<Product> subProducts = productDAO.findByParentProductIds(
+                    Collections.singletonList(String.valueOf(productId)));
+            List<Integer> allIds = new ArrayList<Integer>();
+            allIds.add(productId);
+            if (subProducts != null) {
+                for (Product sub : subProducts) {
+                    if (sub != null && sub.getProductId() != null) {
+                        allIds.add(sub.getProductId());
+                    }
+                }
+            }
+
+            Map<String, Long> refs = productDAO.countReferences(allIds);
+            if (!refs.isEmpty()) {
+                StringBuilder message = new StringBuilder("ไม่สามารถลบได้ เนื่องจากมีการเรียกใช้งานอยู่ที่: ");
+                boolean first = true;
+                for (Map.Entry<String, Long> entry : refs.entrySet()) {
+                    if (!first) {
+                        message.append(", ");
+                    }
+                    message.append(entry.getKey()).append(" (").append(entry.getValue()).append(")");
+                    first = false;
+                }
+                log.warn("stockConsDelete: blocked by references, productId=" + productId
+                        + ", refs=" + refs);
+                return writeJson(false, message.toString());
+            }
+
+            productDAO.deleteWithChildren(productId);
+
+            return writeJson(true, "ลบข้อมูลสำเร็จ");
+        } catch (Exception e) {
+            log.error("stockConsDelete failed, productId=" + productId, e);
+            return writeJson(false, "เกิดข้อผิดพลาด ไม่สามารถลบข้อมูลได้");
         }
     }
 
@@ -849,7 +2026,7 @@ public class ProductAction extends ActionSupport {
                 return writeJson(false, "productId required");
             }
             Product parent = productDAO.findById(productId);
-            if (parent == null || !PRODUCT_TYPE_CONSUMABLES.equals(parent.getProductType())) {
+            if (parent == null || !isEditableStockItem(parent)) {
                 return writeJson(false, "product not found");
             }
 
@@ -861,6 +2038,35 @@ public class ProductAction extends ActionSupport {
             return writeJson(true, null);
         } catch (Exception e) {
             log.error("subProductActiveUpdate failed, productId=" + productId, e);
+            return writeJson(false, "error");
+        }
+    }
+
+    /**
+     * เปิด/ปิด active ของ product (Catalog MR ในหน้า list) - ยิงแบบ AJAX ตอบ JSON
+     */
+    public String productActiveUpdate() {
+        try {
+            User onlineUser = getOnlineUser();
+            if (onlineUser == null) {
+                return writeJson(false, "unauthorized");
+            }
+            if (productId == null) {
+                return writeJson(false, "productId required");
+            }
+            Product product = productDAO.findById(productId);
+            if (product == null || !isEditableStockItem(product)) {
+                return writeJson(false, "product not found");
+            }
+
+            product.setActive("1".equals(active) ? "1" : "0");
+            product.setUserUpdate(onlineUser.getId());
+            product.setTimeUpdate(DateUtil.getCurrentTime());
+            productDAO.update(product);
+
+            return writeJson(true, null);
+        } catch (Exception e) {
+            log.error("productActiveUpdate failed, productId=" + productId, e);
             return writeJson(false, "error");
         }
     }
@@ -880,7 +2086,7 @@ public class ProductAction extends ActionSupport {
                 return ERROR;
             }
             Product parent = productDAO.findById(productId);
-            if (parent == null || !PRODUCT_TYPE_CONSUMABLES.equals(parent.getProductType())) {
+            if (parent == null || !isEditableStockItem(parent)) {
                 log.warn("stockConsUomSave: parent not found/not consumable, productId=" + productId);
                 return ERROR;
             }
@@ -1026,13 +2232,11 @@ public class ProductAction extends ActionSupport {
                 return ERROR;
             }
             Product parent = productDAO.findById(parentId);
-            if (parent == null || !PRODUCT_TYPE_CONSUMABLES.equals(parent.getProductType())) {
+            if (parent == null || !isEditableStockItem(parent)) {
                 log.warn("stockConsSubSave: parent not found/not consumable, parentId=" + parentId);
                 return ERROR;
             }
-
             java.sql.Timestamp now = DateUtil.getCurrentTime();
-            Integer newProductId = productDAO.getMaxId() + 1;
 
             // sequence ต่อท้ายของเดิม
             List<Product> siblings = productDAO.findByParentProductIds(
@@ -1040,7 +2244,7 @@ public class ProductAction extends ActionSupport {
             int nextSeq = (siblings != null) ? siblings.size() : 0;
 
             Product sub = new Product();
-            sub.setProductId(newProductId);
+            // ไม่ต้องตั้ง productId เอง - product_id เป็น AUTO_INCREMENT แล้ว (10/08/2026)
             sub.setProductNo(productNo.trim());
             sub.setProductName(productName.trim());
             // sub product ยึด product_type เดียวกับตัวแม่
@@ -1235,6 +2439,29 @@ public class ProductAction extends ActionSupport {
         } catch (NumberFormatException e) {
             return Integer.MAX_VALUE;
         }
+    }
+
+    /**
+     * true เมื่อ product เป็น item ระดับบนสุด (parent_product_id = '0' ไม่ใช่ sub-product)
+     * และ product_type อยู่ในกลุ่มที่จัดการในหน้า stock (1/2/3)
+     * ใช้กันการยิง id ของ sub-product หรือ product ประเภทอื่นเข้ามาที่หน้า edit/balance
+     */
+    private boolean isEditableStockItem(Product p) {
+        return p != null
+                && p.getProductType() != null
+                && STOCK_ITEM_TYPES.contains(p.getProductType().trim())
+                && "0".equals(p.getParentProductId());
+    }
+
+    /**
+     * true เมื่อ product เป็น Equipment (product_type = '1')
+     * ใช้เช็คก่อนโชว์/บันทึกส่วนที่เฉพาะ Equipment เท่านั้น เช่นผูกเครื่องจริง (equipment table)
+     * เข้ากับ sub product - Equipment มี sub product ได้เหมือน type อื่น (กลับมาใช้อีกครั้ง 25/08/2026)
+     */
+    private boolean isEquipmentProduct(Product p) {
+        return p != null
+                && p.getProductType() != null
+                && "1".equals(p.getProductType().trim());
     }
 
     private boolean isBlank(String value) {

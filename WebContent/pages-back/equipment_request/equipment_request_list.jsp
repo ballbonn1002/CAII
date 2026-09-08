@@ -1,7 +1,7 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
-
+<%@ taglib uri="/WEB-INF/tlds/permission.tld" prefix="perm"%>
 <fmt:setLocale value="en_US" />
 
 <!DOCTYPE html>
@@ -256,7 +256,7 @@ color: var(--bs-primary);
 											<div class="d-flex col-xl-6 gap-4" style="margin: auto;">Equipment Request List </div>
 											<div class="d-flex col-xl-6 gap-4 justify-content-end">
 												<a href="${createUrl}" class="btn btn-success btn-sm px-4"
-													data-route="my_travelA"> <i
+													data-route="my_travelA" id="btn_create"> <i
 													class="ki-duotone ki-plus fs-4 me-2"> <span
 														class="path1"></span><span class="path2"></span>
 												</i> Create
@@ -880,12 +880,26 @@ color: var(--bs-primary);
 																	</c:choose></td>
 																<td class="text-end">
 																	<div class="d-flex justify-content-end gap-2">
-																	<button  data-note="btn edit" onclick="gotoeditpage(`${row.mr_id}`)" title="Edit" class="btn btn-icon btn-sm btn-light-primary">
+																	
+																	<c:if test="${onlineUser.roleId == 'admin'}">
+																		<button  data-note="btn edit" onclick="gotoeditpage(`${row.mr_id}`,`${onlineUser.roleId}`)" title="Edit" class="btn btn-icon btn-sm btn-light-info">
+																			<i class="ki-duotone ki-document fs-5">
+																				<span class="path1"></span>
+																				<span class="path2"></span>
+																			</i>
+																		</button >
+																	</c:if>
+																	
+																	<c:if test="${onlineUser.roleId != 'admin'}">
+																	<button  data-note="btn edit" onclick="gotoeditpage(`${row.mr_id}`,`${onlineUser.roleId}`)" title="Edit" class="btn btn-icon btn-sm btn-light-primary">
 																			<i class="ki-duotone ki-pencil fs-5">
 																				<span class="path1"></span>
 																				<span class="path2"></span>
 																			</i>
-																		</button >										
+																		</button>	
+																	</c:if>		
+																	
+																	<c:if test="${onlineUser.roleId != 'admin'}">							
 																		<button type="button"
 																			class="btn btn-icon btn-sm btn-light-danger btn-delete-expense"
 																			data-id="${row.mr_id}" title="Delete">
@@ -894,6 +908,8 @@ color: var(--bs-primary);
 																				class="path3"></span><span class="path4"></span>
 																			</i>
 																		</button>
+																	</c:if>	
+																	
 																	</div>
 																</td>
 															</tr>
@@ -1608,8 +1624,12 @@ color: var(--bs-primary);
 	    });
 	}
 	
-	function gotoeditpage(id){
-		window.location.replace("equipment_request_update?id="+id);
+	function gotoeditpage(id,role){
+		if(role == 'admin'){
+			window.location.replace("equipment_request_admin?id="+id);
+		}else{
+			window.location.replace("equipment_request_update?id="+id);
+		}
 	}
 
 	document.addEventListener('DOMContentLoaded', function () {
@@ -1684,6 +1704,10 @@ color: var(--bs-primary);
 	var fmEnd   = (serverEndDate && serverEndDate.trim().length > 0) ? moment(serverEndDate, 'D MMM YYYY') : moment('31 Dec ' + currentYear, 'D MMM YYYY');
 
 	$(document).ready(function() {
+		
+		<perm:permission object="admin">
+		$('#btn_create').attr('style', 'display: none !important')       
+		</perm:permission>
 		
 		
 		if ($('#kt_daterangepicker_fm').data('daterangepicker')) {

@@ -672,6 +672,7 @@ public class CompanyAction extends ActionSupport {
 
 		ServletContext context = request.getServletContext();
 		String fileServerPath = context.getRealPath("/");
+		System.out.println("File server path: " + fileServerPath);
 		String originalFileName = fileName;
 
 		FileUtil.upload(file, fileServerPath + filePath, maxId + "_" + originalFileName);

@@ -6,6 +6,7 @@ import java.lang.reflect.Type;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -41,6 +42,7 @@ import com.cubesofttech.model.FileUpload;
 import com.cubesofttech.model.EquipmentType;
 
 import com.cubesofttech.model.User;
+import com.cubesofttech.service.FileAttachmentService;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
@@ -61,7 +63,10 @@ public class EquipmentAction extends ActionSupport {
 	
 	@Autowired
 	private FileUploadDAO fileuploadDAO;
-	
+
+	@Autowired
+	private FileAttachmentService fileAttachmentService;
+
 	@Autowired
 	private BorrowDAO borrowDAO;
 	
@@ -74,6 +79,8 @@ public class EquipmentAction extends ActionSupport {
 	
 	private String itemNo;
 	private String type;
+	// ---- product ที่เครื่องนี้อ้างอิงเป็น catalog item (FK ไป product.product_id, N equipment : 1 product) ----
+	private String productId;
 	private String name;
 	private String serialNo;
 	private int amount;
@@ -152,13 +159,8 @@ public class EquipmentAction extends ActionSupport {
 
 	        if (ur != null) {
 	            User u = userDAO.findById(ur.getId()); 
-	            
-	            log.debug("User ID from Session: " + ur.getId());
-	            log.debug("User found in DB: " + (u != null));
-	            
 	            if (u != null) {
 	                String sig = u.getPathSignature();
-	                log.debug("PathSignature from DB: [" + sig + "]");
 	                
 	                hasSignature = sig != null && !sig.trim().isEmpty() && !"null".equalsIgnoreCase(sig.trim());
 	            }
@@ -212,35 +214,19 @@ public class EquipmentAction extends ActionSupport {
 			int nextEqId = equipmentDAO.getMaxId() + 1;
 			
 			if(image != null) {
-				ServletContext context = request.getServletContext();
-				String fileServerPath = context.getRealPath("/");
-				String uploadPath = fileServerPath + UPLOAD_PATH;
-				
-				int maxId = fileuploadDAO.getMaxId() +1 ;
-				String fName = maxId + "_" + imageFileName;
-				
-				FileUtil.upload(image, uploadPath, fName);
-				
-				String[] fullFileName = imageFileName.split("[.]");
-				String uploadFileName = fullFileName[0];
-				String uploadFileType = fullFileName[1];
-				
-				FileUpload f = new FileUpload();
-				f.setFileId(maxId);
-				f.setName(uploadFileName);
-				f.setPath(UPLOAD_PATH + fName);
-				f.setSize(FileUtil.getFileSize(image.length()));
-				f.setTimeCreate(timestamp);
-				f.setType(uploadFileType);
-				f.setUserCreate(user.getId());
-				f.setUserId(user.getId());
-				f.setPage("equipment");
-				f.setPageId(String.valueOf(nextEqId));
-				fileuploadDAO.save(f);
-				
-				e.setImage(UPLOAD_PATH + fName);
+				List<FileUpload> savedFiles = fileAttachmentService.attach(
+					Arrays.asList(image),
+					Arrays.asList(imageFileName),
+					"equipment",
+					String.valueOf(nextEqId),
+					user.getId(),
+					request.getServletContext().getRealPath("/")
+				);
+				if (savedFiles != null && !savedFiles.isEmpty()) {
+					e.setImage(savedFiles.get(0).getPath());
+				}
 			}
-			
+
 			e.setAmount(amount);
 			e.setBattery(battery);
 			e.setDetail(detail);
@@ -269,7 +255,10 @@ public class EquipmentAction extends ActionSupport {
 	            e.setTimeCreate(timestamp);
 	        }
 			e.setType(type);
+			e.setProductId((productId != null && !productId.trim().isEmpty()) ? productId.trim() : null);
 			e.setUserCreate(user.getId());
+			e.setUserUpdate(user.getId());
+			e.setTimeUpdate(DateUtil.getCurrentTime());
 			e.setWindows(windows);
 			e.setWifiaddress(wifiaddress);
 			e.setLanaddress(lanaddress);
@@ -320,35 +309,19 @@ public class EquipmentAction extends ActionSupport {
 			String oldStatus = e.getStatus();
 			
 			if(image != null) {
-				ServletContext context = request.getServletContext();
-				String fileServerPath = context.getRealPath("/");
-				String uploadPath = fileServerPath + UPLOAD_PATH;
-				
-				int maxId = fileuploadDAO.getMaxId() +1 ;
-				String fName = maxId + "_" + imageFileName;
-				
-				FileUtil.upload(image, uploadPath, fName);
-				
-				String[] fullFileName = imageFileName.split("[.]");
-				String uploadFileName = fullFileName[0];
-				String uploadFileType = fullFileName[1];
-				
-				FileUpload f = new FileUpload();
-				f.setFileId(maxId);
-				f.setName(uploadFileName);
-				f.setPath(UPLOAD_PATH + fName);
-				f.setSize(FileUtil.getFileSize(image.length()));
-				f.setTimeCreate(timestamp);
-				f.setType(uploadFileType);
-				f.setUserCreate(user.getId());
-				f.setUserId(user.getId());
-				f.setPage("equipment");
-				f.setPageId(String.valueOf(e.getEquipmentId()));
-				fileuploadDAO.save(f);
-				
-				e.setImage(UPLOAD_PATH + fName);
+				List<FileUpload> savedFiles = fileAttachmentService.attach(
+					Arrays.asList(image),
+					Arrays.asList(imageFileName),
+					"equipment",
+					String.valueOf(e.getEquipmentId()),
+					user.getId(),
+					request.getServletContext().getRealPath("/")
+				);
+				if (savedFiles != null && !savedFiles.isEmpty()) {
+					e.setImage(savedFiles.get(0).getPath());
+				}
 			}
-			
+
 			e.setAmount(amount);
 			e.setBattery(battery);
 			e.setDetail(detail);
@@ -384,6 +357,7 @@ public class EquipmentAction extends ActionSupport {
 	            e.setTimeCreate(oldTimeCreate);
 	        }
 			e.setType(type);
+			e.setProductId((productId != null && !productId.trim().isEmpty()) ? productId.trim() : null);
 			e.setWifiaddress(wifiaddress);
 			e.setLanaddress(lanaddress);
 			e.setUserCreate(user.getId());
@@ -887,6 +861,14 @@ public class EquipmentAction extends ActionSupport {
 
 	public void setType(String type) {
 		this.type = type;
+	}
+
+	public String getProductId() {
+		return productId;
+	}
+
+	public void setProductId(String productId) {
+		this.productId = productId;
 	}
 
 	public String getName() {

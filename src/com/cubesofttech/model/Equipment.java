@@ -118,7 +118,20 @@ public class Equipment implements Serializable {
     private String display;
     @Column(name = "status_log")
     private String statusLog;
+    /**
+     * catalog item ที่เครื่องนี้สังกัด - FK ไป product.product_id (N equipment : 1 product)
+     * เป็น String เพราะคอลัมน์ใน DB เป็น varchar(32) ตามแบบเดียวกับ
+     * unit_of_measure.product_id / stock.product_id ที่มีอยู่เดิม
+     */
+    @Column(name = "product_id")
+    private String productId;
 
+	public String getProductId() {
+		return productId;
+	}
+	public void setProductId(String productId) {
+		this.productId = productId;
+	}
 	public String getStatusLog() {
 		return statusLog;
 	}

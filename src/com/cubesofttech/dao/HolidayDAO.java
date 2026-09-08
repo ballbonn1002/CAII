@@ -1,5 +1,6 @@
 package com.cubesofttech.dao;
 import java.sql.Timestamp;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -30,6 +31,8 @@ public interface HolidayDAO {
 
 	public List<Holiday> findAllInMonth() throws Exception;
 	List<Holiday> findAll2years() throws Exception;
+	
+	public boolean isHoliday(Date targetDate) throws Exception;
 
 //	public List<Map<String, Object>> findByDate(java.sql.Date keyword) throws Exception; //ÃƒÂ Ã‚Â¸Ã¢â‚¬Å¾ÃƒÂ Ã‚Â¹Ã¢â‚¬Â°ÃƒÂ Ã‚Â¸Ã¢â€žÂ¢ÃƒÂ Ã‚Â¸Ã‚Â«ÃƒÂ Ã‚Â¸Ã‚Â²ÃƒÂ Ã‚Â¸Ã‚Â§ÃƒÂ Ã‚Â¸Ã‚Â±ÃƒÂ Ã‚Â¸Ã¢â€žÂ¢ÃƒÂ Ã‚Â¸Ã¢â‚¬â€�ÃƒÂ Ã‚Â¸Ã‚ÂµÃƒÂ Ã‚Â¹Ã‹â€ 
 //	public List<Map<String, Object>> findByDateStr(String keyword) throws Exception;

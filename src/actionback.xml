@@ -1054,6 +1054,17 @@
 			<result name="error">/index.jsp</result>
 		</action>
 
+		<!-- Doc Status  -->
+		<action name="doc_status_list"
+			class="com.cubesofttech.action.DocStatusAction" method="list">
+			<result name="success" type="tiles">docStatusList</result>
+			<result name="error">/index.jsp</result>
+		</action>
+
+		<action name="doc_status_update"
+			class="com.cubesofttech.action.DocStatusAction" method="performEdit">
+		</action>
+
 		<!-- Employee Profile Edit User Security -->
 		<action name="admin_update_password"
 			class="com.cubesofttech.action.UserAction"
@@ -1810,6 +1821,125 @@
 			class="com.cubesofttech.action.WarehouseAction" method="delete">
 			<result name="success" type="json"/>
 		</action>
+		
+		<!-- ========================== Cube Token ============================== -->
+		
+		<!-- Cube Token Setting -->
+		<action name="tokenSettings"
+			class="com.cubesofttech.action.CubeTokenAction" method="cubeTokenSettingPage">
+			<result name="success" type="tiles">cubeTokenSetting</result>
+			<result name="login">/index.jsp</result>
+			<result name="error">/pages-back/common/error/error_500.jsp</result>
+		</action>
+		
+		<action name="updateTokenSetting"
+        	class="com.cubesofttech.action.CubeTokenAction" method="updateTokenSetting">
+		    <result type="json">
+		        <param name="root">result</param>
+		    </result>
+		</action>
+        
+        <!-- My Cube Token -->
+		<action name="myCubeToken"
+			class="com.cubesofttech.action.CubeTokenAction" method="myCubeTokenPage">
+			<result name="success" type="tiles">myCubeToken</result>
+			<result name="login" type="redirect">/index.jsp</result>
+			<result name="error">/pages-back/common/error/error_500.jsp</result>
+		</action>
+		
+		<action name="getTokenAvailableYears"
+        class="com.cubesofttech.action.CubeTokenAction"
+        method="getTokenAvailableYears"/>
+        
+        <action name="tokenSummary"
+        class="com.cubesofttech.action.CubeTokenAction"
+        method="getTokenSummary"/>
+        
+        <action name="tokenTransaction"
+        class="com.cubesofttech.action.CubeTokenAction"
+        method="listTokenHistory" />
+        
+        <action name="exchangeMonthlyToken"
+        class="com.cubesofttech.action.CubeTokenAction"
+        method="exchangeMonthlyToken" />
+        
+         <!-- Cube Token Management -->
+		<action name="cubeTokenManagement"
+			class="com.cubesofttech.action.CubeTokenAction" method="cubetokenManagementPage">
+			<result name="success" type="tiles">cubeTokenMangement</result>
+			<result name="login" type="redirect">/index.jsp</result>
+			<result name="error">/pages-back/common/error/error_500.jsp</result>
+		</action>
+		
+		<action name="returnCubeTokenPage"
+			class="com.cubesofttech.action.CubeTokenAction" method="returnCubeTokenPage">
+			<result name="success" type="tiles">returnCubeToken</result>
+			<result name="login" type="redirect">/index.jsp</result>
+			<result name="error">/pages-back/common/error/error_500.jsp</result>
+		</action>
+		
+		<action name="getTokenSummaryForAllUsers"
+        class="com.cubesofttech.action.CubeTokenAction"
+        method="getTokenSummaryForAllUsers" />
+        
+        <action name="rewardCubeToken"
+        class="com.cubesofttech.action.CubeTokenAction"
+        method="rewardCubeToken" />
+        
+        <action name="returnCubeToken"
+        class="com.cubesofttech.action.CubeTokenAction"
+        method="returnCubeToken" />
+        
+        
+        <!-- Privilege Management -->
+		<action name="privilegeMangementPage"
+			class="com.cubesofttech.action.CubeTokenAction" method="privilegeMangementPage">
+			<result name="success" type="tiles">privilegeMangement</result>
+			<result name="error">/pages-back/common/error/error_500.jsp</result>
+		</action>
+		
+		<action name="reloadRewardItemTable"
+	        class="com.cubesofttech.action.CubeTokenAction"
+	        method="reloadRewardItemTable">
+	
+		    <result name="success" type="dispatcher">
+		        /pages-back/cube_token/itemTableBody.jsp
+		    </result>
+		
+		    <result name="error">
+		        /pages-back/common/error/error_500.jsp
+		    </result>
+		
+		</action>
+		
+		<!-- Create Reward Item -->
+		<action name="createRewardItem"
+			class="com.cubesofttech.action.CubeTokenAction" method="createRewardItem">
+			<result name="success" type="tiles">createRewardItem</result>
+			<result name="error">/pages-back/common/error/error_500.jsp</result>
+		</action>
+		
+		<action name="saveRewardItem"
+        class="com.cubesofttech.action.CubeTokenAction"
+        method="saveRewardItem" />
+        
+        <action name="editRewardItem"
+			class="com.cubesofttech.action.CubeTokenAction" method="editRewardItem">
+			<result name="success" type="tiles">editRewardItem</result>
+			<result name="error">/pages-back/common/error/error_500.jsp</result>
+		</action>
+		
+		<action name="updateRewardItem"
+        class="com.cubesofttech.action.CubeTokenAction"
+        method="updateRewardItem" />
+        
+        <action name="updateRewardItemActiveFlag"
+        class="com.cubesofttech.action.CubeTokenAction"
+        method="updateRewardItemActiveFlag" />
+        
+        <action name="deleteRewardItem"
+        class="com.cubesofttech.action.CubeTokenAction"
+        method="deleteRewardItem" />
 
 		<!-- ========================== Work Log ============================== -->
 		<action name="work_log"
@@ -1907,7 +2037,6 @@
 			<result name="preview" type="redirectAction">article_preview?articleId=${articleId}
 			</result>
 			<result name="error">/index.jsp</result>
-			<result name="input">/article_add.jsp</result>
 		</action>
 
 		<action name="article_perform_update"
@@ -1934,6 +2063,10 @@
 		<action name="DeleteImgFormEditor"
 			class="com.cubesofttech.action.ArticleAction"
 			method="DeleteImgFormEditor">
+		</action>
+
+		<action name="check_page_url" 
+			class="com.cubesofttech.action.ArticleAction" method="checkPageUrl">
 		</action>
 
 		<!-- ========================== Footer Menu ============================== -->
@@ -2120,19 +2253,19 @@
 
 		<!-- PO - Purchase Order -->
 		<action name="purchase_order_list"
-			class="com.cubesofttech.action.PurchaseOrderAction" method="purchase_order_list">
+			class="com.cubesofttech.action.PurchaseOrderAction" method="purchaseOrderList">
 			<result name="success" type="tiles">purchaseOrderList</result>
 			<result name="error">/index.jsp</result>
 		</action>
 		
 		<action name="purchase_order_add"
-			class="com.cubesofttech.action.PurchaseOrderAction" method="purchase_order_add">
+			class="com.cubesofttech.action.PurchaseOrderAction" method="purchaseOrderAdd">
 			<result name="success" type="tiles">purchaseOrderAdd</result>
 			<result name="error">/index.jsp</result>
 		</action>
 		
 		<action name="purchase_order_edit"
-			class="com.cubesofttech.action.PurchaseOrderAction" method="purchase_order_edit">
+			class="com.cubesofttech.action.PurchaseOrderAction" method="purchaseOrderEdit">
 			<result name="success" type="tiles">purchaseOrderDetail</result>
 			<result name="error">/index.jsp</result>
 		</action>
@@ -2158,19 +2291,19 @@
 		</action>
 		
 		<action name="save_po"
-		    class="com.cubesofttech.action.PurchaseOrderAction" method="save_po">
+		    class="com.cubesofttech.action.PurchaseOrderAction" method="savePo">
 		    <result name="success" type="tiles">purchaseOrderList</result>
 		    <result name="error">/index.jsp</result>
 		</action>
 		
 		<action name="po_perform_delete"
-			class="com.cubesofttech.action.PurchaseOrderAction" method="po_perform_delete">
+			class="com.cubesofttech.action.PurchaseOrderAction" method="poPerformDelete">
 			<result name="success" type="redirect">purchase_order_list</result>
 		    <result name="error">/index.jsp</result>
 		</action>
 
 		<action name="update_po"
-		    class="com.cubesofttech.action.PurchaseOrderAction" method="update_po">
+		    class="com.cubesofttech.action.PurchaseOrderAction" method="updatePo">
 		    <result name="success" type="tiles">purchaseOrderList</result>
 		    <result name="error">/index.jsp</result>
 		</action>
@@ -2180,42 +2313,22 @@
 		</action>
 
 		<action name="delete_po_detail"
-			class="com.cubesofttech.action.PurchaseOrderAction" method="delete_po_detail">
+			class="com.cubesofttech.action.PurchaseOrderAction" method="deletePoDetail">
 		</action>
 
 		<action name="update_po_detail"
-			class="com.cubesofttech.action.PurchaseOrderAction" method="update_po_detail">
+			class="com.cubesofttech.action.PurchaseOrderAction" method="updatePoDetail">
 		</action>
 
 		<action name="confirm_po_sign"
-			class="com.cubesofttech.action.PurchaseOrderAction" method="confirm_po_sign">
+			class="com.cubesofttech.action.PurchaseOrderAction" method="confirmPoSign">
 		</action>
 		
-		<!-- Item Catalog -->
-		<action name="item_catalog"
-			class="com.cubesofttech.action.ItemCatalogAction" method="item_catalog">
-			<result name="success" type="tiles">itemCatalog</result>
-			<result name="error">/index.jsp</result>
-		</action>
-		
-		<action name="catalog_equipment_save"
-		    class="com.cubesofttech.action.ItemCatalogAction" method="catalog_equipment_save">
-		    <result name="success" type="tiles">itemCatalog</result>
-		    <result name="error">/index.jsp</result>
-		</action>
-		
-		<action name="catalog_equipment_delete"
-			class="com.cubesofttech.action.ItemCatalogAction" method="catalog_equipment_delete">
-			<result name="success" type="redirectAction">item_catalog</result>
-		    <result name="error">/index.jsp</result>
-		</action>
-		
-		<action name="catalog_consumables_update"
-		    class="com.cubesofttech.action.ItemCatalogAction" method="catalog_consumables_update">
-		    <result name="success" type="json"/>
-		    <result name="error">/index.jsp</result>
+		<action name="delete_po_attachment"
+		    class="com.cubesofttech.action.PurchaseOrderAction" method="deletePoAttachment">
 		</action>
 
+		<!-- MR -->
 		<action name="equipment_request_list" 
 		class="com.cubesofttech.action.EquipmentRequestAction" method="myEquipmentRequest">
 		    <result name="success" type="tiles">equipment_request_list</result>
@@ -2225,6 +2338,12 @@
 		<action name="equipment_request_listdelete" 
 		class="com.cubesofttech.action.EquipmentRequestAction" method="EquipmentDelete">
 		    <result name="success" type="tiles">equipment_request_listdelete</result>
+		    <result name="error">/index.jsp</result>
+		    <result name="login" type="redirect">/index.jsp</result>
+		</action>
+		<action name="equipment_request_updatestatus" 
+		class="com.cubesofttech.action.EquipmentRequestAction" method="updateStatus">
+		    <result name="success" type="tiles">equipment_request_updatestatus</result>
 		    <result name="error">/index.jsp</result>
 		    <result name="login" type="redirect">/index.jsp</result>
 		</action>
@@ -2242,12 +2361,25 @@
 			<result name="error">/index.jsp</result>
 		</action>
 		
+		<action name="equipment_request_admin"
+			class="com.cubesofttech.action.EquipmentRequestAction"
+			method="EquipmentPreview">
+			<result name="success" type="tiles">equipment_request_admin</result>
+			<result name="error">/index.jsp</result>
+		</action>
+		
 		
 		<action name="equipment_request_save"
 		    class="com.cubesofttech.action.EquipmentRequestAction" method="equipment_request_save">
 		    <result name="success" type="tiles">equipment_request_save</result>
 		    <result name="error">/index.jsp</result>
 		</action>
+		
+		<action name="equipment_request_signature"
+		    class="com.cubesofttech.action.UserAction" method="update_my_profile">
+		    <result name="error">/index.jsp</result>
+		</action>
+		
 		<action name="getauto_id_load"
 		    class="com.cubesofttech.action.EquipmentRequestAction" method="getauto_id_load">
 		    <result name="success" type="tiles">getauto_id_load</result>
@@ -2264,6 +2396,19 @@
 		<action name="stock_cons_add"
 			class="com.cubesofttech.action.ProductAction" method="showStockAddPage">
 			<result name="success" type="tiles">stockConsAdd</result>
+			<result name="error">/index.jsp</result>
+		</action>
+
+		<!-- Stock By Product / Stock By Location - UI mockup เท่านั้น (ดู CLAUDE.md skill product-module) -->
+		<action name="stock_by_product_list"
+			class="com.cubesofttech.action.ProductAction" method="showStockByProductPage">
+			<result name="success" type="tiles">stockByProductList</result>
+			<result name="error">/index.jsp</result>
+		</action>
+
+		<action name="stock_by_location_list"
+			class="com.cubesofttech.action.ProductAction" method="showStockByLocationPage">
+			<result name="success" type="tiles">stockByLocationList</result>
 			<result name="error">/index.jsp</result>
 		</action>
 
@@ -2291,9 +2436,27 @@
 			<result name="error">/index.jsp</result>
 		</action>
 
+		<!-- Add Stock (บันทึกรับเข้า/Good Receipt) จากหน้า Stock Balance -->
+		<action name="stock_cons_stock_add"
+			class="com.cubesofttech.action.ProductAction" method="stockConsStockAdd">
+			<!-- PRG: redirect กลับหน้า Stock Balance กัน refresh แล้ว submit ซ้ำ -->
+			<result name="success" type="redirect">stock_cons_balance?productId=${productId}</result>
+			<result name="error">/index.jsp</result>
+		</action>
+
 		<!-- Stock: Sub product active toggle (AJAX, ตอบ JSON) -->
 		<action name="stock_cons_sub_active_update"
 			class="com.cubesofttech.action.ProductAction" method="subProductActiveUpdate">
+		</action>
+
+		<!-- Stock: product active toggle / Catalog MR (AJAX, ตอบ JSON) -->
+		<action name="stock_cons_active_update"
+			class="com.cubesofttech.action.ProductAction" method="productActiveUpdate">
+		</action>
+
+		<!-- Stock: ลบ product (AJAX, ตอบ JSON) - ใช้ร่วมกันทั้ง Consumables/Accessory/Equipment -->
+		<action name="stock_cons_delete"
+			class="com.cubesofttech.action.ProductAction" method="stockConsDelete">
 		</action>
 
 		<!-- Stock: Unit of Measure (UOM) -->
@@ -2336,22 +2499,70 @@
 			class="com.cubesofttech.action.ProductAction" method="stockConsSubReorder">
 		</action>
 
-		<action name="stock_offs_list"
-			class="com.cubesofttech.action.ProductAction" method="stockOffsList">
-			<result name="success" type="tiles">stockOffsList</result>
+		<!-- Stock: Equipment (product_type = 1)
+		     ใช้ method เดียวกับฝั่ง consumables ทั้งหมด ต่างกันแค่หน้าปลายทาง
+		     ที่ redirect กลับ จึงต้องมี action name แยก
+		     ส่วน action ที่ตอบ JSON (update / toggle / reorder) ใช้ของ stock_cons_* ร่วมกันได้เลย
+		     เพราะไม่มี redirect -->
+		<action name="stock_equ_edit"
+			class="com.cubesofttech.action.ProductAction" method="showStockEditPage">
+			<result name="success" type="tiles">stockEquEdit</result>
 			<result name="error">/index.jsp</result>
 		</action>
 
-		<!-- Product -->
-		<action name="product_cons_list"
-			class="com.cubesofttech.action.ProductAction" method="list">
-			<result name="success" type="tiles">productList</result>
+		<action name="stock_equ_balance"
+			class="com.cubesofttech.action.ProductAction" method="showEquipmentBalancePage">
+			<result name="success" type="tiles">stockEquBalance</result>
 			<result name="error">/index.jsp</result>
 		</action>
 
-		<action name="product_offs_list"
-			class="com.cubesofttech.action.ProductAction" method="list">
-			<result name="success" type="tiles">productList</result>
+		<!-- Stock: Equipment - popup เลือกเครื่องมาผูกกับ catalog (AJAX, ตอบ JSON) -->
+		<action name="stock_equ_link_save"
+			class="com.cubesofttech.action.ProductAction" method="stockEquLinkSave">
+		</action>
+
+		<!-- Stock: Equipment - เอาเครื่องออกจาก catalog (AJAX, ตอบ JSON) -->
+		<action name="stock_equ_unlink_save"
+			class="com.cubesofttech.action.ProductAction" method="stockEquUnlinkSave">
+		</action>
+
+		<!-- Stock: เช็ค Item ID (product_no) ซ้ำ ใช้ทั้งหน้า add/edit ของ Consumables และ Equipment (AJAX, ตอบ JSON) -->
+		<action name="stock_cons_check_duplicate"
+			class="com.cubesofttech.action.ProductAction" method="stockCheckProductNoDuplicate">
+		</action>
+
+		<action name="stock_equ_uom_add"
+			class="com.cubesofttech.action.ProductAction" method="stockConsUomSave">
+			<result name="success" type="redirect">stock_equ_edit?productId=${productId}</result>
+			<result name="error">/index.jsp</result>
+		</action>
+		<action name="stock_equ_uom_edit"
+			class="com.cubesofttech.action.ProductAction" method="stockConsUomUpdate">
+			<result name="success" type="redirect">stock_equ_edit?productId=${productId}</result>
+			<result name="error">/index.jsp</result>
+		</action>
+		<action name="stock_equ_uom_delete"
+			class="com.cubesofttech.action.ProductAction" method="stockConsUomDelete">
+			<result name="success" type="redirect">stock_equ_edit?productId=${productId}</result>
+			<result name="error">/index.jsp</result>
+		</action>
+
+		<!-- Stock: Equipment - Sub product (ใช้ method เดียวกับฝั่ง consumables เหมือน uom ด้านบน
+		     ต้องมี action name แยกเพราะ redirect กลับไปต้องเป็น stock_equ_edit ไม่ใช่ stock_cons_edit
+		     ส่วน stock_cons_sub_reorder ตอบ JSON ไม่มี redirect ใช้ร่วมกันได้เลย ไม่ต้องมี stock_equ_sub_reorder -->
+		<action name="stock_equ_sub_add"
+			class="com.cubesofttech.action.ProductAction" method="stockConsSubSave">
+			<result name="success" type="redirect">stock_equ_edit?productId=${parentProductId}</result>
+			<result name="error">/index.jsp</result>
+		</action>
+		<action name="stock_equ_sub_edit"
+			class="com.cubesofttech.action.ProductAction" method="stockConsSubUpdate">
+			<result name="success" type="redirect">stock_equ_edit?productId=${parentProductId}</result>
+			<result name="error">/index.jsp</result>
+		</action>
+		<action name="stock_equ_sub_delete"
+			class="com.cubesofttech.action.ProductAction" method="stockConsSubDelete">
+			<result name="success" type="redirect">stock_equ_edit?productId=${parentProductId}</result>
 			<result name="error">/index.jsp</result>
 		</action>
 

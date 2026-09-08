@@ -22,7 +22,6 @@
 <script
 	src="${pageContext.request.contextPath}/assets/js/scripts.bundle.js"></script>
 
-
 <style>
 .form-check-success .form-check-input {
 	border-color: #50cd89 !important;
@@ -1574,6 +1573,9 @@
 
 	</div>
 
+	<script
+	src="${pageContext.request.contextPath}/assets/js/custom/utilities/attachFile/attcahfile.js"></script>
+
 	<script>
 	document.addEventListener("DOMContentLoaded", function() {
 		
@@ -2380,15 +2382,15 @@ document.addEventListener("DOMContentLoaded", function () {
 	            mainBtn.innerHTML = '<span class="spinner-border spinner-border-sm align-middle me-2"></span>Compressing...';
 	        }
 	
-	        try {
-	            const compressedFile = await compressImage(file, 1280, 1280, 0.8);
-	            const dt = new DataTransfer();
-	            dt.items.add(compressedFile);
-	            this.files = dt.files;
-	            file = this.files[0];
-	        } catch (error) {
-	            console.error("Compression failed", error);
-	        }
+			try {
+				const processedFile = await processAndRemoveWhiteBg(file);
+				const dt = new DataTransfer();
+				dt.items.add(processedFile);
+				this.files = dt.files;
+				file = this.files[0];
+			} catch (error) {
+				console.error("Remove background failed", error);
+			}
 	
 	        if (mainBtn) {
 	            mainBtn.disabled = false;

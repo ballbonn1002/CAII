@@ -837,22 +837,26 @@ var AppCalendar = function() {
 				rowHtml += '</tr>';
 
 				$tableBody.append(rowHtml);
-
 			} else {
-				var status = '';
+				var statusParts = [];
 				var holidayEvent = dayEvents.find(function(ev) { return ev.classNames.includes('fc-event-secondary'); });
-				var leaveEvent = dayEvents.find(function(ev) { return ev.extendedProps && ev.extendedProps.leave_type_id; });
+				var leaveEventsAll = dayEvents.filter(function(ev) { return ev.extendedProps && ev.extendedProps.leave_type_id; });
+
 				if (holidayEvent) {
-					status = getHolidayStatusHTML(holidayEvent);
-				} else if (leaveEvent) {
-					status = getLeaveStatusHTML(leaveEvent);
+					statusParts.push(getHolidayStatusHTML(holidayEvent));
 				} else {
-					if (dayNum <= todayNum) {
-						if (dayName !== 'Sa' && dayName !== 'Su') {
-							status = getWorkStatusHTML('NO_RECORD');
-						}
+					var leaveFractionDay = 0;
+					leaveEventsAll.forEach(function(lv) {
+						leaveFractionDay += parseFloat(lv.extendedProps.no_day) || 0;
+						statusParts.push(getLeaveStatusHTML(lv));
+					});
+
+					if (dayNum <= todayNum && dayName !== 'Sa' && dayName !== 'Su') {
+						statusParts.push(getWorkStatusHTML('NO_RECORD'));
 					}
 				}
+
+				var status = statusParts.join('<div class="separator separator-dashed my-1"></div>');
 
 				var rowHtml = '<tr class="' + rowStyle + '">';
 				rowHtml += '<td><span class="bullet bullet-vertical me-2 h-20px w-3px ' + iconClass + '" style="vertical-align: middle;"></span>' + dayStr + '</td>';
@@ -862,6 +866,7 @@ var AppCalendar = function() {
 
 				$tableBody.append(rowHtml);
 			}
+			
 		}
 	}
 
@@ -942,49 +947,74 @@ var AppCalendar = function() {
 	                summary.noRecord++;
 	            }
 	            
-	        } else if (dayEvents.length > 0) {
-	            // holiday
-	            if (dayEvents.some(ev => ev.classNames.includes("fc-event-secondary"))) {
-	                status = "Holiday";
-	                summary.holiday++;
-	            }
-	            // leave
-	            if (dayEvents.some(ev => ev.extendedProps && ev.extendedProps.leave_type_id)) {
-                    dayEvents.filter(ev => ev.extendedProps && ev.extendedProps.leave_type_id).forEach(leaveEv => {
-                        var noDay = parseFloat(leaveEv.extendedProps.no_day) || 0;
-                        if (leaveEv.title.includes("ลาป่วย")) {
-                            status = "Sick Leave";
-                            if(!processedLeaves.has(leaveEv.id)) {
-                                summary.sickLeave += noDay;
-                                processedLeaves.add(leaveEv.id);
-                            }
-                        } else {
-                            status = "Leave";
-                            if(!processedLeaves.has(leaveEv.id)) {
-                                summary.leave += noDay;
-                                processedLeaves.add(leaveEv.id);
-                            }
-                        }
-                    });
-	            }
-	            // work
-	            if (dayEvents.some(ev => ev.extendedProps && ev.extendedProps.eventType === "work")) {
-	                var workEv = dayEvents.find(ev => ev.extendedProps.eventType === "work");
-	                switch (workEv.extendedProps.status) {
-	                case "ONTIME":
-	                    summary.onTime++;
-	                    break;
-	                case "LATE":
-	                case "EARLY_OUT":
-	                case "UNFINISHED_WORK":
-	                    summary.lateEarlyUnfinished++;
-	                    break;
-	                case "INCOMPLETE":
-	                    summary.incomplete++;
-	                    break;
-	            	}
-	            }
-	        }
+				} else if (dayEvents.length > 0) {
+				// holiday
+				var isHolidayDay = dayEvents.some(ev => ev.classNames.includes("fc-event-secondary"));
+				if (isHolidayDay) {
+					status = "Holiday";
+					summary.holiday++;
+				}
+
+				// leave
+				var leaveEvsForDay = dayEvents.filter(ev => ev.extendedProps && ev.extendedProps.leave_type_id);
+				var leaveFractionToday = 0;
+				leaveEvsForDay.forEach(leaveEv => {
+					var noDay = parseFloat(leaveEv.extendedProps.no_day) || 0;
+					
+					var evStart = moment(leaveEv.start);
+					var evEnd = leaveEv.end ? moment(leaveEv.end).clone().subtract(1, 'days') : evStart.clone();
+					var totalLeaveDays = evEnd.diff(evStart, 'days') + 1;
+
+					var overlapStart = moment.max(evStart, start);
+					var overlapEnd = moment.min(evEnd, moment(end).subtract(1, 'days'));
+					var overlapDays = overlapEnd.diff(overlapStart, 'days') + 1;
+
+					var perDayFraction = totalLeaveDays > 0 ? (noDay / totalLeaveDays) : 0;
+					leaveFractionToday += perDayFraction;
+
+					if (leaveEv.title.includes("ลาป่วย")) {
+						status = "Sick Leave";
+					} else {
+						status = "Leave";
+					}
+
+					if (!processedLeaves.has(leaveEv.id) && totalLeaveDays > 0) {
+						var portionThisMonth = (overlapDays / totalLeaveDays) * noDay;
+						if (leaveEv.title.includes("ลาป่วย")) {
+							summary.sickLeave += portionThisMonth;
+						} else {
+							summary.leave += portionThisMonth;
+						}
+						processedLeaves.add(leaveEv.id);
+					}
+				});
+
+				// work
+				var workEv = dayEvents.find(ev => ev.extendedProps && ev.extendedProps.eventType === "work");
+				if (workEv) {
+					var workFraction = Math.max(1 - leaveFractionToday, 0);
+					switch (workEv.extendedProps.status) {
+						case "ONTIME":
+							summary.onTime += workFraction;
+							break;
+						case "LATE":
+						case "EARLY_OUT":
+						case "UNFINISHED_WORK":
+							summary.lateEarlyUnfinished += workFraction;
+							break;
+						case "INCOMPLETE":
+							summary.incomplete += workFraction;
+							break;
+					}
+				} else if (!isHolidayDay && leaveFractionToday < 1) {
+					var dow = day.day();
+					if (dow !== 0 && dow !== 6) {
+						//ไม่มีลาเลย หรือมีลาครึ่งวันแต่ไม่มี check-in อีกครึ่ง = No Record
+						summary.noRecord += (1 - leaveFractionToday);
+					}
+				}
+			}
+	        
 	    }
         
 	    // Update value

@@ -555,7 +555,21 @@ CREATE TABLE `doc_status` (
   PRIMARY KEY (`doc_status_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- 04/08/2026 Koy: add auto_increment to unit_id in table unit_of_measure.
+-- 04/08/2026 Koy: create table and add auto_increment to unit_id in table unit_of_measure.
+CREATE TABLE `unit_of_measure` (
+    `unit_id` int(11) NOT NULL AUTO_INCREMENT,
+    `product_id` varchar(32) NOT NULL,
+    `sequence` varchar(32) DEFAULT NULL,
+    `unit_name` varchar(32) DEFAULT NULL,
+    `conversion_rate` int(11) DEFAULT NULL,
+    `description` text DEFAULT NULL,
+    `user_create` varchar(32) DEFAULT NULL,
+    `user_update` varchar(32) DEFAULT NULL,
+    `time_create` timestamp NULL DEFAULT NULL,
+    `time_update` timestamp NULL DEFAULT NULL,
+    PRIMARY KEY (`unit_id`)
+) ENGINE = InnoDB AUTO_INCREMENT = 10 DEFAULT CHARSET = utf8mb4
+
 ALTER TABLE `unit_of_measure` CHANGE `unit_id` `unit_id` INT(11) NOT NULL AUTO_INCREMENT, add PRIMARY KEY (`unit_id`);
 
 -- 05/08/2026 Koy: add column 'warehouse_id' in table stock.
@@ -609,23 +623,15 @@ CREATE TABLE `good_receipt_detail` (
     PRIMARY KEY (`good_receipt_detail_id`)
 ) ENGINE = InnoDB AUTO_INCREMENT = 2 DEFAULT CHARSET = utf8mb4
 
-CREATE TABLE `unit_of_measure` (
-    `unit_id` int(11) NOT NULL AUTO_INCREMENT,
-    `product_id` varchar(32) NOT NULL,
-    `sequence` varchar(32) DEFAULT NULL,
-    `unit_name` varchar(32) DEFAULT NULL,
-    `conversion_rate` int(11) DEFAULT NULL,
-    `description` text DEFAULT NULL,
-    `user_create` varchar(32) DEFAULT NULL,
-    `user_update` varchar(32) DEFAULT NULL,
-    `time_create` timestamp NULL DEFAULT NULL,
-    `time_update` timestamp NULL DEFAULT NULL,
-    PRIMARY KEY (`unit_id`)
-) ENGINE = InnoDB AUTO_INCREMENT = 10 DEFAULT CHARSET = utf8mb4
-
 -- PROD 10 AUG 2026 9:50
-ALTER TABLE mr 
-MODIFY COLUMN request_date TIMESTAMP;
+ALTER TABLE mr MODIFY COLUMN request_date TIMESTAMP;
+
+-- 10/08/2026 Koy: add column to link equipment -> product
+ALTER TABLE `equipment`
+  ADD COLUMN `product_id` VARCHAR(32) DEFAULT NULL COMMENT 'FK -> product.product_id' AFTER `type`;
+
+-- 10/08/2026 Koy: add primary key to product table.
+ALTER TABLE `product` CHANGE `product_id` `product_id` INT(11) NOT NULL AUTO_INCREMENT, ADD PRIMARY KEY (`product_id`);
 
 -- PROD 13 AUG 2026
 
@@ -705,3 +711,265 @@ CREATE TABLE `po_parent` (
   `time_create` timestamp NULL DEFAULT NULL,
   `time_update` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+ALTER TABLE mr MODIFY COLUMN request_date DATETIME DEFAULT CURRENT_TIMESTAMP;
+ 
+
+-- 18/08/2026 Koy: add column equipment_type to product (ref to equipment_type.Type)
+ALTER TABLE `product` ADD COLUMN `equipment_type` VARCHAR(32) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'ref -> equipment_type.Type (เฉพาะ product_type = 1)' AFTER `product_type`;
+
+-- 19/08/2026 June: Fix typo in doc_status table column name from 'decscription' to 'description'
+ALTER TABLE `doc_status` CHANGE `decscription` `description` VARCHAR(1024) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL;
+-- 19/08/2026 June: Insert initial document status master data for PO groups
+INSERT INTO `doc_status` (`doc_status_id`, `status_code`, `status_name`, `group`, `description`, `user_create`, `user_update`, `time_create`, `time_update`) VALUES 
+('1', '1', 'Draft', 'po', NULL, 'cft.admin', 'cft.admin', '2026-08-19 09:54:00', '2026-08-19 09:54:00'),
+('2', '2', 'Pending', 'po', NULL, 'cft.admin', 'cft.admin', '2026-08-19 09:54:00', '2026-08-19 09:54:00'),
+('3', '3', 'Approved', 'po', NULL, 'cft.admin', 'cft.admin', '2026-08-19 09:54:00', '2026-08-19 09:54:00'),
+('4', '4', 'Return', 'po', NULL, 'cft.admin', 'cft.admin', '2026-08-19 09:54:00', '2026-08-19 09:54:00'),
+('5', '5', 'Rejected', 'po', NULL, 'cft.admin', 'cft.admin', '2026-08-19 09:54:00', '2026-08-19 09:54:00'),
+('6', '6', 'Cancel', 'po', NULL, 'cft.admin', 'cft.admin', '2026-08-19 09:54:00', '2026-08-19 09:54:00'),
+('7', '7', 'In-Progress', 'po', NULL, 'cft.admin', 'cft.admin', '2026-08-19 09:54:00', '2026-08-19 09:54:00');
+
+-- 19/08/2026 June: Delete Table Catalog_consumables.
+DROP TABLE catalog_equipment;
+
+-- 20/08/2026 Phone: (www redesign) Add 'view_count' column to 'article' table for per-article view counter
+ALTER TABLE `article` ADD COLUMN `view_count` INT NOT NULL DEFAULT 0 AFTER `time_post`;
+
+-- 20/08/2026 Phone: (www redesign) Fix footer 'Software Development' link pointing at a blog post instead of the real service page
+UPDATE `footer` SET `footer_url` = 'https://www.cubesofttech.com/software-development'
+WHERE `footer_id` = 28 AND `footer_name` = 'Software Development';
+
+-- 24/08/2026 June: Add 'color' column and rename 'group' to 'status_group' in 'doc_status' table
+ALTER TABLE `doc_status`
+    ADD `color` VARCHAR(50) NULL AFTER `description`,
+    CHANGE `group` `status_group` VARCHAR(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL;
+
+-- 24/08/2026 June: Insert initial document status master data for PR and MR groups
+INSERT INTO `doc_status` (`doc_status_id`, `status_code`, `status_name`, `status_group`, `description`, `color`, `user_create`, `user_update`, `time_create`, `time_update`) VALUES
+('8', '1', 'Draft', 'mr', 'ร่าง', 'secondary', 'cft.admin', 'cft.admin', '2026-08-19 02:54:05', '2026-08-19 02:54:05'),
+('9', '2', 'Pending', 'mr', 'รอดำเนินการ', 'warning', 'cft.admin', 'cft.admin', '2026-08-19 02:54:05', '2026-08-19 02:54:05'),
+('10', '3', 'Approved', 'mr', 'อนุมัติ', 'success', 'cft.admin', 'cft.admin', '2026-08-19 02:54:05', '2026-08-19 02:54:05'),
+('11', '4', 'Delivered', 'mr', NULL, 'cyan', 'cft.admin', 'cft.admin', '2026-08-19 02:54:05', '2026-08-19 02:54:05'),
+('12', '5', 'Rejected', 'mr', NULL, 'danger', 'cft.admin', 'cft.admin', '2026-08-19 02:54:05', '2026-08-19 02:54:05'),
+('13', '6', 'Cancel', 'mr', NULL, 'dark', 'cft.admin', 'cft.admin', '2026-08-19 02:54:05', '2026-08-19 02:54:05'),
+('14', '1', 'Draft', 'pr', 'ร่าง', 'secondary', 'cft.admin', 'cft.admin', '2026-08-19 02:54:15', '2026-08-19 02:54:15'),
+('15', '2', 'Pending', 'pr', 'รอดำเนินการ', 'warning', 'cft.admin', 'cft.admin', '2026-08-19 02:54:15', '2026-08-19 02:54:15'),
+('16', '3', 'Approved', 'pr', 'อนุมัติ', 'success', 'cft.admin', 'cft.admin', '2026-08-19 02:54:15', '2026-08-19 02:54:15'),
+('17', '4', 'Return', 'pr', NULL, 'info', 'cft.admin', 'cft.admin', '2026-08-19 02:54:15', '2026-08-19 02:54:15'),
+('18', '5', 'Rejected', 'pr', NULL, 'danger', 'cft.admin', 'cft.admin', '2026-08-19 02:54:15', '2026-08-19 02:54:15'),
+('19', '6', 'Cancel', 'pr', NULL, 'dark', 'cft.admin', 'cft.admin', '2026-08-19 02:54:15', '2026-08-19 02:54:15'),
+('20', '7', 'In-Progress', 'pr', NULL, 'cyan', 'cft.admin', 'cft.admin', '2026-08-19 02:54:15', '2026-08-19 02:54:15');
+-- 25/08/2026 Chaiwit: Create table delivered_detail
+CREATE TABLE delivered_detail (
+    delivered_detail_id INT NOT NULL AUTO_INCREMENT,
+    mr_id varchar(16) DEFAULT NULL,
+    product_id varchar(32) DEFAULT NULL,
+    product_sub_id varchar(32) DEFAULT NULL,
+    amount double DEFAULT NULL,
+    unit varchar(16) DEFAULT NULL,
+    product_type varchar(32) DEFAULT NULL,
+    description text DEFAULT NULL,
+    user_create varchar(32) DEFAULT NULL,
+    user_update varchar(32) DEFAULT NULL,
+    time_create timestamp NULL DEFAULT NULL,
+    time_update timestamp NULL DEFAULT NULL,
+    type varchar(32) DEFAULT NULL,
+    equipment_id varchar(32) DEFAULT NULL,
+    PRIMARY KEY (delivered_detail_id)
+);
+
+-- 25/08/2026 June: Rename 'status_group' to 'page' in 'doc_status' table
+ALTER TABLE `doc_status` CHANGE `status_group` `page` VARCHAR(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL;
+
+-- PROD 
+
+-- 31/08/2026 Best(Intern): Add tables related to the Cube Token module.
+CREATE TABLE `token_action_type` (
+  `action_type_id` int(11) NOT NULL,
+  `action_type_name` varchar(32) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `active_status` char(1) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'N',
+  `description` varchar(1024) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `user_create` varchar(32) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `user_update` varchar(32) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `time_create` timestamp NULL DEFAULT NULL,
+  `time_update` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`action_type_id`)
+) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci;
+
+INSERT INTO token_action_type
+(
+    action_type_id,
+    action_type_name,
+    active_status,
+    description,
+    user_create,
+    user_update,
+    time_create,
+    time_update
+)
+VALUES
+(1, 'Gift',     'N', 'ให้รายเดือน',       'cft.admin', 'cft.admin', NOW(), NOW()),
+(2, 'Deduct',   'N', 'หัก token',         'cft.admin', 'cft.admin', NOW(), NOW()),
+(3, 'Return',   'Y', 'คืน token',         'cft.admin', 'cft.admin', NOW(), NOW()),
+(4, 'Reward',   'Y', 'ให้รางวัลเป็น token',      'cft.admin', 'cft.admin', NOW(), NOW()),
+(5, 'Add In Reconcile',   'Y', 'สะสมสิ้นเดือน',       'cft.admin', 'cft.admin', NOW(), NOW()),
+(6, 'Exchange',   'Y', 'หักสะสมมาเพิ่มรายเดือน',       'cft.admin', 'cft.admin', NOW(), NOW()),
+(7, 'Redeem', 'Y', 'หักสะสมไปแลกของรางวัล',         'cft.admin', 'cft.admin', NOW(), NOW()),
+(8, 'Void',   'Y', 'โมฆะ trancsaction นั้น',       'cft.admin', 'cft.admin', NOW(), NOW());
+
+CREATE TABLE `token_action_point` (
+  `action_point_id` int(11) NOT NULL AUTO_INCREMENT,
+  `action_type_id` int(11) NOT NULL,
+  `action_point_type` varchar(64) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `point` double NOT NULL DEFAULT '0',
+  `action_point_name_th` varchar(64) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `active_status` char(1) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'N',
+  `description` varchar(1024) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `user_create` varchar(32) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `user_update` varchar(32) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `time_create` timestamp NULL DEFAULT NULL,
+  `time_update` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`action_point_id`)
+) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci;
+
+INSERT INTO token_action_point
+(
+    action_type_id,
+    action_point_type,
+    point,
+    action_point_name_th,
+    active_status,
+    description,
+    user_create,
+    user_update,
+    time_create,
+    time_update
+)
+VALUES
+-- =========================================
+-- Gift (1)
+-- =========================================
+(1, 'Permanent Employee', 0, 'พนักงานประจำ',
+ 'N', 'Token สำหรับพนักงานประจำ',
+ 'cft.admin', 'cft.admin', NOW(), NOW()),
+
+(1, 'Contract Employee', 0, 'พนักงานสัญญาจ้าง',
+ 'N', 'Token สำหรับพนักงานสัญญาจ้าง',
+ 'cft.admin', 'cft.admin', NOW(), NOW()),
+
+(1, 'Intern', 0, 'นักศึกษาฝึกงาน',
+ 'N', 'Token สำหรับนักศึกษาฝึกงาน',
+ 'cft.admin', 'cft.admin', NOW(), NOW()),
+
+
+-- =========================================
+-- Deduct (2)
+-- =========================================
+(2, 'Late', 0, 'เข้างานสาย',
+ 'N', 'หัก Token กรณีเข้างานสาย',
+ 'cft.admin', 'cft.admin', NOW(), NOW()),
+
+(2, 'Early Out', 0, 'ออกก่อนเวลา',
+ 'N', 'หัก Token กรณีออกก่อนเวลา',
+ 'cft.admin', 'cft.admin', NOW(), NOW()),
+
+(2, 'Leave', 0, 'ลา',
+ 'N', 'หัก Token กรณีลา',
+ 'cft.admin', 'cft.admin', NOW(), NOW()),
+
+(2, 'Backdate', 0, 'ย้อนหลัง',
+ 'N', 'หัก Token กรณีทำรายการย้อนหลัง',
+ 'cft.admin', 'cft.admin', NOW(), NOW()),
+  
+(2, 'No Record', 0, 'ไม่ลงเวลา',
+ 'N', 'หัก Token กรณีลืมลงเวลา',
+ 'cft.admin', 'cft.admin', NOW(), NOW());
+
+-- Token Setting 
+CREATE TABLE `token_setting` (
+  `setting_id` int(11) NOT NULL AUTO_INCREMENT,
+  `type` char(32) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `type_name` varchar(64) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `status` varchar(10) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `description` varchar(1024) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `user_create` varchar(32) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `user_update` varchar(32) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `time_create` timestamp NULL DEFAULT NULL,
+  `time_update` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`setting_id`)
+) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci;
+
+INSERT INTO `token_setting` (`type`,`type_name`,`status`,`description`,`user_create`,`user_update`,`time_create`,`time_update`) VALUES ('user_status','Active','Disable','For Active Employee','cft.admin',NULL, current_timestamp(),NULL);
+INSERT INTO `token_setting` (`type`,`type_name`,`status`,`description`,`user_create`,`user_update`,`time_create`,`time_update`) VALUES ('user_status','Probation','Disable','For Probation Employee','cft.admin',NULL,current_timestamp(),NULL);
+INSERT INTO `token_setting` (`type`,`type_name`,`status`,`description`,`user_create`,`user_update`,`time_create`,`time_update`) VALUES ('user_status','Excluded','Disable','For Excluded Employee','cft.admin',NULL,current_timestamp(),NULL);
+INSERT INTO `token_setting` (`type`,`type_name`,`status`,`description`,`user_create`,`user_update`,`time_create`,`time_update`) VALUES ('user_status','Intern','Disable','For Status Intern Employee','cft.admin',NULL,current_timestamp(),NULL);
+INSERT INTO `token_setting` (`type`,`type_name`,`status`,`description`,`user_create`,`user_update`,`time_create`,`time_update`) VALUES ('system_status','Enable','Disable','For Enable Employee','cft.admin',NULL,current_timestamp(),NULL);
+INSERT INTO `token_setting` (`type`,`type_name`,`status`,`description`,`user_create`,`user_update`,`time_create`,`time_update`) VALUES ('system_status','Disable','Disable','For Disable Employee','cft.admin',NULL,current_timestamp(),NULL);
+INSERT INTO `token_setting` (`type`,`type_name`,`status`,`description`,`user_create`,`user_update`,`time_create`,`time_update`) VALUES ('activate_date','Day','1','Activate Monthly Token Date','cft.admin',NULL,current_timestamp(),NULL);
+
+CREATE TABLE `token_usage` (
+  `token_usage_id` int(11) NOT NULL AUTO_INCREMENT,
+  `user_id` varchar(32) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `action_type_id` int(11) NOT NULL,
+  `action_point_id` int(11) DEFAULT NULL,
+  `value` double DEFAULT NULL,
+  `reconcile` double DEFAULT NULL,
+  `re_flag` char(1) COLLATE utf8mb4_unicode_ci DEFAULT 'N',
+  `description` varchar(1024) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `user_create` varchar(32) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `user_update` varchar(32) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `time_create` timestamp NULL DEFAULT NULL,
+  `time_update` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`token_usage_id`)
+) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci;
+
+-- PROD
+
+-- 02/09/2026 Best(Intern)
+ALTER TABLE `token_usage`
+MODIFY `description` TEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL;
+
+-- PROD 4 SEP 2026
+
+-- 07/09/2026 Best(Intern) Add permission | Create table usage_summary, item_privilege 
+insert into `role_authorized_object` (`authorized_object_id`, `role_id`, `time_create`, `time_update`) 
+values ('cubetoken.history.viewall', 'admin', NOW(), NOW());
+
+CREATE TABLE `usage_summary` (
+  `usage_summary_id` int(11) NOT NULL AUTO_INCREMENT,
+  `user_id` varchar(32) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `action_type_id` int(11) NOT NULL,
+  `year` varchar(5) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `month` varchar(5) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `token` double NOT NULL,
+  `reconcile` double NOT NULL,
+  `description` varchar(1024) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `user_create` varchar(32) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `user_update` varchar(32) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `time_create` timestamp NULL DEFAULT NULL,
+  `time_update` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`usage_summary_id`)
+) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci;
+
+CREATE TABLE `item_privilege` (
+  `item_id` int(11) NOT NULL AUTO_INCREMENT,
+  `item_name` varchar(128) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `details` varchar(1024) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `token` double NOT NULL DEFAULT '0',
+  `quantity` int(11) NOT NULL DEFAULT '0',
+  `added_money` double NULL,
+  `start_date` date NOT NULL,
+  `end_date` date NOT NULL,
+  `cover_path` varchar(500) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `img_path` text COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `active_flag` char(1) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'Y',
+  `description` varchar(1024) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `user_create` varchar(32) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `user_update` varchar(32) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `time_create` timestamp NULL DEFAULT NULL,
+  `time_update` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`item_id`)
+) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci;
+
+-- PROD 8 SEP 2026
+

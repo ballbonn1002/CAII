@@ -721,4 +721,55 @@ public class UserDAOImpl implements UserDAO {
 	    }
 	    return user;
 	}
+	
+	@Override
+	@SuppressWarnings("unchecked")
+	public List<User> findEligibleUsers(
+	        String employeeType,
+	        boolean allowActive,
+	        boolean allowProbation,
+	        boolean allowExcluded,
+	        boolean allowIntern,
+	        boolean allowEnable,
+	        boolean allowDisable) throws Exception {
+
+	    String hql =
+	            "FROM User u " +
+	            "WHERE u.employeeTypeId = :employeeType " +
+
+	            "AND (" +
+	            "     (u.employeeStatus = 1 AND :allowActive = true) " +
+	            "  OR (u.employeeStatus = 2 AND :allowProbation = true) " +
+	            "  OR (u.employeeStatus = 0 AND :allowExcluded = true) " +
+	            "  OR (u.employeeStatus = 3 AND :allowIntern = true) " +
+	            ") " +
+
+	            "AND (" +
+	            "     (u.enable = 1 AND :allowEnable = true) " +
+	            "  OR (u.enable = 0 AND :allowDisable = true) " +
+	            ")";
+
+	    return sessionFactory
+	            .getCurrentSession()
+	            .createQuery(hql)
+	            .setParameter("employeeType", employeeType)
+	            .setParameter("allowActive", allowActive)
+	            .setParameter("allowProbation", allowProbation)
+	            .setParameter("allowExcluded", allowExcluded)
+	            .setParameter("allowIntern", allowIntern)
+	            .setParameter("allowEnable", allowEnable)
+	            .setParameter("allowDisable", allowDisable)
+	            .list();
+	}
+	
+	public String findStartYear(String userId) throws Exception {
+	    String sql = "SELECT YEAR(time_create) AS year FROM user WHERE id = :userId";
+	    return sessionFactory.getCurrentSession()
+	            .createSQLQuery(sql)
+	            .setParameter("userId", userId)
+	            .setMaxResults(1)
+	            .uniqueResult()
+	            .toString();
+	}
+
 }

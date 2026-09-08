@@ -3,6 +3,8 @@ package com.cubesofttech.model;
 import java.io.Serializable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
@@ -12,7 +14,10 @@ public class Product implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    // product_id เป็น AUTO_INCREMENT ใน DB แล้ว (10/08/2026) - ให้ MySQL ออกเลขให้
+    // แทนการไล่ max+1 เอง ซึ่งมีโอกาส race condition ถ้ามี 2 request สร้างพร้อมกัน
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "product_id")
     private Integer productId;
 
@@ -24,6 +29,14 @@ public class Product implements Serializable {
 
     @Column(name = "product_type")
     private String productType;
+
+    /**
+     * ref อ่อนไปยัง equipment_type.Type (ไม่มี FK constraint จริง ตาม pattern
+     * เดิมของ product_id/warehouse_id ในโปรเจกต์นี้) มีค่าเฉพาะ product_type = '1'
+     * (Equipment) เป็นค่า default ของ catalog - ยังไม่ผูกกับเครื่องจริงใน equipment
+     */
+    @Column(name = "equipment_type")
+    private String equipmentType;
 
     @Column(name = "parent_product_id")
     private String parentProductId;
@@ -85,6 +98,14 @@ public class Product implements Serializable {
 
     public void setProductType(String productType) {
         this.productType = productType;
+    }
+
+    public String getEquipmentType() {
+        return equipmentType;
+    }
+
+    public void setEquipmentType(String equipmentType) {
+        this.equipmentType = equipmentType;
     }
 
     public String getParentProductId() {
@@ -160,13 +181,14 @@ public class Product implements Serializable {
     }
 	@Override
 	public String toString() {
-	    return "Product [product_id=" + productId 
-	        + ", description=" + description 
-	        + ", parent_product_id=" + parentProductId 
-	        + ", product_name=" + productName 
-	        + ", product_no=" + productNo 
-	        + ", product_type=" + productType 
-	        + ", sequence=" + sequence 
+	    return "Product [product_id=" + productId
+	        + ", description=" + description
+	        + ", equipment_type=" + equipmentType
+	        + ", parent_product_id=" + parentProductId
+	        + ", product_name=" + productName
+	        + ", product_no=" + productNo
+	        + ", product_type=" + productType
+	        + ", sequence=" + sequence
 	        + ", time_create=" + timeCreate 
 	        + ", time_update=" + timeUpdate 
 	        + ", user_create=" + userCreate 

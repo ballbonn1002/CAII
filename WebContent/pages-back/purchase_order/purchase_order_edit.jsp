@@ -1,5 +1,4 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8"
-	pageEncoding="UTF-8"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
@@ -28,7 +27,8 @@
 <script
 	src="${pageContext.request.contextPath}/assets/plugins/custom/datatables/datatables.bundle.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/signature_pad@4.1.7/dist/signature_pad.umd.min.js"></script>
-
+<script
+	src="${pageContext.request.contextPath}/assets/js/custom/utilities/attachFile/attcahfile.js"></script>
 <style>
 /* Table MR */
 /* [data-bs-theme="light"] #mrResultTable.table.table-striped > tbody > tr:nth-of-type(odd) > * {
@@ -74,15 +74,6 @@
     text-align: right !important;
     padding-right: 0 !important;
 } */
-
-
-.text-orange{
-	color: #FD7E14 ;
-}
-.btn-cyan{
-	background-color: #0DCAF0 !important;
-}
-
 
 /* ===== Signature Box ===== */
 .sig-box {
@@ -150,34 +141,39 @@
 						</ul>
 					</div>
 			
-					<div class="d-flex align-items-center gap-2">
+					<!-- <div class="d-flex align-items-center gap-2">
 						<span class="fs-2hx text-primary fw-bold" id="">#${poList.poId}</span>
 							<c:choose>
-								<c:when test="${poList.status == '0'}">
-									<span class="badge badge-lg bg-light-secondary fw-semibold fs-7 p-4">Draft</span>
-								</c:when>
 								<c:when test="${poList.status == '1'}">
-									<span class="badge badge-lg bg-cyan text-white fw-semibold fs-7 p-4">In-Progress</span>
+									<span class="badge badge-lg bg-light-secondary fw-semibold fs-7 p-4">${poStatusNames['1']}</span>
+								</c:when>
+								<c:when test="${poList.status == '7'}">
+									<span class="badge badge-lg bg-cyan text-white fw-semibold fs-7 p-4">${poStatusNames['7']}</span>
 								</c:when>
 								<c:when test="${poList.status == '2'}">
-									<span class="badge badge-lg badge-warning text-white fw-semibold fs-7 p-4">Pending</span>
-								</c:when>
-								<c:when test="${poList.status == '3'}">
-									<span class="badge badge-lg badge-info text-white fw-semibold fs-7 p-4">Return</span>
+									<span class="badge badge-lg badge-warning text-white fw-semibold fs-7 p-4">${poStatusNames['2']}</span>
 								</c:when>
 								<c:when test="${poList.status == '4'}">
-									<span class="badge badge-lg bg-success text-white fw-semibold fs-7 p-4">Approved</span>
+									<span class="badge badge-lg badge-info text-white fw-semibold fs-7 p-4">${poStatusNames['4']}</span>
+								</c:when>
+								<c:when test="${poList.status == '3'}">
+									<span class="badge badge-lg bg-success text-white fw-semibold fs-7 p-4">${poStatusNames['3']}</span>
 								</c:when>
 								<c:when test="${poList.status == '5'}">
-									<span class="badge badge-lg bg-danger text-white fw-semibold fs-7 p-4">Rejected</span>
+									<span class="badge badge-lg bg-danger text-white fw-semibold fs-7 p-4">${poStatusNames['5']}</span>
 								</c:when>
 								<c:when test="${poList.status == '6'}">
-									<span class="badge badge-lg bg-dark text-white fw-semibold fs-7 p-4">Closed</span>
+									<span class="badge badge-lg bg-dark text-white fw-semibold fs-7 p-4">${poStatusNames['6']}</span>
 								</c:when>
-								
-								<c:otherwise>
-								</c:otherwise>
+								<c:otherwise></c:otherwise>
 							</c:choose>
+					</div> -->
+					<div class="d-flex align-items-center gap-2">
+						<span class="fs-2hx text-primary fw-bold" id="">#${poList.poId}</span>
+						<span class="badge badge-lg bg-${poStatusColors[poList.status]} fw-semibold fs-7 p-4
+									${poStatusColors[poList.status] == 'secondary' ? 'text-dark' : 'text-white'}">
+							${poStatusNames[poList.status]}
+						</span>
 					</div>
 			
 				</div>
@@ -213,22 +209,99 @@
 									<span class="fs-6 fw-medium text-gray-800"><fmt:formatDate value="${requestDateTime}" pattern="d MMM yyyy" /></span>
 								</div>
 								<c:choose>
-									<c:when test="${poList.status == '0'}">
-										<div class="col-12 mt-9">
+								    <%-- Draft: อัปโหลดเพิ่มได้ + ลบได้ --%>
+								    <c:when test="${poList.status == '1'}">
+								    	<div class="col-12 mt-9">
 											<label class="required fw-medium text-gray-800 mb-2">Description</label>
 											<textarea class="form-control text-gray-700" id="description" name="description"
 												placeholder="Description" rows="3">${poList.description}</textarea>
 										</div>
+								        <div class="col-12 mt-5">
+								            <label for="myFile" id="lbFile" class="btn btn-primary d-inline-flex align-items-center justify-content-center gap-2 fw-medium">
+								                Attach files
+								                <input type="file" id="myFile" name="files" style="display:none;"
+								                    accept="image/*,application/pdf,application/zip,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document" multiple>
+								            </label>
+								
+								            <!-- ไฟล์เดิมที่มีอยู่ใน DB -->
+								            <div id="attachFileList" class="d-flex flex-wrap gap-2 mt-3">
+											    <c:forEach var="af" items="${attachmentList}">
+											        <c:set var="fType" value="${fn:toLowerCase(af.type)}" />
+											        <div class="d-inline-flex align-items-center p-2 border border-gray-200 rounded bg-white" data-file-id="${af.fileId}">
+											            <a href="${pageContext.request.contextPath}${af.path}" target="_blank"
+											               class="d-flex align-items-center text-gray-800 fw-medium text-decoration-none"
+											               title="Click to open">
+											                <c:choose>
+											                    <c:when test="${fType == '.pdf'}">
+											                        <img src="${pageContext.request.contextPath}/assets/media/svg/files/pdf.svg" class="w-25px h-25px me-3 flex-shrink-0" alt="icon" />
+											                    </c:when>
+											                    <c:when test="${fType == '.doc' or fType == '.docx'}">
+											                        <img src="${pageContext.request.contextPath}/assets/media/svg/files/doc.svg" class="w-25px h-25px me-3 flex-shrink-0" alt="icon" />
+											                    </c:when>
+											                    <c:when test="${fType == '.png' or fType == '.jpg' or fType == '.jpeg' or fType == '.gif' or fType == '.webp'}">
+											                        <img src="${pageContext.request.contextPath}/assets/media/svg/files/image.svg" class="w-25px h-25px me-3 flex-shrink-0" alt="icon" />
+											                    </c:when>
+											                    <c:otherwise>
+											                        <img src="${pageContext.request.contextPath}/assets/media/svg/files/folder-document.svg" class="w-25px h-25px me-3 flex-shrink-0" alt="icon" />
+											                    </c:otherwise>
+											                </c:choose>
+											                <span class="text-truncate" style="max-width:220px;">${af.name}${af.type}</span>
+											            </a>
+											            <span class="btn btn-icon btn-sm btn-light-danger ms-2 cursor-pointer"
+											                  title="Delete" onclick="removeExistingAttachment('${af.fileId}', this)">
+											                <i class="ki-duotone ki-trash fs-3">
+											                    <span class="path1"></span><span class="path2"></span>
+											                    <span class="path3"></span><span class="path4"></span><span class="path5"></span>
+											                </i>
+											            </span>
+											        </div>
+											    </c:forEach>
+											   
+											</div>
+									
+									        <div id="errorMsgAF" class="text-danger fs-8 mt-1"></div>
+									    </div>
 									</c:when>
-									<c:otherwise>
-										<div class="col-12 mt-9 d-flex align-items-center">
+								
+								    <%-- Status อื่น: แสดงเฉพาะไฟล์ใน DB, คลิกเปิดได้ ไม่มีปุ่มลบ/อัป --%>
+								    <c:otherwise>
+								    	<div class="col-12 mt-9 d-flex align-items-center">
 											<i class="ki-duotone ki-document fs-3 me-3">
 												<span class="path1"></span>
 												<span class="path2"></span>
 											</i>
-											<span class="fs-6 fw-medium text-gray-800">${poList.description}</span>
+											<span class="fs-6 fw-medium text-gray-800">${empty poList.description ? '-' : poList.description}</span>
 										</div>
-									</c:otherwise>
+								        <c:if test="${not empty attachmentList}">
+										    <div class="col-12 mt-5">
+										        <h3 class="fw-semibold text-gray-900 mt-10 mb-7">Attached files</h3>
+										        <div class="d-flex flex-wrap gap-2">
+										            <c:forEach var="af" items="${attachmentList}">
+										                <c:set var="fType" value="${fn:toLowerCase(af.type)}" />
+										                <a href="${pageContext.request.contextPath}${af.path}" target="_blank"
+										                   class="d-inline-flex align-items-center p-2 border border-gray-200 rounded bg-white text-gray-800 fw-medium text-decoration-none"
+										                   title="Click to open">
+										                    <c:choose>
+										                        <c:when test="${fType == '.pdf'}">
+										                            <img src="${pageContext.request.contextPath}/assets/media/svg/files/pdf.svg" class="w-25px h-25px me-3 flex-shrink-0" alt="icon" />
+										                        </c:when>
+										                        <c:when test="${fType == '.doc' or fType == '.docx'}">
+										                            <img src="${pageContext.request.contextPath}/assets/media/svg/files/doc.svg" class="w-25px h-25px me-3 flex-shrink-0" alt="icon" />
+										                        </c:when>
+										                        <c:when test="${fType == '.png' or fType == '.jpg' or fType == '.jpeg' or fType == '.gif' or fType == '.webp'}">
+										                            <img src="${pageContext.request.contextPath}/assets/media/svg/files/image.svg" class="w-25px h-25px me-3 flex-shrink-0" alt="icon" />
+										                        </c:when>
+										                        <c:otherwise>
+										                            <img src="${pageContext.request.contextPath}/assets/media/svg/files/folder-document.svg" class="w-25px h-25px me-3 flex-shrink-0" alt="icon" />
+										                        </c:otherwise>
+										                    </c:choose>
+										                    <span class="text-truncate" style="max-width:220px;">${af.name}${af.type}</span>
+										                </a>
+										            </c:forEach>
+										        </div>
+										    </div>
+										</c:if>
+								    </c:otherwise>
 								</c:choose>
 								
 							</div>
@@ -246,7 +319,7 @@
 								<div class="col-lg-6 col-md-6 col-12 d-flex flex-column">
 									<label class="fw-medium text-gray-800 mb-2">Reference Invoice/Quotation NO</label>
 									<input type="text" class="form-control text-gray-700 h-45px"
-											name="reference_no" id="reference_no" value="${poList.refNo}" ${poList.status != '0' ? 'disabled' : ''} />
+											name="reference_no" id="reference_no" value="${poList.refNo}" ${poList.status != '1' ? 'disabled' : ''} />
 								</div>
 								
 								<div class="col-lg-6 col-md-6 col-12 d-flex flex-column">
@@ -257,7 +330,7 @@
 										</i>
 										<input class="form-control text-gray-700 ps-12 h-45px" 
 											   id="kt_reference_datepicker" name="reference_date" placeholder="Select date" 
-											   value="<fmt:formatDate value="${poList.refDate}" pattern="yyyy-MM-dd"/>" ${poList.status != '0' ? 'disabled' : ''} />
+											   value="<fmt:formatDate value="${poList.refDate}" pattern="yyyy-MM-dd"/>" ${poList.status != '1' ? 'disabled' : ''} />
 									</div>
 								</div>
 							</div>
@@ -267,14 +340,14 @@
 									<div class="col-lg-6 col-md-6 col-12 d-flex flex-column">
 										<div class="d-flex justify-content-between align-items-center mb-2">
 											<label class="required fw-medium text-gray-800">Company Name</label>
-											<c:if test="${poList.status == '0'}">
+											<c:if test="${poList.status == '1'}">
 												<a href="/company_add" target="_blank" class="text-success fw-medium fs-7 text-hover-primary" style="text-decoration: none;">
 													<i class="ki-outline ki-plus fs-7 text-success me-1"></i>Create
 												</a>
 											</c:if>
 										</div>
 										<select name="vendor_id" id="vendor_id" class="form-select h-45px" data-control="select2" data-placeholder="Select Company Name" 
-											${poList.status != '0' ? 'disabled' : ''}>
+											${poList.status != '1' ? 'disabled' : ''}>
 										    <option value=""></option>     
 										    <c:forEach var="company" items="${companyList}">
 										        <option value="${company.company_id}"
@@ -308,7 +381,7 @@
 								<div class="col-lg-6 col-md-6 col-12 d-flex flex-column">
 									<div class="d-flex justify-content-between align-items-center mb-2">
 										<label class="required fw-medium text-gray-800">Contact Name</label>
-										<c:if test="${poList.status == '0'}">
+										<c:if test="${poList.status == '1'}">
 											<a href="/contact_add" target="_blank" class="text-success fw-medium fs-7 text-hover-primary" style="text-decoration: none;">
 												<i class="ki-outline ki-plus fs-7 me-1 text-success"></i>Create
 											</a>
@@ -334,7 +407,7 @@
 								
 								<div class="col-lg-6 col-md-6 col-12 d-flex flex-column">
 									<label class="fw-medium text-gray-800 mb-2">Description</label>
-									<textarea class="form-control text-gray-700" rows="3" name="vendor_description" id="vendor_description" ${poList.status != '0' ? 'disabled' : ''}>${poList.descriptionVendor}</textarea>
+									<textarea class="form-control text-gray-700" rows="3" name="vendor_description" id="vendor_description" ${poList.status != '1' ? 'disabled' : ''}>${poList.descriptionVendor}</textarea>
 								</div>
 							</div>
 						</div>
@@ -345,7 +418,7 @@
 					        <div class="card-title">
 					            <h3 class="fw-semibold text-gray-900">PO - Detail</h3>
 					        </div>
-							<c:if test="${poList.status == '0'}">
+							<c:if test="${poList.status == '1'}">
 								<div class="card-title gap-3">
 									<button type="button" id="btnOpenCreatePo" class="btn btn-lg btn-success fw-medium text-white px-6 py-4" >
 										<i class="ki-outline ki-plus fs-3 me-1"></i>Create
@@ -381,7 +454,7 @@
 						<form id="signatureForm" method="post" action="update_signature" enctype="multipart/form-data">
 							<div class="card-body filter-card px-10 py-9 rounded-3 row g-5">
 								<!-- Draft status -->
-								<c:if test="${poList.status == '0'}">
+								<c:if test="${poList.status == '1'}">
 									<div class="col-6">
 										<div class="d-flex flex-column align-items-center gap-2">
 											<c:choose>
@@ -397,7 +470,7 @@
 													</div>
 												</c:when>
 
-												<c:when test="${poList.status == '0'}">
+												<c:when test="${poList.status == '1'}">
 													<div class="sig-box uploadable" id="uploadSignatureBox">
 														<img id="signaturePreview" style="max-height:150px; max-width:360px; object-fit:contain; display:none;" />
 														<div id="uploadPlaceholder" class="d-flex flex-column align-items-center">
@@ -449,7 +522,7 @@
 								</c:if>
 
 								<!-- Approved status -->
-								<c:if test="${poList.status == '4' or poList.status == '1'}">
+								<c:if test="${poList.status == '3' or poList.status == '7'}">
 									<c:if test="${not empty poList.signDate}">
 										<div class="col-6">
 											<div class="d-flex flex-column align-items-center gap-3">
@@ -499,7 +572,7 @@
 								</c:if>
 
 								<!-- Pending status -->
-								<c:if test="${poList.status == '2' or poList.status == '3' or poList.status == '5'}">
+								<c:if test="${poList.status == '2' or poList.status == '4' or poList.status == '5' or poList.status == '6'}">
 									<div class="col-6">
 										<div class="d-flex flex-column align-items-center gap-2">
 											<c:choose>
@@ -565,16 +638,22 @@
 						</div>
 					</c:if>
 
-					<c:if test="${poList.status == '3'}">
+					<c:if test="${poList.status == '4' || poList.status == '5' || poList.status == '6'|| poList.status == '7'}">
+						<c:choose>
+							<c:when test="${poList.status == '4'}"><c:set var="actionLabel" value="Returned By"/></c:when>
+							<c:when test="${poList.status == '5'}"><c:set var="actionLabel" value="Rejected By"/></c:when>
+							<c:when test="${poList.status == '6'}"><c:set var="actionLabel" value="Cancel By"/></c:when>
+							<c:when test="${poList.status == '7'}"><c:set var="actionLabel" value="In Progress By"/></c:when>
+						</c:choose>
+
 						<div class="card mb-10">
 							<div class="card-body filter-card px-10 py-9 rounded-3">
 								<div class="d-flex align-items-center fs-6">
-
-									<span>Returned By : ${userUpdate.employeeId} ${userUpdate.nameEN},
-										<fmt:formatDate value="${userUpdate.timeUpdate}" pattern="d MMM YYYY HH:mm" />
+									<span>${actionLabel} : ${userUpdate.employeeId} ${userUpdate.nameEN},
+										<fmt:formatDate value="${poList.timeUpdate}" pattern="d MMM YYYY HH:mm" />
 									</span>
 
-									<c:if test="${not empty poList.reason}">
+									<c:if test="${(poList.status == '4' || poList.status == '5' || poList.status == '7') and not empty poList.reason}">
 										<span class="ms-5 d-inline-flex align-items-center">
 											<i class="ki-duotone ki-document fs-3 me-3">
 												<span class="path1"></span>
@@ -583,31 +662,6 @@
 											<span>${poList.reason}</span>
 										</span>
 									</c:if>
-
-								</div>
-							</div>
-						</div>
-					</c:if>
-
-					<c:if test="${poList.status == '5'}">
-						<div class="card mb-10">
-							<div class="card-body filter-card px-10 py-9 rounded-3">
-								<div class="d-flex align-items-center fs-6">
-
-									<span>Rejected By : ${userUpdate.employeeId} ${userUpdate.nameEN},
-										<fmt:formatDate value="${userUpdate.timeUpdate}" pattern="d MMM YYYY HH:mm" />
-									</span>
-
-									<c:if test="${not empty poList.reason}">
-										<span class="ms-5 d-inline-flex align-items-center">
-											<i class="ki-duotone ki-document fs-3 me-3">
-												<span class="path1"></span>
-												<span class="path2"></span>
-											</i>
-											<span>${poList.reason}</span>
-										</span>
-									</c:if>
-
 								</div>
 							</div>
 						</div>
@@ -632,6 +686,7 @@
 												<select name="items_type" id="items_type" class="form-select h-45px" data-control="select2">
 													<option value="equipment" selected>Equipment</option>
 						                            <option value="consumables">Consumables</option>
+													<option value="accessory">Accessory</option>
 						                            <option value="office">Office supplies</option>
 												</select>
 											</div>
@@ -698,15 +753,15 @@
 								onclick="sessionStorage.removeItem('poDetailCart_draft'); location.href='purchase_order_list'"
     							class="btn btn-lg btn-light fw-medium text-light-inverse px-6 py-4 me-4 border">Back
 							</button>
-							<c:if test="${poList.status != '4' and poList.status != '5' and poList.status != '6'}">
+							<c:if test="${poList.status == '1' or poList.status == '4'}">
 								<button type="button" id="cancelFormBtn"
-									onclick="confirmLeaveForm('purchase_order_list')"
+									onclick="cancelPO()"
 									class="btn btn-lg btn-dark fw-medium px-6 py-4">Cancel
 								</button>
 							</c:if>
 						</div>
 						<c:choose>
-							<c:when test="${poList.status == '0'}">
+							<c:when test="${poList.status == '1'}">
 								<div class="d-flex">
 									<button type="button" id="saveDraft" onclick="saveDraftForm()"
 										class="btn btn-lg btn-cyan text-white fw-medium px-6 py-4 me-4">Save Draft
@@ -718,7 +773,6 @@
 							</c:when>
 							
 							<c:when test="${poList.status == '2'}">
-								
 									<div class="d-flex">
 										<button type="button" id="returnPOBtn" onclick="returnPO()"
 												class="btn btn-lg btn-info text-white fw-medium px-6 py-4 me-4">Return</button>
@@ -730,7 +784,7 @@
 								
 							</c:when>
 
-							<c:when test="${poList.status == '3'}">
+							<c:when test="${poList.status == '4'}">
 								<div class="d-flex">
 									<button type="button" id="editPOFormBtn"
 										class="btn btn-lg btn-primary fw-medium px-6 py-4"
@@ -738,7 +792,7 @@
 								</div>
 							</c:when>
 
-							<c:when test="${poList.status == '4'}">
+							<c:when test="${poList.status == '3'}">
 								<div class="d-flex">
 									<button type="button" id="inProgressPOFormBtn"
 										class="btn btn-lg bg-cyan text-white fw-medium px-6 py-4"
@@ -768,7 +822,7 @@
 	const editLocationId = "${empty poList.companyLocation ? '' : poList.companyLocation}";
 	const editContactId  = "${empty poList.contactId ? '' : poList.contactId}";
 	const poStatus       = "${empty poList.status ? '' : poList.status}";
-	const canEditPoDetail = (poStatus === '0');
+	const canEditPoDetail = (poStatus === '1');
 	
 	let pendingLocationId = editLocationId || null;
 	let pendingContactId  = editContactId  || null;
@@ -1049,6 +1103,150 @@
 			reader.onerror = error => reject(error);
 		});
 	}
+	
+	// --- Multi-file Attach ---
+	var selectedFiles = [];
+
+	function getFileIconPath(fileName) {
+	    var ext = fileName.split('.').pop().toLowerCase();
+	    switch (ext) {
+	        case 'pdf': return ctx + '/assets/media/svg/files/pdf.svg';
+	        case 'doc': case 'docx': return ctx + '/assets/media/svg/files/doc.svg';
+	        case 'png': case 'jpg': case 'jpeg': case 'gif': case 'webp':
+	            return ctx + '/assets/media/svg/files/image.svg';
+	        default: return ctx + '/assets/media/svg/files/folder-document.svg';
+	    }
+	}
+
+	async function processFiles(fileListInput) {
+	    var maxSize = 5 * 1024 * 1024;
+	    var oversizedFiles = [];
+	    var errorMsgAF = document.getElementById('errorMsgAF');
+
+	    for (let i = 0; i < fileListInput.length; i++) {
+	        const file = fileListInput[i];
+	        const existing = selectedFiles.find(f => f.name === file.name && f.size === file.size);
+	        if (existing) continue;
+
+	        if (file.type.match(/image\/(jpeg|jpg|png)/)) {
+	            const processedFile = await compressImage(file);
+	            selectedFiles.push(processedFile);
+	        } else if (file.size > maxSize) {
+	            oversizedFiles.push(file.name);
+	        } else {
+	            selectedFiles.push(file);
+	        }
+	    }
+	    if (errorMsgAF) {
+	        errorMsgAF.innerHTML = oversizedFiles.length > 0
+	            ? 'Files exceed 5MB: <strong>' + oversizedFiles.join(', ') + '</strong>' : '';
+	    }
+	    renderNewFileList();
+	    updateInputFiles();
+	}
+
+	function renderNewFileList() {
+	    var container = document.getElementById('attachFileList');
+	    if (!container) return;
+
+	    container.querySelectorAll('.new-attach-item').forEach(function (el) { el.remove(); });
+
+	    selectedFiles.forEach(function (file) {
+	        const fileName = file.name;
+	        const iconPath = getFileIconPath(fileName);
+
+	        const wrapper = document.createElement('div');
+	        wrapper.className = 'd-inline-flex align-items-center p-2 border border-gray-200 rounded bg-white new-attach-item';
+	        wrapper.style.maxWidth = '100%';
+
+	        const leftGroup = document.createElement('div');
+	        leftGroup.className = 'd-flex align-items-center overflow-hidden me-2';
+
+	        const icon = document.createElement('img');
+	        icon.src = iconPath;
+	        icon.className = 'w-25px h-25px me-3 flex-shrink-0';
+	        icon.alt = 'icon';
+
+	        const nameSpan = document.createElement('span');
+	        nameSpan.className = 'text-gray-800 fw-medium text-truncate';
+	        nameSpan.textContent = fileName;
+	        nameSpan.style.maxWidth = '220px';
+
+	        leftGroup.appendChild(icon);
+	        leftGroup.appendChild(nameSpan);
+
+	        const badge = document.createElement('span');
+	        badge.className = 'badge badge-light-success ms-2';
+	        badge.textContent = 'New';
+
+	        const removeBtn = document.createElement('span');
+	        removeBtn.className = 'btn btn-icon btn-sm btn-light-danger ms-2 cursor-pointer';
+	        removeBtn.innerHTML =
+	            '<i class="ki-duotone ki-trash fs-3">' +
+	                '<span class="path1"></span><span class="path2"></span>' +
+	                '<span class="path3"></span><span class="path4"></span><span class="path5"></span>' +
+	            '</i>';
+	        removeBtn.addEventListener('click', function () {
+	            selectedFiles = selectedFiles.filter(f => f.name !== fileName);
+	            renderNewFileList();
+	            updateInputFiles();
+	        });
+
+	        wrapper.appendChild(leftGroup);
+	        wrapper.appendChild(badge);
+	        wrapper.appendChild(removeBtn);
+	        container.appendChild(wrapper);
+	    });
+
+	}
+
+	function updateInputFiles() {
+	    var inputFile = document.getElementById('myFile');
+	    if (!inputFile) return;
+	    var dataTransfer = new DataTransfer();
+	    selectedFiles.forEach(file => dataTransfer.items.add(file));
+	    inputFile.files = dataTransfer.files;
+	}
+
+	(function initAttach() {
+	    var input = document.getElementById('myFile');
+	    if (input) input.addEventListener('change', function (event) { processFiles(event.target.files); });
+	})();
+	
+	function removeExistingAttachment(fileId, el){
+	    Swal.fire({
+	        title: "Are you sure?!",
+	        text: "Are you sure you want to delete this file?",
+	        icon: "warning",
+	        showCancelButton: true,
+	        confirmButtonText: "Yes, delete it",
+	        cancelButtonText: "Cancel",
+	        buttonsStyling: false,
+	        customClass: {
+	            confirmButton: "btn btn-danger",
+	            cancelButton: "btn btn-secondary"
+	        }
+	    }).then((result) => {
+	        if (!result.isConfirmed) return;
+
+	        $.ajax({
+	            url: ctx + '/delete_po_attachment',
+	            type: 'POST',
+	            dataType: 'json',
+	            data: { fileId: fileId },
+	            success: function (resp) {
+	                if (resp.data && resp.data.success) {
+	                    $(el).closest('[data-file-id]').remove();
+	                } else {
+	                    Swal.fire('Error', 'ไม่สามารถลบไฟล์ได้', 'error');
+	                }
+	            },
+	            error: function () {
+	                Swal.fire('Error', 'เกิดข้อผิดพลาดในการลบไฟล์', 'error');
+	            }
+	        });
+	    });
+	}
 
 	// --- Signature Upload ---
 	(function initSignatureUpload() {
@@ -1081,7 +1279,7 @@
 
 			let finalFile;
 			try {
-				finalFile = await compressImage(file);
+				finalFile = await processAndRemoveWhiteBg(file);
 			} catch (e) {
 				finalFile = file;
 			}
@@ -1132,7 +1330,7 @@
 		}
 	})();
 	
-	const isVendorReadOnly = ${poList.status != '0' ? 'true' : 'false'};
+	const isVendorReadOnly = ${poList.status != '1' ? 'true' : 'false'};
 	$('#vendor_id').on('change', function () {
 	    var companyId = $(this).val();
 
@@ -1339,7 +1537,8 @@ function mapDbItemsTypeToSelect(val){
     switch(String(val)){
         case '1': return 'equipment';
         case '2': return 'consumables';
-        case '3': return 'office';
+		case '3': return 'accessory';
+        case '4': return 'office';
         default:  return val; // เผื่อเป็น 'equipment'/'consumables'/'office' อยู่แล้ว
     }
 }
@@ -1509,6 +1708,16 @@ function createPoCard(item,index,poDetailId){
                     <span class="path3"></span><span class="path4"></span>
                     <span class="path5"></span><span class="path6"></span>
                     <span class="path7"></span><span class="path8"></span>
+                </i>
+            </div>
+        `;
+    }else if(item.itemsType=="accessory" || item.itemsType=="3"){
+        category="Accessory";
+        icon=`
+            <div class="symbol symbol-40px me-4">
+                <i class="ki-duotone ki-medal-star fs-2 text-teal">
+                    <span class="path1"></span><span class="path2"></span>
+                    <span class="path3"></span><span class="path4"></span>
                 </i>
             </div>
         `;
@@ -1892,31 +2101,34 @@ function saveDraftForm(){
         referenceDate: $('#kt_reference_datepicker').val() || '',
         poDetailCartJson: JSON.stringify(poDetailCart)
     };
+    const fd = new FormData();
+    Object.keys(payload).forEach(function (k) { fd.append(k, payload[k]); });
+    if (typeof selectedFiles !== 'undefined') {
+        selectedFiles.forEach(function (file) { fd.append('files', file, file.name); });
+    }
+    
  	$('#saveDraft').prop('disabled', true);
  
     $.ajax({
     	url: ctx + (EDIT_PO_ID ? '/update_po' : '/save_po'),
         type: 'POST',
         dataType: 'json',
-        data: payload,
+        data: fd,
+        processData: false,
+        contentType: false,
         success: function (resp) {
-            // if (resp.debug) console.log('[save_po debug]', resp.debug);
             if (resp.data && resp.data.poId) {
                 sessionStorage.removeItem(PO_CART_STORAGE_KEY);
-                Swal.fire({
-                    title: 'Success!',
-                    text: 'Po saved draft successfully!',
-                    icon: 'success'
-                }).then(() => {
-                    window.location.href = ctx + '/purchase_order_list';
-                });
+                Swal.fire({ title: 'Success!', text: 'Po saved draft successfully!', icon: 'success' })
+                    .then(() => { window.location.href = ctx + '/purchase_order_list'; });
             } else {
                 Swal.fire('Error', 'ไม่สามารถบันทึก Draft ได้', 'error');
             }
         },
         error: function () {
             Swal.fire('Error', 'เกิดข้อผิดพลาดในการบันทึก', 'error');
-        }
+        },
+        complete: function(){ $('#saveDraft').prop('disabled', false); }
     });
 }
 
@@ -1951,7 +2163,7 @@ function submitPO(){
         });
         return;
     }
-
+    
     Swal.fire({
     	title: "Are you sure?!",
         text: "Do you want to save the changes?",
@@ -1979,6 +2191,12 @@ function submitPO(){
             poDetailCartJson: JSON.stringify(poDetailCart),
             status: '2'
         };
+        
+        const fd = new FormData();
+        Object.keys(payload).forEach(function (k) { fd.append(k, payload[k]); });
+        if (typeof selectedFiles !== 'undefined') {
+            selectedFiles.forEach(function (file) { fd.append('files', file, file.name); });
+        }
 
         $('#savePOFormBtn').prop('disabled', true);
 
@@ -1986,9 +2204,10 @@ function submitPO(){
         	url: ctx + (EDIT_PO_ID ? '/update_po' : '/save_po'),
             type: 'POST',
             dataType: 'json',
-            data: payload,
+            data: fd,
+            processData: false,
+            contentType: false,
             success: function (resp) {
-                // if (resp.debug) console.log('[save_po debug]', resp.debug);
                 if (resp.data && resp.data.poId) {
                     sessionStorage.removeItem(PO_CART_STORAGE_KEY);
                     Swal.fire({
@@ -2058,7 +2277,7 @@ function returnPO(){
         const payload = {
             poId: EDIT_PO_ID || '',
             reason: reasonVal,
-            status: '3'
+            status: '4'
         };
 
         $('#returnPOBtn').prop('disabled', true);
@@ -2111,7 +2330,7 @@ function editPO(){
 
         const payload = {
             poId: EDIT_PO_ID || '',
-            status: '0'
+            status: '1'
         };
 
         $('#returnPOBtn').prop('disabled', true);
@@ -2222,7 +2441,7 @@ function approvePO(){
 
         const payload = {
             poId: EDIT_PO_ID || '',
-            status: '4' 
+            status: '3' 
         };
 
         $('#approvePOBtn').prop('disabled', true);
@@ -2251,6 +2470,110 @@ function approvePO(){
             },
             complete: function(){
                 $('#approvePOBtn').prop('disabled', false);
+            }
+        });
+    });
+}
+
+function inProgressPO(){
+    Swal.fire({
+        title: "Are you sure?!",
+        text: "Do you want to in progress this PO?",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonText: "Save",
+        cancelButtonText: "Close",
+        buttonsStyling: false,
+        customClass: {
+            confirmButton: "btn btn-success",
+            cancelButton: "btn btn-secondary"
+        }
+    }).then((result) => {
+        if (!result.isConfirmed) return;
+
+        const payload = {
+            poId: EDIT_PO_ID || '',
+            status: '7' 
+        };
+
+        $('#inProgressPOFormBtn').prop('disabled', true);
+
+        $.ajax({
+            url: ctx + '/update_status_po',
+            type: 'POST',
+            dataType: 'json',
+            data: payload,
+            success: function (resp) {
+                if (resp.data && resp.data.poId) {
+                    sessionStorage.removeItem(PO_CART_STORAGE_KEY);
+                    Swal.fire({
+                        title: 'Success!',
+                        text: 'PO in progress successfully!',
+                        icon: 'success'
+                    }).then(() => {
+                        window.location.href = ctx + '/purchase_order_list';
+                    });
+                } else {
+                    Swal.fire('Error', 'ไม่สามารถอนุมัติ PO ได้', 'error');
+                }
+            },
+            error: function () {
+                Swal.fire('Error', 'เกิดข้อผิดพลาดในการส่งข้อมูล', 'error');
+            },
+            complete: function(){
+                $('#inProgressPOFormBtn').prop('disabled', false);
+            }
+        });
+    });
+}
+
+function cancelPO(){
+    Swal.fire({
+        title: "Are you sure?!",
+        text: "Do you want to cancel this PO?",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonText: "Save",
+        cancelButtonText: "Close",
+        buttonsStyling: false,
+        customClass: {
+            confirmButton: "btn btn-success",
+            cancelButton: "btn btn-secondary"
+        }
+    }).then((result) => {
+        if (!result.isConfirmed) return;
+
+        const payload = {
+            poId: EDIT_PO_ID || '',
+            status: '6' 
+        };
+
+        $('#cancelFormBtn').prop('disabled', true);
+
+        $.ajax({
+            url: ctx + '/update_status_po',
+            type: 'POST',
+            dataType: 'json',
+            data: payload,
+            success: function (resp) {
+                if (resp.data && resp.data.poId) {
+                    sessionStorage.removeItem(PO_CART_STORAGE_KEY);
+                    Swal.fire({
+                        title: 'Success!',
+                        text: 'PO cancel successfully!',
+                        icon: 'success'
+                    }).then(() => {
+                        window.location.href = ctx + '/purchase_order_list';
+                    });
+                } else {
+                    Swal.fire('Error', 'ไม่สามารถลบ PO ได้', 'error');
+                }
+            },
+            error: function () {
+                Swal.fire('Error', 'เกิดข้อผิดพลาดในการส่งข้อมูล', 'error');
+            },
+            complete: function(){
+                $('#cancelFormBtn').prop('disabled', false);
             }
         });
     });

@@ -53,9 +53,9 @@
 	margin-top: 4px;
 }
 
-.border-cyan {
+/* .border-cyan {
 	border-color: #0DCAF0 !important;
-} 
+}  */
 </style>
 
 </head>
@@ -128,7 +128,7 @@
 						</div>
 						<div class="card-body filter-card px-10 py-9 rounded-3">
 						<!-- Summary PO -->
-						<div class="d-flex flex-row justify-content-center mb-10">					
+						<!-- <div class="d-flex flex-row justify-content-center mb-10">					
 							<div class="row align-items-center mt-10 mx-5 fs-6 fw-bold">
 								
 								<div class="col-lg-3 col-md-4 col-6 d-flex align-items-center justify-content-center mb-5 summary-card border border-1 border-primary rounded-3 py-3 px-1" data-status="All" data-border-color="border-primary" style="cursor: pointer;">
@@ -136,54 +136,185 @@
 									<span class="badge badge-primary fs-7">All</span>
 								</div>
 								
-								<div class="col-lg-3 col-md-4 col-6 d-flex align-items-center justify-content-center mb-5 summary-card border border-1 border-transparent rounded-3 p-3" data-status="Draft" data-border-color="border-gray-400" style="cursor: pointer;">
-									<span class="fs-2hx me-2 text-gray-600" id="summaryPODraft">${poSummary['Draft']}</span>
-									<span class="badge badge-light fs-7">Draft</span>
+								<div class="col-lg-3 col-md-4 col-6 d-flex align-items-center justify-content-center mb-5 summary-card border border-1 border-transparent rounded-3 p-3" data-status="${poStatusNames['1']}" data-border-color="border-gray-400" style="cursor: pointer;">
+									<span class="fs-2hx me-2 text-gray-600" id="summaryPODraft">${poSummary['1']}</span>
+									<span class="badge badge-light fs-7">${poStatusNames['1']}</span>
 								</div>
 								
-								<div class="col-lg-3 col-md-4 col-6 d-flex align-items-center justify-content-center mb-5 summary-card border border-1 border-transparent rounded-3 p-3" data-status="Pending" data-border-color="border-warning" style="cursor: pointer;">
-									<span class="fs-2hx me-2 text-warning" id="summaryPOPending">${poSummary['Pending']}</span>
-									<span class="badge badge-warning fs-7">Pending</span>
+								<div class="col-lg-3 col-md-4 col-6 d-flex align-items-center justify-content-center mb-5 summary-card border border-1 border-transparent rounded-3 p-3" data-status="${poStatusNames['2']}" data-border-color="border-warning" style="cursor: pointer;">
+									<span class="fs-2hx me-2 text-warning" id="summaryPOPending">${poSummary['2']}</span>
+									<span class="badge badge-warning fs-7">${poStatusNames['2']}</span>
 								</div>
 								
-								<div class="col-lg-3 col-md-4 col-6 d-flex align-items-center justify-content-center mb-5 summary-card border border-1 border-transparent rounded-3 p-3" data-status="Approved" data-border-color="border-success" style="cursor: pointer;">
-									<span class="fs-2hx me-2 text-success" id="summaryPOApproved">${poSummary['Approved']}</span>
-									<span class="badge badge-success fs-7">Approved</span>
+								
+								<div class="col-lg-3 col-md-4 col-6 d-flex align-items-center justify-content-center mb-5 summary-card border border-1 border-transparent rounded-3 p-3" data-status="${poStatusNames['3']}" data-border-color="border-success" style="cursor: pointer;">
+									<span class="fs-2hx me-2 text-success" id="summaryPOApproved">${poSummary['3']}</span>
+									<span class="badge badge-success fs-7">${poStatusNames['3']}</span>
 								</div>
 								
-								<div class="col-lg-3 col-md-4 col-6 d-flex align-items-center justify-content-center mb-5 summary-card border border-1 border-transparent rounded-3 p-3" data-status="In-Progress" data-border-color="border-cyan" style="cursor: pointer;">
-									<span class="fs-2hx me-2 text-cyan" id="summaryPOInProgress">${poSummary['In-Progress']}</span>
-									<span class="badge badge-cyan fs-7">In-Progress</span>
+								<div class="col-lg-3 col-md-4 col-6 d-flex align-items-center justify-content-center mb-5 summary-card border border-1 border-transparent rounded-3 p-3" data-status="${poStatusNames['4']}" data-border-color="border-info" style="cursor: pointer;">
+									<span class="fs-2hx me-2 text-info" id="summaryPOReturn">${poSummary['4']}</span>
+									<span class="badge badge-info fs-7 lh-base">${poStatusNames['4']}</span>
 								</div>
 								
-								<div class="col-lg-3 col-md-4 col-6 d-flex align-items-center justify-content-center mb-5 summary-card border border-1 border-transparent rounded-3 p-3" data-status="Return" data-border-color="border-info" style="cursor: pointer;">
-									<span class="fs-2hx me-2 text-info" id="summaryPOReturn">${poSummary['Return']}</span>
-									<span class="badge badge-info fs-7 lh-base">Return</span>
+								<div class="col-lg-3 col-md-4 col-6 d-flex align-items-center justify-content-center mb-5 summary-card border border-1 border-transparent rounded-3 p-3" data-status="${poStatusNames['5']}" data-border-color="border-danger" style="cursor: pointer;">
+									<span class="fs-2hx me-2 text-danger" id="summaryPORejected">${poSummary['5']}</span>
+									<span class="badge badge-danger fs-7">${poStatusNames['5']}</span>
 								</div>
 								
-								<div class="col-lg-3 col-md-4 col-6 d-flex align-items-center justify-content-center mb-5 summary-card border border-1 border-transparent rounded-3 p-3" data-status="Rejected" data-border-color="border-danger" style="cursor: pointer;">
-									<span class="fs-2hx me-2 text-danger" id="summaryPORejected">${poSummary['Rejected']}</span>
-									<span class="badge badge-danger fs-7">Rejected</span>
+								<div class="col-lg-3 col-md-4 col-6 d-flex align-items-center justify-content-center mb-5 summary-card border border-1 border-transparent rounded-3 p-3" data-status="${poStatusNames['6']}" data-border-color="border-dark" style="cursor: pointer;">
+									<span class="fs-2hx me-2 text-dark" id="summaryPOCancel">${poSummary['6']}</span>
+									<span class="badge badge-dark fs-7">${poStatusNames['6']}</span>
 								</div>
-								
-								<div class="col-lg-3 col-md-4 col-6 d-flex align-items-center justify-content-center mb-5 summary-card border border-1 border-transparent rounded-3 p-3" data-status="Closed" data-border-color="border-dark" style="cursor: pointer;">
-									<span class="fs-2hx me-2 text-dark" id="summaryPOClosed">${poSummary['Closed']}</span>
-									<span class="badge badge-dark fs-7">Closed</span>
+
+								<div class="col-lg-3 col-md-4 col-6 d-flex align-items-center justify-content-center mb-5 summary-card border border-1 border-transparent rounded-3 p-3" data-status="${poStatusNames['7']}" data-border-color="border-cyan" style="cursor: pointer;">
+									<span class="fs-2hx me-2 text-cyan" id="summaryPOInProgress">${poSummary['7']}</span>
+									<span class="badge badge-cyan fs-7">${poStatusNames['7']}</span>
 								</div>
-						
 							</div>
-						</div>
-							
+						</div> -->
+						<!-- Summary PO -->
+							<div class="d-flex flex-row justify-content-center mb-10">
+								<div class="row align-items-center mt-10 mx-5 fs-6 fw-bold">
+
+									<!-- All -->
+									<div class="col-lg-3 col-md-4 col-6 d-flex align-items-center justify-content-center mb-5 summary-card border border-1 border-primary rounded-3 py-3 px-1"
+										data-status="All"
+										data-border-color="border-primary"
+										style="cursor: pointer;">
+
+										<span class="fs-2hx me-2 text-primary" id="summaryPOAll">
+											${poSummaryTotal}
+										</span>
+
+										<span class="badge badge-primary fs-7">All</span>
+									</div>
+
+									<!-- Draft -->
+									<div class="col-lg-3 col-md-4 col-6 d-flex align-items-center justify-content-center mb-5 summary-card border border-1 border-transparent rounded-3 p-3"
+										data-status="1"
+										data-border-color="${poStatusColors['1'] == 'secondary' ? 'border-gray-400' : 'border-'.concat(poStatusColors['1'])}"
+										style="cursor: pointer;">
+
+										<span class="fs-2hx me-2 ${poStatusColors['1'] == 'secondary' ? 'text-gray-600' : 'text-'.concat(poStatusColors['1'])}"
+											id="summaryPODraft">
+											${poSummary['1']}
+										</span>
+
+										<span class="badge badge-${poStatusColors['1']} fs-7">
+											${poStatusNames['1']}
+										</span>
+									</div>
+
+									<!-- Pending -->
+									<div class="col-lg-3 col-md-4 col-6 d-flex align-items-center justify-content-center mb-5 summary-card border border-1 border-transparent rounded-3 p-3"
+										data-status="2"
+										data-border-color="${poStatusColors['2'] == 'secondary' ? 'border-gray-400' : 'border-'.concat(poStatusColors['2'])}"
+										style="cursor: pointer;">
+
+										<span class="fs-2hx me-2 ${poStatusColors['2'] == 'secondary' ? 'text-gray-600' : 'text-'.concat(poStatusColors['2'])}"
+											id="summaryPOPending">
+											${poSummary['2']}
+										</span>
+
+										<span class="badge badge-${poStatusColors['2']} fs-7">
+											${poStatusNames['2']}
+										</span>
+									</div>
+
+									<!-- Approved -->
+									<div class="col-lg-3 col-md-4 col-6 d-flex align-items-center justify-content-center mb-5 summary-card border border-1 border-transparent rounded-3 p-3"
+										data-status="3"
+										data-border-color="${poStatusColors['3'] == 'secondary' ? 'border-gray-400' : 'border-'.concat(poStatusColors['3'])}"
+										style="cursor: pointer;">
+
+										<span class="fs-2hx me-2 ${poStatusColors['3'] == 'secondary' ? 'text-gray-600' : 'text-'.concat(poStatusColors['3'])}"
+											id="summaryPOApproved">
+											${poSummary['3']}
+										</span>
+
+										<span class="badge badge-${poStatusColors['3']} fs-7">
+											${poStatusNames['3']}
+										</span>
+									</div>
+
+									<!-- Return -->
+									<div class="col-lg-3 col-md-4 col-6 d-flex align-items-center justify-content-center mb-5 summary-card border border-1 border-transparent rounded-3 p-3"
+										data-status="4"
+										data-border-color="${poStatusColors['4'] == 'secondary' ? 'border-gray-400' : 'border-'.concat(poStatusColors['4'])}"
+										style="cursor: pointer;">
+
+										<span class="fs-2hx me-2 ${poStatusColors['4'] == 'secondary' ? 'text-gray-600' : 'text-'.concat(poStatusColors['4'])}"
+											id="summaryPOReturn">
+											${poSummary['4']}
+										</span>
+
+										<span class="badge badge-${poStatusColors['4']} fs-7 lh-base">
+											${poStatusNames['4']}
+										</span>
+									</div>
+
+									<!-- Rejected -->
+									<div class="col-lg-3 col-md-4 col-6 d-flex align-items-center justify-content-center mb-5 summary-card border border-1 border-transparent rounded-3 p-3"
+										data-status="5"
+										data-border-color="${poStatusColors['5'] == 'secondary' ? 'border-gray-400' : 'border-'.concat(poStatusColors['5'])}"
+										style="cursor: pointer;">
+
+										<span class="fs-2hx me-2 ${poStatusColors['5'] == 'secondary' ? 'text-gray-600' : 'text-'.concat(poStatusColors['5'])}"
+											id="summaryPORejected">
+											${poSummary['5']}
+										</span>
+
+										<span class="badge badge-${poStatusColors['5']} fs-7">
+											${poStatusNames['5']}
+										</span>
+									</div>
+
+									<!-- Cancel -->
+									<div class="col-lg-3 col-md-4 col-6 d-flex align-items-center justify-content-center mb-5 summary-card border border-1 border-transparent rounded-3 p-3"
+										data-status="6"
+										data-border-color="${poStatusColors['6'] == 'secondary' ? 'border-gray-400' : 'border-'.concat(poStatusColors['6'])}"
+										style="cursor: pointer;">
+
+										<span class="fs-2hx me-2 ${poStatusColors['6'] == 'secondary' ? 'text-gray-600' : 'text-'.concat(poStatusColors['6'])}"
+											id="summaryPOCancel">
+											${poSummary['6']}
+										</span>
+
+										<span class="badge badge-${poStatusColors['6']} fs-7">
+											${poStatusNames['6']}
+										</span>
+									</div>
+
+									<!-- In-Progress -->
+									<div class="col-lg-3 col-md-4 col-6 d-flex align-items-center justify-content-center mb-5 summary-card border border-1 border-transparent rounded-3 p-3"
+										data-status="7"
+										data-border-color="${poStatusColors['7'] == 'secondary' ? 'border-gray-400' : 'border-'.concat(poStatusColors['7'])}"
+										style="cursor: pointer;">
+
+										<span class="fs-2hx me-2 ${poStatusColors['7'] == 'secondary' ? 'text-gray-600' : 'text-'.concat(poStatusColors['7'])}"
+											id="summaryPOInProgress">
+											${poSummary['7']}
+										</span>
+
+										<span class="badge badge-${poStatusColors['7']} fs-7">
+											${poStatusNames['7']}
+										</span>
+									</div>
+
+								</div>
+							</div>
+														
 							<div class="table-responsive ">
 								<table id="purchaseOrderList"
 										class="table table-striped gy-7 gs-7 table-hover border-gray-300 table-row-bordered table-row-gray-200 ">
 									<thead class="border-bottom-1 text-uppercase">
 										<tr class="fs-7 fw-bold text-gray-500">
 											<th class="min-w-50px text-center">#</th>
-											<th class="min-w-80px">PO ID</th>
-											<th class="min-w-80px">PR ID</th>
-											<th class="min-w-200px">Request Name</th>
-											<th class="min-w-150px">Request Date</th>
+											<th class="min-w-80px text-start">PO ID</th>
+											<th class="min-w-80px text-start">PR Ref</th>
+											<th class="min-w-200px text-start">Request Name</th>
+											<th class="min-w-150px text-start">Request Date</th>
 											<th class="min-w-130px text-end">Product Item</th>
 											<th class="min-w-130px text-end">Status</th>
 											<th class="min-w-130px text-end px-3">Actions</th>
@@ -194,48 +325,65 @@
 									<c:forEach var="poItem" items="${poList}">
 										<tr class="align-middle">
 											<td class="text-gray-900 fs-6 fw-normal text-center row-number"></td>
-											<td class="text-gray-900 fs-6 fw-normal">
+											<td class="text-gray-900 fs-6 fw-normal text-start">
 												${poItem.po_id}
 											</td>
-											<td class="text-gray-900 fs-6 fw-normal">
-												-
+											<td class="text-gray-900 fs-6 fw-normal text-start">
+												<c:choose>
+													<c:when test="${poItem.pr_ref_count > 0}">
+														${poItem.pr_ref_count}
+													</c:when>
+													<c:otherwise>
+														-
+													</c:otherwise>
+												</c:choose>
 											</td>
-											<td class="text-gray-900 fs-6 fw-normal">
+											<td class="text-gray-900 fs-6 fw-normal text-start">
 												${poItem.user_create_name}
 											</td>
-											<td class="text-gray-900 fs-6 fw-normal">
+											<td class="text-gray-900 fs-6 fw-normal text-start">
 												<fmt:formatDate value="${poItem.time_create}" pattern="dd MMM yyyy, HH:mm" />
 											</td>
 											<td class="text-gray-900 fs-6 fw-normal text-end">
 												${poItem.detail_count}
 											</td>
-											<td class="text-gray-900 fs-6 fw-normal text-end">
+											<!-- <td class="text-gray-900 fs-6 fw-normal text-end">
 												<c:choose>
-													<c:when test="${poItem.status == '0'}">
-														<span class="badge badge-lg bg-light-secondary fw-semibold fs-7">Draft</span>
-													</c:when>
 													<c:when test="${poItem.status == '1'}">
-														<span class="badge badge-lg bg-cyan text-white fw-semibold fs-7">In-Progress</span>
+														<span class="badge badge-lg bg-secondary fw-semibold fs-7">${poItem.status_name}</span>
 													</c:when>
-													<c:when test="${poItem.status == '2'}">
-														<span class="badge badge-lg badge-warning text-whitefw-semibold fs-7">Pending</span>
-													</c:when>
+
 													<c:when test="${poItem.status == '3'}">
-														<span class="badge badge-lg badge-info text-whitefw-semibold fs-7">Return</span>
+														<span class="badge badge-lg bg-success text-white fw-semibold fs-7">${poItem.status_name}</span>
 													</c:when>
+
+													<c:when test="${poItem.status == '2'}">
+														<span class="badge badge-lg badge-warning text-white fw-semibold fs-7">${poItem.status_name}</span>
+													</c:when>
+
 													<c:when test="${poItem.status == '4'}">
-														<span class="badge badge-lg bg-success text-white fw-semibold fs-7">Approved</span>
+														<span class="badge badge-lg badge-info text-white fw-semibold fs-7">${poItem.status_name}</span>
 													</c:when>
+													
 													<c:when test="${poItem.status == '5'}">
-														<span class="badge badge-lg bg-danger text-white fw-semibold fs-7">Rejected</span>
+														<span class="badge badge-lg bg-danger text-white fw-semibold fs-7">${poItem.status_name}</span>
 													</c:when>
+
 													<c:when test="${poItem.status == '6'}">
-														<span class="badge badge-lg bg-dark text-white fw-semibold fs-7">Closed</span>
+														<span class="badge badge-lg bg-dark text-white fw-semibold fs-7">${poItem.status_name}</span>
 													</c:when>
-													<c:otherwise>
-														<span class="badge badge-lg bg-light-secondary fw-semibold fs-7">-</span>
-													</c:otherwise>
+
+													<c:when test="${poItem.status == '7'}">
+														<span class="badge badge-lg bg-cyan text-white fw-semibold fs-7">${poItem.status_name}</span>
+													</c:when>
+
+													<c:otherwise></c:otherwise>
 												</c:choose>
+											</td> -->
+											<td class="text-gray-900 fs-6 fw-normal text-end" data-code="${poItem.status}">
+												<span class="badge badge-lg badge-${poItem.status_color} fw-semibold fs-7 ${poItem.status_color == 'secondary' ? 'text-dark' : 'text-white'}">
+													${poItem.status_name}
+												</span>
 											</td>
 											<td class="text-end px-3">
 												<div class="d-flex justify-content-end align-items-center gap-2">
@@ -244,14 +392,35 @@
 														title="Edit"> <i class="ki-duotone ki-pencil fs-2"><span
 														class="path1"></span><span class="path2"></span></i>
 													</a> 
-														
-													<a href="po_perform_delete?poId=${poItem.po_id}" onclick="return confirmDelete(this.href);"
+													
+													<!-- <a href="po_perform_delete?poId=${poItem.po_id}" onclick="return confirmDelete(this.href);"
 														class="btn btn-icon btn-light-danger btn-sm" title="Delete">
 														<i class="ki-duotone ki-trash fs-2"><span
 															class="path1"></span><span class="path2"></span><span
 															class="path3"></span><span class="path4"></span><span
 															class="path5"></span></i>
-													</a>
+													</a> -->
+													<c:choose>
+														<c:when test="${poItem.status == '1' or poItem.status == '4'}">
+															<a href="po_perform_delete?poId=${poItem.po_id}" onclick="return confirmDelete(this.href);"
+																class="btn btn-icon btn-light-danger btn-sm" title="Delete">
+																<i class="ki-duotone ki-trash fs-2"><span
+																	class="path1"></span><span class="path2"></span><span
+																	class="path3"></span><span class="path4"></span><span
+																	class="path5"></span></i>
+															</a>
+														</c:when>
+														<c:otherwise>
+															<a class="btn btn-icon btn-light-danger btn-sm disabled"
+																title="Delete" style="pointer-events: none; opacity: 0.5; cursor: not-allowed;"
+																aria-disabled="true">
+																<i class="ki-duotone ki-trash fs-2"><span
+																	class="path1"></span><span class="path2"></span><span
+																	class="path3"></span><span class="path4"></span><span
+																	class="path5"></span></i>
+															</a>
+														</c:otherwise>
+													</c:choose>
 												</div>
 											</td>
 										</tr>
@@ -319,21 +488,30 @@
 		    });
 			
 			/* ---- Summary Card Filter ---- */
+			var selectedStatusCode = null; // null = All
+			$.fn.dataTable.ext.search.push(function(settings, searchData, dataIndex) {
+				if (settings.nTable.id !== 'purchaseOrderList') {
+					return true;
+				}
+				if (selectedStatusCode === null) {
+					return true;
+				}
+				var cellCode = $(settings.aoData[dataIndex].anCells[6]).data('code');
+				return String(cellCode) === String(selectedStatusCode);
+			});
+
 			$('.summary-card').on('click', function() {
 			    $('.summary-card').each(function() {
 			        var colorClass = $(this).data('border-color');
 			        $(this).removeClass(colorClass).addClass('border-transparent');
 			    });
-			    
+
 			    var activeColor = $(this).data('border-color');
 			    $(this).removeClass('border-transparent').addClass(activeColor);
-			    
+
 			    var status = $(this).data('status');
-			    if (status === "All") {
-			        table.column(6).search('').draw();
-			    } else {
-			        table.column(6).search('^' + status + '$', true, false).draw();
-			    }
+			    selectedStatusCode = (status === "All") ? null : status;
+			    table.draw();
 			});
 			
 			

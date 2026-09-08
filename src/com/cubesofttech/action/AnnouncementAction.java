@@ -34,6 +34,7 @@ import com.cubesofttech.dao.UserDAO;
 import com.cubesofttech.model.Announcement;
 import com.cubesofttech.model.FileUpload;
 import com.cubesofttech.model.User;
+import com.cubesofttech.service.FileAttachmentService;
 import com.cubesofttech.util.DateUtil;
 import com.cubesofttech.util.FileUtil;
 import com.google.gson.Gson;
@@ -54,6 +55,9 @@ public class AnnouncementAction extends ActionSupport {
 
 	@Autowired
 	public FileUploadDAO fileuploadDAO;
+
+	@Autowired
+	private FileAttachmentService fileAttachmentService;
 
 	@Autowired
 	public UserDAO userDAO;
@@ -221,6 +225,7 @@ public class AnnouncementAction extends ActionSupport {
 				return ERROR;
 			}
 	    	
+
 	    	request.setCharacterEncoding("UTF-8");
 	        response.setCharacterEncoding("UTF-8");
 	        
@@ -345,8 +350,19 @@ public class AnnouncementAction extends ActionSupport {
 			}
 			List<Map<String, Object>> announcement = announcementDAO.readcardannounce(Integer.parseInt(id));
 			request.setAttribute("announcement", announcement);
-
-			fileUploadlist = announcementDAO.findByPageAndPageId("announcementFiles", String.valueOf(id));
+			
+			fileUploadlist = fileAttachmentService.listAttachments("announcement", String.valueOf(id));
+			// กรองรูปปกออกจาก list ไฟล์แนบ (cover ผูกกับ announcement.file_id เดี่ยว ไม่ใช่รายการไฟล์แนบ)
+			String coverFileId = (announce != null) ? announce.getFile_id() : null;
+			if (fileUploadlist != null && coverFileId != null) {
+				List<FileUpload> filteredFiles = new ArrayList<>();
+				for (FileUpload f : fileUploadlist) {
+					if (!coverFileId.equals(String.valueOf(f.getFileId()))) {
+						filteredFiles.add(f);
+					}
+				}
+				fileUploadlist = filteredFiles;
+			}
 			request.setAttribute("announcementFiles", fileUploadlist);
 
 			try {
@@ -419,36 +435,39 @@ public class AnnouncementAction extends ActionSupport {
 			if (fileUpload != null) {
 				// If edit delete old file
 				if (isEdit && announcement.getFile_id() != null) {
-					FileUpload oldFile = fileuploadDAO.findById(Integer.parseInt(announcement.getFile_id()));
-					if (oldFile != null)
+
+					Integer oldFileId = Integer.valueOf(announcement.getFile_id());
+					FileUpload oldFile = fileuploadDAO.findById(oldFileId);
+
+					if (oldFile != null) {
+
+						// Delete physical file
+						String realPath = request.getServletContext().getRealPath("/");
+						File physicalFile = new File(realPath + oldFile.getPath());
+
+						if (physicalFile.exists()) {
+							physicalFile.delete();
+						}
+
+						// Delete DB record
 						fileuploadDAO.delete(oldFile);
+
+						log.debug("Deleted old announcement cover file: " + oldFileId);
+					}
 				}
 
-				int maxId = fileuploadDAO.getMaxId() + 1;
-				ServletContext context = request.getServletContext();
-				String fileServerPath = context.getRealPath("/");
-				String fileName = fileUploadFileName;
-				FileUtil.upload(fileUpload, fileServerPath + "upload/user/", maxId + "_" + fileName);
-
-				int split = fileName.lastIndexOf('.');
-				String name = fileName.substring(0, split);
-				String type = fileName.substring(split).toLowerCase();
-
-				FileUpload fileupload = new FileUpload();
-				fileupload.setFileId(maxId);
-				fileupload.setPath("/upload/user/" + maxId + "_" + fileName);
-				fileupload.setSize(formatFileSize(fileUpload.length()));
-				fileupload.setName(name);
-				fileupload.setType(type);
-				fileupload.setUserId(onlineUser.getId());
-				fileupload.setUserCreate(onlineUser.getId());
-				fileupload.setPageId(announcementIdStr);
-				fileupload.setPage("announcement");
-				fileupload.setTimeCreate(DateUtil.getCurrentTime());
-				fileuploadDAO.save(fileupload);
-
-				announcement.setFile_id(String.valueOf(fileupload.getFileId()));
-				announcementDAO.update(announcement);
+				List<FileUpload> savedCoverFiles = fileAttachmentService.attach(
+					Arrays.asList(fileUpload),
+					Arrays.asList(fileUploadFileName),
+					"announcement",
+					announcementIdStr,
+					onlineUser.getId(),
+					request.getServletContext().getRealPath("/")
+				);
+				if (savedCoverFiles != null && !savedCoverFiles.isEmpty()) {
+					announcement.setFile_id(String.valueOf(savedCoverFiles.get(0).getFileId()));
+					announcementDAO.update(announcement);
+				}
 
 			} else if (!isEdit) {
 				int maxId = fileuploadDAO.getMaxId() + 1;
@@ -476,53 +495,29 @@ public class AnnouncementAction extends ActionSupport {
 			log.debug("files to delete: " + Arrays.toString(fileIdss));
 
 			if (fileIdss != null && fileIdss.length > 0) {
-				for (String fileId : fileIdss) {
-					FileUpload file = fileuploadDAO.findById(Integer.parseInt(fileId));
-					if (file != null) {
-						fileuploadDAO.delete(file);
-						log.debug("Deleted file ID: " + fileId);
-					}
-				}
+				fileAttachmentService.deleteByIds(Arrays.asList(fileIdss), request.getServletContext().getRealPath("/"));
+				log.debug("Deleted file IDs: " + Arrays.toString(fileIdss));
 			} else {
 				log.debug("No file to delete");
 			}
+			
 
 			if (files != null && files.length > 0 && filesUploadFileName != null && !filesUploadFileName.isEmpty()) {
 				String[] fileNames = new Gson().fromJson(filesUploadFileName, String[].class);
-				for (int i = 0; i < files.length; i++) {
-					if (i >= fileNames.length) {
-						log.warn("Mismatch between uploaded files and filenames. Skipping index: " + i);
-						continue;
-					}
 
-					int maxId1 = fileuploadDAO.getMaxId() + 1;
-					String fileName1 = fileNames[i];
-					ServletContext context1 = request.getServletContext();
-					String fileServerPath1 = context1.getRealPath("/");
-					long fileSize = files[i].length();
-
-					FileUpload fileupload1 = new FileUpload();
-					fileupload1.setSize(formatFileSize(fileSize));
-					fileupload1.setPath("/upload/user/" + maxId1 + "_" + fileName1);
-					FileUtil.upload(files[i], fileServerPath1 + "upload/user/", maxId1 + "_" + fileName1);
-
-					int split1 = fileName1.lastIndexOf('.');
-					String name1 = fileName1.substring(0, split1);
-					String type1 = fileName1.substring(split1);
-
-					fileupload1.setName(name1);
-					fileupload1.setType(type1);
-					fileupload1.setFileId(maxId1);
-					fileupload1.setUserId(onlineUser.getId());
-					fileupload1.setUserCreate(onlineUser.getId());
-					fileupload1.setPage("announcementFiles");
-					fileupload1.setPageId(announcementIdStr);
-					fileupload1.setUserUpdate(onlineUser.getId());
-					fileupload1.setTimeCreate(DateUtil.getCurrentTime());
-					fileuploadDAO.save(fileupload1);
-
-					log.debug("Added file ID: " + fileupload1.getFileId());
+				int n = Math.min(files.length, fileNames.length);
+				if (n < files.length) {
+					log.warn("Mismatch between uploaded files and filenames. Skipping extra files.");
 				}
+				List<FileUpload> savedAttachFiles = fileAttachmentService.attach(
+					Arrays.asList(files).subList(0, n),
+					Arrays.asList(fileNames).subList(0, n),
+					"announcement",
+					announcementIdStr,
+					onlineUser.getId(),
+					request.getServletContext().getRealPath("/")
+				);
+				log.debug("Added " + (savedAttachFiles != null ? savedAttachFiles.size() : 0) + " files");
 			} else {
 				log.debug("No new file to upload");
 			}
@@ -566,19 +561,35 @@ public class AnnouncementAction extends ActionSupport {
 
 	        FileUpload fileimg = null;
 	        String fileIdStr = announcement.getFile_id();
-	        
-	        if (fileIdStr != null && !fileIdStr.trim().isEmpty()) { 
+
+	        if (fileIdStr != null && !fileIdStr.trim().isEmpty()) {
 	            try {
 	                int fileId = Integer.parseInt(fileIdStr);
 	                fileimg = fileuploadDAO.findById(fileId);
+	                if (fileimg != null) {
+	                    fileimg.setPath(fileAttachmentService.getFileUrl(fileimg.getPath()));
+	                }
 	            } catch (NumberFormatException e) {
 	                log.warn("Invalid file_id format for Announcement ID " + id + ": " + fileIdStr);
 	            }
 	        }
 
 	        log.debug("Editing Announcement ID: " + id);
-	        fileUploadlist = announcementDAO.findByPageAndPageId("announcementFiles", idStr);
-	        
+	        fileUploadlist = fileAttachmentService.listAttachments("announcement", idStr);
+	        // กรองรูปปกออกจาก list ไฟล์แนบ (cover ผูกกับ announcement.file_id เดี่ยว ไม่ใช่รายการไฟล์แนบ)
+	        if (fileUploadlist != null && fileIdStr != null && !fileIdStr.trim().isEmpty()) {
+	            List<FileUpload> filteredFiles = new ArrayList<>();
+	            for (FileUpload f : fileUploadlist) {
+	                if (!fileIdStr.equals(String.valueOf(f.getFileId()))) {
+	                    filteredFiles.add(f);
+	                }
+	            }
+	            fileUploadlist = filteredFiles;
+	        }
+	        for (FileUpload f : fileUploadlist) {
+	            f.setPath(fileAttachmentService.getFileUrl(f.getPath()));
+	        }
+
 	        request.setAttribute("announcementFiles", fileUploadlist);
 	        
 	        if (fileUploadlist != null) {
@@ -601,28 +612,27 @@ public class AnnouncementAction extends ActionSupport {
 			String announcement = request.getParameter("id");
 			int announcementId = Integer.parseInt(announcement);
 			Announcement announcementdl = announcementDAO.findById(announcementId);
-			fileUploadlist = fileuploadDAO.findByPageAndPageId("announcement", announcement);
-			log.debug(fileUploadlist);
-			List<FileUpload> fileUploadlist1 = fileuploadDAO.findByPageAndPageId("announcementFiles", announcement);
 
-			if (fileUploadlist != null) {
-				for (int i = 0; i < fileUploadlist.size(); i++) {
-					fileuploadDAO.delete(fileUploadlist.get(i));
-					log.debug(fileUploadlist.get(i));
-					log.debug("delete fileupload success");
+			fileUploadlist = fileuploadDAO.findByPageAndPageId("announcement", announcement);
+
+			if (fileUploadlist != null && !fileUploadlist.isEmpty()) {
+				String realPath = request.getServletContext().getRealPath("/");
+
+				List<String> fileIds = new ArrayList<String>();
+
+				for (FileUpload fileUpload : fileUploadlist) {
+					fileIds.add(String.valueOf(fileUpload.getFileId()));
 				}
-			}
-			if (fileUploadlist1 != null) {
-				for (int i = 0; i < fileUploadlist1.size(); i++) {
-					fileuploadDAO.delete(fileUploadlist1.get(i));
-					log.debug(fileUploadlist1.get(i));
-					log.debug("delete fileupload success");
-				}
+
+				fileAttachmentService.deleteByIds(fileIds, realPath);
+
+				log.debug("Deleted file IDs: " + fileIds);
 			}
 
 			announcementDAO.delete(announcementdl);
 
 			return SUCCESS;
+
 		} catch (Exception e) {
 			log.error("Error deleting announcement", e);
 			return ERROR;
@@ -643,7 +653,7 @@ public class AnnouncementAction extends ActionSupport {
 				File file = files[0];
 				String fileName = fileNames[0];
 
-				String uploadPath = ServletActionContext.getServletContext().getRealPath("/upload/user/");
+				String uploadPath = ServletActionContext.getServletContext().getRealPath("/upload/announcement/");
 				File dir = new File(uploadPath);
 				if (!dir.exists())
 					dir.mkdirs();
@@ -660,7 +670,7 @@ public class AnnouncementAction extends ActionSupport {
 				File destFile = new File(dir, newFileName);
 				FileUtils.copyFile(file, destFile);
 
-				String fileUrl = request.getContextPath() + "/upload/user/" + newFileName;
+				String fileUrl = request.getContextPath() + "/upload/announcement/" + newFileName;
 
 				response.setContentType("application/json;charset=UTF-8");
 				response.getWriter().write("{\"uploaded\": true, \"url\": \"" + fileUrl + "\"}");

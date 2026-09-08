@@ -28,6 +28,8 @@
 <script
 	src="${pageContext.request.contextPath}/assets/plugins/custom/datatables/datatables.bundle.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/signature_pad@4.1.7/dist/signature_pad.umd.min.js"></script>
+<script
+	src="${pageContext.request.contextPath}/assets/js/custom/utilities/attachFile/attcahfile.js"></script>
 
 <style>
 /* Table MR */
@@ -153,7 +155,7 @@
 					</div>
 			
 					<div class="d-flex align-items-center gap-2">
-						<span class="badge badge-lg bg-light-secondary fw-semibold fs-7 p-4">Draft</span>
+						<span class="badge badge-lg bg-secondary fw-semibold fs-7 p-4">Draft</span>
 					</div>
 			
 				</div>
@@ -193,6 +195,14 @@
 									<label class="required fw-medium text-gray-800 mb-2">Description</label>
 									<textarea class="form-control text-gray-700" id="description" name="description"
 										placeholder="Description" rows="3"></textarea>
+								</div>
+ 								<div class="col-12 mt-5">
+									<label for="myFile" id="lbFile" class="btn btn-primary d-inline-flex align-items-center justify-content-center gap-2 fw-medium mb-3">
+											Attach files
+										<input type="file" id="myFile" name="files" style="display:none;" accept="image/*,application/pdf,application/zip,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document" multiple>
+									</label>
+									<div id="attachFileList" class="d-flex flex-row mt-3 gap-2"></div>
+									<div id="errorMsgAF" class="text-danger fs-8 mt-1"></div>
 								</div>
 							</div>
 						</div>
@@ -365,7 +375,7 @@
 							</div>
 
 							<div class="col-6">
-								<div class="border border-gray-300 rounded-3 h-100 d-flex flex-column align-items-center justify-content-center text-center py-8" id="receiverCard1">
+								<div class="border border-gray-200 rounded-3 h-100 d-flex flex-column align-items-center justify-content-center text-center py-8" id="receiverCard1">
 										<div class="receiver-box d-flex flex-fill flex-column align-items-center justify-content-center gap-2" id="receiverBox1">
 							            <c:choose>
 							                <c:when test="${empty statusActiveSafe}">
@@ -415,6 +425,7 @@
 												<select name="items_type" id="items_type" class="form-select h-45px" data-control="select2">
 													<option value="equipment" selected>Equipment</option>
 						                            <option value="consumables">Consumables</option>
+													<option value="accessory">Accessory</option>
 						                            <option value="office">Office supplies</option>
 												</select>
 											</div>
@@ -773,10 +784,6 @@
 								onclick="location.href='purchase_order_list'"
 								class="btn btn-lg btn-light fw-medium text-light-inverse px-6 py-4 me-4 border">Back
 							</button>
-							<button type="button" id="cancelFormBtn"
-								onclick="confirmLeaveForm('purchase_order_list')"
-								class="btn btn-lg btn-dark fw-medium px-6 py-4">Cancel
-							</button>
 						</div>
 						<div class="d-flex">
 							
@@ -803,21 +810,62 @@
 	    const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
 	    const pad = n => String(n).padStart(2,'0');
 	    return `\${d.getDate()} \${months[d.getMonth()]} \${d.getFullYear()}, \${pad(d.getHours())}:\${pad(d.getMinutes())}`;
-	   
+
 	}
-	
+
+	// --- PO Header/Vendor draft (sessionStorage) ---
+	var poHeaderDraft = null;      // ค่าที่โหลดจาก session ตอน init
+	var pendingLocationId = null;  // vendor_location_id ที่รอ consume หลัง get_company_profile
+	var pendingContactId = null;   // contact_id ที่รอ consume หลัง get_company_location
+
+	function saveHeaderToSession(){
+		try {
+			var data = {
+				description: $('#description').val() || '',
+				reference_no: $('#reference_no').val() || '',
+				reference_date: $('#kt_reference_datepicker').val() || '',
+				vendor_id: $('#vendor_id').val() || '',
+				vendor_location_id: $('#vendor_location_id').val() || '',
+				contact_id: $('#contact_id').val() || '',
+				vendor_description: $('#vendor_description').val() || ''
+			};
+			sessionStorage.setItem(PO_HEADER_STORAGE_KEY, JSON.stringify(data));
+		} catch (e) { console.error('save PO header draft failed', e); }
+	}
+
+	function loadHeaderFromSession(){
+		try {
+			var saved = sessionStorage.getItem(PO_HEADER_STORAGE_KEY);
+			if (!saved) return;
+			poHeaderDraft = JSON.parse(saved) || null;
+			if (!poHeaderDraft) return;
+
+			$('#description').val(poHeaderDraft.description || '');
+			$('#reference_no').val(poHeaderDraft.reference_no || '');
+			$('#vendor_description').val(poHeaderDraft.vendor_description || '');
+
+			pendingLocationId = poHeaderDraft.vendor_location_id || null;
+			pendingContactId = poHeaderDraft.contact_id || null;
+		} catch (e) { console.error('load PO header draft failed', e); poHeaderDraft = null; }
+	}
+
 	document.addEventListener("DOMContentLoaded", function () {
-		
-		
-		flatpickr("#kt_reference_datepicker", {
-	        dateFormat: "Y-m-d",  
+
+		loadHeaderFromSession();
+
+		var _refFp = flatpickr("#kt_reference_datepicker", {
+	        dateFormat: "Y-m-d",
 	        altInput: true,
-	        altFormat: "d M Y",   
-	        locale: "en",        
+	        altFormat: "d M Y",
+	        locale: "en",
 	        allowInput: false,
 	        defaultDate: new Date()
 	    });
-		
+		// ทับ default date ด้วยค่าที่ save ไว้
+		if (poHeaderDraft && poHeaderDraft.reference_date) {
+			_refFp.setDate(poHeaderDraft.reference_date, false);
+		}
+
 		// Table MR
 		// var table = $('#mrResultTable').DataTable({
 		// 	ordering : true,
@@ -950,12 +998,17 @@
 		     */
 		    
 		    var $vendorId = $('#vendor_id');
-		    var $firstCompany = $vendorId.find('option').filter(function () {
-		        return $(this).val() !== '';
-		    }).first();
+		    if (poHeaderDraft && poHeaderDraft.vendor_id) {
+		        // มี draft -> ใช้ค่าที่ save ไว้ ไม่ auto-select บริษัทแรก
+		        $vendorId.val(poHeaderDraft.vendor_id).trigger('change');
+		    } else {
+		        var $firstCompany = $vendorId.find('option').filter(function () {
+		            return $(this).val() !== '';
+		        }).first();
 
-		    if ($firstCompany.length) {
-		        $vendorId.val($firstCompany.val()).trigger('change');
+		        if ($firstCompany.length) {
+		            $vendorId.val($firstCompany.val()).trigger('change');
+		        }
 		    }
 		    
 		   /*  const createPoModalEl = document.getElementById('modal_create_po');
@@ -1016,27 +1069,6 @@
 		    
 	});
 	
-	
-	function confirmLeaveForm(redirectUrl){
-	    Swal.fire({
-	        title: "Are you sure?!",
-	        text: "Closing will discard any unsaved data.",
-	        icon: "warning",
-	        showCancelButton: true,
-	        confirmButtonText: "Yes, discard it",
-	        cancelButtonText: "Cancel",
-	        buttonsStyling: false,
-	        customClass: {
-	            confirmButton: "btn btn-danger",
-	            cancelButton: "btn btn-secondary"
-	        }
-	    }).then((result) => {
-	        if (result.isConfirmed) {
-	            window.location.href = redirectUrl;
-	        }
-	    });
-	}
-	
 	// --- compressImage ---
 	async function compressImage(file, maxWidth = 1280, maxHeight = 1280, quality = 0.8) {
 		if (!file.type.match(/image\/(jpeg|jpg|png)/)) {
@@ -1084,6 +1116,112 @@
 		});
 	}
 
+	// --- Multi-file Attach  ---
+	var selectedFiles = [];
+
+	function getFileIconPath(fileName) {
+		var ext = fileName.split('.').pop().toLowerCase();
+		switch (ext) {
+			case 'pdf': return ctx + '/assets/media/svg/files/pdf.svg';
+			case 'doc': case 'docx': return ctx + '/assets/media/svg/files/doc.svg';
+			case 'png': case 'jpg': case 'jpeg': case 'gif': case 'webp':
+				return ctx + '/assets/media/svg/files/image.svg';
+			default: return ctx + '/assets/media/svg/files/folder-document.svg';
+		}
+	}
+
+	async function processFiles(fileListInput) {
+		var maxSize = 5 * 1024 * 1024;
+		var oversizedFiles = [];
+		var errorMsgAF = document.getElementById('errorMsgAF');
+
+		for (let i = 0; i < fileListInput.length; i++) {
+			const file = fileListInput[i];
+			const existing = selectedFiles.find(f => f.name === file.name && f.size === file.size);
+			if (existing) continue;
+
+			if (file.type.match(/image\/(jpeg|jpg|png)/)) {
+				const processedFile = await compressImage(file);
+				selectedFiles.push(processedFile);
+			} else if (file.size > maxSize) {
+				oversizedFiles.push(file.name);
+			} else {
+				selectedFiles.push(file);
+			}
+		}
+		if (errorMsgAF) {
+			errorMsgAF.innerHTML = oversizedFiles.length > 0
+				? 'Files exceed 5MB: <strong>' + oversizedFiles.join(', ') + '</strong>' : '';
+		}
+		renderNewFileList();
+		updateInputFiles();
+	}
+
+	function renderNewFileList() {
+		var fileListDiv = document.getElementById('attachFileList');
+		if (!fileListDiv) return;
+		fileListDiv.innerHTML = '';
+		fileListDiv.className = 'd-flex flex-wrap gap-2';
+
+		selectedFiles.forEach(function (file) {
+			const fileName = file.name;
+			const iconPath = getFileIconPath(fileName);
+
+			const wrapper = document.createElement('div');
+			wrapper.className = 'd-inline-flex justify-content-between align-items-center p-2 border border-gray-200 rounded bg-white';
+			wrapper.style.maxWidth = '100%';
+
+			const leftGroup = document.createElement('div');
+			leftGroup.className = 'd-flex align-items-center overflow-hidden me-4';
+
+			const icon = document.createElement('img');
+			icon.src = iconPath;
+			icon.className = 'w-25px h-25px me-3 flex-shrink-0';
+			icon.alt = 'icon';
+
+			const nameSpan = document.createElement('span');
+			nameSpan.className = 'text-gray-800 fw-medium text-truncate';
+			nameSpan.textContent = fileName;
+			nameSpan.style.maxWidth = '250px';
+
+			leftGroup.appendChild(icon);
+			leftGroup.appendChild(nameSpan);
+
+			const removeBtn = document.createElement('span');
+			removeBtn.className = 'btn btn-icon btn-sm btn-light-danger cursor-pointer';
+			removeBtn.innerHTML =
+				'<i class="ki-duotone ki-trash fs-3">' +
+					'<span class="path1"></span><span class="path2"></span>' +
+					'<span class="path3"></span><span class="path4"></span><span class="path5"></span>' +
+				'</i>';
+			removeBtn.addEventListener('click', function () {
+				selectedFiles = selectedFiles.filter(f => f.name !== fileName);
+				renderNewFileList();
+				updateInputFiles();
+			});
+
+			wrapper.appendChild(leftGroup);
+			wrapper.appendChild(removeBtn);
+			fileListDiv.appendChild(wrapper);
+		});
+
+		var warn = document.getElementById('attachFileWarn');
+		if (warn) warn.style.display = selectedFiles.length > 0 ? 'block' : 'none';
+	}
+
+	function updateInputFiles() {
+		var inputFile = document.getElementById('myFile');
+		if (!inputFile) return;
+		var dataTransfer = new DataTransfer();
+		selectedFiles.forEach(file => dataTransfer.items.add(file));
+		inputFile.files = dataTransfer.files;
+	}
+
+	(function initAttach() {
+		var input = document.getElementById('myFile');
+		if (input) input.addEventListener('change', function (event) { processFiles(event.target.files); });
+	})();
+
 	// --- Signature Upload ---
 	(function initSignatureUpload() {
 		const uploadBox = document.getElementById('uploadSignatureBox');
@@ -1115,7 +1253,7 @@
 
 			let finalFile;
 			try {
-				finalFile = await compressImage(file);
+				finalFile = await processAndRemoveWhiteBg(file);
 			} catch (e) {
 				finalFile = file;
 			}
@@ -1196,11 +1334,16 @@
 	            if (list.length === 0) {
 	                options = '<option value=""></option>';
 	            } else {
+	                var matchLoc = pendingLocationId != null && list.some(function (l) {
+	                    return String(l.company_address_id) === String(pendingLocationId);
+	                });
 	                list.forEach(function (loc, index) {
-	                    options += '<option value="' + loc.company_address_id + '"' + (index === 0 ? ' selected' : '') + '>' + loc.address_name + '</option>';
+	                    var isSel = matchLoc ? (String(loc.company_address_id) === String(pendingLocationId)) : (index === 0);
+	                    options += '<option value="' + loc.company_address_id + '"' + (isSel ? ' selected' : '') + '>' + loc.address_name + '</option>';
 	                });
 	            }
 	            $('#vendor_location_id').html(options).prop('disabled', false).trigger('change');
+	            pendingLocationId = null; // consume ครั้งเดียว
 	        },
 	        error: function () {
 	            Swal.fire('Error', 'ไม่สามารถโหลดข้อมูลบริษัทได้', 'error');
@@ -1235,11 +1378,16 @@
 	            if (list.length === 0) {
 	                options = '<option value=""></option>';
 	            } else {
+	                var matchC = pendingContactId != null && list.some(function (x) {
+	                    return String(x.company_contact_id) === String(pendingContactId);
+	                });
 	                list.forEach(function (c, index) {
-	                    options += '<option value="' + c.company_contact_id + '"' + (index === 0 ? ' selected' : '') + '>' + c.contact_name + '</option>';
+	                    var isSel = matchC ? (String(c.company_contact_id) === String(pendingContactId)) : (index === 0);
+	                    options += '<option value="' + c.company_contact_id + '"' + (isSel ? ' selected' : '') + '>' + c.contact_name + '</option>';
 	                });
 	            }
 	            $('#contact_id').html(options).prop('disabled', false).trigger('change');
+	            pendingContactId = null; // consume ครั้งเดียว
 	        },
 	        error: function () {
 	            Swal.fire('Error', 'ไม่สามารถโหลดข้อมูล Location ได้', 'error');
@@ -1336,7 +1484,11 @@
 			}
 		});
 	});
-	
+
+	// auto-save PO Header/Vendor draft ทุกครั้งที่ field เปลี่ยน
+	$(document.body).on('input change', '#description, #reference_no, #vendor_description, #kt_reference_datepicker', saveHeaderToSession);
+	$(document.body).on('change', '#vendor_id, #vendor_location_id, #contact_id', saveHeaderToSession);
+
 </script>
 
 <script>
@@ -1347,6 +1499,7 @@ let confirmed1 = ${empty statusActiveSafe ? 'false' : 'true'}; //track ว่า
 
 let requesterSign = null;
 
+const PO_HEADER_STORAGE_KEY = 'poHeader_draft';
 const PO_CART_STORAGE_KEY = 'poDetailCart_draft';
 
 function saveCartToSession(){
@@ -1541,6 +1694,16 @@ function createPoCard(item,index){
                     <span class="path3"></span><span class="path4"></span>
                     <span class="path5"></span><span class="path6"></span>
                     <span class="path7"></span><span class="path8"></span>
+                </i>
+            </div>
+        `;
+    }else if(item.itemsType=="accessory" || item.itemsType=="3"){
+        category="Accessory";
+        icon=`
+            <div class="symbol symbol-40px me-4">
+                <i class="ki-duotone ki-medal-star fs-2 text-teal">
+                    <span class="path1"></span><span class="path2"></span>
+                    <span class="path3"></span><span class="path4"></span>
                 </i>
             </div>
         `;
@@ -1810,15 +1973,22 @@ function saveDraftForm(){
         signDate: requesterSign?.requestAt ?? '',
     };
 
+    const fd = new FormData();
+    Object.keys(payload).forEach(function (k) { fd.append(k, payload[k]); });
+    selectedFiles.forEach(function (file) { fd.append('files', file, file.name); });
+
     $.ajax({
         url: ctx + '/save_po',
         type: 'POST',
         dataType: 'json',
-        data: payload,
+        data: fd,
+        processData: false,
+        contentType: false,
         success: function (resp) {
             // if (resp.debug) console.log('[save_po debug]', resp.debug);
             if (resp.data && resp.data.poId) {
                 sessionStorage.removeItem(PO_CART_STORAGE_KEY);
+                sessionStorage.removeItem(PO_HEADER_STORAGE_KEY);
                 Swal.fire({
                     title: 'Success!',
                     text: 'Po saved draft successfully!',
@@ -1896,17 +2066,24 @@ function submitPO(){
             signDate: requesterSign?.requestAt ?? ''
         };
 
+        const fd = new FormData();
+        Object.keys(payload).forEach(function (k) { fd.append(k, payload[k]); });
+        selectedFiles.forEach(function (file) { fd.append('files', file, file.name); });
+
         $('#savePOFormBtn').prop('disabled', true);
 
         $.ajax({
             url: ctx + '/save_po',
             type: 'POST',
             dataType: 'json',
-            data: payload,
+            data: fd,
+            processData: false,
+            contentType: false,
             success: function (resp) {
                 // if (resp.debug) console.log('[save_po debug]', resp.debug);
                 if (resp.data && resp.data.poId) {
                     sessionStorage.removeItem(PO_CART_STORAGE_KEY);
+                    sessionStorage.removeItem(PO_HEADER_STORAGE_KEY);
                     Swal.fire({
                         title: 'Success!',
                         text: 'Po saved successfully!',

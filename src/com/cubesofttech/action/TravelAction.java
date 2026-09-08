@@ -33,6 +33,7 @@ import com.cubesofttech.model.User;
 
 import com.cubesofttech.service.FileAttachmentService;
 import com.cubesofttech.util.DateUtil;
+import com.cubesofttech.util.FileUtil;
 import com.cubesofttech.util.ReportUtil;
 import com.google.gson.Gson;
 import com.opensymphony.xwork2.ActionSupport;
@@ -336,7 +337,7 @@ public class TravelAction extends ActionSupport {
 			expenseDetailDAO.deleteByExpenseId(expenseId);
 
 			// ── ลบไฟล์แนบ (ถ้ามี) ─────────────────────────────────────────────
-			List<FileUpload> attachedFiles = fileuploadDAO.findByPageAndPageId("travelFiles",
+			List<FileUpload> attachedFiles = fileuploadDAO.findByPageAndPageId("travel",
 					String.valueOf(expenseId));
 			if (attachedFiles != null) {
 				String serverRoot = ServletActionContext.getServletContext().getRealPath("/");
@@ -577,8 +578,23 @@ public class TravelAction extends ActionSupport {
 				}
 			}
 
-			saveAttachedFiles(files, filesFileName, filesUploadFileName, "travelFiles", String.valueOf(newExpenseId),
-					onlineUser.getId(), now);
+			if (files != null && files.length > 0) {
+				String serverRealPath =
+						ServletActionContext.getServletContext().getRealPath("/");
+
+				fileAttachmentService.attach(
+					Arrays.asList(files),
+					filesFileName != null
+						? Arrays.asList(filesFileName)
+						: null,
+					"travel",
+					String.valueOf(newExpenseId),
+					onlineUser.getId(),
+					serverRealPath
+				);
+			}
+			// saveAttachedFiles(files, filesFileName, filesUploadFileName, "travel", String.valueOf(newExpenseId),
+			// 		onlineUser.getId(), now);
 
 			return SUCCESS;
 
@@ -606,7 +622,7 @@ public class TravelAction extends ActionSupport {
 				return ERROR;
 
 			List<ExpenseDetail> detailList = expenseDetailDAO.findByExpenseId(expenseId);
-			List<FileUpload> travelFiles = fileuploadDAO.findByPageAndPageId("travelFiles", id);
+			List<FileUpload> travelFiles = fileuploadDAO.findByPageAndPageId("travel", id);
 
 			String userJSON = userDAO.userListJSON();
 			List<Map<String, Object>> userListObj = new Gson().fromJson(userJSON,
@@ -804,8 +820,22 @@ public class TravelAction extends ActionSupport {
 				}
 			}
 
-			saveAttachedFiles(files, filesFileName, filesUploadFileName, "travelFiles", String.valueOf(expenseId),
-					onlineUser.getId(), now);
+			if (files != null && files.length > 0) {
+				String serverRealPath = ServletActionContext.getServletContext().getRealPath("/");
+
+				fileAttachmentService.attach(
+					Arrays.asList(files),
+					filesFileName != null
+						? Arrays.asList(filesFileName)
+						: null,
+					"travel",
+					String.valueOf(expenseId),
+					onlineUser.getId(),
+					serverRealPath
+				);
+			}
+			// saveAttachedFiles(files, filesFileName, filesUploadFileName, "travel", String.valueOf(expenseId),
+			// 		onlineUser.getId(), now);
 
 			return SUCCESS;
 
@@ -929,7 +959,7 @@ public class TravelAction extends ActionSupport {
 				expMap.put("details", detailMaps);
 
 				// ── Attached files ───────────────────────────────────
-				List<FileUpload> fileList = fileuploadDAO.findByPageAndPageId("travelFiles", String.valueOf(expenseId));
+				List<FileUpload> fileList = fileuploadDAO.findByPageAndPageId("travel", String.valueOf(expenseId));
 				expMap.put("files", fileList != null ? fileList : new ArrayList<>());
 
 				if (exp.getAmount() != null)
@@ -1031,7 +1061,7 @@ public class TravelAction extends ActionSupport {
 					List<FileUpload> savedFiles = fileAttachmentService.attach(
 						Arrays.asList(files[0]),
 						Arrays.asList(filesFileName[0]),
-						"user_signature",
+						"user",
 						onlineUser.getId(),
 						onlineUser.getId(),
 						ServletActionContext.getServletContext().getRealPath("/")
@@ -1062,35 +1092,6 @@ public class TravelAction extends ActionSupport {
 		} catch (Exception e) {
 			e.printStackTrace();
 			return ERROR;
-		}
-	}
-
-	// ===================== Helpers =====================
-	private void saveAttachedFiles(java.io.File[] files, String[] filesFileName, String filesUploadFileName,
-			String page, String pageId, String userId, Timestamp now) {
-		if (files == null || files.length == 0)
-			return;
-		if (filesUploadFileName == null || filesUploadFileName.trim().isEmpty())
-			return;
-		try {
-			String[] fileNames = new Gson().fromJson(filesUploadFileName, String[].class);
-			if (fileNames == null)
-				return;
-
-			// เหมือน logic เดิม: ถ้าไฟล์มากกว่าชื่อไฟล์ที่ส่งมา ตัดไฟล์ส่วนเกินทิ้ง ไม่แนบ
-			int n = Math.min(files.length, fileNames.length);
-			String serverPath = ServletActionContext.getServletContext().getRealPath("/");
-
-			fileAttachmentService.attach(
-				Arrays.asList(files).subList(0, n),
-				Arrays.asList(fileNames).subList(0, n),
-				page,
-				pageId,
-				userId,
-				serverPath
-			);
-		} catch (Exception e) {
-			log.error("Error saving travel files", e);
 		}
 	}
 
@@ -1329,7 +1330,7 @@ public class TravelAction extends ActionSupport {
 				expMap.put("details", detailMaps);
 
 				// ── Attached files ───────────────────────────────────
-				List<FileUpload> fileList = fileuploadDAO.findByPageAndPageId("travelFiles", String.valueOf(expenseId));
+				List<FileUpload> fileList = fileuploadDAO.findByPageAndPageId("travel", String.valueOf(expenseId));
 				expMap.put("files", fileList != null ? fileList : new ArrayList<>());
 
 				if (exp.getAmount() != null)

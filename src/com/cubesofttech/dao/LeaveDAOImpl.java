@@ -2158,4 +2158,32 @@ public class LeaveDAOImpl implements LeaveDAO {
 		return summaryLeave;
 	}
 	
+	@Override
+	public List<Object[]> findApprovedLeaveByUserAndDate(
+	        String userId,
+	        LocalDate targetDate) throws Exception {
+
+	    String sql =
+	            "SELECT half_day, start_time, end_time " +
+	            "FROM leaves " +
+	            "WHERE user_id = :userId " +
+	            "AND leave_status_id = '1' " +
+	            "AND start_date < :nextDay " +
+	            "AND end_date >= :startDay";
+
+	    Timestamp startDay = Timestamp.valueOf(
+	            targetDate.atStartOfDay());
+
+	    Timestamp nextDay = Timestamp.valueOf(
+	            targetDate.plusDays(1).atStartOfDay());
+
+	    return sessionFactory
+	            .getCurrentSession()
+	            .createSQLQuery(sql)
+	            .setParameter("userId", userId)
+	            .setParameter("startDay", startDay)
+	            .setParameter("nextDay", nextDay)
+	            .list();
+	}
+	
 }

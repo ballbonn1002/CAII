@@ -445,6 +445,27 @@
 													<!--File Upload -->
 													<div class="mb-10" id="fileUploadSection">
 														<label class="form-label fs-5" id="fileUploadLabel">Attach files</label>
+														<div class="d-flex flex-row flex-wrap align-items-center gap-3">
+															<div id="fileUploadControls">
+																<label for="myFile" id="lbFile" class="btn btn-primary w-150px d-inline-flex align-items-center justify-content-center gap-2" style="height: 40px;">
+																Attach files
+																<input type="file" id="myFile" name="fileUpload" style="display:none;" accept="image/*,application/pdf,application/zip" multiple>
+																</label>
+																<input type="hidden" name="deleteFileId" id="deleteFileId">
+																<input type="hidden" name="fileUploadSize" value="${size}" id="size">
+																<input type="hidden" name="fileUploadId" id="fileUploadId">
+															</div>
+															<div id="filePreviewContainer" class="d-flex flex-wrap gap-2"></div>
+														</div>
+													</div>
+
+													<div class="mb-10" id="exitingFileSection">
+														<div class="d-flex flex-row flex-wrap align-items-center gap-3">
+															<div id="exitingFilePreviewContainer" class="d-flex flex-wrap gap-2"></div>
+														</div>
+													</div>
+													<!-- <div class="mb-10" id="fileUploadSection">
+														<label class="form-label fs-5" id="fileUploadLabel">Attach files</label>
 														<div class="d-flex flex-column">
 															<div id="fileUploadControls">
 																<label for="myFile" id="lbFile" class="btn btn-primary w-150px mb-2 d-inline-flex align-items-center justify-content-center gap-2" style="height: 40px;">
@@ -461,7 +482,7 @@
 
 													<div class="mb-10" id="exitingFileSection">
 														<div id="exitingFilePreviewContainer" class="mt-2" style="max-width: 400px;"></div>
-													</div>
+													</div> -->
 
 													<!--Approver -->
 													<div class="mb-10">
@@ -481,6 +502,35 @@
 														</button>
 													</div>
 													<!-- <div id="filePreviewContainer_afterFile" class="d-flex justify-content-end gap-3"></div> -->
+
+													<!-- Evidence Upload Modal (เตือนแนบหลักฐาน: ลาป่วย / ลากิจ) -->
+													<div class="modal fade" id="evidenceModal" tabindex="-1" aria-hidden="true">
+														<div class="modal-dialog modal-dialog-centered">
+															<div class="modal-content">
+																<div class="modal-header border-bottom-0">
+																	<!-- <h5 class="modal-title fw-bold">Upload file</h5> -->
+																	<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+																</div>
+																<div class="modal-body pt-5 pb-5 border-bottom-0">
+																	<div class="text-center mb-5">
+																		<i class="ki-duotone ki-information-2 text-danger"
+																		style="display: inline-block; font-size: 80px; line-height: 80px;">
+																			<span class="path1"></span>
+																			<span class="path2"></span>
+																			<span class="path3"></span>
+																		</i>
+
+																		<h1 class="fw-semibold text-danger my-5">Announce</h1>
+																	
+																		<div class="fw-medium fs-5 text-gray-800">กรณีลากิจ และลาป่วย ต้องแนบไฟล์การขออนุมัติจากหัวหน้าทุกครั้ง</div>
+																	</div>
+																</div>
+																<div class="modal-footer border-top-0">
+																	<button type="button" class="btn btn-primary mx-auto fw-medium" id="evidenceAckBtn" data-bs-dismiss="modal">รับทราบ</button>
+																</div>
+															</div>
+														</div>
+													</div>
 
 													<!-- Attach File Modal -->
 													<div class="modal fade" id="attachFileModal" tabindex="-1" aria-hidden="true">
@@ -580,33 +630,7 @@ $(document).ready(function () {
 		}
 	});
 
-	$('#myFile').on("change", function () {
-		const file = this.files[0];
-		const fileName = this.files[0].name;
-		const forbiddenChars = /[\/:*?"<>|]/;
-
-		if (forbiddenChars.test(fileName)) {
-			alert("File name contains invalid characters for Windows");
-			$(this).val('');
-			$('#linkImage').text('');
-			$('#size').val('');
-			return;
-		}
-
-		$('#linkImage').text(fileName);
-
-		var fSExt = new Array('Bytes', 'KB', 'MB', 'GB');
-		fSize = this.files[0].size;
-		i = 0;
-		while (fSize > 900) {
-			fSize /= 1024;
-			i++;
-		}
-		var size_n = (Math.round(fSize * 100) / 100);
-		var size = size_n + ' ' + fSExt[i];
-		console.log(size)
-		$('#size').val(size);
-	});
+	// #myFile change -> จัดการที่ lfAddFiles() (multi-file model) ท้ายไฟล์
 
 
 });
@@ -643,13 +667,13 @@ $(function () {
 			if (leaveTypes[i].id == '6') {
 				if (leaveCheck[i] == '1') {
 					let radio =	'<div class="col-6 col-sm-6 col-md-3" id="label_lt_6"><div class="form-check form-check-custom form-check-solid mb-3">'
-					+'<input class="form-check-input me-3" type="radio" name="leaveType" id="lt_'+leaveTypes[i].id+'" value="'+leaveTypes[i].id+'" disabled required>'+leaveTypes[i].name
+					+'<input class="form-check-input me-3" type="radio" name="leaveType" id="lt_'+leaveTypes[i].id+'" value="'+leaveTypes[i].id+'" data-name="'+leaveTypes[i].name+'" disabled required>'+leaveTypes[i].name
 					+'</div></div>'
 					+'<input type="hidden" class="hide" name="leaveType_hidden" id="lt_hidden">';
 					$('#leaveTypes').addClass('row g-6').append(radio);
 				} else {
 					let radio =	'<div class="col-6 col-sm-6 col-md-3" id="label_lt_6"><div class="form-check form-check-custom form-check-solid mb-3">'
-						+'<input class="form-check-input me-3" type="radio" name="leaveType" id="lt_'+leaveTypes[i].id+'" value="'+leaveTypes[i].id+'" required>'+leaveTypes[i].name
+						+'<input class="form-check-input me-3" type="radio" name="leaveType" id="lt_'+leaveTypes[i].id+'" value="'+leaveTypes[i].id+'" data-name="'+leaveTypes[i].name+'" required>'+leaveTypes[i].name
 						+'</div></div>'
 						+'<input type="hidden" class="hide" name="leaveType_hidden" id="lt_hidden">';
 					$('#leaveTypes').addClass('row g-6').append(radio);
@@ -657,13 +681,13 @@ $(function () {
 			} else {
 				if (leaveCheck[i] == '1') {
 					let radio =	'<div class="col-6 col-sm-6 col-md-3"><div class="form-check form-check-custom form-check-solid mb-3">'
-						+'<input class="form-check-input me-3" type="radio" name="leaveType" id="lt_'+leaveTypes[i].id+'" value="'+leaveTypes[i].id+'" disabled required>'+leaveTypes[i].name
+						+'<input class="form-check-input me-3" type="radio" name="leaveType" id="lt_'+leaveTypes[i].id+'" value="'+leaveTypes[i].id+'" data-name="'+leaveTypes[i].name+'" disabled required>'+leaveTypes[i].name
 						+'</div></div>'
 						+'<input type="hidden" class="hide" name="leaveType_hidden" id="lt_hidden">';
 					$('#leaveTypes').addClass('row g-6').append(radio);
 				} else {
 					let radio =	'<div class="col-6 col-sm-6 col-md-3"><div class="form-check form-check-custom form-check-solid mb-3">'
-						+'<input class="form-check-input me-3" type="radio" name="leaveType" id="lt_'+leaveTypes[i].id+'" value="'+leaveTypes[i].id+'" required>'+leaveTypes[i].name
+						+'<input class="form-check-input me-3" type="radio" name="leaveType" id="lt_'+leaveTypes[i].id+'" value="'+leaveTypes[i].id+'" data-name="'+leaveTypes[i].name+'" required>'+leaveTypes[i].name
 						+'</div></div>'
 						+'<input type="hidden" class="hide" name="leaveType_hidden" id="lt_hidden">';
 					$('#leaveTypes').addClass('row g-6').append(radio);
@@ -673,14 +697,14 @@ $(function () {
 			// Leave w/o pay can be created by user who has 'leave.approve'
 			<perm:permission object="leave.approve">
 				let radio =	'<div class="col-6 col-sm-6 col-md-3"><div class="form-check form-check-custom form-check-solid mb-3">'
-					+'<input class="form-check-input me-3" type="radio" name="leaveType" id="lt_'+leaveTypes[i].id+'" value="'+leaveTypes[i].id+'" required>'+leaveTypes[i].name
+					+'<input class="form-check-input me-3" type="radio" name="leaveType" id="lt_'+leaveTypes[i].id+'" value="'+leaveTypes[i].id+'" data-name="'+leaveTypes[i].name+'" required>'+leaveTypes[i].name
 					+'</div></div>'
 					+'<input type="hidden" class="hide" name="leaveType_hidden" id="lt_hidden">';
 			$('#leaveTypes').addClass('row g-6').append(radio);
 			</perm:permission>
 		} else if (leaveTypes[i].id != '9') {
 			let radio =	'<div class="col-6 col-sm-6 col-md-3"><div class="form-check form-check-custom form-check-solid mb-3">'
-				+'<input class="form-check-input me-3" type="radio" name="leaveType" id="lt_'+leaveTypes[i].id+'" value="'+leaveTypes[i].id+'" required>'+leaveTypes[i].name
+				+'<input class="form-check-input me-3" type="radio" name="leaveType" id="lt_'+leaveTypes[i].id+'" value="'+leaveTypes[i].id+'" data-name="'+leaveTypes[i].name+'" required>'+leaveTypes[i].name
 				+'</div></div>'
 				+'<input type="hidden" class="hide" name="leaveType_hidden" id="lt_hidden">';
 			$('#leaveTypes').addClass('row g-6').append(radio);
@@ -729,6 +753,9 @@ $(function () {
 </c:if>
 <c:if test="${fileLeave == null}">
 	<c:set var="fileLeave" value="''" />
+</c:if>
+<c:if test="${fileLeaveList == null}">
+	<c:set var="fileLeaveList" value="[]" />
 </c:if>
 
 <script>
@@ -788,16 +815,9 @@ $(() => {
 		    $('#fileUploadSection').addClass('d-none');
 			$('#exitingFileSection').addClass('d-block');
 			
-			// Render existing file in exitingFilePreviewContainer
-			if (fileLeave != '' && fileLeave != null) {
-				const fullFileName = fileLeave.name + fileLeave.type;
-				const downloadPath = 'preview_File?id=' + fileLeave.fileId;
-				const exitingContainer = document.getElementById('exitingFilePreviewContainer');
-				if (exitingContainer) {
-					exitingContainer.innerHTML = '';
-					renderSingleFilePreview(fullFileName, downloadPath, true, fileLeave.fileId, 'exitingFilePreviewContainer', 'myFile', true);
-				}
-			}
+			// Render existing files (read-only) — แหล่งข้อมูลจริง: table file (page='leave')
+			lfLoadExisting(${fileLeaveList});
+			lfRenderExistingReadonly('exitingFilePreviewContainer');
 		    $('#submitBtn').addClass('d-none');
 		    
 		    // Hide afterFile button unless status is Approved (1)
@@ -822,12 +842,9 @@ $(() => {
 		    $('#lbafterFile').hide();
 			$('#fileUploadSection').removeClass('d-none');
 			$('#exitingFileSection').addClass('d-none');
-			if (fileLeave != '' && fileLeave != null && fileLeave.fileId) {
-				const fullFileName = fileLeave.name + fileLeave.type;
-				const downloadPath = 'preview_File?id=' + fileLeave.fileId;
-				renderSingleFilePreview(fullFileName, downloadPath, true, fileLeave.fileId, 'filePreviewContainer', 'myFile');
-				$('#fileUploadId').val(fileLeave.fileId);
-			}
+			// Existing files (editable) — แหล่งข้อมูลจริง: table file (page='leave')
+			lfLoadExisting(${fileLeaveList});
+			lfRenderAll();
 			$('#ucEmpId').text(ucEmpId);
 	        $('#ucName').text(ucName);
 	        $('#timeCreate').text(timeCreate);
@@ -1207,6 +1224,13 @@ $(() => {
 	$('#nextYearLeave').trigger('change');
 	// end checkbox ลาปีหน้า ==============================================================
 
+	// แจ้งเตือนตอนเปิดหน้า (informational) — เฉพาะ Add หรือ Edit ที่ยังรออนุมัติ (status '0')
+	var evStatusZero = (typeof leave !== 'undefined' && leave && leave.leaveStatusId != null)
+		? (leave.leaveStatusId.toString() === '0') : false;
+	if (action === 'Add' || (action === 'Edit' && evStatusZero)) {
+		openEvidenceModal();
+	}
+
 });
 
 function userOnChange() {
@@ -1332,22 +1356,58 @@ function showFileName(input) {
 </script>
 
 <script>
-function beforeSubmit() {
+// แยก logic การ submit จริงออกมาเพื่อเรียกใช้ซ้ำได้ทั้งเคสมี popup และไม่มี popup
+function doSubmit() {
 	var spinner = $('#loader');
 	var form = $('#formid');
-	var reportValidity = form[0].reportValidity();
-	if (reportValidity) {
-		spinner.show();
-		$('#btn_submit').prop('disabled', true);
-		$('#formid').find(':input').prop('disabled', false);
-		console.log(form);
-		form.submit();
+	// รวมไฟล์ทั้งหมด (ปุ่มหลัก + modal) เข้า #myFile ชุดเดียว + set #deleteFileId
+	if (typeof lfSyncInput === 'function') { lfSyncInput(); }
+	spinner.show();
+	$('#btn_submit').prop('disabled', true);
+	$('#formid').find(':input').prop('disabled', false);
+	console.log(form);
+	form.submit();
 
-		// Refresh the window that opened this one, if it exists to show the latest data
-		if (window.opener) {
-			window.opener.location.reload();
-		}
+	// Refresh the window that opened this one, if it exists to show the latest data
+	if (window.opener) {
+		window.opener.location.reload();
 	}
+}
+
+// มีไฟล์แนบอยู่ไหม (pending ใหม่ + existing เดิมที่ยังไม่ถูกลบ)
+function lfHasAnyFile() {
+	if (typeof LeaveFiles === 'undefined') return false;
+	var activeExisting = LeaveFiles.existing.filter(function (ex) {
+		return LeaveFiles.deleted.indexOf(ex.fileId) === -1;
+	}).length;
+	return (LeaveFiles.pending.length + activeExisting) > 0;
+}
+
+function openEvidenceModal() {
+	var evEl = document.getElementById('evidenceModal');
+	if (window.bootstrap && bootstrap.Modal) {
+		(bootstrap.Modal.getInstance(evEl) || new bootstrap.Modal(evEl)).show();
+	} else {
+		$('#evidenceModal').modal('show');
+	}
+}
+
+function beforeSubmit() {
+	var form = $('#formid');
+	if (!form[0].reportValidity()) {
+		return;
+	}
+
+	// เช็คชื่อ leave type จาก data-name ของ radio ที่เลือกอยู่ (ไม่เช็คจาก id เพราะ id ต่าง environment ไม่ตรงกัน)
+	var typeName = $('input[name="leaveType"]:checked').data('name') || '';
+	var isSickOrPersonal = (typeName.indexOf('ลาป่วย') !== -1 || typeName.indexOf('ลากิจ') !== -1);
+
+	if (isSickOrPersonal && !lfHasAnyFile()) {
+		// ลาป่วย/ลากิจ แต่ยังไม่มีไฟล์แนบ -> เตือนให้แนบไฟล์ก่อน (ยังไม่ submit)
+		openEvidenceModal();
+		return;
+	}
+	doSubmit();
 }
 </script>
 
@@ -1406,30 +1466,40 @@ document.addEventListener("DOMContentLoaded", function () {
 </script>
 
 <script>
+
+function getFileIconPath(fileName) {
+	var ext = fileName.split('.').pop().toLowerCase();
+	switch (ext) {
+		case 'pdf': return 'assets/media/svg/files/pdf.svg';
+		case 'doc': case 'docx': return 'assets/media/svg/files/doc.svg';
+		case 'xls': case 'xlsx': return 'assets/media/svg/files/xls.svg';
+		case 'png': case 'jpg': case 'jpeg': case 'gif': case 'webp':
+			return 'assets/media/svg/files/image.svg';
+		case 'zip': return 'assets/media/svg/files/zip.svg';
+		default: return 'assets/media/svg/files/folder-document.svg';
+	}
+}
+
 function renderSingleFilePreview(fileName, fileUrl, isExisting = false, fileId = null, containerId = 'filePreviewContainer', fileInputId = 'myFile', disableTrash = false) {
 	const container = document.getElementById(containerId) || document.getElementById('filePreviewContainer');
 	if (!container) return;
 	container.innerHTML = '';
-	const fileExtension = fileName.split('.').pop().toLowerCase();
 
-	// เลือกไอคอนตามนามสกุลไฟล์
-	let iconClass = "fa-file";
-	if (isExisting === true) {
-		iconClass = "ki-duotone ki-file-up";
-	} else if (fileExtension === "pdf") iconClass = "ki-duotone ki-file-pdf";
-	else if (["doc", "docx"].includes(fileExtension)) iconClass = "fa-file-word-o";
-	else if (["xls", "xlsx"].includes(fileExtension)) iconClass = "fa-file-excel-o";
-	else if (["png", "jpg", "jpeg", "gif"].includes(fileExtension)) iconClass = "fa-file-image-o";
+	const iconPath = getFileIconPath(fileName);
 
 	const fileWrapper = document.createElement('div');
-	fileWrapper.className = 'd-flex justify-content-between align-items-center p-2 border rounded bg-light';
+	fileWrapper.className = 'd-inline-flex justify-content-between align-items-center p-2 border border-gray-300 rounded bg-white';
+	fileWrapper.style.width = 'fit-content';
+	fileWrapper.style.maxWidth = '100%';
 
 	// Left Group (Icon + Link)
 	const leftGroup = document.createElement('div');
-	leftGroup.className = 'd-flex align-items-center overflow-hidden';
+	leftGroup.className = 'd-flex align-items-center overflow-hidden me-4';
 
-	const icon = document.createElement('i');
-	icon.className = `${iconClass} fs-2 me-3`;
+	const icon = document.createElement('img');
+	icon.src = iconPath;
+	icon.className = 'w-25px h-25px me-3 flex-shrink-0';
+	icon.alt = 'icon';
 
 	const link = document.createElement('a');
 	link.href = fileUrl || '#';
@@ -1505,103 +1575,15 @@ window.removeSingleFile = function (isExisting, fileId, containerId = 'filePrevi
 
 document.addEventListener('DOMContentLoaded', function () {
 	const fileInput = document.getElementById('myFile');
-
-	if (typeof action !== 'undefined' && action === 'Edit' && typeof fileLeave !== 'undefined' && fileLeave != null && fileLeave != '') {
-		const fullFileName = fileLeave.name + fileLeave.type;
-		const downloadPath = 'preview_File?id=' + fileLeave.fileId;
-		renderSingleFilePreview(fullFileName, downloadPath, true, fileLeave.fileId);
-		$('#fileUploadId').val(fileLeave.fileId);
-		$('#deleteFileId').val('');
-	}
-
 	if (!fileInput) {
 		console.error("Critical Error: File input element with ID 'myFile' not found.");
 		return;
 	}
 
+	// ปุ่ม Attach files หลัก: เลือกได้หลายไฟล์ -> สะสมเข้า LeaveFiles.pending (ไม่ทับของเดิม)
 	fileInput.addEventListener('change', function (event) {
-		const file = event.target.files[0];
-		if (!file) return;
-		const forbiddenChars = /[\/:*?"<>|]/;
-		if (forbiddenChars.test(file.name)) {
-			alert("File name contains invalid characters.");
-			this.value = '';
-			const def = document.getElementById('filePreviewContainer'); if (def) def.innerHTML = '';
-			const exf = document.getElementById('exitingFilePreviewContainer'); if (exf) exf.innerHTML = '';
-			const mdf = document.getElementById('modalFilePreviewName'); if (mdf) mdf.innerText = 'No file selected';
-			const sz = document.getElementById('size'); if (sz) sz.value = '';
-			return;
-		}
-
-		const containerId = window.filePreviewTarget || 'filePreviewContainer';
-		if (window.filePreviewTarget) delete window.filePreviewTarget;
-
-		const defC = document.getElementById('filePreviewContainer'); if (defC) defC.innerHTML = '';
-		const mdfC = document.getElementById('modalFilePreviewName'); if (mdfC) mdfC.innerText = 'No file selected';
-		const exfC = document.getElementById('exitingFilePreviewContainer'); if (exfC) exfC.innerHTML = '';
-
-		var fSExt = new Array('Bytes', 'KB', 'MB', 'GB');
-		var fSize = file.size;
-		var i = 0;
-		while (fSize > 900) {
-			fSize /= 1024;
-			i++;
-		}
-		var size_n = (Math.round(fSize * 100) / 100);
-		const sizeEl = document.getElementById('size'); if (sizeEl) sizeEl.value = size_n + ' ' + fSExt[i];
-
-		const tempUrl = URL.createObjectURL(file);
-		renderSingleFilePreview(file.name, tempUrl, false, null, containerId, 'myFile');
-
-		const delEl = document.getElementById('deleteFileId'); if (delEl) delEl.value = '';
-		const fupEl = document.getElementById('fileUploadId'); if (fupEl) fupEl.value = '';
+		lfAddFiles(event.target.files);
 	});
-
-});
-
-document.getElementById('myFile').addEventListener('change', function(e) {
-    console.log("fileUpload");
-	const file = e.target.files[0];
-
-    if (!file) {
-        return;
-    }
-
-    if (!file.type.startsWith('image/')) {
-        return;
-    }
-    
-    const limitSize = 500 * 1024;
-    if (file.size <= limitSize) {
-        console.log("ขนาดไฟล์เล็กอยู่แล้ว (" + (file.size / 1024).toFixed(2) + " KB) ข้ามการย่อขนาด");
-        return;
-    }
-    
-    console.log("Before resize: " + (file.size / 1024 / 1024).toFixed(2) + " MB");
-
-    new Compressor(file, {
-        quality: 0.8,
-        maxWidth: 1024, 
-        maxHeight: 1024,   
-        success(result) {
-
-            const compressedFile = new File([result], file.name, {
-                type: result.type,
-                lastModified: Date.now()
-            });
-
-            console.log("After resize: " + (compressedFile.size / 1024 / 1024).toFixed(2) + " MB");
-
-            const dataTransfer = new DataTransfer();
-            dataTransfer.items.add(compressedFile);
-            
-            document.getElementById('myFile').files = dataTransfer.files;
-            
-        },
-        error(err) {
-            console.error("Error resize: ", err.message);
-        },
-    });
 });
 
 function previewModalFile(input) {
@@ -1639,7 +1621,7 @@ function submitModalFile() {
 			$('#attachFileModal').modal('hide');
 		}
 		clearModalFile();
-		beforeSubmit();
+		doSubmit();
 	} else {
 		alert('Please select a file first.');
 	}
@@ -1692,6 +1674,159 @@ function handleAfterFileSelect(input) {
 	var fileIdInput = document.getElementById('fileUploadId');
 	if (fileIdInput) fileIdInput.value = '';
 }
+</script>
+
+<script>
+/* =========================================================================
+ * Leave attachments (multi-file) — single source of truth
+ *   LeaveFiles.pending  : File[]                ไฟล์ใหม่ที่ยังไม่ส่ง (ปุ่มหลัก + modal Upload file)
+ *   LeaveFiles.existing : [{fileId,name,type}]  ไฟล์เดิมจาก server (edit mode) = table file (page='leave')
+ *   LeaveFiles.deleted  : number[]              fileId ของไฟล์เดิมที่ผู้ใช้กดลบ
+ * ก่อน submit จริง lfSyncInput() รวม pending -> #myFile และ deleted -> #deleteFileId
+ * ========================================================================= */
+window.LeaveFiles = window.LeaveFiles || { pending: [], existing: [], deleted: [] };
+
+var LF_FORBIDDEN = /[\/:*?"<>|]/;
+var LF_IMG_LIMIT = 500 * 1024;
+
+function lfLoadExisting(list) {
+	LeaveFiles.existing = [];
+	LeaveFiles.deleted = [];
+	if (list && list.length) {
+		for (var i = 0; i < list.length; i++) {
+			var f = list[i];
+			if (!f || f.fileId == null) continue;
+			LeaveFiles.existing.push({ fileId: f.fileId, name: (f.name || 'file'), type: (f.type || '') });
+		}
+	}
+}
+
+function lfMakeItem(name, url, onRemove, disableTrash) {
+	var wrapper = document.createElement('div');
+	wrapper.className = 'd-inline-flex justify-content-between align-items-center p-2 border border-gray-300 rounded bg-white';
+	wrapper.style.maxWidth = '100%';
+
+	var leftGroup = document.createElement('div');
+	leftGroup.className = 'd-flex align-items-center overflow-hidden me-4';
+
+	var icon = document.createElement('img');
+	icon.src = getFileIconPath(name);
+	icon.className = 'w-25px h-25px me-3 flex-shrink-0';
+	icon.alt = 'icon';
+
+	var link = document.createElement('a');
+	link.href = url || '#';
+	link.target = '_blank';
+	link.className = 'text-gray-800 fw-medium text-hover-primary text-truncate';
+	link.textContent = name;
+	link.style.maxWidth = '250px';
+
+	leftGroup.appendChild(icon);
+	leftGroup.appendChild(link);
+
+	var removeBtn = document.createElement('span');
+	removeBtn.className = 'btn btn-icon btn-sm btn-light-danger';
+	var trashIcon = document.createElement('i');
+	trashIcon.className = 'ki-duotone ki-trash fs-3';
+	trashIcon.innerHTML = '<span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span><span class="path5"></span>';
+	removeBtn.appendChild(trashIcon);
+	if (disableTrash) {
+		removeBtn.style.opacity = '0.5';
+		removeBtn.style.pointerEvents = 'none';
+	} else {
+		removeBtn.classList.add('cursor-pointer');
+		removeBtn.onclick = onRemove;
+	}
+
+	wrapper.appendChild(leftGroup);
+	wrapper.appendChild(removeBtn);
+	return wrapper;
+}
+
+function lfPaint(containerId, opts) {
+	var c = document.getElementById(containerId);
+	if (!c) return;
+	opts = opts || {};
+	c.innerHTML = '';
+	for (var i = 0; i < LeaveFiles.existing.length; i++) {
+		(function (ex) {
+			if (LeaveFiles.deleted.indexOf(ex.fileId) !== -1) return;
+			c.appendChild(lfMakeItem(ex.name + (ex.type || ''), 'preview_File?id=' + ex.fileId, function () {
+				LeaveFiles.deleted.push(ex.fileId);
+				lfSyncInput();
+				lfRenderAll();
+			}, !!opts.readonly));
+		})(LeaveFiles.existing[i]);
+	}
+	for (var j = 0; j < LeaveFiles.pending.length; j++) {
+		(function (idx, file) {
+			c.appendChild(lfMakeItem(file.name, URL.createObjectURL(file), function () {
+				LeaveFiles.pending.splice(idx, 1);
+				lfSyncInput();
+				lfRenderAll();
+			}, !!opts.readonly));
+		})(j, LeaveFiles.pending[j]);
+	}
+	if (!c.children.length && opts.emptyText) {
+		c.innerHTML = '<div class="text-muted fs-6">' + opts.emptyText + '</div>';
+	}
+}
+
+function lfRenderAll() {
+	lfPaint('filePreviewContainer', {});
+}
+
+function lfRenderExistingReadonly(containerId) {
+	lfPaint(containerId, { readonly: true });
+}
+
+function lfDup(file) {
+	return LeaveFiles.pending.some(function (f) { return f.name === file.name && f.size === file.size; });
+}
+
+function lfAddFiles(fileList) {
+	if (!fileList || !fileList.length) return;
+	Array.prototype.slice.call(fileList).forEach(function (file) {
+		if (LF_FORBIDDEN.test(file.name)) {
+			alert('File name contains invalid characters: ' + file.name);
+			return;
+		}
+		if (lfDup(file)) return;
+		LeaveFiles.pending.push(file); // push ทันที กัน race ตอน submit
+		// ย่อเฉพาะรูปที่ใหญ่กว่า limit แล้วสลับไฟล์ใน slot เดิม
+		if (file.type && file.type.indexOf('image/') === 0 && file.size > LF_IMG_LIMIT && typeof Compressor !== 'undefined') {
+			new Compressor(file, {
+				quality: 0.8, maxWidth: 1024, maxHeight: 1024,
+				success: function (result) {
+					var compressed = new File([result], file.name, { type: result.type, lastModified: Date.now() });
+					var at = LeaveFiles.pending.indexOf(file);
+					if (at !== -1) LeaveFiles.pending[at] = compressed;
+					lfSyncInput();
+					lfRenderAll();
+				},
+				error: function (err) { console.error('resize error:', err && err.message); }
+			});
+		}
+	});
+	lfSyncInput();
+	lfRenderAll();
+}
+
+function lfSyncInput() {
+	var myFile = document.getElementById('myFile');
+	if (myFile) {
+		try {
+			var dt = new DataTransfer();
+			LeaveFiles.pending.forEach(function (f) { dt.items.add(f); });
+			myFile.files = dt.files;
+		} catch (e) { console.warn('lfSyncInput DataTransfer failed', e); }
+	}
+	var del = document.getElementById('deleteFileId');
+	if (del) del.value = LeaveFiles.deleted.join(',');
+	var sz = document.getElementById('size');
+	if (sz) sz.value = LeaveFiles.pending.length ? (LeaveFiles.pending.length + ' file(s)') : '';
+}
+
 </script>
 
 </html>

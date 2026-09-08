@@ -3098,5 +3098,88 @@ public class WorkHoursDAOImpl implements WorkHoursDAO {
 
 		return list;
 	}
+	
+	@Override
+	public List<Object[]> findUserEnableWorkHoursByDate(Date targetDate) throws Exception {
+
+	    String sql =
+	            "SELECT " +
+	            "    u.id, " +
+	            "    u.work_time_start, " +
+	            "    u.work_time_end, " +
+
+	            // CHECKIN
+	            "    ( " +
+	            "        SELECT wh.work_hours_time_work " +
+	            "        FROM work_hours wh " +
+	            "        WHERE wh.user_create = u.id " +
+	            "          AND wh.work_hours_type = '1' " +
+	            "          AND DATE(wh.work_hours_time_work) = :date " +
+	            "        ORDER BY wh.work_hours_id DESC " +
+	            "        LIMIT 1 " +
+	            "    ) AS checkin, " +
+
+	            "    ( " +
+	            "        SELECT wh.time_create " +
+	            "        FROM work_hours wh " +
+	            "        WHERE wh.user_create = u.id " +
+	            "          AND wh.work_hours_type = '1' " +
+	            "          AND DATE(wh.work_hours_time_work) = :date " +
+	            "        ORDER BY wh.work_hours_id DESC " +
+	            "        LIMIT 1 " +
+	            "    ) AS checkin_time_create, " +
+
+	            "    ( " +
+	            "        SELECT wh.description " +
+	            "        FROM work_hours wh " +
+	            "        WHERE wh.user_create = u.id " +
+	            "          AND wh.work_hours_type = '1' " +
+	            "          AND DATE(wh.work_hours_time_work) = :date " +
+	            "        ORDER BY wh.work_hours_id DESC " +
+	            "        LIMIT 1 " +
+	            "    ) AS checkin_description, " +
+
+	            // CHECKOUT
+	            "    ( " +
+	            "        SELECT wh.work_hours_time_work " +
+	            "        FROM work_hours wh " +
+	            "        WHERE wh.user_create = u.id " +
+	            "          AND wh.work_hours_type = '2' " +
+	            "          AND DATE(wh.work_hours_time_work) = :date " +
+	            "        ORDER BY wh.work_hours_id DESC " +
+	            "        LIMIT 1 " +
+	            "    ) AS checkout, " +
+
+	            "    ( " +
+	            "        SELECT wh.time_create " +
+	            "        FROM work_hours wh " +
+	            "        WHERE wh.user_create = u.id " +
+	            "          AND wh.work_hours_type = '2' " +
+	            "          AND DATE(wh.work_hours_time_work) = :date " +
+	            "        ORDER BY wh.work_hours_id DESC " +
+	            "        LIMIT 1 " +
+	            "    ) AS checkout_time_create, " +
+
+	            "    ( " +
+	            "        SELECT wh.description " +
+	            "        FROM work_hours wh " +
+	            "        WHERE wh.user_create = u.id " +
+	            "          AND wh.work_hours_type = '2' " +
+	            "          AND DATE(wh.work_hours_time_work) = :date " +
+	            "        ORDER BY wh.work_hours_id DESC " +
+	            "        LIMIT 1 " +
+	            "    ) AS checkout_description " +
+
+	            "FROM user u " +
+	            "WHERE u.enable = '1'";
+
+	    SQLQuery query = sessionFactory
+	            .getCurrentSession()
+	            .createSQLQuery(sql);
+
+	    query.setParameter("date", targetDate);
+
+	    return query.list();
+	}
 
 }
