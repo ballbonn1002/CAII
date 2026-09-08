@@ -2134,13 +2134,12 @@ public class LeaveAction extends ActionSupport {
 
 			JSONObject messageJson = new JSONObject();
 			messageJson.put("leaveId", leave.getLeaveId());
-			messageJson.put("leaveTypeId", leave.getLeaveTypeId());
-			messageJson.put("leaveTypeName", leaveTypeName);
+			messageJson.put("typeName", leaveTypeName);
 			messageJson.put("status", statusWord);
 			messageJson.put("startDate", startDate);
 			messageJson.put("endDate", endDate);
 
-			notificationService.create(leave.getUserId(), "leave", messageJson.toString(), leave.getDescription(), actorId);
+			notificationService.create(leave.getUserId(), "Leave", messageJson.toString(), leave.getReason(), actorId, leave.getLeaveId().toString());
 		} catch (Exception e) {
 			log.error("Unable to create leave status notification", e);
 		}

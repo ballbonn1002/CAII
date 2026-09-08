@@ -8,7 +8,7 @@
   <context-param>
     <param-name>org.apache.tiles.impl.BasicTilesContainer.DEFINITIONS_CONFIG</param-name>
     <param-value>
-      /WEB-INF/classes/struts-tiles.xml
+      /WEB-INF/classes/struts-tiles.xml,/WEB-INF/classes/struts-tilesline.xml
    </param-value>
   </context-param>
   <listener>

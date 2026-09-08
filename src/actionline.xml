@@ -1,0 +1,149 @@
+<!DOCTYPE struts PUBLIC
+"-//Apache Software Foundation//DTD Struts Configuration 2.0//EN"
+"http://struts.apache.org/dtds/struts-2.0.dtd">
+<struts>
+	<package name="LineAuthorization" namespace="/" extends="default">
+		<result-types>
+			<result-type name="tiles"
+				class="org.apache.struts2.views.tiles.TilesResult" />
+		</result-types>
+		<action name="line_authorization"
+			class="com.cubesofttech.action.LoginAction" method="login">
+			<!-- <result name="success" type="redirectAction">check_in?userId=${onlineUser.id} 
+				</result> -->
+			<result name="success" type="redirectAction">line_check_in_out</result>
+			<result name="error">/pages-line/index.jsp</result>
+			<!-- <result name="input" type="redirectAction">check_in?userId=${onlineUser.id} 
+				</result> -->
+			<result name="input" type="redirectAction">line_check_in_out</result>
+		</action>
+	</package>
+	<package name="LineLiffAction" namespace="/"
+		extends="default, json-default">
+		<result-types>
+			<result-type name="tiles"
+				class="org.apache.struts2.views.tiles.TilesResult" />
+		</result-types>
+
+		<interceptors>
+			<interceptor-stack name="authStack">
+				<interceptor-ref name="auth" />
+				<interceptor-ref name="defaultStack" />
+			</interceptor-stack>
+		</interceptors>
+		<default-interceptor-ref name="authStack" />
+
+		<!-- Fallback for actions that don't declare their own "login" result -->
+		<global-results>
+			<result name="login" type="redirect">/pages-line/index.jsp</result>
+		</global-results>
+
+		<action name="line_check_in_out"
+			class="com.cubesofttech.action.WorkHoursAction" method="init">
+			<result name="success" type="tiles">line_checkInOut</result>
+			<result name="error">/pages-line/index.jsp</result>
+		</action>
+		
+		<!-- Check All Calendar -->
+		<action name="line_Calendar_Checklist"
+			class="com.cubesofttech.action.WorkHoursAction"
+			method="CheckAllCalendar2">
+			<result name="success" type="tiles">line_NewCheckAllCalendar</result>
+			<result name="error">/pages-line/index.jsp</result>
+		</action>
+		
+		<!-- MyLeave =========================================================================================================== -->
+
+		<!-- Listing -->
+		<action name="line_new_myleave_list"
+			class="com.cubesofttech.action.LeaveAction" method="New_myleave">
+			<result name="success" type="tiles">line_new_myleave_list</result>
+			<result name="error">/pages-line/index.jsp</result>
+		</action>
+		<!-- Listing -->
+		
+		<!-- Search -->
+		<!-- New Function(waiting) -->
+		<action name="line_new_searchyear"
+			class="com.cubesofttech.action.LeaveAction" method="">
+			<result name="success" type="tiles">line_new_myleave_list</result>
+			<result name="error">/pages-line/index.jsp</result>
+		</action>
+		<!-- Search -->
+		
+		<!-- Add -->
+		<action name="line_NewLeaveAdd"
+			class="com.cubesofttech.action.LeaveAction" method="NewLeaveAdd">
+			<result name="success" type="tiles">line_newLeaveAdd</result>
+			<result name="error">/pages-line/index.jsp</result>
+		</action>
+		<action name="line_getManagerIdAndManagerName"
+			class="com.cubesofttech.action.LeaveAction"
+			method="getManagerIdAndManagerName">
+			<result name="success" type="tiles">line_newLeaveAdd</result>
+			<result name="error">/pages-line/index.jsp</result>
+		</action>
+		<action name="line_getLeaveCheckStatusJson"
+			class="com.cubesofttech.action.LeaveAction"
+			method="getLeaveCheckStatusJson">
+			<result name="success" type="tiles">line_newLeaveAdd</result>
+			<result name="error">/pages-line/index.jsp</result>
+		</action>
+		<!-- Add -->
+
+		<!-- Edit Btn -->
+		<action name="line_NewLeaveEdit"
+			class="com.cubesofttech.action.LeaveAction" method="NewLeaveEdit">
+			<result name="success" type="tiles">line_newLeaveEdit</result>
+			<result name="error">/pages-line/index.jsp</result>
+		</action>
+		<!-- Edit Btn -->
+
+		<!-- Send Approve Btn | Edit Page -->
+		<action name="line_new_LeaveEdit_Do"
+			class="com.cubesofttech.action.LeaveAction" method="new_LeaveEdit_Do">
+			<!-- <result name="success" type="redirect">leavecalendar</result> -->
+			<result name="success" type="redirect">line_new_myleave_list?Id=${onlineUser.id}
+			</result>
+			<result name="error">/pages-line/index.jsp</result>
+		</action>
+		<!-- Send Approve Btn | Edit Page -->
+
+		<!-- Update Status -->
+		<action name="line_Leave_inListStatusToCancel"
+			class="com.cubesofttech.action.LeaveAction"
+			method="Leave_inListStatusToCancel">
+			<result name="success" type="chain">line_new_myleave_list</result>
+			<result name="error">/pages-line/index.jsp</result>
+		</action>
+		<!-- Update Status -->
+
+		<!-- File -->
+		<action name="line_preview_File"
+			class="com.cubesofttech.action.LeaveAction" method="preview_File">
+			<result name="success" type="tiles">line_previewFile</result>
+			<result name="error">/pages-line/index.jsp</result>
+		</action>
+		<!-- File -->
+		
+		<!-- MyLeave =========================================================================================================== -->
+		
+		<!-- POST /webhook/LineOA/LineLiff -->
+		<action name="line_checkAccount" class="com.cubesofttech.actionline.LineLoginAction" method="">
+			<result name="success" type="tiles">line_bind_account</result>
+			<result name="error">/pages-line/index.jsp</result>
+		</action>
+		
+		<action name="line_lineLiffLogin" class="com.cubesofttech.actionline.LineLoginAction" method="liffLogin">
+			<result name="returnCheck" type="redirect">line_check_in_out</result>
+			<result name="returnCheckList" type="redirect">line_Calendar_Checklist</result>
+			<result name="returnLeave" type="redirect">line_new_myleave_list</result>
+			<result name="error">/pages-line/index.jsp</result>
+		</action>
+
+		<action name="line_lineWebhook"
+			class="com.cubesofttech.actionline.WebhookAction" method="execute">
+			<result name="none" type="httpheader" />
+		</action>
+	</package>	
+</struts>

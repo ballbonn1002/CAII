@@ -449,7 +449,7 @@
 											<!-- Btn Edit, Delete -->
 											<c:choose>
 												<c:when test="${leave.leave_status_id.toString() == 0}">
-													<a data-note="btn edit" href="NewLeaveEdit?id=${leave.leave_id}" title="Edit" class="btn btn-icon btn-sm btn-light-primary">
+													<a data-note="btn edit" href="line_NewLeaveEdit?id=${leave.leave_id}" title="Edit" class="btn btn-icon btn-sm btn-light-primary">
 														<i class="ki-duotone ki-pencil fs-5">
 															<span class="path1"></span>
 															<span class="path2"></span>
@@ -466,7 +466,7 @@
 													</a>
 												</c:when>
 												<c:when test="${leave.leave_status_id.toString() != 0}">
-													<a data-note="btn edit" href="NewLeaveEdit?id=${leave.leave_id}" title="Edit" class="btn btn-icon btn-sm btn-light-primary">
+													<a data-note="btn edit" href="line_NewLeaveEdit?id=${leave.leave_id}" title="Edit" class="btn btn-icon btn-sm btn-light-primary">
 														<i class="ki-duotone ki-pencil fs-5">
 															<span class="path1"></span>
 															<span class="path2"></span>
@@ -535,20 +535,18 @@
 												${leave.start_time} - ${leave.end_time}
 											</div>
 											
-											<c:set var="leaveFiles" value="${leaveFilesMap[leave.leave_id.toString()]}" />
-											<c:if test="${not empty leaveFiles}">
-											    <div class="d-flex align-items-center flex-wrap gap-2">
-											        <i class="ki-duotone ki-document me-1">
+											<c:if test="${not empty leave.leave_file}">
+											    <div class="d-flex align-items-center">
+											        <i class="ki-duotone ki-document me-2">
 											            <span class="path1"></span>
 											            <span class="path2"></span>
 											        </i>
-											        <c:forEach var="f" items="${leaveFiles}" varStatus="fst">
-											            <a href="preview_File?id=${f.fileId}"
-											               target="_blank"
-											               class="text-primary text-hover-underline text-truncate d-inline-block align-bottom"
-											               style="max-width: 160px;"
-											               title="${f.name}${f.type}">${f.name}${f.type}</a><c:if test="${not fst.last}"><span class="text-muted">,</span></c:if>
-											        </c:forEach>
+											
+											        <a href="line_preview_File?id=${leave.leave_file}"
+											           target="_blank"
+											           class="text-primary text-hover-underline">
+											            ${leave.file_name}${leave.type}
+											        </a>
 											    </div>
 											</c:if>
 										</div>
@@ -865,7 +863,7 @@ function changeStatus(id) {
 
             if (val.length !== 0) {
                 $.ajax({
-                    url: "Leave_inListStatusToCancel",
+                    url: "line_Leave_inListStatusToCancel",
                     type: "POST",
                     data: {
                         leave_id: id,
@@ -894,7 +892,7 @@ function changeStatus(id) {
 
 <script>
 	function add() {
-		document.location = "NewLeaveAdd";
+		document.location = "line_NewLeaveAdd";
 	}
 </script>
 
