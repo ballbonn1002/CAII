@@ -36,8 +36,6 @@
 #summernote {
 	border: 1px solid #d1d5db;
 	border-radius: 6px;
-	overflow: hidden;
-	min-height: 500px;
 	padding: 12px;
 }
 
@@ -516,7 +514,7 @@
 										<input type="text" 
 												class="form-control text-gray-700"
 												placeholder="Page URL" id="pageUriId" name="pageUriId" value="${empty pageUri[0].pageUriId ? '' : fn:escapeXml(pageUri[0].pageUriId)}" />
-														
+										<div class="invalid-feedback d-none" id="pageUriIdFeedback">This Page URL is already in use.</div>				
 									</div>
 									<div class="col-12 mt-5">
 										<label class="required fw-medium text-gray-800 mb-2">Title</label>
@@ -561,6 +559,7 @@
     	$('#summernote').summernote({
             placeholder: '',
             tabsize: 2,
+			height: 500,
             iframeAttributes: {
                 class: 'summernote-iframe'
             }, 
@@ -635,6 +634,8 @@
 			success : function(url) {
 				$('#summernote').summernote('editor.insertImage', url);
 				console.log("Succesful uploaded " + url);
+				// เคลียร์ input file ของ summernote กันเบราว์เซอร์ส่งไฟล์นี้ซ้ำตอน submit ฟอร์มจริง
+    			$('.note-image-input').val('');
 			},
 			error : function(data) {
 				console.log("Error upload");
@@ -863,7 +864,11 @@
 		 	        }
 		    }).then((result) => {
 		        if (result.isConfirmed) {      	
-		        	form.submit();
+					document.getElementById("saveFormBtn").disabled = true;
+					document.getElementById("preview").disabled = true;
+					document.getElementById("saveFormBtn").textContent = "Saving...";
+		        	$(form).find('input[type="file"]').not('#imageInputFile').val('');
+					form.submit();
 		        }
 		    });
 		  return false;
@@ -884,6 +889,9 @@
 			        }
 			    }).then((result) => {
 			        if (result.isConfirmed) {
+						document.getElementById("saveFormBtn").disabled = true;
+						document.getElementById("preview").disabled = true;
+						document.getElementById("saveFormBtn").textContent = "Saving...";
 			            window.location.href = redirectUrl;
 			        }
 			    });
@@ -903,5 +911,55 @@
 	    }
 	})
 	</script>
+
+<script>
+	let pageUriDuplicate = false;
+	let pageUriCheckTimeout;
+	const originalPageUriId = "${empty pageUri[0].pageUriId ? '' : fn:escapeXml(pageUri[0].pageUriId)}";
+
+	document.getElementById("pageUriId").addEventListener("input", function () {
+		const val = this.value.trim();
+		const input = this;
+		const errorBox = document.getElementById("pageUriIdFeedback");
+		const articleId = document.getElementById("articleId").value;
+
+		clearTimeout(pageUriCheckTimeout);
+
+		if (!val || val === originalPageUriId) {
+			input.classList.remove("is-invalid");
+			errorBox.classList.add("d-none");
+			pageUriDuplicate = false;
+			return;
+		}
+
+		pageUriCheckTimeout = setTimeout(function () {
+			$.ajax({
+				url: "${pageContext.request.contextPath}/check_page_url",
+				type: "POST",
+				data: { pageUriId: val, articleId: articleId },
+				dataType: "json",
+				success: function (res) {
+					const box = document.getElementById("pageUriIdFeedback");
+					if (!box) return;
+					if (res.duplicate) {
+						input.classList.add("is-invalid");
+						box.classList.remove("d-none");
+						pageUriDuplicate = true;
+					} else {
+						input.classList.remove("is-invalid");
+						box.classList.add("d-none");
+						pageUriDuplicate = false;
+					}
+				},
+				error: function () {
+					input.classList.remove("is-invalid");
+					const box = document.getElementById("pageUriIdFeedback");
+					if (box) box.classList.add("d-none");
+					pageUriDuplicate = false;
+				}
+			});
+		}, 400);
+	});
+</script>
 </body>
 </html>

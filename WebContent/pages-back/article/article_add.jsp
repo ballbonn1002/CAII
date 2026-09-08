@@ -35,8 +35,6 @@
 #summernote {
 	border: 1px solid #d1d5db;
 	border-radius: 6px;
-	overflow: hidden;
-	min-height: 500px;
 	padding: 12px;
 }
 
@@ -466,47 +464,56 @@
 	var editorInstance;
 
 	function initSummernote(content="") {
-	    $('#summernote').summernote({
-	      placeholder: '',
-	      tabsize: 2,
-	      codeviewFilter: false,
-	      codeviewIframeFilter: false,
-	      toolbar: [
-      	    // style
-      	    ['style', ['style']],
+	    function getEditorHeight() {
+			const el = document.getElementById('summernote');
+			const topOffset = el.getBoundingClientRect().top + window.scrollY;
+			const bottomReserve = 140;
+			const height = window.innerHeight - topOffset - bottomReserve;
+			return height > 500 ? height : 500; 
+		}
 
-      	    // font
-      	    ['font', [
-      	      'bold', 'italic',  'underline', 'strikethrough',
-      	      'superscript', 'subscript', 'clear'
-      	    ]],
+		$('#summernote').summernote({
+			placeholder: '',
+			tabsize: 2,
+			height: getEditorHeight(),
+			codeviewFilter: false,
+			codeviewIframeFilter: false,
+			toolbar: [
+				// style
+				['style', ['style']],
 
-      	    // font size/name/color
-      	    ['fontname', ['fontname']],
-      	    ['fontsize', ['fontsize']],
-      	    ['color', ['color']],
+				// font
+				['font', [
+				'bold', 'italic',  'underline', 'strikethrough',
+				'superscript', 'subscript', 'clear'
+				]],
 
-      	    // paragraph
-      	    ['para', [ 'ul', 'ol', 'paragraph', 'height'  ]],
+				// font size/name/color
+				['fontname', ['fontname']],
+				['fontsize', ['fontsize']],
+				['color', ['color']],
 
-      	    // insert
-      	    ['insert', [ 'link', 'picture', 'video', 'table', 'hr' ]],
+				// paragraph
+				['para', [ 'ul', 'ol', 'paragraph', 'height'  ]],
 
-      	    // misc/view
-      	    ['view', [ 'undo', 'redo', 'fullscreen', 'codeview', 'help' ]]
-      	  ],
-	    	  callbacks : {
-					onImageUpload : function(files) {
-						for (var i = files.length - 1; i >= 0; i--) {
-							sendFile(files[i], this);
+				// insert
+				['insert', [ 'link', 'picture', 'video', 'table', 'hr' ]],
+
+				// misc/view
+				['view', [ 'undo', 'redo', 'fullscreen', 'codeview', 'help' ]]
+			],
+				callbacks : {
+						onImageUpload : function(files) {
+							for (var i = files.length - 1; i >= 0; i--) {
+								sendFile(files[i], this);
+							}
+						},
+						onMediaDelete : function(target) {
+							deleteFile(target[0].src);
 						}
-					},
-					onMediaDelete : function(target) {
-						deleteFile(target[0].src);
 					}
-				}
-	    });
-	    $('#summernote').summernote('code', content);
+			});
+			$('#summernote').summernote('code', content);
 	}
 	
 	function sendFile(file, el) {
@@ -539,6 +546,8 @@
 			success : function(url) {
 				$('#summernote').summernote('editor.insertImage', url);
 				console.log("Succesful uploaded " + url);
+				// เคลียร์ input file ของ summernote กันเบราว์เซอร์ส่งไฟล์นี้ซ้ำตอน submit ฟอร์มจริง
+				$('.note-image-input').val('');
 			},
 			error : function(data) {
 				console.log("Error upload");
@@ -661,6 +670,7 @@
 	function submitForm(){
 		const content = $('#summernote').summernote('code');
 	
+		
 		const errorBox = document.getElementById("editorError");
 	    const editorError = errorBox.textContent.trim();
 	    
@@ -740,8 +750,12 @@
 		 	            cancelButton: "btn btn-secondary"
 		 	        }
 		    }).then((result) => {
-		        if (result.isConfirmed) {		        	
-		        	form.submit();
+		        if (result.isConfirmed) {	
+					document.getElementById("saveFormBtn").disabled = true;
+					document.getElementById("preview").disabled = true;
+					document.getElementById("saveFormBtn").textContent = "Saving...";	        	
+		        	$(form).find('input[type="file"]').not('#imageInputFile').val('');
+					form.submit();
 		        }
 		    });
 		  return false;
@@ -762,6 +776,9 @@
 			        }
 			    }).then((result) => {
 			        if (result.isConfirmed) {
+						document.getElementById("saveFormBtn").disabled = true;
+						document.getElementById("preview").disabled = true;
+						document.getElementById("saveFormBtn").textContent = "Saving...";
 			            window.location.href = redirectUrl;
 			        }
 			    });

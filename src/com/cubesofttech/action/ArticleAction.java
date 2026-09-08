@@ -510,7 +510,14 @@ public class ArticleAction extends ActionSupport {
 					fileName = fileName.trim().replaceAll(" ", "_");
 				}
 
-				String newFileName = maxId + "_" + fileName + typeFile;
+				String safeFileName;
+				if (fileName.matches("^[a-zA-Z0-9._-]+$")) {
+					safeFileName = fileName;
+				} else {
+					safeFileName = "articleCover";
+				}
+
+				String newFileName = maxId + "_" + safeFileName + typeFile;
 
 				long fileSize = fileUpload.length(); // byte
 				double sizeKB = fileSize / 1024.0;
@@ -572,6 +579,7 @@ public class ArticleAction extends ActionSupport {
 
 			article.setTimePost(Timestamp.valueOf(dateTime));
 			articleDAO.save(article);
+			
 			String articleIdStr = String.valueOf(article.getArticleId());
 
 			if (tempKey != null && !tempKey.trim().isEmpty()) {
@@ -817,9 +825,23 @@ public class ArticleAction extends ActionSupport {
 
 			article.setTimePost(Timestamp.valueOf(dateTime));
 			
-			
 			// Upload file
 			if (fileUpload != null) {
+				//ไม่ลบไฟล์เก่าออกจากserver ถ้ามีการอัปโหลดไฟล์ใหม่ จะทำการอัปเดตไฟล์ใหม่แทน
+				if (article.getFileId() != null) {
+					try {
+						FileUpload oldFile = fileuploadDAO.findById(Integer.parseInt(article.getFileId()));
+						if (oldFile != null) {
+							oldFile.setPageId(null);
+							oldFile.setUserUpdate(logonUser);
+							oldFile.setTimeUpdate(DateUtil.getCurrentTime());
+							fileuploadDAO.update(oldFile);
+						}
+					} catch (Exception e) {
+						log.error("Error unlinking old cover file: " + article.getFileId(), e);
+					}
+				}
+				
 				int maxId = fileuploadDAO.getMaxId() + 1;
 				String fileServerPath = request.getServletContext().getRealPath("/");
 				String originalName = fileUploadFileName;
@@ -830,7 +852,14 @@ public class ArticleAction extends ActionSupport {
 					fileName = fileName.trim().replaceAll(" ", "_");
 				}
 
-				String newFileName = maxId + "_" + fileName + typeFile;
+				String safeFileName;
+				if (fileName.matches("^[a-zA-Z0-9._-]+$")) {
+					safeFileName = fileName;
+				} else {
+					safeFileName = "articleCover";
+				}
+
+				String newFileName = maxId + "_" + safeFileName + typeFile;
 
 				long fileSize = fileUpload.length(); // byte
 				double sizeKB = fileSize / 1024.0;
@@ -1107,7 +1136,7 @@ public class ArticleAction extends ActionSupport {
 	            int maxFileId = fileuploadDAO.getMaxId() + 1;
 	            FileUpload file = new FileUpload();
 	            file.setFileId(maxFileId);
-	            String article_Id = String.valueOf(articleId);
+	            String article_Id = (articleId != null) ? String.valueOf(articleId) : null;
 	            if(article_Id != null && !article_Id.trim().isEmpty()) {
 	                file.setPage("article");
 	                file.setPageId(article_Id);
@@ -1163,7 +1192,7 @@ public class ArticleAction extends ActionSupport {
 		                log.debug("File NOT found : " + path.toString());
 		            }
 	
-		            String dbPath = "/upload/article/" + fileImage.getName();
+		            String dbPath = constant.getWebPath() + "/upload/article/" + fileImage.getName();
 	
 		            articleImageDAO.deleteByPath(dbPath);
 		            fileuploadDAO.deleteByPathAtc(dbPath);
@@ -1179,5 +1208,43 @@ public class ArticleAction extends ActionSupport {
 	    }
 	}
 
+	public void checkPageUrl() {
+		try {
+			response.setContentType("application/json");
+			response.setCharacterEncoding("UTF-8");
+
+			JSONObject result = new JSONObject();
+
+			if (pageUriId == null || pageUriId.trim().isEmpty()) {
+				result.put("duplicate", false);
+				response.getWriter().write(result.toString());
+				return;
+			}
+
+			PageUri existing = pageUriDAO.findById(pageUriId.trim());
+
+			boolean duplicate = false;
+			if (existing != null) {
+				// ถ้า URL นี้เป็นของ article ตัวเองอยู่แล้ว ไม่ถือว่าซ้ำ
+				boolean belongsToSameArticle = "article".equals(existing.getModel())
+						&& articleId != null
+						&& String.valueOf(articleId).equals(existing.getModelId());
+
+				if (!belongsToSameArticle) {
+					duplicate = true;
+				}
+			}
+
+			result.put("duplicate", duplicate);
+			response.getWriter().write(result.toString());
+			response.getWriter().flush();
+
+		} catch (Exception e) {
+			log.error("checkPageUri error: ", e);
+			try {
+				response.getWriter().write("{\"duplicate\":false,\"error\":true}");
+			} catch (IOException ignored) {}
+		}
+	}
 
 }

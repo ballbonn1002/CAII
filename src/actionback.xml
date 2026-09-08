@@ -2037,7 +2037,6 @@
 			<result name="preview" type="redirectAction">article_preview?articleId=${articleId}
 			</result>
 			<result name="error">/index.jsp</result>
-			<result name="input">/article_add.jsp</result>
 		</action>
 
 		<action name="article_perform_update"
@@ -2064,6 +2063,10 @@
 		<action name="DeleteImgFormEditor"
 			class="com.cubesofttech.action.ArticleAction"
 			method="DeleteImgFormEditor">
+		</action>
+
+		<action name="check_page_url" 
+			class="com.cubesofttech.action.ArticleAction" method="checkPageUrl">
 		</action>
 
 		<!-- ========================== Footer Menu ============================== -->
@@ -2324,8 +2327,8 @@
 		<action name="delete_po_attachment"
 		    class="com.cubesofttech.action.PurchaseOrderAction" method="deletePoAttachment">
 		</action>
-		
 
+		<!-- MR -->
 		<action name="equipment_request_list" 
 		class="com.cubesofttech.action.EquipmentRequestAction" method="myEquipmentRequest">
 		    <result name="success" type="tiles">equipment_request_list</result>
