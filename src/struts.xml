@@ -17,4 +17,5 @@
 		</action>
 	</package>
 	<include file="actionback.xml"></include>
+	<include file="actionline.xml"></include>
 </struts>
