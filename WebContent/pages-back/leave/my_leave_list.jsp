@@ -895,3 +895,13 @@ function changeStatus(id) {
 		document.location = "NewLeaveAdd";
 	}
 </script>
+
+<script>
+	// When opened from a notification (?leaveId=...), pop the leave status modal
+	$(function () {
+		var leaveId = new URLSearchParams(window.location.search).get("leaveId");
+		if (leaveId && typeof leaveStatus === "function") {
+			leaveStatus(leaveId);
+		}
+	});
+</script>

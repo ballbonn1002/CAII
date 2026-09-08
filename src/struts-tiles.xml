@@ -225,16 +225,11 @@
 
 	<!-- Listing Page -->
 
-	<!-- newLeave Template -->
-	<definition name="newLeave" extends="baseLayout">
+	<!-- Add Leave Page -->
+	<definition name="newLeaveAdd" extends="baseLayout">
+		<put-attribute name="title" value="Add Leave" />
 		<put-attribute name="body"
 			value="/pages-back/leave/new_leavePage.jsp" />
-	</definition>
-	<!-- newLeave Template -->
-
-	<!-- Add Leave Page -->
-	<definition name="newLeaveAdd" extends="newLeave">
-		<put-attribute name="title" value="Add Leave" />
 	</definition>
 	<definition name="leavecalendar" extends="baseLayout">
 		<put-attribute name="title" value="calendar leave" />
@@ -244,8 +239,10 @@
 	<!-- Add Leave Page -->
 
 	<!-- Edit Page -->
-	<definition name="newLeaveEdit" extends="newLeave">
+	<definition name="newLeaveEdit" extends="baseLayout">
 		<put-attribute name="title" value="Edit Leave" />
+		<put-attribute name="body"
+			value="/pages-back/leave/new_leavePage.jsp" />
 	</definition>
 	<!-- Edit Page -->
 
