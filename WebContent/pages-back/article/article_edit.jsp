@@ -382,6 +382,7 @@
 											Cover Photo <span class="fs-6 text-primary fw-semibold">Shown
 												in Cover</span>
 										</h3>
+										<span class="fs-6 text-center text-danger">กรุณาอัปโหลดไฟล์ที่มีชื่อเป็นภาษาอังกฤษเท่านั้น</span>
 										<div id="errorMsg" class="text-center text-danger"></div>
 										<div class="col-12 d-flex justify-content-center mt-6">
 										<input type="hidden" id="hasOldImage" value="${not empty fileImgPath}" />
