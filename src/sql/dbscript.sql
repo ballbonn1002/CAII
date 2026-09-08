@@ -971,4 +971,5 @@ CREATE TABLE `item_privilege` (
   PRIMARY KEY (`item_id`)
 ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci;
 
+-- PROD 8 SEP 2026
 
