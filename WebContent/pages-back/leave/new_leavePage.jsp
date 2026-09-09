@@ -41,6 +41,15 @@
 	</head>
 	<body class="app-default">
 
+		<!--begin::Page loading overlay (กันผู้ใช้กดปุ่ม Submit ซ้ำระหว่างรอระบบบันทึก)-->
+		<div id="loader"
+			class="position-fixed top-0 start-0 w-100 h-100 flex-column align-items-center justify-content-center"
+			style="display: none; background: rgba(255, 255, 255, 0.7); z-index: 1090;">
+			<span class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status"></span>
+			<span class="mt-3 fw-semibold text-gray-700 fs-5">กำลังบันทึกข้อมูล กรุณารอสักครู่...</span>
+		</div>
+		<!--end::Page loading overlay-->
+
 		<%
 			//comment for fix ClassCastException
 			//var action = '${action}'; can still be used
@@ -1356,15 +1365,22 @@ function showFileName(input) {
 </script>
 
 <script>
+// flag กันการ submit ซ้ำ (ผู้ใช้กดปุ่มรัว ๆ เพราะนึกว่าค้าง)
+var leaveSubmitting = false;
+
 // แยก logic การ submit จริงออกมาเพื่อเรียกใช้ซ้ำได้ทั้งเคสมี popup และไม่มี popup
 function doSubmit() {
+	if (leaveSubmitting) { return; } // ส่งไปแล้ว ไม่ต้องส่งซ้ำ
+	leaveSubmitting = true;
+
 	var spinner = $('#loader');
 	var form = $('#formid');
 	// รวมไฟล์ทั้งหมด (ปุ่มหลัก + modal) เข้า #myFile ชุดเดียว + set #deleteFileId
 	if (typeof lfSyncInput === 'function') { lfSyncInput(); }
-	spinner.show();
-	$('#btn_submit').prop('disabled', true);
+	spinner.css('display', 'flex'); // แสดง overlay loading ทับทั้งหน้า
 	$('#formid').find(':input').prop('disabled', false);
+	// ปิดปุ่มที่กดได้ทั้งหมด กันกดซ้ำระหว่างรอ browser navigate
+	$('#submitBtn, #lbafterFile').prop('disabled', true).addClass('disabled');
 	console.log(form);
 	form.submit();
 
@@ -1393,6 +1409,7 @@ function openEvidenceModal() {
 }
 
 function beforeSubmit() {
+	if (leaveSubmitting) { return; } // กำลังส่งอยู่ ไม่ต้องทำอะไรเพิ่ม
 	var form = $('#formid');
 	if (!form[0].reportValidity()) {
 		return;
