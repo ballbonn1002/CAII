@@ -58,7 +58,7 @@
             <div id="kt_app_content_container" class="app-container container-fluid">
 
                 <%-- ============ Product Detail ============ --%>
-                <form id="stockConsEditForm" method="POST" action="stock_cons_update">
+                <form id="stockConsEditForm" method="POST" action="stock_cons_update" enctype="multipart/form-data">
                     <input type="hidden" name="productId" value="${product.productId}" />
 
                     <div class="card mb-8">
@@ -77,6 +77,33 @@
                                 </div>
 
                                 <div class="row g-6">
+                                    <div class="col-12">
+                                        <label class="form-label fw-semibold text-gray-700 d-block">Product Image</label>
+                                        <div id="productImageErrorMsg" class="text-danger mb-2"></div>
+                                        <%-- Cover Photo pattern เดียวกับ announcement_add.jsp - image-input widget ของ Metronic
+                                             preload รูปเดิมจาก product.fileUpload (Hibernate join อัตโนมัติผ่าน Product.fileUpload) --%>
+                                        <div class="image-input image-input-outline"
+                                             data-kt-image-input="true"
+                                             style="background-image: url('${pageContext.request.contextPath}${not empty product.fileUpload.path ? product.fileUpload.path : '/assets/media/svg/avatars/blank.svg'}')">
+                                            <div class="image-input-wrapper w-150px h-150px"
+                                                 style="background-image: url('${pageContext.request.contextPath}${not empty product.fileUpload.path ? product.fileUpload.path : '/assets/media/svg/avatars/blank.svg'}')"></div>
+
+                                            <label class="btn btn-icon btn-circle btn-color-muted btn-active-color-primary w-25px h-25px bg-body shadow"
+                                                   data-kt-image-input-action="change" data-bs-toggle="tooltip"
+                                                   data-bs-dismiss="click" title="Change image">
+                                                <i class="ki-duotone ki-pencil fs-6"><span class="path1"></span><span class="path2"></span></i>
+                                                <input id="productImageInput" type="file" name="productImage" accept=".png, .jpg, .jpeg" />
+                                            </label>
+
+                                            <span class="btn btn-icon btn-circle btn-color-muted btn-active-color-primary w-25px h-25px bg-body shadow"
+                                                  data-kt-image-input-action="cancel" data-bs-toggle="tooltip"
+                                                  data-bs-dismiss="click" title="Cancel image">
+                                                <i class="ki-outline ki-cross fs-3"></i>
+                                            </span>
+                                        </div>
+                                        <div class="form-text">Allowed file types: png, jpg, jpeg. Max 2MB.</div>
+                                    </div>
+
                                     <div class="col-12 col-lg-6">
                                         <label class="form-label fw-semibold text-gray-700" for="productNo">
                                             Item ID <span class="text-danger">*</span>
@@ -133,15 +160,6 @@
                                                 <option value="${fn:escapeXml(eqType.typeID)}"
                                                     <c:if test="${eqType.typeID eq product.equipmentType}">selected</c:if>>${fn:escapeXml(eqType.description)}</option>
                                             </c:forEach>
-                                        </select>
-                                    </div>
-
-                                    <div class="col-12 col-lg-6">
-                                        <label class="form-label fw-semibold text-gray-700" for="icon">Product Icon</label>
-                                        <%-- TODO: ตอนนี้เป็น frontend เปล่าๆ ยังไม่ผูก backend (ถอดออกชั่วคราวตาม requirement ใหม่)
-                                             product ไม่มีคอลัมน์ icon แล้ว จึงยังไม่ preselect ค่าเดิมตอนเปิดหน้า edit --%>
-                                        <select id="icon" name="icon" class="form-select text-gray-700" data-control="select2" data-placeholder="Select or Search Icon...">
-                                            <option></option>
                                         </select>
                                     </div>
 
@@ -646,11 +664,24 @@
                                    class="form-control text-gray-700" placeholder="0" />
                         </div>
                         <div class="col-12 col-md-6">
-                            <label class="form-label fw-semibold text-gray-700" for="uomUnitName">
+                            <label class="form-label fw-semibold text-gray-700" for="uomUnitNameSelect">
                                 Unit Name <span class="text-danger">*</span>
                             </label>
-                            <input type="text" id="uomUnitName" name="unitName" required maxlength="100"
-                                   class="form-control text-gray-700" />
+                            <%-- เลือกจากชื่อหน่วยที่มีอยู่แล้ว (กันตั้งชื่อซ้ำ) หรือกด "+ พิมพ์ชื่อใหม่" เพื่อพิมพ์เอง
+                                 select/input ทั้งสองไม่มี name ของตัวเอง (เจตนา - เคยลอง disabled สลับกันแทน
+                                 แต่พอ disable select ตัวเองแล้วกลับมาเลือกใหม่ไม่ได้อีกเลย) ค่าจริงที่ submit
+                                 มาจาก hidden ด้านล่าง ซึ่ง JS sync ให้ตอน submit ฟอร์ม (ดู .on('submit', ...)) --%>
+                            <select id="uomUnitNameSelect" required class="form-select text-gray-700">
+                                <option value="">- เลือก Unit Name -</option>
+                                <c:forEach var="uName" items="${allUnitNames}">
+                                    <option value="${fn:escapeXml(uName)}">${fn:escapeXml(uName)}</option>
+                                </c:forEach>
+                                <option value="__new__">+ พิมพ์ชื่อใหม่</option>
+                            </select>
+                            <input type="text" id="uomUnitNameInput" maxlength="100"
+                                   class="form-control text-gray-700 mt-2 d-none"
+                                   placeholder="พิมพ์ชื่อหน่วยใหม่" />
+                            <input type="hidden" name="unitName" id="uomUnitNameHidden" />
                         </div>
                         <div class="col-12 col-md-6">
                             <label class="form-label fw-semibold text-gray-700" for="uomConversionRate">
@@ -701,11 +732,20 @@
                                    class="form-control text-gray-700" />
                         </div>
                         <div class="col-12 col-md-6">
-                            <label class="form-label fw-semibold text-gray-700" for="editUomUnitName">
+                            <label class="form-label fw-semibold text-gray-700" for="editUomUnitNameSelect">
                                 Unit Name <span class="text-danger">*</span>
                             </label>
-                            <input type="text" id="editUomUnitName" name="unitName" required maxlength="100"
-                                   class="form-control text-gray-700" />
+                            <select id="editUomUnitNameSelect" required class="form-select text-gray-700">
+                                <option value="">- เลือก Unit Name -</option>
+                                <c:forEach var="uName" items="${allUnitNames}">
+                                    <option value="${fn:escapeXml(uName)}">${fn:escapeXml(uName)}</option>
+                                </c:forEach>
+                                <option value="__new__">+ พิมพ์ชื่อใหม่</option>
+                            </select>
+                            <input type="text" id="editUomUnitNameInput" maxlength="100"
+                                   class="form-control text-gray-700 mt-2 d-none"
+                                   placeholder="พิมพ์ชื่อหน่วยใหม่" />
+                            <input type="hidden" name="unitName" id="editUomUnitNameHidden" />
                         </div>
                         <div class="col-12 col-md-6">
                             <label class="form-label fw-semibold text-gray-700" for="editUomConversionRate">
@@ -926,12 +966,52 @@
         var URL_PREFIX = '${urlPrefix}';
         var IS_EQUIPMENT = ${isEquipment};
 
-        // TODO: frontend เปล่าๆ ก่อน - รายชื่อไฟล์ hardcode ไว้ตรงนี้ชั่วคราว (ยังไม่ได้สแกนจาก backend/DB)
-        // ไฟล์จริงอยู่ใน assets/media/product-icons/ (มี placeholder แค่ box.svg, tag.svg ตอนนี้)
-        var productIconOptions = [
-            { id: 'box.svg', text: 'box.svg' },
-            { id: 'tag.svg', text: 'tag.svg' }
-        ];
+        // Image compression logic - คัดลอกจาก announcement_add.jsp ตรงๆ (vanilla JS ไม่มี dependency พิเศษ)
+        async function compressImage(file, maxWidth = 1280, maxHeight = 1280, quality = 0.8) {
+            if (!file.type.match(/image\/(jpeg|jpg|png)/)) {
+                return file;
+            }
+
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.onload = event => {
+                    const img = new Image();
+                    img.src = event.target.result;
+                    img.onload = () => {
+                        let width = img.width;
+                        let height = img.height;
+
+                        if (width > maxWidth || height > maxHeight) {
+                            const ratio = Math.min(maxWidth / width, maxHeight / height);
+                            width = width * ratio;
+                            height = height * ratio;
+                        }
+
+                        const canvas = document.createElement('canvas');
+                        canvas.width = width;
+                        canvas.height = height;
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0, width, height);
+
+                        canvas.toBlob((blob) => {
+                            if (blob) {
+                                const newFileName = file.name.replace(/\.[^/.]+$/, ".jpg");
+                                const newFile = new File([blob], newFileName, {
+                                    type: 'image/jpeg',
+                                    lastModified: Date.now()
+                                });
+                                resolve(newFile);
+                            } else {
+                                resolve(file);
+                            }
+                        }, 'image/jpeg', quality);
+                    };
+                    img.onerror = error => reject(error);
+                };
+                reader.onerror = error => reject(error);
+            });
+        }
 
         function notifyError(msg) {
             if (window.Swal) {
@@ -964,27 +1044,61 @@
         $('#productType').on('change', toggleEquipmentType);
         toggleEquipmentType(); // ตั้งค่าเริ่มต้นตาม productType ปัจจุบันของ item นี้
 
-        // ---- Product Icon picker (Select2 + รูปพรีวิว) - เหมือนหน้า stock_cons_add.jsp ----
-        function formatProductIcon(opt) {
-            if (!opt.id) { return opt.text; }
-            // ตั้งใจใช้ string concatenation แทน JS template literal เพราะไฟล์นี้เป็น .jsp
-            // (dollar-brace แบบ JS interpolation ในไฟล์ .jsp จะถูก JSP EL ตีความ/กลืนหายไปก่อนถึงมือ browser)
-            return '<span class="d-flex align-items-center">'
-                + '<img src="' + CONTEXT + '/assets/media/product-icons/' + opt.id + '" class="w-20px h-20px me-2" />'
-                + '<span>' + opt.text + '</span>'
-                + '</span>';
+        // ---- Unit Name picker (select จากชื่อเดิม + พิมพ์ชื่อใหม่ได้) ในทั้ง modal Create/Edit UOM ----
+        // select เปิดใช้งานตลอด ไม่ disable อีกต่อไป (เคย disable ตอนเลือก "+ พิมพ์ชื่อใหม่" แล้วกลับมา
+        // เลือกจาก dropdown ไม่ได้อีกเลย ต้อง refresh หน้าเท่านั้น) - สลับแค่โชว์/ซ่อนช่อง input เฉยๆ
+        // ค่าที่จะ submit จริงมาจาก hidden field แยกต่างหาก sync ให้ตอน submit ฟอร์ม (ดูด้านล่าง)
+        function bindUnitNamePicker(selectId, inputId) {
+            var $select = $('#' + selectId);
+            var $input = $('#' + inputId);
+            $select.on('change', function () {
+                var isNew = $select.val() === '__new__';
+                $input.toggleClass('d-none', !isNew);
+                if (isNew) { $input.trigger('focus'); }
+                // ไม่ล้างค่าที่เคยพิมพ์ไว้ตอนสลับกลับไป dropdown - เผื่อผู้ใช้สลับไปมาแล้วอยากได้ค่าเดิมคืน
+            });
+        }
+        bindUnitNamePicker('uomUnitNameSelect', 'uomUnitNameInput');
+        bindUnitNamePicker('editUomUnitNameSelect', 'editUomUnitNameInput');
+
+        /**
+         * ตั้งค่า Unit Name ให้ picker คู่หนึ่ง (select+input) - ใช้ตอนเปิด modal Edit
+         * ถ้าชื่อนี้มีอยู่ใน dropdown อยู่แล้วก็เลือกให้เลย ถ้าไม่เจอ (เคสแปลกๆ ที่ข้อมูลเก่าไม่ตรงกับ
+         * distinct list) ให้ fallback ไปโหมด "+ พิมพ์ชื่อใหม่" แล้วใส่ค่าเดิมไว้ในช่อง input แทน
+         */
+        function setUnitNameValue(selectId, inputId, value) {
+            var $select = $('#' + selectId);
+            var $input = $('#' + inputId);
+            var found = $select.find('option[value="' + $.escapeSelector(value || '') + '"]').length > 0;
+
+            if (found) {
+                $select.val(value);
+                $input.addClass('d-none').val('');
+            } else {
+                $select.val('__new__');
+                $input.removeClass('d-none').val(value || '');
+            }
         }
 
-        $('#icon').select2({
-            data: productIconOptions,
-            placeholder: 'Select or Search Icon...',
-            allowClear: true,
-            minimumInputLength: 0,
-            escapeMarkup: function (markup) { return markup; },
-            templateResult: formatProductIcon,
-            templateSelection: formatProductIcon
-        });
-        // TODO: frontend เปล่าๆ ก่อน - product ไม่มีคอลัมน์ icon แล้ว จึงยังไม่ preselect ค่าเดิม
+        /**
+         * sync ค่าจาก select/input ไปลง hidden field ก่อน submit จริง - เรียกจาก submit handler ด้านล่าง
+         * คืน false ถ้าค่าว่าง (ให้ caller preventDefault + แจ้งเตือนเอง)
+         */
+        function syncUnitNameHidden(selectId, inputId, hiddenId) {
+            var $select = $('#' + selectId);
+            var $input = $('#' + inputId);
+            var $hidden = $('#' + hiddenId);
+            var isNew = $select.val() === '__new__';
+            var value = isNew ? $input.val().trim() : $select.val();
+
+            $hidden.val(value);
+            if (!value) {
+                notifyError(isNew ? 'กรุณาพิมพ์ชื่อหน่วยใหม่' : 'กรุณาเลือก Unit Name');
+                (isNew ? $input : $select).trigger('focus');
+                return false;
+            }
+            return true;
+        }
 
         // ---- แสดงปุ่ม Cancel/Save เฉพาะเมื่อมีการแก้ไขค่าในฟอร์ม Product Detail ----
         var $editForm = $('#stockConsEditForm');
@@ -993,12 +1107,53 @@
         // เก็บค่าตั้งต้นของทุก field ไว้เทียบว่ามีการแก้จริงไหม (กันกรณีพิมพ์แล้วลบกลับเป็นค่าเดิม)
         var initialState = $editForm.serialize();
 
+        // $.fn.serialize() ไม่รวม <input type="file"> เลย (ทั้ง jQuery และ HTML form serialization
+        // มาตรฐานข้าม file input เสมอ) เทียบ serialize() อย่างเดียวจึงไม่มีทางเห็นว่ารูปถูกเปลี่ยน
+        // ต้องมี flag แยกมาช่วยเช็ค dirty
+        var imageDirty = false;
+        // ตัว .image-input (outer) และ .image-input-wrapper (inner) ต้อง sync background-image คู่กันเสมอ
+        // (ดู HTML - ทั้งสอง element ตั้ง style เดียวกันไว้ตอน render หน้า)
+        var $productImageEls = $editForm.find('.image-input, .image-input-wrapper');
+        var initialImageBg = $productImageEls.first().css('background-image');
+
         function refreshEditFooter() {
-            var dirty = $editForm.serialize() !== initialState;
+            var dirty = imageDirty || ($editForm.serialize() !== initialState);
             $editFooter.toggleClass('d-none', !dirty).toggleClass('d-flex', dirty);
         }
 
         $editForm.on('input change', 'input, select, textarea', refreshEditFooter);
+
+        // ---- Product Image: compress ก่อนแนบไฟล์ (maxSize 2MB เหมือนหน้า stock_cons_add.jsp) ----
+        var productImageInput = document.getElementById('productImageInput');
+        productImageInput.addEventListener('change', async function () {
+            const file = this.files[0];
+            const maxSize = 2 * 1024 * 1024;
+            const errorMsg = document.getElementById('productImageErrorMsg');
+
+            if (!file) { return; }
+
+            const compressed = await compressImage(file);
+
+            if (compressed.size > maxSize) {
+                errorMsg.textContent = 'Image must be smaller than 2MB.';
+                this.value = '';
+                imageDirty = false;
+            } else {
+                errorMsg.textContent = '';
+                const dataTransfer = new DataTransfer();
+                dataTransfer.items.add(compressed);
+                this.files = dataTransfer.files;
+                imageDirty = true;
+            }
+            refreshEditFooter();
+        });
+
+        // ปุ่ม "x" เล็กๆ ของตัว image-input widget เอง (Metronic) - ล้างไฟล์ที่เพิ่งเลือกกลับเป็นค่าเดิม
+        $editForm.find('[data-kt-image-input-action="cancel"]').on('click', function () {
+            imageDirty = false;
+            document.getElementById('productImageErrorMsg').textContent = '';
+            refreshEditFooter();
+        });
 
         // toggle Active: sync ค่าเข้า hidden ก่อน แล้วค่อยเช็ค dirty (serialize อ่านจาก hidden)
         $('#activeToggle').on('change', function () {
@@ -1011,14 +1166,35 @@
             $editForm[0].reset();
             // reset คืนค่า checkbox แต่ไม่คืน hidden -> sync ตามสถานะ checkbox หลัง reset
             $('#activeValue').val($('#activeToggle').is(':checked') ? '1' : '0');
+            // form reset() ล้างค่า <input type="file"> ให้เองแล้ว แต่ preview (background-image ที่ตั้งผ่าน JS)
+            // ไม่ได้ตามไปด้วย - ต้องคืนรูปเดิมเองด้วย
+            $productImageEls.css('background-image', initialImageBg);
+            imageDirty = false;
+            document.getElementById('productImageErrorMsg').textContent = '';
             refreshEditFooter();
         });
 
         // กันกด Save ซ้ำระหว่างรอ response (เฉพาะ modal ที่ยัง submit แบบ redirect ปกติ)
-        $('#uomCreateForm, #uomEditForm, #subCreateForm, #subEditForm').on('submit', function () {
-            $(this).find('button[type="submit"]')
-                   .prop('disabled', true)
-                   .attr('data-kt-indicator', 'on');
+        // uomCreateForm/uomEditForm ต้อง sync ค่า Unit Name (select/input) ลง hidden field ก่อนด้วย -
+        // ถ้า sync ไม่ผ่าน (ค่าว่าง) ให้ preventDefault + return ออกเลย ไม่ต้องไป disable ปุ่ม Save
+        $('#uomCreateForm, #uomEditForm, #subCreateForm, #subEditForm').on('submit', function (e) {
+            var $form = $(this);
+
+            if ($form.is('#uomCreateForm')) {
+                if (!syncUnitNameHidden('uomUnitNameSelect', 'uomUnitNameInput', 'uomUnitNameHidden')) {
+                    e.preventDefault();
+                    return;
+                }
+            } else if ($form.is('#uomEditForm')) {
+                if (!syncUnitNameHidden('editUomUnitNameSelect', 'editUomUnitNameInput', 'editUomUnitNameHidden')) {
+                    e.preventDefault();
+                    return;
+                }
+            }
+
+            $form.find('button[type="submit"]')
+                 .prop('disabled', true)
+                 .attr('data-kt-indicator', 'on');
         });
 
         // ---- เช็ค Item ID / Sub Product ID ซ้ำ ทุกครั้งที่พิมพ์ (keyup) - debounce กันยิง request ถี่เกินไป
@@ -1085,11 +1261,22 @@
                 url: CONTEXT + '/stock_cons_update',
                 type: 'POST',
                 dataType: 'json',
-                data: $editForm.serialize(),
+                // $editForm.serialize() ไม่ส่งไฟล์ - ต้องใช้ FormData ถึงจะอัปโหลดรูปได้จริง
+                data: new FormData(formEl),
+                processData: false,
+                contentType: false,
                 success: function (res) {
                     if (res && res.success === true) {
+                        // มีรูปใหม่ - อัปเดต preview ทันทีโดยไม่ reload หน้า
+                        if (res.imagePath) {
+                            var newBg = "url('" + CONTEXT + res.imagePath + "')";
+                            $productImageEls.css('background-image', newBg);
+                            // ตั้งเป็น baseline ใหม่ ไม่งั้นกด Cancel ครั้งถัดไปจะดันย้อนกลับไปรูปเก่าก่อนหน้านี้
+                            initialImageBg = newBg;
+                        }
                         // ตั้งค่าตั้งต้นใหม่ = ค่าปัจจุบัน แล้วซ่อน footer (ไม่ dirty อีก)
                         initialState = $editForm.serialize();
+                        imageDirty = false;
                         refreshEditFooter();
                         notifySuccess('อัพเดทข้อมูลสำเร็จแล้ว');
                     } else {
@@ -1318,7 +1505,7 @@
             var $row = $(this).closest('tr');
             $('#editUomUnitId').val($row.data('id'));
             $('#editUomSequence').val($row.data('sequence'));
-            $('#editUomUnitName').val($row.data('unit-name'));
+            setUnitNameValue('editUomUnitNameSelect', 'editUomUnitNameInput', $row.data('unit-name'));
             $('#editUomConversionRate').val($row.data('conversion-rate'));
             $('#editUomDescription').val($row.data('description'));
             bootstrap.Modal.getOrCreateInstance(document.getElementById('uomEditModal')).show();

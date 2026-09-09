@@ -20,13 +20,39 @@
         <div id="kt_app_content" class="app-content flex-column-fluid">
             <div id="kt_app_content_container" class="app-container container-fluid">
 
-                <form id="stockConsAddForm" method="POST" action="stock_cons_save">
+                <form id="stockConsAddForm" method="POST" action="stock_cons_save" enctype="multipart/form-data">
                     <div class="card">
                         <div class="card-border-radius">
                             <div class="card-body">
                                 <h3 class="page-heading text-gray-900 fw-bold mb-8">Product Detail</h3>
 
                                 <div class="row g-6">
+                                    <div class="col-12">
+                                        <label class="form-label fw-semibold text-gray-700 d-block">Product Image</label>
+                                        <div id="errorMsg" class="text-danger mb-2"></div>
+                                        <%-- Cover Photo pattern เดียวกับ announcement_add.jsp - image-input widget ของ Metronic --%>
+                                        <div class="image-input image-input-outline"
+                                             data-kt-image-input="true"
+                                             style="background-image: url(${pageContext.request.contextPath}/assets/media/svg/avatars/blank.svg)">
+                                            <div class="image-input-wrapper w-150px h-150px"
+                                                 style="background-image: url(${pageContext.request.contextPath}/assets/media/svg/avatars/blank.svg)"></div>
+
+                                            <label class="btn btn-icon btn-circle btn-color-muted btn-active-color-primary w-25px h-25px bg-body shadow"
+                                                   data-kt-image-input-action="change" data-bs-toggle="tooltip"
+                                                   data-bs-dismiss="click" title="Change image">
+                                                <i class="ki-duotone ki-pencil fs-6"><span class="path1"></span><span class="path2"></span></i>
+                                                <input id="productImageInput" type="file" name="productImage" accept=".png, .jpg, .jpeg" />
+                                            </label>
+
+                                            <span class="btn btn-icon btn-circle btn-color-muted btn-active-color-primary w-25px h-25px bg-body shadow"
+                                                  data-kt-image-input-action="cancel" data-bs-toggle="tooltip"
+                                                  data-bs-dismiss="click" title="Cancel image">
+                                                <i class="ki-outline ki-cross fs-3"></i>
+                                            </span>
+                                        </div>
+                                        <div class="form-text">Allowed file types: png, jpg, jpeg. Max 2MB.</div>
+                                    </div>
+
                                     <div class="col-12 col-lg-6">
                                         <label class="form-label fw-semibold text-gray-700" for="productNo">
                                             Item ID <span class="text-danger">*</span>
@@ -87,15 +113,6 @@
                                         </select>
                                     </div>
 
-                                    <div class="col-12 col-lg-6">
-                                        <label class="form-label fw-semibold text-gray-700" for="icon">Product Icon</label>
-                                        <%-- TODO: ตอนนี้เป็น frontend เปล่าๆ ยังไม่ผูก backend (ถอดออกชั่วคราวตาม requirement ใหม่)
-                                             รายชื่อไอคอนด้านล่าง hardcode ไว้ในหน้านี้เอง ไม่ได้ผูกกับคอลัมน์ product.icon/DAO/Action ใดๆ --%>
-                                        <select id="icon" name="icon" class="form-select text-gray-700" data-control="select2" data-placeholder="Select or Search Icon...">
-                                            <option></option>
-                                        </select>
-                                    </div>
-
                                     <div class="col-12">
                                         <label class="form-label fw-semibold text-gray-700" for="description">Description</label>
                                         <input type="text" id="description" name="description" maxlength="255"
@@ -121,35 +138,75 @@
 <script>
     var CONTEXT = '${pageContext.request.contextPath}';
 
-    // TODO: frontend เปล่าๆ ก่อน - รายชื่อไฟล์ hardcode ไว้ตรงนี้ชั่วคราว (ยังไม่ได้สแกนจาก backend/DB)
-    // ไฟล์จริงอยู่ใน assets/media/product-icons/ (มี placeholder แค่ box.svg, tag.svg ตอนนี้)
-    var productIconOptions = [
-        { id: 'box.svg', text: 'box.svg' },
-        { id: 'tag.svg', text: 'tag.svg' }
-    ];
-
-    $(document).ready(function () {
-        // ---- Product Icon picker (Select2 + รูปพรีวิว) ----
-        function formatProductIcon(opt) {
-            if (!opt.id) { return opt.text; }
-            // ตั้งใจใช้ string concatenation แทน JS template literal เพราะไฟล์นี้เป็น .jsp
-            // (dollar-brace แบบ JS interpolation ในไฟล์ .jsp จะถูก JSP EL ตีความ/กลืนหายไปก่อนถึงมือ browser)
-            return '<span class="d-flex align-items-center">'
-                + '<img src="' + CONTEXT + '/assets/media/product-icons/' + opt.id + '" class="w-20px h-20px me-2" />'
-                + '<span>' + opt.text + '</span>'
-                + '</span>';
+    // Image compression logic - คัดลอกจาก announcement_add.jsp ตรงๆ (vanilla JS ไม่มี dependency พิเศษ)
+    async function compressImage(file, maxWidth = 1280, maxHeight = 1280, quality = 0.8) {
+        if (!file.type.match(/image\/(jpeg|jpg|png)/)) {
+            return file;
         }
 
-        $('#icon').select2({
-            data: productIconOptions,
-            placeholder: 'Select or Search Icon...',
-            allowClear: true,
-            minimumInputLength: 0,
-            escapeMarkup: function (markup) { return markup; },
-            templateResult: formatProductIcon,
-            templateSelection: formatProductIcon
-        });
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = event => {
+                const img = new Image();
+                img.src = event.target.result;
+                img.onload = () => {
+                    let width = img.width;
+                    let height = img.height;
 
+                    if (width > maxWidth || height > maxHeight) {
+                        const ratio = Math.min(maxWidth / width, maxHeight / height);
+                        width = width * ratio;
+                        height = height * ratio;
+                    }
+
+                    const canvas = document.createElement('canvas');
+                    canvas.width = width;
+                    canvas.height = height;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, width, height);
+
+                    canvas.toBlob((blob) => {
+                        if (blob) {
+                            const newFileName = file.name.replace(/\.[^/.]+$/, ".jpg");
+                            const newFile = new File([blob], newFileName, {
+                                type: 'image/jpeg',
+                                lastModified: Date.now()
+                            });
+                            resolve(newFile);
+                        } else {
+                            resolve(file);
+                        }
+                    }, 'image/jpeg', quality);
+                };
+                img.onerror = error => reject(error);
+            };
+            reader.onerror = error => reject(error);
+        });
+    }
+
+    $(document).ready(function () {
+        // ---- Product Image: compress ก่อนแนบไฟล์ (maxSize 2MB ต่างจาก cover photo ของ announcement ที่ใช้ 10MB) ----
+        var productImageInput = document.getElementById('productImageInput');
+        productImageInput.addEventListener('change', async function () {
+            const file = this.files[0];
+            const maxSize = 2 * 1024 * 1024;
+            const errorMsg = document.getElementById('errorMsg');
+
+            if (!file) { return; }
+
+            const compressed = await compressImage(file);
+
+            if (compressed.size > maxSize) {
+                errorMsg.textContent = 'Image must be smaller than 2MB.';
+                this.value = '';
+            } else {
+                errorMsg.textContent = '';
+                const dataTransfer = new DataTransfer();
+                dataTransfer.items.add(compressed);
+                this.files = dataTransfer.files;
+            }
+        });
 
         // กันกด Save ซ้ำระหว่างรอ response
         $('#stockConsAddForm').on('submit', function (e) {
