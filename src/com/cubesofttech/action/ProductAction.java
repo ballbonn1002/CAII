@@ -1,8 +1,10 @@
 package com.cubesofttech.action;
 
+import java.io.File;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -24,6 +26,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.cubesofttech.dao.EquipmentDAO;
 import com.cubesofttech.dao.EquipmentStatusDAO;
 import com.cubesofttech.dao.EquipmentTypeDAO;
+import com.cubesofttech.dao.FileUploadDAO;
 import com.cubesofttech.dao.ProductDAO;
 import com.cubesofttech.dao.StockDAO;
 import com.cubesofttech.dao.UnitOfMeasureDAO;
@@ -31,11 +34,13 @@ import com.cubesofttech.dao.UserDAO;
 import com.cubesofttech.dao.WarehouseDAO;
 import com.cubesofttech.model.Equipment;
 import com.cubesofttech.model.EquipmentStatus;
+import com.cubesofttech.model.FileUpload;
 import com.cubesofttech.model.Product;
 import com.cubesofttech.model.Stock;
 import com.cubesofttech.model.UnitOfMeasure;
 import com.cubesofttech.model.User;
 import com.cubesofttech.model.Warehouse;
+import com.cubesofttech.service.FileAttachmentService;
 import com.google.gson.Gson;
 import com.cubesofttech.util.DateUtil;
 import com.opensymphony.xwork2.ActionSupport;
@@ -75,12 +80,22 @@ public class ProductAction extends ActionSupport {
     @Autowired
     private EquipmentStatusDAO equipmentStatusDAO;
 
+    @Autowired
+    private FileUploadDAO fileuploadDAO;
+
+    @Autowired
+    private FileAttachmentService fileAttachmentService;
+
     private Integer productId;
     private String productNo;
     private String productName;
     private String productType;
     private String description;
     private String active;
+
+    // ---- รูปภาพหลักของสินค้า (อัปโหลดจากหน้า Add/Edit) ----
+    private File productImage;
+    private String productImageFileName;
 
     // ---- fields สำหรับ Unit of Measure (UOM) ----
     private Integer unitId;
@@ -121,6 +136,22 @@ public class ProductAction extends ActionSupport {
 
     public void setActive(String active) {
         this.active = active;
+    }
+
+    public File getProductImage() {
+        return productImage;
+    }
+
+    public void setProductImage(File productImage) {
+        this.productImage = productImage;
+    }
+
+    public String getProductImageFileName() {
+        return productImageFileName;
+    }
+
+    public void setProductImageFileName(String productImageFileName) {
+        this.productImageFileName = productImageFileName;
     }
 
     public Integer getUnitId() {
@@ -870,6 +901,9 @@ public class ProductAction extends ActionSupport {
             request.setAttribute("subProducts", subProducts);
             // ใช้เติม dropdown Equipment Type - โผล่เฉพาะตอน Item Type = Equipment (type '1')
             request.setAttribute("equipmentTypes", equipmentTypeDAO.getall());
+            // ใช้เติม dropdown Unit Name ใน modal Create/Edit Unit of Measure - กันสร้างชื่อหน่วยซ้ำ
+            // (unit_of_measure ไม่มีตาราง master กลาง - ดึง distinct จากทุก product แทน)
+            request.setAttribute("allUnitNames", unitOfMeasureDAO.getDistinctUnitNames());
 
             // Equipment เท่านั้นที่ต้องมีตัวเลือกผูกเครื่องจริง - รองรับทั้งมี sub product (ผูกแยกตามรุ่น)
             // และไม่มี sub product เลย (ผูกตรงกับตัวแม่ได้เหมือนเดิม) แสดงรวมในการ์ด "Sub product"
@@ -1872,6 +1906,21 @@ public class ProductAction extends ActionSupport {
             // (product.getProductId() มีค่าแล้วหลัง save เพราะใช้ IDENTITY generator)
             this.productId = product.getProductId();
 
+            // รูปภาพหลักของสินค้า (ถ้าอัปโหลดมา) - ต้องมี productId ก่อนถึง attach ได้ (page_id ของ FileAttachmentService)
+            if (productImage != null) {
+                List<FileUpload> savedImages = fileAttachmentService.attach(
+                        Arrays.asList(productImage),
+                        Arrays.asList(productImageFileName),
+                        "product",
+                        String.valueOf(product.getProductId()),
+                        onlineUser.getId(),
+                        request.getServletContext().getRealPath("/"));
+                if (savedImages != null && !savedImages.isEmpty()) {
+                    product.setFileId(String.valueOf(savedImages.get(0).getFileId()));
+                    productDAO.update(product);
+                }
+            }
+
             return SUCCESS;
         } catch (Exception e) {
             e.printStackTrace();
@@ -1931,9 +1980,27 @@ public class ProductAction extends ActionSupport {
             product.setUserUpdate(onlineUser.getId());
             product.setTimeUpdate(DateUtil.getCurrentTime());
 
+            // รูปภาพหลักของสินค้า (ถ้าอัปโหลดรูปใหม่มา) - ตั้งใจไม่ลบไฟล์/แถวเก่าใน `file`
+            // (ต่างจาก AnnouncementAction) สร้างเป็นแถวใหม่เสมอแล้วเอา id ใหม่ไปทับ file_id เดิม
+            String newImagePath = null;
+            if (productImage != null) {
+                List<FileUpload> savedImages = fileAttachmentService.attach(
+                        Arrays.asList(productImage),
+                        Arrays.asList(productImageFileName),
+                        "product",
+                        String.valueOf(product.getProductId()),
+                        onlineUser.getId(),
+                        request.getServletContext().getRealPath("/"));
+                if (savedImages != null && !savedImages.isEmpty()) {
+                    FileUpload savedImage = savedImages.get(0);
+                    product.setFileId(String.valueOf(savedImage.getFileId()));
+                    newImagePath = savedImage.getPath();
+                }
+            }
+
             productDAO.update(product);
 
-            return writeJson(true, null);
+            return writeJson(true, null, newImagePath);
         } catch (Exception e) {
             log.error("stockConsUpdate failed, productId=" + productId, e);
             return writeJson(false, "error");
@@ -2253,6 +2320,10 @@ public class ProductAction extends ActionSupport {
             sub.setSequence(String.valueOf(nextSeq));
             sub.setDescription(trimToNull(description));
             sub.setActive("1");
+            // ต้องตั้งค่าเสมอ - บาง environment คอลัมน์นี้เป็น NOT NULL (ไม่งั้น insert พังตรง productDAO.save())
+            // ค่านี้ไม่มีความหมายกับ sub product เอง (ใช้แค่ฝั่ง product แม่ - ดู subProductActiveUpdate())
+            // จึงใช้ "0" เป็นค่า default เดียวกับตอนสร้าง product แม่ใหม่ใน stockConsSave()
+            sub.setSubProductActive("0");
             sub.setUserCreate(onlineUser.getId());
             sub.setTimeCreate(now);
             sub.setUserUpdate(onlineUser.getId());
@@ -2401,12 +2472,20 @@ public class ProductAction extends ActionSupport {
 
     /** เขียน JSON ตอบกลับ AJAX แล้วคืน NONE (ไม่ render result) */
     private String writeJson(boolean success, String message) {
+        return writeJson(success, message, null);
+    }
+
+    /** overload เพิ่ม imagePath (ใช้ตอน stockConsUpdate อัปโหลดรูปใหม่ - ฝั่ง JS เอาไปอัปเดต preview โดยไม่ reload หน้า) */
+    private String writeJson(boolean success, String message, String imagePath) {
         try {
             response.setContentType("application/json;charset=UTF-8");
             StringBuilder sb = new StringBuilder();
             sb.append("{\"success\":").append(success);
             if (message != null) {
                 sb.append(",\"message\":\"").append(message.replace("\\", "\\\\").replace("\"", "\\\"")).append("\"");
+            }
+            if (imagePath != null) {
+                sb.append(",\"imagePath\":\"").append(imagePath.replace("\\", "\\\\").replace("\"", "\\\"")).append("\"");
             }
             sb.append("}");
             response.getWriter().write(sb.toString());

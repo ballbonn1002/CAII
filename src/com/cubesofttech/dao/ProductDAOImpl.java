@@ -67,9 +67,13 @@ public class ProductDAOImpl implements ProductDAO {
             sql.append("main.active AS active, main.sub_product_active AS sub_product_active, ");
             // ยอดคงเหลือฝั่ง Equipment = จำนวนเครื่องจริงที่ผูกอยู่ ไม่ได้มาจากตาราง stock
             sql.append("COALESCE(eqc.qty, 0) AS equipment_qty, ");
+            sql.append("img.path AS image_path, ");
             sql.append("GROUP_CONCAT(sub.product_name ORDER BY sub.sequence ASC SEPARATOR ',') AS sub_products ");
             sql.append("FROM product main ");
             sql.append("LEFT JOIN product sub ON main.product_id = sub.parent_product_id ");
+            // รูปภาพหลักของสินค้า - main.file_id เป็น varchar ต้อง CAST ก่อน join กับ file.file_id (int)
+            // ตาม rule เดียวกับ join equipment ด้านล่าง (cast ฝั่ง varchar เท่านั้น)
+            sql.append("LEFT JOIN file img ON img.file_id = CAST(main.file_id AS UNSIGNED) ");
             // นับเครื่องด้วย subquery แยก - ถ้า join equipment ตรงๆ จะคูณกับแถวที่ join sub
             // อยู่แล้ว ทำให้ยอดบานตามจำนวน sub product
             sql.append("LEFT JOIN ( ");
@@ -93,7 +97,7 @@ public class ProductDAOImpl implements ProductDAO {
                 sql.append("AND main.product_type = :productType ");
             }
             sql.append("GROUP BY main.product_id, main.sequence, main.product_no, main.product_name, ");
-            sql.append("main.product_type, main.active, main.sub_product_active, eqc.qty ");
+            sql.append("main.product_type, main.active, main.sub_product_active, eqc.qty, img.path ");
             sql.append("ORDER BY main.product_id ASC");
 
             SQLQuery query = session.createSQLQuery(sql.toString());

@@ -2574,7 +2574,7 @@
 		</action>
 
 		<action name="contact_add"
-			class="com.cubesofttech.action.CompanyContactAction" method="form">
+			class="com.cubesofttech.action.CompanyContactAction" method="open_form">
 			<result name="success" type="tiles">contact_add</result>
 			<result name="error" type="redirect">/index.jsp</result>
 		</action>
@@ -2603,6 +2603,13 @@
 			<result name="success" type="tiles">contact</result>
 			<result name="error" type="tiles">contact</result>
 		</action>
+		
+		<action name="contact_address_list"
+	       class="com.cubesofttech.action.CompanyContactAction" method="listAddressByCompany">
+	      <result name="success" type="json">
+		  <param name="root">addressList</param>
+	</result>
+</action>
 
 
 

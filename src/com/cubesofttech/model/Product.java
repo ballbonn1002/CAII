@@ -3,9 +3,12 @@ package com.cubesofttech.model;
 import java.io.Serializable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 @Entity
@@ -64,6 +67,22 @@ public class Product implements Serializable {
 
     @Column(name = "time_update")
     private java.sql.Timestamp timeUpdate;
+
+    /**
+     * ref -> file.file_id (รูปภาพหลักของสินค้า) ตาม pattern เดียวกับ Announcement.file_id
+     * ไม่มี FK constraint จริง (ตาราง file ใช้เป็น polymorphic attachment ทั่วระบบ)
+     */
+    @Column(name = "file_id")
+    private String fileId;
+
+    /**
+     * map แบบ read-only (insertable/updatable = false) ไปที่ FileUpload ตัวเดียวกับที่ file_id ชี้อยู่
+     * ให้ Hibernate join ดึงมาให้อัตโนมัติทุกครั้งที่โหลด product (ใช้ ${product.fileUpload.path} ใน JSP ได้เลย)
+     * แก้ค่าจริงผ่าน setFileId() เท่านั้น
+     */
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "file_id", referencedColumnName = "file_id", insertable = false, updatable = false)
+    private FileUpload fileUpload;
 
     public Product() {
     }
@@ -179,6 +198,23 @@ public class Product implements Serializable {
     public void setTimeUpdate(java.sql.Timestamp timeUpdate) {
         this.timeUpdate = timeUpdate;
     }
+
+    public String getFileId() {
+        return fileId;
+    }
+
+    public void setFileId(String fileId) {
+        this.fileId = fileId;
+    }
+
+    public FileUpload getFileUpload() {
+        return fileUpload;
+    }
+
+    public void setFileUpload(FileUpload fileUpload) {
+        this.fileUpload = fileUpload;
+    }
+
 	@Override
 	public String toString() {
 	    return "Product [product_id=" + productId
@@ -188,6 +224,7 @@ public class Product implements Serializable {
 	        + ", product_name=" + productName
 	        + ", product_no=" + productNo
 	        + ", product_type=" + productType
+	        + ", file_id=" + fileId
 	        + ", sequence=" + sequence
 	        + ", time_create=" + timeCreate 
 	        + ", time_update=" + timeUpdate 

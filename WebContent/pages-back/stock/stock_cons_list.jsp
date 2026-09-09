@@ -116,9 +116,19 @@
                                                         </c:when>
                                                         <c:otherwise><span class="text-muted">-</span></c:otherwise>
                                                     </c:choose>
+                                                    <%-- รูปภาพหลักของสินค้า (ถ้ามี) - เสริมข้างไอคอนประเภทสินค้า ไม่แทนที่ --%>
+                                                    <c:if test="${not empty product.image_path}">
+                                                        <img src="${pageContext.request.contextPath}${fn:escapeXml(product.image_path)}"
+                                                             class="w-25px h-25px rounded ms-2" alt="" />
+                                                    </c:if>
                                                 </div>
                                             </td>
-                                            <td class="text-gray-900 fw-normal">${fn:escapeXml(product.product_name)}</td>
+                                            <%-- ซ่อน product_no ไว้ในเซลล์นี้เพื่อให้ DataTables global search (#searchInput)
+                                                 หา Item ID เจอด้วย - ของเดิมมีแค่ product_name ในตาราง ทำให้เสิร์ช Item ID ไม่เจอเลย --%>
+                                            <td class="text-gray-900 fw-normal">
+                                                ${fn:escapeXml(product.product_name)}
+                                                <span class="d-none">${fn:escapeXml(product.product_no)}</span>
+                                            </td>
                                             <td class="text-gray-700 fw-normal">
                                                 <c:choose>
                                                     <c:when test="${not empty product.sub_products}">

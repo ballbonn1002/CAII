@@ -973,5 +973,8 @@ CREATE TABLE `item_privilege` (
 
 -- PROD 8 SEP 2026
 
+-- 08/09/2026 Claude: add column file_id to product
+ALTER TABLE `product` ADD COLUMN `file_id` VARCHAR(20) COLLATE utf8mb4_unicode_ci DEFAULT NULL AFTER `equipment_type`;
+
 -- 09/09/2026 Eric: Add column
 ALTER TABLE `notification` ADD `function_id` VARCHAR(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL AFTER `title`;
