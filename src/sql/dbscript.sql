@@ -973,3 +973,5 @@ CREATE TABLE `item_privilege` (
 
 -- PROD 8 SEP 2026
 
+-- 09/09/2026 Eric: Add column
+ALTER TABLE `notification` ADD `function_id` VARCHAR(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL AFTER `title`;

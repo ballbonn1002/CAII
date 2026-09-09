@@ -15,10 +15,11 @@ public class NotificationService {
 	@Autowired
 	private NotificationDAO notificationDAO;
 
-	public void create(String userId, String title, String message, String description, String actorId) throws Exception {
+	public void create(String userId, String title, String message, String description, String actorId, String funcId) throws Exception {
 		Notification notification = new Notification();
 		notification.setUserId(userId);
 		notification.setTitle(title);
+		notification.setFunctionId(funcId);
 		notification.setMessage(message);
 		notification.setDescription(description);
 		notification.setIsRead(false);
