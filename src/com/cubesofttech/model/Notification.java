@@ -26,6 +26,9 @@ public class Notification implements Serializable {
 
 	@Column(name = "title")
 	private String title;
+	
+	@Column(name = "function_id")
+	private String functionId;
 
 	@Column(name = "message")
 	private String message;
@@ -65,6 +68,14 @@ public class Notification implements Serializable {
 
 	public void setTitle(String title) {
 		this.title = title;
+	}
+
+	public String getFunctionId() {
+		return functionId;
+	}
+
+	public void setFunctionId(String functionId) {
+		this.functionId = functionId;
 	}
 
 	public String getMessage() {

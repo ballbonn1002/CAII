@@ -9,7 +9,7 @@
 <tiles-definitions>
 
 	<!-- BASE LAYOUT -->
-	<definition name="baseLayout"
+	<definition name="line_baseLayout"
 		template="/pages-line/_layout/baseLayout.jsp">
 		<put-attribute name="title" value="Base Layout" />
 		<put-attribute name="header"
@@ -23,28 +23,28 @@
 	</definition>
 
 	<!-- CHECK-IN/CHECK-OUT -->
-	<definition name="line_checkInOut" extends="baseLayout">
+	<definition name="line_checkInOut" extends="line_baseLayout">
 		<put-attribute name="title" value="Check-In/Check-Out" />
 		<put-attribute name="body"
 			value="/pages-line/check/check_in_out.jsp" />
 	</definition>
 	
 	<!-- Check All Calendar -->
-	<definition name="line_NewCheckAllCalendar" extends="baseLayout">
+	<definition name="line_NewCheckAllCalendar" extends="line_baseLayout">
 		<put-attribute name="title" value="Check All Calendar" />
 		<put-attribute name="body"
 			value="/pages-line/calendar/new_checkall_calendar.jsp" />
 	</definition>
 	
 	<!-- My Leave -->
-	<definition name="line_new_myleave_list" extends="baseLayout">
+	<definition name="line_new_myleave_list" extends="line_baseLayout">
 		<put-attribute name="title" value="My Leave List" />
 		<put-attribute name="body"
 			value="/pages-line/leave/my_leave_list.jsp" />
 	</definition>
 	
 	<!-- Add Leave Page -->
-	<definition name="line_newLeaveAdd" extends="baseLayout">
+	<definition name="line_newLeaveAdd" extends="line_baseLayout">
 		<put-attribute name="title" value="Add Leave" />
 		<put-attribute name="body"
 			value="/pages-line/leave/new_leavePage.jsp" />
@@ -52,7 +52,7 @@
 	<!-- Add Leave Page -->
 
 	<!-- Edit Page -->
-	<definition name="line_newLeaveEdit" extends="baseLayout">
+	<definition name="line_newLeaveEdit" extends="line_baseLayout">
 		<put-attribute name="title" value="Edit Leave" />
 		<put-attribute name="body"
 			value="/pages-line/leave/new_leavePage.jsp" />
