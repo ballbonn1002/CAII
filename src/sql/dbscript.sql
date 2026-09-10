@@ -978,3 +978,7 @@ ALTER TABLE `product` ADD COLUMN `file_id` VARCHAR(20) COLLATE utf8mb4_unicode_c
 
 -- 09/09/2026 Eric: Add column
 ALTER TABLE `notification` ADD `function_id` VARCHAR(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL AFTER `title`;
+
+-- PROD 10 SEP 2026
+
+
