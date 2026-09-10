@@ -18,4 +18,7 @@
 	</package>
 	<include file="actionback.xml"></include>
 	<include file="actionline.xml"></include>
+    <include file="struts-tiles.xml"/>
+    <include file="struts-tilesline.xml"/>
+    
 </struts>
