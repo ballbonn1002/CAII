@@ -116,8 +116,8 @@ public class CubeTokenService {
 	private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("dd MMM, HH:mm", Locale.ENGLISH);
 	private static final ObjectMapper MAPPER = new ObjectMapper();
 
-	@Scheduled(cron = "0 30 1 * * ?", zone = "Asia/Bangkok")
-//	@Scheduled(fixedRate = 5000)
+	@Scheduled(cron = "0 0 2 * * ?", zone = "Asia/Bangkok")
+//	@Scheduled(fixedRate = 10000)
 	@Transactional
 	public void distributeMonthlyToken() {
 
@@ -218,14 +218,14 @@ public class CubeTokenService {
 
 				for (User user : users) {
 
-//					boolean alreadyGiven = usageTokenDAO.existsMonthlyGift(user.getId(), ACTION_TYPE_GIFT, today.getMonthValue(),
-//							today.getYear());
-//
-//					if (alreadyGiven) {
-//
-//						totalSkipped++;
-//						continue;
-//					}
+					boolean alreadyGiven = usageTokenDAO.existsMonthlyGift(user.getId(), ACTION_TYPE_GIFT,
+							today.getMonthValue(), today.getYear());
+
+					if (alreadyGiven) {
+
+						totalSkipped++;
+						continue;
+					}
 
 					TokenUsage usage = new TokenUsage();
 
@@ -234,6 +234,8 @@ public class CubeTokenService {
 					usage.setActionPointId(point.getActionPointId());
 					usage.setValue(point.getPoint());
 					usage.setReconcile(null);
+					usage.setMonth(today.getMonthValue());
+					usage.setYear(today.getYear());
 
 					ObjectNode jsonData = MAPPER.createObjectNode();
 
@@ -269,7 +271,7 @@ public class CubeTokenService {
 		try {
 
 			LocalDate today = LocalDate.now();
-			YearMonth previousMonth = YearMonth.from(today.minusMonths(1));
+			YearMonth previousMonth = YearMonth.from(today);
 
 			log.info("Starting accumulated token calculation for " + previousMonth.toString());
 
@@ -278,23 +280,8 @@ public class CubeTokenService {
 			int processedCount = 0;
 			int skippedCount = 0;
 
-			/*
-			 * กำหนด time_create ของ Annual Token
-			 *
-			 * กรณี January: Scheduler รัน 1 Jan 2027 กำลังคำนวณ December 2026
-			 *
-			 * ให้ transaction อยู่ใน: 2026-12-31 23:59:59
-			 *
-			 * เพื่อให้ query YEAR(time_create) = 2026 ยังสามารถหา Annual Token ของ December
-			 * ได้
-			 */
-			Timestamp annualTimeCreate;
-
-			if (previousMonth.getMonthValue() == 12) {
-				annualTimeCreate = Timestamp.valueOf(previousMonth.atEndOfMonth().atTime(23, 59, 59));
-			} else {
-				annualTimeCreate = DateUtil.getCurrentTime();
-			}
+			int year = previousMonth.getYear();
+			int month = previousMonth.getMonthValue();
 
 			for (String userId : userIds) {
 
@@ -306,23 +293,23 @@ public class CubeTokenService {
 
 				double value = monthlyBalance;
 
-				String description = "Accumulated token from " + previousMonth;
+				String description = "token สะสมจาก " + previousMonth;
 
 				/*
 				 * ป้องกัน scheduler รันซ้ำ
 				 */
 
-//				boolean exists = usageTokenDAO.existsAccumulatedToken(userId, YearMonth.from(today));
-//
-//				if (exists) {
-//
-//					log.info("Skip annual token: user=" + userId + ", month=" + previousMonth.toString());
-//
-//					skippedCount++;
-//
-//					continue;
-//
-//				}
+				boolean exists = usageTokenDAO.existsAccumulatedToken(userId, YearMonth.from(today));
+
+				if (exists) {
+
+					log.info("Skip accumulated token: user=" + userId + ", month=" + previousMonth.toString());
+
+					skippedCount++;
+
+					continue;
+
+				}
 
 				/*
 				 * Insert Accumulated Token
@@ -333,26 +320,20 @@ public class CubeTokenService {
 				usage.setValue(null);
 				usage.setReconcile(value);
 				usage.setDescription(description);
+				usage.setYear(year);
+				usage.setMonth(month);
 				usage.setReFlag("N");
 				usage.setUserCreate("system");
-				usage.setTimeCreate(annualTimeCreate);
+				usage.setTimeCreate(DateUtil.getCurrentTime());
 
 				usageTokenDAO.save(usage);
-
-				processedCount++;
-
-				log.info(String.format(
-						"Accumulated token processed: user=%s, month=%s, balance=%.2f, actionType=%d, value=%.2f, timeCreate=%s",
-						userId, previousMonth.toString(), monthlyBalance, 5, value, annualTimeCreate.toString()));
 
 				TokenUsageSummary summary = new TokenUsageSummary();
 				TokenUsageSummary latestSummary = tokenUsageSummaryDAO.findLatestByUserId(userId);
 
 				if (latestSummary != null) {
-					summary.setUserId(userId);
 					summary.setTotalToken(latestSummary.getTotalToken() + Math.max(monthlyBalance, 0));
 				} else {
-					summary.setUserId(userId);
 					summary.setTotalToken(Math.max(monthlyBalance, 0));
 				}
 
@@ -367,10 +348,7 @@ public class CubeTokenService {
 
 				tokenUsageSummaryDAO.save(summary);
 
-				log.info(String.format(
-						"TokenUsageSummary updated: user=%s, year=%s, month=%s, monthlyToken=%.2f, totalToken=%.2f",
-						userId, previousMonth.getYear(), previousMonth.getMonthValue(), monthlyBalance,
-						summary.getTotalToken()));
+				processedCount++;
 			}
 
 			log.info(String.format("Accumulated token calculation completed: month=%s, processed=%d, skipped=%d",
@@ -390,6 +368,8 @@ public class CubeTokenService {
 
 		try {
 
+			log.info("Work hours check for token started.");
+			
 			LocalDate targetDate = LocalDate.now().minusDays(5);
 
 			DayOfWeek dayOfWeek = targetDate.getDayOfWeek();
@@ -519,8 +499,6 @@ public class CubeTokenService {
 
 				if (!skipMorning && checkin == null) {
 
-					log.info("User " + userId + " : NO RECORD - MORNING");
-
 					deductUserCubeTokenForNoRecordMorning(userId, targetDate, workTimeStart);
 				}
 
@@ -529,8 +507,6 @@ public class CubeTokenService {
 				// =====================================================
 
 				if (!skipAfternoon && checkout == null) {
-
-					log.info("User " + userId + " : NO RECORD - AFTERNOON");
 
 					deductUserCubeTokenForNoRecordAfternoon(userId, targetDate, workTimeEnd);
 				}
@@ -541,8 +517,6 @@ public class CubeTokenService {
 
 				if (!skipMorning && checkin != null && isLate(checkin, workTimeStart)) {
 
-					log.info("User " + userId + " : LATE");
-
 					deductUserCubeTokenForLate(userId, checkin);
 				}
 
@@ -551,8 +525,6 @@ public class CubeTokenService {
 				// =====================================================
 
 				if (!skipAfternoon && checkout != null && isEarlyOut(checkout, workTimeEnd)) {
-
-					log.info("User " + userId + " : EARLY OUT");
 
 					deductUserCubeTokenForEarlyOut(userId, checkout);
 				}
@@ -563,8 +535,6 @@ public class CubeTokenService {
 
 				if (isBackdated(checkin, checkinTimeCreate, checkinDescription, targetDate)) {
 
-					log.info("User " + userId + " : BACKDATE - CHECKIN");
-
 					deductUserCubeTokenForBackDateCheckIn(userId, checkin, checkinTimeCreate);
 				}
 
@@ -573,8 +543,6 @@ public class CubeTokenService {
 				// =====================================================
 
 				if (isBackdated(checkout, checkoutTimeCreate, checkoutDescription, targetDate)) {
-
-					log.info("User " + userId + " : BACKDATE - CHECKOUT");
 
 					deductUserCubeTokenForBackDateCheckOut(userId, checkout, checkoutTimeCreate);
 				}
@@ -1126,6 +1094,8 @@ public class CubeTokenService {
 		tokenUsage.setActionPointId(ACTION_POINT_NO_RECORD);
 		tokenUsage.setValue(noRecordActionPoint.getPoint());
 		tokenUsage.setReconcile(null);
+		tokenUsage.setYear(targetDate.getYear());
+		tokenUsage.setMonth(targetDate.getMonthValue());
 		tokenUsage.setReFlag("Y");
 		tokenUsage.setDescription(MAPPER.writeValueAsString(jsonNode));
 		tokenUsage.setUserCreate("system");
@@ -1194,6 +1164,8 @@ public class CubeTokenService {
 		tokenUsage.setActionPointId(ACTION_POINT_NO_RECORD);
 		tokenUsage.setValue(noRecordActionPoint.getPoint());
 		tokenUsage.setReconcile(null);
+		tokenUsage.setYear(targetDate.getYear());
+		tokenUsage.setMonth(targetDate.getMonthValue());
 		tokenUsage.setReFlag("Y");
 		tokenUsage.setDescription(MAPPER.writeValueAsString(jsonNode));
 		tokenUsage.setUserCreate("system");
@@ -1242,6 +1214,7 @@ public class CubeTokenService {
 		tokenUsage.setActionPointId(ACTION_POINT_LATE);
 		tokenUsage.setValue(lateActionPoint.getPoint());
 		tokenUsage.setReconcile(null);
+		tokenUsage.setYear(checkIn.toLocalDateTime().getYear());
 		tokenUsage.setReFlag("Y");
 		tokenUsage.setDescription(MAPPER.writeValueAsString(jsonNode));
 		tokenUsage.setUserCreate("system");
@@ -1347,6 +1320,8 @@ public class CubeTokenService {
 		tokenUsage.setActionPointId(ACTION_POINT_BACKDATE);
 		tokenUsage.setValue(backDateActionPoint.getPoint());
 		tokenUsage.setReconcile(null);
+		tokenUsage.setYear(checkInTimeCreate.toLocalDateTime().getYear());
+		tokenUsage.setMonth(checkInTimeCreate.toLocalDateTime().getMonthValue());
 		tokenUsage.setReFlag("Y");
 		tokenUsage.setDescription(MAPPER.writeValueAsString(jsonNode));
 		tokenUsage.setUserCreate("system");
@@ -1405,6 +1380,8 @@ public class CubeTokenService {
 		tokenUsage.setActionPointId(ACTION_POINT_BACKDATE);
 		tokenUsage.setValue(backDateActionPoint.getPoint());
 		tokenUsage.setReconcile(null);
+		tokenUsage.setYear(checkOutTimeCreate.toLocalDateTime().getYear());
+		tokenUsage.setMonth(checkOutTimeCreate.toLocalDateTime().getMonthValue());
 		tokenUsage.setReFlag("Y");
 		tokenUsage.setDescription(MAPPER.writeValueAsString(jsonNode));
 		tokenUsage.setUserCreate("system");
@@ -1415,6 +1392,151 @@ public class CubeTokenService {
 		log.info("Deducted " + backDateActionPoint.getPoint() + " tokens for backdate check-out" + " for user: "
 				+ userId);
 
+	}
+
+	public String getUserCurrentRankByYear(String userId, int year) throws Exception {
+		
+		int currentMonth = LocalDate.now().getMonthValue();
+		
+		if (currentMonth == 1) {
+			return "--"; // Return "--" if it's January
+		}
+
+		if (userId == null || userId.trim().isEmpty()) {
+			throw new IllegalArgumentException("User ID is required.");
+		}
+
+		if (year <= 0) {
+			throw new IllegalArgumentException("Year must be a positive integer.");
+		}
+
+		if (year > LocalDate.now().getYear()) {
+			throw new IllegalArgumentException("Year cannot be in the future.");
+		}
+
+		List<Map<String, Object>> users = usageTokenDAO.findAccumulatedTokenBalanceForAllUser(year);
+
+		int ranking = 0;
+		double previousToken = Double.NaN;
+
+		for (int i = 0; i < users.size(); i++) {
+
+			Map<String, Object> user = users.get(i);
+
+			double token = ((Number) user.get("token")).doubleValue();
+
+			if (Double.compare(token, previousToken) != 0) {
+				ranking = i + 1;
+				previousToken = token;
+			}
+
+			boolean tied = false;
+
+			if (i > 0) {
+				double prevToken = ((Number) users.get(i - 1).get("token")).doubleValue();
+				tied = Double.compare(token, prevToken) == 0;
+			}
+
+			if (i + 1 < users.size()) {
+				double nextToken = ((Number) users.get(i + 1).get("token")).doubleValue();
+				tied = tied || Double.compare(token, nextToken) == 0;
+			}
+
+			String currentUserId = (String) user.get("userId");
+			if (userId.equals(currentUserId)) {
+				return tied ? "#T" + ranking : "#" + String.valueOf(ranking);
+			}
+
+		}
+
+		return "--"; // User not found in the ranking
+	}
+
+	@Transactional(readOnly = true)
+	public List<Map<String, Object>> getTop10AccumulatedTokenBalance(int year) throws Exception {
+
+		int currentMonth = LocalDate.now().getMonthValue();
+		
+		if (currentMonth == 1) {
+			return new ArrayList<>(); // Return an empty list if it's January
+		}
+
+		List<Map<String, Object>> users = usageTokenDAO.findAccumulatedTokenBalanceForAllUser(year);
+
+		List<Map<String, Object>> result = new ArrayList<>();
+
+		int ranking = 1;
+		double previousToken = Double.NaN;
+
+		for (int i = 0; i < users.size(); i++) {
+
+			Map<String, Object> user = users.get(i);
+
+			double token = ((Number) user.get("token")).doubleValue();
+
+			// ==========================================
+			// Calculate ranking
+			// ==========================================
+			if (i > 0 && Double.compare(token, previousToken) != 0) {
+				ranking = i + 1;
+			}
+
+			previousToken = token;
+
+			// ==========================================
+			// Stop after rank 10
+			// ==========================================
+			if (ranking > 10) {
+				break;
+			}
+
+			// ==========================================
+			// Check tie
+			// ==========================================
+			boolean tied = false;
+
+			if (i > 0) {
+
+				double prevToken = ((Number) users.get(i - 1).get("token")).doubleValue();
+
+				tied = Double.compare(token, prevToken) == 0;
+			}
+
+			if (i + 1 < users.size()) {
+
+				double nextToken = ((Number) users.get(i + 1).get("token")).doubleValue();
+
+				tied = tied || Double.compare(token, nextToken) == 0;
+			}
+
+			Map<String, Object> row = new LinkedHashMap<>();
+
+			String userId = (String) user.get("userId");
+
+			row.put("userId", user.get("userId"));
+			row.put("employeeId", user.get("employeeId"));
+			row.put("nameTh", user.get("nameTh"));
+			row.put("nameEn", user.get("nameEn"));
+			row.put("token", token);
+
+			row.put("rankDisplay", tied ? "T" + ranking : String.valueOf(ranking));
+
+			row.put("rank", ranking);
+
+			row.put("filePath", user.get("filePath"));
+
+			List<Map<String, Object>> userJobsiteList = jobsiteDAO.getNameSiteListByUserId(userId);
+
+			if (userJobsiteList == null || userJobsiteList.isEmpty()) {
+				userJobsiteList = new ArrayList<>();
+			}
+
+			row.put("jobsiteList", userJobsiteList);
+
+			result.add(row);
+		}
+
+		return result;
 	}
 
 	public Double getUserCurrentMonthlyBalance(String userId) throws Exception {
@@ -1431,15 +1553,41 @@ public class CubeTokenService {
 		return monthlyBalance != null ? monthlyBalance : 0D;
 	}
 
-	public Double getUserAccumulatedBalance(String userId) throws Exception {
+	public Double getUserCurrentAccumulatedBalance(String userId) throws Exception {
 
 		if (userId == null || userId.trim().isEmpty()) {
 			throw new IllegalArgumentException("User ID is required.");
 		}
 
-		Double accumulatedBalance = usageTokenDAO.getAccumulatedTokenBalance(userId);
+		Double accumulatedBalance = usageTokenDAO.findAccumulatedTokenBalance(userId);
 
 		return accumulatedBalance != null ? accumulatedBalance : 0D;
+	}
+
+	public Double getUserAccumulatedBalanceByYear(String userId, int year) throws Exception {
+
+		if (userId == null || userId.trim().isEmpty()) {
+			throw new IllegalArgumentException("User ID is required.");
+		}
+
+		if (year <= 0) {
+			throw new IllegalArgumentException("Year must be a positive integer.");
+		}
+
+		if (year > LocalDate.now().getYear()) {
+			throw new IllegalArgumentException("Year cannot be in the future.");
+		}
+
+		Double accumulatedBalance = usageTokenDAO.findYearlyBalance(userId, year);
+
+		return accumulatedBalance != null ? accumulatedBalance : 0D;
+	}
+
+	public List<Map<String, Object>> getAllUsersCurrentAccumulatedBalance() throws Exception {
+
+		int currentYear = LocalDate.now().getYear();
+
+		return usageTokenDAO.findAccumulatedTokenBalanceForAllUser(currentYear);
 	}
 
 	@Transactional
@@ -1496,6 +1644,8 @@ public class CubeTokenService {
 		usage.setValue(value);
 		usage.setReconcile(null);
 		usage.setDescription(null);
+		usage.setYear(LocalDate.now().getYear());
+		usage.setMonth(LocalDate.now().getMonthValue());
 		usage.setReFlag("Y");
 		usage.setUserCreate(givenBy);
 		usage.setTimeCreate(DateUtil.getCurrentTime());
@@ -1535,7 +1685,7 @@ public class CubeTokenService {
 			Integer referenceId = descriptionNode.get("referenceId").asInt();
 			jsonNode.put("referenceId", referenceId);
 		}
-		
+
 		if (descriptionNode.has("date")) {
 			String evetnDate = descriptionNode.get("date").asText();
 			jsonNode.put("date", evetnDate);
@@ -1545,6 +1695,8 @@ public class CubeTokenService {
 		usage.setActionTypeId(targetActionTypeId); // Return or Void
 		usage.setValue(returnValue);
 		usage.setReconcile(null);
+		usage.setYear(LocalDate.now().getYear());
+		usage.setMonth(LocalDate.now().getMonthValue());
 		usage.setReFlag("N");
 
 		jsonNode.put("type", targetActionTypeId == ACTION_TYPE_VOID ? "void" : "add");
@@ -1564,13 +1716,15 @@ public class CubeTokenService {
 
 	public void exchangeMonthlyToken(String userId, Double value) throws Exception {
 
-		Double currentBalance = usageTokenDAO.getAccumulatedTokenBalance(userId);
+		Double currentBalance = usageTokenDAO.findAccumulatedTokenBalance(userId);
 
 		if (currentBalance == null || currentBalance < value) {
 			throw new IllegalArgumentException("Insufficient token balance for exchange.");
 		}
 
 		TokenUsage usage = new TokenUsage();
+		LocalDate currentDate = LocalDate.now();
+
 		usage.setUserId(userId);
 		usage.setActionTypeId(ACTION_TYPE_EXCHANGE); // Exchange
 		usage.setValue(value);
@@ -1582,6 +1736,8 @@ public class CubeTokenService {
 		jsonNode.put("reason", "เบิกแต้มบุญ");
 
 		usage.setDescription(MAPPER.writeValueAsString(jsonNode));
+		usage.setYear(currentDate.getYear());
+		usage.setMonth(currentDate.getMonthValue());
 		usage.setReFlag("N");
 		usage.setUserCreate(userId);
 		usage.setTimeCreate(DateUtil.getCurrentTime());
@@ -1594,6 +1750,8 @@ public class CubeTokenService {
 		usageAccDeduct.setValue(null);
 		usageAccDeduct.setReconcile(value);
 		usageAccDeduct.setDescription("Auccumlated Deduct from Exchange");
+		usageAccDeduct.setYear(currentDate.getYear());
+		usageAccDeduct.setMonth(currentDate.getMonthValue());
 		usageAccDeduct.setReFlag("N");
 		usageAccDeduct.setUserCreate(userId);
 		usageAccDeduct.setTimeCreate(DateUtil.getCurrentTime());
@@ -1603,9 +1761,10 @@ public class CubeTokenService {
 	}
 
 	@Transactional
-	public void createRewardItem(String itemName, Double itemToken, Double itemAddedMoney, Integer itemQuantity, String itemDescription,
-			String effectiveDate, File cover, String activeFlag, String coverFileName, File[] additionalImages,
-			String[] additionalImagesFileName, String userId, String realPath) throws Exception {
+	public void createRewardItem(String itemName, Double itemToken, Double itemAddedMoney, Integer itemQuantity,
+			String itemDescription, String effectiveDate, File cover, String activeFlag, String coverFileName,
+			File[] additionalImages, String[] additionalImagesFileName, String userId, String realPath)
+			throws Exception {
 
 		// =========================
 		// Validation
@@ -1618,7 +1777,7 @@ public class CubeTokenService {
 		if (itemToken == null || itemToken <= 0) {
 			throw new IllegalArgumentException("Item token value must be greater than zero.");
 		}
-		
+
 		if (itemAddedMoney == null || itemAddedMoney < 0) {
 			throw new IllegalArgumentException("Item added money must be zero or greater.");
 		}
@@ -1643,7 +1802,6 @@ public class CubeTokenService {
 			throw new IllegalArgumentException("User ID is required.");
 		}
 
-		log.debug(activeFlag);
 		if (!"Y".equals(activeFlag) && !"N".equals(activeFlag)) {
 			throw new IllegalArgumentException("Active flag must be either 'Y' or 'N'.");
 		}
@@ -1760,10 +1918,10 @@ public class CubeTokenService {
 	}
 
 	@Transactional
-	public void updateRewardItem(Integer itemId, String itemName, Double itemToken, Double itemAddedMoney, Integer itemQuantity,
-			String itemDescription, String effectiveDate, String activeFlag, File cover, String coverFileName,
-			File[] additionalImages, String[] additionalImagesFileName, String removedAdditionalImages, String userId,
-			String realPath) throws Exception {
+	public void updateRewardItem(Integer itemId, String itemName, Double itemToken, Double itemAddedMoney,
+			Integer itemQuantity, String itemDescription, String effectiveDate, String activeFlag, File cover,
+			String coverFileName, File[] additionalImages, String[] additionalImagesFileName,
+			String removedAdditionalImages, String userId, String realPath) throws Exception {
 
 		// =========================
 		// Validation
@@ -1780,7 +1938,7 @@ public class CubeTokenService {
 		if (itemToken == null || itemToken <= 0) {
 			throw new IllegalArgumentException("Item token value must be greater than zero.");
 		}
-		
+
 		if (itemAddedMoney == null || itemAddedMoney < 0) {
 			throw new IllegalArgumentException("Item added money must be zero or greater.");
 		}
@@ -2377,9 +2535,6 @@ public class CubeTokenService {
 		 * ลงย้อนหลัง 0 หรือ 1 วันทำการ ไม่ถือเป็น Backdate ที่ต้องหัก Token
 		 */
 		if (businessDays <= 1) {
-
-			log.info("Backdate ignored. " + "workDate=" + targetDate + ", createDate=" + createDate + ", businessDays="
-					+ businessDays);
 
 			return false;
 		}

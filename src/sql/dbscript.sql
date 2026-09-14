@@ -1018,3 +1018,19 @@ CREATE TABLE `job_application` (
     `time_create`        TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (`job_application_id`)
 ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci;
+
+-- 14/09/2026 Best(Intern) แก้ token_usage ให้เก็บเดือน ปี แยก
+
+ALTER TABLE token_usage
+ADD COLUMN `year` SMALLINT UNSIGNED NULL AFTER `reconcile`,
+ADD COLUMN `month` TINYINT UNSIGNED NULL AFTER `year`;
+
+UPDATE token_usage
+SET
+    `year` = YEAR(time_create),
+    `month` = MONTH(time_create)
+WHERE time_create IS NOT NULL;
+
+ALTER TABLE token_usage
+MODIFY COLUMN `year` SMALLINT UNSIGNED NOT NULL,
+MODIFY COLUMN `month` TINYINT UNSIGNED NOT NULL;

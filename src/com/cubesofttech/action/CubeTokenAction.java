@@ -64,6 +64,8 @@ public class CubeTokenAction extends ActionSupport {
 	private List<ItemPrivilege> itemPrivileges;
 	private ItemPrivilege item;
 	
+	private int year;
+	
 
 	@Autowired
 	private CubeTokenService cubeTokenService;
@@ -149,6 +151,31 @@ public class CubeTokenAction extends ActionSupport {
 		}
 	}
 	
+	public String privilegePage() {
+		
+		try {
+			
+			User user = (User) session.getAttribute("user");
+			
+			itemPrivileges = cubeTokenService.getAllRewardItems();
+			
+			Map<String, Object> userInfo = new LinkedHashMap<>();
+			
+			userInfo.put("userId", user.getId());
+			userInfo.put("currentBalance", cubeTokenService.getUserCurrentAccumulatedBalance(user.getId()));
+			
+			request.setAttribute("userInfo", userInfo);
+			
+			return SUCCESS;
+			
+		} catch (Exception e) {
+			
+			log.error("Error in privilegePage: " + e.getMessage(), e);
+			
+			return ERROR;
+		}
+	}
+	
 	public String createRewardItem() {
 		return SUCCESS;
 	}
@@ -203,6 +230,25 @@ public class CubeTokenAction extends ActionSupport {
 			log.error("Error in listTokenHistoryPage: " + e.getMessage(), e);
 			return ERROR;
 		}
+	}
+	
+	public String cubeTokenRankingPage() {
+
+		try {
+			
+			User user = (User) session.getAttribute("user");
+			
+			userInfo = cubeTokenService.getUserInfo(user.getId());
+			userInfo.put("currentBalance", cubeTokenService.getUserAccumulatedBalanceByYear(user.getId(), LocalDate.now().getYear()));
+
+			return SUCCESS;
+
+		} catch (Exception e) {
+
+			log.error("Error in cubeTokenRankingPage: " + e.getMessage(), e);
+			return ERROR;
+		}
+		
 	}
 
 	public String exchangeMonthlyToken() {
@@ -287,6 +333,32 @@ public class CubeTokenAction extends ActionSupport {
 
 			return NONE;
 		}
+	}
+	
+	public String getUserAccumelatedToken() {
+		
+		try {
+			
+			User user = (User) session.getAttribute("user");
+			
+			if(year <= 0) {
+				year = LocalDate.now().getYear();
+			}
+			
+			Double data = cubeTokenService.getUserAccumulatedBalanceByYear(user.getId(), year);
+			
+			writeSuccessResponse(data, HttpServletResponse.SC_OK, "User accumulated token retrieved successfully");
+			
+		} catch (Exception e) {
+
+
+			log.error("Error in getUserAccumelatedToken: ", e);
+			writeErrorResponse(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Internal server error");
+			
+		}
+		
+		
+		return NONE;
 	}
 
 	public String getTokenSummaryForAllUsers() throws Exception {
@@ -658,7 +730,7 @@ public class CubeTokenAction extends ActionSupport {
 
 			List<Map<String, Object>> transactions = cubeTokenService.getUserTokenTransactionByYear(targetUserId, year);
 			Double currentBalance = cubeTokenService.getUserCurrentMonthlyBalance(targetUserId);
-			Double accumulatedBalance = cubeTokenService.getUserAccumulatedBalance(targetUserId);
+			Double accumulatedBalance = cubeTokenService.getUserCurrentAccumulatedBalance(targetUserId);
 
 			Map<String, Object> result = new LinkedHashMap<>();
 
@@ -731,6 +803,28 @@ public class CubeTokenAction extends ActionSupport {
 			return NONE;
 		}
 	}
+	
+	public String getTokenRanking() {
+		
+		try {
+			
+			if (year <= 0) {
+				year = LocalDate.now().getYear();
+			}
+			
+			System.out.println(year);
+			
+			List<Map<String, Object>> data = cubeTokenService.getTop10AccumulatedTokenBalance(year);
+			writeSuccessResponse(data, HttpServletResponse.SC_OK, "Top 10 accumulated token balance retrieved successfully");
+			
+		} catch (Exception e) {
+			
+			writeErrorResponse(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Internal server error");
+			
+		}
+		
+		return NONE;
+	}
 
 	public String getTokenAvailableYears() throws Exception {
 
@@ -777,6 +871,25 @@ public class CubeTokenAction extends ActionSupport {
 
 			return NONE;
 		}
+	}
+	
+	public String getUserCurrentRank() {
+		
+		try {
+			
+			User user = (User) session.getAttribute("user");
+			String data = cubeTokenService.getUserCurrentRankByYear(user.getId(), year);
+			
+			writeSuccessResponse(data, HttpServletResponse.SC_OK, "User current rank retrieved successfully");
+			
+		} catch (Exception e) {
+			
+			log.error("Error in getUserCurrentRank: ", e);
+			writeErrorResponse(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Internal server error");
+			
+		}
+		
+		return NONE;
 	}
 
 	public String getTokenSummary() {
@@ -1051,7 +1164,7 @@ public class CubeTokenAction extends ActionSupport {
 	    return NONE;
 	}
 	
-	private void writeSuccessResponse(Map<String, Object> data, int status, String message) {
+	private void writeSuccessResponse(Object data, int status, String message) {
 
 	    try {
 	        response.setContentType("application/json;charset=UTF-8");
@@ -1274,5 +1387,10 @@ public class CubeTokenAction extends ActionSupport {
 	public void setItemAddedMoney(Double itemAddedMoney) {
 		this.itemAddedMoney = itemAddedMoney;
 	}
+
+	public void setYear(int year) {
+		this.year = year;
+	}
+
 
 }

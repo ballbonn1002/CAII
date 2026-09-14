@@ -282,11 +282,13 @@ pageEncoding="UTF-8"%>
                                 </div>
                             </div>
                             <div class="card-body">
-                                <div class="d-flex gap-4">
+                                <div class="d-flex flex-wrap gap-4">
 	                                <a href="myCubeToken" class="btn btn-light-primary d-inline-flex align-items-center px-6 py-3">My Cube Token</a>
 	                                <a href="tokenSettings" class="btn btn-light-info d-inline-flex align-items-center px-6 py-3">Cube Token Setting</a>
 	                                <a href="cubeTokenManagement" class="btn btn-light-success d-inline-flex align-items-center px-6 py-3">Cube Token Management</a>
+	                                <a href="privilegePage" class="btn btn-light-warning d-inline-flex align-items-center px-6 py-3">Privilege</a>
 	                                <a href="privilegeMangementPage" class="btn btn-light-danger d-inline-flex align-items-center px-6 py-3">Privilege Management </a>
+	                                <a href="cubeTokenRankingPage" class="btn btn-light-dark d-inline-flex align-items-center px-6 py-3">Cube Token Ranking</a>
                                 </div>
                             </div>
                         </div>

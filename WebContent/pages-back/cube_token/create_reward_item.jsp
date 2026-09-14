@@ -180,7 +180,7 @@
 											class="form-control form-control-lg" id="itemName"
 											name="itemName" placeholder="Enter item name" />
 									</div>
-									
+
 									<!-- QUANTITY -->
 									<div class="col-md-6 itemQuantity-container">
 
@@ -208,7 +208,7 @@
 											name="itemToken" min="0" placeholder="0" />
 
 									</div>
-									
+
 									<!-- EXTRA CASH -->
 									<div class="col-12 col-md-6 extraCash-container">
 
@@ -257,6 +257,32 @@
 												class="path3"></span> <span class="path4"></span> <span
 												class="path5"></span> <span class="path6"></span>
 											</i>
+										</div>
+
+										<div class="effectiveDate-container"></div>
+									</div>
+
+								</div>
+
+								<div>
+
+									<label for="effectiveDate"
+										class="form-label fw-medium text-gray-800 required">
+										Product </label>
+
+									<div class="mb-0 ">
+										<div class="position-relative">
+											<select class="form-select" aria-label="Select example">
+												<option>Open this select menu</option>
+												<option value="1">product 1</option>
+												<option value="2">product 2</option>
+												<option value="3">Three</option>
+											</select><!-- <i
+												class="ki-duotone ki-calendar-8 fs-1 position-absolute ms-3 top-50 translate-middle-y">
+												<span class="path1"></span> <span class="path2"></span> <span
+												class="path3"></span> <span class="path4"></span> <span
+												class="path5"></span> <span class="path6"></span>
+											</i> -->
 										</div>
 
 										<div class="effectiveDate-container"></div>
@@ -393,7 +419,8 @@
 
 				<div
 					class="d-flex align-items-center justify-content-end gap-3 mt-10">
-					<button type="button" class="btn btn-light" onClick="window.location.href = 'privilegeMangementPage'">Cancel</button>
+					<button type="button" class="btn btn-light"
+						onClick="window.location.href = 'privilegeMangementPage'">Cancel</button>
 					<button type="button" class="btn btn-success" id="saveBtn">Save</button>
 				</div>
 
@@ -403,7 +430,8 @@
 			</div>
 		</div>
 	</div>
-	<script src="${pageContext.request.contextPath}/assets/js/custom/utilities/attachFile/attcahfile.js"></script>
+	<script
+		src="${pageContext.request.contextPath}/assets/js/custom/utilities/attachFile/attcahfile.js"></script>
 	<script>
 	
 		let additionalImageFiles = [];

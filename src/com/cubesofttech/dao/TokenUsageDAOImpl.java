@@ -60,24 +60,21 @@ public class TokenUsageDAOImpl implements TokenUsageDAO {
 	                                 int month,
 	                                 int year) throws Exception {
 
-	    LocalDate start = LocalDate.of(year, month, 1);
-	    LocalDate end = start.plusMonths(1);
-
 	    String hql =
 	        "SELECT COUNT(*) " +
 	        "FROM TokenUsage " +
 	        "WHERE userId = :userId " +
 	        "AND actionTypeId = :actionTypeId " +
-	        "AND timeCreate >= :startDate " +
-	        "AND timeCreate < :endDate";
+	        "AND month = :month " +
+	        "AND year = :year";
 
 	    Long count = (Long) sessionFactory
 	            .getCurrentSession()
 	            .createQuery(hql)
 	            .setParameter("userId", userId)
 	            .setParameter("actionTypeId", actionTypeId)
-	            .setParameter("startDate", java.sql.Timestamp.valueOf(start.atStartOfDay()))
-	            .setParameter("endDate", java.sql.Timestamp.valueOf(end.atStartOfDay()))
+	            .setParameter("month", month)
+	            .setParameter("year", year)
 	            .uniqueResult();
 
 	    return count != null && count > 0;
@@ -120,7 +117,7 @@ public class TokenUsageDAOImpl implements TokenUsageDAO {
 
 	            "WHERE tu.user_id = :userId " +
 	            "AND (tu.action_type_id IN (1, 2, 3, 4, 7, 8) OR (tu.action_type_id = 6 AND tu.value IS NOT NULL)) " +
-	            "AND YEAR(tu.time_create) = :year " +
+	            "AND year = :year " +
 
 	            "ORDER BY tu.time_create ASC";
 
@@ -214,7 +211,7 @@ public class TokenUsageDAOImpl implements TokenUsageDAO {
 	            "FROM token_usage tu " +
 
 	            "WHERE tu.user_id = :userId " +
-	            "AND YEAR(tu.time_create) = :year";
+	            "AND year = :year";
 
 	    return (Map<String, Object>) sessionFactory
 	            .getCurrentSession()
@@ -278,7 +275,7 @@ public class TokenUsageDAOImpl implements TokenUsageDAO {
 
 	            "LEFT JOIN token_usage tu " +
 	            "    ON u.id = tu.user_id " +
-	            "    AND YEAR(tu.time_create) = :year " +
+	            "    AND year = :year " +
 	            
 				"GROUP BY " +
 				"    u.id, " +
@@ -346,7 +343,7 @@ public class TokenUsageDAOImpl implements TokenUsageDAO {
 	}
 
 	@Override
-	public Double getAccumulatedTokenBalance(String userId) throws Exception {
+	public Double findAccumulatedTokenBalance(String userId) throws Exception {
 
 	    String sql =
 	            "SELECT " +
@@ -361,7 +358,7 @@ public class TokenUsageDAOImpl implements TokenUsageDAO {
 	            "    ), 0) AS token " +
 	            "FROM token_usage tu " +
 	            "WHERE tu.user_id = :userId " +
-	            "AND YEAR(tu.time_create) = :year";
+	            "AND year = :year";
 
 	    SQLQuery query = sessionFactory
 	            .getCurrentSession()
@@ -395,7 +392,7 @@ public class TokenUsageDAOImpl implements TokenUsageDAO {
 	            "    ), 0) AS yearly_token " +
 	            "FROM token_usage tu " +
 	            "WHERE tu.user_id = :userId " +
-	            "AND YEAR(tu.time_create) = :year";
+	            "AND year = :year";
 
 	    SQLQuery query = sessionFactory
 	            .getCurrentSession()
@@ -412,7 +409,51 @@ public class TokenUsageDAOImpl implements TokenUsageDAO {
 
 	    return ((Number) result).doubleValue();
 	}
+	
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<Map<String, Object>> findAccumulatedTokenBalanceForAllUser(int year)
+	        throws Exception {
 
+		 String sql =
+		            "SELECT " +
+		            "    tu.user_id AS userId, " +
+		            "    u.name AS nameTh, " +
+		            "    u.name_en AS nameEn, " +
+		            "    u.employee_id AS employeeId, " +
+		            "    u.path AS filePath, " +
+		            "    COALESCE(SUM( " +
+		            "        CASE " +
+		            "            WHEN tu.action_type_id = 5 " +
+		            "                THEN GREATEST(COALESCE(tu.reconcile, 0), 0) " +
+		            "            WHEN tu.action_type_id = 6 " +
+		            "                AND tu.reconcile IS NOT NULL " +
+		            "                THEN -COALESCE(tu.reconcile, 0) " +
+		            "            ELSE 0 " +
+		            "        END " +
+		            "    ), 0) AS token " +
+		            "FROM token_usage tu " +
+		            "JOIN user u " +
+		            "    ON u.id = tu.user_id " +
+		            "WHERE tu.year = :year AND tu.action_type_id IN (5, 6) " +
+		            "GROUP BY " +
+		            "    tu.user_id, " +
+		            "    u.name, " +
+		            "    u.name_en, " +
+		            "    u.employee_id, " +
+		            "    u.path " +
+		            "ORDER BY token DESC, u.employee_id ASC";
+		 
+	    return sessionFactory
+	            .getCurrentSession()
+	            .createSQLQuery(sql)
+	            .setParameter("year", year)
+	            .setResultTransformer(
+	                    AliasToEntityMapResultTransformer.INSTANCE
+	            )
+	            .list();
+	}
+	
 	@Override
 	public boolean existsAccumulatedToken(String userId, YearMonth yearMonth) throws Exception {
 
@@ -430,8 +471,8 @@ public class TokenUsageDAOImpl implements TokenUsageDAO {
 	            "    FROM token_usage tu " +
 	            "    WHERE tu.user_id = :userId " +
 	            "      AND tu.action_type_id = 5 " +
-	            "      AND YEAR(tu.time_create) = :year " +
-	            "      AND MONTH(tu.time_create) = :month " +
+	            "      AND year = :year " +
+	            "      AND month = :month " +
 	            ")";
 	    
 	    SQLQuery query = sessionFactory
@@ -446,4 +487,6 @@ public class TokenUsageDAOImpl implements TokenUsageDAO {
 	    
 	    return result != null && result.intValue() == 1;
 	}
+	
+	
 }
