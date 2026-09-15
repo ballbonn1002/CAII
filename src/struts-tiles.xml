@@ -714,6 +714,25 @@
 			value="/pages-back/purchase_requisition/purchase_requisition_edit.jsp" />
 	</definition>
 
+	<!-- PR - Purchase Requisition New -->
+	<definition name="purchaseRequisitionList" extends="baseLayout">
+		<put-attribute name="title" value="Purchase Requisition List" />
+		<put-attribute name="body"
+			value="/pages-back/purchase_requisition_new/purchase_requisition_list.jsp" />
+	</definition>
+	
+	<definition name="purchaseRequisitionAdd" extends="baseLayout">
+		<put-attribute name="title" value="Purchase Requisition Create" />
+		<put-attribute name="body"
+			value="/pages-back/purchase_requisition_new/purchase_requisition_create.jsp" />
+	</definition>
+	
+	<definition name="purchaseRequisitionDetail" extends="baseLayout">
+		<put-attribute name="title" value="Purchase Requisition Edit" />
+		<put-attribute name="body"
+			value="/pages-back/purchase_requisition_new/purchase_requisition_edit.jsp" />
+	</definition>
+
 	<!-- Careers -->
 	<definition name="careers_list" extends="baseLayout">
 		<put-attribute name="title" value="Careers List" />

@@ -1,27 +1,20 @@
 package com.cubesofttech.action;
 
-import com.cubesofttech.dao.CompanyAddressDAO;
-import com.cubesofttech.dao.CompanyContactDAO;
-import com.cubesofttech.dao.CompanyDAO;
 import com.cubesofttech.dao.DocStatusDAO;
 import com.cubesofttech.dao.FileUploadDAO;
 import com.cubesofttech.dao.JobsiteDAO;
-import com.cubesofttech.dao.PoDAO;
-import com.cubesofttech.dao.PoDetailDAO;
-import com.cubesofttech.dao.PoParentDAO;
+import com.cubesofttech.dao.PrDAO;
 import com.cubesofttech.dao.PrDetailDAO;
+import com.cubesofttech.dao.PrParentDAO;
 import com.cubesofttech.dao.ProductDAO;
 import com.cubesofttech.dao.UnitOfMeasureDAO;
 import com.cubesofttech.dao.UserDAO;
 import com.cubesofttech.dao.WorkLogDAO;
-import com.cubesofttech.model.Company;
-import com.cubesofttech.model.CompanyAddress;
-import com.cubesofttech.model.CompanyContact;
 import com.cubesofttech.model.DocStatus;
 import com.cubesofttech.model.FileUpload;
-import com.cubesofttech.model.Po;
-import com.cubesofttech.model.PoDetail;
-import com.cubesofttech.model.PoParent;
+import com.cubesofttech.model.Pr;
+import com.cubesofttech.model.PrDetail;
+import com.cubesofttech.model.PrParent;
 import com.cubesofttech.model.Product;
 import com.cubesofttech.model.UnitOfMeasure;
 import com.cubesofttech.model.User;
@@ -30,7 +23,6 @@ import com.cubesofttech.util.DateUtil;
 
 import java.io.File;
 import java.io.PrintWriter;
-import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
@@ -47,8 +39,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
 import org.apache.struts2.ServletActionContext;
-import org.hibernate.SQLQuery;
-import org.hibernate.transform.AliasToEntityMapResultTransformer;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,7 +46,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.google.gson.Gson;
 import com.opensymphony.xwork2.ActionSupport;
 
-public class PurchaseOrderAction extends ActionSupport {
+public class PurchaseRequisitionAction extends ActionSupport {
 
     private static final long serialVersionUID = 2280661337420278284L;
 
@@ -67,29 +57,20 @@ public class PurchaseOrderAction extends ActionSupport {
     private User onlineUser = (User) request.getSession().getAttribute("onlineUser");
 
     @Autowired
-    private PoDAO poDAO;
+    private PrDAO prDAO;
 
     @Autowired
     private UserDAO userDAO;
-    
+
     @Autowired
     private FileUploadDAO fileuploadDAO;
-   
+
     @Autowired
-    private PoDetailDAO poDetailDAO;
-    
+    private PrDetailDAO prDetailDAO;
+
     @Autowired
-    private PoParentDAO poParentDAO;
-    
-    @Autowired
-    private CompanyDAO companyDAO;
-    
-    @Autowired
-    private CompanyAddressDAO companyAddressDAO;
-    
-    @Autowired
-    private CompanyContactDAO companyContactDAO;
-    
+    private PrParentDAO prParentDAO;
+
     @Autowired
     private ProductDAO productDAO;
 
@@ -102,19 +83,17 @@ public class PurchaseOrderAction extends ActionSupport {
     @Autowired
     private DocStatusDAO docStatusDAO;
 
-    @Autowired
-    private PrDetailDAO prDetailDAO;
-    
-    private String poId;
+    private String prId;
     private String itemsType;
+   
     private String includeSubProducts;
 
-    public String getPoId() {
-        return poId;
+    public String getPrId() {
+        return prId;
     }
 
-    public void setPoId(String poId) {
-        this.poId = poId;
+    public void setPrId(String prId) {
+        this.prId = prId;
     }
 
     public String getItemsType() {
@@ -133,33 +112,11 @@ public class PurchaseOrderAction extends ActionSupport {
         this.includeSubProducts = includeSubProducts;
     }
 
-    private String companyId;
-    private String companyLocation;
-    private String contactId;
     private String description;
-    private String descriptionVendor;
-    private String referenceNo;
-    private String referenceDate;
-    private String poDetailCartJson;
+    private String prDetailCartJson;
     private String status;
     private String reason;
     private String fileId;
-
-    public String getCompanyId() {
-        return companyId;
-    }
-
-    public void setCompanyId(String companyId) {
-        this.companyId = companyId;
-    }
-
-    public String getContactId() {
-        return contactId;
-    }
-
-    public void setContactId(String contactId) {
-        this.contactId = contactId;
-    }
 
     public String getDescription() {
         return description;
@@ -169,41 +126,14 @@ public class PurchaseOrderAction extends ActionSupport {
         this.description = description;
     }
 
-    public String getDescriptionVendor() {
-        return descriptionVendor;
+    public String getPrDetailCartJson() {
+        return prDetailCartJson;
     }
 
-    public void setDescriptionVendor(String descriptionVendor) {
-        this.descriptionVendor = descriptionVendor;
+    public void setPrDetailCartJson(String prDetailCartJson) {
+        this.prDetailCartJson = prDetailCartJson;
     }
 
-    public String getReferenceNo() {
-        return referenceNo;
-    }
-
-    public void setReferenceNo(String referenceNo) {
-        this.referenceNo = referenceNo;
-    }
-
-    public String getReferenceDate() {
-        return referenceDate;
-    }
-
-    public void setReferenceDate(String referenceDate) {
-        this.referenceDate = referenceDate;
-    }
-
-    public String getPoDetailCartJson() {
-        return poDetailCartJson;
-    }
-
-    public void setPoDetailCartJson(String poDetailCartJson) {
-        this.poDetailCartJson = poDetailCartJson;
-    }
-
-    public void setCompanyLocation(String companyLocation) {
-        this.companyLocation = companyLocation;
-    }
     public String getStatus() {
         return status;
     }
@@ -219,7 +149,7 @@ public class PurchaseOrderAction extends ActionSupport {
     public void setReason(String reason) {
         this.reason = reason;
     }
-    
+
     public String getFileId() {
         return fileId;
     }
@@ -228,20 +158,20 @@ public class PurchaseOrderAction extends ActionSupport {
         this.fileId = fileId;
     }
 
-    private String poDetailId;
+    private String prDetailId;
     private String productId;
     private String qty;
     private String unit;
-    private String price;
+    private String refLink;
     private String signUser;
     private String signDate;
-    
-    public String getPoDetailId() {
-        return poDetailId;
+
+    public String getPrDetailId() {
+        return prDetailId;
     }
 
-    public void setPoDetailId(String poDetailId) {
-        this.poDetailId = poDetailId;
+    public void setPrDetailId(String prDetailId) {
+        this.prDetailId = prDetailId;
     }
 
     public String getProductId() {
@@ -268,12 +198,12 @@ public class PurchaseOrderAction extends ActionSupport {
         this.unit = unit;
     }
 
-    public String getPrice() {
-        return price;
+    public String getRefLink() {
+        return refLink;
     }
 
-    public void setPrice(String price) {
-        this.price = price;
+    public void setRefLink(String refLink) {
+        this.refLink = refLink;
     }
 
     public String getSignUser() {
@@ -312,25 +242,25 @@ public class PurchaseOrderAction extends ActionSupport {
         this.filesFileName = filesFileName;
     }
 
-    public String purchaseOrderList() {
+    public String purchaseRequisitionList() {
         try {
             if (onlineUser == null) {
                 return ERROR;
             }
 
-            List<Map<String, Object>> poList = poDAO.findAllPoWithUser();
-            request.setAttribute("poList", poList);
+            List<Map<String, Object>> prList = prDAO.findAllPrWithUser();
+            request.setAttribute("prList", prList);
 
-            // --- Summary (อิง doc_status, group=po) ---
-            List<DocStatus> statuses = docStatusDAO.findByPage("po");
+            // --- Summary (อิง doc_status, page=pr) ---
+            List<DocStatus> statuses = docStatusDAO.findByPage("pr");
 
             // นับจำนวนตาม status_code
             Map<String, Integer> summary = new HashMap<>();
             for (DocStatus ds : statuses) {
                 summary.put(ds.getStatusCode(), 0);
             }
-            for (Map<String, Object> po : poList) {
-                String code = String.valueOf(po.get("status"));
+            for (Map<String, Object> pr : prList) {
+                String code = String.valueOf(pr.get("status"));
                 if (summary.containsKey(code)) {
                     summary.put(code, summary.get(code) + 1);
                 }
@@ -345,10 +275,14 @@ public class PurchaseOrderAction extends ActionSupport {
                 statusColors.put(ds.getStatusCode(), ds.getColor());
             }
 
-            request.setAttribute("poSummary", summary);       // key = status_code -> count
-            request.setAttribute("poStatusNames", statusNames); // key = status_code -> status_name
-            request.setAttribute("poStatusColors", statusColors);
-            request.setAttribute("poSummaryTotal", poList.size());
+            request.setAttribute("prSummary", summary);
+            request.setAttribute("prStatusNames", statusNames);
+            request.setAttribute("prStatusColors", statusColors);
+            request.setAttribute("prSummaryTotal", prList.size());
+
+            //นับ progress ของ pr_detail ---
+            Map<String, Integer[]> prDetailProgress = prDetailDAO.countPrDetailProgressGroupByPr();
+            request.setAttribute("prDetailProgress", prDetailProgress);
 
             return SUCCESS;
         } catch (Exception e) {
@@ -357,30 +291,14 @@ public class PurchaseOrderAction extends ActionSupport {
         }
     }
 
-    // private String mapStatusToLabel(String status) {
-    //     switch (status) {
-    //         case "0": return "Draft";
-    //         case "1": return "In-Progress";
-    //         case "2": return "Pending";
-    //         case "3": return "Return";
-    //         case "4": return "Approved";
-    //         case "5": return "Rejected";
-    //         case "6": return "Cancel";
-    //         default: return null;
-    //     }
-    // }
-    
-    public String purchaseOrderAdd() {
+    public String purchaseRequisitionAdd() {
         try {
             if (onlineUser == null) {
                 return ERROR;
             }
-            
+
             String loginUser = onlineUser.getId();
-            List<Map<String, Object>> companyList = companyDAO.findAll();
-            // log.debug("--- companyList ----- "+ companyList);
-            request.setAttribute("companyList", companyList);
-            
+
             User u = userDAO.findById(loginUser);
 
             String signaturePath = fileAttachmentService.getFileUrl(u.getPathSignature());
@@ -390,7 +308,7 @@ public class PurchaseOrderAction extends ActionSupport {
 
             Date requestDate = new Date();
             request.setAttribute("requestDateTime", requestDate);
-            
+
             return SUCCESS;
 
         } catch (Exception e) {
@@ -398,36 +316,36 @@ public class PurchaseOrderAction extends ActionSupport {
             return ERROR;
         }
     }
-    
-    public String purchaseOrderEdit() {
+
+    public String purchaseRequisitionEdit() {
         try {
             if (onlineUser == null) {
                 return ERROR;
             }
             String logonUser = onlineUser.getId();
-            Po poList = poDAO.findById(poId);
-            // log.debug("--- poList ----- "+ poList);
-            request.setAttribute("poList", poList);
-            
-            if(poList.getUserCreate() != null) {
-                User userCreate = userDAO.findById(poList.getUserCreate());
+            Pr prList = prDAO.findById(prId);
+            // log.debug("--- prList ----- "+ prList);
+            request.setAttribute("prList", prList);
+
+            if(prList.getUserCreate() != null) {
+                User userCreate = userDAO.findById(prList.getUserCreate());
                 // log.debug("--- userCreate ----- "+ userCreate);
                 request.setAttribute("userCreate", userCreate);
             }
-            
-            if (Arrays.asList("4", "5", "6", "7").contains(poList.getStatus())) {
-                String userUpdateId = poList.getUserUpdate();
+
+            if (Arrays.asList("4", "5", "6", "7").contains(prList.getStatus())) {
+                String userUpdateId = prList.getUserUpdate();
 
                 if (userUpdateId != null && !userUpdateId.trim().isEmpty()) {
                     User userUpdate = userDAO.findById(userUpdateId);
                     request.setAttribute("userUpdate", userUpdate);
                 }
             }
-            
+
             //--- Get SignUser ---
             User userSignUser = null;
-            if (poList.getSignUser() != null) {
-                userSignUser = userDAO.findById(poList.getSignUser());
+            if (prList.getSignUser() != null) {
+                userSignUser = userDAO.findById(prList.getSignUser());
             } else {
                 userSignUser = userDAO.findById(logonUser);
             }
@@ -436,29 +354,26 @@ public class PurchaseOrderAction extends ActionSupport {
             request.setAttribute("imgPathSignature", signaturePath);
 
             //--- Get ApproveUser signature ---
-            if (poList.getApproveUser() != null && !poList.getApproveUser().trim().isEmpty()) {
-                User userApproveUser = userDAO.findById(poList.getApproveUser());
+            if (prList.getApproveUser() != null && !prList.getApproveUser().trim().isEmpty()) {
+                User userApproveUser = userDAO.findById(prList.getApproveUser());
                 request.setAttribute("userApproveUser", userApproveUser);
 
                 String imgPathApproveSignature = fileAttachmentService.getFileUrl(userApproveUser != null ? userApproveUser.getPathSignature() : null);
                 request.setAttribute("imgPathApproveSignature", imgPathApproveSignature);
             }
 
-            List<Map<String, Object>> companyList = companyDAO.findAll();
-            request.setAttribute("companyList", companyList);
-            
-            List<Map<String, Object>> poDetailList = poDetailDAO.findPoDetailByPoId(String.valueOf(poList.getPoId()));
-            // log.debug("--- poDetailList ----- "+ poDetailList);
-            request.setAttribute("poDetailList", poDetailList);
-            
-            List<Map<String, Object>> poParentList = new java.util.ArrayList<>();
-            if (poDetailList != null) {
-                for (Map<String, Object> detail : poDetailList) {
-                    Object poDetailIdObj = detail.get("po_detail_id");
-                    if (poDetailIdObj != null) {
-                        List<Map<String, Object>> parents = poParentDAO.findPoParentByPoDetailId(String.valueOf(poDetailIdObj));
+            List<Map<String, Object>> prDetailList = prDetailDAO.findPrDetailByPrId(String.valueOf(prList.getPrId()));
+            // log.debug("--- prDetailList ----- "+ prDetailList);
+            request.setAttribute("prDetailList", prDetailList);
+
+            List<Map<String, Object>> prParentList = new java.util.ArrayList<>();
+            if (prDetailList != null) {
+                for (Map<String, Object> detail : prDetailList) {
+                    Object prDetailIdObj = detail.get("pr_detail_id");
+                    if (prDetailIdObj != null) {
+                        List<Map<String, Object>> parents = prParentDAO.findPrParentByPrDetailId(String.valueOf(prDetailIdObj));
                         if (parents != null) {
-                            poParentList.addAll(parents);
+                            prParentList.addAll(parents);
                         }
                     }
 
@@ -477,33 +392,33 @@ public class PurchaseOrderAction extends ActionSupport {
                         UnitOfMeasure uom = unitOfMeasureDAO.findById(unitId);
                         if (uom != null) {
                             detail.put("unit_name", uom.getUnitName());
-                        } 
-                    } 
+                        }
+                    }
                 }
             }
-            // log.debug("--- poParentList ----- " + poParentList);
-            request.setAttribute("poParentList", poParentList);
+            // log.debug("--- prParentList ----- " + prParentList);
+            request.setAttribute("prParentList", prParentList);
 
             Map<String, String> statusNames = new HashMap<>();
             Map<String, String> statusColors = new HashMap<>();
 
-            for (DocStatus ds : docStatusDAO.findByPage("po")) {
+            for (DocStatus ds : docStatusDAO.findByPage("pr")) {
                 statusNames.put(ds.getStatusCode(), ds.getStatusName());
                 statusColors.put(ds.getStatusCode(), ds.getColor());
             }
-            request.setAttribute("poStatusNames", statusNames);
-            request.setAttribute("poStatusColors", statusColors);
-            
-            List<FileUpload> attachmentList = fileAttachmentService.listAttachments("po", String.valueOf(poList.getPoId()));
-            request.setAttribute("attachmentList", attachmentList);
-            
+            request.setAttribute("prStatusNames", statusNames);
+            request.setAttribute("prStatusColors", statusColors);
 
-            User u = userDAO.findById(logonUser);     
+            List<FileUpload> attachmentList = fileAttachmentService.listAttachments("pr", String.valueOf(prList.getPrId()));
+            request.setAttribute("attachmentList", attachmentList);
+
+
+            User u = userDAO.findById(logonUser);
             request.setAttribute("loginUser", u);
-            
+
             Date requestDate = new Date();
             request.setAttribute("requestDateTime", requestDate);
-            
+
             return SUCCESS;
 
         } catch (Exception e) {
@@ -512,15 +427,15 @@ public class PurchaseOrderAction extends ActionSupport {
         }
     }
 
-    // --- generate poId ---
-    private String generateNewPoId() throws Exception {
+    // --- generate prId ---
+    private String generateNewPrId() throws Exception {
         String year = String.valueOf(java.time.Year.now().getValue());
-        String prefix = "PO" + year;
-        String maxPoId = poDAO.findMaxPoIdByYear(prefix + "%");
+        String prefix = "PR" + year;
+        String maxPrId = prDAO.findMaxPrIdByYear(prefix + "%");
 
         long nextSeq = 1L;
-        if (maxPoId != null && maxPoId.length() >= prefix.length() + 8) {
-            String seqPart = maxPoId.substring(prefix.length());
+        if (maxPrId != null && maxPrId.length() >= prefix.length() + 8) {
+            String seqPart = maxPrId.substring(prefix.length());
             try {
                 nextSeq = Long.parseLong(seqPart) + 1;
             } catch (NumberFormatException nfe) {
@@ -538,7 +453,7 @@ public class PurchaseOrderAction extends ActionSupport {
             return 0d;
         }
     }
-    
+
     private Map<String, Object> jsonObjectToMap(JSONObject obj) {
         Map<String, Object> map = new HashMap<>();
         java.util.Iterator<String> keys = obj.keys();
@@ -549,7 +464,7 @@ public class PurchaseOrderAction extends ActionSupport {
         return map;
     }
 
-    public String savePo() {
+    public String savePr() {
         List<String> debugLog = new ArrayList<>();
         try {
             if (onlineUser == null) {
@@ -558,12 +473,12 @@ public class PurchaseOrderAction extends ActionSupport {
             }
             String loginUserId = onlineUser.getId();
 
-            String newPoId = generateNewPoId();
-            debugLog.add("newPoId = " + newPoId);
+            String newPrId = generateNewPrId();
+            debugLog.add("newPrId = " + newPrId);
 
             List<Map<String, Object>> cartItems = new ArrayList<>();
-            if (poDetailCartJson != null && !poDetailCartJson.trim().isEmpty()) {
-                JSONArray jsonArray = new JSONArray(poDetailCartJson);
+            if (prDetailCartJson != null && !prDetailCartJson.trim().isEmpty()) {
+                JSONArray jsonArray = new JSONArray(prDetailCartJson);
                 for (int i = 0; i < jsonArray.length(); i++) {
                     JSONObject obj = jsonArray.getJSONObject(i);
                     cartItems.add(jsonObjectToMap(obj));
@@ -571,66 +486,43 @@ public class PurchaseOrderAction extends ActionSupport {
             }
             debugLog.add("cartItems size = " + cartItems.size());
 
-            double grandTotal = 0d;
-            for (Map<String, Object> item : cartItems) {
-                grandTotal += toDouble(item.get("qty")) * toDouble(item.get("price"));
-            }
-
             // --- Header ---
-            Po po = new Po();
-            po.setPoId(newPoId);
-            po.setRefNo(referenceNo);
+            Pr pr = new Pr();
+            pr.setPrId(newPrId);
 
-            if (referenceDate != null && !referenceDate.trim().isEmpty()) {
-                    java.time.LocalDate ld = java.time.LocalDate.parse(referenceDate);
-                    po.setRefDate(java.sql.Timestamp.valueOf(ld.atStartOfDay()));
-                
-            }
-            
             if(signDate != null && !signDate.trim().isEmpty()) {
-                po.setSignDate(java.sql.Timestamp.valueOf(signDate));
-                po.setSignUser(loginUserId);
+                pr.setSignDate(java.sql.Timestamp.valueOf(signDate));
+                pr.setSignUser(loginUserId);
             }
-            
-            if (companyId != null && !companyId.trim().isEmpty()) po.setCompanyId(Long.parseLong(companyId));
-            if (companyLocation != null && !companyLocation.trim().isEmpty()) po.setCompanyLocation(Long.parseLong(companyLocation));
-            if (contactId != null && !contactId.trim().isEmpty()) po.setContactId(Long.parseLong(contactId));
 
-            po.setDescription(description);
-            po.setDescriptionVendor(descriptionVendor);
-            po.setUserCreate(loginUserId);
-            po.setTimeCreate(DateUtil.getCurrentTime());
-            po.setPoTotal(grandTotal);
-            String poStatus = (status != null && !status.trim().isEmpty()) ? status : "1";
-            po.setStatus(poStatus); // 1 = Draft
+            pr.setDescription(description);
+            pr.setUserCreate(loginUserId);
+            pr.setTimeCreate(DateUtil.getCurrentTime());
+            String prStatus = (status != null && !status.trim().isEmpty()) ? status : "1";
+            pr.setStatus(prStatus); // 1 = Draft
 
-            poDAO.save(po);
+            prDAO.save(pr);
 
          // --- Detail ---
-            Long lastDetailId = poDetailDAO.getMaxId();
-            Long lastParentId = poParentDAO.getMaxId();
+            Long lastDetailId = prDetailDAO.getMaxId();
+            Long lastParentId = prParentDAO.getMaxId();
 
             long nextDetailSeq = lastDetailId + 1;
             long nextParentSeq = lastParentId + 1;
 
             int seq = 0;
-            List<String> pulledPrDetailIds = new ArrayList<>();
             for (Map<String, Object> item : cartItems) {
                 double qty = toDouble(item.get("qty"));
-                double price = toDouble(item.get("price"));
 
-                String poDetailId = String.valueOf(nextDetailSeq + seq);
-                String poParentIdVal = String.valueOf(nextParentSeq + seq);
+                String prDetailId = String.valueOf(nextDetailSeq + seq);
+                String prParentIdVal = String.valueOf(nextParentSeq + seq);
 
                 String productId = item.get("productId") != null ? String.valueOf(item.get("productId")) : null;
                 String parentIdVal = item.get("parentId") != null ? String.valueOf(item.get("parentId")) : "0";
                 String unitVal = item.get("unit") != null ? String.valueOf(item.get("unit")) : null;
                 String descVal = item.get("description") != null ? String.valueOf(item.get("description")) : null;
-                String prIdVal = item.get("prId") != null ? String.valueOf(item.get("prId")) : null;
-                String prDetailIdVal = item.get("prDetailId") != null ? String.valueOf(item.get("prDetailId")) : null;
-                if (prDetailIdVal != null && !prDetailIdVal.trim().isEmpty()) {
-                    pulledPrDetailIds.add(prDetailIdVal);
-                }    
+                String refLinkVal = item.get("refLink") != null ? String.valueOf(item.get("refLink")) : null;
+                String mrIdVal = item.get("mrId") != null ? String.valueOf(item.get("mrId")) : null;
                 String dbProductId = productId;
                 String dbParentId = null;
                 String dbItemsType = null;
@@ -641,7 +533,7 @@ public class PurchaseOrderAction extends ActionSupport {
                         dbItemsType = "1";
                     } else if ("consumables".equals(itemsTypeVal)) {
                         dbItemsType = "2";
-                        
+
                     } else if ("accessory".equals(itemsTypeVal)) {
                         dbItemsType = "3";
                     }else if ("office".equals(itemsTypeVal)) {
@@ -652,38 +544,37 @@ public class PurchaseOrderAction extends ActionSupport {
                     dbProductId = p.getProductId().toString();
                     dbParentId = String.valueOf(p.getParentProductId());
                 }
-                
+
 //                String itemsTypeVal = item.get("items_type") != null ? String.valueOf(item.get("items_type")) : null;
-                
-                // --- PoDetail ---
-                PoDetail detail = new PoDetail();
-                detail.setPoDetailId(poDetailId);
-                detail.setPoId(newPoId);
+
+                // --- PrDetail ---
+                PrDetail detail = new PrDetail();
+                detail.setPrDetailId(prDetailId);
+                detail.setPrId(newPrId);
                 detail.setProductId(productId);
                 detail.setProductId(dbProductId);
                 detail.setParentId(dbParentId);
-                
+
                 detail.setUnit(unitVal);
                 detail.setAmountTotal(qty);
-                detail.setUnitPrice(String.valueOf(price));
-                detail.setPriceTotal(qty * price);
                 detail.setDescription(descVal);
+                detail.setRefLink(refLinkVal);
                 detail.setUserCreate(loginUserId);
                 detail.setTimeCreate(DateUtil.getCurrentTime());
                 detail.setUserUpdate(loginUserId);
                 detail.setTimeUpdate(DateUtil.getCurrentTime());
 
-                poDetailDAO.save(detail);
+                prDetailDAO.save(detail);
 
-                // --- PoParent ---
-                PoParent parent = new PoParent();
-                parent.setPoParentId(poParentIdVal);
-                parent.setPoDetailId(poDetailId);
-                parent.setPrId(prIdVal);
-                
+                // --- PrParent ---
+                PrParent parent = new PrParent();
+                parent.setPrParentId(prParentIdVal);
+                parent.setPrDetailId(prDetailId);
+                parent.setMrId(mrIdVal);
+
                 parent.setProductId(dbProductId);
                 parent.setParentId(dbParentId);
-                
+
                 parent.setAmount(qty);
                 parent.setUnit(unitVal);
                 parent.setDescription(descVal);
@@ -692,23 +583,20 @@ public class PurchaseOrderAction extends ActionSupport {
                 parent.setUserUpdate(loginUserId);
                 parent.setTimeUpdate(DateUtil.getCurrentTime());
 
-                poParentDAO.save(parent);
+                prParentDAO.save(parent);
 
                 seq++;
             }
-            if (!pulledPrDetailIds.isEmpty()) {
-                prDetailDAO.markPulled(pulledPrDetailIds);
-            }
 
-            // --- Attach files (page='po', pageId=newPoId) ---
-            log.debug("files = " + (files == null ? "null" : files.size()) 
+            // --- Attach files (page='pr', pageId= newPrId) ---
+            log.debug("files = " + (files == null ? "null" : files.size())
                 + ", filesFileName = " + (filesFileName == null ? "null" : filesFileName));
 
-            fileAttachmentService.attach(files, filesFileName, "po", newPoId, loginUserId,
+            fileAttachmentService.attach(files, filesFileName, "pr", newPrId, loginUserId,
                 request.getServletContext().getRealPath("/"));
 
             Map<String, Object> result = new HashMap<>();
-            result.put("poId", newPoId);
+            result.put("prId", newPrId);
             writeJson(result, debugLog);
             return NONE;
 
@@ -719,9 +607,9 @@ public class PurchaseOrderAction extends ActionSupport {
             return NONE;
         }
     }
-    
-    
-    public String updatePo() {
+
+
+    public String updatePr() {
         List<String> debugLog = new ArrayList<>();
 
         try {
@@ -730,8 +618,8 @@ public class PurchaseOrderAction extends ActionSupport {
                 return NONE;
             }
 
-            if (poId == null || poId.trim().isEmpty()) {
-                debugLog.add("poId missing");
+            if (prId == null || prId.trim().isEmpty()) {
+                debugLog.add("prId missing");
                 writeJson(null, debugLog);
                 return NONE;
             }
@@ -739,38 +627,26 @@ public class PurchaseOrderAction extends ActionSupport {
             String loginUserId = onlineUser.getId();
 
             // --- Header ---
-            Po po = poDAO.findById(poId);
+            Pr pr = prDAO.findById(prId);
 
-            if (po == null) {
-                debugLog.add("PO not found : " + poId);
+            if (pr == null) {
+                debugLog.add("PR not found : " + prId);
                 writeJson(null, debugLog);
                 return NONE;
             }
 
-            po.setRefNo(referenceNo);
-            
-            if (referenceDate != null && !referenceDate.trim().isEmpty()) {
-                LocalDate ld = LocalDate.parse(referenceDate);
-                po.setRefDate(java.sql.Timestamp.valueOf(ld.atStartOfDay()));
-            }
-
-            if (companyId != null && !companyId.trim().isEmpty()) po.setCompanyId(Long.parseLong(companyId));
-            if (companyLocation != null && !companyLocation.trim().isEmpty()) po.setCompanyLocation(Long.parseLong(companyLocation));
-            if (contactId != null && !contactId.trim().isEmpty()) po.setContactId(Long.parseLong(contactId));
-
-            po.setDescription(description);
-            if (descriptionVendor != null) po.setDescriptionVendor(descriptionVendor);
-            po.setUserUpdate(loginUserId);
-            po.setTimeUpdate(DateUtil.getCurrentTime());
+            pr.setDescription(description);
+            pr.setUserUpdate(loginUserId);
+            pr.setTimeUpdate(DateUtil.getCurrentTime());
 
             if (status != null && !status.trim().isEmpty()) {
-                po.setStatus(status);
+                pr.setStatus(status);
             }
 
             // --- Detail ---
             List<Map<String, Object>> cartItems = new ArrayList<>();
-            if (poDetailCartJson != null && !poDetailCartJson.trim().isEmpty()) {
-                JSONArray jsonArray = new JSONArray(poDetailCartJson);
+            if (prDetailCartJson != null && !prDetailCartJson.trim().isEmpty()) {
+                JSONArray jsonArray = new JSONArray(prDetailCartJson);
                 for (int i = 0; i < jsonArray.length(); i++) {
                     JSONObject obj = jsonArray.getJSONObject(i);
                     cartItems.add(jsonObjectToMap(obj));
@@ -778,33 +654,28 @@ public class PurchaseOrderAction extends ActionSupport {
             }
             debugLog.add("new cartItems size = " + cartItems.size());
 
-            Long lastDetailId = poDetailDAO.getMaxId();
-            Long lastParentId = poParentDAO.getMaxId();
+            Long lastDetailId = prDetailDAO.getMaxId();
+            Long lastParentId = prParentDAO.getMaxId();
             long nextDetailSeq = lastDetailId + 1;
             long nextParentSeq = lastParentId + 1;
 
             int seq = 0;
-            List<String> pulledPrDetailIds = new ArrayList<>();
             for (Map<String, Object> item : cartItems) {
                 double qty = toDouble(item.get("qty"));
-                double price = toDouble(item.get("price"));
 
-                String poDetailId = String.valueOf(nextDetailSeq + seq);
-                String poParentIdVal = String.valueOf(nextParentSeq + seq);
+                String prDetailId = String.valueOf(nextDetailSeq + seq);
+                String prParentIdVal = String.valueOf(nextParentSeq + seq);
 
                 String productId = item.get("productId") != null ? String.valueOf(item.get("productId")) : null;
                 String unitVal = item.get("unit") != null ? String.valueOf(item.get("unit")) : null;
                 String descVal = item.get("description") != null ? String.valueOf(item.get("description")) : null;
-                String prIdVal = item.get("prId") != null ? String.valueOf(item.get("prId")) : null;
-                String prDetailIdVal = item.get("prDetailId") != null ? String.valueOf(item.get("prDetailId")) : null;
-                if (prDetailIdVal != null && !prDetailIdVal.trim().isEmpty()) {
-                    pulledPrDetailIds.add(prDetailIdVal);
-                } 
+                String refLinkVal = item.get("refLink") != null ? String.valueOf(item.get("refLink")) : null;
+                String mrIdVal = item.get("mrId") != null ? String.valueOf(item.get("mrId")) : null;
                 String dbProductId = productId;
                 String dbParentId = null;
                 String dbItemsType = null;
                 String itemsTypeVal = String.valueOf(item.get("itemsType"));
-                
+
                 if(itemsTypeVal != null){
                     if ("equipment".equals(itemsTypeVal)) {
                         dbItemsType = "1";
@@ -815,7 +686,7 @@ public class PurchaseOrderAction extends ActionSupport {
                     }else if ("office".equals(itemsTypeVal)) {
                         dbItemsType = "4";
                     }
-                    
+
                     Product p = productDAO.findById(Integer.valueOf(productId));
                     dbProductId = p.getProductId().toString();
                     dbParentId = String.valueOf(p.getParentProductId());
@@ -837,59 +708,51 @@ public class PurchaseOrderAction extends ActionSupport {
                 //     dbParentId = String.valueOf(p.getParentProductId());
                 // }
 
-                // --- PoDetail ---
-                PoDetail detail = new PoDetail();
-                detail.setPoDetailId(poDetailId);
-                detail.setPoId(poId);
+                // --- PrDetail ---
+                PrDetail detail = new PrDetail();
+                detail.setPrDetailId(prDetailId);
+                detail.setPrId(prId);
                 detail.setProductId(dbProductId);
                 detail.setParentId(dbParentId);
                 detail.setUnit(unitVal);
                 detail.setAmountTotal(qty);
-                detail.setUnitPrice(String.valueOf(price));
-                detail.setPriceTotal(qty * price);
                 detail.setDescription(descVal);
+                detail.setRefLink(refLinkVal);
                 detail.setUserCreate(loginUserId);
                 detail.setTimeCreate(DateUtil.getCurrentTime());
                 detail.setUserUpdate(loginUserId);
                 detail.setTimeUpdate(DateUtil.getCurrentTime());
 
-                poDetailDAO.save(detail);
+                prDetailDAO.save(detail);
 
-                // --- PoParent ---
-                PoParent parent = new PoParent();
-                parent.setPoParentId(poParentIdVal);
-                parent.setPoDetailId(poDetailId);
-                parent.setPrId(prIdVal);
+                // --- PrParent ---
+                PrParent parent = new PrParent();
+                parent.setPrParentId(prParentIdVal);
+                parent.setPrDetailId(prDetailId);
+                parent.setMrId(mrIdVal);
                 parent.setProductId(dbProductId);
                 parent.setParentId(dbParentId);
-                parent.setAmount(qty); 
+                parent.setAmount(qty);
                 parent.setUnit(unitVal);
                 parent.setDescription(descVal);
                 parent.setUserCreate(loginUserId);
                 parent.setTimeCreate(DateUtil.getCurrentTime());
                 parent.setUserUpdate(loginUserId);
                 parent.setTimeUpdate(DateUtil.getCurrentTime());
-                
 
-                poParentDAO.save(parent);
+
+                prParentDAO.save(parent);
                 seq++;
             }
-            if (!pulledPrDetailIds.isEmpty()) {
-                prDetailDAO.markPulled(pulledPrDetailIds);
-            }
 
-            // --- Attach files (page='po', pageId=poId) ---
+            // --- Attach files (page='pr', pageId=prId) ---
             String serverRealPath = ServletActionContext.getServletContext().getRealPath("/");
-            fileAttachmentService.attach(files, filesFileName, "po", poId, loginUserId, serverRealPath);
+            fileAttachmentService.attach(files, filesFileName, "pr", prId, loginUserId, serverRealPath);
 
-            // รวมยอดจาก po_detail จริงใน DB (รายการเดิม + รายการใหม่ที่เพิ่งเพิ่ม) แทนการคำนวณจาก cart
-            double total = poDetailDAO.getTotalByPoId(poId);
-            po.setPoTotal(total);
-
-            poDAO.update(po);
+            prDAO.update(pr);
 
             Map<String, Object> result = new HashMap<>();
-            result.put("poId", poId);
+            result.put("prId", prId);
             writeJson(result, debugLog);
             return NONE;
 
@@ -901,45 +764,36 @@ public class PurchaseOrderAction extends ActionSupport {
         }
     }
 
-    public String updatePoDetail() {
+    public String updatePrDetail() {
         List<String> debugLog = new ArrayList<>();
         try {
             if (onlineUser == null) {
                 writeJsonError();
                 return NONE;
             }
-            if (poDetailId == null || poDetailId.trim().isEmpty()) {
+            if (prDetailId == null || prDetailId.trim().isEmpty()) {
                 writeJson(null, debugLog);
                 return NONE;
             }
 
-            PoDetail detail = poDetailDAO.findById(poDetailId);
+            PrDetail detail = prDetailDAO.findById(prDetailId);
             if (detail == null) {
-                debugLog.add("poDetail not found: " + poDetailId);
+                debugLog.add("prDetail not found: " + prDetailId);
                 writeJson(null, debugLog);
                 return NONE;
             }
 
             double itemQty = qty != null ? toDouble(qty) : 0d;
-            double itemPrice = price != null ? toDouble(price) : 0d;
 
             detail.setProductId(productId);
             detail.setUnit(unit);
             detail.setAmountTotal(itemQty);
-            detail.setUnitPrice(String.valueOf(itemPrice));
-            detail.setPriceTotal(itemQty * itemPrice);
             detail.setDescription(description);
+            detail.setRefLink(refLink);
             detail.setUserUpdate(onlineUser.getId());
             detail.setTimeUpdate(DateUtil.getCurrentTime());
 
-            poDetailDAO.update(detail);
-
-            Po po = poDAO.findById(detail.getPoId());
-            if (po != null) {
-                double total = poDetailDAO.getTotalByPoId(detail.getPoId());
-                po.setPoTotal(total);
-                poDAO.update(po);
-            }
+            prDetailDAO.update(detail);
 
             Map<String, Object> result = new HashMap<>();
             result.put("success", true);
@@ -954,41 +808,20 @@ public class PurchaseOrderAction extends ActionSupport {
         }
     }
 
-    public String deletePoDetail() {
+    public String deletePrDetail() {
         List<String> debugLog = new ArrayList<>();
         try {
             if (onlineUser == null) {
                 writeJsonError();
                 return NONE;
             }
-            if (poDetailId == null || poDetailId.trim().isEmpty()) {
+            if (prDetailId == null || prDetailId.trim().isEmpty()) {
                 writeJson(null, debugLog);
                 return NONE;
             }
 
-            List<Map<String, Object>> parents = poParentDAO.findPoParentByPoDetailId(poDetailId);
-            if (parents != null) {
-                for (Map<String, Object> p : parents) {
-                    Object prIdObj = p.get("pr_id");
-                    Object productIdObj = p.get("product_id");
-                    if (prIdObj != null && productIdObj != null) {
-                        prDetailDAO.revertPulledStatusByPrProduct(String.valueOf(prIdObj), String.valueOf(productIdObj));
-                    }
-                }
-            }
-
-
-            poParentDAO.deleteByPoDetailId(poDetailId);
-            poDetailDAO.deleteByPoIdAndPoDetailId(poDetailId, poId);
-
-            if (poId != null && !poId.trim().isEmpty()) {
-                Po po = poDAO.findById(poId);
-                if (po != null) {
-                    double total = poDetailDAO.getTotalByPoId(poId);
-                    po.setPoTotal(total);
-                    poDAO.update(po);
-                }
-            }
+            prParentDAO.deleteByPrDetailId(prDetailId);
+            prDetailDAO.deleteByPrIdAndPrDetailId(prDetailId, prId);
 
             Map<String, Object> result = new HashMap<>();
             result.put("success", true);
@@ -1003,7 +836,7 @@ public class PurchaseOrderAction extends ActionSupport {
         }
     }
 
-    public String updateStatusPo() {
+    public String updateStatusPr() {
         List<String> debugLog = new ArrayList<>();
         try {
             if (onlineUser == null) {
@@ -1027,148 +860,24 @@ public class PurchaseOrderAction extends ActionSupport {
 
             String loginUserId = onlineUser.getId();
 
-            Po po = poDAO.findById(poId);
-            po.setStatus(status);
+            Pr pr = prDAO.findById(prId);
+            pr.setStatus(status);
             if ("1".equals(status)) {
-                po.setReason(null);
+                pr.setReason(null);
             } else if (reason != null) {
-                po.setReason(reason.trim());
+                pr.setReason(reason.trim());
             }
             if ("3".equals(status)) {
-                po.setApproveUser(loginUserId);
-                po.setApproveDate(DateUtil.getCurrentTime());
+                pr.setApproveUser(loginUserId);
+                pr.setApproveDate(DateUtil.getCurrentTime());
             }
-            po.setUserUpdate(loginUserId);
-            po.setTimeUpdate(DateUtil.getCurrentTime());
+            pr.setUserUpdate(loginUserId);
+            pr.setTimeUpdate(DateUtil.getCurrentTime());
 
-            poDAO.update(po);
+            prDAO.update(pr);
 
             Map<String, Object> result = new HashMap<>();
-            result.put("poId", poId);
-            writeJson(result, debugLog);
-            return NONE;
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            debugLog.add("EXCEPTION: " + e.toString());
-            writeJson(null, debugLog);
-            return NONE;
-        }
-    }
-    
-    public String getCompanyProfile() {
-        List<String> debugLog = new java.util.ArrayList<>();
-        try {
-            if (onlineUser == null) {
-                writeJsonError();
-                return NONE;
-            }
-            String companyIdStr = request.getParameter("companyId");
-            debugLog.add("companyIdStr = " + companyIdStr);
-
-            Long companyId = Long.parseLong(companyIdStr);
-
-            Map<String, Object> profile = companyDAO.findCompanyProfileById(companyId);
-            debugLog.add("profile = " + profile);
-
-            if (profile == null) {
-                writeJson(null, debugLog);
-                return NONE;
-            }
-
-            Map<String, Object> result = new HashMap<>();
-            result.put("taxId", profile.get("tax_number"));
-            result.put("locationList", profile.get("addressList"));
-
-            // log.debug("getCompanyProfile result: " + result);
-
-            writeJson(result, debugLog);
-            return NONE;
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            debugLog.add("EXCEPTION: " + e.toString());
-            writeJson(null, debugLog);
-            return NONE;
-        }
-    }
-    
-    public String getItemsCatalog() {
-        List<String> debugLog = new ArrayList<>();
-
-        try {
-            if (onlineUser == null) {
-                writeJsonError();
-                return NONE;
-            }
-
-            if (itemsType != null) {
-                List<Map<String, Object>> productList = new ArrayList<>();
-                String dbItemsType = null;
-                if ("equipment".equals(itemsType)) {
-                    dbItemsType = "1";
-                } else if ("consumables".equals(itemsType)) {
-                    dbItemsType = "2";
-                } else if ("accessory".equals(itemsType)) {
-                    dbItemsType = "3";
-                } else if ("office".equals(itemsType)) {
-                    dbItemsType = "4";
-                }
-
-                if (dbItemsType != null) {
-                    boolean withSubProducts = "true".equals(includeSubProducts);
-                    List<Map<String, Object>> itemCatalog = withSubProducts
-                            ? productDAO.findByItemsTypeIncludingSubProducts(dbItemsType)
-                            : productDAO.findByItemsType(dbItemsType);
-
-                    for (Map<String, Object> p : itemCatalog) {
-                        Map<String, Object> item = new HashMap<>();
-                        item.put("id", p.get("product_id"));
-                        item.put("name", p.get("product_name"));
-                        productList.add(item);
-                    }
-                }
-
-                Map<String, Object> data = new HashMap<>();
-                data.put("productList", productList);
-
-                writeJson(data, debugLog);
-            }
-
-            return NONE;
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            debugLog.add("EXCEPTION: " + e.toString());
-            writeJson(null, debugLog);
-            return NONE;
-        }
-    }
-
-    public String getCompanyLocation() {
-        List<String> debugLog = new java.util.ArrayList<>();
-        try {
-            if (onlineUser == null) {
-                writeJsonError();
-                return NONE;
-            }
-
-            String addressIdStr = request.getParameter("addressId");
-            debugLog.add("addressIdStr = " + addressIdStr);
-
-            Long addressId = Long.parseLong(addressIdStr);
-
-            CompanyAddress address = companyAddressDAO.findById(addressId);
-            debugLog.add("address = " + address);
-
-            // แก้ให้ผูกกับ address ไม่ใช่ company ทั้งก้อน
-            List<Map<String, Object>> contactList = companyContactDAO.findByAddressId(addressId);
-            debugLog.add("contactList size = " + (contactList != null ? contactList.size() : 0));
-
-            Map<String, Object> result = new HashMap<>();
-            result.put("address", address);
-            result.put("contactList", contactList);
-
+            result.put("prId", prId);
             writeJson(result, debugLog);
             return NONE;
 
@@ -1180,35 +889,6 @@ public class PurchaseOrderAction extends ActionSupport {
         }
     }
 
-    public String getCompanyContact() {
-        List<String> debugLog = new java.util.ArrayList<>();
-        try {
-            if (onlineUser == null) {
-                writeJsonError();
-                return NONE;
-            }
-
-            String contactIdStr = request.getParameter("contactId");
-            debugLog.add("contactIdStr = " + contactIdStr);
-
-            Long contactId = Long.parseLong(contactIdStr);
-
-            CompanyContact contact = companyContactDAO.findById(contactId);
-            debugLog.add("contact = " + contact);
-
-//            log.debug("getCompanyContact result: " + contact);
-
-            writeJson(contact, debugLog);
-            return NONE;
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            debugLog.add("EXCEPTION: " + e.toString());
-            writeJson(null, debugLog);
-            return NONE;
-        }
-    }
-    
     // --- helper เขียน JSON ---
     private void writeJson(Object data) {
         writeJson(data, null);
@@ -1241,39 +921,20 @@ public class PurchaseOrderAction extends ActionSupport {
             e.printStackTrace();
         }
     }
-    
-    public String poPerformDelete() {
+
+    public String prPerformDelete() {
         try {
-            if (onlineUser == null || poId == null || poId.trim().isEmpty()) {
+            if (onlineUser == null || prId == null || prId.trim().isEmpty()) {
                 return ERROR;
             }
             String loginUserId = onlineUser.getId();
-            Po po = poDAO.findById(poId);
-            if (po != null) {
-                List<Map<String, Object>> poDetailList = poDetailDAO.findPoDetailByPoId(poId);
-                if (poDetailList != null) {
-                    for (Map<String, Object> d : poDetailList) {
-                        Object poDetailIdObj = d.get("po_detail_id");
-                        if (poDetailIdObj != null) {
-                            List<Map<String, Object>> parents = poParentDAO.findPoParentByPoDetailId(String.valueOf(poDetailIdObj));
-                            if (parents != null) {
-                                for (Map<String, Object> p : parents) {
-                                    Object prIdObj = p.get("pr_id");
-                                    Object productIdObj = p.get("product_id");
-                                    if (prIdObj != null && productIdObj != null) {
-                                        prDetailDAO.revertPulledStatusByPrProduct(String.valueOf(prIdObj), String.valueOf(productIdObj));
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
+            Pr pr = prDAO.findById(prId);
+            if (pr != null) {
+                pr.setStatus("6");
+                pr.setUserUpdate(loginUserId);
+                pr.setTimeUpdate(DateUtil.getCurrentTime());
 
-                po.setStatus("6");
-                po.setUserUpdate(loginUserId);
-                po.setTimeUpdate(DateUtil.getCurrentTime());
-
-                poDAO.update(po);
+                prDAO.update(pr);
             }
 
             return SUCCESS;
@@ -1284,31 +945,31 @@ public class PurchaseOrderAction extends ActionSupport {
         }
     }
 
-    public String confirmPoSign() {
+    public String confirmPrSign() {
         List<String> debugLog = new ArrayList<>();
         try {
             if (onlineUser == null) {
                 writeJsonError();
                 return NONE;
             }
-            if (poId == null || poId.trim().isEmpty()) {
-                debugLog.add("poId missing");
+            if (prId == null || prId.trim().isEmpty()) {
+                debugLog.add("prId missing");
                 writeJson(null, debugLog);
                 return NONE;
             }
 
-            Po po = poDAO.findById(poId);
-            if (po == null) {
-                debugLog.add("PO not found: " + poId);
+            Pr pr = prDAO.findById(prId);
+            if (pr == null) {
+                debugLog.add("PR not found: " + prId);
                 writeJson(null, debugLog);
                 return NONE;
             }
 
             // กันกดซ้ำ / กันแก้ทับของเดิม
-            if (po.getSignDate() != null) {
+            if (pr.getSignDate() != null) {
                 Map<String, Object> result = new HashMap<>();
                 result.put("success", false);
-                result.put("message", "PO นี้มีการลงชื่อผู้ขอเบิกแล้ว");
+                result.put("message", "PR นี้มีการลงชื่อผู้ขอเบิกแล้ว");
                 writeJson(result, debugLog);
                 return NONE;
             }
@@ -1316,9 +977,9 @@ public class PurchaseOrderAction extends ActionSupport {
             String loginUserId = onlineUser.getId();
             java.sql.Timestamp now = DateUtil.getCurrentTime();
 
-            po.setSignUser(loginUserId);
-            po.setSignDate(now);
-            poDAO.update(po);
+            pr.setSignUser(loginUserId);
+            pr.setSignDate(now);
+            prDAO.update(pr);
 
             String displayName = (onlineUser.getNameEN() != null && !onlineUser.getNameEN().trim().isEmpty())
                     ? onlineUser.getNameEN() : onlineUser.getName();
@@ -1341,42 +1002,7 @@ public class PurchaseOrderAction extends ActionSupport {
         }
     }
 
-    public String getUnitOfMeasure() {
-        List<String> debugLog = new ArrayList<>();
-        try {
-            if (onlineUser == null) {
-                writeJsonError();
-                return NONE;
-            }
-
-            List<Map<String, Object>> unitList = new ArrayList<>();
-
-            if (productId != null && !productId.trim().isEmpty()) {
-                List<UnitOfMeasure> units = unitOfMeasureDAO.findByProductId(productId);
-                for (UnitOfMeasure u : units) {
-                    Map<String, Object> item = new HashMap<>();
-                    item.put("id", u.getUnitId());
-                    item.put("name", u.getUnitName());
-                    unitList.add(item);
-                }
-            }
-            debugLog.add("productId = " + productId + ", unitList size = " + unitList.size());
-
-            Map<String, Object> data = new HashMap<>();
-            data.put("unitList", unitList);
-
-            writeJson(data, debugLog);
-            return NONE;
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            debugLog.add("EXCEPTION: " + e.toString());
-            writeJson(null, debugLog);
-            return NONE;
-        }
-    }
-    
-    public String deletePoAttachment() {
+    public String deletePrAttachment() {
         List<String> debugLog = new ArrayList<>();
         try {
             if (onlineUser == null) {
@@ -1395,29 +1021,6 @@ public class PurchaseOrderAction extends ActionSupport {
             Map<String, Object> result = new HashMap<>();
             result.put("success", true);
             writeJson(result, debugLog);
-            return NONE;
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            debugLog.add("EXCEPTION: " + e.toString());
-            writeJson(null, debugLog);
-            return NONE;
-        }
-    }
-
-    public String searchInprogressPr() {
-        List<String> debugLog = new ArrayList<>();
-        try {
-            if (onlineUser == null) {
-                writeJsonError();
-                return NONE;
-            }
-            List<Map<String, Object>> prDetailList = prDetailDAO.findInprogressPrDetailForPrSearch();
-    
-            Map<String, Object> data = new HashMap<>();
-            data.put("prDetailList", prDetailList);
-            // log.debug("searchApprovedPr result: " + data);
-            writeJson(data, debugLog);
             return NONE;
 
         } catch (Exception e) {

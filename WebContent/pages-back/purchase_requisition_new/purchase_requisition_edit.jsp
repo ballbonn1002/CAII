@@ -132,7 +132,7 @@
 				
 					<div class="page-title d-flex flex-column justify-content-center flex-wrap me-3">
 						<h1 class="page-heading d-flex text-gray-700 fw-semibold flex-column justify-content-center my-0">
-							Edit PO - Purchase Order
+							Edit PR - Purchase Requisition
 						</h1>
 						<ul class="breadcrumb breadcrumb-separatorless fw-semibold fs-7 my-0 pt-1">
 							<li class="breadcrumb-item text-muted"><a class="text-muted text-hover-primary">Home</a></li>
@@ -140,11 +140,39 @@
 							<li class="breadcrumb-item text-muted"><a class="text-muted text-hover-primary">Product</a></li>
 						</ul>
 					</div>
+			
+					<!-- <div class="d-flex align-items-center gap-2">
+						<span class="fs-2hx text-primary fw-bold" id="">#${prList.prId}</span>
+							<c:choose>
+								<c:when test="${prList.status == '1'}">
+									<span class="badge badge-lg bg-light-secondary fw-semibold fs-7 p-4">${prStatusNames['1']}</span>
+								</c:when>
+								<c:when test="${prList.status == '7'}">
+									<span class="badge badge-lg bg-cyan text-white fw-semibold fs-7 p-4">${prStatusNames['7']}</span>
+								</c:when>
+								<c:when test="${prList.status == '2'}">
+									<span class="badge badge-lg badge-warning text-white fw-semibold fs-7 p-4">${prStatusNames['2']}</span>
+								</c:when>
+								<c:when test="${prList.status == '4'}">
+									<span class="badge badge-lg badge-info text-white fw-semibold fs-7 p-4">${prStatusNames['4']}</span>
+								</c:when>
+								<c:when test="${prList.status == '3'}">
+									<span class="badge badge-lg bg-success text-white fw-semibold fs-7 p-4">${prStatusNames['3']}</span>
+								</c:when>
+								<c:when test="${prList.status == '5'}">
+									<span class="badge badge-lg bg-danger text-white fw-semibold fs-7 p-4">${prStatusNames['5']}</span>
+								</c:when>
+								<c:when test="${prList.status == '6'}">
+									<span class="badge badge-lg bg-dark text-white fw-semibold fs-7 p-4">${prStatusNames['6']}</span>
+								</c:when>
+								<c:otherwise></c:otherwise>
+							</c:choose>
+					</div> -->
 					<div class="d-flex align-items-center gap-2">
-						<span class="fs-2hx text-primary fw-bold" id="">#${poList.poId}</span>
-						<span class="badge badge-lg bg-${poStatusColors[poList.status]} fw-semibold fs-7 p-4
-									${poStatusColors[poList.status] == 'secondary' ? 'text-dark' : 'text-white'}">
-							${poStatusNames[poList.status]}
+						<span class="fs-2hx text-primary fw-bold" id="">#${prList.prId}</span>
+						<span class="badge badge-lg bg-${prStatusColors[prList.status]} fw-semibold fs-7 p-4
+									${prStatusColors[prList.status] == 'secondary' ? 'text-dark' : 'text-white'}">
+							${prStatusNames[prList.status]}
 						</span>
 					</div>
 			
@@ -158,7 +186,7 @@
 							<div class="card h-100">
 								<div class="card-header border-0 px-9 pt-7 d-flex align-items-center justify-content-between">
 									<div class="card-title">
-										<h3 class="fw-semibold text-gray-900">PO - Header</h3>
+										<h3 class="fw-semibold text-gray-900">PR - Header</h3>
 									</div>
 								</div>
 								<div class="card-body filter-card px-10 py-9 rounded-3">
@@ -179,11 +207,11 @@
 										</div>
 
 										<c:choose>
-											<c:when test="${poList.status == '1'}">
+											<c:when test="${prList.status == '1'}">
 												<div class="col-12 mt-9">
 													<label class="required fw-medium text-gray-800 mb-5">Description</label>
 													<textarea class="form-control text-gray-700" id="description" name="description"
-														placeholder="Description" rows="3">${poList.description}</textarea>
+														placeholder="Description" rows="3">${prList.description}</textarea>
 												</div>
 											</c:when>
 											<c:otherwise>
@@ -191,7 +219,7 @@
 													<i class="ki-duotone ki-document fs-3 me-3">
 														<span class="path1"></span><span class="path2"></span>
 													</i>
-													<span class="fs-6 fw-medium text-gray-800">${empty poList.description ? '-' : poList.description}</span>
+													<span class="fs-6 fw-medium text-gray-800">${empty prList.description ? '-' : prList.description}</span>
 												</div>
 											</c:otherwise>
 										</c:choose>
@@ -199,14 +227,14 @@
 								</div>
 							</div>
 						</div>
-						
+
 						<div class="col-md-12 col-lg-5 col-xl-5 col-xxl-4 mb-md-5">
 							<div class="card h-100 d-flex flex-column">
 								<div class="card-header border-0 px-9 pt-7 d-flex align-items-center justify-content-between">
 									<div class="card-title">
 										<h3 class="fw-semibold text-gray-900">Attach files</h3>
 									</div>
-									<c:if test="${poList.status == '1'}">
+									<c:if test="${prList.status == '1'}">
 										<label for="myFile" id="lbFile" class="btn btn-lg btn-primary d-inline-flex align-items-center justify-content-center fw-medium h-40px my-0">
 											Upload
 											<input type="file" id="myFile" name="files" multiple style="display:none;"
@@ -215,7 +243,7 @@
 									</c:if>
 								</div>
 								<div class="card-body filter-card px-10 py-9 rounded-3">
-									<c:if test="${poList.status == '1'}">
+									<c:if test="${prList.status == '1'}">
 										<div id="attachFileWarningBox" class="border border-2 border-warning rounded border-active active w-100"
 											style="${not empty attachmentList ? 'display:none;' : ''}">
 											<div class="py-5 d-flex flex-column align-items-center">
@@ -233,7 +261,7 @@
 											</div>
 										</div>
 									</c:if>
-									<c:if test="${poList.status != '1' and empty attachmentList}">
+									<c:if test="${prList.status != '1' and empty attachmentList}">
 										<div class="d-flex flex-column align-items-center justify-content-center text-center">
 											<i class="ki-duotone ki-file-deleted fs-2x text-muted mb-3">
 												<span class="path1"></span><span class="path2"></span>
@@ -266,7 +294,7 @@
 															</c:choose>
 															<span class="fs-6 fw-medium text-truncate" style="min-width:0;" title="${af.name}${af.type}">${af.name}${af.type}</span>
 														</a>
-														<c:if test="${poList.status == '1'}">
+														<c:if test="${prList.status == '1'}">
 															<span class="badge badge-light-danger bg-hover cursor-pointer ms-3 flex-shrink-0"
 																title="Delete" onclick="removeExistingAttachment('${af.fileId}', this)">
 																<i class="ki-duotone ki-trash text-danger fs-2">
@@ -284,123 +312,16 @@
 								</div>
 							</div>
 						</div>
-						
-					</div>
-					
-					
-					<div class="card mb-10 mt-5">
-						<div class="card-header border-0 px-9 pt-7 d-flex align-items-center justify-content-between">
-							<div class="card-title">
-								<h3 class="fw-semibold text-gray-900">Vendor</h3>
-							</div>
-						</div>
-						<div class="card-body filter-card px-10 py-9 rounded-3">
-							<div class="row g-5 mb-6">
-								<div class="col-lg-6 col-md-6 col-12 d-flex flex-column">
-									<label class="fw-medium text-gray-800 mb-2">Reference Invoice/Quotation NO</label>
-									<input type="text" class="form-control text-gray-700 h-45px"
-											name="reference_no" id="reference_no" value="${poList.refNo}" ${poList.status != '1' ? 'disabled' : ''} />
-								</div>
-								
-								<div class="col-lg-6 col-md-6 col-12 d-flex flex-column">
-									<label class="fw-medium text-gray-800 mb-2">Reference Invoice/Quotation Date</label>
-									<div class="position-relative d-flex align-items-center">
-										<i class="ki-duotone ki-calendar-8 position-absolute ms-4 mb-1 text-gray-500 fs-3">
-											<span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span><span class="path5"></span><span class="path6"></span>
-										</i>
-										<input class="form-control text-gray-700 ps-12 h-45px" 
-											   id="kt_reference_datepicker" name="reference_date" placeholder="Select date" 
-											   value="<fmt:formatDate value="${poList.refDate}" pattern="yyyy-MM-dd"/>" ${poList.status != '1' ? 'disabled' : ''} />
-									</div>
-								</div>
-							</div>
-					
-							<div class="row g-5 mb-6">
-								
-									<div class="col-lg-6 col-md-6 col-12 d-flex flex-column">
-										<div class="d-flex justify-content-between align-items-center mb-2">
-											<label class="required fw-medium text-gray-800">Company Name</label>
-											<c:if test="${poList.status == '1'}">
-												<a href="/company_add" target="_blank" class="text-success fw-medium fs-7 text-hover-primary" style="text-decoration: none;">
-													<i class="ki-outline ki-plus fs-7 text-success me-1"></i>Create
-												</a>
-											</c:if>
-										</div>
-										<select name="vendor_id" id="vendor_id" class="form-select h-45px" data-control="select2" data-placeholder="Select Company Name" 
-											${poList.status != '1' ? 'disabled' : ''}>
-										    <option value=""></option>     
-										    <c:forEach var="company" items="${companyList}">
-										        <option value="${company.company_id}"
-										            ${not empty poList.companyId and poList.companyId == company.company_id ? 'selected' : ''}>
-										            ${company.company_en}
-										        </option>     
-										    </c:forEach>
-										</select>
-										<div id="companyTaxInfo" class="d-flex align-items-center text-gray-500 fs-7 mt-3 px-1 d-none">
-											<i class="ki-duotone ki-credit-cart fs-3 me-2 text-muted"><span class="path1"></span><span class="path2"></span></i>
-											<span class="fs-6 fw-normal text-gray-800">Tax ID : <span id="companyTaxNumber"></span></span>
-										</div>
-
-									</div>
-						
-								<div class="col-lg-6 col-md-6 col-12 d-flex flex-column">
-									<label class="required fw-medium text-gray-800 mb-2">Company Location</label>
-									<select name="vendor_location_right_id" id="vendor_location_id" class="form-select h-45px" data-control="select2" data-placeholder="Select Company Location" 
-										disabled>
-									   <option value=""></option>
-									</select>
-									
-									<div id="companyAddressInfo" class="d-flex align-items-center text-gray-500 fs-7 mt-3 px-1 d-none">
-										<i class="ki-duotone ki-map fs-3 me-2 text-muted"><span class="path1"></span><span class="path2"></span><span class="path3"></span></i>
-										<span class="fs-6 fw-normal text-gray-800" id="companyAddress"></span>
-									</div>
-								</div>
-							</div>
-					
-							<div class="row g-5 mb-6">		
-								<div class="col-lg-6 col-md-6 col-12 d-flex flex-column">
-									<div class="d-flex justify-content-between align-items-center mb-2">
-										<label class="required fw-medium text-gray-800">Contact Name</label>
-										<c:if test="${poList.status == '1'}">
-											<a href="/contact_add" target="_blank" class="text-success fw-medium fs-7 text-hover-primary" style="text-decoration: none;">
-												<i class="ki-outline ki-plus fs-7 me-1 text-success"></i>Create
-											</a>
-										</c:if>
-									</div>
-									
-									<select name="contact_id" id="contact_id" class="form-select h-45px" data-control="select2" data-placeholder="Select Contact Name" 
-										disabled>
-										<option value=""></option>
-									</select>
-									
-									<div id="contactInfo" class="d-flex flex-column gap-1 mt-3 px-1 d-none">
-										<div class="d-flex align-items-center text-gray-500 fs-7">
-											<i class="ki-duotone ki-address-book fs-3 me-2 text-muted"><span class="path1"></span><span class="path2"></span><span class="path3"></span></i>
-											<span class="fs-6 fw-normal text-gray-800" id="contactPhone"></span>
-										</div>
-										<div class="d-flex align-items-center text-gray-500 fs-7">
-											<i class="ki-duotone ki-sms fs-3 me-2 text-muted"><span class="path1"></span><span class="path2"></span></i>
-											<span class="fs-6 fw-normal text-gray-800" id="contactEmail"></span>
-										</div>
-									</div>
-								</div>
-								
-								<div class="col-lg-6 col-md-6 col-12 d-flex flex-column">
-									<label class="fw-medium text-gray-800 mb-2">Description</label>
-									<textarea class="form-control text-gray-700" rows="3" name="vendor_description" id="vendor_description" ${poList.status != '1' ? 'disabled' : ''}>${poList.descriptionVendor}</textarea>
-								</div>
-							</div>
-						</div>
 					</div>
 					
 					<div class="card mb-10">
 						<div class="card-header border-0 px-9 pt-7 d-flex align-items-center justify-content-between">
 					        <div class="card-title">
-					            <h3 class="fw-semibold text-gray-900">PO - Detail</h3>
+					            <h3 class="fw-semibold text-gray-900">PR - Detail</h3>
 					        </div>
-							<c:if test="${poList.status == '1'}">
+							<c:if test="${prList.status == '1'}">
 								<div class="card-title gap-3">
-									<button type="button" id="btnOpenCreatePo" class="btn btn-lg btn-success fw-medium text-white px-6 py-4" >
+									<button type="button" id="btnOpenCreatePr" class="btn btn-lg btn-success fw-medium text-white px-6 py-4" >
 										<i class="ki-outline ki-plus fs-3 me-1"></i>Create
 									</button>
 									
@@ -410,16 +331,15 @@
 									</button>
 								</div>
 							</c:if>
+
+							<c:if test="${prList.status == '7'}">
+								<h2 class="fw-bold text-primary">
+									 In-Progress : <span id="prInProgressCount">0</span>/<span id="prInProgressTotal">0</span>
+								</h2>
+							</c:if>
 					    </div>
 						<div class="card-body filter-card px-9 py-8 rounded-3">
-							<div id="poDetailCartContainer"></div>
-					        <!-- Grand Total -->
-					        <div class="d-flex align-items-center justify-content-end pt-3 mt-3 g-3">
-					            <span class="text-gray-900 fs-6 me-5">Total</span>
-					            <h1 class="fw-semibold text-primary ps-9 text-end" id="poDetailGrandTotal">0.00</h1>
-					            <span class="text-gray-900 fs-6 text-end ms-3">บาท</span>
-					        </div>
-											
+							<div id="prDetailCartContainer"></div>
 						</div>
 					</div>
 					
@@ -434,7 +354,7 @@
 						<form id="signatureForm" method="post" action="update_signature" enctype="multipart/form-data">
 							<div class="card-body filter-card px-10 py-9 rounded-3 row g-5">
 								<!-- Draft status -->
-								<c:if test="${poList.status == '1'}">
+								<c:if test="${prList.status == '1'}">
 									<div class="col-6">
 										<div class="d-flex flex-column align-items-center gap-2">
 											<c:choose>
@@ -450,7 +370,7 @@
 													</div>
 												</c:when>
 
-												<c:when test="${poList.status == '1'}">
+												<c:when test="${prList.status == '1'}">
 													<div class="sig-box uploadable" id="uploadSignatureBox">
 														<img id="signaturePreview" style="max-height:150px; max-width:360px; object-fit:contain; display:none;" />
 														<div id="uploadPlaceholder" class="d-flex flex-column align-items-center">
@@ -473,10 +393,10 @@
 									</div>
 
 									<div class="col-6">
-										<div class="border ${empty poList.signDate ? 'border-gray-300' : 'border-success bg-light-success'} rounded-3 h-100 d-flex flex-column align-items-center justify-content-center text-center py-8" id="receiverCard1">
+										<div class="border ${empty prList.signDate ? 'border-gray-300' : 'border-success bg-light-success'} rounded-3 h-100 d-flex flex-column align-items-center justify-content-center text-center py-8" id="receiverCard1">
 											<div class="receiver-box d-flex flex-fill flex-column align-items-center justify-content-center gap-2" id="receiverBox1">
 												<c:choose>
-													<c:when test="${empty poList.signDate}">
+													<c:when test="${empty prList.signDate}">
 														<span class="text-muted fs-7" id="receiverLabel1">คลิ๊ก เพื่อยืนยันผู้ขอเบิกเงิน</span>
 														<div id="receiverPreview1" style="min-height: 44px; display: flex; flex-direction: column; align-items: center;"></div>
 														<button type="button" class="btn btn-primary btn-sm px-5" id="receiverBtn1" onclick="confirmReceiver(1)">
@@ -490,7 +410,7 @@
 															<div class="d-flex flex-column align-items-center">
 																<span class="text-dark fw-semibold fs-7">${empty userSignUser.nameEN ? userSignUser.name : userSignUser.nameEN}</span>
 																<span class="text-muted fs-8">
-																	<fmt:formatDate value="${poList.signDate}" pattern="d MMM yyyy , H:mm" />
+																	<fmt:formatDate value="${prList.signDate}" pattern="d MMM yyyy , H:mm" />
 																</span>
 															</div>
 														</div>
@@ -502,8 +422,8 @@
 								</c:if>
 
 								<!-- Approved status -->
-								<c:if test="${poList.status == '3' or poList.status == '7'}">
-									<c:if test="${not empty poList.signDate}">
+								<c:if test="${prList.status == '3' or prList.status == '7'}">
+									<c:if test="${not empty prList.signDate}">
 										<div class="col-6">
 											<div class="d-flex flex-column align-items-center gap-3">
 												<c:if test="${not empty imgPathSignature}">
@@ -514,14 +434,14 @@
 												<div class="d-flex flex-column align-items-center">
 													<span class="text-gray-900 fw-medium fs-5 pb-2">${empty userSignUser.nameEN ? userSignUser.name : userSignUser.nameEN}</span>
 													<span class="text-gray-900 fw-medium fs-6">
-														<fmt:formatDate value="${poList.signDate}" pattern="d MMM yyyy , H:mm" />
+														<fmt:formatDate value="${prList.signDate}" pattern="d MMM yyyy , H:mm" />
 													</span>
 												</div>
 											</div>
 										</div>
 									</c:if>
 									
-									<c:if test="${not empty poList.approveDate}">
+									<c:if test="${not empty prList.approveDate}">
 										<div class="col-6">
 											<div class="d-flex flex-column align-items-center gap-3">
 												<c:if test="${not empty imgPathApproveSignature}">
@@ -533,16 +453,16 @@
 												<div class="d-flex flex-column align-items-center">
 													<span class="text-gray-900 fw-medium fs-5 pb-2">${empty userApproveUser.nameEN ? userApproveUser.name : userApproveUser.nameEN}</span>
 													<span class="text-gray-900 fw-medium fs-6">
-														<fmt:formatDate value="${poList.approveDate}" pattern="d MMM yyyy , H:mm" />
+														<fmt:formatDate value="${prList.approveDate}" pattern="d MMM yyyy , H:mm" />
 													</span>
 
-													<c:if test="${not empty poList.reason}">
+													<c:if test="${not empty prList.reason}">
 														<span class="d-flex align-items-center mt-3">
 															<i class="ki-duotone ki-document fs-2 fw-normal text-muted me-2">
 																<span class="path1"></span>
 																<span class="path2"></span>
 															</i>
-															<span class="fs-5 fw-normal text-gray-900">${poList.reason}</span>
+															<span class="fs-5 fw-normal text-gray-900">${prList.reason}</span>
 														</span>
 													</c:if>
 												</div>
@@ -552,7 +472,7 @@
 								</c:if>
 
 								<!-- Pending status -->
-								<c:if test="${poList.status == '2' or poList.status == '4' or poList.status == '5' or poList.status == '6'}">
+								<c:if test="${prList.status == '2' or prList.status == '4' or prList.status == '5' or prList.status == '6'}">
 									<div class="col-6">
 										<div class="d-flex flex-column align-items-center gap-2">
 											<c:choose>
@@ -576,10 +496,10 @@
 									</div>
 
 									<div class="col-6">
-										<div class="border ${empty poList.signDate ? 'border-gray-300' : 'border-success bg-light-success'} rounded-3 h-100 d-flex flex-column align-items-center justify-content-center text-center py-8">
+										<div class="border ${empty prList.signDate ? 'border-gray-300' : 'border-success bg-light-success'} rounded-3 h-100 d-flex flex-column align-items-center justify-content-center text-center py-8">
 											<div class="d-flex flex-fill flex-column align-items-center justify-content-center gap-2">
 												<c:choose>
-													<c:when test="${empty poList.signDate}">
+													<c:when test="${empty prList.signDate}">
 														<span class="text-muted fs-7">ยังไม่มีการลงชื่อ ผู้ขอเบิก</span>
 													</c:when>
 													<c:otherwise>
@@ -587,7 +507,7 @@
 														<div class="d-flex flex-column align-items-center">
 															<span class="text-dark fw-semibold fs-7">${empty userSignUser.nameEN ? userSignUser.name : userSignUser.nameEN}</span>
 															<span class="text-muted fs-8">
-																<fmt:formatDate value="${poList.signDate}" pattern="d MMM yyyy , H:mm" />
+																<fmt:formatDate value="${prList.signDate}" pattern="d MMM yyyy , H:mm" />
 															</span>
 														</div>
 													</c:otherwise>
@@ -600,7 +520,7 @@
 						</form>
 					</div>
 					
-					<c:if test="${poList.status == '2'}">
+					<c:if test="${prList.status == '2'}">
 						<div class="card mb-10">
 							<div class="card-header border-0 px-9 pt-7 d-flex align-items-center justify-content-between">
 								<div class="card-title">
@@ -618,28 +538,28 @@
 						</div>
 					</c:if>
 
-					<c:if test="${poList.status == '4' || poList.status == '5' || poList.status == '6'|| poList.status == '7'}">
+					<c:if test="${prList.status == '4' || prList.status == '5' || prList.status == '6'|| prList.status == '7'}">
 						<c:choose>
-							<c:when test="${poList.status == '4'}"><c:set var="actionLabel" value="Returned By"/></c:when>
-							<c:when test="${poList.status == '5'}"><c:set var="actionLabel" value="Rejected By"/></c:when>
-							<c:when test="${poList.status == '6'}"><c:set var="actionLabel" value="Cancel By"/></c:when>
-							<c:when test="${poList.status == '7'}"><c:set var="actionLabel" value="In Progress By"/></c:when>
+							<c:when test="${prList.status == '4'}"><c:set var="actionLabel" value="Returned By"/></c:when>
+							<c:when test="${prList.status == '5'}"><c:set var="actionLabel" value="Rejected By"/></c:when>
+							<c:when test="${prList.status == '6'}"><c:set var="actionLabel" value="Cancel By"/></c:when>
+							<c:when test="${prList.status == '7'}"><c:set var="actionLabel" value="In Progress By"/></c:when>
 						</c:choose>
 
 						<div class="card mb-10">
 							<div class="card-body filter-card px-10 py-9 rounded-3">
 								<div class="d-flex align-items-center fs-6">
 									<span>${actionLabel} : ${userUpdate.employeeId} ${userUpdate.nameEN},
-										<fmt:formatDate value="${poList.timeUpdate}" pattern="d MMM YYYY HH:mm" />
+										<fmt:formatDate value="${prList.timeUpdate}" pattern="d MMM YYYY HH:mm" />
 									</span>
 
-									<c:if test="${(poList.status == '4' || poList.status == '5' || poList.status == '7') and not empty poList.reason}">
+									<c:if test="${(prList.status == '4' || prList.status == '5' || prList.status == '7') and not empty prList.reason}">
 										<span class="ms-5 d-inline-flex align-items-center">
 											<i class="ki-duotone ki-document fs-3 me-3">
 												<span class="path1"></span>
 												<span class="path2"></span>
 											</i>
-											<span>${poList.reason}</span>
+											<span>${prList.reason}</span>
 										</span>
 									</c:if>
 								</div>
@@ -647,11 +567,11 @@
 						</div>
 					</c:if>
 
-					<div class="modal fade" tabindex="-1" id="modal_create_po">
+					<div class="modal fade" tabindex="-1" id="modal_create_pr">
 						<div class="modal-dialog modal-lg">
 						    <div class="modal-content">
 						        <div class="modal-header">
-						            <h3 class="modal-title">Create PO - Detail</h3>
+						            <h3 class="modal-title">Create PR - Detail</h3>
 					
 						            <div class="btn btn-icon btn-sm btn-active-light-primary ms-2" data-bs-dismiss="modal" aria-label="Close">
 						                <i class="ki-duotone ki-cross fs-1"><span class="path1"></span><span class="path2"></span></i>
@@ -687,7 +607,7 @@
 										<div class="col-lg-6 col-md-6 col-12 d-flex flex-column">
 											<label class="required fw-medium text-gray-800 mb-2">จำนวน</label>
 											<input type="number" class="form-control text-gray-700 h-45px" min="1"
-													name="po_qty" id="po_qty" placeholder="1" value="1" />
+													name="pr_qty" id="pr_qty" placeholder="1" value="1" />
 										</div>
 										
 										<div class="col-lg-6 col-md-6 col-12 d-flex flex-column">
@@ -702,25 +622,24 @@
 									</div>
 									
 									<div class="row g-5 mb-6">
-										<div class="col-lg-6 col-md-6 col-12 d-flex flex-column">
-											<label class="required fw-medium text-gray-800 mb-2">ราคาต่อหน่วย</label>
-											<input type="text" class="form-control text-gray-700 h-45px"
-													name="po_price" id="po_price" placeholder="0.00" />
-										</div>
-									<!-- </div>
 									
-									<div class="row g-5 mb-6"> -->
 										<div class="col-6 d-flex flex-column">
 											<label class="required fw-medium text-gray-800 mb-2">Description / Detail</label>
-											<textarea class="form-control text-gray-700" rows="3" name="description" id="po_description" placeholder="Description"></textarea>
+											<textarea class="form-control text-gray-700" rows="3" name="description" id="pr_description" placeholder="Description"></textarea>
+										</div>
+
+										<div class="col-lg-6 col-md-6 col-12 d-flex flex-column">
+											<label class="fw-medium text-gray-800 mb-2">Ref Link</label>
+											<input type="text" class="form-control text-gray-700 h-45px"
+													name="pr_ref_link" id="pr_ref_link" placeholder="https://..." />
 										</div>
 									</div>
 						        </div>
 						
 						        <div class="modal-footer">
 						            <button type="button" class="btn btn-light" data-bs-dismiss="modal">Close</button>
-						            <button type="button" class="btn btn-success" id="btnSavePoDetail"
-        									onclick="addPoDetailToCart()">Save</button>
+						            <button type="button" class="btn btn-success" id="btnSavePrDetail"
+        									onclick="addPrDetailToCart()">Save</button>
 						        </div>
 						    </div>
 						</div>
@@ -730,53 +649,53 @@
 					<div class="d-flex justify-content-between g-10">
 						<div class="d-flex">
 							<button type="button" id="backFormBtn"
-								onclick="sessionStorage.removeItem('poDetailCart_draft'); location.href='purchase_order_list'"
+								onclick="sessionStorage.removeItem('prDetailCart_draft'); location.href='purchase_requisition_list'"
     							class="btn btn-lg btn-light fw-medium text-light-inverse px-6 py-4 me-4 border">Back
 							</button>
-							<c:if test="${poList.status == '1' or poList.status == '4'}">
+							<c:if test="${prList.status == '1' or prList.status == '4'}">
 								<button type="button" id="cancelFormBtn"
-									onclick="cancelPO()"
+									onclick="cancelPR()"
 									class="btn btn-lg btn-dark fw-medium px-6 py-4">Cancel
 								</button>
 							</c:if>
 						</div>
 						<c:choose>
-							<c:when test="${poList.status == '1'}">
+							<c:when test="${prList.status == '1'}">
 								<div class="d-flex">
 									<button type="button" id="saveDraft" onclick="saveDraftForm()"
 										class="btn btn-lg btn-cyan text-white fw-medium px-6 py-4 me-4">Save Draft
 									</button>
-									<button type="button" id="savePOFormBtn"
+									<button type="button" id="savePRFormBtn"
 										class="btn btn-success text-white fw-medium px-6 py-4"
-										onclick="submitPO()">Submit PO</button>
+										onclick="submitPR()">Submit PR</button>
 								</div>
 							</c:when>
 							
-							<c:when test="${poList.status == '2'}">
+							<c:when test="${prList.status == '2'}">
 									<div class="d-flex">
-										<button type="button" id="returnPOBtn" onclick="returnPO()"
+										<button type="button" id="returnPRBtn" onclick="returnPR()"
 												class="btn btn-lg btn-info text-white fw-medium px-6 py-4 me-4">Return</button>
-										<button type="button" id="rejectPOBtn" onclick="rejectPO()"
+										<button type="button" id="rejectPRBtn" onclick="rejectPR()"
 												class="btn btn-lg btn-danger text-white fw-medium px-6 py-4 me-4">Reject</button>
-										<button type="button" id="approvePOBtn" onclick="approvePO()"
+										<button type="button" id="approvePRBtn" onclick="approvePR()"
 													class="btn btn-lg btn-success text-white fw-medium px-6 py-4">Approve</button>
 									</div>
 								
 							</c:when>
 
-							<c:when test="${poList.status == '4'}">
+							<c:when test="${prList.status == '4'}">
 								<div class="d-flex">
-									<button type="button" id="editPOFormBtn"
+									<button type="button" id="editPRFormBtn"
 										class="btn btn-lg btn-primary fw-medium px-6 py-4"
-										onclick="editPO()">Edit</button>
+										onclick="editPR()">Edit</button>
 								</div>
 							</c:when>
 
-							<c:when test="${poList.status == '3'}">
+							<c:when test="${prList.status == '3'}">
 								<div class="d-flex">
-									<button type="button" id="inProgressPOFormBtn"
+									<button type="button" id="inProgressPRFormBtn"
 										class="btn btn-lg bg-cyan text-white fw-medium px-6 py-4"
-										onclick="inProgressPO()">In-Progress</button>
+										onclick="inProgressPR()">In-Progress</button>
 								</div>
 							</c:when>
 
@@ -797,30 +716,26 @@
 	const ctx = "${pageContext.request.contextPath}";
 	const currentUserDisplay = "${empty loginUser.employeeId ? '' : loginUser.employeeId} - ${empty loginUser.nameEN ? '' : loginUser.nameEN}";
 	
-	const EDIT_PO_ID     = "${empty poList.poId ? '' : poList.poId}";
-	const editCompanyId  = "${empty poList.companyId ? '' : poList.companyId}";
-	const editLocationId = "${empty poList.companyLocation ? '' : poList.companyLocation}";
-	const editContactId  = "${empty poList.contactId ? '' : poList.contactId}";
-	const poStatus       = "${empty poList.status ? '' : poList.status}";
-	const canEditPoDetail = (poStatus === '1');
+	const EDIT_PR_ID     = "${empty prList.prId ? '' : prList.prId}";
+	const prStatus       = "${empty prList.status ? '' : prList.status}";
+	const canEditPrDetail = (prStatus === '1');
 	
-	let pendingLocationId = editLocationId || null;
-	let pendingContactId  = editContactId  || null;
 	
-	const serverPoDetailCart = [
-	    <c:forEach var="d" items="${poDetailList}" varStatus="st">
+	const serverPrDetailCart = [
+	    <c:forEach var="d" items="${prDetailList}" varStatus="st">
 	    {
-	        poDetailId: "${d.po_detail_id}",
+	        prDetailId: "${d.pr_detail_id}",
 	        productId: "${d.product_id}",
 	        productName: "${empty d.product_name ? '' : d.product_name}",
 	        itemsType: "${empty d.product_type ? '' : d.product_type}",
 	        qty: ${empty d.amount_total ? 0 : d.amount_total},
 	        unit: "${empty d.unit ? '' : d.unit}",
 			unitName: "${empty d.unit_name ? '' : d.unit_name}",
-	        price: ${empty d.unit_price ? 0 : d.unit_price},
-	        total: ${empty d.price_total ? 0 : d.price_total},
+	        total: 0,
+	        refLink: "${fn:replace(fn:replace(empty d.ref_link ? '' : d.ref_link, '\\', '\\\\'), '"', '\\"')}",
 	        description: "${fn:replace(fn:replace(empty d.description ? '' : d.description, '\\', '\\\\'), '"', '\\"')}",
-	        savedAt: "<fmt:formatDate value="${d.time_create}" pattern="d MMM yyyy, HH:mm"/>"
+	        savedAt: "<fmt:formatDate value="${d.time_create}" pattern="d MMM yyyy, HH:mm"/>",
+			status: "${empty d.status ? '' : d.status}"
 	    }${!st.last ? ',' : ''}
 	    </c:forEach>
 	];
@@ -836,13 +751,6 @@
 	}
 	
 	document.addEventListener("DOMContentLoaded", function () {
-		flatpickr("#kt_reference_datepicker", {
-	        dateFormat: "Y-m-d",  
-	        altInput: true,
-	        altFormat: "d M Y",   
-	        locale: "en",        
-	        allowInput: false
-	    });
 		
 		// Table MR
 		// var table = $('#mrResultTable').DataTable({
@@ -875,10 +783,10 @@
 		// });
 		
 		document.querySelector('#kt_app_content_container').addEventListener('click', function(e){
-			const btn = e.target.closest('.po-group-toggle');
+			const btn = e.target.closest('.pr-group-toggle');
 			if (!btn) return;
 
-			const collapseEl = document.getElementById('poGroup_' + btn.dataset.target);
+			const collapseEl = document.getElementById('prGroup_' + btn.dataset.target);
 			if (!collapseEl) return;
 
 			const icon = btn.querySelector('i');
@@ -897,14 +805,14 @@
 			}
 		});
 		// document.querySelector('#kt_app_content_container').addEventListener('click', function(e){
-		//     const btn = e.target.closest('.collapsed, [data-target^="cart_"], a[id^="poGroupBtn_"]');
+		//     const btn = e.target.closest('.collapsed, [data-target^="cart_"], a[id^="prGroupBtn_"]');
 		//     if (!btn) return;
 
 		//     let collapseEl;
 		//     if (btn.dataset.target) {
-		//         collapseEl = document.getElementById('poGroup_' + btn.dataset.target);
-		//     } else if (btn.id.startsWith('poGroupBtn_')) {
-		//         collapseEl = document.getElementById(btn.id.replace('poGroupBtn_', 'poGroup_'));
+		//         collapseEl = document.getElementById('prGroup_' + btn.dataset.target);
+		//     } else if (btn.id.startsWith('prGroupBtn_')) {
+		//         collapseEl = document.getElementById(btn.id.replace('prGroupBtn_', 'prGroup_'));
 		//     }
 		//     if (!collapseEl) return;
 
@@ -961,37 +869,28 @@
 		        });
 		    }
 		    
-		    if (!editCompanyId) { // เฉพาะโหมด add เท่านั้น
-		        var $vendorId = $('#vendor_id');
-		        var $firstCompany = $vendorId.find('option').filter(function () {
-		            return $(this).val() !== '';
-		        }).first();
-		        if ($firstCompany.length) {
-		            $vendorId.val($firstCompany.val()).trigger('change');
-		        }
-		    }
 		    
-		    const createPoModalEl = document.getElementById('modal_create_po');
+		    const createPrModalEl = document.getElementById('modal_create_pr');
 
-		    createPoModalEl.addEventListener('show.bs.modal', function () {
+		    createPrModalEl.addEventListener('show.bs.modal', function () {
 		        if (editingIndex === -1 && !editingExistingDetailId) {
 		            $('#items_type').val('equipment').trigger('change');
-		            $('#po_qty').val('1');
+		            $('#pr_qty').val('1');
 		            $('#unit').val('');
-		            $('#po_price').val('');
-		            $('#po_description').val('');
-		            $('#modal_create_po .modal-title').text('Create PO - Detail');
-		            $('#btnSavePoDetail').text('Save');
+		            $('#pr_ref_link').val('');
+		            $('#pr_description').val('');
+		            $('#modal_create_pr .modal-title').text('Create PR - Detail');
+		            $('#btnSavePrDetail').text('Save');
 		        }
 		    });
 
-		    createPoModalEl.addEventListener('shown.bs.modal', function () {
+		    createPrModalEl.addEventListener('shown.bs.modal', function () {
 		        document.body.classList.add('modal-open');
 		        document.body.style.overflow = 'hidden';
 		        document.documentElement.style.overflow = 'hidden';
 		    });
 
-		    createPoModalEl.addEventListener('hidden.bs.modal', function () {
+		    createPrModalEl.addEventListener('hidden.bs.modal', function () {
 		        editingIndex = -1;
 		        editingExistingDetailId = null;
 		        document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
@@ -1001,18 +900,15 @@
 		        document.documentElement.style.removeProperty('overflow');
 		    });
 		    
-			const btnOpenCreatePo = document.getElementById('btnOpenCreatePo');
-			if (btnOpenCreatePo) {
-				btnOpenCreatePo.addEventListener('click', function () {
+			const btnOpenCreatePr = document.getElementById('btnOpenCreatePr');
+			if (btnOpenCreatePr) {
+				btnOpenCreatePr.addEventListener('click', function () {
 					editingIndex = -1;
 					editingExistingDetailId = null;
-					bootstrap.Modal.getOrCreateInstance(createPoModalEl, { backdrop: true }).show();
+					bootstrap.Modal.getOrCreateInstance(createPrModalEl, { backdrop: true }).show();
 				});
 			}
 
-			if (editCompanyId) {
-				$('#vendor_id').val(editCompanyId).trigger('change');
-			}
 		    
 		    
 });
@@ -1033,7 +929,7 @@
 	        }
 	    }).then((result) => {
 	        if (result.isConfirmed) {
-	        	sessionStorage.removeItem(PO_CART_STORAGE_KEY);
+	        	sessionStorage.removeItem(PR_CART_STORAGE_KEY);
 	            window.location.href = redirectUrl;
 	        }
 	    });
@@ -1128,55 +1024,55 @@
 	}
 
 	function updateWarningBoxVisibility() {
-		var warn = document.getElementById('attachFileWarningBox');
-		if (!warn) return;
-		var totalFiles = existingAttachmentCount + selectedFiles.length;
-		warn.style.display = totalFiles > 0 ? 'none' : 'block';
+	    var warn = document.getElementById('attachFileWarningBox');
+	    if (!warn) return;
+	    var totalFiles = existingAttachmentCount + selectedFiles.length;
+	    warn.style.display = totalFiles > 0 ? 'none' : 'block';
 	}
 
 	function renderNewFileList() {
-		var container = document.getElementById('attachFileList');
-		if (!container) return;
+	    var container = document.getElementById('attachFileList');
+	    if (!container) return;
 
-		container.querySelectorAll('.new-attach-item').forEach(function (el) { el.remove(); });
+	    container.querySelectorAll('.new-attach-item').forEach(function (el) { el.remove(); });
 
-		selectedFiles.forEach(function (file) {
-			const fileName = file.name;
-			const lastDotIndex = fileName.lastIndexOf('.');
-			const nameOnly = lastDotIndex > -1 ? fileName.substring(0, lastDotIndex) : fileName;
-			const fileExt = lastDotIndex > -1 ? fileName.substring(lastDotIndex) : '';
-			const iconPath = getFileIconPath(fileName);
+	    selectedFiles.forEach(function (file) {
+	        const fileName = file.name;
+	        const lastDotIndex = fileName.lastIndexOf('.');
+	        const nameOnly = lastDotIndex > -1 ? fileName.substring(0, lastDotIndex) : fileName;
+	        const fileExt = lastDotIndex > -1 ? fileName.substring(lastDotIndex) : '';
+	        const iconPath = getFileIconPath(fileName);
 
-			const wrapper = document.createElement('div');
-			wrapper.className = 'd-flex align-items-center justify-content-center mb-2 new-attach-item';
+	        const wrapper = document.createElement('div');
+	        wrapper.className = 'd-flex align-items-center justify-content-center mb-2 new-attach-item';
 
-			wrapper.innerHTML =
-				'<div class="d-flex align-items-center justify-content-between w-100 p-2 rounded">' +
-					'<div class="d-flex align-items-center overflow-hidden" style="flex-grow:1;min-width:0;">' +
-						'<img src="' + iconPath + '" class="w-25px h-25px me-3 flex-shrink-0" alt="icon" />' +
-						'<span class="fs-6 fw-medium d-flex" style="min-width:0;" title="' + fileName + '">' +
-							'<span class="text-truncate">' + nameOnly + '</span>' +
-							'<span class="text-gray-800 fw-medium flex-shrink-0">' + fileExt + '</span>' +
-						'</span>' +
-					'</div>' +
-					'<span class="badge badge-light-success ms-2 flex-shrink-0">New</span>' +
-					'<span class="badge badge-light-danger bg-hover cursor-pointer ms-2 flex-shrink-0" title="Delete">' +
-						'<i class="ki-duotone ki-trash text-danger fs-2">' +
-							'<span class="path1"></span><span class="path2"></span>' +
-							'<span class="path3"></span><span class="path4"></span><span class="path5"></span>' +
-						'</i>' +
-					'</span>' +
-				'</div>';
+	        wrapper.innerHTML =
+	            '<div class="d-flex align-items-center justify-content-between w-100 p-2 rounded">' +
+	                '<div class="d-flex align-items-center overflow-hidden" style="flex-grow:1;min-width:0;">' +
+	                    '<img src="' + iconPath + '" class="w-25px h-25px me-3 flex-shrink-0" alt="icon" />' +
+	                    '<span class="fs-6 fw-medium d-flex" style="min-width:0;" title="' + fileName + '">' +
+	                        '<span class="text-truncate">' + nameOnly + '</span>' +
+	                        '<span class="text-gray-800 fw-medium flex-shrink-0">' + fileExt + '</span>' +
+	                    '</span>' +
+	                '</div>' +
+	                '<span class="badge badge-light-success ms-2 flex-shrink-0">New</span>' +
+	                '<span class="badge badge-light-danger bg-hover cursor-pointer ms-2 flex-shrink-0" title="Delete">' +
+	                    '<i class="ki-duotone ki-trash text-danger fs-2">' +
+	                        '<span class="path1"></span><span class="path2"></span>' +
+	                        '<span class="path3"></span><span class="path4"></span><span class="path5"></span>' +
+	                    '</i>' +
+	                '</span>' +
+	            '</div>';
 
-			wrapper.querySelector('.badge-light-danger').addEventListener('click', function () {
-				selectedFiles = selectedFiles.filter(f => f.name !== fileName);
-				renderNewFileList();
-				updateInputFiles();
-			});
+	        wrapper.querySelector('.badge-light-danger').addEventListener('click', function () {
+	            selectedFiles = selectedFiles.filter(f => f.name !== fileName);
+	            renderNewFileList();
+	            updateInputFiles();
+	        });
 
-			container.appendChild(wrapper);
-		});
-		 updateWarningBoxVisibility();
+	        container.appendChild(wrapper);
+	    });
+	    updateWarningBoxVisibility();
 	}
 
 	function updateInputFiles() {
@@ -1209,15 +1105,15 @@
 	        if (!result.isConfirmed) return;
 
 	        $.ajax({
-	            url: ctx + '/delete_po_attachment',
+	            url: ctx + '/delete_pr_attachment',
 	            type: 'POST',
 	            dataType: 'json',
 	            data: { fileId: fileId },
 	            success: function (resp) {
 	                if (resp.data && resp.data.success) {
 	                    $(el).closest('[data-file-id]').remove();
-						existingAttachmentCount = Math.max(0, existingAttachmentCount - 1);
-        				updateWarningBoxVisibility();
+	                    existingAttachmentCount = Math.max(0, existingAttachmentCount - 1);
+	                    updateWarningBoxVisibility();
 	                } else {
 	                    Swal.fire('Error', 'ไม่สามารถลบไฟล์ได้', 'error');
 	                }
@@ -1311,131 +1207,6 @@
 		}
 	})();
 	
-	const isVendorReadOnly = ${poList.status != '1' ? 'true' : 'false'};
-	$('#vendor_id').on('change', function () {
-	    var companyId = $(this).val();
-
-	    $('#companyTaxInfo').addClass('d-none');
-	    $('#companyAddressInfo').addClass('d-none');
-	    $('#contactInfo').addClass('d-none');
-
-	    $('#vendor_location_id').html('<option value=""></option>').prop('disabled', true).trigger('change');
-	    $('#contact_id').html('<option value=""></option>').prop('disabled', true).trigger('change');
-
-	    if (!companyId) return;
-
-	    $.ajax({
-	        url: ctx + '/get_company_profile',
-	        type: 'POST',
-	        dataType: 'json',
-	        data: { companyId: companyId },
-	        success: function (resp) {
-	            // if (resp.debug) console.log('[get_company_profile debug]', resp.debug);
-	            var data = resp.data;
-	            if (!data) return;
-
-	            $('#companyTaxNumber').text(data.taxId || '');
-	            $('#companyTaxInfo').removeClass('d-none');
-
-	            var list = data.locationList || [];
-	            var options = '';
-	            var matched = pendingLocationId &&
-                list.some(l => String(l.company_address_id) === String(pendingLocationId));
-            	var selectedLocId = matched ? pendingLocationId
-                                : (list.length ? list[0].company_address_id : '');
-            	if (list.length === 0) {
-                    options = '<option value=""></option>';
-                } else {
-                    list.forEach(function (loc) {
-                        var isSel = String(loc.company_address_id) === String(selectedLocId);
-                        options += '<option value="' + loc.company_address_id + '"' + (isSel ? ' selected' : '') + '>' + loc.address_name + '</option>';
-                    });
-                }
-            	
-            	$('#vendor_location_id').html(options).prop('disabled', isVendorReadOnly);
-                pendingLocationId = null; // ใช้ไปแล้ว เคลียร์ทิ้ง กันเลือกซ้ำรอบหน้า
-                $('#vendor_location_id').trigger('change');
-	        },
-	        error: function () {
-	            Swal.fire('Error', 'ไม่สามารถโหลดข้อมูลบริษัทได้', 'error');
-	        }
-	    });
-	});
-
-	$('#vendor_location_id').on('change', function () {
-	    var addressId = $(this).val() ? $(this).val().trim() : '';
-
-	    $('#companyAddressInfo').addClass('d-none');
-	    $('#contactInfo').addClass('d-none');
-	    $('#contact_id').html('<option value=""></option>').prop('disabled', true);
-
-	    if (!addressId) return;
-
-	    $.ajax({
-	        url: ctx + '/get_company_location',
-	        type: 'POST',
-	        dataType: 'json',
-	        data: { addressId: addressId },
-	        success: function (resp) {
-	            var data = resp.data;
-	            if (!data) return;
-
-	            $('#companyAddress').text(data.address ? data.address.address : '');
-	            $('#companyAddressInfo').removeClass('d-none');
-
-	            var list = data.contactList || [];
-	            var options = '';
-
-	            var matched = pendingContactId &&
-	                list.some(c => String(c.company_contact_id) === String(pendingContactId));
-	            var selectedContactId = matched ? pendingContactId
-	                                    : (list.length ? list[0].company_contact_id : '');
-
-	            if (list.length === 0) {
-	                options = '<option value=""></option>';
-	            } else {
-	                list.forEach(function (c) {
-	                    var isSel = String(c.company_contact_id) === String(selectedContactId);
-	                    options += '<option value="' + c.company_contact_id + '"' + (isSel ? ' selected' : '') + '>' + c.contact_name + '</option>';
-	                });
-	            }
-
-	            $('#contact_id').html(options).prop('disabled', isVendorReadOnly);
-	            pendingContactId = null; // ใช้ไปแล้ว เคลียร์ทิ้ง
-	            $('#contact_id').trigger('change');
-	        },
-	        error: function () {
-	            Swal.fire('Error', 'ไม่สามารถโหลดข้อมูล Location ได้', 'error');
-	        }
-	    });
-	});
-
-	$('#contact_id').on('change', function () {
-	    var contactId = $(this).val();
-	    $('#contactInfo').addClass('d-none');
-
-	    if (!contactId) return;
-
-	    $.ajax({
-	        url: ctx + '/get_company_contact',
-	        type: 'POST',
-	        dataType: 'json',
-	        data: { contactId: contactId },
-	        success: function (resp) {
-	            // if (resp.debug) console.log('[get_company_contact debug]', resp.debug);
-	            var data = resp.data;
-	            if (!data) return;
-
-	            $('#contactPhone').text(data.phone || '');
-	            $('#contactEmail').text(data.email || '');
-	            $('#contactInfo').removeClass('d-none');
-	        },
-	        error: function () {
-	            Swal.fire('Error', 'ไม่สามารถโหลดข้อมูล Contact ได้', 'error');
-	        }
-	    });
-	});
-	
 	$('#items_type').on('change', function(){
 		var itemsType = $(this).val();
 		if(!itemsType) return;
@@ -1504,14 +1275,14 @@
 </script>
 
 <script>
-let poDetailCart = []; // เก็บรายการใหม่ ที่เพิ่มระหว่างแก้ไข ยังไม่ถูกบันทึกลง DB
-let existingPoDetailList = (typeof serverPoDetailCart !== 'undefined') ? serverPoDetailCart : []; // รายการเดิมที่มีอยู่แล้วใน DB (แก้/ลบผ่าน AJAX ทันที)
-let poDetailCounter = 0;
+let prDetailCart = []; // เก็บรายการใหม่ ที่เพิ่มระหว่างแก้ไข ยังไม่ถูกบันทึกลง DB
+let existingPrDetailList = (typeof serverPrDetailCart !== 'undefined') ? serverPrDetailCart : []; // รายการเดิมที่มีอยู่แล้วใน DB (แก้/ลบผ่าน AJAX ทันที)
+let prDetailCounter = 0;
 let editingIndex = -1;
-let editingExistingDetailId = null; // po_detail_id ของรายการเดิมที่กำลังแก้ (ถ้ามี)
-let confirmed1 = ${empty poList.signDate ? 'false' : 'true'}; //track ว่าลงชื่อ ผู้ขอเบิก แล้วหรือยัง
+let editingExistingDetailId = null; // pr_detail_id ของรายการเดิมที่กำลังแก้ (ถ้ามี)
+let confirmed1 = ${empty prList.signDate ? 'false' : 'true'}; //track ว่าลงชื่อ ผู้ขอเบิก แล้วหรือยัง
 
-const PO_CART_STORAGE_KEY = 'poDetailCart_draft_' + (EDIT_PO_ID || 'new');
+const PR_CART_STORAGE_KEY = 'prDetailCart_draft_' + (EDIT_PR_ID || 'new');
 loadCartFromSession();
 
 function mapDbItemsTypeToSelect(val){
@@ -1525,7 +1296,7 @@ function mapDbItemsTypeToSelect(val){
 }
 function saveCartToSession(){
     try {
-        sessionStorage.setItem(PO_CART_STORAGE_KEY, JSON.stringify(poDetailCart));
+        sessionStorage.setItem(PR_CART_STORAGE_KEY, JSON.stringify(prDetailCart));
     } catch (e) {
         console.error('ไม่สามารถบันทึก cart ลง sessionStorage ได้', e);
     }
@@ -1533,53 +1304,51 @@ function saveCartToSession(){
 
 function loadCartFromSession(){
     try {
-        const saved = sessionStorage.getItem(PO_CART_STORAGE_KEY);
+        const saved = sessionStorage.getItem(PR_CART_STORAGE_KEY);
         if (saved) {
-            poDetailCart = JSON.parse(saved);
+            prDetailCart = JSON.parse(saved);
             
-            poDetailCart = poDetailCart.map(item => ({
+            prDetailCart = prDetailCart.map(item => ({
                 ...item,
-                price: Number(item.price) || 0,
                 qty: Number(item.qty) || 0,
-                total: Number(item.total) || (Number(item.qty) || 0) * (Number(item.price) || 0),
+                refLink: item.refLink || '',
+                total: 0,
                 savedAt: item.savedAt || formatNowDateTime()
             }));
         }
     } catch (e) {
         console.error('ไม่สามารถโหลด cart จาก sessionStorage ได้', e);
-        poDetailCart = [];
+        prDetailCart = [];
     }
 }
 
 //กันข้อมูลหายตอน refresh
 loadCartFromSession();
 document.addEventListener('DOMContentLoaded', function(){
-    renderPoDetailCart();
-   
+    if (prDetailCart.length > 0 || existingPrDetailList.length > 0) {
+        renderPrDetailCart();
+    }
 });
 
-function validatePoDetailForm(){
+function validatePrDetailForm(){
     let errors = [];
 
     if (!$('#items_type').val() || !$('#items_type').val().trim()) errors.push('Category');
     if (!$('#product_name').val() || !$('#product_name').val().trim()) errors.push('Product Name');
 
-    const qty = $('#po_qty').val().trim();
+    const qty = $('#pr_qty').val().trim();
     if (!qty || Number(qty) <= 0) errors.push('จำนวน');
 
     if (!$('#unit').val().trim()) errors.push('Unit');
 
-    const price = $('#po_price').val().trim();
-    if (!price || parseFormattedNumber(price) < 0) errors.push('ราคาต่อหน่วย');
-
-    if (!$('#po_description').val().trim()) errors.push('Description / Detail');
+    if (!$('#pr_description').val().trim()) errors.push('Description / Detail');
 
     return errors;
 }
 
-function addPoDetailToCart(){
+function addPrDetailToCart(){
 
-    const errors = validatePoDetailForm();
+    const errors = validatePrDetailForm();
 
     if (errors.length > 0) {
         Swal.fire({
@@ -1596,89 +1365,79 @@ function addPoDetailToCart(){
         itemsTypeText: $("#items_type option:selected").text(),
         productId: $("#product_name").val(),
         productName: $("#product_name option:selected").text(),
-        qty: Number($("#po_qty").val()),
+        qty: Number($("#pr_qty").val()),
         unit: $("#unit").val(),
-		unitName: $("#unit option:selected").text(), 
-        price: parseFormattedNumber($("#po_price").val()),
-        description: $("#po_description").val(),
+		unitName: $("#unit option:selected").text(),
+        refLink: $("#pr_ref_link").val().trim(),
+        description: $("#pr_description").val(),
         savedAt: formatNowDateTime()
     };
 
-    item.total = item.qty * item.price;
+    item.total = 0;
 
     if (editingExistingDetailId) {
         // แก้ไขรายการเดิมที่มีอยู่แล้วใน DB -> เรียก AJAX update ทันที
-        updateExistingPoDetail(editingExistingDetailId, item);
+        updateExistingPrDetail(editingExistingDetailId, item);
         return;
     }
 
     if (editingIndex >= 0) {
-        poDetailCart[editingIndex] = item;
+        prDetailCart[editingIndex] = item;
         editingIndex = -1;
     } else {
-        poDetailCart.push(item);
+        prDetailCart.push(item);
     }
 
     saveCartToSession();
-    renderPoDetailCart();
+    renderPrDetailCart();
 
     if (document.activeElement) {
         document.activeElement.blur();
     }
 
-    const modalEl = document.getElementById("modal_create_po");
+    const modalEl = document.getElementById("modal_create_pr");
     const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
     modal.hide();
 }
 
-function renderPoDetailCart(){
+function updateInProgressCount(){
+    const countEl = document.getElementById('prInProgressCount');
+    const totalEl = document.getElementById('prInProgressTotal');
+    if (!countEl || !totalEl) return; //แค่status = 7
+
+    const total = existingPrDetailList.length; // จำนวน PR-Detail ทั้งหมด
+    const approvedCount = existingPrDetailList.filter(function(item){
+        return item.status == 1; // 
+    }).length;
+
+    countEl.textContent = approvedCount;
+    totalEl.textContent = total;
+}
+function renderPrDetailCart(){
 
     let html = "";
-    let grandTotal = 0;
 
-    existingPoDetailList.forEach(function(item){
+    existingPrDetailList.forEach(function(item){
 
-        html += createPoCard(item, null, item.poDetailId);
-        grandTotal += item.total;
+        html += createPrCard(item, null, item.prDetailId);
 
     });
 
-    poDetailCart.forEach(function(item,index){
+    prDetailCart.forEach(function(item,index){
 
-        html += createPoCard(item, index, null);
-        grandTotal += item.total;
+        html += createPrCard(item, index, null);
 
     });
 
-	const totalCount = existingPoDetailList.length + poDetailCart.length;
+    $("#prDetailCartContainer").html(html);
 
-    if (totalCount === 0 ) {
-        html = `
-            <div class="d-flex flex-column align-items-center justify-content-center py-5 text-center">
-                <i class="ki-duotone ki-file-deleted fs-2x text-muted mb-3">
-                    <span class="path1"></span><span class="path2"></span>
-                </i>
-                <span class="fs-5 fw-medium text-muted">No items</span>
-            </div>
-        `;
-    }
-
-    $("#poDetailCartContainer").html(html);
-
-    $("#poDetailGrandTotal").text(
-        grandTotal.toLocaleString(undefined,{
-            minimumFractionDigits:2,
-            maximumFractionDigits:2
-        })
-    );
+	updateInProgressCount();
 
 }
 
-//-------- PO- Detail -----------
-function createPoCard(item,index,poDetailId){
-	const safePrice = Number(item.price) || 0;
+//-------- PR- Detail -----------
+function createPrCard(item,index,prDetailId){
     const safeQty = Number(item.qty) || 0;
-    const safeTotal = Number(item.total) || (safeQty * safePrice);
 
     let icon = "";
     let category = "";
@@ -1727,16 +1486,16 @@ function createPoCard(item,index,poDetailId){
         `;
     }
 
-    const groupId = poDetailId ? ("existing_" + poDetailId) : ("cart_" + index);
-    const badgeNew = poDetailId ? "" : `<span class="badge badge-light-success me-3">New</span>`;
+    const groupId = prDetailId ? ("existing_" + prDetailId) : ("cart_" + index);
+    const badgeNew = prDetailId ? "" : `<span class="badge badge-light-success me-3">New</span>`;
 
     let actionButtons = '';
-    if (canEditPoDetail) {
-        actionButtons = poDetailId
-        ? `<a href="#" onclick="return editExistingCartItem('\${poDetailId}');" class="btn btn-icon btn-light-primary btn-sm" title="Edit">
+    if (canEditPrDetail) {
+        actionButtons = prDetailId
+        ? `<a href="#" onclick="return editExistingCartItem('\${prDetailId}');" class="btn btn-icon btn-light-primary btn-sm" title="Edit">
                 <i class="ki-duotone ki-pencil fs-2"><span class="path1"></span><span class="path2"></span></i>
             </a>
-            <a href="#" onclick="return removeExistingCartItem('\${poDetailId}');" class="btn btn-icon btn-light-danger btn-sm" title="Delete">
+            <a href="#" onclick="return removeExistingCartItem('\${prDetailId}');" class="btn btn-icon btn-light-danger btn-sm" title="Delete">
                 <i class="ki-duotone ki-trash fs-2"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span><span class="path5"></span></i>
             </a>`
         : `<a href="#" onclick="return editCartItem(\${index});" class="btn btn-icon btn-light-primary btn-sm" title="Edit">
@@ -1747,7 +1506,7 @@ function createPoCard(item,index,poDetailId){
             </a>`;
 	}
 
-    return `<div class="po-item-group border-gray-400 border-bottom py-9 px-6">
+    return `<div class="pr-item-group border-gray-400 border-bottom py-9 px-6">
     			<div class="d-flex align-items-center justify-content-between row">
     				<div class="col-7 d-flex align-items-center">\${icon}
 						<span class="text-gray-900 fs-5 fw-normal me-3">\${category}</span>
@@ -1764,46 +1523,42 @@ function createPoCard(item,index,poDetailId){
 						</div>
 					</div>
 		
-					<div class="col-3 d-flex align-items-center justify-content-between px-0">
-						<div class="col-2 d-flex flex-column text-end">
+					<div class="col-1 d-flex align-items-center justify-content-between px-0">
+						<div class="col-12 d-flex flex-column text-end">
 							<span class="fs-6 fw-normal text-gray-900">\${item.unitName}</span>
 							<span class="fw-semibold text-gray-800 fs-5">\${item.qty}</span>
+						</div>
 					</div>
 		
-					<div class="col-4 d-flex flex-column text-end">
-						<span class="fs-6 fw-normal text-gray-900">Price</span>
-						<span class="fw-semibold text-gray-800 fs-5">\${safePrice.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span>
+					<div class="col-2 d-flex justify-content-end align-items-center gap-2 px-0">
+						\${actionButtons}
+						<a class="collapsed pr-group-toggle" data-target="\${groupId}">
+							<i class="ki-duotone ki-up-square fs-2hx">
+								<span class="path1"></span><span class="path2"></span>
+							</i>
+						</a>
+						\${
+							prStatus === '7'
+								? (item.status == 1
+									? '<i class="ki-solid ki-check-square fs-2hx text-success"></i>'
+									: '<i class="ki-solid ki-cross-square fs-2hx text-disabled"></i>')
+								: ''
+						}
 					</div>
-					
-					<div class="col-4 d-flex flex-column text-end">
-						<span class="fs-6 fw-normal text-gray-900">Total</span>
-						<span class="fs-5 fw-semibold text-primary">\${safeTotal.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span>
-					</div>
-		
-				</div>
-		
-				<div class="col-2 d-flex justify-content-end align-items-center gap-2 px-0">
-	                \${actionButtons}
-	                <a class="collapsed po-group-toggle" data-target="\${groupId}">
-	                    <i class="ki-duotone ki-up-square fs-2hx">
-	                        <span class="path1"></span><span class="path2"></span>
-	                    </i>
-	                </a>
-            	</div>
 			</div>
 			
-			<div class="collapse border-gray-300 border-top mt-3" id="poGroup_\${groupId}">
+			<div class="collapse border-gray-300 border-top mt-3" id="prGroup_\${groupId}">
 	            <div class="ps-9 pt-9">
 	                <div class="d-flex align-items-center justify-content-between row">
 	                    <div class="col-11">
-	                        <div class="d-flex align-items-center fs-7">
+	                        <div class="d-flex align-items-center fs-7 gap-3">
 	                            <div class="col-4">
 	                                <i class="ki-duotone ki-user-tick fs-3 text-muted me-2">
 	                                    <span class="path1"></span><span class="path2"></span><span class="path3"></span>
 	                                </i>
 	                                <span class="text-gray-800 fs-5">\${currentUserDisplay}</span>
 	                            </div>
-	                            <div class="col-4 d-flex align-items-center">
+	                            <div class="col-5 d-flex align-items-center">
 	                                <i class="ki-duotone ki-calendar-2 fs-3 me-2">
 	                                    <span class="path1"></span><span class="path2"></span><span class="path3"></span>
 	                                    <span class="path4"></span><span class="path5"></span>
@@ -1814,7 +1569,15 @@ function createPoCard(item,index,poDetailId){
 				                    <i class="ki-duotone ki-tablet-book fs-3 me-2">
 					                     <span class="path1"></span><span class="path2"></span>
 									</i>
-				                    <span class="badge badge-lg badge-light-primary text-primary fs-7 fw-semibold d-inline-block text-center">-</span>
+									<span class="badge badge-lg badge-light-primary text-primary fs-7 fw-semibold d-inline-block text-center me-3">-</span>
+									\${item.refLink 
+										? `<a href="\${item.refLink}" target="_blank" class="my-0 d-flex align-items-center">
+											<i class="ki-duotone ki-fasten fs-2 me-2 text-primary">
+					                     		<span class="path1"></span><span class="path2"></span>
+											</i>
+											</a>`
+										: ''
+									}
 		                    	</div>
 	                        </div>
 	                    </div>
@@ -1831,13 +1594,13 @@ function createPoCard(item,index,poDetailId){
 }
 
 function editCartItem(index){
-    const item = poDetailCart[index];
+    const item = prDetailCart[index];
     if (!item) return false;
 
     editingIndex = index;
 
-    $('#modal_create_po .modal-title').text('Edit PO - Detail');
-    $('#btnSavePoDetail').text('Update');
+    $('#modal_create_pr .modal-title').text('Edit PR - Detail');
+    $('#btnSavePrDetail').text('Update');
 
     $('#items_type').val(mapDbItemsTypeToSelect(item.itemsType)).trigger('change');
 
@@ -1848,7 +1611,7 @@ function editCartItem(index){
 			
 			const waitForUnitList = setInterval(function(){
                 if ($('#unit option[value="' + item.unit + '"]').length > 0) {
-                    $('#unit').val(item.unit).trigger('change');
+                    $('#unit').val(item.unit);
                     clearInterval(waitForUnitList);
                 }
             }, 100);
@@ -1858,12 +1621,12 @@ function editCartItem(index){
 
     setTimeout(function(){ clearInterval(waitForProductList); }, 3000);
 
-    $('#po_qty').val(item.qty);
+    $('#pr_qty').val(item.qty);
     // $('#unit').val(item.unit);
-    $('#po_price').val(Number(item.price).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2}));
-    $('#po_description').val(item.description);
+    $('#pr_ref_link').val(item.refLink || '');
+    $('#pr_description').val(item.description);
 
-    const modalEl = document.getElementById("modal_create_po");
+    const modalEl = document.getElementById("modal_create_pr");
     const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
     modal.show();
 
@@ -1885,24 +1648,24 @@ function removeCartItem(index){
         }
     }).then((result) => {
         if (result.isConfirmed) {
-            poDetailCart.splice(index, 1);
+            prDetailCart.splice(index, 1);
             saveCartToSession();
-            renderPoDetailCart();
+            renderPrDetailCart();
         }
     });
     return false;
 }
 
-/* ──────── แก้ไข / ลบ รายการที่มีอยู่แล้วใน DB ───── */
-function editExistingCartItem(poDetailId){
-    const item = existingPoDetailList.find(function(d){ return String(d.poDetailId) === String(poDetailId); });
+/* ──────── แก้ไข / ลบ รายการที่มีอยู่แล้วใน DB ──────── */
+function editExistingCartItem(prDetailId){
+    const item = existingPrDetailList.find(function(d){ return String(d.prDetailId) === String(prDetailId); });
     if (!item) return false;
 
-    editingExistingDetailId = poDetailId;
+    editingExistingDetailId = prDetailId;
     editingIndex = -1;
 
-    $('#modal_create_po .modal-title').text('Edit PO - Detail');
-    $('#btnSavePoDetail').text('Update');
+    $('#modal_create_pr .modal-title').text('Edit PR - Detail');
+    $('#btnSavePrDetail').text('Update');
 
     $('#items_type').val(mapDbItemsTypeToSelect(item.itemsType)).trigger('change');
 
@@ -1913,7 +1676,7 @@ function editExistingCartItem(poDetailId){
 
 			const waitForUnitList = setInterval(function(){
                 if ($('#unit option[value="' + item.unit + '"]').length > 0) {
-                    $('#unit').val(item.unit).trigger('change');
+                    $('#unit').val(item.unit);
                     clearInterval(waitForUnitList);
                 }
             }, 100);
@@ -1923,19 +1686,19 @@ function editExistingCartItem(poDetailId){
 
     setTimeout(function(){ clearInterval(waitForProductList); }, 3000);
 
-    $('#po_qty').val(item.qty);
+    $('#pr_qty').val(item.qty);
     // $('#unit').val(item.unit);
-    $('#po_price').val(Number(item.price).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2}));
-    $('#po_description').val(item.description);
+    $('#pr_ref_link').val(item.refLink || '');
+    $('#pr_description').val(item.description);
 
-    const modalEl = document.getElementById("modal_create_po");
+    const modalEl = document.getElementById("modal_create_pr");
     const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
     modal.show();
 
     return false;
 }
 
-function removeExistingCartItem(poDetailId){
+function removeExistingCartItem(prDetailId){
     Swal.fire({
         title: "Are you sure?!",
         text: "Are you sure you want to delete this item?",
@@ -1951,10 +1714,10 @@ function removeExistingCartItem(poDetailId){
     }).then((result) => {
         if (result.isConfirmed) {
             $.ajax({
-                url: ctx + '/delete_po_detail',
+                url: ctx + '/delete_pr_detail',
                 type: 'POST',
                 dataType: 'json',
-                data: { poDetailId: poDetailId, poId: EDIT_PO_ID },
+                data: { prDetailId: prDetailId, prId: EDIT_PR_ID },
                 success: function (resp) {
                     if (resp.data && resp.data.success) {
                         window.location.reload();
@@ -1971,24 +1734,24 @@ function removeExistingCartItem(poDetailId){
     return false;
 }
 
-function updateExistingPoDetail(poDetailId, item){
+function updateExistingPrDetail(prDetailId, item){
     $.ajax({
-        url: ctx + '/update_po_detail',
+        url: ctx + '/update_pr_detail',
         type: 'POST',
         dataType: 'json',
         data: {
-            poDetailId: poDetailId,
-            poId: EDIT_PO_ID,
+            prDetailId: prDetailId,
+            prId: EDIT_PR_ID,
             productId: item.productId,
             qty: item.qty,
             unit: item.unit,
-            price: item.price,
+            refLink: item.refLink,
             description: item.description
         },
         success: function (resp) {
             if (resp.data && resp.data.success) {
                 editingExistingDetailId = null;
-                const modalEl = document.getElementById("modal_create_po");
+                const modalEl = document.getElementById("modal_create_pr");
                 bootstrap.Modal.getOrCreateInstance(modalEl).hide();
                 window.location.reload();
             } else {
@@ -2006,47 +1769,20 @@ function parseFormattedNumber(str) {
     return Number(String(str).replace(/,/g, ''));
 }
 
-$(document.body).on('input', '#po_price', function() {
-    let value = $(this).val();
-
-    value = value.replace(/[^0-9.]/g, '');
-
-    const parts = value.split('.');
-    if (parts.length > 2) {
-        value = parts[0] + '.' + parts.slice(1).join('');
-    }
-
-    if (parts[0]) {
-        parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-    }
-
-    $(this).val(parts.join('.'));
-});
-
-$(document.body).on('blur', '#po_price', function() {
-    let raw = parseFormattedNumber($(this).val());
-    if ($(this).val() === '' ) return;
-    $(this).val(raw.toLocaleString(undefined, {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2
-    }));
-});
-
-
 //────────── Confirm Receiver ──────────
 function confirmReceiver(slot) {
-    if (!EDIT_PO_ID) return;
+    if (!EDIT_PR_ID) return;
 
     const btn = document.getElementById('receiverBtn' + slot);
     btn.disabled = true; // กันกดซ้ำระหว่างรอ ajax
 
     $.ajax({
-        url: ctx + '/confirm_po_sign',
+        url: ctx + '/confirm_pr_sign',
         type: 'POST',
         dataType: 'json',
-        data: { poId: EDIT_PO_ID },
+        data: { prId: EDIT_PR_ID },
         success: function (resp) {
-            // if (resp.debug) console.log('[confirm_po_sign debug]', resp.debug);
+            // if (resp.debug) console.log('[confirm_pr_sign debug]', resp.debug);
 
             if (resp.data && resp.data.success) {
                 confirmed1 = true;
@@ -2084,15 +1820,9 @@ function confirmReceiver(slot) {
 
 function saveDraftForm(){
     const payload = {
-		poId: EDIT_PO_ID || '',
-        companyId: $('#vendor_id').val() || '',
-        companyLocation: $('#vendor_location_id').val() || '',
-        contactId: $('#contact_id').val() || '',
+		prId: EDIT_PR_ID || '',
         description: $('#description').val() || '',
-        descriptionVendor: $('#vendor_description').val() || '',
-        referenceNo: $('#reference_no').val() || '',
-        referenceDate: $('#kt_reference_datepicker').val() || '',
-        poDetailCartJson: JSON.stringify(poDetailCart)
+        prDetailCartJson: JSON.stringify(prDetailCart)
     };
     const fd = new FormData();
     Object.keys(payload).forEach(function (k) { fd.append(k, payload[k]); });
@@ -2103,17 +1833,17 @@ function saveDraftForm(){
  	$('#saveDraft').prop('disabled', true);
  
     $.ajax({
-    	url: ctx + (EDIT_PO_ID ? '/update_po' : '/save_po'),
+    	url: ctx + (EDIT_PR_ID ? '/update_pr' : '/save_pr'),
         type: 'POST',
         dataType: 'json',
         data: fd,
         processData: false,
         contentType: false,
         success: function (resp) {
-            if (resp.data && resp.data.poId) {
-                sessionStorage.removeItem(PO_CART_STORAGE_KEY);
-                Swal.fire({ title: 'Success!', text: 'Po saved draft successfully!', icon: 'success' })
-                    .then(() => { window.location.href = ctx + '/purchase_order_list'; });
+            if (resp.data && resp.data.prId) {
+                sessionStorage.removeItem(PR_CART_STORAGE_KEY);
+                Swal.fire({ title: 'Success!', text: 'Pr saved draft successfully!', icon: 'success' })
+                    .then(() => { window.location.href = ctx + '/purchase_requisition_list'; });
             } else {
                 Swal.fire('Error', 'ไม่สามารถบันทึก Draft ได้', 'error');
             }
@@ -2125,14 +1855,11 @@ function saveDraftForm(){
     });
 }
 
-function validatePOForm(){
+function validatePRForm(){
     let errors = [];
     if (!($('#description').val() || '').trim()) errors.push('Description');
-    if (!($('#vendor_id').val() || '').trim()) errors.push('Company Name');
-    if (!($('#vendor_location_id').val() || '').trim()) errors.push('Company Location');
-    if (!($('#contact_id').val() || '').trim()) errors.push('Contact Name');
-    const totalDetailCount = (existingPoDetailList ? existingPoDetailList.length : 0) + (poDetailCart ? poDetailCart.length : 0);
-    if (totalDetailCount === 0) errors.push('Please add at least 1 Po Detail');
+    const totalDetailCount = (existingPrDetailList ? existingPrDetailList.length : 0) + (prDetailCart ? prDetailCart.length : 0);
+    if (totalDetailCount === 0) errors.push('Please add at least 1 Pr Detail');
 
     const hasSignature = $('#hasSignature').val() === 'true';
     if (!hasSignature) errors.push('ลายเซ็น (Signature)');
@@ -2142,8 +1869,8 @@ function validatePOForm(){
     return errors;
 }
 
-function submitPO(){
-    const errors = validatePOForm();
+function submitPR(){
+    const errors = validatePRForm();
 
     if (errors.length > 0) {
         Swal.fire({
@@ -2173,15 +1900,9 @@ function submitPO(){
         if (!result.isConfirmed) return;
 
         const payload = {
-        	poId: EDIT_PO_ID || '',
-            companyId: $('#vendor_id').val() || '',
-            companyLocation: $('#vendor_location_id').val() || '',
-            contactId: $('#contact_id').val() || '',
+        	prId: EDIT_PR_ID || '',
             description: $('#description').val().trim() || '',
-            descriptionVendor: $('#vendor_description').val().trim() || '',
-            referenceNo: $('#reference_no').val().trim() || '',
-            referenceDate: $('#kt_reference_datepicker').val() || '',
-            poDetailCartJson: JSON.stringify(poDetailCart),
+            prDetailCartJson: JSON.stringify(prDetailCart),
             status: '2'
         };
         
@@ -2191,34 +1912,34 @@ function submitPO(){
             selectedFiles.forEach(function (file) { fd.append('files', file, file.name); });
         }
 
-        $('#savePOFormBtn').prop('disabled', true);
+        $('#savePRFormBtn').prop('disabled', true);
 
         $.ajax({
-        	url: ctx + (EDIT_PO_ID ? '/update_po' : '/save_po'),
+        	url: ctx + (EDIT_PR_ID ? '/update_pr' : '/save_pr'),
             type: 'POST',
             dataType: 'json',
             data: fd,
             processData: false,
             contentType: false,
             success: function (resp) {
-                if (resp.data && resp.data.poId) {
-                    sessionStorage.removeItem(PO_CART_STORAGE_KEY);
+                if (resp.data && resp.data.prId) {
+                    sessionStorage.removeItem(PR_CART_STORAGE_KEY);
                     Swal.fire({
                         title: 'Success!',
-                        text: 'Po saved successfully!',
+                        text: 'Pr saved successfully!',
                         icon: 'success'
                     }).then(() => {
-                        window.location.href = ctx + '/purchase_order_list';
+                        window.location.href = ctx + '/purchase_requisition_list';
                     });
                 } else {
-                    Swal.fire('Error', 'ไม่สามารถส่ง PO ได้', 'error');
+                    Swal.fire('Error', 'ไม่สามารถส่ง PR ได้', 'error');
                 }
             },
             error: function () {
                 Swal.fire('Error', 'เกิดข้อผิดพลาดในการส่งข้อมูล', 'error');
             },
             complete: function(){
-                $('#savePOFormBtn').prop('disabled', false);
+                $('#savePRFormBtn').prop('disabled', false);
             }
         });
     });
@@ -2246,15 +1967,15 @@ function validateReason(){
     return reasonVal;
 }
 
-function returnPO(){
+function returnPR(){
     const reasonVal = validateReason();
     if (reasonVal === null) return;
 
-    const errors = validatePOForm();
+    const errors = validatePRForm();
 
     Swal.fire({
         title: "Are you sure?!",
-        text: "Do you want to return this PO?",
+        text: "Do you want to return this PR?",
         icon: "warning",
         showCancelButton: true,
         confirmButtonText: "Save",
@@ -2268,69 +1989,53 @@ function returnPO(){
         if (!result.isConfirmed) return;
 
         const payload = {
-            poId: EDIT_PO_ID || '',
+            prId: EDIT_PR_ID || '',
             reason: reasonVal,
             status: '4'
         };
 
-        $('#returnPOBtn').prop('disabled', true);
+        $('#returnPRBtn').prop('disabled', true);
 
         $.ajax({
-            url: ctx + ('/update_status_po'),
+            url: ctx + ('/update_status_pr'),
             type: 'POST',
             dataType: 'json',
             data: payload,
             success: function (resp) {
-                if (resp.data && resp.data.poId) {
-                    sessionStorage.removeItem(PO_CART_STORAGE_KEY);
+                if (resp.data && resp.data.prId) {
+                    sessionStorage.removeItem(PR_CART_STORAGE_KEY);
                     Swal.fire({
                         title: 'Success!',
-                        text: 'Po returned successfully!',
+                        text: 'Pr returned successfully!',
                         icon: 'success'
                     }).then(() => {
 						location.reload();
-                        // window.location.href = ctx + '/purchase_order_list';
+                        // window.location.href = ctx + '/purchase_requisition_list';
                     });
                 } else {
-                    Swal.fire('Error', 'ไม่สามารถคืน PO ได้', 'error');
+                    Swal.fire('Error', 'ไม่สามารถคืน PR ได้', 'error');
                 }
             },
             error: function () {
                 Swal.fire('Error', 'เกิดข้อผิดพลาดในการส่งข้อมูล', 'error');
             },
             complete: function(){
-                $('#returnPOBtn').prop('disabled', false);
+                $('#returnPRBtn').prop('disabled', false);
             }
         });
     });
 }
 
-function editPO(){
-
-    // Swal.fire({
-    //     title: "Are you sure?!",
-    //     text: "Do you want to return this PO?",
-    //     icon: "warning",
-    //     showCancelButton: true,
-    //     confirmButtonText: "Save",
-    //     cancelButtonText: "Close",
-    //     buttonsStyling: false,
-    //     customClass: {
-    //         confirmButton: "btn btn-success",
-    //         cancelButton: "btn btn-secondary"
-    //     }
-    // }).then((result) => {
-    //     if (!result.isConfirmed) return;
-
+function editPR(){
         const payload = {
-            poId: EDIT_PO_ID || '',
+            prId: EDIT_PR_ID || '',
             status: '1'
         };
 
-        $('#returnPOBtn').prop('disabled', true);
+        $('#returnPRBtn').prop('disabled', true);
 
         $.ajax({
-            url: ctx + ('/update_status_po'),
+            url: ctx + ('/update_status_pr'),
             type: 'POST',
             dataType: 'json',
             data: payload,
@@ -2341,22 +2046,22 @@ function editPO(){
                 Swal.fire('Error', 'เกิดข้อผิดพลาดในการส่งข้อมูล', 'error');
             },
             complete: function(){
-                $('#returnPOBtn').prop('disabled', false);
+                $('#returnPRBtn').prop('disabled', false);
             }
         });
     // });
 }
 
 
-function rejectPO(){
+function rejectPR(){
     const reasonVal = validateReason();
     if (reasonVal === null) return;
 
-    const errors = validatePOForm();
+    const errors = validatePRForm();
 
     Swal.fire({
         title: "Are you sure?!",
-        text: "Do you want to reject this PO?",
+        text: "Do you want to reject this PR?",
         icon: "warning",
         showCancelButton: true,
         confirmButtonText: "Save",
@@ -2370,153 +2075,47 @@ function rejectPO(){
         if (!result.isConfirmed) return;
 
         const payload = {
-            poId: EDIT_PO_ID || '',
+            prId: EDIT_PR_ID || '',
             reason: reasonVal,
             status: '5'
         };
 
-        $('#rejectPOBtn').prop('disabled', true);
+        $('#rejectPRBtn').prop('disabled', true);
 
         $.ajax({
-            url: ctx + ('/update_status_po'),
+            url: ctx + ('/update_status_pr'),
             type: 'POST',
             dataType: 'json',
             data: payload,
             success: function (resp) {
-                if (resp.data && resp.data.poId) {
-                    sessionStorage.removeItem(PO_CART_STORAGE_KEY);
+                if (resp.data && resp.data.prId) {
+                    sessionStorage.removeItem(PR_CART_STORAGE_KEY);
                     Swal.fire({
                         title: 'Success!',
-                        text: 'Po rejected successfully!',
-                        icon: 'success'
-                    }).then(() => {
-						location.reload();
-                        // window.location.href = ctx + '/purchase_order_list';
-                    });
-                } else {
-                    Swal.fire('Error', 'ไม่สามารถปฏิเสธ PO ได้', 'error');
-                }
-            },
-            error: function () {
-                Swal.fire('Error', 'เกิดข้อผิดพลาดในการส่งข้อมูล', 'error');
-            },
-            complete: function(){
-                $('#rejectPOBtn').prop('disabled', false);
-            }
-        });
-    });
-}
-
-function approvePO(){
-    Swal.fire({
-        title: "Are you sure?!",
-        text: "Do you want to approve this PO?",
-        icon: "warning",
-        showCancelButton: true,
-        confirmButtonText: "Save",
-        cancelButtonText: "Close",
-        buttonsStyling: false,
-        customClass: {
-            confirmButton: "btn btn-success",
-            cancelButton: "btn btn-secondary"
-        }
-    }).then((result) => {
-        if (!result.isConfirmed) return;
-
-        const payload = {
-            poId: EDIT_PO_ID || '',
-            status: '3' 
-        };
-
-        $('#approvePOBtn').prop('disabled', true);
-
-        $.ajax({
-            url: ctx + '/update_status_po',
-            type: 'POST',
-            dataType: 'json',
-            data: payload,
-            success: function (resp) {
-                if (resp.data && resp.data.poId) {
-                    sessionStorage.removeItem(PO_CART_STORAGE_KEY);
-                    Swal.fire({
-                        title: 'Success!',
-                        text: 'PO approved successfully!',
-                        icon: 'success'
-                    }).then(() => {
-						location.reload();
-                        // window.location.href = ctx + '/purchase_order_list';
-                    });
-                } else {
-                    Swal.fire('Error', 'ไม่สามารถอนุมัติ PO ได้', 'error');
-                }
-            },
-            error: function () {
-                Swal.fire('Error', 'เกิดข้อผิดพลาดในการส่งข้อมูล', 'error');
-            },
-            complete: function(){
-                $('#approvePOBtn').prop('disabled', false);
-            }
-        });
-    });
-}
-
-function inProgressPO(){
-    Swal.fire({
-        title: "Are you sure?!",
-        text: "Do you want to in progress this PO?",
-        icon: "warning",
-        showCancelButton: true,
-        confirmButtonText: "Save",
-        cancelButtonText: "Close",
-        buttonsStyling: false,
-        customClass: {
-            confirmButton: "btn btn-success",
-            cancelButton: "btn btn-secondary"
-        }
-    }).then((result) => {
-        if (!result.isConfirmed) return;
-
-        const payload = {
-            poId: EDIT_PO_ID || '',
-            status: '7' 
-        };
-
-        $('#inProgressPOFormBtn').prop('disabled', true);
-
-        $.ajax({
-            url: ctx + '/update_status_po',
-            type: 'POST',
-            dataType: 'json',
-            data: payload,
-            success: function (resp) {
-                if (resp.data && resp.data.poId) {
-                    sessionStorage.removeItem(PO_CART_STORAGE_KEY);
-                    Swal.fire({
-                        title: 'Success!',
-                        text: 'PO in progress successfully!',
+                        text: 'Pr rejected successfully!',
                         icon: 'success'
                     }).then(() => {
                         location.reload();
-                        // window.location.href = ctx + '/purchase_order_list';
+                        // window.location.href = ctx + '/purchase_requisition_list';
                     });
                 } else {
-                    Swal.fire('Error', 'ไม่สามารถอนุมัติ PO ได้', 'error');
+                    Swal.fire('Error', 'ไม่สามารถปฏิเสธ PR ได้', 'error');
                 }
             },
             error: function () {
                 Swal.fire('Error', 'เกิดข้อผิดพลาดในการส่งข้อมูล', 'error');
             },
             complete: function(){
-                $('#inProgressPOFormBtn').prop('disabled', false);
+                $('#rejectPRBtn').prop('disabled', false);
             }
         });
     });
 }
 
-function cancelPO(){
+function approvePR(){
     Swal.fire({
         title: "Are you sure?!",
-        text: "Do you want to cancel this PO?",
+        text: "Do you want to approve this PR?",
         icon: "warning",
         showCancelButton: true,
         confirmButtonText: "Save",
@@ -2530,30 +2129,136 @@ function cancelPO(){
         if (!result.isConfirmed) return;
 
         const payload = {
-            poId: EDIT_PO_ID || '',
+            prId: EDIT_PR_ID || '',
+            status: '3' 
+        };
+
+        $('#approvePRBtn').prop('disabled', true);
+
+        $.ajax({
+            url: ctx + '/update_status_pr',
+            type: 'POST',
+            dataType: 'json',
+            data: payload,
+            success: function (resp) {
+                if (resp.data && resp.data.prId) {
+                    sessionStorage.removeItem(PR_CART_STORAGE_KEY);
+                    Swal.fire({
+                        title: 'Success!',
+                        text: 'PR approved successfully!',
+                        icon: 'success'
+                    }).then(() => {
+                        location.reload();
+                        // window.location.href = ctx + '/purchase_requisition_list';
+                    });
+                } else {
+                    Swal.fire('Error', 'ไม่สามารถอนุมัติ PR ได้', 'error');
+                }
+            },
+            error: function () {
+                Swal.fire('Error', 'เกิดข้อผิดพลาดในการส่งข้อมูล', 'error');
+            },
+            complete: function(){
+                $('#approvePRBtn').prop('disabled', false);
+            }
+        });
+    });
+}
+
+function inProgressPR(){
+    Swal.fire({
+        title: "Are you sure?!",
+        text: "Do you want to in progress this PR?",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonText: "Save",
+        cancelButtonText: "Close",
+        buttonsStyling: false,
+        customClass: {
+            confirmButton: "btn btn-success",
+            cancelButton: "btn btn-secondary"
+        }
+    }).then((result) => {
+        if (!result.isConfirmed) return;
+
+        const payload = {
+            prId: EDIT_PR_ID || '',
+            status: '7' 
+        };
+
+        $('#inProgressPRFormBtn').prop('disabled', true);
+
+        $.ajax({
+            url: ctx + '/update_status_pr',
+            type: 'POST',
+            dataType: 'json',
+            data: payload,
+            success: function (resp) {
+                if (resp.data && resp.data.prId) {
+                    sessionStorage.removeItem(PR_CART_STORAGE_KEY);
+                    Swal.fire({
+                        title: 'Success!',
+                        text: 'PR in progress successfully!',
+                        icon: 'success'
+                    }).then(() => {
+                        location.reload();
+                        // window.location.href = ctx + '/purchase_requisition_list';
+                    });
+                } else {
+                    Swal.fire('Error', 'ไม่สามารถอนุมัติ PR ได้', 'error');
+                }
+            },
+            error: function () {
+                Swal.fire('Error', 'เกิดข้อผิดพลาดในการส่งข้อมูล', 'error');
+            },
+            complete: function(){
+                $('#inProgressPRFormBtn').prop('disabled', false);
+            }
+        });
+    });
+}
+
+function cancelPR(){
+    Swal.fire({
+        title: "Are you sure?!",
+        text: "Do you want to cancel this PR?",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonText: "Save",
+        cancelButtonText: "Close",
+        buttonsStyling: false,
+        customClass: {
+            confirmButton: "btn btn-success",
+            cancelButton: "btn btn-secondary"
+        }
+    }).then((result) => {
+        if (!result.isConfirmed) return;
+
+        const payload = {
+            prId: EDIT_PR_ID || '',
             status: '6' 
         };
 
         $('#cancelFormBtn').prop('disabled', true);
 
         $.ajax({
-            url: ctx + '/update_status_po',
+            url: ctx + '/update_status_pr',
             type: 'POST',
             dataType: 'json',
             data: payload,
             success: function (resp) {
-                if (resp.data && resp.data.poId) {
-                    sessionStorage.removeItem(PO_CART_STORAGE_KEY);
+                if (resp.data && resp.data.prId) {
+                    sessionStorage.removeItem(PR_CART_STORAGE_KEY);
                     Swal.fire({
                         title: 'Success!',
-                        text: 'PO cancel successfully!',
+                        text: 'PR cancel successfully!',
                         icon: 'success'
                     }).then(() => {
                         location.reload();
-                        // window.location.href = ctx + '/purchase_order_list';
+                        // window.location.href = ctx + '/purchase_requisition_list';
                     });
                 } else {
-                    Swal.fire('Error', 'ไม่สามารถลบ PO ได้', 'error');
+                    Swal.fire('Error', 'ไม่สามารถลบ PR ได้', 'error');
                 }
             },
             error: function () {

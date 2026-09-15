@@ -32,113 +32,106 @@
 	src="${pageContext.request.contextPath}/assets/js/custom/utilities/attachFile/attcahfile.js"></script>
 
 <style>
-/* ==================== Table PR ==================== */
-
-[data-bs-theme="light"] #prResultTable.table.table-striped > tbody > tr:nth-of-type(odd) > * {
-    background-color: #FBFBFB !important;
+/* Table MR */
+/* [data-bs-theme="light"] #mrResultTable.table.table-striped > tbody > tr:nth-of-type(odd) > * {
+    background-color: #FBFBFB !important; 
     box-shadow: none !important;
-}
-
-[data-bs-theme="dark"] #prResultTable.table.table-striped > tbody > tr:nth-of-type(odd) > * {
-    background-color: #191B20 !important;
+  }
+ [data-bs-theme="dark"] #mrResultTable.table.table-striped > tbody > tr:nth-of-type(odd) > * {
+    background-color: #191B20 !important; 
     box-shadow: none !important;
+  }
+
+#mrResultTable thead th {
+	white-space: nowrap !important;
+	position: relative !important;
+	padding-right: 35px !important;
+	cursor: pointer;
 }
 
-
-/* ===== Table Header ===== */
-
-#prResultTable thead th {
-    white-space: nowrap !important;
-    vertical-align: middle !important;
-    padding-right: 35px !important;
-    cursor: pointer;
+#mrResultTable thead th.sorting:after, #mrResultTable thead th.sorting_asc:after,
+#mrResultTable thead th.sorting_desc:after, #mrResultTable thead th.sorting:before,	
+#mrResultTable thead th.sorting_asc:before, #mrResultTable thead th.sorting_desc:before
+	{
+	position: absolute !important;
+	top: 10px !important;
+	right: 10px !important;
+	display: block !important;
+	opacity: 0.5;
 }
 
-
-/* ===== DataTables Header ===== */
- 
-#prResultTable thead th .dt-column-header {
-    display: inline-flex !important;
-    align-items: center !important;
-    width: auto !important;
-    white-space: nowrap !important;
+#mrResultTable thead th.sorting:before {
+	margin-top: -6px;
 }
 
-#prResultTable thead th .dt-column-title {
-    display: inline-block !important;
-    white-space: nowrap !important;
+#mrResultTable thead th.sorting:after {
+	margin-top: 4px;
 }
 
-/* ===== Remove old DataTables arrow ===== */
-
-#prResultTable thead th.sorting::before,
-#prResultTable thead th.sorting::after,
-#prResultTable thead th.sorting_asc::before,
-#prResultTable thead th.sorting_asc::after,
-#prResultTable thead th.sorting_desc::before,
-#prResultTable thead th.sorting_desc::after {
-    display: none !important;
-}
-
-/* ===== First / Last Column ===== */
-
-#prResultTable thead th:first-child{
+#mrResultTable thead th:first-child, th:last-child {
     padding-right: 0 !important;
 }
 
-/* ===== PR Search Modal ===== */
+#mrResultTable thead th:last-child {
+    text-align: right !important;
+    padding-right: 0 !important;
+} */
 
-#modal_search_pr .table-responsive {
-    max-height: 300px;
-    overflow-y: auto;
+
+.text-orange{
+	color: #FD7E14 ;
+}
+.btn-cyan{
+	background-color: #0DCAF0 !important;
 }
 
-/* ======= Signature Box ======= */
 
+/* ===== Signature Box ===== */
 .sig-box {
-    width: 100%;
-    height: 200px;
-    border-radius: 10px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    position: relative;
-    overflow: hidden;
+	width: 100%;
+	height: 200px;
+	border-radius: 10px;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	position: relative;
+	overflow: hidden;
 }
 
 .sig-box.locked {
-    border: 2px solid #E4E6EF;
-    background: #F9F9F9;
-    cursor: default;
+	border: 2px solid #E4E6EF;
+	background: #F9F9F9;
+	cursor: default;
 }
 
 .sig-box.uploadable {
-    border: 2px dashed #C9D0E0;
-    background: #FAFAFA;
-    cursor: pointer;
+	border: 2px dashed #C9D0E0;
+	background: #FAFAFA;
+	cursor: pointer;
 }
 
 .sig-box.uploadable:hover {
-    border-color: #009EF7;
-    background: #F0FAFF;
+	border-color: #009EF7;
+	background: #F0FAFF;
 }
 
 .sig-box.unuploadable {
-    border: 2px dashed #C9D0E0;
-    background: #FAFAFA;
+	border: 2px dashed #C9D0E0;
+	background: #FAFAFA;
 }
 
 .sig-lock-badge {
-    position: absolute;
-    top: 6px;
-    right: 8px;
-    font-size: .7rem;
-    color: #A1A5B7;
-    display: flex;
-    align-items: center;
-    gap: 3px;
+	position: absolute;
+	top: 6px;
+	right: 8px;
+	font-size: .7rem;
+	color: #A1A5B7;
+	display: flex;
+	align-items: center;
+	gap: 3px;
 }
+
 
 </style>
 
@@ -152,7 +145,7 @@
 				
 					<div class="page-title d-flex flex-column justify-content-center flex-wrap me-3">
 						<h1 class="page-heading d-flex text-gray-700 fw-semibold flex-column justify-content-center my-0">
-							Add PO - Purchase Order
+							Add PR - Purchase Requisition
 						</h1>
 						<ul class="breadcrumb breadcrumb-separatorless fw-semibold fs-7 my-0 pt-1">
 							<li class="breadcrumb-item text-muted"><a class="text-muted text-hover-primary">Home</a></li>
@@ -175,46 +168,37 @@
 							<div class="card h-100">
 								<div class="card-header border-0 px-9 pt-7 d-flex align-items-center justify-content-between">
 									<div class="card-title">
-										<h3 class="fw-semibold text-gray-900">PO - Header</h3>
+										<h3 class="fw-semibold text-gray-900">PR - Header</h3>
 									</div>
 								</div>
 								<div class="card-body filter-card px-10 py-9 rounded-3">
 									<div class="row g-5">
-										<div class="col-lg-6 col-md-6 col-12 d-flex align-items-center">
-											<i class="ki-duotone ki-user-tick fs-3 me-3">
-												<span class="path1"></span>
-												<span class="path2"></span>
-												<span class="path3"></span>
-											</i>
-											<span class="fs-6 fw-medium text-gray-800">${empty loginUser.employeeId ? '' : loginUser.employeeId} - ${empty loginUser.nameEN ? '' : loginUser.nameEN}</span>
-										</div>
-										
-										<div class="col-lg-6 col-md-6 col-12 d-flex align-items-center">
-											<i class="ki-duotone ki-calendar-2 fs-3 me-3">
-												<span class="path1"></span>
-												<span class="path2"></span>
-												<span class="path3"></span>
-												<span class="path4"></span>
-												<span class="path5"></span>
-											</i>
-											<span class="fs-6 fw-medium text-gray-800"><fmt:formatDate value="${requestDateTime}" pattern="d MMM yyyy" /></span>
-										</div>
-										
-										<div class="col-12 mt-9">
-											<label class="required fw-medium text-gray-800 mb-5">Description</label>
-											<textarea class="form-control text-gray-700" id="description" name="description"
-												placeholder="Description" rows="3"></textarea>
-										</div>
-										<!-- <div class="col-12 mt-5">
-											<label for="myFile" id="lbFile" class="btn btn-primary d-inline-flex align-items-center justify-content-center gap-2 fw-medium mb-3">
-													Attach files
-												<input type="file" id="myFile" name="files" style="display:none;" accept="image/*,application/pdf,application/zip,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document" multiple>
-											</label>
-											<div id="attachFileList" class="d-flex flex-column mt-3 gap-2"></div>
-											<div id="errorMsgAF" class="text-danger fs-8 mt-1"></div>
-										</div> -->
+								<div class="col-lg-6 col-md-6 col-12 d-flex align-items-center">
+									<i class="ki-duotone ki-user-tick fs-3 me-3">
+										 <span class="path1"></span>
+										 <span class="path2"></span>
+										 <span class="path3"></span>
+									</i>
+									<span class="fs-6 fw-medium text-gray-800">${empty loginUser.employeeId ? '' : loginUser.employeeId} - ${empty loginUser.nameEN ? '' : loginUser.nameEN}</span>
+								</div>
+								
+								<div class="col-lg-6 col-md-6 col-12 d-flex align-items-center">
+									<i class="ki-duotone ki-calendar-2 fs-3 me-3">
+										 <span class="path1"></span>
+										 <span class="path2"></span>
+										 <span class="path3"></span>
+										 <span class="path4"></span>
+ 										 <span class="path5"></span>
+									</i>
+									<span class="fs-6 fw-medium text-gray-800"><fmt:formatDate value="${requestDateTime}" pattern="d MMM yyyy" /></span>
+								</div>
+								
+								<div class="col-12 mt-9">
+									<label class="required fw-medium text-gray-800 mb-2">Description</label>
+									<textarea class="form-control text-gray-700" id="description" name="description"
+										placeholder="Description" rows="3"></textarea>
+								</div>
 									</div>
-
 								</div>
 							</div>
 						</div>
@@ -225,28 +209,23 @@
 										<h3 class="fw-semibold text-gray-900">Attach files</h3>
 									</div>
 									<label for="myFile" id="lbFile" class="btn btn-lg btn-primary d-inline-flex align-items-center justify-content-center fw-medium h-40px my-0">
-											Upload
+										Upload
 										<input type="file" id="myFile" name="files" multiple style="display: none;"
-											accept="image/*,application/pdf,application/zip,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document" multiple>
-											
+											accept="image/*,application/pdf,application/zip,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document">
 									</label>
 								</div>
 								<div class="card-body filter-card px-10 py-9 rounded-3">
 									<div id="attachFileWarningBox"
 										class="border border-2 border-warning rounded border-active active w-100">
 										<div class="py-5 d-flex flex-column align-items-center">
-											<div
-												class="fs-3 fw-bold text-warning d-flex justify-content-center align-items-center gap-2 mb-5">
+											<div class="fs-3 fw-bold text-warning d-flex justify-content-center align-items-center gap-2 mb-5">
 												<i class="ki-duotone ki-information-2 fs-3x text-warning">
-													<span class="path1"></span> <span class="path2"></span> <span
-													class="path3"></span>
+													<span class="path1"></span> <span class="path2"></span> <span class="path3"></span>
 												</i> Attach files
 											</div>
-											<div
-												class="d-flex justify-content-center align-items-center text-center fw-medium fs-7 mb-5 text-gray-800">Only
+											<div class="d-flex justify-content-center align-items-center text-center fw-medium fs-7 mb-5 text-gray-800">Only
 												English filenames are accepted.</div>
-											<div
-												class="d-flex justify-content-center align-items-center text-center fw-medium fs-7 text-muted">
+											<div class="d-flex justify-content-center align-items-center text-center fw-medium fs-7 text-muted">
 												Files with Thai or special characters may<br> not open
 												correctly after upload.
 											</div>
@@ -258,132 +237,28 @@
 									</div>
 								</div>
 							</div>
-						
 						</div>
 					</div>
-					
-					<div class="card mb-10 mt-5">
-						<div class="card-header border-0 px-9 pt-7 d-flex align-items-center justify-content-between">
-							<div class="card-title">
-								<h3 class="fw-semibold text-gray-900">Vendor</h3>
-							</div>
-						</div>
-						<div class="card-body filter-card px-10 py-9 rounded-3">
-							<div class="row g-5 mb-6">
-								<div class="col-lg-6 col-md-6 col-12 d-flex flex-column">
-									<label class="fw-medium text-gray-800 mb-2">Reference Invoice/Quotation NO</label>
-									<input type="text" class="form-control text-gray-700 h-45px"
-											placeholder="Reference Invoice/Quotation NO" name="reference_no"
-											id="reference_no" value="" />
-								</div>
-								
-								<div class="col-lg-6 col-md-6 col-12 d-flex flex-column">
-									<label class="fw-medium text-gray-800 mb-2">Reference Invoice/Quotation Date</label>
-									<div class="position-relative d-flex align-items-center">
-										<i class="ki-duotone ki-calendar-8 position-absolute ms-4 mb-1 text-gray-500 fs-3">
-											<span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span><span class="path5"></span><span class="path6"></span>
-										</i>
-										<input class="form-control text-gray-700 ps-12 h-45px" 
-											   id="kt_reference_datepicker" name="reference_date" placeholder="Select date" 
-											   value=""/>
-									</div>
-								</div>
-							</div>
-					
-							<div class="row g-5 mb-6">
-								
-									<div class="col-lg-6 col-md-6 col-12 d-flex flex-column">
-										<div class="d-flex justify-content-between align-items-center mb-2">
-											<label class="required fw-medium text-gray-800">Company Name</label>
-											<a href="/company_add" target="_blank" class="text-success fw-medium fs-7 text-hover-primary" style="text-decoration: none;">
-												<i class="ki-outline ki-plus fs-7 text-success me-1"></i>Create
-											</a>
-										</div>
-										<select name="vendor_id" id="vendor_id" class="form-select h-45px" data-control="select2" data-placeholder="Select Company Name">
-									   		<option value=""></option>     
-									        <c:forEach var="company" items="${companyList}">
-									            <option value="${company.company_id}">${company.company_en}</option>
-									        </c:forEach>
-									    </select>
-											<div id="companyTaxInfo" class="d-flex align-items-center text-gray-500 fs-7 mt-3 px-1 d-none">
-												<i class="ki-duotone ki-credit-cart fs-3 me-2 text-muted"><span class="path1"></span><span class="path2"></span></i>
-												<span class="fs-6 fw-normal text-gray-800">Tax ID : <span id="companyTaxNumber"></span></span>
-											</div>
 
-									</div>
-						
-								<div class="col-lg-6 col-md-6 col-12 d-flex flex-column">
-									<label class="required fw-medium text-gray-800 mb-2">Company Location</label>
-									<select name="vendor_location_right_id" id="vendor_location_id" class="form-select h-45px" data-control="select2" data-placeholder="Select Company Location" disabled>
-									   <option value=""></option>
-									</select>
-									
-									<div id="companyAddressInfo" class="d-flex align-items-center text-gray-500 fs-7 mt-3 px-1 d-none">
-										<i class="ki-duotone ki-map fs-3 me-2 text-muted"><span class="path1"></span><span class="path2"></span><span class="path3"></span></i>
-										<span class="fs-6 fw-normal text-gray-800" id="companyAddress"></span>
-									</div>
-								</div>
-							</div>
-					
-							<div class="row g-5 mb-6">		
-								<div class="col-lg-6 col-md-6 col-12 d-flex flex-column">
-									<div class="d-flex justify-content-between align-items-center mb-2">
-										<label class="required fw-medium text-gray-800">Contact Name</label>
-										<a href="/contact_add" target="_blank" class="text-success fw-medium fs-7 text-hover-primary" style="text-decoration: none;">
-											<i class="ki-outline ki-plus fs-7 me-1 text-success"></i>Create
-										</a>
-									</div>
-									
-									<select name="contact_id" id="contact_id" class="form-select h-45px" data-control="select2" data-placeholder="Select Contact Name" disabled>
-										<option value=""></option>
-									</select>
-									
-									<div id="contactInfo" class="d-flex flex-column gap-1 mt-3 px-1 d-none">
-										<div class="d-flex align-items-center text-gray-500 fs-7">
-											<i class="ki-duotone ki-address-book fs-3 me-2 text-muted"><span class="path1"></span><span class="path2"></span><span class="path3"></span></i>
-											<span class="fs-6 fw-normal text-gray-800" id="contactPhone"></span>
-										</div>
-										<div class="d-flex align-items-center text-gray-500 fs-7">
-											<i class="ki-duotone ki-sms fs-3 me-2 text-muted"><span class="path1"></span><span class="path2"></span></i>
-											<span class="fs-6 fw-normal text-gray-800" id="contactEmail"></span>
-										</div>
-									</div>
-								</div>
-								
-								<div class="col-lg-6 col-md-6 col-12 d-flex flex-column">
-									<label class="fw-medium text-gray-800 mb-2">Description</label>
-									<textarea class="form-control text-gray-700" rows="3" name="vendor_description" id="vendor_description" placeholder="Description"></textarea>
-								</div>
-							</div>
-						</div>
-					</div>
-					
 					<div class="card mb-10">
 						<div class="card-header border-0 px-9 pt-7 d-flex align-items-center justify-content-between">
 					        <div class="card-title">
-					            <h3 class="fw-semibold text-gray-900">PO - Detail</h3>
+					            <h3 class="fw-semibold text-gray-900">PR - Detail</h3>
 					        </div>
 					        <div class="card-title gap-3">
-						         <button type="button" id="btnOpenCreatePo" class="btn btn-lg btn-success fw-medium text-white px-6 py-4">
+						         <button type="button" id="btnOpenCreatePr" class="btn btn-lg btn-success fw-medium text-white px-6 py-4">
 									<i class="ki-outline ki-plus fs-3 me-1"></i>Create
 								</button>
 								
-								<button type="button" class="btn btn-lg btn-primary fw-medium text-white px-6 py-4" data-bs-toggle="modal" data-bs-target="#modal_search_pr">
+								<button type="button" class="btn btn-lg btn-primary fw-medium text-white px-6 py-4" data-bs-toggle="modal" data-bs-target="#modal_search_mr">
 									<i class="ki-duotone ki-magnifier fs-3 me-1">
-						                <span class="path1"></span><span class="path2"></span></i>Search PR
+						                <span class="path1"></span><span class="path2"></span></i>Search MR
 								</button>
 					            
 					        </div>
 					    </div>
 						<div class="card-body filter-card px-9 py-8 rounded-3">
-							<div id="poDetailCartContainer"></div>
-					        <!-- Grand Total -->
-					        <div class="d-flex align-items-center justify-content-end pt-3 mt-3 g-3">
-					            <span class="text-gray-900 fs-6 me-5">Total</span>
-					            <h1 class="fw-semibold text-primary ps-9 text-end" id="poDetailGrandTotal">0.00</h1>
-					            <span class="text-gray-900 fs-6 text-end ms-3">บาท</span>
-					        </div>
-											
+							<div id="prDetailCartContainer"></div>
 						</div>
 					</div>
 					
@@ -460,11 +335,11 @@
 					</div>
 					
 					
-					<div class="modal fade" tabindex="-1" id="modal_create_po">
+					<div class="modal fade" tabindex="-1" id="modal_create_pr">
 						<div class="modal-dialog modal-lg">
 						    <div class="modal-content">
 						        <div class="modal-header">
-						            <h3 class="modal-title">Create PO - Detail</h3>
+						            <h3 class="modal-title">Create PR - Detail</h3>
 					
 						            <div class="btn btn-icon btn-sm btn-active-light-primary ms-2" data-bs-dismiss="modal" aria-label="Close">
 						                <i class="ki-duotone ki-cross fs-1"><span class="path1"></span><span class="path2"></span></i>
@@ -481,7 +356,6 @@
 						                            <option value="consumables">Consumables</option>
 													<option value="accessory">Accessory</option>
 						                            <option value="office">Office supplies</option>
-													<option value="accessory">Accessory</option>
 												</select>
 											</div>
 										</div>
@@ -500,7 +374,7 @@
 										<div class="col-lg-6 col-md-6 col-12 d-flex flex-column">
 											<label class="required fw-medium text-gray-800 mb-2">จำนวน</label>
 											<input type="number" class="form-control text-gray-700 h-45px" min="1"
-													name="po_qty" id="po_qty" placeholder="1" value="1" />
+													name="pr_qty" id="pr_qty" placeholder="1" value="1" />
 										</div>
 										
 										<div class="col-lg-6 col-md-6 col-12 d-flex flex-column">
@@ -514,33 +388,34 @@
 									</div>
 									
 									<div class="row g-5 mb-6">
-										<div class="col-lg-6 col-md-6 col-12 d-flex flex-column">
-											<label class="required fw-medium text-gray-800 mb-2">ราคาต่อหน่วย</label>
-											<input type="text" class="form-control text-gray-700 h-45px"
-													name="po_price" id="po_price" placeholder="0.00" />
-										</div>
-								
 										<div class="col-6 d-flex flex-column">
 											<label class="required fw-medium text-gray-800 mb-2">Description / Detail</label>
-											<textarea class="form-control text-gray-700" rows="3" name="description" id="po_description" placeholder="Description"></textarea>
+											<textarea class="form-control text-gray-700" rows="3" name="description" id="pr_description" placeholder="Description"></textarea>
 										</div>
+
+										<div class="col-lg-6 col-md-6 col-12 d-flex flex-column">
+											<label class="fw-medium text-gray-800 mb-2">Ref Link</label>
+											<input type="text" class="form-control text-gray-700 h-45px"
+													name="pr_ref_link" id="pr_ref_link" placeholder="https://..." />
+										</div>
+
 									</div>
 						        </div>
 						
 						        <div class="modal-footer">
 						            <button type="button" class="btn btn-light" data-bs-dismiss="modal">Close</button>
-						            <button type="button" class="btn btn-success" id="btnSavePoDetail"
-        									onclick="addPoDetailToCart()">Save</button>
+						            <button type="button" class="btn btn-success" id="btnSavePrDetail"
+        									onclick="addPrDetailToCart()">Save</button>
 						        </div>
 						    </div>
 						</div>
 					</div>
 				
-					<div class="modal fade" tabindex="-1" id="modal_search_pr">
-					    <div class="modal-dialog modal-xl">
+					<div class="modal fade" tabindex="-1" id="modal_search_mr">
+					    <div class="modal-dialog modal-lg">
 					        <div class="modal-content px-3">
 					            <div class="modal-header border-0">
-					                <h3 class="modal-title">Search PR</h3>
+					                <h3 class="modal-title">Search MR</h3>
 					                <div class="btn btn-icon btn-sm btn-active-light-primary ms-2" data-bs-dismiss="modal" aria-label="Close">
 					                    <i class="ki-duotone ki-cross fs-1"><span class="path1"></span><span class="path2"></span></i>
 					                </div>
@@ -549,16 +424,17 @@
 					            <div class="modal-body">
 					                <div class="row g-5 mb-3">
 					                    <div class="col-lg-6 col-md-6 col-12 d-flex flex-column">
-					                        <label class="required fw-medium text-gray-800 mb-2">Search PR</label>
+					                        <label class="required fw-medium text-gray-800 mb-2">Search MR</label>
 					                        <div class="input-group">
-					                            <input type="text" class="form-control text-gray-700 h-45px" name="searchPrKeyword" id="searchPrKeyword" />
+					                            <input type="text" class="form-control text-gray-700 h-45px"
+					                                    name="" id="" />
 					                            
 					                        </div>
 					                    </div>
 					
 					                    <div class="col-lg-6 col-md-6 col-12 d-flex flex-column">
 					                        <label class="required fw-medium text-gray-800 mb-2">Category</label>
-					                        <select name="searchPrCategory" id="searchPrCategory" class="form-select h-45px" data-control="select2">
+					                        <select name="searchMrCategory" id="searchMrCategory" class="form-select h-45px" data-control="select2">
 					                            <option value="" selected>All</option>
 					                            <option value="equipment">Equipment</option>
 					                            <option value="consumables">Consumables</option>
@@ -571,47 +447,261 @@
 						                    <div class="d-flex align-items-center justify-content-between mb-4 ">
 							                    <div class="d-flex align-items-center gap-2">
 								                    <h3 class="text-gray-900 fw-bold">
-												        <span id="prItemsFoundCount"></span> Items Found 
+												        <span id="mrItemsFoundCount"></span> Items Found 
 												    </h3>
 												
 												  
 												    <span id="mrSortLabel" class="fw-bold fs-6 text-gray-500">by Recent Updates</span>
 												</div>
 												        <h3 class="text-primary fw-bold">
-												            <span id="prSelectedCount"></span> Selected
+												            <span id="mrSelectedCount"></span> Selected
 												        </h3>
 												    
 							        
 											    
 											</div>
 					                        <div class="table-responsive">
-					                            <table class="table table-striped align-middle gy-4 gs-7" id="prResultTable">
+					                            <table class="table table-striped align-middle gy-4 gs-7" id="mrResultTable">
 					                                <thead>
 					                                    <tr class="fs-7 fw-bold text-gray-500 text-uppercase border-bottom border-gray-200 mb-0">
-					                                        <th class="min-w-15px ">
+					                                        <th class="w-25px ">
 					                                            <div class="text-center form-check form-check-sm">
-					                                                <input class="form-check-input" type="checkbox" id="checkAllPr" />
+					                                                <input class="form-check-input" type="checkbox" id="checkAllMr" />
 					                                            </div>
 					                                        </th>
-					                                        <th class="min-w-40px text-start mx-0">#</th>
-					                                        <th class="min-w-80px">PR ID</th>
+					                                        <th class="min-w-40px">#</th>
+					                                        <th class="min-w-80px">MR ID</th>
 					                                        <th class="min-w-100px">Category</th>
 					                                         <th class="min-w-200px">Request Name</th>
 					                                        <th class="min-w-200px">Product</th>
-					                                        <th class="min-w-100px text-end px-2">Status</th>
+					                                        <th class="min-w-100px text-center">Status</th>
 					                                    </tr>
 					                                </thead>
-					                                <tbody id="prResultBody"></tbody>
-												</table>
+					                                <tbody id="mrResultBody">
+					                                    <tr class="fw-semibold fs-6 text-gray-800 border-bottom border-gray-200">
+					                                        <td>
+					                                            <div class="form-check form-check-sm">
+					                                                <input class="form-check-input mr-row-check" type="checkbox" />
+					                                            </div>
+					                                        </td>
+					                                        <td class="fw-semibold text-gray-900 fs-7 row-number"></td>
+					                                        <td class="fw-normal text-gray-900 fs-5">MR001</td>
+					                                        <td>
+					                                        	<div class="d-flex align-items-center">
+							                                        <div class="symbol symbol-40px me-4">
+														                 <i class="ki-duotone ki-monitor-mobile fs-2 text-primary">
+														                     <span class="path1"></span><span class="path2"></span></i>
+														            </div>
+							                                        <span class="fw-normal text-gray-900 fs-5">Equipment</span>
+						                                        </div>
+					                                        </td>
+					                                        <td>
+															    <div class="d-flex align-items-center gap-3">
+															        
+															        <div class="symbol symbol-35px"
+															             data-kt-menu-trigger="{default: 'click', lg: 'hover'}"
+															             data-kt-menu-attach="parent" data-kt-menu-placement="bottom-end">
+															            <c:choose>
+															                <c:when test="${not empty sessionScope.userImgPath}">
+															                    <img id="avatarPreview" src="${sessionScope.userImgPath}" alt="${not empty onlineUser.nameEN ? onlineUser.nameEN : onlineUser.name}"
+															                         class="rounded-circle w-35px h-35px" style="object-fit: cover;"> 
+															                </c:when>
+															                <c:otherwise>
+															                  
+															                    <div id="avatarPreview" class="rounded-circle w-35px h-35px bg-light text-primary d-flex justify-content-center align-items-center fw-bold">
+															                        <c:choose>
+															                            <c:when test="${not empty onlineUser.nameEN and fn:length(onlineUser.nameEN) >= 1}">
+															                                ${fn:toUpperCase(fn:substring(onlineUser.nameEN, 0, 1))}
+															                            </c:when>
+															                            <c:when test="${not empty onlineUser.name and fn:length(onlineUser.name) >= 1}">
+															                                ${fn:toUpperCase(fn:substring(onlineUser.name, 0, 1))}
+															                            </c:when>
+															                            <c:otherwise>-</c:otherwise>
+															                        </c:choose>
+															                    </div>
+															                </c:otherwise>
+															            </c:choose>
+															        </div>
+															
+															        <div class="d-flex flex-column">
+															            <span class="fw-normal text-gray-900 fs-6">Kridsada Ninpetch</span>
+															            <span class="fw-normal text-gray-900 fs-6">1 Jan 2026, 12:33</span>
+															        </div>
+															        
+															    </div>
+															</td>
+					                                        <td>
+					                                        	<div class="d-flex flex-column">
+															        <span class="fw-normal text-gray-900 fs-6">Lenovo LOQ 15IAXB</span>
+															        <span class="fw-normal text-gray-900 fs-6">1 เครื่อง</span>
+															 	</div>
+															</td>
+					                                        <td class="text-end">
+					                                        <c:choose>
+																<c:when test="${item.status == 'B'}">
+																	<span class="badge badge-lg bg-light fw-semibold fs-7 text-gray-600">Draft</span>
+																</c:when>
+																<c:when test="${item.status == 'W'}">
+																	<span class="badge badge-lg badge-warning fw-semibold fs-7">Pending</span>
+																</c:when>
+																<c:when test="${item.status == 'C'}">
+																	<span class="badge badge-lg bg-success fw-semibold fs-7">Approved</span>
+																</c:when>
+																<c:when test="${item.status == 'T'}">
+																	<span class="badge badge-lg bg-cyan text-white fw-semibold fs-7">In-Progress</span>
+																</c:when>
+																<c:when test="${item.status == 'W'}">
+																	<span class="badge badge-lg badge-info fw-semibold fs-7">Return</span>
+																</c:when>
+																<c:when test="${item.status == 'C'}">
+																	<span class="badge badge-lg bg-danger fw-semibold fs-7">Rejected</span>
+																</c:when>
+																<c:when test="${item.status == 'T'}">
+																	<span class="badge badge-lg bg-dark fw-semibold fs-7">Closed</span>
+																</c:when>
+																<c:otherwise>
+																</c:otherwise>
+															</c:choose>
+															
+															<span class="badge badge-lg bg-light-secondary fw-semibold fs-7">Draft</span>
+					                                        </td>
+					                                    </tr>
+					                                    <tr class="fw-semibold fs-6 text-gray-800 border-bottom border-gray-200">
+					                                        <td>
+					                                            <div class="form-check form-check-sm">
+					                                                <input class="form-check-input mr-row-check" type="checkbox" />
+					                                            </div>
+					                                        </td>
+					                                        <td class="fw-semibold text-gray-900 fs-7 row-number"></td>
+					                                        <td class="fw-normal text-gray-900 fs-5">MR002</td>
+					                                        <td>
+					                                        	<div class="d-flex align-items-center">
+							                                        <div class="symbol symbol-40px me-4">
+							                                        <i class="ki-duotone ki-lots-shopping fs-2 text-orange">
+													                     <span class="path1"></span><span class="path2"></span>
+													                     <span class="path3"></span><span class="path4"></span>
+													                     <span class="path5"></span><span class="path6"></span>
+													                     <span class="path7"></span><span class="path8"></span>
+												                     </i>
+														            </div>
+							                                        <span class="fw-normal text-gray-900 fs-5">Consumables</span>
+						                                        </div>
+					                                        </td>
+					                                        <td>
+															    <div class="d-flex align-items-center gap-3">
+															        
+															        <div class="symbol symbol-35px"
+															             data-kt-menu-trigger="{default: 'click', lg: 'hover'}"
+															             data-kt-menu-attach="parent" data-kt-menu-placement="bottom-end">
+															            <c:choose>
+															                <c:when test="${not empty sessionScope.userImgPath}">
+															                    <img id="avatarPreview" src="${sessionScope.userImgPath}" alt="${not empty onlineUser.nameEN ? onlineUser.nameEN : onlineUser.name}"
+															                         class="rounded-circle w-35px h-35px" style="object-fit: cover;"> 
+															                </c:when>
+															                <c:otherwise>
+															                  
+															                    <div id="avatarPreview" class="rounded-circle w-35px h-35px bg-light text-primary d-flex justify-content-center align-items-center fw-bold">
+															                        <c:choose>
+															                            <c:when test="${not empty onlineUser.nameEN and fn:length(onlineUser.nameEN) >= 1}">
+															                                ${fn:toUpperCase(fn:substring(onlineUser.nameEN, 0, 1))}
+															                            </c:when>
+															                            <c:when test="${not empty onlineUser.name and fn:length(onlineUser.name) >= 1}">
+															                                ${fn:toUpperCase(fn:substring(onlineUser.name, 0, 1))}
+															                            </c:when>
+															                            <c:otherwise>-</c:otherwise>
+															                        </c:choose>
+															                    </div>
+															                </c:otherwise>
+															            </c:choose>
+															        </div>
+															
+															        <div class="d-flex flex-column">
+															            <span class="fw-normal text-gray-900 fs-6">Kridsada Ninpetch</span>
+															            <span class="fw-normal text-gray-900 fs-6">1 Jan 2026, 12:33</span>
+															        </div>
+															        
+															    </div>
+															</td>
+					                                        <td>
+					                                        	<div class="d-flex flex-column">
+															        <span class="fw-normal text-gray-900 fs-6">A4</span>
+															        <span class="fw-normal text-gray-900 fs-6">1 รีม</span>
+															 	</div>
+															</td>
+															
+					                                        <td class="text-end"><span class="badge badge-lg badge-warning fw-semibold fs-7">Pending</span></td>
+					                                    </tr>
+					                                    <tr class="fw-semibold fs-6 text-gray-800 border-bottom border-gray-200">
+					                                        <td>
+					                                            <div class="form-check form-check-sm">
+					                                                <input class="form-check-input mr-row-check" type="checkbox" />
+					                                            </div>
+					                                        </td>
+					                                        <td class="fw-normal text-gray-900 fs-7 row-number"></td>
+					                                        <td class="fw-normal text-gray-900 fs-5">MR003</td>
+					                                        <td>
+					                                        	<div class="d-flex align-items-center">
+							                                        <div class="symbol symbol-40px me-4">
+														                 <i class="ki-duotone ki-keyboard fs-2 text-dark">
+														                     <span class="path1"></span><span class="path2"></span></i>
+														            </div>
+							                                        <span class="fw-normal text-gray-900 fs-5">Instrument</span>
+						                                        </div>
+					                                        </td>
+					                                        <td>
+															    <div class="d-flex align-items-center gap-3">
+															        
+															        <div class="symbol symbol-35px"
+															             data-kt-menu-trigger="{default: 'click', lg: 'hover'}"
+															             data-kt-menu-attach="parent" data-kt-menu-placement="bottom-end">
+															            <c:choose>
+															                <c:when test="${not empty sessionScope.userImgPath}">
+															                    <img id="avatarPreview" src="${sessionScope.userImgPath}" alt="${not empty onlineUser.nameEN ? onlineUser.nameEN : onlineUser.name}"
+															                         class="rounded-circle w-35px h-35px" style="object-fit: cover;"> 
+															                </c:when>
+															                <c:otherwise>
+															                  
+															                    <div id="avatarPreview" class="rounded-circle w-35px h-35px bg-light text-primary d-flex justify-content-center align-items-center fw-bold">
+															                        <c:choose>
+															                            <c:when test="${not empty onlineUser.nameEN and fn:length(onlineUser.nameEN) >= 1}">
+															                                ${fn:toUpperCase(fn:substring(onlineUser.nameEN, 0, 1))}
+															                            </c:when>
+															                            <c:when test="${not empty onlineUser.name and fn:length(onlineUser.name) >= 1}">
+															                                ${fn:toUpperCase(fn:substring(onlineUser.name, 0, 1))}
+															                            </c:when>
+															                            <c:otherwise>-</c:otherwise>
+															                        </c:choose>
+															                    </div>
+															                </c:otherwise>
+															            </c:choose>
+															        </div>
+															
+															        <div class="d-flex flex-column">
+															            <span class="fw-normal text-gray-900 fs-6">Kridsada Ninpetch</span>
+															            <span class="fw-normal text-gray-900 fs-6">1 Jan 2026, 12:33</span>
+															        </div>
+															        
+															    </div>
+															</td>
+					                                        <td>
+					                                        	<div class="d-flex flex-column">
+															        <span class="fw-normal text-gray-900 fs-6">ต้นคริสมาส</span>
+															        <span class="fw-normal text-gray-900 fs-6">1 ต้น</span>
+															 	</div>
+															</td>
+					                                         <td class="text-end"><span class="badge badge-lg badge-warning fw-semibold fs-7">Pending</span></td>
+					                                    </tr>
+					                                </tbody>
+					                            </table>
 					                        </div>
-					                        <div class="text-muted fs-7 mt-2" id="prNoResult" style="display:none;">No matching PR found.</div>
+					                        <div class="text-muted fs-7 mt-2" id="mrNoResult" style="display:none;">No matching MR found.</div>
 					                    
 					                </div>
 					            </div>
 					
 					            <div class="modal-footer pt-0 mt-0 mb-2 border-0">
 					                <button type="button" class="btn btn-light" data-bs-dismiss="modal">Close</button>
-					                <button type="button" class="btn btn-success" id="btnSubmitPr">Submit</button>
+					                <button type="button" class="btn btn-success" id="btnSubmitMr">Submit</button>
 					            </div>
 					        </div>
 					    </div>
@@ -620,7 +710,7 @@
 					<div class="d-flex justify-content-between g-10">
 						<div class="d-flex">
 							<button type="button" id="backFormBtn"
-								onclick="location.href='purchase_order_list'"
+								onclick="location.href='purchase_requisition_list'"
 								class="btn btn-lg btn-light fw-medium text-light-inverse px-6 py-4 me-4 border">Back
 							</button>
 						</div>
@@ -629,9 +719,9 @@
 							<button type="button" id="saveDraft" onclick="saveDraftForm()"
 								class="btn btn-lg btn-cyan text-white fw-medium px-6 py-4 me-4">Save Draft
 							</button>
-							<button type="button" id="savePOFormBtn"
+							<button type="button" id="savePRFormBtn"
 								class="btn btn-success text-white fw-medium px-6 py-4"
-								onclick="submitPO()">Submit PO</button>
+								onclick="submitPR()">Submit PR</button>
 						</div>
 					</div>
 				</div>
@@ -653,67 +743,72 @@
 	}
 
 	// --- PO Header/Vendor draft (sessionStorage) ---
-	var poHeaderDraft = null;      // ค่าที่โหลดจาก session ตอน init
-	var pendingLocationId = null;  // vendor_location_id ที่รอ consume หลัง get_company_profile
-	var pendingContactId = null;   // contact_id ที่รอ consume หลัง get_company_location
+	var prHeaderDraft = null;      // ค่าที่โหลดจาก session ตอน init
 
 	function saveHeaderToSession(){
 		try {
 			var data = {
-				description: $('#description').val() || '',
-				reference_no: $('#reference_no').val() || '',
-				reference_date: $('#kt_reference_datepicker').val() || '',
-				vendor_id: $('#vendor_id').val() || '',
-				vendor_location_id: $('#vendor_location_id').val() || '',
-				contact_id: $('#contact_id').val() || '',
-				vendor_description: $('#vendor_description').val() || ''
+				description: $('#description').val() || ''
 			};
-			sessionStorage.setItem(PO_HEADER_STORAGE_KEY, JSON.stringify(data));
-		} catch (e) { console.error('save PO header draft failed', e); }
+			sessionStorage.setItem(PR_HEADER_STORAGE_KEY, JSON.stringify(data));
+		} catch (e) { console.error('save PR header draft failed', e); }
 	}
 
 	function loadHeaderFromSession(){
 		try {
-			var saved = sessionStorage.getItem(PO_HEADER_STORAGE_KEY);
+			var saved = sessionStorage.getItem(PR_HEADER_STORAGE_KEY);
 			if (!saved) return;
-			poHeaderDraft = JSON.parse(saved) || null;
-			if (!poHeaderDraft) return;
+			prHeaderDraft = JSON.parse(saved) || null;
+			if (!prHeaderDraft) return;
 
-			$('#description').val(poHeaderDraft.description || '');
-			$('#reference_no').val(poHeaderDraft.reference_no || '');
-			$('#vendor_description').val(poHeaderDraft.vendor_description || '');
+			$('#description').val(prHeaderDraft.description || '');
 
-			pendingLocationId = poHeaderDraft.vendor_location_id || null;
-			pendingContactId = poHeaderDraft.contact_id || null;
-		} catch (e) { console.error('load PO header draft failed', e); poHeaderDraft = null; }
+		} catch (e) { console.error('load PR header draft failed', e); prHeaderDraft = null; }
 	}
 
 	document.addEventListener("DOMContentLoaded", function () {
-
 		loadHeaderFromSession();
 
-		var _refFp = flatpickr("#kt_reference_datepicker", {
-	        dateFormat: "Y-m-d",
-	        altInput: true,
-	        altFormat: "d M Y",
-	        locale: "en",
-	        allowInput: false,
-	        defaultDate: new Date()
-	    });
-		// ทับ default date ด้วยค่าที่ save ไว้
-		if (poHeaderDraft && poHeaderDraft.reference_date) {
-			_refFp.setDate(poHeaderDraft.reference_date, false);
-		}
+		// Table MR
+		var table = $('#mrResultTable').DataTable({
+			ordering : true,
+			searching : true,
+			autoWidth : false,
+			info: false, 
+			paging: false,
+			columnDefs : [ {
+				orderable : false,
+				targets : [ 0 ]
+			}, {
+				orderable : true,
+				targets : [ 1, 2, 3, 4, 5 ]
+			}, {
+				targets: [ 5 ],
+				type: 'string'
+			} ],
+			order : [],
+			headerCallback : function(thead) {
+				$(thead).find('th').each(
+						function(index) {
+							if (index === 0) return;
+							if ($(this).find('.th-wrapper').length === 0) {
+								$(this).wrapInner(
+										'<span class="th-wrapper" style="display:inline-flex; align-items:center; white-space:nowrap; pointer-events:none;"></span>');
+								}
+							});
+				}
+		});
+		
 		
 		document.querySelector('#kt_app_content_container').addEventListener('click', function(e){
-		    const btn = e.target.closest('.collapsed, [data-target^="cart_"], a[id^="poGroupBtn_"]');
+		    const btn = e.target.closest('.collapsed, [data-target^="cart_"], a[id^="prGroupBtn_"]');
 		    if (!btn) return;
 
 		    let collapseEl;
 		    if (btn.dataset.target) {
-		        collapseEl = document.getElementById('poGroup_' + btn.dataset.target);
-		    } else if (btn.id.startsWith('poGroupBtn_')) {
-		        collapseEl = document.getElementById(btn.id.replace('poGroupBtn_', 'poGroup_'));
+		        collapseEl = document.getElementById('prGroup_' + btn.dataset.target);
+		    } else if (btn.id.startsWith('prGroupBtn_')) {
+		        collapseEl = document.getElementById(btn.id.replace('prGroupBtn_', 'prGroup_'));
 		    }
 		    if (!collapseEl) return;
 
@@ -734,17 +829,17 @@
 		});
 		
 		//running number
-		// function runNumber() {
-		// 	const info = table.page.info();
-		// 	table.column(1, {
-		// 		page : 'current'
-		// 			}).nodes().each(function(cell, i) {
-		// 				cell.innerHTML = info.start + i + 1;
-		// 				});
-		// 	}
+		function runNumber() {
+			const info = table.page.info();
+			table.column(1, {
+				page : 'current'
+					}).nodes().each(function(cell, i) {
+						cell.innerHTML = info.start + i + 1;
+						});
+			}
 		
-		// table.on('draw.dt order.dt search.dt', runNumber);
-		// runNumber();
+		table.on('draw.dt order.dt search.dt', runNumber);
+		runNumber();
 		
 		
 		// --- Modal ---
@@ -769,34 +864,56 @@
 		            });
 		        });
 		    }
-		    
-		    var $vendorId = $('#vendor_id');
-		    if (poHeaderDraft && poHeaderDraft.vendor_id) {
-		        // มี draft -> ใช้ค่าที่ save ไว้ ไม่ auto-select บริษัทแรก
-		        $vendorId.val(poHeaderDraft.vendor_id).trigger('change');
-		    } else {
-		        var $firstCompany = $vendorId.find('option').filter(function () {
-		            return $(this).val() !== '';
-		        }).first();
+		    // MR
+		    // document.querySelectorAll('a.btn-primary[href="#"]').forEach(function (btn) {
+		    //     if (btn.textContent.trim().includes('Search MR')) {
+		    //         btn.setAttribute('data-bs-toggle', 'modal');
+		    //         btn.setAttribute('data-bs-target', '#modal_search_mr');
+		    //     }
+		    // });
 
-		        if ($firstCompany.length) {
-		            $vendorId.val($firstCompany.val()).trigger('change');
-		        }
+		    document.getElementById('checkAllMr').addEventListener('change', function () {
+		        document.querySelectorAll('.mr-row-check').forEach(cb => cb.checked = this.checked);
+		        updateMrSelectedCount();
+		    });
+
+		    document.querySelectorAll('.mr-row-check').forEach(function (cb) {
+		        cb.addEventListener('change', updateMrSelectedCount);
+		    });
+
+		    function updateMrSelectedCount() {
+		        var count = document.querySelectorAll('.mr-row-check:checked').length;
+		        document.getElementById('mrSelectedCount').textContent = count;
 		    }
-		    
-		   /*  const createPoModalEl = document.getElementById('modal_create_po');
-		    const createPoModal = bootstrap.Modal.getOrCreateInstance(createPoModalEl);
+		    updateMrSelectedCount();  
 
-		    createPoModalEl.addEventListener('hidden.bs.modal', function () {
+		    function updateItemsFoundCount() {
+		        var count = table.rows({ search: 'applied' }).count();
+		        document.getElementById('mrItemsFoundCount').textContent = count;
+		    }
+
+		    table.on('draw.dt search.dt', updateItemsFoundCount);
+		    updateItemsFoundCount();
+		    
+		    /* $('#modal_create_pr').on('shown.bs.modal', function () {
 		        $('#items_type').val('equipment').trigger('change');
-		        $('#po_qty').val('');
+		    });
+		     */
+		    
+		    
+		   /*  const createPrModalEl = document.getElementById('modal_create_pr');
+		    const createPrModal = bootstrap.Modal.getOrCreateInstance(createPrModalEl);
+
+		    createPrModalEl.addEventListener('hidden.bs.modal', function () {
+		        $('#items_type').val('equipment').trigger('change');
+		        $('#pr_qty').val('');
 		        $('#unit').val('');
-		        $('#po_price').val('');
-		        $('#po_description').val('');
+		        $('#pr_price').val('');
+		        $('#pr_description').val('');
 		        
 		        editingIndex = -1;
-		        $('#modal_create_po .modal-title').text('Create PO - Detail');
-		        $('#btnSavePoDetail').text('Save');
+		        $('#modal_create_pr .modal-title').text('Create PR - Detail');
+		        $('#btnSavePrDetail').text('Save');
 
 		        if (!document.querySelector('.modal.show')) {
 		            document.body.classList.remove('modal-open');
@@ -805,27 +922,27 @@
 		            document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
 		        }
 		    }); */
-		    const createPoModalEl = document.getElementById('modal_create_po');
+		    const createPrModalEl = document.getElementById('modal_create_pr');
 
-		    createPoModalEl.addEventListener('show.bs.modal', function () {
+		    createPrModalEl.addEventListener('show.bs.modal', function () {
 		        if (editingIndex === -1) {
 		            $('#items_type').val('equipment').trigger('change');
-		            $('#po_qty').val('1');
+		            $('#pr_qty').val('1');
 		            $('#unit').val('');
-		            $('#po_price').val('');
-		            $('#po_description').val('');
-		            $('#modal_create_po .modal-title').text('Create PO - Detail');
-		            $('#btnSavePoDetail').text('Save');
+		            $('#pr_ref_link').val('');
+		            $('#pr_description').val('');
+		            $('#modal_create_pr .modal-title').text('Create PR - Detail');
+		            $('#btnSavePrDetail').text('Save');
 		        }
 		    });
 
-		    createPoModalEl.addEventListener('shown.bs.modal', function () {
+		    createPrModalEl.addEventListener('shown.bs.modal', function () {
 		        document.body.classList.add('modal-open');
 		        document.body.style.overflow = 'hidden';
 		        document.documentElement.style.overflow = 'hidden';
 		    });
 
-		    createPoModalEl.addEventListener('hidden.bs.modal', function () {
+		    createPrModalEl.addEventListener('hidden.bs.modal', function () {
 		        editingIndex = -1;
 		        document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
 		        document.body.classList.remove('modal-open');
@@ -834,35 +951,10 @@
 		        document.documentElement.style.removeProperty('overflow');
 		    });
 
-		    document.getElementById('btnOpenCreatePo').addEventListener('click', function () {
+		    document.getElementById('btnOpenCreatePr').addEventListener('click', function () {
 		        editingIndex = -1;
-		        bootstrap.Modal.getOrCreateInstance(createPoModalEl, { backdrop: true }).show();
+		        bootstrap.Modal.getOrCreateInstance(createPrModalEl, { backdrop: true }).show();
 		    });
-
-			const searchPrModalEl = document.getElementById('modal_search_pr');
-
-			searchPrModalEl.addEventListener('shown.bs.modal', function () {
-				document.body.classList.add('modal-open');
-				document.body.style.overflow = 'hidden';
-				document.documentElement.style.overflow = 'hidden';
-			});
-			
-			searchPrModalEl.addEventListener('hidden.bs.modal', function () {
-				selectedPrCategory = '';
-    			$('#searchPrCategory').val('').trigger('change.select2');
-				document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
-
-				if (!document.querySelector('.modal.show')) {
-					document.body.classList.remove('modal-open');
-					document.body.style.removeProperty('padding-right');
-					document.body.style.removeProperty('overflow');
-					document.documentElement.style.removeProperty('overflow');
-				}
-			});
-
-			searchPrModalEl.addEventListener('show.bs.modal', function () {
-				loadInprogressPrDetail();
-			});
 		    
 		    
 	});
@@ -1096,123 +1188,6 @@
 		}
 	})();
 	
-	$('#vendor_id').on('change', function () {
-	    var companyId = $(this).val();
-
-	    $('#companyTaxInfo').addClass('d-none');
-	    $('#companyAddressInfo').addClass('d-none');
-	    $('#contactInfo').addClass('d-none');
-
-	    $('#vendor_location_id').html('<option value=""></option>').prop('disabled', true).trigger('change');
-	    $('#contact_id').html('<option value=""></option>').prop('disabled', true).trigger('change');
-
-	    if (!companyId) return;
-
-	    $.ajax({
-	        url: ctx + '/get_company_profile',
-	        type: 'POST',
-	        dataType: 'json',
-	        data: { companyId: companyId },
-	        success: function (resp) {
-	            // if (resp.debug) console.log('[get_company_profile debug]', resp.debug);
-	            var data = resp.data;
-	            if (!data) return;
-
-	            $('#companyTaxNumber').text(data.taxId || '');
-	            $('#companyTaxInfo').removeClass('d-none');
-
-	            var list = data.locationList || [];
-	            var options = '';
-	            if (list.length === 0) {
-	                options = '<option value=""></option>';
-	            } else {
-	                var matchLoc = pendingLocationId != null && list.some(function (l) {
-	                    return String(l.company_address_id) === String(pendingLocationId);
-	                });
-	                list.forEach(function (loc, index) {
-	                    var isSel = matchLoc ? (String(loc.company_address_id) === String(pendingLocationId)) : (index === 0);
-	                    options += '<option value="' + loc.company_address_id + '"' + (isSel ? ' selected' : '') + '>' + loc.address_name + '</option>';
-	                });
-	            }
-	            $('#vendor_location_id').html(options).prop('disabled', false).trigger('change');
-	            pendingLocationId = null; // consume ครั้งเดียว
-	        },
-	        error: function () {
-	            Swal.fire('Error', 'ไม่สามารถโหลดข้อมูลบริษัทได้', 'error');
-	        }
-	    });
-	});
-
-	$('#vendor_location_id').on('change', function () {
-	    var addressId = $(this).val() ? $(this).val().trim() : '';
-
-	    $('#companyAddressInfo').addClass('d-none');
-	    $('#contactInfo').addClass('d-none');
-	    $('#contact_id').html('<option value=""></option>').prop('disabled', true).trigger('change');
-
-	    if (!addressId) return;
-
-	    $.ajax({
-	        url: ctx + '/get_company_location',
-	        type: 'POST',
-	        dataType: 'json',
-	        data: { addressId: addressId },
-	        success: function (resp) {
-	            // if (resp.debug) console.log('[get_company_location debug]', resp.debug);
-	            var data = resp.data;
-	            if (!data) return;
-
-	            $('#companyAddress').text(data.address ? data.address.address : '');
-	            $('#companyAddressInfo').removeClass('d-none');
-
-	            var list = data.contactList || [];
-	            var options = '';
-	            if (list.length === 0) {
-	                options = '<option value=""></option>';
-	            } else {
-	                var matchC = pendingContactId != null && list.some(function (x) {
-	                    return String(x.company_contact_id) === String(pendingContactId);
-	                });
-	                list.forEach(function (c, index) {
-	                    var isSel = matchC ? (String(c.company_contact_id) === String(pendingContactId)) : (index === 0);
-	                    options += '<option value="' + c.company_contact_id + '"' + (isSel ? ' selected' : '') + '>' + c.contact_name + '</option>';
-	                });
-	            }
-	            $('#contact_id').html(options).prop('disabled', false).trigger('change');
-	            pendingContactId = null; // consume ครั้งเดียว
-	        },
-	        error: function () {
-	            Swal.fire('Error', 'ไม่สามารถโหลดข้อมูล Location ได้', 'error');
-	        }
-	    });
-	});
-
-	$('#contact_id').on('change', function () {
-	    var contactId = $(this).val();
-	    $('#contactInfo').addClass('d-none');
-
-	    if (!contactId) return;
-
-	    $.ajax({
-	        url: ctx + '/get_company_contact',
-	        type: 'POST',
-	        dataType: 'json',
-	        data: { contactId: contactId },
-	        success: function (resp) {
-	            // if (resp.debug) console.log('[get_company_contact debug]', resp.debug);
-	            var data = resp.data;
-	            if (!data) return;
-
-	            $('#contactPhone').text(data.phone || '');
-	            $('#contactEmail').text(data.email || '');
-	            $('#contactInfo').removeClass('d-none');
-	        },
-	        error: function () {
-	            Swal.fire('Error', 'ไม่สามารถโหลดข้อมูล Contact ได้', 'error');
-	        }
-	    });
-	});
-	
 	$('#items_type').on('change', function(){
 		var itemsType = $(this).val().trim();
 		if(!itemsType) return;
@@ -1277,26 +1252,25 @@
 		});
 	});
 
-	// auto-save PO Header/Vendor draft ทุกครั้งที่ field เปลี่ยน
-	$(document.body).on('input change', '#description, #reference_no, #vendor_description, #kt_reference_datepicker', saveHeaderToSession);
-	$(document.body).on('change', '#vendor_id, #vendor_location_id, #contact_id', saveHeaderToSession);
+	// auto-save PR Header draft ทุกครั้งที่ field เปลี่ยน
+	$(document.body).on('input change', '#description', saveHeaderToSession);
 
 </script>
 
 <script>
-let poDetailCart = [];
-let poDetailCounter = 0;
+let prDetailCart = [];
+let prDetailCounter = 0;
 let editingIndex = -1;
 let confirmed1 = ${empty statusActiveSafe ? 'false' : 'true'}; //track ว่าลงชื่อ ผู้ขอเบิก แล้วหรือยัง
 
 let requesterSign = null;
 
-const PO_HEADER_STORAGE_KEY = 'poHeader_draft';
-const PO_CART_STORAGE_KEY = 'poDetailCart_draft';
+const PR_HEADER_STORAGE_KEY = 'prHeader_draft';
+const PR_CART_STORAGE_KEY = 'prDetailCart_draft';
 
 function saveCartToSession(){
     try {
-        sessionStorage.setItem(PO_CART_STORAGE_KEY, JSON.stringify(poDetailCart));
+        sessionStorage.setItem(PR_CART_STORAGE_KEY, JSON.stringify(prDetailCart));
     } catch (e) {
         console.error('ไม่สามารถบันทึก cart ลง sessionStorage ได้', e);
     }
@@ -1304,52 +1278,49 @@ function saveCartToSession(){
 
 function loadCartFromSession(){
     try {
-        const saved = sessionStorage.getItem(PO_CART_STORAGE_KEY);
+        const saved = sessionStorage.getItem(PR_CART_STORAGE_KEY);
         if (saved) {
-            poDetailCart = JSON.parse(saved);
+            prDetailCart = JSON.parse(saved);
             
-            poDetailCart = poDetailCart.map(item => ({
+            prDetailCart = prDetailCart.map(item => ({
                 ...item,
-                price: Number(item.price) || 0,
                 qty: Number(item.qty) || 0,
-                total: Number(item.total) || (Number(item.qty) || 0) * (Number(item.price) || 0),
+                refLink: item.refLink || '',
+                total: 0,
                 savedAt: item.savedAt || formatNowDateTime()
             }));
         }
     } catch (e) {
         console.error('ไม่สามารถโหลด cart จาก sessionStorage ได้', e);
-        poDetailCart = [];
+        prDetailCart = [];
     }
 }
 
 //กันข้อมูลหายตอน refresh
 loadCartFromSession();
 document.addEventListener('DOMContentLoaded', function(){
-        renderPoDetailCart();
+    renderPrDetailCart();
 });
 
-function validatePoDetailForm(){
+function validatePrDetailForm(){
     let errors = [];
 
     if (!$('#items_type').val() || !$('#items_type').val().trim()) errors.push('Category');
     if (!$('#product_name').val() || !$('#product_name').val().trim()) errors.push('Product Name');
 
-    const qty = $('#po_qty').val().trim();
+    const qty = $('#pr_qty').val().trim();
     if (!qty || Number(qty) <= 0) errors.push('จำนวน');
 
     if (!$('#unit').val().trim()) errors.push('Unit');
 
-    const price = $('#po_price').val().trim();
-    if (!price || parseFormattedNumber(price) < 0) errors.push('ราคาต่อหน่วย');
-
-    if (!$('#po_description').val().trim()) errors.push('Description / Detail');
+    if (!$('#pr_description').val().trim()) errors.push('Description / Detail');
 
     return errors;
 }
 
-function addPoDetailToCart(){
+function addPrDetailToCart(){
 
-    const errors = validatePoDetailForm();
+    const errors = validatePrDetailForm();
 
     if (errors.length > 0) {
         Swal.fire({
@@ -1361,91 +1332,86 @@ function addPoDetailToCart(){
         return;
     }
 
-	// ถ้ากำลัง edit ของเดิม ให้เอา object เดิมมาเป็นฐานก่อน (เก็บ prId, mrId, prDetailId, refLink ไว้)
-    const baseItem = (editingIndex >= 0 && poDetailCart[editingIndex]) ? poDetailCart[editingIndex] : {};
-
     const item = {
-		...baseItem,
         itemsType: $("#items_type").val(),
         itemsTypeText: $("#items_type option:selected").text(),
         productId: $("#product_name").val(),
         productName: $("#product_name option:selected").text(),
-        qty: Number($("#po_qty").val()),
+        qty: Number($("#pr_qty").val()),
         unit: $("#unit").val(),
-        unitName: $("#unit option:selected").text(), 
-        price: parseFormattedNumber($("#po_price").val()),
-        description: $("#po_description").val(),
+        unitName: $("#unit option:selected").text(),
+        refLink: $("#pr_ref_link").val().trim(),
+        description: $("#pr_description").val(),
         savedAt: formatNowDateTime()
     };
 
-    item.total = item.qty * item.price;
+    item.total = 0;
 
     if (editingIndex >= 0) {
-        poDetailCart[editingIndex] = item;
+        prDetailCart[editingIndex] = item;
         editingIndex = -1;
     } else {
-        poDetailCart.push(item);
+        prDetailCart.push(item);
     }
 
     // console.log(item);
-    // console.log(poDetailCart);
+    // console.log(prDetailCart);
     
     saveCartToSession();
-    renderPoDetailCart();
+    renderPrDetailCart();
     
     if (document.activeElement) {
         document.activeElement.blur();
     }
 
-    const modalEl = document.getElementById("modal_create_po");
+    const modalEl = document.getElementById("modal_create_pr");
     const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
     modal.hide();
 }
 
-/* function addPoDetailToCart(){
+/* function addPrDetailToCart(){
     const item = {
         itemsType: $("#items_type").val(),
         itemsTypeText: $("#items_type option:selected").text(),
         productId: $("#product_name").val(),
         productName: $("#product_name option:selected").text(),
-        qty: Number($("#po_qty").val()),
+        qty: Number($("#pr_qty").val()),
         unit: $("#unit").val(),
-        price: parseFormattedNumber($("#po_price").val()),
-        description: $("#po_description").val(),
+        price: parseFormattedNumber($("#pr_price").val()),
+        description: $("#pr_description").val(),
         savedAt: formatNowDateTime()
     };
 
     item.total = item.qty * item.price;
 
     if (editingIndex >= 0) {
-        poDetailCart[editingIndex] = item;
+        prDetailCart[editingIndex] = item;
         editingIndex = -1; 
     } else {
-        poDetailCart.push(item);
+        prDetailCart.push(item);
     }
 
     saveCartToSession(); 
-    renderPoDetailCart();
+    renderPrDetailCart();
 
-    renderPoDetailCart();
+    renderPrDetailCart();
 
-    const modalEl = document.getElementById("modal_create_po");
+    const modalEl = document.getElementById("modal_create_pr");
     const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
     modal.hide();
 } */
 
-function renderPoDetailCart(){
+function renderPrDetailCart(){
 
     let html = "";
-    let grandTotal = 0;
 
-    poDetailCart.forEach(function(item,index){
+    prDetailCart.forEach(function(item,index){
 
-        html += createPoCard(item,index);
+        html += createPrCard(item,index);
 
     });
 
-	if (poDetailCart.length === 0) {
+	if (prDetailCart.length === 0) {
         html = `
             <div class="d-flex flex-column align-items-center justify-content-center py-5 text-center">
                 <i class="ki-duotone ki-file-deleted fs-2x text-muted mb-3">
@@ -1456,27 +1422,13 @@ function renderPoDetailCart(){
         `;
     }
 
-    $("#poDetailCartContainer").html(html);
-    poDetailCart.forEach(function(item){
-
-        grandTotal += item.total;
-
-    });
-
-    $("#poDetailGrandTotal").text(
-        grandTotal.toLocaleString(undefined,{
-            minimumFractionDigits:2,
-            maximumFractionDigits:2
-        })
-    );
+    $("#prDetailCartContainer").html(html);
 
 }
 
 //-------- PO- Detail -----------
-function createPoCard(item,index){
-	const safePrice = Number(item.price) || 0;
+function createPrCard(item,index){
     const safeQty = Number(item.qty) || 0;
-    const safeTotal = Number(item.total) || (safeQty * safePrice);
 
     let icon = "";
     let category = "";
@@ -1527,7 +1479,7 @@ function createPoCard(item,index){
 
     const groupId = "cart_" + index;
 
-    return `<div class="po-item-group border-gray-400 border-bottom py-9 px-6">
+    return `<div class="pr-item-group border-gray-400 border-bottom py-9 px-6">
     			<div class="d-flex align-items-center justify-content-between row">
     				<div class="col-7 d-flex align-items-center">\${icon}
 						<span class="text-gray-900 fs-5 fw-normal me-3">\${category}</span>
@@ -1539,28 +1491,17 @@ function createPoCard(item,index){
 								<span class="path2"></span>
 							</i>
 		
-							<span class="text-gray-900 fs-5 fw-normal">\${item.description}</span>
-		
+							<span class="text-gray-900 fs-5 fw-normal me-3">\${item.description}</span>
+
 						</div>
 					</div>
 		
-					<div class="col-3 d-flex align-items-center justify-content-between px-0">
-						<div class="col-2 d-flex flex-column text-end">
+					<div class="col-1 d-flex align-items-center justify-content-between px-0">
+						<div class="col-12 d-flex flex-column text-end">
 							<span class="fs-6 fw-normal text-gray-900">\${item.unitName}</span>
 							<span class="fw-semibold text-gray-800 fs-5">\${item.qty}</span>
+						</div>
 					</div>
-		
-					<div class="col-4 d-flex flex-column text-end">
-						<span class="fs-6 fw-normal text-gray-900">Price</span>
-						<span class="fw-semibold text-gray-800 fs-5">\${safePrice.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span>
-					</div>
-					
-					<div class="col-4 d-flex flex-column text-end">
-						<span class="fs-6 fw-normal text-gray-900">Total</span>
-						<span class="fs-5 fw-semibold text-primary">\${safeTotal.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span>
-					</div>
-		
-				</div>
 		
 				<div class="col-2 d-flex justify-content-end align-items-center gap-2 px-0">
 	                <a href="#" onclick="return editCartItem(\${index});" class="btn btn-icon btn-light-primary btn-sm" title="Edit">
@@ -1569,7 +1510,7 @@ function createPoCard(item,index){
 	                <a href="#" onclick="return removeCartItem(\${index});" class="btn btn-icon btn-light-danger btn-sm" title="Delete">
 	                    <i class="ki-duotone ki-trash fs-2"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span><span class="path5"></span></i>
 	                </a>
-	                <a class="collapsed po-group-toggle" data-target="\${groupId}">
+	                <a class="collapsed pr-group-toggle" data-target="\${groupId}">
 	                    <i class="ki-duotone ki-up-square fs-2hx">
 	                        <span class="path1"></span><span class="path2"></span>
 	                    </i>
@@ -1577,43 +1518,35 @@ function createPoCard(item,index){
             	</div>
 			</div>
 			
-			<div class="collapse border-gray-300 border-top mt-3" id="poGroup_\${groupId}">
+			<div class="collapse border-gray-300 border-top mt-3" id="prGroup_\${groupId}">
 	            <div class="ps-9 pt-9">
 	                <div class="d-flex align-items-center justify-content-between row">
 	                    <div class="col-11">
-	                        <div class="d-flex align-items-center fs-7">
+	                        <div class="d-flex align-items-center fs-7 gap-3">
 	                            <div class="col-4">
 	                                <i class="ki-duotone ki-user-tick fs-3 text-muted me-2">
 	                                    <span class="path1"></span><span class="path2"></span><span class="path3"></span>
 	                                </i>
 	                                <span class="text-gray-800 fs-5">\${currentUserDisplay}</span>
 	                            </div>
-	                            <div class="col-4 d-flex align-items-center">
+	                            <div class="col-5 d-flex align-items-center">
 	                                <i class="ki-duotone ki-calendar-2 fs-3 me-2">
 	                                    <span class="path1"></span><span class="path2"></span><span class="path3"></span>
 	                                    <span class="path4"></span><span class="path5"></span>
 	                                </i>
 	                                <span class="text-gray-800 fs-5">\${item.savedAt}</span>
 	                            </div>
-	                            <div class="col-3 d-flex align-items-center gap-2">
-				                    <i class="ki-duotone ki-tablet-book fs-3">
+	                            <div class="col-3 d-flex align-items-center">
+				                    <i class="ki-duotone ki-tablet-book fs-3 me-2">
 					                     <span class="path1"></span><span class="path2"></span>
 									</i>
-				                    <a href="\${item.mrId ? ctx + '/material_requisition_edit?mrId=' + item.mrId : ctx + '/purchase_requisition_edit?prId=' + item.prId}"
-										target="_blank"
-										onclick="event.stopPropagation();"
-										class="badge badge-lg fs-7 fw-semibold d-inline-block text-center text-decoration-none
-											\${item.mrId ? 'badge-light-purple text-purple' : 'badge-light-primary text-primary'}"
-										style="\${(!item.prId && !item.mrId) ? 'pointer-events:none;' : ''}">
-										\${item.prId || item.mrId || '-'}
-									</a>
-
-									\${item.refLink
-										? `<a href="\${item.refLink}" target="_blank" class="text-primary d-inline-flex" onclick="event.stopPropagation();">
-											<i class="ki-duotone ki-fasten fs-2 text-primary">
-												<span class="path1"></span><span class="path2"></span>
+									<span class="badge badge-lg badge-light-primary text-primary fs-7 fw-semibold d-inline-block text-center me-3">-</span>
+									\${item.refLink 
+										? `<a href="\${item.refLink}" target="_blank" class="my-0 d-flex align-items-center">
+											<i class="ki-duotone ki-fasten fs-2 me-2 text-primary">
+					                     		<span class="path1"></span><span class="path2"></span>
 											</i>
-										</a>`
+											</a>`
 										: ''
 									}
 		                    	</div>
@@ -1632,13 +1565,13 @@ function createPoCard(item,index){
 }
 
 function editCartItem(index){
-    const item = poDetailCart[index];
+    const item = prDetailCart[index];
     if (!item) return false;
 
     editingIndex = index;
 
-    $('#modal_create_po .modal-title').text('Edit PO - Detail');
-    $('#btnSavePoDetail').text('Update');
+    $('#modal_create_pr .modal-title').text('Edit PR - Detail');
+    $('#btnSavePrDetail').text('Update');
 
     $('#items_type').val(item.itemsType).trigger('change');
 
@@ -1649,7 +1582,7 @@ function editCartItem(index){
 
 			const waitForUnitList = setInterval(function(){
                 if ($('#unit option[value="' + item.unit + '"]').length > 0) {
-                    $('#unit').val(item.unit).trigger('change');
+                    $('#unit').val(item.unit);
                     clearInterval(waitForUnitList);
                 }
             }, 100);
@@ -1659,12 +1592,12 @@ function editCartItem(index){
 
     setTimeout(function(){ clearInterval(waitForProductList); }, 3000);
 
-    $('#po_qty').val(item.qty);
-    $('#unit').val(item.unit).trigger('change');
-    $('#po_price').val(Number(item.price).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2}));
-    $('#po_description').val(item.description);
+    $('#pr_qty').val(item.qty);
+    $('#unit').val(item.unit);
+    $('#pr_ref_link').val(item.refLink || '');
+    $('#pr_description').val(item.description);
 
-    const modalEl = document.getElementById("modal_create_po");
+    const modalEl = document.getElementById("modal_create_pr");
     const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
     modal.show();
 
@@ -1686,9 +1619,9 @@ function removeCartItem(index){
         }
     }).then((result) => {
         if (result.isConfirmed) {
-            poDetailCart.splice(index, 1);
+            prDetailCart.splice(index, 1);
             saveCartToSession();    
-            renderPoDetailCart();
+            renderPrDetailCart();
         }
     });
     return false;
@@ -1699,39 +1632,13 @@ function parseFormattedNumber(str) {
     return Number(String(str).replace(/,/g, ''));
 }
 
-$(document.body).on('input', '#po_price', function() {
-    let value = $(this).val();
-
-    value = value.replace(/[^0-9.]/g, '');
-
-    const parts = value.split('.');
-    if (parts.length > 2) {
-        value = parts[0] + '.' + parts.slice(1).join('');
-    }
-
-    if (parts[0]) {
-        parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-    }
-
-    $(this).val(parts.join('.'));
-});
-
-$(document.body).on('blur', '#po_price', function() {
-    let raw = parseFormattedNumber($(this).val());
-    if ($(this).val() === '' ) return;
-    $(this).val(raw.toLocaleString(undefined, {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2
-    }));
-});
-
-
-//──────── Confirm Receiver ───────────
+//── Confirm Receiver ──────────────────────────────────────
 function confirmReceiver(slot) {
     const now = new Date();
     const pad = n => String(n).padStart(2, '0');
     const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
 
+    //ส่ง backend
     const timestamp =
         now.getFullYear() + "-" +
         pad(now.getMonth()+1) + "-" +
@@ -1740,6 +1647,7 @@ function confirmReceiver(slot) {
         pad(now.getMinutes()) + ":" +
         pad(now.getSeconds());
 
+    //แสดงผล
     const displayTimestamp = now.getDate() + " " + months[now.getMonth()] + " " + now.getFullYear() +
         " , " + pad(now.getHours()) + ":" + pad(now.getMinutes());
 
@@ -1749,7 +1657,7 @@ function confirmReceiver(slot) {
         requestAt: timestamp
     };
 
-    sessionStorage.setItem("poRequesterSign", JSON.stringify(requesterSign));
+    sessionStorage.setItem("prRequesterSign", JSON.stringify(requesterSign));
 
     const labelEl = document.getElementById('receiverLabel'+slot);
     if (labelEl) labelEl.style.display = 'none';
@@ -1775,15 +1683,14 @@ function confirmReceiver(slot) {
 }
 
 function saveDraftForm(){
+   /*  if (!prDetailCart || prDetailCart.length === 0) {
+        Swal.fire('error', 'กรุณาเพิ่มรายการ PO อย่างน้อย 1 รายการ', 'warning');
+        return;
+    }
+ */
     const payload = {
-        companyId: $('#vendor_id').val().trim() || '',
-        companyLocation: $('#vendor_location_id').val().trim() || '',
-        contactId: $('#contact_id').val().trim() || '',
         description: $('#description').val().trim() || '',
-		descriptionVendor: $('#vendor_description').val().trim() || '',
-        referenceNo: $('#reference_no').val().trim() || '',
-        referenceDate: $('#kt_reference_datepicker').val().trim() || '',
-        poDetailCartJson: JSON.stringify(poDetailCart),
+        prDetailCartJson: JSON.stringify(prDetailCart),
         signDate: requesterSign?.requestAt ?? '',
     };
 
@@ -1792,23 +1699,23 @@ function saveDraftForm(){
     selectedFiles.forEach(function (file) { fd.append('files', file, file.name); });
 
     $.ajax({
-        url: ctx + '/save_po',
+        url: ctx + '/save_pr',
         type: 'POST',
         dataType: 'json',
         data: fd,
         processData: false,
         contentType: false,
         success: function (resp) {
-            // if (resp.debug) console.log('[save_po debug]', resp.debug);
-            if (resp.data && resp.data.poId) {
-                sessionStorage.removeItem(PO_CART_STORAGE_KEY);
-                sessionStorage.removeItem(PO_HEADER_STORAGE_KEY);
+            // if (resp.debug) console.log('[save_pr debug]', resp.debug);
+            if (resp.data && resp.data.prId) {
+                sessionStorage.removeItem(PR_CART_STORAGE_KEY);
+                sessionStorage.removeItem(PR_HEADER_STORAGE_KEY);
                 Swal.fire({
                     title: 'Success!',
-                    text: 'Po saved draft successfully!',
+                    text: 'Pr saved draft successfully!',
                     icon: 'success'
                 }).then(() => {
-                    window.location.href = ctx + '/purchase_order_list';
+                    window.location.href = ctx + '/purchase_requisition_list';
                 });
             } else {
                 Swal.fire('Error', 'ไม่สามารถบันทึก Draft ได้', 'error');
@@ -1820,22 +1727,10 @@ function saveDraftForm(){
     });
 }
 
-function validatePOForm(){
+function validatePRForm(){
     let errors = [];
     if (!$('#description').val().trim()) errors.push('Description');
-    if (!$('#vendor_id').val().trim()) errors.push('Company Name');
-    if (!$('#vendor_location_id').val().trim()) errors.push('Company Location');
-    if (!$('#contact_id').val().trim()) errors.push('Contact Name');
-    if (!poDetailCart || poDetailCart.length === 0) {
-        errors.push('Please add at least 1 Po Detail');
-    } else {
-        // เช็คว่ามีรายการไหนราคายังเป็น 0 / ยังไม่ได้ใส่ราคา
-        const zeroPriceItems = poDetailCart.filter(item => !item.price || Number(item.price) <= 0);
-        if (zeroPriceItems.length > 0) {
-            const names = zeroPriceItems.map(i => i.productName).join(', ');
-            errors.push('กรุณาใส่ราคาต่อหน่วยให้ครบทุกรายการ (' + names + ')');
-        }
-    }
+    if (!prDetailCart || prDetailCart.length === 0) errors.push('Please add at least 1 Pr Detail');
     
     const hasSignature = $('#hasSignature').val() === 'true';
     if (!hasSignature) errors.push('ลายเซ็น (Signature)');
@@ -1845,12 +1740,14 @@ function validatePOForm(){
     return errors;
 }
 
-function submitPO(){
-    const errors = validatePOForm();
+function submitPR(){
+    const errors = validatePRForm();
 
     if (errors.length > 0) {
         Swal.fire({
             title: 'Please complete the form!',
+            /* html: errors.join('<br>'),
+            icon: 'warning' */
             html: "Please fill in the following fields:<br><strong>" + errors.join(", ") + "</strong>",
  	        icon: "error",
  	        confirmButtonText: "OK",
@@ -1874,14 +1771,8 @@ function submitPO(){
         if (!result.isConfirmed) return;
 
         const payload = {
-            companyId: $('#vendor_id').val().trim() || '',
-            companyLocation: $('#vendor_location_id').val().trim() || '',
-            contactId: $('#contact_id').val().trim() || '',
             description: $('#description').val().trim() || '',
-			descriptionVendor: $('#vendor_description').val().trim() || '',
-            referenceNo: $('#reference_no').val().trim() || '',
-            referenceDate: $('#kt_reference_datepicker').val().trim() || '',
-            poDetailCartJson: JSON.stringify(poDetailCart),
+            prDetailCartJson: JSON.stringify(prDetailCart),
             status: '2',
             signDate: requesterSign?.requestAt ?? ''
         };
@@ -1890,284 +1781,40 @@ function submitPO(){
         Object.keys(payload).forEach(function (k) { fd.append(k, payload[k]); });
         selectedFiles.forEach(function (file) { fd.append('files', file, file.name); });
 
-        $('#savePOFormBtn').prop('disabled', true);
+        $('#savePRFormBtn').prop('disabled', true);
 
         $.ajax({
-            url: ctx + '/save_po',
+            url: ctx + '/save_pr',
             type: 'POST',
             dataType: 'json',
             data: fd,
             processData: false,
             contentType: false,
             success: function (resp) {
-                // if (resp.debug) console.log('[save_po debug]', resp.debug);
-                if (resp.data && resp.data.poId) {
-                    sessionStorage.removeItem(PO_CART_STORAGE_KEY);
-                    sessionStorage.removeItem(PO_HEADER_STORAGE_KEY);
+                // if (resp.debug) console.log('[save_pr debug]', resp.debug);
+                if (resp.data && resp.data.prId) {
+                    sessionStorage.removeItem(PR_CART_STORAGE_KEY);
+                    sessionStorage.removeItem(PR_HEADER_STORAGE_KEY);
                     Swal.fire({
                         title: 'Success!',
-                        text: 'Po saved successfully!',
+                        text: 'Pr saved successfully!',
                         icon: 'success'
                     }).then(() => {
-                        window.location.href = ctx + '/purchase_order_list';
+                        window.location.href = ctx + '/purchase_requisition_list';
                     });
                 } else {
-                    Swal.fire('Error', 'ไม่สามารถส่ง PO ได้', 'error');
+                    Swal.fire('Error', 'ไม่สามารถส่ง PR ได้', 'error');
                 }
             },
             error: function () {
                 Swal.fire('Error', 'เกิดข้อผิดพลาดในการส่งข้อมูล', 'error');
             },
             complete: function(){
-                $('#savePOFormBtn').prop('disabled', false);
+                $('#savePRFormBtn').prop('disabled', false);
             }
         });
     });
 }
-
-// Modal PR
-let inprogressPrDetailList = [];
-let prDetailTable = null;
-let selectedPrCategory = '';
-
-$.fn.dataTable.ext.search.push(function (settings, data, dataIndex) {
-    if (settings.nTable.id !== 'prResultTable') return true;
-    if (!selectedPrCategory) return true;
-
-    var item = inprogressPrDetailList[dataIndex];
-    if (!item) return true;
-
-    var mapped = mapDbItemsTypeToSelect(item.product_type);
-    console.log('[DEBUG] row', dataIndex, '| product_type:', item.product_type, '| mapped:', mapped, '| selected:', selectedPrCategory, '| match:', mapped === selectedPrCategory);
-    return mapped === selectedPrCategory;
-});
-
-function loadInprogressPrDetail(){
-    $.ajax({
-        url: ctx + '/search_inprogress_pr',
-        type: 'POST',
-        dataType: 'json',
-        success: function (resp) {
-            var data = resp.data;
-            inprogressPrDetailList = (data && data.prDetailList) || [];
-            renderPrResultTable(inprogressPrDetailList);
-        },
-        error: function () {
-            Swal.fire('Error', 'ไม่สามารถโหลดข้อมูล PR ได้', 'error');
-        }
-    });
-}
-
-function getCategoryIcon(productType){
-    switch(String(productType)){
-        case '1': return { name: 'Equipment', icon: '<i class="ki-duotone ki-monitor-mobile fs-2 text-primary"><span class="path1"></span><span class="path2"></span></i>' };
-        case '2': return { name: 'Consumables', icon: '<i class="ki-duotone ki-lots-shopping fs-2 text-orange"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span><span class="path5"></span><span class="path6"></span><span class="path7"></span><span class="path8"></span></i>' };
-        case '3': return { name: 'Accessory', icon: '<i class="ki-duotone ki-medal-star fs-2 text-teal"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span></i>' };
-        case '4': return { name: 'Office supplies', icon: '<i class="ki-duotone ki-parcel fs-2 text-success"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span><span class="path5"></span></i>' };
-        default:  return { name: '-', icon: '' };
-    }
-}
-
-function mapDbItemsTypeToSelect(val){
-    switch(String(val)){
-        case '1': return 'equipment';
-        case '2': return 'consumables';
-        case '3': return 'accessory';
-        case '4': return 'office';
-        default:  return val;
-    }
-}
-
-// function formatTimeCreate(inputDate){
-//     const d = inputDate ? new Date(String(inputDate).replace(' ', 'T')) : new Date();
-//     const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
-//     const pad = n => String(n).padStart(2,'0');
-//     return `\${d.getDate()} \${months[d.getMonth()]} \${d.getFullYear()}, \${pad(d.getHours())}:\${pad(d.getMinutes())}`;
-// }
-function formatNowDateTime(inputDate){
-    const d = inputDate ? new Date(String(inputDate).replace(' ', 'T')) : new Date();
-    const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
-    const pad = n => String(n).padStart(2,'0');
-    return `\${d.getDate()} \${months[d.getMonth()]} \${d.getFullYear()}, \${pad(d.getHours())}:\${pad(d.getMinutes())}`;
-}
-
-$(document.body).on('keyup input', '#searchPrKeyword', function () {
-    if (prDetailTable) {
-        prDetailTable.search(this.value).draw();
-    }
-});
-
-$(document.body).on('change', '#searchPrCategory', function () {
-    selectedPrCategory = $(this).val();
-	console.log('[DEBUG] category changed →', selectedPrCategory, '| table exists:', !!prDetailTable);
-    if (prDetailTable) {
-        prDetailTable.draw();
-    }
-});
-
-function renderPrResultTable(list){
-    var tbody = document.getElementById('prResultBody');
-    var html = '';
-
-    list.forEach(function(item, index){
-		var cat = getCategoryIcon(item.product_type);
-		var qty = item.amount_total || 0;
-		var unitName = item.unit_name || '';
-		var userName = item.user_create_name || '-';
-		var timeCreate = formatNowDateTime(item.time_create);
-		var description = item.description || '';
-		var initial = userName.charAt(0).toUpperCase();
-		var userPath = item.user_create_path || '';
-		var statusBadge = item.pr_status == '3'
-			? '<span class="badge badge-lg bg-success fw-semibold fs-7 text-white">Approved</span>'
-			: item.pr_status == '7'
-			? '<span class="badge badge-lg bg-cyan fw-semibold fs-7 text-white">In-Progress</span>'
-			: '';
-
-		html += `
-		<tr class="fw-semibold fs-6 text-gray-800 border-bottom border-gray-200">
-			<td>
-				<div class="form-check form-check-sm">
-					<input class="form-check-input pr-row-check" type="checkbox"
-						data-pr-detail-id="\${item.pr_detail_id}" />
-				</div>
-			</td>
-			<td class="fw-bold text-gray-900 fs-7 row-number text-start"></td>
-			<td class="text-gray-900 fs-6 fw-normal">\${item.pr_id}</td>
-			<td>
-				<div class="d-flex align-items-center">
-					<div class="symbol symbol-40px me-4">\${cat.icon}</div>
-					<span class="text-gray-900 fs-5 fw-normal">\${cat.name}</span>
-				</div>
-			</td>
-			<td>
-				<div class="d-flex align-items-center">
-					<div class="symbol symbol-35px symbol-circle me-3">
-						<div class="symbol symbol-35px symbol-circle me-3">
-							\${userPath
-								? '<img src="' + userPath + '" alt="' + userName + '" class="object-fit-cover" />'
-								: '<span class="symbol-label bg-light-primary text-primary fw-bold">' + initial + '</span>'
-							}
-						</div>
-					</div>
-					<div class="d-flex flex-column">
-						<span class="text-gray-900 fs-6 fw-normal">\${userName}</span>
-						<span class="text-gray-900 fs-6 fw-normal">\${timeCreate}</span>
-					</div>
-				</div>
-			</td>
-			<td>
-				<div class="d-flex flex-column">
-					<span class="text-gray-900 fs-6 fw-normal">\${item.product_name || ''}</span>
-					
-					<span class="text-gray-900 fs-6 fw-normal">\${qty} \${unitName}</span>
-				</div>
-			</td>
-			<td class="text-end pe-2">
-				\${statusBadge}
-			</td>
-		</tr>`;
-	});
-    tbody.innerHTML = html;
-
-    if (prDetailTable) {
-        prDetailTable.destroy();
-        prDetailTable = null;
-    }
-    prDetailTable = $('#prResultTable').DataTable({
-		ordering : true,
-		searching : true,
-		autoWidth : false,
-		info: false,
-		paging: false,
-		columnDefs : [
-			{ orderable: false, targets: [0,6] },
-			{ orderable: true, targets: [1,2,3,4,5] },
-			{
-				targets: -1,
-				orderable: false
-			}
-		],
-		order: [],
-		drawCallback: function(settings) {
-			var api = this.api();
-
-			// อัปเดตเลขลำดับแถว (running number) ตามที่แสดงจริง
-			api.column(1, { search: 'applied', order: 'applied' })
-				.nodes()
-				.each(function (cell, i) {
-					cell.innerHTML = i + 1;
-				});
-
-			// อัปเดตจำนวน Items Found ตามที่ filter/search เหลือจริง
-			document.getElementById('prItemsFoundCount').textContent = api.rows({ search: 'applied' }).count();
-		}
-	});
-    updatePrSelectedCountReal();
-
-    document.querySelectorAll('.pr-row-check').forEach(function (cb) {
-        cb.addEventListener('change', updatePrSelectedCountReal);
-    });
-
-    var checkAll = document.getElementById('checkAllPr');
-    checkAll.checked = false;
-    checkAll.onchange = function(){
-        document.querySelectorAll('.pr-row-check').forEach(cb => cb.checked = this.checked);
-        updatePrSelectedCountReal();
-    };
-}
-
-function updatePrSelectedCountReal(){
-    var count = document.querySelectorAll('.pr-row-check:checked').length;
-    document.getElementById('prSelectedCount').textContent = count;
-}
-
-document.getElementById('btnSubmitPr').addEventListener('click', function(){
-    var selectedIds = [];
-    document.querySelectorAll('.pr-row-check:checked').forEach(function(cb){
-        selectedIds.push(cb.getAttribute('data-pr-detail-id'));
-    });
-
-    if (selectedIds.length === 0) {
-        Swal.fire('แจ้งเตือน', 'กรุณาเลือกอย่างน้อย 1 รายการ', 'warning');
-        return;
-    }
-
-    selectedIds.forEach(function(prDetailId){
-        var src = inprogressPrDetailList.find(function(d){ return String(d.pr_detail_id) === String(prDetailId); });
-        if (!src) return;
-
-        var qty = Number(src.amount_total) || 0;
-        var price = Number(src.unit_price) || 0;
-
-        var item = {
-            prId: src.pr_id,
-            prDetailId: src.pr_detail_id,
-            itemsType: mapDbItemsTypeToSelect(src.product_type),
-            itemsTypeText: getCategoryIcon(src.product_type).name,
-            productId: src.product_id,
-            productName: src.product_name || '',
-            qty: qty,
-            unit: src.unit,
-            unitName: src.unit_name || '',
-            price: price,
-            description: src.description || '',
-			refLink: src.ref_link || '',
-            savedAt: formatNowDateTime()
-        };
-        item.total = item.qty * item.price;
-
-        poDetailCart.push(item);
-    });
-
-    saveCartToSession();
-    renderPoDetailCart();
-
-    var modalEl = document.getElementById('modal_search_pr');
-    bootstrap.Modal.getOrCreateInstance(modalEl).hide();
-});
-
-
 
 </script>
 </html>

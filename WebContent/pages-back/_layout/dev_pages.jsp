@@ -71,6 +71,11 @@ pageEncoding="UTF-8"%>
                     class="btn btn-light-danger d-inline-flex align-items-center px-6 py-3"
                     >GR - Goods Receipt</a
                   >
+                  <a
+                    href="purchase_requisition_list"
+                    class="btn btn-light-warning d-inline-flex align-items-center px-6 py-3"
+                    >PR New - Purchase Requisition</a
+                  >
                 </div>
               </div>
             </div>

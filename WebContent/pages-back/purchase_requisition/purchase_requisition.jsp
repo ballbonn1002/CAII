@@ -299,7 +299,7 @@
 									</td>
 									<td class="text-center">
 										<div class="d-flex align-items-center justify-content-center gap-2">
-											<a href="purchase_requisition_edit?id=${pr.prId}" class="btn btn-sm btn-icon btn-light-primary"> 
+											<a href="purchase_requisition_detail?id=${pr.prId}" class="btn btn-sm btn-icon btn-light-primary">
 												<i class="ki-duotone ki-pencil fs-4"> <span class="path1"></span><span class="path2"></span></i>
 											</a>
 											<a href="javascript:void(0);" onclick="deletePR('${pr.prId}')" class="btn btn-sm btn-icon btn-light-danger"> 
