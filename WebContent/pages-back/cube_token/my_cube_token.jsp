@@ -76,57 +76,52 @@
 }
 
 .responsive-button {
-    padding: 0.775rem 1.5rem !important;
-    font-size: 1.1rem !important;
-    border-radius: 0.475rem !important;
-
-    /* Light theme */
-    background-color: var(--bs-white) !important;
-    color: var(--bs-primary) !important;
-    border: 1px solid var(--bs-primary) !important;
-
-    transition:
-        background-color 0.2s ease-in-out,
-        color 0.2s ease-in-out,
-        border-color 0.2s ease-in-out,
-        box-shadow 0.2s ease-in-out !important;
+	padding: 0.775rem 1.5rem !important;
+	font-size: 1.1rem !important;
+	border-radius: 0.475rem !important;
+	/* Light theme */
+	background-color: var(--bs-white) !important;
+	color: var(--bs-primary) !important;
+	border: 1px solid var(--bs-primary) !important;
+	transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out,
+		border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out !important;
 }
 
 /* Icon */
 .responsive-button i {
-    color: var(--bs-primary) !important;
-    transition: color 0.2s ease-in-out !important;
+	color: var(--bs-primary) !important;
+	transition: color 0.2s ease-in-out !important;
 }
 
 /* Hover */
 .responsive-button:hover {
-    background-color: var(--bs-primary) !important;
-    color: var(--bs-white) !important;
-    border-color: var(--bs-primary) !important;
+	background-color: var(--bs-primary) !important;
+	color: var(--bs-white) !important;
+	border-color: var(--bs-primary) !important;
 }
 
 .responsive-button:hover i {
-    color: var(--bs-white) !important;
+	color: var(--bs-white) !important;
 }
 
 [data-bs-theme="dark"] .responsive-button {
-    background-color: transparent !important;
-    color: var(--bs-primary) !important;
-    border-color: var(--bs-primary) !important;
+	background-color: transparent !important;
+	color: var(--bs-primary) !important;
+	border-color: var(--bs-primary) !important;
 }
 
 [data-bs-theme="dark"] .responsive-button i {
-    color: var(--bs-primary) !important;
+	color: var(--bs-primary) !important;
 }
 
 [data-bs-theme="dark"] .responsive-button:hover {
-    background-color: var(--bs-primary) !important;
-    color: var(--bs-white) !important;
-    border-color: var(--bs-primary) !important;
+	background-color: var(--bs-primary) !important;
+	color: var(--bs-white) !important;
+	border-color: var(--bs-primary) !important;
 }
 
 [data-bs-theme="dark"] .responsive-button:hover i {
-    color: var(--bs-white) !important;
+	color: var(--bs-white) !important;
 }
 
 /* Mobile */
@@ -147,6 +142,10 @@
 		border-radius: 0.425rem !important;
 		font-weight: 500 !important;
 		line-height: 1.5 !important;
+	}
+	
+	.button-label {
+		display: none !important;
 	}
 }
 
@@ -198,44 +197,49 @@
 		<div id="kt_app_toolbar" class="app-toolbar py-3 py-lg-6">
 			<div id="kt_app_toolbar_container"
 				class="app-container container-fluid d-flex flex-stack">
-				<div
-					class="page-title d-flex flex-column justify-content-center flex-wrap me-3">
-					<h1
-						class="page-heading d-flex text-gray-700 fw-semibold flex-column justify-content-center my-0">
-						My Cube Token</h1>
-					<ul
-						class="breadcrumb breadcrumb-separatorless fw-semibold fs-7 my-0 pt-1">
-						<li class="breadcrumb-item text-muted"><a
-							href="${pageContext.request.contextPath}/check_in_out"
-							class="text-muted text-hover-primary">Home</a></li>
-						<li class="breadcrumb-item"><span
-							class="bullet bg-gray-500 w-5px h-2px"></span></li>
-						<li class="breadcrumb-item text-muted"><a
-							href="${pageContext.request.contextPath}/myCubeToken"
-							class="text-muted text-hover-primary">My Cube Token</a></li>
-					</ul>
+
+				<div class="d-flex justify-content-between align-items-center w-100">
+					<div
+						class="page-title d-flex flex-column justify-content-center flex-wrap me-3">
+						<h1
+							class="page-heading d-flex text-gray-700 fw-semibold flex-column justify-content-center my-0">
+							My Cube Token</h1>
+						<ul
+							class="breadcrumb breadcrumb-separatorless fw-semibold fs-7 my-0 pt-1">
+							<li class="breadcrumb-item text-muted"><a
+								href="${pageContext.request.contextPath}/check_in_out"
+								class="text-muted text-hover-primary">Home</a></li>
+							<li class="breadcrumb-item"><span
+								class="bullet bg-gray-500 w-5px h-2px"></span></li>
+							<li class="breadcrumb-item text-muted"><a
+								href="${pageContext.request.contextPath}/myCubeToken"
+								class="text-muted text-hover-primary">My Cube Token</a></li>
+						</ul>
+					</div>
+
+					<div class="d-flex align-items-center justify-content-end">
+						<div class="dropdown">
+							<button
+								class="btn btn-light-primary year-select d-flex align-items-center justify-content-center"
+								type="button" data-bs-toggle="dropdown" aria-expanded="false">
+
+								<i class="ki-duotone ki-filter fs-1"> <span class="path1"></span>
+									<span class="path2"></span>
+								</i>
+							</button>
+
+							<div class="dropdown-menu dropdown-menu-end p-3 "
+								id="token-year-menu"></div>
+						</div>
+					</div>
 				</div>
+
 			</div>
 		</div>
 
 		<div id="kt_app_content" class="app-content flex-column-fluid ">
 			<div id="kt_app_content_container"
 				class="app-container container-fluid">
-				<div class="d-flex justify-content-end">
-					<div class="dropdown">
-						<button
-							class="btn btn-light-primary year-select d-flex align-items-center justify-content-center"
-							type="button" data-bs-toggle="dropdown" aria-expanded="false">
-
-							<i class="ki-duotone ki-filter fs-1"> <span class="path1"></span>
-								<span class="path2"></span>
-							</i>
-						</button>
-
-						<div class="dropdown-menu dropdown-menu-end p-3 "
-							id="token-year-menu"></div>
-					</div>
-				</div>
 
 				<div class="row g-5 align-items-stretch">
 
@@ -758,15 +762,15 @@
 					class="d-flex align-items-center justify-content-between mt-6 py-3">
 					<h3 class="fw-medium text-gray-900">Transaction History</h3>
 
-					<div class="d-flex flex-column flex-md-row gap-3">
+					<div class="d-flex gap-3">
 						<div>
 							<button
 								class="d-flex align-items-center justify-content-start gap-3
-							           btn 
+							           btn
 							           responsive-button w-100"
 								type="button" onClick="openExchangeTokenModal()">
 
-								<i class="ki-duotone ki-handcart fs-1"></i> <span class="fs-6">
+								<i class="ki-duotone ki-handcart fs-1"></i> <span class="fs-6 button-label">
 									Privilege History </span>
 
 							</button>
@@ -778,7 +782,7 @@
 								type="button" onClick="openExchangeTokenModal()">
 								<i class="ki-duotone ki-arrow-right-left fs-1"> <span
 									class="path1"></span> <span class="path2"></span>
-								</i> <span class="fs-6"> Exchange Cube Token </span>
+								</i> <span class="fs-6 button-label"> Exchange Cube Token </span>
 							</button>
 						</div>
 					</div>

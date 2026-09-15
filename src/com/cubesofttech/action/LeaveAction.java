@@ -1924,25 +1924,28 @@ public class LeaveAction extends ActionSupport {
 		try {
 			User onlineUser = (User) request.getSession().getAttribute("onlineUser");
 			String id = request.getParameter("id");
-			log.debug("File ID: " + id);
 			FileUpload fileUpload = fileuploadDAO.findById(Integer.parseInt(id));
 			if (fileUpload == null) {
 				return ERROR;
 			}
 			String storedPath = fileUpload.getPath();
-        	log.debug("Stored Path in DB: " + storedPath);
 			String realPath = request.getSession().getServletContext().getRealPath(fileUpload.getPath());
-			log.debug("Real Path: " + realPath);
 			File imgFile = new File(realPath);
-			log.debug("File exists: " + imgFile.exists());
-			log.debug("File absolute path: " + imgFile.getAbsolutePath());
 			
 			URL fileUrl = request.getSession().getServletContext().getResource(fileUpload.getPath());
-			log.debug("fileUrl: " + fileUrl);
 			if(fileUrl != null) {
-				log.debug("File URL: " + fileUrl.toString());
 				if (imgFile.exists()) {
 					byte[] fileContent = Files.readAllBytes(imgFile.toPath());
+					// เช็ค .heic/.heif ส่งดาวน์โหลดแทนเปิด
+					if (imgFile.getName().toLowerCase().matches(".*\\.(heic|heif)$")) {
+						response.setContentType("application/octet-stream");
+						response.setHeader("Content-Disposition", "attachment; filename=\"" + imgFile.getName() + "\"");
+						response.setContentLength(fileContent.length);
+						response.getOutputStream().write(fileContent);
+						response.getOutputStream().flush();
+						response.getOutputStream().close();
+						return null;
+					}
 					String mimeType = Files.probeContentType(imgFile.toPath());
 					if (mimeType == null) {
 						mimeType = "image/png"; //default value

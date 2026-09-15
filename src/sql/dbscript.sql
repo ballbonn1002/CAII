@@ -1018,3 +1018,67 @@ CREATE TABLE `job_application` (
     `time_create`        TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (`job_application_id`)
 ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci;
+
+-- 14/09/2026 Best(Intern) แก้ token_usage ให้เก็บเดือน ปี แยก
+
+ALTER TABLE token_usage
+ADD COLUMN `year` SMALLINT UNSIGNED NULL AFTER `reconcile`,
+ADD COLUMN `month` TINYINT UNSIGNED NULL AFTER `year`;
+
+UPDATE token_usage
+SET
+    `year` = YEAR(time_create),
+    `month` = MONTH(time_create)
+WHERE time_create IS NOT NULL;
+
+ALTER TABLE token_usage
+MODIFY COLUMN `year` SMALLINT UNSIGNED NOT NULL,
+MODIFY COLUMN `month` TINYINT UNSIGNED NOT NULL;
+
+-- 15/09/2026 June: CREATE TABLE pr, pr_detail and pr_parent
+CREATE TABLE `pr` (
+  `pr_id` varchar(16) NOT NULL,
+  `description` text DEFAULT NULL,
+  `sign_user` varchar(32) DEFAULT NULL,
+  `sign_date` datetime DEFAULT NULL,
+  `approve_user` varchar(32) DEFAULT NULL,
+  `approve_date` datetime DEFAULT NULL,
+  `status` varchar(32) NOT NULL,
+  `reason` varchar(1024) DEFAULT NULL,
+  `user_create` varchar(32) NOT NULL,
+  `user_update` varchar(32) DEFAULT NULL,
+  `time_create` timestamp NULL DEFAULT NULL,
+  `time_update` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE `pr_detail` (
+  `pr_detail_id` varchar(16) NOT NULL,
+  `pr_id` varchar(16) NOT NULL,
+  `product_id` varchar(16) DEFAULT NULL,
+  `parent_id` varchar(32) DEFAULT NULL,
+  `amount_total` double NOT NULL,
+  `unit` varchar(32) NOT NULL,
+  `description` text DEFAULT NULL,
+  `ref_link` text DEFAULT NULL,
+  `status` varchar(8) DEFAULT '0',
+  `user_create` varchar(32) NOT NULL,
+  `user_update` varchar(32) DEFAULT NULL,
+  `time_create` timestamp NULL DEFAULT NULL,
+  `time_update` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE `pr_parent` (
+  `pr_parent_id` varchar(16) NOT NULL,
+  `pr_detail_id` varchar(16) NOT NULL,
+  `mr_id` varchar(16) DEFAULT NULL,
+  `product_id` varchar(16) DEFAULT NULL,
+  `parent_id` varchar(32) DEFAULT NULL,
+  `amount` double NOT NULL,
+  `unit` varchar(32) NOT NULL,
+  `description` text DEFAULT NULL,
+  `user_create` varchar(32) NOT NULL,
+  `user_update` varchar(32) DEFAULT NULL,
+  `time_create` timestamp NULL DEFAULT NULL,
+  `time_update` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+

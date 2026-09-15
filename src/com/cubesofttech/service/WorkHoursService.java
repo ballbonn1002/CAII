@@ -14,12 +14,10 @@ import java.text.SimpleDateFormat;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
@@ -94,6 +92,9 @@ public class WorkHoursService {
 			list = holidayDAO.findAll();
 		} catch (Exception e) {
 			e.printStackTrace();
+		}
+		if (list == null) {
+			list = new ArrayList<>();
 		}
 
 		Set<LocalDate> dates = new HashSet<>();

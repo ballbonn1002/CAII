@@ -27,6 +27,12 @@ public class TokenUsage {
 
     @Column(name = "reconcile")
     private Double reconcile;
+    
+    @Column(name = "year")
+    private int year;
+    
+    @Column(name = "month")
+    private int month;
 
 	@Column(name = "re_flag")
     private String reFlag;
@@ -133,6 +139,22 @@ public class TokenUsage {
 
 	public void setActionPointId(Integer actionPointId) {
 		this.actionPointId = actionPointId;
+	}
+	
+	public int getYear() {
+		return this.year;
+	}
+	
+	public void setYear(int year) {
+		this.year = year;
+	}
+	
+	public int getMonth() {
+		return this.month;
+	}
+	
+	public void setMonth(int month) {
+		this.month = month;
 	}
 
     

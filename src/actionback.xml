@@ -1851,17 +1851,39 @@
         class="com.cubesofttech.action.CubeTokenAction"
         method="getTokenAvailableYears"/>
         
-        <action name="tokenSummary"
-        class="com.cubesofttech.action.CubeTokenAction"
-        method="getTokenSummary"/>
+		<action name="tokenSummary"
+		class="com.cubesofttech.action.CubeTokenAction"
+		method="getTokenSummary"/>
+		
+		<action name="tokenTransaction"
+		class="com.cubesofttech.action.CubeTokenAction"
+		method="listTokenHistory" />
+		
+		<action name="exchangeMonthlyToken"
+		class="com.cubesofttech.action.CubeTokenAction"
+		method="exchangeMonthlyToken" />
         
-        <action name="tokenTransaction"
-        class="com.cubesofttech.action.CubeTokenAction"
-        method="listTokenHistory" />
         
-        <action name="exchangeMonthlyToken"
+        <!-- Cube Token Ranking -->
+		<action name="cubeTokenRankingPage"
+			class="com.cubesofttech.action.CubeTokenAction" method="cubeTokenRankingPage">
+			<result name="success" type="tiles">cubeTokenRanking</result>
+			<result name="error">/pages-back/common/error/error_500.jsp</result>
+		</action>
+		
+		<action name="getTokenRanking"
         class="com.cubesofttech.action.CubeTokenAction"
-        method="exchangeMonthlyToken" />
+        method="getTokenRanking" />
+        
+		<action name="getUserCurrentRank"
+		class="com.cubesofttech.action.CubeTokenAction"
+		method="getUserCurrentRank" />
+        
+        
+		<action name="getUserAccumelatedToken"
+		class="com.cubesofttech.action.CubeTokenAction"
+		method="getUserAccumelatedToken" />
+        
         
          <!-- Cube Token Management -->
 		<action name="cubeTokenManagement"
@@ -1890,11 +1912,17 @@
         class="com.cubesofttech.action.CubeTokenAction"
         method="returnCubeToken" />
         
+        <!-- Privilege -->
+		<action name="privilegePage"
+			class="com.cubesofttech.action.CubeTokenAction" method="privilegePage">
+			<result name="success" type="tiles">privilege</result>
+			<result name="error">/pages-back/common/error/error_500.jsp</result>
+		</action>
         
         <!-- Privilege Management -->
 		<action name="privilegeMangementPage"
 			class="com.cubesofttech.action.CubeTokenAction" method="privilegeMangementPage">
-			<result name="success" type="tiles">privilegeMangement</result>
+			<result name="success" type="tiles">privilegeManagement</result>
 			<result name="error">/pages-back/common/error/error_500.jsp</result>
 		</action>
 		
@@ -2327,6 +2355,67 @@
 		<action name="delete_po_attachment"
 		    class="com.cubesofttech.action.PurchaseOrderAction" method="deletePoAttachment">
 		</action>
+
+		<action name="search_inprogress_pr"
+            class="com.cubesofttech.action.PurchaseOrderAction" method="searchInprogressPr">
+        </action>
+        
+        <!-- PR - Purchase Requisition -->
+        <action name="purchase_requisition_list"
+            class="com.cubesofttech.action.PurchaseRequisitionAction" method="purchaseRequisitionList">
+            <result name="success" type="tiles">purchaseRequisitionList</result>
+            <result name="error">/index.jsp</result>
+        </action>
+        
+        <action name="purchase_requisition_add"
+            class="com.cubesofttech.action.PurchaseRequisitionAction" method="purchaseRequisitionAdd">
+            <result name="success" type="tiles">purchaseRequisitionAdd</result>
+            <result name="error">/index.jsp</result>
+        </action>
+        
+        <action name="purchase_requisition_edit"
+            class="com.cubesofttech.action.PurchaseRequisitionAction" method="purchaseRequisitionEdit">
+            <result name="success" type="tiles">purchaseRequisitionDetail</result>
+            <result name="error">/index.jsp</result>
+        </action>
+		        
+        <action name="save_pr"
+            class="com.cubesofttech.action.PurchaseRequisitionAction" method="savePr">
+            <result name="success" type="tiles">purchaseRequisitionList</result>
+            <result name="error">/index.jsp</result>
+        </action>
+        
+        <action name="pr_perform_delete"
+            class="com.cubesofttech.action.PurchaseRequisitionAction" method="prPerformDelete">
+            <result name="success" type="redirect">purchase_requisition_list</result>
+            <result name="error">/index.jsp</result>
+        </action>
+
+        <action name="update_pr"
+            class="com.cubesofttech.action.PurchaseRequisitionAction" method="updatePr">
+            <result name="success" type="tiles">purchaseRequisitionList</result>
+            <result name="error">/index.jsp</result>
+        </action>
+
+        <action name="update_status_pr"
+            class="com.cubesofttech.action.PurchaseRequisitionAction" method="updateStatusPr">
+        </action>
+
+        <action name="delete_pr_detail"
+            class="com.cubesofttech.action.PurchaseRequisitionAction" method="deletePrDetail">
+        </action>
+
+        <action name="update_pr_detail"
+            class="com.cubesofttech.action.PurchaseRequisitionAction" method="updatePrDetail">
+        </action>
+
+        <action name="confirm_pr_sign"
+            class="com.cubesofttech.action.PurchaseRequisitionAction" method="confirmPrSign">
+        </action>
+        
+        <action name="delete_pr_attachment"
+            class="com.cubesofttech.action.PurchaseRequisitionAction" method="deletePrAttachment">
+        </action>
 
 		<!-- MR -->
 		<action name="equipment_request_list" 

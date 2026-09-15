@@ -505,6 +505,12 @@
 			value="/pages-back/cube_token/my_cube_token.jsp" />
 	</definition>
 	
+	<definition name="cubeTokenRanking" extends="baseLayout">
+		<put-attribute name="title" value="Cube Token Ranking" />
+		<put-attribute name="body"
+			value="/pages-back/cube_token/cube_token_ranking.jsp" />
+	</definition>
+	
 	<definition name="cubeTokenMangement" extends="baseLayout">
 		<put-attribute name="title" value="Cube Token Management" />
 		<put-attribute name="body"
@@ -518,10 +524,16 @@
 	</definition>
 	
 
-	<definition name="privilegeMangement" extends="baseLayout">
+	<definition name="privilegeManagement" extends="baseLayout">
 		<put-attribute name="title" value="Privilege Management" />
 		<put-attribute name="body"
 			value="/pages-back/cube_token/privilege_management.jsp" />
+	</definition>
+	
+	<definition name="privilege" extends="baseLayout">
+		<put-attribute name="title" value="Privilege" />
+		<put-attribute name="body"
+			value="/pages-back/cube_token/privilege.jsp" />
 	</definition>
 	
 	<definition name="createRewardItem" extends="baseLayout">
@@ -700,6 +712,25 @@
 		<put-attribute name="title" value="Purchase Requisition Edit" />
 		<put-attribute name="body"
 			value="/pages-back/purchase_requisition/purchase_requisition_edit.jsp" />
+	</definition>
+
+	<!-- PR - Purchase Requisition New -->
+	<definition name="purchaseRequisitionList" extends="baseLayout">
+		<put-attribute name="title" value="Purchase Requisition List" />
+		<put-attribute name="body"
+			value="/pages-back/purchase_requisition_new/purchase_requisition_list.jsp" />
+	</definition>
+	
+	<definition name="purchaseRequisitionAdd" extends="baseLayout">
+		<put-attribute name="title" value="Purchase Requisition Create" />
+		<put-attribute name="body"
+			value="/pages-back/purchase_requisition_new/purchase_requisition_create.jsp" />
+	</definition>
+	
+	<definition name="purchaseRequisitionDetail" extends="baseLayout">
+		<put-attribute name="title" value="Purchase Requisition Edit" />
+		<put-attribute name="body"
+			value="/pages-back/purchase_requisition_new/purchase_requisition_edit.jsp" />
 	</definition>
 
 	<!-- Careers -->

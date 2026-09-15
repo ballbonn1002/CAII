@@ -193,8 +193,17 @@ public class WorkHoursAction extends ActionSupport {
 
 	public String savecheck() {
 		User ur = (User) request.getSession().getAttribute("onlineUser");
-		
+
 		Map<String, Object> result = new HashMap<>();
+
+		// หมดเวลา session -> ตอบ JSON ให้ฝั่ง AJAX จัดการเอง
+		if (ur == null) {
+			result.put("status", "error");
+			result.put("message", "หมดเวลาการใช้งาน กรุณาเข้าสู่ระบบใหม่อีกครั้ง");
+			writeJson(result);
+			return null;
+		}
+
 		try {
 			String userId = request.getParameter("userId");
 			String checkDate = request.getParameter("date");
@@ -203,6 +212,49 @@ public class WorkHoursAction extends ActionSupport {
 			String workType = request.getParameter("workType");
 			String checkMode = request.getParameter("mode");
 			log.debug(checkType + "/" + workType+"/"+checkDate+ "/"+userId);
+
+			// ===== ตรวจสอบกรอบวันลงเวลาย้อนหลังฝั่ง server =====
+			// ฝั่ง client (flatpickr) จำกัด minDate ไว้แล้ว แต่ป้องกันไม่ได้ถ้ายิง request ตรง
+			// หรือเปิดหน้าค้างไว้ข้ามวัน จึงต้องตรวจซ้ำที่นี่เสมอ
+			if ("retro".equals(checkMode)) {
+				LocalDate today = LocalDate.now(ZONE);
+				LocalDate targetDate;
+				try {
+					targetDate = LocalDate.parse(checkDate); // คาดหวังรูปแบบ yyyy-MM-dd
+				} catch (Exception e) {
+					log.error("Retro date parse failed: " + checkDate, e);
+					result.put("status", "error");
+					result.put("message", "รูปแบบวันที่ไม่ถูกต้อง");
+					writeJson(result);
+					return null;
+				}
+
+				if (targetDate.isAfter(today)) {
+					result.put("status", "error");
+					result.put("message", "ไม่สามารถลงเวลาย้อนหลังเป็นวันในอนาคตได้");
+					writeJson(result);
+					return null;
+				}
+
+				LocalDate earliestAllowed;
+				try {
+					earliestAllowed = workHoursService.calculateAllowedWorkDate(today);
+				} catch (Exception e) {
+					log.error("calculateAllowedWorkDate failed", e);
+					result.put("status", "error");
+					result.put("message", "ระบบไม่สามารถตรวจสอบวันหยุดได้ กรุณาลองใหม่อีกครั้ง");
+					writeJson(result);
+					return null;
+				}
+
+				if (targetDate.isBefore(earliestAllowed)) {
+					result.put("status", "error");
+					result.put("message", "ลงเวลาย้อนหลังได้ไม่เกิน 1 วันทำการ "
+							+ "(ย้อนหลังได้ถึงวันที่ " + earliestAllowed + " เท่านั้น)");
+					writeJson(result);
+					return null;
+				}
+			}
 
 			if ("2".equals(checkType)) {
 				LocalDate targetDate = LocalDate.now(ZoneId.of("Asia/Bangkok"));
@@ -460,6 +512,19 @@ public class WorkHoursAction extends ActionSupport {
 		}
 		
 		return null;
+	}
+
+	// เขียน JSON response กลับไปให้ฝั่ง AJAX (รวม boilerplate ที่เดิมเขียนซ้ำหลายที่)
+	private void writeJson(Map<String, Object> result) {
+		try {
+			ObjectMapper mapper = new ObjectMapper();
+			response.setContentType("application/json;charset=UTF-8");
+			response.getWriter().write(mapper.writeValueAsString(result));
+			response.getWriter().flush();
+			response.getWriter().close();
+		} catch (Exception e) {
+			log.error("writeJson failed", e);
+		}
 	}
 
 	public String CheckAllCalendar() {
