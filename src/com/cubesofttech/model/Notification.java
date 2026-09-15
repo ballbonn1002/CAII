@@ -142,4 +142,5 @@ public class Notification implements Serializable {
 		this.timeUpdate = timeUpdate;
 	}
 
+	
 }
