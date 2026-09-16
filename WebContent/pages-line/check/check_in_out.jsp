@@ -4,6 +4,10 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
 
+<%-- =====================================================================
+     OLD: check in / check out
+     ===================================================================== --%>
+<%--
 <style>
 .btn-check:checked+label span {
 	color: #fff !important;
@@ -38,7 +42,7 @@
 				<div
 					class="page-title d-flex flex-column justify-content-center flex-wrap me-3">
 					<h1
-						class="page-heading d-flex text-gray-700 fw-semibold flex-column justify-content-center my-0">Check
+						class="page-heading d-flex text-gray-700 fw-semibold flex-column justify-content-center my-0">LINE Check
 						In / Check Out</h1>
 					<ul
 						class="breadcrumb breadcrumb-separatorless fw-semibold fs-7 my-0 pt-1">
@@ -220,7 +224,8 @@
 						            <div class="tab-pane fade show active">
 						            <div class="d-flex flex-column flex-md-row ">
 						             <span class="fs-4 fw-medium text-gray-900 min-w-80px mb-4 mb-md-0">Today</span>
-						             <%-- <c:set var="leaveTodayBlock">
+						             --%>
+<%-- <c:set var="leaveTodayBlock">
 										<c:forEach var="leave" items="${leaveToday}">
 										
 										    <c:set var="leaveTitle" value="${leave.leave_type_name}" />
@@ -321,6 +326,7 @@
 						                        </div>
 						                    </div>
 						                    </c:if> --%>
+<%--
 						                   
 						                    <!-- ตรวจประเภทการลา Today -->
 						                    <c:set var="hasFullLeave" value="false"/>
@@ -965,6 +971,7 @@
 <!--end:::Main-->
 <!--begin:::Modal-->
 <!-- popup announcement -->
+--%>
 <%-- <div class="modal fade" id="announcementModal" data-bs-backdrop="static"
 	data-bs-keyboard="false" tabindex="-1" aria-hidden="true">
 	<div class="modal-dialog modal-dialog-centered modal-lg">
@@ -1096,6 +1103,7 @@
 		</div>
 	</div>
 </div> --%>
+<%--
 <!--end:::Modal-->
 <!-- Popup Notification -->
 <c:if test="${hasNotification}">
@@ -1165,6 +1173,7 @@
 						       
 						
 						                <div class="d-flex gap-2 align-items-center">
+--%>
 						                 	<%-- <c:if test="${not empty imgPathSignature}">
 								                <a href="signature_perform_delete?userId=${user.id}" onclick="return confirmDelete(this.href, 'check_in_out');"
 													class="btn btn-icon btn-light-danger btn-sm" title="Delete">
@@ -1174,6 +1183,7 @@
 														class="path5"></span></i>
 												</a>
 											</c:if> --%>
+<%--
 						                    <button type="button" id="mainActionBtn" class="btn btn-primary">Upload</button>
 						                </div>
 						                <input type="hidden" id="hasSignature" value="${not empty imgPathSignature}" />
@@ -1372,7 +1382,9 @@
 			</div>
 
 			<div class="modal-footer border-0 pt-0 justify-content-end">
+--%>
 				<%-- <a href="${pageContext.request.contextPath}/borrow_list" class="btn btn-light me-3">Cancel</a> --%>
+<%--
 				<button type="button" class="btn btn-light me-3" data-bs-dismiss="modal">
 					<span class="indicator-label">Cancel</span>
 				</button>
@@ -1384,6 +1396,7 @@
 	</div>
 </div>
 </c:if>
+
 <script>
 let serverTimeOffset = 0;
 
@@ -1573,6 +1586,7 @@ function saveCheckInOut(userId, workType, checkType, mode, selectDate, selectTim
 	  });
 }
 </script>
+
 <script>
 var map, infoWindow, marker;
 function initMap() {
@@ -1667,9 +1681,11 @@ function handleLocationError(browserHasGeolocation, infoWindow, pos) {
 	infoWindow.open(map);
 }
 </script>
+
 <script async defer
 	src="https://maps.googleapis.com/maps/api/js?key=${GOOGLE_API_KEY}&callback=initMap">
 </script>
+
 <script>
 var inactivityTime = function () {
     var time;
@@ -1950,4 +1966,402 @@ window.onload = function() {
 
 	        	})
 
+</script>
+--%>
+<!-- ===== END: old desktop-clone content (commented out) ===== -->
+
+<%-- =====================================================================
+     NEW: LINE LIFF
+     ===================================================================== --%>
+
+<fmt:setLocale value="en_US" scope="request" />
+<style>
+
+.liff-shell { max-width: 393px; margin: 0 auto; }
+
+input[name="checkType"] + .btn.bg-light,
+input[name="checkType"] + .btn.bg-light i,
+input[name="workType"] + .btn.bg-light,
+input[name="workType"] + .btn.bg-light i { color: var(--bs-gray-400); }
+
+.liff-clock { font-size: 52px; line-height: 1; }
+.liff-inout-label { font-weight: 700; min-width: 34px; display: inline-block; }
+.liff-inout-time { min-width: 50px; display: inline-block; font-variant-numeric: tabular-nums; }
+/* 
+@media (min-width: 1200px) {
+	.liff-shell .fs-2  { font-size: 17.75px !important; }
+	.liff-shell .fs-2x { font-size: 20.76px !important; }
+	.liff-shell .fs-3  { font-size: 16.85px !important; }
+} */
+</style>
+
+<div class="liff-shell">
+
+	<h1 class="fw-medium text-gray-700 mb-6 pt-6">Home</h1>
+
+	<!--begin::Work Hours card-->
+	<div class="card card-flush mb-7">
+		<div class="card-header pt-5 min-h-auto">
+			<div class="card-title flex-column align-items-start">
+				<span class="fw-medium text-gray-900 fs-6">Work Hours</span>
+			</div>
+			<div class="card-toolbar flex-column align-items-end gap-2">
+				<span class="fw-medium text-gray-700 fs-8">${user.workTimeStart} - ${user.workTimeEnd}</span>
+				<c:choose>
+					<c:when test="${not empty jobsiteList}">
+						<c:forEach var="site" items="${jobsiteList}">
+							<span class="badge badge-primary fw-bold text-uppercase fs-9"><c:out value="${site['name_site']}" /></span>
+						</c:forEach>
+					</c:when>
+					<c:otherwise>
+						<span class="badge badge-primary fw-bold text-uppercase fs-9">In-house</span>
+					</c:otherwise>
+				</c:choose>
+			</div>
+		</div>
+
+		<div class="card-body pt-6 pb-7">
+			<!-- clock -->
+			<div class="d-flex flex-center align-items-baseline mb-2">
+				<span id="clock" class="liff-clock fw-medium text-gray-900">--:--</span>
+				<span id="clock-second" class="fs-2x fw-medium text-gray-500">:--</span>
+			</div>
+			<div id="date" class="fs-2x fw-normal text-gray-900 text-center mb-8">&nbsp;</div>
+
+			<div class="d-flex gap-10 justify-content-center mb-8">
+				<input type="radio" class="btn-check" name="checkType" id="checkType1" value="1">
+				<label for="checkType1"
+					class="btn bg-light btn-active-success d-flex flex-column align-items-center justify-content-center text-center gap-6 p-0 rounded"
+					style="width: 130px; height: 120px;">
+					<i class="ki-duotone ki-time" style="font-size: 33.33px;"><span class="path1"></span><span class="path2"></span></i>
+					<span class="fs-4 fw-medium">Check - In</span>
+				</label>
+				<input type="radio" class="btn-check" name="checkType" id="checkType2" value="2">
+				<label for="checkType2"
+					class="btn bg-light btn-active-info d-flex flex-column align-items-center justify-content-center text-center gap-6 p-0 rounded"
+					style="width: 130px; height: 120px;">
+					<i class="ki-duotone ki-time" style="font-size: 33.33px;"><span class="path1"></span><span class="path2"></span></i>
+					<span class="fs-4 fw-medium">Check - Out</span>
+				</label>
+			</div>
+
+			<!-- work location -->
+			<div class="text-center mb-4">
+				<label class="form-label fw-bold required mb-0">Your Work Location</label>
+			</div>
+			
+			<div class="d-flex gap-4 justify-content-center mb-8">
+				<input class="btn-check" type="radio" name="workType" id="workType1" value="1" <c:if test="${user.workType == 1}">checked</c:if>>
+				<label for="workType1"
+					class="btn bg-light btn-active-primary d-flex flex-column align-items-center justify-content-center text-center gap-6 p-4 rounded"
+					style="width: 89px; height: 83px;">
+					<i class="ki-duotone ki-map" style="font-size: 20px;"><span class="path1"></span><span class="path2"></span><span class="path3"></span></i>
+					<span class="fs-7 fw-semibold text-nowrap">On-Site</span>
+				</label>
+				<input class="btn-check" type="radio" name="workType" id="workType2" value="2" <c:if test="${user.workType == 2}">checked</c:if>>
+				<label for="workType2"
+					class="btn bg-light btn-active-success d-flex flex-column align-items-center justify-content-center text-center gap-6 p-4 rounded"
+					style="width: 89px; height: 83px;">
+					<i class="ki-duotone ki-home-2" style="font-size: 20px;"><span class="path1"></span><span class="path2"></span></i>
+					<span class="fs-7 fw-semibold text-nowrap">WFH</span>
+				</label>
+				<input class="btn-check" type="radio" name="workType" id="workType3" value="3" <c:if test="${user.workType == 3}">checked</c:if>>
+				<label for="workType3"
+					class="btn bg-light btn-active-danger d-flex flex-column align-items-center justify-content-center text-center gap-6 p-4 rounded"
+					style="width: 89px; height: 83px;">
+					<i class="ki-solid ki-cube-2" style="font-size: 20px;"></i>
+					<span class="fs-7 fw-semibold text-nowrap">Head Office</span>
+				</label>
+			</div>
+
+			<button type="button" id="submitBtn" class="btn btn-primary w-100 fw-medium">Accept</button>
+		</div>
+	</div>
+	<!--end::Work Hours card-->
+
+	<!--begin::Last Update card-->
+	<div class="card card-flush mb-7">
+		<div class="card-header pt-5 min-h-auto">
+			<div class="card-title flex-column align-items-start">
+				<span class="fs-6 fw-medium text-gray-900">Last Update</span>
+				<span class="text-gray-500 fw-medium fs-7">Check in / Check Out</span>
+			</div>
+		</div>
+		<div class="card-body pt-6 pb-7">
+
+			<!-- Today -->
+			<div class="d-flex flex-column mb-5">
+				<span class="fs-6 fw-medium text-gray-900 mb-3">Today</span>
+
+				<c:if test="${not empty leaveToday and fn:trim(leaveToday[0].half_day) == '0'}">
+					<div class="d-flex align-items-center gap-2">
+						<span class="badge ${fn:contains(leaveToday[0].leave_type_name, 'ป่วย') ? 'badge-info' : 'badge-primary'} fw-semibold">
+							${leaveToday[0].leave_type_name} : เต็มวัน
+						</span>
+						<c:if test="${fn:trim(leaveToday[0].leave_status_id) == '0'}">
+							<i class="ki-duotone ki-watch text-warning"><span class="path1"></span><span class="path2"></span></i>
+						</c:if>
+					</div>
+				</c:if>
+				<c:if test="${empty leaveToday or fn:trim(leaveToday[0].half_day) != '0'}">
+					<div class="d-flex flex-column gap-3">
+						<c:forTokens items="IN,OUT" delims="," var="dir">
+							<c:choose>
+								<c:when test="${dir == 'IN'}">
+									<c:set var="inoutList" value="${todaycheckin}"/>
+									<c:set var="inoutColor" value="success"/>
+								</c:when>
+								<c:otherwise>
+									<c:set var="inoutList" value="${todaycheckout}"/>
+									<c:set var="inoutColor" value="info"/>
+								</c:otherwise>
+							</c:choose>
+							<div class="d-flex align-items-center justify-content-between">
+								<div class="d-flex align-items-center">
+									<span class="bullet bullet-vertical bg-${inoutColor} min-h-25px me-3 rounded-0"></span>
+									<span class="liff-inout-label text-${inoutColor} fs-8 me-3">${dir}</span>
+									<c:if test="${not empty inoutList[0].work_hours_time_work}">
+										<span class="fw-medium text-gray-900 fs-6 liff-inout-time me-2"><fmt:formatDate value="${inoutList[0].work_hours_time_work}" pattern="HH:mm"/></span>
+										<span class="fw-medium text-gray-900 fs-7"><fmt:formatDate value="${inoutList[0].work_hours_time_work}" pattern="dd MMM yyyy"/></span>
+									</c:if>
+								</div>
+								<c:if test="${not empty inoutList[0].work_hours_time_work}">
+									<c:choose>
+										<c:when test="${inoutList[0].work_type.toString() eq '1'}"><i class="ki-duotone ki-map fs-2x text-primary"><span class="path1"></span><span class="path2"></span><span class="path3"></span></i></c:when>
+										<c:when test="${inoutList[0].work_type.toString() eq '2'}"><i class="ki-duotone ki-home-2 fs-2x text-success"><span class="path1"></span><span class="path2"></span></i></c:when>
+										<c:when test="${inoutList[0].work_type.toString() eq '3'}"><i class="ki-duotone ki-cube-2 fs-2x text-danger"><span class="path1"></span><span class="path2"></span><span class="path3"></span></i></c:when>
+									</c:choose>
+								</c:if>
+							</div>
+						</c:forTokens>
+					</div>
+					<c:if test="${not empty leaveToday}">
+						<div class="d-flex align-items-center gap-2 mt-3">
+							<span class="badge ${fn:contains(leaveToday[0].leave_type_name, 'ป่วย') ? 'badge-info' : 'badge-primary'} fw-semibold">
+								${leaveToday[0].leave_type_name} : ${fn:trim(leaveToday[0].half_day) == '1' ? 'ช่วงเช้า' : 'ช่วงบ่าย'}
+							</span>
+							<c:if test="${fn:trim(leaveToday[0].leave_status_id) == '0'}">
+								<i class="ki-duotone ki-watch text-warning"><span class="path1"></span><span class="path2"></span></i>
+							</c:if>
+						</div>
+					</c:if>
+				</c:if>
+			</div>
+
+			<div class="separator separator-dashed my-5"></div>
+
+			<!-- Last work day -->
+			<div class="d-flex flex-column">
+				<span class="fs-6 fw-medium text-gray-900 mb-3">${empty lastWorkDayName ? 'Last' : lastWorkDayName}</span>
+
+				<c:if test="${not empty leaveLastday and fn:trim(leaveLastday[0].half_day) == '0'}">
+					<div class="d-flex align-items-center gap-2">
+						<span class="badge ${fn:contains(leaveLastday[0].leave_type_name, 'ป่วย') ? 'badge-info' : 'badge-primary'} fw-semibold">
+							${leaveLastday[0].leave_type_name} : เต็มวัน
+						</span>
+						<c:if test="${fn:trim(leaveLastday[0].leave_status_id) == '0'}">
+							<i class="ki-duotone ki-watch text-warning"><span class="path1"></span><span class="path2"></span></i>
+						</c:if>
+					</div>
+				</c:if>
+				<c:if test="${empty leaveLastday or fn:trim(leaveLastday[0].half_day) != '0'}">
+					<div class="d-flex flex-column gap-3">
+						<c:forTokens items="IN,OUT" delims="," var="dir">
+							<c:choose>
+								<c:when test="${dir == 'IN'}">
+									<c:set var="inoutList" value="${lastcheckin}"/>
+									<c:set var="inoutColor" value="success"/>
+								</c:when>
+								<c:otherwise>
+									<c:set var="inoutList" value="${lastcheckout}"/>
+									<c:set var="inoutColor" value="info"/>
+								</c:otherwise>
+							</c:choose>
+							<div class="d-flex align-items-center justify-content-between">
+								<div class="d-flex align-items-center">
+									<span class="bullet bullet-vertical bg-${inoutColor} min-h-25px me-3 rounded-0"></span>
+									<span class="liff-inout-label text-${inoutColor} fs-8 me-3">${dir}</span>
+									<c:if test="${not empty inoutList[0].work_hours_time_work}">
+										<span class="fw-medium text-gray-900 fs-6 liff-inout-time me-2"><fmt:formatDate value="${inoutList[0].work_hours_time_work}" pattern="HH:mm"/></span>
+										<span class="fw-medium text-gray-900 fs-7"><fmt:formatDate value="${inoutList[0].work_hours_time_work}" pattern="dd MMM yyyy"/></span>
+									</c:if>
+								</div>
+								<c:if test="${not empty inoutList[0].work_hours_time_work}">
+									<c:choose>
+										<c:when test="${inoutList[0].work_type.toString() eq '1'}"><i class="ki-duotone ki-map fs-2x text-primary"><span class="path1"></span><span class="path2"></span><span class="path3"></span></i></c:when>
+										<c:when test="${inoutList[0].work_type.toString() eq '2'}"><i class="ki-duotone ki-home-2 fs-2x text-success"><span class="path1"></span><span class="path2"></span></i></c:when>
+										<c:when test="${inoutList[0].work_type.toString() eq '3'}"><i class="ki-duotone ki-cube-2 fs-2x text-danger"><span class="path1"></span><span class="path2"></span><span class="path3"></span></i></c:when>
+									</c:choose>
+								</c:if>
+							</div>
+						</c:forTokens>
+					</div>
+					<c:if test="${not empty leaveLastday}">
+						<div class="d-flex align-items-center gap-2 mt-3">
+							<span class="badge ${fn:contains(leaveLastday[0].leave_type_name, 'ป่วย') ? 'badge-info' : 'badge-primary'} fw-semibold">
+								${leaveLastday[0].leave_type_name} : ${fn:trim(leaveLastday[0].half_day) == '1' ? 'ช่วงเช้า' : 'ช่วงบ่าย'}
+							</span>
+							<c:if test="${fn:trim(leaveLastday[0].leave_status_id) == '0'}">
+								<i class="ki-duotone ki-watch text-warning"><span class="path1"></span><span class="path2"></span></i>
+							</c:if>
+						</div>
+					</c:if>
+				</c:if>
+			</div>
+		</div>
+	</div>
+	<!--end::Last Update card-->
+</div>
+
+<script>
+$(function () {
+	"use strict";
+
+	/* ---------- clock (ตัดที่ 18:30) ---------- */
+	function updateClock() {
+		var now = new Date(), hours = now.getHours(), minutes = now.getMinutes();
+		if (hours > 18 || (hours === 18 && minutes >= 30)) {
+			$("#clock").text("18:30");
+			$("#clock-second").text(":00");
+		} else {
+			$("#clock").text(hours.toString().padStart(2, '0') + ":" + minutes.toString().padStart(2, '0'));
+			$("#clock-second").text(":" + now.getSeconds().toString().padStart(2, '0'));
+		}
+		$("#date").text(now.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }).replace(/,/g, ''));
+	}
+
+	updateClock();
+	setInterval(updateClock, 1000);
+
+	/* ---------- auto-select check-in/out by time of day ---------- */
+	var hour = new Date().getHours();
+	$(hour <= 12 ? "#checkType1" : "#checkType2").prop("checked", true);
+
+	/* ---------- geolocation (ไม่มี map ตาม Figma ) ---------- */
+	let lat = null, lng = null;
+	if (navigator.geolocation) {
+		navigator.geolocation.getCurrentPosition(function (pos) {
+			lat = pos.coords.latitude;
+			lng = pos.coords.longitude;
+			adddata();
+		}, function (err) {
+			console.warn('Geolocation failed:', err.message); 
+		}, { enableHighAccuracy: true, timeout: 8000 });
+	}
+
+	function adddata() {
+		const x = lat, y = lng;
+		$.ajax({
+			url: "saveLocationToSession",
+			type: "POST",
+			data: {
+				latitude: x,
+				longitude: y
+			}
+		});
+	}
+
+	/* ---------- Request body Check In / Check Out ---------- */
+	function buildCheckRequest(checkType, workType, mode) {
+		return {
+			userId: "${logonUser}",
+			workType: workType,
+			checkType: checkType,
+			mode: mode,
+			reason: "",
+			latitude: lat == null ? "" : lat,
+			longitude: lng == null ? "" : lng
+		};
+	}
+
+	/* ---------- submit ---------- */
+	$("#submitBtn").click(function() {
+		const workType = $("input[name='workType']:checked").val();
+		const checkType = $("input[name='checkType']:checked").val();
+
+		console.log(workType + "/" + checkType);
+
+		const $btn = $(this).prop("disabled", true);
+
+		saveCheckInOut(workType, checkType, "normal", $btn);
+	});
+
+	function saveCheckInOut(workType, checkType, mode, $btn) {
+		console.log(workType + "|" + checkType + "|" + mode);
+		toastr.options = {
+			"closeButton": false,
+			"debug": false,
+			"newestOnTop": false,
+			"progressBar": false,
+			"positionClass": "toastr-top-right",
+			"preventDuplicates": false,
+			"onclick": null,
+			"showDuration": "300",
+			"hideDuration": "1000",
+			"timeOut": "2000",
+			"extendedTimeOut": "1000",
+			"showEasing": "swing",
+			"hideEasing": "linear",
+			"showMethod": "fadeIn",
+			"hideMethod": "fadeOut"
+		};
+
+		const data = buildCheckRequest(checkType, workType, mode);
+
+		var loadingEl = $("<div>")
+			.attr("id", "page-loader")
+			.css({
+				"position": "fixed",
+				"top": "0", "left": "0",
+				"width": "100%", "height": "100%",
+				"background-color": "rgba(0, 0, 0, 0.5)",
+				"z-index": "9999",
+				"display": "flex",
+				"align-items": "center",
+				"justify-content": "center",
+				"flex-direction": "column",
+				"backdrop-filter": "blur(2px)"
+			})
+			.html('<div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;"></div>'
+				+ '<span class="text-white fs-4 fw-bold mt-3">Processing...</span>');
+		$("body").append(loadingEl);
+
+		let targetUrl = "";
+		if (checkType === "1") {
+			targetUrl = "saveCheckIn";
+		} else if (checkType === "2") {
+			targetUrl = "saveCheckOut";
+		}
+
+		$.ajax({
+			url: targetUrl,
+			type: "POST",
+			dataType: "json",
+			data: data,
+			success: function (res) {
+				console.log(res);
+				let type = res.type === "1" ? "Check-in" : "Check-out";
+				if (res.status === "success") {
+					toastr.success(type + " : " + res.time, "Saved successfully!");
+					setTimeout(function() {
+						location.reload();
+					}, 2000);
+				} else {
+					$("#page-loader").remove();
+					toastr.options.timeOut = "5000";
+					toastr.options.extendedTimeOut = "5000";
+					toastr.error(res.message || "Failed to record your attendance. Please try again.");
+					// กันกดซ้ำ 
+					$btn.prop("disabled", false);
+				}
+			},
+			error: function (xhr, status, error) {
+				$("#page-loader").remove();
+				toastr.error("Error saving data: " + error);
+				// กันกดซ้ำ
+				$btn.prop("disabled", false);
+			}
+		});
+	}
+});
 </script>

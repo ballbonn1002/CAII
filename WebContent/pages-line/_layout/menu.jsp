@@ -9,6 +9,11 @@ String token = (String) session.getAttribute("token"); // ดึง token ที
 String targetURL = Constant.getWebContext2() + "/line_authorization?token=" + token;
 %>
 
+<%-- =====================================================================
+     OLD: Desktop admin sidebar (Metronic app-sidebar)
+     ===================================================================== --%>
+
+<%--
 <!--begin::Sidebar-->
 <div id="kt_app_sidebar" class="app-sidebar flex-column"
 	data-kt-drawer="true" data-kt-drawer-name="app-sidebar"
@@ -941,3 +946,73 @@ String targetURL = Constant.getWebContext2() + "/line_authorization?token=" + to
 					    });
 					});
 				</script>
+--%>
+<!-- ===== END: OLD desktop sidebar (commented out) ===== -->
+
+<!--begin::LIFF mobile navbar (support tablet, mobile)-->
+<style>
+
+body { padding-bottom: calc(90px + env(safe-area-inset-bottom)); }
+
+.liff-nav {
+	position: fixed;
+	left: 0; right: 0; bottom: 0;
+	max-width: 480px;
+	margin: 0 auto;
+	background: #fff;
+	box-shadow: 0 -4px 30px rgba(82, 63, 105, .05);
+	display: flex;
+	padding-bottom: env(safe-area-inset-bottom);
+	z-index: 100;
+}
+.liff-nav a {
+	flex: 1;
+	height: 75px;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	gap: 6.5px;
+	font-size: 12px;
+	font-weight: 500;
+	color: var(--bs-gray-500);
+	text-decoration: none;
+	border-top: 2px solid transparent;
+}
+.liff-nav a i { font-size: 24px; }
+.liff-nav a.active { color: var(--bs-primary); border-top-color: var(--bs-primary); }
+.liff-nav a.active i { color: var(--bs-primary); }
+</style>
+
+<%-- Note: line_profile: not now --%>
+<nav class="liff-nav">
+	<a href="line_check_in_out" data-route="line_check_in_out">
+		<i class="ki-duotone ki-home-2"><span class="path1"></span><span class="path2"></span></i>
+		<span>Home</span>
+	</a>
+	<a href="line_Calendar_Checklist" data-route="line_Calendar_Checklist">
+		<i class="ki-duotone ki-calendar-tick"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span><span class="path5"></span><span class="path6"></span></i>
+		<span>Check List</span>
+	</a>
+	<a href="line_new_myleave_list?Id=${onlineUser.id}" data-route="line_new_myleave_list">
+		<i class="ki-duotone ki-pulse"><span class="path1"></span><span class="path2"></span></i>
+		<span>Leave</span>
+	</a>
+	<a href="my_profile" data-route="my_profile">
+		<i class="ki-duotone ki-profile-circle"><span class="path1"></span><span class="path2"></span><span class="path3"></span></i>
+		<span>Profile</span>
+	</a>
+</nav>
+<!--end::LIFF mobile navbar-->
+
+<script type="text/javascript">
+	$(function () {
+		var cur = (location.pathname.split('/').pop() || 'index')
+			.replace(/\.(jsp|action|html|php)$/i, '');
+		$('.liff-nav a[data-route]').each(function () {
+			if (new RegExp('^' + $(this).data('route') + '$', 'i').test(cur)) {
+				$(this).addClass('active');
+			}
+		});
+	});
+</script>

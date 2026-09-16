@@ -3,6 +3,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
 
+<%--
 <style>
 #avatarPreview{
     background-color: #f3f6f9;
@@ -121,6 +122,7 @@
 				</div>
 				<!--end::Theme mode-->
 				<!--begin::Notifications-->
+				--%>
 				<%--
 				<div class="app-navbar-item ms-1 ms-md-4">
 					<!--begin::Menu toggle-->
@@ -181,6 +183,7 @@
 					<!--end::Menu-->
 				</div>
 				--%>
+				<%--
 				<!--end::Notifications-->
 				<script>
 					$(document).ready(function() {
@@ -418,6 +421,7 @@
 								Notification</a>
 						</div>
 						--%>
+						<%--
 						<!-- My Projects -->
 						<!-- <div class="menu-item px-5">
 							<a href="#" class="menu-link px-5"> <span
@@ -576,3 +580,5 @@
 	<!--end::Header container-->
 </div>
 <!--end::Header-->
+--%>
+<!-- ===== END: header.jsp commented out (LINE LIFF ไม่ใช้ top navbar) ===== -->
