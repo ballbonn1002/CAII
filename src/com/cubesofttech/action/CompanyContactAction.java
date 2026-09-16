@@ -313,20 +313,13 @@ public class CompanyContactAction extends ActionSupport {
 	                    isFreelancerSave = true;
 	                    freelancerCompanyRow = existingCompany;
 	                }
-	            } catch (NumberFormatException nfe) {
-	                // contactCompanyId ไม่ใช่ตัวเลข ข้ามไป
+	            } catch (NumberFormatException nfe) {	       
 	            }
 	        }
 
 	        if (isFreelancerSave) {
 
-	            if (freelancerCompanyRow == null && freelancerRealCompanyId != null && !freelancerRealCompanyId.trim().isEmpty()) {
-	                try {
-	                    freelancerCompanyRow = companyDAO.findById(Long.parseLong(freelancerRealCompanyId.trim()));
-	                } catch (NumberFormatException nfe) {
-	                    freelancerCompanyRow = null;
-	                }
-	            }
+	            
 
 	            boolean isNewCompany = (freelancerCompanyRow == null);
 	            if (isNewCompany) {
@@ -341,12 +334,15 @@ public class CompanyContactAction extends ActionSupport {
 	                freelancerCompanyRow.setTimeUpdate(now);
 	            }
 
-	            freelancerCompanyRow.setCompanyEn(freelancerCompanyNameEn);
+	            if (freelancerCompanyNameEn != null && !freelancerCompanyNameEn.trim().isEmpty()) {
+	                freelancerCompanyRow.setCompanyEn(freelancerCompanyNameEn);
+	            }
 
-	            String companyThValue = (freelancerCompanyNameTh != null && !freelancerCompanyNameTh.trim().isEmpty())
-	                    ? freelancerCompanyNameTh
-	                    : freelancerCompanyNameEn;
-	            freelancerCompanyRow.setCompanyTh(companyThValue);
+	            if (freelancerCompanyNameTh != null && !freelancerCompanyNameTh.trim().isEmpty()) {
+	                freelancerCompanyRow.setCompanyTh(freelancerCompanyNameTh);
+	            } else if (freelancerCompanyNameEn != null && !freelancerCompanyNameEn.trim().isEmpty()) {
+	                freelancerCompanyRow.setCompanyTh(freelancerCompanyNameEn);
+	            }
 
 	            try {
 	            	if (isNewCompany) {
@@ -405,9 +401,11 @@ public class CompanyContactAction extends ActionSupport {
 	            }
 
 	            freelancerAddressRow.setCompanyId(contactCompanyId);
-	            freelancerAddressRow.setAddressName(freelancerCompanyNameEn);
-
-	            // อัปเดตเฉพาะตอนมีค่าส่งมาจริง (ตอนแก้ไขผ่าน panel นี้ ช่อง Address/Google Map ที่ซ่อนไว้จะไม่ถูกส่งค่าใหม่มา)
+	           
+	            if (freelancerCompanyNameEn != null && !freelancerCompanyNameEn.trim().isEmpty()) {
+	                freelancerAddressRow.setAddressName(freelancerCompanyNameEn);
+	            }
+	           
 	            if (freelancerAddress != null && !freelancerAddress.trim().isEmpty()) {
 	                freelancerAddressRow.setAddress(freelancerAddress);
 	            }

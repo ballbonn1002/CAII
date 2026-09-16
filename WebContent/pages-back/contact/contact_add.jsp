@@ -895,6 +895,19 @@
 			        $("#freelancer_address").text("");
 			        $("#company_map_link").attr("href", "#").text("");
 			        $("#company_tax").text(taxNumber || "-");
+			    } else {
+			       
+			        $("#company_name_en").val("");
+			        $("#company_name_th").val("");
+			        $("#location_name").val("");
+			        $("#freelancer_address").text("");
+			        $("#company_map_link").attr("href", "").text("");			      
+			        $("#company_logo").val("");
+			        $("#company_logo_preview").html(
+			            '<i class="ki-duotone ki-picture fs-5x text-gray-300">' +
+			                '<span class="path1"></span><span class="path2"></span>' +
+			            '</i>'
+			        );
 			    }
 			});
 
