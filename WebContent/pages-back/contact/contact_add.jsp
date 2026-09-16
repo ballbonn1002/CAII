@@ -62,19 +62,23 @@
 			<input type="hidden" id="contact_company_address_id"
 				name="contact.companyAddressId"
 				value="<c:out value="${contact.companyAddressId}" />">
-			<input type="hidden" id="contact_address_location"
-				name="contact.addressLocation"
-				value="<c:out value="${contact.addressLocation}" />">
-			<input type="hidden" id="contact_location_name"
-				name="contact.locationName"
-				value="<c:out value="${contact.locationName}" />">
+			<input type="hidden" id="hidden_freelancer_address"
+				name="freelancerAddress" value="">
+						<input type="hidden" id="hidden_freelancer_google_map"
+				name="freelancerGoogleMap" value="">
+			<input type="hidden" id="contact_freelancer_company_id"
+				name="freelancerRealCompanyId"
+				value="<c:out value="${isFreelancerContact ? contact.companyId : ''}" />">
 			<input type="hidden" id="contact_profile_image"
 				name="profileImage"
 				value="<c:out value="${profileImage}" />">
 			<input type="hidden" id="remove_profile_image"
 				name="removeProfileImage" value="">
+				
+				
+			
 
-			<div class="row g-8">
+			<div class="row g-8"> 
 
 				<!-- Personal Information -->
 				<div class="col-xl-8">
@@ -102,10 +106,13 @@
 										data-userid="weerawat.p" data-enable="1"
 										${empty contact.companyContactId or contact.isActive eq '1' ? 'checked' : ''}>
 								</div>
+								
 
 							</div>
 
 						</div>
+					
+					
 
 
 						<div class="card-body">
@@ -364,12 +371,20 @@
 								<div class="image-input image-input-empty image-input-outline"
 									data-kt-image-input="true">
 
-									<div id="company_logo_preview"
+										<div id="company_logo_preview"
 										class="image-input-wrapper w-100px h-100px d-flex align-items-center justify-content-center">
 
-										<i class="ki-duotone ki-picture fs-5x text-gray-300"> <span
-											class="path1"></span> <span class="path2"></span>
-										</i>
+										<c:choose>
+											<c:when test="${not empty companyLogoPath}">
+												<img src="${pageContext.request.contextPath}${companyLogoPath}"
+													class="w-100 h-100 object-fit-cover rounded" alt="Company Logo">
+											</c:when>
+											<c:otherwise>
+												<i class="ki-duotone ki-picture fs-5x text-gray-300"> <span
+													class="path1"></span> <span class="path2"></span>
+												</i>
+											</c:otherwise>
+										</c:choose>
 
 									</div>
 
@@ -415,7 +430,9 @@
                                </option>
                            
                                </c:forEach>
-                               <option value="4" data-tax="" ${contact.companyId eq '4' ? 'selected' : ''}>Freelancer </option>
+                                            <option value="4" data-tax="" ${contact.companyId eq '4' ? 'selected' : ''}>Freelancer </option>
+                                            
+                                            
                                </select>
                                </div>
 
@@ -456,15 +473,17 @@
 							
 
 							<!-- ข้อมูลสำหรับ Freelancer -->
-							<%-- <div id="freelancer_section" style="display: none;">
+							<div id="freelancer_section" style="display: none;">
 
-								<!-- Company Name EN -->
+																<!-- Company Name EN -->
 								<div class="mb-7">
 
-									<label for="company_name_en" class="form-label fw-medium">
-										Company Name EN </label> <input type="text" id="company_name_en"
-										name="contact.companyEn" class="form-control py-4"
-										value="<c:out value="${contact.companyEn}" />"
+									<label for="company_name_en" class="form-label fw-medium required">
+										Company Name EN </label>
+
+									<input type="text" id="company_name_en"
+										name="freelancerCompanyNameEn" class="form-control py-4"
+										value="<c:out value="${freelancerCompanySharedInfo.companyEn}" />"
 										placeholder="Company Name EN">
 
 								</div>
@@ -472,12 +491,13 @@
 
 								<!-- Company Name TH -->
 								<div class="mb-7">
+								<label for="company_name_th" class="form-label fw-medium">
+                                Company Name TH </label> <input type="text" id="company_name_th"
+                                name="freelancerCompanyNameTh" class="form-control py-4"
+                                value="<c:out value="${freelancerCompanySharedInfo.companyTh}" />"
+                                placeholder="Company Name TH">
 
-									<label for="company_name_th" class="form-label fw-medium">
-										Company Name TH </label> <input type="text" id="company_name_th"
-										class="form-control py-4"
-										placeholder="Company Name TH">
-
+									
 								</div>
 
 
@@ -491,7 +511,7 @@
 
 										<input type="text" id="location_name"
 											class="form-control py-4"
-											value="<c:out value="${contact.companyAddressId}" />"
+											value="<c:out value="${freelancerAddressInfo.addressName}" />"
 											placeholder="Location">
 
 										<button type="button" id="select_location_btn"
@@ -513,19 +533,23 @@
                               <i class="ki-duotone ki-map fs-2x text-gray-400 me-4 mt-1">
 	                            <span class="path1"></span> <span class="path2"></span><span class="path3"></span> </i>
                                      <div id="freelancer_address" class="text-gray-700 lh-lg">
+                                        <c:out value="${freelancerAddressInfo.address}" />
                                       </div>
                                          </div>
 	                                    
 	                            <!-- Google Maps Link -->
 							<div class="d-flex align-items-center mb-7">
 							  <i class="ki-duotone ki-geolocation fs-2x text-gray-400 me-4 mt-1">
-							    <span class="path1"></span> <span class="path2"></span>
-                                 </i> <a id="company_map_link" target="_blank"
+							    <span class="path1"></span> 
+							    <span class="path2"></span>
+                                 </i> 
+                                 <a id="company_map_link" href="<c:out value="${freelancerAddressInfo.googleMap}" />" target="_blank"
                                  class="text-gray-700 text-hover-primary text-break">
+                                 <c:out value="${freelancerAddressInfo.googleMap}" />
                                    </a>
-                                    </div>                                                   
+                                </div>                                                   
 
-							</div> --%>
+							</div> 
 
 						</div>
 
@@ -672,6 +696,7 @@
 		</div>
 
 	</div>
+	
 
 	<script type="text/javascript">
 
@@ -810,24 +835,36 @@
 
 			if (!companyId) {
 				$("#company_detail").hide();
-				return;
-			}
-
-			$("#company_detail").show();
-
-			const logoPath = $("#company_id option:selected").data("logo");
-			if (logoPath) {
-				$("#company_logo_preview").html(
-					'<img src="' + contextPath + logoPath + '"' +
-					' class="w-100 h-100 object-fit-cover rounded"' +
-					' alt="Company Logo">'
-				);
-			} else {
+				$("#company_logo").val("");
 				$("#company_logo_preview").html(
 					'<i class="ki-duotone ki-picture fs-5x text-gray-300">' +
 						'<span class="path1"></span><span class="path2"></span>' +
 					'</i>'
 				);
+				return;
+			}
+			$("#company_detail").show();
+
+			const hasPendingLogoFile =
+				$("#company_logo")[0] &&
+				$("#company_logo")[0].files &&
+				$("#company_logo")[0].files.length > 0;
+
+			if (!hasPendingLogoFile) {
+				const logoPath = $("#company_id option:selected").data("logo");
+				if (logoPath) {
+					$("#company_logo_preview").html(
+						'<img src="' + contextPath + logoPath + '"' +
+						' class="w-100 h-100 object-fit-cover rounded"' +
+						' alt="Company Logo">'
+					);
+				} else {
+					$("#company_logo_preview").html(
+						'<i class="ki-duotone ki-picture fs-5x text-gray-300">' +
+							'<span class="path1"></span><span class="path2"></span>' +
+						'</i>'
+					);
+				}
 			}
 
 			$("#company_tax").text("");
@@ -844,21 +881,22 @@
 		/*
 		 * เปลี่ยนบริษัท
 		 */
-		$("#company_id").on("change", function () {
+		 $("#company_id").on("change", function () {
 
-			const companyId = $(this).val();
-			const taxNumber = $(this).find("option:selected").data("tax");
+			    const companyId = $(this).val();
+			    const taxNumber = $(this).find("option:selected").data("tax");
 
-			showCompanyDetail(companyId);
-			loadCompanyAddresses(companyId);
+			    showCompanyDetail(companyId);
+			    loadCompanyAddresses(companyId);
 
-			if (companyId !== "4") {
-				$("#company_name_en").val("");
-				$("#company_name_th").val("");
-				$("#location_name").val("");
-				$("#company_tax").text(taxNumber || "-");
-			}
-		});
+			    if (companyId !== "4") {
+			        $("#company_name_en").val("");
+			        $("#company_name_th").val("");
+			        $("#freelancer_address").text("");
+			        $("#company_map_link").attr("href", "#").text("");
+			        $("#company_tax").text(taxNumber || "-");
+			    }
+			});
 
 
 		/*
@@ -935,30 +973,29 @@
 		/*
 		 * เปิด Customer Address Modal
 		 */
-		$("#select_location_btn").on("click", function () {
+		 $("#select_location_btn").on("click", function () {
 
-			$("#modal_address_name").val(
-				$("#location_name").val()
-			);
+			    $("#modal_address_name").val(
+				        $("#location_name").val()
+				    );
 
-			$("#modal_address").val(
-				$("#freelancer_address").text().trim()
-			);
+			    $("#modal_address").val(
+			        $("#freelancer_address").text().trim()
+			    );
 
-			$("#modal_google_map").val(
-				$("#company_map_link").attr("href") || ""
-			);
+			    $("#modal_google_map").val(
+			        $("#company_map_link").attr("href") || ""
+			    );
 
-			const modalElement =
-				document.getElementById("customerAddressModal");
+			    const modalElement =
+			        document.getElementById("customerAddressModal");
 
-			const customerAddressModal =
-				bootstrap.Modal.getOrCreateInstance(modalElement);
+			    const customerAddressModal =
+			        bootstrap.Modal.getOrCreateInstance(modalElement);
 
-			customerAddressModal.show();
+			    customerAddressModal.show();
 
-		});
-
+			});
 
 		/*
 		 * บันทึก Customer Address กลับหน้า Contact Detail
@@ -985,9 +1022,9 @@
 				return;
 			}
 
+			/* $("#company_name_en").val(addressName); */
 			$("#location_name").val(addressName);
 			$("#freelancer_address").text(address);
-
 			$("#company_map_link")
 				.attr("href", googleMap)
 				.text(googleMap);
@@ -1042,67 +1079,48 @@
 			}
 
 			/*
-			 * ตรวจข้อมูล Freelancer
+			 * เตรียมข้อมูลก่อน Submit
 			 */
-			/* if (companyId === "4") {
+			if (companyId === "4") {
 
-				const companyNameEn =
-					$("#company_name_en").val().trim();
+				$("#hidden_freelancer_address").val(
+					$("#freelancer_address").text().trim()
+				);
+				$("#hidden_freelancer_google_map").val(
+					$("#company_map_link").attr("href") || ""
+				);
 
-				const companyNameTh =
-					$("#company_name_th").val().trim();
-
-				const locationName =
-					$("#location_name").val().trim();
-
-				if (
-					!companyNameEn ||
-					!companyNameTh ||
-					!locationName
-				) {
-
-					swal(
-						"Error",
-						"กรุณากรอกข้อมูล Freelancer ให้ครบ",
-						"error"
-					);
-
-					return;
-				}
-
+			} else {
+				$("#contact_company_address_id").val(
+					$("#company_location_id").val() || ""
+				);
 			}
- */
+
 			$("#contact_is_active").val(
 				$(".js-toggle-enable").is(":checked") ? "1" : "0"
 			);
 
 			if (companyId === "4") {
-				$("#contact_company_address_id").val(
-					$("#location_name").val().trim()
-				);
-				$("#contact_address_location").val(
+
+				$("#hidden_freelancer_address").val(
 					$("#freelancer_address").text().trim()
 				);
-				$("#contact_location_name").val(
-					$("#location_name").val().trim()
+				$("#hidden_freelancer_google_map").val(
+					$("#company_map_link").attr("href") || ""
 				);
+
 			} else {
-				$("#company_name_en").val(
-					$("#company_id option:selected").text().trim()
-				);
 				$("#contact_company_address_id").val(
 					$("#company_location_id").val() || ""
 				);
-				$("#contact_address_location").val(
-					$("#selected_company_address").text().trim()
-				);
-				$("#contact_location_name").val(
-					$("#company_location_id option:selected").text().trim()
-				);
 			}
 
+			$("#contact_is_active").val(
+				$(".js-toggle-enable").is(":checked") ? "1" : "0"
+			);
+
 			HTMLFormElement.prototype.submit.call(this);
- 
+
 		});
 		
 		
@@ -1111,20 +1129,14 @@
 		 */
 		const initialCompanyId = $("#company_id").val();
 		const initialCompanyAddressId = $("#contact_company_address_id").val();
-		const initialAddressLocation = $("#contact_address_location").val();
 		const initialTaxNumber = $("#company_id option:selected").data("tax");
 
 		showCompanyDetail(initialCompanyId);
 
-		if (initialCompanyId === "4") {
-			if (initialAddressLocation) {
-				$("#freelancer_address").text(initialAddressLocation);
-			}
-		} else if (initialCompanyId) {
-			$("#company_tax").text(initialTaxNumber || "-");
-			loadCompanyAddresses(initialCompanyId, initialCompanyAddressId);
+		if (initialCompanyId && initialCompanyId !== "4") {
+		    $("#company_tax").text(initialTaxNumber || "-");
+		    loadCompanyAddresses(initialCompanyId, initialCompanyAddressId);
 		}
-
 		});
 </script>
 

@@ -33,7 +33,6 @@
 
 	</script>
 
-	
 <!-- SweetAlert -->
 	<link
 		rel="stylesheet"
@@ -43,24 +42,6 @@
 		src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/1.1.3/sweetalert.min.js">
 	</script>
 	
-	<style>
-		#contact_table thead th {
-			font-weight: 600 !important;
-			text-transform: uppercase;
-			white-space: nowrap;
-			vertical-align: middle;
-		}
-
-		#contact_table thead th .dt-column-header {
-			display: inline-flex !important;
-			flex-direction: row !important;
-			align-items: center !important;
-		}
-
-		#contact_table thead th .dt-column-order {
-			margin: 0 !important;
-		}
-	</style>
 </head>
 
 <body>
@@ -84,6 +65,7 @@
 			</ul>
 
 		</div>
+		
 
 		<!-- Search -->
 		<div class="card shadow-sm mb-8">
@@ -181,7 +163,7 @@
                         id="contact_table"
                         class="table table-striped table-row-bordered table-row-gray-200 align-middle table-hover">
 						<thead>
-										<tr class="text-muted text-uppercase text-gray-500">
+										<tr class="text-muted text-uppercase text-gray-500 fw-bold text-nowrap">
 											<th>#</th>
 											<th>company name</th>
 											<th>company </th>
@@ -281,12 +263,12 @@
 
 												<c:choose>
 
-													<c:when test="${not empty contact.company_en}">
-														<c:out value="${contact.company_en}" />
+													<c:when test="${not empty contact.companyEn}">
+														<c:out value="${contact.companyEn}" />
 													</c:when>
 
 													<c:otherwise>
-														<c:out value="${contact.companyId}" />
+														<c:out value="${contact.company_Id}" />
 													</c:otherwise>
 
 												</c:choose>
@@ -300,7 +282,7 @@
 									<!-- Address -->
 									<td>
 
-										<div class="d-flex align-items-center mb- ">
+										<div class="d-flex align-items-center mb-3 ">
 
 											<i
 												class="ki-duotone ki-map fs-2x text-gray-400 me-4 mt-1">
@@ -314,13 +296,11 @@
 
 												<c:choose>
 
-													<c:when test="${not empty contact.address_location}">
-													<c:out value="${contact.address_location}" />
+													<c:when test="${not empty contact.address_name}">
+													<c:out value="${contact.address_name}" />
 												</c:when>
 													
-													<c:when test="${not empty contact.location_name}">
-													<c:out value="${contact.location_name}" />
-												</c:when>
+													 
 
 													<c:otherwise>
 														-
@@ -336,17 +316,15 @@
 
 											<c:choose>
 
-												<c:when test="${not empty contact.address_location}">
-													<c:out value="${contact.address_location}" />
+												<c:when test="${not empty contact.company_address}">
+													<c:out value="${contact.company_address}" />
 												</c:when>
 												
 												
-												<c:when test="${not empty contact.location_name}">
-													<c:out value="${contact.location_name}" />
-												</c:when>
+												
 
 												<c:otherwise>
-											
+											          -
 												</c:otherwise>
 
 											</c:choose>
@@ -418,14 +396,18 @@
 
 									<!-- Active -->
 									<td class="text-center">
-
-										<input
+									
+									
+                                        <div class="form-check form-check-custom form-check-solid justify-content-center">
+										<input										
 											type="checkbox"
 											class="form-check-input js-isactive-input contact-active"
 											data-id="${contact.company_contact_id}"
 											<c:if test="${contact.is_active eq '1'}">
 												checked
 											</c:if>>
+											
+											</div>
 
 									</td>
 
@@ -520,26 +502,33 @@
 
 	</div>
 
+</div>
+
 	<script type="text/javascript">
 
-		$(document).ready(function () {
-			const table = $('#contact_table').DataTable({
-				dom: "rt",
-				paging: false, 
-				ordering: true,
-				searching: true,
-				autoWidth: false,
-				columnDefs: [
-					{ orderable: false, targets: [5,6] },
-					{ orderable: true, targets: [0, 1, 2, 3 ,4 ,5] }
-				],
-				order: []
-			});
+	$(document).ready(function () {
+	    const table = $('#contact_table').DataTable({
+	        dom: "rt",
+	        paging: false,
+	        ordering: true,
+	        searching: true,
+	        autoWidth: false,
+	        columnDefs: [
+	            { orderable: false, targets: [5,6] },
+	            { orderable: true, targets: [0, 1, 2, 3 ,4 ,5] }
+	        ],
+	        order: [],
+	        headerCallback: function (thead) {
+	            $(thead).find('.dt-column-header').addClass('d-inline-flex align-items-center');
+	            $(thead).find('.dt-column-order').addClass('m-0');
+	        }
 
-			let rowsPerPage = Number($("#page_size").val()) || 25;
-			let currentPage = 1;
-			let searchKeyword = "";
-			let isGridView = false;
+	    });
+
+	    let currentPage = 1;      
+	    let rowsPerPage = Number($("#page_size").val()) || 25;
+	    let searchKeyword = "";
+	    let isGridView = false;
 
 			/*
 			 * ป้องกัน HTML ที่อ่านมาจาก Table

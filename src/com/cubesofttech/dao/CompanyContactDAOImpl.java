@@ -34,13 +34,14 @@ public class CompanyContactDAOImpl implements CompanyContactDAO {
 		Session session = sessionFactory.getCurrentSession();
 
 		String sql =
-				"SELECT " +
-				"cc.*, " +
-				"f.path AS file_path, "  +
-				"co.company_en AS companyEn, " +
-				"cf.path AS company_logo_path, " +
-				"ca.address_name " +
-				"FROM company_contact cc " +
+		        "SELECT " +
+		        "cc.*, " +
+		        "f.path AS file_path, "  +
+		        "co.company_en AS companyEn, " +
+		        "cf.path AS company_logo_path, " +
+		        "ca.address_name, " +
+		        "ca.address AS company_address " +
+		        "FROM company_contact cc " +
 				"LEFT JOIN file f ON cc.file_id = f.file_id " +
 				"LEFT JOIN company co ON cc.company_id = co.company_id " +
 				"LEFT JOIN file cf ON co.file_id = cf.file_id " +
