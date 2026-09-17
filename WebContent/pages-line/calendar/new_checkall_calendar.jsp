@@ -1269,7 +1269,7 @@ jQuery(document).ready(function() {
      NEW: LINE LIFF
      ===================================================================== --%>
 <style>
-.liff-shell { width: 100%; max-width: 393px; margin: 0 auto; }
+.liff-shell { width: calc(100% - 32px); max-width: 393px; margin: 0 auto; }
 #weekButtonsRow .btn-danger:hover,
 #weekButtonsRow .btn-danger:focus,
 #weekButtonsRow .btn-danger:active { background-color: var(--bs-danger) !important; border-color: var(--bs-danger) !important; color: #fff !important; }
@@ -1280,7 +1280,10 @@ jQuery(document).ready(function() {
 
 <div class="liff-shell">
 
-	<h1 class="fw-medium text-gray-700 mb-6 pt-6">Check List</h1>
+	<div class="d-flex justify-content-between align-items-center mb-6 pt-6">
+		<h1 class="fw-medium text-gray-700 mb-0">Check List</h1>
+		<h3 id="calendarTitle" class="fs-7 fw-bold text-primary mb-0"></h3>
+	</div>
 
 	<div class="d-none">
 	<!-- Form without submit button -->
@@ -1429,27 +1432,25 @@ jQuery(document).ready(function() {
 	</div>
 	<!-- ===== END: Search/User + Calendar + Summary boxes (hidden, kept for script) ===== -->
 
-	<div class="text-end mb-2">
-		<h3 id="calendarTitle" class="fs-7 fw-bold text-primary mb-0"></h3>
-	</div>
-
 	<!-- Check List -->
-	<div class="d-flex flex-row">
-		<div class="card flex-row-fluid mb-5">
+	<div class="d-flex flex-row" style="min-width:0;">
+		<div class="card flex-row-fluid mb-5" style="min-width:0;">
 			<div class="card-header pt-10" style="border-bottom: none;">
 				<div id="calendarMonthYearRow" class="d-flex align-items-center justify-content-between w-100">
-					<a href="#" id="calendarPrevBtn" class="btn btn-icon btn-sm btn-secondary w-30px h-30px">
-						<i class="ki-duotone ki-left fs-3"></i>
+					<a href="#" id="calendarPrevBtn">
+						<i class="ki-duotone ki-left-square fs-3x text-muted"><span class="path1"></span><span class="path2"></span></i>
 					</a>
 					<h3 id="calendarMonthYear" class="fs-6 fw-bold mb-0"></h3>
-					<a href="#" id="calendarNextBtn" class="btn btn-icon btn-sm btn-secondary w-30px h-30px">
-						<i class="ki-duotone ki-right fs-3"></i>
+					<a href="#" id="calendarNextBtn">
+						<i class="ki-duotone ki-right-square fs-3x text-muted"><span class="path1"></span><span class="path2"></span></i>
 					</a>
 				</div>
 
 			</div>
 			<div class="card-body">
-				<div id="weekButtonsRow" class="d-flex justify-content-around gap-2 mb-9">
+				<div class="mb-9" style="padding-left:calc(1.5rem + 3px); padding-right:1.5rem;">
+					<div id="weekButtonsRow" class="d-flex justify-content-center" style="gap:1.25rem;">
+					</div>
 				</div>
 				<!-- ===== OLD: table-based Check List rows (commented out, kept for reference — replaced with card-list below)
 				<div class="table-responsive">
@@ -1468,11 +1469,14 @@ jQuery(document).ready(function() {
 				</div>
 				===== END: OLD table-based Check List rows ===== -->
 
-				<div class="d-flex justify-content-between px-4 mb-3">
-					<span class="fs-8 fw-bold text-gray-500 text-uppercase">Date</span>
-					<div class="d-flex gap-5">
-						<span class="fs-8 fw-bold text-gray-500 text-uppercase">In</span>
-						<span class="fs-8 fw-bold text-gray-500 text-uppercase">Out</span>
+				<div class="d-flex align-items-stretch mb-3">
+					<span class="w-3px" style="visibility:hidden;"></span>
+					<div class="d-flex justify-content-between px-4 flex-fill">
+						<span class="fs-8 fw-bold text-gray-500 text-uppercase">Date</span>
+						<div class="d-flex gap-5">
+							<span class="fs-8 fw-bold text-gray-500 text-uppercase" style="min-width:60px; text-align:center;">In</span>
+							<span class="fs-8 fw-bold text-gray-500 text-uppercase" style="min-width:60px; text-align:center;">Out</span>
+						</div>
 					</div>
 				</div>
 				<div id="calendarTableBody">
@@ -2053,9 +2057,9 @@ var AppCalendar = function() {
 						// --- Logic Check-in ---
 						var typeIn = Number(item.workTypeIn);
 						var iconIn = "";
-						if (typeIn === 1) iconIn = '<i class="ki-duotone ki-delivery-door text-primary fs-2 me-1 align-middle"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span></i> ';
-						else if (typeIn === 2) iconIn = '<i class="ki-duotone ki-home fs-2 text-teal me-1 align-middle"></i> ';
-						else if (typeIn === 3) iconIn = '<i class="ki-duotone ki-cube-2 fs-2 text-danger me-1 align-middle"><span class="path1"></span><span class="path2"></span><span class="path3"></span></i> ';
+						if (typeIn === 1) iconIn = '<i class="ki-duotone ki-map text-primary fs-2x me-1 align-middle"><span class="path1"></span><span class="path2"></span><span class="path3"></span></i> ';
+						else if (typeIn === 2) iconIn = '<i class="ki-duotone ki-home-2 fs-2x text-success me-1 align-middle"><span class="path1"></span><span class="path2"></span></i> ';
+						else if (typeIn === 3) iconIn = '<i class="ki-duotone ki-cube-2 fs-2x text-danger me-1 align-middle"><span class="path1"></span><span class="path2"></span><span class="path3"></span></i> ';
 						var rawCheckin = item.checkin || '';
 						var timeIn = rawCheckin.length >= 16 ? rawCheckin.substring(11, 16) : '';
 						var desIn = item.descriptionIn ? '<i class="ki-duotone ki-message-text-2 fs-2 text-gray-500 me-1 align-middle">'+
@@ -2063,15 +2067,15 @@ var AppCalendar = function() {
 
 						if (timeIn) {
 							var spacer = itemIndex > 0 ? '<div class="separator separator-dashed my-1"></div>' : '';
-							combinedCheckinHtml += spacer + '<div style="display:flex;flex-direction:column;align-items:center;">' + iconIn + timeIn + '</div><small class="text-muted">' + desIn + '</small>';
+							combinedCheckinHtml += spacer + '<div style="display:flex;flex-direction:column;align-items:center;gap: 7px;">' + iconIn + '<span class="fw-bold fs-6 text-capitalize lh-1" style="letter-spacing:0;">' + timeIn + '</span></div><small class="text-muted">' + desIn + '</small>';
 						}
 
 						// --- Logic Check-out ---
 						var typeOut = Number(item.workTypeOut);
 						var iconOut = "";
-						if (typeOut === 1) iconOut = '<i class="ki-duotone ki-delivery-door fs-2 text-primary me-1 align-middle"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span></i> ';
-						else if (typeOut === 2) iconOut = '<i class="ki-duotone ki-home fs-2 text-teal me-1 align-middle"></i> ';
-						else if (typeOut === 3) iconOut = '<i class="ki-duotone ki-cube-2 fs-2 text-danger me-1 align-middle"><span class="path1"></span><span class="path2"></span><span class="path3"></span></i> ';
+						if (typeOut === 1) iconOut = '<i class="ki-duotone ki-map fs-2x text-primary me-1 align-middle"><span class="path1"></span><span class="path2"></span><span class="path3"></span></i> ';
+						else if (typeOut === 2) iconOut = '<i class="ki-duotone ki-home-2 fs-2x text-success me-1 align-middle"><span class="path1"></span><span class="path2"></span></i> ';
+						else if (typeOut === 3) iconOut = '<i class="ki-duotone ki-cube-2 fs-2x text-danger me-1 align-middle"><span class="path1"></span><span class="path2"></span><span class="path3"></span></i> ';
 						var rawCheckout = item.checkout || '';
 						var timeOut = rawCheckout ? rawCheckout.substring(0, 5) : '';
 						//var timeOut = props.checkout ? props.checkout.substring(0, 5) : '';
@@ -2080,14 +2084,14 @@ var AppCalendar = function() {
 
 						if (timeOut) {
 							var spacer = itemIndex > 0 ? '<div class="separator separator-dashed my-1"></div>' : '';
-							combinedCheckoutHtml += spacer + '<div style="display:flex;flex-direction:column;align-items:center;">' + iconOut + timeOut + '</div><small class="text-muted">' + desOut + '</small>';
+							combinedCheckoutHtml += spacer + '<div style="display:flex;flex-direction:column;align-items:center;gap: 7px;">' + iconOut + '<span class="fw-bold fs-6 text-capitalize lh-1" style="letter-spacing:0;">' + timeOut + '</span></div><small class="text-muted">' + desOut + '</small>';
 						}
 					});
 				});
 
 				// Format Working Hours
 
-				var finalStatusHtml = statusHtmlList.join('<div class="separator separator-dashed my-1"></div>');
+				var finalStatusHtml = statusHtmlList.join('<div class="mb-1"></div>');
 
 				var rowHtml = '<div class="calendar-day-card card mb-3 ' + rowStyle + '" data-week="' + weekIndex + '">';
 				rowHtml += '<div class="d-flex align-items-stretch">';

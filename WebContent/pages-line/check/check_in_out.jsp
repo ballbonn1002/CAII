@@ -1977,7 +1977,7 @@ window.onload = function() {
 <fmt:setLocale value="en_US" scope="request" />
 <style>
 
-.liff-shell { max-width: 393px; margin: 0 auto; }
+.liff-shell { width: calc(100% - 32px); max-width: 393px; margin: 0 auto; }
 
 input[name="checkType"] + .btn.bg-light,
 input[name="checkType"] + .btn.bg-light i,
