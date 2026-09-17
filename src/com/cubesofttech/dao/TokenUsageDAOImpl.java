@@ -116,7 +116,7 @@ public class TokenUsageDAOImpl implements TokenUsageDAO {
 				"    ON tu.action_point_id = tap.action_point_id " +
 
 	            "WHERE tu.user_id = :userId " +
-	            "AND (tu.action_type_id IN (1, 2, 3, 4, 7, 8) OR (tu.action_type_id = 6 AND tu.value IS NOT NULL)) " +
+	            "AND (tu.action_type_id IN (1, 2, 3, 4, 8) OR (tu.action_type_id = 6 AND tu.value IS NOT NULL)) " +
 	            "AND year = :year " +
 
 	            "ORDER BY tu.time_create ASC";
@@ -147,7 +147,7 @@ public class TokenUsageDAOImpl implements TokenUsageDAO {
 				"    CASE " +
 				"        WHEN tu.action_type_id = 5 " +
 				"            THEN GREATEST(COALESCE(tu.reconcile, 0), 0) " +
-				"        WHEN tu.action_type_id = 6 AND tu.reconcile IS NOT NULL " +
+				"        WHEN (tu.action_type_id = 6 OR tu.action_type_id = 7) AND tu.reconcile IS NOT NULL " + // Exchange, Redeem
 				"            THEN -COALESCE(tu.reconcile, 0) " +
 				"        ELSE 0 " +
 				"    END" +
@@ -243,7 +243,7 @@ public class TokenUsageDAOImpl implements TokenUsageDAO {
 				"    CASE " +
 				"        WHEN tu.action_type_id = 5 " + // Add in reconcile
 				"            THEN GREATEST(COALESCE(tu.reconcile, 0), 0) " + // Exclude negative reconcile values
-				"        WHEN tu.action_type_id = 6 AND tu.reconcile IS NOT NULL" + // Exchange
+				"        WHEN (tu.action_type_id = 6 OR tu.action_type_id = 7) AND tu.reconcile IS NOT NULL" + // Exchange, Redeem
 				"            THEN -COALESCE(tu.reconcile, 0) " +
 				"        ELSE 0 " +
 				"    END" +
@@ -351,8 +351,8 @@ public class TokenUsageDAOImpl implements TokenUsageDAO {
 	            "        CASE " +
 	            "            WHEN tu.action_type_id = 5 " + // Add in reconcile
 	            "                THEN GREATEST(COALESCE(tu.reconcile, 0), 0) " + // Exclude negative reconcile values
-	            "            WHEN tu.action_type_id = 6 AND tu.reconcile IS NOT NULL " +
-	            "                THEN -COALESCE(tu.reconcile, 0) " + // Exchange 
+	            "            WHEN (tu.action_type_id = 6 OR tu.action_type_id = 7) AND tu.reconcile IS NOT NULL " +
+	            "                THEN -COALESCE(tu.reconcile, 0) " + // Exchange, Redeem
 	            "            ELSE 0 " +
 	            "        END " +
 	            "    ), 0) AS token " +
@@ -385,7 +385,7 @@ public class TokenUsageDAOImpl implements TokenUsageDAO {
 	            "        CASE " +
 	            "            WHEN tu.action_type_id = 5 " +
 	            "                THEN GREATEST(COALESCE(tu.reconcile, 0), 0) " +
-	            "            WHEN tu.action_type_id = 6 AND tu.reconcile IS NOT NULL " +
+	            "            WHEN (tu.action_type_id = 6 OR tu.action_type_id = 7) AND tu.reconcile IS NOT NULL " + // Exchange, Redeem
 	            "                THEN -COALESCE(tu.reconcile, 0) " +
 	            "            ELSE 0 " +
 	            "        END " +
@@ -426,7 +426,7 @@ public class TokenUsageDAOImpl implements TokenUsageDAO {
 		            "        CASE " +
 		            "            WHEN tu.action_type_id = 5 " +
 		            "                THEN GREATEST(COALESCE(tu.reconcile, 0), 0) " +
-		            "            WHEN tu.action_type_id = 6 " +
+		            "            WHEN (tu.action_type_id = 6 OR tu.action_type_id = 7) " +
 		            "                AND tu.reconcile IS NOT NULL " +
 		            "                THEN -COALESCE(tu.reconcile, 0) " +
 		            "            ELSE 0 " +
@@ -435,7 +435,7 @@ public class TokenUsageDAOImpl implements TokenUsageDAO {
 		            "FROM token_usage tu " +
 		            "JOIN user u " +
 		            "    ON u.id = tu.user_id " +
-		            "WHERE tu.year = :year AND tu.action_type_id IN (5, 6) " +
+		            "WHERE tu.year = :year AND tu.action_type_id IN (5, 6, 7) " +
 		            "GROUP BY " +
 		            "    tu.user_id, " +
 		            "    u.name, " +

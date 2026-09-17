@@ -32,6 +32,17 @@
 #itemTable thead th .dt-column-order {
 	margin: 0 !important;
 }
+
+.details-truncate {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 5;
+    overflow: hidden;
+
+    overflow-wrap: anywhere;
+    word-break: break-word;
+    white-space: normal;
+}
 </style>
 </head>
 <body>

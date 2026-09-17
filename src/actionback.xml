@@ -1785,6 +1785,11 @@
 			<result name="success" type="json"/>
 		</action>
 		
+		<action name="update_company_status"
+			class="com.cubesofttech.action.CompanyAction" method="updateIsActiveStatus">
+			<result name="success" type="json"/>
+		</action>
+		
 		<action name="check_company_code"
         	class="com.cubesofttech.action.CompanyAction" method="checkCompanyCode">
         </action>
@@ -1918,6 +1923,18 @@
 			<result name="success" type="tiles">privilege</result>
 			<result name="error">/pages-back/common/error/error_500.jsp</result>
 		</action>
+		
+		<action name="getRewardItemList"
+        class="com.cubesofttech.action.CubeTokenAction"
+        method="getRewardItemList" />
+        
+        <action name="redeemRewardItem"
+        class="com.cubesofttech.action.CubeTokenAction"
+        method="redeemRewardItem" />
+        
+        <action name="toggleFavorite"
+        class="com.cubesofttech.action.CubeTokenAction"
+        method="toggleFavorite" />
         
         <!-- Privilege Management -->
 		<action name="privilegeMangementPage"

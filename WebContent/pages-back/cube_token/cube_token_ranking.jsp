@@ -15,6 +15,9 @@
 	href="${pageContext.request.contextPath}/assets/css/style.bundle.css"
 	rel="stylesheet" />
 <style>
+.userInfoContainer {
+	box-shadow: 0px 3px 4px 0px rgba(0, 0, 0, 0.03);
+}
 
 /* Header */
 #tokenRankingTable thead th {
@@ -165,7 +168,7 @@
 }
 
 .symbol.rank-1 {
-	border: 2px solid rgba(255, 217, 75, 1) !important;
+	border: 4px solid rgba(255, 217, 75, 1) !important;
 }
 
 .symbol.rank-1 .symbol-label {
@@ -173,7 +176,7 @@
 }
 
 .symbol.rank-2 {
-	border: 2px solid var(--bs-text-gray-700) !important;
+	border: 4px solid var(--bs-text-gray-700) !important;
 }
 
 .symbol.rank-2 .symbol-label {
@@ -185,7 +188,7 @@
 }
 
 .symbol.rank-3 {
-	border: 2px solid var(--bs-orange) !important;
+	border: 4px solid var(--bs-orange) !important;
 }
 
 .symbol.rank-3 .symbol-label {
@@ -226,19 +229,24 @@
 }
 
 .remaining-count {
-	font-size: clamp(12px, 1.3vw, 20px);
+	font-size: clamp(10px, 1.3vw, 20px) !important;
+}
+
+.font-responsive { 
+	font-size: clamp(12px, 1.3vw, 2rem) !important;
 }
 
 /* Mobile */
-@media ( max-width : 767.98px) { /* 	.symbol.rank-1 {
-		border: 1px solid rgba(255, 217, 75, 1) !important;
+@media ( max-width : 767.98px) {
+	.symbol.rank-1 {
+		border: 2px solid rgba(255, 217, 75, 1) !important;
 	}
 	.symbol.rank-2 {
-		border: 1px solid var(--bs-text-gray-700) !important;
+		border: 2px solid var(--bs-text-gray-700) !important;
 	}
 	.symbol.rank-3 {
-		border: 1px solid var(--bs-orange) !important;
-	} */
+		border: 2px solid var(--bs-orange) !important;
+	}
 	.card-toolbar {
 		width: 100%;
 	}
@@ -250,7 +258,7 @@
 
 /* Tablet */
 @media ( min-width : 768px) and (max-width: 991.98px) {
-	/* 	.symbol.rank-1 {
+	.symbol.rank-1 {
 		border: 2px solid rgba(255, 217, 75, 1) !important;
 	}
 	.symbol.rank-2 {
@@ -258,11 +266,12 @@
 	}
 	.symbol.rank-3 {
 		border: 2px solid var(--bs-orange) !important;
-	} */
+	}
 }
 
 /* large device */
-@media ( min-width : 992) and (max-width: 1200) { /* 	.symbol.rank-1 {
+@media ( min-width : 992) and (max-width: 1200) {
+	.symbol.rank-1 {
 		border: 3px solid rgba(255, 217, 75, 1) !important;
 	}
 	.symbol.rank-2 {
@@ -270,7 +279,7 @@
 	}
 	.symbol.rank-3 {
 		border: 3px solid var(--bs-orange) !important;
-	} */
+	}
 }
 </style>
 </head>
@@ -331,7 +340,7 @@
 				class="app-container container-fluid">
 
 				<div
-					class="d-flex justify-content-between flex-wrap boder-left-primary-subtle align-items-center border rounded py-6 py-md-8 px-6 mt-4 gap-6 gap-sm-3 gap-md-0">
+					class="d-flex justify-content-between flex-wrap boder-left-primary-subtle align-items-center border rounded py-6 px-6 mt-4 gap-6 gap-sm-3 gap-md-0 userInfoContainer">
 
 					<div class="d-flex flex-column gap-2">
 						<div class="d-flex gap-4">
@@ -550,8 +559,9 @@
 							</div>
 
 						</div>
-						
-						<div class="table-responsive mt-10" id="tokenRankingTableContainer">
+
+						<div class="table-responsive mt-10"
+							id="tokenRankingTableContainer">
 							<table
 								class="table table-striped table-row-bordered table-row-gray-200 align-middle gy-7 gs-10"
 								id="tokenRankingTable">
@@ -698,7 +708,7 @@
 
 	    			html += `
 	    				<div
-							class="symbol symbol-circle symbol-25px symbol-sm-30px symbol-lg-40px symbol-xl-60px symbol-xxl-70px rank-\${rank}">
+							class="symbol symbol-circle symbol-25px symbol-sm-30px symbol-lg-35px symbol-xl-60px symbol-xxl-70px rank-\${rank}">
 							<img src="${pageContext.request.contextPath}\${user.filePath}" alt="\${displayName}" />
 						</div>
 	    			`;
@@ -709,10 +719,10 @@
 
 	    			html += `
 	                    <div
-	                        class="symbol symbol-circle symbol-25px symbol-sm-30px symbol-lg-40px symbol-xl-60px symbol-xxl-70px rank-\${rank}">
+	                        class="symbol symbol-circle symbol-25px symbol-sm-30px symbol-lg-35px symbol-xl-60px symbol-xxl-70px rank-\${rank}">
 
-	                        <div class="symbol-label fw-medium fs-2x text-gray-700">
-	                            \${initial}
+	                        <div class="symbol-label fw-medium font-responsive text-gray-700">
+	                            \${initial} 
 	                        </div>
 
 	                    </div>

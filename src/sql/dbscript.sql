@@ -1086,3 +1086,82 @@ CREATE TABLE `pr_parent` (
 
 
 
+
+-- 15/09/2026 June: CREATE TABLE pr, pr_detail and pr_parent
+CREATE TABLE `pr` (
+  `pr_id` varchar(16) NOT NULL,
+  `description` text DEFAULT NULL,
+  `sign_user` varchar(32) DEFAULT NULL,
+  `sign_date` datetime DEFAULT NULL,
+  `approve_user` varchar(32) DEFAULT NULL,
+  `approve_date` datetime DEFAULT NULL,
+  `status` varchar(32) NOT NULL,
+  `reason` varchar(1024) DEFAULT NULL,
+  `user_create` varchar(32) NOT NULL,
+  `user_update` varchar(32) DEFAULT NULL,
+  `time_create` timestamp NULL DEFAULT NULL,
+  `time_update` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE `pr_detail` (
+  `pr_detail_id` varchar(16) NOT NULL,
+  `pr_id` varchar(16) NOT NULL,
+  `product_id` varchar(16) DEFAULT NULL,
+  `parent_id` varchar(32) DEFAULT NULL,
+  `amount_total` double NOT NULL,
+  `unit` varchar(32) NOT NULL,
+  `description` text DEFAULT NULL,
+  `ref_link` text DEFAULT NULL,
+  `status` varchar(8) DEFAULT '0',
+  `user_create` varchar(32) NOT NULL,
+  `user_update` varchar(32) DEFAULT NULL,
+  `time_create` timestamp NULL DEFAULT NULL,
+  `time_update` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE `pr_parent` (
+  `pr_parent_id` varchar(16) NOT NULL,
+  `pr_detail_id` varchar(16) NOT NULL,
+  `mr_id` varchar(16) DEFAULT NULL,
+  `product_id` varchar(16) DEFAULT NULL,
+  `parent_id` varchar(32) DEFAULT NULL,
+  `amount` double NOT NULL,
+  `unit` varchar(32) NOT NULL,
+  `description` text DEFAULT NULL,
+  `user_create` varchar(32) NOT NULL,
+  `user_update` varchar(32) DEFAULT NULL,
+  `time_create` timestamp NULL DEFAULT NULL,
+  `time_update` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- PROD 15 SEP 2026 14:30
+
+-- 18/09/2026 Best(Intern) เพิ่ม table สําหรับเก็บข้อมูลการกดถูกใจของรางวัล
+CREATE TABLE `user_favorite` (
+  `user_favorite_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `user_id` varchar(32) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `item_id` int(11) NOT NULL,
+  `description` varchar(1024) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `user_create` varchar(32) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `user_update` varchar(32) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `time_create` timestamp NULL DEFAULT NULL,
+  `time_update` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`user_favorite_id`),
+  UNIQUE KEY `uk_user_favorite_user_item` (`user_id`, `item_id`)
+) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci;
+
+-- เพิ่ม table สําหรับเก็บประวัติการแลกของรางวัล
+CREATE TABLE `user_redeem` (
+  `user_redeem_id` int(11) NOT NULL AUTO_INCREMENT,
+  `user_id` varchar(32) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `item_id` int(11) NOT NULL,
+  `token` double DEFAULT NULL,
+  `cash` double DEFAULT NULL,
+  `redeem_status` varchar(20) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `description` varchar(1024) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `user_create` varchar(32) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `user_update` varchar(32) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `time_create` timestamp NULL DEFAULT NULL,
+  `time_update` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`user_redeem_id`)
+) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci;
