@@ -167,6 +167,7 @@ public class PrDetailDAOImpl implements PrDetailDAO {
 					"  p.status AS pr_status, " +
 					"  pr_pd.product_name, pr_pd.product_type, " +
 					"  uom.unit_name, " +
+					"  uc.employee_id AS user_create_emp_id, " +
 					"  uc.name_en AS user_create_name, " +
 					"  uc.path AS user_create_path " +
 					"FROM pr_detail pd " +

@@ -459,6 +459,7 @@ public class PurchaseOrderAction extends ActionSupport {
                         List<Map<String, Object>> parents = poParentDAO.findPoParentByPoDetailId(String.valueOf(poDetailIdObj));
                         if (parents != null) {
                             poParentList.addAll(parents);
+                            detail.put("poParentList", parents);
                         }
                     }
 
@@ -614,37 +615,31 @@ public class PurchaseOrderAction extends ActionSupport {
             long nextParentSeq = lastParentId + 1;
 
             int seq = 0;
+            long parentSeq = 0;
             List<String> pulledPrDetailIds = new ArrayList<>();
             for (Map<String, Object> item : cartItems) {
                 double qty = toDouble(item.get("qty"));
                 double price = toDouble(item.get("price"));
 
                 String poDetailId = String.valueOf(nextDetailSeq + seq);
-                String poParentIdVal = String.valueOf(nextParentSeq + seq);
 
                 String productId = item.get("productId") != null ? String.valueOf(item.get("productId")) : null;
-                String parentIdVal = item.get("parentId") != null ? String.valueOf(item.get("parentId")) : "0";
                 String unitVal = item.get("unit") != null ? String.valueOf(item.get("unit")) : null;
                 String descVal = item.get("description") != null ? String.valueOf(item.get("description")) : null;
-                String prIdVal = item.get("prId") != null ? String.valueOf(item.get("prId")) : null;
-                String prDetailIdVal = item.get("prDetailId") != null ? String.valueOf(item.get("prDetailId")) : null;
-                if (prDetailIdVal != null && !prDetailIdVal.trim().isEmpty()) {
-                    pulledPrDetailIds.add(prDetailIdVal);
-                }    
+
                 String dbProductId = productId;
                 String dbParentId = null;
                 String dbItemsType = null;
                 String itemsTypeVal = String.valueOf(item.get("itemsType"));
 
-                if(itemsTypeVal != null){
+                if (itemsTypeVal != null) {
                     if ("equipment".equals(itemsTypeVal)) {
                         dbItemsType = "1";
                     } else if ("consumables".equals(itemsTypeVal)) {
                         dbItemsType = "2";
-                        
                     } else if ("accessory".equals(itemsTypeVal)) {
                         dbItemsType = "3";
-                    }else if ("office".equals(itemsTypeVal)) {
+                    } else if ("office".equals(itemsTypeVal)) {
                         dbItemsType = "4";
                     }
 
@@ -652,17 +647,13 @@ public class PurchaseOrderAction extends ActionSupport {
                     dbProductId = p.getProductId().toString();
                     dbParentId = String.valueOf(p.getParentProductId());
                 }
-                
-//                String itemsTypeVal = item.get("items_type") != null ? String.valueOf(item.get("items_type")) : null;
-                
+
                 // --- PoDetail ---
                 PoDetail detail = new PoDetail();
                 detail.setPoDetailId(poDetailId);
                 detail.setPoId(newPoId);
-                detail.setProductId(productId);
                 detail.setProductId(dbProductId);
                 detail.setParentId(dbParentId);
-                
                 detail.setUnit(unitVal);
                 detail.setAmountTotal(qty);
                 detail.setUnitPrice(String.valueOf(price));
@@ -675,24 +666,59 @@ public class PurchaseOrderAction extends ActionSupport {
 
                 poDetailDAO.save(detail);
 
-                // --- PoParent ---
-                PoParent parent = new PoParent();
-                parent.setPoParentId(poParentIdVal);
-                parent.setPoDetailId(poDetailId);
-                parent.setPrId(prIdVal);
-                
-                parent.setProductId(dbProductId);
-                parent.setParentId(dbParentId);
-                
-                parent.setAmount(qty);
-                parent.setUnit(unitVal);
-                parent.setDescription(descVal);
-                parent.setUserCreate(loginUserId);
-                parent.setTimeCreate(DateUtil.getCurrentTime());
-                parent.setUserUpdate(loginUserId);
-                parent.setTimeUpdate(DateUtil.getCurrentTime());
+                // --- PoParent: อ่านจาก item.sources (ถ้ามี) ---
+                List<Map<String, Object>> sources = new ArrayList<>();
+                Object sourcesObj = item.get("sources");
+                if (sourcesObj instanceof JSONArray) {
+                    JSONArray arr = (JSONArray) sourcesObj;
+                    for (int i = 0; i < arr.length(); i++) {
+                        sources.add(jsonObjectToMap(arr.getJSONObject(i)));
+                    }
+                }
 
-                poParentDAO.save(parent);
+                if (sources.isEmpty()) {
+                    String poParentIdVal = String.valueOf(nextParentSeq + parentSeq++);
+                    PoParent parent = new PoParent();
+                    parent.setPoParentId(poParentIdVal);
+                    parent.setPoDetailId(poDetailId);
+                    parent.setPrId(null);
+                    parent.setProductId(dbProductId);
+                    parent.setParentId(dbParentId);
+                    parent.setAmount(qty);
+                    parent.setUnit(unitVal);
+                    parent.setDescription(descVal);
+                    parent.setUserCreate(loginUserId);
+                    parent.setTimeCreate(DateUtil.getCurrentTime());
+                    parent.setUserUpdate(loginUserId);
+                    parent.setTimeUpdate(DateUtil.getCurrentTime());
+                    poParentDAO.save(parent);
+                } else {
+                    for (Map<String, Object> src : sources) {
+                        String prIdVal = src.get("prId") != null ? String.valueOf(src.get("prId")) : null;
+                        String prDetailIdVal = src.get("prDetailId") != null ? String.valueOf(src.get("prDetailId")) : null;
+                        double srcQty = toDouble(src.get("qty"));
+
+                        if (prDetailIdVal != null && !prDetailIdVal.trim().isEmpty()) {
+                            pulledPrDetailIds.add(prDetailIdVal);
+                        }
+
+                        String poParentIdVal = String.valueOf(nextParentSeq + parentSeq++);
+                        PoParent parent = new PoParent();
+                        parent.setPoParentId(poParentIdVal);
+                        parent.setPoDetailId(poDetailId);
+                        parent.setPrId(prIdVal);
+                        parent.setProductId(dbProductId);
+                        parent.setParentId(dbParentId);
+                        parent.setAmount(srcQty);
+                        parent.setUnit(unitVal);
+                        parent.setDescription(descVal);
+                        parent.setUserCreate(loginUserId);
+                        parent.setTimeCreate(DateUtil.getCurrentTime());
+                        parent.setUserUpdate(loginUserId);
+                        parent.setTimeUpdate(DateUtil.getCurrentTime());
+                        poParentDAO.save(parent);
+                    }
+                }
 
                 seq++;
             }
@@ -967,12 +993,17 @@ public class PurchaseOrderAction extends ActionSupport {
             }
 
             List<Map<String, Object>> parents = poParentDAO.findPoParentByPoDetailId(poDetailId);
+            debugLog.add("parents found = " + (parents != null ? parents.size() : 0));
             if (parents != null) {
                 for (Map<String, Object> p : parents) {
                     Object prIdObj = p.get("pr_id");
                     Object productIdObj = p.get("product_id");
+                    debugLog.add("parent row: pr_id=" + prIdObj + ", product_id=" + productIdObj);
                     if (prIdObj != null && productIdObj != null) {
                         prDetailDAO.revertPulledStatusByPrProduct(String.valueOf(prIdObj), String.valueOf(productIdObj));
+                        debugLog.add("revert called for pr_id=" + prIdObj + ", product_id=" + productIdObj);
+                    } else {
+                        debugLog.add("SKIPPED revert - prId or productId is null");
                     }
                 }
             }

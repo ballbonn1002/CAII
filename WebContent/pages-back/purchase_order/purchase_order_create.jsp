@@ -368,7 +368,7 @@
 									<i class="ki-outline ki-plus fs-3 me-1"></i>Create
 								</button>
 								
-								<button type="button" class="btn btn-lg btn-primary fw-medium text-white px-6 py-4" data-bs-toggle="modal" data-bs-target="#modal_search_pr">
+								<button type="button" id="btnOpenSearchPr" class="btn btn-lg btn-primary fw-medium text-white px-6 py-4">
 									<i class="ki-duotone ki-magnifier fs-3 me-1">
 						                <span class="path1"></span><span class="path2"></span></i>Search PR
 								</button>
@@ -522,7 +522,7 @@
 								
 										<div class="col-6 d-flex flex-column">
 											<label class="required fw-medium text-gray-800 mb-2">Description / Detail</label>
-											<textarea class="form-control text-gray-700" rows="3" name="description" id="po_description" placeholder="Description"></textarea>
+											<textarea class="form-control text-gray-700" rows="3" name="po_item_description" id="po_description" placeholder="Description"></textarea>
 										</div>
 									</div>
 						        </div>
@@ -575,7 +575,7 @@
 												    </h3>
 												
 												  
-												    <span id="mrSortLabel" class="fw-bold fs-6 text-gray-500">by Recent Updates</span>
+												    <span id="prSortLabel" class="fw-bold fs-6 text-gray-500">by Recent Updates</span>
 												</div>
 												        <h3 class="text-primary fw-bold">
 												            <span id="prSelectedCount"></span> Selected
@@ -763,7 +763,7 @@
 		                const modalEl = document.querySelector(this.getAttribute("data-bs-stacked-modal"));
 
 		                if (modalEl) {
-		                    const modal = new bootstrap.Modal(modalEl);
+		                    const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
 		                    modal.show();
 		                }
 		            });
@@ -819,19 +819,13 @@
 		        }
 		    });
 
-		    createPoModalEl.addEventListener('shown.bs.modal', function () {
-		        document.body.classList.add('modal-open');
-		        document.body.style.overflow = 'hidden';
-		        document.documentElement.style.overflow = 'hidden';
-		    });
-
 		    createPoModalEl.addEventListener('hidden.bs.modal', function () {
 		        editingIndex = -1;
-		        document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
-		        document.body.classList.remove('modal-open');
-		        document.body.style.removeProperty('padding-right');
-		        document.body.style.removeProperty('overflow');
-		        document.documentElement.style.removeProperty('overflow');
+		        // document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
+		        // document.body.classList.remove('modal-open');
+		        // document.body.style.removeProperty('padding-right');
+		        // document.body.style.removeProperty('overflow');
+		        // document.documentElement.style.removeProperty('overflow');
 		    });
 
 		    document.getElementById('btnOpenCreatePo').addEventListener('click', function () {
@@ -841,27 +835,29 @@
 
 			const searchPrModalEl = document.getElementById('modal_search_pr');
 
-			searchPrModalEl.addEventListener('shown.bs.modal', function () {
-				document.body.classList.add('modal-open');
-				document.body.style.overflow = 'hidden';
-				document.documentElement.style.overflow = 'hidden';
+			searchPrModalEl.addEventListener('hide.bs.modal', function () {
+				if (document.activeElement && searchPrModalEl.contains(document.activeElement)) {
+					document.activeElement.blur();
+				}
 			});
 			
 			searchPrModalEl.addEventListener('hidden.bs.modal', function () {
+				isSearchPrModalOpen = false;
 				selectedPrCategory = '';
-    			$('#searchPrCategory').val('').trigger('change.select2');
-				document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
-
-				if (!document.querySelector('.modal.show')) {
-					document.body.classList.remove('modal-open');
-					document.body.style.removeProperty('padding-right');
-					document.body.style.removeProperty('overflow');
-					document.documentElement.style.removeProperty('overflow');
-				}
+				$('#searchPrCategory').val('').trigger('change.select2');
 			});
 
 			searchPrModalEl.addEventListener('show.bs.modal', function () {
+				isSearchPrModalOpen = true;
 				loadInprogressPrDetail();
+			});
+
+			// เปิด modal นี้ผ่าน JS เอง แทน data-bs-toggle="modal" เดิม — ใช้ pattern
+			// เดียวกับ btnOpenCreatePo เป๊ะๆ (getOrCreateInstance().show() ตรงๆ ไม่ dispose
+			// instance เก่า เพราะ dispose() แบบ synchronous กลางทาง transition ที่ยังไม่จบ
+			// ทำให้ backdrop object หลุด track ค้างใน DOM ได้)
+			document.getElementById('btnOpenSearchPr').addEventListener('click', function () {
+				bootstrap.Modal.getOrCreateInstance(searchPrModalEl).show();
 			});
 		    
 		    
@@ -1375,6 +1371,7 @@ function addPoDetailToCart(){
         unitName: $("#unit option:selected").text(), 
         price: parseFormattedNumber($("#po_price").val()),
         description: $("#po_description").val(),
+		creatorName: currentUserDisplay,
         savedAt: formatNowDateTime()
     };
 
@@ -1401,38 +1398,6 @@ function addPoDetailToCart(){
     const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
     modal.hide();
 }
-
-/* function addPoDetailToCart(){
-    const item = {
-        itemsType: $("#items_type").val(),
-        itemsTypeText: $("#items_type option:selected").text(),
-        productId: $("#product_name").val(),
-        productName: $("#product_name option:selected").text(),
-        qty: Number($("#po_qty").val()),
-        unit: $("#unit").val(),
-        price: parseFormattedNumber($("#po_price").val()),
-        description: $("#po_description").val(),
-        savedAt: formatNowDateTime()
-    };
-
-    item.total = item.qty * item.price;
-
-    if (editingIndex >= 0) {
-        poDetailCart[editingIndex] = item;
-        editingIndex = -1; 
-    } else {
-        poDetailCart.push(item);
-    }
-
-    saveCartToSession(); 
-    renderPoDetailCart();
-
-    renderPoDetailCart();
-
-    const modalEl = document.getElementById("modal_create_po");
-    const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
-    modal.hide();
-} */
 
 function renderPoDetailCart(){
 
@@ -1527,7 +1492,7 @@ function createPoCard(item,index){
 
     const groupId = "cart_" + index;
 
-    return `<div class="po-item-group border-gray-400 border-bottom py-9 px-6">
+    return `<div class="po-item-group border-gray-400 border-bottom pt-9 pb-6 px-6">
     			<div class="d-flex align-items-center justify-content-between row">
     				<div class="col-7 d-flex align-items-center">\${icon}
 						<span class="text-gray-900 fs-5 fw-normal me-3">\${category}</span>
@@ -1579,56 +1544,96 @@ function createPoCard(item,index){
 			
 			<div class="collapse border-gray-300 border-top mt-3" id="poGroup_\${groupId}">
 	            <div class="ps-9 pt-9">
-	                <div class="d-flex align-items-center justify-content-between row">
-	                    <div class="col-11">
-	                        <div class="d-flex align-items-center fs-7">
-	                            <div class="col-4">
-	                                <i class="ki-duotone ki-user-tick fs-3 text-muted me-2">
-	                                    <span class="path1"></span><span class="path2"></span><span class="path3"></span>
-	                                </i>
-	                                <span class="text-gray-800 fs-5">\${currentUserDisplay}</span>
-	                            </div>
-	                            <div class="col-4 d-flex align-items-center">
-	                                <i class="ki-duotone ki-calendar-2 fs-3 me-2">
-	                                    <span class="path1"></span><span class="path2"></span><span class="path3"></span>
-	                                    <span class="path4"></span><span class="path5"></span>
-	                                </i>
-	                                <span class="text-gray-800 fs-5">\${item.savedAt}</span>
-	                            </div>
-	                            <div class="col-3 d-flex align-items-center gap-2">
-				                    <i class="ki-duotone ki-tablet-book fs-3">
-					                     <span class="path1"></span><span class="path2"></span>
-									</i>
-				                    <a href="\${item.mrId ? ctx + '/material_requisition_edit?mrId=' + item.mrId : ctx + '/purchase_requisition_edit?prId=' + item.prId}"
-										target="_blank"
-										onclick="event.stopPropagation();"
-										class="badge badge-lg fs-7 fw-semibold d-inline-block text-center text-decoration-none
-											\${item.mrId ? 'badge-light-purple text-purple' : 'badge-light-primary text-primary'}"
-										style="\${(!item.prId && !item.mrId) ? 'pointer-events:none;' : ''}">
-										\${item.prId || item.mrId || '-'}
-									</a>
-
-									\${item.refLink
-										? `<a href="\${item.refLink}" target="_blank" class="text-primary d-inline-flex" onclick="event.stopPropagation();">
-											<i class="ki-duotone ki-fasten fs-2 text-primary">
-												<span class="path1"></span><span class="path2"></span>
-											</i>
-										</a>`
-										: ''
-									}
-		                    	</div>
-	                        </div>
-	                    </div>
-	                    <div class="col-1 text-end">
-	                        <span class="text-gray-800 fs-5">\${item.qty} \${item.unitName}</span>
-	                    </div>
-	                </div>
+	                \${
+	                    (item.sources && item.sources.length > 0)
+	                        ? item.sources.map(function(s){
+	                            return createPoSourceRow(s.qty, s.unitName || item.unitName, s.savedAt, s.prId, s.mrId, s.refLink, s.creatorName);
+	                          }).join('')
+	                        : createPoSourceRow(item.qty, item.unitName, item.savedAt, item.prId, item.mrId, item.refLink, item.creatorName)
+	                }
 	            </div>
 	        </div>
 		
 		</div>
 		
 		`;
+}
+
+function createPrMrBadges(prId, mrId, refLink){
+    let html = '';
+
+    if (prId) {
+        html += `
+        <a href="\${ctx}/purchase_requisition_edit?prId=\${prId}"
+            target="_blank" onclick="event.stopPropagation();"
+            class="badge badge-lg fs-7 fw-semibold d-inline-block text-center text-decoration-none badge-light-primary text-primary">
+            \${prId}
+        </a>`;
+
+        if (mrId || refLink) {
+            if (refLink) {
+                html += `
+                <a href="\${refLink}" target="_blank" class="text-primary d-inline-flex mx-1" onclick="event.stopPropagation();">
+                    <i class="ki-duotone ki-fasten fs-2 text-primary">
+                        <span class="path1"></span><span class="path2"></span>
+                    </i>
+                </a>`;
+            } else {
+                html += `
+                <i class="ki-duotone ki-fasten fs-2 text-primary mx-1">
+                    <span class="path1"></span><span class="path2"></span>
+                </i>`;
+            }
+        }
+    }
+
+    if (mrId) {
+        html += `
+        <a href="\${ctx}/material_requisition_edit?mrId=\${mrId}"
+            target="_blank" onclick="event.stopPropagation();"
+            class="badge badge-lg fs-7 fw-semibold d-inline-block text-center text-decoration-none badge-light-purple text-purple">
+            \${mrId}
+        </a>`;
+    }
+
+    if (!prId && !mrId) {
+        html = `<span class="badge badge-lg fs-7 fw-semibold d-inline-block text-center badge-light-primary text-primary">-</span>`;
+    }
+
+    return html;
+}
+
+function createPoSourceRow(qty, unitName, savedAt, prId, mrId, refLink, creatorName){
+    return `
+    <div class="d-flex align-items-center justify-content-between row mb-6">
+        <div class="col-11">
+            <div class="d-flex align-items-center fs-7">
+                <div class="col-4">
+                    <i class="ki-duotone ki-user-tick fs-3 text-muted me-2">
+                        <span class="path1"></span><span class="path2"></span><span class="path3"></span>
+                    </i>
+                    <span class="text-gray-800 fs-5 fw-normal">\${creatorName || currentUserDisplay}</span>
+                </div>
+                <div class="col-4 d-flex align-items-center">
+                    <i class="ki-duotone ki-calendar-2 fs-3 me-2">
+                        <span class="path1"></span><span class="path2"></span><span class="path3"></span>
+                        <span class="path4"></span><span class="path5"></span>
+                    </i>
+                    <span class="text-gray-800 fs-5 fw-normal">\${savedAt}</span>
+                </div>
+                <div class="col-3 d-flex align-items-center gap-2">
+                    <i class="ki-duotone ki-tablet-book fs-3">
+                         <span class="path1"></span><span class="path2"></span>
+                    </i>
+                    \${createPrMrBadges(prId, mrId, refLink)}
+                </div>
+            </div>
+        </div>
+        <div class="col-1 text-end">
+            <span class="text-gray-800 fs-5 fw-normal">\${qty}</span>
+    		<span class="text-gray-800 fs-5 fw-normal ms-2">\${unitName}</span>
+        </div>
+    </div>`;
 }
 
 function editCartItem(index){
@@ -1686,9 +1691,11 @@ function removeCartItem(index){
         }
     }).then((result) => {
         if (result.isConfirmed) {
+			const removedItem = poDetailCart[index];
             poDetailCart.splice(index, 1);
             saveCartToSession();    
             renderPoDetailCart();
+			uncheckPrCheckboxesForItem(removedItem);
         }
     });
     return false;
@@ -1929,6 +1936,8 @@ function submitPO(){
 let inprogressPrDetailList = [];
 let prDetailTable = null;
 let selectedPrCategory = '';
+let prSearchRequestToken = 0;
+let isSearchPrModalOpen = false;
 
 $.fn.dataTable.ext.search.push(function (settings, data, dataIndex) {
     if (settings.nTable.id !== 'prResultTable') return true;
@@ -1943,11 +1952,15 @@ $.fn.dataTable.ext.search.push(function (settings, data, dataIndex) {
 });
 
 function loadInprogressPrDetail(){
+    var requestToken = ++prSearchRequestToken;
     $.ajax({
         url: ctx + '/search_inprogress_pr',
         type: 'POST',
         dataType: 'json',
         success: function (resp) {
+            if (requestToken !== prSearchRequestToken || !isSearchPrModalOpen) {
+                return;
+            }
             var data = resp.data;
             inprogressPrDetailList = (data && data.prDetailList) || [];
             renderPrResultTable(inprogressPrDetailList);
@@ -2005,6 +2018,14 @@ $(document.body).on('change', '#searchPrCategory', function () {
     }
 });
 
+function isPrDetailIdInCart(prDetailId){
+    return poDetailCart.some(function(it){
+        return (it.sources || []).some(function(s){
+            return String(s.prDetailId) === String(prDetailId);
+        });
+    });
+}
+
 function renderPrResultTable(list){
     var tbody = document.getElementById('prResultBody');
     var html = '';
@@ -2029,7 +2050,7 @@ function renderPrResultTable(list){
 			<td>
 				<div class="form-check form-check-sm">
 					<input class="form-check-input pr-row-check" type="checkbox"
-						data-pr-detail-id="\${item.pr_detail_id}" />
+						data-pr-detail-id="\${item.pr_detail_id}"\${isPrDetailIdInCart(item.pr_detail_id) ? ' checked' : ''} />
 				</div>
 			</td>
 			<td class="fw-bold text-gray-900 fs-7 row-number text-start"></td>
@@ -2105,12 +2126,21 @@ function renderPrResultTable(list){
 	});
     updatePrSelectedCountReal();
 
+    var checkAll = document.getElementById('checkAllPr');
+
+    function syncCheckAllState(){
+        var allBoxes = document.querySelectorAll('.pr-row-check');
+        checkAll.checked = allBoxes.length > 0 && Array.prototype.every.call(allBoxes, function (box) { return box.checked; });
+    }
+
     document.querySelectorAll('.pr-row-check').forEach(function (cb) {
-        cb.addEventListener('change', updatePrSelectedCountReal);
+        cb.addEventListener('change', function () {
+            updatePrSelectedCountReal();
+            syncCheckAllState();
+        });
     });
 
-    var checkAll = document.getElementById('checkAllPr');
-    checkAll.checked = false;
+    checkAll.checked = list.length > 0 && list.every(function (d) { return isPrDetailIdInCart(d.pr_detail_id); });
     checkAll.onchange = function(){
         document.querySelectorAll('.pr-row-check').forEach(cb => cb.checked = this.checked);
         updatePrSelectedCountReal();
@@ -2122,17 +2152,60 @@ function updatePrSelectedCountReal(){
     document.getElementById('prSelectedCount').textContent = count;
 }
 
+function uncheckPrCheckboxesForItem(item){
+    if (!item || !item.sources || item.sources.length === 0) return;
+
+    item.sources.forEach(function(s){
+        if (!s.prDetailId) return;
+        var cb = document.querySelector('.pr-row-check[data-pr-detail-id="' + s.prDetailId + '"]');
+        if (cb) cb.checked = false;
+    });
+
+    updatePrSelectedCountReal();
+
+    var checkAll = document.getElementById('checkAllPr');
+    if (checkAll) {
+        var allBoxes = document.querySelectorAll('.pr-row-check');
+        checkAll.checked = allBoxes.length > 0 &&
+            Array.prototype.every.call(allBoxes, function (box) { return box.checked; });
+    }
+}
+
 document.getElementById('btnSubmitPr').addEventListener('click', function(){
     var selectedIds = [];
     document.querySelectorAll('.pr-row-check:checked').forEach(function(cb){
         selectedIds.push(cb.getAttribute('data-pr-detail-id'));
     });
+    var selectedIdSet = {};
+    selectedIds.forEach(function(id){ selectedIdSet[String(id)] = true; });
 
-    if (selectedIds.length === 0) {
-        Swal.fire('แจ้งเตือน', 'กรุณาเลือกอย่างน้อย 1 รายการ', 'warning');
-        return;
-    }
+    // เอารายการออกจาก poDetailCart: รายการที่เคยดึงเข้ามาจากตารางนี้
+    inprogressPrDetailList.forEach(function(d){
+        var prDetailId = String(d.pr_detail_id);
+        if (selectedIdSet[prDetailId]) return; //ถ้ายังติ๊กอยู่ ไม่ต้องลบ
 
+        for (var i = poDetailCart.length - 1; i >= 0; i--) {
+            var cartItem = poDetailCart[i];
+            if (!cartItem.sources) continue;
+
+            var srcIdx = cartItem.sources.findIndex(function (s) {
+                return String(s.prDetailId) === prDetailId;
+            });
+            if (srcIdx === -1) continue;
+
+            var removedQty = Number(cartItem.sources[srcIdx].qty) || 0;
+            cartItem.sources.splice(srcIdx, 1);
+
+            if (cartItem.sources.length === 0) {
+                poDetailCart.splice(i, 1);
+            } else {
+                cartItem.qty = Math.max(0, (Number(cartItem.qty) || 0) - removedQty);
+                cartItem.total = cartItem.qty * (Number(cartItem.price) || 0);
+            }
+        }
+    });
+
+    // เพิ่มเข้า poDetailCart: รายการที่ติ๊กใหม่ (ยังไม่มีใน poDetailCart) หรือรายการที่เคยติ๊กแล้วแต่ถูกลบออกไปก่อนหน้านี้
     selectedIds.forEach(function(prDetailId){
         var src = inprogressPrDetailList.find(function(d){ return String(d.pr_detail_id) === String(prDetailId); });
         if (!src) return;
@@ -2140,34 +2213,68 @@ document.getElementById('btnSubmitPr').addEventListener('click', function(){
         var qty = Number(src.amount_total) || 0;
         var price = Number(src.unit_price) || 0;
 
-        var item = {
+        // ข้อมูลที่มา (ต่อ PR แต่ละใบ)
+        var sourceEntry = {
             prId: src.pr_id,
             prDetailId: src.pr_detail_id,
-            itemsType: mapDbItemsTypeToSelect(src.product_type),
-            itemsTypeText: getCategoryIcon(src.product_type).name,
-            productId: src.product_id,
-            productName: src.product_name || '',
+            mrId: src.mr_id || '',
             qty: qty,
-            unit: src.unit,
             unitName: src.unit_name || '',
-            price: price,
-            description: src.description || '',
-			refLink: src.ref_link || '',
-            savedAt: formatNowDateTime()
+            refLink: src.ref_link || '',
+			creatorName: (src.user_create_emp_id ? src.user_create_emp_id + ' - ' : '') + (src.user_create_name || ''),
+            savedAt: formatNowDateTime(src.time_create)
         };
-        item.total = item.qty * item.price;
 
-        poDetailCart.push(item);
+        // หา item ที่ productId เดียวกันใน cart อยู่แล้วหรือยัง (group ตาม Product)
+        var existingIndex = poDetailCart.findIndex(function(it){
+            return String(it.productId) === String(src.product_id);
+        });
+
+        if (existingIndex >= 0) {
+            var existing = poDetailCart[existingIndex];
+
+            // กันเพิ่มซ้ำ ถ้า pr_detail_id นี้ถูกดึงมาแล้ว
+            var alreadyAdded = (existing.sources || []).some(function(s){
+                return String(s.prDetailId) === String(src.pr_detail_id);
+            });
+            if (alreadyAdded) return;
+
+            existing.sources = existing.sources || [];
+            existing.sources.push(sourceEntry);
+            existing.qty = (Number(existing.qty) || 0) + qty;
+            existing.total = existing.qty * (Number(existing.price) || 0);
+        } else {
+            var item = {
+                itemsType: mapDbItemsTypeToSelect(src.product_type),
+                itemsTypeText: getCategoryIcon(src.product_type).name,
+                productId: src.product_id,
+                productName: src.product_name || '',
+                qty: qty,
+                unit: src.unit,
+                unitName: src.unit_name || '',
+                price: price,
+                description: '',
+                sources: [sourceEntry]
+            };
+            item.total = item.qty * item.price;
+            poDetailCart.push(item);
+        }
     });
 
     saveCartToSession();
     renderPoDetailCart();
 
+	if (document.activeElement) {
+        document.activeElement.blur();
+    }
+
     var modalEl = document.getElementById('modal_search_pr');
-    bootstrap.Modal.getOrCreateInstance(modalEl).hide();
+	var modal = bootstrap.Modal.getInstance(modalEl);
+
+	if (modal) {
+		modal.hide();
+	}
 });
-
-
 
 </script>
 </html>

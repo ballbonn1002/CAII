@@ -195,7 +195,7 @@
 											<i class="ki-duotone ki-user-tick fs-3 me-3">
 												<span class="path1"></span><span class="path2"></span><span class="path3"></span>
 											</i>
-											<span class="fs-6 fw-medium text-gray-800">${empty loginUser.employeeId ? '' : loginUser.employeeId} - ${empty loginUser.nameEN ? '' : loginUser.nameEN}</span>
+											<span class="fs-6 fw-medium text-gray-800">${empty userCreate.employeeId ? '' : userCreate.employeeId} - ${empty userCreate.nameEN ? '' : userCreate.nameEN}</span>
 										</div>
 
 										<div class="col-lg-6 col-md-6 col-12 d-flex align-items-center">
@@ -203,7 +203,7 @@
 												<span class="path1"></span><span class="path2"></span><span class="path3"></span>
 												<span class="path4"></span><span class="path5"></span>
 											</i>
-											<span class="fs-6 fw-medium text-gray-800"><fmt:formatDate value="${requestDateTime}" pattern="d MMM yyyy" /></span>
+											<span class="fs-6 fw-medium text-gray-800"><fmt:formatDate value="${prList.timeCreate}" pattern="d MMM yyyy" /></span>
 										</div>
 
 										<c:choose>
@@ -1611,7 +1611,7 @@ function editCartItem(index){
 			
 			const waitForUnitList = setInterval(function(){
                 if ($('#unit option[value="' + item.unit + '"]').length > 0) {
-                    $('#unit').val(item.unit);
+                    $('#unit').val(item.unit).trigger('change'); 
                     clearInterval(waitForUnitList);
                 }
             }, 100);
@@ -1676,7 +1676,7 @@ function editExistingCartItem(prDetailId){
 
 			const waitForUnitList = setInterval(function(){
                 if ($('#unit option[value="' + item.unit + '"]').length > 0) {
-                    $('#unit').val(item.unit);
+                    $('#unit').val(item.unit).trigger('change');
                     clearInterval(waitForUnitList);
                 }
             }, 100);

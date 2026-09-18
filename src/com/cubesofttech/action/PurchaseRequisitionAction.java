@@ -554,7 +554,7 @@ public class PurchaseRequisitionAction extends ActionSupport {
                 detail.setProductId(productId);
                 detail.setProductId(dbProductId);
                 detail.setParentId(dbParentId);
-
+                detail.setStatus("0");
                 detail.setUnit(unitVal);
                 detail.setAmountTotal(qty);
                 detail.setDescription(descVal);
@@ -691,22 +691,6 @@ public class PurchaseRequisitionAction extends ActionSupport {
                     dbProductId = p.getProductId().toString();
                     dbParentId = String.valueOf(p.getParentProductId());
                 }
-                // if ("equipment".equals(itemsTypeVal)) {
-                //     dbItemsType = "1";
-                //     Product p = productDAO.findById(Integer.valueOf(productId));
-                //     dbProductId = p.getProductId().toString();
-                //     dbParentId = null;
-                // } else if ("consumables".equals(itemsTypeVal)) {
-                //     dbItemsType = "2";
-                //     Product p = productDAO.findById(Integer.valueOf(productId));
-                //     dbProductId = p.getProductId().toString();
-                //     dbParentId = String.valueOf(p.getParentProductId());
-                // } else if ("office".equals(itemsTypeVal)) {
-                //     dbItemsType = "3";
-                //     Product p = productDAO.findById(Integer.valueOf(productId));
-                //     dbProductId = p.getProductId().toString();
-                //     dbParentId = String.valueOf(p.getParentProductId());
-                // }
 
                 // --- PrDetail ---
                 PrDetail detail = new PrDetail();
@@ -718,6 +702,7 @@ public class PurchaseRequisitionAction extends ActionSupport {
                 detail.setAmountTotal(qty);
                 detail.setDescription(descVal);
                 detail.setRefLink(refLinkVal);
+                detail.setStatus("0");
                 detail.setUserCreate(loginUserId);
                 detail.setTimeCreate(DateUtil.getCurrentTime());
                 detail.setUserUpdate(loginUserId);

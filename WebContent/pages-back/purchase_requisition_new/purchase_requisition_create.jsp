@@ -211,7 +211,7 @@
 									<label for="myFile" id="lbFile" class="btn btn-lg btn-primary d-inline-flex align-items-center justify-content-center fw-medium h-40px my-0">
 										Upload
 										<input type="file" id="myFile" name="files" multiple style="display: none;"
-											accept="image/*,application/pdf,application/zip,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document">
+											accept="image/jpeg,image/png,image/gif,image/webp,image/bmp,application/pdf,application/zip,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document">
 									</label>
 								</div>
 								<div class="card-body filter-card px-10 py-9 rounded-3">
@@ -1582,7 +1582,7 @@ function editCartItem(index){
 
 			const waitForUnitList = setInterval(function(){
                 if ($('#unit option[value="' + item.unit + '"]').length > 0) {
-                    $('#unit').val(item.unit);
+                    $('#unit').val(item.unit).trigger('change'); 
                     clearInterval(waitForUnitList);
                 }
             }, 100);
@@ -1593,7 +1593,7 @@ function editCartItem(index){
     setTimeout(function(){ clearInterval(waitForProductList); }, 3000);
 
     $('#pr_qty').val(item.qty);
-    $('#unit').val(item.unit);
+    $('#unit').val(item.unit).trigger('change');
     $('#pr_ref_link').val(item.refLink || '');
     $('#pr_description').val(item.description);
 

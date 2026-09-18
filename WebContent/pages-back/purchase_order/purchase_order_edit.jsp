@@ -30,96 +30,114 @@
 <script
 	src="${pageContext.request.contextPath}/assets/js/custom/utilities/attachFile/attcahfile.js"></script>
 <style>
-/* Table MR */
-/* [data-bs-theme="light"] #mrResultTable.table.table-striped > tbody > tr:nth-of-type(odd) > * {
-    background-color: #FBFBFB !important; 
+/* ==================== Table PR ==================== */
+
+[data-bs-theme="light"] #prResultTable.table.table-striped > tbody > tr:nth-of-type(odd) > * {
+    background-color: #FBFBFB !important;
     box-shadow: none !important;
-  }
- [data-bs-theme="dark"] #mrResultTable.table.table-striped > tbody > tr:nth-of-type(odd) > * {
-    background-color: #191B20 !important; 
+}
+
+[data-bs-theme="dark"] #prResultTable.table.table-striped > tbody > tr:nth-of-type(odd) > * {
+    background-color: #191B20 !important;
     box-shadow: none !important;
-  }
-
-#mrResultTable thead th {
-	white-space: nowrap !important;
-	position: relative !important;
-	padding-right: 35px !important;
-	cursor: pointer;
 }
 
-#mrResultTable thead th.sorting:after, #mrResultTable thead th.sorting_asc:after,
-#mrResultTable thead th.sorting_desc:after, #mrResultTable thead th.sorting:before,	
-#mrResultTable thead th.sorting_asc:before, #mrResultTable thead th.sorting_desc:before
-	{
-	position: absolute !important;
-	top: 10px !important;
-	right: 10px !important;
-	display: block !important;
-	opacity: 0.5;
+
+/* ===== Table Header ===== */
+
+#prResultTable thead th {
+    white-space: nowrap !important;
+    vertical-align: middle !important;
+    padding-right: 35px !important;
+    cursor: pointer;
 }
 
-#mrResultTable thead th.sorting:before {
-	margin-top: -6px;
+
+/* ===== DataTables Header ===== */
+ 
+#prResultTable thead th .dt-column-header {
+    display: inline-flex !important;
+    align-items: center !important;
+    width: auto !important;
+    white-space: nowrap !important;
 }
 
-#mrResultTable thead th.sorting:after {
-	margin-top: 4px;
+#prResultTable thead th .dt-column-title {
+    display: inline-block !important;
+    white-space: nowrap !important;
 }
 
-#mrResultTable thead th:first-child, th:last-child {
+/* ===== Remove old DataTables arrow ===== */
+
+#prResultTable thead th.sorting::before,
+#prResultTable thead th.sorting::after,
+#prResultTable thead th.sorting_asc::before,
+#prResultTable thead th.sorting_asc::after,
+#prResultTable thead th.sorting_desc::before,
+#prResultTable thead th.sorting_desc::after {
+    display: none !important;
+}
+
+/* ===== First / Last Column ===== */
+
+#prResultTable thead th:first-child{
     padding-right: 0 !important;
 }
 
-#mrResultTable thead th:last-child {
-    text-align: right !important;
-    padding-right: 0 !important;
-} */
+/* ===== PR Search Modal ===== */
 
-/* ===== Signature Box ===== */
+#modal_search_pr .table-responsive {
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+/* ======= Signature Box ======= */
+
 .sig-box {
-	width: 100%;
-	height: 200px;
-	border-radius: 10px;
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	justify-content: center;
-	position: relative;
-	overflow: hidden;
+    width: 100%;
+    height: 200px;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
 }
 
 .sig-box.locked {
-	border: 2px solid #E4E6EF;
-	background: #F9F9F9;
-	cursor: default;
+    border: 2px solid #E4E6EF;
+    background: #F9F9F9;
+    cursor: default;
 }
 
 .sig-box.uploadable {
-	border: 2px dashed #C9D0E0;
-	background: #FAFAFA;
-	cursor: pointer;
+    border: 2px dashed #C9D0E0;
+    background: #FAFAFA;
+    cursor: pointer;
 }
 
 .sig-box.uploadable:hover {
-	border-color: #009EF7;
-	background: #F0FAFF;
+    border-color: #009EF7;
+    background: #F0FAFF;
 }
 
 .sig-box.unuploadable {
-	border: 2px dashed #C9D0E0;
-	background: #FAFAFA;
+    border: 2px dashed #C9D0E0;
+    background: #FAFAFA;
 }
 
 .sig-lock-badge {
-	position: absolute;
-	top: 6px;
-	right: 8px;
-	font-size: .7rem;
-	color: #A1A5B7;
-	display: flex;
-	align-items: center;
-	gap: 3px;
+    position: absolute;
+    top: 6px;
+    right: 8px;
+    font-size: .7rem;
+    color: #A1A5B7;
+    display: flex;
+    align-items: center;
+    gap: 3px;
 }
+
 </style>
 
 </head>
@@ -167,7 +185,7 @@
 											<i class="ki-duotone ki-user-tick fs-3 me-3">
 												<span class="path1"></span><span class="path2"></span><span class="path3"></span>
 											</i>
-											<span class="fs-6 fw-medium text-gray-800">${empty loginUser.employeeId ? '' : loginUser.employeeId} - ${empty loginUser.nameEN ? '' : loginUser.nameEN}</span>
+											<span class="fs-6 fw-medium text-gray-800">${empty userCreate.employeeId ? '' : userCreate.employeeId} - ${empty userCreate.nameEN ? '' : userCreate.nameEN}</span>
 										</div>
 
 										<div class="col-lg-6 col-md-6 col-12 d-flex align-items-center">
@@ -175,7 +193,7 @@
 												<span class="path1"></span><span class="path2"></span><span class="path3"></span>
 												<span class="path4"></span><span class="path5"></span>
 											</i>
-											<span class="fs-6 fw-medium text-gray-800"><fmt:formatDate value="${requestDateTime}" pattern="d MMM yyyy" /></span>
+											<span class="fs-6 fw-medium text-gray-800"><fmt:formatDate value="${poList.timeCreate}" pattern="d MMM yyyy" /></span>
 										</div>
 
 										<c:choose>
@@ -404,9 +422,9 @@
 										<i class="ki-outline ki-plus fs-3 me-1"></i>Create
 									</button>
 									
-									<button type="button" class="btn btn-lg btn-primary fw-medium text-white px-6 py-4" data-bs-toggle="modal" data-bs-target="#modal_search_mr">
+									<button type="button" id="btnOpenSearchPr" class="btn btn-lg btn-primary fw-medium text-white px-6 py-4">
 										<i class="ki-duotone ki-magnifier fs-3 me-1">
-											<span class="path1"></span><span class="path2"></span></i>Search MR
+											<span class="path1"></span><span class="path2"></span></i>Search PR
 									</button>
 								</div>
 							</c:if>
@@ -712,7 +730,7 @@
 									<div class="row g-5 mb-6"> -->
 										<div class="col-6 d-flex flex-column">
 											<label class="required fw-medium text-gray-800 mb-2">Description / Detail</label>
-											<textarea class="form-control text-gray-700" rows="3" name="description" id="po_description" placeholder="Description"></textarea>
+											<textarea class="form-control text-gray-700" rows="3" name="po_item_description" id="po_description" placeholder="Description"></textarea>
 										</div>
 									</div>
 						        </div>
@@ -726,6 +744,80 @@
 						</div>
 					</div>
 					
+					
+					<div class="modal fade" tabindex="-1" id="modal_search_pr">
+					    <div class="modal-dialog modal-xl">
+					        <div class="modal-content px-3">
+					            <div class="modal-header border-0">
+					                <h3 class="modal-title">Search PR</h3>
+					                <div class="btn btn-icon btn-sm btn-active-light-primary ms-2" data-bs-dismiss="modal" aria-label="Close">
+					                    <i class="ki-duotone ki-cross fs-1"><span class="path1"></span><span class="path2"></span></i>
+					                </div>
+					            </div>
+					
+					            <div class="modal-body">
+					                <div class="row g-5 mb-3">
+					                    <div class="col-lg-6 col-md-6 col-12 d-flex flex-column">
+					                        <label class="required fw-medium text-gray-800 mb-2">Search PR</label>
+					                        <div class="input-group">
+					                            <input type="text" class="form-control text-gray-700 h-45px" name="searchPrKeyword" id="searchPrKeyword" />
+					                        </div>
+					                    </div>
+					
+					                    <div class="col-lg-6 col-md-6 col-12 d-flex flex-column">
+					                        <label class="required fw-medium text-gray-800 mb-2">Category</label>
+					                        <select name="searchPrCategory" id="searchPrCategory" class="form-select h-45px" data-control="select2">
+					                            <option value="" selected>All</option>
+					                            <option value="equipment">Equipment</option>
+					                            <option value="consumables">Consumables</option>
+					                            <option value="office">Office supplies</option>
+					                        </select>
+					                    </div>
+					                </div>
+					
+					                <div class="row g-5 mb-6 mt-3">
+					                    <div class="d-flex align-items-center justify-content-between mb-4 ">
+					                        <div class="d-flex align-items-center gap-2">
+					                            <h3 class="text-gray-900 fw-bold">
+					                                <span id="prItemsFoundCount"></span> Items Found
+					                            </h3>
+					                            <span id="prSortLabel" class="fw-bold fs-6 text-gray-500">by Recent Updates</span>
+					                        </div>
+					                        <h3 class="text-primary fw-bold">
+					                            <span id="prSelectedCount"></span> Selected
+					                        </h3>
+					                    </div>
+					                    <div class="table-responsive">
+					                        <table class="table table-striped align-middle gy-4 gs-7" id="prResultTable">
+					                            <thead>
+					                                <tr class="fs-7 fw-bold text-gray-500 text-uppercase border-bottom border-gray-200 mb-0">
+					                                    <th class="min-w-15px ">
+					                                        <div class="text-center form-check form-check-sm">
+					                                            <input class="form-check-input" type="checkbox" id="checkAllPr" />
+					                                        </div>
+					                                    </th>
+					                                    <th class="min-w-40px text-start mx-0">#</th>
+					                                    <th class="min-w-80px">PR ID</th>
+					                                    <th class="min-w-100px">Category</th>
+					                                    <th class="min-w-200px">Request Name</th>
+					                                    <th class="min-w-200px">Product</th>
+					                                    <th class="min-w-100px text-end px-2">Status</th>
+					                                </tr>
+					                            </thead>
+					                            <tbody id="prResultBody"></tbody>
+					                        </table>
+					                    </div>
+					                    <div class="text-muted fs-7 mt-2" id="prNoResult" style="display:none;">No matching PR found.</div>
+					                </div>
+					            </div>
+					
+					            <div class="modal-footer pt-0 mt-0 mb-2 border-0">
+					                <button type="button" class="btn btn-light" data-bs-dismiss="modal">Close</button>
+					                <button type="button" class="btn btn-success" id="btnSubmitPr">Submit</button>
+					            </div>
+					        </div>
+					    </div>
+					</div>
 					
 					<div class="d-flex justify-content-between g-10">
 						<div class="d-flex">
@@ -820,19 +912,29 @@
 	        price: ${empty d.unit_price ? 0 : d.unit_price},
 	        total: ${empty d.price_total ? 0 : d.price_total},
 	        description: "${fn:replace(fn:replace(empty d.description ? '' : d.description, '\\', '\\\\'), '"', '\\"')}",
-	        savedAt: "<fmt:formatDate value="${d.time_create}" pattern="d MMM yyyy, HH:mm"/>"
+	        savedAt: "<fmt:formatDate value="${d.time_create}" pattern="d MMM yyyy, HH:mm"/>",
+			sources: [
+				<c:forEach var="p" items="${d.poParentList}" varStatus="ps">
+				{
+					prId: "${p.pr_id}",
+					refLink: "${empty p.ref_link ? '' : p.ref_link}",
+					qty: ${empty p.amount ? 0 : p.amount},
+					creatorName: "${empty p.userEmployeeId ? '' : p.userEmployeeId} ${empty p.user_create_nameEN ? '' : ' - '.concat(p.user_create_nameEN)}",
+					savedAt: "<fmt:formatDate value="${p.pr_time_create}" pattern="d MMM yyyy, HH:mm"/>"
+				}${!ps.last ? ',' : ''}
+				</c:forEach>
+			]
 	    }${!st.last ? ',' : ''}
 	    </c:forEach>
 	];
 
 	let existingAttachmentCount = ${not empty attachmentList ? fn:length(attachmentList) : 0};
 
-	function formatNowDateTime(){
-	    const d = new Date();
+	function formatNowDateTime(inputDate){
+	    const d = inputDate ? new Date(String(inputDate).replace(' ', 'T')) : new Date();
 	    const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
 	    const pad = n => String(n).padStart(2,'0');
 	    return `\${d.getDate()} \${months[d.getMonth()]} \${d.getFullYear()}, \${pad(d.getHours())}:\${pad(d.getMinutes())}`;
-	    /* return `\${d.getDate()} \${months[d.getMonth()]} \${d.getFullYear()}, \${pad(d.getHours())}:\${pad(d.getMinutes())}`; */
 	}
 	
 	document.addEventListener("DOMContentLoaded", function () {
@@ -843,36 +945,6 @@
 	        locale: "en",        
 	        allowInput: false
 	    });
-		
-		// Table MR
-		// var table = $('#mrResultTable').DataTable({
-		// 	ordering : true,
-		// 	searching : true,
-		// 	autoWidth : false,
-		// 	info: false, 
-		// 	paging: false,
-		// 	columnDefs : [ {
-		// 		orderable : false,
-		// 		targets : [ 0 ]
-		// 	}, {
-		// 		orderable : true,
-		// 		targets : [ 1, 2, 3, 4, 5 ]
-		// 	}, {
-		// 		targets: [ 5 ],
-		// 		type: 'string'
-		// 	} ],
-		// 	order : [],
-		// 	headerCallback : function(thead) {
-		// 		$(thead).find('th').each(
-		// 				function(index) {
-		// 					if (index === 0) return;
-		// 					if ($(this).find('.th-wrapper').length === 0) {
-		// 						$(this).wrapInner(
-		// 								'<span class="th-wrapper" style="display:inline-flex; align-items:center; white-space:nowrap; pointer-events:none;"></span>');
-		// 						}
-		// 					});
-		// 		}
-		// });
 		
 		document.querySelector('#kt_app_content_container').addEventListener('click', function(e){
 			const btn = e.target.closest('.po-group-toggle');
@@ -896,47 +968,6 @@
 				icon.classList.add('ki-down-square');
 			}
 		});
-		// document.querySelector('#kt_app_content_container').addEventListener('click', function(e){
-		//     const btn = e.target.closest('.collapsed, [data-target^="cart_"], a[id^="poGroupBtn_"]');
-		//     if (!btn) return;
-
-		//     let collapseEl;
-		//     if (btn.dataset.target) {
-		//         collapseEl = document.getElementById('poGroup_' + btn.dataset.target);
-		//     } else if (btn.id.startsWith('poGroupBtn_')) {
-		//         collapseEl = document.getElementById(btn.id.replace('poGroupBtn_', 'poGroup_'));
-		//     }
-		//     if (!collapseEl) return;
-
-		//     const icon = btn.querySelector('i');
-		//     const isOpen = collapseEl.classList.contains('show');
-
-		//     if (isOpen) {
-		//         collapseEl.classList.remove('show');
-		//         btn.classList.add('collapsed');
-		//         icon.classList.remove('ki-down-square');
-		//         icon.classList.add('ki-up-square');
-		//     } else {
-		//         collapseEl.classList.add('show');
-		//         btn.classList.remove('collapsed');
-		//         icon.classList.remove('ki-up-square');
-		//         icon.classList.add('ki-down-square');
-		//     }
-		// });
-		
-		//running number
-		/* function runNumber() {
-			const info = table.page.info();
-			table.column(1, {
-				page : 'current'
-					}).nodes().each(function(cell, i) {
-						cell.innerHTML = info.start + i + 1;
-						});
-			}
-		
-		table.on('draw.dt order.dt search.dt', runNumber);
-		runNumber();
-		 */
 		
 		// --- Modal ---
 		 var elements = Array.prototype.slice.call(document.querySelectorAll("[data-bs-stacked-modal]"));
@@ -985,21 +1016,10 @@
 		        }
 		    });
 
-		    createPoModalEl.addEventListener('shown.bs.modal', function () {
-		        document.body.classList.add('modal-open');
-		        document.body.style.overflow = 'hidden';
-		        document.documentElement.style.overflow = 'hidden';
-		    });
-
 		    createPoModalEl.addEventListener('hidden.bs.modal', function () {
-		        editingIndex = -1;
-		        editingExistingDetailId = null;
-		        document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
-		        document.body.classList.remove('modal-open');
-		        document.body.style.removeProperty('padding-right');
-		        document.body.style.removeProperty('overflow');
-		        document.documentElement.style.removeProperty('overflow');
-		    });
+				editingIndex = -1;
+				editingExistingDetailId = null;
+			});
 		    
 			const btnOpenCreatePo = document.getElementById('btnOpenCreatePo');
 			if (btnOpenCreatePo) {
@@ -1009,6 +1029,31 @@
 					bootstrap.Modal.getOrCreateInstance(createPoModalEl, { backdrop: true }).show();
 				});
 			}
+
+			const searchPrModalEl = document.getElementById('modal_search_pr');
+
+			searchPrModalEl.addEventListener('hide.bs.modal', function () {
+				if (document.activeElement && searchPrModalEl.contains(document.activeElement)) {
+					document.activeElement.blur();
+				}
+			});
+
+			searchPrModalEl.addEventListener('hidden.bs.modal', function () {
+				isSearchPrModalOpen = false;
+				selectedPrCategory = '';
+				$('#searchPrCategory').val('').trigger('change.select2');
+			});
+
+			searchPrModalEl.addEventListener('show.bs.modal', function () {
+				isSearchPrModalOpen = true;
+				loadInprogressPrDetail();
+			});
+
+			// เปิด modal นี้ผ่าน JS เอง แทน data-bs-toggle="modal" เดิม
+			document.getElementById('btnOpenSearchPr').addEventListener('click', function () {
+				bootstrap.Modal.getOrCreateInstance(searchPrModalEl).show();
+			});
+
 
 			if (editCompanyId) {
 				$('#vendor_id').val(editCompanyId).trigger('change');
@@ -1794,34 +1839,13 @@ function createPoCard(item,index,poDetailId){
 			
 			<div class="collapse border-gray-300 border-top mt-3" id="poGroup_\${groupId}">
 	            <div class="ps-9 pt-9">
-	                <div class="d-flex align-items-center justify-content-between row">
-	                    <div class="col-11">
-	                        <div class="d-flex align-items-center fs-7">
-	                            <div class="col-4">
-	                                <i class="ki-duotone ki-user-tick fs-3 text-muted me-2">
-	                                    <span class="path1"></span><span class="path2"></span><span class="path3"></span>
-	                                </i>
-	                                <span class="text-gray-800 fs-5">\${currentUserDisplay}</span>
-	                            </div>
-	                            <div class="col-4 d-flex align-items-center">
-	                                <i class="ki-duotone ki-calendar-2 fs-3 me-2">
-	                                    <span class="path1"></span><span class="path2"></span><span class="path3"></span>
-	                                    <span class="path4"></span><span class="path5"></span>
-	                                </i>
-	                                <span class="text-gray-800 fs-5">\${item.savedAt}</span>
-	                            </div>
-	                            <div class="col-3 d-flex align-items-center">
-				                    <i class="ki-duotone ki-tablet-book fs-3 me-2">
-					                     <span class="path1"></span><span class="path2"></span>
-									</i>
-				                    <span class="badge badge-lg badge-light-primary text-primary fs-7 fw-semibold d-inline-block text-center">-</span>
-		                    	</div>
-	                        </div>
-	                    </div>
-	                    <div class="col-1 text-end">
-	                        <span class="text-gray-800 fs-5">\${item.qty} \${item.unitName}</span>
-	                    </div>
-	                </div>
+	                \${
+	                    (item.sources && item.sources.length > 0)
+	                        ? item.sources.map(function(s){
+	                            return createPoSourceRow(s.qty, s.unitName || item.unitName, s.savedAt, s.prId, s.mrId, s.refLink, s.creatorName);
+	                          }).join('')
+	                        : createPoSourceRow(item.qty, item.unitName, item.savedAt, item.prId, item.mrId, item.refLink, item.creatorName)
+	                }
 	            </div>
 	        </div>
 		
@@ -1885,9 +1909,11 @@ function removeCartItem(index){
         }
     }).then((result) => {
         if (result.isConfirmed) {
+			const removedItem = poDetailCart[index];
             poDetailCart.splice(index, 1);
             saveCartToSession();
             renderPoDetailCart();
+			uncheckPrCheckboxesForItem(removedItem);
         }
     });
     return false;
@@ -2131,8 +2157,29 @@ function validatePOForm(){
     if (!($('#vendor_id').val() || '').trim()) errors.push('Company Name');
     if (!($('#vendor_location_id').val() || '').trim()) errors.push('Company Location');
     if (!($('#contact_id').val() || '').trim()) errors.push('Contact Name');
-    const totalDetailCount = (existingPoDetailList ? existingPoDetailList.length : 0) + (poDetailCart ? poDetailCart.length : 0);
-    if (totalDetailCount === 0) errors.push('Please add at least 1 Po Detail');
+
+    const existingList = existingPoDetailList || [];
+    const cartList = poDetailCart || [];
+    const totalDetailCount = existingList.length + cartList.length;
+
+    if (totalDetailCount === 0) {
+        errors.push('Please add at least 1 Po Detail');
+    } else {
+		const allItems = existingList.concat(cartList);
+
+        const zeroPriceItems = existingList.concat(cartList)
+            .filter(item => !item.price || Number(item.price) <= 0);
+        if (zeroPriceItems.length > 0) {
+            const names = zeroPriceItems.map(i => i.productName).join(', ');
+            errors.push('กรุณาใส่ราคาต่อหน่วยให้ครบทุกรายการ (' + names + ')');
+        }
+
+		const noDescItems = allItems.filter(item => !item.description || !String(item.description).trim());
+        if (noDescItems.length > 0) {
+            const names = noDescItems.map(i => i.productName).join(', ');
+            errors.push('กรุณาใส่ Description ให้ครบทุกรายการ (' + names + ')');
+        }
+    }
 
     const hasSignature = $('#hasSignature').val() === 'true';
     if (!hasSignature) errors.push('ลายเซ็น (Signature)');
@@ -2306,22 +2353,6 @@ function returnPO(){
 }
 
 function editPO(){
-
-    // Swal.fire({
-    //     title: "Are you sure?!",
-    //     text: "Do you want to return this PO?",
-    //     icon: "warning",
-    //     showCancelButton: true,
-    //     confirmButtonText: "Save",
-    //     cancelButtonText: "Close",
-    //     buttonsStyling: false,
-    //     customClass: {
-    //         confirmButton: "btn btn-success",
-    //         cancelButton: "btn btn-secondary"
-    //     }
-    // }).then((result) => {
-    //     if (!result.isConfirmed) return;
-
         const payload = {
             poId: EDIT_PO_ID || '',
             status: '1'
@@ -2565,6 +2596,389 @@ function cancelPO(){
         });
     });
 }
+
+
+function createPrMrBadges(prId, mrId, refLink){
+    let html = '';
+
+    if (prId) {
+        html += `
+        <a href="\${ctx}/purchase_requisition_edit?prId=\${prId}"
+            target="_blank" onclick="event.stopPropagation();"
+            class="badge badge-lg fs-7 fw-semibold d-inline-block text-center text-decoration-none badge-light-primary text-primary">
+            \${prId}
+        </a>`;
+
+        if (mrId || refLink) {
+            if (refLink) {
+                html += `
+                <a href="\${refLink}" target="_blank" class="text-primary d-inline-flex mx-1" onclick="event.stopPropagation();">
+                    <i class="ki-duotone ki-fasten fs-2 text-primary">
+                        <span class="path1"></span><span class="path2"></span>
+                    </i>
+                </a>`;
+            } else {
+                html += `
+                <i class="ki-duotone ki-fasten fs-2 text-primary mx-1">
+                    <span class="path1"></span><span class="path2"></span>
+                </i>`;
+            }
+        }
+    }
+
+    if (mrId) {
+        html += `
+        <a href="\${ctx}/material_requisition_edit?mrId=\${mrId}"
+            target="_blank" onclick="event.stopPropagation();"
+            class="badge badge-lg fs-7 fw-semibold d-inline-block text-center text-decoration-none badge-light-purple text-purple">
+            \${mrId}
+        </a>`;
+    }
+
+    if (!prId && !mrId) {
+        html = `<span class="badge badge-lg fs-7 fw-semibold d-inline-block text-center badge-light-primary text-primary">-</span>`;
+    }
+
+    return html;
+}
+
+function createPoSourceRow(qty, unitName, savedAt, prId, mrId, refLink, creatorName){
+    return `
+    <div class="d-flex align-items-center justify-content-between row mb-6">
+        <div class="col-11">
+            <div class="d-flex align-items-center fs-7">
+                <div class="col-4">
+                    <i class="ki-duotone ki-user-tick fs-3 text-muted me-2">
+                        <span class="path1"></span><span class="path2"></span><span class="path3"></span>
+                    </i>
+                    <span class="text-gray-800 fs-5 fw-normal">\${creatorName || currentUserDisplay}</span>
+                </div>
+                <div class="col-4 d-flex align-items-center">
+                    <i class="ki-duotone ki-calendar-2 fs-3 me-2">
+                        <span class="path1"></span><span class="path2"></span><span class="path3"></span>
+                        <span class="path4"></span><span class="path5"></span>
+                    </i>
+                    <span class="text-gray-800 fs-5 fw-normal">\${savedAt}</span>
+                </div>
+                <div class="col-3 d-flex align-items-center gap-2">
+                    <i class="ki-duotone ki-tablet-book fs-3">
+                         <span class="path1"></span><span class="path2"></span>
+                    </i>
+                    \${createPrMrBadges(prId, mrId, refLink)}
+                </div>
+            </div>
+        </div>
+        <div class="col-1 text-end">
+            <span class="text-gray-800 fs-5 fw-normal">\${qty}</span>
+    		<span class="text-gray-800 fs-5 fw-normal ms-2">\${unitName}</span>
+        </div>
+    </div>`;
+}
+
+// Modal Search PR
+let inprogressPrDetailList = [];
+let prDetailTable = null;
+let selectedPrCategory = '';
+let prSearchRequestToken = 0;
+let isSearchPrModalOpen = false; 
+
+$.fn.dataTable.ext.search.push(function (settings, data, dataIndex) {
+    if (settings.nTable.id !== 'prResultTable') return true;
+    if (!selectedPrCategory) return true;
+
+    var item = inprogressPrDetailList[dataIndex];
+    if (!item) return true;
+
+    return mapDbItemsTypeToSelect(item.product_type) === selectedPrCategory;
+});
+
+function getCategoryIcon(productType){
+    switch(String(productType)){
+        case '1': return { name: 'Equipment', icon: '<i class="ki-duotone ki-monitor-mobile fs-2 text-primary"><span class="path1"></span><span class="path2"></span></i>' };
+        case '2': return { name: 'Consumables', icon: '<i class="ki-duotone ki-lots-shopping fs-2 text-orange"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span><span class="path5"></span><span class="path6"></span><span class="path7"></span><span class="path8"></span></i>' };
+        case '3': return { name: 'Accessory', icon: '<i class="ki-duotone ki-medal-star fs-2 text-teal"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span></i>' };
+        case '4': return { name: 'Office supplies', icon: '<i class="ki-duotone ki-parcel fs-2 text-success"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span><span class="path5"></span></i>' };
+        default:  return { name: '-', icon: '' };
+    }
+}
+
+function loadInprogressPrDetail(){
+    var requestToken = ++prSearchRequestToken;
+    $.ajax({
+        url: ctx + '/search_inprogress_pr',
+        type: 'POST',
+        dataType: 'json',
+        success: function (resp) {
+            if (requestToken !== prSearchRequestToken || !isSearchPrModalOpen) {
+                return;
+            }
+            var data = resp.data;
+            inprogressPrDetailList = (data && data.prDetailList) || [];
+            renderPrResultTable(inprogressPrDetailList);
+        },
+        error: function () {
+            Swal.fire('Error', 'ไม่สามารถโหลดข้อมูล PR ได้', 'error');
+        }
+    });
+}
+
+$(document.body).on('keyup input', '#searchPrKeyword', function () {
+    if (prDetailTable) {
+        prDetailTable.search(this.value).draw();
+    }
+});
+
+$(document.body).on('change', '#searchPrCategory', function () {
+    selectedPrCategory = $(this).val();
+    if (prDetailTable) {
+        prDetailTable.draw();
+    }
+});
+
+function isPrDetailIdInCart(prDetailId){
+    return poDetailCart.some(function(it){
+        return (it.sources || []).some(function(s){
+            return String(s.prDetailId) === String(prDetailId);
+        });
+    });
+}
+
+function renderPrResultTable(list){
+    var tbody = document.getElementById('prResultBody');
+    var html = '';
+
+    list.forEach(function(item, index){
+        var cat = getCategoryIcon(item.product_type);
+        var qty = item.amount_total || 0;
+        var unitName = item.unit_name || '';
+        var userName = item.user_create_name || '-';
+        var timeCreate = formatNowDateTime(item.time_create);
+        var initial = userName.charAt(0).toUpperCase();
+        var userPath = item.user_create_path || '';
+        var statusBadge = item.pr_status == '3'
+            ? '<span class="badge badge-lg bg-success fw-semibold fs-7 text-white">Approved</span>'
+            : item.pr_status == '7'
+            ? '<span class="badge badge-lg bg-cyan fw-semibold fs-7 text-white">In-Progress</span>'
+            : '';
+
+        html += `
+        <tr class="fw-semibold fs-6 text-gray-800 border-bottom border-gray-200">
+            <td>
+                <div class="form-check form-check-sm">
+                    <input class="form-check-input pr-row-check" type="checkbox"
+    						data-pr-detail-id="\${item.pr_detail_id}"\${isPrDetailIdInCart(item.pr_detail_id) ? ' checked' : ''} />
+                </div>
+            </td>
+            <td class="fw-bold text-gray-900 fs-7 row-number text-start"></td>
+            <td class="text-gray-900 fs-6 fw-normal">\${item.pr_id}</td>
+            <td>
+                <div class="d-flex align-items-center">
+                    <div class="symbol symbol-40px me-4">\${cat.icon}</div>
+                    <span class="text-gray-900 fs-5 fw-normal">\${cat.name}</span>
+                </div>
+            </td>
+            <td>
+                <div class="d-flex align-items-center">
+                    <div class="symbol symbol-35px symbol-circle me-3">
+                        <div class="symbol symbol-35px symbol-circle me-3">
+                            \${userPath
+                                ? '<img src="' + userPath + '" alt="' + userName + '" class="object-fit-cover" />'
+                                : '<span class="symbol-label bg-light-primary text-primary fw-bold">' + initial + '</span>'
+                            }
+                        </div>
+                    </div>
+                    <div class="d-flex flex-column">
+                        <span class="text-gray-900 fs-6 fw-normal">\${userName}</span>
+                        <span class="text-gray-900 fs-6 fw-normal">\${timeCreate}</span>
+                    </div>
+                </div>
+            </td>
+            <td>
+                <div class="d-flex flex-column">
+                    <span class="text-gray-900 fs-6 fw-normal">\${item.product_name || ''}</span>
+                    <span class="text-gray-900 fs-6 fw-normal">\${qty} \${unitName}</span>
+                </div>
+            </td>
+            <td class="text-end pe-2">
+                \${statusBadge}
+            </td>
+        </tr>`;
+    });
+    tbody.innerHTML = html;
+
+    if (prDetailTable) {
+        prDetailTable.destroy();
+        prDetailTable = null;
+    }
+    prDetailTable = $('#prResultTable').DataTable({
+        ordering : true,
+        searching : true,
+        autoWidth : false,
+        info: false,
+        paging: false,
+        columnDefs : [
+            { orderable: false, targets: [0,6] },
+            { orderable: true, targets: [1,2,3,4,5] },
+            { targets: -1, orderable: false }
+        ],
+        order: [],
+        drawCallback: function(settings) {
+            var api = this.api();
+
+            api.column(1, { search: 'applied', order: 'applied' })
+                .nodes()
+                .each(function (cell, i) {
+                    cell.innerHTML = i + 1;
+                });
+
+            document.getElementById('prItemsFoundCount').textContent = api.rows({ search: 'applied' }).count();
+        }
+    });
+    updatePrSelectedCountReal();
+
+	var checkAll = document.getElementById('checkAllPr');
+
+	function syncCheckAllState(){
+		var allBoxes = document.querySelectorAll('.pr-row-check');
+		checkAll.checked = allBoxes.length > 0 && Array.prototype.every.call(allBoxes, function (box) { return box.checked; });
+	}
+
+	document.querySelectorAll('.pr-row-check').forEach(function (cb) {
+		cb.addEventListener('change', function () {
+			updatePrSelectedCountReal();
+			syncCheckAllState();
+		});
+	});
+
+	checkAll.checked = list.length > 0 && list.every(function (d) { return isPrDetailIdInCart(d.pr_detail_id); });
+	checkAll.onchange = function(){
+		document.querySelectorAll('.pr-row-check').forEach(cb => cb.checked = this.checked);
+		updatePrSelectedCountReal();
+	};
+}
+
+function updatePrSelectedCountReal(){
+    var count = document.querySelectorAll('.pr-row-check:checked').length;
+    document.getElementById('prSelectedCount').textContent = count;
+}
+
+function uncheckPrCheckboxesForItem(item){
+    if (!item || !item.sources || item.sources.length === 0) return;
+
+    item.sources.forEach(function(s){
+        if (!s.prDetailId) return;
+        var cb = document.querySelector('.pr-row-check[data-pr-detail-id="' + s.prDetailId + '"]');
+        if (cb) cb.checked = false;
+    });
+
+    updatePrSelectedCountReal();
+
+    var checkAll = document.getElementById('checkAllPr');
+    if (checkAll) {
+        var allBoxes = document.querySelectorAll('.pr-row-check');
+        checkAll.checked = allBoxes.length > 0 &&
+            Array.prototype.every.call(allBoxes, function (box) { return box.checked; });
+    }
+}
+
+document.getElementById('btnSubmitPr').addEventListener('click', function(){
+    var selectedIds = [];
+    document.querySelectorAll('.pr-row-check:checked').forEach(function(cb){
+        selectedIds.push(cb.getAttribute('data-pr-detail-id'));
+    });
+    var selectedIdSet = {};
+    selectedIds.forEach(function(id){ selectedIdSet[String(id)] = true; });
+
+    // เอาออกจาก poDetailCart: รายการที่เคยดึงเข้ามาจากตารางนี้ แต่ตอนนี้ถูกเลิกติ๊กแล้ว
+    inprogressPrDetailList.forEach(function(d){
+        var prDetailId = String(d.pr_detail_id);
+        if (selectedIdSet[prDetailId]) return;
+
+        for (var i = poDetailCart.length - 1; i >= 0; i--) {
+            var cartItem = poDetailCart[i];
+            if (!cartItem.sources) continue;
+
+            var srcIdx = cartItem.sources.findIndex(function (s) {
+                return String(s.prDetailId) === prDetailId;
+            });
+            if (srcIdx === -1) continue;
+
+            var removedQty = Number(cartItem.sources[srcIdx].qty) || 0;
+            cartItem.sources.splice(srcIdx, 1);
+
+            if (cartItem.sources.length === 0) {
+                poDetailCart.splice(i, 1);
+            } else {
+                cartItem.qty = Math.max(0, (Number(cartItem.qty) || 0) - removedQty);
+                cartItem.total = cartItem.qty * (Number(cartItem.price) || 0);
+            }
+        }
+    });
+
+    // รายการที่ดึงมาจาก Search PR ทั้งหมดเป็นของใหม่ (ยังไม่ save ลง DB)
+    selectedIds.forEach(function(prDetailId){
+        var src = inprogressPrDetailList.find(function(d){ return String(d.pr_detail_id) === String(prDetailId); });
+        if (!src) return;
+
+        var qty = Number(src.amount_total) || 0;
+        var price = Number(src.unit_price) || 0;
+
+        var sourceEntry = {
+            prId: src.pr_id,
+            prDetailId: src.pr_detail_id,
+            mrId: src.mr_id || '',
+            qty: qty,
+            unitName: src.unit_name || '',
+            refLink: src.ref_link || '',
+            creatorName: (src.user_create_emp_id ? src.user_create_emp_id + ' - ' : '') + (src.user_create_name || ''),
+            savedAt: formatNowDateTime(src.time_create)
+        };
+
+        // group ตาม productId เฉพาะกับรายการใหม่ใน poDetailCart (ไม่ยุ่งกับ existingPoDetailList)
+        var existingIndex = poDetailCart.findIndex(function(it){
+            return String(it.productId) === String(src.product_id);
+        });
+
+        if (existingIndex >= 0) {
+            var existing = poDetailCart[existingIndex];
+
+            var alreadyAdded = (existing.sources || []).some(function(s){
+                return String(s.prDetailId) === String(src.pr_detail_id);
+            });
+            if (alreadyAdded) return;
+
+            existing.sources = existing.sources || [];
+            existing.sources.push(sourceEntry);
+            existing.qty = (Number(existing.qty) || 0) + qty;
+            existing.total = existing.qty * (Number(existing.price) || 0);
+        } else {
+            var item = {
+                itemsType: mapDbItemsTypeToSelect(src.product_type),
+                itemsTypeText: getCategoryIcon(src.product_type).name,
+                productId: src.product_id,
+                productName: src.product_name || '',
+                qty: qty,
+                unit: src.unit,
+                unitName: src.unit_name || '',
+                price: price,
+                description: '',
+                sources: [sourceEntry]
+            };
+            item.total = item.qty * item.price;
+            poDetailCart.push(item);
+        }
+    });
+
+    saveCartToSession();
+    renderPoDetailCart();
+
+    if (document.activeElement) {
+        document.activeElement.blur();
+    }
+
+    var modalEl = document.getElementById('modal_search_pr');
+    bootstrap.Modal.getOrCreateInstance(modalEl).hide();
+});
 
 </script>
 

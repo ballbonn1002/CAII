@@ -102,33 +102,40 @@ public class PoParentDAOImpl implements PoParentDAO {
 	@Override
 	public List<Map<String, Object>> findPoParentByPoDetailId(String poDetailId) throws Exception {
 
-	    List<Map<String, Object>> poParentList = new ArrayList<>();
+		List<Map<String, Object>> poParentList = new ArrayList<>();
 
-	    try {
-	        Session session = sessionFactory.getCurrentSession();
+		try {
+			Session session = sessionFactory.getCurrentSession();
 
-	        String sql = "SELECT po.*, " +
-	        		"uc.employee_id AS userEmployeeId, " +
-	                "uc.name_en AS user_create_nameEN, " +
-	                "uc.name AS user_create_name, " +
-	                "uu.name_en AS user_update_name " +
-	                "FROM po_parent po " +
-	                "LEFT JOIN user uc ON po.user_create = uc.id " +
-	                "LEFT JOIN user uu ON po.user_update = uu.id " +
-	                "WHERE po.po_detail_id = :poDetailId";
+			String sql = "SELECT po.*, " +
+					"uc.employee_id AS userEmployeeId, " +
+					"uc.name_en AS user_create_nameEN, " +
+					"uc.name AS user_create_name, " +
+					"uu.name_en AS user_update_name, " +
+					"(SELECT prd.ref_link FROM pr_detail prd " +
+					" WHERE prd.pr_id = po.pr_id AND prd.product_id = po.product_id " +
+					" ORDER BY prd.pr_detail_id LIMIT 1) AS ref_link, " +
+					"(SELECT prd.time_create FROM pr_detail prd " +
+					" WHERE prd.pr_id = po.pr_id AND prd.product_id = po.product_id " +
+					" ORDER BY prd.pr_detail_id LIMIT 1) AS pr_time_create " +
+					"FROM po_parent po " +
+					"LEFT JOIN user uc ON po.user_create = uc.id " +
+					"LEFT JOIN user uu ON po.user_update = uu.id " +
+					"WHERE po.po_detail_id = :poDetailId " +
+					"ORDER BY po.time_create ASC";
 
-	        SQLQuery query = session.createSQLQuery(sql);
-	        query.setParameter("poDetailId", poDetailId);
-	        query.setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
+			SQLQuery query = session.createSQLQuery(sql);
+			query.setParameter("poDetailId", poDetailId);
+			query.setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
 
-	        poParentList = query.list();
+			poParentList = query.list();
 
-	    } catch (Exception e) {
-	        e.printStackTrace();
-	        throw e;
-	    }
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw e;
+		}
 
-	    return poParentList;
+		return poParentList;
 	}
 	
 	@Override
