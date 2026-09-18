@@ -1269,7 +1269,15 @@ jQuery(document).ready(function() {
      NEW: LINE LIFF
      ===================================================================== --%>
 <style>
-.liff-shell { width: calc(100% - 32px); max-width: 393px; margin: 0 auto; }
+.liff-shell {
+	/* ค่ากลางของ spacing */
+	--liff-gutter: 1.5rem;      /* padding ซ้าย-ขวามาตรฐานของการ์ด (เทียบเท่า px-4) */
+	--liff-bullet-w: 3px;       /* ความกว้างแถบสีซ้ายของแต่ละแถว (.bullet.bullet-vertical) */
+	--liff-col-w: 60px;         /* ความกว้าง column เวลา check-in/check-out */
+	--liff-inout-gap: 7px;      /* ระยะห่างไอคอนกับตัวเลขเวลาใน column เดียวกัน */
+	--liff-week-gap: 1.25rem;   /* gap ระหว่างปุ่ม Week */
+	width: calc(100% - 32px); max-width: 393px; margin: 0 auto;
+}
 #weekButtonsRow .btn-danger:hover,
 #weekButtonsRow .btn-danger:focus,
 #weekButtonsRow .btn-danger:active { background-color: var(--bs-danger) !important; border-color: var(--bs-danger) !important; color: #fff !important; }
@@ -1448,34 +1456,18 @@ jQuery(document).ready(function() {
 
 			</div>
 			<div class="card-body">
-				<div class="mb-9" style="padding-left:calc(1.5rem + 3px); padding-right:1.5rem;">
-					<div id="weekButtonsRow" class="d-flex justify-content-center" style="gap:1.25rem;">
+				<div class="mb-9" style="padding-left:calc(var(--liff-gutter) + var(--liff-bullet-w)); padding-right:var(--liff-gutter);">
+					<div id="weekButtonsRow" class="d-flex justify-content-center" style="gap:var(--liff-week-gap);">
 					</div>
 				</div>
-				<!-- ===== OLD: table-based Check List rows (commented out, kept for reference — replaced with card-list below)
-				<div class="table-responsive">
-					<table id="calendarTable"
-						class="table table-row-bordered table-row-gray-300 gy-7">
-						<thead>
-							<tr class="fw-bold fs-7 text-gray-500">
-								<th class="min-w-120px">DATE</th>
-								<th class="min-w-120px">IN</th>
-								<th class="min-w-120px">OUT</th>
-							</tr>
-						</thead>
-						<tbody id="calendarTableBody">
-						</tbody>
-					</table>
-				</div>
-				===== END: OLD table-based Check List rows ===== -->
 
 				<div class="d-flex align-items-stretch mb-3">
-					<span class="w-3px" style="visibility:hidden;"></span>
+					<span style="width:var(--liff-bullet-w); visibility:hidden;"></span>
 					<div class="d-flex justify-content-between px-4 flex-fill">
 						<span class="fs-8 fw-bold text-gray-500 text-uppercase">Date</span>
 						<div class="d-flex gap-5">
-							<span class="fs-8 fw-bold text-gray-500 text-uppercase" style="min-width:60px; text-align:center;">In</span>
-							<span class="fs-8 fw-bold text-gray-500 text-uppercase" style="min-width:60px; text-align:center;">Out</span>
+							<span class="fs-8 fw-bold text-gray-500 text-uppercase" style="min-width:var(--liff-col-w); text-align:center;">In</span>
+							<span class="fs-8 fw-bold text-gray-500 text-uppercase" style="min-width:var(--liff-col-w); text-align:center;">Out</span>
 						</div>
 					</div>
 				</div>
@@ -1912,31 +1904,31 @@ var AppCalendar = function() {
     	}
     }
 
+	const WORK_TYPE_ICON_MAP = {
+		1: { name: 'ki-map',    paths: 3, color: 'text-primary' },
+		2: { name: 'ki-home-2', paths: 2, color: 'text-success' },
+		3: { name: 'ki-cube-2', paths: 3, color: 'text-danger' }
+	};
+	
+	function getWorkTypeIconHtml(type, size, colorClass) {
+		const icon = WORK_TYPE_ICON_MAP[Number(type)];
+		if (!icon) return '';
+		let spans = '';
+		for (let i = 1; i <= icon.paths; i++) { spans += '<span class="path' + i + '"></span>'; }
+		return '<i class="ki-duotone ' + icon.name + ' ' + size + ' ' + (colorClass || icon.color) + ' me-1 align-middle">' + spans + '</i> ';
+	}
+
+	function getDescriptionHtml(text) {
+		if (!text) return '';
+		return '<i class="ki-duotone ki-message-text-2 fs-2 text-gray-500 me-1 align-middle">' +
+			'<span class="path1"></span><span class="path2"></span><span class="path3"></span></i>' +
+			'<span class="fs-6 fw-400">' + text.trim() + '</span>';
+	}
+
 	// Helper: (Check-In/Out) format event title
 	function getEventTitle(status, checkin, checkout, typein, typeout) {
-		var workTypeIn = "";
-        var workTypeOut = "";
-
-        if(typein == '1'){
-			workTypeIn = '<i class="ki-duotone ki-delivery-door fs-2 me-1 text-light align-middle">' +
-				'<span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span></i>';
-		}else if(typein == '2'){
-			workTypeIn = '<i class="ki-duotone ki-home fs-2 me-1 text-light align-middle">' +
-                '</i> '
-        }else if(typein == '3'){
-			workTypeIn = '<i class="ki-duotone ki-cube-2 fs-2 me-1 text-light align-middle">' +
-                '<span class="path1"></span><span class="path2"></span><span class="path3"></span></i> '
-		}
-		if(typeout == '1'){
-			workTypeOut = '<i class="ki-duotone ki-delivery-door fs-2 me-1 text-light align-middle">' +
-				'<span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span></i>';
-		}else if(typeout == '2'){
-			workTypeOut = '<i class="ki-duotone ki-home fs-2 me-1 text-light align-middle">' +
-                '</i> '
-		}else if(typeout == '3'){
-			workTypeOut = '<i class="ki-duotone ki-cube-2 fs-2 me-1 text-light align-middle">' +
-            '<span class="path1"></span><span class="path2"></span><span class="path3"></span></i> '
-		}
+		const workTypeIn = getWorkTypeIconHtml(typein, 'fs-2', 'text-light');
+		const workTypeOut = getWorkTypeIconHtml(typeout, 'fs-2', 'text-light');
 
         if (status === 'INCOMPLETE') {
 	        var incTime = (checkin && checkin !== '' && checkin !== 'null') ? checkin.substring(11, 16) : '--:--';
@@ -1972,6 +1964,58 @@ var AppCalendar = function() {
                'Status: ' + status;
     }
 
+	function filterDayEvents(events, day, dayStr) {
+		return events.filter(function(ev) {
+			if ((ev.extendedProps && ev.extendedProps.leave_type_id) ||
+				(ev.classNames && ev.classNames.includes('fc-event-secondary'))) {
+				const evStart = moment(ev.start);
+				const evEnd = ev.end ? moment(ev.end).subtract(1, 'days') : evStart.clone();
+				return day.isSameOrAfter(evStart, 'day') && day.isSameOrBefore(evEnd, 'day');
+			}
+			return moment(ev.start).format('dd D MMM') === dayStr;
+		});
+	}
+
+	function pickFirstInLastOut(workList) {
+		let allItems = [];
+		workList.forEach(function(workEvent) {
+			const props = workEvent.extendedProps;
+			const dataList = (props.checkinList && props.checkinList.length > 0) ? props.checkinList : [props];
+			allItems = allItems.concat(dataList);
+		});
+
+		let earliestCheckinItem = null;
+		let latestCheckoutItem = null;
+		allItems.forEach(function(item) {
+			if (item.checkin && (!earliestCheckinItem || item.checkin < earliestCheckinItem.checkin)) {
+				earliestCheckinItem = item;
+			}
+			if (item.checkout && (!latestCheckoutItem || item.checkout > latestCheckoutItem.checkout)) {
+				latestCheckoutItem = item;
+			}
+		});
+		return { earliestCheckinItem: earliestCheckinItem, latestCheckoutItem: latestCheckoutItem };
+	}
+
+	
+	function buildInOutColumnHtml(iconHtml, time) {
+		if (!time) return '';
+		return '<div style="display:flex;flex-direction:column;align-items:center;gap:var(--liff-inout-gap);">' + iconHtml + '<span class="fw-bold fs-6 text-capitalize lh-1" style="letter-spacing:0;">' + time + '</span></div>';
+	}
+
+	function buildDayRowHtml(weekIndex, rowStyle, iconClass, dayStr, statusHtml, checkinHtml, checkoutHtml) {
+		let html = '<div class="calendar-day-card card mb-3 ' + rowStyle + '" data-week="' + weekIndex + '">';
+		html += '<div class="d-flex align-items-stretch">';
+		html += '<span class="bullet bullet-vertical ' + iconClass + '" style="width:var(--liff-bullet-w);"></span>';
+		html += '<div class="card-body d-flex align-items-center justify-content-between py-3 px-4 flex-fill">';
+		html += '<div><span class="day-date">' + dayStr + '</span>' + (statusHtml ? '<br/><span style="display:inline-block;margin-top:10px;">' + statusHtml + '</span>' : '') + '</div>';
+		html += '<div class="d-flex gap-5">';
+		html += '<div style="display:flex;flex-direction:column;align-items:center;min-width:var(--liff-col-w);">' + checkinHtml + '</div>';
+		html += '<div style="display:flex;flex-direction:column;align-items:center;min-width:var(--liff-col-w);">' + checkoutHtml + '</div>';
+		html += '</div></div></div></div>';
+		return html;
+	}
+
 	// Populate calendar checklist
 	function populateCheckList(view) {
 		var events = calendar.getEvents();
@@ -1988,37 +2032,17 @@ var AppCalendar = function() {
 		for (var day = start.clone(); day.isBefore(end); day.add(1, 'days')) {
 			var dayStr = day.format('dd D MMM');
 			var dayName = day.format('dd');
-
-			var dayEvents = events.filter(function(ev) {
-                if (ev.extendedProps && ev.extendedProps.leave_type_id) {
-                    var evStart = moment(ev.start);
-                    var evEnd = ev.end ? moment(ev.end).subtract(1, 'days') : evStart.clone();
-                    return day.isSameOrAfter(evStart, 'day') && day.isSameOrBefore(evEnd, 'day');
-                }
-                else if(ev.classNames && ev.classNames.includes('fc-event-secondary')){
-                	var evStart = moment(ev.start);
-                	var evEnd = ev.end ? moment(ev.end).subtract(1, 'days') : evStart.clone();
-                	return day.isSameOrAfter(evStart, 'day') && day.isSameOrBefore(evEnd, 'day');
-                }
-                else {
-                    return moment(ev.start).format('dd D MMM') === dayStr;
-                }
-            });
+			var dayEvents = filterDayEvents(events, day, dayStr);
 
 			var dayNum = parseInt(day.format('YYYYMMDD'));
 			var weekIndex = Math.floor(day.diff(weekStart, 'days') / 7);
 			if (weekIndex > maxWeek) maxWeek = weekIndex;
 			var todayNum = parseInt(today.format('YYYYMMDD'));
 			var iconClass = getDayIconClass(dayName);
-			var rowStyle = "";
+			var rowStyle = (dayName === 'Sa' || dayName === 'Su') ? "bg-light" : "";
 
-			if (dayName === 'Sa' || dayName === 'Su') {
-				rowStyle = "bg-light";
-			}
-			var isHolidayEvent = dayEvents.some(function(ev) {
-				return ev.classNames.includes('fc-event-secondary');
-			});
-			if (isHolidayEvent) {
+			var holidayEvent = dayEvents.find(function(ev) { return ev.classNames.includes('fc-event-secondary'); });
+			if (holidayEvent) {
 				rowStyle = "bg-light";
 			}
 
@@ -2026,111 +2050,59 @@ var AppCalendar = function() {
 				return ev.extendedProps && ev.extendedProps.eventType === 'work';
 			});
 			var statusHtmlList = [];
-
-			var holidayEvent = dayEvents.find(function(ev) { return ev.classNames.includes('fc-event-secondary'); });
 			if (holidayEvent) {
 				statusHtmlList.push(getHolidayStatusHTML(holidayEvent));
 			}
 
 			var leaveEvents = dayEvents.filter(function(ev) { return ev.extendedProps && ev.extendedProps.leave_type_id; });
-			if (leaveEvents.length > 0) {
-				leaveEvents.forEach(function(leave) {
-					statusHtmlList.push(getLeaveStatusHTML(leave));
-				});
-			}
+			leaveEvents.forEach(function(leave) {
+				statusHtmlList.push(getLeaveStatusHTML(leave));
+			});
 
+			var rowHtml;
 			if (workList.length > 0) {
-				var combinedCheckinHtml = "";
-				var combinedCheckoutHtml = "";
-
-				var mainProps = workList[0].extendedProps;
-				var workingHourVal = mainProps.workinghour || '';
-				var statusVal = mainProps.status || '';
+				const statusVal = workList[0].extendedProps.status || '';
 				if (statusVal && statusVal !== 'NO_RECORD') {
 					statusHtmlList.push(getWorkStatusHTML(statusVal));
 				}
-				workList.forEach(function(workEvent, index) {
-					var props = workEvent.extendedProps;
-					var dataList = (props.checkinList && props.checkinList.length > 0) ? props.checkinList : [props];
 
-					dataList.forEach(function(item, itemIndex) {
-						// --- Logic Check-in ---
-						var typeIn = Number(item.workTypeIn);
-						var iconIn = "";
-						if (typeIn === 1) iconIn = '<i class="ki-duotone ki-map text-primary fs-2x me-1 align-middle"><span class="path1"></span><span class="path2"></span><span class="path3"></span></i> ';
-						else if (typeIn === 2) iconIn = '<i class="ki-duotone ki-home-2 fs-2x text-success me-1 align-middle"><span class="path1"></span><span class="path2"></span></i> ';
-						else if (typeIn === 3) iconIn = '<i class="ki-duotone ki-cube-2 fs-2x text-danger me-1 align-middle"><span class="path1"></span><span class="path2"></span><span class="path3"></span></i> ';
-						var rawCheckin = item.checkin || '';
-						var timeIn = rawCheckin.length >= 16 ? rawCheckin.substring(11, 16) : '';
-						var desIn = item.descriptionIn ? '<i class="ki-duotone ki-message-text-2 fs-2 text-gray-500 me-1 align-middle">'+
-							'<span class="path1"></span><span class="path2"></span><span class="path3"></span></i><span class="fs-6 fw-400">' + item.descriptionIn.trim() + '</span>' : '';
+				const { earliestCheckinItem, latestCheckoutItem } = pickFirstInLastOut(workList);
 
-						if (timeIn) {
-							var spacer = itemIndex > 0 ? '<div class="separator separator-dashed my-1"></div>' : '';
-							combinedCheckinHtml += spacer + '<div style="display:flex;flex-direction:column;align-items:center;gap: 7px;">' + iconIn + '<span class="fw-bold fs-6 text-capitalize lh-1" style="letter-spacing:0;">' + timeIn + '</span></div><small class="text-muted">' + desIn + '</small>';
-						}
+				let combinedCheckinHtml = "";
+				if (earliestCheckinItem) {
+					const timeIn = earliestCheckinItem.checkin && earliestCheckinItem.checkin.length >= 16 ? earliestCheckinItem.checkin.substring(11, 16) : '';
+					combinedCheckinHtml = buildInOutColumnHtml(
+						getWorkTypeIconHtml(earliestCheckinItem.workTypeIn, 'fs-2x'),
+						timeIn
+					);
+				}
 
-						// --- Logic Check-out ---
-						var typeOut = Number(item.workTypeOut);
-						var iconOut = "";
-						if (typeOut === 1) iconOut = '<i class="ki-duotone ki-map fs-2x text-primary me-1 align-middle"><span class="path1"></span><span class="path2"></span><span class="path3"></span></i> ';
-						else if (typeOut === 2) iconOut = '<i class="ki-duotone ki-home-2 fs-2x text-success me-1 align-middle"><span class="path1"></span><span class="path2"></span></i> ';
-						else if (typeOut === 3) iconOut = '<i class="ki-duotone ki-cube-2 fs-2x text-danger me-1 align-middle"><span class="path1"></span><span class="path2"></span><span class="path3"></span></i> ';
-						var rawCheckout = item.checkout || '';
-						var timeOut = rawCheckout ? rawCheckout.substring(0, 5) : '';
-						//var timeOut = props.checkout ? props.checkout.substring(0, 5) : '';
-						var desOut = item.descriptionOut ? '<i class="ki-duotone ki-message-text-2 fs-2 text-gray-500 me-1 align-middle">'+
-								'<span class="path1"></span><span class="path2"></span><span class="path3"></span></i><span class="fs-6 fw-400">' + item.descriptionOut + '</span>' : '';
+				let combinedCheckoutHtml = "";
+				if (latestCheckoutItem) {
+					const timeOut = latestCheckoutItem.checkout ? latestCheckoutItem.checkout.substring(0, 5) : '';
+					combinedCheckoutHtml = buildInOutColumnHtml(
+						getWorkTypeIconHtml(latestCheckoutItem.workTypeOut, 'fs-2x'),
+						timeOut
+					);
+				}
 
-						if (timeOut) {
-							var spacer = itemIndex > 0 ? '<div class="separator separator-dashed my-1"></div>' : '';
-							combinedCheckoutHtml += spacer + '<div style="display:flex;flex-direction:column;align-items:center;gap: 7px;">' + iconOut + '<span class="fw-bold fs-6 text-capitalize lh-1" style="letter-spacing:0;">' + timeOut + '</span></div><small class="text-muted">' + desOut + '</small>';
-						}
-					});
-				});
-
-				// Format Working Hours
-
-				var finalStatusHtml = statusHtmlList.join('<div class="mb-1"></div>');
-
-				var rowHtml = '<div class="calendar-day-card card mb-3 ' + rowStyle + '" data-week="' + weekIndex + '">';
-				rowHtml += '<div class="d-flex align-items-stretch">';
-				rowHtml += '<span class="bullet bullet-vertical w-3px ' + iconClass + '"></span>';
-				rowHtml += '<div class="card-body d-flex align-items-center justify-content-between py-3 px-4 flex-fill">';
-				rowHtml += '<div><span class="day-date">' + dayStr + '</span><br/><span style="display:inline-block;margin-top:10px;">' + finalStatusHtml + '</span></div>';
-				rowHtml += '<div class="d-flex gap-5">';
-				rowHtml += '<div style="display:flex;flex-direction:column;align-items:center;min-width:60px;">' + combinedCheckinHtml + '</div>';
-				rowHtml += '<div style="display:flex;flex-direction:column;align-items:center;min-width:60px;">' + combinedCheckoutHtml + '</div>';
-				rowHtml += '</div></div></div></div>';
-
-				$tableBody.append(rowHtml);
+				const finalStatusHtml = statusHtmlList.join('<div class="mb-1"></div>');
+				rowHtml = buildDayRowHtml(weekIndex, rowStyle, iconClass, dayStr, finalStatusHtml, combinedCheckinHtml, combinedCheckoutHtml);
 
 			} else {
-				var status = '';
-				var holidayEvent = dayEvents.find(function(ev) { return ev.classNames.includes('fc-event-secondary'); });
 				var leaveEvent = dayEvents.find(function(ev) { return ev.extendedProps && ev.extendedProps.leave_type_id; });
+				var status = '';
 				if (holidayEvent) {
 					status = getHolidayStatusHTML(holidayEvent);
 				} else if (leaveEvent) {
 					status = getLeaveStatusHTML(leaveEvent);
-				} else {
-					if (dayNum <= todayNum) {
-						if (dayName !== 'Sa' && dayName !== 'Su') {
-							status = getWorkStatusHTML('NO_RECORD');
-						}
-					}
+				} else if (dayNum <= todayNum && dayName !== 'Sa' && dayName !== 'Su') {
+					status = getWorkStatusHTML('NO_RECORD');
 				}
-
-				var rowHtml = '<div class="calendar-day-card card mb-3 ' + rowStyle + '" data-week="' + weekIndex + '">';
-				rowHtml += '<div class="d-flex align-items-stretch">';
-				rowHtml += '<span class="bullet bullet-vertical w-3px ' + iconClass + '"></span>';
-				rowHtml += '<div class="card-body d-flex align-items-center justify-content-between py-3 px-4 flex-fill">';
-				rowHtml += '<div><span class="day-date">' + dayStr + '</span>' + (status ? '<br/><span style="display:inline-block;margin-top:10px;">' + status + '</span>' : '') + '</div>';
-				rowHtml += '<div class="d-flex gap-5"><div style="min-width:60px;"></div><div style="min-width:60px;"></div></div>';
-				rowHtml += '</div></div></div>';
-
-				$tableBody.append(rowHtml);
+				rowHtml = buildDayRowHtml(weekIndex, rowStyle, iconClass, dayStr, status, '', '');
 			}
+
+			$tableBody.append(rowHtml);
 		}
 		return maxWeek + 1;
 	}
