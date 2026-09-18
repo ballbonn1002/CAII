@@ -1723,22 +1723,32 @@ document.addEventListener("DOMContentLoaded", function(){
 </perm:permission>
 // ----------------- END Search -----------------
 </script>
+<%!
+// กัน JS string literal และ กัน HTML injection จาก free-text field (description)
+private String escFreeText(String s) {
+	if (s == null) return "";
+	return s.replace("\\", "\\\\")
+			.replace("\r\n", " ").replace("\n", " ").replace("\r", " ")
+			.replace("'", "\\'")
+			.replace("&", "&amp;")
+			.replace("<", "&lt;")
+			.replace(">", "&gt;")
+			.replace("\"", "&quot;");
+}
+%>
 <script> // ----------- Calendar & Checklist -----------------
 "use strict";
 // ----------- Calendar -----------------
 // Calendar Application Class
 var AppCalendar = function() {
-	<%pageContext.setAttribute("sq", "'");%>
-	<%pageContext.setAttribute("esq", "\\'");%>
 	// Holiday Events
 	function buildHolidayEvents() {
         var events = [];
         <c:forEach var="holiday" items="${allholiday}">
-        <c:set var = "holidayDesc" value = "${holiday.description}"/>
-        	<%pageContext.setAttribute("newline", "\r\n");%>
-        <c:set var = "holidayDescClean" value = "${fn:replace(holidayDesc,newline,'')}" />
-        <c:set var = "holidayDescClean" value = "${fn:replace(holidayDescClean,sq,esq)}" />
-        <c:set var = "holidayHeadClean" value = "${fn:replace(holiday.head,sq,esq)}" />
+        <c:set var = "rawHolidayDesc" value = "${holiday.description}"/>
+        <% pageContext.setAttribute("holidayDescClean", escFreeText((String) pageContext.getAttribute("rawHolidayDesc"))); %>
+        <c:set var = "rawHolidayHead" value = "${holiday.head}"/>
+        <% pageContext.setAttribute("holidayHeadClean", escFreeText((String) pageContext.getAttribute("rawHolidayHead"))); %>
             events.push({
                 id: '${holiday.id_date}',
                 title: '${holidayHeadClean}',
@@ -1762,8 +1772,10 @@ var AppCalendar = function() {
 
 	    <c:forEach var="work" items="${workList}" varStatus="status">
 	        var dateKey = '${work["DATE(work_hours_time_work)"]}';
-	        <c:set var = "descriptionInClean" value = "${fn:replace(work.descriptionIn,sq,esq)}" />
-	        <c:set var = "descriptionOutClean" value = "${fn:replace(work.descriptionOut,sq,esq)}" />
+	        <c:set var = "rawDescIn" value = "${work.descriptionIn}" />
+	        <% pageContext.setAttribute("descriptionInClean", escFreeText((String) pageContext.getAttribute("rawDescIn"))); %>
+	        <c:set var = "rawDescOut" value = "${work.descriptionOut}" />
+	        <% pageContext.setAttribute("descriptionOutClean", escFreeText((String) pageContext.getAttribute("rawDescOut"))); %>
 
 	        if (dateKey && dateKey !== '') {
 	            if (!dailyData[dateKey]) {
@@ -1850,10 +1862,8 @@ var AppCalendar = function() {
 	function buildLeaveEvents() {
         var events = [];
         <c:forEach var="leave" items="${leave}">
-        <c:set var = "leaveDesc" value = "${leave.description}"/>
-        	<%pageContext.setAttribute("newline", "\r\n");%>
-        <c:set var = "leaveDescClean" value = "${fn:replace(leaveDesc,newline,'')}" />
-        <c:set var = "leaveDescClean" value = "${fn:replace(leaveDescClean,sq,esq)}" />
+        <c:set var = "rawLeaveDesc" value = "${leave.description}"/>
+        <% pageContext.setAttribute("leaveDescClean", escFreeText((String) pageContext.getAttribute("rawLeaveDesc"))); %>
             if (${leave.leave_status_id} != 3 && ${leave.leave_status_id} != 2) {
                 var leaveType = '${leave.leave_type_name}';
                 var color = leaveType === 'ลาป่วย' ?
@@ -1916,13 +1926,6 @@ var AppCalendar = function() {
 		let spans = '';
 		for (let i = 1; i <= icon.paths; i++) { spans += '<span class="path' + i + '"></span>'; }
 		return '<i class="ki-duotone ' + icon.name + ' ' + size + ' ' + (colorClass || icon.color) + ' me-1 align-middle">' + spans + '</i> ';
-	}
-
-	function getDescriptionHtml(text) {
-		if (!text) return '';
-		return '<i class="ki-duotone ki-message-text-2 fs-2 text-gray-500 me-1 align-middle">' +
-			'<span class="path1"></span><span class="path2"></span><span class="path3"></span></i>' +
-			'<span class="fs-6 fw-400">' + text.trim() + '</span>';
 	}
 
 	// Helper: (Check-In/Out) format event title
@@ -2456,7 +2459,7 @@ function leaveStatus(id) {
 			$('#ucName').html(obj.ucName);
 			$('#stime').html(obj.start_time);
 			$('#etime').html(obj.end_time);
-			$('#desc').html(obj.description);
+			$('#desc').text(obj.description);
 
 			if(obj.leave_file_id == null || obj.leave_file_id == ""){
 				$('#file').html("No file");
