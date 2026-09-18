@@ -1445,12 +1445,12 @@ jQuery(document).ready(function() {
 		<div class="card flex-row-fluid mb-5" style="min-width:0;">
 			<div class="card-header pt-10" style="border-bottom: none;">
 				<div id="calendarMonthYearRow" class="d-flex align-items-center justify-content-between w-100">
-					<a href="#" id="calendarPrevBtn">
-						<i class="ki-duotone ki-left-square fs-3x text-muted"><span class="path1"></span><span class="path2"></span></i>
+					<a href="#" id="calendarPrevBtn" class="d-inline-flex" style="padding:12px; margin:-12px;">
+						<i class="ki-duotone ki-left-square fs-2x text-muted"><span class="path1"></span><span class="path2"></span></i>
 					</a>
 					<h3 id="calendarMonthYear" class="fs-6 fw-bold mb-0"></h3>
-					<a href="#" id="calendarNextBtn">
-						<i class="ki-duotone ki-right-square fs-3x text-muted"><span class="path1"></span><span class="path2"></span></i>
+					<a href="#" id="calendarNextBtn" class="d-inline-flex" style="padding:12px; margin:-12px;">
+						<i class="ki-duotone ki-right-square fs-2x text-muted"><span class="path1"></span><span class="path2"></span></i>
 					</a>
 				</div>
 
@@ -2307,8 +2307,8 @@ var AppCalendar = function() {
     }
 
 	function filterWeek(weekIndex) {
-		$('#weekButtonsRow button').removeClass('btn-danger').addClass('btn-light');
-		$('#weekButtonsRow button[data-week="' + weekIndex + '"]').removeClass('btn-light').addClass('btn-danger');
+		$('#weekButtonsRow button').removeClass('btn-danger').addClass('bg-transparent border-0 text-gray-700');
+		$('#weekButtonsRow button[data-week="' + weekIndex + '"]').removeClass('bg-transparent border-0 text-gray-700').addClass('btn-danger');
 		$('#calendarTableBody .calendar-day-card').hide();
 		$('#calendarTableBody .calendar-day-card[data-week="' + weekIndex + '"]').show();
 	}
@@ -2329,7 +2329,7 @@ var AppCalendar = function() {
 		}
 
 		for (var w = 0; w < weekCount; w++) {
-			var btnClass = (w === defaultWeek) ? 'btn-danger' : 'btn-light';
+			var btnClass = (w === defaultWeek) ? 'btn-danger' : 'bg-transparent border-0 text-gray-700';
 			$row.append(
 				$('<button type="button" class="btn btn-sm ' + btnClass + ' d-flex flex-column align-items-center lh-1 gap-2" style="border-radius:600px; width:45px; height:62px; justify-content:center;" data-week="' + w + '"><span class="fs-9 fw-semibold">Week</span><span class="fs-6 fw-bold">' + (w + 1) + '</span></button>')
 			);
