@@ -1284,6 +1284,8 @@ jQuery(document).ready(function() {
 .calendar-day-card { border: none; box-shadow: none; border-radius: 0; overflow: hidden; }
 .calendar-day-card .bullet-vertical { height: auto !important; align-self: stretch; border-radius: 0; }
 .calendar-day-card .day-date { font-weight: 600; font-size: 12.9px; line-height: 19.35px; letter-spacing: 0px; }
+.liff-shell .fs-2x { font-size: 28px !important; }
+.liff-shell .fs-2  { font-size: 20px !important; }
 </style>
 
 <div class="liff-shell">
@@ -1571,14 +1573,6 @@ jQuery(document).ready(function() {
 							<i class="ki-duotone ki-calendar-2 fs-2 me-2"> <span
 								class="path1"></span> <span class="path2"></span>
 							</i><span id="timeUpdate"></span>
-						</div>
-					</div>
-
-					<div class="row mb-5 fs-6 fw-medium">
-						<div class="col-md-6">
-							<i class="ki-duotone ki-document fs-2 me-2"> <span
-								class="path1"></span> <span class="path2"></span>
-							</i>No description
 						</div>
 					</div>
 				</div>
@@ -2071,7 +2065,7 @@ var AppCalendar = function() {
 				if (earliestCheckinItem) {
 					const timeIn = earliestCheckinItem.checkin && earliestCheckinItem.checkin.length >= 16 ? earliestCheckinItem.checkin.substring(11, 16) : '';
 					combinedCheckinHtml = buildInOutColumnHtml(
-						getWorkTypeIconHtml(earliestCheckinItem.workTypeIn, 'fs-2x'),
+						getWorkTypeIconHtml(earliestCheckinItem.workTypeIn, 'fs-2'),
 						timeIn
 					);
 				}
@@ -2080,7 +2074,7 @@ var AppCalendar = function() {
 				if (latestCheckoutItem) {
 					const timeOut = latestCheckoutItem.checkout ? latestCheckoutItem.checkout.substring(0, 5) : '';
 					combinedCheckoutHtml = buildInOutColumnHtml(
-						getWorkTypeIconHtml(latestCheckoutItem.workTypeOut, 'fs-2x'),
+						getWorkTypeIconHtml(latestCheckoutItem.workTypeOut, 'fs-2'),
 						timeOut
 					);
 				}
@@ -2295,7 +2289,7 @@ var AppCalendar = function() {
         if (leaveEvent.extendedProps && leaveEvent.extendedProps.leave_file) {
             var fileUrl = "${pageContext.request.contextPath}" + leaveEvent.extendedProps.leave_file;
             statusLeave += "&nbsp;<a href='" + fileUrl + "' target='_blank' class='text-primary'>" +
-            			"<i class='ki-duotone ki-document fs-2x text-primary align-middle'>" +
+            			"<i class='ki-duotone ki-document fs-2 text-primary align-middle'>" +
                 		"<i class='path1'></i><i class='path2'></i>" +
             			"</i> " + "</a>";
         }

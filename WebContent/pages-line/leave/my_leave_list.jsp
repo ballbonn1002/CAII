@@ -6,6 +6,10 @@
 <fmt:setLocale value="en_US" />
 <fmt:setTimeZone value="Asia/Bangkok" />
 
+<%-- =====================================================================
+     OLD: desktop My Leave list (disabled, kept for reference)
+     ===================================================================== --%>
+<%--
 <!--begin::Main-->
 <div class="app-main flex-column flex-row-fluid">
 	<div class="d-flex flex-column flex-column-fluid">
@@ -102,6 +106,7 @@
 							<div class="card-body">
 								<div class="row g-5">
 									<!-- ลาพักร้อน -->
+								--%>
 								<%-- 	<div class="col-6 col-xs-4 col-sm-4 col-md-4 col-xl-3">
 										<div class="d-flex align-items-center">
 											<div class="symbol symbol-50px me-4">
@@ -126,6 +131,7 @@
 											</div>	
 										</div>
 									</div>	 --%>
+<%--
 
 									<!-- ลาพักร้อน + ลากิจ -->
 									<div class="col-6 col-xs-4 col-sm-4 col-md-4 col-xl-3">
@@ -594,7 +600,361 @@
 	</div>
 </div>
 <!--end:::Main-->
+--%>
+<!-- ===== END: old desktop-clone content (commented out) ===== -->
 
+<%-- =====================================================================
+     NEW: LINE LIFF
+     ===================================================================== --%>
+<style>
+.liff-shell {
+	--liff-gutter: 1.5rem;
+	--liff-bullet-w: 3px;
+	width: calc(100% - 32px); max-width: 393px; margin: 0 auto;
+}
+.leave-filter-card .form-select, .leave-filter-card .form-control { font-size: 13px; }
+.card-header .bg-info-subtle:hover { background-color: var(--bs-info) !important; }
+.card-header .bg-info-subtle:hover i { color: var(--bs-info-inverse) !important; }
+.card-header .bg-primary-subtle:hover { background-color: var(--bs-primary) !important; }
+.card-header .bg-primary-subtle:hover i { color: var(--bs-primary-inverse) !important; }
+.card-header .bg-danger-subtle:hover { background-color: var(--bs-danger) !important; }
+.card-header .bg-danger-subtle:hover i { color: var(--bs-danger-inverse) !important; }
+.leave-summary-pager { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+.leave-summary-pager::-webkit-scrollbar { display: none; }
+.leave-summary-page { flex: 0 0 100%; scroll-snap-align: start; min-width: 0; }
+.leave-summary-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; }
+.leave-summary-item { display: flex; align-items: center; gap: 15px; min-width: 0; overflow: hidden; padding-right: 13px; }
+.leave-summary-item .d-flex.flex-column { min-width: 0; overflow: hidden; gap: 4px; }
+.leave-summary-item .text-gray-600 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.leave-summary-dots { display: flex; justify-content: center; gap: 6px; margin-top: 19.5px; }
+.leave-summary-dots span { width: 6px; height: 6px; border-radius: 50%; background: #D9D9E3; transition: background .2s; }
+.leave-summary-dots span.active { background: #1B84FF; }
+</style>
+
+<div class="liff-shell">
+
+	<div class="d-flex justify-content-between align-items-center mb-6 pt-6">
+		<h1 class="fw-medium text-gray-700 mb-0">My Leave</h1>
+		<a href="javascript:void(0)" class="btn btn-sm btn-primary d-inline-flex align-items-center gap-1" onclick="add()">
+			<i class="ki-duotone ki-plus fs-4"></i> Add
+		</a>
+	</div>
+
+	<!-- Filter (same form/name/id as legacy so new_searchfromto + daterangepicker script keep working) -->
+	<div class="card leave-filter-card mb-4">
+		<div class="card-body py-4">
+			<form action="new_searchfromto" method="POST" id="searchForm">
+				<div class="row g-2">
+					<div class="col-6">
+						<select class="form-select form-select-sm" data-placeholder="All Leave Type" name="type" onchange="this.form.submit()">
+							<option value="allType" ${leaveType == 'allType' ? 'selected' : ''}>All Type</option>
+							<c:forEach var="leavetype" items="${leavetypelistChoice}">
+								<option value="${leavetype.leaveTypeId}" ${leaveType == leavetype.leaveTypeId ? 'selected' : ''}>${leavetype.leaveTypeName}</option>
+							</c:forEach>
+						</select>
+					</div>
+					<div class="col-6">
+						<select class="form-select form-select-sm" data-placeholder="All Status" name="appr" id="appr" onchange="this.form.submit()">
+							<option value="4" ${appr == 4 ? 'selected' : ''}>All Status</option>
+							<option value="0" ${appr == 0 ? 'selected' : ''}>Waiting</option>
+							<option value="1" ${appr == 1 ? 'selected' : ''}>Approve</option>
+							<option value="2" ${appr == 2 ? 'selected' : ''}>Reject</option>
+							<option value="3" ${appr == 3 ? 'selected' : ''}>Cancel</option>
+						</select>
+					</div>
+					<div class="col-12">
+						<input id="kt_daterangepicker" class="form-control form-control-sm" placeholder="Pick date range" autocomplete="off"/>
+						<input type="hidden" name="startdate" id="startdate">
+						<input type="hidden" name="enddate" id="enddate">
+					</div>
+				</div>
+			</form>
+		</div>
+	</div>
+
+	<!-- Summary Leave (same EL bindings as legacy, condensed into a scroll strip) -->
+	<div class="mb-6">
+		<div class="card card-bordered">
+		<div class="card-body" style="padding:29.25px;">
+		<div class="leave-summary-pager" id="leaveSummaryPager">
+					<div class="leave-summary-item">
+						<span class="symbol symbol-50px">
+							<span class="symbol-label bg-success-subtle">
+								<i class="ki-duotone ki-airplane text-success" style="font-size:1.75rem;">
+									<span class="path1"></span><span class="path2"></span>
+								</i>
+							</span>
+						</span>
+						<div class="d-flex flex-column">
+							<span class="fw-bold text-gray-800" style="font-size:15.88px; line-height:1.21;">
+								<fmt:formatNumber type="number" pattern="#.##" value="${leave_1}"/>/<fmt:formatNumber type="number" pattern="#.##" value="${quota_1}"/>
+								<c:set var="leaveWA1" value="${empty LeaveWAnumT1 ? 0 : LeaveWAnumT1}" />
+								<c:if test="${leaveWA1 > 0}">
+									<span class="badge badge-sm badge-warning"><fmt:formatNumber type="number" pattern="#.##" value="${leaveWA1}"/></span>
+								</c:if>
+							</span>
+							<span class="text-gray-600" style="font-size:12.35px; line-height:1.21;">${type_1}</span>
+						</div>
+					</div>
+
+					<div class="leave-summary-item">
+						<span class="symbol symbol-50px">
+							<span class="symbol-label bg-primary-subtle">
+								<i class="ki-duotone ki-car-2 text-primary" style="font-size:1.75rem;">
+									<span class="path1"></span><span class="path2"></span><span class="path3"></span>
+									<span class="path4"></span><span class="path5"></span><span class="path6"></span>
+								</i>
+							</span>
+						</span>
+						<div class="d-flex flex-column">
+							<span class="fw-bold text-gray-800" style="font-size:15.88px; line-height:1.21;">
+								<fmt:formatNumber type="number" pattern="#.##" value="${leave_2}"/>/<fmt:formatNumber type="number" pattern="#.##" value="${quota_2}"/>
+								<c:set var="leaveWA2" value="${empty LeaveWAnumT2 ? 0 : LeaveWAnumT2}" />
+								<c:if test="${leaveWA2 > 0}">
+									<span class="badge badge-sm badge-warning"><fmt:formatNumber type="number" pattern="#.##" value="${leaveWA2}"/></span>
+								</c:if>
+							</span>
+							<span class="text-gray-600" style="font-size:12.35px; line-height:1.21;">${type_2}</span>
+						</div>
+					</div>
+
+					<!-- ลาไม่ได้รับค่าจ้างตัดออก -->
+					<!-- <div class="leave-summary-item">
+						<span class="symbol symbol-50px">
+							<span class="symbol-label bg-light-warning">
+								<i class="ki-duotone ki-timer text-warning" style="font-size:1.75rem;">
+									<span class="path1"></span><span class="path2"></span><span class="path3"></span>
+								</i>
+							</span>
+						</span>
+						<div class="d-flex flex-column">
+							<span class="fw-bold text-gray-800" style="font-size:15.88px; line-height:1.21;">
+								<fmt:formatNumber type="number" pattern="#.##" value="${leave_6}"/>
+								<c:if test="${quotaLastYear.doubleValue() > 0}">/<fmt:formatNumber type="number" pattern="#.##" value="${quotaLastYear}"/></c:if>
+								<c:if test="${LeaveWAnumT6.doubleValue() > 0}">
+									<span class="badge badge-sm badge-warning"><fmt:formatNumber type="number" pattern="#.##" value="${LeaveWAnumT6}"/></span>
+								</c:if>
+							</span>
+							<span class="text-gray-600" style="font-size:12.35px; line-height:1.21;">${type_6}</span>
+						</div>
+					</div> -->
+
+					<div class="leave-summary-item">
+						<span class="symbol symbol-50px">
+							<span class="symbol-label bg-light-info">
+								<i class="ki-duotone ki-pulse text-info" style="font-size:1.75rem;">
+									<span class="path1"></span><span class="path2"></span>
+								</i>
+							</span>
+						</span>
+						<div class="d-flex flex-column">
+							<span class="fw-bold text-gray-800" style="font-size:15.88px; line-height:1.21;">
+								<fmt:formatNumber type="number" pattern="#.##" value="${leave_3}"/>
+								<c:if test="${LeaveWAnumT3.doubleValue() > 0}">
+									<span class="badge badge-sm badge-warning"><fmt:formatNumber type="number" pattern="#.##" value="${LeaveWAnumT3}"/></span>
+								</c:if>
+							</span>
+							<span class="text-gray-600" style="font-size:12.35px; line-height:1.21;">${type_3}</span>
+						</div>
+					</div>
+
+					<div class="leave-summary-item">
+						<span class="symbol symbol-50px">
+							<span class="symbol-label bg-light-danger">
+								<i class="ki-duotone ki-calendar-remove text-danger" style="font-size:1.75rem;">
+									<span class="path1"></span><span class="path2"></span><span class="path3"></span>
+									<span class="path4"></span><span class="path5"></span><span class="path6"></span>
+								</i>
+							</span>
+						</span>
+						<div class="d-flex flex-column">
+							<span class="fw-bold text-gray-800" style="font-size:15.88px; line-height:1.21;">
+								<fmt:formatNumber type="number" pattern="#.##" value="${leave_4}"/>
+								<c:if test="${LeaveWAnumT4.doubleValue() > 0}">
+									<span class="badge badge-sm badge-warning"><fmt:formatNumber type="number" pattern="#.##" value="${LeaveWAnumT4}"/></span>
+								</c:if>
+							</span>
+							<span class="text-gray-600" style="font-size:12.35px; line-height:1.21;">${type_4}</span>
+						</div>
+					</div>
+
+					<div class="leave-summary-item">
+						<span class="symbol symbol-50px">
+							<span class="symbol-label bg-light-dark">
+								<i class="ki-duotone ki-brifecase-cros text-dark" style="font-size:1.75rem;">
+									<span class="path1"></span><span class="path2"></span><span class="path3"></span>
+								</i>
+							</span>
+						</span>
+						<div class="d-flex flex-column">
+							<span class="fw-bold text-gray-800" style="font-size:15.88px; line-height:1.21;">
+								<fmt:formatNumber type="number" pattern="#.##" value="${leave_5}"/>
+								<c:if test="${LeaveWAnumT5.doubleValue() > 0}">
+									<span class="badge badge-sm badge-warning"><fmt:formatNumber type="number" pattern="#.##" value="${LeaveWAnumT5}"/></span>
+								</c:if>
+							</span>
+							<span class="text-gray-600" style="font-size:12.35px; line-height:1.21;">${type_5}</span>
+						</div>
+					</div>
+
+					<div class="leave-summary-item">
+						<span class="symbol symbol-50px">
+							<span class="symbol-label" style="background-color: #4B5675;">
+								<i class="ki-duotone ki-abstract-12 " style="color:#FFFFFF; font-size:1.75rem;">
+									<span class="path1"></span><span class="path2"></span>
+								</i>
+							</span>
+						</span>
+						<div class="d-flex flex-column">
+							<span class="fw-bold text-gray-800" style="font-size:15.88px; line-height:1.21;">
+								<fmt:formatNumber type="number" pattern="#.##" value="${leave_7}"/>
+								<c:if test="${LeaveWAnumT7.doubleValue() > 0}">
+									<span class="badge badge-sm badge-warning"><fmt:formatNumber type="number" pattern="#.##" value="${LeaveWAnumT7}"/></span>
+								</c:if>
+							</span>
+							<span class="text-gray-600" style="font-size:12.35px; line-height:1.21;">${type_7}</span>
+						</div>
+					</div>
+			</div>
+		<div class="leave-summary-dots" id="leaveSummaryDots"></div>
+		</div>
+		</div>
+		</div>
+
+	<!-- Leave List (same EL bindings + same edit/delete/info wiring as legacy) -->
+	<div class="d-flex align-items-center justify-content-between mb-3">
+		<span class="fw-bold text-gray-900" style="font-size:16px; line-height:1;">${fn:length(leavelist)} Items Found</span>
+		<span class="fs-8 text-muted">Recent Updates ↓</span>
+	</div>
+
+	<c:forEach var="leave" items="${leavelist}" varStatus="status">
+
+		<div class="card card-bordered mb-3">
+			<div class="card-header" style="padding:16px; min-height:auto; flex-wrap:nowrap;">
+				<div class="d-flex align-items-center gap-2" style="min-width:0; overflow:hidden;">
+					<span class="fw-bold text-primary fs-8" style="flex:none;">#${leave.leave_id}</span>
+					<span class="fs-5 fw-bold lh-1 text-gray-800" style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${leave.leave_type_name}</span>
+				</div>
+				<div class="d-inline-flex align-items-center" style="gap:10px; flex:none;">
+					<a href="javascript:void(0)" class="btn btn-icon btn-sm bg-info-subtle" onclick="leaveStatus(${leave.leave_id})">
+						<i class="ki-duotone ki-document text-info" style="font-size:1.45rem;"><span class="path1"></span><span class="path2"></span></i>
+					</a>
+					<c:choose>
+						<c:when test="${leave.leave_status_id.toString() == 0}">
+							<a data-note="btn edit" href="line_NewLeaveEdit?id=${leave.leave_id}" title="Edit" class="btn btn-icon btn-sm bg-primary-subtle">
+								<i class="ki-duotone ki-pencil text-primary" style="font-size:1.45rem;"><span class="path1"></span><span class="path2"></span></i>
+							</a>
+							<a data-note="btn delete" onclick="changeStatus(${leave.leave_id});" title="Delete" class="btn btn-icon btn-sm bg-danger-subtle">
+								<i class="ki-duotone ki-trash text-danger" style="font-size:1.45rem;"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span><span class="path5"></span></i>
+							</a>
+						</c:when>
+						<c:when test="${leave.leave_status_id.toString() != 0}">
+							<a data-note="btn edit" href="line_NewLeaveEdit?id=${leave.leave_id}" title="Edit" class="btn btn-icon btn-sm bg-primary-subtle">
+								<i class="ki-duotone ki-pencil text-primary" style="font-size:1.45rem;"><span class="path1"></span><span class="path2"></span></i>
+							</a>
+							<a data-note="btn delete" class="btn btn-icon btn-sm btn-light-secondary disabled">
+								<i class="ki-duotone ki-trash" style="font-size:1.45rem;"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span><span class="path5"></span></i>
+							</a>
+						</c:when>
+					</c:choose>
+				</div>
+			</div>
+			<div class="card-body" style="padding:16px;">
+
+				<div class="fw-bold fs-7 text-dark mb-3">${leave.name}</div>
+
+				<div class="d-flex align-items-center gap-1 fs-8 text-gray-600 mb-3">
+						<i class="ki-duotone ki-calendar-2 fs-6"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span><span class="path5"></span></i>
+						<span><fmt:formatDate value="${leave.start_date}" type="date" pattern="d MMM yyyy"/> - <fmt:formatDate value="${leave.end_date}" type="date" pattern="d MMM yyyy"/></span>
+						<span class="badge badge-light-primary fs-9 ms-1"><fmt:formatNumber type="number" pattern="#.###" value="${leave.no_day}"/> day</span>
+					</div>
+
+					<div class="d-flex flex-column gap-2 fs-8 text-gray-600 mb-3">
+						<c:if test="${leave.half_day != null}">
+							<div class="d-inline-flex align-items-center gap-1">
+								<i class="ki-duotone ki-calendar-8 fs-6"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span><span class="path5"></span><span class="path6"></span></i>
+								<c:if test="${leave.half_day.toString() == 0}">เต็มวัน</c:if>
+								<c:if test="${leave.half_day.toString() == 1}">ช่วงเช้า</c:if>
+								<c:if test="${leave.half_day.toString() == 2}">ช่วงบ่าย</c:if>
+								<c:if test="${leave.half_day.toString() == 3}">ช่วงเวลา</c:if>
+							</div>
+						</c:if>
+						<div class="d-inline-flex align-items-center gap-1">
+							<i class="ki-duotone ki-time fs-6"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span></i>
+							${leave.start_time} - ${leave.end_time}
+						</div>
+					</div>
+
+					<c:if test="${not empty leave.leave_file}">
+						<div class="d-flex align-items-center gap-1 fs-8 mb-1">
+							<i class="ki-duotone ki-document"><span class="path1"></span><span class="path2"></span></i>
+							<a href="line_preview_File?id=${leave.leave_file}" target="_blank" class="text-primary text-hover-underline">${leave.file_name}${leave.type}</a>
+						</div>
+					</c:if>
+
+					<div class="d-flex align-items-center justify-content-between">
+						<span class="fs-9 text-muted">Request Date: <fmt:formatDate value="${leave.time_create}" type="date" pattern="d MMM yyyy"/></span>
+						<c:if test="${leave.leave_status_id.toString() == '0'}"><span class="badge badge-light-warning fs-9">Wait for approve</span></c:if>
+						<c:if test="${leave.leave_status_id.toString() == '1'}"><span class="badge badge-light-success fs-9">Approved</span></c:if>
+						<c:if test="${leave.leave_status_id.toString() == '2'}"><span class="badge badge-light-danger fs-9">Reject</span></c:if>
+						<c:if test="${leave.leave_status_id.toString() == '3'}"><span class="badge badge-light-dark fs-9">Cancel</span></c:if>
+					</div>
+
+				</div>
+		</div>
+	</c:forEach>
+
+	<c:if test="${empty leavelist}">
+		<div class="text-center text-muted py-10 fs-7">No leave records found</div>
+	</c:if>
+
+</div>
+
+<script>
+	(function () {
+		var pager = document.getElementById('leaveSummaryPager');
+		var dots = document.getElementById('leaveSummaryDots');
+		if (!pager || !dots) return;
+
+		// Items sit flat inside the pager (no hardcoded page split in the JSP).
+		// Group them here into 2x2 pages, 4 at a time, in DOM order — so each
+		// page reads left-to-right/top-to-bottom like a normal grid, and a
+		// partial last page (e.g. 2 items) still fills a full-width page
+		// instead of leaving scroll room short of the next snap point.
+		var items = Array.prototype.slice.call(pager.querySelectorAll('.leave-summary-item'));
+		if (items.length === 0) return;
+
+		var pageCount = Math.ceil(items.length / 4);
+		var pages = [];
+		for (var p = 0; p < pageCount; p++) {
+			var pageEl = document.createElement('div');
+			pageEl.className = 'leave-summary-page';
+			var gridEl = document.createElement('div');
+			gridEl.className = 'leave-summary-grid';
+			items.slice(p * 4, p * 4 + 4).forEach(function (item) { gridEl.appendChild(item); });
+			pageEl.appendChild(gridEl);
+			pages.push(pageEl);
+		}
+		pager.innerHTML = '';
+		pages.forEach(function (pageEl) { pager.appendChild(pageEl); });
+
+		dots.innerHTML = '';
+		for (var i = 0; i < pageCount; i++) {
+			var dot = document.createElement('span');
+			if (i === 0) dot.className = 'active';
+			dots.appendChild(dot);
+		}
+		if (pageCount <= 1) { dots.hidden = true; return; }
+
+		var dotEls = dots.querySelectorAll('span');
+		pager.addEventListener('scroll', function () {
+			var page = Math.round(pager.scrollLeft / pager.clientWidth);
+			dotEls.forEach(function (dot, i) {
+				dot.classList.toggle('active', i === page);
+			});
+		}, { passive: true });
+	})();
+</script>
 
 <script>
 	/* $("#kt_daterangepicker").daterangepicker({

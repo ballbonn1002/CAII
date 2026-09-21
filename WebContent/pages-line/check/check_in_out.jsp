@@ -1987,12 +1987,8 @@ input[name="workType"] + .btn.bg-light i { color: var(--bs-gray-400); }
 .liff-clock { font-size: 52px; line-height: 1; }
 .liff-inout-label { font-weight: 700; min-width: 34px; display: inline-block; }
 .liff-inout-time { min-width: 50px; display: inline-block; font-variant-numeric: tabular-nums; }
-/* 
-@media (min-width: 1200px) {
-	.liff-shell .fs-2  { font-size: 17.75px !important; }
-	.liff-shell .fs-2x { font-size: 20.76px !important; }
-	.liff-shell .fs-3  { font-size: 16.85px !important; }
-} */
+.liff-shell .fs-2x { font-size: 28px !important; }
+.liff-shell .fs-2  { font-size: 20px !important; }
 </style>
 
 <div class="liff-shell">
@@ -2127,9 +2123,9 @@ input[name="workType"] + .btn.bg-light i { color: var(--bs-gray-400); }
 								</div>
 								<c:if test="${not empty inoutList[0].work_hours_time_work}">
 									<c:choose>
-										<c:when test="${inoutList[0].work_type.toString() eq '1'}"><i class="ki-duotone ki-map fs-2x text-primary"><span class="path1"></span><span class="path2"></span><span class="path3"></span></i></c:when>
-										<c:when test="${inoutList[0].work_type.toString() eq '2'}"><i class="ki-duotone ki-home-2 fs-2x text-success"><span class="path1"></span><span class="path2"></span></i></c:when>
-										<c:when test="${inoutList[0].work_type.toString() eq '3'}"><i class="ki-duotone ki-cube-2 fs-2x text-danger"><span class="path1"></span><span class="path2"></span><span class="path3"></span></i></c:when>
+										<c:when test="${inoutList[0].work_type.toString() eq '1'}"><i class="ki-duotone ki-map fs-2 text-primary"><span class="path1"></span><span class="path2"></span><span class="path3"></span></i></c:when>
+										<c:when test="${inoutList[0].work_type.toString() eq '2'}"><i class="ki-duotone ki-home-2 fs-2 text-success"><span class="path1"></span><span class="path2"></span></i></c:when>
+										<c:when test="${inoutList[0].work_type.toString() eq '3'}"><i class="ki-duotone ki-cube-2 fs-2 text-danger"><span class="path1"></span><span class="path2"></span><span class="path3"></span></i></c:when>
 									</c:choose>
 								</c:if>
 							</div>
@@ -2188,9 +2184,9 @@ input[name="workType"] + .btn.bg-light i { color: var(--bs-gray-400); }
 								</div>
 								<c:if test="${not empty inoutList[0].work_hours_time_work}">
 									<c:choose>
-										<c:when test="${inoutList[0].work_type.toString() eq '1'}"><i class="ki-duotone ki-map fs-2x text-primary"><span class="path1"></span><span class="path2"></span><span class="path3"></span></i></c:when>
-										<c:when test="${inoutList[0].work_type.toString() eq '2'}"><i class="ki-duotone ki-home-2 fs-2x text-success"><span class="path1"></span><span class="path2"></span></i></c:when>
-										<c:when test="${inoutList[0].work_type.toString() eq '3'}"><i class="ki-duotone ki-cube-2 fs-2x text-danger"><span class="path1"></span><span class="path2"></span><span class="path3"></span></i></c:when>
+										<c:when test="${inoutList[0].work_type.toString() eq '1'}"><i class="ki-duotone ki-map fs-2 text-primary"><span class="path1"></span><span class="path2"></span><span class="path3"></span></i></c:when>
+										<c:when test="${inoutList[0].work_type.toString() eq '2'}"><i class="ki-duotone ki-home-2 fs-2 text-success"><span class="path1"></span><span class="path2"></span></i></c:when>
+										<c:when test="${inoutList[0].work_type.toString() eq '3'}"><i class="ki-duotone ki-cube-2 fs-2 text-danger"><span class="path1"></span><span class="path2"></span><span class="path3"></span></i></c:when>
 									</c:choose>
 								</c:if>
 							</div>
