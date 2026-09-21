@@ -64,14 +64,14 @@
 				value="<c:out value="${contact.companyAddressId}" />">
 			<input type="hidden" id="hidden_freelancer_address"
 				name="freelancerAddress" value="">
-						<input type="hidden" id="hidden_freelancer_google_map"
+			<input type="hidden" id="hidden_freelancer_google_map"
 				name="freelancerGoogleMap" value="">
 			<input type="hidden" id="contact_freelancer_company_id"
 				name="freelancerRealCompanyId"
 				value="<c:out value="${isFreelancerContact ? contact.companyId : ''}" />">
 			<input type="hidden" id="contact_profile_image"
-				name="profileImage"
-				value="<c:out value="${profileImage}" />">
+               name="existingProfileImagePath"
+               value="<c:out value="${profileImage}" />">
 			<input type="hidden" id="remove_profile_image"
 				name="removeProfileImage" value="">
 				
@@ -123,8 +123,9 @@
 								<div
 									class="symbol symbol-150px symbol-square position-relative mx-auto">
 
-									<img
+										<img
 										id="profile_preview"
+										style="width:150px; height:150px; object-fit:cover; object-position: center top;"
 										src="<c:choose><c:when test="${not empty profileImage}">${pageContext.request.contextPath}${profileImage}
 										</c:when><c:otherwise>${pageContext.request.contextPath}/assets/media/avatars/blank.png</c:otherwise></c:choose>"
 										alt="Profile">
@@ -463,8 +464,8 @@
 	                             </i> <span id="selected_company_address"></span>
 	                             </div>
 
-                                 <!-- Google Map -->
-                                 <div class="d-flex align-items-center mb-7">
+                                  <!-- Google Map -->
+                                 <div id="selected_company_map_row" class="d-flex align-items-center mb-7">
                                  <i class="ki-duotone ki-geolocation fs-2x text-gray-400 me-4 mt-1"> 
                                  <span class="path1"></span> <span class="path2"></span>
                                  </i> <a id="selected_company_map" href="" target="_blank"> </a>
@@ -538,9 +539,8 @@
                                          </div>
 	                                    
 	                            <!-- Google Maps Link -->
-							<div class="d-flex align-items-center mb-7">
-							  <i class="ki-duotone ki-geolocation fs-2x text-gray-400 me-4 mt-1">
-							    <span class="path1"></span> 
+													<div id="company_map_row" class="d-flex align-items-center mb-7">
+						  <i class="ki-duotone ki-geolocation fs-2x text-gray-400 me-4 mt-1">							    <span class="path1"></span> 
 							    <span class="path2"></span>
                                  </i> 
                                  <a id="company_map_link" href="<c:out value="${freelancerAddressInfo.googleMap}" />" target="_blank"
@@ -659,7 +659,7 @@
 
 						<label
 							for="modal_google_map"
-							class="required form-label fw-medium">
+							class="form-label fw-medium">
 							Google Map URL
 						</label>
 
@@ -705,8 +705,9 @@
 		const contextPath = "${pageContext.request.contextPath}";
         
 		let currentAddresses = [];
+		let freelancerOriginalData = null;
 
-		function loadCompanyAddresses(companyId) {
+		function loadCompanyAddresses(companyId, preselectAddressId) {
 
 		    if (!companyId || companyId === "4") {
 		        currentAddresses = [];
@@ -730,10 +731,21 @@
 		            );
 		        });
 
-		        const first = currentAddresses[0];
-		        if (first) {
-		            $("#company_location_id").val(first.address_id);
-		            showLocation(first.address_id);
+		        let selected = null;
+
+		        if (preselectAddressId) {
+		            selected = currentAddresses.find(function (item) {
+		                return String(item.address_id) === String(preselectAddressId);
+		            });
+		        }
+
+		        if (!selected) {
+		            selected = currentAddresses[0];
+		        }
+
+		        if (selected) {
+		            $("#company_location_id").val(selected.address_id);
+		            showLocation(selected.address_id);
 		        }
 
 		    }).fail(function () {
@@ -752,6 +764,7 @@
 		    if (!location) {
 		        $("#selected_company_address").text("-");
 		        $("#selected_company_map").attr("href", "#").text("-");
+		        updateSelectedCompanyMapVisibility();
 		        return;
 		    }
 
@@ -759,6 +772,7 @@
 		    $("#selected_company_map")
 		        .attr("href", location.google_map || "#")
 		        .text(location.google_map || "-");
+		    updateSelectedCompanyMapVisibility();
 		}
 
 		/*
@@ -876,7 +890,30 @@
 			$("#selected_company_map").attr("href", "#").text("");
 
 		}
-
+		//Company
+				function updateSelectedCompanyMapVisibility() {
+			const mapHref = ($("#selected_company_map").attr("href") || "").trim();
+			const row = document.getElementById("selected_company_map_row");
+			if (!row) return;
+			if (!mapHref || mapHref === "#") {
+				row.style.setProperty("display", "none", "important");
+			} else {
+				row.style.setProperty("display", "flex", "important");
+			}
+		}
+		
+		
+		//Freelanc
+				function updateMapLinkVisibility() {
+			const mapHref = ($("#company_map_link").attr("href") || "").trim();
+			const row = document.getElementById("company_map_row");
+			if (!row) return;
+			if (!mapHref || mapHref === "#") {
+				row.style.setProperty("display", "none", "important");
+			} else {
+				row.style.setProperty("display", "flex", "important");
+			}
+		}
 
 		/*
 		 * เปลี่ยนบริษัท
@@ -894,20 +931,42 @@
 			        $("#company_name_th").val("");
 			        $("#freelancer_address").text("");
 			        $("#company_map_link").attr("href", "#").text("");
+			        updateMapLinkVisibility();
 			        $("#company_tax").text(taxNumber || "-");
 			    } else {
-			       
-			        $("#company_name_en").val("");
-			        $("#company_name_th").val("");
-			        $("#location_name").val("");
-			        $("#freelancer_address").text("");
-			        $("#company_map_link").attr("href", "").text("");			      
-			        $("#company_logo").val("");
-			        $("#company_logo_preview").html(
-			            '<i class="ki-duotone ki-picture fs-5x text-gray-300">' +
-			                '<span class="path1"></span><span class="path2"></span>' +
-			            '</i>'
-			        );
+
+			        if (freelancerOriginalData) {
+
+			            // กลับมาเลือก Freelancer ตัวเดิมที่กำลังแก้ไขอยู่ คืนข้อมูลเดิมกลับมา ไม่เคลียร์ทิ้ง
+			            $("#company_name_en").val(freelancerOriginalData.companyNameEn);
+			            $("#company_name_th").val(freelancerOriginalData.companyNameTh);
+			            $("#location_name").val(freelancerOriginalData.locationName);
+			            $("#freelancer_address").text(freelancerOriginalData.addressText);
+			            $("#company_map_link").attr("href", freelancerOriginalData.mapHref).text(freelancerOriginalData.mapText);
+			            updateMapLinkVisibility();
+
+			            $("#company_logo").val("");
+			            $("#company_logo_preview").html(freelancerOriginalData.logoHtml);
+
+			        } else {
+
+			            // เลือก Freelancer สดใหม่ ไม่เคยมีข้อมูลเดิม เคลียร์ฟอร์มว่างตามปกติ
+			            $("#company_name_en").val("");
+			            $("#company_name_th").val("");
+			            $("#location_name").val("");
+			            $("#freelancer_address").text("");
+			            $("#company_map_link").attr("href", "").text("");
+			            const freshMapRow = document.getElementById("company_map_row");
+			            if (freshMapRow) { freshMapRow.style.setProperty("display", "flex", "important"); }
+
+			            $("#company_logo").val("");
+			            $("#company_logo_preview").html(
+			                '<i class="ki-duotone ki-picture fs-5x text-gray-300">' +
+			                    '<span class="path1"></span><span class="path2"></span>' +
+			                '</i>'
+			            );
+
+			        }
 			    }
 			});
 
@@ -1024,7 +1083,7 @@
 			const googleMap =
 				$("#modal_google_map").val().trim();
 
-			if (!addressName || !address || !googleMap) {
+			if (!addressName || !address) {
 
 				swal(
 					"Error",
@@ -1039,8 +1098,9 @@
 			$("#location_name").val(addressName);
 			$("#freelancer_address").text(address);
 			$("#company_map_link")
-				.attr("href", googleMap)
-				.text(googleMap);
+			.attr("href", googleMap)
+			.text(googleMap);
+		updateMapLinkVisibility();
 
 			const modalElement =
 				document.getElementById("customerAddressModal");
@@ -1143,12 +1203,43 @@
 		const initialCompanyId = $("#company_id").val();
 		const initialCompanyAddressId = $("#contact_company_address_id").val();
 		const initialTaxNumber = $("#company_id option:selected").data("tax");
+		const isFreelancerContactInit = ${isFreelancerContact ? true : false};
 
-		showCompanyDetail(initialCompanyId);
+		if (isFreelancerContactInit) {
 
-		if (initialCompanyId && initialCompanyId !== "4") {
-		    $("#company_tax").text(initialTaxNumber || "-");
-		    loadCompanyAddresses(initialCompanyId, initialCompanyAddressId);
+		   
+		    const savedCompanyNameEn = $("#company_name_en").val();
+		    const savedCompanyNameTh = $("#company_name_th").val();
+		    const savedLocationName  = $("#location_name").val();
+		    const savedAddressText   = $("#freelancer_address").text();
+		    const savedMapHref       = $("#company_map_link").attr("href");
+		    const savedMapText       = $("#company_map_link").text();
+
+		    freelancerOriginalData = {
+		        companyNameEn: savedCompanyNameEn,
+		        companyNameTh: savedCompanyNameTh,
+		        locationName:  savedLocationName,
+		        addressText:   savedAddressText,
+		        mapHref:       savedMapHref,
+		        mapText:       savedMapText
+		    };
+				   
+		    $("#company_id").val("4").trigger("change");	
+		    $("#company_name_en").val(savedCompanyNameEn);
+		    $("#company_name_th").val(savedCompanyNameTh);
+		    $("#location_name").val(savedLocationName);
+		    $("#freelancer_address").text(savedAddressText);
+		    $("#company_map_link").attr("href", savedMapHref).text(savedMapText);
+		    updateMapLinkVisibility();
+
+		} else {
+		    showCompanyDetail(initialCompanyId);
+
+		    if (initialCompanyId && initialCompanyId !== "4") {
+		        $("#company_tax").text(initialTaxNumber || "-");
+		        loadCompanyAddresses(initialCompanyId, initialCompanyAddressId);
+		    }
+
 		}
 		});
 </script>

@@ -196,11 +196,13 @@
 										<div class="d-flex align-items-center gap-3">
 
 											<img
-												src="<c:choose>
-												<c:when test="${not empty contact.file_path}">${pageContext.request.contextPath}${contact.file_path}</c:when>
-												<c:otherwise>${pageContext.request.contextPath}/assets/media/avatars/blank.png</c:otherwise>
-	                                            </c:choose>"
-												class="rounded-circle" width="42" height="42" alt="Profile">
+											src="<c:choose>
+											<c:when test="${not empty contact.file_path}">${pageContext.request.contextPath}${contact.file_path}</c:when>
+											<c:otherwise>${pageContext.request.contextPath}/assets/media/avatars/blank.png</c:otherwise>
+                                            </c:choose>"
+											class="rounded-circle" width="42" height="42"
+											style="object-fit:cover; object-position: center top;"
+											alt="Profile">
 
 											<div class="min-w-0">
 

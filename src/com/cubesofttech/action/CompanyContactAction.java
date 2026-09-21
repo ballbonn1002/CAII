@@ -317,6 +317,19 @@ public class CompanyContactAction extends ActionSupport {
 	            }
 	        }
 
+	        if (isFreelancerSave && freelancerCompanyRow == null
+	                && freelancerRealCompanyId != null && !freelancerRealCompanyId.trim().isEmpty()) {
+	            try {
+	                Company existingFreelancerCompany =
+	                        companyDAO.findById(Long.parseLong(freelancerRealCompanyId.trim()));
+	                if (existingFreelancerCompany != null
+	                        && "FREELANCE".equals(existingFreelancerCompany.getIndustryId())) {
+	                    freelancerCompanyRow = existingFreelancerCompany;
+	                }
+	            } catch (NumberFormatException nfe) {
+	            }
+	        }
+
 	        if (isFreelancerSave) {
 
 	            
@@ -419,6 +432,33 @@ public class CompanyContactAction extends ActionSupport {
 	            }
 
 	            companyAddressId = String.valueOf(freelancerAddressRow.getCompanyAddressId());
+	            
+	            
+	        } else if (companyLogo != null && contactCompanyId != null && !contactCompanyId.trim().isEmpty()) {
+
+	            // อัปโหลดโลโก้ให้ Company ปกติ (ไม่ใช่ Freelancer)
+	            try {
+	                Company selectedCompany = companyDAO.findById(Long.parseLong(contactCompanyId.trim()));
+	                if (selectedCompany != null) {
+	                    List<FileUpload> savedLogoFiles = fileAttachmentService.attach(
+	                        Arrays.asList(companyLogo),
+	                        Arrays.asList(companyLogoFileName),
+	                        "company", contactCompanyId, username,
+	                        request.getServletContext().getRealPath("/")
+	                    );
+	                    if (savedLogoFiles != null && !savedLogoFiles.isEmpty()) {
+	                        selectedCompany.setFileId(String.valueOf(savedLogoFiles.get(0).getFileId()));
+	                        selectedCompany.setUserUpdate(username);
+	                        selectedCompany.setTimeUpdate(now);
+	                        companyDAO.update(selectedCompany);
+	                    }
+	                }
+	            } catch (NumberFormatException nfe) {
+	            } catch (Exception ex) {
+	                log.error("Unable to save Company logo", ex);
+	                addActionError("DEBUG company logo: " + ex.getMessage());
+	            }
+
 	        }
             ////
 	        target.setCompanyId(contactCompanyId);
@@ -450,7 +490,7 @@ public class CompanyContactAction extends ActionSupport {
 	            List<FileUpload> savedFiles = fileAttachmentService.attach(
 	                Arrays.asList(profileImage),
 	                Arrays.asList(profileImageFileName),
-	                "contact", username, username,
+	                "contact", String.valueOf(target.getCompanyContactId()), username,
 	                request.getServletContext().getRealPath("/")
 	            );
 	            if (savedFiles != null && !savedFiles.isEmpty()) {
