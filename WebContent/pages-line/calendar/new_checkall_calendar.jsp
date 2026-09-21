@@ -1979,17 +1979,13 @@ var AppCalendar = function() {
 		});
 	}
 
-	function pickFirstInLastOut(workList) {
-		let allItems = [];
-		workList.forEach(function(workEvent) {
-			const props = workEvent.extendedProps;
-			const dataList = (props.checkinList && props.checkinList.length > 0) ? props.checkinList : [props];
-			allItems = allItems.concat(dataList);
-		});
+	function pickFirstInLastOut(workEvent) {
+		const props = workEvent.extendedProps;
+		const items = (props.checkinList && props.checkinList.length > 0) ? props.checkinList : [props];
 
 		let earliestCheckinItem = null;
 		let latestCheckoutItem = null;
-		allItems.forEach(function(item) {
+		items.forEach(function(item) {
 			if (item.checkin && (!earliestCheckinItem || item.checkin < earliestCheckinItem.checkin)) {
 				earliestCheckinItem = item;
 			}
@@ -2069,7 +2065,7 @@ var AppCalendar = function() {
 					statusHtmlList.push(getWorkStatusHTML(statusVal));
 				}
 
-				const { earliestCheckinItem, latestCheckoutItem } = pickFirstInLastOut(workList);
+				const { earliestCheckinItem, latestCheckoutItem } = pickFirstInLastOut(workList[0]);
 
 				let combinedCheckinHtml = "";
 				if (earliestCheckinItem) {
