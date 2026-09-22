@@ -25,11 +25,4 @@ public interface UnitOfMeasureDAO {
 
     /** ลบ unit ทั้งหมดของ product (ใช้ตอนลบ product หรือบันทึกทับทั้งชุด) */
     public int deleteByProductId(String productId) throws Exception;
-
-    /**
-     * รายชื่อ unit_name ที่ไม่ซ้ำกัน จากทุก product ในระบบ เรียงตามตัวอักษร
-     * ใช้เติม dropdown ให้เลือกชื่อหน่วยเดิม กันสร้างชื่อซ้ำกันโดยไม่ตั้งใจ
-     * (unit_of_measure ไม่มีตาราง master กลาง - product_id เป็น NOT NULL จึงต้อง distinct ข้าม product ทั้งหมด)
-     */
-    public List<String> getDistinctUnitNames() throws Exception;
 }

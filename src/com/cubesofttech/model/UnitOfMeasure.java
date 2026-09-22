@@ -23,6 +23,10 @@ public class UnitOfMeasure implements Serializable {
     @Column(name = "product_id")
     private String productId;
 
+    /** ref -> unit_master.unit_master_id (ชื่อหน่วยกลาง กันสร้างชื่อซ้ำข้าม product) */
+    @Column(name = "unit_master_id")
+    private Integer unitMasterId;
+
     /** ตัวแรกให้เป็น 0 และให้เป็น unit หลัก */
     @Column(name = "sequence")
     private String sequence;
@@ -65,6 +69,14 @@ public class UnitOfMeasure implements Serializable {
 
     public void setProductId(String productId) {
         this.productId = productId;
+    }
+
+    public Integer getUnitMasterId() {
+        return unitMasterId;
+    }
+
+    public void setUnitMasterId(Integer unitMasterId) {
+        this.unitMasterId = unitMasterId;
     }
 
     public String getSequence() {
@@ -133,8 +145,9 @@ public class UnitOfMeasure implements Serializable {
 
     @Override
     public String toString() {
-        return "UnitOfMeasure [unitId=" + unitId + ", productId=" + productId + ", sequence=" + sequence
-                + ", unitName=" + unitName + ", conversionRate=" + conversionRate + ", description=" + description
+        return "UnitOfMeasure [unitId=" + unitId + ", productId=" + productId + ", unitMasterId=" + unitMasterId
+                + ", sequence=" + sequence + ", unitName=" + unitName + ", conversionRate=" + conversionRate
+                + ", description=" + description
                 + ", userCreate=" + userCreate + ", userUpdate=" + userUpdate + ", timeCreate=" + timeCreate
                 + ", timeUpdate=" + timeUpdate + "]";
     }

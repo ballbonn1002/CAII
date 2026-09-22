@@ -1084,9 +1084,6 @@ CREATE TABLE `pr_parent` (
 
 -- PROD 15 SEP 2026 14:30
 
-
-
-
 -- 15/09/2026 June: CREATE TABLE pr, pr_detail and pr_parent
 CREATE TABLE `pr` (
   `pr_id` varchar(16) NOT NULL,
@@ -1165,3 +1162,24 @@ CREATE TABLE `user_redeem` (
   `time_update` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`user_redeem_id`)
 ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci;
+
+-- 22/09/2026 Koy: add unit_master table + unit_of_measure.unit_master_id
+CREATE TABLE `unit_master` (
+    `unit_master_id` INT(11) NOT NULL AUTO_INCREMENT,
+    `unit_name` VARCHAR(32) NOT NULL,
+    `user_create` VARCHAR(32) NOT NULL,
+    `user_update` varchar(32) DEFAULT NULL,
+    `time_create` timestamp NULL NOT NULL,
+    `time_update` timestamp NULL DEFAULT NULL,
+    PRIMARY KEY (`unit_master_id`),
+    UNIQUE KEY `uq_unit_master_name` (`unit_name`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+INSERT INTO unit_master (unit_name, user_create, time_create)
+SELECT DISTINCT unit_name, 'system', NOW() FROM unit_of_measure WHERE unit_name IS NOT NULL AND TRIM(unit_name) <> '';
+
+ALTER TABLE unit_of_measure ADD COLUMN unit_master_id INT(11) NULL AFTER product_id;
+
+UPDATE unit_of_measure uom
+JOIN unit_master um ON um.unit_name = uom.unit_name
+SET uom.unit_master_id = um.unit_master_id;

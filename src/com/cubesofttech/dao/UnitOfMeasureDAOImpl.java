@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.hibernate.Query;
-import org.hibernate.SQLQuery;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -121,20 +120,5 @@ public class UnitOfMeasureDAOImpl implements UnitOfMeasureDAO {
         query.setParameter("productId", productId.trim());
 
         return query.executeUpdate();
-    }
-
-    @Override
-    @SuppressWarnings("unchecked")
-    public List<String> getDistinctUnitNames() throws Exception {
-        Session session = this.sessionFactory.getCurrentSession();
-        // ไม่มี input จากผู้ใช้ใน query นี้ (ไม่ filter อะไร) จึงไม่มี named parameter ให้ผูก
-        // - ถ้าในอนาคตเพิ่มเงื่อนไข filter ต้องผูกด้วย :param เสมอ ห้ามต่อ string เข้า SQL
-        String sql = "SELECT DISTINCT unit_name FROM unit_of_measure "
-                + "WHERE unit_name IS NOT NULL AND TRIM(unit_name) <> '' "
-                + "ORDER BY unit_name ASC";
-
-        SQLQuery query = session.createSQLQuery(sql);
-        List<String> names = query.list();
-        return names != null ? names : new ArrayList<String>();
     }
 }
