@@ -205,7 +205,10 @@ public class WorkHoursAction extends ActionSupport {
 		}
 
 		try {
-			String userId = request.getParameter("userId");
+			// ล็อก userId ให้เป็นคนที่ login อยู่เสมอ ไม่เชื่อค่าจาก client
+			// (เดิมรับ request.getParameter("userId") ตรงๆ -> ยิง POST ใส่ userId ของคนอื่น
+			// แล้วปลอมลงเวลาแทนได้ ทั้งลงเวลาปกติและย้อนหลัง)
+			String userId = ur.getId();
 			String checkDate = request.getParameter("date");
 			String checkTime = request.getParameter("time");
 			String checkType = request.getParameter("checkType");
@@ -366,6 +369,9 @@ public class WorkHoursAction extends ActionSupport {
 				if (ldt.isAfter(now)) {
 					result.put("status", "error");
 					result.put("message", "Can't check-in/out time in future. Please try again.");
+					// เดิมจุดนี้ไม่มี return -> โค้ดไหลต่อไป save จริงแล้วตอบ success ทับ error ที่เพิ่งตั้ง
+					writeJson(result);
+					return null;
 				} else {
 					result.put("status", "success");
 					result.put("type", checkType);
