@@ -63,6 +63,8 @@ public class ProductDAOImpl implements ProductDAO {
             sql.append("SELECT main.product_id AS product_id, main.sequence AS sequence, ");
             sql.append("main.product_no AS product_no, ");
             sql.append("main.product_name AS product_name, main.product_type AS product_type, ");
+            // equipment_type ใช้กรองรายการหน้า list ตอนเลือก type = Equipment เท่านั้น (ref -> equipment_type.Type)
+            sql.append("main.equipment_type AS equipment_type, ");
             // active -> Catalog MR, sub_product_active -> Select Subproduct (หน้า list)
             sql.append("main.active AS active, main.sub_product_active AS sub_product_active, ");
             // ยอดคงเหลือฝั่ง Equipment = จำนวนเครื่องจริงที่ผูกอยู่ ไม่ได้มาจากตาราง stock
@@ -97,7 +99,7 @@ public class ProductDAOImpl implements ProductDAO {
                 sql.append("AND main.product_type = :productType ");
             }
             sql.append("GROUP BY main.product_id, main.sequence, main.product_no, main.product_name, ");
-            sql.append("main.product_type, main.active, main.sub_product_active, eqc.qty, img.path ");
+            sql.append("main.product_type, main.equipment_type, main.active, main.sub_product_active, eqc.qty, img.path ");
             sql.append("ORDER BY main.product_id ASC");
 
             SQLQuery query = session.createSQLQuery(sql.toString());

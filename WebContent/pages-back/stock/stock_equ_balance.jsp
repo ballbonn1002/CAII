@@ -5,7 +5,7 @@
 <%--
   Stock - Equipment : Stock Balance
 
-  ต่างจาก stock_cons_balance.jsp ตรงที่ยอดคงเหลือของ Equipment คือ "จำนวนเครื่องจริง"
+  ต่างจาก stock_balance.jsp ตรงที่ยอดคงเหลือของ Equipment คือ "จำนวนเครื่องจริง"
   ในตาราง equipment ที่ผูก product_id ไว้ ไม่ได้มาจากตาราง stock / good_receipt
   จึงไม่มี Add Stock / History IN-OUT แต่แสดงเป็นรายการเครื่องแทน
 
@@ -30,7 +30,7 @@
                     <ul class="breadcrumb breadcrumb-separatorless fw-semibold fs-7 my-0 pt-1">
                         <li class="breadcrumb-item text-muted"><a href="${pageContext.request.contextPath}/check_in_out" class="text-muted text-hover-primary fw-medium fs-7">Home</a></li>
                         <li class="breadcrumb-item"><span class="bullet bg-gray-500 fw-medium fs-7 w-5px h-2px"></span></li>
-                        <li class="breadcrumb-item text-muted fw-medium fs-7"><a href="${pageContext.request.contextPath}/stock_cons_list" class="text-muted text-hover-primary">Product</a></li>
+                        <li class="breadcrumb-item text-muted fw-medium fs-7"><a href="${pageContext.request.contextPath}/product_list" class="text-muted text-hover-primary">Product</a></li>
                     </ul>
                 </div>
 
@@ -196,7 +196,7 @@
                 </div>
 
                 <div class="d-flex justify-content-start">
-                    <a href="stock_cons_list" class="btn btn-light d-inline-flex align-items-center px-6 py-3">
+                    <a href="product_list" class="btn btn-light d-inline-flex align-items-center px-6 py-3">
                         <i class="ki-duotone ki-arrow-left fs-3 me-2"><span class="path1"></span><span class="path2"></span></i>
                         <span class="fw-bold text-gray-700">Back</span>
                     </a>

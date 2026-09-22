@@ -11,7 +11,7 @@
                     <ul class="breadcrumb breadcrumb-separatorless fw-semibold fs-7 my-0 pt-1">
                         <li class="breadcrumb-item text-muted"><a href="${pageContext.request.contextPath}/check_in_out" class="text-muted text-hover-primary fw-medium fs-7">Home</a></li>
                         <li class="breadcrumb-item"><span class="bullet bg-gray-500 fw-medium fs-7 w-5px h-2px"></span></li>
-                        <li class="breadcrumb-item text-muted fw-medium fs-7"><a href="${pageContext.request.contextPath}/stock_cons_list" class="text-muted text-hover-primary">Product</a></li>
+                        <li class="breadcrumb-item text-muted fw-medium fs-7"><a href="${pageContext.request.contextPath}/product_list" class="text-muted text-hover-primary">Product</a></li>
                     </ul>
                 </div>
             </div>
@@ -26,7 +26,7 @@
 
                             <div class="d-flex align-items-center justify-content-between flex-wrap gap-3 mb-6">
                                 <h3 class="page-heading text-gray-900 fw-bold mb-0">Product List</h3>
-                                <a href="stock_cons_add" class="btn btn-success d-inline-flex align-items-center px-6 py-3">
+                                <a href="product_add" class="btn btn-success d-inline-flex align-items-center px-6 py-3">
                                     <i class="ki-duotone ki-plus fs-3 me-2"><span class="path1"></span><span class="path2"></span></i>
                                     <span class="fw-bold">Create</span>
                                 </a>
@@ -79,6 +79,34 @@
                                 </div>
                             </div>
 
+                            <%-- filter ย่อยตาม Equipment Type - โชว์เฉพาะตอนเลือกการ์ด Equipment (data-type="1")
+                                 คุมด้วย JS (#equipmentTypeFilterWrap) ไม่ต้องพึ่ง JSTL เพราะขึ้นกับการคลิกฝั่ง client
+                                 dropdown checkbox เลือกได้หลายตัว (pattern เดียวกับ filter "Type" ใน equipment_list.jsp)
+                                 checkbox list ใช้ JSTL loop ตรงๆ เพราะ ${equipmentTypes} มีอยู่แล้วในฝั่ง server --%>
+                            <div id="equipmentTypeFilterWrap" class="d-flex align-items-center gap-3 mb-6 d-none">
+                                <label class="form-label fw-semibold text-gray-700 mb-0">Equipment Type</label>
+                                <div class="dropdown">
+                                    <button class="btn btn-white border border-gray-300 rounded-3 d-flex justify-content-between align-items-center gap-3 px-4 py-3" type="button" data-bs-toggle="dropdown" style="min-width: 250px;">
+                                        <span id="equipmentTypeFilterBtnText">All</span>
+                                        <i class="ki-duotone ki-down fs-4"><span class="path1"></span><span class="path2"></span></i>
+                                    </button>
+                                    <div class="dropdown-menu dropdown-menu-end p-4 shadow rounded-4" style="min-width: 254px;">
+                                        <div class="mb-4" id="equipmentTypeFilterContainer">
+                                            <c:forEach var="eqType" items="${equipmentTypes}">
+                                                <label class="form-check form-check-custom form-check-solid mb-3">
+                                                    <input class="form-check-input filter-equipment-type" type="checkbox" value="${fn:escapeXml(eqType.typeID)}">
+                                                    <span class="form-check-label text-gray-600 fw-normal menu-heading">${fn:escapeXml(eqType.description)}</span>
+                                                </label>
+                                            </c:forEach>
+                                        </div>
+                                        <div class="d-flex justify-content-between pt-3 border-top">
+                                            <button type="button" class="btn btn-light btn-equipment-type-deselect-all">Deselect All</button>
+                                            <button type="button" class="btn btn-primary btn-equipment-type-select-all">Select All</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
                             <table id="stockConsTable" class="table align-middle fs-6 mb-0">
                                 <thead class="fs-7 text-gray-500 text-uppercase">
                                     <tr class="fw-semibold">
@@ -93,7 +121,8 @@
                                 </thead>
                                 <tbody>
                                     <c:forEach var="product" items="${products}" varStatus="st">
-                                        <tr data-type="${fn:escapeXml(product.product_type)}">
+                                        <tr data-type="${fn:escapeXml(product.product_type)}"
+                                            data-equipment-type="${fn:escapeXml(product.equipment_type)}">
                                             <td class="text-gray-900 fw-bold">${st.index + 1}</td>
                                             <td class="text-gray-700 fw-normal">
                                                 <div class="d-flex align-items-center gap-2">
@@ -166,7 +195,7 @@
                                             </td>
                                             <%-- Equipment ไปหน้า settings คนละตัวเพราะ Stock Balance คิดจากเครื่องจริง
                                                  ไม่ได้คิดจากตาราง stock เหมือน Consumables/Accessory --%>
-                                            <c:set var="editUrl" value="${product.product_type eq '1' ? 'stock_equ_edit' : 'stock_cons_edit'}" />
+                                            <c:set var="editUrl" value="${product.product_type eq '1' ? 'stock_equ_edit' : 'product_edit'}" />
                                             <td class="text-end text-nowrap">
                                                 <a href="${editUrl}?productId=${product.product_id}" class="btn btn-icon btn-sm btn-light-primary me-1" title="Edit">
                                                     <i class="ki-duotone ki-pencil fs-3"><span class="path1"></span><span class="path2"></span></i>
@@ -200,12 +229,19 @@
         // จำนวนต่อ type render มาจาก backend (typeCounts) แล้ว ไม่ต้องนับจาก DOM
 
         // custom filter ตาม type ที่เลือกจากการ์ด ('' = แสดงทั้งหมด)
+        // + filter ย่อยตาม equipment_type (มีผลเฉพาะตอน selectedType === '1' เท่านั้น)
         var selectedType = '';
+        // Equipment Type ตอนนี้เลือกได้หลายตัว (dropdown checkbox) เก็บเป็น array ของ value ที่ติ๊กไว้
+        var selectedEquipmentTypes = [];
         $.fn.dataTable.ext.search.push(function (settings, data, dataIndex) {
             if (settings.nTable.id !== 'stockConsTable') { return true; }
-            if (!selectedType) { return true; }
             var tr = settings.aoData[dataIndex].nTr;
-            return String($(tr).data('type')) === selectedType;
+
+            if (selectedType && String($(tr).data('type')) !== selectedType) { return false; }
+            if (selectedType === '1' && selectedEquipmentTypes.length > 0
+                && selectedEquipmentTypes.indexOf(String($(tr).data('equipmentType'))) === -1) { return false; }
+
+            return true;
         });
 
         var table = $('#stockConsTable').DataTable({
@@ -227,6 +263,21 @@
         });
 
         // กดการ์ด type เพื่อ filter (กดซ้ำ = ยกเลิก filter)
+        // สลับออกจาก Equipment (หรือยกเลิก filter) ทุกครั้งต้องล้างค่า Equipment Type filter ด้วย
+        // ไม่งั้นจะค้างเป็นตัวกรองที่มองไม่เห็น (dropdown ซ่อนอยู่แต่ค่ายังเลือกไว้)
+        var $equipmentTypeFilterWrap = $('#equipmentTypeFilterWrap');
+        var $equipmentTypeFilterContainer = $('#equipmentTypeFilterContainer');
+        var $equipmentTypeFilterBtnText = $('#equipmentTypeFilterBtnText');
+
+        function toggleEquipmentTypeFilter(isEquipment) {
+            $equipmentTypeFilterWrap.toggleClass('d-none', !isEquipment);
+            if (!isEquipment) {
+                selectedEquipmentTypes = [];
+                $equipmentTypeFilterContainer.find('input[type="checkbox"]').prop('checked', false);
+                $equipmentTypeFilterBtnText.text('All');
+            }
+        }
+
         $('.type-filter-card').on('click', function () {
             var t = String($(this).data('type'));
             if (selectedType === t) {
@@ -237,8 +288,48 @@
                 $('.type-filter-card').removeClass('active border-primary bg-light-primary');
                 $(this).addClass('active border-primary bg-light-primary');
             }
+            toggleEquipmentTypeFilter(selectedType === '1');
             table.draw();
         });
+
+        // อ่าน checkbox ที่ติ๊กไว้ทั้งหมด -> selectedEquipmentTypes + อัปเดตข้อความบนปุ่ม dropdown
+        // (pattern เดียวกับ updateFilter ของ equipment_list.jsp แต่ไม่มีคอลัมน์ DataTables ให้ search
+        // เพราะ equipment_type ไม่ได้แสดงเป็นคอลัมน์ในตารางนี้ - ใช้ custom search ข้างบนกรองแทน)
+        function updateEquipmentTypeFilter() {
+            var checked = $equipmentTypeFilterContainer.find('input[type="checkbox"]:checked');
+            var labels = [];
+            selectedEquipmentTypes = [];
+
+            checked.each(function () {
+                selectedEquipmentTypes.push(String($(this).val()));
+                labels.push($(this).siblings('span').text().trim());
+            });
+
+            if (selectedEquipmentTypes.length === 0) {
+                $equipmentTypeFilterBtnText.text('All');
+            } else {
+                $equipmentTypeFilterBtnText.text(labels.length <= 2 ? labels.join(', ') : labels.length + ' Selected');
+            }
+
+            table.draw();
+        }
+
+        $equipmentTypeFilterContainer.on('change', '.filter-equipment-type', updateEquipmentTypeFilter);
+
+        $('.btn-equipment-type-select-all').on('click', function (e) {
+            e.stopPropagation();
+            $equipmentTypeFilterContainer.find('input[type="checkbox"]').prop('checked', true);
+            updateEquipmentTypeFilter();
+        });
+
+        $('.btn-equipment-type-deselect-all').on('click', function (e) {
+            e.stopPropagation();
+            $equipmentTypeFilterContainer.find('input[type="checkbox"]').prop('checked', false);
+            updateEquipmentTypeFilter();
+        });
+
+        // กันไม่ให้ dropdown ปิดเวลาคลิกพื้นที่ว่างในเมนู (ติ๊ก checkbox / กดปุ่ม select all)
+        $equipmentTypeFilterWrap.find('.dropdown-menu').on('click', function (e) { e.stopPropagation(); });
 
         // ---- กดติ๊ก Catalog MR / Select Subproduct แล้วเซฟทันที (AJAX) ----
         var CONTEXT = '${pageContext.request.contextPath}';
@@ -279,11 +370,11 @@
         }
 
         $('#stockConsTable').on('change', '.js-active-toggle', function () {
-            toggleFlag($(this), 'stock_cons_active_update', 'active');
+            toggleFlag($(this), 'product_active_update', 'active');
         });
 
         $('#stockConsTable').on('change', '.js-subactive-toggle', function () {
-            toggleFlag($(this), 'stock_cons_sub_active_update', 'subProductActive');
+            toggleFlag($(this), 'product_sub_active_update', 'subProductActive');
         });
 
         // ---- ลบ product (AJAX) - ตอบ JSON แทน redirect เพื่อโชว์เหตุผลตอนลบไม่ได้ ----
@@ -300,7 +391,7 @@
                 $btn.prop('disabled', true);
 
                 $.ajax({
-                    url: CONTEXT + '/stock_cons_delete',
+                    url: CONTEXT + '/product_delete',
                     type: 'POST',
                     dataType: 'json',
                     data: { productId: id },

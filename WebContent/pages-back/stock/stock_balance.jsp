@@ -29,11 +29,11 @@
                 </div>
 
                 <div class="d-flex align-items-center gap-3">
-                    <a href="stock_cons_edit?productId=${product.productId}" class="btn btn-light d-inline-flex align-items-center px-5 py-3">
+                    <a href="product_edit?productId=${product.productId}" class="btn btn-light d-inline-flex align-items-center px-5 py-3">
                         <i class="ki-duotone ki-setting-2 fs-3 me-2 text-gray-500"><span class="path1"></span><span class="path2"></span></i>
                         <span class="fw-semibold text-gray-700">Product</span>
                     </a>
-                    <a href="stock_cons_balance?productId=${product.productId}" class="btn btn-light-primary d-inline-flex align-items-center px-5 py-3 active">
+                    <a href="stock_balance?productId=${product.productId}" class="btn btn-light-primary d-inline-flex align-items-center px-5 py-3 active">
                         <i class="ki-duotone ki-cube-2 fs-3 me-2"><span class="path1"></span><span class="path2"></span><span class="path3"></span></i>
                         <span class="fw-semibold">Stock Balance</span>
                     </a>
@@ -233,7 +233,7 @@
 <div class="modal fade" id="addStockModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered mw-650px">
         <div class="modal-content">
-            <form id="addStockForm" method="POST" action="stock_cons_stock_add" class="form">
+            <form id="addStockForm" method="POST" action="stock_add" class="form">
                 <input type="hidden" name="productId" value="${product.productId}" />
 
                 <div class="modal-header">
@@ -300,7 +300,7 @@
                             </div>
                         </c:when>
                         <c:otherwise>
-                            <%-- ไม่มี sub product - รับเข้าเป็นบรรทัดเดียวผูกกับตัวแม่โดยตรง (ดู stockConsStockAdd) --%>
+                            <%-- ไม่มี sub product - รับเข้าเป็นบรรทัดเดียวผูกกับตัวแม่โดยตรง (ดู stockAdd) --%>
                             <div class="row g-4">
                                 <div class="col-12 col-md-6">
                                     <div class="input-group">

@@ -121,7 +121,7 @@ pageEncoding="UTF-8"%>
               <div class="card-body">
                 <div class="d-flex gap-4">
                   <a
-                    href="stock_cons_list"
+                    href="product_list"
                     class="btn btn-light-warning d-inline-flex align-items-center px-6 py-3"
                     >Product</a
                   >

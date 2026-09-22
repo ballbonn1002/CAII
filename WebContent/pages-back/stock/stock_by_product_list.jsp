@@ -23,7 +23,7 @@
                     <ul class="breadcrumb breadcrumb-separatorless fw-semibold fs-7 my-0 pt-1">
                         <li class="breadcrumb-item text-muted"><a href="${pageContext.request.contextPath}/check_in_out" class="text-muted text-hover-primary fw-medium fs-7">Home</a></li>
                         <li class="breadcrumb-item"><span class="bullet bg-gray-500 fw-medium fs-7 w-5px h-2px"></span></li>
-                        <li class="breadcrumb-item text-muted fw-medium fs-7"><a href="${pageContext.request.contextPath}/stock_cons_list" class="text-muted text-hover-primary">Product</a></li>
+                        <li class="breadcrumb-item text-muted fw-medium fs-7"><a href="${pageContext.request.contextPath}/product_list" class="text-muted text-hover-primary">Product</a></li>
                         <li class="breadcrumb-item"><span class="bullet bg-gray-500 fw-medium fs-7 w-5px h-2px"></span></li>
                         <li class="breadcrumb-item text-muted fw-medium fs-7">Stock By Product</li>
                     </ul>
@@ -168,7 +168,7 @@
                                                     <c:otherwise><span class="text-muted">-</span></c:otherwise>
                                                 </c:choose>
                                             </td>
-                                            <c:set var="viewUrl" value="${product.product_type eq '1' ? 'stock_equ_balance' : 'stock_cons_balance'}" />
+                                            <c:set var="viewUrl" value="${product.product_type eq '1' ? 'stock_equ_balance' : 'stock_balance'}" />
                                             <td class="text-end">
                                                 <a href="${viewUrl}?productId=${product.product_id}" class="btn btn-icon btn-sm btn-light-primary" title="View">
                                                     <i class="ki-duotone ki-eye fs-3"><span class="path1"></span><span class="path2"></span><span class="path3"></span></i>

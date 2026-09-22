@@ -805,16 +805,16 @@
 
 	<!-- Stock -->
 	<!-- หน้า list เดียวแสดงรวมทั้ง Equipment / Consumables / Accessory -->
-	<definition name="stockConsList" extends="baseLayout">
-		<put-attribute name="title" value="Stock - Product" />
+	<definition name="productList" extends="baseLayout">
+		<put-attribute name="title" value="Product List" />
 		<put-attribute name="body"
-			value="/pages-back/stock/stock_cons_list.jsp" />
+			value="/pages-back/stock/product_list.jsp" />
 	</definition>
 
-	<definition name="stockConsAdd" extends="baseLayout">
-		<put-attribute name="title" value="Stock - Consumables" />
+	<definition name="productAdd" extends="baseLayout">
+		<put-attribute name="title" value="Add Product" />
 		<put-attribute name="body"
-			value="/pages-back/stock/stock_cons_add.jsp" />
+			value="/pages-back/stock/product_add.jsp" />
 	</definition>
 
 	<!-- UI mockup เท่านั้น - ยังไม่ต่อ backend จริง -->
@@ -830,16 +830,16 @@
 			value="/pages-back/stock/stock_by_location_list.jsp" />
 	</definition>
 
-	<definition name="stockConsEdit" extends="baseLayout">
-		<put-attribute name="title" value="Stock - Consumables" />
+	<definition name="productEdit" extends="baseLayout">
+		<put-attribute name="title" value="Edit Product" />
 		<put-attribute name="body"
-			value="/pages-back/stock/stock_cons_edit.jsp" />
+			value="/pages-back/stock/product_edit.jsp" />
 	</definition>
 
-	<definition name="stockConsBalance" extends="baseLayout">
+	<definition name="stockBalance" extends="baseLayout">
 		<put-attribute name="title" value="Stock - Consumables" />
 		<put-attribute name="body"
-			value="/pages-back/stock/stock_cons_balance.jsp" />
+			value="/pages-back/stock/stock_balance.jsp" />
 	</definition>
 
 	<!-- Equipment ใช้หน้า settings คนละไฟล์กับ Consumables เพราะยอดคงเหลือ
@@ -862,14 +862,6 @@
 			value="/pages-back/stock/stock_offs_list.jsp" />
 	</definition>
 
-	<!-- Product -->
-	<definition name="productList" extends="baseLayout">
-		<put-attribute name="title" value="Product List" />
-		<put-attribute name="body"
-			value="/pages-back/product/product_list.jsp" />
-	</definition>
-
-	
 	<!-- PO - Purchase Order -->
 	<definition name="purchaseOrderList" extends="baseLayout">
 		<put-attribute name="title" value="Purchase Order List" />
