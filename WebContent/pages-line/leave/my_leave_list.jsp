@@ -612,7 +612,12 @@
 	--liff-bullet-w: 3px;
 	width: calc(100% - 32px); max-width: 393px; margin: 0 auto;
 }
-.leave-filter-card .form-select, .leave-filter-card .form-control { font-size: 13px; }
+#yearFilterBtn { font-size: 13px; font-weight: 600; color: var(--bs-gray-700); border: 1px solid #E4E6EF; border-radius: 8px; padding: 6px 16px; background-color: #F8F9FB; }
+#yearFilterBtn:hover, #yearFilterBtn:focus, #yearFilterBtn:active { background-color: #F8F9FB; border-color: var(--bs-primary); box-shadow: none; }
+#yearFilterBtn::after { vertical-align: 1px; }
+.dropdown-menu[aria-labelledby="yearFilterBtn"] { min-width: 92px; border-radius: 10px; border: 1px solid #E4E6EF; box-shadow: 0 4px 20px rgba(0,0,0,.08); padding: 6px; max-height: 260px; overflow-y: auto; }
+.dropdown-menu[aria-labelledby="yearFilterBtn"] .dropdown-item { font-size: 13px; font-weight: 500; border-radius: 6px; padding: 8px 12px; }
+.dropdown-menu[aria-labelledby="yearFilterBtn"] .dropdown-item.active, .dropdown-menu[aria-labelledby="yearFilterBtn"] .dropdown-item:active { background-color: var(--bs-primary); color: #fff; }
 .card-header .bg-info-subtle:hover { background-color: var(--bs-info) !important; }
 .card-header .bg-info-subtle:hover i { color: var(--bs-info-inverse) !important; }
 .card-header .bg-primary-subtle:hover { background-color: var(--bs-primary) !important; }
@@ -629,48 +634,55 @@
 .leave-summary-dots { display: flex; justify-content: center; gap: 6px; margin-top: 19.5px; }
 .leave-summary-dots span { width: 6px; height: 6px; border-radius: 50%; background: #D9D9E3; transition: background .2s; }
 .leave-summary-dots span.active { background: #1B84FF; }
+.leave-status-badge { display: inline-flex; align-items: center; justify-content: center; gap: 10px; min-width: 26px; height: 26px; padding: 4.23px 6.5px; border-radius: 5.52px; }
+.liff-fab {
+	position: fixed;
+	right: max(16px, calc((100vw - 393px) / 2 + 16px)); /* เกาะขอบขวาของ .liff-shell จริง ไม่ใช่ขอบจอ เผื่อทดสอบจอกว้าง */
+	bottom: calc(90px + 16px + env(safe-area-inset-bottom)); /* ลอยเหนือ .liff-nav (สูง 75px + เผื่อ shadow ตาม body padding-bottom เดิม) */
+	width: 56px; height: 56px;
+	border-radius: 16px;
+	background: var(--bs-success);
+	display: flex; align-items: center; justify-content: center;
+	box-shadow: 0 4px 16px rgba(0,0,0,.2);
+	z-index: 100;
+}
+.liff-loading-overlay {
+	position: fixed; inset: 0;
+	background: rgba(255,255,255,.7);
+	display: none;
+	align-items: center; justify-content: center;
+	z-index: 200; /* เหนือ .liff-fab/.liff-nav (z-index:100) */
+}
 </style>
 
 <div class="liff-shell">
 
-	<div class="d-flex justify-content-between align-items-center mb-6 pt-6">
-		<h1 class="fw-medium text-gray-700 mb-0">My Leave</h1>
-		<a href="javascript:void(0)" class="btn btn-sm btn-primary d-inline-flex align-items-center gap-1" onclick="add()">
-			<i class="ki-duotone ki-plus fs-4"></i> Add
-		</a>
+	<div id="liffLoadingOverlay" class="liff-loading-overlay">
+		<div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading...</span></div>
 	</div>
 
-	<!-- Filter (same form/name/id as legacy so new_searchfromto + daterangepicker script keep working) -->
-	<div class="card leave-filter-card mb-4">
-		<div class="card-body py-4">
-			<form action="new_searchfromto" method="POST" id="searchForm">
-				<div class="row g-2">
-					<div class="col-6">
-						<select class="form-select form-select-sm" data-placeholder="All Leave Type" name="type" onchange="this.form.submit()">
-							<option value="allType" ${leaveType == 'allType' ? 'selected' : ''}>All Type</option>
-							<c:forEach var="leavetype" items="${leavetypelistChoice}">
-								<option value="${leavetype.leaveTypeId}" ${leaveType == leavetype.leaveTypeId ? 'selected' : ''}>${leavetype.leaveTypeName}</option>
-							</c:forEach>
-						</select>
-					</div>
-					<div class="col-6">
-						<select class="form-select form-select-sm" data-placeholder="All Status" name="appr" id="appr" onchange="this.form.submit()">
-							<option value="4" ${appr == 4 ? 'selected' : ''}>All Status</option>
-							<option value="0" ${appr == 0 ? 'selected' : ''}>Waiting</option>
-							<option value="1" ${appr == 1 ? 'selected' : ''}>Approve</option>
-							<option value="2" ${appr == 2 ? 'selected' : ''}>Reject</option>
-							<option value="3" ${appr == 3 ? 'selected' : ''}>Cancel</option>
-						</select>
-					</div>
-					<div class="col-12">
-						<input id="kt_daterangepicker" class="form-control form-control-sm" placeholder="Pick date range" autocomplete="off"/>
-						<input type="hidden" name="startdate" id="startdate">
-						<input type="hidden" name="enddate" id="enddate">
-					</div>
-				</div>
-			</form>
+	<!-- Year range matches pages-back/report/summary_working_day.jsp (startYear=2010 to current, newest first) -->
+	<c:set var="currentYearInt"><%= java.time.Year.now().getValue() %></c:set>
+	<c:set var="startYearInt" value="2010" />
+	<fmt:formatDate value="${startdate}" pattern="yyyy" var="selectedYear"/>
+	<div class="d-flex justify-content-between align-items-center mb-6 pt-6">
+		<h1 class="liff-page-title text-gray-700 mb-0">My Leave</h1>
+		<div class="dropdown">
+			<button class="btn btn-sm dropdown-toggle" type="button" id="yearFilterBtn" data-bs-toggle="dropdown" aria-expanded="false">
+				${selectedYear}
+			</button>
+			<ul class="dropdown-menu dropdown-menu-end" aria-labelledby="yearFilterBtn">
+				<c:forEach var="i" begin="0" end="${currentYearInt - startYearInt}">
+					<c:set var="y" value="${currentYearInt - i}"/>
+					<li><a class="dropdown-item ${selectedYear == y ? 'active' : ''}" href="javascript:void(0)" onclick="filterByYear(${y})">${y}</a></li>
+				</c:forEach>
+			</ul>
 		</div>
 	</div>
+
+	<a href="javascript:void(0)" class="liff-fab" onclick="add()" aria-label="Add">
+		<i class="ki-duotone ki-plus" style="color:#FFFFFF; font-size:1.75rem;"></i>
+	</a>
 
 	<!-- Summary Leave (same EL bindings as legacy, condensed into a scroll strip) -->
 	<div class="mb-6">
@@ -822,9 +834,9 @@
 		</div>
 
 	<!-- Leave List (same EL bindings + same edit/delete/info wiring as legacy) -->
-	<div class="d-flex align-items-center justify-content-between mb-3">
+	<div class="d-flex align-items-center justify-content-between mt-2 mb-4">
 		<span class="fw-bold text-gray-900" style="font-size:16px; line-height:1;">${fn:length(leavelist)} Items Found</span>
-		<span class="fs-8 text-muted">Recent Updates ↓</span>
+		<span class="fw-bold fs-6 text-muted">Recent Updates ↓</span>
 	</div>
 
 	<c:forEach var="leave" items="${leavelist}" varStatus="status">
@@ -832,8 +844,8 @@
 		<div class="card card-bordered mb-3">
 			<div class="card-header" style="padding:16px; min-height:auto; flex-wrap:nowrap;">
 				<div class="d-flex align-items-center gap-2" style="min-width:0; overflow:hidden;">
-					<span class="fw-bold text-primary fs-8" style="flex:none;">#${leave.leave_id}</span>
-					<span class="fs-5 fw-bold lh-1 text-gray-800" style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${leave.leave_type_name}</span>
+					<span class="fw-bold text-primary fs-4" style="flex:none; line-height:1; letter-spacing:0;">#${leave.leave_id}</span>
+					<span class="fs-4 fw-bold text-gray-800" style="line-height:1.4; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${leave.leave_type_name}</span>
 				</div>
 				<div class="d-inline-flex align-items-center" style="gap:10px; flex:none;">
 					<a href="javascript:void(0)" class="btn btn-icon btn-sm bg-info-subtle" onclick="leaveStatus(${leave.leave_id})">
@@ -861,15 +873,15 @@
 			</div>
 			<div class="card-body" style="padding:16px;">
 
-				<div class="fw-bold fs-7 text-dark mb-3">${leave.name}</div>
+				<div class="fw-bold fs-6 text-dark mb-3">${leave.name}</div>
 
-				<div class="d-flex align-items-center gap-1 fs-8 text-gray-600 mb-3">
+				<div class="d-flex align-items-center gap-1 fs-7 text-gray-600 mb-3">
 						<i class="ki-duotone ki-calendar-2 fs-6"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span><span class="path5"></span></i>
 						<span><fmt:formatDate value="${leave.start_date}" type="date" pattern="d MMM yyyy"/> - <fmt:formatDate value="${leave.end_date}" type="date" pattern="d MMM yyyy"/></span>
-						<span class="badge badge-light-primary fs-9 ms-1"><fmt:formatNumber type="number" pattern="#.###" value="${leave.no_day}"/> day</span>
+						<span class="badge badge-light-primary fs-8 ms-1"><fmt:formatNumber type="number" pattern="#.###" value="${leave.no_day}"/> day</span>
 					</div>
 
-					<div class="d-flex flex-column gap-2 fs-8 text-gray-600 mb-3">
+					<div class="d-flex flex-column gap-2 fs-7 text-gray-600 mb-3">
 						<c:if test="${leave.half_day != null}">
 							<div class="d-inline-flex align-items-center gap-1">
 								<i class="ki-duotone ki-calendar-8 fs-6"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span><span class="path5"></span><span class="path6"></span></i>
@@ -886,18 +898,18 @@
 					</div>
 
 					<c:if test="${not empty leave.leave_file}">
-						<div class="d-flex align-items-center gap-1 fs-8 mb-1">
+						<div class="d-flex align-items-center gap-1 fs-7 mb-1">
 							<i class="ki-duotone ki-document"><span class="path1"></span><span class="path2"></span></i>
 							<a href="line_preview_File?id=${leave.leave_file}" target="_blank" class="text-primary text-hover-underline">${leave.file_name}${leave.type}</a>
 						</div>
 					</c:if>
 
 					<div class="d-flex align-items-center justify-content-between">
-						<span class="fs-9 text-muted">Request Date: <fmt:formatDate value="${leave.time_create}" type="date" pattern="d MMM yyyy"/></span>
-						<c:if test="${leave.leave_status_id.toString() == '0'}"><span class="badge badge-light-warning fs-9">Wait for approve</span></c:if>
-						<c:if test="${leave.leave_status_id.toString() == '1'}"><span class="badge badge-light-success fs-9">Approved</span></c:if>
-						<c:if test="${leave.leave_status_id.toString() == '2'}"><span class="badge badge-light-danger fs-9">Reject</span></c:if>
-						<c:if test="${leave.leave_status_id.toString() == '3'}"><span class="badge badge-light-dark fs-9">Cancel</span></c:if>
+						<span class="fs-8 text-muted">Request Date: <fmt:formatDate value="${leave.time_create}" type="date" pattern="d MMM yyyy"/></span>
+						<c:if test="${leave.leave_status_id.toString() == '0'}"><span class="badge badge-light-warning leave-status-badge fs-8">Wait for approve</span></c:if>
+						<c:if test="${leave.leave_status_id.toString() == '1'}"><span class="badge badge-light-success leave-status-badge fs-8">Approved</span></c:if>
+						<c:if test="${leave.leave_status_id.toString() == '2'}"><span class="badge badge-light-danger leave-status-badge fs-8">Reject</span></c:if>
+						<c:if test="${leave.leave_status_id.toString() == '3'}"><span class="badge badge-light-dark leave-status-badge fs-8">Cancel</span></c:if>
 					</div>
 
 				</div>
@@ -905,7 +917,16 @@
 	</c:forEach>
 
 	<c:if test="${empty leavelist}">
-		<div class="text-center text-muted py-10 fs-7">No leave records found</div>
+		<div class="text-center py-10">
+			<div class="d-inline-flex align-items-center justify-content-center mb-4" style="width:88px; height:88px; border-radius:50%; background:#EFF3FA;">
+				<i class="ki-duotone ki-calendar-search text-primary" style="font-size:2.5rem;">
+					<span class="path1"></span><span class="path2"></span><span class="path3"></span>
+					<span class="path4"></span><span class="path5"></span><span class="path6"></span>
+				</i>
+			</div>
+			<div class="fs-6 fw-semibold text-gray-800 mb-1">No leave records found</div>
+			<div class="fs-8 text-muted">ยังไม่มีข้อมูลการลาในช่วงเวลานี้</div>
+		</div>
 	</c:if>
 
 </div>
@@ -915,12 +936,6 @@
 		var pager = document.getElementById('leaveSummaryPager');
 		var dots = document.getElementById('leaveSummaryDots');
 		if (!pager || !dots) return;
-
-		// Items sit flat inside the pager (no hardcoded page split in the JSP).
-		// Group them here into 2x2 pages, 4 at a time, in DOM order — so each
-		// page reads left-to-right/top-to-bottom like a normal grid, and a
-		// partial last page (e.g. 2 items) still fills a full-width page
-		// instead of leaving scroll room short of the next snap point.
 		var items = Array.prototype.slice.call(pager.querySelectorAll('.leave-summary-item'));
 		if (items.length === 0) return;
 
@@ -957,96 +972,10 @@
 </script>
 
 <script>
-	/* $("#kt_daterangepicker").daterangepicker({
-		startDate : moment().startOf("year"),
-		endDate : moment().endOf("year"),
-		locale : {
-			format : "DD MMM YYYY"
-		}
-	}); */
-
-	$(document).ready(function () {
-		// กำหนดค่าเริ่มต้น
-		/* var start = moment("2025-01-01", "YYYY-MM-DD");
-		var end = moment("2025-12-31", "YYYY-MM-DD"); */
-		var start = moment("<fmt:formatDate value='${startdate}' pattern='dd-MM-yyyy'/>", "DD-MM-YYYY");
-		var end = moment("<fmt:formatDate value='${enddate}' pattern='dd-MM-yyyy'/>", "DD-MM-YYYY");
-
-		// สร้าง Date Range Picker
-		/* $("#kt_daterangepicker").daterangepicker({
-			startDate: start,
-			endDate: end,
-			locale: {
-				format: "DD MMM YYYY"
-			}
-		}, function (start, end) {
-			// อัปเดต hidden input ทุกครั้งที่เลือกช่วงวันใหม่
-			$("#startdate").val(start.format("DD-MM-YYYY"));
-			$("#enddate").val(end.format("DD-MM-YYYY"));
-
-			// auto-submit form
-			$("#searchForm").submit();
-		}); */
-		$("#kt_daterangepicker").daterangepicker({
-	        startDate: start,
-	        endDate: end,
-			locale: {
-				format: "DD MMM YYYY",  // รูปแบบวันที่
-				monthNames: [
-				  "January", "February", "March", "April", "May", "June",
-				  "July", "August", "September", "October", "November", "December"
-				],  // กำหนดชื่อเดือนเต็ม
-	        },
-	        showDropdowns: true,     // มี dropdown เดือน/ปี
-	        autoApply: true,  // ยืนยันโดยอัตโนมัติเมื่อเลือกวันที่
-	        linkedCalendars: false,  // เดือนซ้าย-ขวาอิสระ ไม่ fix
-	        alwaysShowCalendars: true,
-	        opens: 'center'
-		}, function (start, end) {
-			// อัปเดต hidden input ทุกครั้งที่เลือกช่วงวันใหม่
-			$("#startdate").val(start.format("DD-MM-YYYY"));
-			$("#enddate").val(end.format("DD-MM-YYYY"));
-
-			// auto-submit form
-			$("#searchForm").submit();
-		});
-
-		// ตั้งค่าเริ่มต้นตอนโหลด
-		$("#startdate").val(start.format("DD-MM-YYYY"));
-		$("#enddate").val(end.format("DD-MM-YYYY"));
-
-
-	    /* $('#kt_daterangepicker_single').daterangepicker({
-	        startDate: moment().startOf('year'),
-	        endDate: moment().endOf('year'),
-	        locale: {
-	            format: 'DD MMM YYYY'
-	        },
-	        singleDatePicker: false,    // false = ใช้ช่วงวัน (range)
-	        showDropdowns: true,        // เพิ่ม dropdown เดือน/ปี
-	        linkedCalendars: false,     // ทำให้แต่ละปฏิทินอิสระ
-	        alwaysShowCalendars: true,  // คงแสดงปฏิทินไว้
-	        opens: 'center'             // เปิดกลางหน้าจอ
-	    }, function(start, end) {
-	        console.log("Selected range: " + start.format("DD MMM YYYY") + " - " + end.format("DD MMM YYYY"));
-	    }); */
-
-/* 	    $('#kt_daterangepicker_dual').daterangepicker({
-	        startDate: moment().startOf('year'),
-	        endDate: moment().endOf('year'),
-	        locale: {
-	            format: 'DD MMM YYYY'
-	        },
-	        showDropdowns: true,     // มี dropdown เดือน/ปี
-	        linkedCalendars: false,  // เดือนซ้าย-ขวาอิสระ ไม่ fix
-	        alwaysShowCalendars: true,
-	        opens: 'center'
-	    }, function(start, end) {
-	        console.log("Selected range: " + start.format("DD MMM YYYY") + " - " + end.format("DD MMM YYYY"));
-	    });
- */		
-	});
-	
+	function filterByYear(year) {
+		document.getElementById('liffLoadingOverlay').style.display = 'flex';
+		window.location.href = 'line_new_myleave_list?Id=${onlineUser.id}&startdate=01-01-' + year + '&enddate=31-12-' + year;
+	}
 </script>
 <!-- <script>
 function leaveStatus(id) {

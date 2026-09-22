@@ -1993,7 +1993,7 @@ input[name="workType"] + .btn.bg-light i { color: var(--bs-gray-400); }
 
 <div class="liff-shell">
 
-	<h1 class="fw-medium text-gray-700 mb-6 pt-6">Home</h1>
+	<h1 class="liff-page-title text-gray-700 mb-6 pt-6">Home</h1>
 
 	<!--begin::Work Hours card-->
 	<div class="card card-flush mb-7">
@@ -2079,19 +2079,19 @@ input[name="workType"] + .btn.bg-light i { color: var(--bs-gray-400); }
 	<div class="card card-flush mb-7">
 		<div class="card-header pt-5 min-h-auto">
 			<div class="card-title flex-column align-items-start">
-				<span class="fs-6 fw-medium text-gray-900">Last Update</span>
-				<span class="text-gray-500 fw-medium fs-7">Check in / Check Out</span>
+				<span class="fs-5 fw-medium text-gray-900">Last Update</span>
+				<span class="text-gray-500 fw-medium fs-6">Check in / Check Out</span>
 			</div>
 		</div>
 		<div class="card-body pt-6 pb-7">
 
 			<!-- Today -->
 			<div class="d-flex flex-column mb-5">
-				<span class="fs-6 fw-medium text-gray-900 mb-3">Today</span>
+				<span class="fs-5 fw-medium text-gray-900 mb-3">Today</span>
 
 				<c:if test="${not empty leaveToday and fn:trim(leaveToday[0].half_day) == '0'}">
 					<div class="d-flex align-items-center gap-2">
-						<span class="badge ${fn:contains(leaveToday[0].leave_type_name, 'ป่วย') ? 'badge-info' : 'badge-primary'} fw-semibold">
+						<span class="badge ${fn:contains(leaveToday[0].leave_type_name, 'ป่วย') ? 'badge-info' : 'badge-primary'} fw-semibold fs-7">
 							${leaveToday[0].leave_type_name} : เต็มวัน
 						</span>
 						<c:if test="${fn:trim(leaveToday[0].leave_status_id) == '0'}">
@@ -2115,10 +2115,10 @@ input[name="workType"] + .btn.bg-light i { color: var(--bs-gray-400); }
 							<div class="d-flex align-items-center justify-content-between">
 								<div class="d-flex align-items-center">
 									<span class="bullet bullet-vertical bg-${inoutColor} min-h-25px me-3 rounded-0"></span>
-									<span class="liff-inout-label text-${inoutColor} fs-8 me-3">${dir}</span>
+									<span class="liff-inout-label text-${inoutColor} fs-7 me-3">${dir}</span>
 									<c:if test="${not empty inoutList[0].work_hours_time_work}">
-										<span class="fw-medium text-gray-900 fs-6 liff-inout-time me-2"><fmt:formatDate value="${inoutList[0].work_hours_time_work}" pattern="HH:mm"/></span>
-										<span class="fw-medium text-gray-900 fs-7"><fmt:formatDate value="${inoutList[0].work_hours_time_work}" pattern="dd MMM yyyy"/></span>
+										<span class="fw-medium text-gray-900 fs-5 liff-inout-time me-2"><fmt:formatDate value="${inoutList[0].work_hours_time_work}" pattern="HH:mm"/></span>
+										<span class="fw-medium text-gray-900 fs-6"><fmt:formatDate value="${inoutList[0].work_hours_time_work}" pattern="dd MMM yyyy"/></span>
 									</c:if>
 								</div>
 								<c:if test="${not empty inoutList[0].work_hours_time_work}">
@@ -2133,7 +2133,7 @@ input[name="workType"] + .btn.bg-light i { color: var(--bs-gray-400); }
 					</div>
 					<c:if test="${not empty leaveToday}">
 						<div class="d-flex align-items-center gap-2 mt-3">
-							<span class="badge ${fn:contains(leaveToday[0].leave_type_name, 'ป่วย') ? 'badge-info' : 'badge-primary'} fw-semibold">
+							<span class="badge ${fn:contains(leaveToday[0].leave_type_name, 'ป่วย') ? 'badge-info' : 'badge-primary'} fw-semibold fs-7">
 								${leaveToday[0].leave_type_name} : ${fn:trim(leaveToday[0].half_day) == '1' ? 'ช่วงเช้า' : 'ช่วงบ่าย'}
 							</span>
 							<c:if test="${fn:trim(leaveToday[0].leave_status_id) == '0'}">
@@ -2148,11 +2148,11 @@ input[name="workType"] + .btn.bg-light i { color: var(--bs-gray-400); }
 
 			<!-- Last work day -->
 			<div class="d-flex flex-column">
-				<span class="fs-6 fw-medium text-gray-900 mb-3">${empty lastWorkDayName ? 'Last' : lastWorkDayName}</span>
+				<span class="fs-5 fw-medium text-gray-900 mb-3">${empty lastWorkDayName ? 'Last' : lastWorkDayName}</span>
 
 				<c:if test="${not empty leaveLastday and fn:trim(leaveLastday[0].half_day) == '0'}">
 					<div class="d-flex align-items-center gap-2">
-						<span class="badge ${fn:contains(leaveLastday[0].leave_type_name, 'ป่วย') ? 'badge-info' : 'badge-primary'} fw-semibold">
+						<span class="badge ${fn:contains(leaveLastday[0].leave_type_name, 'ป่วย') ? 'badge-info' : 'badge-primary'} fw-semibold fs-7">
 							${leaveLastday[0].leave_type_name} : เต็มวัน
 						</span>
 						<c:if test="${fn:trim(leaveLastday[0].leave_status_id) == '0'}">
@@ -2176,10 +2176,10 @@ input[name="workType"] + .btn.bg-light i { color: var(--bs-gray-400); }
 							<div class="d-flex align-items-center justify-content-between">
 								<div class="d-flex align-items-center">
 									<span class="bullet bullet-vertical bg-${inoutColor} min-h-25px me-3 rounded-0"></span>
-									<span class="liff-inout-label text-${inoutColor} fs-8 me-3">${dir}</span>
+									<span class="liff-inout-label text-${inoutColor} fs-7 me-3">${dir}</span>
 									<c:if test="${not empty inoutList[0].work_hours_time_work}">
-										<span class="fw-medium text-gray-900 fs-6 liff-inout-time me-2"><fmt:formatDate value="${inoutList[0].work_hours_time_work}" pattern="HH:mm"/></span>
-										<span class="fw-medium text-gray-900 fs-7"><fmt:formatDate value="${inoutList[0].work_hours_time_work}" pattern="dd MMM yyyy"/></span>
+										<span class="fw-medium text-gray-900 fs-5 liff-inout-time me-2"><fmt:formatDate value="${inoutList[0].work_hours_time_work}" pattern="HH:mm"/></span>
+										<span class="fw-medium text-gray-900 fs-6"><fmt:formatDate value="${inoutList[0].work_hours_time_work}" pattern="dd MMM yyyy"/></span>
 									</c:if>
 								</div>
 								<c:if test="${not empty inoutList[0].work_hours_time_work}">
@@ -2194,7 +2194,7 @@ input[name="workType"] + .btn.bg-light i { color: var(--bs-gray-400); }
 					</div>
 					<c:if test="${not empty leaveLastday}">
 						<div class="d-flex align-items-center gap-2 mt-3">
-							<span class="badge ${fn:contains(leaveLastday[0].leave_type_name, 'ป่วย') ? 'badge-info' : 'badge-primary'} fw-semibold">
+							<span class="badge ${fn:contains(leaveLastday[0].leave_type_name, 'ป่วย') ? 'badge-info' : 'badge-primary'} fw-semibold fs-7">
 								${leaveLastday[0].leave_type_name} : ${fn:trim(leaveLastday[0].half_day) == '1' ? 'ช่วงเช้า' : 'ช่วงบ่าย'}
 							</span>
 							<c:if test="${fn:trim(leaveLastday[0].leave_status_id) == '0'}">

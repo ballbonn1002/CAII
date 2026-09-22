@@ -24,7 +24,7 @@
 <link rel="shortcut icon" href="assets/media/logos/cube-small-ico.ico" />
 
 <!--begin::Fonts(mandatory for all pages)-->
-<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inter:300,400,500,600,700" />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@300;400;500;600;700&display=swap" />
 <!--end::Fonts-->
 <!--begin::Vendor Stylesheets(used for this page only)-->
 <link href="assets/plugins/custom/fullcalendar/fullcalendar.bundle.css" rel="stylesheet" type="text/css" />
@@ -46,6 +46,13 @@ body {
 	overscroll-behavior-y: contain; /* กัน pull-to-refresh / bounce ของ webview */
 	-webkit-tap-highlight-color: transparent; /* กันไฮไลต์ฟ้าตอนแตะปุ่มบน Android */
 	padding-top: env(safe-area-inset-top); /* เผื่อ notch/status bar เวลาเปิดแบบ full-screen */
+	font-family: 'IBM Plex Sans Thai', Helvetica, Arial, sans-serif;
+}
+.liff-page-title {
+	font-weight: 700;
+	font-size: 23.1px;
+	line-height: 27.72px;
+	letter-spacing: 0px;
 }
 </style>
 <!--end::LIFF app-shell standards-->

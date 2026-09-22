@@ -1274,16 +1274,20 @@ jQuery(document).ready(function() {
 	--liff-gutter: 1.5rem;      /* padding ซ้าย-ขวามาตรฐานของการ์ด (เทียบเท่า px-4) */
 	--liff-bullet-w: 3px;       /* ความกว้างแถบสีซ้ายของแต่ละแถว (.bullet.bullet-vertical) */
 	--liff-col-w: 60px;         /* ความกว้าง column เวลา check-in/check-out */
-	--liff-inout-gap: 7px;      /* ระยะห่างไอคอนกับตัวเลขเวลาใน column เดียวกัน */
-	--liff-week-gap: 1.25rem;   /* gap ระหว่างปุ่ม Week */
+	--liff-inout-gap: 14px;      /* ปรับให้ตัวเลขเวลาเลื่อนลงมาใกล้ระดับ badge สถานะฝั่งซ้าย */
+	--liff-week-gap: 8px;   /* ระยะห่างระหว่างปุ่ม week */
 	width: calc(100% - 32px); max-width: 393px; margin: 0 auto;
 }
 #weekButtonsRow .btn-danger:hover,
 #weekButtonsRow .btn-danger:focus,
 #weekButtonsRow .btn-danger:active { background-color: var(--bs-danger) !important; border-color: var(--bs-danger) !important; color: #fff !important; }
+#weekButtonsRow .week-label { color: #B5B5C3; }
+#weekButtonsRow .btn-danger .week-label { color: #fff; }
 .calendar-day-card { border: none; box-shadow: none; border-radius: 0; overflow: hidden; }
 .calendar-day-card .bullet-vertical { height: auto !important; align-self: stretch; border-radius: 0; }
-.calendar-day-card .day-date { font-weight: 600; font-size: 12.9px; line-height: 19.35px; letter-spacing: 0px; }
+.calendar-day-card .day-date { font-weight: 600; font-size: 15px; line-height: 22.5px; letter-spacing: 0px; }
+#calendarPrevBtn i, #calendarNextBtn i { transition: color .15s; }
+#calendarPrevBtn:hover i, #calendarNextBtn:hover i { color: var(--bs-primary) !important; }
 .liff-shell .fs-2x { font-size: 28px !important; }
 .liff-shell .fs-2  { font-size: 20px !important; }
 </style>
@@ -1291,8 +1295,8 @@ jQuery(document).ready(function() {
 <div class="liff-shell">
 
 	<div class="d-flex justify-content-between align-items-center mb-6 pt-6">
-		<h1 class="fw-medium text-gray-700 mb-0">Check List</h1>
-		<h3 id="calendarTitle" class="fs-7 fw-bold text-primary mb-0"></h3>
+		<h1 class="liff-page-title text-gray-700 mb-0">Check List</h1>
+		<h3 id="calendarTitle" class="fs-6 fw-bold text-primary mb-0" style="line-height:19.35px; letter-spacing:0px;"></h3>
 	</div>
 
 	<div class="d-none">
@@ -1450,7 +1454,7 @@ jQuery(document).ready(function() {
 					<a href="#" id="calendarPrevBtn" class="d-inline-flex" style="padding:12px; margin:-12px;">
 						<i class="ki-duotone ki-left-square fs-2x text-muted"><span class="path1"></span><span class="path2"></span></i>
 					</a>
-					<h3 id="calendarMonthYear" class="fs-6 fw-bold mb-0"></h3>
+					<h3 id="calendarMonthYear" class="fs-5 fw-bold mb-0"></h3>
 					<a href="#" id="calendarNextBtn" class="d-inline-flex" style="padding:12px; margin:-12px;">
 						<i class="ki-duotone ki-right-square fs-2x text-muted"><span class="path1"></span><span class="path2"></span></i>
 					</a>
@@ -2000,7 +2004,7 @@ var AppCalendar = function() {
 		let html = '<div class="calendar-day-card card mb-3 ' + rowStyle + '" data-week="' + weekIndex + '">';
 		html += '<div class="d-flex align-items-stretch">';
 		html += '<span class="bullet bullet-vertical ' + iconClass + '" style="width:var(--liff-bullet-w);"></span>';
-		html += '<div class="card-body d-flex align-items-center justify-content-between py-3 px-4 flex-fill">';
+		html += '<div class="card-body d-flex align-items-center justify-content-between py-5 px-4 flex-fill">';
 		html += '<div><span class="day-date">' + dayStr + '</span>' + (statusHtml ? '<br/><span style="display:inline-block;margin-top:10px;">' + statusHtml + '</span>' : '') + '</div>';
 		html += '<div class="d-flex gap-5">';
 		html += '<div style="display:flex;flex-direction:column;align-items:center;min-width:var(--liff-col-w);">' + checkinHtml + '</div>';
@@ -2321,7 +2325,7 @@ var AppCalendar = function() {
 		for (var w = 0; w < weekCount; w++) {
 			var btnClass = (w === defaultWeek) ? 'btn-danger' : 'bg-transparent border-0 text-gray-700';
 			$row.append(
-				$('<button type="button" class="btn btn-sm ' + btnClass + ' d-flex flex-column align-items-center lh-1 gap-2" style="border-radius:600px; width:45px; height:62px; justify-content:center;" data-week="' + w + '"><span class="fs-9 fw-semibold">Week</span><span class="fs-6 fw-bold">' + (w + 1) + '</span></button>')
+				$('<button type="button" class="btn btn-sm ' + btnClass + ' d-flex flex-column align-items-center lh-1 gap-2" style="border-radius:600px; flex:1 1 0; max-width:45px; min-width:0; height:62px; justify-content:center;" data-week="' + w + '"><span class="fs-9 fw-semibold week-label">Week</span><span class="fs-6 fw-bold">' + (w + 1) + '</span></button>')
 			);
 		}
 
