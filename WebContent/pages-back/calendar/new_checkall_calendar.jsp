@@ -597,6 +597,19 @@ var AppCalendar = function() {
 	// Leave Events
 	function buildLeaveEvents() {
         var events = [];
+
+        // เก็บวันที่เป็น holiday ทั้งหมดเป็น 'YYYY-MM-DD' เพื่อใช้ตัดแถบลาให้ขาดช่วง
+        var holidaySet = {};
+        buildHolidayEvents().forEach(function(h) {
+            var hStart = moment(String(h.start).substring(0, 10));
+            var hEnd = moment(h.end); // end เป็น exclusive อยู่แล้ว
+            if (!hStart.isValid()) return;
+            if (!hEnd.isValid()) hEnd = hStart.clone().add(1, 'days');
+            for (var hd = hStart.clone(); hd.isBefore(hEnd, 'day'); hd.add(1, 'days')) {
+                holidaySet[hd.format('YYYY-MM-DD')] = true;
+            }
+        });
+
         <c:forEach var="leave" items="${leave}">
         <c:set var = "leaveDesc" value = "${leave.description}"/>
         	<%pageContext.setAttribute("newline", "\r\n");%>
@@ -615,20 +628,53 @@ var AppCalendar = function() {
 				}
 				var title = '${leave.leave_type_name}' + " : " + halfDay;
 
-                events.push({
-                    id: '${leave.leave_id}',
-                    title: title,
-                    start: '${leave.start_date}'.substring(0,10),
-                    end: moment('${leave.end_date}'.substring(0,10)).add(1, 'days').format("YYYY-MM-DD"),
-                    description: '${leaveDescClean}',
-                    backgroundColor: color.bg,
-                    borderColor: color.border,
-                    allDay: true,
-                    no_day : '${leave.no_day}',
-                    status: '${leave.leave_status_id}',
-                    leave_type_id: '${leave.leave_type_id}',
-                    leave_file: '${leave.file_path}',
-                    className: color.className
+                // ช่วงวันลาทั้งก้อนก่อนตัด (end เป็นวันสุดท้ายจริง ไม่ +1)
+                var origStart = '${leave.start_date}'.substring(0,10);
+                var origEnd = '${leave.end_date}'.substring(0,10);
+                if (!origEnd) origEnd = origStart;
+
+                // ตัดช่วงลาเป็น segment โดยข้ามวันที่เป็น holiday และวันเสาร์-อาทิตย์
+                var segments = [];
+                var segStart = null;
+                var segLast = null;
+                var lastLeaveDay = moment(origEnd);
+                for (var ld = moment(origStart); ld.isSameOrBefore(lastLeaveDay, 'day'); ld.add(1, 'days')) {
+                    var ldKey = ld.format('YYYY-MM-DD');
+                    var ldDow = ld.day(); // 0=Sunday, 6=Saturday
+                    if (holidaySet[ldKey] || ldDow === 0 || ldDow === 6) {
+                        if (segStart) {
+                            segments.push({start: segStart, last: segLast});
+                            segStart = null;
+                        }
+                    } else {
+                        if (!segStart) segStart = ldKey;
+                        segLast = ldKey;
+                    }
+                }
+                if (segStart) segments.push({start: segStart, last: segLast});
+
+                // ถ้าวันลาตรงกับ holiday/เสาร์-อาทิตย์หมด segments จะว่าง → ไม่แสดงแถบลา
+                segments.forEach(function(seg) {
+                    events.push({
+                        id: '${leave.leave_id}',
+                        groupId: '${leave.leave_id}',
+                        title: title,
+                        start: seg.start,
+                        end: moment(seg.last).add(1, 'days').format("YYYY-MM-DD"),
+                        description: '${leaveDescClean}',
+                        backgroundColor: color.bg,
+                        borderColor: color.border,
+                        allDay: true,
+                        no_day : '${leave.no_day}',
+                        status: '${leave.leave_status_id}',
+                        leave_type_id: '${leave.leave_type_id}',
+                        leave_file: '${leave.file_path}',
+                        className: color.className,
+                        extendedProps: {
+                            origStart: origStart,
+                            origEnd: origEnd
+                        }
+                    });
                 });
             }
         </c:forEach>
@@ -845,13 +891,20 @@ var AppCalendar = function() {
 				if (holidayEvent) {
 					statusParts.push(getHolidayStatusHTML(holidayEvent));
 				} else {
+					// สัดส่วนวันลาของวันนี้ (กระจาย no_day ลงวันลาที่นับได้จริง เหมือน Summary)
+					var holidayEventsAll = events.filter(function(ev) { return ev.classNames.includes('fc-event-secondary'); });
 					var leaveFractionDay = 0;
 					leaveEventsAll.forEach(function(lv) {
-						leaveFractionDay += parseFloat(lv.extendedProps.no_day) || 0;
+						var lvNoDay = parseFloat(lv.extendedProps.no_day) || 0;
+						var lvWorkDays = getLeaveWorkDays(lv, holidayEventsAll);
+						if (lvWorkDays.length > 0 && lvWorkDays.indexOf(day.format('YYYY-MM-DD')) !== -1) {
+							leaveFractionDay += lvNoDay / lvWorkDays.length;
+						}
 						statusParts.push(getLeaveStatusHTML(lv));
 					});
 
-					if (dayNum <= todayNum && dayName !== 'Sa' && dayName !== 'Su') {
+					// ลาเต็มวันแล้วไม่ต้องขึ้น No Record (ลาครึ่งวันยังขึ้น เพราะอีกครึ่งวันไม่มี check-in)
+					if (dayNum <= todayNum && dayName !== 'Sa' && dayName !== 'Su' && leaveFractionDay < 0.999) {
 						statusParts.push(getWorkStatusHTML('NO_RECORD'));
 					}
 				}
@@ -893,8 +946,29 @@ var AppCalendar = function() {
 	    return workingDays;
 	}
     
+	// วันลาที่นับได้จริงของใบลาทั้งก้อน (ก่อนตัด segment) = ไม่รวม เสาร์-อาทิตย์ และ holiday
+	// คืนค่าเป็น array ของ 'YYYY-MM-DD'
+	function getLeaveWorkDays(leaveEv, holidayEvents) {
+		var props = leaveEv.extendedProps || {};
+		var evStart = props.origStart ? moment(props.origStart) : moment(leaveEv.start);
+		var evEnd = props.origEnd ? moment(props.origEnd)
+				: (leaveEv.end ? moment(leaveEv.end).subtract(1, 'days') : evStart.clone());
+		var days = [];
+		for (var d = evStart.clone(); d.isSameOrBefore(evEnd, 'day'); d.add(1, 'days')) {
+			var dow = d.day(); // 0=Sunday, 6=Saturday
+			if (dow === 0 || dow === 6) continue;
+			var isHoliday = holidayEvents.some(function(hd) {
+				var hdStart = moment(hd.start);
+				var hdEnd = hd.end ? moment(hd.end).subtract(1, 'days') : hdStart.clone();
+				return d.isSameOrAfter(hdStart, 'day') && d.isSameOrBefore(hdEnd, 'day');
+			});
+			if (!isHoliday) days.push(d.format('YYYY-MM-DD'));
+		}
+		return days;
+	}
+
 	// Calculate summary
-	
+
 	function calculateSummary() {
 		var events = calendar.getEvents();
 	    var view = calendar.view;
@@ -960,17 +1034,21 @@ var AppCalendar = function() {
 				var leaveFractionToday = 0;
 				leaveEvsForDay.forEach(leaveEv => {
 					var noDay = parseFloat(leaveEv.extendedProps.no_day) || 0;
-					
-					var evStart = moment(leaveEv.start);
-					var evEnd = leaveEv.end ? moment(leaveEv.end).clone().subtract(1, 'days') : evStart.clone();
-					var totalLeaveDays = evEnd.diff(evStart, 'days') + 1;
 
-					var overlapStart = moment.max(evStart, start);
-					var overlapEnd = moment.min(evEnd, moment(end).subtract(1, 'days'));
-					var overlapDays = overlapEnd.diff(overlapStart, 'days') + 1;
+					// กระจาย no_day ลงเฉพาะ "วันลาที่นับได้จริง" ของใบลาทั้งก้อน (ไม่นับ เสาร์-อาทิตย์/holiday)
+					var leaveWorkDays = getLeaveWorkDays(leaveEv, holidayEvents);
+					var totalLeaveDays = leaveWorkDays.length;
+
+					var monthStartStr = start.format('YYYY-MM-DD');
+					var monthEndStr = moment(end).subtract(1, 'days').format('YYYY-MM-DD');
+					var overlapDays = leaveWorkDays.filter(function(d) {
+						return d >= monthStartStr && d <= monthEndStr;
+					}).length;
 
 					var perDayFraction = totalLeaveDays > 0 ? (noDay / totalLeaveDays) : 0;
-					leaveFractionToday += perDayFraction;
+					if (leaveWorkDays.indexOf(day.format('YYYY-MM-DD')) !== -1) {
+						leaveFractionToday += perDayFraction;
+					}
 
 					if (leaveEv.title.includes("ลาป่วย")) {
 						status = "Sick Leave";
@@ -979,7 +1057,7 @@ var AppCalendar = function() {
 					}
 
 					if (!processedLeaves.has(leaveEv.id) && totalLeaveDays > 0) {
-						var portionThisMonth = (overlapDays / totalLeaveDays) * noDay;
+						var portionThisMonth = (noDay * overlapDays) / totalLeaveDays;
 						if (leaveEv.title.includes("ลาป่วย")) {
 							summary.sickLeave += portionThisMonth;
 						} else {
