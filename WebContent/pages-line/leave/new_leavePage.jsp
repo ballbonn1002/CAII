@@ -41,6 +41,7 @@
 	</head>
 	<body class="app-default">
 
+<%-- ===== OLD: desktop-clone content (commented out) =====
 		<%
 			//comment for fix ClassCastException
 			//var action = '${action}'; can still be used
@@ -530,6 +531,454 @@
 
 		</div>
 		<!--end:::Main-->
+--%>
+<!-- ===== END: old desktop-clone content (commented out) ===== -->
+
+<%-- =====================================================================
+     NEW: LINE LIFF
+     ===================================================================== --%>
+<style>
+/* .liff-shell / .liff-back-btn / .liff-loading-overlay / .liff-input-underline / .liff-field-*
+   now live in _layout/baseLayout.jsp (shared across all LIFF pages) — kept here only what's
+   specific to this leave form. */
+.liff-leave-card { border-radius: 14px; }
+.liff-day-badges { flex: 1 1 auto; display: flex; justify-content: flex-end; gap: 10px; }
+.liff-day-badge { box-sizing: border-box; display: inline-flex; align-items: center; justify-content: center; min-width: 26px; height: 26px; padding: 4.23px 6.5px; border-radius: 5.52px; opacity: 1; background: var(--bs-gray-300); color: var(--bs-gray-700); font-weight: 600; font-size: 12px; white-space: nowrap; }
+/* leaveType is now a real <select> (#leaveTypeSelect); the legacy-generated radios in #leaveTypes
+   stay in the DOM (visually hidden) so the untouched scripts (quota disable, required validation,
+   leave-id-6 date logic) keep working exactly as before — see the sync script below. */
+#leaveTypes { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.liff-upload-badge { box-sizing: border-box; display: inline-flex; align-items: center; justify-content: center; gap: 10px; margin-left: auto; width: 84px; height: 24px; padding: 0 8px; border-radius: 5.53px; opacity: 1; background: var(--bs-primary-bg-subtle); color: var(--bs-primary); font-weight: 600; font-size: 12px; white-space: nowrap; cursor: pointer; }
+.liff-upload-badge i { color: var(--bs-primary); }
+.liff-submit-bar { display: flex; gap: 10px; margin-top: 20px; }
+.liff-submit-bar .btn { flex: 1; }
+#status.liff-status-select { font-size: 12px; font-weight: 600; padding: 4px 10px; min-width: 0; width: auto; border-radius: 8px; }
+</style>
+
+<div class="liff-shell">
+
+	<div id="liffLoadingOverlay" class="liff-loading-overlay">
+		<div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading...</span></div>
+	</div>
+
+	<div class="d-flex align-items-center gap-3 mb-6 pt-6">
+		<a href="javascript:void(0)" class="liff-back-btn" onclick="document.getElementById('liffLoadingOverlay').style.display='flex'; window.history.go(-1); return false;" aria-label="Back">
+			<i class="ki-duotone ki-black-left fs-3 text-gray-700"><span class="path1"></span><span class="path2"></span></i>
+		</a>
+		<h1 class="liff-page-title text-gray-700 mb-0 flex-grow-1">Create Leave</h1>
+		<!-- <div class="d-flex align-items-center" id="leaveidInfo" style="display:none;">
+			<span class="fw-bold fs-6 text-primary">#<span id="leaveId"></span></span>
+		</div> -->
+	</div>
+
+	<!-- Summary Leave: hidden per request (no longer shown in FE UI). Kept as a comment, not deleted,
+	     in case it needs to come back. -->
+	<!-- <div class="mb-6">
+		<div class="card card-bordered liff-leave-card">
+			<div class="card-body p-4">
+				<div class="d-flex overflow-auto gap-5" style="scrollbar-width:none;">
+					<div class="d-flex align-items-center gap-2" style="white-space:nowrap;">
+						<span class="symbol symbol-40px">
+							<span class="symbol-label bg-primary-subtle">
+								<i class="ki-duotone ki-car-2 text-primary fs-3">
+									<span class="path1"></span><span class="path2"></span><span class="path3"></span>
+									<span class="path4"></span><span class="path5"></span><span class="path6"></span>
+								</i>
+							</span>
+						</span>
+						<div class="d-flex flex-column">
+							<span class="fw-bold text-gray-800 fs-7">
+								<fmt:formatNumber type="number" pattern="#.##" value="${leave_1}"/>+<fmt:formatNumber type="number" pattern="#.##" value="${leave_2}"/>
+								/<fmt:formatNumber type="number" pattern="#.##" value="${quota_1+quota_2}"/>
+							</span>
+							<span class="text-gray-500" style="font-size:11px;">${type_1}+${type_2}</span>
+						</div>
+					</div>
+					<div class="d-flex align-items-center gap-2" style="white-space:nowrap;">
+						<span class="symbol symbol-40px">
+							<span class="symbol-label bg-info-subtle">
+								<i class="ki-duotone ki-pulse text-info fs-3"><span class="path1"></span><span class="path2"></span></i>
+							</span>
+						</span>
+						<div class="d-flex flex-column">
+							<span class="fw-bold text-gray-800 fs-7"><fmt:formatNumber type="number" pattern="#.##" value="${leave_3}"/></span>
+							<span class="text-gray-500" style="font-size:11px;">${type_3}</span>
+						</div>
+					</div>
+					<div class="d-flex align-items-center gap-2" style="white-space:nowrap;">
+						<span class="symbol symbol-40px">
+							<span class="symbol-label bg-warning-subtle">
+								<i class="ki-duotone ki-timer text-warning fs-3"><span class="path1"></span><span class="path2"></span><span class="path3"></span></i>
+							</span>
+						</span>
+						<div class="d-flex flex-column">
+							<span class="fw-bold text-gray-800 fs-7">
+								<fmt:formatNumber type="number" pattern="#.##" value="${leave_6}"/>
+								<c:if test="${quota_4.doubleValue() > 0}">/<fmt:formatNumber type="number" pattern="#.##" value="${quota_4}"/></c:if>
+							</span>
+							<span class="text-gray-500" style="font-size:11px;">${type_6}</span>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div> -->
+
+	<!--begin::Leave form card-->
+	<div class="card card-flush mb-7">
+		<div class="card-body pt-6 pb-7">
+	<form method="post" id="formid" class="form-horizontal" action="line_new_LeaveEdit_Do" enctype="multipart/form-data">
+
+		<!-- Status: hidden per request (no longer shown in FE UI). status_hidden stays live outside
+		     the comment — the halfDay handler reads it directly ($('#status_hidden').val() != '0')
+		     to know whether an Edit-mode leave is still editable. -->
+		<!-- <div class="d-flex justify-content-end mb-3">
+			<select class="form-select liff-status-select" id="status" name="status" disabled required>
+				<option value="0">Wait for approve</option>
+				<option value="1">Approved</option>
+				<option value="2">Reject</option>
+				<option value="3">Cancel</option>
+			</select>
+		</div> -->
+		<input type="hidden" name="status_hidden" id="status_hidden">
+
+		<!-- Next Year Leave: hidden per request (no longer shown in FE UI). Safe to fully remove from
+		     the DOM — nothing reads $('#nextYearLeave')'s value elsewhere; the unconditional
+		     $('#nextYearLeave').trigger('change') on init just no-ops when the element doesn't exist,
+		     and date_from/date_to still get their daterangepicker via the separate init block below. -->
+		<!-- <div class="mb-6" id="nextYearLeaveContainer">
+			<div class="form-check form-check-custom form-check-solid">
+				<input class="form-check-input me-3" type="checkbox" id="nextYearLeave" name="nextYearLeave" value="1" />
+				<label class="form-check-label" for="nextYearLeave">
+					<div class="fw-bold fs-6 text-primary">เลือกวันลาปีหน้า</div>
+				</label>
+			</div>
+		</div> -->
+
+		<!-- DDL User: visually hidden per request (not shown in FE UI). Kept in the DOM (not commented
+		     out) because userOnChange() reads $('#user').val()/.find(":selected") directly, and it
+		     always runs once on page load (via the nextYearLeave init below) even outside the admin
+		     on-behalf flow — removing the element from the DOM broke that with a JS error. -->
+		<div class="mb-6" style="position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap;">
+			<select id="user" name="user" class="form-select liff-input-underline" onchange="userOnChange()" disabled required>
+				<option></option>
+				<optgroup id='u_enable' label="Enable"></optgroup>
+				<optgroup id='u_disable' label="Disable"></optgroup>
+			</select>
+		</div>
+		<input hidden name="user_hidden" id="user_hidden" type="text">
+		<input hidden name="leaveId_hidden" id="leaveId_hidden" type="text">
+
+		<!-- Type of leave: shown as a dropdown; mirrors the legacy hidden radio group below -->
+		<div class="liff-field-row mb-6">
+			<label class="liff-field-label" for="leaveTypeSelect">Type of leave <span class="text-danger">*</span></label>
+			<select class="form-select liff-field-value liff-field-dropdown" id="leaveTypeSelect" required></select>
+		</div>
+		<div id="leaveTypes" class="row g-3 fs-7" aria-hidden="true">
+			<!-- Loop Leave Type Javascript (legacy, kept for quota-disable + validation + leaveId=6 date logic) -->
+		</div>
+
+		<!-- Date range & half-day -->
+		<div class="liff-field-row mb-3">
+			<label class="liff-field-label" for="date_from">Start Date <span class="text-danger">*</span></label>
+			<div class="input-group date date-picker input-daterange liff-field-grow" data-provide="datepicker" data-date-format="dd M yyyy">
+				<input type="text" class="form-control liff-field-value" id="date_from" name="from" autocomplete="off" placeholder="DD/MM/YYYY" required>
+				<input class="hide" name="from_hidden" id="date_from_hidden" type="text" hidden>
+			</div>
+			<i class="ki-duotone ki-calendar fs-4 text-gray-500"><span class="path1"></span><span class="path2"></span></i>
+		</div>
+
+		<div class="liff-field-row mb-3">
+			<label class="liff-field-label" for="date_to">End Date <span class="text-danger">*</span></label>
+			<div class="input-group date date-picker input-daterange liff-field-grow" data-provide="datepicker" data-date-format="dd M yyyy">
+				<input type="text" class="form-control liff-field-value" id="date_to" name="to" autocomplete="off" placeholder="DD/MM/YYYY" required>
+				<input class="hide" name="to_hidden" id="date_to_hidden" type="text" hidden>
+			</div>
+			<i class="ki-duotone ki-calendar fs-4 text-gray-500"><span class="path1"></span><span class="path2"></span></i>
+		</div>
+
+		<div class="liff-field-row mb-6">
+			<label class="liff-field-label" for="halfDay">ช่วงเวลาในการลา <span class="text-danger">*</span></label>
+			<select class="form-select liff-field-value liff-field-dropdown input-daterange" id="halfDay" name="halfDay" required>
+				<option value="0" selected>เต็มวัน</option>
+				<option value="1">ช่วงเช้า</option>
+				<option value="2">ช่วงบ่าย</option>
+				<option value="3">กำหนดเวลาเอง</option>
+			</select>
+		</div>
+
+		<div class="liff-field-row mb-3">
+			<label class="liff-field-label" for="time_from">Start Time <span class="text-danger">*</span></label>
+			<input type="text" class="form-control liff-field-value liff-field-dropdown timepicker timepicker-24 checkHours" id="time_from" name="time_from" autocomplete="off" required disabled>
+			<input class="hide" id="time_from_hidden" name="time_from_hidden" hidden>
+		</div>
+		<div class="liff-field-row mb-3">
+			<label class="liff-field-label" for="time_to">End Time <span class="text-danger">*</span></label>
+			<input type="text" class="form-control liff-field-value liff-field-dropdown timepicker timepicker-24 checkHours" id="time_to" name="time_to" autocomplete="off" required disabled>
+			<input class="hide" id="time_to_hidden" name="time_to_hidden" hidden>
+		</div>
+		<div class="form-text text-danger mb-3" id="alert_time_to"></div>
+
+		<div class="liff-field-row mb-6">
+			<label class="liff-field-label">Day</label>
+			<div class="liff-day-badges">
+				<span class="liff-day-badge" id="amountDisplayDay">0D</span>
+				<span class="liff-day-badge" id="amountDisplayHour">0H</span>
+			</div>
+			<!-- real values the legacy scripts read/write; kept in the DOM but not shown (mirrored into the two badges above) -->
+			<input type="text" id="amount" name="amount" class="checkHours" hidden>
+			<input id="amount_hidden" name="amount_hidden" hidden>
+			<input type="text" id="amount_sub" name="amount_sub" class="checkHours" value="0" hidden>
+			<input value="0" id="amount_sub_hidden" name="amount_sub_hidden" hidden>
+		</div>
+
+		<!-- Description -->
+		<div class="mb-6">
+			<label class="form-label required fs-6">Description</label>
+			<textarea class="form-control liff-input-underline" style="word-break: break-all; white-space: normal;" maxlength="1024"
+				name="description" id="description" rows="3" placeholder="Enter a reason." required></textarea>
+			<input hidden class="hide" name="description_hidden" id="description_hidden" type="text">
+			<div class="text-danger mt-2 fs-8">กรุณาระบุเหตุผลในการลา ตัวอย่าง ลางานเนื่องจากท้องเสีย</div>
+		</div>
+
+		<!-- File Upload -->
+		<div class="liff-field-row mb-3" id="fileUploadSection">
+			<label class="liff-field-label" for="myFile" id="fileUploadLabel">Attach files</label>
+			<label for="myFile" id="lbFile" class="liff-upload-badge">
+				<i class="ki-duotone ki-file-up fs-7"><span class="path1"></span><span class="path2"></span></i>
+				Upload
+				<input type="file" id="myFile" name="fileUpload" style="display:none;" accept="image/*,application/pdf,application/zip" multiple>
+			</label>
+			<input type="hidden" name="deleteFileId" id="deleteFileId">
+			<input type="hidden" name="fileUploadSize" value="${size}" id="size">
+			<input type="hidden" name="fileUploadId" id="fileUploadId">
+		</div>
+		<div id="filePreviewContainer" class="d-flex flex-wrap gap-2 mb-3"></div>
+
+		<div class="mb-6" id="exitingFileSection">
+			<div id="exitingFilePreviewContainer" class="d-flex flex-wrap gap-2 mt-2"></div>
+			<div class="liff-field-row mb-3" id="afterFileRow">
+				<label class="liff-field-label" for="afterFile">Attach files</label>
+				<label for="afterFile" id="lbafterFile" class="liff-upload-badge">
+					<i class="ki-duotone ki-file-up fs-7"><span class="path1"></span><span class="path2"></span></i>
+					Upload
+					<input type="file" id="afterFile" name="afterFileUpload" style="display:none;" accept="image/*,application/pdf" onchange="handleAfterFileSelectAndSubmit(this)">
+				</label>
+			</div>
+			<div id="modalFilePreviewName" class="text-muted fs-6 mt-2"></div>
+		</div>
+
+		<!-- Approver -->
+		<div class="liff-field-row mb-10">
+			<label class="liff-field-label" for="approver">Approvers <span class="text-danger">*</span></label>
+			<select id="approver" name="approver" class="form-select liff-field-value liff-field-dropdown" required>
+				<option value="admin">แอดมิน</option>
+			</select>
+			<input hidden name="approver_hidden" id="approver_hidden" type="text">
+		</div>
+
+		<!-- Buttons -->
+		<div class="liff-submit-bar">
+			<button type="button" class="btn btn-light" onclick="window.history.go(-1); return false;">Cancel</button>
+			<button type="button" class="btn btn-success" id="submitBtn" onclick="beforeSubmit();">Submit</button>
+		</div>
+
+	</form>
+		</div>
+	</div>
+	<!--end::Leave form card-->
+
+	<!-- Request/Approve-by info: hidden per request (no longer shown in FE UI). -->
+	<!-- <div class="py-6" id="infoBlock">
+		<div class="fs-8 text-gray-500" id="requestInfo">
+			Request By : <span id="ucEmpId"></span> <span id="ucName"></span> , <span id="timeCreate"></span>
+		</div>
+		<div class="fs-8 text-gray-500" id="approveInfo">
+			Approved By : <span id="aprEmpId"></span> <span id="aprName"></span> - <span id="aprRole"></span> , <span id="timeUpdate"></span>
+		</div>
+	</div> -->
+
+</div>
+
+<script>
+/* Mirrors the legacy #leaveTypes radio group (generated dynamically by the untouched script
+   further down) into a proper dropdown (#leaveTypeSelect). Two-way synced so quota-disable
+   (userOnChange ajax), edit-mode prefill, and the leaveId=6 date logic all keep working
+   unmodified — this script never edits their behavior, only mirrors state. */
+(function () {
+	var $select = null;
+	var syncing = false;
+
+	function labelTextFor(radio) {
+		// legacy markup is "<input .../>Label text" inside .form-check — grab the trailing text node
+		var text = '';
+		var node = radio.nextSibling;
+		while (node) {
+			if (node.nodeType === 3) text += node.textContent;
+			node = node.nextSibling;
+		}
+		return text.trim();
+	}
+
+	function rebuildOptions() {
+		if (!$select) return;
+		var radios = document.querySelectorAll('#leaveTypes input[name="leaveType"]');
+		var current = $select.value;
+		$select.innerHTML = '<option value="" disabled ' + (current ? '' : 'selected') + '>เลือกประเภทการลา</option>';
+		radios.forEach(function (radio) {
+			var opt = document.createElement('option');
+			opt.value = radio.value;
+			opt.textContent = labelTextFor(radio) || radio.value;
+			opt.disabled = radio.disabled;
+			if (radio.checked) opt.selected = true;
+			$select.appendChild(opt);
+		});
+	}
+
+	function onSelectChange() {
+		if (syncing) return;
+		var radio = document.getElementById('lt_' + $select.value);
+		if (!radio) return;
+		syncing = true;
+		radio.checked = true;
+		$(radio).trigger('change');
+		syncing = false;
+	}
+
+	document.addEventListener('DOMContentLoaded', function () {
+		$select = document.getElementById('leaveTypeSelect');
+		var container = document.getElementById('leaveTypes');
+		if (!$select || !container) return;
+		$select.addEventListener('change', onSelectChange);
+
+		// The legacy scripts set .checked/.disabled as JS properties (not attributes), which a
+		// MutationObserver can't see — so re-sync on radio creation (observable) AND on a short
+		// stagger to catch the edit-mode "checked" set + the quota-disable ajax response, both of
+		// which run as separate synchronous/async steps right after the radios are created.
+		new MutationObserver(rebuildOptions).observe(container, { childList: true, subtree: true });
+		[0, 150, 400, 900, 1600].forEach(function (ms) { setTimeout(rebuildOptions, ms); });
+
+		// Admin "on behalf" flow (la=1): userOnChange() re-checks quota via ajax when #user changes.
+		var userSelect = document.getElementById('user');
+		if (userSelect) userSelect.addEventListener('change', function () { setTimeout(rebuildOptions, 900); });
+	});
+})();
+
+/* "0D" / "0H" badges reading #amount (day) / #amount_sub (hour), which the legacy scripts set via
+   plain .val() in several places (date range calc, half-day switch, checkHours handler, edit-mode
+   init) without dispatching an event — so poll instead of trying to hook every call site. */
+(function () {
+	var lastDay = null, lastHour = null;
+	function tick() {
+		var dayEl = document.getElementById('amount');
+		var hourEl = document.getElementById('amount_sub');
+		var dayBadge = document.getElementById('amountDisplayDay');
+		var hourBadge = document.getElementById('amountDisplayHour');
+		if (!dayEl || !hourEl || !dayBadge || !hourBadge) return;
+		var day = dayEl.value || '0';
+		var hour = hourEl.value || '0';
+		if (day !== lastDay || hour !== lastHour) {
+			lastDay = day; lastHour = hour;
+			dayBadge.textContent = day + 'D';
+			hourBadge.textContent = hour + 'H';
+		}
+	}
+	document.addEventListener('DOMContentLoaded', function () {
+		tick();
+		setInterval(tick, 250);
+	});
+})();
+
+function liffMountSelectDropdown(selectEl) {
+	if (!selectEl || selectEl.dataset.liffMounted) return;
+	selectEl.dataset.liffMounted = '1';
+
+	selectEl.classList.add('liff-select-hidden');
+
+	var wrap = document.createElement('div');
+	wrap.className = 'liff-select-dropdown';
+	selectEl.parentNode.insertBefore(wrap, selectEl);
+	wrap.appendChild(selectEl);
+
+	var triggerClass = selectEl.className.replace('liff-select-hidden', '').trim();
+	var btn = document.createElement('button');
+	btn.type = 'button';
+	btn.className = (triggerClass + ' liff-dropdown-trigger').trim();
+	wrap.appendChild(btn);
+
+	var menu = document.createElement('ul');
+	menu.className = 'liff-dropdown-menu';
+	wrap.appendChild(menu);
+
+	function closeMenu() { wrap.classList.remove('liff-dropdown-open'); }
+	function openMenu() {
+		document.querySelectorAll('.liff-select-dropdown.liff-dropdown-open').forEach(function (el) {
+			if (el !== wrap) el.classList.remove('liff-dropdown-open');
+		});
+		wrap.classList.add('liff-dropdown-open');
+	}
+
+	btn.addEventListener('click', function (e) {
+		e.stopPropagation();
+		if (btn.disabled) return;
+		if (wrap.classList.contains('liff-dropdown-open')) closeMenu(); else openMenu();
+	});
+	document.addEventListener('click', function (e) {
+		if (!wrap.contains(e.target)) closeMenu();
+	});
+
+	function sync() {
+		var opts = selectEl.options;
+		menu.innerHTML = '';
+		var seenValues = {}; // legacy population code can append the same value more than once
+		                      // (e.g. approver: once from the static markup, once from the user
+		                      // list loop, once from the AJAX response) — only show it once, or
+		                      // clicking a later duplicate looks like it does nothing (the select
+		                      // just re-lands on whichever matching option came first).
+		for (var i = 0; i < opts.length; i++) {
+			(function (opt) {
+				if (opt.value === '') return; // skip placeholder options
+				if (Object.prototype.hasOwnProperty.call(seenValues, opt.value)) return;
+				seenValues[opt.value] = true;
+				var li = document.createElement('li');
+				// plain <button>, not <a href="javascript:void(0)"> — this runs inside the LINE
+				// in-app webview, which can be finicky about javascript: URIs; a button has no
+				// navigation semantics to fight with at all.
+				var a = document.createElement('button');
+				a.type = 'button';
+				a.className = 'dropdown-item' + (opt.selected ? ' active' : '') + (opt.disabled ? ' disabled' : '');
+				a.textContent = opt.textContent;
+				a.disabled = !!opt.disabled;
+				if (!opt.disabled) {
+					a.addEventListener('click', function (e) {
+						e.preventDefault();
+						e.stopPropagation();
+						selectEl.value = opt.value;
+						selectEl.dispatchEvent(new Event('change', { bubbles: true }));
+						closeMenu();
+					});
+				}
+				li.appendChild(a);
+				menu.appendChild(li);
+			})(opts[i]);
+		}
+		var selectedOpt = selectEl.options[selectEl.selectedIndex];
+		btn.textContent = selectedOpt ? selectedOpt.textContent : '';
+		btn.disabled = selectEl.disabled;
+	}
+
+	sync();
+	selectEl.addEventListener('change', sync);
+	new MutationObserver(sync).observe(selectEl, { childList: true, subtree: true, attributes: true, attributeFilter: ['disabled'] });
+}
+
+document.addEventListener('DOMContentLoaded', function () {
+	['leaveTypeSelect', 'halfDay', 'approver'].forEach(function (id) {
+		liffMountSelectDropdown(document.getElementById(id));
+	});
+});
+</script>
+
 	</body>
 <script>
 //var action = '${action}';
@@ -579,34 +1028,7 @@ $(document).ready(function () {
 			$('#alert_time_to').text('')
 		}
 	});
-
-	$('#myFile').on("change", function () {
-		const file = this.files[0];
-		const fileName = this.files[0].name;
-		const forbiddenChars = /[\/:*?"<>|]/;
-
-		if (forbiddenChars.test(fileName)) {
-			alert("File name contains invalid characters for Windows");
-			$(this).val('');
-			$('#linkImage').text('');
-			$('#size').val('');
-			return;
-		}
-
-		$('#linkImage').text(fileName);
-
-		var fSExt = new Array('Bytes', 'KB', 'MB', 'GB');
-		fSize = this.files[0].size;
-		i = 0;
-		while (fSize > 900) {
-			fSize /= 1024;
-			i++;
-		}
-		var size_n = (Math.round(fSize * 100) / 100);
-		var size = size_n + ' ' + fSExt[i];
-		console.log(size)
-		$('#size').val(size);
-	});
+	// #myFile change is handled by lfAddFiles() (multi-file model) further down the file.
 
 
 });
@@ -730,6 +1152,9 @@ $(function () {
 <c:if test="${fileLeave == null}">
 	<c:set var="fileLeave" value="''" />
 </c:if>
+<c:if test="${fileLeaveList == null}">
+	<c:set var="fileLeaveList" value="[]" />
+</c:if>
 
 <script>
 $(() => {
@@ -788,21 +1213,14 @@ $(() => {
 		    $('#fileUploadSection').addClass('d-none');
 			$('#exitingFileSection').addClass('d-block');
 			
-			// Render existing file in exitingFilePreviewContainer
-			if (fileLeave != '' && fileLeave != null) {
-				const fullFileName = fileLeave.name + fileLeave.type;
-				const downloadPath = 'line_preview_File?id=' + fileLeave.fileId;
-				const exitingContainer = document.getElementById('exitingFilePreviewContainer');
-				if (exitingContainer) {
-					exitingContainer.innerHTML = '';
-					renderSingleFilePreview(fullFileName, downloadPath, true, fileLeave.fileId, 'exitingFilePreviewContainer', 'myFile', true);
-				}
-			}
+			// Render existing files (read-only) — real source is the file table (page='leave')
+			lfLoadExisting(${fileLeaveList});
+			lfRenderExistingReadonly('exitingFilePreviewContainer');
 		    $('#submitBtn').addClass('d-none');
 		    
-		    // Hide afterFile button unless status is Approved (1)
+		    // Hide afterFile row unless status is Approved (1)
 		    if (leave.leaveStatusId.toString() != '1') {
-		    	$('#lbafterFile').addClass('d-none');
+		    	$('#afterFileRow').addClass('d-none');
 		    }
 		    
 		    $('#aprEmpId').text(aprEmpId);
@@ -818,16 +1236,13 @@ $(() => {
 			$('#leaveidInfo').show();
 			$('#requestInfo').show();
 		    $('#approveInfo').hide();
-		    // Hide afterFile button for 'Wait for approve' status
-		    $('#lbafterFile').hide();
+		    // Hide afterFile row for 'Wait for approve' status
+		    $('#afterFileRow').hide();
 			$('#fileUploadSection').removeClass('d-none');
 			$('#exitingFileSection').addClass('d-none');
-			if (fileLeave != '' && fileLeave != null && fileLeave.fileId) {
-				const fullFileName = fileLeave.name + fileLeave.type;
-				const downloadPath = 'line_preview_File?id=' + fileLeave.fileId;
-				renderSingleFilePreview(fullFileName, downloadPath, true, fileLeave.fileId, 'filePreviewContainer', 'myFile');
-				$('#fileUploadId').val(fileLeave.fileId);
-			}
+			// Existing files (editable) — real source is the file table (page='leave')
+			lfLoadExisting(${fileLeaveList});
+			lfRenderAll();
 			$('#ucEmpId').text(ucEmpId);
 	        $('#ucName').text(ucName);
 	        $('#timeCreate').text(timeCreate);
@@ -846,8 +1261,8 @@ $(() => {
 		$('#leaveidInfo').hide();
 		$('#requestInfo').hide();
 		$('#approveInfo').hide();
-		// Hide afterFile button in Add mode
-		$('#lbafterFile').hide();
+		// Hide afterFile row in Add mode
+		$('#afterFileRow').hide();
 		
 		if (la == '1') {
 			<perm:permission object="leave.viewall">
@@ -1335,12 +1750,13 @@ function showFileName(input) {
 function beforeSubmit() {
 	var spinner = $('#loader');
 	var form = $('#formid');
+	// Merge all attached files (main + inline "attach files" control) into #myFile + set #deleteFileId
+	if (typeof lfSyncInput === 'function') { lfSyncInput(); }
 	var reportValidity = form[0].reportValidity();
 	if (reportValidity) {
 		spinner.show();
 		$('#btn_submit').prop('disabled', true);
 		$('#formid').find(':input').prop('disabled', false);
-		console.log(form);
 		form.submit();
 
 		// Refresh the window that opened this one, if it exists to show the latest data
@@ -1505,144 +1921,33 @@ window.removeSingleFile = function (isExisting, fileId, containerId = 'filePrevi
 
 document.addEventListener('DOMContentLoaded', function () {
 	const fileInput = document.getElementById('myFile');
-
-	if (typeof action !== 'undefined' && action === 'Edit' && typeof fileLeave !== 'undefined' && fileLeave != null && fileLeave != '') {
-		const fullFileName = fileLeave.name + fileLeave.type;
-		const downloadPath = 'line_preview_File?id=' + fileLeave.fileId;
-		renderSingleFilePreview(fullFileName, downloadPath, true, fileLeave.fileId);
-		$('#fileUploadId').val(fileLeave.fileId);
-		$('#deleteFileId').val('');
-	}
-
 	if (!fileInput) {
 		console.error("Critical Error: File input element with ID 'myFile' not found.");
 		return;
 	}
-
+	// Main Attach-files control: can pick several files -> accumulate into LeaveFiles.pending
+	// (doesn't overwrite what's already attached). window.__lfAddFilesCallback lets the inline
+	// "attach file" control (handleAfterFileSelectAndSubmit, further down) know when its
+	// forwarded file is done.
 	fileInput.addEventListener('change', function (event) {
-		const file = event.target.files[0];
-		if (!file) return;
-		const forbiddenChars = /[\/:*?"<>|]/;
-		if (forbiddenChars.test(file.name)) {
-			alert("File name contains invalid characters.");
-			this.value = '';
-			const def = document.getElementById('filePreviewContainer'); if (def) def.innerHTML = '';
-			const exf = document.getElementById('exitingFilePreviewContainer'); if (exf) exf.innerHTML = '';
-			const mdf = document.getElementById('modalFilePreviewName'); if (mdf) mdf.innerText = 'No file selected';
-			const sz = document.getElementById('size'); if (sz) sz.value = '';
-			return;
-		}
-
-		const containerId = window.filePreviewTarget || 'filePreviewContainer';
-		if (window.filePreviewTarget) delete window.filePreviewTarget;
-
-		const defC = document.getElementById('filePreviewContainer'); if (defC) defC.innerHTML = '';
-		const mdfC = document.getElementById('modalFilePreviewName'); if (mdfC) mdfC.innerText = 'No file selected';
-		const exfC = document.getElementById('exitingFilePreviewContainer'); if (exfC) exfC.innerHTML = '';
-
-		var fSExt = new Array('Bytes', 'KB', 'MB', 'GB');
-		var fSize = file.size;
-		var i = 0;
-		while (fSize > 900) {
-			fSize /= 1024;
-			i++;
-		}
-		var size_n = (Math.round(fSize * 100) / 100);
-		const sizeEl = document.getElementById('size'); if (sizeEl) sizeEl.value = size_n + ' ' + fSExt[i];
-
-		const tempUrl = URL.createObjectURL(file);
-		renderSingleFilePreview(file.name, tempUrl, false, null, containerId, 'myFile');
-
-		const delEl = document.getElementById('deleteFileId'); if (delEl) delEl.value = '';
-		const fupEl = document.getElementById('fileUploadId'); if (fupEl) fupEl.value = '';
+		var cb = window.__lfAddFilesCallback;
+		window.__lfAddFilesCallback = null;
+		lfAddFiles(event.target.files, cb);
 	});
-
 });
 
-document.getElementById('myFile').addEventListener('change', function(e) {
-    console.log("fileUpload");
-	const file = e.target.files[0];
-
-    if (!file) {
-        return;
-    }
-
-    if (!file.type.startsWith('image/')) {
-        return;
-    }
-    
-    const limitSize = 500 * 1024;
-    if (file.size <= limitSize) {
-        console.log("ขนาดไฟล์เล็กอยู่แล้ว (" + (file.size / 1024).toFixed(2) + " KB) ข้ามการย่อขนาด");
-        return;
-    }
-    
-    console.log("Before resize: " + (file.size / 1024 / 1024).toFixed(2) + " MB");
-
-    new Compressor(file, {
-        quality: 0.8,
-        maxWidth: 1024, 
-        maxHeight: 1024,   
-        success(result) {
-
-            const compressedFile = new File([result], file.name, {
-                type: result.type,
-                lastModified: Date.now()
-            });
-
-            console.log("After resize: " + (compressedFile.size / 1024 / 1024).toFixed(2) + " MB");
-
-            const dataTransfer = new DataTransfer();
-            dataTransfer.items.add(compressedFile);
-            
-            document.getElementById('myFile').files = dataTransfer.files;
-            
-        },
-        error(err) {
-            console.error("Error resize: ", err.message);
-        },
-    });
-});
-
-function previewModalFile(input) {
+// Inline "Attach files" control shown when editing an Approved leave (no main Submit button
+// there, so picking a file here submits right away once it clears validation/compression).
+function handleAfterFileSelectAndSubmit(input) {
 	const container = document.getElementById('modalFilePreviewName');
-    if (!container) return;
-	if (input.files && input.files[0]) {
-		const file = input.files[0];
-        const tempUrl = URL.createObjectURL(file);
-        renderSingleFilePreview(file.name, tempUrl, false, null, 'modalFilePreviewName', 'afterFile');
-
-	} else {
-		container.innerHTML = '<div class="text-muted fs-6">No file selected</div>';
-	}
-}
-function clearModalFile() {
-    const input = document.getElementById('afterFile');
-    if (input) input.value = '';
-    
-    removeSingleFile(false, null, 'modalFilePreviewName', 'afterFile');
-    
-    const container = document.getElementById('modalFilePreviewName');
-    if (container) {
-        container.innerHTML = '<div class="text-muted fs-6">No file selected</div>';
-    }
-}
-function submitModalFile() {
-	const input = document.getElementById('afterFile');
-	if (input.files && input.files.length > 0) {
-		handleAfterFileSelect(input);
-		var modalEl = document.getElementById('attachFileModal');
-		var modalInstance = bootstrap.Modal.getInstance(modalEl);
-		if (modalInstance) {
-			modalInstance.hide();
-		} else {
-			$('#attachFileModal').modal('hide');
-		}
-		clearModalFile();
+	if (!input.files || input.files.length === 0) return;
+	window.__lfAddFilesCallback = function (success) {
+		if (!success) return;
+		try { input.value = ''; } catch (e) { /* ignore */ }
+		if (container) container.innerHTML = '';
 		beforeSubmit();
-	} else {
-		alert('Please select a file first.');
-	}
+	};
+	handleAfterFileSelect(input);
 }
 </script>
 
@@ -1691,6 +1996,279 @@ function handleAfterFileSelect(input) {
 	if (deleteInput) deleteInput.value = '';
 	var fileIdInput = document.getElementById('fileUploadId');
 	if (fileIdInput) fileIdInput.value = '';
+}
+</script>
+
+<script>
+/* =========================================================================
+ * Multi-file attach model, ported from pages-back/leave/new_leavePage.jsp so
+ * this LIFF page supports attaching several files, not just one — same
+ * validation/compression rules as the desktop admin page (HEIC rejection,
+ * duplicate check, 2MB total size cap, auto-compress large images).
+ * Before submit, beforeSubmit() calls lfSyncInput() to merge pending ->
+ * #myFile and deleted -> #deleteFileId.
+ * ========================================================================= */
+window.LeaveFiles = window.LeaveFiles || { pending: [], existing: [], deleted: [], loading: [] };
+var LF_LOADING_SEQ = 0;
+
+var LF_FORBIDDEN = /[\/:*?"<>|]/;
+var LF_IMG_LIMIT = 500 * 1024;
+var LF_TOTAL_LIMIT = 2 * 1024 * 1024;
+
+function getFileIconPath(fileName) {
+	var ext = fileName.split('.').pop().toLowerCase();
+	switch (ext) {
+		case 'pdf': return 'assets/media/svg/files/pdf.svg';
+		case 'doc': case 'docx': return 'assets/media/svg/files/doc.svg';
+		case 'xls': case 'xlsx': return 'assets/media/svg/files/xls.svg';
+		case 'png': case 'jpg': case 'jpeg': case 'gif': case 'webp':
+			return 'assets/media/svg/files/blank-image.svg';
+		case 'zip': return 'assets/media/svg/files/zip.svg';
+		default: return 'assets/media/svg/files/folder-document.svg';
+	}
+}
+
+function lfLoadExisting(list) {
+	LeaveFiles.existing = [];
+	LeaveFiles.deleted = [];
+	if (list && list.length) {
+		for (var i = 0; i < list.length; i++) {
+			var f = list[i];
+			if (!f || f.fileId == null) continue;
+			LeaveFiles.existing.push({ fileId: f.fileId, name: (f.name || 'file'), type: (f.type || '') });
+		}
+	}
+}
+
+function lfMakeItem(name, url, onRemove, disableTrash) {
+	var wrapper = document.createElement('div');
+	wrapper.className = 'd-flex w-100 justify-content-between align-items-center p-2 border border-gray-300 rounded bg-white';
+
+	var leftGroup = document.createElement('div');
+	leftGroup.className = 'd-flex align-items-center overflow-hidden me-4';
+
+	var icon = document.createElement('img');
+	icon.src = getFileIconPath(name);
+	icon.className = 'w-25px h-25px me-3 flex-shrink-0';
+	icon.alt = 'icon';
+
+	var link = document.createElement('a');
+	link.href = url || '#';
+	link.target = '_blank';
+	link.className = 'text-gray-800 fw-medium text-hover-primary text-truncate';
+	link.textContent = name;
+	link.style.maxWidth = '250px';
+
+	leftGroup.appendChild(icon);
+	leftGroup.appendChild(link);
+
+	var removeBtn = document.createElement('span');
+	removeBtn.className = 'btn btn-icon btn-sm btn-light-danger';
+	var trashIcon = document.createElement('i');
+	trashIcon.className = 'ki-duotone ki-trash fs-3';
+	trashIcon.innerHTML = '<span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span><span class="path5"></span>';
+	removeBtn.appendChild(trashIcon);
+	if (disableTrash) {
+		removeBtn.style.opacity = '0.5';
+		removeBtn.style.pointerEvents = 'none';
+	} else {
+		removeBtn.classList.add('cursor-pointer');
+		removeBtn.onclick = onRemove;
+	}
+
+	wrapper.appendChild(leftGroup);
+	wrapper.appendChild(removeBtn);
+	return wrapper;
+}
+
+function lfMakeLoadingItem(name) {
+	var wrapper = document.createElement('div');
+	wrapper.className = 'd-flex w-100 align-items-center p-2 border border-gray-300 rounded bg-white';
+
+	var spinner = document.createElement('span');
+	spinner.className = 'spinner-border spinner-border-sm text-primary me-3 flex-shrink-0';
+	spinner.setAttribute('role', 'status');
+
+	var label = document.createElement('span');
+	label.className = 'text-gray-600 fs-6 text-truncate';
+	label.textContent = 'กำลังประมวลผล ' + name + '...';
+	label.style.maxWidth = '250px';
+
+	wrapper.appendChild(spinner);
+	wrapper.appendChild(label);
+	return wrapper;
+}
+
+function lfRemoveLoading(loadingId) {
+	LeaveFiles.loading = LeaveFiles.loading.filter(function (l) { return l.id !== loadingId; });
+}
+
+function lfUpdateSubmitState() {
+	var hasLoading = LeaveFiles.loading.length > 0;
+	$('#submitBtn')
+		.prop('disabled', hasLoading)
+		.toggleClass('disabled', hasLoading)
+		.attr('title', hasLoading ? 'กำลังประมวลผลไฟล์แนบ กรุณารอสักครู่' : '');
+}
+
+function lfPaint(containerId, opts) {
+	var c = document.getElementById(containerId);
+	if (!c) return;
+	opts = opts || {};
+	c.innerHTML = '';
+	for (var i = 0; i < LeaveFiles.existing.length; i++) {
+		(function (ex) {
+			if (LeaveFiles.deleted.indexOf(ex.fileId) !== -1) return;
+			c.appendChild(lfMakeItem(ex.name + (ex.type || ''), 'line_preview_File?id=' + ex.fileId, function () {
+				LeaveFiles.deleted.push(ex.fileId);
+				lfSyncInput();
+				lfRenderAll();
+			}, !!opts.readonly));
+		})(LeaveFiles.existing[i]);
+	}
+	for (var j = 0; j < LeaveFiles.pending.length; j++) {
+		(function (idx, file) {
+			c.appendChild(lfMakeItem(file.name, URL.createObjectURL(file), function () {
+				LeaveFiles.pending.splice(idx, 1);
+				lfSyncInput();
+				lfRenderAll();
+			}, !!opts.readonly));
+		})(j, LeaveFiles.pending[j]);
+	}
+	if (!opts.readonly) {
+		for (var k = 0; k < LeaveFiles.loading.length; k++) {
+			c.appendChild(lfMakeLoadingItem(LeaveFiles.loading[k].name));
+		}
+	}
+	if (!c.children.length && opts.emptyText) {
+		c.innerHTML = '<div class="text-muted fs-6">' + opts.emptyText + '</div>';
+	}
+
+	lfUpdateSubmitState();
+}
+
+function lfRenderAll() {
+	lfPaint('filePreviewContainer', {});
+}
+
+function lfRenderExistingReadonly(containerId) {
+	lfPaint(containerId, { readonly: true });
+}
+
+function lfDup(file) {
+	return LeaveFiles.pending.some(function (f) { return f.name === file.name && f.size === file.size; });
+}
+
+function lfCurrentTotalSize() {
+	var total = 0;
+	LeaveFiles.pending.forEach(function (f) { total += f.size; });
+	return total;
+}
+
+function lfIsHeic(file) {
+	var name = (file.name || '').toLowerCase();
+	return name.endsWith('.heic') || name.endsWith('.heif')
+		|| file.type === 'image/heic' || file.type === 'image/heif';
+}
+
+function lfCompressIfNeeded(file, loadingId, onDone) {
+	if (file.type && file.type.indexOf('image/') === 0 && file.size > LF_IMG_LIMIT && typeof Compressor !== 'undefined') {
+		new Compressor(file, {
+			quality: 0.8, maxWidth: 1024, maxHeight: 1024,
+			success: function (result) {
+				var compressed = new File([result], file.name, { type: result.type, lastModified: Date.now() });
+				lfTryAddFile(compressed, loadingId, onDone);
+			},
+			error: function (err) {
+				console.error('resize error:', err && err.message);
+				lfTryAddFile(file, loadingId, onDone);
+			}
+		});
+	} else {
+		lfTryAddFile(file, loadingId, onDone);
+	}
+}
+
+function lfProcessFile(file, loadingId, onDone) {
+	if (lfIsHeic(file)) {
+		lfRemoveLoading(loadingId);
+		lfRenderAll();
+		Swal.fire({
+			icon: 'error',
+			title: 'ไม่รองรับไฟล์ HEIC',
+			html: 'ไม่รองรับไฟล์นามสกุล .heic กรุณาแปลงก่อนแนบไฟล์'
+				+ '<br><br><span class="text-muted fs-7">ไฟล์ที่รองรับ: PNG, JPG, JPEG, GIF, WEBP, PDF, ZIP</span>',
+			confirmButtonText: 'รับทราบ'
+		});
+		if (onDone) onDone(false);
+		return;
+	}
+	lfCompressIfNeeded(file, loadingId, onDone);
+}
+
+function lfTryAddFile(file, loadingId, onDone) {
+	lfRemoveLoading(loadingId);
+	var currentTotal = lfCurrentTotalSize();
+	if (currentTotal + file.size > LF_TOTAL_LIMIT) {
+		Swal.fire({
+			icon: 'warning',
+			title: 'ไฟล์มีขนาดเกินกำหนด',
+			text: 'ไม่สามารถแนบไฟล์ "' + file.name + '" ได้ เนื่องจากขนาดไฟล์รวมเกินขนาดสูงสุดที่กำหนดไว้',
+			confirmButtonText: 'รับทราบ'
+		});
+		lfRenderAll();
+		if (onDone) onDone(false);
+		return;
+	}
+	LeaveFiles.pending.push(file);
+	lfSyncInput();
+	lfRenderAll();
+	if (onDone) onDone(true);
+}
+
+function lfAddFiles(fileList, onDone) {
+	if (!fileList || !fileList.length) {
+		if (onDone) onDone(false);
+		return;
+	}
+
+	Array.prototype.slice.call(fileList).forEach(function (file) {
+		if (LF_FORBIDDEN.test(file.name)) {
+			Swal.fire({
+				icon: 'error',
+				title: 'Invalid file name',
+				text: 'File name contains invalid characters: ' + file.name,
+				confirmButtonText: 'OK'
+			});
+			if (onDone) onDone(false);
+			return;
+		}
+		if (lfDup(file)) {
+			if (onDone) onDone(true);
+			return;
+		}
+
+		var loadingId = ++LF_LOADING_SEQ;
+		LeaveFiles.loading.push({ id: loadingId, name: file.name });
+		lfRenderAll();
+
+		lfProcessFile(file, loadingId, onDone);
+	});
+}
+
+function lfSyncInput() {
+	var myFile = document.getElementById('myFile');
+	if (myFile) {
+		try {
+			var dt = new DataTransfer();
+			LeaveFiles.pending.forEach(function (f) { dt.items.add(f); });
+			myFile.files = dt.files;
+		} catch (e) { console.warn('lfSyncInput DataTransfer failed', e); }
+	}
+	var del = document.getElementById('deleteFileId');
+	if (del) del.value = LeaveFiles.deleted.join(',');
+	var sz = document.getElementById('size');
+	if (sz) sz.value = LeaveFiles.pending.length ? (LeaveFiles.pending.length + ' file(s)') : '';
 }
 </script>
 

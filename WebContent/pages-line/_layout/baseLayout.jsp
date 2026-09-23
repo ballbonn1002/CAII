@@ -54,6 +54,53 @@ body {
 	line-height: 27.72px;
 	letter-spacing: 0px;
 }
+.liff-shell { --liff-gutter: 1.5rem; width: calc(100% - 32px); max-width: 393px; margin: 0 auto; }
+.liff-back-btn { display: inline-flex; align-items: center; justify-content: center; width: 36px; height: 36px; border-radius: 10px; background: #F8F9FB; border: 1px solid #E4E6EF; }
+.liff-loading-overlay {
+	position: fixed; inset: 0;
+	background: rgba(255,255,255,.7);
+	display: none;
+	align-items: center; justify-content: center;
+	z-index: 200;
+}
+.liff-input-underline { border: none; border-bottom: 1.5px solid #E4E6EF; border-radius: 0; background: transparent; padding: 8px 2px; box-shadow: none !important; }
+.liff-input-underline:focus { border-bottom-color: var(--bs-primary); background: transparent; }
+.liff-input-underline:disabled, .liff-input-underline[readonly] { background: transparent; border-bottom-style: dashed; color: var(--bs-gray-600); }
+textarea.liff-input-underline { padding-left: 2px; padding-right: 2px; }
+.liff-field-row { box-sizing: border-box; display: flex; flex-direction: row; align-items: center; padding: 0; gap: 6.5px; width: 100%; min-height: 55.25px; border-bottom: 1px solid #DBDFE9; }
+.liff-field-row .liff-field-label { flex: none; font-size: 13.5px; font-weight: 500; color: var(--bs-gray-700); white-space: nowrap; }
+.liff-field-row .liff-field-value { flex: 1 1 auto; min-width: 0; border: none !important; background-color: transparent !important; padding: 0 !important; text-align: right; box-shadow: none !important; }
+.liff-field-row .liff-field-value:disabled, .liff-field-row .liff-field-value[readonly] { color: var(--bs-gray-600); cursor: default; }
+.liff-field-row .liff-field-value::placeholder { color: var(--bs-gray-300); opacity: 1; }
+.liff-field-grow { flex: 1 1 auto; min-width: 0; }
+.liff-field-row .liff-field-value.liff-field-dropdown {
+	appearance: none; -webkit-appearance: none; -moz-appearance: none;
+	padding-right: 18px !important;
+	background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%2399A1B7' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.6' d='m2 5 6 6 6-6'/%3e%3c/svg%3e") !important;
+	background-repeat: no-repeat !important;
+	background-position: right center !important;
+	background-size: 11px 8px !important;
+	cursor: pointer;
+}
+.liff-field-row .liff-field-value.liff-field-dropdown:disabled { cursor: default; background-image: none !important; padding-right: 0 !important; }
+.liff-select-hidden { position: absolute !important; width: 1px !important; height: 1px !important; overflow: hidden !important; clip: rect(0 0 0 0) !important; white-space: nowrap !important; }
+.liff-field-row .liff-select-dropdown { position: relative; flex: 1 1 auto; min-width: 0; }
+.liff-select-dropdown .liff-dropdown-trigger { width: 100%; border: none !important; background-color: transparent !important; }
+.liff-select-dropdown .liff-dropdown-menu {
+	display: none;
+	position: absolute; top: 100%; right: 0; margin-top: 4px;
+	z-index: 300; list-style: none;
+	min-width: 140px; max-width: 260px;
+	border-radius: 10px; border: 1px solid #E4E6EF; box-shadow: 0 4px 20px rgba(0,0,0,.08);
+	padding: 6px; margin-block: 0; margin-inline-start: 0;
+	max-height: 260px; overflow-y: auto;
+	background: #fff;
+}
+.liff-select-dropdown.liff-dropdown-open .liff-dropdown-menu { display: block; }
+.liff-dropdown-menu .dropdown-item { display: block; width: 100%; text-align: left; font-size: 13px; font-weight: 500; border-radius: 6px; padding: 8px 12px; color: var(--bs-gray-700); white-space: normal; text-decoration: none; background: none; border: none; }
+.liff-dropdown-menu .dropdown-item:hover { background-color: var(--bs-gray-100); }
+.liff-dropdown-menu .dropdown-item.active { background-color: var(--bs-primary); color: #fff; }
+.liff-dropdown-menu .dropdown-item.disabled { color: var(--bs-gray-400); pointer-events: none; }
 </style>
 <!--end::LIFF app-shell standards-->
 <!--begin::Javascript-->
