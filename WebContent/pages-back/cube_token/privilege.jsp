@@ -22,16 +22,18 @@
 	-ms-overflow-style: none;
 	scroll-behavior: smooth;
 	cursor: grab;
-    user-select: none;
+	user-select: none;
+	max-width: 600px;
+	scrollbar-width: none;
 }
 
 .carousel:active {
-    cursor: grabbing;
+	cursor: grabbing;
 }
 
 .carousel img {
-    pointer-events: none;
-    user-select: none;
+	pointer-events: none;
+	user-select: none;
 }
 
 .carousel::-webkit-scrollbar {
@@ -88,17 +90,17 @@
 }
 
 .image-cover {
-	object-fit: contain;
-	height: clamp(160px, 15vw, 300px);
+	object-fit: cover;
+	height: clamp(160px, 20vw, 313px);
 }
 
 .image-cover[id="redeemItemImage"] {
-	object-fit: contain;
+	object-fit: cover;
 	height: clamp(250px, 30vw, 100%);
 }
 
 .redeem-image-container {
-	height: 290px;
+	height: 300px;
 	overflow: hidden;
 }
 
@@ -170,6 +172,20 @@
 	border-color: var(--bs-dark) !important;
 }
 
+.effective-date {
+	background: rgba(0, 0, 0, 0.15);
+	transition: background 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.item-card:hover .effective-date {
+	background: rgba(0, 0, 0, 0.5);
+}
+
+.badge-gray-500 {
+	background-color: rgba(219, 223, 233, 1) !important;
+	color: var(--bs-text-muted) !important;
+}
+
 /* Mobile */
 @media ( max-width : 767.98px) {
 	.responsive-button {
@@ -182,6 +198,9 @@
 	.redeem-btn:hover .ki-parcel {
 		opacity: 1 !important;
 		transform: translate(-50%, -50%) translateX(-40px);
+	}
+	.border-end-dashed {
+		border-right: 0 !important;
 	}
 }
 
@@ -241,6 +260,38 @@
 			<div id="kt_app_content_container"
 				class="app-container container-fluid">
 
+				<div class="card">
+					<div class="card-body">
+						<div class="row g-6">
+
+							<!-- Search -->
+							<div class="col-12 col-md-9">
+								<div class="position-relative">
+									<i
+										class="ki-duotone ki-magnifier fs-5 position-absolute top-50 translate-middle-y ms-4 text-gray-500">
+										<span class="path1"></span> <span class="path2"></span>
+									</i> <input type="text" id="searchInput"
+										class="form-control form-control-lg ps-12"
+										placeholder="Search" />
+								</div>
+							</div>
+
+							<!-- Filter -->
+							<div class="col-12 col-md-3">
+								<select id="filterSelect" class="form-select form-select-lg"
+									data-control="select2" data-hide-search="true">
+									<option value="all">All Item</option>
+									<option value="available">Available</option>
+									<option value="redeemable">Can Redeem</option>
+									<option value="favorite">Favorites</option>
+								</select>
+							</div>
+
+						</div>
+					</div>
+				</div>
+
+
 				<div class="d-flex align-items-center justify-content-between mt-10">
 					<h3 class="fw-semibold text-gray-900">
 						Item List (<span id="itemCount">0</span>)
@@ -248,7 +299,7 @@
 				</div>
 
 				<div
-					class="row row-cols-2 row-cols-md-3 row-cols-lg-4 g-4 g-md-6 mt-4 card-container">
+					class="row row-cols-2 row-cols-md-3 row-cols-xl-4 g-4 g-md-6 mt-4 card-container">
 					<!-- item card will be rendered here -->
 				</div>
 
@@ -268,8 +319,8 @@
 							</div>
 
 							<div class="modal-body">
-								<div class="row g-6">
-									<div class="col-12 col-md-6 h-100">
+								<div class="row g-6 ">
+									<div class="col-12 col-md-7">
 										<div class="d-flex align-items-center justify-content-center">
 
 											<input type="hidden" id="itemId" />
@@ -284,7 +335,7 @@
 
 											<div
 												class="flex-grow-1 d-flex justify-content-center align-items-center redeem-image-container">
-												<img class="image-cover" id="redeemItemImage" />
+												<img class="image-cover lozad" id="redeemItemImage" />
 											</div>
 
 
@@ -295,163 +346,124 @@
 												</i>
 											</button>
 										</div>
-										<div class="carousel gap-2 p-2 mt-4" id="carouselContainer">
+										<div class="carousel gap-2 p-2 mt-6" id="carouselContainer">
 										</div>
 
-										<div class="fw-semibold fs-2 text-gray-800 mt-8"
-											id="redeemItemName"></div>
+									</div>
+									<div class="col-12 col-md-5">
 
-										<div class="separator separator-dashed border-secondary my-6"></div>
-
-										<div class="d-flex gap-4 align-items-center">
-											<i class="ki-duotone ki-laptop fs-2x"> <span
-												class="path1"></span> <span class="path2"></span>
-											</i>
-											<div class="fw-bold fs-5 text-gray-800">รายละเอียด</div>
-										</div>
-
-										<div class="fw-normal fs-5 text-gray-600 mt-4"
-											id="redeemItemDetails"></div>
-
-										<div
-											class="d-flex justify-content-between align-items-center mt-6 bg-light-success border border-success rounded px-6 py-3">
-											<div class="d-flex align-items-center gap-3">
-												<i class="ki-duotone ki-parcel fs-1 text-success"> <span
-													class="path1"></span> <span class="path2"></span> <span
-													class="path3"></span> <span class="path4"></span> <span
-													class="path5"></span>
-												</i>
-												<div class="fw-semibold fs-7 text-gray-700">สินค้าคงเหลือในคลัง</div>
+										<div class="card p-6 w-100">
+											<div class="fw-semibold fs-2 text-gray-800 mb-6"
+												id="redeemItemName"></div>
+											<div class="mb-6">
+												<span class="badge badge-lg badge-light-success py-2"
+													id="redeemItemQuantity"></span>
 											</div>
-											<div class="d-flex align-items-center gap-2">
-												<div class="fw-bold fs-3 text-success"
-													id="redeemItemQuantity">0</div>
-												<div class="fw-semibold fs-7 text-success">ชิ้น</div>
+											<div class="mb-6">
+												<div class="d-flex align-items-center gap-4 mb-6">
+													<i class="ki-duotone ki-laptop fs-2x"> <span
+														class="path1"></span> <span class="path2"></span>
+													</i>
+													<div class="fw-bold fs-5 text-gray-800">Detail</div>
+												</div>
+												<div class="fw-normal fs-5 text-gray-800 lh-lg scroll"
+													style="height: 150px;" id="redeemItemDetails"></div>
+											</div>
+											<div
+												class="d-flex align-items-center flex-wrap fw-normal fs-5 text-primary">
+												<span class="me-1">ระยะเวลาการแลก : </span> <span
+													class="text-gray-800" id="effectiveDate"></span>
 											</div>
 										</div>
 									</div>
-									<div
-										class="col-12 col-md-6 flex-1 d-flex flex-column justify-content-between">
-										<div class="d-flex flex-column gap-7">
-											<div class="card py-3">
-												<div class="d-flex align-items-center flex-column gap-2">
-													<div>
-														<i class="ki-duotone ki-cube-2 text-primary fs-4x"> <span
+								</div>
+
+								<div class="card p-6 mt-7">
+									<div class="row g-10">
+										<div
+											class="col-12 col-md-6 border-end-dashed border-gray-300 pe-7">
+											<div
+												class="d-flex flex-column align-items-center justify-content-center h-100">
+												<div
+													class="d-flex justify-content-between align-items-center w-100">
+													<div class="text-gray-700 fs-6">ใช้แลกของรางวัล</div>
+													<div class="d-flex align-items-center gap-2">
+														<i class="ki-duotone ki-cube-2 fs-2x text-primary"> <span
 															class="path1"></span> <span class="path2"></span> <span
 															class="path3"></span>
 														</i>
+														<div class="fw-bold fs-3 text-gray-800"
+															id="redeemTokenAmount"></div>
 													</div>
-
-
-													<div class="d-flex flex-column align-items-center gap-2">
-														<div
-															class="fw-bold fs-2qx text-gray-800 lh-1 user-current-balance">0</div>
-														<div class="fw-bold fs-4 text-primary lh-1">My Cube
-															Token</div>
-														<span class="fw-semibold fs-6 text-gray-600 lh-1 mb-1">สะสมทั้งหมด</span>
-													</div>
-
 												</div>
-											</div>
 
-											<div class="card py-3">
-												<div class="card-body py-3 px-5">
-													<div class="d-flex align-items-center">
-														<div
-															class="d-flex flex-column align-items-start gap-3 w-50">
-															<div class="fw-normal fs-6 text-gray-700">
-																ใช้แลกของรางวัล</div>
-															<div class="d-flex gap-3">
-																<i class="ki-duotone ki-cube-2 text-primary fs-2x">
-																	<span class="path1"></span> <span class="path2"></span>
-																	<span class="path3"></span>
-																</i>
-																<div
-																	class="fw-bold fs-3 text-gray-800 redeem-token-amount">0</div>
-															</div>
-														</div>
-
-														<div
-															class="d-flex flex-column align-items-start gap-3 w-50">
-															<div class="fw-normal fs-6 text-gray-700">+
-																เพิ่มเงิน</div>
-															<div class="d-flex gap-3">
-																<i class="ki-duotone ki-text-bold fs-2x"> <span
-																	class="path1"></span> <span class="path2"></span> <span
-																	class="path3"></span>
-																</i>
-																<div class="fw-bold fs-3 text-gray-800 ">
-																	&#3647; <span id="redeemExtraCash">0</span>
-																</div>
-															</div>
-														</div>
-													</div>
-
-													<div
-														class="separator separator-dashed border-secondary my-8"></div>
-
-													<div class="d-flex flex-column gap-8">
-														<div class="fw-bold fs-5 text-gray-800">สรุปยอดหลังการแลก</div>
-														<div
-															class="d-flex justify-content-between align-items-center">
-															<div class="fw-normal fs-5 text-gray-600">แต้มที่มีอยู่:</div>
-															<div
-																class="fw-medium fs-5 text-gray-800 user-current-balance">0</div>
-														</div>
-
-														<div
-															class="d-flex justify-content-between align-items-center">
-															<div class="fw-normal fs-5 text-gray-600">แต้มที่ใช้แลก:</div>
-															<div
-																class="fw-medium fs-5 text-danger redeem-token-amount">0</div>
-														</div>
-													</div>
-
-													<div
-														class="separator separator-dashed border-secondary my-8"></div>
-
-													<div
-														class="d-flex justify-content-between align-items-center">
-														<div class="fw-normal fs-5 text-gray-600">แต้มคงเหลือ:</div>
-														<div class="fw-medium fs-5" id="remainingBalance">0</div>
-													</div>
-
-													<div
-														class="d-flex align-items-center gap-2 bg-light-danger rounded border border-danger py-2 px-3 mt-4 d-none"
-														id="insufficientBalanceWarning">
-														<i class="ki-duotone ki-information-3 fs-1 text-danger">
-															<span class="path1"></span> <span class="path2"></span> <span
+												<div
+													class="d-flex justify-content-between align-items-center mt-6 w-100">
+													<div class="text-gray-700 fs-6">+ เพิ่มเงิน</div>
+													<div class="d-flex align-items-center gap-3">
+														<i class="ki-duotone ki-text-bold fs-2x"> <span
+															class="path1"></span> <span class="path2"></span> <span
 															class="path3"></span>
 														</i>
-														<div class="fw-medium fs-7 text-gray-700">ขออภัย
-															แต้มของคุณไม่เพียงพอในการแลกสินค้าชินนี้</div>
+														<div class="fw-bold fs-3 text-gray-800">
+															&#3647;<span id="redeemExtraCash"></span>
+														</div>
 													</div>
+												</div>
+											</div>
 
+
+										</div>
+										<div class="col-12 col-md-6">
+											<div
+												class="d-flex flex-column gap-8 justify-content-center w-100 px-md-4">
+												<div class="fw-bold fs-5 text-gray-800">สรุปยอดหลังการแลก</div>
+												<div
+													class="d-flex align-items-center justify-content-between">
+													<div class="fs-5 text-gray-600">แต้มที่มีอยู่:</div>
+													<div class="fw-medium fs-5 user-current-balance"></div>
+												</div>
+												<div
+													class="d-flex align-items-center justify-content-between">
+													<div class="fs-5 text-gray-600">แต้มที่ใช้แลก:</div>
+													<div class="fw-medium fs-5 text-danger redeem-token-amount">
+													</div>
+												</div>
+												<div
+													class="d-flex align-items-center justify-content-between">
+													<div class="fs-5 text-gray-600">แต้มคงเหลือ:</div>
+													<div class="fw-medium fs-5" id="remainingBalance"></div>
 												</div>
 
-
+												<div
+													class="d-flex align-items-center gap-2 bg-light-danger rounded border border-danger py-2 px-3 mt-4"
+													id="insufficientBalanceWarning">
+													<i class="ki-duotone ki-information-3 fs-1 text-danger">
+														<span class="path1"></span> <span class="path2"></span> <span
+														class="path3"></span>
+													</i>
+													<div class="fw-medium fs-7 text-gray-700">ขออภัย
+														แต้มของคุณไม่เพียงพอในการแลกสินค้าชินนี้</div>
+												</div>
 											</div>
 										</div>
-
-
-										<div class="d-flex justify-content-end mt-4">
-											<button type="button" class="btn btn-light me-3"
-												data-bs-dismiss="modal">ยกเลิก</button>
-											<button type="button" class="btn btn-success"
-												id="modalRedeemBtn">ยืนยันการแลก</button>
-
-										</div>
-
 									</div>
+								</div>
+
+							</div>
+
+							<div class="modal-footer border-top-0">
+								<div class="d-flex justify-content-end ">
+									<button type="button" class="btn btn-light me-3"
+										data-bs-dismiss="modal">ยกเลิก</button>
+									<button type="button" class="btn btn-success"
+										id="modalRedeemBtn">ยืนยันการแลก</button>
+
 								</div>
 							</div>
 						</div>
 					</div>
 				</div>
-
-
-
-
 			</div>
 		</div>
 	</div>
@@ -472,6 +484,14 @@
 	    })
 	    
 	    $(document).on("click", ".favorite-icon", toggleFavorite);
+		
+		$("#searchInput").on("input", function () {
+		    filterRewardItems();
+		});
+		
+		$("#filterSelect").on("change", function () {
+		    filterRewardItems();
+		});
 		
 		$(document).on("click", "#prevImageBtn", function () {
 
@@ -736,6 +756,29 @@
                 
                 $("#itemCount").text(items.length);
                 
+                if (items.length === 0) {
+	                $(".card-container").append(`
+	                    <div class="reward-no-result w-100">
+	                        <div class="d-flex flex-column align-items-center justify-content-center text-center py-20">
+	                            <i class="ki-duotone ki-magnifier fs-5tx text-gray-400">
+	                                <span class="path1"></span>
+	                                <span class="path2"></span>
+	                            </i>
+	
+	                            <div class="fw-bold fs-3 text-gray-700 mt-5">
+	                                No items found
+	                            </div>
+	
+	                            <div class="text-gray-500 fs-6 mt-2">
+	                            	There are currently no rewards available.
+	                            </div>
+	                        </div>
+	                    </div>
+	                `);
+	                
+	                return;
+                }
+                
                 rewardItems = {};
                 items.forEach(function(item) {
 
@@ -746,9 +789,9 @@
                     const details = escapeHtml(item.details).replace(/\r\n/g, "<br>").replace(/\n/g, "<br>");
                     const quantity = Number(item.quantity) || 0;
                     const token = Number(item.token) || 0;
+                    const effectiveDate = `\${formatDate(item.startDate)} - \${formatDate(item.endDate)}`; 
                     const addedMoney = Number(item.addedMoney) || 0;
                     const isFavorite = Boolean(item.isFavorite);
-                    
                     
 
                     const coverPath =
@@ -772,7 +815,7 @@
 
                                         <img
                                             src="\${coverPath}"
-                                            class="w-100 image-cover"
+                                            class="w-100 image-cover lozad"
                                             alt="\${itemName}">
 
                                         \${soldOut ? `
@@ -788,19 +831,18 @@
 
                                         </div>
                                         ` : ""}
-
                                     </div>
 
                                     <!--begin::Stock-->
                                     <div
-                                        class="d-flex w-100 justify-content-between position-absolute top-0 start-0 mt-5 m-4 p-0">
+                                        class="d-flex w-100 justify-content-between position-absolute top-0 start-0 mt-3 ms-3 p-0">
 
                                         <div>
 
                                             <span
-                                                class="badge badge-lg badge-primary fw-normal fs-7 ">
+                                                class="badge badge-lg \${soldOut ? 'badge-gray-500' : 'badge-primary'} fw-normal fs-7 py-2 px-3" style="border: 1px solid rgba(241, 241, 244, 1);">
 
-                                                คงเหลือ \${quantity} ชิ้น
+                                                \${quantity} ชิ้น
 
                                             </span>
 
@@ -823,10 +865,14 @@
                                         <!--end::Favorite-->
 
                                     </div>
-
+                                    
+                                    <div class="effective-date position-absolute translate-middle-x bottom-0 start-50 w-100 d-flex align-items-center justify-content-center text-center p-4">
+	                                	<div class="fs-7 text-white fw-normal">\${effectiveDate}</div>
+	                                </div>
+                                    
                                 </div>
                                 <!--end::Image-->
-
+ 
 
                                 <!--begin::Card body-->
                                 <div class="card-body d-flex flex-column p-6">
@@ -959,7 +1005,113 @@
                 `);
             }
         });
-	}
+	
+    
+    }
+    
+    function filterRewardItems() {
+        const searchText = $("#searchInput").val().trim().toLowerCase();
+        const filter = $("#filterSelect").val();
+
+        let visibleCount = 0;
+
+        $(".card-container .item-card").each(function () {
+            const $card = $(this);
+            const itemId = $card.data("item-id");
+            const item = rewardItems[itemId];
+
+            if (!item) {
+                $card.closest(".col").hide();
+                return;
+            }
+
+            const itemName = String(item.itemName || "").toLowerCase();
+            const details = String(item.details || "").toLowerCase();
+
+            // =========================
+            // Search
+            // =========================
+            const matchesSearch =
+                !searchText ||
+                itemName.includes(searchText) ||
+                details.includes(searchText);
+
+            // =========================
+            // Filter
+            // =========================
+            let matchesFilter = true;
+
+            const quantity = Number(item.quantity) || 0;
+            const token = Number(item.token) || 0;
+            const isFavorite = Number(item.isFavorite) === 1;
+            
+            if (filter === "available") {
+                matchesFilter = quantity > 0;
+            }
+
+            if (filter === "redeemable") {
+                matchesFilter =
+                    quantity > 0 &&
+                    userCurrentBalance >= token;
+            }
+
+            if (filter === "favorite") {
+                matchesFilter = isFavorite;
+            }
+
+            // =========================
+            // Show / Hide
+            // =========================
+            const visible = matchesSearch && matchesFilter;
+
+            $card.closest(".col").toggle(visible);
+
+            if (visible) {
+                visibleCount++;
+            }
+        });
+
+        // =========================
+        // Item count
+        // =========================
+        $("#itemCount").text(visibleCount);
+
+        // =========================
+        // No result message
+        // =========================
+        $(".reward-no-result").remove();
+
+        if (visibleCount === 0) {
+            $(".card-container").append(`
+                <div class="reward-no-result w-100">
+                    <div class="d-flex flex-column align-items-center justify-content-center text-center py-20">
+                        <i class="ki-duotone ki-magnifier fs-5tx text-gray-400">
+                            <span class="path1"></span>
+                            <span class="path2"></span>
+                        </i>
+
+                        <div class="fw-bold fs-3 text-gray-700 mt-5">
+                            No items found
+                        </div>
+
+                        <div class="text-gray-500 fs-6 mt-2">
+                            Try changing your search or filter.
+                        </div>
+                    </div>
+                </div>
+            `);
+        }
+    }
+    
+    function formatDate(timestamp) {
+        const date = new Date(timestamp);
+
+        const day = date.getDate();
+        const month = date.toLocaleString("en-US", { month: "short" });
+        const year = String(date.getFullYear()).slice(-2);
+
+        return `\${day} \${month} \${year}`;
+    }
     
     function toggleFavorite(event) {
 
@@ -1012,6 +1164,15 @@
                         console.error(
                             response.message || "Failed to toggle favorite."
                         );
+                        
+                        const isFavorite = response.data;
+
+                        // Update local data
+                        if (rewardItems[itemId]) {
+                            rewardItems[itemId].isFavorite = isFavorite;
+                        }
+
+                        const $icon = $favorite.find("i");
 
                         // ถ้า backend fail ให้ย้อน UI กลับ
                         if (isFavorite) {
@@ -1082,14 +1243,14 @@
                         height="70"
                         src="\${imagePath}"
                         style="width: 100%; height: 100%; object-fit: cover;"
-                        class="rounded" />
+                        class="rounded lozad" />
 
                 </div>
             `);
 
             $imageDiv.on("click", function () {
 
-            	currentImageIndex = index;
+            	currentImageIndex = index; 
             	
                 $("#redeemItemImage").attr(
                     "src",
@@ -1191,9 +1352,11 @@
         // Populate modal with item details
         $("#itemId").val(item.itemId);
         $("#redeemItemName").text(item.itemName);
-        $("#redeemItemQuantity").text(item.quantity);
+        $("#redeemItemQuantity").text(`คงเหลือ \${item.quantity} ชิ้น`);
+        $("#effectiveDate").text(`\${formatDate(item.startDate)} - \${formatDate(item.endDate)}`);
         $(".user-current-balance").text(userCurrentBalance.toLocaleString());
-        $(".redeem-token-amount").text(item.token.toLocaleString());
+        $("#redeemTokenAmount").text(item.token.toLocaleString());
+        $(".redeem-token-amount").text("-" + item.token.toLocaleString());
         $("#redeemItemDetails").html(item.details.replace(/\r\n/g, "<br>").replace(/\n/g, "<br>"));
         $("#redeemExtraCash").text(item.addedMoney.toLocaleString());
         

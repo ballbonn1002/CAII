@@ -21,7 +21,7 @@
 
 					<img src="${pageContext.request.contextPath}${item.coverPath}"
 						alt="${item.itemName}"
-						class="w-100 h-100 object-fit-contain rounded">
+						class="w-100 h-100 object-fit-cover rounded">
 
 				</div>
 			</td>

@@ -1,5 +1,7 @@
 package com.cubesofttech.dao;
 
+import java.sql.Date;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 
@@ -60,6 +62,8 @@ public class ItemPrivilegeDAOImpl implements ItemPrivilegeDAO {
 		        "    ip.quantity AS quantity, " +
 		        "    ip.cover_path AS coverPath, " +
 		        "    ip.img_path AS imgPath, " +
+		        "    ip.start_date AS startDate, " +
+		        "    ip.end_date AS endDate, " +
 		        "    CASE " +
 		        "        WHEN uf.user_favorite_id IS NOT NULL THEN true " +
 		        "        ELSE false " +
@@ -68,7 +72,7 @@ public class ItemPrivilegeDAOImpl implements ItemPrivilegeDAO {
 		        "LEFT JOIN user_favorite uf " +
 		        "    ON ip.item_id = uf.item_id " +
 		        "    AND uf.user_id = :userId " +
-		        "WHERE ip.active_flag = 'Y' " +
+		        "WHERE ip.active_flag = 'Y' AND :date BETWEEN ip.start_date AND ip.end_date " +
 		        "ORDER BY " +
 		        "    CASE WHEN uf.user_favorite_id IS NOT NULL THEN 0 ELSE 1 END, " +
 		        "    ip.item_id ASC";
@@ -76,6 +80,7 @@ public class ItemPrivilegeDAOImpl implements ItemPrivilegeDAO {
 	    return sessionFactory.getCurrentSession()
 	            .createSQLQuery(sql)
 	            .setParameter("userId", userId)
+	            .setParameter("date", Date.valueOf(LocalDate.now()))
 	            .setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE)
 	            .list();
 	}

@@ -251,13 +251,17 @@
 										Effective Date </label>
 
 									<div class="mb-0 ">
+										<fmt:formatDate value="${item.startDate}" pattern="yyyy-MM-dd"
+											var="startDate" />
+										<fmt:formatDate value="${item.endDate}" pattern="yyyy-MM-dd"
+											var="endDate" />
+
 										<div class="position-relative">
+
 											<input class="form-control form-control-lg ps-15"
-												value="<fmt:formatDate
-														value="${item.startDate}" pattern="dd/MM/yyyy" /> - <fmt:formatDate
-														value="${item.endDate}" pattern="dd/MM/yyyy" />"
 												placeholder="Select date range" placeholder="Pick date rage"
-												id="kt_daterangepicker_1" name="effectiveDate" /> <i
+												id="kt_daterangepicker_1" name="effectiveDate" /> 
+												<i
 												class="ki-duotone ki-calendar-8 fs-1 position-absolute ms-3 top-50 translate-middle-y">
 												<span class="path1"></span> <span class="path2"></span> <span
 												class="path3"></span> <span class="path4"></span> <span
@@ -402,7 +406,8 @@
 
 				<div
 					class="d-flex align-items-center justify-content-end gap-3 mt-10">
-					<button type="button" class="btn btn-light" onClick="window.location.href = 'privilegeMangementPage'">Cancel</button>
+					<button type="button" class="btn btn-light"
+						onClick="window.location.href = 'privilegeMangementPage'">Cancel</button>
 					<button type="button" class="btn btn-success" id="saveBtn">Save</button>
 				</div>
 
@@ -412,7 +417,8 @@
 			</div>
 		</div>
 	</div>
-	<script src="${pageContext.request.contextPath}/assets/js/custom/utilities/attachFile/attcahfile.js"></script>
+	<script
+		src="${pageContext.request.contextPath}/assets/js/custom/utilities/attachFile/attcahfile.js"></script>
 	<script>
 
     // ==========================================
@@ -895,13 +901,13 @@
         }
 
 
-        if (Number(value) <= 0) {
+        if (Number(value) < 0) {
 
             validationState.itemQuantity = false;
 
             setFieldInvalid(
                 "#itemQuantity",
-                "Item quantity must be greater than zero."
+                "Item quantity must be positive."
             );
 
             updateBtnState();
@@ -1382,8 +1388,38 @@
                 coverInput.files.length > 0) {
 
             	const originalFile = coverInput.files[0];
+            	try {
 
-	            try {
+            		const compressedCover = await compressImage(
+            			originalFile,
+            			1280,
+            			1280,
+            			0.8
+            		);
+            		
+            		formData.append("cover", compressedCover);
+                    formData.append("coverFileName", compressedCover.name);
+            	
+            	} catch (error) {
+            		console.error("Image compression error:", error);
+            		
+            		Swal.fire({
+            			title: "Error!",
+            			text: "Unable to compress cover image.",
+            			icon: "error",
+            			confirmButtonText: "OK",
+            			buttonsStyling: false,
+            			customClass: {
+            				confirmButton: "btn btn-primary"
+            			}
+            		});
+            		
+            		updateBtnState();
+            		return;
+            	}
+            	 
+            	
+	            /* try {
 	                const processedFile = await processAndRemoveWhiteBg(originalFile);
 
 	                formData.append("cover", processedFile);
@@ -1406,15 +1442,46 @@
 	                updateBtnState();
 	                return;
 	            }
-
+ 					*/
             }
 
 
             // ==========================================
             // New Additional Images
             // ==========================================
+            	
+            	for (const file of additionalImageFiles) {
+				    try {
+				        const compressedFile = await compressImage(
+				            file,
+				            1280,
+				            1280,
+				            0.8
+				        );
+				
+				        formData.append("additionalImages", compressedFile);
+				        formData.append("additionalImagesFileName", compressedFile.name);
+				
+				    } catch (error) {
+				        console.error("Image compression error:", error);
+				
+				        Swal.fire({
+				            title: "Error!",
+				            text: "Unable to compress additional image: " + file.name,
+				            icon: "error",
+				            confirmButtonText: "OK",
+				            buttonsStyling: false,
+				            customClass: {
+				                confirmButton: "btn btn-primary"
+				            }
+				        });
+				
+				        updateBtnState();
+				        return;
+				    }
+				}
 
-            additionalImageFiles.forEach(function (file) {
+            /* additionalImageFiles.forEach(function (file) {
 
                 formData.append(
                     "additionalImages",
@@ -1426,7 +1493,7 @@
                     file.name
                 );
 
-            });
+            }); */
 
 
             // ==========================================
@@ -1686,7 +1753,7 @@
         // Flatpickr
         // ==========================================
 
-        $("#kt_daterangepicker_1").flatpickr({
+/*         $("#kt_daterangepicker_1").flatpickr({
 
             mode: "range",
 
@@ -1699,6 +1766,21 @@
             }
 
         });
+         */
+         
+         $("#kt_daterangepicker_1").flatpickr({
+        	    mode: "range",
+        	    dateFormat: "d M Y",
+
+        	    defaultDate: [
+        	        new Date("${startDate}T00:00:00"),
+        	        new Date("${endDate}T00:00:00")
+        	    ],
+
+        	    locale: {
+        	        rangeSeparator: " - "
+        	    }
+        	});
 
 
         // ==========================================

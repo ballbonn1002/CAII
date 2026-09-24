@@ -173,6 +173,7 @@
 
 .symbol.rank-1 .symbol-label {
 	background-color: rgba(255, 248, 221, 1) !important;
+	color: var(--bs-text-warning) !important;
 }
 
 .symbol.rank-2 {
@@ -181,6 +182,7 @@
 
 .symbol.rank-2 .symbol-label {
 	background-color: var(--bs-border-color) !important;
+		color: var(--bs-text-gray-700) !important;
 }
 
 [data-bs-theme="dark"] .symbol.rank-2 .symbol-label {
@@ -232,8 +234,12 @@
 	font-size: clamp(10px, 1.3vw, 20px) !important;
 }
 
-.font-responsive { 
+.font-responsive {
 	font-size: clamp(12px, 1.3vw, 2rem) !important;
+}
+
+.gx-custom {
+	 --bs-gutter-x: 3rem !important;
 }
 
 /* Mobile */
@@ -379,6 +385,66 @@
 
 				</div>
 
+				<div class="modal fade" tabindex="-1" id="sameRankModal">
+					<div class="modal-dialog modal-dialog-centered modal-lg">
+						<div class="modal-content">
+							<div class="modal-header border-0 pb-0">
+								<h3 class="modal-title"></h3>
+
+								<!--begin::Close-->
+								<div class="btn btn-icon btn-sm btn-active-light-primary ms-2"
+									data-bs-dismiss="modal" aria-label="Close">
+									<i class="ki-duotone ki-cross fs-1"><span class="path1"></span><span
+										class="path2"></span></i>
+								</div>
+								<!--end::Close-->
+							</div>
+
+							<div class="modal-body">
+								<div
+									class="d-flex flex-column gap-4 align-items-center justify-content-center px-md-10">
+									<div class="fw-bold text-gray-800 fs-2x">
+										อันดับที่ <span id="sameRank"></span>
+									</div>
+									<div class="fw-medium fs-3">
+										<span id="usersWithSameRankAmount" class="text-muted"></span>
+										<span id="tokenAmount" class="text-primary"></span>
+									</div>
+
+									<!-- Table -->
+									<div class="table-responsive w-100 mt-6 px-md-6">
+										<table
+											class="table align-middle table-row-bordered table-striped fs-7 gy-7 gx-4"
+											id="sameRankTable">
+
+											<thead>
+												<tr
+													class="text-start text-gray-500 fw-bold fs-7 text-uppercase gs-0">
+													<th class="w-50px ps-4">#</th>
+													<th class="min-w-80px">EMP.ID</th>
+													<th class="min-w-200px">NAME</th>
+													<th class="min-w-120px text-end pe-4">JOB SITE</th>
+												</tr>
+											</thead>
+
+											<tbody id="sameRankTableBody">
+												<!-- JS render -->
+											</tbody>
+
+										</table>
+									</div>
+								</div>
+							</div>
+
+							<!-- Footer -->
+							<div class="modal-footer border-0 pt-0">
+								<button type="button" class="btn btn-light"
+									data-bs-dismiss="modal">Close</button>
+							</div>
+						</div>
+					</div>
+				</div>
+
 				<div class="card card-flush mb-7 mt-10 postion-relative">
 
 					<div class="card-header">
@@ -397,7 +463,7 @@
 							<span class="text-gray-600 mt-4"> Loading... </span>
 						</div>
 
-						<div class="token-podium d-none">
+						<div class="token-podium d-none" style="max-width: 1500px; margin: 0 auto;">
 
 							<div
 								class="row align-items-end justify-content-center gx-2 gx-md-10">
@@ -414,7 +480,6 @@
 													<div class="symbol-label rank2-label fw-bold fs-1">-</div>
 												</div>
 											</div>
-
 										</div>
 
 
@@ -429,14 +494,14 @@
 											style="background: linear-gradient(180deg, rgba(216, 224, 233, 1), rgba(156, 170, 187, 1));">
 
 											<div
-												class="h-100 d-flex flex-column align-items-center gap-3 mt-4 mt-lg-10">
+												class="h-100 d-flex flex-column align-items-center gap-md-1 gap-lg-2 mt-4 mt-lg-10">
 
 												<div class="position-relative">
 
-													<i class="ki-duotone ki-medal-star text-white fs-5tx">
+													<i class="ki-duotone ki-medal-star text-white" style="font-size: clamp(5.25rem, 10vw, 80px);">
 														<span class="path1"> </span> <span class="path2"></span> <span
 														class="path3"></span> <span class="path4"></span>
-													</i> <span class="fw-bold fs-8 rank-label rank-2"> 2 </span>
+													</i> <span class="fw-bold fs-8 rank-label rank-2" id="2ndRankDisplay"> 2 </span>
 												</div>
 
 												<div class="d-flex flex-column align-items-center">
@@ -483,17 +548,17 @@
 											style="background: linear-gradient(180deg, rgba(255, 220, 79, 1), rgba(254, 160, 0, 1));">
 
 											<div
-												class="h-100 d-flex flex-column align-items-center gap-10 mt-5 mt-md-10">
+												class="h-100 d-flex flex-column align-items-center gap-3 gap-lg-6 mt-5 mt-md-10">
 
 												<div class="position-relative">
 
-													<i class="ki-duotone ki-medal-star text-white fs-5tx">
+													<i class="ki-duotone ki-medal-star text-white" style="font-size: clamp(6rem, 10vw, 120px);">
 														<span class="path1"> </span> <span class="path2"></span> <span
 														class="path3"></span> <span class="path4"></span>
-													</i> <span class="fw-bold fs-8 rank-label rank-1"> 1 </span>
+													</i> <span class="fw-bold fs-7 rank-label rank-1" id="1stRankDisplay"> 1 </span>
 												</div>
 
-												<div class="d-flex flex-column align-items-center mt-xl-7">
+												<div class="d-flex flex-column align-items-center mt-xl-3">
 													<div
 														class="d-flex align-items-end text-white fw-bold podium-token"
 														id="1stToken">0</div>
@@ -538,10 +603,10 @@
 
 												<div class="position-relative">
 
-													<i class="ki-duotone ki-medal-star text-white fs-5hx">
+													<i class="ki-duotone ki-medal-star text-white"  style="font-size: clamp(5.25rem, 10vw, 80px);">
 														<span class="path1"> </span> <span class="path2"></span> <span
 														class="path3"></span> <span class="path4"></span>
-													</i> <span class="fw-bold fs-8 rank-label rank-3"> 3 </span>
+													</i> <span class="fw-bold fs-8 rank-label rank-3" id="3rdRankDisplay"> 3 </span>
 												</div>
 
 
@@ -595,10 +660,9 @@
 
 	<script>
 
-    const firstPlaces = [];
-    const secondPlaces = [];
-    const thirdPlaces = [];
-    const restOfUsers = [];
+    let firstPlaces = [];
+    let secondPlaces = [];
+    let thirdPlaces = [];
 	
 	$(document).ready(function() {
 
@@ -655,155 +719,278 @@
         loadTokenRanking(year);
     });
 	
-	
-	function renderTop3User() {
-	
-		renderPodiumPlace($("#1stPlace"), $("#1stPodiumName"), $("#1stEmployeeId"), $("#1stToken"), firstPlaces, 1); // first place
-		renderPodiumPlace($("#2ndPlace"), $("#2ndPodiumName"), $("#2ndEmployeeId"), $("#2ndToken"), secondPlaces, 2); // second place
-		renderPodiumPlace($("#3rdPlace"), $("#3rdPodiumName"), $("#3rdEmployeeId"), $("#3rdToken"), thirdPlaces, 3); // third place
-		
+	function showSameRankUsers(rank, token, users) {
+
+	    $("#sameRank").text(rank);
+	    $("#tokenAmount").text(`\${token} Cube Token`);
+
+	    renderSameRankUsers(users);
+
+	    const modal = new bootstrap.Modal(
+	        document.getElementById("sameRankModal")
+	    );
+
+	    modal.show();
 	}
 	
-	function renderPodiumPlace($placeContainer, $name, $employeeId, $token, users, rank) {
+	function renderSameRankUsers(users) {
 
-		$placeContainer.empty();
+	    const $tbody = $("#sameRankTableBody");
+	    $tbody.empty();
 
-	    if (!users || users.length === 0) {
-			$placeContainer.html(`
-				<div
-					class="symbol symbol-circle symbol-40px symbol-lg-70px symbol-xl-90px mb-2 mb-md-4 rank-\${rank}">
-					<div class="symbol-label fw-medium fs-2x"
-						style="color: \${getRankColor(rank)}">-</div>
-				</div>
-		    `)
-		    
-		    $name.text("");
-			$employeeId.text("");
-			$token.text("0");
-			
-	        return;
-	    }
-	    
-	    const token = users[0].token || 0;
-	    
-	    // multiple users with the same rank
-	    
-	    if (users.length > 1) {
+	    users.forEach(function(user, index) {
 
-	    	const displayUsers = users.slice(0,3);
-	    	const remainingCount = users.length - displayUsers.length;
-	    	
-	    	let html = `<div class="symbol-group mb-2 mb-md-4">`;
-	    	
-	    	displayUsers.forEach(function(user) {
+	        const displayName =
+	            user.nameEn ||
+	            user.nameTh ||
+	            "-";
 
-	    		const displayName =
-	                user.nameEn ||
-	                user.nameTh ||
-	                "-";
-	    		
-	    		const initial = displayName.charAt(0).toUpperCase();
-	    		
-	    		if (user.filePath) {
+	        const initial = displayName
+	            .charAt(0)
+	            .toUpperCase();
 
-	    			html += `
-	    				<div
-							class="symbol symbol-circle symbol-25px symbol-sm-30px symbol-lg-35px symbol-xl-60px symbol-xxl-70px rank-\${rank}">
-							<img src="${pageContext.request.contextPath}\${user.filePath}" alt="\${displayName}" />
-						</div>
-	    			`;
-	    			
-	    		}
-	    		
-	    		else {
+	        let avatarHtml;
 
-	    			html += `
-	                    <div
-	                        class="symbol symbol-circle symbol-25px symbol-sm-30px symbol-lg-35px symbol-xl-60px symbol-xxl-70px rank-\${rank}">
+	        if (user.filePath) {
 
-	                        <div class="symbol-label fw-medium font-responsive text-gray-700">
-	                            \${initial} 
+	            avatarHtml = `
+	                <div class="symbol symbol-circle symbol-40px me-4">
+	                    <img 
+	                        class="symbol-label"
+	                        src="${pageContext.request.contextPath}\${user.filePath}"
+	                        alt="\${escapeHtml(displayName)}"
+	                    />
+	                </div>
+	            `;
+
+	        } else {
+
+	            avatarHtml = `
+	                <div class="symbol symbol-circle symbol-40px me-4">
+	                    <div class="symbol-label bg-light-primary text-primary fw-semibold fs-5">
+	                        \${escapeHtml(initial)}
+	                    </div>
+	                </div>
+	            `;
+	        }
+
+	        const jobSiteHtml = (user.jobsiteList || [])
+	            .map(function(site) {
+	                return `
+	                	<div>
+		                    <span class="badge badge-lg badge-primary py-2">
+		                        \${escapeHtml(site.name_site)}
+		                    </span>
+	                    </div>
+	                `;
+	            })
+	            .join("");
+
+	        const html = `
+	            <tr>
+
+	                <td class="fs-6 fw-normal text-gray-900 ps-4">
+	                    \${index + 1}
+	                </td>
+
+	                <td>
+	                    <span class="fs-6 fw-normal text-gray-900">
+	                        \${escapeHtml(user.employeeId || "-")}
+	                    </span>
+	                </td>
+
+	                <td>
+	                    <div class="d-flex align-items-center">
+
+	                        \${avatarHtml}
+
+	                        <div class="d-flex flex-column">
+	                            <span class="fs-6 fw-normal text-gray-900">
+	                                \${escapeHtml(user.nameEn || "-")}
+	                            </span>
+
+	                            <span class="fs-6 fw-normal text-gray-900">
+	                                \${escapeHtml(user.nameTh || "-")}
+	                            </span>
 	                        </div>
 
 	                    </div>
-	                `;
-	    		
-	    		}
-	    	});
-	    	
-	    	// If there are remaining users, show the "+N" symbol
-	    	
-	    	if (remainingCount > 0) {
-	    		html += `
-	                <div
-	                    class="symbol symbol-circle symbol-30px symbol-sm-35px symbol-lg-45px symbol-xl-65px symbol-xxl-75px"> 
+	                </td>
 
+	                <td class="text-end pe-4">
+	                	<div class="d-flex flex-column gap-3">
+	                		\${jobSiteHtml || "-"}
+	                	</div>
+	                </td>
+
+	            </tr>
+	        `;
+
+	        $tbody.append(html);
+	    });
+
+	    $("#usersWithSameRankAmount").text(
+	        `\${users.length} คนร่วมอันดับ`
+	    );
+	}
+	
+	
+	function renderTop3User() {
+	
+		renderPodiumPlace($("#1stPlace"), $("#1stPodiumName"), $("#1stRankDisplay"), $("#1stEmployeeId"), $("#1stToken"), firstPlaces, 1); // first place
+		renderPodiumPlace($("#2ndPlace"), $("#2ndPodiumName"), $("#2ndRankDisplay"), $("#2ndEmployeeId"), $("#2ndToken"), secondPlaces, 2); // second place
+		renderPodiumPlace($("#3rdPlace"), $("#3rdPodiumName"), $("#3rdRankDisplay"), $("#3rdEmployeeId"), $("#3rdToken"), thirdPlaces, 3); // third place
+		
+	}
+	
+	function renderPodiumPlace($placeContainer, $name, $rankDisplay, $employeeId, $token, users, rank) {
+
+	    $placeContainer.empty();
+
+	    if (!users || users.length === 0) {
+
+	        $placeContainer.html(`
+	            <div
+	                class="symbol symbol-circle symbol-35px symbol-lg-70px symbol-xl-90px mb-2 mb-md-4 rank-\${rank} d-none">
+	                <div
+	                    class="symbol-label fw-medium fs-2x"
+	                    style="color: \${getRankColor(rank)}">
+	                    -
+	                </div>
+	            </div>
+	        `);
+
+	        $name.text("");
+	        $employeeId.text("");
+	        $token.text("0");
+	        $rankDisplay.text(rank);
+
+	        return;
+	    }
+
+	    // ใช้ token จาก user คนแรก
+	    const tokenAmount = users[0].token || 0;
+	    const rankDisplayText = users[0].rankDisplay || rank;
+	    
+	    $rankDisplay.text(rankDisplayText);
+
+	    // มีหลายคนร่วมอันดับ
+	    if (users.length > 1) {
+
+	        const displayUsers = users.slice(0, 3);
+	        const remainingCount = users.length - displayUsers.length;
+
+	        const $group = $(`
+	            <div class="symbol-group mb-2 mb-md-4 cursor-pointer">
+	            </div>
+	        `);
+
+	        displayUsers.forEach(function(user) {
+
+	            const displayName =
+	                user.nameEn ||
+	                user.nameTh ||
+	                "-";
+
+	            const initial = displayName
+	                .charAt(0)
+	                .toUpperCase();
+
+	            if (user.filePath) {
+
+	                $group.append(`
 	                    <div
-	                        class="symbol-label remaining-count fw-semibold bg-secondary text-gray-700">
+	                        class="symbol symbol-circle symbol-25px symbol-sm-30px symbol-lg-35px symbol-xl-60px symbol-xxl-70px rank-\${rank}">
+	                        <img
+	                            src="${pageContext.request.contextPath}\${user.filePath}"
+	                            alt="\${escapeHtml(displayName)}" />
+	                    </div>
+	                `);
+
+	            } else {
+
+	                $group.append(`
+	                    <div
+	                        class="symbol symbol-circle symbol-25px symbol-sm-30px symbol-lg-35px symbol-xl-60px symbol-xxl-70px rank-\${rank}">
+	                        <div
+	                            class="symbol-label fw-medium font-responsive text-gray-700">
+	                            \${escapeHtml(initial)}
+	                        </div>
+	                    </div>
+	                `);
+	            }
+	        });
+
+	        // ถ้ามีคนที่เหลือ
+	        if (remainingCount > 0) {
+
+	            $group.append(`
+	                <div
+	                    class="symbol symbol-circle symbol-30px symbol-sm-35px symbol-lg-45px symbol-xl-70px symbol-xxl-75px ">
+	                    <div
+	                        class="symbol-label bg-secondary text-inverse-secondary fw-medium font-responsive">
 	                        +\${remainingCount}
 	                    </div>
-
 	                </div>
-	            `;
-        	}
-	    	
-	    	html += `</div>`;
-	    	
-	    	$placeContainer.html(html);
-	    	
-	    	
-	    	// set podium name and employee id
-	    	$name.text(`\${users.length} คนร่วมอันดับ`);
-	    	$token.text(token);
-	    	$employeeId.text("").addClass("d-none");
-	    	
-	    	return;
-	    	
-	    }
-	    
-	    // single user with the rank
-	    else {
-			
-	    	const user = users[0];
-	    	
-	    	const name = user.nameEn || user.nameTh || "-";
-	    	const employeeId = user.employeeId || "-";
-	    	
-	    	const initial = name.charAt(0).toUpperCase();  
-	    	
-	    	let avatarHtml;
-	    	
-	    	if (user.filePath) {
+	            `);
+	        }
 
-	    		avatarHtml = `
+	        $group.on("click", function() {
+	            showSameRankUsers(
+	                rank,
+	                tokenAmount,
+	                users
+	            );
+	        });
+
+	        $placeContainer.append($group);
+
+	        $name.text(`\${users.length} คนร่วมอันดับ`);
+	        $employeeId.text("");
+	        $token.text(tokenAmount);
+
+	        return;
+	    }
+
+	    // มีคนเดียว
+	    const user = users[0];
+
+	    const displayName =
+	        user.nameEn ||
+	        user.nameTh ||
+	        "-";
+
+	    const initial = displayName
+	        .charAt(0)
+	        .toUpperCase();
+
+	    if (user.filePath) {
+
+	        $placeContainer.html(`
+	            <div
+	                class="symbol symbol-circle symbol-35px symbol-lg-70px symbol-xl-90px mb-2 mb-md-4 rank-\${rank}">
 	                <img
-	                    src="\${user.filePath}"
-	                    alt="\${name}" />
-	            `;
-	    		
-	    	}
-	    	
-	    	else {
+	                    src="${pageContext.request.contextPath}\${user.filePath}"
+	                    alt="\${escapeHtml(displayName)}" />
+	            </div>
+	        `);
 
-	    		avatarHtml = `
-					<div class="symbol-label fw-medium fs-2x"
-							style="color: \${getRankColor(rank)}">\${initial}</div>
-					</div>
-	            `;
-	    	
-	    	}
-	    	
-	    	$placeContainer.html(`
-	    			<div class="symbol symbol-circle symbol-40px symbol-lg-70px symbol-xl-90px mb-2 mb-md-4 rank-\${rank}">
-	    				\${avatarHtml}
-        			</div>
-        	`);
-	    	
-	    	$name.text(name);
-	    	$token.text(token);
-	    	$employeeId.text(employeeId).removeClass("d-none");
-	    	
+	    } else {
+
+	        $placeContainer.html(`
+	            <div
+	                class="symbol symbol-circle symbol-35px symbol-lg-70px symbol-xl-90px mb-2 mb-md-4 rank-\${rank}">
+	                <div
+	                    class="symbol-label fw-medium font-responsive">
+	                    \${escapeHtml(initial)}
+	                </div>
+	            </div>
+	        `);
 	    }
+
+	    $name.text(displayName);
+	    $employeeId.text(user.employeeId || "-");
+	    $token.text(tokenAmount);
 	}
 	
 	function escapeHtml(value) {
@@ -955,25 +1142,63 @@
 	            }
 	
 	            let html = "";
-	
+	            /* const rankingGroups = [];
+	            
+	            users.forEach(function(user) {
+
+	                const rankDisplay = String(user.rankDisplay);
+
+	                let group = rankingGroups.find(function(group) {
+	                    return group.rankDisplay === rankDisplay;
+	                });
+
+	                if (!group) {
+	                    group = {
+	                        rankDisplay: rankDisplay,
+	                        users: []
+	                    };
+
+	                    rankingGroups.push(group);
+	                }
+
+	                group.users.push(user);
+	            });
+	            
+	            const top3Groups = rankingGroups.slice(0, 3);
+	         
+	            firstPlaces = top3Groups[0] ? top3Groups[0].users : [];
+	            secondPlaces = top3Groups[1] ? top3Groups[1].users : [];
+	            thirdPlaces = top3Groups[2] ? top3Groups[2].users : [];
+	            
+	            const top3Count = firstPlaces.length + secondPlaces.length + thirdPlaces.length; */
+	            
 	            users.forEach(function(user) {
 
 	            	const rank = String(user.rankDisplay).replace("T", "");
 
-	                if (rank === "1") {
-	                    firstPlaces.push(user);
-	                    return;
-	                }
+	            	if (rank === "1") {
 
-	                if (rank === "2") {
-	                    secondPlaces.push(user);
-	                    return;
-	                }
+		            	firstPlaces.push(user);
+	
+		            	return;
 
-	                if (rank === "3") {
-	                    thirdPlaces.push(user);
-	                    return;
-	                }
+	            	}
+
+	            	if (rank === "2") {
+	
+		            	secondPlaces.push(user);
+	
+		            	return;
+
+	            	}
+
+	            	if (rank === "3") {
+
+		            	thirdPlaces.push(user);
+	
+		            	return;
+
+	            	}
 
 	                // ==========================================
 	                // Avatar

@@ -91,6 +91,8 @@ public class TokenUsageDAOImpl implements TokenUsageDAO {
 	            "    tu.value, " +
 	            "    tu.reconcile, " +
 	            "    tu.re_flag AS returned, " +
+	            "    tu.month, " +
+	            "    tu.year, " +
 	            "    tu.time_create, " +
 	            "    tu.action_type_id, " +
 	            "    tat.action_type_name, " +

@@ -1332,7 +1332,10 @@
 						    December: 12
 						};
 					
-					const currentMonth = new Date().getMonth() + 1;
+					const currentDate = new Date();
+					const currentMonth = currentDate.getMonth() + 1;
+					const currentYear = currentDate.getFullYear();
+					
 					const data = response.data;
 					
 					userCurrentMonthlyBalance = Number(response.currentBalance) || 0;
@@ -1343,7 +1346,9 @@
 						const tableId = "token_table_" + index;
 						
 						const monthNumber = monthNumberMap[month.month];
-					    const isCurrentMonth = currentMonth === monthNumber;
+						const isCurrentMonth =
+						    monthNumber === currentMonth &&
+						    Number(year) === currentYear;
 
 						const summary = month.summary || {};
 						const transactions = month.transactions || [];
@@ -1377,9 +1382,12 @@
 										<div class="d-flex align-items-center gap-2 gap-md-4">
 											<div class="d-flex align-items-center justify-content-center gap-2 gap-md-3">
 												<!-- Cube Token Icon -->
-												<i class="ki-duotone ki-triangle fs-1 text-primary"> <span
+												<i class="ki-duotone ki-cube-3 fs-1 text-primary"> <span
 													class="path1"></span> <span class="path2"></span> <span
 													class="path3"></span>
+													<span class="path4"></span>
+													<span class="path5"></span>
+													<span class="path6"></span>
 												</i>
 			
 												<!-- Label -->
@@ -1500,7 +1508,7 @@
 																</td>
 																
 																<td class="text-end pe-4">
-																    \${!tx.returned && (
+																    \${!tx.returned &&  isCurrentMonth && (
 																    	    !isAdd || tx.actionName.toLowerCase() === 'reward'
 																    )
 																        ? `
