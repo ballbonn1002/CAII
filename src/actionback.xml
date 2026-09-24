@@ -1065,6 +1065,18 @@
 			class="com.cubesofttech.action.DocStatusAction" method="performEdit">
 		</action>
 
+		<!-- Unit Master -->
+		<action name="unit_master_list"
+			class="com.cubesofttech.action.UnitMasterAction" method="list">
+			<result name="success" type="tiles">unitMasterList</result>
+			<result name="error">/index.jsp</result>
+		</action>
+
+		<action name="unit_master_update"
+			class="com.cubesofttech.action.UnitMasterAction" method="update">
+		</action>
+		<!-- Unit Master -->
+
 		<!-- Employee Profile Edit User Security -->
 		<action name="admin_update_password"
 			class="com.cubesofttech.action.UserAction"

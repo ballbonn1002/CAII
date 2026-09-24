@@ -121,6 +121,11 @@
                                                 <td class="text-gray-900 fw-bold" colspan="3">${fn:escapeXml(g.label)}</td>
                                                 <td class="text-center">
                                                     <span class="badge badge-primary fw-bold">${g.total} เครื่อง</span>
+                                                    <button type="button" class="btn btn-icon btn-sm btn-active-light-success sub-equ-add ms-1"
+                                                            data-target-id="${g.productId}" data-target-name="${fn:escapeXml(g.label)}"
+                                                            data-bs-toggle="modal" data-bs-target="#equipmentPickerModal" title="Link Equipment">
+                                                        <i class="ki-duotone ki-plus fs-3"><span class="path1"></span><span class="path2"></span></i>
+                                                    </button>
                                                 </td>
                                                 <td class="text-gray-500 fs-7">
                                                     <c:if test="${g.retired > 0}">ปลดระวางแล้ว ${g.retired}</c:if>
@@ -207,7 +212,94 @@
     </div>
 </div>
 
+<%-- ============ Modal: Link Equipment (เลือกเครื่องที่ยังไม่ผูก catalog ไหนเลย) ============
+     ก็อปมาจาก stock_item_edit_fragment.jsp (modal #equipmentPickerModal) - ใช้ endpoint stock_equ_link_save เดิม
+     ไม่มี unlink ที่หน้านี้ (มีแค่ list ไม่มีฟอร์มแก้ไข) --%>
+<div class="modal fade" id="equipmentPickerModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title fw-bold text-gray-900" id="equipmentPickerModalTitle">เลือกเครื่องเพื่อเพิ่มเข้า Item นี้</h3>
+                <button type="button" class="btn btn-icon btn-sm btn-active-light-primary" data-bs-dismiss="modal" aria-label="Close">
+                    <i class="ki-duotone ki-cross fs-1"><span class="path1"></span><span class="path2"></span></i>
+                </button>
+            </div>
+
+            <div class="modal-body">
+                <div class="d-flex align-items-center position-relative mb-6">
+                    <i class="ki-duotone ki-magnifier fs-3 position-absolute ms-5"><span class="path1"></span><span class="path2"></span></i>
+                    <input type="text" id="equipmentPickerSearch" class="form-control form-control-solid ps-14 text-gray-700"
+                           placeholder="ค้นหา Item ID / ชื่อเครื่อง / Serial No" />
+                </div>
+
+                <table id="equipmentPickerTable" class="table align-middle fs-6 mb-0">
+                    <thead class="fs-7 text-gray-500 text-uppercase">
+                        <tr class="fw-semibold">
+                            <th class="w-40px"></th>
+                            <th class="min-w-150px text-nowrap">Item ID</th>
+                            <th class="min-w-250px text-nowrap">ชื่อเครื่อง</th>
+                            <th class="min-w-180px text-nowrap">Serial No</th>
+                            <th class="min-w-120px text-nowrap text-center">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <c:forEach var="equip" items="${unlinkedEquipment}">
+                            <tr>
+                                <td class="text-center">
+                                    <div class="form-check form-check-custom form-check-solid d-inline-flex">
+                                        <input class="form-check-input equipment-pick-checkbox" type="checkbox" value="${equip.equipmentId}" />
+                                    </div>
+                                </td>
+                                <td class="text-gray-900 fw-bold">
+                                    <c:choose>
+                                        <c:when test="${not empty fn:trim(equip.itemNo)}">${fn:escapeXml(equip.itemNo)}</c:when>
+                                        <c:otherwise><span class="text-muted">#${equip.equipmentId}</span></c:otherwise>
+                                    </c:choose>
+                                </td>
+                                <td class="text-gray-700 fw-normal">
+                                    <c:choose>
+                                        <c:when test="${not empty fn:trim(equip.name)}">${fn:escapeXml(equip.name)}</c:when>
+                                        <c:otherwise><span class="text-muted">(ไม่ระบุชื่อ)</span></c:otherwise>
+                                    </c:choose>
+                                </td>
+                                <td class="text-gray-700 fw-normal">
+                                    <c:choose>
+                                        <c:when test="${not empty equip.serialNo}">${fn:escapeXml(equip.serialNo)}</c:when>
+                                        <c:otherwise><span class="text-muted">-</span></c:otherwise>
+                                    </c:choose>
+                                </td>
+                                <td class="text-center">
+                                    <c:choose>
+                                        <c:when test="${not empty equip.status}"><span class="badge badge-light-primary fw-semibold">${fn:escapeXml(equip.status)}</span></c:when>
+                                        <c:otherwise><span class="text-muted">-</span></c:otherwise>
+                                    </c:choose>
+                                </td>
+                            </tr>
+                        </c:forEach>
+                    </tbody>
+                </table>
+                <%-- ตอนตารางว่าง ปล่อยให้ DataTables โชว์ข้อความเอง (language.emptyTable ด้านล่าง)
+                     ไม่ใส่ div ซ้ำตรงนี้ ไม่งั้นจะขึ้นข้อความซ้อนกัน 2 อัน --%>
+            </div>
+
+            <div class="modal-footer d-flex justify-content-between align-items-center">
+                <span class="text-gray-600 fs-7"><span id="equipmentPickerSelectedCount">0</span> รายการที่เลือก</span>
+                <div class="d-flex gap-3">
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" id="btnEquipmentPickerSave" class="btn btn-success">Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script>
+    var CONTEXT = '${pageContext.request.contextPath}';
+    function notifyError(msg) {
+        if (window.Swal) { Swal.fire('Error', msg || 'เกิดข้อผิดพลาด', 'error'); }
+        else { alert(msg || 'เกิดข้อผิดพลาด'); }
+    }
+
     $(document).ready(function () {
         // ---- ขยาย/ยุบ รายการเครื่องของแต่ละกลุ่ม ----
         $('#equipmentBalanceTable').on('click', '.equ-toggle', function () {
@@ -346,5 +438,101 @@
 
         // ---- เรียกครั้งแรกตอนโหลดหน้า ให้ default filter status (A+B) มีผลทันที ----
         applyEquipmentFilters();
+
+        // ==================== Equipment: จำ sub product/ตัวแม่เป้าหมายไว้ก่อนเปิด popup Link Equipment ====================
+        var currentEquipmentTargetId = null;
+        $(document).on('click', '.sub-equ-add', function () {
+            currentEquipmentTargetId = $(this).data('target-id');
+            var targetName = $(this).data('target-name') || '';
+            $('#equipmentPickerModalTitle').text('เลือกเครื่องเพื่อเพิ่มเข้า "' + targetName + '"');
+        });
+
+        // ==================== Equipment: popup เลือกเครื่องมาผูกกับ catalog ====================
+        // DataTables คำนวณความกว้างคอลัมน์ผิดถ้า init ตอน modal ยังซ่อนอยู่ (display:none)
+        // จึงต้อง init ตอน modal โชว์แล้วเท่านั้น (shown.bs.modal) และ init ครั้งเดียวพอ
+        $('#equipmentPickerModal').on('shown.bs.modal', function () {
+            if (!$.fn.dataTable.isDataTable('#equipmentPickerTable')) {
+                $('#equipmentPickerTable').DataTable({
+                    dom: "<'table-responsive'tr>" +
+                         "<'row align-items-center mt-6'<'col-sm-auto mb-2 mb-sm-0'l><'col-sm d-flex justify-content-sm-end'p>>",
+                    pageLength: 10,
+                    lengthMenu: [10, 20, 50, 100],
+                    info: false,
+                    ordering: true,
+                    autoWidth: false,
+                    language: {
+                        lengthMenu: '_MENU_',
+                        emptyTable: 'ไม่มีเครื่องว่างให้เลือก - เครื่องทั้งหมดถูกผูกกับ catalog อื่นแล้ว'
+                    },
+                    columnDefs: [{ targets: 0, orderable: false }]
+                });
+            }
+        });
+
+        $('#equipmentPickerSearch').on('keyup', function () {
+            if ($.fn.dataTable.isDataTable('#equipmentPickerTable')) {
+                $('#equipmentPickerTable').DataTable().search(this.value).draw();
+            }
+        });
+
+        // นับจำนวนที่ติ๊กไว้ - checkbox render มาจาก server ตั้งแต่โหลดหน้า (delegate กันเหนียว)
+        $('#equipmentPickerTable').on('change', '.equipment-pick-checkbox', function () {
+            $('#equipmentPickerSelectedCount').text($('.equipment-pick-checkbox:checked').length);
+        });
+
+        // ปิด modal แล้วเคลียร์สถานะ กันเลือกค้างจากรอบก่อนโผล่มาอีกตอนเปิดใหม่
+        $('#equipmentPickerModal').on('hidden.bs.modal', function () {
+            $('.equipment-pick-checkbox').prop('checked', false);
+            $('#equipmentPickerSelectedCount').text('0');
+            $('#equipmentPickerSearch').val('');
+            currentEquipmentTargetId = null;
+            if ($.fn.dataTable.isDataTable('#equipmentPickerTable')) {
+                $('#equipmentPickerTable').DataTable().search('').draw();
+            }
+        });
+
+        // กด Save ใน popup - บันทึกลง DB ทันทีแบบ AJAX แล้วรีโหลดหน้า (filter/search บนหน้านี้จะรีเซ็ตหลัง reload
+        // เหมือนพฤติกรรมเดิมของหน้า edit ถือว่ายอมรับได้)
+        $('#btnEquipmentPickerSave').on('click', function () {
+            var ids = $('.equipment-pick-checkbox:checked').map(function () { return $(this).val(); }).get();
+            if (ids.length === 0) {
+                if (window.Swal) { Swal.fire('กรุณาเลือกรายการ', 'เลือกอย่างน้อย 1 เครื่อง', 'warning'); }
+                else { alert('กรุณาเลือกอย่างน้อย 1 เครื่อง'); }
+                return;
+            }
+            if (!currentEquipmentTargetId) {
+                notifyError('ไม่พบ sub product เป้าหมาย กรุณาปิดหน้าต่างแล้วกด Link Equipment ใหม่');
+                return;
+            }
+
+            var $btn = $(this);
+            $btn.prop('disabled', true).attr('data-kt-indicator', 'on');
+
+            $.ajax({
+                url: CONTEXT + '/stock_equ_link_save',
+                type: 'POST',
+                dataType: 'json',
+                data: { productId: currentEquipmentTargetId, equipmentIds: ids.join(',') },
+                success: function (res) {
+                    if (res && res.success === true) {
+                        if (window.Swal) {
+                            Swal.fire({ icon: 'success', title: 'บันทึกสำเร็จ', text: res.message || 'เพิ่มเครื่องสำเร็จ' })
+                                .then(function () { window.location.reload(); });
+                        } else {
+                            alert(res.message || 'บันทึกสำเร็จ');
+                            window.location.reload();
+                        }
+                    } else {
+                        notifyError(res && res.message ? res.message : 'บันทึกไม่สำเร็จ');
+                    }
+                },
+                error: function () {
+                    notifyError('บันทึกไม่สำเร็จ กรุณาลองใหม่');
+                },
+                complete: function () {
+                    $btn.prop('disabled', false).removeAttr('data-kt-indicator');
+                }
+            });
+        });
     });
 </script>

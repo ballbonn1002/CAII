@@ -951,4 +951,11 @@
 			value="/pages-back/doc_status/doc_status_list.jsp" />
 	</definition>
 
+	<!-- Unit Master -->
+	<definition name="unitMasterList" extends="baseLayout">
+		<put-attribute name="title" value="Unit Master" />
+		<put-attribute name="body"
+			value="/pages-back/unit_master/unit_master_list.jsp" />
+	</definition>
+
 </tiles-definitions>

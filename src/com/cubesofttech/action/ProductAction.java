@@ -1403,6 +1403,9 @@ public class ProductAction extends ActionSupport {
             List<EquipmentStatus> statuses = equipmentStatusDAO.getall();
             request.setAttribute("equipmentStatusList", new Gson().toJson(statuses));
 
+            // เครื่องที่ยังไม่ผูกกับ catalog ไหนเลย - ใช้เป็นตัวเลือกใน popup Link Equipment (เหมือนหน้า edit)
+            request.setAttribute("unlinkedEquipment", equipmentDAO.findUnlinked());
+
             return SUCCESS;
         } catch (Exception e) {
             log.error("showEquipmentBalancePage failed, productId=" + productId, e);

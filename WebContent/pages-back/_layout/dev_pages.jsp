@@ -47,7 +47,7 @@ pageEncoding="UTF-8"%>
               <div class="card-body">
                 <div class="d-flex gap-4">
                   <a
-                    href="/equipment_request_list"
+                    href="equipment_request_list"
                     class="btn btn-light-primary d-inline-flex align-items-center px-6 py-3"
                     >MR - Material Request</a
                   >
@@ -163,6 +163,12 @@ pageEncoding="UTF-8"%>
                     href="doc_status_list"
                     class="btn btn-light-success d-inline-flex align-items-center px-6 py-3"
                     >Doc Status</a
+                  >
+
+                  <a
+                    href="unit_master_list"
+                    class="btn btn-light-warning d-inline-flex align-items-center px-6 py-3"
+                    >Unit Master</a
                   >
                 </div>
               </div>
