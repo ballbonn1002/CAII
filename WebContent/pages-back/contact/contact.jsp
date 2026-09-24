@@ -2,7 +2,6 @@
 	pageEncoding="UTF-8"%>
 
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 
 <!DOCTYPE html>
@@ -420,10 +419,8 @@
 
 											<button type="button"
 												class="btn btn-icon btn-light-primary btn-sm edit-contact"
-												data-id="${contact.company_contact_id}"
-												<c:if test="${contact.is_active eq 'Y'}">   
-                                                     checked
-                                                </c:if>>
+												data-id="${contact.company_contact_id}">
+												
 
 												<i class="ki-duotone ki-pencil fs-3"> <span
 													class="path1"></span> <span class="path2"></span>

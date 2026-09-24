@@ -93,6 +93,10 @@ public class CompanyContactAction extends ActionSupport {
 	public String list() {
 
 		try {
+			
+			response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
+	        response.setHeader("Pragma", "no-cache");
+	        response.setDateHeader("Expires", 0);
 
 			List<Map<String, Object>> contactList = companyContactDAO.findAll();
 
@@ -303,7 +307,7 @@ public class CompanyContactAction extends ActionSupport {
 	        Timestamp now = new Timestamp(System.currentTimeMillis());
 
 	        //Freelancer
-	        boolean isFreelancerSave = "4".equals(contactCompanyId);
+	        boolean isFreelancerSave = "freelancer".equals(contactCompanyId);
 	        Company freelancerCompanyRow = null;
 
 	        if (!isFreelancerSave && contactCompanyId != null && !contactCompanyId.trim().isEmpty()) {

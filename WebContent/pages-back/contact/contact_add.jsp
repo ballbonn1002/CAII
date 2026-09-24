@@ -105,8 +105,7 @@
 										type="checkbox" id="active_weerawat.p"
 										data-userid="weerawat.p" data-enable="1"
 										${empty contact.companyContactId or contact.isActive eq '1' ? 'checked' : ''}>
-								</div>
-								
+								</div>																					
 
 							</div>
 
@@ -352,6 +351,8 @@
 					</div>
 
 				</div>
+				
+				
 
 
 				<!-- Company Information -->
@@ -431,7 +432,7 @@
                                </option>
                            
                                </c:forEach>
-                                            <option value="4" data-tax="" ${contact.companyId eq '4' ? 'selected' : ''}>Freelancer </option>
+                                           <option value="freelancer" data-tax="" ${contact.companyId eq 'freelancer' ? 'selected' : ''}>Freelancer </option>
                                             
                                             
                                </select>
@@ -581,9 +582,9 @@
 
 			</div>
 
-		</form>
+				</form>
 
-	</div>
+	   </div>
 	
 
 	<!-- Customer Address Modal -->
@@ -709,7 +710,7 @@
 
 		function loadCompanyAddresses(companyId, preselectAddressId) {
 
-		    if (!companyId || companyId === "4") {
+		    if (!companyId || companyId === "freelancer") {
 		        currentAddresses = [];
 		        $("#company_location_id").empty();
 		        return;
@@ -839,7 +840,7 @@
 		 */
 		function showCompanyDetail(companyId) {
 
-			if (companyId === "4") {
+			if (companyId === "freelancer") {
 				$("#company_detail").hide();
 				$("#freelancer_section").stop(true, true).slideDown();
 				return;
@@ -926,7 +927,7 @@
 			    showCompanyDetail(companyId);
 			    loadCompanyAddresses(companyId);
 
-			    if (companyId !== "4") {
+			    if (companyId !== "freelancer") {
 			        $("#company_name_en").val("");
 			        $("#company_name_th").val("");
 			        $("#freelancer_address").text("");
@@ -1154,7 +1155,7 @@
 			/*
 			 * เตรียมข้อมูลก่อน Submit
 			 */
-			if (companyId === "4") {
+			if (companyId === "freelancer") {
 
 				$("#hidden_freelancer_address").val(
 					$("#freelancer_address").text().trim()
@@ -1173,7 +1174,7 @@
 				$(".js-toggle-enable").is(":checked") ? "1" : "0"
 			);
 
-			if (companyId === "4") {
+			if (companyId === "freelancer") {
 
 				$("#hidden_freelancer_address").val(
 					$("#freelancer_address").text().trim()
@@ -1224,7 +1225,7 @@
 		        mapText:       savedMapText
 		    };
 				   
-		    $("#company_id").val("4").trigger("change");	
+		    $("#company_id").val("freelancer").trigger("change");	
 		    $("#company_name_en").val(savedCompanyNameEn);
 		    $("#company_name_th").val(savedCompanyNameTh);
 		    $("#location_name").val(savedLocationName);
@@ -1235,7 +1236,7 @@
 		} else {
 		    showCompanyDetail(initialCompanyId);
 
-		    if (initialCompanyId && initialCompanyId !== "4") {
+		    if (initialCompanyId && initialCompanyId !== "freelancer") {
 		        $("#company_tax").text(initialTaxNumber || "-");
 		        loadCompanyAddresses(initialCompanyId, initialCompanyAddressId);
 		    }
