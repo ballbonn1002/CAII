@@ -1,45 +1,12 @@
-<%@page import="org.apache.velocity.runtime.directive.Foreach"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
 <%@ taglib uri="/WEB-INF/tlds/permission.tld" prefix="perm"%>
 <%@ page trimDirectiveWhitespaces="true"%>
-<%@ taglib uri="http://tiles.apache.org/tags-tiles" prefix="tiles"%>
 
-
-<!DOCTYPE html>
-<html>
-	<c:set var="now" value="<%=new java.util.Date()%>" />
-	<fmt:formatDate type="date" value="${now}" pattern="dd-MM-yyyy" var="date_now" />
-	<fmt:formatDate type="date" value="${now}" pattern="dd-MM-yyyy" var="lastday" />
-	<head>
-		<meta charset="utf-8">
-		<title>
-			<tiles:insertAttribute name="title" ignore="true" />
-		</title>
-		<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-		<!--begin::Javascript-->
-		<script>var hostUrl = "assets/";</script>
-
-		<!--begin::Custom Javascript(used for this page only)-->
-		<script src="assets/js/widgets.bundle.js"></script>
-		<script src="assets/js/custom/widgets.js"></script>
-		<script src="assets/js/custom/apps/chat/chat.js"></script>
-		<script src="assets/js/custom/utilities/modals/upgrade-plan.js"></script>
-		<!-- <script src="assets/js/custom/utilities/modals/create-app.js"></script> -->
-		<script src="assets/js/custom/utilities/modals/new-target.js"></script>
-		<!-- <script src="assets/js/custom/utilities/modals/users-search.js"></script> -->
-		<!--end::Custom Javascript-->
-		<!--end::Javascript-->
-		<link href="assets/plugins/global/plugins.bundle.css" rel="stylesheet" type="text/css"/>
-		<script src="assets/plugins/global/plugins.bundle.js"></script>
-		<link href="https://cdn.jsdelivr.net/npm/summernote@0.9.0/dist/summernote-bs4.min.css" rel="stylesheet">
-    	<script src="https://cdn.jsdelivr.net/npm/summernote@0.9.0/dist/summernote-bs4.min.js"></script>
-    	
-    	<script src="https://cdnjs.cloudflare.com/ajax/libs/compressorjs/1.2.1/compressor.min.js"></script>
-	</head>
-	<body class="app-default">
+<c:set var="now" value="<%=new java.util.Date()%>" />
+<fmt:formatDate type="date" value="${now}" pattern="dd-MM-yyyy" var="lastday" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/compressorjs/1.2.1/compressor.min.js"></script>
 
 <%-- ===== OLD: desktop-clone content (commented out) =====
 		<%
@@ -537,6 +504,7 @@
 <%-- =====================================================================
      NEW: LINE LIFF
      ===================================================================== --%>
+
 <style>
 /* .liff-shell / .liff-back-btn / .liff-loading-overlay / .liff-input-underline / .liff-field-*
    now live in _layout/baseLayout.jsp (shared across all LIFF pages) — kept here only what's
@@ -552,8 +520,7 @@
 .liff-upload-badge i { color: var(--bs-primary); }
 .liff-submit-bar { display: flex; gap: 10px; margin-top: 20px; }
 .liff-submit-bar .btn { flex: 1; }
-#status.liff-status-select { font-size: 12px; font-weight: 600; padding: 4px 10px; min-width: 0; width: auto; border-radius: 8px; }
-</style>
+#status.liff-status-select { font-size: 12px; font-weight: 600; padding: 4px 10px; min-width: 0; width: auto; border-radius: 8px; }</style>
 
 <div class="liff-shell">
 
@@ -753,6 +720,7 @@
 			<input type="hidden" name="fileUploadSize" value="${size}" id="size">
 			<input type="hidden" name="fileUploadId" id="fileUploadId">
 		</div>
+		<div class="form-text text-danger mb-3" id="alert_evidence"></div>
 		<div id="filePreviewContainer" class="d-flex flex-wrap gap-2 mb-3"></div>
 
 		<div class="mb-6" id="exitingFileSection">
@@ -801,6 +769,7 @@
 </div>
 
 <script>
+/* ---------- dropdown ประเภทการลา + badge วัน/ชั่วโมง ---------- */
 /* Mirrors the legacy #leaveTypes radio group (generated dynamically by the untouched script
    further down) into a proper dropdown (#leaveTypeSelect). Two-way synced so quota-disable
    (userOnChange ajax), edit-mode prefill, and the leaveId=6 date logic all keep working
@@ -979,12 +948,12 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 </script>
 
-	</body>
 <script>
-//var action = '${action}';
+/* ---------- halfDay: เต็มวัน / ครึ่งเช้า / ครึ่งบ่าย / ชั่วโมง ---------- */
 var action = '${empty action ? "" : action}';
-console.log("action = " + action);
-$(document).ready(function () {
+$(document).ready(initHalfDay);
+
+function initHalfDay() {
 	$('#halfDay').on('change', function () {
 		if (action == 'Edit' && $('#status_hidden').val() != '0') return;
 		if (this.value == 3) {
@@ -1028,14 +997,11 @@ $(document).ready(function () {
 			$('#alert_time_to').text('')
 		}
 	});
-	// #myFile change is handled by lfAddFiles() (multi-file model) further down the file.
-
-
-});
-
+}
 </script>
 
 <script>
+/* ---------- date helpers ---------- */
 var toISODate = (date) => {
 	return date.substring(3, 6) + "-" + date.substring(0, 2) + "-" + date.substring(7, 11);
 }
@@ -1056,7 +1022,10 @@ var toDisplayDate = (date) => {
 <!-- Start leaveType Radio -->
 <c:if test="${leaveType != null}">
 <script>
-$(function () {
+/* ---------- ประเภทการลา ---------- */
+$(initLeaveTypeRadios);
+
+function initLeaveTypeRadios() {
 	var leaveTypes;
 	leaveTypes = JSON.parse('${leaveType}');
 	let leaveCheck = [${leave1Check},${leave2Check},${leave3Check},'','',${leave6Check}];
@@ -1141,7 +1110,7 @@ $(function () {
 			}
 		}
 	});
-});
+}
 </script>
 </c:if>
 <!-- End leaveType Radio -->
@@ -1157,471 +1126,482 @@ $(function () {
 </c:if>
 
 <script>
+/* ---------- Add / Edit leave form ---------- */
 $(() => {
 	var userList = ${userList};
 	var action = '${action}';
 	var user;
 	var manager;
+	var leave;
+	var fileLeave;
+	var leaveInfo;
 	const queryString = window.location.search;
 	const urlParams = new URLSearchParams(queryString);
 	const la = urlParams.get('la');
-	if (action == 'Edit') {
-		var leave = ${leave};
-		var fileLeave = ${fileLeave};
-		var leaveInfo = ${empty leaveInfo ? '[]' : leaveInfo};
-		user = leave.userId;
-		manager = leave.apprUserId;
-		department = leave.leaveStatusId.toString();
 
-		if (la == '1') {
-			$('form').attr('action','line_new_LeaveEdit_Do_LA');
-			<perm:permission object="leave.approve">
-				document.getElementById('status').disabled = false;
-			</perm:permission>
-		} else {
-			$('form').attr('action', 'line_new_LeaveEdit_Do');
-		}
-		
-		var aprEmpId;
-		var aprName;
-        var apprUserId;
-        var aprRole;
-        var ucEmpId;
-        var ucName;
-        var timeCreate;
-        var timeUpdate;
-		if (leaveInfo && leaveInfo.length > 0) {
+	initFormMode();
+	initDefaultDate();
+	initLeaveAmount();
+	initUserApprover();
+	initEditValues();
+	initNextYearLeave();
+
+	// ตั้งค่าฟอร์มตามโหมด Add / Edit
+	function initFormMode() {
+		if (action == 'Edit') {
+			leave = ${leave};
+			fileLeave = ${fileLeave};
+			leaveInfo = ${empty leaveInfo ? '[]' : leaveInfo};
+			user = leave.userId;
+			manager = leave.apprUserId;
+			department = leave.leaveStatusId.toString();
+
+			if (la == '1') {
+				$('form').attr('action','line_new_LeaveEdit_Do_LA');
+				<perm:permission object="leave.approve">
+					document.getElementById('status').disabled = false;
+				</perm:permission>
+			} else {
+				$('form').attr('action', 'line_new_LeaveEdit_Do');
+			}
 			
-			aprEmpId = leaveInfo[0].apr_emp_id;
-			aprName = leaveInfo[0].apr_name;
-	        apprUserId = leaveInfo[0].appr_user_id;
-	        aprRole = leaveInfo[0].apr_role;
-	        ucEmpId = leaveInfo[0].uc_emp_id;
-	        ucName = leaveInfo[0].uc_name;
-	        timeCreate = moment(leaveInfo[0].time_create).format("DD MMM YYYY HH:mm");
-	        timeUpdate = moment(leaveInfo[0].time_update).format("DD MMM YYYY HH:mm");
-		}
-		if (leave.leaveStatusId.toString() != '0') {
-		    $('input[name="leaveType"]').prop('disabled', true);
-			$('#status, #date_from, #date_to, #halfDay, #description, #myFile, #removeFileBtn, #approver, #submitBtn').prop('disabled', true);
-		    $('input[name="leaveType"]').closest('.form-check').css('pointer-events', 'none').css('opacity', '0.6');
-			$('#leaveidInfo').show();
-			$('#requestInfo').show();
-		    $('#approveInfo').show();
-		    
-		    // Hide file upload section and show existing file preview
-		    $('#fileUploadSection').addClass('d-none');
-			$('#exitingFileSection').addClass('d-block');
+			var aprEmpId;
+			var aprName;
+	        var apprUserId;
+	        var aprRole;
+	        var ucEmpId;
+	        var ucName;
+	        var timeCreate;
+	        var timeUpdate;
+			if (leaveInfo && leaveInfo.length > 0) {
+				
+				aprEmpId = leaveInfo[0].apr_emp_id;
+				aprName = leaveInfo[0].apr_name;
+		        apprUserId = leaveInfo[0].appr_user_id;
+		        aprRole = leaveInfo[0].apr_role;
+		        ucEmpId = leaveInfo[0].uc_emp_id;
+		        ucName = leaveInfo[0].uc_name;
+		        timeCreate = moment(leaveInfo[0].time_create).format("DD MMM YYYY HH:mm");
+		        timeUpdate = moment(leaveInfo[0].time_update).format("DD MMM YYYY HH:mm");
+			}
+			if (leave.leaveStatusId.toString() != '0') {
+			    $('input[name="leaveType"]').prop('disabled', true);
+				$('#status, #date_from, #date_to, #halfDay, #description, #myFile, #removeFileBtn, #approver, #submitBtn').prop('disabled', true);
+			    $('input[name="leaveType"]').closest('.form-check').css('pointer-events', 'none').css('opacity', '0.6');
+				$('#leaveidInfo').show();
+				$('#requestInfo').show();
+			    $('#approveInfo').show();
+			    
+			    // Hide file upload section and show existing file preview
+			    $('#fileUploadSection').addClass('d-none');
+				$('#exitingFileSection').addClass('d-block');
+				
+				// Render existing files (read-only) — real source is the file table (page='leave')
+				lfLoadExisting(${fileLeaveList});
+				lfRenderExistingReadonly('exitingFilePreviewContainer');
+			    $('#submitBtn').addClass('d-none');
+			    
+			    // Hide afterFile row unless status is Approved (1)
+			    if (leave.leaveStatusId.toString() != '1') {
+			    	$('#afterFileRow').addClass('d-none');
+			    }
+			    
+			    $('#aprEmpId').text(aprEmpId);
+		        $('#aprName').text(aprName);
+		        $('#aprRole').text(aprRole);
+		        $('#timeUpdate').text(timeUpdate);
+		        
+		        $('#ucEmpId').text(ucEmpId);
+		        $('#ucName').text(ucName);
+		        $('#timeCreate').text(timeCreate);
+			}
+			else if(leave.leaveStatusId.toString() == '0'){
+				$('#leaveidInfo').show();
+				$('#requestInfo').show();
+			    $('#approveInfo').hide();
+			    // Hide afterFile row for 'Wait for approve' status
+			    $('#afterFileRow').hide();
+				$('#fileUploadSection').removeClass('d-none');
+				$('#exitingFileSection').addClass('d-none');
+				// Existing files (editable) — real source is the file table (page='leave')
+				lfLoadExisting(${fileLeaveList});
+				lfRenderAll();
+				$('#ucEmpId').text(ucEmpId);
+		        $('#ucName').text(ucName);
+		        $('#timeCreate').text(timeCreate);
+			}
 			
-			// Render existing files (read-only) — real source is the file table (page='leave')
-			lfLoadExisting(${fileLeaveList});
-			lfRenderExistingReadonly('exitingFilePreviewContainer');
-		    $('#submitBtn').addClass('d-none');
-		    
-		    // Hide afterFile row unless status is Approved (1)
-		    if (leave.leaveStatusId.toString() != '1') {
-		    	$('#afterFileRow').addClass('d-none');
-		    }
-		    
-		    $('#aprEmpId').text(aprEmpId);
-	        $('#aprName').text(aprName);
-	        $('#aprRole').text(aprRole);
-	        $('#timeUpdate').text(timeUpdate);
-	        
-	        $('#ucEmpId').text(ucEmpId);
-	        $('#ucName').text(ucName);
-	        $('#timeCreate').text(timeCreate);
-		}
-		else if(leave.leaveStatusId.toString() == '0'){
-			$('#leaveidInfo').show();
-			$('#requestInfo').show();
-		    $('#approveInfo').hide();
-		    // Hide afterFile row for 'Wait for approve' status
-		    $('#afterFileRow').hide();
-			$('#fileUploadSection').removeClass('d-none');
-			$('#exitingFileSection').addClass('d-none');
-			// Existing files (editable) — real source is the file table (page='leave')
-			lfLoadExisting(${fileLeaveList});
-			lfRenderAll();
-			$('#ucEmpId').text(ucEmpId);
-	        $('#ucName').text(ucName);
-	        $('#timeCreate').text(timeCreate);
-		}
-		
-		$('#leaveId').text('${leaveId}');
+			$('#leaveId').text('${leaveId}');
 
-	} else {	//Add
-		user = "${onlineUser.id}";
-		manager = "${onlineUser.managerId}";
-		if (la == '1') {
-			$('form').attr('action', 'new_LeaveAdd_Do_LA');
-		} else {
-			$('form').attr('action', 'new_LeaveAdd_Do');
-		}
-		$('#leaveidInfo').hide();
-		$('#requestInfo').hide();
-		$('#approveInfo').hide();
-		// Hide afterFile row in Add mode
-		$('#afterFileRow').hide();
-		
-		if (la == '1') {
-			<perm:permission object="leave.viewall">
-				document.getElementById('user').disabled = false;
-			</perm:permission>
+		} else {	//Add
+			user = "${onlineUser.id}";
+			manager = "${onlineUser.managerId}";
+			if (la == '1') {
+				$('form').attr('action', 'new_LeaveAdd_Do_LA');
+			} else {
+				$('form').attr('action', 'line_new_LeaveAdd_Do');
+			}
+			$('#leaveidInfo').hide();
+			$('#requestInfo').hide();
+			$('#approveInfo').hide();
+			// Hide afterFile row in Add mode
+			$('#afterFileRow').hide();
+			
+			if (la == '1') {
+				<perm:permission object="leave.viewall">
+					document.getElementById('user').disabled = false;
+				</perm:permission>
+
+			}
 
 		}
-
-	}
-	user = user.toLowerCase();
-	manager = manager.toLowerCase();
-
-	/* Date from leave calendar */
-	$('#date_from').val('${date}');
-	$('#date_to').val('${date}');
-	$('#amount').val(1);
-
-	/* Set time format from Add Leave */
-
-
-	/* Start amount of day from Add Leave */
-	var holiday;
-	var holidays = [];
-	holiday = JSON.parse('${holiday}');
-
-	for (let i = 0; i < holiday.length; i++) {
-		let start = new Date(holiday[i].start);
-		let end = new Date(holiday[i].end);
-		for (let j = start; j <= end; j.setDate(j.getDate() + 1)) {
-			holidays.push(toDisplayDate(j));
-		}
+		user = user.toLowerCase();
+		manager = manager.toLowerCase();
 	}
 
-	function handleDateChange() {
-		let amount = 0;
-		let holiday_count = 0;
-		let from = new Date(toISODate($('#date_from').val()));
-		let to = new Date(toISODate($('#date_to').val()));
-		let halfDay = $('#halfDay').val();
+	// วันที่เริ่มต้น (มาจากปฏิทินลา)
+	function initDefaultDate() {
+		/* Date from leave calendar */
+		$('#date_from').val('${date}');
+		$('#date_to').val('${date}');
+		$('#amount').val(1);
+	}
 
-		if (halfDay !== "0") {
-			$('#date_to').val($('#date_from').val());
-			$('#date_to_hidden').val($('#date_from').val());
-			$('#amount').val(0);
-			$('#amount_hidden').val(0);
-		} else {
-			if (from < to) {
-				amount = ((to - from) / 86400000) + 1;
-				for (let i = from; i < to; i.setDate(i.getDate() + 1)) {
-					for (let j = 0; j < holidays.length; j++) {
-						let holiday_ts = toTimestamp2(holidays[j]);
-						if (i.getTime() == holiday_ts) holiday_count++;
+	// คำนวณจำนวนวัน / ชั่วโมงที่ลา
+	function initLeaveAmount() {
+		/* Start amount of day from Add Leave */
+		var holiday;
+		var holidays = [];
+		holiday = JSON.parse('${holiday}');
+
+		for (let i = 0; i < holiday.length; i++) {
+			let start = new Date(holiday[i].start);
+			let end = new Date(holiday[i].end);
+			for (let j = start; j <= end; j.setDate(j.getDate() + 1)) {
+				holidays.push(toDisplayDate(j));
+			}
+		}
+
+		function handleDateChange() {
+			let amount = 0;
+			let holiday_count = 0;
+			let from = new Date(toISODate($('#date_from').val()));
+			let to = new Date(toISODate($('#date_to').val()));
+			let halfDay = $('#halfDay').val();
+
+			if (halfDay !== "0") {
+				$('#date_to').val($('#date_from').val());
+				$('#date_to_hidden').val($('#date_from').val());
+				$('#amount').val(0);
+				$('#amount_hidden').val(0);
+			} else {
+				if (from < to) {
+					amount = ((to - from) / 86400000) + 1;
+					for (let i = from; i < to; i.setDate(i.getDate() + 1)) {
+						for (let j = 0; j < holidays.length; j++) {
+							let holiday_ts = toTimestamp2(holidays[j]);
+							if (i.getTime() == holiday_ts) holiday_count++;
+						}
+						if (i.getDay() == '0' || i.getDay() == '6') holiday_count++;
 					}
-					if (i.getDay() == '0' || i.getDay() == '6') holiday_count++;
+					amount -= holiday_count;
+				} else if (from > to) {
+					$('#date_from').val('');
+					$('#date_to').val('');
+				} else if (from.getTime() === to.getTime() && halfDay === "0") {
+					amount = 1;
+				} else if (from.getTime() === to.getTime() && halfDay !== "0") {
+					amount = 0;
 				}
-				amount -= holiday_count;
-			} else if (from > to) {
-				$('#date_from').val('');
-				$('#date_to').val('');
-			} else if (from.getTime() === to.getTime() && halfDay === "0") {
-				amount = 1;
-			} else if (from.getTime() === to.getTime() && halfDay !== "0") {
-				amount = 0;
+				$('#amount').val(amount);
+				$('#amount_hidden').val(amount);
+			}
+		}
+
+		const dateFrom = document.getElementById("date_from");
+		const dateTo = document.getElementById("date_to");
+		const dateRangeDiv = document.querySelector(".input-daterange");
+
+		dateFrom.addEventListener("change.td", function () {
+			$(dateRangeDiv).trigger("change");
+		});
+		dateTo.addEventListener("change.td", function () {
+			$(dateRangeDiv).trigger("change");
+		});
+
+		$('.input-daterange').on('change', handleDateChange);
+
+		$('.checkHours').change(function () {
+			let timeFrom = new Date("01/01/2007 " + $('#time_from').val()).getHours();
+			let timeTo = new Date("01/01/2007 " + $('#time_to').val()).getHours();
+			let hourDiff = timeTo - timeFrom;
+			if (hourDiff <= 0) {
+				hourDiff = 0;
+				$('#time_to').val('');
+				$('#alert_time_to').text('กรุณาระบุเวลาสิ้นสุดใหม่').css({
+					fontSize: "12px",
+					color: "red"
+				});
+			} else if (hourDiff > 0 && hourDiff < 8) {
+				$('#time_to').css('color', 'black');
+				$('#alert_time_to').text('');
+			} else if (hourDiff >= 8) {
+				hourDiff = 0;
+				$('#time_to').val('');
+				$('#alert_time_to').text('8 ชม. ขึ้นไป กรุณาเลือกการลาแบบเต็มวัน').css({
+					fontSize: "12px",
+					color: "red"
+				});
+			} else {
+				hourDiff = null;
+			}
+			$('#amount_sub').val(hourDiff);
+			$('#amount_sub_hidden').val(hourDiff);
+
+			updateLeaveDisplay();
+
+		});
+
+		function updateLeaveDisplay() {
+			const day = parseFloat($('#amount').val()) || 0;
+			const hour = parseFloat($('#amount_sub').val()) || 0;
+			const total = day + (hour / 8); // 8 ชม. = 1 วัน
+			$('#amount_display').text(`${total.toFixed(2)} day`);
+		}
+
+		$('.input-daterange').on('change', updateLeaveDisplay);
+
+		/* End amount of day from Add Leave */
+	}
+
+	// รายชื่อผู้ลา / ผู้อนุมัติ
+	function initUserApprover() {
+		/* Start Applicant/Approver List */
+		for (let i = 0; i < userList.length; i++) {
+			let id = userList[i].id.toLowerCase();
+			let name = userList[i].name;
+			let name_en = userList[i].name_en;
+			let employee_id = userList[i].employee_id;
+			let status = userList[i].enable;
+			userList = ${userList};
+			
+			userList.sort(function(a, b){
+
+			    if(a.employee_id && b.employee_id){
+			        let empCompare = a.employee_id.localeCompare(b.employee_id);
+			        if(empCompare !== 0) return empCompare;
+			    }
+
+			    if(a.employee_id) return -1;
+			    if(b.employee_id) return 1;
+
+			    if(a.name_en && b.name_en){
+			        let nameEnCompare = a.name_en.localeCompare(b.name_en);
+			        if(nameEnCompare !== 0) return nameEnCompare;
+			    }
+
+			    if(a.name_en) return -1;
+			    if(b.name_en) return 1;
+
+			    return (a.name || "").localeCompare(b.name || "");
+			});
+			
+			let displayText = '';
+
+			if (employee_id) {
+				displayText += employee_id;
+			}
+			
+			if (name_en) {
+				if (displayText) displayText += ' - ';
+				displayText += name_en;
+			}
+			
+			if (name) {
+				if (displayText) displayText += ' - ';
+				displayText += name;
+			}
+
+			let option = '<option value="' + id + '">' + displayText + '</option>';
+
+			if (status == '1') {
+				$('#u_enable').append(option);
+			} else {
+				$('#u_disable').append(option);
+			}
+			if (id == manager) {
+				$('#approver').append(option);
+			}
+		}
+		$('#user').val(user);
+		$('#user').trigger('change');
+		$('#user_hidden').val(user);
+		$('#status_hidden').val(0);
+		$('#approver').val(manager);
+		$('#approver').trigger('change');
+		$('#user').change(() => {
+			let val = $('#user').val();
+			for (let i = 0; i < userList.length; i++) {
+				let user = userList[i].id.toLowerCase();
+				let mng = userList[i].manager;
+				if (user == val) {
+					$('#approver').val(mng.toLowerCase());
+					$('#approver').trigger('change');
+				}
+			}
+		});
+		/* End Applicant/Approver List */
+	}
+
+	// เติมค่าจากใบลาเดิม (Edit)
+	function initEditValues() {
+		/* Start Leave Edit init */
+		if (leave != null) {
+			$('#user_hidden').val(leave.userCreate);
+			$('#leaveId_hidden').val(leave.leaveId);
+			$('#status_hidden').val(leave.leaveStatusId);
+			var noDay = leave.noDay.toString().split(".");
+			var amount = noDay[0];
+			var amount_sub = (leave.noDay % 1) * 8;
+			if (isNaN(amount_sub)) {
+				amount_sub = 0;
+			}
+			var s_date = moment(leave.startDate, 'MMM D, Y').format('DD MMM YYYY');
+			var e_date = moment(leave.endDate, 'MMM D, Y').format('DD MMM YYYY');
+			$('#date_from').val(s_date);
+			$('#date_to').val(e_date);
+			if (leave.halfDay === '3') {
+				$('#time_from').val(leave.startTime);
+				$('#time_to').val(leave.endTime);
 			}
 			$('#amount').val(amount);
 			$('#amount_hidden').val(amount);
+			$('#amount_sub').val(amount_sub);
+			$('#amount_sub_hidden').val(amount_sub);
+			$('#description').val(leave.description);
+			$('#status').val(leave.leaveStatusId).change();
+			$('#lt_' + leave.leaveTypeId).prop('checked', 'checked');
+			$('#halfDay').val(leave.halfDay).change();
+			$('#approver').val(leave.apprUserId).change();
 		}
+		/* End Leave Edit init */
 	}
 
-	const dateFrom = document.getElementById("date_from");
-	const dateTo = document.getElementById("date_to");
-	const dateRangeDiv = document.querySelector(".input-daterange");
+	// checkbox ลาปีหน้า
+	function initNextYearLeave() {
+		const qThisYear = '${quotaThisYear}';
 
-	dateFrom.addEventListener("change.td", function () {
-		$(dateRangeDiv).trigger("change");
-	});
-	dateTo.addEventListener("change.td", function () {
-		$(dateRangeDiv).trigger("change");
-	});
 
-	$('.input-daterange').on('change', handleDateChange);
+		// begin checkbox ลาปีหน้า ==============================================================
+		// display hide checkbox ลาปีหน้า
+		const currentMonth = new Date().getMonth(); // JavaScript: 0 = ม.ค. ถึง 11 = ธ.ค.
 
-	$('.checkHours').change(function () {
-		let timeFrom = new Date("01/01/2007 " + $('#time_from').val()).getHours();
-		let timeTo = new Date("01/01/2007 " + $('#time_to').val()).getHours();
-		let hourDiff = timeTo - timeFrom;
-		if (hourDiff <= 0) {
-			hourDiff = 0;
-			$('#time_to').val('');
-			$('#alert_time_to').text('กรุณาระบุเวลาสิ้นสุดใหม่').css({
-				fontSize: "12px",
-				color: "red"
-			});
-		} else if (hourDiff > 0 && hourDiff < 8) {
-			$('#time_to').css('color', 'black');
-			$('#alert_time_to').text('');
-		} else if (hourDiff >= 8) {
-			hourDiff = 0;
-			$('#time_to').val('');
-			$('#alert_time_to').text('8 ชม. ขึ้นไป กรุณาเลือกการลาแบบเต็มวัน').css({
-				fontSize: "12px",
-				color: "red"
-			});
+		const $nextYearCheckboxContainer = $('#nextYearLeaveContainer');
+
+		// display only month nov or dec : nov=10,dec=11
+		if (currentMonth === 10 || currentMonth === 11) {
+			$nextYearCheckboxContainer.show();
 		} else {
-			hourDiff = null;
+			$nextYearCheckboxContainer.hide();
+			// if hide checkbox = false
+			$('#nextYearLeave').prop('checked', false); // if nextYearLeave = hide : uncheck nextYearLeave
 		}
-		$('#amount_sub').val(hourDiff);
-		$('#amount_sub_hidden').val(hourDiff);
+		// display hide checkbox ลาปีหน้า
 
-		updateLeaveDisplay();
+		function updateDatePickerRange(isNextYear) {
+			var currentYear = new Date().getFullYear();
+			var targetYear = isNextYear ? (currentYear + 1) : currentYear;
 
-	});
+			var startDate = '01 Jan ' + targetYear;
+			var endDate = '31 Dec ' + targetYear;
 
-	function updateLeaveDisplay() {
-		const day = parseFloat($('#amount').val()) || 0;
-		const hour = parseFloat($('#amount_sub').val()) || 0;
-		const total = day + (hour / 8); // 8 ชม. = 1 วัน
-		$('#amount_display').text(`${total.toFixed(2)} day`);
-	}
+			var $inputs = $('#date_from, #date_to');
 
-	$('.input-daterange').on('change', updateLeaveDisplay);
-
-	/* End amount of day from Add Leave */
-
-
-	/* Start Applicant/Approver List */
-	for (let i = 0; i < userList.length; i++) {
-		let id = userList[i].id.toLowerCase();
-		let name = userList[i].name;
-		let name_en = userList[i].name_en;
-		let employee_id = userList[i].employee_id;
-		let status = userList[i].enable;
-		var userList = ${userList};
-		
-		userList.sort(function(a, b){
-
-		    if(a.employee_id && b.employee_id){
-		        let empCompare = a.employee_id.localeCompare(b.employee_id);
-		        if(empCompare !== 0) return empCompare;
-		    }
-
-		    if(a.employee_id) return -1;
-		    if(b.employee_id) return 1;
-
-		    if(a.name_en && b.name_en){
-		        let nameEnCompare = a.name_en.localeCompare(b.name_en);
-		        if(nameEnCompare !== 0) return nameEnCompare;
-		    }
-
-		    if(a.name_en) return -1;
-		    if(b.name_en) return 1;
-
-		    return (a.name || "").localeCompare(b.name || "");
-		});
-		
-		let displayText = '';
-
-		if (employee_id) {
-			displayText += employee_id;
-		}
-		
-		if (name_en) {
-			if (displayText) displayText += ' - ';
-			displayText += name_en;
-		}
-		
-		if (name) {
-			if (displayText) displayText += ' - ';
-			displayText += name;
-		}
-
-		let option = '<option value="' + id + '">' + displayText + '</option>';
-
-		if (status == '1') {
-			$('#u_enable').append(option);
-		} else {
-			$('#u_disable').append(option);
-		}
-		if (id == manager) {
-			$('#approver').append(option);
-		}
-	}
-	$('#user').val(user);
-	$('#user').trigger('change');
-	$('#user_hidden').val(user);
-	$('#status_hidden').val(0);
-	$('#approver').val(manager);
-	$('#approver').trigger('change');
-	$('#user').change(() => {
-		let val = $('#user').val();
-		for (let i = 0; i < userList.length; i++) {
-			let user = userList[i].id.toLowerCase();
-			let mng = userList[i].manager;
-			if (user == val) {
-				$('#approver').val(mng.toLowerCase());
-				$('#approver').trigger('change');
-			}
-		}
-	});
-	/* End Applicant/Approver List */
-
-	console.log(leave);
-	/* Start Leave Edit init */
-	if (leave != null) {
-		$('#user_hidden').val(leave.userCreate);
-		//$('#leaveId').val(leave.leaveId);
-		$('#leaveId_hidden').val(leave.leaveId);
-		console.log($('#leaveId_hidden').val());
-		$('#status_hidden').val(leave.leaveStatusId);
-		var noDay = leave.noDay.toString().split(".");
-		var amount = noDay[0];
-		var amount_sub = (leave.noDay % 1) * 8;
-		if (isNaN(amount_sub)) {
-			amount_sub = 0;
-		}
-		var s_date = moment(leave.startDate, 'MMM D, Y').format('DD MMM YYYY');
-		var e_date = moment(leave.endDate, 'MMM D, Y').format('DD MMM YYYY');
-		$('#date_from').val(s_date);
-		$('#date_to').val(e_date);
-		if (leave.halfDay === '3') {
-			$('#time_from').val(leave.startTime);
-			$('#time_to').val(leave.endTime);
-		}
-		$('#amount').val(amount);
-		$('#amount_hidden').val(amount);
-		$('#amount_sub').val(amount_sub);
-		$('#amount_sub_hidden').val(amount_sub);
-		$('#description').val(leave.description);
-		$('#status').val(leave.leaveStatusId).change();
-		$('#lt_' + leave.leaveTypeId).prop('checked', 'checked');
-		$('#halfDay').val(leave.halfDay).change();
-		$('#approver').val(leave.apprUserId).change();
-	}
-	/* End Leave Edit init */
-
-	const qThisYear = '${quotaThisYear}';
-
-
-	// begin checkbox ลาปีหน้า ==============================================================
-	// display hide checkbox ลาปีหน้า
-	//debugger;
-	const currentMonth = new Date().getMonth(); // JavaScript: 0 = ม.ค. ถึง 11 = ธ.ค.
-	//const currentMonth = 0 //for test display "ลาพักร้อนที่เหลือจากปีก่อน"
-	//const currentMonth = 1 //for test hide "ลาพักร้อนที่เหลือจากปีก่อน"
-
-	const $nextYearCheckboxContainer = $('#nextYearLeaveContainer');
-
-	// display only month nov or dec : nov=10,dec=11
-	if (currentMonth === 10 || currentMonth === 11) {
-		$nextYearCheckboxContainer.show();
-	} else {
-		$nextYearCheckboxContainer.hide();
-		// if hide checkbox = false
-		$('#nextYearLeave').prop('checked', false); // if nextYearLeave = hide : uncheck nextYearLeave
-	}
-	// display hide checkbox ลาปีหน้า
-
-	function updateDatePickerRange(isNextYear) {
-		var currentYear = new Date().getFullYear();
-		var targetYear = isNextYear ? (currentYear + 1) : currentYear;
-
-		var startDate = '01 Jan ' + targetYear;
-		var endDate = '31 Dec ' + targetYear;
-
-		var $inputs = $('#date_from, #date_to');
-
-		// ล้างค่าที่เลือกไว้เดิม เพื่อให้ User เลือกใหม่ในช่วงปีที่ถูกต้อง
-		var action = '${empty action ? "" : action}';
-		if (action === 'Add') {
-			$inputs.val('');
-			$('#date_from_hidden, #date_from, #date_to, #date_to_hidden').val('');
-		}
-
-		$inputs.daterangepicker({
-			singleDatePicker: true,
-			showDropdowns: true,
-			autoUpdateInput: false,
-			autoApply: true,
-			minDate: startDate,
-			maxDate: endDate,
-			locale: {
-				format: "DD MMM YYYY",
-				monthNames: [
-					"January", "February", "March", "April", "May", "June",
-					"July", "August", "September", "October", "November", "December"
-				],
-			},
-			drops: "down",
-			theme: 'light'
-		});
-
-		// for fix : autoUpdateInput: false,
-		$inputs.on('apply.daterangepicker', function (ev, picker) {
-			$(this).val(picker.startDate.format('DD MMM YYYY'));
-
-			var hiddenId = '#' + $(this).attr('id') + '_hidden';
-			$(hiddenId).val(picker.startDate.format('DD-MM-YYYY'));
-
-			$(this).trigger('change');
-		});
-
-		$inputs.on('cancel.daterangepicker', function (ev, picker) {
-			$(this).val('');
-			var hiddenId = '#' + $(this).attr('id') + '_hidden';
-			$(hiddenId).val('');
-		});
-
-	}
-
-	//updateDatePickerRange(false);
-
-	$('#nextYearLeave').on('change', function () {
-		//debugger;
-		var isNextYear = $(this).is(':checked');
-		updateDatePickerRange(isNextYear);
-		const leave6Container = $('#label_lt_6');
-
-		const leaveTypeRadios = $('input:radio[name="leaveType"]');
-
-		var action = '${empty action ? "" : action}';
-		if (action !== 'Edit') {
-			leaveTypeRadios.prop('checked', false); // nextYearLeave onChange : uncheck radio leave type
-		}
-
-		$('#lt_hidden').val('');
-		if (isNextYear) {
-			leaveTypeRadios.prop('disabled', false); // if nextYearLeave = true : ignore quota : radio leave type = enable all
-			console.log("Next Year Leave: All leave types enabled.");
-
-			// if nextYearLeave = true : display "ลาพักร้อนที่เหลือจากปีก่อน"
-			if (leave6Container.length) {
-				leave6Container.show();
-				console.log("Leave ID 6: SHOW (Next Year Leave checked)");
+			// ล้างค่าที่เลือกไว้เดิม เพื่อให้ User เลือกใหม่ในช่วงปีที่ถูกต้อง
+			var action = '${empty action ? "" : action}';
+			if (action === 'Add') {
+				$inputs.val('');
+				$('#date_from_hidden, #date_from, #date_to, #date_to_hidden').val('');
 			}
 
-		} else {
-			userOnChange();
+			$inputs.daterangepicker({
+				singleDatePicker: true,
+				showDropdowns: true,
+				autoUpdateInput: false,
+				autoApply: true,
+				minDate: startDate,
+				maxDate: endDate,
+				locale: {
+					format: "DD MMM YYYY",
+					monthNames: [
+						"January", "February", "March", "April", "May", "June",
+						"July", "August", "September", "October", "November", "December"
+					],
+				},
+				drops: "down",
+				theme: 'light'
+			});
 
-			// if nextYearLeave = false : control visibility by month logic
-			if (leave6Container.length) {
-				const currentMonth = new Date().getMonth();
-				//const currentMonth = 0 //for test display "ลาพักร้อนที่เหลือจากปีก่อน"
-				//const currentMonth = 1 //for test hide "ลาพักร้อนที่เหลือจากปีก่อน"
-				if (currentMonth > 2) {
-					leave6Container.hide();
-					$('#lt_6').prop('checked', false);
-					//console.log("Leave ID 6: HIDE (Reverted to month check > 2)");
-				} else {
+			// for fix : autoUpdateInput: false,
+			$inputs.on('apply.daterangepicker', function (ev, picker) {
+				$(this).val(picker.startDate.format('DD MMM YYYY'));
+
+				var hiddenId = '#' + $(this).attr('id') + '_hidden';
+				$(hiddenId).val(picker.startDate.format('DD-MM-YYYY'));
+
+				$(this).trigger('change');
+			});
+
+			$inputs.on('cancel.daterangepicker', function (ev, picker) {
+				$(this).val('');
+				var hiddenId = '#' + $(this).attr('id') + '_hidden';
+				$(hiddenId).val('');
+			});
+
+		}
+
+
+		$('#nextYearLeave').on('change', function () {
+			var isNextYear = $(this).is(':checked');
+			updateDatePickerRange(isNextYear);
+			const leave6Container = $('#label_lt_6');
+
+			const leaveTypeRadios = $('input:radio[name="leaveType"]');
+
+			var action = '${empty action ? "" : action}';
+			if (action !== 'Edit') {
+				leaveTypeRadios.prop('checked', false); // nextYearLeave onChange : uncheck radio leave type
+			}
+
+			$('#lt_hidden').val('');
+			if (isNextYear) {
+				leaveTypeRadios.prop('disabled', false); // if nextYearLeave = true : ignore quota : radio leave type = enable all
+
+				// if nextYearLeave = true : display "ลาพักร้อนที่เหลือจากปีก่อน"
+				if (leave6Container.length) {
 					leave6Container.show();
-					//console.log("Leave ID 6: SHOW (Month <= 2, keeping shown)");
+				}
+
+			} else {
+				userOnChange();
+
+				// if nextYearLeave = false : control visibility by month logic
+				if (leave6Container.length) {
+					const currentMonth = new Date().getMonth();
+					if (currentMonth > 2) {
+						leave6Container.hide();
+						$('#lt_6').prop('checked', false);
+					} else {
+						leave6Container.show();
+					}
 				}
 			}
-		}
 
-	});
+		});
 
-	$('#nextYearLeave').trigger('change');
-	// end checkbox ลาปีหน้า ==============================================================
-
+		$('#nextYearLeave').trigger('change');
+		// end checkbox ลาปีหน้า ==============================================================
+	}
 });
 
 function userOnChange() {
@@ -1637,7 +1617,6 @@ function userOnChange() {
 			"userId": userId
 		},
 		success: function (data) {
-			//console.log(data);
 			var dataObj = JSON.parse(data);
 			$("#approver option[value != 'admin']").remove();
 			$('#approver').append(dataObj.option)
@@ -1653,7 +1632,6 @@ function userOnChange() {
 			"userId": userId
 		},
 		success: function (data) {
-			//console.log(data);
 			const responseData = JSON.parse(data);
 			const leaveStatus = responseData.leaveCheckStatus;
 
@@ -1665,17 +1643,12 @@ function userOnChange() {
 					const elementId = "lt_" + leaveTypeId; //ref id leaveType Radio
 
 					const targetElement = document.getElementById(elementId);
-					//const targetElement = $(elementId);
 					if (targetElement) {
 						if (isQuotaFull === true) {
-							//console.log("Quota full for leaveTypeId : " + leaveTypeId);
 							targetElement.disabled = true;
 						} else {
-							//console.log("Quota available for leaveTypeId : " + leaveTypeId);
 							targetElement.disabled = false;
 						}
-					} else {
-						console.log("Element with ID : " + leaveTypeId + "not found in the DOM.");
 					}
 				}
 			}
@@ -1686,7 +1659,10 @@ function userOnChange() {
 </script>
 
 <script>
-document.addEventListener("DOMContentLoaded", function () {
+/* ---------- time picker ---------- */
+document.addEventListener("DOMContentLoaded", initTimePickers);
+
+function initTimePickers() {
 	// Start Time picker
 	const startTimePicker = new tempusDominus.TempusDominus(document.getElementById("time_from"), {
 		display: {
@@ -1732,44 +1708,76 @@ document.addEventListener("DOMContentLoaded", function () {
 
 	// ตั้งค่าเริ่มต้นเป็น 18:00
 	endTimePicker.dates.setValue(tempusDominus.DateTime.convert(new Date(0, 0, 0, 18, 0)));
+}
+</script>
+
+<script>
+/* ---------- submit ---------- */
+// flag กันการ submit ซ้ำ (ผู้ใช้กดปุ่มรัว ๆ เพราะนึกว่าค้าง)
+var leaveSubmitting = false;
+
+// แยก logic การ submit จริงออกมาเพื่อเรียกใช้ซ้ำได้ทั้งเคสมี popup และไม่มี popup
+function doSubmit() {
+	if (leaveSubmitting) { return; } // ส่งไปแล้ว ไม่ต้องส่งซ้ำ
+	leaveSubmitting = true;
+
+	var spinner = $('#liffLoadingOverlay');
+	var form = $('#formid');
+	// รวมไฟล์ทั้งหมด (ปุ่มหลัก + modal) เข้า #myFile ชุดเดียว + set #deleteFileId
+	if (typeof lfSyncInput === 'function') { lfSyncInput(); }
+	spinner.css('display', 'flex'); // แสดง overlay loading ทับทั้งหน้า
+	$('#formid').find(':input').prop('disabled', false);
+	// ปิดปุ่มที่กดได้ทั้งหมด กันกดซ้ำระหว่างรอ browser navigate
+	$('#submitBtn, #lbafterFile').prop('disabled', true).addClass('disabled');
+	form.submit();
+
+	// Refresh the window that opened this one, if it exists to show the latest data
+	if (window.opener) {
+		window.opener.location.reload();
+	}
+}
+
+// มีไฟล์แนบอยู่ไหม (pending ใหม่ + existing เดิมที่ยังไม่ถูกลบ)
+function lfHasAnyFile() {
+	if (typeof LeaveFiles === 'undefined') return false;
+	var activeExisting = LeaveFiles.existing.filter(function (ex) {
+		return LeaveFiles.deleted.indexOf(ex.fileId) === -1;
+	}).length;
+	return (LeaveFiles.pending.length + activeExisting) > 0;
+}
+
+function beforeSubmit() {
+	if (leaveSubmitting) { return; } // กำลังส่งอยู่ ไม่ต้องทำอะไรเพิ่ม
+	if (LeaveFiles.loading.length > 0) { return; } // ไฟล์ยังประมวลผลไม่เสร็จ disabled ปุ่มไว้
+	var form = $('#formid');
+	if (!form[0].reportValidity()) {
+		return;
+	}
+
+	// เช็คชื่อ leave type
+	var typeName = $('#leaveTypeSelect option:selected').text() || '';
+	var isSickOrPersonal = (typeName.indexOf('ลาป่วย') !== -1 || typeName.indexOf('ลากิจ') !== -1);
+
+	if (isSickOrPersonal && !lfHasAnyFile()) {
+		// ลาป่วย/ลากิจ แต่ยังไม่มีไฟล์แนบ -> เตือนใต้แถวแนบไฟล์
+		$('#alert_evidence').text('กรณีลากิจ และลาป่วย ต้องแนบไฟล์การขออนุมัติจากหัวหน้าทุกครั้ง');
+		document.getElementById('fileUploadSection').scrollIntoView({ behavior: 'smooth', block: 'center' });
+		return;
+	}
+	doSubmit();
+}
+
+// กด back กลับมาหน้านี้ให้โหลดใหม่
+window.addEventListener('pageshow', function (e) {
+	if (e.persisted) location.reload();
 });
 </script>
 
 <script>
-function showFileName(input) {
-	const fileDisplay = document.getElementById("fileNameDisplay");
-	if (input.files.length > 0) {
-		fileDisplay.textContent = input.files[0].name;
-	} else {
-		fileDisplay.textContent = "ยังไม่ได้เลือกไฟล์";
-	}
-}
-</script>
+/* ---------- select ผู้ลา + date picker ---------- */
+document.addEventListener("DOMContentLoaded", initSelectAndDatePickers);
 
-<script>
-function beforeSubmit() {
-	var spinner = $('#loader');
-	var form = $('#formid');
-	// Merge all attached files (main + inline "attach files" control) into #myFile + set #deleteFileId
-	if (typeof lfSyncInput === 'function') { lfSyncInput(); }
-	var reportValidity = form[0].reportValidity();
-	if (reportValidity) {
-		spinner.show();
-		$('#btn_submit').prop('disabled', true);
-		$('#formid').find(':input').prop('disabled', false);
-		form.submit();
-
-		// Refresh the window that opened this one, if it exists to show the latest data
-		if (window.opener) {
-			window.opener.location.reload();
-		}
-	}
-}
-</script>
-
-<script>
-document.addEventListener("DOMContentLoaded", function () {
-
+function initSelectAndDatePickers() {
 	$("#user").select2({
 		allowClear: true,
 		width: '100%'
@@ -1817,11 +1825,11 @@ document.addEventListener("DOMContentLoaded", function () {
 		const val = e.detail.date ? e.detail.date.format("DD-MM-YYYY") : "";
 		document.getElementById("date_to_hidden").value = val;
 	});
-
-});
+}
 </script>
 
 <script>
+/* ---------- ไฟล์แนบ: preview / ลบไฟล์ ---------- */
 function renderSingleFilePreview(fileName, fileUrl, isExisting = false, fileId = null, containerId = 'filePreviewContainer', fileInputId = 'myFile', disableTrash = false) {
 	const container = document.getElementById(containerId) || document.getElementById('filePreviewContainer');
 	if (!container) return;
@@ -1871,7 +1879,6 @@ function renderSingleFilePreview(fileName, fileUrl, isExisting = false, fileId =
 	trashIcon.className = 'ki-duotone ki-trash fs-3';
 	trashIcon.innerHTML = `<span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span><span class="path5"></span>`;
 	removeBtn.appendChild(trashIcon);
-	console.log("Disable Trash: " + disableTrash);
 	if (disableTrash === true) {
 		removeBtn.style.opacity = '0.5';
 		removeBtn.style.pointerEvents = 'none';
@@ -1919,7 +1926,9 @@ window.removeSingleFile = function (isExisting, fileId, containerId = 'filePrevi
 	if (window.filePreviewTarget) delete window.filePreviewTarget;
 };
 
-document.addEventListener('DOMContentLoaded', function () {
+document.addEventListener('DOMContentLoaded', initFileInput);
+
+function initFileInput() {
 	const fileInput = document.getElementById('myFile');
 	if (!fileInput) {
 		console.error("Critical Error: File input element with ID 'myFile' not found.");
@@ -1932,9 +1941,10 @@ document.addEventListener('DOMContentLoaded', function () {
 	fileInput.addEventListener('change', function (event) {
 		var cb = window.__lfAddFilesCallback;
 		window.__lfAddFilesCallback = null;
+		$('#alert_evidence').text(''); // แนบไฟล์แล้ว ซ่อนข้อความเตือน
 		lfAddFiles(event.target.files, cb);
 	});
-});
+}
 
 // Inline "Attach files" control shown when editing an Approved leave (no main Submit button
 // there, so picking a file here submits right away once it clears validation/compression).
@@ -1952,6 +1962,7 @@ function handleAfterFileSelectAndSubmit(input) {
 </script>
 
 <script>
+/* ---------- ไฟล์แนบ: แนบไฟล์ตอน Approved ---------- */
 function handleAfterFileSelect(input) {
 	const file = input.files[0];
 	if (!file) return;
@@ -2000,14 +2011,7 @@ function handleAfterFileSelect(input) {
 </script>
 
 <script>
-/* =========================================================================
- * Multi-file attach model, ported from pages-back/leave/new_leavePage.jsp so
- * this LIFF page supports attaching several files, not just one — same
- * validation/compression rules as the desktop admin page (HEIC rejection,
- * duplicate check, 2MB total size cap, auto-compress large images).
- * Before submit, beforeSubmit() calls lfSyncInput() to merge pending ->
- * #myFile and deleted -> #deleteFileId.
- * ========================================================================= */
+/* ---------- ไฟล์แนบ: หลายไฟล์ ---------- */
 window.LeaveFiles = window.LeaveFiles || { pending: [], existing: [], deleted: [], loading: [] };
 var LF_LOADING_SEQ = 0;
 
@@ -2271,5 +2275,3 @@ function lfSyncInput() {
 	if (sz) sz.value = LeaveFiles.pending.length ? (LeaveFiles.pending.length + ' file(s)') : '';
 }
 </script>
-
-</html>

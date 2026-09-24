@@ -611,6 +611,7 @@
 	--liff-gutter: 1.5rem;
 	--liff-bullet-w: 3px;
 	width: calc(100% - 32px); max-width: 393px; margin: 0 auto;
+	padding-bottom: 80px; /* เว้นที่ให้ปุ่ม + */
 }
 #yearFilterBtn { font-size: 13px; font-weight: 600; color: var(--bs-gray-700); border: 1px solid #E4E6EF; border-radius: 8px; padding: 6px 16px; background-color: #F8F9FB; }
 #yearFilterBtn:hover, #yearFilterBtn:focus, #yearFilterBtn:active { background-color: #F8F9FB; border-color: var(--bs-primary); box-shadow: none; }
@@ -1115,6 +1116,40 @@ function leaveStatus(id) {
 }
 </script>  -->
 <script>
+/* ---------- toast ---------- */
+function liffToastSuccess(message, title) {
+	toastr.options = {
+		"closeButton": false,
+		"debug": false,
+		"newestOnTop": false,
+		"progressBar": false,
+		"positionClass": "toastr-top-right",
+		"preventDuplicates": false,
+		"onclick": null,
+		"showDuration": "300",
+		"hideDuration": "1000",
+		"timeOut": "2000",
+		"extendedTimeOut": "1000",
+		"showEasing": "swing",
+		"hideEasing": "linear",
+		"showMethod": "fadeIn",
+		"hideMethod": "fadeOut"
+	};
+	toastr.success(message, title);
+}
+
+// เพิ่มใบลาสำเร็จ: line_new_LeaveAdd_Do redirect มาพร้อม ?saved=add
+$(function () {
+	const params = new URLSearchParams(window.location.search);
+	if (params.get('saved') === 'add') {
+		liffToastSuccess("Your leave request has been submitted.", "Saved successfully!");
+		params.delete('saved'); // เอาออกจาก URL กัน refresh แล้วขึ้นซ้ำ
+		const qs = params.toString();
+		history.replaceState(null, '', window.location.pathname + (qs ? '?' + qs : ''));
+	}
+});
+
+/* ---------- ยกเลิกใบลา ---------- */
 function changeStatus(id) {
     Swal.fire({
         title: "Are you sure?",
@@ -1159,7 +1194,10 @@ function changeStatus(id) {
                         reason: val
                     },
                     success: function(response) {
-                        window.location.reload(true); // reload หน้าทันทีเหมือนโค้ดเดิม
+                        liffToastSuccess("Your leave has been cancelled.", "Cancelled successfully!");
+                        setTimeout(function () {
+                            window.location.reload(true);
+                        }, 2000);
                     },
                     error: function() {
                         Swal.fire("Error", "Unable to cancel leave. Please try again.", "error");

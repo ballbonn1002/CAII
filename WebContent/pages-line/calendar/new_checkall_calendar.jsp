@@ -1531,6 +1531,7 @@ jQuery(document).ready(function() {
 					</div>
 				</div>
 
+				<%-- ไม่แสดงคำอธิบาย/ไฟล์แนบใน Check List
 				<div class="row mb-5 fs-6 fw-medium">
 					<div class="col-md-6">
 						<div class="d-flex align-items-center mb-2">
@@ -1549,6 +1550,7 @@ jQuery(document).ready(function() {
 						</div>
 					</div>
 				</div>
+				--%>
 
 				<div class="row mb-5 fs-6 fw-medium">
 					<div class="col-md-6">
@@ -2289,14 +2291,15 @@ var AppCalendar = function() {
         }
         statusLeave += '</span>';
 
+        // ไม่แสดงไฟล์แนบใน Check List
         // Check File Leave
-        if (leaveEvent.extendedProps && leaveEvent.extendedProps.leave_file) {
-            var fileUrl = "${pageContext.request.contextPath}" + leaveEvent.extendedProps.leave_file;
-            statusLeave += "&nbsp;<a href='" + fileUrl + "' target='_blank' class='text-primary'>" +
-            			"<i class='ki-duotone ki-document fs-2 text-primary align-middle'>" +
-                		"<i class='path1'></i><i class='path2'></i>" +
-            			"</i> " + "</a>";
-        }
+        // if (leaveEvent.extendedProps && leaveEvent.extendedProps.leave_file) {
+        //     var fileUrl = "${pageContext.request.contextPath}" + leaveEvent.extendedProps.leave_file;
+        //     statusLeave += "&nbsp;<a href='" + fileUrl + "' target='_blank' class='text-primary'>" +
+        //     			"<i class='ki-duotone ki-document fs-2 text-primary align-middle'>" +
+        //         		"<i class='path1'></i><i class='path2'></i>" +
+        //     			"</i> " + "</a>";
+        // }
         return statusLeave;
     }
 
