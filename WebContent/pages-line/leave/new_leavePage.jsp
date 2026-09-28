@@ -1211,6 +1211,7 @@ $(() => {
 		    $('input[name="leaveType"]').prop('disabled', true);
 			$('#status, #date_from, #date_to, #halfDay, #description, #myFile, #removeFileBtn, #approver, #submitBtn').prop('disabled', true);
 		    $('input[name="leaveType"]').closest('.form-check').css('pointer-events', 'none').css('opacity', '0.6');
+			$('#leaveTypeSelect').prop('disabled', true);
 			$('#leaveidInfo').show();
 			$('#requestInfo').show();
 		    $('#approveInfo').show();
