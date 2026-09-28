@@ -724,7 +724,6 @@
 		<div id="filePreviewContainer" class="d-flex flex-wrap gap-2 mb-3"></div>
 
 		<div class="mb-6" id="exitingFileSection">
-			<div id="exitingFilePreviewContainer" class="d-flex flex-wrap gap-2 mt-2"></div>
 			<div class="liff-field-row mb-3" id="afterFileRow">
 				<label class="liff-field-label" for="afterFile">Attach files</label>
 				<label for="afterFile" id="lbafterFile" class="liff-upload-badge">
@@ -733,6 +732,7 @@
 					<input type="file" id="afterFile" name="afterFileUpload" style="display:none;" accept="image/*,application/pdf" onchange="previewAfterFile(this)">
 				</label>
 			</div>
+			<div id="exitingFilePreviewContainer" class="d-flex flex-wrap gap-2 mb-3"></div>
 			<div id="modalFilePreviewName" class="text-muted fs-6 mt-2"></div>
 		</div>
 
