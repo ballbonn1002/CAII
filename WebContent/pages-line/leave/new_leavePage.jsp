@@ -730,7 +730,7 @@
 				<label for="afterFile" id="lbafterFile" class="liff-upload-badge">
 					<i class="ki-duotone ki-file-up fs-7"><span class="path1"></span><span class="path2"></span></i>
 					Upload
-					<input type="file" id="afterFile" name="afterFileUpload" style="display:none;" accept="image/*,application/pdf" onchange="handleAfterFileSelectAndSubmit(this)">
+					<input type="file" id="afterFile" name="afterFileUpload" style="display:none;" accept="image/*,application/pdf" onchange="previewAfterFile(this)">
 				</label>
 			</div>
 			<div id="modalFilePreviewName" class="text-muted fs-6 mt-2"></div>
@@ -749,6 +749,7 @@
 		<div class="liff-submit-bar">
 			<button type="button" class="btn btn-light" onclick="window.history.go(-1); return false;">Cancel</button>
 			<button type="button" class="btn btn-success" id="submitBtn" onclick="beforeSubmit();">Submit</button>
+			<button type="button" class="btn btn-success d-none" id="afterFileSubmitBtn" onclick="submitAfterFile();">Submit</button>
 		</div>
 
 	</form>
@@ -1224,7 +1225,7 @@ $(() => {
 			lfRenderExistingReadonly('exitingFilePreviewContainer');
 		    $('#submitBtn').addClass('d-none');
 
-		    // แนบไฟล์หลังอนุมัติ (#afterFileRow): มีเฉพาะ Approved เลือกไฟล์แล้วส่งทันที
+		    // แนบไฟล์หลังอนุมัติ (#afterFileRow): มีเฉพาะ Approved เลือกไฟล์แล้วกด Submit ถึงส่ง
 		    if (leave.leaveStatusId.toString() != '1') {
 		    	$('#afterFileRow').addClass('d-none');
 		    }
@@ -1750,7 +1751,7 @@ function doSubmit() {
 	var disabledInputs = form.find(':input:disabled').prop('disabled', false);
 	var formData = new FormData(form[0]);
 	disabledInputs.prop('disabled', true);
-	$('#submitBtn, #lbafterFile').prop('disabled', true).addClass('disabled');
+	$('#submitBtn, #lbafterFile, #afterFileSubmitBtn').prop('disabled', true).addClass('disabled');
 
 	fetch(form.attr('action'), { method: 'POST', body: formData })
 		.then(function (res) {
@@ -1765,7 +1766,7 @@ function doSubmit() {
 		.catch(function () {
 			leaveSubmitting = false;
 			spinner.css('display', 'none');
-			$('#submitBtn, #lbafterFile').prop('disabled', false).removeClass('disabled');
+			$('#submitBtn, #lbafterFile, #afterFileSubmitBtn').prop('disabled', false).removeClass('disabled');
 			liffToastError("Unable to submit your leave request. Please try again.", "Submit failed");
 		});
 }
@@ -1969,7 +1970,7 @@ function initFileInput() {
 	}
 	// Main Attach-files control: can pick several files -> accumulate into LeaveFiles.pending
 	// (doesn't overwrite what's already attached). window.__lfAddFilesCallback lets the inline
-	// "attach file" control (handleAfterFileSelectAndSubmit, further down) know when its
+	// "attach file" control (submitAfterFile, further down) know when its
 	// forwarded file is done.
 	fileInput.addEventListener('change', function (event) {
 		var cb = window.__lfAddFilesCallback;
@@ -1979,16 +1980,70 @@ function initFileInput() {
 	});
 }
 
-// Inline "Attach files" control shown when editing an Approved leave (no main Submit button
-// there, so picking a file here submits right away once it clears validation/compression).
-function handleAfterFileSelectAndSubmit(input) {
+/* ---------- ไฟล์แนบตอน Approved: เลือกไฟล์ → ดูก่อน → กด Submit ถึงส่ง ---------- */
+function toggleAfterFileSubmit() {
+	var input = document.getElementById('afterFile');
+	var hasFile = !!(input && input.files && input.files.length > 0);
+	$('#afterFileSubmitBtn').toggleClass('d-none', !hasFile);
+}
+
+function previewAfterFile(input) {
 	const container = document.getElementById('modalFilePreviewName');
+	if (!container) return;
+	if (input.files && input.files[0]) {
+		const file = input.files[0];
+
+		if (lfIsHeic(file)) {
+			input.value = '';
+			container.innerHTML = '';
+			toggleAfterFileSubmit();
+			Swal.fire({
+				icon: 'error',
+				title: 'ไม่รองรับไฟล์ HEIC',
+				html: 'ไม่รองรับไฟล์นามสกุล .heic กรุณาแปลงก่อนแนบไฟล์'
+					+ '<br><br><span class="text-muted fs-7">ไฟล์ที่รองรับ: PNG, JPG, JPEG, GIF, WEBP, PDF, ZIP</span>',
+				confirmButtonText: 'รับทราบ'
+			});
+			return;
+		}
+
+		if (LF_FORBIDDEN.test(file.name)) {
+			input.value = '';
+			container.innerHTML = '';
+			toggleAfterFileSubmit();
+			Swal.fire({
+				icon: 'error',
+				title: 'Invalid file name',
+				text: 'File name contains invalid characters: ' + file.name,
+				confirmButtonText: 'OK'
+			});
+			return;
+		}
+
+		const tempUrl = URL.createObjectURL(file);
+		renderSingleFilePreview(file.name, tempUrl, false, null, 'modalFilePreviewName', 'afterFile');
+		$('#removeFileBtn_modalFilePreviewName').on('click', toggleAfterFileSubmit);
+	} else {
+		container.innerHTML = '';
+	}
+	toggleAfterFileSubmit();
+}
+
+function clearAfterFile() {
+	const input = document.getElementById('afterFile');
+	if (input) input.value = '';
+	removeSingleFile(false, null, 'modalFilePreviewName', 'afterFile');
+	toggleAfterFileSubmit();
+}
+
+function submitAfterFile() {
+	const input = document.getElementById('afterFile');
 	if (!input.files || input.files.length === 0) return;
+	// เช็คขนาด/บีบอัดก่อน ผ่านแล้วค่อยส่ง
 	window.__lfAddFilesCallback = function (success) {
 		if (!success) return;
-		try { input.value = ''; } catch (e) { /* ignore */ }
-		if (container) container.innerHTML = '';
-		beforeSubmit();
+		clearAfterFile();
+		doSubmit();
 	};
 	handleAfterFileSelect(input);
 }
