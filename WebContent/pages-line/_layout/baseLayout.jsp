@@ -63,6 +63,7 @@ body {
 	align-items: center; justify-content: center;
 	z-index: 200;
 }
+.liff-initializing { visibility: hidden; }
 .liff-input-underline { border: none; border-bottom: 1.5px solid #E4E6EF; border-radius: 0; background: transparent; padding: 8px 2px; box-shadow: none !important; }
 .liff-input-underline:focus { border-bottom-color: var(--bs-primary); background: transparent; }
 .liff-input-underline:disabled, .liff-input-underline[readonly] { background: transparent; border-bottom-style: dashed; color: var(--bs-gray-600); }
@@ -162,6 +163,14 @@ function liffToastError(message, title) {
 }
 </script>
 <!--end::LIFF toast-->
+<!--begin::LIFF form init-->
+<script>
+function liffInitDone(formSelector) {
+	$(formSelector).removeClass('liff-initializing').removeAttr('aria-busy');
+	$('#liffLoadingOverlay').hide();
+}
+</script>
+<!--end::LIFF form init-->
 <!--end::Javascript-->
 </head>
 <!--begin::Body-->

@@ -524,7 +524,7 @@
 
 <div class="liff-shell">
 
-	<div id="liffLoadingOverlay" class="liff-loading-overlay">
+	<div id="liffLoadingOverlay" class="liff-loading-overlay" style="display:flex;">
 		<div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading...</span></div>
 	</div>
 
@@ -594,7 +594,7 @@
 	<!--begin::Leave form card-->
 	<div class="card card-flush mb-7">
 		<div class="card-body pt-6 pb-7">
-	<form method="post" id="formid" class="form-horizontal" action="line_new_LeaveEdit_Do" enctype="multipart/form-data">
+	<form method="post" id="formid" class="form-horizontal liff-initializing" aria-busy="true" action="line_new_LeaveEdit_Do" enctype="multipart/form-data">
 
 		<!-- Status: hidden per request (no longer shown in FE UI). status_hidden stays live outside
 		     the comment — the halfDay handler reads it directly ($('#status_hidden').val() != '0')
@@ -1140,12 +1140,16 @@ $(() => {
 	const urlParams = new URLSearchParams(queryString);
 	const la = urlParams.get('la');
 
-	initFormMode();
-	initDefaultDate();
-	initLeaveAmount();
-	initUserApprover();
-	initEditValues();
-	initNextYearLeave();
+	try {
+		initFormMode();
+		initDefaultDate();
+		initLeaveAmount();
+		initUserApprover();
+		initEditValues();
+		initNextYearLeave();
+	} finally {
+		liffInitDone('#formid');
+	}
 
 	// ตั้งค่าฟอร์มตามโหมด Add / Edit
 	function initFormMode() {
