@@ -1149,114 +1149,130 @@ $(() => {
 	// ตั้งค่าฟอร์มตามโหมด Add / Edit
 	function initFormMode() {
 		if (action == 'Edit') {
-			leave = ${leave};
-			fileLeave = ${fileLeave};
-			leaveInfo = ${empty leaveInfo ? '[]' : leaveInfo};
-			user = leave.userId;
-			manager = leave.apprUserId;
-			department = leave.leaveStatusId.toString();
-
-			if (la == '1') {
-				$('form').attr('action','line_new_LeaveEdit_Do_LA');
-				<perm:permission object="leave.approve">
-					document.getElementById('status').disabled = false;
-				</perm:permission>
-			} else {
-				$('form').attr('action', 'line_new_LeaveEdit_Do');
-			}
-			
-			var aprEmpId;
-			var aprName;
-	        var apprUserId;
-	        var aprRole;
-	        var ucEmpId;
-	        var ucName;
-	        var timeCreate;
-	        var timeUpdate;
-			if (leaveInfo && leaveInfo.length > 0) {
-				
-				aprEmpId = leaveInfo[0].apr_emp_id;
-				aprName = leaveInfo[0].apr_name;
-		        apprUserId = leaveInfo[0].appr_user_id;
-		        aprRole = leaveInfo[0].apr_role;
-		        ucEmpId = leaveInfo[0].uc_emp_id;
-		        ucName = leaveInfo[0].uc_name;
-		        timeCreate = moment(leaveInfo[0].time_create).format("DD MMM YYYY HH:mm");
-		        timeUpdate = moment(leaveInfo[0].time_update).format("DD MMM YYYY HH:mm");
-			}
-			if (leave.leaveStatusId.toString() != '0') {
-			    $('input[name="leaveType"]').prop('disabled', true);
-				$('#status, #date_from, #date_to, #halfDay, #description, #myFile, #removeFileBtn, #approver, #submitBtn').prop('disabled', true);
-			    $('input[name="leaveType"]').closest('.form-check').css('pointer-events', 'none').css('opacity', '0.6');
-				$('#leaveidInfo').show();
-				$('#requestInfo').show();
-			    $('#approveInfo').show();
-			    
-			    // Hide file upload section and show existing file preview
-			    $('#fileUploadSection').addClass('d-none');
-				$('#exitingFileSection').addClass('d-block');
-				
-				// Render existing files (read-only) — real source is the file table (page='leave')
-				lfLoadExisting(${fileLeaveList});
-				lfRenderExistingReadonly('exitingFilePreviewContainer');
-			    $('#submitBtn').addClass('d-none');
-			    
-			    // Hide afterFile row unless status is Approved (1)
-			    if (leave.leaveStatusId.toString() != '1') {
-			    	$('#afterFileRow').addClass('d-none');
-			    }
-			    
-			    $('#aprEmpId').text(aprEmpId);
-		        $('#aprName').text(aprName);
-		        $('#aprRole').text(aprRole);
-		        $('#timeUpdate').text(timeUpdate);
-		        
-		        $('#ucEmpId').text(ucEmpId);
-		        $('#ucName').text(ucName);
-		        $('#timeCreate').text(timeCreate);
-			}
-			else if(leave.leaveStatusId.toString() == '0'){
-				$('#leaveidInfo').show();
-				$('#requestInfo').show();
-			    $('#approveInfo').hide();
-			    // Hide afterFile row for 'Wait for approve' status
-			    $('#afterFileRow').hide();
-				$('#fileUploadSection').removeClass('d-none');
-				$('#exitingFileSection').addClass('d-none');
-				// Existing files (editable) — real source is the file table (page='leave')
-				lfLoadExisting(${fileLeaveList});
-				lfRenderAll();
-				$('#ucEmpId').text(ucEmpId);
-		        $('#ucName').text(ucName);
-		        $('#timeCreate').text(timeCreate);
-			}
-			
-			$('#leaveId').text('${leaveId}');
-
-		} else {	//Add
-			user = "${onlineUser.id}";
-			manager = "${onlineUser.managerId}";
-			if (la == '1') {
-				$('form').attr('action', 'new_LeaveAdd_Do_LA');
-			} else {
-				$('form').attr('action', 'line_new_LeaveAdd_Do');
-			}
-			$('#leaveidInfo').hide();
-			$('#requestInfo').hide();
-			$('#approveInfo').hide();
-			// Hide afterFile row in Add mode
-			$('#afterFileRow').hide();
-			
-			if (la == '1') {
-				<perm:permission object="leave.viewall">
-					document.getElementById('user').disabled = false;
-				</perm:permission>
-
-			}
-
+			initEditMode();
+		} else {
+			initAddMode();
 		}
 		user = user.toLowerCase();
 		manager = manager.toLowerCase();
+	}
+
+	// Edit: โหลดใบลาเดิม
+	function initEditMode() {
+		leave = ${leave};
+		fileLeave = ${fileLeave};
+		leaveInfo = ${empty leaveInfo ? '[]' : leaveInfo};
+		user = leave.userId;
+		manager = leave.apprUserId;
+		department = leave.leaveStatusId.toString();
+
+		if (la == '1') {
+			$('form').attr('action','line_new_LeaveEdit_Do_LA');
+			<perm:permission object="leave.approve">
+				document.getElementById('status').disabled = false;
+			</perm:permission>
+		} else {
+			$('form').attr('action', 'line_new_LeaveEdit_Do');
+		}
+
+		// ข้อมูลผู้ขอ / ผู้อนุมัติ
+		var aprEmpId;
+		var aprName;
+        var apprUserId;
+        var aprRole;
+        var ucEmpId;
+        var ucName;
+        var timeCreate;
+        var timeUpdate;
+		if (leaveInfo && leaveInfo.length > 0) {
+			
+			aprEmpId = leaveInfo[0].apr_emp_id;
+			aprName = leaveInfo[0].apr_name;
+	        apprUserId = leaveInfo[0].appr_user_id;
+	        aprRole = leaveInfo[0].apr_role;
+	        ucEmpId = leaveInfo[0].uc_emp_id;
+	        ucName = leaveInfo[0].uc_name;
+	        timeCreate = moment(leaveInfo[0].time_create).format("DD MMM YYYY HH:mm");
+	        timeUpdate = moment(leaveInfo[0].time_update).format("DD MMM YYYY HH:mm");
+		}
+		// สถานะใบลา: 0 Wait for approve / 1 Approved / 2 Reject / 3 Cancel
+		if (leave.leaveStatusId.toString() != '0') {
+			initEditReadOnly();
+		}
+		// Wait for approve แก้ข้อมูลได้
+		else if(leave.leaveStatusId.toString() == '0'){
+			initEditPending();
+		}
+		
+		$('#leaveId').text('${leaveId}');
+
+		function initEditReadOnly() {
+			// ล็อกทุกช่อง
+		    $('input[name="leaveType"]').prop('disabled', true);
+			$('#status, #date_from, #date_to, #halfDay, #description, #myFile, #removeFileBtn, #approver, #submitBtn').prop('disabled', true);
+		    $('input[name="leaveType"]').closest('.form-check').css('pointer-events', 'none').css('opacity', '0.6');
+			$('#leaveidInfo').show();
+			$('#requestInfo').show();
+		    $('#approveInfo').show();
+		    
+		    // ไฟล์เดิมแสดงแบบดูอย่างเดียว + ซ่อนปุ่ม Submit
+		    $('#fileUploadSection').addClass('d-none');
+			$('#exitingFileSection').addClass('d-block');
+			lfLoadExisting(${fileLeaveList});
+			lfRenderExistingReadonly('exitingFilePreviewContainer');
+		    $('#submitBtn').addClass('d-none');
+
+		    // แนบไฟล์หลังอนุมัติ (#afterFileRow): มีเฉพาะ Approved เลือกไฟล์แล้วส่งทันที
+		    if (leave.leaveStatusId.toString() != '1') {
+		    	$('#afterFileRow').addClass('d-none');
+		    }
+		    
+		    $('#aprEmpId').text(aprEmpId);
+	        $('#aprName').text(aprName);
+	        $('#aprRole').text(aprRole);
+	        $('#timeUpdate').text(timeUpdate);
+	        
+	        $('#ucEmpId').text(ucEmpId);
+	        $('#ucName').text(ucName);
+	        $('#timeCreate').text(timeCreate);
+		}
+
+		function initEditPending() {
+			$('#leaveidInfo').show();
+			$('#requestInfo').show();
+		    $('#approveInfo').hide();
+		    // แนบไฟล์ด้วย #fileUploadSection (เพิ่ม/ลบได้ ส่งตอนกด Submit) ซ่อน #afterFileRow
+		    $('#afterFileRow').hide();
+			$('#fileUploadSection').removeClass('d-none');
+			$('#exitingFileSection').addClass('d-none');
+			lfLoadExisting(${fileLeaveList});
+			lfRenderAll();
+			$('#ucEmpId').text(ucEmpId);
+	        $('#ucName').text(ucName);
+	        $('#timeCreate').text(timeCreate);
+		}
+	}
+
+	// Add: ใบลาใหม่
+	function initAddMode() {
+		user = "${onlineUser.id}";
+		manager = "${onlineUser.managerId}";
+		if (la == '1') {
+			$('form').attr('action', 'new_LeaveAdd_Do_LA');
+		} else {
+			$('form').attr('action', 'line_new_LeaveAdd_Do');
+		}
+		$('#leaveidInfo').hide();
+		$('#requestInfo').hide();
+		$('#approveInfo').hide();
+		$('#afterFileRow').hide(); // แนบไฟล์หลังอนุมัติ ใช้เฉพาะ Approved
+		
+		if (la == '1') {
+			<perm:permission object="leave.viewall">
+				document.getElementById('user').disabled = false;
+			</perm:permission>
+
+		}
 	}
 
 	// วันที่เริ่มต้น (มาจากปฏิทินลา)
