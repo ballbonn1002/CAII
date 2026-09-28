@@ -1185,3 +1185,7 @@ JOIN unit_master um ON um.unit_name = uom.unit_name
 SET uom.unit_master_id = um.unit_master_id;
 
 # PROD 25 SEP 2026
+
+-- 28/09/2026 Koy: add column 'warehouse_id' to 'equipment' table to link equipment to warehouse
+ALTER TABLE equipment ADD COLUMN warehouse_id BIGINT NULL, ADD INDEX idx_equipment_warehouse_id (warehouse_id);
+

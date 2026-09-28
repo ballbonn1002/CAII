@@ -323,9 +323,8 @@ public class WorkHoursAction extends ActionSupport {
 			String desRaw = null;
 			String des = null;
 			desRaw = request.getParameter("reason");
-			des = (desRaw != null || desRaw != "") ? desRaw.trim() : "";
+			des = (desRaw != null && !desRaw.trim().isEmpty()) ? desRaw.trim() : "";
 			log.debug(desRaw);
-			
 
 			String lat = request.getParameter("latitude");
 			String lng = request.getParameter("longitude");
@@ -399,7 +398,7 @@ public class WorkHoursAction extends ActionSupport {
 			}
 			
 			if ("retro".equals(checkMode)) {
-				des = desRaw != null ? desRaw.trim() : "";
+				des = desRaw != null && !desRaw.trim().isEmpty() ? desRaw.trim() : "";
 	
 				log.debug(des);
 				des = des.replaceAll("[:;']", "")

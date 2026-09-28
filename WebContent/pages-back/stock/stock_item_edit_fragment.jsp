@@ -40,17 +40,17 @@
                         <i class="ki-duotone ki-setting-2 fs-3 me-2"><span class="path1"></span><span class="path2"></span></i>
                         <span class="fw-semibold">Product</span>
                     </a>
-                    <a href="${pageContext.request.contextPath}/stock_by_product_list" class="btn btn-light d-inline-flex align-items-center px-5 py-3">
+                    <!-- <a href="${pageContext.request.contextPath}/stock_by_product_list" class="btn btn-light d-inline-flex align-items-center px-5 py-3">
                         <i class="ki-duotone ki-barcode fs-3 me-2 text-gray-500">
                             <span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span>
                             <span class="path5"></span><span class="path6"></span><span class="path7"></span><span class="path8"></span>
                         </i>
                         <span class="fw-semibold text-gray-700">Stock By Product</span>
-                    </a>
-                    <a href="${pageContext.request.contextPath}/stock_by_location_list" class="btn btn-light d-inline-flex align-items-center px-5 py-3">
+                    </a> -->
+                    <!-- <a href="${pageContext.request.contextPath}/stock_by_location_list" class="btn btn-light d-inline-flex align-items-center px-5 py-3">
                         <i class="ki-duotone ki-home-2 fs-3 me-2 text-gray-500"><span class="path1"></span><span class="path2"></span></i>
                         <span class="fw-semibold text-gray-700">Stock By Location</span>
-                    </a>
+                    </a> -->
                     <a href="${balanceUrl}?productId=${product.productId}" class="btn btn-light d-inline-flex align-items-center px-5 py-3">
                         <i class="ki-duotone ki-cube-2 fs-3 me-2 text-gray-500"><span class="path1"></span><span class="path2"></span><span class="path3"></span></i>
                         <span class="fw-semibold text-gray-700">Stock Balance</span>

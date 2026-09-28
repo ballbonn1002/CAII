@@ -2639,6 +2639,11 @@
 			class="com.cubesofttech.action.ProductAction" method="stockEquLinkSave">
 		</action>
 
+		<!-- Stock: Equipment - ตั้ง/เคลียร์ warehouse ของเครื่อง Available (AJAX, ตอบ JSON) -->
+		<action name="stock_equ_warehouse_save"
+			class="com.cubesofttech.action.ProductAction" method="stockEquWarehouseSave">
+		</action>
+
 		<!-- Stock: Equipment - เอาเครื่องออกจาก catalog (AJAX, ตอบ JSON) -->
 		<action name="stock_equ_unlink_save"
 			class="com.cubesofttech.action.ProductAction" method="stockEquUnlinkSave">

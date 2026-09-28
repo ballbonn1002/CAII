@@ -140,7 +140,9 @@
                                             <%-- เครื่องที่ปลดระวางแล้วยังโชว์อยู่ แต่ทำให้จางลงและไม่ถูกนับในยอด
                                                  flag e.retired คำนวณมาจาก action แล้ว (อิง EquipmentDAO.RETIRED_STATUSES) --%>
                                             <c:forEach var="e" items="${g.rows}">
-                                                <tr class="equ-detail${gs.first ? '' : ' d-none'}${e.retired ? ' opacity-50' : ''}" data-group="${g.productId}" data-status="${fn:escapeXml(e.status)}">
+                                                <tr class="equ-detail${gs.first ? '' : ' d-none'}${e.retired ? ' opacity-50' : ''}" data-group="${g.productId}" data-status="${fn:escapeXml(e.status)}"
+                                                    data-equipment-id="${e.equipmentId}" data-warehouse-id="${e.warehouseId}"
+                                                    data-location="${fn:escapeXml(e.location)}">
                                                     <%-- ข้อมูลเก่าบางแถว item_no / name ว่าง (8 และ 13 แถว ณ 10/08/2026)
                                                          โชว์ #equipment_id แทนจะได้ยังอ้างอิงเครื่องได้ --%>
                                                     <td class="text-gray-900 fw-bold">
@@ -161,15 +163,19 @@
                                                             <c:otherwise><span class="text-muted">-</span></c:otherwise>
                                                         </c:choose>
                                                     </td>
+                                                    <%-- Status: server ใส่รหัสย่อไว้เป็น fallback ก่อน - JS (renderEquipmentRows) แทนด้วย description เต็ม
+                                                         + สี badge-<color2> จาก equipmentStatusList  (data-status ของ tr ยังเป็นรหัสย่อเหมือนเดิมให้ filter ใช้) --%>
                                                     <td class="text-center">
-                                                        <span class="badge fw-semibold ${e.retired ? 'badge-light-danger' : 'badge-light-success'}">
+                                                        <span class="badge fw-semibold badge-secondary equ-status-badge">
                                                             <c:choose>
                                                                 <c:when test="${not empty e.status}">${fn:escapeXml(e.status)}</c:when>
                                                                 <c:otherwise>-</c:otherwise>
                                                             </c:choose>
                                                         </span>
                                                     </td>
-                                                    <td class="text-gray-700">
+                                                    <%-- ที่ตั้ง: status A -> warehouse (แก้ไขได้) / status B -> ชื่อผู้ยืม + ปุ่มดูข้อมูลการยืม (JS เติมให้)
+                                                         status อื่นคงค่า location เดิมไว้ตามที่ server แสดง --%>
+                                                    <td class="text-gray-700 equ-location-cell">
                                                         <c:choose>
                                                             <c:when test="${not empty e.location}">${fn:escapeXml(e.location)}</c:when>
                                                             <c:otherwise><span class="text-muted">-</span></c:otherwise>
@@ -287,6 +293,84 @@
                 <div class="d-flex gap-3">
                     <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
                     <button type="button" id="btnEquipmentPickerSave" class="btn btn-success">Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<%-- ============ Modal: เลือก Warehouse ของเครื่อง (เฉพาะ status Available) ============
+     ตัวเลือก = warehouse ระดับบนสุด (parent = 0) จาก warehouseList + "ไม่ระบุ" - บันทึกแบบ AJAX ไปที่ stock_equ_warehouse_save --%>
+<div class="modal fade" id="equipmentWarehouseModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered mw-500px">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title fw-bold text-gray-900" id="equipmentWarehouseModalTitle">เลือก Warehouse</h3>
+                <button type="button" class="btn btn-icon btn-sm btn-active-light-primary" data-bs-dismiss="modal" aria-label="Close">
+                    <i class="ki-duotone ki-cross fs-1"><span class="path1"></span><span class="path2"></span></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <label class="form-label fw-bold" for="equipmentWarehouseSelect">Warehouse</label>
+                <select id="equipmentWarehouseSelect" class="form-select"></select>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" id="btnEquipmentWarehouseSave" class="btn btn-success">Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<%-- ============ Modal: ข้อมูลการยืม (ดูอย่างเดียว) - เฉพาะส่วน Borrow ตาม equipment_list.jsp (openViewModal) ============ --%>
+<div class="modal fade" id="equipmentBorrowViewModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header border-0 px-6 pt-5 pb-0 align-items-center">
+                <h2 class="fw-bold m-0 text-gray-800 ps-4 pt-1">Borrow Detail</h2>
+                <div class="btn btn-sm btn-icon btn-active-color-primary" data-bs-dismiss="modal">
+                    <i class="ki-duotone ki-cross fs-1"><span class="path1"></span><span class="path2"></span></i>
+                </div>
+            </div>
+            <div class="modal-body px-10 pt-5 pb-10">
+                <div class="rounded p-6">
+                    <div class="row g-5 mb-5">
+                        <div class="col-md-6 d-flex align-items-center gap-3">
+                            <span class="fs-5 fw-bold text-primary" id="borrowView_itemNo">-</span>
+                            <span class="badge" id="borrowView_statusBadge">-</span>
+                        </div>
+                        <div class="col-md-6 d-flex align-items-center gap-2">
+                            <span class="fs-5 fw-bold text-gray-800" id="borrowView_name">-</span>
+                        </div>
+                        <div class="col-12 d-flex align-items-start gap-2">
+                            <span class="text-gray-700 fw-normal fs-5">Serial No:</span>
+                            <span class="text-gray-800 fw-normal fs-5" id="borrowView_serial">-</span>
+                        </div>
+                    </div>
+
+                    <div class="separator separator-dashed border-gray-300 my-8"></div>
+
+                    <div class="d-flex align-items-center mb-5">
+                        <span class="fs-5 fw-bold text-gray-800 me-3">Borrow ID:</span>
+                        <span class="fs-5 fw-bold text-primary" id="borrowView_borrowId">-</span>
+                    </div>
+                    <div class="row g-5">
+                        <div class="col-12 d-flex flex-wrap align-items-center">
+                            <span class="text-gray-700 fw-normal fs-5 me-2">Borrow by:</span>
+                            <span class="fs-5 text-gray-800 fw-medium" id="borrowView_borrower">-</span>
+                        </div>
+                        <div class="col-12 d-flex align-items-center">
+                            <span class="text-gray-700 fw-normal fs-5 me-2">Location:</span>
+                            <span class="text-gray-800 fw-normal fs-5" id="borrowView_location">-</span>
+                        </div>
+                        <div class="col-12 d-flex align-items-center">
+                            <span class="text-gray-700 fw-normal fs-5 me-2">Borrow Date:</span>
+                            <span class="text-gray-800 fw-normal fs-5" id="borrowView_date">-</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="d-flex justify-content-end mt-6">
+                    <button type="button" class="btn btn-light fw-bold" data-bs-dismiss="modal">Close</button>
                 </div>
             </div>
         </div>
@@ -436,7 +520,212 @@
             applyEquipmentFilters();
         });
 
-        // ---- เรียกครั้งแรกตอนโหลดหน้า ให้ default filter status (A+B) มีผลทันที ----
+        // ==================== คอลัมน์ Status (คำเต็ม) + ที่ตั้ง (A = Warehouse, B = ผู้ยืม) ====================
+        // ข้อมูลทั้งหมดมาจาก ProductAction.showEquipmentBalancePage() (equipmentStatusList / borrows / userList / warehouseList)
+        // ค่าที่ประกอบเป็น HTML ต้องผ่าน escapeHtml() เสมอ
+        var borrows = ${borrows != null ? borrows : '[]'};
+        var users = ${userList != null ? userList : '[]'};
+        var warehouseList = ${warehouseList != null ? warehouseList : '[]'};
+
+        function escapeHtml(s) {
+            return String(s == null ? '' : s)
+                .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;').replace(/'/g, "&#39;");
+        }
+
+        // statusId -> {cls, label} (สี badge = badge-<color2> เหมือน equipment_list.jsp ไม่มีให้ใช้ badge-secondary)
+        var statusConfig = {};
+        $.each(dbStatusList || [], function (i, st) {
+            statusConfig[st.statusId] = {
+                cls: st.color2 ? ('badge-' + st.color2) : 'badge-secondary',
+                label: st.description || st.statusId
+            };
+        });
+
+        // user id -> ชื่อที่ใช้โชว์ (name_en > name > id) เหมือน userById ใน equipment_list.jsp
+        var userById = {};
+        $.each(users || [], function (i, u) {
+            var key = String(u.id || '').trim().toLowerCase();
+            userById[key] = (u.name_en && String(u.name_en).trim() !== '') ? u.name_en : (u.name || u.id);
+        });
+
+        // equipmentId -> borrow ล่าสุด (borrowId มากสุด) เหมือน lastBorrowByEqId ใน equipment_list.jsp
+        var lastBorrowByEqId = {};
+        $.each(borrows || [], function (i, b) {
+            var eqId = String(b.equipmentId);
+            if (!lastBorrowByEqId[eqId] || b.borrowId > lastBorrowByEqId[eqId].borrowId) {
+                lastBorrowByEqId[eqId] = b;
+            }
+        });
+
+        var warehouseNameById = {};
+        $.each(warehouseList || [], function (i, w) {
+            warehouseNameById[String(w.warehouseId)] = w.warehouseName || ('#' + w.warehouseId);
+        });
+
+        function formatDateTime(dateStr) {
+            if (!dateStr) return '-';
+            var d = new Date(dateStr);
+            if (isNaN(d.getTime())) return dateStr;
+            return d.getDate() + ' ' + d.toLocaleString('en-GB', { month: 'short' }) + ' ' + d.getFullYear()
+                + ', ' + ('0' + d.getHours()).slice(-2) + ':' + ('0' + d.getMinutes()).slice(-2);
+        }
+
+        function borrowerName(borrow) {
+            var raw = String(borrow.userBorrowid || '').trim();
+            return userById[raw.toLowerCase()] || raw || '-';
+        }
+
+        function renderStatusBadge($row) {
+            var status = String($row.attr('data-status') || '').trim();
+            if (!status) { return; }
+            var cfg = statusConfig[status];
+            $row.find('.equ-status-badge')
+                .attr('class', 'badge fw-semibold equ-status-badge ' + (cfg ? cfg.cls : 'badge-secondary'))
+                .text(cfg ? cfg.label : status);
+        }
+
+        function renderLocationCell($row) {
+            var status = String($row.attr('data-status') || '').trim();
+            var eqId = String($row.attr('data-equipment-id') || '');
+            var $cell = $row.find('.equ-location-cell');
+
+            if (status === 'B') {
+                var borrow = lastBorrowByEqId[eqId];
+                if (!borrow) {
+                    $cell.html('<span class="text-muted">-</span>');
+                    return;
+                }
+                $cell.html('<span class="text-gray-900">' + escapeHtml(borrowerName(borrow)) + '</span>'
+                    + '<button type="button" class="btn btn-icon btn-sm btn-light-info ms-2 btn-equ-borrow-view"'
+                    + ' data-bs-toggle="modal" data-bs-target="#equipmentBorrowViewModal" title="Borrow Detail">'
+                    + '<i class="ki-duotone ki-document fs-3"><span class="path1"></span><span class="path2"></span></i></button>');
+            } else if (status === 'A') {
+                var whId = String($row.attr('data-warehouse-id') || '');
+                var whName = whId ? warehouseNameById[whId] : null;
+                $cell.html((whName ? '<span class="text-gray-700">' + escapeHtml(whName) + '</span>' : '<span class="text-muted">-</span>')
+                    + '<button type="button" class="btn btn-icon btn-sm btn-light-primary ms-2 btn-equ-warehouse"'
+                    + ' data-bs-toggle="modal" data-bs-target="#equipmentWarehouseModal"'
+                    + ' title="' + (whName ? 'แก้ไข Warehouse' : 'ระบุ Warehouse') + '">'
+                    + '<i class="ki-duotone ' + (whName ? 'ki-pencil' : 'ki-plus') + ' fs-3"><span class="path1"></span><span class="path2"></span></i></button>');
+            }
+            // status อื่น: คงค่า location เดิมที่ server แสดงไว้ (ไม่มีปุ่มแก้ไข)
+        }
+
+        function renderEquipmentRows() {
+            $('#equipmentBalanceTable .equ-detail[data-equipment-id]').each(function () {
+                renderStatusBadge($(this));
+                renderLocationCell($(this));
+            });
+        }
+
+        // ---- modal ข้อมูลการยืม (ดูอย่างเดียว) ----
+        $('#equipmentBalanceTable').on('click', '.btn-equ-borrow-view', function () {
+            var $row = $(this).closest('tr');
+            var eqId = String($row.attr('data-equipment-id') || '');
+            var borrow = lastBorrowByEqId[eqId];
+            var $tds = $row.children('td');
+            var status = String($row.attr('data-status') || '').trim();
+            var cfg = statusConfig[status];
+
+            $('#borrowView_itemNo').text('ID: ' + ($tds.eq(0).text().trim() || '-'));
+            $('#borrowView_name').text($tds.eq(1).text().trim() || '-');
+            $('#borrowView_serial').text($tds.eq(2).text().trim() || '-');
+            $('#borrowView_statusBadge')
+                .attr('class', 'badge badge-lg fw-semibold py-2 ' + (cfg ? cfg.cls : 'badge-secondary'))
+                .text(cfg ? cfg.label : (status || '-'));
+
+            if (!borrow) {
+                $('#borrowView_borrowId, #borrowView_borrower, #borrowView_location, #borrowView_date').text('-');
+                return;
+            }
+
+            var borrowerStr;
+            var borrowerId = String(borrow.userBorrowid || '').trim().toLowerCase();
+            var u = null;
+            $.each(users || [], function (i, x) {
+                if (String(x.id || '').trim().toLowerCase() === borrowerId) { u = x; return false; }
+            });
+            if (u) {
+                var parts = [];
+                var empId = u.employee_id || u.employeeId;
+                var enName = u.name_en || u.nameEn || u.nick_name;
+                if (empId) parts.push(empId);
+                if (u.name) parts.push(u.name);
+                if (enName) parts.push(enName);
+                borrowerStr = parts.length ? parts.join('   -   ') : '-';
+            } else {
+                borrowerStr = (borrow.userBorrowid || '-') + ' (Unknown User)';
+            }
+
+            $('#borrowView_borrowId').text(borrow.borrowId || '-');
+            $('#borrowView_borrower').text(borrowerStr);
+            $('#borrowView_location').text(borrow.location || $row.attr('data-location') || '-');
+            $('#borrowView_date').text(formatDateTime(borrow.dateStart) + ' - ' + (borrow.dateEnd ? formatDateTime(borrow.dateEnd) : 'None'));
+        });
+
+        // ---- modal เลือก Warehouse (บันทึกทันทีด้วย AJAX แล้วอัปเดตเฉพาะเซลล์ ไม่ reload เพื่อไม่ให้ filter/search รีเซ็ต) ----
+        var $warehouseSelect = $('#equipmentWarehouseSelect');
+        $warehouseSelect.append($('<option>').val('').text('ไม่ระบุ'));
+        $.each(warehouseList || [], function (i, w) {
+            $warehouseSelect.append($('<option>').val(String(w.warehouseId)).text(w.warehouseName || ('#' + w.warehouseId)));
+        });
+
+        var currentWarehouseEquipmentId = null;
+        $('#equipmentBalanceTable').on('click', '.btn-equ-warehouse', function () {
+            var $row = $(this).closest('tr');
+            currentWarehouseEquipmentId = String($row.attr('data-equipment-id') || '');
+            $('#equipmentWarehouseModalTitle').text('เลือก Warehouse - ' + ($row.children('td').eq(0).text().trim() || ''));
+            $warehouseSelect.val($row.attr('data-warehouse-id') || '');
+            if ($warehouseSelect.val() === null) { $warehouseSelect.val(''); }
+        });
+
+        $('#equipmentWarehouseModal').on('hidden.bs.modal', function () {
+            currentWarehouseEquipmentId = null;
+        });
+
+        $('#btnEquipmentWarehouseSave').on('click', function () {
+            if (!currentWarehouseEquipmentId) {
+                notifyError('ไม่พบเครื่องเป้าหมาย กรุณาปิดหน้าต่างแล้วลองใหม่');
+                return;
+            }
+            var eqId = currentWarehouseEquipmentId;
+            var whId = $warehouseSelect.val() || '';
+            var $btn = $(this);
+            $btn.prop('disabled', true);
+
+            $.ajax({
+                url: CONTEXT + '/stock_equ_warehouse_save',
+                type: 'POST',
+                dataType: 'json',
+                data: { equipmentId: eqId, warehouseId: whId },
+                success: function (res) {
+                    if (res && res.success === true) {
+                        var $row = $('#equipmentBalanceTable .equ-detail').filter(function () {
+                            return String($(this).attr('data-equipment-id')) === eqId;
+                        });
+                        $row.attr('data-warehouse-id', whId);
+                        renderLocationCell($row);
+                        applyEquipmentFilters();
+                        $('#equipmentWarehouseModal').modal('hide');
+                        if (window.Swal) {
+                            Swal.fire({ icon: 'success', title: 'บันทึกสำเร็จ', timer: 1500, showConfirmButton: false });
+                        }
+                    } else {
+                        notifyError(res && res.message ? res.message : 'บันทึกไม่สำเร็จ');
+                    }
+                },
+                error: function () {
+                    notifyError('บันทึกไม่สำเร็จ กรุณาลองใหม่');
+                },
+                complete: function () {
+                    $btn.prop('disabled', false);
+                }
+            });
+        });
+
+        // ---- เรียกครั้งแรกตอนโหลดหน้า: เติม Status/ที่ตั้ง แล้วให้ default filter status (A+B) มีผลทันที ----
+        renderEquipmentRows();
         applyEquipmentFilters();
 
         // ==================== Equipment: จำ sub product/ตัวแม่เป้าหมายไว้ก่อนเปิด popup Link Equipment ====================

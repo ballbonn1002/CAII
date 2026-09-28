@@ -23,6 +23,7 @@ import org.apache.log4j.Logger;
 import org.apache.struts2.ServletActionContext;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.cubesofttech.dao.BorrowDAO;
 import com.cubesofttech.dao.EquipmentDAO;
 import com.cubesofttech.dao.EquipmentStatusDAO;
 import com.cubesofttech.dao.EquipmentTypeDAO;
@@ -80,6 +81,9 @@ public class ProductAction extends ActionSupport {
     private EquipmentDAO equipmentDAO;
 
     @Autowired
+    private BorrowDAO borrowDAO;
+
+    @Autowired
     private EquipmentTypeDAO equipmentTypeDAO;
 
     @Autowired
@@ -121,6 +125,9 @@ public class ProductAction extends ActionSupport {
 
     // ---- popup เลือกเครื่องมาผูกกับ catalog Equipment - ส่ง equipment_id คั่นด้วย comma ----
     private String equipmentIds;
+
+    // ---- ตั้ง warehouse ให้เครื่องเดียว (stock_equ_warehouse_save) - ใช้ field warehouseId ด้านล่างร่วมกับ Add Stock ----
+    private Integer equipmentId;
 
     // ---- fields สำหรับ Add Stock (บันทึกรับเข้า/Good Receipt) ในหน้า Stock Balance ----
     private String warehouseId;
@@ -237,6 +244,14 @@ public class ProductAction extends ActionSupport {
 
     public void setEquipmentIds(String equipmentIds) {
         this.equipmentIds = equipmentIds;
+    }
+
+    public Integer getEquipmentId() {
+        return equipmentId;
+    }
+
+    public void setEquipmentId(Integer equipmentId) {
+        this.equipmentId = equipmentId;
     }
 
     public String getProductNo() {
@@ -1009,6 +1024,63 @@ public class ProductAction extends ActionSupport {
     }
 
     /**
+     * ตั้ง/เคลียร์ warehouse ของเครื่องหนึ่งเครื่อง (AJAX ตอบ JSON) - ใช้กับคอลัมน์ "ที่ตั้ง" หน้า stock_equ_balance
+     * รับ equipmentId + warehouseId (ว่าง = เคลียร์เป็น NULL)
+     * ทำได้เฉพาะเครื่อง status = 'A' (Available) และ warehouse ต้องเป็นระดับบนสุด (parent = 0) เท่านั้น
+     * ไม่ผ่าน validation ตอบ success:false พร้อมข้อความ ไม่ throw
+     */
+    public String stockEquWarehouseSave() {
+        try {
+            User onlineUser = getOnlineUser();
+            if (onlineUser == null) {
+                log.warn("stockEquWarehouseSave: no online user in session");
+                return writeJson(false, "กรุณาเข้าสู่ระบบใหม่");
+            }
+            if (equipmentId == null) {
+                log.warn("stockEquWarehouseSave: equipmentId is required");
+                return writeJson(false, "ไม่พบรหัสเครื่อง");
+            }
+
+            Equipment equipment = equipmentDAO.getById(equipmentId.intValue());
+            if (equipment == null) {
+                log.warn("stockEquWarehouseSave: equipment not found, equipmentId=" + equipmentId);
+                return writeJson(false, "ไม่พบเครื่องนี้ในระบบ");
+            }
+            String status = (equipment.getStatus() == null) ? "" : equipment.getStatus().trim();
+            if (!"A".equals(status)) {
+                log.warn("stockEquWarehouseSave: status is not Available, equipmentId=" + equipmentId
+                        + ", status=" + status);
+                return writeJson(false, "ระบุ warehouse ได้เฉพาะเครื่องที่สถานะ Available เท่านั้น");
+            }
+
+            Long newWarehouseId = null;
+            if (!isBlank(warehouseId)) {
+                try {
+                    newWarehouseId = Long.valueOf(warehouseId.trim());
+                } catch (NumberFormatException nfe) {
+                    log.warn("stockEquWarehouseSave: invalid warehouseId=" + warehouseId);
+                    return writeJson(false, "รหัส warehouse ไม่ถูกต้อง");
+                }
+                Warehouse warehouse = warehouseDAO.findById(newWarehouseId);
+                if (warehouse == null) {
+                    log.warn("stockEquWarehouseSave: warehouse not found, warehouseId=" + newWarehouseId);
+                    return writeJson(false, "ไม่พบ warehouse ที่เลือก");
+                }
+                if (warehouse.getParent() == null || warehouse.getParent().longValue() != 0L) {
+                    log.warn("stockEquWarehouseSave: warehouse is not top level, warehouseId=" + newWarehouseId);
+                    return writeJson(false, "เลือกได้เฉพาะ warehouse ระดับบนสุดเท่านั้น");
+                }
+            }
+
+            equipmentDAO.updateWarehouse(equipmentId, newWarehouseId, onlineUser.getId(), DateUtil.getCurrentTime());
+            return writeJson(true, "บันทึกสำเร็จ");
+        } catch (Exception e) {
+            log.error("stockEquWarehouseSave failed, equipmentId=" + equipmentId + ", warehouseId=" + warehouseId, e);
+            return writeJson(false, "เกิดข้อผิดพลาด ไม่สามารถบันทึกได้");
+        }
+    }
+
+    /**
      * ยกเลิกการผูกเครื่อง (equipment) ออกจาก catalog - เคลียร์ equipment.product_id
      * เครื่องไม่ได้ถูกลบ แค่เอาออกจาก catalog นี้ จะกลับไปเป็นเครื่องที่ยังไม่ผูก
      * รองรับ equipmentIds หลายค่าคั่นด้วย comma (reuse field เดียวกับ stockEquLinkSave)
@@ -1406,6 +1478,26 @@ public class ProductAction extends ActionSupport {
             // เครื่องที่ยังไม่ผูกกับ catalog ไหนเลย - ใช้เป็นตัวเลือกใน popup Link Equipment (เหมือนหน้า edit)
             request.setAttribute("unlinkedEquipment", equipmentDAO.findUnlinked());
 
+            // ข้อมูลให้ JS แสดงคอลัมน์ "ที่ตั้ง": Borrowed -> ชื่อผู้ยืม + modal ข้อมูลการยืม (pattern เดียวกับ EquipmentAction.table())
+            request.setAttribute("borrows", new Gson().toJson(borrowDAO.findAll()));
+            request.setAttribute("userList", userDAO.userListJSON());
+
+            // Available -> warehouse ระดับบนสุด (parent = 0) ให้เลือก - ส่งเฉพาะ id/ชื่อ ไม่ส่ง field อื่นของ Warehouse
+            List<Map<String, Object>> warehouseOptions = new ArrayList<Map<String, Object>>();
+            List<Warehouse> topWarehouses = warehouseDAO.findByParentId(Long.valueOf(0L));
+            if (topWarehouses != null) {
+                for (Warehouse w : topWarehouses) {
+                    if (w == null || w.getWarehouseId() == null) {
+                        continue;
+                    }
+                    Map<String, Object> option = new LinkedHashMap<String, Object>();
+                    option.put("warehouseId", w.getWarehouseId());
+                    option.put("warehouseName", w.getWarehouseName());
+                    warehouseOptions.add(option);
+                }
+            }
+            request.setAttribute("warehouseList", new Gson().toJson(warehouseOptions));
+
             return SUCCESS;
         } catch (Exception e) {
             log.error("showEquipmentBalancePage failed, productId=" + productId, e);
@@ -1465,6 +1557,7 @@ public class ProductAction extends ActionSupport {
                 row.put("serialNo", equipment.getSerialNo());
                 row.put("status", equipment.getStatus());
                 row.put("location", equipment.getLocation());
+                row.put("warehouseId", equipment.getWarehouseId());
                 row.put("retired", Boolean.valueOf(isRetired));
                 rows.add(row);
             }

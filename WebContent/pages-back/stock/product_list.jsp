@@ -32,9 +32,16 @@
                                 </a>
                             </div>
 
-                            <div class="d-flex align-items-center position-relative mb-6">
-                                <i class="ki-duotone ki-magnifier fs-3 position-absolute ms-5"><span class="path1"></span><span class="path2"></span></i>
-                                <input type="text" id="searchInput" class="form-control form-control-solid ps-14 text-gray-700" placeholder="Search" />
+                            <div class="d-flex align-items-center gap-3 mb-6">
+                                <div class="d-flex align-items-center position-relative flex-grow-1">
+                                    <i class="ki-duotone ki-magnifier fs-3 position-absolute ms-5"><span class="path1"></span><span class="path2"></span></i>
+                                    <input type="text" id="searchInput" class="form-control form-control-solid ps-14 text-gray-700" placeholder="Search" />
+                                </div>
+                                <%-- สแกนบาร์โค้ด/QR ด้วยกล้อง แล้วเติมค่าลงช่องค้นหา (modal #barcodeScanModal ด้านล่าง) --%>
+                                <button type="button" id="btnScanBarcode" class="btn btn-light-primary btn-icon"
+                                        data-bs-toggle="modal" data-bs-target="#barcodeScanModal" title="Scan Barcode / QR" aria-label="Scan Barcode / QR">
+                                    <i class="ki-duotone ki-scan-barcode fs-2"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span><span class="path5"></span><span class="path6"></span><span class="path7"></span><span class="path8"></span></i>
+                                </button>
                             </div>
 
                             <%-- การ์ดสรุป/filter ตาม type - กดเพื่อกรองตาราง (กดซ้ำ = ยกเลิก)
@@ -224,6 +231,30 @@
     </div>
 </div>
 
+<%-- ============ Modal: สแกนบาร์โค้ด / QR code ด้วยกล้อง (html5-qrcode เก็บไว้ในโปรเจกต์ ไม่พึ่ง CDN) ============
+     กล้องเปิดได้เฉพาะหน้าที่เข้าผ่าน HTTPS หรือ localhost เท่านั้น (ข้อกำหนดของเบราว์เซอร์) --%>
+<div class="modal fade" id="barcodeScanModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title fw-bold text-gray-900">Scan Barcode / QR Code</h3>
+                <button type="button" class="btn btn-icon btn-sm btn-active-light-primary" data-bs-dismiss="modal" aria-label="Close">
+                    <i class="ki-duotone ki-cross fs-1"><span class="path1"></span><span class="path2"></span></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div id="barcodeScanReader" class="w-100 rounded overflow-hidden"></div>
+                <div id="barcodeScanError" class="alert alert-danger d-none mt-4 mb-0"></div>
+                <div class="text-gray-600 fs-7 mt-4">เล็งกล้องไปที่บาร์โค้ดหรือ QR code ของสินค้า ระบบจะเติมค่าลงช่องค้นหาให้อัตโนมัติ</div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="${pageContext.request.contextPath}/assets/plugins/custom/html5-qrcode/html5-qrcode.min.js"></script>
 <script>
     $(document).ready(function () {
         // จำนวนต่อ type render มาจาก backend (typeCounts) แล้ว ไม่ต้องนับจาก DOM
@@ -261,6 +292,66 @@
         $('#searchInput').on('keyup', function () {
             table.search(this.value).draw();
         });
+
+        // ==================== สแกนบาร์โค้ด / QR ด้วยกล้อง -> เติมช่องค้นหา ====================
+        var barcodeScanner = null;
+        var barcodeScanHandled = false;
+
+        function showScanError(msg) {
+            $('#barcodeScanError').text(msg).removeClass('d-none');
+        }
+
+        function stopBarcodeScanner() {
+            if (!barcodeScanner) { return; }
+            var scanner = barcodeScanner;
+            barcodeScanner = null;
+            // stop() ตอนกล้องยังไม่เริ่ม/เริ่มไม่สำเร็จจะ reject - ไม่ต้องสนใจ
+            scanner.stop().then(function () { scanner.clear(); }).catch(function () {});
+        }
+
+        function onBarcodeScanned(text) {
+            if (barcodeScanHandled) { return; }   // callback ถูกเรียกซ้ำทุกเฟรมที่เห็นโค้ด รับแค่ครั้งแรก
+            barcodeScanHandled = true;
+            var value = $.trim(text);
+            $('#searchInput').val(value);
+            table.search(value).draw();
+            $('#barcodeScanModal').modal('hide');
+
+            if (table.rows({ search: 'applied' }).count() === 0 && window.Swal) {
+                Swal.fire({ icon: 'info', title: 'ไม่พบสินค้าที่ตรงกับค่าที่สแกน',
+                            text: 'ลองตรวจสอบตัวกรองประเภทสินค้า หรือค่าที่สแกนได้: ' + value });
+            }
+        }
+
+        $('#barcodeScanModal').on('shown.bs.modal', function () {
+            barcodeScanHandled = false;
+            $('#barcodeScanError').addClass('d-none').text('');
+
+            if (!window.isSecureContext) {
+                showScanError('เปิดกล้องไม่ได้: ต้องเข้าเว็บผ่าน HTTPS หรือ localhost เท่านั้น');
+                return;
+            }
+            if (typeof Html5Qrcode === 'undefined') {
+                showScanError('โหลดตัวสแกนไม่สำเร็จ กรุณารีเฟรชหน้าแล้วลองใหม่');
+                return;
+            }
+
+            barcodeScanner = new Html5Qrcode('barcodeScanReader');
+            barcodeScanner.start({ facingMode: 'environment' }, { fps: 10 }, onBarcodeScanned, function () {})
+                .catch(function (err) {
+                    var name = (err && err.name) ? err.name : '';
+                    if (name === 'NotAllowedError' || String(err).indexOf('Permission') !== -1) {
+                        showScanError('ไม่ได้รับอนุญาตให้ใช้กล้อง กรุณาอนุญาตในเบราว์เซอร์แล้วลองใหม่');
+                    } else if (name === 'NotFoundError' || String(err).indexOf('NotFound') !== -1) {
+                        showScanError('ไม่พบกล้องในอุปกรณ์นี้');
+                    } else {
+                        showScanError('เปิดกล้องไม่สำเร็จ: ' + err);
+                    }
+                    barcodeScanner = null;
+                });
+        });
+
+        $('#barcodeScanModal').on('hide.bs.modal', stopBarcodeScanner);
 
         // กดการ์ด type เพื่อ filter (กดซ้ำ = ยกเลิก filter)
         // สลับออกจาก Equipment (หรือยกเลิก filter) ทุกครั้งต้องล้างค่า Equipment Type filter ด้วย
