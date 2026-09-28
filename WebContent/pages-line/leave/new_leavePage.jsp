@@ -530,7 +530,7 @@
 
 	<div class="d-flex align-items-center gap-3 mb-6 pt-6">
 		<a href="javascript:void(0)" class="liff-back-btn" onclick="document.getElementById('liffLoadingOverlay').style.display='flex'; window.history.go(-1); return false;" aria-label="Back">
-			<i class="ki-duotone ki-black-left fs-3 text-gray-700"><span class="path1"></span><span class="path2"></span></i>
+			<i class="ki-outline ki-left fs-2 text-gray-700"></i>
 		</a>
 		<h1 class="liff-page-title text-gray-700 mb-0 flex-grow-1">${action == 'Edit' ? 'Edit Leave' : 'Create Leave'}</h1>
 		<!-- <div class="d-flex align-items-center" id="leaveidInfo" style="display:none;">
