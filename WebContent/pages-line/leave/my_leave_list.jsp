@@ -1117,7 +1117,7 @@ function leaveStatus(id) {
 </script>  -->
 <script>
 /* ---------- toast ---------- */
-// บันทึกใบลาสำเร็จ: Add ได้ ?saved=add จาก BE / Edit ได้ ?saved=edit จาก doSubmit()
+// บันทึกใบลาสำเร็จ: doSubmit() ใน new_leavePage.jsp เติม ?saved=add / ?saved=edit มาให้
 $(function () {
 	const params = new URLSearchParams(window.location.search);
 	const saved = params.get('saved');

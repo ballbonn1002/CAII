@@ -1745,12 +1745,9 @@ function doSubmit() {
 			if (window.opener) {
 				window.opener.location.reload();
 			}
-			// Add: BE redirect มาพร้อม saved=add อยู่แล้ว / Edit: FE เติม saved=edit เอง
-			var nextUrl = res.url;
-			if (action == 'Edit') {
-				nextUrl += (nextUrl.indexOf('?') === -1 ? '?' : '&') + 'saved=edit';
-			}
-			window.location.href = nextUrl;
+			// บอกหน้า list ให้ขึ้น toast สำเร็จ (add / edit)
+			var saved = (action == 'Edit') ? 'edit' : 'add';
+			window.location.href = res.url + (res.url.indexOf('?') === -1 ? '?' : '&') + 'saved=' + saved;
 		})
 		.catch(function () {
 			leaveSubmitting = false;
