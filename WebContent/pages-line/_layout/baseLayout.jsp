@@ -135,46 +135,29 @@ textarea.liff-input-underline { padding-left: 2px; padding-right: 2px; }
 <!--end::Custom Javascript-->
 <!--begin::LIFF toast (ใช้ร่วมทุกหน้า LIFF)-->
 <script>
+var liffToastOptions = {
+	"closeButton": false,
+	"debug": false,
+	"newestOnTop": false,
+	"progressBar": false,
+	"positionClass": "toastr-top-right",
+	"preventDuplicates": false,
+	"onclick": null,
+	"showDuration": "300",
+	"hideDuration": "1000",
+	"showEasing": "swing",
+	"hideEasing": "linear",
+	"showMethod": "fadeIn",
+	"hideMethod": "fadeOut"
+};
+
 function liffToastSuccess(message, title) {
-	toastr.options = {
-		"closeButton": false,
-		"debug": false,
-		"newestOnTop": false,
-		"progressBar": false,
-		"positionClass": "toastr-top-right",
-		"preventDuplicates": false,
-		"onclick": null,
-		"showDuration": "300",
-		"hideDuration": "1000",
-		"timeOut": "2000",
-		"extendedTimeOut": "1000",
-		"showEasing": "swing",
-		"hideEasing": "linear",
-		"showMethod": "fadeIn",
-		"hideMethod": "fadeOut"
-	};
+	toastr.options = $.extend({}, liffToastOptions, { "timeOut": "2000", "extendedTimeOut": "1000" });
 	toastr.success(message, title);
 }
 
-// error ค้างนานกว่า ให้ผู้ใช้อ่านทัน
 function liffToastError(message, title) {
-	toastr.options = {
-		"closeButton": false,
-		"debug": false,
-		"newestOnTop": false,
-		"progressBar": false,
-		"positionClass": "toastr-top-right",
-		"preventDuplicates": false,
-		"onclick": null,
-		"showDuration": "300",
-		"hideDuration": "1000",
-		"timeOut": "5000",
-		"extendedTimeOut": "5000",
-		"showEasing": "swing",
-		"hideEasing": "linear",
-		"showMethod": "fadeIn",
-		"hideMethod": "fadeOut"
-	};
+	toastr.options = $.extend({}, liffToastOptions, { "timeOut": "5000", "extendedTimeOut": "5000" });
 	toastr.error(message, title);
 }
 </script>

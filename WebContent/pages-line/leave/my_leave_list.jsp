@@ -1116,7 +1116,7 @@ function leaveStatus(id) {
 }
 </script>  -->
 <script>
-/* ---------- toast (liffToastSuccess อยู่ใน _layout/baseLayout.jsp) ---------- */
+/* ---------- toast ---------- */
 // เพิ่มใบลาสำเร็จ: line_new_LeaveAdd_Do redirect มาพร้อม ?saved=add
 $(function () {
 	const params = new URLSearchParams(window.location.search);
