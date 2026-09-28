@@ -937,7 +937,7 @@ function liffMountSelectDropdown(selectEl) {
 	}
 
 	sync();
-	selectEl.addEventListener('change', sync);
+	$(selectEl).on('change', sync);
 	new MutationObserver(sync).observe(selectEl, { childList: true, subtree: true, attributes: true, attributeFilter: ['disabled'] });
 }
 
