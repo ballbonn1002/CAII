@@ -662,9 +662,8 @@
 		<div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading...</span></div>
 	</div>
 
-	<!-- Year range matches pages-back/report/summary_working_day.jsp (startYear=2010 to current, newest first) -->
 	<c:set var="currentYearInt"><%= java.time.Year.now().getValue() %></c:set>
-	<c:set var="startYearInt" value="2010" />
+	<c:set var="startYearInt" value="${currentYearInt - 1}" />
 	<fmt:formatDate value="${startdate}" pattern="yyyy" var="selectedYear"/>
 	<div class="d-flex justify-content-between align-items-center mb-6 pt-6">
 		<h1 class="liff-page-title text-gray-700 mb-0">My Leave</h1>
