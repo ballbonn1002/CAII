@@ -91,6 +91,15 @@
 		</action>
 		<!-- Add -->
 
+		<!-- Send Approve Btn | Add Leave Page -->
+		<action name="line_new_LeaveAdd_Do"
+			class="com.cubesofttech.action.LeaveAction" method="new_LeaveAdd_Do">
+			<result name="success" type="redirect">line_new_myleave_list?Id=${onlineUser.id}
+			</result>
+			<result name="error">/pages-line/index.jsp</result>
+		</action>
+		<!-- Send Approve Btn | Add Leave Page -->
+
 		<!-- Edit Btn -->
 		<action name="line_NewLeaveEdit"
 			class="com.cubesofttech.action.LeaveAction" method="NewLeaveEdit">
