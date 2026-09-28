@@ -1745,7 +1745,12 @@ function doSubmit() {
 			if (window.opener) {
 				window.opener.location.reload();
 			}
-			window.location.href = res.url;
+			// Add: BE redirect มาพร้อม saved=add อยู่แล้ว / Edit: FE เติม saved=edit เอง
+			var nextUrl = res.url;
+			if (action == 'Edit') {
+				nextUrl += (nextUrl.indexOf('?') === -1 ? '?' : '&') + 'saved=edit';
+			}
+			window.location.href = nextUrl;
 		})
 		.catch(function () {
 			leaveSubmitting = false;

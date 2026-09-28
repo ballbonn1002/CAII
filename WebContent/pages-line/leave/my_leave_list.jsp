@@ -1117,11 +1117,16 @@ function leaveStatus(id) {
 </script>  -->
 <script>
 /* ---------- toast ---------- */
-// เพิ่มใบลาสำเร็จ: line_new_LeaveAdd_Do redirect มาพร้อม ?saved=add
+// บันทึกใบลาสำเร็จ: Add ได้ ?saved=add จาก BE / Edit ได้ ?saved=edit จาก doSubmit()
 $(function () {
 	const params = new URLSearchParams(window.location.search);
-	if (params.get('saved') === 'add') {
+	const saved = params.get('saved');
+	if (saved === 'add') {
 		liffToastSuccess("Your leave request has been submitted.", "Saved successfully!");
+	} else if (saved === 'edit') {
+		liffToastSuccess("Your leave request has been updated.", "Updated successfully!");
+	}
+	if (saved) {
 		params.delete('saved'); // เอาออกจาก URL กัน refresh แล้วขึ้นซ้ำ
 		const qs = params.toString();
 		history.replaceState(null, '', window.location.pathname + (qs ? '?' + qs : ''));
