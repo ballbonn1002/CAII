@@ -1218,6 +1218,7 @@ $(() => {
 		    
 		    // ไฟล์เดิมแสดงแบบดูอย่างเดียว + ซ่อนปุ่ม Submit
 		    $('#fileUploadSection').addClass('d-none');
+			$('#filePreviewContainer').addClass('d-none'); // อยู่นอก #fileUploadSection ต้องซ่อนเอง
 			$('#exitingFileSection').addClass('d-block');
 			lfLoadExisting(${fileLeaveList});
 			lfRenderExistingReadonly('exitingFilePreviewContainer');
