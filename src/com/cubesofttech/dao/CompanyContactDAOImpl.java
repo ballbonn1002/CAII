@@ -40,7 +40,7 @@ public class CompanyContactDAOImpl implements CompanyContactDAO {
 		        "co.company_en AS companyEn, " +
 		        "cf.path AS company_logo_path, " +
 		        "ca.address_name, " +
-		        "ca.address AS company_address " +
+		        "ca.address AS companyAddress " +
 		        "FROM company_contact cc " +
 				"LEFT JOIN file f ON cc.file_id = f.file_id " +
 				"LEFT JOIN company co ON cc.company_id = co.company_id " +

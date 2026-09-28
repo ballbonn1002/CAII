@@ -86,6 +86,7 @@ public class CompanyContactAction extends ActionSupport {
 	private String companyLogoContentType;
 	
 	private String freelancerRealCompanyId;
+	private String freelancerAddressName;
 
 	public String getRemoveProfileImage() { return removeProfileImage; }
 	public void setRemoveProfileImage(String removeProfileImage) { this.removeProfileImage = removeProfileImage; }
@@ -93,10 +94,6 @@ public class CompanyContactAction extends ActionSupport {
 	public String list() {
 
 		try {
-			
-			response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
-	        response.setHeader("Pragma", "no-cache");
-	        response.setDateHeader("Expires", 0);
 
 			List<Map<String, Object>> contactList = companyContactDAO.findAll();
 
@@ -115,6 +112,10 @@ public class CompanyContactAction extends ActionSupport {
 	public String add() {
 
 		try {
+			
+			response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
+			response.setHeader("Pragma", "no-cache");
+			response.setDateHeader("Expires", 0);
 			
 			List<Map<String, Object>> companyList = companyDAO.findAll();
 			log.debug("CompanyList = "+companyList);
@@ -419,7 +420,9 @@ public class CompanyContactAction extends ActionSupport {
 
 	            freelancerAddressRow.setCompanyId(contactCompanyId);
 	           
-	            if (freelancerCompanyNameEn != null && !freelancerCompanyNameEn.trim().isEmpty()) {
+	            if (freelancerAddressName != null && !freelancerAddressName.trim().isEmpty()) {
+	                freelancerAddressRow.setAddressName(freelancerAddressName.trim());
+	            } else if (freelancerCompanyNameEn != null && !freelancerCompanyNameEn.trim().isEmpty()) {
 	                freelancerAddressRow.setAddressName(freelancerCompanyNameEn);
 	            }
 	           
@@ -714,5 +717,12 @@ public class CompanyContactAction extends ActionSupport {
 	public void setCompanyLogoContentType(String companyLogoContentType) { 
 		this.companyLogoContentType = companyLogoContentType; 
 		}
+	
+	public String getFreelancerAddressName() {
+	    return freelancerAddressName;
+	}
+	public void setFreelancerAddressName(String freelancerAddressName) {
+	    this.freelancerAddressName = freelancerAddressName;
+	}
 
 }

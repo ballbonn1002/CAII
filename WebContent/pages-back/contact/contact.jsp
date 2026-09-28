@@ -214,7 +214,7 @@
 														</c:when>
 
 														<c:otherwise>
-															<c:out value="${contact.contactNameTh}" />
+															<c:out value="${contact.contact_name_th}" />
 														</c:otherwise>
 
 													</c:choose>
@@ -250,8 +250,8 @@
 																	<c:when test="${not empty contact.companyEn}">
                                                                        ${fn:toUpperCase(fn:substring(contact.companyEn, 0, 1))}
                                                                     </c:when>
-																	<c:when test="${not empty contact.companyId}">
-                                                                       ${fn:toUpperCase(fn:substring(contact.companyId, 0, 1))}
+																	<c:when test="${not empty contact.company_id}">
+                                                                       ${fn:toUpperCase(fn:substring(contact.company_id, 0, 1))}
                                                                     </c:when>
 																	<c:otherwise>?</c:otherwise>
 																</c:choose>
@@ -269,7 +269,7 @@
 													</c:when>
 
 													<c:otherwise>
-														<c:out value="${contact.company_Id}" />
+														<c:out value="${contact.company_id}" />
 													</c:otherwise>
 
 												</c:choose>
@@ -317,9 +317,9 @@
 
 											<c:choose>
 
-												<c:when test="${not empty contact.company_address}">
-													<c:out value="${contact.company_address}" />
-												</c:when>
+												<c:when test="${not empty contact.companyAddress}">
+                                                <c:out value="${contact.companyAddress}" />
+                                            </c:when>
 												
 												
 												

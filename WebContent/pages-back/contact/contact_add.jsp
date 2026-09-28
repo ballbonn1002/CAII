@@ -66,6 +66,8 @@
 				name="freelancerAddress" value="">
 			<input type="hidden" id="hidden_freelancer_google_map"
 				name="freelancerGoogleMap" value="">
+			<input type="hidden" id="hidden_freelancer_address_name"
+                name="freelancerAddressName" value="">
 			<input type="hidden" id="contact_freelancer_company_id"
 				name="freelancerRealCompanyId"
 				value="<c:out value="${isFreelancerContact ? contact.companyId : ''}" />">
@@ -424,14 +426,14 @@
                                    class="form-select py-4" data-control="select2">
                              <option value="" data-tax="">Select </option> 
                               <c:forEach items="${companyList}" var="companyList">
-                               <option value="${companyList.company_id}"
-                                      data-tax="${companyList.tax_number}"
-                                      data-logo="${companyList.file_path}"
-                                      ${contact.companyId eq companyList.company_id ? 'selected' : ''}>
-                                            ${companyList.company_en}
-                               </option>
-                           
-                               </c:forEach>
+                               <c:set var="optCompanyId">${companyList.company_id}</c:set>
+                                 <option value="${companyList.company_id}"
+                                    data-tax="${companyList.tax_number}"
+                                    data-logo="${companyList.file_path}"
+                                    ${contact.companyId eq optCompanyId ? 'selected' : ''}>
+                                    ${companyList.company_en}
+                                  </option>
+                                </c:forEach>
                                            <option value="freelancer" data-tax="" ${contact.companyId eq 'freelancer' ? 'selected' : ''}>Freelancer </option>
                                             
                                             
@@ -1156,6 +1158,10 @@
 			 * เตรียมข้อมูลก่อน Submit
 			 */
 			if (companyId === "freelancer") {
+				
+			    $("#hidden_freelancer_address_name").val(
+			            $("#location_name").val().trim()
+			        );
 
 				$("#hidden_freelancer_address").val(
 					$("#freelancer_address").text().trim()
