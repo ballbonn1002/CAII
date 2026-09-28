@@ -1716,6 +1716,11 @@ function initTimePickers() {
 // flag กันการ submit ซ้ำ (ผู้ใช้กดปุ่มรัว ๆ เพราะนึกว่าค้าง)
 var leaveSubmitting = false;
 
+// สำเร็จ BE redirect ไปหน้า list / ไม่สำเร็จ forward หน้า login (ไม่ redirect) หรือ session หมด redirect ไป index.jsp
+function isLeaveSaved(res) {
+	return res.ok && res.redirected && res.url.indexOf('index.jsp') === -1;
+}
+
 // แยก logic การ submit จริงออกมาเพื่อเรียกใช้ซ้ำได้ทั้งเคสมี popup และไม่มี popup
 function doSubmit() {
 	if (leaveSubmitting) { return; } // ส่งไปแล้ว ไม่ต้องส่งซ้ำ
@@ -1726,15 +1731,28 @@ function doSubmit() {
 	// รวมไฟล์ทั้งหมด (ปุ่มหลัก + modal) เข้า #myFile ชุดเดียว + set #deleteFileId
 	if (typeof lfSyncInput === 'function') { lfSyncInput(); }
 	spinner.css('display', 'flex'); // แสดง overlay loading ทับทั้งหน้า
-	$('#formid').find(':input').prop('disabled', false);
-	// ปิดปุ่มที่กดได้ทั้งหมด กันกดซ้ำระหว่างรอ browser navigate
+	// เปิด field ที่ disabled ชั่วคราวให้ติดไปกับ FormData แล้วคืนสถานะเดิม
+	var disabledInputs = form.find(':input:disabled').prop('disabled', false);
+	var formData = new FormData(form[0]);
+	disabledInputs.prop('disabled', true);
+	// ปิดปุ่มที่กดได้ทั้งหมด กันกดซ้ำระหว่างรอ
 	$('#submitBtn, #lbafterFile').prop('disabled', true).addClass('disabled');
-	form.submit();
 
-	// Refresh the window that opened this one, if it exists to show the latest data
-	if (window.opener) {
-		window.opener.location.reload();
-	}
+	fetch(form.attr('action'), { method: 'POST', body: formData })
+		.then(function (res) {
+			if (!isLeaveSaved(res)) { throw new Error('save failed'); }
+			// Refresh the window that opened this one, if it exists to show the latest data
+			if (window.opener) {
+				window.opener.location.reload();
+			}
+			window.location.href = res.url;
+		})
+		.catch(function () {
+			leaveSubmitting = false;
+			spinner.css('display', 'none');
+			$('#submitBtn, #lbafterFile').prop('disabled', false).removeClass('disabled');
+			liffToastError("Unable to submit your leave request. Please try again.", "Submit failed");
+		});
 }
 
 // มีไฟล์แนบอยู่ไหม (pending ใหม่ + existing เดิมที่ยังไม่ถูกลบ)
