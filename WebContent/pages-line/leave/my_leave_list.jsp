@@ -1116,28 +1116,7 @@ function leaveStatus(id) {
 }
 </script>  -->
 <script>
-/* ---------- toast ---------- */
-function liffToastSuccess(message, title) {
-	toastr.options = {
-		"closeButton": false,
-		"debug": false,
-		"newestOnTop": false,
-		"progressBar": false,
-		"positionClass": "toastr-top-right",
-		"preventDuplicates": false,
-		"onclick": null,
-		"showDuration": "300",
-		"hideDuration": "1000",
-		"timeOut": "2000",
-		"extendedTimeOut": "1000",
-		"showEasing": "swing",
-		"hideEasing": "linear",
-		"showMethod": "fadeIn",
-		"hideMethod": "fadeOut"
-	};
-	toastr.success(message, title);
-}
-
+/* ---------- toast (liffToastSuccess อยู่ใน _layout/baseLayout.jsp) ---------- */
 // เพิ่มใบลาสำเร็จ: line_new_LeaveAdd_Do redirect มาพร้อม ?saved=add
 $(function () {
 	const params = new URLSearchParams(window.location.search);
@@ -1150,6 +1129,11 @@ $(function () {
 });
 
 /* ---------- ยกเลิกใบลา ---------- */
+// สำเร็จ BE chain กลับมาเป็นหน้า My Leave / ไม่สำเร็จได้หน้า login (HTTP 200 เหมือนกัน)
+function isCancelSuccess(html) {
+	return typeof html === 'string' && html.indexOf('id="leaveDetailModal"') !== -1;
+}
+
 function changeStatus(id) {
     Swal.fire({
         title: "Are you sure?",
@@ -1194,13 +1178,17 @@ function changeStatus(id) {
                         reason: val
                     },
                     success: function(response) {
+                        if (!isCancelSuccess(response)) {
+                            liffToastError("Unable to cancel leave. Please try again.", "Cancel failed");
+                            return;
+                        }
                         liffToastSuccess("Your leave has been cancelled.", "Cancelled successfully!");
                         setTimeout(function () {
                             window.location.reload(true);
                         }, 2000);
                     },
                     error: function() {
-                        Swal.fire("Error", "Unable to cancel leave. Please try again.", "error");
+                        liffToastError("Unable to cancel leave. Please try again.", "Cancel failed");
                     }
                 });
             }

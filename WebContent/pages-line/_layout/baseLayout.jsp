@@ -133,6 +133,52 @@ textarea.liff-input-underline { padding-left: 2px; padding-right: 2px; }
 <script src="assets/js/custom/utilities/modals/new-target.js"></script>
 <script src="assets/js/custom/utilities/modals/users-search.js"></script>
 <!--end::Custom Javascript-->
+<!--begin::LIFF toast (ใช้ร่วมทุกหน้า LIFF)-->
+<script>
+function liffToastSuccess(message, title) {
+	toastr.options = {
+		"closeButton": false,
+		"debug": false,
+		"newestOnTop": false,
+		"progressBar": false,
+		"positionClass": "toastr-top-right",
+		"preventDuplicates": false,
+		"onclick": null,
+		"showDuration": "300",
+		"hideDuration": "1000",
+		"timeOut": "2000",
+		"extendedTimeOut": "1000",
+		"showEasing": "swing",
+		"hideEasing": "linear",
+		"showMethod": "fadeIn",
+		"hideMethod": "fadeOut"
+	};
+	toastr.success(message, title);
+}
+
+// error ค้างนานกว่า ให้ผู้ใช้อ่านทัน
+function liffToastError(message, title) {
+	toastr.options = {
+		"closeButton": false,
+		"debug": false,
+		"newestOnTop": false,
+		"progressBar": false,
+		"positionClass": "toastr-top-right",
+		"preventDuplicates": false,
+		"onclick": null,
+		"showDuration": "300",
+		"hideDuration": "1000",
+		"timeOut": "5000",
+		"extendedTimeOut": "5000",
+		"showEasing": "swing",
+		"hideEasing": "linear",
+		"showMethod": "fadeIn",
+		"hideMethod": "fadeOut"
+	};
+	toastr.error(message, title);
+}
+</script>
+<!--end::LIFF toast-->
 <!--end::Javascript-->
 </head>
 <!--begin::Body-->
