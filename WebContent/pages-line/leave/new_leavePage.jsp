@@ -2125,7 +2125,9 @@ function lfAlertHeic() {
 		title: 'ไม่รองรับไฟล์ HEIC',
 		html: 'ไม่รองรับไฟล์นามสกุล .heic กรุณาแปลงก่อนแนบไฟล์'
 			+ '<br><br><span class="text-muted fs-7">ไฟล์ที่รองรับ: PNG, JPG, JPEG, GIF, WEBP, PDF, ZIP</span>',
-		confirmButtonText: 'รับทราบ'
+		confirmButtonText: 'รับทราบ',
+		buttonsStyling: false,
+		customClass: { confirmButton: "btn btn-primary" }
 	});
 }
 
@@ -2134,7 +2136,9 @@ function lfAlertBadName(fileName) {
 		icon: 'error',
 		title: 'Invalid file name',
 		text: 'File name contains invalid characters: ' + fileName,
-		confirmButtonText: 'OK'
+		confirmButtonText: 'OK',
+		buttonsStyling: false,
+		customClass: { confirmButton: "btn btn-primary" }
 	});
 }
 
@@ -2181,7 +2185,9 @@ function lfTryAddFile(file, loadingId, onDone) {
 			icon: 'warning',
 			title: 'ไฟล์มีขนาดเกินกำหนด',
 			text: 'ไม่สามารถแนบไฟล์ "' + file.name + '" ได้ เนื่องจากขนาดไฟล์รวมเกินขนาดสูงสุดที่กำหนดไว้',
-			confirmButtonText: 'รับทราบ'
+			confirmButtonText: 'รับทราบ',
+			buttonsStyling: false,
+			customClass: { confirmButton: "btn btn-primary" }
 		});
 		lfRenderAll();
 		if (onDone) onDone(false);
