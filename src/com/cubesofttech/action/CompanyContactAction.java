@@ -94,6 +94,10 @@ public class CompanyContactAction extends ActionSupport {
 	public String list() {
 
 		try {
+			
+			response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
+			response.setHeader("Pragma", "no-cache");
+			response.setDateHeader("Expires", 0);
 
 			List<Map<String, Object>> contactList = companyContactDAO.findAll();
 
@@ -111,12 +115,7 @@ public class CompanyContactAction extends ActionSupport {
 
 	public String add() {
 
-		try {
-			
-			response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
-			response.setHeader("Pragma", "no-cache");
-			response.setDateHeader("Expires", 0);
-			
+		try {							
 			List<Map<String, Object>> companyList = companyDAO.findAll();
 			log.debug("CompanyList = "+companyList);
 
