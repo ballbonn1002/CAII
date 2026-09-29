@@ -596,31 +596,26 @@
 		<div class="card-body pt-6 pb-7">
 	<form method="post" id="formid" class="form-horizontal liff-initializing" aria-busy="true" action="line_new_LeaveEdit_Do" enctype="multipart/form-data">
 
-		<!-- Status: hidden per request (no longer shown in FE UI). status_hidden stays live outside
-		     the comment — the halfDay handler reads it directly ($('#status_hidden').val() != '0')
-		     to know whether an Edit-mode leave is still editable. -->
-		<!-- <div class="d-flex justify-content-end mb-3">
+		<div class="d-none">
 			<select class="form-select liff-status-select" id="status" name="status" disabled required>
 				<option value="0">Wait for approve</option>
 				<option value="1">Approved</option>
 				<option value="2">Reject</option>
 				<option value="3">Cancel</option>
 			</select>
-		</div> -->
+		</div>
 		<input type="hidden" name="status_hidden" id="status_hidden">
 
-		<!-- Next Year Leave: hidden per request (no longer shown in FE UI). Safe to fully remove from
-		     the DOM — nothing reads $('#nextYearLeave')'s value elsewhere; the unconditional
-		     $('#nextYearLeave').trigger('change') on init just no-ops when the element doesn't exist,
-		     and date_from/date_to still get their daterangepicker via the separate init block below. -->
-		<!-- <div class="mb-6" id="nextYearLeaveContainer">
-			<div class="form-check form-check-custom form-check-solid">
-				<input class="form-check-input me-3" type="checkbox" id="nextYearLeave" name="nextYearLeave" value="1" />
-				<label class="form-check-label" for="nextYearLeave">
-					<div class="fw-bold fs-6 text-primary">เลือกวันลาปีหน้า</div>
-				</label>
+		<div class="d-none">
+			<div class="mb-6" id="nextYearLeaveContainer">
+				<div class="form-check form-check-custom form-check-solid">
+					<input class="form-check-input me-3" type="checkbox" id="nextYearLeave" name="nextYearLeave" value="1" />
+					<label class="form-check-label" for="nextYearLeave">
+						<div class="fw-bold fs-6 text-primary">เลือกวันลาปีหน้า</div>
+					</label>
+				</div>
 			</div>
-		</div> -->
+		</div>
 
 		<!-- DDL User: visually hidden per request (not shown in FE UI). Kept in the DOM (not commented
 		     out) because userOnChange() reads $('#user').val()/.find(":selected") directly, and it
@@ -796,6 +791,7 @@
 		var current = $select.value;
 		$select.innerHTML = '<option value="" disabled ' + (current ? '' : 'selected') + '>เลือกประเภทการลา</option>';
 		radios.forEach(function (radio) {
+			if (radio.value === '6' && !radio.checked) return;
 			var opt = document.createElement('option');
 			opt.value = radio.value;
 			opt.textContent = labelTextFor(radio) || radio.value;
