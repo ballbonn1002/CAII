@@ -1296,7 +1296,7 @@ jQuery(document).ready(function() {
 
 	<div class="d-flex justify-content-between align-items-center mb-6 pt-6">
 		<h1 class="liff-page-title text-gray-700 mb-0">Check List</h1>
-		<h3 id="calendarTitle" class="fs-6 fw-bold text-primary mb-0" style="line-height:19.35px; letter-spacing:0px;"></h3>
+		<h3 id="calendarTitle" class="fs-6 fw-bold text-primary mb-0" style="line-height:19.35px; letter-spacing:0px; cursor:pointer;"></h3>
 	</div>
 
 	<div class="d-none">
@@ -2421,6 +2421,10 @@ var AppCalendar = function() {
 
 			$('#calendarPrevBtn').off('click').on('click', function(e) { e.preventDefault(); calendar.prev(); });
 			$('#calendarNextBtn').off('click').on('click', function(e) { e.preventDefault(); calendar.next(); });
+			$('#calendarTitle').off('click').on('click', function() {
+				calendar.today();
+				filterWeek(Math.floor(moment().diff(moment().startOf('month').startOf('isoWeek'), 'days') / 7));
+			});
 			$('#weekButtonsRow').off('click', 'button').on('click', 'button', function() { filterWeek($(this).data('week')); });
 
 			// Initialize tooltips after calendar renders
