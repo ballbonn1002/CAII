@@ -1569,7 +1569,7 @@
         });
 
         // ==================== Reorder ด้วย SortableJS ====================
-        // ส่งลำดับ id (คั่น comma) ไป backend แล้ว backend รัน sequence ใหม่ 0..n
+        // ส่งลำดับ id (คั่น comma) ไป backend แล้ว backend รัน sequence ใหม่ (UOM 0..n, Sub product 1..n)
         // toast แจ้งผลสำเร็จมุมขวาบน (ถ้าไม่มี Swal ก็ข้ามไปเงียบๆ)
         function notifySuccess(msg) {
             if (window.Swal) {
@@ -1618,9 +1618,11 @@
                             success: function (res) {
                                 if (res && res.success === true) {
                                     // อัปเดตเลข sequence ที่โชว์ (UOM ใช้ .uom-seq, Sub product ใช้ .sub-seq)
+                                    // Sub product เริ่มที่ 1, UOM เริ่มที่ 0 (ให้ตรงกับที่ backend รันเลขใหม่)
                                     $rows.each(function (index) {
-                                        $(this).find('.uom-seq, .sub-seq').text(index);
-                                        $(this).attr('data-sequence', index);
+                                        var seqNo = $(this).find('.sub-seq').length ? index + 1 : index;
+                                        $(this).find('.uom-seq, .sub-seq').text(seqNo);
+                                        $(this).attr('data-sequence', seqNo);
                                     });
                                     // เผื่อแถวพิเศษหลุดตำแหน่งจากการลากของแถวอื่นรอบๆ - ดันกลับไปท้ายสุดเสมอ
                                     if (excludeSelector) {

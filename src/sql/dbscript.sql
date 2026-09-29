@@ -1189,3 +1189,13 @@ SET uom.unit_master_id = um.unit_master_id;
 -- 28/09/2026 Koy: add column 'warehouse_id' to 'equipment' table to link equipment to warehouse
 ALTER TABLE equipment ADD COLUMN warehouse_id BIGINT NULL, ADD INDEX idx_equipment_warehouse_id (warehouse_id);
 
+-- 29/09/2026 Koy: เลื่อน sequence ของ sub product เก่าให้เริ่มที่ 1 (เฉพาะกลุ่มที่ยังมี sequence = 0, ตัวแม่ไม่แตะ, รันซ้ำได้)
+UPDATE product p
+JOIN (SELECT parent_product_id
+      FROM product
+      WHERE parent_product_id <> '0'
+        AND sequence REGEXP '^[0-9]+$'
+        AND CAST(sequence AS UNSIGNED) = 0
+      GROUP BY parent_product_id) g ON g.parent_product_id = p.parent_product_id
+SET p.sequence = CAST(CAST(p.sequence AS UNSIGNED) + 1 AS CHAR)
+WHERE p.parent_product_id <> '0' AND p.sequence REGEXP '^[0-9]+$';

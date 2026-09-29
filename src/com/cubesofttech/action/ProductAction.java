@@ -2413,10 +2413,24 @@ public class ProductAction extends ActionSupport {
             }
             java.sql.Timestamp now = DateUtil.getCurrentTime();
 
-            // sequence ต่อท้ายของเดิม
+            // sequence ต่อท้ายของเดิม - sub product เริ่มที่ 1 (ตัวแม่ parent_product_id = '0' คง sequence '0')
+            // ใช้ค่า max ของ sequence ที่เป็นตัวเลข + 1 (ไม่ใช้จำนวนแถว กันซ้ำเมื่อลำดับมีช่องว่างหลังลบ sub)
             List<Product> siblings = productDAO.findByParentProductIds(
                     Collections.singletonList(String.valueOf(parentId)));
-            int nextSeq = (siblings != null) ? siblings.size() : 0;
+            int maxSeq = 0;
+            if (siblings != null) {
+                for (Product sibling : siblings) {
+                    if (sibling == null || sibling.getSequence() == null) {
+                        continue;
+                    }
+                    try {
+                        maxSeq = Math.max(maxSeq, Integer.parseInt(sibling.getSequence().trim()));
+                    } catch (NumberFormatException ignore) {
+                        // sequence ที่ไม่ใช่ตัวเลขข้ามไป
+                    }
+                }
+            }
+            int nextSeq = maxSeq + 1;
 
             Product sub = new Product();
             // ไม่ต้องตั้ง productId เอง - product_id เป็น AUTO_INCREMENT แล้ว (10/08/2026)
@@ -2516,7 +2530,7 @@ public class ProductAction extends ActionSupport {
         }
     }
 
-    /** จัดลำดับ sub product ใหม่ตามที่ลากใน SortableJS (AJAX) - sequence รันใหม่ 0..n */
+    /** จัดลำดับ sub product ใหม่ตามที่ลากใน SortableJS (AJAX) - sequence รันใหม่ 1..n */
     public String productSubReorder() {
         try {
             User onlineUser = getOnlineUser();
@@ -2529,7 +2543,8 @@ public class ProductAction extends ActionSupport {
 
             String parentKey = parentProductId.trim();
             java.sql.Timestamp now = DateUtil.getCurrentTime();
-            int seq = 0;
+            // sub product เริ่มที่ 1 (ต่างจาก unit_of_measure ที่ยังเริ่มที่ 0)
+            int seq = 1;
             for (Integer sid : parseIds(orderedIds)) {
                 Product sub = productDAO.findById(sid);
                 // ข้ามตัวที่ไม่พบ หรือไม่ได้เป็นลูกของ parent นี้
