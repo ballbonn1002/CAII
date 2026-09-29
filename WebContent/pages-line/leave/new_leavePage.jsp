@@ -1225,13 +1225,12 @@ $(() => {
 		    $('#fileUploadSection').addClass('d-none');
 			$('#filePreviewContainer').addClass('d-none'); // อยู่นอก #fileUploadSection ต้องซ่อนเอง
 			$('#exitingFileSection').addClass('d-block');
-			lfLoadExisting(${fileLeaveList});
+			lfLoadExisting(${fileLeaveList}, fileLeave);
 			lfRenderExistingReadonly('exitingFilePreviewContainer');
 		    $('#submitBtn').addClass('d-none');
 
-		    // แนบไฟล์หลังอนุมัติ (#afterFileRow): มีเฉพาะ Approved เลือกไฟล์แล้วกด Submit ถึงส่ง
 		    if (leave.leaveStatusId.toString() != '1') {
-		    	$('#afterFileRow').addClass('d-none');
+		    	$('#lbafterFile').addClass('d-none');
 		    }
 		    
 		    $('#aprEmpId').text(aprEmpId);
@@ -1252,7 +1251,7 @@ $(() => {
 		    $('#afterFileRow').hide();
 			$('#fileUploadSection').removeClass('d-none');
 			$('#exitingFileSection').addClass('d-none');
-			lfLoadExisting(${fileLeaveList});
+			lfLoadExisting(${fileLeaveList}, fileLeave);
 			lfRenderAll();
 			$('#ucEmpId').text(ucEmpId);
 	        $('#ucName').text(ucName);
@@ -2124,7 +2123,7 @@ function getFileIconPath(fileName) {
 	}
 }
 
-function lfLoadExisting(list) {
+function lfLoadExisting(list, legacyFile) {
 	LeaveFiles.existing = [];
 	LeaveFiles.deleted = [];
 	if (list && list.length) {
@@ -2133,6 +2132,9 @@ function lfLoadExisting(list) {
 			if (!f || f.fileId == null) continue;
 			LeaveFiles.existing.push({ fileId: f.fileId, name: (f.name || 'file'), type: (f.type || '') });
 		}
+	}
+	if (legacyFile && legacyFile.fileId != null && !LeaveFiles.existing.some(function (e) { return e.fileId == legacyFile.fileId; })) {
+		LeaveFiles.existing.push({ fileId: legacyFile.fileId, name: (legacyFile.name || 'file'), type: (legacyFile.type || '') });
 	}
 }
 
