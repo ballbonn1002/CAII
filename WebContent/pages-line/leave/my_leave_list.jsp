@@ -1341,7 +1341,7 @@ function setLeaveApprover(obj) {
 }
 
 function leaveStatus(id) {
-	const modal = new bootstrap.Modal(document.getElementById('leaveDetailModal'));
+	const modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('leaveDetailModal'));
 	modal.show();
 
 	$.ajax({
