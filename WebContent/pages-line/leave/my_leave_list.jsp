@@ -1257,7 +1257,6 @@ function changeStatus(id) {
         buttonsStyling: false,
         focusConfirm: false,
 
-        // ฟังก์ชันตรวจสอบก่อนกด "Confirm"
         preConfirm: () => {
             const val = document.getElementById('text').value.trim();
             if (!val) {
@@ -1267,7 +1266,6 @@ function changeStatus(id) {
             return val;
         }
     }).then((result) => {
-        // กดยืนยัน
         if (result.isConfirmed) {
             const val = result.value;
 
@@ -1296,7 +1294,6 @@ function changeStatus(id) {
             }
         }
 
-        // กด Close
         if (result.isDismissed) {
             return false;
         }
@@ -1306,7 +1303,6 @@ function changeStatus(id) {
 
 <script>
 /* ---------- modal รายละเอียดใบลา ---------- */
-// แสดงไฟล์แนบทั้งหมดของ leave
 function renderLeaveModalFiles(obj) {
 	var $list = $('#fileList').empty();
 
@@ -1334,7 +1330,6 @@ function renderLeaveModalFiles(obj) {
 	});
 }
 
-// ข้อมูลผู้อนุมัติ
 function setLeaveApprover(obj) {
 	$('#status_panel').show();
 	$('#approved_detail').show();
@@ -1363,7 +1358,6 @@ function leaveStatus(id) {
 			$('#etime').html(obj.end_time);
 			$('#desc').html(obj.description);
 
-			// ไฟล์แนบ
 			renderLeaveModalFiles(obj);
 
 			// leave type name
