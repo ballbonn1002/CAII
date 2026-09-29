@@ -4,9 +4,6 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
 <%@ taglib uri="/WEB-INF/tlds/permission.tld" prefix="perm"%>
-<!DOCTYPE html>
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
-<script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"></script>
 
 <%-- =====================================================================
      OLD: Calendar and Check List (desktop clone)
@@ -1270,13 +1267,10 @@ jQuery(document).ready(function() {
      ===================================================================== --%>
 <style>
 .liff-shell {
-	/* ค่ากลางของ spacing */
-	--liff-gutter: 1.5rem;      /* padding ซ้าย-ขวามาตรฐานของการ์ด (เทียบเท่า px-4) */
-	--liff-bullet-w: 3px;       /* ความกว้างแถบสีซ้ายของแต่ละแถว (.bullet.bullet-vertical) */
-	--liff-col-w: 60px;         /* ความกว้าง column เวลา check-in/check-out */
-	--liff-inout-gap: 14px;      /* ปรับให้ตัวเลขเวลาเลื่อนลงมาใกล้ระดับ badge สถานะฝั่งซ้าย */
-	--liff-week-gap: 8px;   /* ระยะห่างระหว่างปุ่ม week */
-	width: calc(100% - 32px); max-width: 393px; margin: 0 auto;
+	--liff-bullet-w: 3px;    /* แถบสีซ้ายของแถว */
+	--liff-col-w: 60px;      /* column เวลา In/Out */
+	--liff-inout-gap: 14px;
+	--liff-week-gap: 8px;
 }
 #weekButtonsRow .btn-danger:hover,
 #weekButtonsRow .btn-danger:focus,
@@ -1303,6 +1297,7 @@ jQuery(document).ready(function() {
 	<!-- Form without submit button -->
 	<div class="d-flex flex-row">
 		<div class="card flex-row-fluid mb-5">
+	<%-- OLD: ช่องค้นหาพนักงาน (LIFF ไม่ใช้ และไม่ต้องฝังรายชื่อพนักงานในหน้า)
 			<div class="card-header" style="border-bottom: none;">
 				<!--begin::Main wrapper-->
 				<div id="kt_docs_search_handler_responsive"
@@ -1355,7 +1350,7 @@ jQuery(document).ready(function() {
 				<!--end::Main wrapper-->
 
 			</div>
-
+	--%>
 			<div class="card-body d-flex flex-row flex-wrap pt-0">
 				<div class="d-flex align-items-center me-5">
 					<span class="badge badge-primary">${user.workType == 1 ? 'On-site' : (user.workType == 2 ? 'WFH' : 'Head Office')}</span>
@@ -1596,6 +1591,7 @@ jQuery(document).ready(function() {
 	</div>
 </div>
 
+<%-- OLD: script ค้นหาพนักงาน (ฝัง ${cubeUserJson} ทั้งบริษัท) LIFF ไม่ใช้
 <script> // ----------- Search -----------------
 // Get JSON data from backend
 var cubeUserData = ${cubeUserJson};
@@ -1723,6 +1719,7 @@ document.addEventListener("DOMContentLoaded", function(){
 </perm:permission>
 // ----------------- END Search -----------------
 </script>
+--%>
 <%!
 // กัน JS string literal และ กัน HTML injection จาก free-text field (description)
 private String escFreeText(String s) {
@@ -1865,8 +1862,7 @@ var AppCalendar = function() {
         <c:set var = "rawLeaveDesc" value = "${leave.description}"/>
         <% pageContext.setAttribute("leaveDescClean", escFreeText((String) pageContext.getAttribute("rawLeaveDesc"))); %>
             if (${leave.leave_status_id} != 3 && ${leave.leave_status_id} != 2) {
-                var leaveType = '${leave.leave_type_name}';
-                var color = leaveType === 'ลาป่วย' ?
+                var color = '${leave.leave_type_id}' === '3' ? // ลาป่วย
                     {bg: '#7239ea', border: '#7239ea', className: 'fc-event-info'} :
                     {bg: '#007bff', border: '#007bff', className: 'fc-event-primary'};
 				var halfDay = '${leave.half_day}';
@@ -1943,30 +1939,6 @@ var AppCalendar = function() {
         return workTypeIn + ' ' + checkinTime + ' - ' + workTypeOut + ' ' + checkoutTime;
     }
 
-	// Helper: (Check-In/Out) format event description
-	function getEventDescription(checkin, checkout, status, workhour, typeIn, typeOut) {
-		var checkinDateObj = checkin ? new Date(checkin) : null;
-        var checkDate = checkinDateObj ? checkinDateObj.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' }) : '';
-        var checkinTime = checkin ? checkin.substring(11, 16) : '';
-        var checkoutTime = checkout && checkout !== '' ? checkout.trim() : '';
-        var workingHours = workhour ? workhour : '';
-
-		switch(status) {
-            case 'ONTIME': status = 'On Time'; break;
-            case 'LATE': status = 'Late'; break;
-            case 'EARLY_OUT': status = 'Early Out'; break;
-            case 'UNFINISHED_WORK': status = 'Unfinished Work'; break;
-            case 'INCOMPLETE': status = 'Incomplete'; break;
-            case 'NO_RECORD': status = 'No Record'; break;
-        }
-
-        return '<b>' + checkDate + '</b><br/>' +
-        	   'Check-in: ' + checkinTime + '<br/>' +
-               'Check-out: ' + checkoutTime + '<br/>' +
-               'Work-time (hrs): ' + workingHours + '<br/>' +
-               'Status: ' + status;
-    }
-
 	function filterDayEvents(events, day, dayStr) {
 		return events.filter(function(ev) {
 			if ((ev.extendedProps && ev.extendedProps.leave_type_id) ||
@@ -2016,7 +1988,7 @@ var AppCalendar = function() {
 	}
 
 	// Populate calendar checklist
-	function populateCheckList(view) {
+	function populateCheckList() {
 		var events = calendar.getEvents();
 		var $tableBody = $('#calendarTableBody');
 		$tableBody.empty();
@@ -2193,7 +2165,7 @@ var AppCalendar = function() {
 	            if (dayEvents.some(ev => ev.extendedProps && ev.extendedProps.leave_type_id)) {
                     dayEvents.filter(ev => ev.extendedProps && ev.extendedProps.leave_type_id).forEach(leaveEv => {
                         var noDay = parseFloat(leaveEv.extendedProps.no_day) || 0;
-                        if (leaveEv.title.includes("ลาป่วย")) {
+                        if (leaveEv.extendedProps.leave_type_id === '3') { // ลาป่วย
                             status = "Sick Leave";
                             if(!processedLeaves.has(leaveEv.id)) {
                                 summary.sickLeave += noDay;
@@ -2255,7 +2227,6 @@ var AppCalendar = function() {
             case 'Su': return 'bg-danger';
             default: return 'bg-muted';
         }
-        return '<span class="bullet bullet-vertical me-2 ' + colorClass + '"></span>';
     }
 
 	function getWorkStatusHTML(status) {
@@ -2280,10 +2251,10 @@ var AppCalendar = function() {
 	function getLeaveStatusHTML(leaveEvent) {
         var leaveTitle = leaveEvent.title;
         var statusLeave = '';
-        var badgeColor = leaveTitle.includes('ลาป่วย') ? 'badge badge-info' : 'badge badge-primary';
-        var textColor = leaveTitle.includes('ลาป่วย') ? 'text-info' : 'text-primary';
+        var isSick = leaveEvent.extendedProps && leaveEvent.extendedProps.leave_type_id === '3';
+        var badgeColor = isSick ? 'badge badge-info' : 'badge badge-primary';
 
-        statusLeave = '<span class="' + badgeColor + ' fs-7 fw-bold style="cursor: pointer;" onclick="leaveStatus('+ leaveEvent.id +')">' + leaveTitle ;
+        statusLeave = '<span class="' + badgeColor + ' fs-7 fw-bold" style="cursor: pointer;" onclick="leaveStatus('+ leaveEvent.id +')">' + leaveTitle ;
 
 		if (leaveEvent.extendedProps && leaveEvent.extendedProps.status === '0') {
         	statusLeave += ' <i class="ki-duotone ki-watch fs-2 text-warning align-middle">' +
@@ -2372,7 +2343,7 @@ var AppCalendar = function() {
 				datesSet: function(info) {
                 	$('#calendarMonthYear').text(moment(info.view.currentStart).format('MMMM YYYY'));
                 	$('#calendarTitle').text('Today ' + moment().format('D MMM YYYY'));
-                    renderWeekButtons(populateCheckList(info));
+                    renderWeekButtons(populateCheckList());
                     calculateSummary();
                 },
 
