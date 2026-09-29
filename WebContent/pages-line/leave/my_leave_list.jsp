@@ -638,21 +638,14 @@
 .leave-status-badge { display: inline-flex; align-items: center; justify-content: center; gap: 10px; min-width: 26px; height: 26px; padding: 4.23px 6.5px; border-radius: 5.52px; }
 .liff-fab {
 	position: fixed;
-	right: max(16px, calc((100vw - 393px) / 2 + 16px)); /* เกาะขอบขวาของ .liff-shell จริง ไม่ใช่ขอบจอ เผื่อทดสอบจอกว้าง */
-	bottom: calc(90px + 16px + env(safe-area-inset-bottom)); /* ลอยเหนือ .liff-nav (สูง 75px + เผื่อ shadow ตาม body padding-bottom เดิม) */
+	right: max(16px, calc((100vw - 393px) / 2 + 16px)); /* ชิดขวา .liff-shell */
+	bottom: calc(90px + 16px + env(safe-area-inset-bottom)); /* ลอยเหนือ .liff-nav */
 	width: 56px; height: 56px;
 	border-radius: 16px;
 	background: var(--bs-success);
 	display: flex; align-items: center; justify-content: center;
 	box-shadow: 0 4px 16px rgba(0,0,0,.2);
 	z-index: 100;
-}
-.liff-loading-overlay {
-	position: fixed; inset: 0;
-	background: rgba(255,255,255,.7);
-	display: none;
-	align-items: center; justify-content: center;
-	z-index: 200; /* เหนือ .liff-fab/.liff-nav (z-index:100) */
 }
 </style>
 
@@ -684,7 +677,7 @@
 		<i class="ki-duotone ki-plus" style="color:#FFFFFF; font-size:1.75rem;"></i>
 	</a>
 
-	<!-- Summary Leave (same EL bindings as legacy, condensed into a scroll strip) -->
+	<!-- Summary Leave -->
 	<div class="mb-6">
 		<div class="card card-bordered">
 			<div class="card-body" style="padding:29.25px;">
@@ -833,7 +826,7 @@
 		</div>
 	</div>
 
-	<!-- Leave List (same EL bindings + same edit/delete/info wiring as legacy) -->
+	<!-- Leave List -->
 	<div class="d-flex align-items-center justify-content-between mt-2 mb-4">
 		<span class="fw-bold text-gray-900" style="font-size:16px; line-height:1;">${fn:length(leavelist)} Items Found</span>
 		<span class="fw-bold fs-6 text-muted">Recent Updates ↓</span>
@@ -851,19 +844,16 @@
 					<a href="javascript:void(0)" class="btn btn-icon btn-sm bg-info-subtle" onclick="leaveStatus(${leave.leave_id})">
 						<i class="ki-duotone ki-document text-info" style="font-size:1.45rem;"><span class="path1"></span><span class="path2"></span></i>
 					</a>
+					<a data-note="btn edit" href="line_NewLeaveEdit?id=${leave.leave_id}" title="Edit" class="btn btn-icon btn-sm bg-primary-subtle">
+						<i class="ki-duotone ki-pencil text-primary" style="font-size:1.45rem;"><span class="path1"></span><span class="path2"></span></i>
+					</a>
 					<c:choose>
 						<c:when test="${leave.leave_status_id.toString() == 0}">
-							<a data-note="btn edit" href="line_NewLeaveEdit?id=${leave.leave_id}" title="Edit" class="btn btn-icon btn-sm bg-primary-subtle">
-								<i class="ki-duotone ki-pencil text-primary" style="font-size:1.45rem;"><span class="path1"></span><span class="path2"></span></i>
-							</a>
 							<a data-note="btn delete" onclick="changeStatus(${leave.leave_id});" title="Delete" class="btn btn-icon btn-sm bg-danger-subtle">
 								<i class="ki-duotone ki-trash text-danger" style="font-size:1.45rem;"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span><span class="path5"></span></i>
 							</a>
 						</c:when>
 						<c:when test="${leave.leave_status_id.toString() != 0}">
-							<a data-note="btn edit" href="line_NewLeaveEdit?id=${leave.leave_id}" title="Edit" class="btn btn-icon btn-sm bg-primary-subtle">
-								<i class="ki-duotone ki-pencil text-primary" style="font-size:1.45rem;"><span class="path1"></span><span class="path2"></span></i>
-							</a>
 							<a data-note="btn delete" class="btn btn-icon btn-sm btn-light-secondary disabled">
 								<i class="ki-duotone ki-trash" style="font-size:1.45rem;"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span><span class="path5"></span></i>
 							</a>
@@ -1224,7 +1214,7 @@ function leaveStatus(id) {
 
 <script>
 /* ---------- toast ---------- */
-// บันทึกใบลาสำเร็จ: doSubmit() ใน new_leavePage.jsp เติม ?saved=add / ?saved=edit มาให้
+// ?saved=add / edit มาจาก doSubmit() หน้า Add/Edit
 $(function () {
 	const params = new URLSearchParams(window.location.search);
 	const saved = params.get('saved');
@@ -1241,7 +1231,7 @@ $(function () {
 });
 
 /* ---------- ยกเลิกใบลา ---------- */
-// สำเร็จ BE chain กลับมาเป็นหน้า My Leave / ไม่สำเร็จได้หน้า login (HTTP 200 เหมือนกัน)
+// ได้ HTTP 200 ทั้งสำเร็จ/ไม่สำเร็จ เช็กจากหน้าที่ได้กลับมา
 function isCancelSuccess(html) {
 	return typeof html === 'string' && html.indexOf('id="leaveDetailModal"') !== -1;
 }
@@ -1277,7 +1267,7 @@ function changeStatus(id) {
             return val;
         }
     }).then((result) => {
-        // ถ้ากดยืนยัน (เหมือน if(inputValue == true))
+        // กดยืนยัน
         if (result.isConfirmed) {
             const val = result.value;
 
@@ -1306,7 +1296,7 @@ function changeStatus(id) {
             }
         }
 
-        // ถ้ากด Cancel (เหมือน if(inputValue == false))
+        // กด Close
         if (result.isDismissed) {
             return false;
         }
@@ -1425,12 +1415,17 @@ function leaveStatus(id) {
 			}
 		},
 		error: function () {
-			alert("Error retrieving leave detail.");
+			// modal ยังเปิดไม่เสร็จ รอ shown ก่อนค่อย hide
+			var $m = $('#leaveDetailModal');
+			$m.one('shown.bs.modal.loadFail', function () { modal.hide(); });
+			$m.one('hidden.bs.modal', function () { $m.off('shown.bs.modal.loadFail'); });
+			modal.hide();
+			liffToastError("Unable to load leave details. Please try again.", "Load failed");
 		}
 	});
 }
 
-	// When opened from a notification (?leaveId=...), pop the leave status modal
+	// เปิดจาก notification (?leaveId=) ให้เปิด modal
 	$(function () {
 		var leaveId = new URLSearchParams(window.location.search).get("leaveId");
 		if (leaveId && typeof leaveStatus === "function") {
