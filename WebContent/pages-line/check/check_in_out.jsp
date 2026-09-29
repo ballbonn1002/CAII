@@ -2188,14 +2188,14 @@ $(function () {
 		navigator.geolocation.getCurrentPosition(function (pos) {
 			lat = pos.coords.latitude;
 			lng = pos.coords.longitude;
-			saveLocation();
+			adddata();
 		}, function (err) {
 			console.warn('Geolocation failed:', err.message); 
 		}, { enableHighAccuracy: true, timeout: 8000 });
 	}
 
 	// ส่งพิกัดเข้า session
-	function saveLocation() {
+	function adddata() {
 		$.ajax({
 			url: "saveLocationToSession",
 			type: "POST",
@@ -2271,14 +2271,14 @@ $(function () {
 				} else {
 					$("#page-loader").remove();
 					liffToastError(res.message || "Failed to record your attendance. Please try again.");
-					// เปิดปุ่มคืนให้กดใหม่
+					// บันทึกไม่สำเร็จ ให้กด Accept ใหม่ได้
 					$btn.prop("disabled", false);
 				}
 			},
 			error: function (xhr, status, error) {
 				$("#page-loader").remove();
 				liffToastError("Error saving data: " + error);
-				// เปิดปุ่มคืนให้กดใหม่
+				// บันทึกไม่สำเร็จ ให้กด Accept ใหม่ได้
 				$btn.prop("disabled", false);
 			}
 		});
