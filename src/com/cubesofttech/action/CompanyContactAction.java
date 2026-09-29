@@ -401,6 +401,11 @@ public class CompanyContactAction extends ActionSupport {
 	            if (companyAddressId != null && !companyAddressId.trim().isEmpty()) {
 	                try {
 	                    freelancerAddressRow = companyAddressDAO.findById(Long.parseLong(companyAddressId.trim()));
+	                    
+	                    if (freelancerAddressRow != null
+	                            && !contactCompanyId.equals(freelancerAddressRow.getCompanyId())) {
+	                        freelancerAddressRow = null;
+	                    }
 	                } catch (NumberFormatException nfe) {
 	                    freelancerAddressRow = null;
 	                }
