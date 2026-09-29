@@ -976,6 +976,14 @@
 		document.getElementById('liffLoadingOverlay').style.display = 'flex';
 		window.location.href = 'line_new_myleave_list?Id=${onlineUser.id}&startdate=01-01-' + year + '&enddate=31-12-' + year;
 	}
+
+	$(document).on('click', 'a[href^="line_NewLeaveEdit"]', function() {
+		document.getElementById('liffLoadingOverlay').style.display = 'flex';
+	});
+	// กด Back กลับมา (bfcache) ซ่อน spinner
+	window.addEventListener('pageshow', function(e) {
+		if (e.persisted) document.getElementById('liffLoadingOverlay').style.display = 'none';
+	});
 </script>
 <!-- <script>
 function leaveStatus(id) {
@@ -1413,6 +1421,7 @@ function leaveStatus(id) {
 
 <script>
 	function add() {
+		document.getElementById('liffLoadingOverlay').style.display = 'flex';
 		document.location = "line_NewLeaveAdd";
 	}
 </script>
