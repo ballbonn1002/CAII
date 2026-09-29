@@ -1977,7 +1977,6 @@ window.onload = function() {
 <fmt:setLocale value="en_US" scope="request" />
 <style>
 
-.liff-shell { width: calc(100% - 32px); max-width: 393px; margin: 0 auto; }
 
 input[name="checkType"] + .btn.bg-light,
 input[name="checkType"] + .btn.bg-light i,
@@ -2085,125 +2084,75 @@ input[name="workType"] + .btn.bg-light i { color: var(--bs-gray-400); }
 		</div>
 		<div class="card-body pt-6 pb-7">
 
-			<!-- Today -->
-			<div class="d-flex flex-column mb-5">
-				<span class="fs-5 fw-medium text-gray-900 mb-3">Today</span>
+			<%-- Today / วันทำงานล่าสุด ใช้ markup เดียวกัน --%>
+			<c:forTokens items="today,last" delims="," var="dayKey">
+				<c:choose>
+					<c:when test="${dayKey == 'today'}">
+						<c:set var="dayLabel" value="Today"/>
+						<c:set var="dayLeave" value="${leaveToday}"/>
+						<c:set var="dayIn" value="${todaycheckin}"/>
+						<c:set var="dayOut" value="${todaycheckout}"/>
+					</c:when>
+					<c:otherwise>
+						<c:set var="dayLabel" value="${empty lastWorkDayName ? 'Last' : lastWorkDayName}"/>
+						<c:set var="dayLeave" value="${leaveLastday}"/>
+						<c:set var="dayIn" value="${lastcheckin}"/>
+						<c:set var="dayOut" value="${lastcheckout}"/>
+						<div class="separator separator-dashed my-5"></div>
+					</c:otherwise>
+				</c:choose>
+				<c:set var="isFullDayLeave" value="${not empty dayLeave and fn:trim(dayLeave[0].half_day) == '0'}"/>
 
-				<c:if test="${not empty leaveToday and fn:trim(leaveToday[0].half_day) == '0'}">
-					<div class="d-flex align-items-center gap-2">
-						<span class="badge ${fn:contains(leaveToday[0].leave_type_name, 'ป่วย') ? 'badge-info' : 'badge-primary'} fw-semibold fs-7">
-							${leaveToday[0].leave_type_name} : เต็มวัน
-						</span>
-						<c:if test="${fn:trim(leaveToday[0].leave_status_id) == '0'}">
-							<i class="ki-duotone ki-watch text-warning"><span class="path1"></span><span class="path2"></span></i>
-						</c:if>
-					</div>
-				</c:if>
-				<c:if test="${empty leaveToday or fn:trim(leaveToday[0].half_day) != '0'}">
-					<div class="d-flex flex-column gap-3">
-						<c:forTokens items="IN,OUT" delims="," var="dir">
-							<c:choose>
-								<c:when test="${dir == 'IN'}">
-									<c:set var="inoutList" value="${todaycheckin}"/>
-									<c:set var="inoutColor" value="success"/>
-								</c:when>
-								<c:otherwise>
-									<c:set var="inoutList" value="${todaycheckout}"/>
-									<c:set var="inoutColor" value="info"/>
-								</c:otherwise>
-							</c:choose>
-							<div class="d-flex align-items-center justify-content-between">
-								<div class="d-flex align-items-center">
-									<span class="bullet bullet-vertical bg-${inoutColor} min-h-25px me-3 rounded-0"></span>
-									<span class="liff-inout-label text-${inoutColor} fs-7 me-3">${dir}</span>
+				<div class="d-flex flex-column${dayKey == 'today' ? ' mb-5' : ''}">
+					<span class="fs-5 fw-medium text-gray-900 mb-3">${dayLabel}</span>
+
+					<c:if test="${not isFullDayLeave}">
+						<div class="d-flex flex-column gap-3">
+							<c:forTokens items="IN,OUT" delims="," var="dir">
+								<c:choose>
+									<c:when test="${dir == 'IN'}">
+										<c:set var="inoutList" value="${dayIn}"/>
+										<c:set var="inoutColor" value="success"/>
+									</c:when>
+									<c:otherwise>
+										<c:set var="inoutList" value="${dayOut}"/>
+										<c:set var="inoutColor" value="info"/>
+									</c:otherwise>
+								</c:choose>
+								<div class="d-flex align-items-center justify-content-between">
+									<div class="d-flex align-items-center">
+										<span class="bullet bullet-vertical bg-${inoutColor} min-h-25px me-3 rounded-0"></span>
+										<span class="liff-inout-label text-${inoutColor} fs-7 me-3">${dir}</span>
+										<c:if test="${not empty inoutList[0].work_hours_time_work}">
+											<span class="fw-medium text-gray-900 fs-5 liff-inout-time me-2"><fmt:formatDate value="${inoutList[0].work_hours_time_work}" pattern="HH:mm"/></span>
+											<span class="fw-medium text-gray-900 fs-6"><fmt:formatDate value="${inoutList[0].work_hours_time_work}" pattern="dd MMM yyyy"/></span>
+										</c:if>
+									</div>
 									<c:if test="${not empty inoutList[0].work_hours_time_work}">
-										<span class="fw-medium text-gray-900 fs-5 liff-inout-time me-2"><fmt:formatDate value="${inoutList[0].work_hours_time_work}" pattern="HH:mm"/></span>
-										<span class="fw-medium text-gray-900 fs-6"><fmt:formatDate value="${inoutList[0].work_hours_time_work}" pattern="dd MMM yyyy"/></span>
+										<c:choose>
+											<c:when test="${inoutList[0].work_type.toString() eq '1'}"><i class="ki-duotone ki-map fs-2 text-primary"><span class="path1"></span><span class="path2"></span><span class="path3"></span></i></c:when>
+											<c:when test="${inoutList[0].work_type.toString() eq '2'}"><i class="ki-duotone ki-home-2 fs-2 text-success"><span class="path1"></span><span class="path2"></span></i></c:when>
+											<c:when test="${inoutList[0].work_type.toString() eq '3'}"><i class="ki-duotone ki-cube-2 fs-2 text-danger"><span class="path1"></span><span class="path2"></span><span class="path3"></span></i></c:when>
+										</c:choose>
 									</c:if>
 								</div>
-								<c:if test="${not empty inoutList[0].work_hours_time_work}">
-									<c:choose>
-										<c:when test="${inoutList[0].work_type.toString() eq '1'}"><i class="ki-duotone ki-map fs-2 text-primary"><span class="path1"></span><span class="path2"></span><span class="path3"></span></i></c:when>
-										<c:when test="${inoutList[0].work_type.toString() eq '2'}"><i class="ki-duotone ki-home-2 fs-2 text-success"><span class="path1"></span><span class="path2"></span></i></c:when>
-										<c:when test="${inoutList[0].work_type.toString() eq '3'}"><i class="ki-duotone ki-cube-2 fs-2 text-danger"><span class="path1"></span><span class="path2"></span><span class="path3"></span></i></c:when>
-									</c:choose>
-								</c:if>
-							</div>
-						</c:forTokens>
-					</div>
-					<c:if test="${not empty leaveToday}">
-						<div class="d-flex align-items-center gap-2 mt-3">
-							<span class="badge ${fn:contains(leaveToday[0].leave_type_name, 'ป่วย') ? 'badge-info' : 'badge-primary'} fw-semibold fs-7">
-								${leaveToday[0].leave_type_name} : ${fn:trim(leaveToday[0].half_day) == '1' ? 'ช่วงเช้า' : 'ช่วงบ่าย'}
+							</c:forTokens>
+						</div>
+					</c:if>
+
+					<%-- ใบลาวันนั้น: เต็มวันแสดงแทนแถว IN/OUT, ครึ่งวันแสดงต่อท้าย --%>
+					<c:if test="${not empty dayLeave}">
+						<div class="d-flex align-items-center gap-2${isFullDayLeave ? '' : ' mt-3'}">
+							<span class="badge ${fn:contains(dayLeave[0].leave_type_name, 'ป่วย') ? 'badge-info' : 'badge-primary'} fw-semibold fs-7">
+								${dayLeave[0].leave_type_name} : ${isFullDayLeave ? 'เต็มวัน' : (fn:trim(dayLeave[0].half_day) == '1' ? 'ช่วงเช้า' : 'ช่วงบ่าย')}
 							</span>
-							<c:if test="${fn:trim(leaveToday[0].leave_status_id) == '0'}">
+							<c:if test="${fn:trim(dayLeave[0].leave_status_id) == '0'}">
 								<i class="ki-duotone ki-watch text-warning"><span class="path1"></span><span class="path2"></span></i>
 							</c:if>
 						</div>
 					</c:if>
-				</c:if>
-			</div>
-
-			<div class="separator separator-dashed my-5"></div>
-
-			<!-- Last work day -->
-			<div class="d-flex flex-column">
-				<span class="fs-5 fw-medium text-gray-900 mb-3">${empty lastWorkDayName ? 'Last' : lastWorkDayName}</span>
-
-				<c:if test="${not empty leaveLastday and fn:trim(leaveLastday[0].half_day) == '0'}">
-					<div class="d-flex align-items-center gap-2">
-						<span class="badge ${fn:contains(leaveLastday[0].leave_type_name, 'ป่วย') ? 'badge-info' : 'badge-primary'} fw-semibold fs-7">
-							${leaveLastday[0].leave_type_name} : เต็มวัน
-						</span>
-						<c:if test="${fn:trim(leaveLastday[0].leave_status_id) == '0'}">
-							<i class="ki-duotone ki-watch text-warning"><span class="path1"></span><span class="path2"></span></i>
-						</c:if>
-					</div>
-				</c:if>
-				<c:if test="${empty leaveLastday or fn:trim(leaveLastday[0].half_day) != '0'}">
-					<div class="d-flex flex-column gap-3">
-						<c:forTokens items="IN,OUT" delims="," var="dir">
-							<c:choose>
-								<c:when test="${dir == 'IN'}">
-									<c:set var="inoutList" value="${lastcheckin}"/>
-									<c:set var="inoutColor" value="success"/>
-								</c:when>
-								<c:otherwise>
-									<c:set var="inoutList" value="${lastcheckout}"/>
-									<c:set var="inoutColor" value="info"/>
-								</c:otherwise>
-							</c:choose>
-							<div class="d-flex align-items-center justify-content-between">
-								<div class="d-flex align-items-center">
-									<span class="bullet bullet-vertical bg-${inoutColor} min-h-25px me-3 rounded-0"></span>
-									<span class="liff-inout-label text-${inoutColor} fs-7 me-3">${dir}</span>
-									<c:if test="${not empty inoutList[0].work_hours_time_work}">
-										<span class="fw-medium text-gray-900 fs-5 liff-inout-time me-2"><fmt:formatDate value="${inoutList[0].work_hours_time_work}" pattern="HH:mm"/></span>
-										<span class="fw-medium text-gray-900 fs-6"><fmt:formatDate value="${inoutList[0].work_hours_time_work}" pattern="dd MMM yyyy"/></span>
-									</c:if>
-								</div>
-								<c:if test="${not empty inoutList[0].work_hours_time_work}">
-									<c:choose>
-										<c:when test="${inoutList[0].work_type.toString() eq '1'}"><i class="ki-duotone ki-map fs-2 text-primary"><span class="path1"></span><span class="path2"></span><span class="path3"></span></i></c:when>
-										<c:when test="${inoutList[0].work_type.toString() eq '2'}"><i class="ki-duotone ki-home-2 fs-2 text-success"><span class="path1"></span><span class="path2"></span></i></c:when>
-										<c:when test="${inoutList[0].work_type.toString() eq '3'}"><i class="ki-duotone ki-cube-2 fs-2 text-danger"><span class="path1"></span><span class="path2"></span><span class="path3"></span></i></c:when>
-									</c:choose>
-								</c:if>
-							</div>
-						</c:forTokens>
-					</div>
-					<c:if test="${not empty leaveLastday}">
-						<div class="d-flex align-items-center gap-2 mt-3">
-							<span class="badge ${fn:contains(leaveLastday[0].leave_type_name, 'ป่วย') ? 'badge-info' : 'badge-primary'} fw-semibold fs-7">
-								${leaveLastday[0].leave_type_name} : ${fn:trim(leaveLastday[0].half_day) == '1' ? 'ช่วงเช้า' : 'ช่วงบ่าย'}
-							</span>
-							<c:if test="${fn:trim(leaveLastday[0].leave_status_id) == '0'}">
-								<i class="ki-duotone ki-watch text-warning"><span class="path1"></span><span class="path2"></span></i>
-							</c:if>
-						</div>
-					</c:if>
-				</c:if>
-			</div>
+				</div>
+			</c:forTokens>
 		</div>
 	</div>
 	<!--end::Last Update card-->
@@ -2239,20 +2188,20 @@ $(function () {
 		navigator.geolocation.getCurrentPosition(function (pos) {
 			lat = pos.coords.latitude;
 			lng = pos.coords.longitude;
-			adddata();
+			saveLocation();
 		}, function (err) {
 			console.warn('Geolocation failed:', err.message); 
 		}, { enableHighAccuracy: true, timeout: 8000 });
 	}
 
-	function adddata() {
-		const x = lat, y = lng;
+	// ส่งพิกัดเข้า session
+	function saveLocation() {
 		$.ajax({
 			url: "saveLocationToSession",
 			type: "POST",
 			data: {
-				latitude: x,
-				longitude: y
+				latitude: lat,
+				longitude: lng
 			}
 		});
 	}
@@ -2274,32 +2223,12 @@ $(function () {
 	$("#submitBtn").click(function() {
 		const workType = $("input[name='workType']:checked").val();
 		const checkType = $("input[name='checkType']:checked").val();
-
-
 		const $btn = $(this).prop("disabled", true);
 
 		saveCheckInOut(workType, checkType, "normal", $btn);
 	});
 
 	function saveCheckInOut(workType, checkType, mode, $btn) {
-		toastr.options = {
-			"closeButton": false,
-			"debug": false,
-			"newestOnTop": false,
-			"progressBar": false,
-			"positionClass": "toastr-top-right",
-			"preventDuplicates": false,
-			"onclick": null,
-			"showDuration": "300",
-			"hideDuration": "1000",
-			"timeOut": "2000",
-			"extendedTimeOut": "1000",
-			"showEasing": "swing",
-			"hideEasing": "linear",
-			"showMethod": "fadeIn",
-			"hideMethod": "fadeOut"
-		};
-
 		const data = buildCheckRequest(checkType, workType, mode);
 
 		var loadingEl = $("<div>")
@@ -2335,23 +2264,21 @@ $(function () {
 			success: function (res) {
 				let type = res.type === "1" ? "Check-in" : "Check-out";
 				if (res.status === "success") {
-					toastr.success(type + " : " + res.time, "Saved successfully!");
+					liffToastSuccess(type + " : " + res.time, "Saved successfully!");
 					setTimeout(function() {
 						location.reload();
 					}, 2000);
 				} else {
 					$("#page-loader").remove();
-					toastr.options.timeOut = "5000";
-					toastr.options.extendedTimeOut = "5000";
-					toastr.error(res.message || "Failed to record your attendance. Please try again.");
-					// กันกดซ้ำ 
+					liffToastError(res.message || "Failed to record your attendance. Please try again.");
+					// เปิดปุ่มคืนให้กดใหม่
 					$btn.prop("disabled", false);
 				}
 			},
 			error: function (xhr, status, error) {
 				$("#page-loader").remove();
-				toastr.error("Error saving data: " + error);
-				// กันกดซ้ำ
+				liffToastError("Error saving data: " + error);
+				// เปิดปุ่มคืนให้กดใหม่
 				$btn.prop("disabled", false);
 			}
 		});
