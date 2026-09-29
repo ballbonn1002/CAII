@@ -1159,6 +1159,7 @@ function leaveStatus(id) {
 </div>
 <!--end::Modal - Leave Detail-->
 
+<%-- ===== NEW: script หน้า My Leave ===== --%>
 <script>
 /* ---------- ไปหน้าอื่น + spinner ---------- */
 	function filterByYear(year) {
