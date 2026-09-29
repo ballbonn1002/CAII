@@ -687,8 +687,8 @@
 	<!-- Summary Leave (same EL bindings as legacy, condensed into a scroll strip) -->
 	<div class="mb-6">
 		<div class="card card-bordered">
-		<div class="card-body" style="padding:29.25px;">
-		<div class="leave-summary-pager" id="leaveSummaryPager">
+			<div class="card-body" style="padding:29.25px;">
+				<div class="leave-summary-pager" id="leaveSummaryPager">
 					<div class="leave-summary-item">
 						<span class="symbol symbol-50px">
 							<span class="symbol-label bg-success-subtle">
@@ -827,11 +827,11 @@
 							<span class="text-gray-600" style="font-size:12.35px; line-height:1.21;">${type_7}</span>
 						</div>
 					</div>
+				</div>
+				<div class="leave-summary-dots" id="leaveSummaryDots"></div>
 			</div>
-		<div class="leave-summary-dots" id="leaveSummaryDots"></div>
 		</div>
-		</div>
-		</div>
+	</div>
 
 	<!-- Leave List (same EL bindings + same edit/delete/info wiring as legacy) -->
 	<div class="d-flex align-items-center justify-content-between mt-2 mb-4">
@@ -876,43 +876,43 @@
 				<div class="fw-bold fs-6 text-dark mb-3">${leave.name}</div>
 
 				<div class="d-flex align-items-center gap-1 fs-7 text-gray-600 mb-3">
-						<i class="ki-duotone ki-calendar-2 fs-6"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span><span class="path5"></span></i>
-						<span><fmt:formatDate value="${leave.start_date}" type="date" pattern="d MMM yyyy"/> - <fmt:formatDate value="${leave.end_date}" type="date" pattern="d MMM yyyy"/></span>
-						<span class="badge badge-light-primary fs-8 ms-1"><fmt:formatNumber type="number" pattern="#.###" value="${leave.no_day}"/> day</span>
-					</div>
+					<i class="ki-duotone ki-calendar-2 fs-6"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span><span class="path5"></span></i>
+					<span><fmt:formatDate value="${leave.start_date}" type="date" pattern="d MMM yyyy"/> - <fmt:formatDate value="${leave.end_date}" type="date" pattern="d MMM yyyy"/></span>
+					<span class="badge badge-light-primary fs-8 ms-1"><fmt:formatNumber type="number" pattern="#.###" value="${leave.no_day}"/> day</span>
+				</div>
 
-					<div class="d-flex flex-column gap-2 fs-7 text-gray-600 mb-3">
-						<c:if test="${leave.half_day != null}">
-							<div class="d-inline-flex align-items-center gap-1">
-								<i class="ki-duotone ki-calendar-8 fs-6"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span><span class="path5"></span><span class="path6"></span></i>
-								<c:if test="${leave.half_day.toString() == 0}">เต็มวัน</c:if>
-								<c:if test="${leave.half_day.toString() == 1}">ช่วงเช้า</c:if>
-								<c:if test="${leave.half_day.toString() == 2}">ช่วงบ่าย</c:if>
-								<c:if test="${leave.half_day.toString() == 3}">ช่วงเวลา</c:if>
-							</div>
-						</c:if>
+				<div class="d-flex flex-column gap-2 fs-7 text-gray-600 mb-3">
+					<c:if test="${leave.half_day != null}">
 						<div class="d-inline-flex align-items-center gap-1">
-							<i class="ki-duotone ki-time fs-6"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span></i>
-							${leave.start_time} - ${leave.end_time}
-						</div>
-					</div>
-
-					<c:if test="${not empty leave.leave_file}">
-						<div class="d-flex align-items-center gap-1 fs-7 mb-1">
-							<i class="ki-duotone ki-document"><span class="path1"></span><span class="path2"></span></i>
-							<a href="line_preview_File?id=${leave.leave_file}" target="_blank" class="text-primary text-hover-underline">${leave.file_name}${leave.type}</a>
+							<i class="ki-duotone ki-calendar-8 fs-6"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span><span class="path5"></span><span class="path6"></span></i>
+							<c:if test="${leave.half_day.toString() == 0}">เต็มวัน</c:if>
+							<c:if test="${leave.half_day.toString() == 1}">ช่วงเช้า</c:if>
+							<c:if test="${leave.half_day.toString() == 2}">ช่วงบ่าย</c:if>
+							<c:if test="${leave.half_day.toString() == 3}">ช่วงเวลา</c:if>
 						</div>
 					</c:if>
-
-					<div class="d-flex align-items-center justify-content-between">
-						<span class="fs-8 text-muted">Request Date: <fmt:formatDate value="${leave.time_create}" type="date" pattern="d MMM yyyy"/></span>
-						<c:if test="${leave.leave_status_id.toString() == '0'}"><span class="badge badge-light-warning leave-status-badge fs-8">Wait for approve</span></c:if>
-						<c:if test="${leave.leave_status_id.toString() == '1'}"><span class="badge badge-light-success leave-status-badge fs-8">Approved</span></c:if>
-						<c:if test="${leave.leave_status_id.toString() == '2'}"><span class="badge badge-light-danger leave-status-badge fs-8">Reject</span></c:if>
-						<c:if test="${leave.leave_status_id.toString() == '3'}"><span class="badge badge-light-dark leave-status-badge fs-8">Cancel</span></c:if>
+					<div class="d-inline-flex align-items-center gap-1">
+						<i class="ki-duotone ki-time fs-6"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span></i>
+						${leave.start_time} - ${leave.end_time}
 					</div>
-
 				</div>
+
+				<c:if test="${not empty leave.leave_file}">
+					<div class="d-flex align-items-center gap-1 fs-7 mb-1">
+						<i class="ki-duotone ki-document"><span class="path1"></span><span class="path2"></span></i>
+						<a href="line_preview_File?id=${leave.leave_file}" target="_blank" class="text-primary text-hover-underline">${leave.file_name}${leave.type}</a>
+					</div>
+				</c:if>
+
+				<div class="d-flex align-items-center justify-content-between">
+					<span class="fs-8 text-muted">Request Date: <fmt:formatDate value="${leave.time_create}" type="date" pattern="d MMM yyyy"/></span>
+					<c:if test="${leave.leave_status_id.toString() == '0'}"><span class="badge badge-light-warning leave-status-badge fs-8">Wait for approve</span></c:if>
+					<c:if test="${leave.leave_status_id.toString() == '1'}"><span class="badge badge-light-success leave-status-badge fs-8">Approved</span></c:if>
+					<c:if test="${leave.leave_status_id.toString() == '2'}"><span class="badge badge-light-danger leave-status-badge fs-8">Reject</span></c:if>
+					<c:if test="${leave.leave_status_id.toString() == '3'}"><span class="badge badge-light-dark leave-status-badge fs-8">Cancel</span></c:if>
+				</div>
+
+			</div>
 		</div>
 	</c:forEach>
 
@@ -931,60 +931,12 @@
 
 </div>
 
-<script>
-	(function () {
-		var pager = document.getElementById('leaveSummaryPager');
-		var dots = document.getElementById('leaveSummaryDots');
-		if (!pager || !dots) return;
-		var items = Array.prototype.slice.call(pager.querySelectorAll('.leave-summary-item'));
-		if (items.length === 0) return;
-
-		var pageCount = Math.ceil(items.length / 4);
-		var pages = [];
-		for (var p = 0; p < pageCount; p++) {
-			var pageEl = document.createElement('div');
-			pageEl.className = 'leave-summary-page';
-			var gridEl = document.createElement('div');
-			gridEl.className = 'leave-summary-grid';
-			items.slice(p * 4, p * 4 + 4).forEach(function (item) { gridEl.appendChild(item); });
-			pageEl.appendChild(gridEl);
-			pages.push(pageEl);
-		}
-		pager.innerHTML = '';
-		pages.forEach(function (pageEl) { pager.appendChild(pageEl); });
-
-		dots.innerHTML = '';
-		for (var i = 0; i < pageCount; i++) {
-			var dot = document.createElement('span');
-			if (i === 0) dot.className = 'active';
-			dots.appendChild(dot);
-		}
-		if (pageCount <= 1) { dots.hidden = true; return; }
-
-		var dotEls = dots.querySelectorAll('span');
-		pager.addEventListener('scroll', function () {
-			var page = Math.round(pager.scrollLeft / pager.clientWidth);
-			dotEls.forEach(function (dot, i) {
-				dot.classList.toggle('active', i === page);
-			});
-		}, { passive: true });
-	})();
-</script>
-
-<script>
-	function filterByYear(year) {
-		document.getElementById('liffLoadingOverlay').style.display = 'flex';
-		window.location.href = 'line_new_myleave_list?Id=${onlineUser.id}&startdate=01-01-' + year + '&enddate=31-12-' + year;
-	}
-
-	$(document).on('click', 'a[href^="line_NewLeaveEdit"]', function() {
-		document.getElementById('liffLoadingOverlay').style.display = 'flex';
-	});
-	// กด Back กลับมา (bfcache) ซ่อน spinner
-	window.addEventListener('pageshow', function(e) {
-		if (e.persisted) document.getElementById('liffLoadingOverlay').style.display = 'none';
-	});
-</script>
+<%-- ===== OLD: modal ที่ใช้ร่วมกับ desktop (disabled, kept for reference) =====
+<jsp:include page="/pages-back/common/leave_modal.jsp">
+    <jsp:param name="showApproverInfo" value="true"/>
+</jsp:include>
+--%>
+<%-- ===== OLD: leaveStatus() ของ desktop (disabled, kept for reference) ===== --%>
 <!-- <script>
 function leaveStatus(id) {
 	const modal = new bootstrap.Modal(document.getElementById('leaveDetailModal'));
@@ -1122,6 +1074,153 @@ function leaveStatus(id) {
 	});
 }
 </script>  -->
+
+<%-- ===== NEW: modal รายละเอียดใบลา LIFF ===== --%>
+<!--begin::Modal - Leave Detail-->
+<div class="modal fade" id="leaveDetailModal" tabindex="-1" aria-hidden="true">
+	<div class="modal-dialog modal-dialog-centered">
+		<div class="modal-content">
+			<!--begin::Header-->
+			<div class="modal-header">
+				<h2 class="modal-title">Leave</h2>
+				<div class="btn btn-icon btn-sm btn-active-light-primary ms-2" data-bs-dismiss="modal" aria-label="Close">
+					<i class="ki-duotone ki-cross fs-1"><span class="path1"></span><span class="path2"></span></i>
+				</div>
+			</div>
+			<!--end::Header-->
+
+			<!--begin::Body-->
+			<div class="modal-body">
+				<!-- Leaver Info -->
+				<div class="d-flex align-items-center gap-4 mb-4 fs-5">
+					<span class="fw-bold text-primary">#<span id="leaveid"></span></span>
+					<span class="fw-semibold text-dark" id="leavetype"></span>
+					<span class="rounded-circle flex-shrink-0" style="width:8px; height:8px; background-color:var(--bs-text-gray-400);"></span><%-- จุดคั่น --%>
+					<span class="badge badge-light-primary fw-semibold" id="noday"></span>
+				</div>
+
+				<div class="d-flex align-items-center gap-2 text-gray-800 fw-semibold mb-3 fs-6">
+					<i class="ki-duotone ki-user-square fs-4"><span class="path1"></span><span class="path2"></span><span class="path3"></span></i>
+					<span><span id="employeeId"></span><span id="username"></span></span>
+				</div>
+
+				<div class="d-flex align-items-center gap-2 text-gray-700 mb-3 fs-6">
+					<i class="ki-duotone ki-calendar-2 fs-4"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span><span class="path5"></span></i>
+					<span><span id="sdate"></span> - <span id="edate"></span></span>
+				</div>
+
+				<div class="d-flex align-items-center gap-2 text-gray-700 mb-3 fs-6">
+					<i class="ki-duotone ki-time fs-4"><span class="path1"></span><span class="path2"></span></i>
+					<span><span id="stime"></span> - <span id="etime"></span></span>
+				</div>
+
+				<div class="d-flex align-items-start gap-2 text-gray-700 mb-3 fs-6">
+					<i class="ki-duotone ki-message-text fs-4 mt-1"><span class="path1"></span><span class="path2"></span><span class="path3"></span></i>
+					<span id="desc" class="text-break"></span>
+				</div>
+
+				<div class="d-flex align-items-start gap-2 text-gray-700 mb-4 fs-6">
+					<i class="ki-duotone ki-document fs-4 mt-1"><span class="path1"></span><span class="path2"></span></i>
+					<span id="fileList" class="d-flex flex-wrap gap-2 align-items-center" style="min-width:0;"></span>
+				</div>
+
+				<div class="mb-3">
+					<span id="leavestatus" class="badge fs-7 fw-semibold"></span>
+				</div>
+
+				<div class="fs-7 text-muted">Request Date: <span id="requestdate"></span></div>
+				<!-- Leaver Info -->
+
+				<hr id="leaveDetailDivider" style="border-top: 1px dashed #ced4da; opacity: 1;" class="my-5">
+
+				<!-- Approver Info -->
+				<div id="status_panel" style="display: none;">
+					<h3 class="page-heading fw-bold fs-4 mb-4" id="status_title"></h3>
+					<div id="approved_detail">
+						<div class="d-flex align-items-center gap-2 text-gray-700 mb-3 fs-6">
+							<i class="ki-duotone ki-user-tick fs-4"><span class="path1"></span><span class="path2"></span><span class="path3"></span></i>
+							<span id="aprName"></span>
+						</div>
+						<div class="d-flex align-items-center gap-2 text-gray-700 mb-3 fs-6">
+							<i class="ki-duotone ki-calendar-2 fs-4"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span><span class="path5"></span></i>
+							<span id="timeupdate"></span>
+						</div>
+						<div class="d-flex align-items-start gap-2 text-gray-700 fs-6">
+							<i class="ki-duotone ki-document fs-4 mt-1"><span class="path1"></span><span class="path2"></span></i>
+							<span id="reason_s" class="text-break"></span>
+						</div>
+					</div>
+				</div>
+				<!-- Approver Info -->
+			</div>
+			<!--end::Body-->
+		</div>
+	</div>
+</div>
+<!--end::Modal - Leave Detail-->
+
+<script>
+/* ---------- ไปหน้าอื่น + spinner ---------- */
+	function filterByYear(year) {
+		document.getElementById('liffLoadingOverlay').style.display = 'flex';
+		window.location.href = 'line_new_myleave_list?Id=${onlineUser.id}&startdate=01-01-' + year + '&enddate=31-12-' + year;
+	}
+
+	function add() {
+		document.getElementById('liffLoadingOverlay').style.display = 'flex';
+		document.location = "line_NewLeaveAdd";
+	}
+
+	$(document).on('click', 'a[href^="line_NewLeaveEdit"]', function() {
+		document.getElementById('liffLoadingOverlay').style.display = 'flex';
+	});
+	// กด Back กลับมา (bfcache) ซ่อน spinner
+	window.addEventListener('pageshow', function(e) {
+		if (e.persisted) document.getElementById('liffLoadingOverlay').style.display = 'none';
+	});
+</script>
+
+<script>
+/* ---------- Summary pager ---------- */
+	(function () {
+		var pager = document.getElementById('leaveSummaryPager');
+		var dots = document.getElementById('leaveSummaryDots');
+		if (!pager || !dots) return;
+		var items = Array.prototype.slice.call(pager.querySelectorAll('.leave-summary-item'));
+		if (items.length === 0) return;
+
+		var pageCount = Math.ceil(items.length / 4);
+		var pages = [];
+		for (var p = 0; p < pageCount; p++) {
+			var pageEl = document.createElement('div');
+			pageEl.className = 'leave-summary-page';
+			var gridEl = document.createElement('div');
+			gridEl.className = 'leave-summary-grid';
+			items.slice(p * 4, p * 4 + 4).forEach(function (item) { gridEl.appendChild(item); });
+			pageEl.appendChild(gridEl);
+			pages.push(pageEl);
+		}
+		pager.innerHTML = '';
+		pages.forEach(function (pageEl) { pager.appendChild(pageEl); });
+
+		dots.innerHTML = '';
+		for (var i = 0; i < pageCount; i++) {
+			var dot = document.createElement('span');
+			if (i === 0) dot.className = 'active';
+			dots.appendChild(dot);
+		}
+		if (pageCount <= 1) { dots.hidden = true; return; }
+
+		var dotEls = dots.querySelectorAll('span');
+		pager.addEventListener('scroll', function () {
+			var page = Math.round(pager.scrollLeft / pager.clientWidth);
+			dotEls.forEach(function (dot, i) {
+				dot.classList.toggle('active', i === page);
+			});
+		}, { passive: true });
+	})();
+</script>
+
 <script>
 /* ---------- toast ---------- */
 // บันทึกใบลาสำเร็จ: doSubmit() ใน new_leavePage.jsp เติม ?saved=add / ?saved=edit มาให้
@@ -1213,97 +1312,9 @@ function changeStatus(id) {
     });
 }
 </script>
-<%-- ===== OLD: modal ที่ใช้ร่วมกับ desktop (disabled, kept for reference) =====
-<jsp:include page="/pages-back/common/leave_modal.jsp">
-    <jsp:param name="showApproverInfo" value="true"/>
-</jsp:include>
---%>
-
-<%-- ===== NEW: modal รายละเอียดใบลา LIFF ===== --%>
-<!--begin::Modal - Leave Detail-->
-<div class="modal fade" id="leaveDetailModal" tabindex="-1" aria-hidden="true">
-	<div class="modal-dialog modal-dialog-centered">
-		<div class="modal-content">
-			<!--begin::Header-->
-			<div class="modal-header">
-				<h2 class="modal-title">Leave</h2>
-				<div class="btn btn-icon btn-sm btn-active-light-primary ms-2" data-bs-dismiss="modal" aria-label="Close">
-					<i class="ki-duotone ki-cross fs-1"><span class="path1"></span><span class="path2"></span></i>
-				</div>
-			</div>
-			<!--end::Header-->
-
-			<!--begin::Body-->
-			<div class="modal-body">
-				<!-- Leaver Info -->
-				<div class="d-flex align-items-center gap-4 mb-4 fs-5">
-					<span class="fw-bold text-primary">#<span id="leaveid"></span></span>
-					<span class="fw-semibold text-dark" id="leavetype"></span>
-					<span class="rounded-circle flex-shrink-0" style="width:8px; height:8px; background-color:var(--bs-text-gray-400);"></span><%-- จุดคั่น --%>
-					<span class="badge badge-light-primary fw-semibold" id="noday"></span>
-				</div>
-
-				<div class="d-flex align-items-center gap-2 text-gray-800 fw-semibold mb-3 fs-6">
-					<i class="ki-duotone ki-user-square fs-4"><span class="path1"></span><span class="path2"></span><span class="path3"></span></i>
-					<span><span id="employeeId"></span><span id="username"></span></span>
-				</div>
-
-				<div class="d-flex align-items-center gap-2 text-gray-700 mb-3 fs-6">
-					<i class="ki-duotone ki-calendar-2 fs-4"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span><span class="path5"></span></i>
-					<span><span id="sdate"></span> - <span id="edate"></span></span>
-				</div>
-
-				<div class="d-flex align-items-center gap-2 text-gray-700 mb-3 fs-6">
-					<i class="ki-duotone ki-time fs-4"><span class="path1"></span><span class="path2"></span></i>
-					<span><span id="stime"></span> - <span id="etime"></span></span>
-				</div>
-
-				<div class="d-flex align-items-start gap-2 text-gray-700 mb-3 fs-6">
-					<i class="ki-duotone ki-message-text fs-4 mt-1"><span class="path1"></span><span class="path2"></span><span class="path3"></span></i>
-					<span id="desc" class="text-break"></span>
-				</div>
-
-				<div class="d-flex align-items-start gap-2 text-gray-700 mb-4 fs-6">
-					<i class="ki-duotone ki-document fs-4 mt-1"><span class="path1"></span><span class="path2"></span></i>
-					<span id="fileList" class="d-flex flex-wrap gap-2 align-items-center" style="min-width:0;"></span>
-				</div>
-
-				<div class="mb-3">
-					<span id="leavestatus" class="badge fs-7 fw-semibold"></span>
-				</div>
-
-				<div class="fs-7 text-muted">Request Date: <span id="requestdate"></span></div>
-				<!-- Leaver Info -->
-
-				<hr id="leaveDetailDivider" style="border-top: 1px dashed #ced4da; opacity: 1;" class="my-5">
-
-				<!-- Approver Info -->
-				<div id="status_panel" style="display: none;">
-					<h3 class="page-heading fw-bold fs-4 mb-4" id="status_title"></h3>
-					<div id="approved_detail">
-						<div class="d-flex align-items-center gap-2 text-gray-700 mb-3 fs-6">
-							<i class="ki-duotone ki-user-tick fs-4"><span class="path1"></span><span class="path2"></span><span class="path3"></span></i>
-							<span id="aprName"></span>
-						</div>
-						<div class="d-flex align-items-center gap-2 text-gray-700 mb-3 fs-6">
-							<i class="ki-duotone ki-calendar-2 fs-4"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span><span class="path5"></span></i>
-							<span id="timeupdate"></span>
-						</div>
-						<div class="d-flex align-items-start gap-2 text-gray-700 fs-6">
-							<i class="ki-duotone ki-document fs-4 mt-1"><span class="path1"></span><span class="path2"></span></i>
-							<span id="reason_s" class="text-break"></span>
-						</div>
-					</div>
-				</div>
-				<!-- Approver Info -->
-			</div>
-			<!--end::Body-->
-		</div>
-	</div>
-</div>
-<!--end::Modal - Leave Detail-->
 
 <script>
+/* ---------- modal รายละเอียดใบลา ---------- */
 // แสดงไฟล์แนบทั้งหมดของ leave
 function renderLeaveModalFiles(obj) {
 	var $list = $('#fileList').empty();
@@ -1417,16 +1428,7 @@ function leaveStatus(id) {
 		}
 	});
 }
-</script>
 
-<script>
-	function add() {
-		document.getElementById('liffLoadingOverlay').style.display = 'flex';
-		document.location = "line_NewLeaveAdd";
-	}
-</script>
-
-<script>
 	// When opened from a notification (?leaveId=...), pop the leave status modal
 	$(function () {
 		var leaveId = new URLSearchParams(window.location.search).get("leaveId");
