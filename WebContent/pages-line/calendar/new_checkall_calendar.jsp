@@ -2451,7 +2451,6 @@ function leaveStatus(id) {
  		data : "leaveId="+ id,
  		success : function(data) {
  			var obj = JSON.parse(data);
-			console.log(obj);
 			$('#leaveid').html(obj.leave_id);
 			$('#employeeId').html(obj.employeeId);
 			//$('#userid').html(obj.name);

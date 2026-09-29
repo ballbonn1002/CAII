@@ -2275,7 +2275,6 @@ $(function () {
 		const workType = $("input[name='workType']:checked").val();
 		const checkType = $("input[name='checkType']:checked").val();
 
-		console.log(workType + "/" + checkType);
 
 		const $btn = $(this).prop("disabled", true);
 
@@ -2283,7 +2282,6 @@ $(function () {
 	});
 
 	function saveCheckInOut(workType, checkType, mode, $btn) {
-		console.log(workType + "|" + checkType + "|" + mode);
 		toastr.options = {
 			"closeButton": false,
 			"debug": false,
@@ -2335,7 +2333,6 @@ $(function () {
 			dataType: "json",
 			data: data,
 			success: function (res) {
-				console.log(res);
 				let type = res.type === "1" ? "Check-in" : "Check-out";
 				if (res.status === "success") {
 					toastr.success(type + " : " + res.time, "Saved successfully!");
