@@ -140,8 +140,7 @@
 		<script src="assets/js/scripts.bundle.js"></script>
 		<!--end::Global Javascript Bundle-->
 		<!--begin::Custom Javascript(used for this page only)-->
-		<%-- ไม่ใช้: หา #kt_sign_in_form ที่ comment ไปแล้ว ทำให้ error ทุกครั้ง
-		<script src="assets/js/custom/authentication/sign-in/general.js"></script> --%>
+		<script src="assets/js/custom/authentication/sign-in/general.js"></script>
 		<!--end::Custom Javascript-->
 		<!--end::Javascript-->
 	</body>

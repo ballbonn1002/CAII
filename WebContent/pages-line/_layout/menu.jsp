@@ -994,7 +994,7 @@ body { padding-bottom: calc(90px + env(safe-area-inset-bottom)); }
 		<i class="ki-duotone ki-calendar-tick"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span><span class="path5"></span><span class="path6"></span></i>
 		<span>Check List</span>
 	</a>
-	<a href="line_new_myleave_list?Id=${onlineUser.id}" data-route="line_new_myleave_list|line_NewLeaveAdd|line_NewLeaveEdit">
+	<a href="line_new_myleave_list?Id=${onlineUser.id}" data-route="line_new_myleave_list">
 		<i class="ki-duotone ki-pulse"><span class="path1"></span><span class="path2"></span></i>
 		<span>Leave</span>
 	</a>
@@ -1010,7 +1010,7 @@ body { padding-bottom: calc(90px + env(safe-area-inset-bottom)); }
 		var cur = (location.pathname.split('/').pop() || 'index')
 			.replace(/\.(jsp|action|html|php)$/i, '');
 		$('.liff-nav a[data-route]').each(function () {
-			if (new RegExp('^(' + $(this).data('route') + ')$', 'i').test(cur)) {
+			if (new RegExp('^' + $(this).data('route') + '$', 'i').test(cur)) {
 				$(this).addClass('active');
 			}
 		});
