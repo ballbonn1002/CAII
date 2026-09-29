@@ -506,15 +506,11 @@
      ===================================================================== --%>
 
 <style>
-/* .liff-shell / .liff-back-btn / .liff-loading-overlay / .liff-input-underline / .liff-field-*
-   now live in _layout/baseLayout.jsp (shared across all LIFF pages) — kept here only what's
-   specific to this leave form. */
+/* ของที่ใช้ร่วมอยู่ใน baseLayout เหลือเฉพาะของฟอร์มนี้ */
 .liff-leave-card { border-radius: 14px; }
 .liff-day-badges { flex: 1 1 auto; display: flex; justify-content: flex-end; gap: 10px; }
 .liff-day-badge { box-sizing: border-box; display: inline-flex; align-items: center; justify-content: center; min-width: 26px; height: 26px; padding: 4.23px 6.5px; border-radius: 5.52px; opacity: 1; background: var(--bs-gray-300); color: var(--bs-gray-700); font-weight: 600; font-size: 12px; white-space: nowrap; }
-/* leaveType is now a real <select> (#leaveTypeSelect); the legacy-generated radios in #leaveTypes
-   stay in the DOM (visually hidden) so the untouched scripts (quota disable, required validation,
-   leave-id-6 date logic) keep working exactly as before — see the sync script below. */
+/* radio ประเภทลาเดิม ซ่อนไว้ให้ script legacy ใช้ต่อ (sync กับ #leaveTypeSelect) */
 #leaveTypes { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 .liff-upload-badge { box-sizing: border-box; display: inline-flex; align-items: center; justify-content: center; gap: 10px; margin-left: auto; width: 84px; height: 24px; padding: 0 8px; border-radius: 5.53px; opacity: 1; background: var(--bs-primary-bg-subtle); color: var(--bs-primary); font-weight: 600; font-size: 12px; white-space: nowrap; cursor: pointer; }
 .liff-upload-badge i { color: var(--bs-primary); }
@@ -538,8 +534,7 @@
 		</div> -->
 	</div>
 
-	<!-- Summary Leave: hidden per request (no longer shown in FE UI). Kept as a comment, not deleted,
-	     in case it needs to come back. -->
+	<!-- Summary Leave: ซ่อนตามที่ขอ -->
 	<!-- <div class="mb-6">
 		<div class="card card-bordered liff-leave-card">
 			<div class="card-body p-4">
@@ -617,10 +612,7 @@
 			</div>
 		</div>
 
-		<!-- DDL User: visually hidden per request (not shown in FE UI). Kept in the DOM (not commented
-		     out) because userOnChange() reads $('#user').val()/.find(":selected") directly, and it
-		     always runs once on page load (via the nextYearLeave init below) even outside the admin
-		     on-behalf flow — removing the element from the DOM broke that with a JS error. -->
+		<!-- DDL User: ซ่อน แต่ต้องมีใน DOM เพราะ userOnChange() อ่านค่า -->
 		<div class="mb-6" style="position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap;">
 			<select id="user" name="user" class="form-select liff-input-underline" onchange="userOnChange()" disabled required>
 				<option></option>
@@ -631,20 +623,20 @@
 		<input hidden name="user_hidden" id="user_hidden" type="text">
 		<input hidden name="leaveId_hidden" id="leaveId_hidden" type="text">
 
-		<!-- Type of leave: shown as a dropdown; mirrors the legacy hidden radio group below -->
+		<!-- Type of leave: dropdown ที่ sync กับ radio ข้างล่าง -->
 		<div class="liff-field-row mb-6">
 			<label class="liff-field-label" for="leaveTypeSelect">Type of leave <span class="text-danger">*</span></label>
 			<select class="form-select liff-field-value liff-field-dropdown" id="leaveTypeSelect" required></select>
 		</div>
 		<div id="leaveTypes" class="row g-3 fs-7" aria-hidden="true">
-			<!-- Loop Leave Type Javascript (legacy, kept for quota-disable + validation + leaveId=6 date logic) -->
+			<!-- radio ประเภทลา (สร้างด้วย JS) -->
 		</div>
 
 		<!-- Date range & half-day -->
 		<div class="liff-field-row mb-3">
 			<label class="liff-field-label" for="date_from">Start Date <span class="text-danger">*</span></label>
 			<div class="input-group date date-picker input-daterange liff-field-grow" data-provide="datepicker" data-date-format="dd M yyyy">
-				<input type="text" class="form-control liff-field-value" id="date_from" name="from" autocomplete="off" placeholder="DD/MM/YYYY" required>
+				<input type="text" class="form-control liff-field-value" id="date_from" name="from" autocomplete="off" placeholder="DD MMM YYYY" required>
 				<input class="hide" name="from_hidden" id="date_from_hidden" type="text" hidden>
 			</div>
 			<i class="ki-duotone ki-calendar fs-4 text-gray-500"><span class="path1"></span><span class="path2"></span></i>
@@ -653,7 +645,7 @@
 		<div class="liff-field-row mb-3">
 			<label class="liff-field-label" for="date_to">End Date <span class="text-danger">*</span></label>
 			<div class="input-group date date-picker input-daterange liff-field-grow" data-provide="datepicker" data-date-format="dd M yyyy">
-				<input type="text" class="form-control liff-field-value" id="date_to" name="to" autocomplete="off" placeholder="DD/MM/YYYY" required>
+				<input type="text" class="form-control liff-field-value" id="date_to" name="to" autocomplete="off" placeholder="DD MMM YYYY" required>
 				<input class="hide" name="to_hidden" id="date_to_hidden" type="text" hidden>
 			</div>
 			<i class="ki-duotone ki-calendar fs-4 text-gray-500"><span class="path1"></span><span class="path2"></span></i>
@@ -687,7 +679,7 @@
 				<span class="liff-day-badge" id="amountDisplayDay">0D</span>
 				<span class="liff-day-badge" id="amountDisplayHour">0H</span>
 			</div>
-			<!-- real values the legacy scripts read/write; kept in the DOM but not shown (mirrored into the two badges above) -->
+			<!-- ค่าจริงที่ script legacy ใช้ (ซ่อน) -->
 			<input type="text" id="amount" name="amount" class="checkHours" hidden>
 			<input id="amount_hidden" name="amount_hidden" hidden>
 			<input type="text" id="amount_sub" name="amount_sub" class="checkHours" value="0" hidden>
@@ -752,7 +744,7 @@
 	</div>
 	<!--end::Leave form card-->
 
-	<!-- Request/Approve-by info: hidden per request (no longer shown in FE UI). -->
+	<!-- ข้อมูลผู้ขอ/ผู้อนุมัติ: ซ่อนตามที่ขอ -->
 	<!-- <div class="py-6" id="infoBlock">
 		<div class="fs-8 text-gray-500" id="requestInfo">
 			Request By : <span id="ucEmpId"></span> <span id="ucName"></span> , <span id="timeCreate"></span>
@@ -766,16 +758,13 @@
 
 <script>
 /* ---------- dropdown ประเภทการลา + badge วัน/ชั่วโมง ---------- */
-/* Mirrors the legacy #leaveTypes radio group (generated dynamically by the untouched script
-   further down) into a proper dropdown (#leaveTypeSelect). Two-way synced so quota-disable
-   (userOnChange ajax), edit-mode prefill, and the leaveId=6 date logic all keep working
-   unmodified — this script never edits their behavior, only mirrors state. */
+/* sync dropdown ประเภทการลา กับ radio เดิม (#leaveTypes) ทั้งสองทาง */
 (function () {
 	var $select = null;
 	var syncing = false;
 
 	function labelTextFor(radio) {
-		// legacy markup is "<input .../>Label text" inside .form-check — grab the trailing text node
+		// ชื่อประเภทอยู่หลัง <input> เป็น text node
 		var text = '';
 		var node = radio.nextSibling;
 		while (node) {
@@ -817,22 +806,17 @@
 		if (!$select || !container) return;
 		$select.addEventListener('change', onSelectChange);
 
-		// The legacy scripts set .checked/.disabled as JS properties (not attributes), which a
-		// MutationObserver can't see — so re-sync on radio creation (observable) AND on a short
-		// stagger to catch the edit-mode "checked" set + the quota-disable ajax response, both of
-		// which run as separate synchronous/async steps right after the radios are created.
+		// radio ถูกตั้ง checked/disabled ผ่าน property ซึ่ง MutationObserver มองไม่เห็น เลย sync ซ้ำตามเวลา
 		new MutationObserver(rebuildOptions).observe(container, { childList: true, subtree: true });
 		[0, 150, 400, 900, 1600].forEach(function (ms) { setTimeout(rebuildOptions, ms); });
 
-		// Admin "on behalf" flow (la=1): userOnChange() re-checks quota via ajax when #user changes.
+		// la=1: เปลี่ยนผู้ลาแล้ว quota โหลดใหม่
 		var userSelect = document.getElementById('user');
 		if (userSelect) userSelect.addEventListener('change', function () { setTimeout(rebuildOptions, 900); });
 	});
 })();
 
-/* "0D" / "0H" badges reading #amount (day) / #amount_sub (hour), which the legacy scripts set via
-   plain .val() in several places (date range calc, half-day switch, checkHours handler, edit-mode
-   init) without dispatching an event — so poll instead of trying to hook every call site. */
+/* badge วัน/ชั่วโมง: script legacy ตั้ง #amount ด้วย .val() ไม่มี event เลย poll */
 (function () {
 	var lastDay = null, lastHour = null;
 	function tick() {
@@ -896,20 +880,14 @@ function liffMountSelectDropdown(selectEl) {
 	function sync() {
 		var opts = selectEl.options;
 		menu.innerHTML = '';
-		var seenValues = {}; // legacy population code can append the same value more than once
-		                      // (e.g. approver: once from the static markup, once from the user
-		                      // list loop, once from the AJAX response) — only show it once, or
-		                      // clicking a later duplicate looks like it does nothing (the select
-		                      // just re-lands on whichever matching option came first).
+		var seenValues = {}; // option value ซ้ำได้ (เช่น approver) แสดงครั้งเดียว
 		for (var i = 0; i < opts.length; i++) {
 			(function (opt) {
 				if (opt.value === '') return; // skip placeholder options
 				if (Object.prototype.hasOwnProperty.call(seenValues, opt.value)) return;
 				seenValues[opt.value] = true;
 				var li = document.createElement('li');
-				// plain <button>, not <a href="javascript:void(0)"> — this runs inside the LINE
-				// in-app webview, which can be finicky about javascript: URIs; a button has no
-				// navigation semantics to fight with at all.
+				// ใช้ <button> แทน <a href="javascript:"> เพราะ webview ของ LINE
 				var a = document.createElement('button');
 				a.type = 'button';
 				a.className = 'dropdown-item' + (opt.selected ? ' active' : '') + (opt.disabled ? ' disabled' : '');
@@ -1026,52 +1004,26 @@ function initLeaveTypeRadios() {
 	var leaveTypes;
 	leaveTypes = JSON.parse('${leaveType}');
 	let leaveCheck = [${leave1Check},${leave2Check},${leave3Check},'','',${leave6Check}];
+	// radio 1 ตัว (id 6 มี wrapper id ไว้ซ่อน/แสดงตามเดือน)
+	function leaveTypeRadioHtml(type, disabled) {
+		return '<div class="col-6 col-sm-6 col-md-3"' + (type.id == '6' ? ' id="label_lt_6"' : '') + '><div class="form-check form-check-custom form-check-solid mb-3">'
+			+ '<input class="form-check-input me-3" type="radio" name="leaveType" id="lt_' + type.id + '" value="' + type.id + '"' + (disabled ? ' disabled' : '') + ' required>' + type.name
+			+ '</div></div>'
+			+ '<input type="hidden" class="hide" name="leaveType_hidden" id="lt_hidden">';
+	}
+
 	for (let i = 0; i < leaveTypes.length; i++) {
-		if (leaveTypes[i].id == '1' || leaveTypes[i].id == '2' || leaveTypes[i].id == '3' || leaveTypes[i].id == '6') {
-			if (leaveTypes[i].id == '6') {
-				if (leaveCheck[i] == '1') {
-					let radio =	'<div class="col-6 col-sm-6 col-md-3" id="label_lt_6"><div class="form-check form-check-custom form-check-solid mb-3">'
-					+'<input class="form-check-input me-3" type="radio" name="leaveType" id="lt_'+leaveTypes[i].id+'" value="'+leaveTypes[i].id+'" disabled required>'+leaveTypes[i].name
-					+'</div></div>'
-					+'<input type="hidden" class="hide" name="leaveType_hidden" id="lt_hidden">';
-					$('#leaveTypes').addClass('row g-6').append(radio);
-				} else {
-					let radio =	'<div class="col-6 col-sm-6 col-md-3" id="label_lt_6"><div class="form-check form-check-custom form-check-solid mb-3">'
-						+'<input class="form-check-input me-3" type="radio" name="leaveType" id="lt_'+leaveTypes[i].id+'" value="'+leaveTypes[i].id+'" required>'+leaveTypes[i].name
-						+'</div></div>'
-						+'<input type="hidden" class="hide" name="leaveType_hidden" id="lt_hidden">';
-					$('#leaveTypes').addClass('row g-6').append(radio);
-				}
-			} else {
-				if (leaveCheck[i] == '1') {
-					let radio =	'<div class="col-6 col-sm-6 col-md-3"><div class="form-check form-check-custom form-check-solid mb-3">'
-						+'<input class="form-check-input me-3" type="radio" name="leaveType" id="lt_'+leaveTypes[i].id+'" value="'+leaveTypes[i].id+'" disabled required>'+leaveTypes[i].name
-						+'</div></div>'
-						+'<input type="hidden" class="hide" name="leaveType_hidden" id="lt_hidden">';
-					$('#leaveTypes').addClass('row g-6').append(radio);
-				} else {
-					let radio =	'<div class="col-6 col-sm-6 col-md-3"><div class="form-check form-check-custom form-check-solid mb-3">'
-						+'<input class="form-check-input me-3" type="radio" name="leaveType" id="lt_'+leaveTypes[i].id+'" value="'+leaveTypes[i].id+'" required>'+leaveTypes[i].name
-						+'</div></div>'
-						+'<input type="hidden" class="hide" name="leaveType_hidden" id="lt_hidden">';
-					$('#leaveTypes').addClass('row g-6').append(radio);
-				}
-			}
-		} else if (leaveTypes[i].id == '5') {
+		const id = leaveTypes[i].id;
+		if (id == '1' || id == '2' || id == '3' || id == '6') {
+			// quota เต็ม = disabled
+			$('#leaveTypes').addClass('row g-6').append(leaveTypeRadioHtml(leaveTypes[i], leaveCheck[i] == '1'));
+		} else if (id == '5') {
 			// Leave w/o pay can be created by user who has 'leave.approve'
 			<perm:permission object="leave.approve">
-				let radio =	'<div class="col-6 col-sm-6 col-md-3"><div class="form-check form-check-custom form-check-solid mb-3">'
-					+'<input class="form-check-input me-3" type="radio" name="leaveType" id="lt_'+leaveTypes[i].id+'" value="'+leaveTypes[i].id+'" required>'+leaveTypes[i].name
-					+'</div></div>'
-					+'<input type="hidden" class="hide" name="leaveType_hidden" id="lt_hidden">';
-			$('#leaveTypes').addClass('row g-6').append(radio);
+				$('#leaveTypes').addClass('row g-6').append(leaveTypeRadioHtml(leaveTypes[i], false));
 			</perm:permission>
-		} else if (leaveTypes[i].id != '9') {
-			let radio =	'<div class="col-6 col-sm-6 col-md-3"><div class="form-check form-check-custom form-check-solid mb-3">'
-				+'<input class="form-check-input me-3" type="radio" name="leaveType" id="lt_'+leaveTypes[i].id+'" value="'+leaveTypes[i].id+'" required>'+leaveTypes[i].name
-				+'</div></div>'
-				+'<input type="hidden" class="hide" name="leaveType_hidden" id="lt_hidden">';
-			$('#leaveTypes').addClass('row g-6').append(radio);
+		} else if (id != '9') {
+			$('#leaveTypes').addClass('row g-6').append(leaveTypeRadioHtml(leaveTypes[i], false));
 		}
 	}
 
@@ -1131,7 +1083,6 @@ $(() => {
 	var manager;
 	var leave;
 	var fileLeave;
-	var leaveInfo;
 	const queryString = window.location.search;
 	const urlParams = new URLSearchParams(queryString);
 	const la = urlParams.get('la');
@@ -1162,10 +1113,8 @@ $(() => {
 	function initEditMode() {
 		leave = ${leave};
 		fileLeave = ${fileLeave};
-		leaveInfo = ${empty leaveInfo ? '[]' : leaveInfo};
 		user = leave.userId;
 		manager = leave.apprUserId;
-		department = leave.leaveStatusId.toString();
 
 		if (la == '1') {
 			$('form').attr('action','line_new_LeaveEdit_Do_LA');
@@ -1176,26 +1125,6 @@ $(() => {
 			$('form').attr('action', 'line_new_LeaveEdit_Do');
 		}
 
-		// ข้อมูลผู้ขอ / ผู้อนุมัติ
-		var aprEmpId;
-		var aprName;
-        var apprUserId;
-        var aprRole;
-        var ucEmpId;
-        var ucName;
-        var timeCreate;
-        var timeUpdate;
-		if (leaveInfo && leaveInfo.length > 0) {
-			
-			aprEmpId = leaveInfo[0].apr_emp_id;
-			aprName = leaveInfo[0].apr_name;
-	        apprUserId = leaveInfo[0].appr_user_id;
-	        aprRole = leaveInfo[0].apr_role;
-	        ucEmpId = leaveInfo[0].uc_emp_id;
-	        ucName = leaveInfo[0].uc_name;
-	        timeCreate = moment(leaveInfo[0].time_create).format("DD MMM YYYY HH:mm");
-	        timeUpdate = moment(leaveInfo[0].time_update).format("DD MMM YYYY HH:mm");
-		}
 		// สถานะใบลา: 0 Wait for approve / 1 Approved / 2 Reject / 3 Cancel
 		if (leave.leaveStatusId.toString() != '0') {
 			initEditReadOnly();
@@ -1205,17 +1134,13 @@ $(() => {
 			initEditPending();
 		}
 		
-		$('#leaveId').text('${leaveId}');
 
 		function initEditReadOnly() {
 			// ล็อกทุกช่อง
 		    $('input[name="leaveType"]').prop('disabled', true);
-			$('#status, #date_from, #date_to, #halfDay, #description, #myFile, #removeFileBtn, #approver, #submitBtn').prop('disabled', true);
+			$('#status, #date_from, #date_to, #halfDay, #description, #myFile, #approver, #submitBtn').prop('disabled', true);
 		    $('input[name="leaveType"]').closest('.form-check').css('pointer-events', 'none').css('opacity', '0.6');
 			$('#leaveTypeSelect').prop('disabled', true);
-			$('#leaveidInfo').show();
-			$('#requestInfo').show();
-		    $('#approveInfo').show();
 		    
 		    // ไฟล์เดิมแสดงแบบดูอย่างเดียว + ซ่อนปุ่ม Submit
 		    $('#fileUploadSection').addClass('d-none');
@@ -1229,29 +1154,16 @@ $(() => {
 		    	$('#lbafterFile').addClass('d-none');
 		    }
 		    
-		    $('#aprEmpId').text(aprEmpId);
-	        $('#aprName').text(aprName);
-	        $('#aprRole').text(aprRole);
-	        $('#timeUpdate').text(timeUpdate);
 	        
-	        $('#ucEmpId').text(ucEmpId);
-	        $('#ucName').text(ucName);
-	        $('#timeCreate').text(timeCreate);
 		}
 
 		function initEditPending() {
-			$('#leaveidInfo').show();
-			$('#requestInfo').show();
-		    $('#approveInfo').hide();
 		    // แนบไฟล์ด้วย #fileUploadSection (เพิ่ม/ลบได้ ส่งตอนกด Submit) ซ่อน #afterFileRow
 		    $('#afterFileRow').hide();
 			$('#fileUploadSection').removeClass('d-none');
 			$('#exitingFileSection').addClass('d-none');
 			lfLoadExisting(${fileLeaveList}, fileLeave);
 			lfRenderAll();
-			$('#ucEmpId').text(ucEmpId);
-	        $('#ucName').text(ucName);
-	        $('#timeCreate').text(timeCreate);
 		}
 	}
 
@@ -1264,9 +1176,6 @@ $(() => {
 		} else {
 			$('form').attr('action', 'line_new_LeaveAdd_Do');
 		}
-		$('#leaveidInfo').hide();
-		$('#requestInfo').hide();
-		$('#approveInfo').hide();
 		$('#afterFileRow').hide(); // แนบไฟล์หลังอนุมัติ ใช้เฉพาะ Approved
 		
 		if (la == '1') {
@@ -1336,17 +1245,6 @@ $(() => {
 			}
 		}
 
-		const dateFrom = document.getElementById("date_from");
-		const dateTo = document.getElementById("date_to");
-		const dateRangeDiv = document.querySelector(".input-daterange");
-
-		dateFrom.addEventListener("change.td", function () {
-			$(dateRangeDiv).trigger("change");
-		});
-		dateTo.addEventListener("change.td", function () {
-			$(dateRangeDiv).trigger("change");
-		});
-
 		$('.input-daterange').on('change', handleDateChange);
 
 		$('.checkHours').change(function () {
@@ -1375,19 +1273,7 @@ $(() => {
 			}
 			$('#amount_sub').val(hourDiff);
 			$('#amount_sub_hidden').val(hourDiff);
-
-			updateLeaveDisplay();
-
 		});
-
-		function updateLeaveDisplay() {
-			const day = parseFloat($('#amount').val()) || 0;
-			const hour = parseFloat($('#amount_sub').val()) || 0;
-			const total = day + (hour / 8); // 8 ชม. = 1 วัน
-			$('#amount_display').text(`${total.toFixed(2)} day`);
-		}
-
-		$('.input-daterange').on('change', updateLeaveDisplay);
 
 		/* End amount of day from Add Leave */
 	}
@@ -1507,7 +1393,6 @@ $(() => {
 
 	// checkbox ลาปีหน้า
 	function initNextYearLeave() {
-		const qThisYear = '${quotaThisYear}';
 
 
 		// begin checkbox ลาปีหน้า ==============================================================
@@ -1624,7 +1509,6 @@ $(() => {
 
 function userOnChange() {
 
-	var empId = $('#user').find(":selected").text().split(" ")[0];
 	var userId = $('#user').val();
 
 	$.ajax({
@@ -1848,16 +1732,6 @@ function initSelectAndDatePickers() {
 		theme: 'light', // ใช้ธีมแสง
 	});
 
-	// ซิงค์ค่า hidden input
-	document.getElementById("date_from").addEventListener("change.td", function (e) {
-		const val = e.detail.date ? e.detail.date.format("DD-MM-YYYY") : "";
-		document.getElementById("date_from_hidden").value = val;
-	});
-
-	document.getElementById("date_to").addEventListener("change.td", function (e) {
-		const val = e.detail.date ? e.detail.date.format("DD-MM-YYYY") : "";
-		document.getElementById("date_to_hidden").value = val;
-	});
 }
 </script>
 
@@ -1967,10 +1841,7 @@ function initFileInput() {
 		console.error("Critical Error: File input element with ID 'myFile' not found.");
 		return;
 	}
-	// Main Attach-files control: can pick several files -> accumulate into LeaveFiles.pending
-	// (doesn't overwrite what's already attached). window.__lfAddFilesCallback lets the inline
-	// "attach file" control (submitAfterFile, further down) know when its
-	// forwarded file is done.
+	// เลือกได้หลายไฟล์ สะสมใน LeaveFiles.pending (__lfAddFilesCallback ใช้ตอนแนบหลังอนุมัติ)
 	fileInput.addEventListener('change', function (event) {
 		var cb = window.__lfAddFilesCallback;
 		window.__lfAddFilesCallback = null;
@@ -1996,13 +1867,7 @@ function previewAfterFile(input) {
 			input.value = '';
 			container.innerHTML = '';
 			toggleAfterFileSubmit();
-			Swal.fire({
-				icon: 'error',
-				title: 'ไม่รองรับไฟล์ HEIC',
-				html: 'ไม่รองรับไฟล์นามสกุล .heic กรุณาแปลงก่อนแนบไฟล์'
-					+ '<br><br><span class="text-muted fs-7">ไฟล์ที่รองรับ: PNG, JPG, JPEG, GIF, WEBP, PDF, ZIP</span>',
-				confirmButtonText: 'รับทราบ'
-			});
+			lfAlertHeic();
 			return;
 		}
 
@@ -2010,12 +1875,7 @@ function previewAfterFile(input) {
 			input.value = '';
 			container.innerHTML = '';
 			toggleAfterFileSubmit();
-			Swal.fire({
-				icon: 'error',
-				title: 'Invalid file name',
-				text: 'File name contains invalid characters: ' + file.name,
-				confirmButtonText: 'OK'
-			});
+			lfAlertBadName(file.name);
 			return;
 		}
 
@@ -2055,14 +1915,13 @@ function handleAfterFileSelect(input) {
 	if (!file) return;
 	const forbiddenChars = /[\/:*?"<>|]/;
 	if (forbiddenChars.test(file.name)) {
-		alert("File name contains invalid characters.");
+		lfAlertBadName(file.name);
 		input.value = '';
 		return;
 	}
 
-	// Forward the chosen file to the existing #myFile input so existing handlers run
+	// ส่งไฟล์ต่อให้ #myFile ใช้ handler เดิม
 	try {
-		// render into the afterFile preview container
 		window.filePreviewTarget = 'modalFilePreviewName';
 		const dataTransfer = new DataTransfer();
 		dataTransfer.items.add(file);
@@ -2071,7 +1930,7 @@ function handleAfterFileSelect(input) {
 			myFile.files = dataTransfer.files;
 			const evt = new Event('change', { bubbles: true });
 			myFile.dispatchEvent(evt);
-			// clear the afterFile input so the form doesn't submit both
+			// ล้าง #afterFile กันส่งซ้ำ
 			try { input.value = ''; } catch (e) { /* ignore */ }
 			return;
 		}
@@ -2079,7 +1938,7 @@ function handleAfterFileSelect(input) {
 		console.warn('Forward to #myFile failed, fallback to direct preview', err);
 	}
 
-	// Fallback: render preview directly and set hidden fields
+	// สำรองกรณี DataTransfer ใช้ไม่ได้
 	const tempUrl = URL.createObjectURL(file);
 	renderSingleFilePreview(file.name, tempUrl, false, null, 'modalFilePreviewName', 'afterFile');
 
@@ -2259,6 +2118,26 @@ function lfCurrentTotalSize() {
 	return total;
 }
 
+// popup ไฟล์ HEIC / ชื่อไฟล์มีอักขระต้องห้าม (ใช้ร่วมทุกจุดที่แนบไฟล์)
+function lfAlertHeic() {
+	Swal.fire({
+		icon: 'error',
+		title: 'ไม่รองรับไฟล์ HEIC',
+		html: 'ไม่รองรับไฟล์นามสกุล .heic กรุณาแปลงก่อนแนบไฟล์'
+			+ '<br><br><span class="text-muted fs-7">ไฟล์ที่รองรับ: PNG, JPG, JPEG, GIF, WEBP, PDF, ZIP</span>',
+		confirmButtonText: 'รับทราบ'
+	});
+}
+
+function lfAlertBadName(fileName) {
+	Swal.fire({
+		icon: 'error',
+		title: 'Invalid file name',
+		text: 'File name contains invalid characters: ' + fileName,
+		confirmButtonText: 'OK'
+	});
+}
+
 function lfIsHeic(file) {
 	var name = (file.name || '').toLowerCase();
 	return name.endsWith('.heic') || name.endsWith('.heif')
@@ -2287,13 +2166,7 @@ function lfProcessFile(file, loadingId, onDone) {
 	if (lfIsHeic(file)) {
 		lfRemoveLoading(loadingId);
 		lfRenderAll();
-		Swal.fire({
-			icon: 'error',
-			title: 'ไม่รองรับไฟล์ HEIC',
-			html: 'ไม่รองรับไฟล์นามสกุล .heic กรุณาแปลงก่อนแนบไฟล์'
-				+ '<br><br><span class="text-muted fs-7">ไฟล์ที่รองรับ: PNG, JPG, JPEG, GIF, WEBP, PDF, ZIP</span>',
-			confirmButtonText: 'รับทราบ'
-		});
+		lfAlertHeic();
 		if (onDone) onDone(false);
 		return;
 	}
@@ -2328,12 +2201,7 @@ function lfAddFiles(fileList, onDone) {
 
 	Array.prototype.slice.call(fileList).forEach(function (file) {
 		if (LF_FORBIDDEN.test(file.name)) {
-			Swal.fire({
-				icon: 'error',
-				title: 'Invalid file name',
-				text: 'File name contains invalid characters: ' + file.name,
-				confirmButtonText: 'OK'
-			});
+			lfAlertBadName(file.name);
 			if (onDone) onDone(false);
 			return;
 		}
