@@ -121,7 +121,7 @@
 						<!--begin::Footer-->
 						<div class="text-center mb-11">
 							<!--begin::Subtitle-->
-							<div class="text-gray-500 fw-semibold fs-6">2025 © Cube SoftTech Co., Ltd. TS Management System v. 1.0</div>
+							<div class="text-gray-500 fw-semibold fs-6">2026 © Cube SoftTech Co., Ltd. Cube Attendance System v. 2.0 (R202609)</div>
 							<!--end::Subtitle=-->
 						</div>
 						<!--end::Footer-->

@@ -1199,3 +1199,7 @@ JOIN (SELECT parent_product_id
       GROUP BY parent_product_id) g ON g.parent_product_id = p.parent_product_id
 SET p.sequence = CAST(CAST(p.sequence AS UNSIGNED) + 1 AS CHAR)
 WHERE p.parent_product_id <> '0' AND p.sequence REGEXP '^[0-9]+$';
+
+#PROD 30 SEP 2025
+
+
