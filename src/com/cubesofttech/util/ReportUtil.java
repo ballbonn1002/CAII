@@ -42,6 +42,7 @@ public class ReportUtil {
 		String jasperFile = path + nameFile + ".jasper";
 		try {
 			JasperPrint jp = JasperFillManager.fillReport(jasperFile, reportParameters, ReportUtil.getConnection());
+			
 			response.setContentType("application/pdf");
 			response.setHeader("Content-Disposition", "inline; filename=\"" + pdfname + "\"");
 			JRExporter exporter = new JRPdfExporter();

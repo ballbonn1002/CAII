@@ -23,7 +23,7 @@
 	scroll-behavior: smooth;
 	cursor: grab;
 	user-select: none;
-	max-width: 600px;
+	max-width: 90%;
 	scrollbar-width: none;
 }
 
@@ -186,6 +186,50 @@
 	color: var(--bs-text-muted) !important;
 }
 
+.timeline-horizontal {
+	--bs-timeline-icon-size: 38px;
+	--bs-timeline-icon-space: 0.35rem;
+	display: flex;
+	align-items: flex-start;
+	width: 100%;
+}
+
+.timeline-horizontal .timeline-h-item {
+	position: relative;
+	flex: 1;
+	text-align: center;
+}
+
+.timeline-horizontal .timeline-h-icon {
+	position: relative;
+	z-index: 1;
+	width: var(--bs-timeline-icon-size);
+	height: var(--bs-timeline-icon-size);
+	margin: 0 auto 1rem;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	border: 1px solid var(--bs-gray-300);
+	border-style: dashed;
+	border-radius: 50%;
+	background-color: var(--bs-body-bg);
+}
+
+.timeline-horizontal .timeline-h-item:not(:last-child)::after {
+	content: "";
+	position: absolute;
+	z-index: 0;
+	top: calc(var(--bs-timeline-icon-size)/2);
+	left: calc(50% + var(--bs-timeline-icon-size)/2);
+	right: calc(-50% + var(--bs-timeline-icon-size)/2);
+	border-top: 1px solid var(--bs-gray-300);
+}
+
+.timeline-horizontal.timeline-border-dashed .timeline-h-item:not(:last-child)::after
+	{
+	border-top-style: dashed;
+}
+
 /* Mobile */
 @media ( max-width : 767.98px) {
 	.responsive-button {
@@ -201,6 +245,27 @@
 	}
 	.border-end-dashed {
 		border-right: 0 !important;
+	}
+	.timeline-horizontal {
+		flex-direction: column;
+	}
+	.timeline-h-item {
+		width: 100%;
+		display: flex;
+		text-align: left;
+	}
+	.timeline-horizontal .timeline-h-item:not(:last-child)::after {
+		top: var(--bs-timeline-icon-size);
+		bottom: 0;
+		left: 19px;
+		right: auto;
+		height: 100%;
+		border-top: 0;
+		border-left: 1px solid var(--bs-gray-300);
+	}
+	.timeline-h-icon {
+		margin: 0 1rem 1rem 0;
+		flex-shrink: 0;
 	}
 }
 
@@ -223,7 +288,7 @@
 						class="page-title d-flex flex-column justify-content-center flex-wrap me-3">
 						<h1
 							class="page-heading d-flex text-gray-700 fw-semibold flex-column justify-content-center my-0">
-							Privilege</h1>
+							Redeem Rewards</h1>
 						<ul
 							class="breadcrumb breadcrumb-separatorless fw-semibold fs-7 my-0 pt-1">
 							<li class="breadcrumb-item text-muted"><a
@@ -231,23 +296,19 @@
 								class="text-muted text-hover-primary">Home</a></li>
 							<li class="breadcrumb-item"><span
 								class="bullet bg-gray-500 w-5px h-2px"></span></li>
-							<li class="breadcrumb-item text-muted"><a href="#"
-								class="text-muted text-hover-primary">Cube Token Management</a></li>
-
-							<li class="breadcrumb-item"><span
-								class="bullet bg-gray-500 w-5px h-2px"></span></li>
 							<li class="breadcrumb-item text-muted"><a
 								href="${pageContext.request.contextPath}/privilegePage"
-								class="text-muted text-hover-primary">Privilege</a></li>
+								class="text-muted text-hover-primary">Redeem Rewards</a></li>
 						</ul>
 					</div>
 
 					<div class="d-flex align-items-center justify-content-end">
 						<button
 							class="d-flex align-items-center justify-content-start gap-3 btn responsive-button"
-							type="button">
+							type="button"
+							onclick="window.location.href='${pageContext.request.contextPath}/privilegeHistory'">
 							<i class="ki-duotone ki-handcart fs-1"></i> <span class="fs-6">
-								Privilege History </span>
+								Redeem History </span>
 
 						</button>
 					</div>
@@ -260,7 +321,272 @@
 			<div id="kt_app_content_container"
 				class="app-container container-fluid">
 
-				<div class="card">
+				<div class="row g-5 align-items-stretch mb-12">
+
+					<!-- ================= EMPLOYEE INFO ================= -->
+					<div class="col-12 col-lg-12 col-xl-6 d-flex">
+
+						<div class="card card-flush mt-6 px-9 pb-0 pt-6 w-100 h-100">
+
+							<!-- Employee Personal Info -->
+							<div class="employee-personal-info">
+
+								<!-- Name + Employee Type + Status -->
+								<div class="d-flex align-items-center gap-3 flex-wrap">
+
+									<div class="fw-bold fs-2 text-gray-900">
+										${userInfo.name_en}</div>
+
+									<div>
+										<!-- Employee Type -->
+										<span
+											class="badge
+										<c:choose>
+											<c:when test="${userInfo.employee_type == '1'}">
+												badge-light-primary py-2
+											</c:when>
+											<c:when test="${userInfo.employee_type == '2'}">
+												badge-light-warning py-2
+											</c:when>
+											<c:when test="${userInfo.employee_type == '3'}">
+												badge-light-info py-2
+											</c:when>
+											<c:otherwise>
+												badge-light-secondary
+											</c:otherwise>
+										</c:choose>">
+
+											<c:choose>
+												<c:when test="${userInfo.employee_type == '1'}">
+												พนักงานประจำ
+											</c:when>
+												<c:when test="${userInfo.employee_type == '2'}">
+												พนักงานอัตราจ้าง
+											</c:when>
+												<c:when test="${userInfo.employee_type == '3'}">
+												นักศึกษาฝึกงาน
+											</c:when>
+												<c:otherwise>
+												Unknown
+											</c:otherwise>
+											</c:choose>
+
+										</span>
+
+										<!-- Employee Status -->
+										<span
+											class="badge
+									<c:choose>
+										<c:when test="${userInfo.employee_status == '1'}">
+											badge-light-success py-2
+										</c:when>
+										<c:when test="${userInfo.employee_status == '2'}">
+											badge-light-warning py-2
+										</c:when>
+										<c:when test="${userInfo.employee_status == '0'}">
+											badge-light-danger py-2
+										</c:when>
+										<c:when test="${userInfo.employee_status == '3'}">
+											badge-light-info py-2
+										</c:when>
+										<c:otherwise>
+											badge-light-secondary
+										</c:otherwise>
+									</c:choose>">
+											<c:choose>
+												<c:when test="${userInfo.employee_status == '1'}">
+												Active
+											</c:when>
+												<c:when test="${userInfo.employee_status == '2'}">
+												Probation
+											</c:when>
+												<c:when test="${userInfo.employee_status == '0'}">
+												Excluded
+											</c:when>
+												<c:when test="${userInfo.employee_status == '3'}">
+												Intern
+											</c:when>
+												<c:otherwise>
+												Unknown
+											</c:otherwise>
+											</c:choose>
+
+										</span>
+									</div>
+								</div>
+
+
+								<!-- Employee ID + Name -->
+								<div
+									class="d-flex align-items-center gap-3 fw-normal mt-3 mt-md-1 fs-6 fs-md-4 text-gray-900">
+
+									<div id="employeeId">${userInfo.employee_id}</div>
+
+									<div id="employeeName">
+										${userInfo.name_en}-${userInfo.name_th}</div>
+
+								</div>
+
+							</div>
+
+							<!-- Employee Work Info -->
+							<div class="employee-work-info mt-4">
+								<div class="row g-5">
+									<!-- Position -->
+									<div class="col-md-4">
+										<div
+											class="employee-position
+													d-flex flex-column
+													px-4 py-3
+													border border-gray-300 border-dashed
+													rounded h-100">
+
+											<span class="fw-bold fs-4 text-gray-900"
+												id="employeePosition"> ${userInfo.position} </span> <span
+												class="fw-bold fs-6 text-gray-600"> Position </span>
+
+										</div>
+
+									</div>
+
+
+									<!-- Department -->
+									<div class="col-md-4">
+										<div
+											class="employee-department
+													d-flex flex-column
+													px-4 py-3
+													border border-gray-300 border-dashed
+													rounded h-100">
+
+											<span class="fw-bold fs-4 text-gray-900"
+												id="employeeDepartment"> ${userInfo.department} </span> <span
+												class="fw-bold fs-6 text-gray-600"> Department </span>
+										</div>
+
+									</div>
+
+									<!-- Site -->
+									<div class="col-md-4">
+										<div
+											class="employee-site
+													d-flex flex-column
+													px-4 py-3
+													border border-gray-300 border-dashed
+													rounded h-100">
+
+											<span class="fw-bold fs-4 text-gray-900"> <c:choose>
+													<c:when test="${not empty userInfo.jobsiteList}">
+														<c:forEach var="site" items="${userInfo.jobsiteList}"
+															varStatus="status">
+															${site.name_site}
+															<c:if test="${!status.last}">
+																,
+															</c:if>
+														</c:forEach>
+													</c:when>
+
+													<c:otherwise>
+														-
+													</c:otherwise>
+												</c:choose>
+
+											</span> <span class="fw-bold fs-6 text-gray-600"> Site </span>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+
+
+					<!-- ================= TOTAL / YEARLY TOKEN ================= -->
+					<div class="col-12 col-lg-12 col-xl-6 d-flex">
+
+						<div class="row g-5 flex-grow-1">
+
+							<!-- ================= TOTAL TOKEN ================= -->
+							<div class="col-6 d-flex">
+								<div class="card card-flush mt-6 w-100 h-100">
+									<div
+										class="d-flex flex-column
+												align-items-center
+												justify-content-center
+												h-100 gap-1">
+
+										<!-- Icon -->
+										<div>
+											<i class="ki-duotone ki-cube-2 fs-4x text-primary"> <span
+												class="path1"></span> <span class="path2"></span> <span
+												class="path3"></span>
+											</i>
+										</div>
+
+										<!-- Token Information -->
+										<div
+											class="d-flex flex-column
+													align-items-center
+													justify-content-center
+													">
+											<span class="fw-bold fs-2qx text-gray-800 token-value"
+												data-field="cubeToken"> - </span> <span
+												class="fs-4 fw-bold text-primary"> Cube Token </span> <span
+												class="fs-6 text-gray-600"> สะสมทั้งหมด </span>
+										</div>
+
+									</div>
+
+								</div>
+
+							</div>
+
+
+							<!-- ================= YEARLY TOKEN ================= -->
+							<div class="col-6 d-flex">
+
+								<div class="card card-flush mt-6 w-100 h-100">
+
+									<div
+										class="d-flex flex-column
+												align-items-center
+												justify-content-center
+												h-100 gap-1">
+										<!-- Icon -->
+										<div>
+											<i class="ki-duotone ki-cube-3 fs-4x text-primary"> <span
+												class="path1"></span> <span class="path2"></span> <span
+												class="path3"></span>
+											</i>
+										</div>
+
+										<!-- Token Information -->
+										<div
+											class="d-flex flex-column
+													align-items-center
+													justify-content-center
+													">
+
+											<span class="fw-bold fs-2qx text-gray-800 token-value"
+												data-field="yearlyCubeToken"> - </span> <span
+												class="fs-4 fw-bold text-primary"> Cube Token </span> <span
+												class="fs-6 fw-semibold text-gray-600"> สะสมรายปี <span
+												id="yearlyCubeToken-year">2026</span>
+											</span>
+										</div>
+
+									</div>
+
+								</div>
+
+							</div>
+
+						</div>
+
+					</div>
+
+				</div>
+
+				<div class="card mt-12">
 					<div class="card-body">
 						<div class="row g-6">
 
@@ -356,7 +682,7 @@
 											<div class="fw-semibold fs-2 text-gray-800 mb-6"
 												id="redeemItemName"></div>
 											<div class="mb-6">
-												<span class="badge badge-lg badge-light-success py-2"
+												<span class="badge badge-lg badge-primary py-2"
 													id="redeemItemQuantity"></span>
 											</div>
 											<div class="mb-6">
@@ -373,6 +699,14 @@
 												class="d-flex align-items-center flex-wrap fw-normal fs-5 text-primary">
 												<span class="me-1">ระยะเวลาการแลก : </span> <span
 													class="text-gray-800" id="effectiveDate"></span>
+											</div>
+
+											<div class="d-flex gap-3 align-items-center mt-6">
+												<i class="ki-duotone ki-information-5 text-primary fs-1"> <span
+													class="path1"></span> <span class="path2"></span> <span
+													class="path3"></span>
+												</i>
+												<div class="fw-medium fs-7 text-gray-700">รูปภาพเพื่อประกอบการโฆษณาเท่านั้น</div>
 											</div>
 										</div>
 									</div>
@@ -461,8 +795,16 @@
 
 								</div>
 							</div>
+
+
+
+
 						</div>
+
+
 					</div>
+
+
 				</div>
 			</div>
 		</div>
@@ -685,6 +1027,7 @@
                 if (response.success) {
                     userCurrentBalance = Number(response.data);
                     loadRewardItems();
+                    loadTokenSummary("${userInfo.id}", new Date().getFullYear());
                 } else {
                     console.error("Invalid user info response:", response);
                 }
@@ -718,7 +1061,7 @@
         `);
 
         $.ajax({
-            url: "${pageContext.request.contextPath}/getRewardItemList",
+            url: "${pageContext.request.contextPath}/getRewardItemWithFavoriteList",
             type: "GET",
             dataType: "json",
 
@@ -799,7 +1142,8 @@
                         (item.coverPath || "");
 
                     const soldOut = quantity <= 0;
-                    const isDisabled = soldOut || userCurrentBalance < token;
+                    const insufficientBalance = userCurrentBalance < token;
+                    const isDisabled = soldOut || insufficientBalance;
 
                     const html = `
                         <div class="col">
@@ -842,7 +1186,7 @@
                                             <span
                                                 class="badge badge-lg \${soldOut ? 'badge-gray-500' : 'badge-primary'} fw-normal fs-7 py-2 px-3" style="border: 1px solid rgba(241, 241, 244, 1);">
 
-                                                \${quantity} ชิ้น
+                                                \${quantity} Remaining
 
                                             </span>
 
@@ -917,11 +1261,24 @@
                                                 </i>
 
                                                 <span
-                                                    class="fw-bold fs-3 text-primary">
+                                                    class="fw-bold fs-3 text-\${insufficientBalance ? 'warning' : 'gray-800'}">
 
                                                     \${token.toLocaleString()}
 
                                                 </span>
+                                                
+                                                \${insufficientBalance ? `
+
+                                               		<i class="ki-solid ki-information-5 fs-1 text-warning">
+                                               		 <span class="path1"></span>
+                                               		 <span class="path2"></span>
+                                               		 <span class="path3"></span>
+                                               		</i>
+
+                                                	` 
+                                                : 
+                                                ``
+                                                }
 
                                             </div>
 
@@ -946,7 +1303,7 @@
                                         <button
                                             type="button"
                                             data-item-id="\${itemId}"
-                                            onClick="openRedeemModal(\${itemId})" \${isDisabled ? 'disabled' : ''}
+                                            onClick="openRedeemModal(\${itemId})"
                                             class="btn btn-icon w-100 fw-semibold p-1 redeem-btn"> 
 
                                             <i
@@ -961,7 +1318,7 @@
                                             </i>
 
                                             <span class="redeem-text">
-                                                แลกของรางวัล
+                                               \${isDisabled ? 'รายละเอียด' : 'แลกของางวัล'}
                                             </span>
 
                                         </button>
@@ -1220,6 +1577,100 @@
     let dragStartX = 0;
     let scrollStartLeft = 0;
     
+    function formatToken(value) {
+	    if (value === null || value === undefined) {
+	        return "0";
+	    }
+
+	    const number = Number(value);
+
+	    if (Number.isNaN(number)) {
+	        return "0";
+	    }
+
+	    return number.toLocaleString("en-US", {
+	        minimumFractionDigits: 0,
+	        maximumFractionDigits: 2
+	    });
+	}
+    
+    function loadTokenSummary(userId, year) {
+    	
+	    $.ajax({
+	        url: `tokenSummary?year=\${year}\${userId ? '&userId=' + userId : ''}`,
+	        type: "GET",
+
+	        beforeSend: function() {
+	            $(".token-value").text("-");
+	        },
+
+	        success: function(res) {
+
+	            if (!res.success) {
+	                toastr.error(
+	                    res.message || "Unable to load token summary."
+	                );
+	                return;
+	            }
+	            
+	            const data = res.data;
+
+	            $("[data-field='cubeToken']").text(
+	                formatToken(data.accumulatedToken)
+	            );
+	            
+	            $("[data-field='yearlyCubeToken']").text(
+		                formatToken(data.yearlyToken)
+		        );
+
+/* 	            $("[data-field='gift']").text(
+	                formatToken(data.gift)
+	            );
+
+	            $("[data-field='reward']").text(
+	                formatToken(data.reward)
+	            );
+
+	            $("[data-field='return']").text(
+	                formatToken(data.return)
+	            );
+
+	            $("[data-field='exchange']").text(
+	                formatToken(data.exchange)
+	            );
+
+	            $("[data-field='late']").text(
+	                formatToken(data.late)
+	            );
+
+	            $("[data-field='earlyOut']").text(
+	                formatToken(data.earlyOut)
+	            );
+
+	            $("[data-field='leave']").text(
+	                formatToken(data.leave)
+	            );
+
+	            $("[data-field='backDate']").text(
+	                formatToken(data.backDate)
+	            );
+	            
+	            $("[data-field='noRecord']").text(
+		                formatToken(data.noRecord)
+		        );
+ */	        },
+
+	        error: function(xhr) {
+
+	            console.error("Get Token Summary error");
+
+	            $(".token-value").text("-");
+
+	            toastr.error("Unable to load token summary. Please try again.");
+	        }
+	    });
+	}
+    
     function renderThumbnails() {
 
         const $carouselContainer = $("#carouselContainer");
@@ -1352,7 +1803,7 @@
         // Populate modal with item details
         $("#itemId").val(item.itemId);
         $("#redeemItemName").text(item.itemName);
-        $("#redeemItemQuantity").text(`คงเหลือ \${item.quantity} ชิ้น`);
+        $("#redeemItemQuantity").text(`\${item.quantity} Remaining`);
         $("#effectiveDate").text(`\${formatDate(item.startDate)} - \${formatDate(item.endDate)}`);
         $(".user-current-balance").text(userCurrentBalance.toLocaleString());
         $("#redeemTokenAmount").text(item.token.toLocaleString());
@@ -1361,21 +1812,31 @@
         $("#redeemExtraCash").text(item.addedMoney.toLocaleString());
         
         const remainingBalance = userCurrentBalance - item.token;
+        const isOutOfStock = item.quantity <= 0;
         const isNegativeBalance = remainingBalance < 0;
-        
-		if (isNegativeBalance) {
-            $("#remainingBalance").addClass("text-danger").removeClass("text-success");
+
+        // Reset previous state
+        $("#remainingBalance")
+            .removeClass("text-danger text-success");
+
+        $("#insufficientBalanceWarning").addClass("d-none");
+
+        // Show warning if balance is insufficient
+        if (isNegativeBalance) {
+            $("#remainingBalance").addClass("text-danger");
             $("#insufficientBalanceWarning").removeClass("d-none");
-            $("#modalRedeemBtn").prop("disabled", true);
         } else {
-            $("#remainingBalance").addClass("text-success").removeClass("text-danger");
-            $("#insufficientBalanceWarning").addClass("d-none");
-            $("#modalRedeemBtn").prop("disabled", false);
+            $("#remainingBalance").addClass("text-success");
         }
-        
-        $("#remainingBalance").text(`\${remainingBalance.toLocaleString()}`);
-        
-        
+
+        // Disable redeem button if insufficient balance OR out of stock
+        $("#modalRedeemBtn").prop(
+            "disabled",
+            isNegativeBalance || isOutOfStock
+        );
+
+        $("#remainingBalance").text(remainingBalance.toLocaleString());
+
         // Show the modal
         $("#redeemModal").modal("show");
     }

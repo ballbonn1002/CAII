@@ -768,10 +768,10 @@
 								class="d-flex align-items-center justify-content-start gap-3
 							           btn
 							           responsive-button w-100"
-								type="button" onClick="openExchangeTokenModal()">
+								type="button" onClick="window.location.href='${pageContext.request.contextPath}/privilegeHistory'">
 
 								<i class="ki-duotone ki-handcart fs-1"></i> <span class="fs-6 button-label">
-									Privilege History </span>
+									Redeem History </span>
 
 							</button>
 						</div>
@@ -1218,13 +1218,13 @@
 
 											<table
 												id="\${tableId}"
-												class="table table-striped table-row-bordered gy-5">
+												class="table align-middle table-striped table-row-bordered gy-5">
 
 												<thead>
 													<tr class="fw-semibold fs-7 text-gray-500 text-uppercase">
 
 														<th class="ps-4" style="min-width: 150px">Activity</th>
-														<th style="min-width: 150px">Date</th>
+														<th style="min-width: 150px">Transaction Date</th>
 														<th style="min-width: 150px">Description</th>
 														<th class="text-end" style="min-width: 150px">Get Token</th>
 														<th class="text-end" style="min-width: 150px">Deduct Token</th>
@@ -1247,6 +1247,8 @@
 														const deductToken = !isAdd
 															? formatToken(tx.value)
 															: "-";
+															
+														const actionName = tx.actionName || null;
 															
 														return `
 															<tr>
@@ -1359,13 +1361,11 @@
 			const referenceId = data.referenceId || null;
 			const eventDate = data.date || null;
 			
-			console.log(action);
-			
 			switch (type) {
                 case "add":
                     return `<div class="d-flex flex-column gap-3">
                     			<div class="fw-normal text-gray-700 fs-6">
-                    				<span class="\${action === 'return' ? 'text-info' : 'text-success'}">\${action === 'return' ? 'ยกเลิก' : 'ได้รับ'}</span> \${reason}
+                    				<span class="\${action === 'return' ? 'text-info' : 'text-success'}">\${action === 'return' ? 'คืนแต้ม' : 'ได้รับ'}</span> \${reason}
                     			</div>
                     			\${eventDate ? `<div><span class="fw-normal fs-6 text-gray-700">\${eventDate}</span></div>` : ''}
                     			\${referenceId ? `<div><span class="badge badge-lg badge-light badge-light-primary p-2">#\${referenceId}</span></div>` : ''}
@@ -1373,14 +1373,56 @@
                     	`;	
                     
                 case "deduct":
-                    return `<div class="d-flex flex-column gap-2">
-			        			<div class="fw-normal text-gray-700 fs-6">
-				    				<span class="text-danger">หัก</span> \${reason}
-				    			</div>
-				    			\${referenceId ? `<div><span class="badge badge-lg badge-light-primary p-2">#\${referenceId}</span></div>` : ''}
-				    			\${eventDate ? `<div><span class="fw-normal fs-6 text-gray-700">\${eventDate}</span></div>` : ''}
-				    		</div>
-				    	`;	
+                	
+                	if (action === "leave") {
+
+                		const startDate = data.startDate || null;
+                		const endDate = data.endDate || null;
+                		
+                		const formatDate = (dateStr) => {
+                		    if (!dateStr) return null;
+                		    const date = new Date(dateStr);
+                		    const options = { day: 'numeric', month: 'short' };
+                		    return date.toLocaleDateString('en-US', options);
+                		};
+                		
+                		const displayDate = startDate === endDate ? formatDate(startDate) : `\${formatDate(startDate)} - \${formatDate(endDate)}`; 
+                		
+                		const halfDayLabels = {
+                		        "0": "เต็มวัน",
+                		        "1": "ครึ่งวัน",
+                		        "2": "ครึ่งวัน",
+                		        "3": "ตามช่วงเวลา"
+                		    };
+
+               		    const halfDay = data.halfDay != null
+                		        ? String(data.halfDay)
+                		        : null;
+
+               		    const leaveLabel = halfDayLabels[halfDay] || "";
+
+                		return `<div class="d-flex flex-column gap-2">
+				        			<div class="fw-normal text-gray-700 fs-6">
+					    				<span class="text-danger">หัก</span> \${reason} 
+					    				<span class="text-primary">\${leaveLabel}</span>
+					    				<span>\${displayDate ? `\${displayDate}` : ''}</span>
+					    			</div>
+					    			\${referenceId ? `<div><span class="badge badge-lg badge-light-primary p-2">#\${referenceId}</span></div>` : ''}
+					    		</div>
+						    	`;	
+                	}
+                	
+                	else {
+
+                		return `<div class="d-flex flex-column gap-2">
+				        			<div class="fw-normal text-gray-700 fs-6">
+					    				<span class="text-danger">หัก</span> \${reason}
+					    			</div>
+					    			\${referenceId ? `<div><span class="badge badge-lg badge-light-primary p-2">#\${referenceId}</span></div>` : ''}
+					    			\${eventDate ? `<div><span class="fw-normal fs-6 text-gray-700">\${eventDate}</span></div>` : ''}
+					    		</div>
+				    			`;	
+					}
 				    	
                 case "void":
                     return `<div class="d-flex flex-column gap-3">
@@ -1683,22 +1725,24 @@
 			`;
 		}
 		
+
 		function formatToken(value) {
+		    if (value === null || value === undefined) {
+		        return "0";
+		    }
 
-			if (value === null || value === undefined) {
-				return "0";
-			}
+		    const number = Number(value);
 
-			const number = Number(value);
+		    if (Number.isNaN(number)) {
+		        return "0";
+		    }
 
-			if (Number.isNaN(number)) {
-				return "0";
-			}
-
-			return Number.isInteger(number)
-				? number.toString()
-				: number.toFixed(2);
+		    return number.toLocaleString("en-US", {
+		        minimumFractionDigits: 0,
+		        maximumFractionDigits: 2
+		    });
 		}
+
 
 
 		function escapeHtml(value) {

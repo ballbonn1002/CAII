@@ -3171,7 +3171,9 @@ public class WorkHoursDAOImpl implements WorkHoursDAO {
 	            "    ) AS checkout_description " +
 
 	            "FROM user u " +
-	            "WHERE u.enable = '1'";
+	            "WHERE u.enable = '1' " + 
+	            "AND u.start_date IS NOT NULL " +
+	            "AND u.start_date <= current_date() ";
 
 	    SQLQuery query = sessionFactory
 	            .getCurrentSession()

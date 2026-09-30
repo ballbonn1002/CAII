@@ -4,6 +4,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
 <!DOCTYPE html>
 <html>
 <head>
@@ -58,6 +59,9 @@
 	border-radius: 8px;
 	overflow: visible;
 	background-color: #fff;
+	display: flex;
+	align-items: center;
+	justify-content: center;
 }
 
 .additional-image-card img {
@@ -171,7 +175,56 @@
 
 							<div class="card-body">
 
-								<div class="row g-5 mb-6">
+								<div class="d-flex flex-column align-items-center mt-6">
+									<!--begin::Image input-->
+									<div
+										class="image-input image-input-empty image-input-placeholder mb-3"
+										id="coverImageInput" data-kt-image-input="true">
+										<!--begin::Image preview wrapper-->
+										<div class="image-input-wrapper w-150px h-150px"></div>
+										<!--end::Image preview wrapper-->
+
+										<!--begin::Edit button-->
+										<label
+											class="btn btn-icon btn-circle btn-color-muted btn-active-color-primary w-25px h-25px bg-body shadow-sm"
+											data-kt-image-input-action="change" data-bs-toggle="tooltip"
+											data-bs-dismiss="click" title="Change cover image"> <i
+											class="ki-duotone ki-pencil fs-6"><span class="path1"></span><span
+												class="path2"></span></i> <!--begin::Inputs--> <input
+											type="file" name="cover" id="coverImage"
+											accept=".png, .jpg, .jpeg" /> <input type="hidden"
+											name="cover_remove" /> <!--end::Inputs-->
+										</label>
+										<!--end::Edit button-->
+
+										<!--begin::Cancel button-->
+										<span
+											class="btn btn-icon btn-circle btn-color-muted btn-active-color-primary w-25px h-25px bg-body shadow-sm"
+											data-kt-image-input-action="cancel" data-bs-toggle="tooltip"
+											data-bs-dismiss="click" title="Cancel cover"> <i
+											class="ki-outline ki-cross fs-3"></i>
+										</span>
+										<!--end::Cancel button-->
+
+										<!--begin::Remove button-->
+										<span
+											class="btn btn-icon btn-circle btn-color-muted btn-active-color-primary w-25px h-25px bg-body shadow-sm"
+											data-kt-image-input-action="remove" data-bs-toggle="tooltip"
+											data-bs-dismiss="click" title="Remove logo"> <i
+											class="ki-outline ki-cross fs-3"></i>
+										</span>
+										<!--end::Remove button-->
+									</div>
+									<!--end::Image input-->
+
+									<div
+										class="cover-container d-flex flex-column align-items-center justify-content-center">
+										<span class="fw-medium text-muted fs-7">Allowed file
+											types: png, jpg, jpeg.</span>
+									</div>
+								</div>
+
+								<div class="row g-5 mb-6 mt-8">
 									<!-- ITEM NAME -->
 									<div class="col-md-6 itemName-container">
 										<label for="itemName"
@@ -244,7 +297,7 @@
 										class="form-label fw-medium text-gray-800 required">
 										Effective Date </label>
 
-									<div class="mb-0 ">
+									<div class="mb-6">
 										<div class="position-relative">
 											<input class="form-control form-control-lg ps-15"
 												value="<fmt:formatDate
@@ -262,33 +315,73 @@
 										<div class="effectiveDate-container"></div>
 									</div>
 
-								</div>
+									<div class="mb-0">
 
-								<div>
+										<label for="product"
+											class="form-label fw-medium text-gray-800"> Select
+											From Product (Optional) </label>
 
-									<label for="effectiveDate"
-										class="form-label fw-medium text-gray-800 required">
-										Product </label>
-
-									<div class="mb-0 ">
 										<div class="position-relative">
-											<select class="form-select" aria-label="Select example">
-												<option>Open this select menu</option>
-												<option value="1">product 1</option>
-												<option value="2">product 2</option>
-												<option value="3">Three</option>
-											</select><!-- <i
-												class="ki-duotone ki-calendar-8 fs-1 position-absolute ms-3 top-50 translate-middle-y">
-												<span class="path1"></span> <span class="path2"></span> <span
-												class="path3"></span> <span class="path4"></span> <span
-												class="path5"></span> <span class="path6"></span>
-											</i> -->
+											<select class="form-select form-select-lg" name="productId"
+												id="productSelect" data-control="select2"
+												data-allow-clear="true"
+												data-placeholder="Search or select product...">
+
+												<option value=""></option>
+
+											</select> <i id="productTypeIcon"> </i>
 										</div>
 
-										<div class="effectiveDate-container"></div>
+
 									</div>
 
 								</div>
+
+							</div>
+						</div>
+
+						<div class="card mt-8">
+							<!--begin::Card Header-->
+							<div class="card-header">
+
+								<!--begin::Card title-->
+								<div class="card-title">
+									<h3 class="fw-semibold text-gray-900">Additional Images</h3>
+								</div>
+								<!--end::Card title-->
+							</div>
+							<!--end::Card Header-->
+
+
+							<div class="card-body">
+								<div
+									class="d-flex flex-column justify-content-between align-items-center h-100">
+									<!-- Preview Container -->
+									<div id="additionalImagesPreview"
+										class="row row-cols-2 row-cols-md-5 g-4 mb-6"></div>
+
+									<!-- Empty State -->
+									<div id="additionalImagesEmpty"
+										class="d-flex flex-column align-items-center justify-content-center pb-10">
+
+										<img
+											src="${pageContext.request.contextPath}/assets/media/svg/files/blank-image.svg"
+											alt="" style="width: 80px; height: 80px" class="rounded" />
+
+									</div>
+								</div>
+
+								<!-- Upload Button -->
+								<div>
+									<div id="errorMessage" class="text-danger fs-7 fw-medium"></div>
+									<button type="button" id="uploadAdditionalImagesBtn"
+										class="btn btn-primary">Upload Images</button>
+
+									<input type="file" id="additionalImagesInput"
+										accept=".png,.jpg,.jpeg" multiple hidden>
+
+								</div>
+
 							</div>
 						</div>
 					</div>
@@ -300,7 +393,7 @@
 									<div class="card-header">
 										<!--begin::Card title-->
 										<div class="card-title">
-											<h3 class="fw-semibold text-gray-900">Cover Image</h3>
+											<h3 class="fw-semibold text-gray-900">Redeem Log</h3>
 											<label class="required form-label ms-1 pt-1"></label>
 										</div>
 										<!--end::Card title-->
@@ -309,110 +402,22 @@
 
 
 									<div class="card-body">
-
-										<div class="d-flex flex-column align-items-center">
-											<!--begin::Image input-->
-											<div
-												class="image-input image-input-empty image-input-placeholder mb-3"
-												id="coverImageInput" data-kt-image-input="true">
-												<!--begin::Image preview wrapper-->
-												<div class="image-input-wrapper w-150px h-150px"></div>
-												<!--end::Image preview wrapper-->
-
-												<!--begin::Edit button-->
-												<label
-													class="btn btn-icon btn-circle btn-color-muted btn-active-color-primary w-25px h-25px bg-body shadow-sm"
-													data-kt-image-input-action="change"
-													data-bs-toggle="tooltip" data-bs-dismiss="click"
-													title="Change cover image"> <i
-													class="ki-duotone ki-pencil fs-6"><span class="path1"></span><span
-														class="path2"></span></i> <!--begin::Inputs--> <input
-													type="file" name="cover" id="coverImage"
-													accept=".png, .jpg, .jpeg" /> <input type="hidden"
-													name="cover_remove" /> <!--end::Inputs-->
-												</label>
-												<!--end::Edit button-->
-
-												<!--begin::Cancel button-->
-												<span
-													class="btn btn-icon btn-circle btn-color-muted btn-active-color-primary w-25px h-25px bg-body shadow-sm"
-													data-kt-image-input-action="cancel"
-													data-bs-toggle="tooltip" data-bs-dismiss="click"
-													title="Cancel cover"> <i
-													class="ki-outline ki-cross fs-3"></i>
-												</span>
-												<!--end::Cancel button-->
-
-												<!--begin::Remove button-->
-												<span
-													class="btn btn-icon btn-circle btn-color-muted btn-active-color-primary w-25px h-25px bg-body shadow-sm"
-													data-kt-image-input-action="remove"
-													data-bs-toggle="tooltip" data-bs-dismiss="click"
-													title="Remove logo"> <i
-													class="ki-outline ki-cross fs-3"></i>
-												</span>
-												<!--end::Remove button-->
-											</div>
-											<!--end::Image input-->
-
-											<div
-												class="cover-container d-flex flex-column align-items-center justify-content-center">
-												<span class="fw-medium text-muted fs-7">Allowed file
-													types: png, jpg, jpeg.</span>
+										<div class="card-body">
+											<div class="d-flex align-items-center justify-content-center">
+												<div
+													class="d-flex flex-column align-items-center justify-content-center gap-5">
+													<i class="ki-duotone ki-cube-2 fs-3tx"> <span
+														class="path1"></span> <span class="path2"></span> <span
+														class="path3"></span>
+													</i>
+													<div class="fw-semibold fs-5 text-gray-800">No data</div>
+												</div>
 											</div>
 										</div>
-
 									</div>
 								</div>
 							</div>
-							<div class="col-12 col-md-6 col-xl-12">
-								<div class="card h-100">
-									<!--begin::Card Header-->
-									<div class="card-header">
 
-										<!--begin::Card title-->
-										<div class="card-title">
-											<h3 class="fw-semibold text-gray-900">Additional Images</h3>
-										</div>
-										<!--end::Card title-->
-									</div>
-									<!--end::Card Header-->
-
-
-									<div class="card-body">
-										<div
-											class="d-flex flex-column justify-content-between align-items-center h-100">
-											<!-- Preview Container -->
-											<div id="additionalImagesPreview" class="row g-4 mb-6">
-											</div>
-
-											<!-- Empty State -->
-											<div id="additionalImagesEmpty"
-												class="d-flex flex-column align-items-center justify-content-center pb-10">
-
-												<img
-													src="${pageContext.request.contextPath}/assets/media/svg/files/blank-image.svg"
-													alt="" style="width: 80px; height: 80px" class="rounded" />
-
-											</div>
-
-
-
-											<!-- Upload Button -->
-											<div class="text-center w-100">
-												<div id="errorMessage" class="text-danger fs-7 fw-medium"></div>
-												<button type="button" id="uploadAdditionalImagesBtn"
-													class="btn btn-primary w-100">Upload Images</button>
-
-												<input type="file" id="additionalImagesInput"
-													accept=".png,.jpg,.jpeg" multiple hidden>
-
-											</div>
-										</div>
-
-									</div>
-								</div>
-							</div>
 						</div>
 					</div>
 				</div>
@@ -432,6 +437,266 @@
 	</div>
 	<script
 		src="${pageContext.request.contextPath}/assets/js/custom/utilities/attachFile/attcahfile.js"></script>
+
+
+	<script>
+	
+	function escapeHtml(value) {
+
+		if (value === null || value === undefined) {
+			return "";
+		}
+
+		return String(value)
+			.replace(/&/g, "&amp;")
+			.replace(/</g, "&lt;")
+			.replace(/>/g, "&gt;")
+			.replace(/"/g, "&quot;")
+			.replace(/'/g, "&#039;");
+	}
+	
+	
+    const products = [
+        <c:forEach items="${products}" var="product" varStatus="status">
+	        {
+	            productId: "${product.productId}",
+	            productNo: "${fn:escapeXml(product.productNo)}",
+	            productName: "${fn:escapeXml(product.productName)}",
+	            productType: "${product.productType}"
+	        }<c:if test="${!status.last}">,</c:if>
+	        </c:forEach>
+	    ];
+
+	    const selectedProductId = "${item.productId}";
+	    const productConfig = {
+	            "1": {
+	                label: "Equipment",
+	                icon: "ki-laptop",
+	                color: "text-primary"
+	            },
+	            "2": {
+	                label: "Consumables",
+	                icon: "ki-lots-shopping",
+	                color: "text-warning"
+	            },
+	            "3": {
+	                label: "Accessories",
+	                icon: "ki-medal-star",
+	                color: "text-success"
+	            },
+	            "4": {
+	                label: "Office Supplies",
+	                icon: "ki-parcel",
+	                color: "text-info"
+	            }
+	        };
+	    
+	    $(document).ready(function () {
+
+	        const $productSelect = $("#productSelect");
+	        const $productIcon = $("#productTypeIcon");
+
+	        // ==========================================
+	        // Group products
+	        // ==========================================
+
+	        const groupedProducts = {};
+
+	        products.forEach(function (product) {
+
+	            const type = String(product.productType);
+
+	            if (!productConfig[type]) {
+	                return;
+	            }
+
+	            if (!groupedProducts[type]) {
+	                groupedProducts[type] = [];
+	            }
+
+	            groupedProducts[type].push(product);
+	        });
+
+
+	        // ==========================================
+	        // Render <optgroup>
+	        // ==========================================
+
+	        Object.keys(productConfig).forEach(function (type) {
+
+	            const config = productConfig[type];
+	            const productList = groupedProducts[type];
+
+	            if (!productList || !productList.length) {
+	                return;
+	            }
+
+	            const $optgroup = $("<optgroup>")
+	                .attr("label", config.label);
+
+	            productList.forEach(function (product) {
+
+	                const $option = $("<option>")
+	                    .val(product.productId)
+	                    .text(
+	                        product.productNo +
+	                        " - " +
+	                        product.productName
+	                    )
+	                    .attr("data-product-type", type);
+
+	                // Edit page
+	                if (
+	                    String(product.productId) ===
+	                    String(selectedProductId)
+	                ) {
+	                    $option.prop("selected", true);
+	                }
+
+	                $optgroup.append($option);
+	            });
+
+	            $productSelect.append($optgroup);
+	        });
+
+
+	        // ==========================================
+	        // Initialize Select2
+	        // ==========================================
+
+	        $productSelect.select2({
+
+	            allowClear: true,
+
+	            placeholder: "Search or select product...",
+
+	            templateResult: function (product) {
+
+	                if (!product.id) {
+	                    return product.text;
+	                }
+
+	                const type = $(product.element)
+	                    .data("product-type");
+
+	                const config = productConfig[type];
+
+	                if (!config) {
+	                    return product.text;
+	                }
+
+	                return $(`
+	                        <span>\${escapeHtml(product.text)}</span> 
+	                `);
+	            },
+
+	            templateSelection: function (product) {
+
+	                if (!product.id) {
+	                    return product.text;
+	                }
+
+	                const type = $(product.element)
+	                    .data("product-type");
+
+	                const config = productConfig[type];
+
+	                if (!config) {
+	                    return product.text;
+	                } 
+
+	                return $(`
+                        <span>\${config.label} - \${escapeHtml(product.text)}</span>
+	                `);
+	            }
+
+	        });
+
+
+	        // ==========================================
+	        // Update left icon
+	        // ==========================================
+
+	        function updateProductIcon() {
+			
+			    const selectedOption = $productSelect.find(":selected");
+			    const type = selectedOption.data("product-type");
+			    const config = productConfig[type];
+			
+			    // Select2 rendered element
+			    const $selectionRendered = $productSelect
+			        .next(".select2")
+			        .find(".select2-selection__rendered");
+			
+			    // ==========================================
+			    // No product selected / Clear
+			    // ==========================================
+			    if (!config) {
+			
+			        console.log("No product selected");
+			
+			        // เอา padding ออกจาก UI ของ Select2
+			        $selectionRendered.removeClass("ps-9");
+			
+			        // ซ่อน icon
+			        $productIcon
+			            .addClass("d-none")
+			            .empty();
+			
+			        return;
+			    }
+			
+			    // ==========================================
+			    // Product selected
+			    // ==========================================
+			
+			
+			    // เพิ่ม padding ให้ UI ของ Select2
+			    $selectionRendered.addClass("ps-9");
+			
+			    // แสดง icon
+			    $productIcon
+			        .removeClass("d-none")
+			        .attr(
+			            "class",
+			            "ki-duotone " +
+			            "position-absolute " +
+			            "start-0 " +
+			            "top-50 " +
+			            "translate-middle-y " +
+			            "ms-3 " +
+			            "fs-2x " +
+			            config.icon + " " +
+			            config.color
+			        );
+			
+			    $productIcon.html(`
+			        <span class="path1"></span>
+			        <span class="path2"></span>
+			        <span class="path3"></span>
+			        <span class="path4"></span>
+			        <span class="path5"></span>
+			        <span class="path6"></span>
+			        <span class="path7"></span>
+			        <span class="path8"></span>
+			    `);
+			}
+
+
+	        // ==========================================
+	        // Change event
+	        // ==========================================
+
+	        $productSelect.on("change", function () {
+	            updateProductIcon();
+	        });
+
+
+	        // Initial icon for Edit page
+	        updateProductIcon();
+
+	    });
+	</script>
 	<script>
 	
 		let additionalImageFiles = [];
@@ -600,7 +865,7 @@
 
 		        const col = document.createElement("div");
 
-		        col.className = "col-6";
+		        col.className = "col";
 
 
 		        const wrapper = document.createElement("div");
@@ -1073,6 +1338,11 @@
 		            "effectiveDate",
 		            $("#kt_daterangepicker_1").val().trim()
 		        );
+		        
+		        formData.append(
+                    "productId",
+                    $("select[name='productId']").val() || ""
+                );
 
 		        formData.append(
 		            "activeFlag",

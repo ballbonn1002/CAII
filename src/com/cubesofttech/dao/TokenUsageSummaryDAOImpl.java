@@ -1,5 +1,6 @@
 package com.cubesofttech.dao;
 
+import java.time.YearMonth;
 import java.util.List;
 
 import org.hibernate.SessionFactory;
@@ -53,6 +54,23 @@ public class TokenUsageSummaryDAOImpl implements TokenUsageSummaryDAO {
 		        .createQuery(hql)
 		        .setParameter("userId", userId)
 		        .setMaxResults(1)
+		        .uniqueResult();
+	}
+
+	@Override
+	public TokenUsageSummary findByUserIdAndYearMonth(String userId, YearMonth yearMonth) {
+		
+		String hql = "FROM TokenUsageSummary "
+		           + "WHERE userId = :userId "
+		           + "AND year = :yearMonth "
+		           + "AND month = :month";
+		
+		
+		return (TokenUsageSummary) sessionFactory.getCurrentSession()
+		        .createQuery(hql)
+		        .setParameter("userId", userId)
+		        .setParameter("yearMonth", yearMonth.getYear())
+		        .setParameter("month", yearMonth.getMonthValue())
 		        .uniqueResult();
 	}
 

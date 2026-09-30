@@ -2187,4 +2187,25 @@ public class LeaveDAOImpl implements LeaveDAO {
 	            .list();
 	}
 	
+	@SuppressWarnings("unchecked")
+	public List<Leaves> findApprovedLeavesByStartDate(LocalDate targetDate) throws Exception {
+
+	    LocalDate nextDate = targetDate.plusDays(1);
+
+	    Timestamp start = Timestamp.valueOf(targetDate.atStartOfDay());
+	    Timestamp end = Timestamp.valueOf(nextDate.atStartOfDay());
+
+	    return sessionFactory.getCurrentSession()
+	            .createQuery(
+	                "FROM Leaves l " +
+	                "WHERE l.leaveStatusId = :status " +
+	                "AND l.startDate >= :startDate " +
+	                "AND l.startDate < :endDate"
+	            )
+	            .setParameter("status", "1")
+	            .setParameter("startDate", start)
+	            .setParameter("endDate", end)
+	            .list();
+	}
+	
 }

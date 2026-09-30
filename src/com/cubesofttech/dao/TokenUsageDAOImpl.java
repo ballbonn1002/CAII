@@ -7,8 +7,6 @@ import java.time.YearMonth;
 import java.util.List;
 import java.util.Map;
 
-import javax.persistence.criteria.From;
-
 import org.hibernate.SQLQuery;
 import org.hibernate.SessionFactory;
 import org.hibernate.transform.AliasToEntityMapResultTransformer;
@@ -19,6 +17,21 @@ import com.cubesofttech.model.TokenUsage;
 
 @Repository
 public class TokenUsageDAOImpl implements TokenUsageDAO {
+	
+	private static final Integer ACTION_TYPE_GIFT = 1;
+	private static final Integer ACTION_TYPE_DUDUCT = 2;
+	private static final Integer ACTION_TYPE_RETURN = 3;
+	private static final Integer ACTION_TYPE_REWARD = 4;
+	private static final Integer ACTION_TYPE_ADD_RECONCILE = 5;
+	private static final Integer ACTION_TYPE_EXCHANGE = 6;
+	private static final Integer ACTION_TYPE_REDEEM = 7;
+	private static final Integer ACTION_TYPE_VOID = 8;
+
+	private static final Integer ACTION_POINT_LATE = 4;
+	private static final Integer ACTION_POINT_EARLY_OUT = 5;
+	private static final Integer ACTION_POINT_LEAVE = 6;
+	private static final Integer ACTION_POINT_BACKDATE = 7;
+	private static final Integer ACTION_POINT_NO_RECORD = 8;
 
 	@Autowired
 	SessionFactory sessionFactory;
@@ -43,7 +56,7 @@ public class TokenUsageDAOImpl implements TokenUsageDAO {
 
 	@Override
 	public TokenUsage findById(Integer usageTokenId) throws Exception {
-		return sessionFactory.getCurrentSession().get(TokenUsage.class, usageTokenId);
+		return sessionFactory.getCurrentSession().get(TokenUsage.class, usageTokenId); 
 	}
 	
 	@Override
@@ -147,9 +160,9 @@ public class TokenUsageDAOImpl implements TokenUsageDAO {
 	            // Accumulated token balance
 				"COALESCE(SUM(" +
 				"    CASE " +
-				"        WHEN tu.action_type_id = 5 " +
+				"        WHEN tu.action_type_id = 5 OR tu.action_type_id = 9" +
 				"            THEN GREATEST(COALESCE(tu.reconcile, 0), 0) " +
-				"        WHEN (tu.action_type_id = 6 OR tu.action_type_id = 7) AND tu.reconcile IS NOT NULL " + // Exchange, Redeem
+				"        WHEN (tu.action_type_id = 6 OR tu.action_type_id = 10 OR tu.action_type_id = 11) AND tu.reconcile IS NOT NULL " + // Exchange, Spend Carry Over, Spend Current Year
 				"            THEN -COALESCE(tu.reconcile, 0) " +
 				"        ELSE 0 " +
 				"    END" +
@@ -243,9 +256,9 @@ public class TokenUsageDAOImpl implements TokenUsageDAO {
 				// Accumulated token balance
 				"COALESCE(SUM(" +
 				"    CASE " +
-				"        WHEN tu.action_type_id = 5 " + // Add in reconcile
+				"        WHEN tu.action_type_id = 5 OR tu.action_type_id = 9 " + // Add in reconcile, Carry Over
 				"            THEN GREATEST(COALESCE(tu.reconcile, 0), 0) " + // Exclude negative reconcile values
-				"        WHEN (tu.action_type_id = 6 OR tu.action_type_id = 7) AND tu.reconcile IS NOT NULL" + // Exchange, Redeem
+				"        WHEN (tu.action_type_id = 6 OR tu.action_type_id = 10 OR tu.action_type_id = 11) AND tu.reconcile IS NOT NULL" + // Exchange, Spend Carry Over, Spend Current Year
 				"            THEN -COALESCE(tu.reconcile, 0) " +
 				"        ELSE 0 " +
 				"    END" +
@@ -306,17 +319,12 @@ public class TokenUsageDAOImpl implements TokenUsageDAO {
 	            .list();
 	}
 	
-	public Double findMonthlyBalance(String userId, YearMonth previousMonth) throws Exception {
+	public Double findMonthlyBalance(String userId, YearMonth yearMonth) throws Exception {
 
-	    LocalDateTime startDate = previousMonth
-	            .atDay(1)
-	            .atStartOfDay();
-
-	    LocalDateTime endDate = previousMonth
-	            .plusMonths(1)
-	            .atDay(1)
-	            .atStartOfDay();
-
+	    int year = yearMonth.getYear();
+	    int month = yearMonth.getMonthValue();
+	    
+	    
 	    String sql =
 	            "SELECT COALESCE(SUM( " +
 	            "    CASE " +
@@ -328,15 +336,15 @@ public class TokenUsageDAOImpl implements TokenUsageDAO {
 	            "), 0) AS balance " +
 	            "FROM token_usage tu " +
 	            "WHERE tu.user_id = :userId " +
-	            "AND tu.time_create >= :startDate " +
-	            "AND tu.time_create < :endDate";
+	            "AND tu.month = :month " +
+	            "AND tu.year = :year";
 
 	    Object result = sessionFactory
 	            .getCurrentSession()
 	            .createSQLQuery(sql)
 	            .setParameter("userId", userId)
-	            .setParameter("startDate", Timestamp.valueOf(startDate))
-	            .setParameter("endDate", Timestamp.valueOf(endDate))
+	            .setParameter("month", month)
+	            .setParameter("year", year)
 	            .uniqueResult();
 
 	    return result != null
@@ -351,15 +359,16 @@ public class TokenUsageDAOImpl implements TokenUsageDAO {
 	            "SELECT " +
 	            "    COALESCE(SUM( " +
 	            "        CASE " +
-	            "            WHEN tu.action_type_id = 5 " + // Add in reconcile
+	            "            WHEN tu.action_type_id = 5 OR tu.action_type_id = 9 " + // Add in reconcile, Carry Over
 	            "                THEN GREATEST(COALESCE(tu.reconcile, 0), 0) " + // Exclude negative reconcile values
-	            "            WHEN (tu.action_type_id = 6 OR tu.action_type_id = 7) AND tu.reconcile IS NOT NULL " +
-	            "                THEN -COALESCE(tu.reconcile, 0) " + // Exchange, Redeem
+	            "            WHEN (tu.action_type_id = 6 OR tu.action_type_id = 10 OR tu.action_type_id = 11) AND tu.reconcile IS NOT NULL " +
+	            "                THEN -COALESCE(tu.reconcile, 0) " + // Exchange, Spend Carry Over, Spend Current Year
 	            "            ELSE 0 " +
 	            "        END " +
 	            "    ), 0) AS token " +
 	            "FROM token_usage tu " +
 	            "WHERE tu.user_id = :userId " +
+	            "AND tu.action_type_id IN (5, 6, 9, 10, 11) " +
 	            "AND year = :year";
 
 	    SQLQuery query = sessionFactory
@@ -385,15 +394,49 @@ public class TokenUsageDAOImpl implements TokenUsageDAO {
 	            "SELECT " +
 	            "    COALESCE(SUM( " +
 	            "        CASE " +
-	            "            WHEN tu.action_type_id = 5 " +
+	            "            WHEN tu.action_type_id = 5 " + // Add in reconcile
 	            "                THEN GREATEST(COALESCE(tu.reconcile, 0), 0) " +
-	            "            WHEN (tu.action_type_id = 6 OR tu.action_type_id = 7) AND tu.reconcile IS NOT NULL " + // Exchange, Redeem
+	            "            WHEN tu.action_type_id = 11 AND tu.reconcile IS NOT NULL " + // Spend Current Year
 	            "                THEN -COALESCE(tu.reconcile, 0) " +
 	            "            ELSE 0 " +
 	            "        END " +
 	            "    ), 0) AS yearly_token " +
 	            "FROM token_usage tu " +
-	            "WHERE tu.user_id = :userId " +
+	            "WHERE tu.user_id = :userId AND tu.action_type_id IN (5, 11)" +
+	            "AND year = :year";
+
+	    SQLQuery query = sessionFactory
+	            .getCurrentSession()
+	            .createSQLQuery(sql);
+
+	    query.setParameter("userId", userId);
+	    query.setParameter("year", year);
+
+	    Object result = query.uniqueResult();
+
+	    if (result == null) {
+	        return 0D;
+	    }
+
+	    return ((Number) result).doubleValue();
+	}
+	
+	@Override
+	public Double findAccumulatedBalanceByYear(String userId, Integer year) throws Exception {
+
+	    String sql =
+	            "SELECT " +
+	            "    COALESCE(SUM( " +
+	            "        CASE " +
+	            "            WHEN tu.action_type_id = 5 OR tu.action_type_id = 9 " + // Add in reconcile, Carry Over
+	            "                THEN GREATEST(COALESCE(tu.reconcile, 0), 0) " +
+	            "            WHEN (tu.action_type_id = 10 OR tu.action_type_id = 11) AND tu.reconcile IS NOT NULL " + // Spend Carry Over, Spend Current Year
+	            "                THEN -COALESCE(tu.reconcile, 0) " +
+	            "            ELSE 0 " +
+	            "        END " +
+	            "    ), 0) AS yearly_token " +
+	            "FROM token_usage tu " +
+	            "WHERE tu.user_id = :userId AND tu.action_type_id IN (5, 9, 10, 11)" +
 	            "AND year = :year";
 
 	    SQLQuery query = sessionFactory
@@ -426,9 +469,9 @@ public class TokenUsageDAOImpl implements TokenUsageDAO {
 		            "    u.path AS filePath, " +
 		            "    COALESCE(SUM( " +
 		            "        CASE " +
-		            "            WHEN tu.action_type_id = 5 " +
+		            "            WHEN tu.action_type_id = 5 OR tu.action_type_id = 9 " +
 		            "                THEN GREATEST(COALESCE(tu.reconcile, 0), 0) " +
-		            "            WHEN (tu.action_type_id = 6 OR tu.action_type_id = 7) " +
+		            "            WHEN (tu.action_type_id = 10 OR tu.action_type_id = 11) " +
 		            "                AND tu.reconcile IS NOT NULL " +
 		            "                THEN -COALESCE(tu.reconcile, 0) " +
 		            "            ELSE 0 " +
@@ -437,7 +480,7 @@ public class TokenUsageDAOImpl implements TokenUsageDAO {
 		            "FROM token_usage tu " +
 		            "JOIN user u " +
 		            "    ON u.id = tu.user_id " +
-		            "WHERE tu.year = :year AND tu.action_type_id IN (5, 6, 7) " +
+		            "WHERE tu.year = :year AND tu.action_type_id IN (5, 9, 10, 11) " +
 		            "GROUP BY " +
 		            "    tu.user_id, " +
 		            "    u.name, " +
@@ -490,5 +533,114 @@ public class TokenUsageDAOImpl implements TokenUsageDAO {
 	    return result != null && result.intValue() == 1;
 	}
 	
+	public boolean existsLeaveDeduction(Integer leaveId) {
+
+	    if (leaveId == null) {
+	        throw new IllegalArgumentException("Leave ID is required.");
+	    }
+
+	    String sql =
+	            "SELECT COUNT(*) " +
+	            "FROM token_usage " +
+	            "WHERE action_type_id = :actionTypeId " +
+	            "AND action_point_id = :actionPointId " +
+	            "AND JSON_UNQUOTE(JSON_EXTRACT(description, '$.referenceId')) = :leaveId";
+
+	    Number count = (Number) sessionFactory.getCurrentSession()
+	            .createSQLQuery(sql)
+	            .setParameter("actionTypeId", ACTION_TYPE_DUDUCT)
+	            .setParameter("actionPointId", ACTION_POINT_LEAVE)
+	            .setParameter("leaveId", String.valueOf(leaveId))
+	            .uniqueResult();
+
+	    return count != null && count.longValue() > 0;
+	}
+	
+	@Override
+	public boolean existsCarryOver(String userId, Integer year) throws Exception {
+
+	    if (userId == null || userId.trim().isEmpty()) {
+	        throw new IllegalArgumentException("User ID is required.");
+	    }
+
+	    if (year == null || year <= 0) {
+	        throw new IllegalArgumentException("Year month is required.");
+	    }
+
+	    String sql =
+	            "SELECT EXISTS ( " +
+	            "    SELECT 1 " +
+	            "    FROM token_usage tu " +
+	            "    WHERE tu.user_id = :userId " +
+	            "      AND tu.action_type_id = 9 " +
+	            "      AND year = :year " +
+	            ")";
+	    
+	    SQLQuery query = sessionFactory
+	            .getCurrentSession()
+	            .createSQLQuery(sql);
+	    
+	    query.setParameter("userId", userId);
+	    query.setParameter("year", year);
+
+	    Number result = (Number) query.uniqueResult();
+	    
+	    return result != null && result.intValue() == 1;
+	}
+	
+	@Override
+	public TokenUsage findExistsAccumulatedToken(
+	        String userId, YearMonth yearMonth) throws Exception {
+
+	    if (userId == null || userId.trim().isEmpty()) {
+	        throw new IllegalArgumentException("User ID is required.");
+	    }
+
+	    if (yearMonth == null) {
+	        throw new IllegalArgumentException("Year month is required.");
+	    }
+
+	    String hql = "FROM TokenUsage tu " +
+	                 "WHERE tu.userId = :userId " +
+	                 "AND tu.actionTypeId = :actionTypeId " +
+	                 "AND tu.year = :year " +
+	                 "AND tu.month = :month";
+
+	    return (TokenUsage) sessionFactory
+	            .getCurrentSession()
+	            .createQuery(hql)
+	            .setParameter("userId", userId)
+	            .setParameter("actionTypeId", ACTION_TYPE_ADD_RECONCILE)
+	            .setParameter("year", yearMonth.getYear())
+	            .setParameter("month", yearMonth.getMonthValue())
+	            .uniqueResult();
+	}
+	
+	public Double findCarryOverBalance(String userId, Integer year) throws Exception {
+
+	    String sql =
+	            "SELECT COALESCE(SUM( " +
+	            "    CASE " +
+	            "        WHEN tu.action_type_id = 9 THEN COALESCE(tu.reconcile, 0) " + // Carry Over
+	            "        WHEN tu.action_type_id = 10 THEN -COALESCE(tu.reconcile, 0) " + // Spend Carry Over
+	            "        ELSE 0 " +
+	            "    END " +
+	            "), 0) AS balance " +
+	            "FROM token_usage tu " +
+	            "WHERE tu.user_id = :userId " +
+	            "AND tu.year = :year";
+
+	    Object result = sessionFactory
+	            .getCurrentSession()
+	            .createSQLQuery(sql)
+	            .setParameter("userId", userId)
+	            .setParameter("year", year)
+	            .uniqueResult();
+
+	    return result != null
+	            ? ((Number) result).doubleValue()
+	            : 0D;
+	}
+
 	
 }

@@ -198,6 +198,8 @@ public interface LeaveDAO {
 	public List<Map<String, Object>> getSummaryLeave(String type, String userId, String userLogin, String status, Timestamp startDate, Timestamp endDate, String leaveType) throws Exception;
 	
 	public List<Object[]> findApprovedLeaveByUserAndDate(String userId, LocalDate targetDate) throws Exception;
+	
+	public List<Leaves> findApprovedLeavesByStartDate(LocalDate targetDate) throws Exception;
 
 
 }

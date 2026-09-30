@@ -474,6 +474,11 @@
 							<a href="my_profile" class="menu-link px-5">My
 								Profile</a>
 						</div>
+						
+						<div class="menu-item px-5">
+							<a href="myCubeToken" class="menu-link px-5">My
+								Cube Token</a>
+						</div>
 						<!-- My Notification -->
 						<%--
 						<div class="menu-item px-5">

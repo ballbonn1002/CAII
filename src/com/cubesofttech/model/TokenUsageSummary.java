@@ -26,10 +26,10 @@ public class TokenUsageSummary {
     private Integer actionTypeId;
     
 	@Column(name = "year")
-    private String year;
+    private int year;
     
     @Column(name = "month")
-    private String month;
+    private int month;
     
     @Column(name = "token")
     private Double monthlyToken;
@@ -80,19 +80,19 @@ public class TokenUsageSummary {
 		this.actionTypeId = actionTypeId;
 	}
 
-    public String getYear() {
+    public int getYear() {
         return year;
     }
 
-    public void setYear(String year) {
+    public void setYear(int year) {
         this.year = year;
     }
 
-    public String getMonth() {
+    public int getMonth() {
         return month;
     }
 
-    public void setMonth(String month) {
+    public void setMonth(int month) {
         this.month = month;
     }
 

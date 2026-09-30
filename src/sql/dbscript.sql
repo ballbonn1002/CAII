@@ -1248,4 +1248,69 @@ ALTER TABLE `work_hours`
 	ADD `click_token_status` VARCHAR(20) NULL DEFAULT NULL AFTER `request_referer`;
 	
 -- PROD 27 OCT 2026	
-	
+
+
+-- 28/10/2026 Best(Intern): Alter table 'usage_summary', 'user_redeem'
+-- Create table 'token_monthly_log', 'token_monthly_log_detail'
+-- Add permission 'redeem.edit' to admin role
+insert into `token_action_point` (`action_point_id`, `action_point_name_th`, `action_point_type`, `action_type_id`, `active_status`, `description`, `point`, `time_create`, `time_update`, `user_create`, `user_update`) 
+values (9, '+ Allow Location', 'GPS Check-In/Out', 1, 'Y', 'ให้ Token กรณีเช็คอิน/เอาท์มี GPS', 0.5, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'cft.admin', 'cft.admin');
+
+ALTER TABLE `usage_summary`
+    MODIFY COLUMN `year` SMALLINT(5) UNSIGNED NOT NULL,
+    MODIFY COLUMN `month` TINYINT(3) UNSIGNED NOT NULL;
+
+ALTER TABLE `item_privilege`
+    ADD COLUMN `product_id` INT(11) DEFAULT NULL
+        AFTER `item_id`;
+
+ALTER TABLE `user_redeem`
+    ADD COLUMN `status_log` TEXT COLLATE utf8mb4_unicode_ci
+        AFTER `redeem_status`,
+    ADD COLUMN `user_approve` VARCHAR(32)
+        COLLATE utf8mb4_unicode_ci DEFAULT NULL
+        AFTER `time_update`,
+    ADD COLUMN `time_approve` TIMESTAMP NULL DEFAULT NULL
+        AFTER `user_approve`,
+    ADD COLUMN `user_deliver` VARCHAR(32)
+        COLLATE utf8mb4_unicode_ci DEFAULT NULL
+        AFTER `time_approve`,
+    ADD COLUMN `time_deliver` TIMESTAMP NULL DEFAULT NULL
+        AFTER `user_deliver`,
+    ADD COLUMN `time_receive` TIMESTAMP NULL DEFAULT NULL
+        AFTER `time_deliver`,
+    ADD COLUMN `user_receive` VARCHAR(32)
+        COLLATE utf8mb4_unicode_ci DEFAULT NULL
+        AFTER `time_receive`;
+
+
+INSERT INTO `role_authorized_object` (`authorized_object_id`, `role_id`, `time_create`, `time_update`) 
+VALUES ('redeem.edit', 'admin', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+
+CREATE TABLE `token_monthly_log` (
+  `monitor_log_id` int(11) NOT NULL AUTO_INCREMENT,
+  `date_time` datetime NOT NULL,
+  `success_case` int(11) NOT NULL DEFAULT '0',
+  `fail_case` int(11) NOT NULL DEFAULT '0',
+  `description` varchar(1024) DEFAULT NULL,
+  `user_create` varchar(32) DEFAULT NULL,
+  `user_update` varchar(32) DEFAULT NULL,
+  `time_create` timestamp NULL DEFAULT NULL,
+  `time_update` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`monitor_log_id`)
+) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci;
+
+CREATE TABLE `token_monthly_log_detail` (
+  `token_log_id` int(11) NOT NULL AUTO_INCREMENT,
+  `monitor_log_id` int(11) NOT NULL,
+  `user_id` varchar(32) NOT NULL,
+  `date_time` datetime DEFAULT NULL,
+  `value` double DEFAULT NULL,
+  `status` varchar(32) DEFAULT NULL,
+  `description` varchar(1024) DEFAULT NULL,
+  `user_create` varchar(32) DEFAULT NULL,
+  `user_update` varchar(32) DEFAULT NULL,
+  `time_create` timestamp NULL DEFAULT NULL,
+  `time_update` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`token_log_id`)
+) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci;

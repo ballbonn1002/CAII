@@ -13,12 +13,17 @@ public interface TokenUsageDAO {
 	public TokenUsage findById(Integer usageTokenId) throws Exception;
 	public boolean existsMonthlyGift(String id, Integer actionTypeId, int monthValue, int year) throws Exception;
 	public boolean existsAccumulatedToken(String userId, YearMonth yearMonth) throws Exception;
+	public boolean existsCarryOver(String userId, Integer year) throws Exception;
 	public List<Map<String, Object>> findTokenLedgerByUserId(String userId, int year) throws Exception;
-	public Double findMonthlyBalance(String userId, YearMonth previousMonth) throws Exception;
+	public Double findMonthlyBalance(String userId, YearMonth yearMonth) throws Exception;
 	public Double findYearlyBalance(String userId, Integer year) throws Exception;
+	public Double findAccumulatedBalanceByYear(String userId, Integer year) throws Exception;
 	public Double findAccumulatedTokenBalance(String userId) throws Exception;
 	public Map<String, Object> findTokenSummaryByUserId(String userId, int year) throws Exception;
 	public List<Map<String,Object>> findTokenSummaryForAllUsers(int year) throws Exception;
 	public List<String> findAllUserIds () throws Exception;
 	public List<Map<String,Object>> findAccumulatedTokenBalanceForAllUser(int year) throws Exception;
+	public boolean existsLeaveDeduction(Integer leaveId) throws Exception;
+	public TokenUsage findExistsAccumulatedToken(String userId, YearMonth yearMonth) throws Exception;
+	public Double findCarryOverBalance(String userId, Integer year) throws Exception;
 }

@@ -45,7 +45,7 @@ public class ItemPrivilegeDAOImpl implements ItemPrivilegeDAO {
 	@SuppressWarnings("unchecked")
 	@Override
 	public List<ItemPrivilege> findAll() throws Exception {
-		return sessionFactory.getCurrentSession().createQuery("from ItemPrivilege").list();
+		return sessionFactory.getCurrentSession().createQuery("from ItemPrivilege order by timeCreate desc").list();
 	}
 
 	@Override
