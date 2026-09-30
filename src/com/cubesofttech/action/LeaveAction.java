@@ -19,6 +19,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -81,6 +82,10 @@ public class LeaveAction extends ActionSupport {
 	public static final String TYPELEAVE = "leave_type_id";
 	public static final String NODAY = "no_day";
 	public static final String STATUS = "leave_status_id";
+	private static final Comparator<Map<String, Object>> BY_LATEST_STATUS =
+			Comparator.comparing((Map<String, Object> m) -> toChar(m.get(STATUS)))
+					.thenComparing(m -> (Timestamp) m.get("time_update"), Comparator.nullsLast(Comparator.reverseOrder()))
+					.thenComparing(m -> ((Number) m.get("leave_id")).intValue(), Comparator.reverseOrder());
 
 	private static char toChar(Object value) {
 		if (value instanceof Character) {
@@ -1012,6 +1017,13 @@ public class LeaveAction extends ActionSupport {
 			//log.debug(userLogin);
 			List<Map<String, Object>> leavelist = null;
 			leavelist = leaveDAO.findUserLeaveByTypeAndStatus(start_date, end_date, userLogin, type, leaveType);
+			if (leavelist == null) {
+				leavelist = new ArrayList<>();
+			}
+			// latest_status แยกตามสถานะเหมือนเดิม เพิ่มสถานะเปลี่ยนล่าสุดขึ้นก่อน
+			if ("latest_status".equals(request.getParameter("sort"))) {
+				leavelist.sort(BY_LATEST_STATUS);
+			}
 			request.setAttribute("leavelist", leavelist);
 			setLeaveFilesMap(leavelist);
 
