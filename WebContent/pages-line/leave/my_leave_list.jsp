@@ -844,92 +844,94 @@
 		</button>
 	</div>
 
-	<c:forEach var="leave" items="${leavelist}" varStatus="status">
+	<div id="leaveList">
+		<c:forEach var="leave" items="${leavelist}" varStatus="status">
 
-		<div class="card card-bordered mb-3">
-			<div class="card-header" style="padding:16px; min-height:auto; flex-wrap:nowrap;">
-				<div class="d-flex align-items-center gap-2" style="min-width:0; overflow:hidden;">
-					<span class="fw-bold text-primary fs-4" style="flex:none; line-height:1; letter-spacing:0;">#${leave.leave_id}</span>
-					<span class="fs-4 fw-bold text-gray-800" style="line-height:1.4; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${leave.leave_type_name}</span>
+			<div class="card card-bordered mb-3">
+				<div class="card-header" style="padding:16px; min-height:auto; flex-wrap:nowrap;">
+					<div class="d-flex align-items-center gap-2" style="min-width:0; overflow:hidden;">
+						<span class="fw-bold text-primary fs-4" style="flex:none; line-height:1; letter-spacing:0;">#${leave.leave_id}</span>
+						<span class="fs-4 fw-bold text-gray-800" style="line-height:1.4; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${leave.leave_type_name}</span>
+					</div>
+					<div class="d-inline-flex align-items-center" style="gap:10px; flex:none;">
+						<a href="javascript:void(0)" class="btn btn-icon btn-sm bg-info-subtle" onclick="leaveStatus(${leave.leave_id})">
+							<i class="ki-duotone ki-document text-info" style="font-size:1.45rem;"><span class="path1"></span><span class="path2"></span></i>
+						</a>
+						<a data-note="btn edit" href="line_NewLeaveEdit?id=${leave.leave_id}" title="Edit" class="btn btn-icon btn-sm bg-primary-subtle">
+							<i class="ki-duotone ki-pencil text-primary" style="font-size:1.45rem;"><span class="path1"></span><span class="path2"></span></i>
+						</a>
+						<c:choose>
+							<c:when test="${leave.leave_status_id.toString() == 0}">
+								<a data-note="btn delete" onclick="changeStatus(${leave.leave_id});" title="Delete" class="btn btn-icon btn-sm bg-danger-subtle">
+									<i class="ki-duotone ki-trash text-danger" style="font-size:1.45rem;"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span><span class="path5"></span></i>
+								</a>
+							</c:when>
+							<c:when test="${leave.leave_status_id.toString() != 0}">
+								<a data-note="btn delete" class="btn btn-icon btn-sm btn-light-secondary disabled">
+									<i class="ki-duotone ki-trash" style="font-size:1.45rem;"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span><span class="path5"></span></i>
+								</a>
+							</c:when>
+						</c:choose>
+					</div>
 				</div>
-				<div class="d-inline-flex align-items-center" style="gap:10px; flex:none;">
-					<a href="javascript:void(0)" class="btn btn-icon btn-sm bg-info-subtle" onclick="leaveStatus(${leave.leave_id})">
-						<i class="ki-duotone ki-document text-info" style="font-size:1.45rem;"><span class="path1"></span><span class="path2"></span></i>
-					</a>
-					<a data-note="btn edit" href="line_NewLeaveEdit?id=${leave.leave_id}" title="Edit" class="btn btn-icon btn-sm bg-primary-subtle">
-						<i class="ki-duotone ki-pencil text-primary" style="font-size:1.45rem;"><span class="path1"></span><span class="path2"></span></i>
-					</a>
-					<c:choose>
-						<c:when test="${leave.leave_status_id.toString() == 0}">
-							<a data-note="btn delete" onclick="changeStatus(${leave.leave_id});" title="Delete" class="btn btn-icon btn-sm bg-danger-subtle">
-								<i class="ki-duotone ki-trash text-danger" style="font-size:1.45rem;"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span><span class="path5"></span></i>
-							</a>
-						</c:when>
-						<c:when test="${leave.leave_status_id.toString() != 0}">
-							<a data-note="btn delete" class="btn btn-icon btn-sm btn-light-secondary disabled">
-								<i class="ki-duotone ki-trash" style="font-size:1.45rem;"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span><span class="path5"></span></i>
-							</a>
-						</c:when>
-					</c:choose>
-				</div>
-			</div>
-			<div class="card-body" style="padding:16px;">
+				<div class="card-body" style="padding:16px;">
 
-				<div class="fw-bold fs-6 text-dark mb-3">${leave.name}</div>
+					<div class="fw-bold fs-6 text-dark mb-3">${leave.name}</div>
 
-				<div class="d-flex align-items-center gap-1 fs-7 text-gray-600 mb-3">
-					<i class="ki-duotone ki-calendar-2 fs-6"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span><span class="path5"></span></i>
-					<span><fmt:formatDate value="${leave.start_date}" type="date" pattern="d MMM yyyy"/> - <fmt:formatDate value="${leave.end_date}" type="date" pattern="d MMM yyyy"/></span>
-					<span class="badge badge-light-primary fs-8 ms-1"><fmt:formatNumber type="number" pattern="#.###" value="${leave.no_day}"/> day</span>
-				</div>
+					<div class="d-flex align-items-center gap-1 fs-7 text-gray-600 mb-3">
+						<i class="ki-duotone ki-calendar-2 fs-6"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span><span class="path5"></span></i>
+						<span><fmt:formatDate value="${leave.start_date}" type="date" pattern="d MMM yyyy"/> - <fmt:formatDate value="${leave.end_date}" type="date" pattern="d MMM yyyy"/></span>
+						<span class="badge badge-light-primary fs-8 ms-1"><fmt:formatNumber type="number" pattern="#.###" value="${leave.no_day}"/> day</span>
+					</div>
 
-				<div class="d-flex flex-column gap-2 fs-7 text-gray-600 mb-3">
-					<c:if test="${leave.half_day != null}">
+					<div class="d-flex flex-column gap-2 fs-7 text-gray-600 mb-3">
+						<c:if test="${leave.half_day != null}">
+							<div class="d-inline-flex align-items-center gap-1">
+								<i class="ki-duotone ki-calendar-8 fs-6"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span><span class="path5"></span><span class="path6"></span></i>
+								<c:if test="${leave.half_day.toString() == 0}">เต็มวัน</c:if>
+								<c:if test="${leave.half_day.toString() == 1}">ช่วงเช้า</c:if>
+								<c:if test="${leave.half_day.toString() == 2}">ช่วงบ่าย</c:if>
+								<c:if test="${leave.half_day.toString() == 3}">ช่วงเวลา</c:if>
+							</div>
+						</c:if>
 						<div class="d-inline-flex align-items-center gap-1">
-							<i class="ki-duotone ki-calendar-8 fs-6"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span><span class="path5"></span><span class="path6"></span></i>
-							<c:if test="${leave.half_day.toString() == 0}">เต็มวัน</c:if>
-							<c:if test="${leave.half_day.toString() == 1}">ช่วงเช้า</c:if>
-							<c:if test="${leave.half_day.toString() == 2}">ช่วงบ่าย</c:if>
-							<c:if test="${leave.half_day.toString() == 3}">ช่วงเวลา</c:if>
+							<i class="ki-duotone ki-time fs-6"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span></i>
+							${leave.start_time} - ${leave.end_time}
+						</div>
+					</div>
+
+					<c:if test="${not empty leave.leave_file}">
+						<div class="d-flex align-items-center gap-1 fs-7 mb-1">
+							<i class="ki-duotone ki-document"><span class="path1"></span><span class="path2"></span></i>
+							<a href="line_preview_File?id=${leave.leave_file}" target="_blank" class="text-primary text-hover-underline">${leave.file_name}${leave.type}</a>
 						</div>
 					</c:if>
-					<div class="d-inline-flex align-items-center gap-1">
-						<i class="ki-duotone ki-time fs-6"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span></i>
-						${leave.start_time} - ${leave.end_time}
+
+					<div class="d-flex align-items-center justify-content-between">
+						<span class="fs-8 text-muted">Request Date: <fmt:formatDate value="${leave.time_create}" type="date" pattern="d MMM yyyy"/></span>
+						<c:if test="${leave.leave_status_id.toString() == '0'}"><span class="badge badge-light-warning leave-status-badge fs-8">Wait for approve</span></c:if>
+						<c:if test="${leave.leave_status_id.toString() == '1'}"><span class="badge badge-light-success leave-status-badge fs-8">Approved</span></c:if>
+						<c:if test="${leave.leave_status_id.toString() == '2'}"><span class="badge badge-light-danger leave-status-badge fs-8">Reject</span></c:if>
+						<c:if test="${leave.leave_status_id.toString() == '3'}"><span class="badge badge-light-dark leave-status-badge fs-8">Cancel</span></c:if>
 					</div>
+
 				</div>
+			</div>
+		</c:forEach>
 
-				<c:if test="${not empty leave.leave_file}">
-					<div class="d-flex align-items-center gap-1 fs-7 mb-1">
-						<i class="ki-duotone ki-document"><span class="path1"></span><span class="path2"></span></i>
-						<a href="line_preview_File?id=${leave.leave_file}" target="_blank" class="text-primary text-hover-underline">${leave.file_name}${leave.type}</a>
-					</div>
-				</c:if>
-
-				<div class="d-flex align-items-center justify-content-between">
-					<span class="fs-8 text-muted">Request Date: <fmt:formatDate value="${leave.time_create}" type="date" pattern="d MMM yyyy"/></span>
-					<c:if test="${leave.leave_status_id.toString() == '0'}"><span class="badge badge-light-warning leave-status-badge fs-8">Wait for approve</span></c:if>
-					<c:if test="${leave.leave_status_id.toString() == '1'}"><span class="badge badge-light-success leave-status-badge fs-8">Approved</span></c:if>
-					<c:if test="${leave.leave_status_id.toString() == '2'}"><span class="badge badge-light-danger leave-status-badge fs-8">Reject</span></c:if>
-					<c:if test="${leave.leave_status_id.toString() == '3'}"><span class="badge badge-light-dark leave-status-badge fs-8">Cancel</span></c:if>
+		<c:if test="${empty leavelist}">
+			<div class="text-center py-10">
+				<div class="d-inline-flex align-items-center justify-content-center mb-4" style="width:88px; height:88px; border-radius:50%; background:#EFF3FA;">
+					<i class="ki-duotone ki-calendar-search text-primary" style="font-size:2.5rem;">
+						<span class="path1"></span><span class="path2"></span><span class="path3"></span>
+						<span class="path4"></span><span class="path5"></span><span class="path6"></span>
+					</i>
 				</div>
-
+				<div class="fs-6 fw-semibold text-gray-800 mb-1">No leave records found</div>
+				<div class="fs-8 text-muted">ยังไม่มีข้อมูลการลาในช่วงเวลานี้</div>
 			</div>
-		</div>
-	</c:forEach>
-
-	<c:if test="${empty leavelist}">
-		<div class="text-center py-10">
-			<div class="d-inline-flex align-items-center justify-content-center mb-4" style="width:88px; height:88px; border-radius:50%; background:#EFF3FA;">
-				<i class="ki-duotone ki-calendar-search text-primary" style="font-size:2.5rem;">
-					<span class="path1"></span><span class="path2"></span><span class="path3"></span>
-					<span class="path4"></span><span class="path5"></span><span class="path6"></span>
-				</i>
-			</div>
-			<div class="fs-6 fw-semibold text-gray-800 mb-1">No leave records found</div>
-			<div class="fs-8 text-muted">ยังไม่มีข้อมูลการลาในช่วงเวลานี้</div>
-		</div>
-	</c:if>
+		</c:if>
+	</div>
 
 </div>
 
@@ -1182,14 +1184,11 @@ function leaveStatus(id) {
 		window.location.href = 'line_new_myleave_list?' + params.toString();
 	}
 
-	// การ์ดใบลา + ข้อความไม่มีข้อมูล (ซ่อนตอน sort)
-	const LEAVE_LIST_ITEMS = '.liff-shell > .card.card-bordered, .liff-shell > .text-center.py-10';
-
 	function showSortLoading() {
 		const btn = document.getElementById('sortToggleBtn');
 		btn.disabled = true;
 		btn.querySelector('.liff-sort-icon').innerHTML = '<span class="spinner-border text-primary" role="status"></span>';
-		$(LEAVE_LIST_ITEMS).addClass('d-none');
+		$('#leaveList').addClass('d-none');
 		// skeleton loading
 		const bar = (w, h) => '<span class="liff-skel" style="width:' + w + '; height:' + (h || 12) + 'px;"></span>';
 		const row = (w) => '<div class="liff-skel-row"><span class="liff-skel liff-skel-dot"></span>' + bar(w) + '</div>';
@@ -1205,7 +1204,7 @@ function leaveStatus(id) {
 			+ row('60px') + row('90px')
 			+ '<div class="d-flex align-items-center justify-content-between">' + bar('130px', 10) + bar('90px', 26) + '</div>'
 			+ '</div></div>';
-		$(btn).closest('div').after('<div id="sortSkeleton">' + skel + skel + skel + '</div>');
+		$('#leaveList').before('<div id="sortSkeleton">' + skel + skel + skel + '</div>');
 	}
 
 	function hideSortLoading() {
@@ -1213,7 +1212,7 @@ function leaveStatus(id) {
 		btn.disabled = false;
 		btn.querySelector('.liff-sort-icon').textContent = '↓';
 		$('#sortSkeleton').remove();
-		$(LEAVE_LIST_ITEMS).removeClass('d-none');
+		$('#leaveList').removeClass('d-none');
 	}
 
 	function add() {
