@@ -613,6 +613,15 @@
 	width: calc(100% - 32px); max-width: 393px; margin: 0 auto;
 	padding-bottom: 80px; /* เว้นที่ให้ปุ่ม + */
 }
+.liff-sort-btn { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 600; color: var(--bs-gray-700); border: 1px solid #E4E6EF; border-radius: 8px; padding: 6px 12px; background-color: #F8F9FB; }
+.liff-sort-btn:hover, .liff-sort-btn:focus { border-color: var(--bs-primary); }
+.liff-sort-btn .spinner-border { width: 12px; height: 12px; border-width: 2px; }
+.liff-skel { display: inline-block; height: 12px; border-radius: 6px; flex: none; background: linear-gradient(90deg, #F1F1F4 25%, #E4E6EF 37%, #F1F1F4 63%); background-size: 400% 100%; animation: liffShimmer 1.2s ease-in-out infinite; }
+.liff-skel-box { width: 35px; height: 35px; border-radius: .475rem; }
+.liff-skel-row { display: flex; align-items: center; gap: .5rem; min-height: 20px; }
+.liff-skel-dot { width: 14px; height: 14px; border-radius: 50%; }
+@keyframes liffShimmer { 0% { background-position: 100% 50%; } 100% { background-position: 0 50%; } }
+@media (prefers-reduced-motion: reduce) { .liff-skel { animation: none; } }
 #yearFilterBtn { font-size: 13px; font-weight: 600; color: var(--bs-gray-700); border: 1px solid #E4E6EF; border-radius: 8px; padding: 6px 16px; background-color: #F8F9FB; }
 #yearFilterBtn:hover, #yearFilterBtn:focus, #yearFilterBtn:active { background-color: #F8F9FB; border-color: var(--bs-primary); box-shadow: none; }
 #yearFilterBtn::after { vertical-align: 1px; }
@@ -829,7 +838,10 @@
 	<!-- Leave List -->
 	<div class="d-flex align-items-center justify-content-between mt-2 mb-4">
 		<span class="fw-bold text-gray-900" style="font-size:16px; line-height:1;">${fn:length(leavelist)} Items Found</span>
-		<span class="fw-bold fs-6 text-muted">Recent Updates ↓</span>
+		<c:set var="isLatestStatus" value="${param.sort == 'latest_status'}" />
+		<button type="button" id="sortToggleBtn" class="liff-sort-btn" onclick="toggleSort()" aria-pressed="${isLatestStatus}">
+			<span>${isLatestStatus ? 'Latest Status' : 'Leave Date'}</span><span class="liff-sort-icon">↓</span>
+		</button>
 	</div>
 
 	<c:forEach var="leave" items="${leavelist}" varStatus="status">
@@ -1153,8 +1165,55 @@ function leaveStatus(id) {
 <script>
 /* ---------- ไปหน้าอื่น + spinner ---------- */
 	function filterByYear(year) {
+		const sort = new URLSearchParams(window.location.search).get('sort');
 		document.getElementById('liffLoadingOverlay').style.display = 'flex';
-		window.location.href = 'line_new_myleave_list?Id=${onlineUser.id}&startdate=01-01-' + year + '&enddate=31-12-' + year;
+		window.location.href = 'line_new_myleave_list?Id=${onlineUser.id}&startdate=01-01-' + year + '&enddate=31-12-' + year
+			+ (sort ? '&sort=' + sort : '');
+	}
+
+	function toggleSort() {
+		const params = new URLSearchParams(window.location.search);
+		if (params.has('sort')) {
+			params.delete('sort');
+		} else {
+			params.set('sort', 'latest_status');
+		}
+		showSortLoading();
+		window.location.href = 'line_new_myleave_list?' + params.toString();
+	}
+
+	// การ์ดใบลา + ข้อความไม่มีข้อมูล (ซ่อนตอน sort)
+	const LEAVE_LIST_ITEMS = '.liff-shell > .card.card-bordered, .liff-shell > .text-center.py-10';
+
+	function showSortLoading() {
+		const btn = document.getElementById('sortToggleBtn');
+		btn.disabled = true;
+		btn.querySelector('.liff-sort-icon').innerHTML = '<span class="spinner-border text-primary" role="status"></span>';
+		$(LEAVE_LIST_ITEMS).addClass('d-none');
+		// skeleton loading
+		const bar = (w, h) => '<span class="liff-skel" style="width:' + w + '; height:' + (h || 12) + 'px;"></span>';
+		const row = (w) => '<div class="liff-skel-row"><span class="liff-skel liff-skel-dot"></span>' + bar(w) + '</div>';
+		const skel = '<div class="card card-bordered mb-3">'
+			+ '<div class="card-header" style="padding:16px; min-height:auto; flex-wrap:nowrap;">'
+			+ '<div class="d-flex align-items-center gap-2">' + bar('56px', 20) + bar('88px', 20) + '</div>'
+			+ '<div class="d-inline-flex align-items-center" style="gap:10px;">'
+			+ '<span class="liff-skel liff-skel-box"></span><span class="liff-skel liff-skel-box"></span><span class="liff-skel liff-skel-box"></span></div>'
+			+ '</div>'
+			+ '<div class="card-body d-flex flex-column gap-3" style="padding:16px;">'
+			+ bar('55%', 16)
+			+ '<div class="liff-skel-row"><span class="liff-skel liff-skel-dot"></span>' + bar('150px') + bar('40px', 18) + '</div>'
+			+ row('60px') + row('90px')
+			+ '<div class="d-flex align-items-center justify-content-between">' + bar('130px', 10) + bar('90px', 26) + '</div>'
+			+ '</div></div>';
+		$(btn).closest('div').after('<div id="sortSkeleton">' + skel + skel + skel + '</div>');
+	}
+
+	function hideSortLoading() {
+		const btn = document.getElementById('sortToggleBtn');
+		btn.disabled = false;
+		btn.querySelector('.liff-sort-icon').textContent = '↓';
+		$('#sortSkeleton').remove();
+		$(LEAVE_LIST_ITEMS).removeClass('d-none');
 	}
 
 	function add() {
@@ -1165,9 +1224,11 @@ function leaveStatus(id) {
 	$(document).on('click', 'a[href^="line_NewLeaveEdit"]', function() {
 		document.getElementById('liffLoadingOverlay').style.display = 'flex';
 	});
-	// กด Back กลับมา (bfcache) ซ่อน spinner
+	// กด Back กลับมา (bfcache) ซ่อน spinner / skeleton
 	window.addEventListener('pageshow', function(e) {
-		if (e.persisted) document.getElementById('liffLoadingOverlay').style.display = 'none';
+		if (!e.persisted) return;
+		document.getElementById('liffLoadingOverlay').style.display = 'none';
+		hideSortLoading();
 	});
 </script>
 
