@@ -2144,7 +2144,7 @@ input[name="workType"] + .btn.bg-light i { color: var(--bs-gray-400); }
 					<c:if test="${not empty dayLeave}">
 						<div class="d-flex align-items-center gap-2${isFullDayLeave ? '' : ' mt-3'}">
 							<span class="badge ${fn:contains(dayLeave[0].leave_type_name, 'ป่วย') ? 'badge-info' : 'badge-primary'} fw-semibold fs-7">
-								${dayLeave[0].leave_type_name} : ${isFullDayLeave ? 'เต็มวัน' : (fn:trim(dayLeave[0].half_day) == '1' ? 'ช่วงเช้า' : 'ช่วงบ่าย')}
+								${fn:escapeXml(dayLeave[0].leave_type_name)} : ${isFullDayLeave ? 'เต็มวัน' : (fn:trim(dayLeave[0].half_day) == '1' ? 'ช่วงเช้า' : 'ช่วงบ่าย')}
 							</span>
 							<c:if test="${fn:trim(dayLeave[0].leave_status_id) == '0'}">
 								<i class="ki-duotone ki-watch text-warning"><span class="path1"></span><span class="path2"></span></i>

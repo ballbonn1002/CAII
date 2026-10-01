@@ -876,7 +876,7 @@
 				</div>
 				<div class="card-body" style="padding:16px;">
 
-					<div class="fw-bold fs-6 text-dark mb-3">${leave.name}</div>
+					<div class="fw-bold fs-6 text-dark mb-3">${fn:escapeXml(leave.name)}</div>
 
 					<div class="d-flex align-items-center gap-1 fs-7 text-gray-600 mb-3">
 						<i class="ki-duotone ki-calendar-2 fs-6"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span><span class="path5"></span></i>
@@ -903,7 +903,7 @@
 					<c:if test="${not empty leave.leave_file}">
 						<div class="d-flex align-items-center gap-1 fs-7 mb-1">
 							<i class="ki-duotone ki-document"><span class="path1"></span><span class="path2"></span></i>
-							<a href="line_preview_File?id=${leave.leave_file}" target="_blank" class="text-primary text-hover-underline">${leave.file_name}${leave.type}</a>
+							<a href="line_preview_File?id=${leave.leave_file}" target="_blank" class="text-primary text-hover-underline">${fn:escapeXml(leave.file_name)}${fn:escapeXml(leave.type)}</a>
 						</div>
 					</c:if>
 

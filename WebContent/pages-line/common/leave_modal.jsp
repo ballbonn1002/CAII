@@ -1,7 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 
-<%-- modal รายละเอียดใบลา LIFF ใช้ร่วมกัน (My Leave / Check List) --%>
+<%-- modal รายละเอียดใบลา LIFF (My Leave / Check List) --%>
 <!--begin::Modal - Leave Detail-->
 <div class="modal fade" id="leaveDetailModal" tabindex="-1" aria-hidden="true">
 	<div class="modal-dialog modal-dialog-centered">
@@ -119,12 +119,19 @@ function renderLeaveModalFiles(obj) {
 function setLeaveApprover(obj) {
 	$('#status_panel').show();
 	$('#approved_detail').show();
-	$('#aprName').html(obj.aprName);
-	// BE ส่งมาเป็น "dd MMM yyyy, HH:mm"
+	$('#aprName').text(obj.aprName);
 	var updated = moment(obj.time_update, "DD MMM YYYY, HH:mm");
-	$('#timeupdate').html(updated.isValid() ? updated.format("D MMM YYYY , H:mm") : (obj.time_update || '-'));
-	$('#reason_s').html(obj.reason || '-');
+	$('#timeupdate').text(updated.isValid() ? updated.format("D MMM YYYY , H:mm") : (obj.time_update || '-'));
+	$('#reason_s').text(obj.reason || '-');
 }
+
+// สถานะใบลา (0 ไม่มีส่วนผู้อนุมัติ)
+var leaveStatusMap = {
+	'0': { text: 'Wait for Approving', badge: 'warning' },
+	'1': { text: 'Approved', badge: 'success', title: 'Approver', titleColor: 'text-primary' },
+	'2': { text: 'Reject', badge: 'danger', title: 'Reject', titleColor: 'text-danger' },
+	'3': { text: 'Cancel', badge: 'dark', title: 'Cancel', titleColor: 'text-danger' }
+};
 
 function leaveStatus(id) {
 	const modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('leaveDetailModal'));
@@ -137,61 +144,49 @@ function leaveStatus(id) {
 		success: function (data) {
 			var obj = JSON.parse(data);
 
-			$('#leaveid').html(obj.leave_id);
-			$('#employeeId').html(obj.employeeId + " ");
-			$('#username').html(obj.name);
-			$('#stime').html(obj.start_time);
-			$('#etime').html(obj.end_time);
-			$('#desc').html(obj.description);
+			$('#leaveid').text(obj.leave_id);
+			$('#employeeId').text(obj.employeeId + " ");
+			$('#username').text(obj.name);
+			$('#stime').text(obj.start_time);
+			$('#etime').text(obj.end_time);
+			$('#desc').text(obj.description);
 
 			renderLeaveModalFiles(obj);
 
 			// leave type name
-			if (obj.leave_type_id == 1) { $('#leavetype').html("ลาพักร้อน"); }
-			if (obj.leave_type_id == 2) { $('#leavetype').html("ลากิจ"); }
-			if (obj.leave_type_id == 3) { $('#leavetype').html("ลาป่วย"); }
-			if (obj.leave_type_id == 4) { $('#leavetype').html("ขาดงาน"); }
-			if (obj.leave_type_id == 5) { $('#leavetype').html("ลาโดยไม่รับค่าจ้าง"); }
-			if (obj.leave_type_id == 6) { $('#leavetype').html("ลาพักร้อนที่เหลือจากปีก่อน"); }
-			if (obj.leave_type_id == 7) { $('#leavetype').html("ลาอื่นๆ"); }
-			if (obj.leave_type_id == 9) { $('#leavetype').html("อื่นๆ"); }
+			if (obj.leave_type_id == 1) { $('#leavetype').text("ลาพักร้อน"); }
+			if (obj.leave_type_id == 2) { $('#leavetype').text("ลากิจ"); }
+			if (obj.leave_type_id == 3) { $('#leavetype').text("ลาป่วย"); }
+			if (obj.leave_type_id == 4) { $('#leavetype').text("ขาดงาน"); }
+			if (obj.leave_type_id == 5) { $('#leavetype').text("ลาโดยไม่รับค่าจ้าง"); }
+			if (obj.leave_type_id == 6) { $('#leavetype').text("ลาพักร้อนที่เหลือจากปีก่อน"); }
+			if (obj.leave_type_id == 7) { $('#leavetype').text("ลาอื่นๆ"); }
+			if (obj.leave_type_id == 9) { $('#leavetype').text("อื่นๆ"); }
 
 			// date formatting
 			var startdate = (obj.start_date).split(",");
-			$('#sdate').html(moment(startdate[0]).format("D MMM YYYY"));
+			$('#sdate').text(moment(startdate[0]).format("D MMM YYYY"));
 
 			var enddate = (obj.end_date).split(",");
-			$('#edate').html(moment(enddate[0]).format("D MMM YYYY"));
+			$('#edate').text(moment(enddate[0]).format("D MMM YYYY"));
 
-			$('#noday').html(obj.no_day + " Day");
+			$('#noday').text(obj.no_day + " Day");
 
 			// Request Date แสดงแค่วันที่
 			var created = moment(String(obj.time_create || '').split(",")[0], "DD MMM YYYY");
-			$('#requestdate').html(created.isValid() ? created.format("D MMM YYYY") : (obj.time_create || '-'));
+			$('#requestdate').text(created.isValid() ? created.format("D MMM YYYY") : (obj.time_create || '-'));
 
 			// leave status
 			$('#status_panel').hide();
 			$('#leaveDetailDivider').hide();
-			if (obj.leave_status_id == '0') {//Wait for Approving
-				$('#leavestatus').html("Wait for Approving").removeClass().addClass('badge badge-light-warning fs-7 fw-semibold');
-			}
-			else if (obj.leave_status_id == '1') {//Approved
-				$('#leavestatus').html("Approved").removeClass().addClass('badge badge-light-success fs-7 fw-semibold');
-				$('#status_title').html("Approver").removeClass('text-danger').addClass('text-primary');
-				$('#leaveDetailDivider').show();
-				setLeaveApprover(obj);
-			}
-			else if (obj.leave_status_id == '2') {//Reject
-				$('#leavestatus').html("Reject").removeClass().addClass('badge badge-light-danger fs-7 fw-semibold');
-				$('#status_title').html("Reject").removeClass('text-primary').addClass('text-danger');
-				$('#leaveDetailDivider').show();
-				setLeaveApprover(obj);
-			}
-			else if (obj.leave_status_id == '3') {//Cancel
-				$('#leavestatus').html("Cancel").removeClass().addClass('badge badge-light-dark fs-7 fw-semibold');
-				$('#status_title').html("Cancel").removeClass('text-primary').addClass('text-danger');
-				$('#leaveDetailDivider').show();
-				setLeaveApprover(obj);
+			var status = leaveStatusMap[obj.leave_status_id];
+			if (status) {
+				$('#leavestatus').text(status.text).removeClass().addClass('badge badge-light-' + status.badge + ' fs-7 fw-semibold');
+				if (status.title) {
+					$('#status_title').text(status.title).removeClass('text-primary text-danger').addClass(status.titleColor);
+					$('#leaveDetailDivider').show();
+					setLeaveApprover(obj);
+				}
 			}
 		},
 		error: function () {
