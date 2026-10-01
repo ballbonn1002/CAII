@@ -1480,6 +1480,7 @@ jQuery(document).ready(function() {
 
 </div>
 
+<%-- ===== OLD: modal ใบลาแบบ desktop (disabled, kept for reference) =====
 <!-- Leave Modal -->
 <div class="modal fade" id="leavemodal" tabindex="-1">
 	<div class="modal-dialog modal-lg">
@@ -1546,6 +1547,7 @@ jQuery(document).ready(function() {
 					</div>
 				</div>
 				--%>
+<%-- OLD (ต่อ): modal ใบลาแบบ desktop
 
 				<div class="row mb-5 fs-6 fw-medium">
 					<div class="col-md-6">
@@ -1590,6 +1592,10 @@ jQuery(document).ready(function() {
 		</div>
 	</div>
 </div>
+--%>
+
+<%-- ===== NEW: modal รายละเอียดใบลา LIFF (ตัวกลาง, ไม่แสดงคำอธิบาย/ไฟล์แนบ) ===== --%>
+<jsp:include page="/pages-line/common/leave_modal.jsp" />
 
 <%-- OLD: script ค้นหาพนักงาน (ฝัง ${cubeUserJson} ทั้งบริษัท) LIFF ไม่ใช้
 <script> // ----------- Search -----------------
@@ -2412,6 +2418,7 @@ var AppCalendar = function() {
 
 // ----------------- END Calendar & Checklist ------------------------
 
+<%-- ===== OLD: leaveStatus() ของ desktop (disabled, kept for reference) =====
 // --------------------- Leave Modal ------------------------
 function leaveStatus(id) {
 	$("#leavemodal").modal("show");
@@ -2502,6 +2509,7 @@ function leaveStatus(id) {
 	});
 }
 // --------------------- END of Leave Modal -----------------------
+--%>
 
 </script>
 <script>
