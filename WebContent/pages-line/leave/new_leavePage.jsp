@@ -1617,9 +1617,14 @@ function initTimePickers() {
 /* ---------- submit ---------- */
 var leaveSubmitting = false; // กันกดซ้ำ
 
-// สำเร็จ = redirect ไปหน้า list (error/session หมด = หน้า login)
+// บันทึกสำเร็จ redirect ไปหน้า list
 function isLeaveSaved(res) {
-	return res.ok && res.redirected && res.url.indexOf('index.jsp') === -1;
+	return res.ok && res.redirected && res.url.indexOf('line_new_myleave_list') !== -1;
+}
+
+// session หมด AuthInterceptor redirect ไปหน้า login
+function isSessionExpired(res) {
+	return res.redirected && res.url.indexOf('/pages-line/index.jsp') !== -1;
 }
 
 function doSubmit() {
@@ -1638,7 +1643,15 @@ function doSubmit() {
 
 	fetch(form.attr('action'), { method: 'POST', body: formData })
 		.then(function (res) {
+			// session หมด ไปหน้า login
+			if (isSessionExpired(res)) {
+				window.location.href = res.url;
+				return;
+			}
+			// บันทึกไม่สำเร็จ ไป catch
 			if (!isLeaveSaved(res)) { throw new Error('save failed'); }
+
+			// บันทึกสำเร็จ ไปหน้า My Leave พร้อม toast
 			if (window.opener) {
 				window.opener.location.reload();
 			}
