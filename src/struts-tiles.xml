@@ -880,6 +880,37 @@
 		<put-attribute name="body"
 			value="/pages-back/purchase_order/purchase_order_create.jsp" />
 	</definition>
+
+	<!-- MR - Material Request (New) -->
+	<definition name="equipmentRequestMrList" extends="baseLayout">
+		<put-attribute name="title" value="Material Request List" />
+		<put-attribute name="body"
+			value="/pages-back/equipment_request_mr/equipment_request_mr_list.jsp" />
+	</definition>
+
+	<definition name="equipmentRequestMrAdd" extends="baseLayout">
+		<put-attribute name="title" value="Equipment Request" />
+		<put-attribute name="body"
+			value="/pages-back/equipment_request_mr/equipment_request_mr_create.jsp" />
+	</definition>
+
+	<definition name="equipmentRequestMrEdit" extends="baseLayout">
+		<put-attribute name="title" value="Equipment Request Edit" />
+		<put-attribute name="body"
+			value="/pages-back/equipment_request_mr/equipment_request_mr_edit.jsp" />
+	</definition>
+
+	<definition name="equipmentRequestMrListAdmin" extends="baseLayout">
+		<put-attribute name="title" value="Material Request List (Admin)" />
+		<put-attribute name="body"
+			value="/pages-back/equipment_request_mr/equipment_request_mr_list_admin.jsp" />
+	</definition>
+
+	<definition name="equipmentRequestMrApprove" extends="baseLayout">
+		<put-attribute name="title" value="Equipment Request Approve" />
+		<put-attribute name="body"
+			value="/pages-back/equipment_request_mr/equipment_request_mr_approve.jsp" />
+	</definition>
 	
 	<!-- Line OA -->
 	<definition name="bind_account" template="/pages-back/LineOA/BindAccountLineOA.jsp">

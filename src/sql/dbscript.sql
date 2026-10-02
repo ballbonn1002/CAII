@@ -1202,4 +1202,30 @@ WHERE p.parent_product_id <> '0' AND p.sequence REGEXP '^[0-9]+$';
 
 #PROD 30 SEP 2025
 
+-- 02/10/2026 June: Alter 'mr' table: rename product/parent columns, change date types, add 'reason' and 'user_create', drop 'item_type'
+  ALTER TABLE `mr`
+  CHANGE COLUMN `catalog_items_id` `product_id` VARCHAR(16)
+      CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  CHANGE COLUMN `item_sub_id` `parent_id` VARCHAR(32)
+      CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  MODIFY COLUMN `request_date` TIMESTAMP NULL DEFAULT NULL,
+  MODIFY COLUMN `approve_date` TIMESTAMP NULL DEFAULT NULL,
+  MODIFY COLUMN `receive_date` TIMESTAMP NULL DEFAULT NULL,
+  ADD COLUMN `reason` varchar(1024)
+      CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL AFTER `description`,
+  ADD COLUMN `user_create` VARCHAR(32)
+      CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL AFTER `url_ref`,
+  MODIFY COLUMN `user_update` VARCHAR(32)
+      CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  MODIFY COLUMN `time_create` TIMESTAMP NULL DEFAULT NULL,
+  DROP COLUMN `item_type`;
 
+-- 02/10/2026 June: add 'ref_link' column to 'pr_parent' table
+ALTER TABLE pr_parent ADD COLUMN ref_link text DEFAULT NULL;
+
+-- 02/10/2026 June: copy old 'ref_link' from 'pr_detail' to 'pr_parent'
+JOIN pr_detail pd ON pd.pr_detail_id = pp.pr_detail_id
+SET pp.ref_link = pd.ref_link
+WHERE pp.ref_link IS NULL
+  AND pd.ref_link IS NOT NULL
+  AND (SELECT COUNT(*) FROM pr_parent z WHERE z.pr_detail_id = pd.pr_detail_id) = 1;

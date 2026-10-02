@@ -2503,6 +2503,73 @@
 		    <result name="success" type="tiles">getauto_id_load</result>
 		    <result name="error">/index.jsp</result>
 		</action>
+
+		<!-- MR - Material Request (New) -->
+		<action name="equipment_request_mr_list"
+			class="com.cubesofttech.action.EquipmentRequestMrAction" method="equipmentRequestMrList">
+			<result name="success" type="tiles">equipmentRequestMrList</result>
+			<result name="error">/index.jsp</result>
+			<result name="login" type="redirect">/index.jsp</result>
+		</action>
+
+		<action name="equipment_request_mr_add"
+			class="com.cubesofttech.action.EquipmentRequestMrAction" method="equipmentRequestMrAdd">
+			<result name="success" type="tiles">equipmentRequestMrAdd</result>
+			<result name="error">/index.jsp</result>
+			<result name="login" type="redirect">/index.jsp</result>
+		</action>
+
+		<action name="get_mr_sub_item"
+			class="com.cubesofttech.action.EquipmentRequestMrAction" method="getMrSubItem">
+		</action>
+
+		<action name="get_mr_unit"
+			class="com.cubesofttech.action.EquipmentRequestMrAction" method="getMrUnit">
+		</action>
+
+		<action name="save_mr"
+			class="com.cubesofttech.action.EquipmentRequestMrAction" method="saveMr">
+		</action>
+
+		<action name="equipment_request_mr_edit"
+			class="com.cubesofttech.action.EquipmentRequestMrAction" method="equipmentRequestMrEdit">
+			<result name="success" type="tiles">equipmentRequestMrEdit</result>
+			<result name="notallowed" type="redirect">equipment_request_mr_list?msg=${msg}</result>
+			<result name="error">/index.jsp</result>
+			<result name="login" type="redirect">/index.jsp</result>
+		</action>
+
+		<action name="update_mr"
+			class="com.cubesofttech.action.EquipmentRequestMrAction" method="updateMr">
+		</action>
+
+		<action name="delete_mr_attachment"
+			class="com.cubesofttech.action.EquipmentRequestMrAction" method="deleteMrAttachment">
+		</action>
+
+		<action name="delete_mr"
+			class="com.cubesofttech.action.EquipmentRequestMrAction" method="deleteMr">
+		</action>
+
+		<!-- MR admin  -->
+		<action name="equipment_request_mr_list_admin"
+			class="com.cubesofttech.action.EquipmentRequestMrAction" method="equipmentRequestMrListAdmin">
+			<result name="success" type="tiles">equipmentRequestMrListAdmin</result>
+			<result name="error">/index.jsp</result>
+			<result name="login" type="redirect">/index.jsp</result>
+		</action>
+
+		<action name="equipment_request_mr_approve"
+			class="com.cubesofttech.action.EquipmentRequestMrAction" method="equipmentRequestMrApprove">
+			<result name="success" type="tiles">equipmentRequestMrApprove</result>
+			<result name="notallowed" type="redirect">equipment_request_mr_list_admin?msg=${msg}</result>
+			<result name="error">/index.jsp</result>
+			<result name="login" type="redirect">/index.jsp</result>
+		</action>
+
+		<action name="update_status_mr"
+		    class="com.cubesofttech.action.EquipmentRequestMrAction" method="updateStatusMr">
+		</action>
 		
 		<!-- Stock / Product -->
 		<action name="product_list"

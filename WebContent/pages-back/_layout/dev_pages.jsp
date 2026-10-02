@@ -71,10 +71,22 @@ pageEncoding="UTF-8"%>
                     class="btn btn-light-danger d-inline-flex align-items-center px-6 py-3"
                     >GR - Goods Receipt</a
                   >
+                  </div>
+                  <div class="d-flex gap-4 mt-6">
                   <a
                     href="purchase_requisition_list"
                     class="btn btn-light-warning d-inline-flex align-items-center px-6 py-3"
                     >PR New - Purchase Requisition</a
+                  >
+                  <a
+                    href="equipment_request_mr_list"
+                    class="btn btn-light-primary d-inline-flex align-items-center px-6 py-3"
+                    >MR New - Material Request</a
+                  >
+                   <a
+                    href="equipment_request_mr_list_admin"
+                    class="btn btn-light-success d-inline-flex align-items-center px-6 py-3"
+                    >MR New - Approval</a
                   >
                 </div>
               </div>
