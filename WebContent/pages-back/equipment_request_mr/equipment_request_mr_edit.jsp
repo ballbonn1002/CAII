@@ -486,6 +486,16 @@
 													<span class="text-gray-900 fw-medium fs-6">
 														<fmt:formatDate value="${approveDate}" pattern="d MMM yyyy , H:mm" />
 													</span>
+
+													<c:if test="${not empty mr.reason}">
+														<span class="d-flex align-items-center mt-3">
+															<i class="ki-duotone ki-document fs-2 fw-normal text-muted me-2">
+																<span class="path1"></span>
+																<span class="path2"></span>
+															</i>
+															<span class="fs-5 fw-normal text-gray-900">${mr.reason}</span>
+														</span>
+													</c:if>
 												</div>
 											</div>
 										</div>
