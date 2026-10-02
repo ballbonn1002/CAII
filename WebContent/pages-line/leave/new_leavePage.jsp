@@ -1985,10 +1985,9 @@ function getFileIconPath(fileName) {
 	switch (ext) {
 		case 'pdf': return 'assets/media/svg/files/pdf.svg';
 		case 'doc': case 'docx': return 'assets/media/svg/files/doc.svg';
-		case 'xls': case 'xlsx': return 'assets/media/svg/files/xls.svg';
 		case 'png': case 'jpg': case 'jpeg': case 'gif': case 'webp':
 			return 'assets/media/svg/files/blank-image.svg';
-		case 'zip': return 'assets/media/svg/files/zip.svg';
+		// xls / zip ยังไม่มีไอคอน ใช้ไอคอนกลาง
 		default: return 'assets/media/svg/files/folder-document.svg';
 	}
 }
