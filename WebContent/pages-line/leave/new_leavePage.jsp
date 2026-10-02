@@ -601,6 +601,7 @@
 		</div>
 		<input type="hidden" name="status_hidden" id="status_hidden">
 
+		<!-- LIFF ยกเลิกการลาข้ามปี ซ่อน checkbox ไว้ให้ script legacy ใช้ต่อ -->
 		<div class="d-none">
 			<div class="mb-6" id="nextYearLeaveContainer">
 				<div class="form-check form-check-custom form-check-solid">
@@ -780,6 +781,7 @@
 		var current = $select.value;
 		$select.innerHTML = '<option value="" disabled ' + (current ? '' : 'selected') + '>เลือกประเภทการลา</option>';
 		radios.forEach(function (radio) {
+			// LIFF ยกเลิกการลาประเภทนี้ (type 6 ลาพักร้อนที่เหลือจากปีก่อน) เหลือไว้แค่ตอน Edit ใบเดิม
 			if (radio.value === '6' && !radio.checked) return;
 			var opt = document.createElement('option');
 			opt.value = radio.value;

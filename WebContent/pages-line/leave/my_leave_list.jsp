@@ -732,7 +732,7 @@
 						</div>
 					</div>
 
-					<!-- ลาไม่ได้รับค่าจ้างตัดออก -->
+					<!-- LIFF ยกเลิกการลาประเภทนี้ (type 6 ลาพักร้อนที่เหลือจากปีก่อน) -->
 					<!-- <div class="leave-summary-item">
 						<span class="symbol symbol-50px">
 							<span class="symbol-label bg-light-warning">
