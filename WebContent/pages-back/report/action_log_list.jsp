@@ -238,7 +238,7 @@
                 <div class="d-flex align-items-center justify-content-between mb-5 pb-4 border-bottom">
                     <div class="d-flex align-items-center gap-3">
                         <div class="symbol symbol-45px symbol-circle">
-                            <img id="modalUserImg" src="" class="w-100 h-100 rounded-circle" style="object-fit:cover; display:none;" />
+                            <img id="modalUserImg" src="" class="rounded-circle" style="object-fit:cover; display:none;" />
                             <span id="modalUserInitial" class="symbol-label bg-light-primary text-primary fw-bold fs-4 d-flex align-items-center justify-content-center"></span>
                         </div>
                         <span id="modalUserName" class="fw-semibold text-gray-800 fs-5"></span>
@@ -569,14 +569,14 @@
             var imgSrc = contextPath + path;
             var $img   = $("#modalUserImg");
             $img.attr("src", imgSrc).show();
-            $("#modalUserInitial").hide();
+            $("#modalUserInitial").addClass("d-none").hide();	
             $img.on("error", function () {
                 $(this).hide();
-                $("#modalUserInitial").show();
+                $("#modalUserInitial").removeClass("d-none").show();
             });
         } else {
             $("#modalUserImg").hide();
-            $("#modalUserInitial").show();
+            $("#modalUserInitial").removeClass("d-none").show();
         }
 
         // Log data (แสดงตรงๆ สีดำ ตัดบรรทัดทุกลูกน้ำ)
