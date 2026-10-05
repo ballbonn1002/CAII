@@ -32,20 +32,31 @@
 
 	<div class="app-main flex-column px-16">
 
-		<!-- Toolbar -->
-		<div class="page-title">
+				<!-- Toolbar -->
+		<div class="page-title d-flex flex-column justify-content-center flex-wrap me-3">
 
-			<h1 class="page-heading text-gray-700 fw-semibold">
+			<h1 class="page-heading d-flex text-gray-700 fw-semibold flex-column justify-content-center my-0">
 				Contact Detail
 			</h1>
 
-			<ul
-				class="list-unstyled d-inline-flex gap-2 text-muted fs-7 fw-medium">
-
-				<li>Dashboard</li>
-				<li>-</li>
-				<li>Contact</li>
-
+			<ul class="breadcrumb breadcrumb-separatorless fw-semibold fs-7 my-0 pt-1">
+				<li class="breadcrumb-item text-muted">
+					<a href="${pageContext.request.contextPath}/check_in_out"
+						class="text-muted text-hover-primary">Home</a>
+				</li>
+				<li class="breadcrumb-item">
+					<span class="bullet bg-gray-500 w-5px h-2px"></span>
+				</li>
+				<li class="breadcrumb-item text-muted">
+					<a href="${pageContext.request.contextPath}/contact.action"
+						class="text-muted text-hover-primary">Contact</a>
+				</li>
+				<li class="breadcrumb-item">
+					<span class="bullet bg-gray-500 w-5px h-2px"></span>
+				</li>
+				<li class="breadcrumb-item text-muted">
+					${empty contact.companyContactId ? 'Create' : 'Edit'}
+				</li>
 			</ul>
 
 		</div>
@@ -74,13 +85,13 @@
 			<input type="hidden" id="contact_profile_image"
                name="existingProfileImagePath"
                value="<c:out value="${profileImage}" />">
+             <input type="hidden" id="remove_company_logo_flag"
+			   name="removeCompanyLogo" value="">
 			<input type="hidden" id="remove_profile_image"
 				name="removeProfileImage" value="">
 				
 				
-			
-
-			<div class="row g-8"> 
+				<div class="row g-8 mt-0">
 
 				<!-- Personal Information -->
 				<div class="col-xl-8">
@@ -392,14 +403,14 @@
 
 									</div>
 
-									<label
+									<label id="change_company_logo"
 										class="btn btn-icon btn-circle btn-active-color-primary w-25px h-25px bg-body shadow"
 										data-kt-image-input-action="change" data-bs-toggle="tooltip"
 										title="Change logo"> <i
 										class="ki-duotone ki-pencil fs-7"> <span class="path1"></span>
 											<span class="path2"></span>
 									</i> <input type="file" id="company_logo" name="companyLogo"
-										accept=".png,.jpg,.jpeg">
+										accept=".png,.jpg,.jpeg,.webp">
 
 									</label> <span id="remove_company_logo"
 										class="btn btn-icon btn-circle btn-active-color-primary w-25px h-25px bg-body shadow"
@@ -413,7 +424,7 @@
 
 								</div>
 
-								<div class="form-text mt-3">Allowed file types: png, jpg, jpeg.</div>
+								<div id="company_logo_hint" class="form-text mt-3">Allowed file types: png, jpg, jpeg, webp.</div>
 
 							</div>
 
@@ -461,17 +472,19 @@
 								</div>
 
 								<!-- Address -->
-                                <div class="d-flex align-items-center mb-7">
-	                             <i class="ki-duotone ki-map fs-2x text-gray-400 me-4 mt-1"> 
+                                 <div class="d-flex align-items-center mb-7">
+	                             <i class="ki-duotone ki-map fs-2x text-gray-400 me-4 mt-1 flex-shrink-0"> 
 	                             <span class="path1"></span> <span class="path2"></span><span class="path3"></span>
-	                             </i> <span id="selected_company_address"></span>
+	                             </i> <span id="selected_company_address"
+	                                        class="min-w-0" style="overflow-wrap: anywhere;"></span>
 	                             </div>
 
                                   <!-- Google Map -->
                                  <div id="selected_company_map_row" class="d-flex align-items-center mb-7">
-                                 <i class="ki-duotone ki-geolocation fs-2x text-gray-400 me-4 mt-1"> 
+                                 <i class="ki-duotone ki-geolocation fs-2x text-gray-400 me-4 mt-1 flex-shrink-0"> 
                                  <span class="path1"></span> <span class="path2"></span>
-                                 </i> <a id="selected_company_map" href="" target="_blank"> </a>
+                                 </i> <a id="selected_company_map" href="" target="_blank"
+                                         class="min-w-0" style="overflow-wrap: anywhere;"> </a>
                                  </div>
                                    </div>
 							
@@ -542,12 +555,13 @@
                                          </div>
 	                                    
 	                            <!-- Google Maps Link -->
-													<div id="company_map_row" class="d-flex align-items-center mb-7">
-						  <i class="ki-duotone ki-geolocation fs-2x text-gray-400 me-4 mt-1">							    <span class="path1"></span> 
+							<div id="company_map_row" class="d-flex align-items-center mb-7">
+						     <i class="ki-duotone ki-geolocation fs-2x text-gray-400 me-4 mt-1">
+						     <span class="path1"></span> 
 							    <span class="path2"></span>
                                  </i> 
                                  <a id="company_map_link" href="<c:out value="${freelancerAddressInfo.googleMap}" />" target="_blank"
-                                 class="text-gray-700 text-hover-primary text-break">
+                                 class="text-gray-700 text-hover-primary text-break min-w-0" style="overflow-wrap: anywhere;">
                                  <c:out value="${freelancerAddressInfo.googleMap}" />
                                    </a>
                                 </div>                                                   
@@ -841,13 +855,29 @@
 		 * แสดงข้อมูลบริษัท (โชว์ panel เปล่า ไม่ auto-fill)
 		 */
 		function showCompanyDetail(companyId) {
+			
+			/*
+			 * เปิด/ปิดการแก้โลโก้บริษัท
+			 * Freelancer = แก้ได้, บริษัทปกติ = ดูอย่างเดียว (โลโก้มาจากหน้า Company)
+			 */
+			function setCompanyLogoEditable(editable) {
+				$("#change_company_logo").toggle(editable);
+				$("#remove_company_logo").toggle(editable);
+				$("#company_logo_hint").toggle(editable);
+				if (!editable) {
+					$("#company_logo").val("");
+					$("#remove_company_logo_flag").val("");
+				}
+			}
 
 			if (companyId === "freelancer") {
+				setCompanyLogoEditable(true);
 				$("#company_detail").hide();
 				$("#freelancer_section").stop(true, true).slideDown();
 				return;
 			}
-
+			
+			setCompanyLogoEditable(false);
 			$("#freelancer_section").stop(true, true).slideUp();
 
 			if (!companyId) {
@@ -995,14 +1025,15 @@
 
 			const allowedTypes = [
 				"image/png",
-				"image/jpeg"
+				"image/jpeg",
+				"image/webp"
 			];
 
 			if (!allowedTypes.includes(file.type)) {
 
 				swal(
 					"Error",
-					"รองรับเฉพาะไฟล์ png, jpg และ jpeg",
+					"รองรับเฉพาะไฟล์ png, jpg, jpeg และ webp",
 					"error"
 				);
 
@@ -1010,6 +1041,9 @@
 
 				return;
 			}
+			
+			// เลือกไฟล์ใหม่แล้ว ยกเลิกสถานะลบที่อาจตั้งไว้ก่อนหน้า
+			$("#remove_company_logo_flag").val("");
 
 			const reader = new FileReader();
 
@@ -1034,6 +1068,9 @@
 		$("#remove_company_logo").on("click", function () {
 
 			$("#company_logo").val("");
+			
+			// แจ้ง Backend ว่าต้องการลบโลโก้เดิมตอน Save
+			$("#remove_company_logo_flag").val("Y");
 
 			$("#company_logo_preview").html(
 				'<i class="ki-duotone ki-picture fs-5x text-gray-300">' +
@@ -1211,6 +1248,19 @@
 		const initialCompanyAddressId = $("#contact_company_address_id").val();
 		const initialTaxNumber = $("#company_id option:selected").data("tax");
 		const isFreelancerContactInit = ${isFreelancerContact ? true : false};
+		
+		/*
+		 * แจ้งบันทึกสำเร็จ (มาจาก contact_save → ?saved=1)
+		 */
+		if ("${param.saved}" === "1") {
+			swal("สำเร็จ", "บันทึกข้อมูล Contact เรียบร้อยแล้ว", "success");
+
+			// ลบ saved=1 ออกจาก URL กด Refresh จะได้ไม่ขึ้นข้อความซ้ำ
+			if (window.history.replaceState) {
+				const cleanUrl = window.location.pathname + "?id=" + encodeURIComponent("${param.id}");
+				window.history.replaceState(null, "", cleanUrl);
+			}
+		}
 
 		if (isFreelancerContactInit) {
 
