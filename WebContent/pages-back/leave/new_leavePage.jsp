@@ -11,6 +11,9 @@
 <!DOCTYPE html>
 <html>
 	<c:set var="now" value="<%=new java.util.Date()%>" />
+	<%-- Hide leave type 6 (ลาพักร้อนที่เหลือ) after 31-12-2026 --%>
+	<fmt:formatDate value="${now}" pattern="yyyyMMdd" var="today_ymd" />
+	<c:set var="hideLeave6" value="${today_ymd > '20261231'}" />
 	<fmt:formatDate type="date" value="${now}" pattern="dd-MM-yyyy" var="date_now" />
 	<fmt:formatDate type="date" value="${now}" pattern="dd-MM-yyyy" var="lastday" />
 	<head>
@@ -127,6 +130,7 @@
 											</div>
 
 											<!-- ลาพักร้อนที่เหลือ -->
+											<c:if test="${!hideLeave6}">
 											<div class="col-6 col-md-4 col-xl-3">
 												<div class="d-flex align-items-center">
 													<div class="symbol symbol-50px me-4">
@@ -154,6 +158,7 @@
 													</div>
 												</div>
 											</div>
+											</c:if>
 
 											<!-- ลาป่วย -->
 											<div class="col-6 col-md-4 col-xl-3">
@@ -672,6 +677,7 @@ $(function () {
 	leaveTypes = JSON.parse('${leaveType}');
 	let leaveCheck = [${leave1Check},${leave2Check},${leave3Check},'','',${leave6Check}];
 	for (let i = 0; i < leaveTypes.length; i++) {
+		if (${hideLeave6} && leaveTypes[i].id == '6') continue; // hide after 31-12-2026
 		if (leaveTypes[i].id == '1' || leaveTypes[i].id == '2' || leaveTypes[i].id == '3' || leaveTypes[i].id == '6') {
 			if (leaveTypes[i].id == '6') {
 				if (leaveCheck[i] == '1') {

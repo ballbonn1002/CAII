@@ -6,6 +6,11 @@
 <fmt:setLocale value="en_US" />
 <fmt:setTimeZone value="Asia/Bangkok" />
 
+<%-- Hide leave type 6 (ลาพักร้อนที่เหลือ) after 31-12-2026 --%>
+<c:set var="now" value="<%=new java.util.Date()%>" />
+<fmt:formatDate value="${now}" pattern="yyyyMMdd" var="today_ymd" />
+<c:set var="hideLeave6" value="${today_ymd > '20261231'}" />
+
 <!--begin::Main-->
 <div class="app-main flex-column flex-row-fluid">
 	<div class="d-flex flex-column flex-column-fluid">
@@ -162,6 +167,7 @@
 									</div>
 
 									<!-- ลาพักร้อนที่เหลือ -->
+									<c:if test="${!hideLeave6}">
 									<div class="col-6 col-xs-4 col-sm-4 col-md-4 col-xl-3">
 										<div class="d-flex align-items-center">
 											<div class="symbol symbol-50px me-4">
@@ -191,6 +197,7 @@
 											</div>
 										</div>
 									</div>
+									</c:if>
 
 									<!-- ลาป่วย -->
 									<div class="col-6 col-xs-4 col-sm-4 col-md-4 col-xl-3">
