@@ -1223,9 +1223,3 @@ WHERE p.parent_product_id <> '0' AND p.sequence REGEXP '^[0-9]+$';
 -- 02/10/2026 June: add 'ref_link' column to 'pr_parent' table
 ALTER TABLE pr_parent ADD COLUMN ref_link text DEFAULT NULL;
 
--- 02/10/2026 June: copy old 'ref_link' from 'pr_detail' to 'pr_parent'
-JOIN pr_detail pd ON pd.pr_detail_id = pp.pr_detail_id
-SET pp.ref_link = pd.ref_link
-WHERE pp.ref_link IS NULL
-  AND pd.ref_link IS NOT NULL
-  AND (SELECT COUNT(*) FROM pr_parent z WHERE z.pr_detail_id = pd.pr_detail_id) = 1;
