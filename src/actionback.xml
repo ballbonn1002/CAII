@@ -2771,7 +2771,11 @@
 
 		<action name="contact_save"
 			class="com.cubesofttech.action.CompanyContactAction" method="save">
-			<result name="success" type="redirectAction">contact</result>
+			<result name="success" type="redirectAction">
+				<param name="actionName">contact_add</param>
+				<param name="id">${contact.companyContactId}</param>
+				<param name="saved">1</param>
+			</result>
 			<result name="error" type="tiles">contact_add</result>
 		</action>
 

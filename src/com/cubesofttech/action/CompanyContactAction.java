@@ -87,6 +87,8 @@ public class CompanyContactAction extends ActionSupport {
 	
 	private String freelancerRealCompanyId;
 	private String freelancerAddressName;
+	
+	private String removeCompanyLogo;
 
 	public String getRemoveProfileImage() { return removeProfileImage; }
 	public void setRemoveProfileImage(String removeProfileImage) { this.removeProfileImage = removeProfileImage; }
@@ -394,6 +396,10 @@ public class CompanyContactAction extends ActionSupport {
 	                    log.error("Unable to save Freelancer company logo", ex);
 	                    addActionError("DEBUG company logo: " + ex.getMessage());
 	                }
+	            } else if ("Y".equals(removeCompanyLogo)) {
+	                // ผู้ใช้กดลบโลโก้ และไม่ได้เลือกรูปใหม่
+	                freelancerCompanyRow.setFileId(null);
+	                companyDAO.update(freelancerCompanyRow);
 	            }
 
 
@@ -445,30 +451,30 @@ public class CompanyContactAction extends ActionSupport {
 	            companyAddressId = String.valueOf(freelancerAddressRow.getCompanyAddressId());
 	            
 	            
-	        } else if (companyLogo != null && contactCompanyId != null && !contactCompanyId.trim().isEmpty()) {
-
-	            // อัปโหลดโลโก้ให้ Company ปกติ (ไม่ใช่ Freelancer)
-	            try {
-	                Company selectedCompany = companyDAO.findById(Long.parseLong(contactCompanyId.trim()));
-	                if (selectedCompany != null) {
-	                    List<FileUpload> savedLogoFiles = fileAttachmentService.attach(
-	                        Arrays.asList(companyLogo),
-	                        Arrays.asList(companyLogoFileName),
-	                        "company", contactCompanyId, username,
-	                        request.getServletContext().getRealPath("/")
-	                    );
-	                    if (savedLogoFiles != null && !savedLogoFiles.isEmpty()) {
-	                        selectedCompany.setFileId(String.valueOf(savedLogoFiles.get(0).getFileId()));
-	                        selectedCompany.setUserUpdate(username);
-	                        selectedCompany.setTimeUpdate(now);
-	                        companyDAO.update(selectedCompany);
-	                    }
-	                }
-	            } catch (NumberFormatException nfe) {
-	            } catch (Exception ex) {
-	                log.error("Unable to save Company logo", ex);
-	                addActionError("DEBUG company logo: " + ex.getMessage());
-	            }
+//	        } else if (companyLogo != null && contactCompanyId != null && !contactCompanyId.trim().isEmpty()) {
+//
+//	            // อัปโหลดโลโก้ให้ Company ปกติ (ไม่ใช่ Freelancer)
+//	            try {
+//	                Company selectedCompany = companyDAO.findById(Long.parseLong(contactCompanyId.trim()));
+//	                if (selectedCompany != null) {
+//	                    List<FileUpload> savedLogoFiles = fileAttachmentService.attach(
+//	                        Arrays.asList(companyLogo),
+//	                        Arrays.asList(companyLogoFileName),
+//	                        "company", contactCompanyId, username,
+//	                        request.getServletContext().getRealPath("/")
+//	                    );
+//	                    if (savedLogoFiles != null && !savedLogoFiles.isEmpty()) {
+//	                        selectedCompany.setFileId(String.valueOf(savedLogoFiles.get(0).getFileId()));
+//	                        selectedCompany.setUserUpdate(username);
+//	                        selectedCompany.setTimeUpdate(now);
+//	                        companyDAO.update(selectedCompany);
+//	                    }
+//	                }
+//	            } catch (NumberFormatException nfe) {
+//	            } catch (Exception ex) {
+//	                log.error("Unable to save Company logo", ex);
+//	                addActionError("DEBUG company logo: " + ex.getMessage());
+//	            }
 
 	        }
             ////
@@ -727,6 +733,13 @@ public class CompanyContactAction extends ActionSupport {
 	}
 	public void setFreelancerAddressName(String freelancerAddressName) {
 	    this.freelancerAddressName = freelancerAddressName;
+	}
+	
+	public String getRemoveCompanyLogo() {
+	    return removeCompanyLogo;
+	}
+	public void setRemoveCompanyLogo(String removeCompanyLogo) {
+	    this.removeCompanyLogo = removeCompanyLogo;
 	}
 
 }
