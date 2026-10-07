@@ -496,10 +496,10 @@
 								<!--end::Header -->
 
 								<!--begin::Footer -->
-								<div class="card-header fs-5">
-									<div class="d-flex align-items-center mt-3 mb-2">
+								<div class="card-header fs-5 flex-nowrap">
+									<div class="d-flex align-items-center mt-3 mb-2 flex-grow-1" style="min-width: 0;">
 										<div class="d-flex flex-wrap align-items-center gap-3 row-gap-1">
-											<div class="fw-bold fs-6 text-dark">${leave.name}</div>
+											<div class="fw-bold fs-6 text-dark text-break">${leave.name}</div>
 											<div class="d-flex align-items-center">
 												<i class="ki-duotone ki-calendar-2 fs-5">
 													<span class="path1"></span>
@@ -561,7 +561,7 @@
 										</div>
 									</div>
 
-									<div class="card-toolbar">
+									<div class="card-toolbar flex-shrink-0 ms-3">
 										<div class="d-inline-flex align-items-center justify-content-end gap-2">
 
 											<span class="text-muted fs-7">
