@@ -1,0 +1,12 @@
+name: CA-II CodeQL config
+
+queries:
+  - uses: security-and-quality
+
+# Skip third-party/vendor code and build output.
+paths-ignore:
+  - WebContent/assets/plugins
+  - WebContent/WEB-INF/lib
+  - "**/*.min.js"
+  - bin
+  - apache-tomcat-*
