@@ -1003,16 +1003,36 @@ body { padding-bottom: calc(90px + env(safe-area-inset-bottom)); }
 		<span>Profile</span>
 	</a>
 </nav>
+<div id="liffNavOverlay" class="liff-loading-overlay" style="z-index:99;">
+	<div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading...</span></div>
+</div>
 <!--end::LIFF mobile navbar-->
 
 <script type="text/javascript">
-	$(function () {
+	function setLiffNavActive() {
 		var cur = (location.pathname.split('/').pop() || 'index')
 			.replace(/\.(jsp|action|html|php)$/i, '');
 		$('.liff-nav a[data-route]').each(function () {
-			if (new RegExp('^' + $(this).data('route') + '$', 'i').test(cur)) {
-				$(this).addClass('active');
-			}
+			$(this).toggleClass('active', new RegExp('^' + $(this).data('route') + '$', 'i').test(cur));
 		});
+	}
+	$(function () {
+		setLiffNavActive();
+	});
+
+	$(document).on('click', '.liff-nav a[data-route]', function (e) {
+		if ($('#liffNavOverlay').is(':visible')) {
+			e.preventDefault();
+			return;
+		}
+		$('.liff-nav a').removeClass('active');
+		$(this).addClass('active');
+		$('#liffNavOverlay').css('display', 'flex');
+	});
+	window.addEventListener('pageshow', function (e) {
+		if (e.persisted) {
+			$('#liffNavOverlay').hide();
+			setLiffNavActive();
+		}
 	});
 </script>
