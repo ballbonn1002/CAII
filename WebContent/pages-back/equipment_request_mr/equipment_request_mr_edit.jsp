@@ -221,134 +221,293 @@
 							</div>
 							<div class="card-body px-9 py-9">
 								<div class="row g-8">
+									<div class="col-6 d-flex flex-column gap-8">
+
+										<!-- ผู้ขอ -->
+										<div class="d-flex align-items-center">
+											<i class="ki-duotone ki-user-tick fs-3 me-3 flex-shrink-0">
+												<span class="path1"></span><span class="path2"></span><span class="path3"></span>
+											</i>
+											<span class="text-gray-900 fs-6 fw-normal">
+												<c:out value="${userRequest.employeeId}" /> - <c:out value="${userRequest.nameEN}" />
+											</span>
+										</div>
+
+										<!-- ประเภท / สินค้า / จำนวน -->
+										<div class="d-flex align-items-center flex-wrap">
+											<c:if test="${not empty mrItemType}">
+												<span class="d-flex align-items-center fw-medium text-gray-800">
+													<div class="symbol symbol-40px d-flex align-items-center">
+														<c:if test="${mrItemType == '1'}">
+															<i class="ki-duotone ki-monitor-mobile fs-2 text-primary me-2">
+																<span class="path1"></span><span class="path2"></span>
+															</i><span>Equipment</span>
+														</c:if>
+														<c:if test="${mrItemType == '2'}">
+															<i class="ki-duotone ki-lots-shopping fs-2 text-orange me-2">
+																<span class="path1"></span><span class="path2"></span>
+																<span class="path3"></span><span class="path4"></span>
+																<span class="path5"></span><span class="path6"></span>
+																<span class="path7"></span><span class="path8"></span>
+															</i><span>Consumables</span>
+														</c:if>
+														<c:if test="${mrItemType == '3'}">
+															<i class="ki-duotone ki-medal-star fs-2 text-teal me-2">
+																<span class="path1"></span><span class="path2"></span>
+																<span class="path3"></span><span class="path4"></span>
+															</i><span>Accessory</span>
+														</c:if>
+														<c:if test="${mrItemType == '4'}">
+															<i class="ki-duotone ki-parcel fs-2 text-success me-2">
+																<span class="path1"></span><span class="path2"></span>
+																<span class="path3"></span><span class="path4"></span>
+																<span class="path5"></span>
+															</i><span>Office Supplies</span>
+														</c:if>
+													</div>
+												</span>
+											</c:if>
+
+											<i class="ki-duotone ki-black-right mx-2 text-gray-500 fs-2">
+												<span class="path1"></span><span class="path2"></span><span class="path3"></span>
+											</i>
+											<span class="fs-6 fw-normal text-gray-900">
+												<c:out value="${mrItemName}"/>
+												<c:if test="${not empty mrSubItemName}">
+													<span class="mx-2 text-gray-500">|</span><c:out value="${mrSubItemName}"/>
+												</c:if>
+											</span>
+											<span class="mx-5 fs-4 text-gray-900">:</span>
+											<span class="fs-6 fw-normal text-gray-900">
+												<fmt:formatNumber value="${mr.amount}" maxFractionDigits="0" groupingUsed="false" />
+												<span id="mr_unit_label"><c:out value="${mrUnitName}" default="-"/></span>
+											</span>
+										</div>
+
+										<!-- ไฟล์แนบ (ถ้ามี) -->
+										<c:if test="${not empty attachmentList}">
+											<div class="d-flex align-items-start">
+												<i class="ki-duotone ki-folder fs-2x text-gray-600 me-6 flex-shrink-0">
+													<span class="path1"></span><span class="path2"></span>
+												</i>
+												<div class="flex-grow-1" style="min-width:0;">
+													<div id="existingFileList" class="d-flex flex-wrap align-items-center gap-6">
+														<c:forEach var="af" items="${attachmentList}">
+															<c:set var="fType" value="${fn:toLowerCase(af.type)}" />
+															<div class="d-flex align-items-center" data-file-id="${af.fileId}">
+																<a href="${pageContext.request.contextPath}${af.path}" target="_blank"
+																	class="d-flex align-items-center text-decoration-none text-gray-800">
+																	<c:choose>
+																		<c:when test="${fType == '.pdf'}">
+																			<img src="${pageContext.request.contextPath}/assets/media/svg/files/pdf.svg" class="w-25px h-25px me-3" alt="icon" />
+																		</c:when>
+																		<c:when test="${fType == '.doc' or fType == '.docx'}">
+																			<img src="${pageContext.request.contextPath}/assets/media/svg/files/doc.svg" class="w-25px h-25px me-3" alt="icon" />
+																		</c:when>
+																		<c:when test="${fType == '.png' or fType == '.jpg' or fType == '.jpeg' or fType == '.gif' or fType == '.webp'}">
+																			<img src="${pageContext.request.contextPath}/assets/media/svg/files/blank-image.svg" class="w-25px h-25px me-3" alt="icon" />
+																		</c:when>
+																		<c:otherwise>
+																			<img src="${pageContext.request.contextPath}/assets/media/svg/files/folder-document.svg" class="w-25px h-25px me-3" alt="icon" />
+																		</c:otherwise>
+																	</c:choose>
+																	<span class="fs-6 fw-medium text-truncate" style="max-width: 150px;" title="${fn:escapeXml(af.name)}${fn:escapeXml(af.type)}"><c:out value="${af.name}" /> <c:out value="${af.type}" /></span>
+																</a>
+																
+															</div>
+														</c:forEach>
+													</div>
+													<div id="attachFileList" class="d-flex flex-wrap align-items-center gap-6 mt-4"></div>
+												</div>
+											</div>
+										</c:if>
+									</div>
+
+									<div class="col-6 d-flex flex-column gap-8">
+
+										<!-- วันที่ -->
+										<div class="d-flex align-items-center">
+											<i class="ki-duotone ki-calendar-2 fs-3 me-3 flex-shrink-0">
+												<span class="path1"></span><span class="path2"></span><span class="path3"></span>
+												<span class="path4"></span><span class="path5"></span>
+											</i>
+											<span class="text-gray-900 fs-6 fw-normal">
+												<fmt:formatDate value="${mr.requestDate}" pattern="d MMM yyyy, HH:mm" />
+											</span>
+										</div>
+
+										<!-- description (ถ้ามี) -->
+										<c:if test="${not empty mr.description}">
+											<div class="d-flex align-items-start">
+												<i class="ki-duotone ki-document fs-3 text-muted me-3 flex-shrink-0">
+													<span class="path1"></span><span class="path2"></span>
+												</i>
+												<span class="fs-6 fw-normal text-gray-900 text-break"><c:out value="${mr.description}" /></span>
+											</div>
+										</c:if>
+
+										<!-- ลิงก์ (ถ้ามี) -->
+										<c:if test="${not empty mr.urlRef}">
+											<div class="d-flex align-items-center">
+												<i class="ki-duotone ki-fasten fs-3 text-gray-600 me-3 flex-shrink-0">
+													<span class="path1"></span><span class="path2"></span>
+												</i>
+												<a href="<c:out value='${mr.urlRef}'/>" target="_blank" rel="noopener"
+												class="fs-6 fw-normal text-gray-900 text-hover-primary text-truncate d-block"
+												style="min-width:0;" title="<c:out value='${mr.urlRef}'/>">
+													<c:out value="${mr.urlRef}" />
+												</a>
+											</div>
+										</c:if>
+									</div>
+
+								</div>
+							</div>
+							<!-- <div class="card-body px-9 py-9">
+								<div class="row g-8">
 									<div class="col-6">
 										<div class="d-flex align-items-center">
-											<div class="symbol symbol-45px symbol-circle me-5 flex-shrink-0">
-												<c:choose>
-													<c:when test="${not empty userRequest.path}">
-														<img src="${pageContext.request.contextPath}${userRequest.path}"
-															alt="<c:out value='${userRequest.nameEN}' />" class="object-fit-cover" />
-													</c:when>
-													<c:otherwise>
-														<span class="symbol-label bg-light-primary text-primary fw-bold fs-4">
-															<c:out value="${empty userRequest.nameEN ? '?' : fn:toUpperCase(fn:substring(userRequest.nameEN, 0, 1))}" />
-														</span>
-													</c:otherwise>
-												</c:choose>
-											</div>
-
-											<div class="d-flex flex-column">
-												<span class="text-gray-900 fs-6 fw-normal mb-3">
-													<c:out value="${userRequest.employeeId}" /> - <c:out value="${userRequest.nameEN}" />
-												</span>
-												<span class="text-gray-900 fs-6 fw-normal">
-													<fmt:formatDate value="${mr.requestDate}" pattern="d MMM yyyy, HH:mm" />
-												</span>
-											</div>
-
+											<i class="ki-duotone ki-user-tick fs-3 me-3">
+												<span class="path1"></span><span class="path2"></span><span class="path3"></span>
+											</i>
+											<span class="text-gray-900 fs-6 fw-normal ">
+												<c:out value="${userRequest.employeeId}" /> - <c:out value="${userRequest.nameEN}" />
+											</span>
 										</div>
-										
+									</div>
+
+									<div class="col-6 d-flex align-items-center">
+										<i class="ki-duotone ki-calendar-2 fs-3 me-3">
+											<span class="path1"></span><span class="path2"></span><span class="path3"></span>
+											<span class="path4"></span><span class="path5"></span>
+										</i>
+										<span class="text-gray-900 fs-6 fw-normal">
+											<fmt:formatDate value="${mr.requestDate}" pattern="d MMM yyyy, HH:mm" />
+										</span>
+									</div>
+								</div>
+
+								<div class="row g-8 mt-3">
+									<div class="col-6 d-flex align-items-center flex-wrap mb-6">
+										<c:if test="${not empty mrItemType}">
+											<span class="d-flex align-items-center fw-medium text-gray-800 ">
+												<div class="symbol symbol-40px d-flex align-items-center">
+													<c:if test="${mrItemType == '1'}">
+														<i class="ki-duotone ki-monitor-mobile fs-2 text-primary me-2">
+															<span class="path1"></span><span class="path2"></span>
+														</i><span>Equipment</span>
+													</c:if>
+													<c:if test="${mrItemType == '2'}">
+														<i class="ki-duotone ki-lots-shopping fs-2 text-orange me-2">
+															<span class="path1"></span><span class="path2"></span>
+															<span class="path3"></span><span class="path4"></span>
+															<span class="path5"></span><span class="path6"></span>
+															<span class="path7"></span><span class="path8"></span>
+														</i><span>Consumables</span>
+													</c:if>
+													<c:if test="${mrItemType == '3'}">
+														<i class="ki-duotone ki-medal-star fs-2 text-teal me-2">
+															<span class="path1"></span><span class="path2"></span>
+															<span class="path3"></span><span class="path4"></span>
+														</i><span>Accessory</span>
+													</c:if>
+													<c:if test="${mrItemType == '4'}">
+														<i class="ki-duotone ki-parcel fs-2 text-success me-2">
+															<span class="path1"></span><span class="path2"></span>
+															<span class="path3"></span><span class="path4"></span>
+															<span class="path5"></span>
+														</i><span>Office Supplies</span>
+													</c:if>
+												</div>
+											</span>
+										</c:if>
+												
+										<i class="ki-duotone ki-black-right mx-2 text-gray-500 fs-2">
+											<span class="path1"></span><span class="path2"></span><span class="path3"></span>
+										</i>
+										<span class="fs-6 fw-normal text-gray-900">
+											<c:out value="${mrItemName}"/>
+												<c:if test="${not empty mrSubItemName}">
+													<span class="mx-2 text-gray-500">|</span><c:out value="${mrSubItemName}"/>
+												</c:if>
+										</span>
+										<span class="mx-5 fs-4 text-gray-900">:</span>
+										<span class="fs-6 fw-normal text-gray-900"> 
+											<fmt:formatNumber value="${mr.amount}" maxFractionDigits="0" groupingUsed="false" />
+											<span id="mr_unit_label"><c:out value="${mrUnitName}" default="-"/></span>
+										</span>
 									</div>
 									<div class="col-6">
-										<div class="row">
-											<div class="d-flex align-items-center flex-wrap mb-6">
-												<c:if test="${not empty mrItemType}">
-													<span class="d-flex align-items-center fw-medium text-gray-800 ">
-														<div class="symbol symbol-40px d-flex align-items-center">
-															<c:if test="${mrItemType == '1'}">
-																<i class="ki-duotone ki-monitor-mobile fs-2 text-primary me-2">
-																	<span class="path1"></span><span class="path2"></span>
-																</i><span>Equipment</span>
-															</c:if>
-															<c:if test="${mrItemType == '2'}">
-																<i class="ki-duotone ki-lots-shopping fs-2 text-orange me-2">
-																	<span class="path1"></span><span class="path2"></span>
-																	<span class="path3"></span><span class="path4"></span>
-																	<span class="path5"></span><span class="path6"></span>
-																	<span class="path7"></span><span class="path8"></span>
-																</i><span>Consumables</span>
-															</c:if>
-															<c:if test="${mrItemType == '3'}">
-																<i class="ki-duotone ki-medal-star fs-2 text-teal me-2">
-																	<span class="path1"></span><span class="path2"></span>
-																	<span class="path3"></span><span class="path4"></span>
-																</i><span>Accessory</span>
-															</c:if>
-															<c:if test="${mrItemType == '4'}">
-																<i class="ki-duotone ki-parcel fs-2 text-success me-2">
-																	<span class="path1"></span><span class="path2"></span>
-																	<span class="path3"></span><span class="path4"></span>
-																	<span class="path5"></span>
-																</i><span>Office Supplies</span>
-															</c:if>
-														</div>
-													</span>
-												</c:if>
-												
-												<i class="ki-duotone ki-black-right mx-2 text-gray-500 fs-2">
-													<span class="path1"></span><span class="path2"></span><span class="path3"></span>
+										<c:if test="${not empty mr.description}">
+											<div class="d-flex align-items-center">
+												<i class="ki-duotone ki-document fs-2 fw-normal text-muted me-3">
+													<span class="path1"></span><span class="path2"></span>
 												</i>
-												<span class="fs-6 fw-normal text-gray-900">
-													<c:out value="${mrItemName}"/>
-													<c:if test="${not empty mrSubItemName}">
-														<span class="mx-2 text-gray-500">|</span><c:out value="${mrSubItemName}"/>
-													</c:if>
-												</span>
-												<span class="mx-5 fs-4 text-gray-900">:</span>
-												<span class="fs-6 fw-normal text-gray-900"> 
-													<fmt:formatNumber value="${mr.amount}" maxFractionDigits="0" groupingUsed="false" />
-													<span id="mr_unit_label"><c:out value="${mrUnitName}" default="-"/></span>
-												</span>
-											</div>
-
-											<c:if test="${not empty mr.description}">
-												<div class="d-flex align-items-center">
-													<i class="ki-duotone ki-document fs-2 fw-normal text-muted me-2">
-																<span class="path1"></span>
-																<span class="path2"></span>
-													</i>
 													<span class="fs-5 fw-normal text-gray-900">${mr.description}</span>
-												</div>
-											</c:if>
-									
-										</div>
-									</div>
-									<c:if test="${not empty attachmentList}">
-										<div class="col-12">
-											<h4 class="fw-semibold text-gray-900">
-												Attach Files
-											</h4>
-											<div id="existingFileList" class="d-flex flex-wrap align-items-center gap-6 mt-4">
-												<c:forEach var="af" items="${attachmentList}">
-													<c:set var="fType" value="${fn:toLowerCase(af.type)}" />
-													<div class="d-flex align-items-center" data-file-id="${af.fileId}">
-														<a href="${pageContext.request.contextPath}${af.path}" target="_blank"
-															class="d-flex align-items-center text-decoration-none text-gray-800">
-															<c:choose>
-																<c:when test="${fType == '.pdf'}">
-																	<img src="${pageContext.request.contextPath}/assets/media/svg/files/pdf.svg" class="w-25px h-25px me-3" alt="icon" />
-																</c:when>
-																<c:when test="${fType == '.doc' or fType == '.docx'}">
-																	<img src="${pageContext.request.contextPath}/assets/media/svg/files/doc.svg" class="w-25px h-25px me-3" alt="icon" />
-																</c:when>
-																<c:when test="${fType == '.png' or fType == '.jpg' or fType == '.jpeg' or fType == '.gif' or fType == '.webp'}">
-																	<img src="${pageContext.request.contextPath}/assets/media/svg/files/blank-image.svg" class="w-25px h-25px me-3" alt="icon" />
-																</c:when>
-																<c:otherwise>
-																	<img src="${pageContext.request.contextPath}/assets/media/svg/files/folder-document.svg" class="w-25px h-25px me-3" alt="icon" />
-																</c:otherwise>
-															</c:choose>
-															<span class="fs-6 fw-medium text-truncate" style="max-width: 220px;" title="${fn:escapeXml(af.name)}${fn:escapeXml(af.type)}"><c:out value="${af.name}" /> <c:out value="${af.type}" /></span>
-														</a>
-													</div>
-												</c:forEach>
 											</div>
-											<div id="attachFileList" class="d-flex flex-wrap align-items-center gap-6 mt-4"></div>
+										</c:if>
+									</div>
+								</div>
+
+								<div class="row g-8 mt-3">
+									<c:if test="${not empty attachmentList}">
+										<div class="col-6">
+											<div class="d-flex align-items-start">
+												<i class="ki-duotone ki-folder fs-2x text-gray-600 me-6 flex-shrink-0">
+													<span class="path1"></span><span class="path2"></span>
+												</i>
+
+												<div class="flex-grow-1" style="min-width:0;">
+													<div id="existingFileList" class="d-flex flex-wrap align-items-center column-gap-10 row-gap-5">
+														<c:forEach var="af" items="${attachmentList}">
+															<c:set var="fType" value="${fn:toLowerCase(af.type)}" />
+															<div class="d-flex align-items-center" data-file-id="${af.fileId}">
+																<a href="${pageContext.request.contextPath}${af.path}" target="_blank"
+																class="d-flex align-items-center text-decoration-none text-gray-800 text-hover-primary">
+																	<c:choose>
+																		<c:when test="${fType == '.pdf'}">
+																			<img src="${pageContext.request.contextPath}/assets/media/svg/files/pdf.svg" class="w-30px h-30px me-3 flex-shrink-0" alt="icon" />
+																		</c:when>
+																		<c:when test="${fType == '.doc' or fType == '.docx'}">
+																			<img src="${pageContext.request.contextPath}/assets/media/svg/files/doc.svg" class="w-30px h-30px me-3 flex-shrink-0" alt="icon" />
+																		</c:when>
+																		<c:when test="${fType == '.png' or fType == '.jpg' or fType == '.jpeg' or fType == '.gif' or fType == '.webp'}">
+																			<img src="${pageContext.request.contextPath}/assets/media/svg/files/blank-image.svg" class="w-30px h-30px me-3 flex-shrink-0" alt="icon" />
+																		</c:when>
+																		<c:otherwise>
+																			<img src="${pageContext.request.contextPath}/assets/media/svg/files/folder-document.svg" class="w-30px h-30px me-3 flex-shrink-0" alt="icon" />
+																		</c:otherwise>
+																	</c:choose>
+																	<span class="fs-5 fw-medium text-truncate" style="max-width: 220px;"
+																		title="${fn:escapeXml(af.name)}${fn:escapeXml(af.type)}"><c:out value="${af.name}" /><c:out value="${af.type}" /></span>
+																</a>
+															</div>
+														</c:forEach>
+													</div>
+													<div id="attachFileList" class="d-flex flex-wrap align-items-center gap-6 mt-4"></div>
+												</div>
+											</div>
+										</div>
+									</c:if>
+
+									<c:if test="${not empty mr.urlRef}">
+										<div class="col-6">
+											<div class="d-flex align-items-center">
+												<i class="ki-duotone ki-fasten fs-2 fw-normal text-gray-600 me-3 flex-shrink-0">
+													<span class="path1"></span><span class="path2"></span>
+												</i>
+												<a href="<c:out value='${mr.urlRef}'/>" target="_blank" rel="noopener"
+													class="fs-5 fw-normal text-gray-900 text-hover-primary text-truncate d-block"
+													style="min-width:0;" title="<c:out value='${mr.urlRef}'/>">
+													<c:out value="${mr.urlRef}" />
+												</a>
+											</div>
 										</div>
 									</c:if>
 								</div>
-							</div>
+							</div> -->
 						</div>
+
 					</c:otherwise>
 				</c:choose>
 					

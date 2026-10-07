@@ -1220,6 +1220,4 @@ WHERE p.parent_product_id <> '0' AND p.sequence REGEXP '^[0-9]+$';
   MODIFY COLUMN `time_create` TIMESTAMP NULL DEFAULT NULL,
   DROP COLUMN `item_type`;
 
--- 02/10/2026 June: add 'ref_link' column to 'pr_parent' table
-ALTER TABLE pr_parent ADD COLUMN ref_link text DEFAULT NULL;
 

@@ -160,7 +160,7 @@
 											<th class="min-w-50px text-center">#</th>
 											<th class="min-w-100px">MR ID</th>
 											<th class="min-w-130px">Category</th>
-											<th class="min-w-150px">Product Name</th>
+											<th class="min-w-200px">Product Name</th>
 											<th class="min-w-130px">Quantity / Unit</th>
 											<th class="min-w-225px">Request By</th>
 											<th class="min-w-130px text-end px-3">Status</th>
@@ -217,7 +217,8 @@
 											<td class="text-gray-900 fs-6 fw-normal text-start">
 												<c:choose>
 													<c:when test="${not empty mrItem.product_name}">
-														<c:out value="${mrItem.product_name}" />
+														<c:if test="${not empty mrItem.parent_product_name}">
+															<c:out value="${mrItem.parent_product_name}" /> &gt; </c:if><c:out value="${mrItem.product_name}" />
 													</c:when>
 													<c:otherwise>-</c:otherwise>
 												</c:choose>

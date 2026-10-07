@@ -29,6 +29,8 @@ public class EquipmentRequestMrNewDAOImpl implements EquipmentRequestMrNewDAO {
 				"SELECT mr.*, " +
 				" pd.product_no AS product_no, " +
 				" pd.product_name AS product_name, " +
+				" CASE WHEN pd.parent_product_id IS NULL OR pd.parent_product_id = '0' " +
+				" THEN NULL ELSE pm.product_name END AS parent_product_name, " +
 				" pm.product_type AS product_type, " +
 				" (SELECT u.unit_name FROM unit_of_measure u " +
 				"   WHERE u.product_id = pm.product_id " +
@@ -66,6 +68,8 @@ public class EquipmentRequestMrNewDAOImpl implements EquipmentRequestMrNewDAO {
 				"SELECT mr.*, " +
 				" pd.product_no AS product_no, " +
 				" pd.product_name AS product_name, " +
+				" CASE WHEN pd.parent_product_id IS NULL OR pd.parent_product_id = '0' " +
+				" THEN NULL ELSE pm.product_name END AS parent_product_name, " +
 				" pm.product_type AS product_type, " +
 				" (SELECT u.unit_name FROM unit_of_measure u " +
 				"   WHERE u.product_id = pm.product_id " +
@@ -230,7 +234,7 @@ public class EquipmentRequestMrNewDAOImpl implements EquipmentRequestMrNewDAO {
 				"  mr.status_id AS mr_status, " +
 				"  mr.request_user, mr.request_date, mr.time_create, " +
 				"  COALESCE(mr.time_update, mr.time_create) AS time_sort, " +
-				"  pd.product_name, " +
+				"  pd.product_name, pp.product_name AS parent_product_name, " +
 				"  COALESCE(pp.product_type, pd.product_type) AS product_type, " +
 				"  ur.employee_id AS user_create_emp_id, " +
 				"  ur.name_en AS user_create_name, " +

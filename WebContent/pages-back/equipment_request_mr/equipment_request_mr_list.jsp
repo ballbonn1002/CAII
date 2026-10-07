@@ -217,7 +217,8 @@
 											<td class="text-gray-900 fs-6 fw-normal text-start">
 												<c:choose>
 													<c:when test="${not empty mrItem.product_name}">
-														<c:out value="${mrItem.product_name}" />
+														<c:if test="${not empty mrItem.parent_product_name}">
+															<c:out value="${mrItem.parent_product_name}" /> &gt; </c:if><c:out value="${mrItem.product_name}" />
 													</c:when>
 													<c:otherwise>-</c:otherwise>
 												</c:choose>

@@ -913,9 +913,10 @@ public class EquipmentRequestMrAction extends ActionSupport {
 
             EquipmentRequestMr mr = equipmentRequestMrNewDAO.findMrById(mrId);
             mr.setStatusId(status);
-            if (reason != null) {
+            if (reason != null && !reason.trim().isEmpty()) {
                 mr.setReason(reason.trim());
             }
+            
             if ("3".equals(status)) {
                 mr.setApproveUser(onlineUser.getId());
                 mr.setApproveDate(DateUtil.getCurrentTime());

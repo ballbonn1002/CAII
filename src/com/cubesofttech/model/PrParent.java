@@ -39,9 +39,6 @@ public class PrParent implements Serializable{
 	 
 	 @Column(name = "description")
 	 private String description;
-
-	 @Column(name = "ref_link")
-	 private String refLink;
 	 
 	 @Column(name = "user_create")
 	 private String userCreate;
@@ -117,14 +114,6 @@ public class PrParent implements Serializable{
 
 	 public void setDescription(String description) {
 		 this.description = description;
-	 }
-
-	 public String getRefLink() {
-		 return refLink;
-	 }
-
-	 public void setRefLink(String refLink) {
-		 this.refLink = refLink;
 	 }
 
 	 public String getUserCreate() {
