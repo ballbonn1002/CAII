@@ -94,7 +94,7 @@
 				<div class="row g-8 mt-0">
 
 				<!-- Personal Information -->
-				<div class="col-xl-8">
+				<div class="col-xl-8 row g-8 mt-0">
 
 					<div class="card shadow-sm">
 
@@ -171,13 +171,13 @@
 										type="file"
 										id="profile_image"
 										name="profileImage"
-										accept=".png,.jpg,.jpeg"
+										accept=".png,.jpg,.jpeg,.webp"
 										class="d-none">
 
 								</div>
 
 								<div class="text-muted fs-7 mt-3">
-									Allowed file types: png, jpg, jpeg.
+									Allowed file types: png, jpg, jpeg, webp.
 								</div>
 
 							</div>
