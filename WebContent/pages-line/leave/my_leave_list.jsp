@@ -645,9 +645,6 @@
 .leave-summary-dots span { width: 6px; height: 6px; border-radius: 50%; background: #D9D9E3; transition: background .2s; }
 .leave-summary-dots span.active { background: #1B84FF; }
 .card.card-bordered.liff-leave-card { box-shadow: var(--bs-root-card-box-shadow); }
-.liff-day-stat { flex: none; width: 64px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; line-height: 1.1; }
-.card .liff-status-band { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 10px 16px; border-top: 0; }
-.liff-status-band .liff-status-text i { color: inherit; }
 .liff-fab {
 	position: fixed;
 	right: max(16px, calc((100vw - 393px) / 2 + 16px)); /* ชิดขวา .liff-shell */
@@ -914,7 +911,7 @@
 								</div>
 							</c:if>
 						</div>
-						<div class="liff-day-stat border-start border-gray-200">
+						<div class="d-flex flex-column align-items-center justify-content-center flex-shrink-0 w-65px gap-1 lh-1 border-start border-gray-200">
 							<span class="fs-2x fw-bold text-gray-900"><fmt:formatNumber type="number" pattern="#.###" value="${leave.no_day}"/></span>
 							<span class="fs-base fw-semibold text-gray-500">${leave.no_day > 1 ? 'days' : 'day'}</span>
 						</div>
@@ -926,12 +923,12 @@
 
 				<c:set var="st" value="${leave.leave_status_id.toString()}" />
 				<c:set var="stColor" value="${st == '1' ? 'success' : st == '2' ? 'danger' : st == '3' ? 'dark' : 'warning'}" />
-				<div class="card-footer liff-status-band bg-light-${stColor}">
-					<span class="liff-status-text d-inline-flex align-items-center gap-2 fs-6 fw-semibold text-${stColor}">
-						<c:if test="${st == '0'}"><i class="ki-outline ki-time fs-4"></i>Wait for approve</c:if>
-						<c:if test="${st == '1'}"><i class="ki-outline ki-check-circle fs-4"></i>Approved</c:if>
-						<c:if test="${st == '2'}"><i class="ki-outline ki-cross-circle fs-4"></i>Reject</c:if>
-						<c:if test="${st == '3'}"><i class="ki-outline ki-minus-circle fs-4"></i>Cancel</c:if>
+				<div class="card-footer d-flex align-items-center justify-content-between gap-3 px-5 py-3 border-top-0 bg-light-${stColor}">
+					<span class="d-inline-flex align-items-center gap-2 fs-6 fw-semibold text-${stColor}">
+						<c:if test="${st == '0'}"><i class="ki-outline ki-time fs-4 text-warning"></i>Wait for approve</c:if>
+						<c:if test="${st == '1'}"><i class="ki-outline ki-check-circle fs-4 text-success"></i>Approved</c:if>
+						<c:if test="${st == '2'}"><i class="ki-outline ki-cross-circle fs-4 text-danger"></i>Reject</c:if>
+						<c:if test="${st == '3'}"><i class="ki-outline ki-minus-circle fs-4 text-dark"></i>Cancel</c:if>
 					</span>
 					<c:if test="${st != '0'}">
 						<span class="fs-base text-gray-600"><fmt:formatDate value="${leave.time_update}" type="both" pattern="d MMM yyyy, H:mm"/></span>
@@ -1144,11 +1141,11 @@ function leaveStatus(id) {
 			+ bar('55%', 16)
 			+ '<div class="d-flex align-items-stretch justify-content-between gap-3">'
 			+ '<div class="d-flex flex-column gap-3">' + row('150px') + row('60px') + row('90px') + '</div>'
-			+ '<div class="liff-day-stat border-start border-gray-200">' + bar('22px', 20) + bar('28px', 10) + '</div>'
+			+ '<div class="d-flex flex-column align-items-center justify-content-center flex-shrink-0 w-65px gap-1 lh-1 border-start border-gray-200">' + bar('22px', 20) + bar('28px', 10) + '</div>'
 			+ '</div>'
 			+ bar('130px', 10)
 			+ '</div>'
-			+ '<div class="card-footer liff-status-band">' + bar('100px', 14) + bar('110px', 10) + '</div>'
+			+ '<div class="card-footer d-flex align-items-center justify-content-between gap-3 px-5 py-3 border-top-0">' + bar('100px', 14) + bar('110px', 10) + '</div>'
 			+ '</div>';
 		$('#leaveList').before('<div id="sortSkeleton">' + skel + skel + skel + '</div>');
 	}
