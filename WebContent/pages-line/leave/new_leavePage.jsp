@@ -515,8 +515,7 @@
 .liff-upload-badge { box-sizing: border-box; display: inline-flex; align-items: center; justify-content: center; gap: 10px; margin-left: auto; width: 84px; height: 24px; padding: 0 8px; border-radius: 5.53px; opacity: 1; background: var(--bs-primary-bg-subtle); color: var(--bs-primary); font-weight: 600; font-size: 12px; white-space: nowrap; cursor: pointer; }
 .liff-upload-badge i { color: var(--bs-primary); }
 .liff-submit-bar { display: flex; gap: 10px; margin-top: 20px; }
-.liff-submit-bar .btn { flex: 1; }
-#status.liff-status-select { font-size: 12px; font-weight: 600; padding: 4px 10px; min-width: 0; width: auto; border-radius: 8px; }</style>
+.liff-submit-bar .btn { flex: 1; }</style>
 
 <div class="liff-shell">
 
@@ -592,7 +591,7 @@
 	<form method="post" id="formid" class="form-horizontal liff-initializing" aria-busy="true" action="line_new_LeaveEdit_Do" enctype="multipart/form-data">
 
 		<div class="d-none">
-			<select class="form-select liff-status-select" id="status" name="status" disabled required>
+			<select class="form-select" id="status" name="status" disabled required>
 				<option value="0">Wait for approve</option>
 				<option value="1">Approved</option>
 				<option value="2">Reject</option>
@@ -702,7 +701,7 @@
 			<label for="myFile" id="lbFile" class="liff-upload-badge">
 				<i class="ki-duotone ki-file-up fs-7"><span class="path1"></span><span class="path2"></span></i>
 				Upload
-				<input type="file" id="myFile" name="fileUpload" style="display:none;" accept="image/*,application/pdf,application/zip" multiple>
+				<input type="file" id="myFile" name="fileUpload" class="d-none" accept="image/*,application/pdf,application/zip" multiple>
 			</label>
 			<input type="hidden" name="deleteFileId" id="deleteFileId">
 			<input type="hidden" name="fileUploadSize" value="${size}" id="size">
@@ -717,7 +716,7 @@
 				<label for="afterFile" id="lbafterFile" class="liff-upload-badge">
 					<i class="ki-duotone ki-file-up fs-7"><span class="path1"></span><span class="path2"></span></i>
 					Upload
-					<input type="file" id="afterFile" name="afterFileUpload" style="display:none;" accept="image/*,application/pdf" onchange="previewAfterFile(this)">
+					<input type="file" id="afterFile" name="afterFileUpload" class="d-none" accept="image/*,application/pdf" onchange="previewAfterFile(this)">
 				</label>
 			</div>
 			<div id="exitingFilePreviewContainer" class="d-flex flex-wrap gap-2 mb-3"></div>

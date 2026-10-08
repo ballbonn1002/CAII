@@ -21,7 +21,7 @@
 				<div class="d-flex align-items-center gap-4 mb-4 fs-5">
 					<span class="fw-bold text-primary">#<span id="leaveid"></span></span>
 					<span class="fw-semibold text-dark" id="leavetype"></span>
-					<span class="rounded-circle flex-shrink-0" style="width:8px; height:8px; background-color:var(--bs-text-gray-400);"></span><%-- จุดคั่น --%>
+					<span class="rounded-circle flex-shrink-0 w-8px h-8px bg-gray-400"></span>
 					<span class="badge badge-light-primary fw-semibold" id="noday"></span>
 				</div>
 

@@ -683,7 +683,7 @@
 	</div>
 
 	<a href="javascript:void(0)" class="liff-fab" onclick="add()" aria-label="Add">
-		<i class="ki-duotone ki-plus" style="color:#FFFFFF; font-size:1.75rem;"></i>
+		<i class="ki-duotone ki-plus text-white" style="font-size:1.75rem;"></i>
 	</a>
 
 	<!-- Summary Leave -->
@@ -813,8 +813,8 @@
 
 					<div class="leave-summary-item">
 						<span class="symbol symbol-50px">
-							<span class="symbol-label" style="background-color: #4B5675;">
-								<i class="ki-duotone ki-abstract-12 " style="color:#FFFFFF; font-size:1.75rem;">
+							<span class="symbol-label bg-gray-700">
+								<i class="ki-duotone ki-abstract-12 text-white" style="font-size:1.75rem;">
 									<span class="path1"></span><span class="path2"></span>
 								</i>
 							</span>
@@ -1245,7 +1245,7 @@ function changeStatus(id) {
         html: `
             <p>You want to cancel this leave!</p>
             <span class="col-lg-12 d-block text-start">
-                Please enter a reason.<span style="color:red;">*</span>
+                Please enter a reason.<span class="text-danger">*</span>
             </span>
             <textarea id="text" rows="4" class="form-control mt-2" placeholder="Enter reason..."></textarea>
         `,
