@@ -1979,7 +1979,7 @@ var AppCalendar = function() {
 	
 	function buildInOutColumnHtml(iconHtml, time) {
 		if (!time) return '';
-		return '<div style="display:flex;flex-direction:column;align-items:center;gap:var(--liff-inout-gap);">' + iconHtml + '<span class="fw-bold fs-6 text-capitalize lh-1" style="letter-spacing:0;">' + time + '</span></div>';
+		return '<div class="d-flex flex-column align-items-center" style="gap:var(--liff-inout-gap);">' + iconHtml + '<span class="fw-bold fs-6 text-capitalize lh-1" style="letter-spacing:0;">' + time + '</span></div>';
 	}
 
 	function buildDayRowHtml(weekIndex, rowStyle, iconClass, dayStr, statusHtml, checkinHtml, checkoutHtml) {
@@ -1987,10 +1987,10 @@ var AppCalendar = function() {
 		html += '<div class="d-flex align-items-stretch">';
 		html += '<span class="bullet bullet-vertical ' + iconClass + '" style="width:var(--liff-bullet-w);"></span>';
 		html += '<div class="card-body d-flex align-items-center justify-content-between py-5 px-4 flex-fill">';
-		html += '<div><span class="day-date">' + dayStr + '</span>' + (statusHtml ? '<br/><span style="display:inline-block;margin-top:10px;">' + statusHtml + '</span>' : '') + '</div>';
+		html += '<div><span class="day-date">' + dayStr + '</span>' + (statusHtml ? '<br/><span class="d-inline-block mt-3">' + statusHtml + '</span>' : '') + '</div>';
 		html += '<div class="d-flex gap-5">';
-		html += '<div style="display:flex;flex-direction:column;align-items:center;min-width:var(--liff-col-w);">' + checkinHtml + '</div>';
-		html += '<div style="display:flex;flex-direction:column;align-items:center;min-width:var(--liff-col-w);">' + checkoutHtml + '</div>';
+		html += '<div class="d-flex flex-column align-items-center" style="min-width:var(--liff-col-w);">' + checkinHtml + '</div>';
+		html += '<div class="d-flex flex-column align-items-center" style="min-width:var(--liff-col-w);">' + checkoutHtml + '</div>';
 		html += '</div></div></div></div>';
 		return html;
 	}
@@ -2307,7 +2307,7 @@ var AppCalendar = function() {
 		for (var w = 0; w < weekCount; w++) {
 			var btnClass = (w === defaultWeek) ? 'btn-danger' : 'bg-transparent border-0 text-gray-700';
 			$row.append(
-				$('<button type="button" class="btn btn-sm ' + btnClass + ' d-flex flex-column align-items-center lh-1 gap-2" style="border-radius:600px; flex:1 1 0; max-width:45px; min-width:0; height:62px; justify-content:center;" data-week="' + w + '"><span class="fs-9 fw-semibold week-label">Week</span><span class="fs-6 fw-bold">' + (w + 1) + '</span></button>')
+				$('<button type="button" class="btn btn-sm ' + btnClass + ' d-flex flex-column align-items-center justify-content-center lh-1 gap-2 rounded-pill mw-45px" style="flex:1 1 0; min-width:0; height:62px;" data-week="' + w + '"><span class="fs-9 fw-semibold week-label">Week</span><span class="fs-6 fw-bold">' + (w + 1) + '</span></button>')
 			);
 		}
 
