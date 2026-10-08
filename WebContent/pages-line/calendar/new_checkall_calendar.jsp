@@ -1869,7 +1869,7 @@ var AppCalendar = function() {
         <c:forEach var="leave" items="${leave}">
         <c:set var = "rawLeaveDesc" value = "${leave.description}"/>
         <% pageContext.setAttribute("leaveDescClean", escFreeText((String) pageContext.getAttribute("rawLeaveDesc"))); %>
-            if (${leave.leave_status_id} != 3 && ${leave.leave_status_id} != 2) {
+            if ('${leave.leave_status_id}' != '3' && '${leave.leave_status_id}' != '2') {
                 var color = '${leave.leave_type_id}' === '3' ? // ลาป่วย
                     {bg: '#7239ea', border: '#7239ea', className: 'fc-event-info'} :
                     {bg: '#007bff', border: '#007bff', className: 'fc-event-primary'};
