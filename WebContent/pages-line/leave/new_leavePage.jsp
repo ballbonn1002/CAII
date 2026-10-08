@@ -1,6 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
 <%@ taglib uri="/WEB-INF/tlds/permission.tld" prefix="perm"%>
 <%@ page trimDirectiveWhitespaces="true"%>
 
@@ -1007,8 +1008,9 @@ function initLeaveTypeRadios() {
 	let leaveCheck = [${leave1Check},${leave2Check},${leave3Check},'','',${leave6Check}];
 	// radio 1 ตัว (id 6 มี wrapper id ไว้ซ่อน/แสดงตามเดือน)
 	function leaveTypeRadioHtml(type, disabled) {
+		var labelHtml = $('<div>').text(type.name).html();
 		return '<div class="col-6 col-sm-6 col-md-3"' + (type.id == '6' ? ' id="label_lt_6"' : '') + '><div class="form-check form-check-custom form-check-solid mb-3">'
-			+ '<input class="form-check-input me-3" type="radio" name="leaveType" id="lt_' + type.id + '" value="' + type.id + '"' + (disabled ? ' disabled' : '') + ' required>' + type.name
+			+ '<input class="form-check-input me-3" type="radio" name="leaveType" id="lt_' + type.id + '" value="' + type.id + '"' + (disabled ? ' disabled' : '') + ' required>' + labelHtml
 			+ '</div></div>'
 			+ '<input type="hidden" class="hide" name="leaveType_hidden" id="lt_hidden">';
 	}
@@ -1190,8 +1192,8 @@ $(() => {
 	// วันที่เริ่มต้น (มาจากปฏิทินลา)
 	function initDefaultDate() {
 		/* Date from leave calendar */
-		$('#date_from').val('${date}');
-		$('#date_to').val('${date}');
+		$('#date_from').val('${fn:escapeXml(date)}');
+		$('#date_to').val('${fn:escapeXml(date)}');
 		$('#amount').val(1);
 	}
 
@@ -1327,7 +1329,7 @@ $(() => {
 				displayText += name;
 			}
 
-			let option = '<option value="' + id + '">' + displayText + '</option>';
+			let option = $('<option>').val(id).text(displayText);
 
 			if (status == '1') {
 				$('#u_enable').append(option);
@@ -1335,7 +1337,7 @@ $(() => {
 				$('#u_disable').append(option);
 			}
 			if (id == manager) {
-				$('#approver').append(option);
+				$('#approver').append($('<option>').val(id).text(displayText));
 			}
 		}
 		$('#user').val(user);

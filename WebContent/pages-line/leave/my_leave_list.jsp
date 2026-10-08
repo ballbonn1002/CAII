@@ -704,7 +704,7 @@
 									<span class="badge badge-sm badge-warning"><fmt:formatNumber type="number" pattern="#.##" value="${leaveWA1}"/></span>
 								</c:if>
 							</span>
-							<span class="text-gray-600 fs-base lh-sm">${type_1}</span>
+							<span class="text-gray-600 fs-base lh-sm">${fn:escapeXml(type_1)}</span>
 						</div>
 					</div>
 
@@ -725,7 +725,7 @@
 									<span class="badge badge-sm badge-warning"><fmt:formatNumber type="number" pattern="#.##" value="${leaveWA2}"/></span>
 								</c:if>
 							</span>
-							<span class="text-gray-600 fs-base lh-sm">${type_2}</span>
+							<span class="text-gray-600 fs-base lh-sm">${fn:escapeXml(type_2)}</span>
 						</div>
 					</div>
 
@@ -765,7 +765,7 @@
 									<span class="badge badge-sm badge-warning"><fmt:formatNumber type="number" pattern="#.##" value="${LeaveWAnumT3}"/></span>
 								</c:if>
 							</span>
-							<span class="text-gray-600 fs-base lh-sm">${type_3}</span>
+							<span class="text-gray-600 fs-base lh-sm">${fn:escapeXml(type_3)}</span>
 						</div>
 					</div>
 
@@ -785,7 +785,7 @@
 									<span class="badge badge-sm badge-warning"><fmt:formatNumber type="number" pattern="#.##" value="${LeaveWAnumT4}"/></span>
 								</c:if>
 							</span>
-							<span class="text-gray-600 fs-base lh-sm">${type_4}</span>
+							<span class="text-gray-600 fs-base lh-sm">${fn:escapeXml(type_4)}</span>
 						</div>
 					</div>
 
@@ -804,7 +804,7 @@
 									<span class="badge badge-sm badge-warning"><fmt:formatNumber type="number" pattern="#.##" value="${LeaveWAnumT5}"/></span>
 								</c:if>
 							</span>
-							<span class="text-gray-600 fs-base lh-sm">${type_5}</span>
+							<span class="text-gray-600 fs-base lh-sm">${fn:escapeXml(type_5)}</span>
 						</div>
 					</div>
 
@@ -823,7 +823,7 @@
 									<span class="badge badge-sm badge-warning"><fmt:formatNumber type="number" pattern="#.##" value="${LeaveWAnumT7}"/></span>
 								</c:if>
 							</span>
-							<span class="text-gray-600 fs-base lh-sm">${type_7}</span>
+							<span class="text-gray-600 fs-base lh-sm">${fn:escapeXml(type_7)}</span>
 						</div>
 					</div>
 				</div>
@@ -848,7 +848,7 @@
 				<div class="card-header p-5 min-h-auto flex-nowrap">
 					<div class="d-flex align-items-center gap-2 overflow-hidden" style="min-width:0;">
 						<span class="fw-bold text-primary fs-4 flex-shrink-0 lh-1" style="letter-spacing:0;">#${leave.leave_id}</span>
-						<span class="fs-4 fw-bold text-gray-800 text-truncate" style="line-height:1.4;">${leave.leave_type_name}</span>
+						<span class="fs-4 fw-bold text-gray-800 text-truncate" style="line-height:1.4;">${fn:escapeXml(leave.leave_type_name)}</span>
 					</div>
 					<div class="d-inline-flex align-items-center gap-3 flex-shrink-0">
 						<a href="javascript:void(0)" class="btn btn-icon btn-sm bg-info-subtle" onclick="leaveStatus(${leave.leave_id})">
