@@ -59,7 +59,7 @@
 				<div class="fs-7 text-muted">Request Date: <span id="requestdate"></span></div>
 				<!-- Leaver Info -->
 
-				<hr id="leaveDetailDivider" style="border-top: 1px dashed #ced4da; opacity: 1;" class="my-5">
+				<hr id="leaveDetailDivider" class="my-5 border-dashed border-gray-300 opacity-100">
 
 				<!-- Approver Info -->
 				<div id="status_panel" style="display: none;">

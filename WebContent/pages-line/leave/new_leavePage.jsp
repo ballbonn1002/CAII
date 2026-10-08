@@ -613,7 +613,7 @@
 		</div>
 
 		<!-- DDL User: ซ่อน แต่ต้องมีใน DOM เพราะ userOnChange() อ่านค่า -->
-		<div class="mb-6" style="position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap;">
+		<div class="mb-6 liff-select-hidden">
 			<select id="user" name="user" class="form-select liff-input-underline" onchange="userOnChange()" disabled required>
 				<option></option>
 				<optgroup id='u_enable' label="Enable"></optgroup>

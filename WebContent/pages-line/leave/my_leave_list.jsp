@@ -613,19 +613,19 @@
 	width: calc(100% - 32px); max-width: 393px; margin: 0 auto;
 	padding-bottom: 80px; /* เว้นที่ให้ปุ่ม + */
 }
-.liff-sort-btn { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 600; color: var(--bs-gray-700); border: 1px solid #E4E6EF; border-radius: 8px; padding: 6px 12px; background-color: #F8F9FB; }
+.liff-sort-btn { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 600; color: var(--bs-gray-700); border: 1px solid var(--bs-gray-300); border-radius: 8px; padding: 6px 12px; background-color: var(--bs-gray-100); }
 .liff-sort-btn:hover, .liff-sort-btn:focus { border-color: var(--bs-primary); }
 .liff-sort-btn .spinner-border { width: 12px; height: 12px; border-width: 2px; }
-.liff-skel { display: inline-block; height: 12px; border-radius: 6px; flex: none; background: linear-gradient(90deg, #F1F1F4 25%, #E4E6EF 37%, #F1F1F4 63%); background-size: 400% 100%; animation: liffShimmer 1.2s ease-in-out infinite; }
+.liff-skel { display: inline-block; height: 12px; border-radius: 6px; flex: none; background: linear-gradient(90deg, var(--bs-gray-200) 25%, var(--bs-gray-300) 37%, var(--bs-gray-200) 63%); background-size: 400% 100%; animation: liffShimmer 1.2s ease-in-out infinite; }
 .liff-skel-box { width: 35px; height: 35px; border-radius: .475rem; }
 .liff-skel-row { display: flex; align-items: center; gap: .5rem; min-height: 20px; }
 .liff-skel-dot { width: 14px; height: 14px; border-radius: 50%; }
 @keyframes liffShimmer { 0% { background-position: 100% 50%; } 100% { background-position: 0 50%; } }
 @media (prefers-reduced-motion: reduce) { .liff-skel { animation: none; } }
-#yearFilterBtn { font-size: 13px; font-weight: 600; color: var(--bs-gray-700); border: 1px solid #E4E6EF; border-radius: 8px; padding: 6px 16px; background-color: #F8F9FB; }
-#yearFilterBtn:hover, #yearFilterBtn:focus, #yearFilterBtn:active { background-color: #F8F9FB; border-color: var(--bs-primary); box-shadow: none; }
+#yearFilterBtn { font-size: 13px; font-weight: 600; color: var(--bs-gray-700); border: 1px solid var(--bs-gray-300); border-radius: 8px; padding: 6px 16px; background-color: var(--bs-gray-100); }
+#yearFilterBtn:hover, #yearFilterBtn:focus, #yearFilterBtn:active { background-color: var(--bs-gray-100); border-color: var(--bs-primary); box-shadow: none; }
 #yearFilterBtn::after { vertical-align: 1px; }
-.dropdown-menu[aria-labelledby="yearFilterBtn"] { min-width: 92px; border-radius: 10px; border: 1px solid #E4E6EF; box-shadow: 0 4px 20px rgba(0,0,0,.08); padding: 6px; max-height: 260px; overflow-y: auto; }
+.dropdown-menu[aria-labelledby="yearFilterBtn"] { min-width: 92px; border-radius: 10px; border: 1px solid var(--bs-gray-300); box-shadow: 0 4px 20px rgba(0,0,0,.08); padding: 6px; max-height: 260px; overflow-y: auto; }
 .dropdown-menu[aria-labelledby="yearFilterBtn"] .dropdown-item { font-size: 13px; font-weight: 500; border-radius: 6px; padding: 8px 12px; }
 .dropdown-menu[aria-labelledby="yearFilterBtn"] .dropdown-item.active, .dropdown-menu[aria-labelledby="yearFilterBtn"] .dropdown-item:active { background-color: var(--bs-primary); color: #fff; }
 .card-header .bg-info-subtle:hover { background-color: var(--bs-info) !important; }
@@ -642,8 +642,8 @@
 .leave-summary-item .d-flex.flex-column { min-width: 0; overflow: hidden; gap: 4px; }
 .leave-summary-item .text-gray-600 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 .leave-summary-dots { display: flex; justify-content: center; gap: 6px; margin-top: 19.5px; }
-.leave-summary-dots span { width: 6px; height: 6px; border-radius: 50%; background: #D9D9E3; transition: background .2s; }
-.leave-summary-dots span.active { background: #1B84FF; }
+.leave-summary-dots span { width: 6px; height: 6px; border-radius: 50%; background: var(--bs-gray-300); transition: background .2s; }
+.leave-summary-dots span.active { background: var(--bs-primary); }
 .card.card-bordered.liff-leave-card { box-shadow: var(--bs-root-card-box-shadow); }
 .liff-fab {
 	position: fixed;
@@ -689,7 +689,7 @@
 	<!-- Summary Leave -->
 	<div class="mb-6">
 		<div class="card card-bordered">
-			<div class="card-body" style="padding:29.25px;">
+			<div class="card-body p-10">
 				<div class="leave-summary-pager" id="leaveSummaryPager">
 					<div class="leave-summary-item">
 						<span class="symbol symbol-50px">
@@ -700,14 +700,14 @@
 							</span>
 						</span>
 						<div class="d-flex flex-column">
-							<span class="fw-bold text-gray-800" style="font-size:15.88px; line-height:1.21;">
+							<span class="fw-bold text-gray-800 fs-3 lh-sm">
 								<fmt:formatNumber type="number" pattern="#.##" value="${leave_1}"/>/<fmt:formatNumber type="number" pattern="#.##" value="${quota_1}"/>
 								<c:set var="leaveWA1" value="${empty LeaveWAnumT1 ? 0 : LeaveWAnumT1}" />
 								<c:if test="${leaveWA1 > 0}">
 									<span class="badge badge-sm badge-warning"><fmt:formatNumber type="number" pattern="#.##" value="${leaveWA1}"/></span>
 								</c:if>
 							</span>
-							<span class="text-gray-600" style="font-size:12.35px; line-height:1.21;">${type_1}</span>
+							<span class="text-gray-600 fs-base lh-sm">${type_1}</span>
 						</div>
 					</div>
 
@@ -721,14 +721,14 @@
 							</span>
 						</span>
 						<div class="d-flex flex-column">
-							<span class="fw-bold text-gray-800" style="font-size:15.88px; line-height:1.21;">
+							<span class="fw-bold text-gray-800 fs-3 lh-sm">
 								<fmt:formatNumber type="number" pattern="#.##" value="${leave_2}"/>/<fmt:formatNumber type="number" pattern="#.##" value="${quota_2}"/>
 								<c:set var="leaveWA2" value="${empty LeaveWAnumT2 ? 0 : LeaveWAnumT2}" />
 								<c:if test="${leaveWA2 > 0}">
 									<span class="badge badge-sm badge-warning"><fmt:formatNumber type="number" pattern="#.##" value="${leaveWA2}"/></span>
 								</c:if>
 							</span>
-							<span class="text-gray-600" style="font-size:12.35px; line-height:1.21;">${type_2}</span>
+							<span class="text-gray-600 fs-base lh-sm">${type_2}</span>
 						</div>
 					</div>
 
@@ -762,13 +762,13 @@
 							</span>
 						</span>
 						<div class="d-flex flex-column">
-							<span class="fw-bold text-gray-800" style="font-size:15.88px; line-height:1.21;">
+							<span class="fw-bold text-gray-800 fs-3 lh-sm">
 								<fmt:formatNumber type="number" pattern="#.##" value="${leave_3}"/>
 								<c:if test="${LeaveWAnumT3.doubleValue() > 0}">
 									<span class="badge badge-sm badge-warning"><fmt:formatNumber type="number" pattern="#.##" value="${LeaveWAnumT3}"/></span>
 								</c:if>
 							</span>
-							<span class="text-gray-600" style="font-size:12.35px; line-height:1.21;">${type_3}</span>
+							<span class="text-gray-600 fs-base lh-sm">${type_3}</span>
 						</div>
 					</div>
 
@@ -782,13 +782,13 @@
 							</span>
 						</span>
 						<div class="d-flex flex-column">
-							<span class="fw-bold text-gray-800" style="font-size:15.88px; line-height:1.21;">
+							<span class="fw-bold text-gray-800 fs-3 lh-sm">
 								<fmt:formatNumber type="number" pattern="#.##" value="${leave_4}"/>
 								<c:if test="${LeaveWAnumT4.doubleValue() > 0}">
 									<span class="badge badge-sm badge-warning"><fmt:formatNumber type="number" pattern="#.##" value="${LeaveWAnumT4}"/></span>
 								</c:if>
 							</span>
-							<span class="text-gray-600" style="font-size:12.35px; line-height:1.21;">${type_4}</span>
+							<span class="text-gray-600 fs-base lh-sm">${type_4}</span>
 						</div>
 					</div>
 
@@ -801,13 +801,13 @@
 							</span>
 						</span>
 						<div class="d-flex flex-column">
-							<span class="fw-bold text-gray-800" style="font-size:15.88px; line-height:1.21;">
+							<span class="fw-bold text-gray-800 fs-3 lh-sm">
 								<fmt:formatNumber type="number" pattern="#.##" value="${leave_5}"/>
 								<c:if test="${LeaveWAnumT5.doubleValue() > 0}">
 									<span class="badge badge-sm badge-warning"><fmt:formatNumber type="number" pattern="#.##" value="${LeaveWAnumT5}"/></span>
 								</c:if>
 							</span>
-							<span class="text-gray-600" style="font-size:12.35px; line-height:1.21;">${type_5}</span>
+							<span class="text-gray-600 fs-base lh-sm">${type_5}</span>
 						</div>
 					</div>
 
@@ -820,13 +820,13 @@
 							</span>
 						</span>
 						<div class="d-flex flex-column">
-							<span class="fw-bold text-gray-800" style="font-size:15.88px; line-height:1.21;">
+							<span class="fw-bold text-gray-800 fs-3 lh-sm">
 								<fmt:formatNumber type="number" pattern="#.##" value="${leave_7}"/>
 								<c:if test="${LeaveWAnumT7.doubleValue() > 0}">
 									<span class="badge badge-sm badge-warning"><fmt:formatNumber type="number" pattern="#.##" value="${LeaveWAnumT7}"/></span>
 								</c:if>
 							</span>
-							<span class="text-gray-600" style="font-size:12.35px; line-height:1.21;">${type_7}</span>
+							<span class="text-gray-600 fs-base lh-sm">${type_7}</span>
 						</div>
 					</div>
 				</div>
@@ -837,7 +837,7 @@
 
 	<!-- Leave List -->
 	<div class="d-flex align-items-center justify-content-between mt-2 mb-4">
-		<span class="fw-bold text-gray-900" style="font-size:16px; line-height:1;">${fn:length(leavelist)} Items Found</span>
+		<span class="fw-bold text-gray-900 fs-4 lh-1">${fn:length(leavelist)} Items Found</span>
 		<c:set var="isLatestStatus" value="${param.sort == 'latest_status'}" />
 		<button type="button" id="sortToggleBtn" class="liff-sort-btn" onclick="toggleSort()" aria-pressed="${isLatestStatus}">
 			<span>${isLatestStatus ? 'Latest Status' : 'Leave Date'}</span><span class="liff-sort-icon">↓</span>
@@ -848,33 +848,33 @@
 		<c:forEach var="leave" items="${leavelist}" varStatus="status">
 
 			<div class="card card-bordered liff-leave-card mb-5">
-				<div class="card-header" style="padding:16px; min-height:auto; flex-wrap:nowrap;">
-					<div class="d-flex align-items-center gap-2" style="min-width:0; overflow:hidden;">
-						<span class="fw-bold text-primary fs-4" style="flex:none; line-height:1; letter-spacing:0;">#${leave.leave_id}</span>
-						<span class="fs-4 fw-bold text-gray-800" style="line-height:1.4; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${leave.leave_type_name}</span>
+				<div class="card-header p-5 min-h-auto flex-nowrap">
+					<div class="d-flex align-items-center gap-2 overflow-hidden" style="min-width:0;">
+						<span class="fw-bold text-primary fs-4 flex-shrink-0 lh-1" style="letter-spacing:0;">#${leave.leave_id}</span>
+						<span class="fs-4 fw-bold text-gray-800 text-truncate" style="line-height:1.4;">${leave.leave_type_name}</span>
 					</div>
-					<div class="d-inline-flex align-items-center" style="gap:10px; flex:none;">
+					<div class="d-inline-flex align-items-center gap-3 flex-shrink-0">
 						<a href="javascript:void(0)" class="btn btn-icon btn-sm bg-info-subtle" onclick="leaveStatus(${leave.leave_id})">
-							<i class="ki-duotone ki-document text-info" style="font-size:1.45rem;"><span class="path1"></span><span class="path2"></span></i>
+							<i class="ki-duotone ki-document text-info fs-1"><span class="path1"></span><span class="path2"></span></i>
 						</a>
 						<a data-note="btn edit" href="line_NewLeaveEdit?id=${leave.leave_id}" title="Edit" class="btn btn-icon btn-sm bg-primary-subtle">
-							<i class="ki-duotone ki-pencil text-primary" style="font-size:1.45rem;"><span class="path1"></span><span class="path2"></span></i>
+							<i class="ki-duotone ki-pencil text-primary fs-1"><span class="path1"></span><span class="path2"></span></i>
 						</a>
 						<c:choose>
 							<c:when test="${leave.leave_status_id.toString() == 0}">
 								<a data-note="btn delete" onclick="changeStatus(${leave.leave_id});" title="Delete" class="btn btn-icon btn-sm bg-danger-subtle">
-									<i class="ki-duotone ki-trash text-danger" style="font-size:1.45rem;"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span><span class="path5"></span></i>
+									<i class="ki-duotone ki-trash text-danger fs-1"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span><span class="path5"></span></i>
 								</a>
 							</c:when>
 							<c:when test="${leave.leave_status_id.toString() != 0}">
 								<a data-note="btn delete" class="btn btn-icon btn-sm btn-light-secondary disabled">
-									<i class="ki-duotone ki-trash" style="font-size:1.45rem;"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span><span class="path5"></span></i>
+									<i class="ki-duotone ki-trash fs-1"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span><span class="path5"></span></i>
 								</a>
 							</c:when>
 						</c:choose>
 					</div>
 				</div>
-				<div class="card-body" style="padding:16px;">
+				<div class="card-body p-5">
 
 					<div class="fw-bold fs-5 text-dark mb-3">${fn:escapeXml(leave.name)}</div>
 
@@ -1132,12 +1132,12 @@ function leaveStatus(id) {
 		const bar = (w, h) => '<span class="liff-skel" style="width:' + w + '; height:' + (h || 12) + 'px;"></span>';
 		const row = (w) => '<div class="liff-skel-row"><span class="liff-skel liff-skel-dot"></span>' + bar(w) + '</div>';
 		const skel = '<div class="card card-bordered liff-leave-card mb-5">'
-			+ '<div class="card-header" style="padding:16px; min-height:auto; flex-wrap:nowrap;">'
+			+ '<div class="card-header p-5 min-h-auto flex-nowrap">'
 			+ '<div class="d-flex align-items-center gap-2">' + bar('56px', 20) + bar('88px', 20) + '</div>'
-			+ '<div class="d-inline-flex align-items-center" style="gap:10px;">'
+			+ '<div class="d-inline-flex align-items-center gap-3">'
 			+ '<span class="liff-skel liff-skel-box"></span><span class="liff-skel liff-skel-box"></span><span class="liff-skel liff-skel-box"></span></div>'
 			+ '</div>'
-			+ '<div class="card-body d-flex flex-column gap-3" style="padding:16px;">'
+			+ '<div class="card-body d-flex flex-column gap-3 p-5">'
 			+ bar('55%', 16)
 			+ '<div class="d-flex align-items-stretch justify-content-between gap-3">'
 			+ '<div class="d-flex flex-column gap-3">' + row('150px') + row('60px') + row('90px') + '</div>'
