@@ -1290,7 +1290,7 @@ jQuery(document).ready(function() {
 
 	<div class="d-flex justify-content-between align-items-center mb-6 pt-6">
 		<h1 class="liff-page-title text-gray-700 mb-0">Check List</h1>
-		<h3 id="calendarTitle" class="fs-6 fw-bold text-primary mb-0" style="line-height:19.35px; letter-spacing:0px; cursor:pointer;"></h3>
+		<h3 id="calendarTitle" class="fs-6 fw-bold text-primary mb-0 cursor-pointer" style="line-height:19.35px; letter-spacing:0px;"></h3>
 	</div>
 
 	<div class="d-none">
@@ -1467,8 +1467,8 @@ jQuery(document).ready(function() {
 					<div class="d-flex justify-content-between px-4 flex-fill">
 						<span class="fs-8 fw-bold text-gray-500 text-uppercase">Date</span>
 						<div class="d-flex gap-5">
-							<span class="fs-8 fw-bold text-gray-500 text-uppercase" style="min-width:var(--liff-col-w); text-align:center;">In</span>
-							<span class="fs-8 fw-bold text-gray-500 text-uppercase" style="min-width:var(--liff-col-w); text-align:center;">Out</span>
+							<span class="fs-8 fw-bold text-gray-500 text-uppercase text-center" style="min-width:var(--liff-col-w);">In</span>
+							<span class="fs-8 fw-bold text-gray-500 text-uppercase text-center" style="min-width:var(--liff-col-w);">Out</span>
 						</div>
 					</div>
 				</div>
@@ -2262,7 +2262,7 @@ var AppCalendar = function() {
         var isSick = leaveEvent.extendedProps && leaveEvent.extendedProps.leave_type_id === '3';
         var badgeColor = isSick ? 'badge badge-info' : 'badge badge-primary';
 
-        statusLeave = '<span class="' + badgeColor + ' fs-7 fw-bold" style="cursor: pointer;" onclick="leaveStatus('+ leaveEvent.id +')">' + leaveTitle ;
+        statusLeave = '<span class="' + badgeColor + ' fs-7 fw-bold cursor-pointer" onclick="leaveStatus('+ leaveEvent.id +')">' + leaveTitle ;
 
 		if (leaveEvent.extendedProps && leaveEvent.extendedProps.status === '0') {
         	statusLeave += ' <i class="ki-duotone ki-watch fs-2 text-warning align-middle">' +
