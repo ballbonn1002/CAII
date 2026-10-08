@@ -608,9 +608,6 @@
      ===================================================================== --%>
 <style>
 .liff-shell {
-	--liff-gutter: 1.5rem;
-	--liff-bullet-w: 3px;
-	width: calc(100% - 32px); max-width: 393px; margin: 0 auto;
 	padding-bottom: 80px; /* เว้นที่ให้ปุ่ม + */
 }
 .liff-sort-btn { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 600; color: var(--bs-gray-700); border: 1px solid var(--bs-gray-300); border-radius: 8px; padding: 6px 12px; background-color: var(--bs-gray-100); }

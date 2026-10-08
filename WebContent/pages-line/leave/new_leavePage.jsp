@@ -1566,8 +1566,14 @@ function userOnChange() {
 document.addEventListener("DOMContentLoaded", initTimePickers);
 
 function initTimePickers() {
-	// Start Time picker
-	const startTimePicker = new tempusDominus.TempusDominus(document.getElementById("time_from"), {
+	// Start Time picker ค่าเริ่มต้น 09:00
+	createTimePicker("time_from", 9);
+	// End Time picker ค่าเริ่มต้น 18:00
+	createTimePicker("time_to", 18);
+}
+
+function createTimePicker(inputId, defaultHour) {
+	const picker = new tempusDominus.TempusDominus(document.getElementById(inputId), {
 		display: {
 			components: {
 				calendar: false, // ไม่ต้องมีปฏิทิน
@@ -1586,31 +1592,7 @@ function initTimePickers() {
 		useCurrent: false
 	});
 
-	// ตั้งค่าเริ่มต้นเป็น 09:00
-	startTimePicker.dates.setValue(tempusDominus.DateTime.convert(new Date(0, 0, 0, 9, 0)));
-
-	// End Time picker
-	const endTimePicker = new tempusDominus.TempusDominus(document.getElementById("time_to"), {
-		display: {
-			components: {
-				calendar: false,
-				clock: true,
-				hours: true,
-				minutes: true,
-				seconds: false,
-				useTwentyfourHour: true
-			},
-			theme: "light"
-		},
-		localization: {
-			hourCycle: 'h23',
-			format: "HH:mm"
-		},
-		useCurrent: false
-	});
-
-	// ตั้งค่าเริ่มต้นเป็น 18:00
-	endTimePicker.dates.setValue(tempusDominus.DateTime.convert(new Date(0, 0, 0, 18, 0)));
+	picker.dates.setValue(tempusDominus.DateTime.convert(new Date(0, 0, 0, defaultHour, 0)));
 }
 </script>
 
@@ -1714,24 +1696,8 @@ function initSelectAndDatePickers() {
 		width: '100%'
 	});
 
-	//Start Date Picker
-	$("#date_from").daterangepicker({
-		singleDatePicker: true,
-		showDropdowns: true,
-		autoApply: true, // ยืนยันโดยอัตโนมัติเมื่อเลือกวันที่
-		locale: {
-			format: "DD MMM YYYY", // รูปแบบวันที่
-			monthNames: [
-				"January", "February", "March", "April", "May", "June",
-				"July", "August", "September", "October", "November", "December"
-			], // กำหนดชื่อเดือนเต็ม
-		},
-		drops: "down",
-		theme: 'light', // ใช้ธีมแสง
-	});
-
-	// End Date Picker
-	$("#date_to").daterangepicker({
+	// Start / End Date Picker
+	$("#date_from, #date_to").daterangepicker({
 		singleDatePicker: true,
 		showDropdowns: true,
 		autoApply: true, // ยืนยันโดยอัตโนมัติเมื่อเลือกวันที่
