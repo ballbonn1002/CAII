@@ -181,7 +181,19 @@
                                                             <c:otherwise><span class="text-muted">-</span></c:otherwise>
                                                         </c:choose>
                                                     </td>
-                                                    <td></td>
+                                                    <%-- ค่า default ที่เข้ารหัสใน QR: ใช้ Item ID ถ้ามี ไม่งั้น fallback เป็น equipment_id
+                                                         (แก้ไขเป็นค่าอื่นได้ในช่อง input ของ modal ก่อน generate) --%>
+                                                    <c:choose>
+                                                        <c:when test="${not empty fn:trim(e.itemNo)}"><c:set var="qrDefault" value="${e.itemNo}" /></c:when>
+                                                        <c:otherwise><c:set var="qrDefault" value="${e.equipmentId}" /></c:otherwise>
+                                                    </c:choose>
+                                                    <td class="text-end">
+                                                        <button type="button" class="btn btn-icon btn-sm btn-light-primary btn-generate-qr"
+                                                                data-qr-value="${fn:escapeXml(qrDefault)}"
+                                                                title="Generate QR">
+                                                            <i class="bi bi-qr-code fs-3"></i>
+                                                        </button>
+                                                    </td>
                                                 </tr>
                                             </c:forEach>
 
@@ -377,6 +389,42 @@
     </div>
 </div>
 
+<%-- ============ Modal: Generate QR Code (qrcode.js เก็บไว้ในโปรเจกต์ ไม่พึ่ง CDN)
+     เนื้อหาที่เข้ารหัสแก้ไขได้เอง - ช่อง input ตั้งค่า default มาจากปุ่มที่กด (Item ID/equipment_id) ============ --%>
+<div class="modal fade" id="qrGenerateModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title fw-bold text-gray-900">Generate QR Code</h3>
+                <button type="button" class="btn btn-icon btn-sm btn-active-light-primary" data-bs-dismiss="modal" aria-label="Close">
+                    <i class="ki-duotone ki-cross fs-1"><span class="path1"></span><span class="path2"></span></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-5">
+                    <label class="form-label fw-semibold text-gray-700" for="qrGenerateInput">ข้อมูลที่จะเข้ารหัสใน QR</label>
+                    <input type="text" id="qrGenerateInput" class="form-control form-control-solid" maxlength="500" autocomplete="off" />
+                </div>
+                <div class="text-center">
+                    <div id="qrGenerateCanvas" class="d-inline-block p-4 bg-white rounded border"></div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-light" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-light-primary" id="btnQrPrint">
+                    <i class="ki-duotone ki-printer fs-3 me-1"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span><span class="path5"></span></i>
+                    Print
+                </button>
+                <button type="button" class="btn btn-primary" id="btnQrDownload">
+                    <i class="ki-duotone ki-exit-down fs-3 me-1"><span class="path1"></span><span class="path2"></span></i>
+                    Download
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="${pageContext.request.contextPath}/assets/plugins/custom/qrcode/qrcode.min.js"></script>
 <script>
     var CONTEXT = '${pageContext.request.contextPath}';
     function notifyError(msg) {
@@ -822,6 +870,74 @@
                     $btn.prop('disabled', false).removeAttr('data-kt-indicator');
                 }
             });
+        });
+    });
+</script>
+
+<%-- ==================== Generate QR Code: ปุ่มต่อแถวเครื่อง เปิด modal พรีวิว QR แก้ไขเนื้อหาได้ก่อน generate ====================
+     qrcodejs วาดเป็น <canvas> ทำให้ Print/Download อ่านรูปจาก canvas.toDataURL() ได้ตรงๆ --%>
+<script>
+    $(document).ready(function () {
+        var qrGenerateInstance = null;
+
+        function renderQrPreview(text) {
+            var $box = $('#qrGenerateCanvas');
+            $box.empty();
+            qrGenerateInstance = null;
+            var value = $.trim(text);
+            if (!value || typeof QRCode === 'undefined') {
+                return;
+            }
+            qrGenerateInstance = new QRCode($box.get(0), {
+                text: value,
+                width: 220,
+                height: 220,
+                correctLevel: QRCode.CorrectLevel.M
+            });
+        }
+
+        $(document).on('click', '.btn-generate-qr', function () {
+            var defaultValue = $(this).data('qr-value');
+            $('#qrGenerateInput').val(defaultValue != null ? String(defaultValue) : '');
+            $('#qrGenerateModal').modal('show');
+        });
+
+        $('#qrGenerateModal').on('shown.bs.modal', function () {
+            renderQrPreview($('#qrGenerateInput').val());
+            $('#qrGenerateInput').trigger('focus').trigger('select');
+        });
+
+        // พิมพ์แก้เนื้อหาในช่อง input แล้ว generate ใหม่ทันที
+        $('#qrGenerateInput').on('input', function () {
+            renderQrPreview($(this).val());
+        });
+
+        $('#btnQrDownload').on('click', function () {
+            var $canvas = $('#qrGenerateCanvas canvas');
+            if ($canvas.length === 0) {
+                notifyError('ยังไม่มี QR ให้ดาวน์โหลด กรุณากรอกข้อมูลก่อน');
+                return;
+            }
+            var link = document.createElement('a');
+            link.download = 'qrcode.png';
+            link.href = $canvas.get(0).toDataURL('image/png');
+            link.click();
+        });
+
+        $('#btnQrPrint').on('click', function () {
+            var $canvas = $('#qrGenerateCanvas canvas');
+            if ($canvas.length === 0) {
+                notifyError('ยังไม่มี QR ให้พิมพ์ กรุณากรอกข้อมูลก่อน');
+                return;
+            }
+            var dataUrl = $canvas.get(0).toDataURL('image/png');
+            var printWin = window.open('', '_blank');
+            if (!printWin) {
+                notifyError('เบราว์เซอร์บล็อกหน้าต่างพิมพ์ กรุณาอนุญาต popup แล้วลองใหม่');
+                return;
+            }
+            printWin.document.write('<img src="' + dataUrl + '" style="width:300px;height:300px;" onload="window.print();window.close();" />');
+            printWin.document.close();
         });
     });
 </script>
