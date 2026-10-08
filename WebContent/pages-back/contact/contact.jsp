@@ -225,7 +225,9 @@
 									data-company-code="${fn:escapeXml(contact.companyCode)}"
 									data-tax="${fn:escapeXml(contact.taxNumber)}"
 									data-company-active="${contact.companyActive}"
-									data-title="${fn:escapeXml(contact.title_name_en)}">
+									data-title="${fn:escapeXml(contact.title_name_en)}"
+									data-time-update="${contact.time_update}"
+									data-time-create="${contact.time_create}">
 
 									<!-- Number -->
 									<td class="row-number">
@@ -647,179 +649,130 @@
 
 			}
 			/*
-			 * Grid View: 1 การ์ดต่อ 1 บริษัท (เหมือนการ์ดหน้า Company)
+			 * Grid View: 1 การ์ดต่อ 1 คน (Contact)
 			 */
-				function buildGridCards($rows) {
+			function formatThaiDate(dateStr) {
+				if (!dateStr) return "-";
+				const datePart = String(dateStr).substring(0, 10); // YYYY-MM-DD
+				const parts = datePart.split("-");
+				if (parts.length !== 3) return "-";
+				const thaiMonths = ["ม.ค.", "ก.พ.", "มี.ค.", "เม.ย.", "พ.ค.", "มิ.ย.",
+				                     "ก.ค.", "ส.ค.", "ก.ย.", "ต.ค.", "พ.ย.", "ธ.ค."];
+				const year  = parts[0];
+				const month = parseInt(parts[1], 10);
+				const day   = parts[2];
+				if (!year || !month || !day || month < 1 || month > 12) return "-";
+				return day + " " + thaiMonths[month - 1] + " " + year;
+			}
 
-					const $gridContainer = $("#gridViewContainer");
-					const ctx = "${pageContext.request.contextPath}";
+			function buildGridCards($rows) {
 
-					$rows = $rows || getFilteredRows();
-					$gridContainer.empty();
+				const $gridContainer = $("#gridViewContainer");
 
-					// ---------- 1) จัดกลุ่มตามบริษัท ----------
-					const groups = [];
-					const groupMap = {};
+				$rows = $rows || getFilteredRows();
+				$gridContainer.empty();
 
-					$rows.each(function () {
+				$rows.each(function () {
 
-						const $row = $(this);
-						const $cells = $row.children("td");
+					const $row = $(this);
+					const $cells = $row.children("td");
 
-						const company   = $row.find(".contact-company").text().trim() || "-";
-						const companyId = String($row.attr("data-company-id") || "");
-						const key = companyId || company.toLowerCase();
-						const $logoImg = $cells.eq(2).find("img").first();
+					const id = String($row.attr("data-id") || "");
 
-						if (!groupMap[key]) {
-							groupMap[key] = {
-								companyId:   companyId,
-								company:     company,
-								companyCode: $row.attr("data-company-code") || "",
-								tax:         $row.attr("data-tax") || "",
-								active:      $row.attr("data-company-active") === "1",
-								logo:        $logoImg.length ? ($logoImg.attr("src") || "") : "",
-								addresses: [], addressKeys: {}, contacts: []
-							};
-							groups.push(groupMap[key]);
-						}
-						const g = groupMap[key];
+					const title    = $row.attr("data-title") || "";
+					const name     = $row.find(".contact-name").text().trim() || "-";
+					const fullName = (title ? title + " " : "") + name;
 
-						const branch  = $row.find(".contact-branch").text().trim();
-						const address = $row.find(".contact-address").text().trim();
-						if (branch && branch !== "-" && !g.addressKeys[branch + "|" + address]) {
-							g.addressKeys[branch + "|" + address] = true;
-							g.addresses.push({ name: branch, address: address });
-						}
+					const position = $row.find(".contact-position").text().trim();
+					const company  = $row.find(".contact-company").text().trim() || "-";
 
-						const name = $row.find(".contact-name").text().trim();
-						const $photo = $cells.eq(1).find("img").first();
+					const phone = $row.find(".contact-phone").text().trim() || "-";
+					const email = $row.find(".contact-email").text().trim() || "-";
 
-						g.contacts.push({
-							id:       String($row.attr("data-id") || ""),
-							name:     name,
-							title:    $row.attr("data-title") || "",
-							position: $row.find(".contact-position").text().trim(),
-							phone:    $row.find(".contact-phone").text().trim(),
-							email:    $row.find(".contact-email").text().trim(),
-							branch:   branch,
-							address:  address,
-							isActive: $row.find(".contact-active").is(":checked"),
-							photo:    $photo.length ? ($photo.attr("src") || "") : "",
-							initial:  $cells.eq(1).find(".symbol-label").first().text().trim()
-							          || (name.charAt(0) || "?").toUpperCase()
-						});
-					});
+					const branch  = $row.find(".contact-branch").text().trim();
+					const address = $row.find(".contact-address").text().trim();
 
-					// ---------- 2) สร้างการ์ดบริษัท ----------
-					groups.forEach(function (g, gi) {
+					const $photo  = $cells.eq(1).find("img").first();
+					const photo   = $photo.length ? ($photo.attr("src") || "") : "";
+					const initial = $cells.eq(1).find(".symbol-label").first().text().trim()
+					                || (name.charAt(0) || "?").toUpperCase();
 
-						const logoHtml = g.logo
-							? '<img src="' + escapeHtml(g.logo) + '" style="object-fit: contain;" />'
-							: '<div class="symbol-label fs-3 fw-bold bg-light-primary text-primary">' +
-							      escapeHtml((g.company.charAt(0) || "?").toUpperCase()) + '</div>';
+					const lastUpdate = $row.attr("data-time-update") || $row.attr("data-time-create") || "";
 
-						// ที่อยู่บริษัท
-						let addressHtml = "";
-						if (g.addresses.length) {
-							g.addresses.forEach(function (a) {
-								addressHtml +=
-									'<div>' +
-										'<div class="d-flex gap-2 align-items-center">' +
-											'<i class="ki-duotone ki-map fs-2"><span class="path1"></span><span class="path2"></span><span class="path3"></span></i>' +
-											'<span class="fw-medium text-gray-700">' + escapeHtml(a.name) + '</span>' +
-										'</div>' +
-										'<div class="ps-8 mt-1"><span class="text-gray-500" style="overflow-wrap:anywhere;">' + escapeHtml(a.address || "-") + '</span></div>' +
-									'</div>';
-							});
-						} else {
-							addressHtml =
-								'<div class="d-flex gap-2 align-items-center">' +
-									'<i class="ki-duotone ki-map fs-2"><span class="path1"></span><span class="path2"></span><span class="path3"></span></i>' +
-									'<span class="text-gray-700 fw-medium">-</span>' +
-								'</div>';
-						}
+					const avatarHtml = photo
+						? '<img src="' + escapeHtml(photo) + '" style="object-fit: cover; object-position: center top;">'
+						: '<div class="symbol-label fs-4 fw-bold bg-light-primary text-primary">' + escapeHtml(initial) + '</div>';
 
-						// รายชื่อ contact (ข้อมูลครบแบบการ์ด contact เดิม)
-												// รายชื่อ contact (แบบหน้า Company)
-						let contactsHtml = "";
-						g.contacts.forEach(function (c, i) {
+					let addressHtml;
+					if (branch && branch !== "-") {
+						addressHtml =
+							'<div class="d-flex gap-2">' +
+								'<i class="ki-duotone ki-map fs-2 text-gray-400 mt-1 flex-shrink-0"><span class="path1"></span><span class="path2"></span><span class="path3"></span></i>' +
+								'<div>' +
+									'<div class="fw-medium text-gray-700">' + escapeHtml(branch) + '</div>' +
+									'<div class="text-gray-500 fs-7" style="overflow-wrap:anywhere;">' + escapeHtml(address || "-") + '</div>' +
+								'</div>' +
+							'</div>';
+					} else {
+						addressHtml =
+							'<div class="d-flex gap-2 align-items-center">' +
+								'<i class="ki-duotone ki-map fs-2 text-gray-400 flex-shrink-0"><span class="path1"></span><span class="path2"></span><span class="path3"></span></i>' +
+								'<span class="text-gray-700">-</span>' +
+							'</div>';
+					}
 
-							const avatarHtml = c.photo
-								? '<img src="' + escapeHtml(c.photo) + '" style="object-fit: cover; object-position: center top;">'
-								: '<div class="symbol-label bg-light-primary text-primary fw-bold">' + escapeHtml(c.initial) + '</div>';
+					const cardHtml =
+						'<div class="col-md-6 col-xl-4 contact-grid-item" data-id="' + escapeHtml(id) + '">' +
+						'<div class="card shadow-sm border border-gray-200 h-100">' +
 
-							contactsHtml +=
-								'<div class="d-flex align-items-center contact-grid-item" data-id="' + escapeHtml(c.id) + '">' +
-									'<div class="symbol symbol-40px symbol-circle me-3">' + avatarHtml + '</div>' +
+							'<div class="card-body px-6 pt-6 pb-0">' +
+
+								'<div class="d-flex align-items-start mb-5">' +
+									'<div class="symbol symbol-50px symbol-circle me-4 flex-shrink-0">' + avatarHtml + '</div>' +
 									'<div class="d-flex flex-column">' +
-										'<span class="fw-medium text-gray-800">' + escapeHtml(((c.title ? c.title + " " : "") + (c.name || "-"))) + '</span>' +
-										'<span class="text-muted fs-7">' + escapeHtml(c.position || "") + '</span>' +
-									'</div>' +
-								'</div>' +
-								(i < g.contacts.length - 1 ? '<div class="separator separator-solid border-1"></div>' : '');
-						});
-						
-
-						// ท้ายการ์ด (ของบริษัท)
-						const footerHtml = g.companyId
-							? '<div class="card-footer px-6 d-flex justify-content-between align-items-center py-4">' +
-								'<label class="form-check form-check-custom form-check-solid form-check-sm">' +
-									'<input class="form-check-input grid-company-active" type="checkbox" data-company-id="' + escapeHtml(g.companyId) + '"' + (g.active ? ' checked' : '') + '>' +
-									'<span class="ms-3 text-gray-700 fw-medium">Is Active</span>' +
-								'</label>' +
-								'<div class="d-flex">' +
-								'<a href="' + ctx + '/contact_add.action?id=' + encodeURIComponent(g.contacts[0].id) + '" class="btn btn-sm btn-light-primary me-2">' +
-										'<i class="ki-duotone ki-pencil fs-4 me-1"><span class="path1"></span><span class="path2"></span></i> Edit</a>' +
-									'<button type="button" class="btn btn-sm btn-light-danger grid-company-delete" data-company-id="' + escapeHtml(g.companyId) + '">' +
-										'<i class="ki-duotone ki-trash fs-4 me-1"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span><span class="path5"></span></i> Delete</button>' +
-								'</div>' +
-							  '</div>'
-							: '';
-
-						const collapseId = "contactGroupCollapse" + gi;
-
-						const cardHtml =
-							'<div class="col-md-6 col-xl-4">' +
-							'<div class="card shadow-sm border border-gray-200">' +
-
-								'<div class="card-body px-6 pt-6 pb-0">' +
-									'<div class="d-flex align-items-start mb-5">' +
-										'<div class="symbol symbol-60px me-4 flex-shrink-0">' + logoHtml + '</div>' +
-										'<div class="d-flex flex-column">' +
-											(g.companyId
-													? '<a href="' + ctx + '/contact_add.action?id=' + encodeURIComponent(g.contacts[0].id) + '" class="fs-5 fw-bold text-gray-900 text-hover-primary mb-1">' + escapeHtml(g.company) + '</a>'
-												: '<span class="fs-5 fw-bold text-gray-900 mb-1">' + escapeHtml(g.company) + '</span>') +
-											'<span class="fs-7 fw-semibold text-muted">' + escapeHtml(g.companyCode) + '</span>' +
-										'</div>' +
-									'</div>' +
-									'<div class="d-flex flex-column gap-4 pb-6">' +
-										'<div class="d-flex gap-2 align-items-center">' +
-											'<i class="ki-duotone ki-credit-cart fs-2"><span class="path1"></span><span class="path2"></span></i>' +
-											'<span class="fw-medium text-gray-700">' + escapeHtml(g.tax || "-") + '</span>' +
-										'</div>' +
-										addressHtml +
+										'<span class="fs-6 fw-bold text-gray-900">' + escapeHtml(fullName) + '</span>' +
+										'<span class="fs-7 text-muted">' + escapeHtml(position || "-") + '</span>' +
 									'</div>' +
 								'</div>' +
 
-								'<div class="border-top border-gray-200 px-6 py-5">' +
-									'<div class="d-flex justify-content-between align-items-center cursor-pointer rotate collapsed" data-bs-toggle="collapse" data-bs-target="#' + collapseId + '">' +
-										'<div class="fw-medium text-gray-700">Contact ( ' + g.contacts.length + ' )</div>' +
-										'<span class="rotate-180"><i class="ki-duotone ki-down fs-3"><span class="path1"></span><span class="path2"></span></i></span>' +
-									'</div>' +
-									'<div class="collapse" id="' + collapseId + '">' +
-									'<div class="d-flex flex-column gap-6 mt-6 pb-3">' + contactsHtml + '</div>' +
-									'</div>' +
-								'</div>' +
+								'<div class="d-flex flex-column gap-4 pb-6">' +
 
-								footerHtml +
+									'<div class="fw-bold text-gray-800">' + escapeHtml(company) + '</div>' +
+
+									'<div class="d-flex align-items-center gap-2">' +
+										'<i class="ki-duotone ki-phone fs-3 text-gray-400"><span class="path1"></span><span class="path2"></span></i>' +
+										'<span class="text-gray-700">' + escapeHtml(phone) + '</span>' +
+									'</div>' +
+
+									'<div class="d-flex align-items-center gap-2">' +
+										'<i class="ki-duotone ki-sms fs-3 text-gray-400"><span class="path1"></span><span class="path2"></span></i>' +
+										'<span class="text-gray-700" style="overflow-wrap:anywhere;">' + escapeHtml(email) + '</span>' +
+									'</div>' +
+
+									addressHtml +
+
+								'</div>' +
 
 							'</div>' +
-							'</div>';
 
-						$gridContainer.append(cardHtml);
-					});
-				}
+							'<div class="card-footer px-6 d-flex justify-content-between align-items-center py-4">' +
+								'<span class="text-muted fs-7">Last update: ' + formatThaiDate(lastUpdate) + '</span>' +
+								'<div class="d-flex gap-2">' +
+									'<button type="button" class="btn btn-icon btn-sm btn-light-primary edit-contact" data-id="' + escapeHtml(id) + '">' +
+										'<i class="ki-duotone ki-pencil fs-4"><span class="path1"></span><span class="path2"></span></i>' +
+									'</button>' +
+									'<button type="button" class="btn btn-icon btn-sm btn-light-danger delete-contact" data-id="' + escapeHtml(id) + '">' +
+										'<i class="ki-duotone ki-trash fs-4"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span><span class="path5"></span></i>' +
+									'</button>' +
+								'</div>' +
+							'</div>' +
+
+						'</div>' +
+						'</div>';
+
+					$gridContainer.append(cardHtml);
+				});
+			}
 			/*
 			 * แสดงข้อมูลตามหน้าปัจจุบัน
 			 */
