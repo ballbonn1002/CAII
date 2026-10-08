@@ -1107,7 +1107,7 @@ function leaveStatus(id) {
 /* ---------- ไปหน้าอื่น + spinner ---------- */
 	function filterByYear(year) {
 		const sort = new URLSearchParams(window.location.search).get('sort');
-		document.getElementById('liffLoadingOverlay').style.display = 'flex';
+		liffShowLoading();
 		window.location.href = 'line_new_myleave_list?Id=${onlineUser.id}&startdate=01-01-' + year + '&enddate=31-12-' + year
 			+ (sort ? '&sort=' + sort : '');
 	}
@@ -1159,12 +1159,12 @@ function leaveStatus(id) {
 	}
 
 	function add() {
-		document.getElementById('liffLoadingOverlay').style.display = 'flex';
+		liffShowLoading();
 		document.location = "line_NewLeaveAdd";
 	}
 
 	$(document).on('click', 'a[href^="line_NewLeaveEdit"]', function() {
-		document.getElementById('liffLoadingOverlay').style.display = 'flex';
+		liffShowLoading();
 	});
 	// กด Back กลับมา (bfcache) ซ่อน spinner / skeleton
 	window.addEventListener('pageshow', function(e) {

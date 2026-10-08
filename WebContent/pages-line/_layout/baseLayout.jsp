@@ -169,6 +169,10 @@ function liffInitDone(formSelector) {
 	$(formSelector).removeClass('liff-initializing').removeAttr('aria-busy');
 	$('#liffLoadingOverlay').hide();
 }
+
+function liffShowLoading() {
+	document.getElementById('liffLoadingOverlay').style.display = 'flex';
+}
 </script>
 <!--end::LIFF form init-->
 <!--end::Javascript-->
