@@ -2048,22 +2048,19 @@ input[name="workType"] + .btn.bg-light i { color: var(--bs-gray-400); }
 			<div class="d-flex gap-4 justify-content-center mb-8">
 				<input class="btn-check" type="radio" name="workType" id="workType1" value="1" <c:if test="${user.workType == 1}">checked</c:if>>
 				<label for="workType1"
-					class="btn bg-light btn-active-primary d-flex flex-column align-items-center justify-content-center text-center gap-6 p-4 rounded"
-					style="width: 89px; height: 83px;">
+					class="btn bg-light btn-active-primary d-flex flex-column align-items-center justify-content-center text-center gap-6 p-4 rounded w-90px h-85px">
 					<i class="ki-duotone ki-map fs-2"><span class="path1"></span><span class="path2"></span><span class="path3"></span></i>
 					<span class="fs-7 fw-semibold text-nowrap">On-Site</span>
 				</label>
 				<input class="btn-check" type="radio" name="workType" id="workType2" value="2" <c:if test="${user.workType == 2}">checked</c:if>>
 				<label for="workType2"
-					class="btn bg-light btn-active-success d-flex flex-column align-items-center justify-content-center text-center gap-6 p-4 rounded"
-					style="width: 89px; height: 83px;">
+					class="btn bg-light btn-active-success d-flex flex-column align-items-center justify-content-center text-center gap-6 p-4 rounded w-90px h-85px">
 					<i class="ki-duotone ki-home-2 fs-2"><span class="path1"></span><span class="path2"></span></i>
 					<span class="fs-7 fw-semibold text-nowrap">WFH</span>
 				</label>
 				<input class="btn-check" type="radio" name="workType" id="workType3" value="3" <c:if test="${user.workType == 3}">checked</c:if>>
 				<label for="workType3"
-					class="btn bg-light btn-active-danger d-flex flex-column align-items-center justify-content-center text-center gap-6 p-4 rounded"
-					style="width: 89px; height: 83px;">
+					class="btn bg-light btn-active-danger d-flex flex-column align-items-center justify-content-center text-center gap-6 p-4 rounded w-90px h-85px">
 					<i class="ki-solid ki-cube-2 fs-2"></i>
 					<span class="fs-7 fw-semibold text-nowrap">Head Office</span>
 				</label>
