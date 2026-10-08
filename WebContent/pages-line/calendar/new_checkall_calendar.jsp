@@ -2005,7 +2005,6 @@ var AppCalendar = function() {
 		var start = moment(currentDate).startOf('month');
 		var end = moment(currentDate).endOf('month');
 		var today = moment();
-		var weekStart = moment(start).startOf('isoWeek');
 		var maxWeek = 0;
 
 		for (var day = start.clone(); day.isBefore(end); day.add(1, 'days')) {
@@ -2014,7 +2013,7 @@ var AppCalendar = function() {
 			var dayEvents = filterDayEvents(events, day, dayStr);
 
 			var dayNum = parseInt(day.format('YYYYMMDD'));
-			var weekIndex = Math.floor(day.diff(weekStart, 'days') / 7);
+			var weekIndex = getWeekIndex(day);
 			if (weekIndex > maxWeek) maxWeek = weekIndex;
 			var todayNum = parseInt(today.format('YYYYMMDD'));
 			var iconClass = getDayIconClass(dayName);
@@ -2282,6 +2281,12 @@ var AppCalendar = function() {
         return statusLeave;
     }
 
+	// สัปดาห์ที่เท่าไหร่ของเดือน (จ.-อา., เริ่มที่ 0)
+	function getWeekIndex(day) {
+		const weekStart = moment(day).startOf('month').startOf('isoWeek');
+		return Math.floor(moment(day).diff(weekStart, 'days') / 7);
+	}
+
 	function filterWeek(weekIndex) {
 		$('#weekButtonsRow button').removeClass('btn-danger').addClass('bg-transparent border-0 text-gray-700');
 		$('#weekButtonsRow button[data-week="' + weekIndex + '"]').removeClass('bg-transparent border-0 text-gray-700').addClass('btn-danger');
@@ -2294,12 +2299,10 @@ var AppCalendar = function() {
 		$row.empty();
 
 		var currentDate = calendar.getDate();
-		var start = moment(currentDate).startOf('month');
-		var weekStart = moment(start).startOf('isoWeek');
 		var today = moment();
 		var defaultWeek = 0;
 		if (today.isSame(currentDate, 'month')) {
-			defaultWeek = Math.floor(today.diff(weekStart, 'days') / 7);
+			defaultWeek = getWeekIndex(today);
 			if (defaultWeek < 0) defaultWeek = 0;
 			if (defaultWeek > weekCount - 1) defaultWeek = weekCount - 1;
 		}
@@ -2402,7 +2405,7 @@ var AppCalendar = function() {
 			$('#calendarNextBtn').off('click').on('click', function(e) { e.preventDefault(); calendar.next(); });
 			$('#calendarTitle').off('click').on('click', function() {
 				calendar.today();
-				filterWeek(Math.floor(moment().diff(moment().startOf('month').startOf('isoWeek'), 'days') / 7));
+				filterWeek(getWeekIndex(moment()));
 			});
 			$('#weekButtonsRow').off('click', 'button').on('click', 'button', function() { filterWeek($(this).data('week')); });
 
