@@ -271,4 +271,36 @@ document.onkeypress = resetTimer;
 document.onclick = resetTimer;
 document.onscroll = resetTimer;
 
+// มือถือ: keypress/click ไม่ครอบคลุมการแตะ-ลาก (เช่น แผนที่) และคีย์บอร์ดบนจอ จึงเพิ่ม touch/input/keydown
+// (capture เพื่อให้จับ scroll ใน element ย่อยได้ด้วย)
+['touchstart', 'touchmove', 'input', 'keydown', 'scroll'].forEach(function (evt) {
+    document.addEventListener(evt, resetTimer, { passive: true, capture: true });
+});
+
+// Keep-alive: ผู้ใช้ที่ยังใช้งานหน้าเว็บอยู่ (ขยับเมาส์/พิมพ์/คลิก/เลื่อน/แตะ) ให้ยิงไป server เป็นระยะ
+// เพื่อต่ออายุ session ฝั่ง server ให้ตรงกับตัวจับเวลาในหน้านี้
+(function () {
+    // ยิงทุก 1/4 ของ timeout แต่ไม่เกิน 5 นาที และไม่ถี่กว่า 30 วินาที
+    const pingInterval = Math.max(30000, Math.min(300000, Math.floor(timeoutDuration / 4)));
+    let userActive = false;
+
+    ['mousemove', 'keydown', 'click', 'scroll', 'touchstart'].forEach(function (evt) {
+        document.addEventListener(evt, function () { userActive = true; }, { passive: true, capture: true });
+    });
+
+    setInterval(function () {
+        if (!userActive) return;
+        userActive = false;
+        fetch('session_keepalive.action', { credentials: 'same-origin', cache: 'no-store' })
+            .then(function (res) {
+                // redirected = session หมดอายุไปแล้ว (ถูกส่งกลับหน้า login)
+                if (res.redirected) {
+                    clearTimeout(sessionTimer);
+                    showSessionAlert();
+                }
+            })
+            .catch(function () { /* เน็ตหลุดชั่วคราว: ข้ามรอบนี้ */ });
+    }, pingInterval);
+})();
+
 </script>

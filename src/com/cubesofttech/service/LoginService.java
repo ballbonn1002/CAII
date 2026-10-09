@@ -6,6 +6,9 @@ import java.util.List;
 import java.util.Random;
 import java.util.Set;
 
+import javax.servlet.http.HttpSession;
+
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -13,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 import com.cubesofttech.dao.RoleAuthorizedObjectDAO;
 import com.cubesofttech.model.RoleAuthorizedObject;
+import com.cubesofttech.model.User;
 import com.cubesofttech.model.UserRole;
 import com.cubesofttech.system.Constant;
 import com.cubesofttech.util.MD5;
@@ -20,11 +24,31 @@ import com.cubesofttech.util.MD5;
 @Service
 public class LoginService {
 
+	private static final Logger log = Logger.getLogger(LoginService.class);
+
 	@Autowired
 	private RoleAuthorizedObjectDAO roleAuthorizedObjectDAO;
 	
 	@Autowired
 	private JavaMailSender mailSender;
+
+	/**
+	 * ตั้งเวลา session timeout ตาม role ของ user ที่เพิ่งล็อกอิน
+	 * HR ได้ Constant.HR_SESSION_TIMEOUT_MINUTES นาที, role อื่นใช้ค่า default จาก web.xml
+	 * เรียกหลัง session.setAttribute("onlineUser", user)
+	 * ใช้เฉพาะ user.role_id (ไม่นับตาราง user_role)
+	 */
+	public static void applySessionTimeout(HttpSession session, User user) {
+		if (session == null || user == null) {
+			return;
+		}
+		String roleId = user.getRoleId();
+		if (roleId != null && Constant.HR_ROLE_ID.equalsIgnoreCase(roleId.trim())) {
+			// setMaxInactiveInterval รับหน่วยวินาที
+			session.setMaxInactiveInterval(Constant.HR_SESSION_TIMEOUT_MINUTES * 60);
+			log.info("set session timeout user=" + user.getId() + " minutes=" + Constant.HR_SESSION_TIMEOUT_MINUTES);
+		}
+	}
 
 	public String generateMD5(String password) throws NoSuchAlgorithmException {
 		return MD5.getInstance().hashData(password.getBytes());

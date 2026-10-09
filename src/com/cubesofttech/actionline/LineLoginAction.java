@@ -4,6 +4,7 @@ import okhttp3.*;
 
 import com.cubesofttech.dao.UserDAO;
 import com.cubesofttech.model.User;
+import com.cubesofttech.service.LoginService;
 import com.cubesofttech.service.FileAttachmentService;
 import com.cubesofttech.system.Constant;
 import com.google.gson.JsonObject;
@@ -239,7 +240,9 @@ public class LineLoginAction extends ActionSupport {
     			session.setAttribute("userImgPath", imgPath);
                 session.setAttribute("user", user);
     			session.setAttribute("onlineUser", user);
-    			
+    			// HR ได้ session timeout นานกว่า role อื่น
+    			LoginService.applySessionTimeout(session, user);
+
     			switch (typeAction) {
     		    case "1":
     		    	return "returnCheck";

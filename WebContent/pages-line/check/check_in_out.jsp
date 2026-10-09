@@ -1687,38 +1687,6 @@ function handleLocationError(browserHasGeolocation, infoWindow, pos) {
 </script>
 
 <script>
-var inactivityTime = function () {
-    var time;
-    const TIMEOUT_PERIOD = 1800000;	// 30 * minutes * 1000
-
-    function resetTimer() {
-        clearTimeout(time);
-        time = setTimeout(logout, TIMEOUT_PERIOD);
-    }
-
-    function logout() {
-        window.location.href = 'signout.action';
-    }
-
-    // --- Events for Desktop ---
-    document.onmousemove = resetTimer;
-    document.onkeypress = resetTimer;
-    document.onclick = resetTimer;
-    // --- Events for Mobile ---
-    document.ontouchstart = resetTimer; 
-    document.ontouchmove = resetTimer;
-    // --- Event for Scroll ---
-    window.onscroll = resetTimer; 
-
-    resetTimer();
-};
-
-window.onload = function() {
-    inactivityTime();
-};
-</script>
-
-<script>
 	const fileInput = document.getElementById("signatureInputFile");
 	const mainBtn = document.getElementById("mainActionBtn");
 	const btnCancel = document.getElementById("btnCancelPreview");

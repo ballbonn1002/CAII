@@ -38,6 +38,14 @@
 			<result name="login" type="redirect">/index.jsp</result>
 		</global-results>
 
+		<!-- Session keep-alive: หน้าเว็บยิงเป็นระยะเพื่อต่ออายุ session (ใช้ร่วมกับ pages-line) -->
+		<action name="session_keepalive"
+			class="com.cubesofttech.system.SessionKeepAlive" method="ping">
+			<result name="success" type="json">
+				<param name="includeProperties">status</param>
+			</result>
+		</action>
+
 		<action name="blank_template"
 			class="com.cubesofttech.action.NewsAction" method="demoDashboard">
 			<result name="success" type="tiles">blankTemplate</result>

@@ -15,6 +15,10 @@ import java.util.List;
 
 public class Constant {
     public static List<String> onlineUserList = new ArrayList<>();
+    // session timeout ของ HR (นาที) — role อื่นใช้ค่า default 30 นาทีจาก web.xml
+    public static final int HR_SESSION_TIMEOUT_MINUTES = 60;
+    // role_id ของ HR ในตาราง user (เทียบแบบไม่สนตัวพิมพ์เล็กใหญ่)
+    public static final String HR_ROLE_ID = "HR";
     private String test;
     private String googleApiKey;
     private String webPath;
