@@ -1003,7 +1003,7 @@ body { padding-bottom: calc(90px + env(safe-area-inset-bottom)); }
 		<span>Profile</span>
 	</a>
 </nav>
-<div id="liffNavOverlay" class="liff-loading-overlay" style="z-index:99;">
+<div id="liffNavOverlay" class="liff-loading-overlay liff-loading-delayed" style="z-index:99;">
 	<div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading...</span></div>
 </div>
 <!--end::LIFF mobile navbar-->

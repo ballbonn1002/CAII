@@ -64,6 +64,9 @@ body {
 	z-index: 200;
 }
 .liff-initializing { visibility: hidden; }
+/* overlay โผล่เมื่อรอเกิน 300ms */
+.liff-loading-delayed { animation: liffDelayShow 0s .3s both; }
+@keyframes liffDelayShow { from { visibility: hidden; } to { visibility: visible; } }
 .liff-skel { display: inline-block; height: 12px; border-radius: 6px; flex: none; background: linear-gradient(90deg, var(--bs-gray-200) 25%, var(--bs-gray-300) 37%, var(--bs-gray-200) 63%); background-size: 400% 100%; animation: liffShimmer 1.2s ease-in-out infinite; }
 .liff-skel-box { width: 35px; height: 35px; border-radius: .475rem; }
 .liff-skel-row { display: flex; align-items: center; gap: .5rem; min-height: 20px; }
@@ -173,7 +176,8 @@ function liffToastError(message, title) {
 <script>
 function liffInitDone(formSelector) {
 	$(formSelector).removeClass('liff-initializing').removeAttr('aria-busy');
-	$('#liffLoadingOverlay').hide();
+	// หลัง init แล้ว spinner ตอน submit ต้องโผล่ทันที
+	$('#liffLoadingOverlay').hide().removeClass('liff-loading-delayed');
 }
 
 function liffShowLoading() {

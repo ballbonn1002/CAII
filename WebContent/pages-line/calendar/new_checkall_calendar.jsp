@@ -1286,7 +1286,11 @@ jQuery(document).ready(function() {
 .liff-shell .fs-2  { font-size: 20px !important; }
 </style>
 
-<div class="liff-shell">
+<div id="liffLoadingOverlay" class="liff-loading-overlay liff-loading-delayed" style="display:flex; z-index:99;">
+	<div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading...</span></div>
+</div>
+
+<div class="liff-shell liff-initializing" aria-busy="true">
 
 	<div class="d-flex justify-content-between align-items-center mb-6 pt-6">
 		<h1 class="liff-page-title text-gray-700 mb-0">Check List</h1>
@@ -2356,6 +2360,7 @@ var AppCalendar = function() {
                 	$('#calendarTitle').text('Today ' + moment().format('D MMM YYYY'));
                     renderWeekButtons(populateCheckList());
                     calculateSummary();
+                    liffInitDone('.liff-shell');
                 },
 
 				eventClick: function(info) {

@@ -651,7 +651,7 @@
 
 <div class="liff-shell">
 
-	<div id="liffLoadingOverlay" class="liff-loading-overlay">
+	<div id="liffLoadingOverlay" class="liff-loading-overlay liff-loading-delayed">
 		<div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading...</span></div>
 	</div>
 
