@@ -613,12 +613,6 @@
 .liff-sort-btn { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 600; color: var(--bs-gray-700); border: 1px solid var(--bs-gray-300); border-radius: 8px; padding: 6px 12px; background-color: var(--bs-gray-100); }
 .liff-sort-btn:hover, .liff-sort-btn:focus { border-color: var(--bs-primary); }
 .liff-sort-btn .spinner-border { width: 12px; height: 12px; border-width: 2px; }
-.liff-skel { display: inline-block; height: 12px; border-radius: 6px; flex: none; background: linear-gradient(90deg, var(--bs-gray-200) 25%, var(--bs-gray-300) 37%, var(--bs-gray-200) 63%); background-size: 400% 100%; animation: liffShimmer 1.2s ease-in-out infinite; }
-.liff-skel-box { width: 35px; height: 35px; border-radius: .475rem; }
-.liff-skel-row { display: flex; align-items: center; gap: .5rem; min-height: 20px; }
-.liff-skel-dot { width: 14px; height: 14px; border-radius: 50%; }
-@keyframes liffShimmer { 0% { background-position: 100% 50%; } 100% { background-position: 0 50%; } }
-@media (prefers-reduced-motion: reduce) { .liff-skel { animation: none; } }
 #yearFilterBtn { font-size: 13px; font-weight: 600; color: var(--bs-gray-700); border: 1px solid var(--bs-gray-300); border-radius: 8px; padding: 6px 16px; background-color: var(--bs-gray-100); }
 #yearFilterBtn:hover, #yearFilterBtn:focus, #yearFilterBtn:active { background-color: var(--bs-gray-100); border-color: var(--bs-primary); box-shadow: none; }
 #yearFilterBtn::after { vertical-align: 1px; }

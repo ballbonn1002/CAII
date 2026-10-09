@@ -17,6 +17,25 @@
 
 			<!--begin::Body-->
 			<div class="modal-body">
+				<div id="leaveDetailSkeleton" class="d-none" aria-busy="true">
+					<div class="d-flex align-items-center gap-4 mb-4">
+						<span class="liff-skel w-70px h-20px"></span>
+						<span class="liff-skel w-60px h-20px"></span>
+						<span class="liff-skel w-45px h-20px"></span>
+					</div>
+					<div class="d-flex flex-column gap-3 mb-4">
+						<div class="liff-skel-row"><span class="liff-skel liff-skel-dot"></span><span class="liff-skel w-150px"></span></div>
+						<div class="liff-skel-row"><span class="liff-skel liff-skel-dot"></span><span class="liff-skel w-150px"></span></div>
+						<div class="liff-skel-row"><span class="liff-skel liff-skel-dot"></span><span class="liff-skel w-90px"></span></div>
+						<c:if test="${param.showDescFiles == 'true'}">
+						<div class="liff-skel-row"><span class="liff-skel liff-skel-dot"></span><span class="liff-skel w-200px"></span></div>
+						<div class="liff-skel-row"><span class="liff-skel liff-skel-dot"></span><span class="liff-skel w-175px"></span></div>
+						</c:if>
+					</div>
+					<span class="liff-skel w-80px h-20px"></span>
+					<div class="mt-3"><span class="liff-skel w-125px h-10px"></span></div>
+				</div>
+
 				<!-- Leaver Info -->
 				<div class="d-flex align-items-center gap-4 mb-4 fs-5">
 					<span class="fw-bold text-primary">#<span id="leaveid"></span></span>
@@ -48,7 +67,7 @@
 
 				<div class="d-flex align-items-start gap-2 text-gray-700 mb-4 fs-6">
 					<i class="ki-duotone ki-document fs-4 mt-1"><span class="path1"></span><span class="path2"></span></i>
-					<span id="fileList" class="d-flex flex-wrap gap-2 align-items-center" style="min-width:0;"></span>
+					<span id="fileList" class="d-flex flex-column gap-1" style="min-width:0;"></span>
 				</div>
 				</c:if>
 
@@ -103,16 +122,14 @@ function renderLeaveModalFiles(obj) {
 		return;
 	}
 
-	files.forEach(function (f, i) {
-		var full = (f.name || '') + (f.type || '');
+	files.forEach(function (f) {
 		$list.append(
-			$('<a target="_blank" class="text-primary text-hover-underline text-truncate d-inline-block align-bottom"></a>')
+			$('<a target="_blank" class="d-flex text-primary text-hover-underline" style="min-width:0;"></a>')
 				.attr('href', 'line_preview_File?id=' + f.id)
-				.css('max-width', '220px')
-				.attr('title', full)
-				.text(full)
+				.attr('title', (f.name || '') + (f.type || ''))
+				.append($('<span class="text-truncate"></span>').text(f.name || ''))
+				.append($('<span class="flex-shrink-0"></span>').text(f.type || ''))
 		);
-		if (i < files.length - 1) $list.append($('<span class="text-muted">,</span>'));
 	});
 }
 
@@ -125,6 +142,18 @@ function setLeaveApprover(obj) {
 	$('#reason_s').text(obj.reason || '-');
 }
 
+// ชื่อประเภทลา
+var leaveTypeNameMap = {
+	'1': 'ลาพักร้อน',
+	'2': 'ลากิจ',
+	'3': 'ลาป่วย',
+	'4': 'ขาดงาน',
+	'5': 'ลาโดยไม่รับค่าจ้าง',
+	'6': 'ลาพักร้อนที่เหลือจากปีก่อน', // ไม่ใช้แล้ว
+	'7': 'ลาอื่นๆ',
+	'9': 'อื่นๆ'
+};
+
 // สถานะใบลา (0 ไม่มีส่วนผู้อนุมัติ)
 var leaveStatusMap = {
 	'0': { text: 'Wait for Approving', badge: 'warning' },
@@ -133,8 +162,34 @@ var leaveStatusMap = {
 	'3': { text: 'Cancel', badge: 'dark', title: 'Cancel', titleColor: 'text-danger' }
 };
 
+
+var leaveModalCurrentId;
+var leaveModalSkeletonTimer;
+
+function getLeaveModalContent() {
+	return $('#leaveDetailModal .modal-body').children().not('#leaveDetailSkeleton');
+}
+
+// ซ่อนข้อมูลใบก่อนหน้า, โหลดเกิน 300ms ค่อยโชว์ skeleton
+function showLeaveModalLoading() {
+	var $content = getLeaveModalContent().addClass('invisible');
+	clearTimeout(leaveModalSkeletonTimer);
+	leaveModalSkeletonTimer = setTimeout(function () {
+		$content.addClass('d-none');
+		$('#leaveDetailSkeleton').removeClass('d-none');
+	}, 300);
+}
+
+function hideLeaveModalLoading() {
+	clearTimeout(leaveModalSkeletonTimer);
+	$('#leaveDetailSkeleton').addClass('d-none');
+	getLeaveModalContent().removeClass('invisible d-none');
+}
+
 function leaveStatus(id) {
 	const modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('leaveDetailModal'));
+	leaveModalCurrentId = id;
+	showLeaveModalLoading();
 	modal.show();
 
 	$.ajax({
@@ -142,6 +197,8 @@ function leaveStatus(id) {
 		method: "POST",
 		data: { leaveId: id },
 		success: function (data) {
+			// ผู้ใช้กดใบอื่นไปแล้ว ไม่ต้องแสดง
+			if (id !== leaveModalCurrentId) { return; }
 			var obj = JSON.parse(data);
 
 			$('#leaveid').text(obj.leave_id);
@@ -154,14 +211,7 @@ function leaveStatus(id) {
 			renderLeaveModalFiles(obj);
 
 			// leave type name
-			if (obj.leave_type_id == 1) { $('#leavetype').text("ลาพักร้อน"); }
-			if (obj.leave_type_id == 2) { $('#leavetype').text("ลากิจ"); }
-			if (obj.leave_type_id == 3) { $('#leavetype').text("ลาป่วย"); }
-			if (obj.leave_type_id == 4) { $('#leavetype').text("ขาดงาน"); }
-			if (obj.leave_type_id == 5) { $('#leavetype').text("ลาโดยไม่รับค่าจ้าง"); }
-			if (obj.leave_type_id == 6) { $('#leavetype').text("ลาพักร้อนที่เหลือจากปีก่อน"); }
-			if (obj.leave_type_id == 7) { $('#leavetype').text("ลาอื่นๆ"); }
-			if (obj.leave_type_id == 9) { $('#leavetype').text("อื่นๆ"); }
+			$('#leavetype').text(leaveTypeNameMap[obj.leave_type_id] || '');
 
 			// date formatting
 			var startdate = (obj.start_date).split(",");
@@ -188,8 +238,12 @@ function leaveStatus(id) {
 					setLeaveApprover(obj);
 				}
 			}
+
+			hideLeaveModalLoading();
 		},
 		error: function () {
+			if (id !== leaveModalCurrentId) { return; }
+			hideLeaveModalLoading();
 			// modal ยังเปิดไม่เสร็จ รอแสดงก่อนค่อย hide
 			var $m = $('#leaveDetailModal');
 			$m.one('shown.bs.modal.loadFail', function () { modal.hide(); });
