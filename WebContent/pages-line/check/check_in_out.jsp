@@ -2179,7 +2179,7 @@ $(function () {
 	var hour = new Date().getHours();
 	$(hour <= 12 ? "#checkType1" : "#checkType2").prop("checked", true);
 
-	/* ---------- geolocation (ไม่มี map ตาม Figma ) ---------- */
+	/* ---------- geolocation (ไม่มี map) ---------- */
 	let lat = null, lng = null;
 	if (navigator.geolocation) {
 		navigator.geolocation.getCurrentPosition(function (pos) {

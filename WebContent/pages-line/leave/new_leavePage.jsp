@@ -534,7 +534,7 @@
 		</div> -->
 	</div>
 
-	<!-- Summary Leave: ซ่อนตามที่ขอ -->
+	<!-- Summary Leave: ซ่อน -->
 	<!-- <div class="mb-6">
 		<div class="card card-bordered liff-leave-card">
 			<div class="card-body p-4">
@@ -745,7 +745,7 @@
 	</div>
 	<!--end::Leave form card-->
 
-	<!-- ข้อมูลผู้ขอ/ผู้อนุมัติ: ซ่อนตามที่ขอ -->
+	<!-- ข้อมูลผู้ขอ/ผู้อนุมัติ: ซ่อน -->
 	<!-- <div class="py-6" id="infoBlock">
 		<div class="fs-8 text-gray-500" id="requestInfo">
 			Request By : <span id="ucEmpId"></span> <span id="ucName"></span> , <span id="timeCreate"></span>
