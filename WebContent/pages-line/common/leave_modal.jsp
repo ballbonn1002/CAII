@@ -222,9 +222,9 @@ function leaveStatus(id) {
 
 			$('#noday').text(obj.no_day + " Day");
 
-			// Request Date แสดงแค่วันที่
-			var created = moment(String(obj.time_create || '').split(",")[0], "DD MMM YYYY");
-			$('#requestdate').text(created.isValid() ? created.format("D MMM YYYY") : (obj.time_create || '-'));
+			// Request Date แสดงวันที่ + เวลา
+			var created = moment(obj.time_create, "DD MMM YYYY, HH:mm");
+			$('#requestdate').text(created.isValid() ? created.format("D MMM YYYY, H:mm") : (obj.time_create || '-'));
 
 			// leave status
 			$('#status_panel').hide();
