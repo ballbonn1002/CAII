@@ -914,12 +914,12 @@
 
 				<c:set var="st" value="${leave.leave_status_id.toString()}" />
 				<c:set var="stColor" value="${st == '1' ? 'success' : st == '2' ? 'danger' : st == '3' ? 'dark' : 'warning'}" />
-				<div class="card-footer d-flex align-items-center justify-content-between gap-3 px-5 py-3 border-top-0 bg-light-${stColor}">
-					<span class="d-inline-flex align-items-center gap-2 fs-6 fw-semibold text-${stColor}">
-						<c:if test="${st == '0'}"><i class="ki-outline ki-time fs-4 text-warning"></i>Wait for approve</c:if>
-						<c:if test="${st == '1'}"><i class="ki-outline ki-check-circle fs-4 text-success"></i>Approved</c:if>
-						<c:if test="${st == '2'}"><i class="ki-outline ki-cross-circle fs-4 text-danger"></i>Reject</c:if>
-						<c:if test="${st == '3'}"><i class="ki-outline ki-minus-circle fs-4 text-dark"></i>Cancel</c:if>
+				<div class="card-footer d-flex align-items-center justify-content-between gap-3 px-5 py-3">
+					<span class="badge badge-light-${stColor} fs-6 fw-semibold">
+						<c:if test="${st == '0'}">Wait for approve</c:if>
+						<c:if test="${st == '1'}">Approved</c:if>
+						<c:if test="${st == '2'}">Reject</c:if>
+						<c:if test="${st == '3'}">Cancel</c:if>
 					</span>
 					<c:if test="${st != '0'}">
 						<span class="fs-base text-gray-600"><fmt:formatDate value="${leave.time_update}" type="both" pattern="d MMM yyyy, H:mm"/></span>
@@ -1136,7 +1136,7 @@ function leaveStatus(id) {
 			+ '</div>'
 			+ bar('130px', 10)
 			+ '</div>'
-			+ '<div class="card-footer d-flex align-items-center justify-content-between gap-3 px-5 py-3 border-top-0">' + bar('100px', 14) + bar('110px', 10) + '</div>'
+			+ '<div class="card-footer d-flex align-items-center justify-content-between gap-3 px-5 py-3">' + bar('100px', 14) + bar('110px', 10) + '</div>'
 			+ '</div>';
 		$('#leaveList').before('<div id="sortSkeleton">' + skel + skel + skel + '</div>');
 	}
