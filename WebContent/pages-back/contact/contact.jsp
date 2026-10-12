@@ -188,7 +188,7 @@
 				<!-- Grid View -->
 				<div
 					id="gridViewContainer"
-					class="row g-6 d-none">
+					class="row g-10 d-none">
 				</div>
 
 				<!-- Table View -->
