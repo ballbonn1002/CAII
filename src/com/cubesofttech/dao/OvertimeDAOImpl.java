@@ -80,7 +80,7 @@ public class OvertimeDAOImpl implements OvertimeDAO {
 			String[] dates = dateRange.split(" - ");
 			startDate = dates[0];
 			endDate = dates[1];
-			sql += " AND ot.ot_date BETWEEN :startDate AND :endDate ";
+			sql += " AND DATE(ot.start_time) BETWEEN :startDate AND :endDate ";
 		}
 
 		sql += " ORDER BY ot.ot_id ASC";
