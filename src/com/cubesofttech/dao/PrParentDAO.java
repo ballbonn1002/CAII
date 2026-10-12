@@ -12,7 +12,7 @@ public interface PrParentDAO {
 	
 	void save(PrParent PrParent) throws Exception;
 	
-	PrParent findById(Long prParentId) throws Exception;
+	PrParent findById(String prParentId) throws Exception;
 
 	Long getMaxId() throws Exception;
 

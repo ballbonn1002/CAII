@@ -49,7 +49,7 @@ public class PrParentDAOImpl implements PrParentDAO {
 	}
 
 	@Override
-	public PrParent findById(Long PrParentId) throws Exception {
+	public PrParent findById(String PrParentId) throws Exception {
 		Session session = sessionFactory.getCurrentSession();
 		PrParent PrParent = null;
 		try {
@@ -111,11 +111,14 @@ public class PrParentDAOImpl implements PrParentDAO {
 	        		"uc.employee_id AS userEmployeeId, " +
 	                "uc.name_en AS user_create_nameEN, " +
 	                "uc.name AS user_create_name, " +
-	                "uu.name_en AS user_update_name " +
+	                "uu.name_en AS user_update_name, " +
+	                "mr.url_ref AS mr_ref_link " +
 	                "FROM pr_parent pr " +
 	                "LEFT JOIN user uc ON pr.user_create = uc.id " +
 	                "LEFT JOIN user uu ON pr.user_update = uu.id " +
-	                "WHERE pr.pr_detail_id = :prDetailId";
+	                "LEFT JOIN mr ON mr.mr_id = pr.mr_id " +
+	                "WHERE pr.pr_detail_id = :prDetailId "+
+					"ORDER BY CAST(pr.pr_parent_id AS UNSIGNED), pr.pr_parent_id";
 
 	        SQLQuery query = session.createSQLQuery(sql);
 	        query.setParameter("prDetailId", prDetailId);
@@ -145,7 +148,5 @@ public class PrParentDAOImpl implements PrParentDAO {
 	        throw e;
 	    }
 	}
-
-	
 
 }

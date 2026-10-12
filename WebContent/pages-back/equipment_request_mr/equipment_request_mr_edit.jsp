@@ -221,7 +221,7 @@
 							</div>
 							<div class="card-body px-9 py-9">
 								<div class="row g-8">
-									<div class="col-6 d-flex flex-column gap-8">
+									<div class="col-12 col-md-6 d-flex flex-column gap-8">
 
 										<!-- ผู้ขอ -->
 										<div class="d-flex align-items-center">
@@ -323,7 +323,7 @@
 										</c:if>
 									</div>
 
-									<div class="col-6 d-flex flex-column gap-8">
+									<div class="col-12 col-md-6 d-flex flex-column gap-8">
 
 										<!-- วันที่ -->
 										<div class="d-flex align-items-center">

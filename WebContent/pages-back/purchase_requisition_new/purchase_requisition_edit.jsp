@@ -3,6 +3,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
 <%@ taglib uri="/WEB-INF/tlds/permission.tld" prefix="perm"%>
+<% pageContext.setAttribute("nl", "\n"); pageContext.setAttribute("cr", "\r"); %>
 <fmt:setLocale value="en_US" />
 
 <!DOCTYPE html>
@@ -30,50 +31,66 @@
 <script
 	src="${pageContext.request.contextPath}/assets/js/custom/utilities/attachFile/attcahfile.js"></script>
 <style>
-/* Table MR */
-/* [data-bs-theme="light"] #mrResultTable.table.table-striped > tbody > tr:nth-of-type(odd) > * {
-    background-color: #FBFBFB !important; 
+/* ==================== Table MR ==================== */
+
+[data-bs-theme="light"] #mrResultTable.table.table-striped > tbody > tr:nth-of-type(odd) > * {
+    background-color: #FBFBFB !important;
     box-shadow: none !important;
-  }
- [data-bs-theme="dark"] #mrResultTable.table.table-striped > tbody > tr:nth-of-type(odd) > * {
-    background-color: #191B20 !important; 
+}
+
+[data-bs-theme="dark"] #mrResultTable.table.table-striped > tbody > tr:nth-of-type(odd) > * {
+    background-color: #191B20 !important;
     box-shadow: none !important;
-  }
+}
+
+
+/* ===== Table Header ===== */
 
 #mrResultTable thead th {
-	white-space: nowrap !important;
-	position: relative !important;
-	padding-right: 35px !important;
-	cursor: pointer;
+    white-space: nowrap !important;
+    vertical-align: middle !important;
+    padding-right: 35px !important;
+    cursor: pointer;
 }
 
-#mrResultTable thead th.sorting:after, #mrResultTable thead th.sorting_asc:after,
-#mrResultTable thead th.sorting_desc:after, #mrResultTable thead th.sorting:before,	
-#mrResultTable thead th.sorting_asc:before, #mrResultTable thead th.sorting_desc:before
-	{
-	position: absolute !important;
-	top: 10px !important;
-	right: 10px !important;
-	display: block !important;
-	opacity: 0.5;
+
+/* ===== DataTables Header ===== */
+
+#mrResultTable thead th .dt-column-header {
+    display: inline-flex !important;
+    align-items: center !important;
+    width: auto !important;
+    white-space: nowrap !important;
 }
 
-#mrResultTable thead th.sorting:before {
-	margin-top: -6px;
+#mrResultTable thead th .dt-column-title {
+    display: inline-block !important;
+    white-space: nowrap !important;
 }
 
-#mrResultTable thead th.sorting:after {
-	margin-top: 4px;
+/* ===== Remove old DataTables arrow ===== */
+
+#mrResultTable thead th.sorting::before,
+#mrResultTable thead th.sorting::after,
+#mrResultTable thead th.sorting_asc::before,
+#mrResultTable thead th.sorting_asc::after,
+#mrResultTable thead th.sorting_desc::before,
+#mrResultTable thead th.sorting_desc::after {
+    display: none !important;
 }
 
-#mrResultTable thead th:first-child, th:last-child {
+/* ===== First / Last Column ===== */
+
+#mrResultTable thead th:first-child{
     padding-right: 0 !important;
 }
 
-#mrResultTable thead th:last-child {
-    text-align: right !important;
-    padding-right: 0 !important;
-} */
+/* ===== MR Search Modal ===== */
+
+#modal_search_mr .table-responsive {
+    max-height: 300px;
+    overflow-y: auto;
+}
 
 /* ===== Signature Box ===== */
 .sig-box {
@@ -120,6 +137,25 @@
 	align-items: center;
 	gap: 3px;
 }
+
+.pr-src-actions {
+	display: none;
+	min-width: 80px;
+}
+.pr-src-menu.menu-open .pr-src-actions {
+	display: block;
+}
+.pr-src-menu.menu-open > .btn {
+	background-color: var(--bs-primary);
+	color: #fff;
+}
+
+/* ===== Responsive: sticky action bar (mobile) ===== */
+@media (max-width: 767.98px) {
+	.pr-src-actions {
+		max-width: calc(100vw - 32px);
+	}
+}
 </style>
 
 </head>
@@ -128,7 +164,7 @@
 	<div class="app-main flex-column flex-row-fluid">
 		<div class="d-flex flex-column flex-column-fluid">
 			<div id="kt_app_toolbar" class="app-toolbar py-3 py-lg-6">
-				<div id="kt_app_toolbar_container" class="app-container container-fluid d-flex flex-stack">
+				<div id="kt_app_toolbar_container" class="app-container container-fluid d-flex flex-stack flex-wrap gap-3">
 				
 					<div class="page-title d-flex flex-column justify-content-center flex-wrap me-3">
 						<h1 class="page-heading d-flex text-gray-700 fw-semibold flex-column justify-content-center my-0">
@@ -140,36 +176,9 @@
 							<li class="breadcrumb-item text-muted"><a class="text-muted text-hover-primary">Product</a></li>
 						</ul>
 					</div>
-			
-					<!-- <div class="d-flex align-items-center gap-2">
-						<span class="fs-2hx text-primary fw-bold" id="">#${prList.prId}</span>
-							<c:choose>
-								<c:when test="${prList.status == '1'}">
-									<span class="badge badge-lg bg-light-secondary fw-semibold fs-7 p-4">${prStatusNames['1']}</span>
-								</c:when>
-								<c:when test="${prList.status == '7'}">
-									<span class="badge badge-lg bg-cyan text-white fw-semibold fs-7 p-4">${prStatusNames['7']}</span>
-								</c:when>
-								<c:when test="${prList.status == '2'}">
-									<span class="badge badge-lg badge-warning text-white fw-semibold fs-7 p-4">${prStatusNames['2']}</span>
-								</c:when>
-								<c:when test="${prList.status == '4'}">
-									<span class="badge badge-lg badge-info text-white fw-semibold fs-7 p-4">${prStatusNames['4']}</span>
-								</c:when>
-								<c:when test="${prList.status == '3'}">
-									<span class="badge badge-lg bg-success text-white fw-semibold fs-7 p-4">${prStatusNames['3']}</span>
-								</c:when>
-								<c:when test="${prList.status == '5'}">
-									<span class="badge badge-lg bg-danger text-white fw-semibold fs-7 p-4">${prStatusNames['5']}</span>
-								</c:when>
-								<c:when test="${prList.status == '6'}">
-									<span class="badge badge-lg bg-dark text-white fw-semibold fs-7 p-4">${prStatusNames['6']}</span>
-								</c:when>
-								<c:otherwise></c:otherwise>
-							</c:choose>
-					</div> -->
+		
 					<div class="d-flex align-items-center gap-2">
-						<span class="fs-2hx text-primary fw-bold" id="">#${prList.prId}</span>
+						<span class="fs-1 fs-md-2hx text-primary fw-bold" id="">#${prList.prId}</span>
 						<span class="badge badge-lg bg-${prStatusColors[prList.status]} fw-semibold fs-7 p-4
 									${prStatusColors[prList.status] == 'secondary' ? 'text-dark' : 'text-white'}">
 							${prStatusNames[prList.status]}
@@ -189,7 +198,7 @@
 										<h3 class="fw-semibold text-gray-900">PR - Header</h3>
 									</div>
 								</div>
-								<div class="card-body filter-card px-10 py-9 rounded-3">
+								<div class="card-body filter-card px-5 px-lg-10 py-9 rounded-3">
 									<div class="row g-5">
 										<div class="col-lg-6 col-md-6 col-12 d-flex align-items-center">
 											<i class="ki-duotone ki-user-tick fs-3 me-3">
@@ -203,7 +212,7 @@
 												<span class="path1"></span><span class="path2"></span><span class="path3"></span>
 												<span class="path4"></span><span class="path5"></span>
 											</i>
-											<span class="fs-6 fw-medium text-gray-800"><fmt:formatDate value="${prList.timeCreate}" pattern="d MMM yyyy" /></span>
+											<span class="fs-6 fw-medium text-gray-800"><fmt:formatDate value="${prList.timeCreate}" pattern="d MMM yyyy, HH:mm" /></span>
 										</div>
 
 										<c:choose>
@@ -242,7 +251,7 @@
 										</label>
 									</c:if>
 								</div>
-								<div class="card-body filter-card px-10 py-9 rounded-3">
+								<div class="card-body filter-card px-5 px-lg-10 py-9 rounded-3">
 									<c:if test="${prList.status == '1'}">
 										<div id="attachFileWarningBox" class="border border-2 border-warning rounded border-active active w-100"
 											style="${not empty attachmentList ? 'display:none;' : ''}">
@@ -315,17 +324,17 @@
 					</div>
 					
 					<div class="card mb-10">
-						<div class="card-header border-0 px-9 pt-7 d-flex align-items-center justify-content-between">
+						<div class="card-header border-0 px-9 pt-7 d-flex flex-wrap align-items-center justify-content-between gap-3">
 					        <div class="card-title">
 					            <h3 class="fw-semibold text-gray-900">PR - Detail</h3>
 					        </div>
 							<c:if test="${prList.status == '1'}">
-								<div class="card-title gap-3">
+								<div class="card-title flex-wrap gap-3">
 									<button type="button" id="btnOpenCreatePr" class="btn btn-lg btn-success fw-medium text-white px-6 py-4" >
 										<i class="ki-outline ki-plus fs-3 me-1"></i>Create
 									</button>
 									
-									<button type="button" class="btn btn-lg btn-primary fw-medium text-white px-6 py-4" data-bs-toggle="modal" data-bs-target="#modal_search_mr">
+									<button type="button" id="btnOpenSearchMr" class="btn btn-lg btn-primary fw-medium text-white px-6 py-4">
 										<i class="ki-duotone ki-magnifier fs-3 me-1">
 											<span class="path1"></span><span class="path2"></span></i>Search MR
 									</button>
@@ -338,7 +347,7 @@
 								</h2>
 							</c:if>
 					    </div>
-						<div class="card-body filter-card px-9 py-8 rounded-3">
+						<div class="card-body filter-card px-5 px-lg-10 py-8 rounded-3">
 							<div id="prDetailCartContainer"></div>
 						</div>
 					</div>
@@ -352,10 +361,10 @@
 							</div>
 						</div>
 						<form id="signatureForm" method="post" action="update_signature" enctype="multipart/form-data">
-							<div class="card-body filter-card px-10 py-9 rounded-3 row g-5">
+							<div class="card-body filter-card px-5 px-lg-10 py-9 rounded-3 row g-5">
 								<!-- Draft status -->
 								<c:if test="${prList.status == '1'}">
-									<div class="col-6">
+									<div class="col-12 col-md-6">
 										<div class="d-flex flex-column align-items-center gap-2">
 											<c:choose>
 												<c:when test="${not empty imgPathSignature}">
@@ -392,7 +401,7 @@
 										</div>
 									</div>
 
-									<div class="col-6">
+									<div class="col-12 col-md-6">
 										<div class="border ${empty prList.signDate ? 'border-gray-300' : 'border-success bg-light-success'} rounded-3 h-100 d-flex flex-column align-items-center justify-content-center text-center py-8" id="receiverCard1">
 											<div class="receiver-box d-flex flex-fill flex-column align-items-center justify-content-center gap-2" id="receiverBox1">
 												<c:choose>
@@ -424,7 +433,7 @@
 								<!-- Approved status -->
 								<c:if test="${prList.status == '3' or prList.status == '7'}">
 									<c:if test="${not empty prList.signDate}">
-										<div class="col-6">
+										<div class="col-12 col-md-6 p-5 p-md-16 m-0">
 											<div class="d-flex flex-column align-items-center gap-3">
 												<c:if test="${not empty imgPathSignature}">
 													<img src="${pageContext.request.contextPath}${imgPathSignature}"
@@ -442,7 +451,7 @@
 									</c:if>
 									
 									<c:if test="${not empty prList.approveDate}">
-										<div class="col-6">
+										<div class="col-12 col-md-6 p-5 p-md-16 m-0">
 											<div class="d-flex flex-column align-items-center gap-3">
 												<c:if test="${not empty imgPathApproveSignature}">
 													<img src="${pageContext.request.contextPath}${imgPathApproveSignature}"
@@ -473,7 +482,7 @@
 
 								<!-- Pending status -->
 								<c:if test="${prList.status == '2' or prList.status == '4' or prList.status == '5' or prList.status == '6'}">
-									<div class="col-6">
+									<div class="col-12 col-md-6">
 										<div class="d-flex flex-column align-items-center gap-2">
 											<c:choose>
 												<c:when test="${not empty imgPathSignature}">
@@ -495,7 +504,7 @@
 										</div>
 									</div>
 
-									<div class="col-6">
+									<div class="col-12 col-md-6">
 										<div class="border ${empty prList.signDate ? 'border-gray-300' : 'border-success bg-light-success'} rounded-3 h-100 d-flex flex-column align-items-center justify-content-center text-center py-8">
 											<div class="d-flex flex-fill flex-column align-items-center justify-content-center gap-2">
 												<c:choose>
@@ -547,7 +556,7 @@
 						</c:choose>
 
 						<div class="card mb-10">
-							<div class="card-body filter-card px-10 py-9 rounded-3">
+							<div class="card-body filter-card px-5 px-lg-10 py-9 rounded-3">
 								<div class="d-flex align-items-center fs-6">
 									<span>${actionLabel} : ${userUpdate.employeeId} ${userUpdate.nameEN},
 										<fmt:formatDate value="${prList.timeUpdate}" pattern="d MMM YYYY HH:mm" />
@@ -568,7 +577,7 @@
 					</c:if>
 
 					<div class="modal fade" tabindex="-1" id="modal_create_pr">
-						<div class="modal-dialog modal-lg">
+						<div class="modal-dialog modal-lg modal-fullscreen-sm-down modal-dialog-centered">
 						    <div class="modal-content">
 						        <div class="modal-header">
 						            <h3 class="modal-title">Create PR - Detail</h3>
@@ -603,35 +612,35 @@
 										</div>
 									</div>
 									
-									<div class="row g-5 mb-6">
+									<div class="row g-5 mb-6" id="prQtyUnitRow">
 										<div class="col-lg-6 col-md-6 col-12 d-flex flex-column">
 											<label class="required fw-medium text-gray-800 mb-2">จำนวน</label>
 											<input type="number" class="form-control text-gray-700 h-45px" min="1"
 													name="pr_qty" id="pr_qty" placeholder="1" value="1" />
 										</div>
-										
+
 										<div class="col-lg-6 col-md-6 col-12 d-flex flex-column">
 											<label class="required fw-medium text-gray-800 mb-2">Unit</label>
 											<div class="position-relative d-flex align-items-center">
 												<select id="unit" class="form-select h-45px" data-control="select2">
 													<option value=""></option>
 												</select>
-												
+
 											</div>
 										</div>
 									</div>
-									
+
 									<div class="row g-5 mb-6">
-									
-										<div class="col-6 d-flex flex-column">
-											<label class="required fw-medium text-gray-800 mb-2">Description / Detail</label>
-											<textarea class="form-control text-gray-700" rows="3" name="description" id="pr_description" placeholder="Description"></textarea>
+
+										<div class="col-12 col-md-6 d-flex flex-column">
+											<label class="fw-medium text-gray-800 mb-2">Description / Detail</label>
+											<textarea class="form-control text-gray-700" rows="3" name="pr_description" id="pr_description" placeholder="Description"></textarea>
 										</div>
 
-										<div class="col-lg-6 col-md-6 col-12 d-flex flex-column">
+										<div class="col-lg-6 col-md-6 col-12 d-flex flex-column" id="prRefLinkRow">
 											<label class="fw-medium text-gray-800 mb-2">Ref Link</label>
-											<input type="text" class="form-control text-gray-700 h-45px"
-													name="pr_ref_link" id="pr_ref_link" placeholder="https://..." />
+											<textarea class="form-control text-gray-700" rows="3"
+													name="pr_ref_link" id="pr_ref_link" placeholder="https://..."></textarea>
 										</div>
 									</div>
 						        </div>
@@ -644,13 +653,152 @@
 						    </div>
 						</div>
 					</div>
-					
-					
-					<div class="d-flex justify-content-between g-10">
-						<div class="d-flex">
+
+					<div class="modal fade" tabindex="-1" id="modal_search_mr">
+					    <div class="modal-dialog modal-xl modal-fullscreen-lg-down">
+					        <div class="modal-content px-3">
+					            <div class="modal-header border-0">
+					                <h3 class="modal-title">Search MR</h3>
+					                <div class="btn btn-icon btn-sm btn-active-light-primary ms-2" data-bs-dismiss="modal" aria-label="Close">
+					                    <i class="ki-duotone ki-cross fs-1"><span class="path1"></span><span class="path2"></span></i>
+					                </div>
+					            </div>
+
+					            <div class="modal-body">
+					                <div class="row g-5 mb-3">
+					                    <div class="col-lg-6 col-md-6 col-12 d-flex flex-column">
+					                        <label class="required fw-medium text-gray-800 mb-2">Search MR</label>
+					                        <div class="input-group">
+					                            <input type="text" class="form-control text-gray-700 h-45px" name="searchMrKeyword" id="searchMrKeyword" />
+					                        </div>
+					                    </div>
+
+					                    <div class="col-lg-6 col-md-6 col-12 d-flex flex-column">
+					                        <label class="required fw-medium text-gray-800 mb-2">Category</label>
+					                        <select name="searchMrCategory" id="searchMrCategory" class="form-select h-45px" data-control="select2">
+					                            <option value="" selected>All</option>
+					                            <option value="equipment">Equipment</option>
+					                            <option value="consumables">Consumables</option>
+												<option value="accessory">Accessory</option>
+					                            <option value="office">Office supplies</option>
+					                        </select>
+					                    </div>
+					                </div>
+
+					                <div class="row g-5 mb-6 mt-3">
+					                    <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-4">
+					                        <div class="d-flex align-items-center gap-2">
+					                            <h3 class="text-gray-900 fw-bold">
+					                                <span id="mrItemsFoundCount"></span> Items Found
+					                            </h3>
+					                            <span id="mrSortLabel" class="fw-bold fs-6 text-gray-500">by Recent Updates</span>
+					                        </div>
+					                        <h3 class="text-primary fw-bold">
+					                            <span id="mrSelectedCount"></span> Selected
+					                        </h3>
+					                    </div>
+					                    <div class="table-responsive">
+					                        <table class="table table-striped align-middle gy-4 gs-7" id="mrResultTable">
+					                            <thead>
+					                                <tr class="fs-7 fw-bold text-gray-500 text-uppercase border-bottom border-gray-200 mb-0">
+					                                    <th class="min-w-15px ">
+					                                        <div class="text-center form-check form-check-sm">
+					                                            <input class="form-check-input" type="checkbox" id="checkAllMr" />
+					                                        </div>
+					                                    </th>
+					                                    <th class="min-w-40px text-start mx-0">#</th>
+					                                    <th class="min-w-80px">MR ID</th>
+					                                    <th class="min-w-100px">Category</th>
+					                                    <th class="min-w-200px">Request Name</th>
+					                                    <th class="min-w-200px">Product</th>
+					                                    <th class="min-w-100px text-end px-2">Status</th>
+					                                </tr>
+					                            </thead>
+					                            <tbody id="mrResultBody"></tbody>
+					                        </table>
+					                    </div>
+					                    <div class="text-muted fs-7 mt-2" id="mrNoResult" style="display:none;">No matching MR found.</div>
+					                </div>
+					            </div>
+
+					            <div class="modal-footer pt-0 mt-0 mb-2 border-0">
+					                <button type="button" class="btn btn-light" data-bs-dismiss="modal">Close</button>
+					                <button type="button" class="btn btn-success" id="btnSubmitMr">Submit</button>
+					            </div>
+					        </div>
+					    </div>
+					</div>
+
+					<div class="modal fade" tabindex="-1" id="modal_edit_source">
+						<div class="modal-dialog modal-lg modal-dialog-centered">
+							<div class="modal-content">
+								<div class="modal-header">
+									<h3 class="modal-title">Edit PR - Detail</h3>
+									<div class="btn btn-icon btn-sm btn-active-light-primary ms-2" data-bs-dismiss="modal" aria-label="Close">
+										<i class="ki-duotone ki-cross fs-1"><span class="path1"></span><span class="path2"></span></i>
+									</div>
+								</div>
+
+								<div class="modal-body">
+									<div class="d-flex align-items-center mb-4">
+										<div class="symbol symbol-40px me-3" id="editSrcTypeIcon"></div>
+										<span class="fs-6 fw-normal text-gray-900" id="editSrcTypeName"></span>
+										<i class="ki-duotone ki-black-right mx-2 text-gray-500 fs-2">
+											<span class="path1"></span><span class="path2"></span><span class="path3"></span>
+										</i>
+										<span class="fs-6 fw-normal text-gray-900" id="editSrcProduct"></span>
+									</div>
+
+									<div class="d-flex align-items-center justify-content-between flex-wrap gap-5 bg-light rounded p-5 mb-8">
+										<div class="d-flex align-items-center flex-wrap gap-8">
+											<div class="d-flex align-items-center">
+												<i class="ki-duotone ki-user-tick fs-3 text-muted me-2"><span class="path1"></span><span class="path2"></span><span class="path3"></span></i>
+												<span class="text-gray-800 fs-5" id="editSrcCreator"></span>
+											</div>
+											<div class="d-flex align-items-center">
+												<i class="ki-duotone ki-calendar-2 fs-3 me-2"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span><span class="path5"></span></i>
+												<span class="text-gray-800 fs-5" id="editSrcDate"></span>
+											</div>
+											<div class="d-flex align-items-center gap-2">
+												<i class="ki-duotone ki-tablet-book fs-3"><span class="path1"></span><span class="path2"></span></i>
+												<span id="editSrcMr"></span>
+											</div>
+										</div>
+										<div class="text-end">
+											<div class="text-muted fs-8">ปัจจุบัน</div>
+											<div class="text-gray-900 fs-5 fw-no" id="editSrcCurrent"></div>
+										</div>
+									</div>
+
+									<div class="row g-5">
+										<div class="col-12 col-sm-6 d-flex flex-column">
+											<label class="required fw-medium text-gray-800 mb-2">จำนวน</label>
+											<input type="number" class="form-control text-gray-700 h-45px" min="1" id="edit_src_qty" />
+										</div>
+										<div class="col-12 col-sm-6 d-flex flex-column">
+											<label class="required fw-medium text-gray-800 mb-2">Unit</label>
+											<select id="edit_src_unit" class="form-select h-45px" data-control="select2"
+													data-dropdown-parent="#modal_edit_source" data-hide-search="true">
+												<option value=""></option>
+											</select>
+										</div>
+									</div>
+									<div class="text-muted fs-7 mt-3" id="editSrcPreview"></div>
+								</div>
+
+								<div class="modal-footer">
+									<button type="button" class="btn btn-light" data-bs-dismiss="modal">Close</button>
+									<button type="button" class="btn btn-success" onclick="saveEditSource()">Update</button>
+								</div>
+							</div>
+						</div>
+					</div>
+
+					<div class="pr-action-bar d-flex flex-wrap justify-content-between gap-3">
+						<div class="d-flex flex-wrap gap-3">
 							<button type="button" id="backFormBtn"
-								onclick="sessionStorage.removeItem('prDetailCart_draft'); location.href='purchase_requisition_list'"
-    							class="btn btn-lg btn-light fw-medium text-light-inverse px-6 py-4 me-4 border">Back
+								onclick="sessionStorage.removeItem(PR_CART_STORAGE_KEY); sessionStorage.removeItem(PR_EXISTING_SRC_KEY); location.href='purchase_requisition_list'"
+    							class="btn btn-lg btn-light fw-medium text-light-inverse px-6 py-4 border">Back
 							</button>
 							<c:if test="${prList.status == '1' or prList.status == '4'}">
 								<button type="button" id="cancelFormBtn"
@@ -661,9 +809,9 @@
 						</div>
 						<c:choose>
 							<c:when test="${prList.status == '1'}">
-								<div class="d-flex">
+								<div class="d-flex flex-wrap gap-3">
 									<button type="button" id="saveDraft" onclick="saveDraftForm()"
-										class="btn btn-lg btn-cyan text-white fw-medium px-6 py-4 me-4">Save Draft
+										class="btn btn-lg btn-cyan text-white fw-medium px-6 py-4">Save Draft
 									</button>
 									<button type="button" id="savePRFormBtn"
 										class="btn btn-success text-white fw-medium px-6 py-4"
@@ -672,11 +820,11 @@
 							</c:when>
 							
 							<c:when test="${prList.status == '2'}">
-									<div class="d-flex">
+									<div class="d-flex flex-wrap gap-3">
 										<button type="button" id="returnPRBtn" onclick="returnPR()"
-												class="btn btn-lg btn-info text-white fw-medium px-6 py-4 me-4">Return</button>
+												class="btn btn-lg btn-info text-white fw-medium px-6 py-4">Return</button>
 										<button type="button" id="rejectPRBtn" onclick="rejectPR()"
-												class="btn btn-lg btn-danger text-white fw-medium px-6 py-4 me-4">Reject</button>
+												class="btn btn-lg btn-danger text-white fw-medium px-6 py-4">Reject</button>
 										<button type="button" id="approvePRBtn" onclick="approvePR()"
 													class="btn btn-lg btn-success text-white fw-medium px-6 py-4">Approve</button>
 									</div>
@@ -684,7 +832,7 @@
 							</c:when>
 
 							<c:when test="${prList.status == '4'}">
-								<div class="d-flex">
+								<div class="d-flex flex-wrap gap-3">
 									<button type="button" id="editPRFormBtn"
 										class="btn btn-lg btn-primary fw-medium px-6 py-4"
 										onclick="editPR()">Edit</button>
@@ -692,7 +840,7 @@
 							</c:when>
 
 							<c:when test="${prList.status == '3'}">
-								<div class="d-flex">
+								<div class="d-flex flex-wrap gap-3">
 									<button type="button" id="inProgressPRFormBtn"
 										class="btn btn-lg bg-cyan text-white fw-medium px-6 py-4"
 										onclick="inProgressPR()">In-Progress</button>
@@ -722,22 +870,37 @@
 	
 	
 	const serverPrDetailCart = [
-	    <c:forEach var="d" items="${prDetailList}" varStatus="st">
-	    {
-	        prDetailId: "${d.pr_detail_id}",
-	        productId: "${d.product_id}",
-	        productName: "${empty d.product_name ? '' : d.product_name}",
-	        itemsType: "${empty d.product_type ? '' : d.product_type}",
-	        qty: ${empty d.amount_total ? 0 : d.amount_total},
-	        unit: "${empty d.unit ? '' : d.unit}",
-			unitName: "${empty d.unit_name ? '' : d.unit_name}",
-	        total: 0,
-	        refLink: "${fn:replace(fn:replace(empty d.ref_link ? '' : d.ref_link, '\\', '\\\\'), '"', '\\"')}",
-	        description: "${fn:replace(fn:replace(empty d.description ? '' : d.description, '\\', '\\\\'), '"', '\\"')}",
-	        savedAt: "<fmt:formatDate value="${d.time_create}" pattern="d MMM yyyy, HH:mm"/>",
-			status: "${empty d.status ? '' : d.status}"
-	    }${!st.last ? ',' : ''}
-	    </c:forEach>
+		<c:forEach var="d" items="${prDetailList}" varStatus="st">
+		{
+			prDetailId: "${d.pr_detail_id}",
+			productId: "${d.product_id}",
+			productName: "${fn:replace(fn:replace(fn:replace(fn:replace(empty d.product_name ? '' : d.product_name, '\\', '\\\\'), '"', '\\"'), cr, ''), nl, '\\n')}",
+			parentProductName: "${fn:replace(fn:replace(fn:replace(fn:replace(empty d.parent_product_name ? '' : d.parent_product_name, '\\', '\\\\'), '"', '\\"'), cr, ''), nl, '\\n')}",
+			itemsType: "${empty d.product_type ? '' : d.product_type}",
+			qty: ${empty d.amount_total ? 0 : d.amount_total},
+			unit: "${empty d.unit ? '' : d.unit}",
+			unitName: "${fn:replace(fn:replace(fn:replace(fn:replace(empty d.unit_name ? '' : d.unit_name, '\\', '\\\\'), '"', '\\"'), cr, ''), nl, '\\n')}",
+			description: "${fn:replace(fn:replace(fn:replace(fn:replace(empty d.description ? '' : d.description, '\\', '\\\\'), '"', '\\"'), cr, ''), nl, '\\n')}",
+			savedAt: "<fmt:formatDate value="${d.time_create}" pattern="d MMM yyyy, HH:mm"/>",
+			status: "${empty d.status ? '' : d.status}",
+			sources: [
+				<c:forEach var="p" items="${d.prParentList}" varStatus="ps">
+				{
+					prParentId: "${empty p.pr_parent_id ? '' : p.pr_parent_id}",
+					mrId: "${empty p.mr_id ? '' : p.mr_id}",
+					refLink: "${fn:replace(fn:replace(fn:replace(fn:replace(empty p.ref_link ? '' : p.ref_link, '\\', '\\\\'), '"', '\\"'), cr, ''), nl, '\\n')}",
+					qty: ${empty p.amount ? 0 : p.amount},
+					unit: "${empty p.unit ? '' : p.unit}",
+					unitName: "${fn:replace(fn:replace(fn:replace(fn:replace(empty p.unit_name ? '' : p.unit_name, '\\', '\\\\'), '"', '\\"'), cr, ''), nl, '\\n')}",
+					baseQty: ${empty p.base_qty ? (empty p.amount ? 0 : p.amount) : p.base_qty},
+					description: "${fn:replace(fn:replace(fn:replace(fn:replace(empty p.description ? '' : p.description, '\\', '\\\\'), '"', '\\"'), cr, ''), nl, '\\n')}",
+					creatorName: "${empty p.userEmployeeId ? '' : p.userEmployeeId}${empty p.user_create_nameEN ? '' : ' - '.concat(p.user_create_nameEN)}",
+					savedAt: "<fmt:formatDate value="${p.time_create}" pattern="d MMM yyyy, HH:mm"/>"
+				}${!ps.last ? ',' : ''}
+				</c:forEach>
+			]
+		}${!st.last ? ',' : ''}
+		</c:forEach>
 	];
 
 	let existingAttachmentCount = ${not empty attachmentList ? fn:length(attachmentList) : 0};
@@ -747,41 +910,10 @@
 	    const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
 	    const pad = n => String(n).padStart(2,'0');
 	    return `\${d.getDate()} \${months[d.getMonth()]} \${d.getFullYear()}, \${pad(d.getHours())}:\${pad(d.getMinutes())}`;
-	    /* return `\${d.getDate()} \${months[d.getMonth()]} \${d.getFullYear()}, \${pad(d.getHours())}:\${pad(d.getMinutes())}`; */
 	}
 	
 	document.addEventListener("DOMContentLoaded", function () {
-		
-		// Table MR
-		// var table = $('#mrResultTable').DataTable({
-		// 	ordering : true,
-		// 	searching : true,
-		// 	autoWidth : false,
-		// 	info: false, 
-		// 	paging: false,
-		// 	columnDefs : [ {
-		// 		orderable : false,
-		// 		targets : [ 0 ]
-		// 	}, {
-		// 		orderable : true,
-		// 		targets : [ 1, 2, 3, 4, 5 ]
-		// 	}, {
-		// 		targets: [ 5 ],
-		// 		type: 'string'
-		// 	} ],
-		// 	order : [],
-		// 	headerCallback : function(thead) {
-		// 		$(thead).find('th').each(
-		// 				function(index) {
-		// 					if (index === 0) return;
-		// 					if ($(this).find('.th-wrapper').length === 0) {
-		// 						$(this).wrapInner(
-		// 								'<span class="th-wrapper" style="display:inline-flex; align-items:center; white-space:nowrap; pointer-events:none;"></span>');
-		// 						}
-		// 					});
-		// 		}
-		// });
-		
+
 		document.querySelector('#kt_app_content_container').addEventListener('click', function(e){
 			const btn = e.target.closest('.pr-group-toggle');
 			if (!btn) return;
@@ -804,47 +936,6 @@
 				icon.classList.add('ki-down-square');
 			}
 		});
-		// document.querySelector('#kt_app_content_container').addEventListener('click', function(e){
-		//     const btn = e.target.closest('.collapsed, [data-target^="cart_"], a[id^="prGroupBtn_"]');
-		//     if (!btn) return;
-
-		//     let collapseEl;
-		//     if (btn.dataset.target) {
-		//         collapseEl = document.getElementById('prGroup_' + btn.dataset.target);
-		//     } else if (btn.id.startsWith('prGroupBtn_')) {
-		//         collapseEl = document.getElementById(btn.id.replace('prGroupBtn_', 'prGroup_'));
-		//     }
-		//     if (!collapseEl) return;
-
-		//     const icon = btn.querySelector('i');
-		//     const isOpen = collapseEl.classList.contains('show');
-
-		//     if (isOpen) {
-		//         collapseEl.classList.remove('show');
-		//         btn.classList.add('collapsed');
-		//         icon.classList.remove('ki-down-square');
-		//         icon.classList.add('ki-up-square');
-		//     } else {
-		//         collapseEl.classList.add('show');
-		//         btn.classList.remove('collapsed');
-		//         icon.classList.remove('ki-up-square');
-		//         icon.classList.add('ki-down-square');
-		//     }
-		// });
-		
-		//running number
-		/* function runNumber() {
-			const info = table.page.info();
-			table.column(1, {
-				page : 'current'
-					}).nodes().each(function(cell, i) {
-						cell.innerHTML = info.start + i + 1;
-						});
-			}
-		
-		table.on('draw.dt order.dt search.dt', runNumber);
-		runNumber();
-		 */
 		
 		// --- Modal ---
 		 var elements = Array.prototype.slice.call(document.querySelectorAll("[data-bs-stacked-modal]"));
@@ -881,6 +972,10 @@
 		            $('#pr_description').val('');
 		            $('#modal_create_pr .modal-title').text('Create PR - Detail');
 		            $('#btnSavePrDetail').text('Save');
+		            $('#prQtyUnitRow').removeClass('d-none');
+		            $('#prRefLinkRow').removeClass('d-none');
+		        } else {
+		            $('#prQtyUnitRow').addClass('d-none');
 		        }
 		    });
 
@@ -909,8 +1004,35 @@
 				});
 			}
 
-		    
-		    
+			document.getElementById('modal_edit_source').addEventListener('hidden.bs.modal', function () {
+				editingSrc = null;
+			});
+
+			const searchMrModalEl = document.getElementById('modal_search_mr');
+
+			searchMrModalEl.addEventListener('hide.bs.modal', function () {
+				if (document.activeElement && searchMrModalEl.contains(document.activeElement)) {
+					document.activeElement.blur();
+				}
+			});
+
+			searchMrModalEl.addEventListener('hidden.bs.modal', function () {
+				isSearchMrModalOpen = false;
+				selectedMrCategory = '';
+				$('#searchMrCategory').val('').trigger('change.select2');
+			});
+
+			searchMrModalEl.addEventListener('show.bs.modal', function () {
+				isSearchMrModalOpen = true;
+				loadInprogressMrDetail();
+			});
+
+			document.getElementById('btnOpenSearchMr').addEventListener('click', function () {
+				bootstrap.Modal.getOrCreateInstance(searchMrModalEl).show();
+			});
+
+
+
 });
 	
 	
@@ -930,6 +1052,7 @@
 	    }).then((result) => {
 	        if (result.isConfirmed) {
 	        	sessionStorage.removeItem(PR_CART_STORAGE_KEY);
+				sessionStorage.removeItem(PR_EXISTING_SRC_KEY);
 	            window.location.href = redirectUrl;
 	        }
 	    });
@@ -1114,12 +1237,13 @@
 	                    $(el).closest('[data-file-id]').remove();
 	                    existingAttachmentCount = Math.max(0, existingAttachmentCount - 1);
 	                    updateWarningBoxVisibility();
+						toastOk('ลบไฟล์สำเร็จ');
 	                } else {
-	                    Swal.fire('Error', 'ไม่สามารถลบไฟล์ได้', 'error');
+	                    toastFail('ไม่สามารถลบไฟล์ได้');
 	                }
 	            },
 	            error: function () {
-	                Swal.fire('Error', 'เกิดข้อผิดพลาดในการลบไฟล์', 'error');
+	                toastFail('เกิดข้อผิดพลาดในการลบไฟล์');
 	            }
 	        });
 	    });
@@ -1242,7 +1366,7 @@
 
 	$('#product_name').on('change', function(){
 		var productId = $(this).val();
-		$('#unit').html('<option value=""></option>').trigger('change');
+		$('#unit').html('<option value=""></option>').data('base-unit-id', '').data('base-unit-name', '').trigger('change');
 		if(!productId) return;
 
 		$.ajax({
@@ -1256,15 +1380,23 @@
 				var list = (data && data.unitList) || [];
 
 				var options = '';
+				var baseUnit = null;
 				if (list.length === 0) {
 					options = '<option value=""></option>';
 				} else {
 					list.forEach(function (item, index) {
-						options += '<option value="' + item.id + '"' + (index === 0 ? ' selected' : '') + '>' + item.name + '</option>';
+						if (String(item.sequence) === '0') baseUnit = item;
+						options += '<option value="' + item.id + '"'
+							+ ' data-conversion-rate="' + (item.conversionRate != null ? item.conversionRate : 1) + '"'
+							+ ' data-sequence="' + (item.sequence != null ? item.sequence : '') + '"'
+							+ (index === 0 ? ' selected' : '') + '>' + item.name + '</option>';
 					});
 				}
 
-				$('#unit').html(options).trigger('change');
+				$('#unit').html(options)
+					.data('base-unit-id', baseUnit ? baseUnit.id : '')
+					.data('base-unit-name', baseUnit ? baseUnit.name : '')
+					.trigger('change');
 			},
 			error: function () {
 				Swal.fire('Error', 'ไม่สามารถโหลดข้อมูล Unit ได้', 'error');
@@ -1280,10 +1412,76 @@ let existingPrDetailList = (typeof serverPrDetailCart !== 'undefined') ? serverP
 let prDetailCounter = 0;
 let editingIndex = -1;
 let editingExistingDetailId = null; // pr_detail_id ของรายการเดิมที่กำลังแก้ (ถ้ามี)
+let pendingExistingSources = {};
 let confirmed1 = ${empty prList.signDate ? 'false' : 'true'}; //track ว่าลงชื่อ ผู้ขอเบิก แล้วหรือยัง
 
 const PR_CART_STORAGE_KEY = 'prDetailCart_draft_' + (EDIT_PR_ID || 'new');
+const PR_EXISTING_SRC_KEY = 'prExistingSrc_draft_' + (EDIT_PR_ID || 'new');
 loadCartFromSession();
+
+function addSourceToCart(itemBase, source){
+	// ถ้าสินค้านี้มีการ์ดอยู่แล้วใน DB ต่อเป็น source ใหม่ของการ์ดนั้น
+    const exItem = existingPrDetailList.find(function(it){
+        return String(it.productId) === String(itemBase.productId);
+    });
+    if (exItem) {
+        const pid = String(exItem.prDetailId);
+        const pending = pendingExistingSources[pid] || [];
+        const dup = (exItem.sources || []).concat(pending).some(function(s){
+            return source.mrId && String(s.mrId) === String(source.mrId);
+        });
+        if (dup) return;
+        pending.push(source);
+        pendingExistingSources[pid] = pending;
+        return;
+    }
+
+    const idx = prDetailCart.findIndex(function(it){
+        return String(it.productId) === String(itemBase.productId);
+    });
+    if (idx >= 0) {
+        const ex = prDetailCart[idx];
+
+        // item เดิมที่ยังไม่มี sources ห่อตัวเองเป็น source แรกก่อน
+        if (!ex.sources || ex.sources.length === 0) {
+            ex.sources = [{
+                mrId: null,
+                qty: ex.qty, unit: ex.unit, unitName: ex.unitName, baseQty: ex.qty,
+                refLink: '', description: ex.description || '',
+                creatorName: ex.creatorName || currentUserDisplay,
+                savedAt: ex.savedAt || formatNowDateTime()
+            }];
+        }
+
+        // กันเพิ่มซ้ำ ถ้า mr_id นี้ถูกดึงมาแล้ว
+        if (source.mrId && ex.sources.some(function(s){ return String(s.mrId) === String(source.mrId); })) return;
+
+        ex.sources.push(source);
+        ex.qty = (Number(ex.qty) || 0) + source.baseQty;
+        if (!ex.description && itemBase.description) ex.description = itemBase.description;
+    } else {
+        prDetailCart.push({ ...itemBase, qty: source.baseQty, sources: [source] });
+    }
+}
+
+// draft เก่าใน sessionStorage ที่ยังไม่มี sources (โครงสร้างเก่าก่อนแก้รอบนี้) → ห่อเป็นโครงสร้างใหม่
+function normalizeCartItem(item){
+    const qty = Number(item.qty) || 0;
+    if (!item.sources || item.sources.length === 0) {
+        item.sources = [{
+            mrId: item.mrId || null,
+            qty: qty, unit: item.unit, unitName: item.unitName, baseQty: qty,
+            refLink: item.refLink || '',
+            description: item.description || '',
+            creatorName: item.creatorName || currentUserDisplay,
+            savedAt: item.savedAt || formatNowDateTime()
+        }];
+    }
+    delete item.mrId; delete item.refLink; delete item.total;
+    item.qty = qty;
+    item.savedAt = item.savedAt || formatNowDateTime();
+    return item;
+}
 
 function mapDbItemsTypeToSelect(val){
     switch(String(val)){
@@ -1291,12 +1489,13 @@ function mapDbItemsTypeToSelect(val){
         case '2': return 'consumables';
 		case '3': return 'accessory';
         case '4': return 'office';
-        default:  return val; // เผื่อเป็น 'equipment'/'consumables'/'office' อยู่แล้ว
+        default:  return val;
     }
 }
 function saveCartToSession(){
     try {
         sessionStorage.setItem(PR_CART_STORAGE_KEY, JSON.stringify(prDetailCart));
+        sessionStorage.setItem(PR_EXISTING_SRC_KEY, JSON.stringify(pendingExistingSources));
     } catch (e) {
         console.error('ไม่สามารถบันทึก cart ลง sessionStorage ได้', e);
     }
@@ -1305,20 +1504,13 @@ function saveCartToSession(){
 function loadCartFromSession(){
     try {
         const saved = sessionStorage.getItem(PR_CART_STORAGE_KEY);
-        if (saved) {
-            prDetailCart = JSON.parse(saved);
-            
-            prDetailCart = prDetailCart.map(item => ({
-                ...item,
-                qty: Number(item.qty) || 0,
-                refLink: item.refLink || '',
-                total: 0,
-                savedAt: item.savedAt || formatNowDateTime()
-            }));
-        }
+        if (saved) prDetailCart = JSON.parse(saved).map(normalizeCartItem);
+        const savedEx = sessionStorage.getItem(PR_EXISTING_SRC_KEY);
+        if (savedEx) pendingExistingSources = JSON.parse(savedEx) || {};
     } catch (e) {
         console.error('ไม่สามารถโหลด cart จาก sessionStorage ได้', e);
         prDetailCart = [];
+        pendingExistingSources = {};
     }
 }
 
@@ -1336,14 +1528,24 @@ function validatePrDetailForm(){
     if (!$('#items_type').val() || !$('#items_type').val().trim()) errors.push('Category');
     if (!$('#product_name').val() || !$('#product_name').val().trim()) errors.push('Product Name');
 
-    const qty = $('#pr_qty').val().trim();
-    if (!qty || Number(qty) <= 0) errors.push('จำนวน');
-
-    if (!$('#unit').val().trim()) errors.push('Unit');
-
-    if (!$('#pr_description').val().trim()) errors.push('Description / Detail');
+    if (editingIndex === -1 && !editingExistingDetailId) {
+        const qty = $('#pr_qty').val().trim();
+        if (!qty || Number(qty) <= 0) errors.push('จำนวน');
+        if (!$('#unit').val().trim()) errors.push('Unit');
+    }
 
     return errors;
+}
+
+function getManualRefSourceIndex(item){
+    const srcs = item.sources || [];
+    let idx = srcs.findIndex(function(s){ return !s.mrId && s.refLink; });
+    if (idx === -1) idx = srcs.findIndex(function(s){ return !s.mrId; });
+    return idx;
+}
+function getManualRefSource(item){
+    const idx = getManualRefSourceIndex(item);
+    return idx >= 0 ? item.sources[idx] : null;
 }
 
 function addPrDetailToCart(){
@@ -1360,32 +1562,61 @@ function addPrDetailToCart(){
         return;
     }
 
-    const item = {
-        itemsType: $("#items_type").val(),
-        itemsTypeText: $("#items_type option:selected").text(),
-        productId: $("#product_name").val(),
-        productName: $("#product_name option:selected").text(),
-        qty: Number($("#pr_qty").val()),
-        unit: $("#unit").val(),
-		unitName: $("#unit option:selected").text(),
-        refLink: $("#pr_ref_link").val().trim(),
-        description: $("#pr_description").val(),
-        savedAt: formatNowDateTime()
-    };
-
-    item.total = 0;
+    const description = $("#pr_description").val();
+	const refLink = $("#pr_ref_link").val().trim();
 
     if (editingExistingDetailId) {
-        // แก้ไขรายการเดิมที่มีอยู่แล้วใน DB -> เรียก AJAX update ทันที
-        updateExistingPrDetail(editingExistingDetailId, item);
+        // แก้ไขรายการเดิมที่มีอยู่แล้วใน DB
+        updateExistingPrDetail(editingExistingDetailId, {
+            productId: $("#product_name").val(),
+            qty: $("#pr_qty").val(),
+            unit: $("#unit").val(),
+            description: description,
+        	refLink: refLink
+        });
         return;
     }
 
     if (editingIndex >= 0) {
-        prDetailCart[editingIndex] = item;
-        editingIndex = -1;
-    } else {
-        prDetailCart.push(item);
+		const old = prDetailCart[editingIndex] || {};
+		const updated = { ...old, description: description };
+
+		const targetIdx = getManualRefSourceIndex(old);
+		updated.sources = (old.sources || []).map(function(s, i){
+			if (i !== targetIdx) return s;
+			return { ...s, description: description, refLink: refLink };
+		});
+
+		prDetailCart[editingIndex] = updated;
+		editingIndex = -1;
+	} else {
+        const rawQty = Number($("#pr_qty").val()) || 0;
+        const rawUnitId = $("#unit").val();
+        const rawUnitName = $("#unit option:selected").text();
+        const conversionRate = Number($("#unit option:selected").data('conversion-rate')) || 1;
+        const baseUnitId = $('#unit').data('base-unit-id') || rawUnitId;
+        const baseUnitName = $('#unit').data('base-unit-name') || rawUnitName;
+        const baseQty = rawQty * conversionRate;
+
+        addSourceToCart({
+            itemsType: $("#items_type").val(),
+            itemsTypeText: $("#items_type option:selected").text(),
+            productId: $("#product_name").val(),
+            productName: $("#product_name option:selected").text(),
+            unit: baseUnitId,
+            unitName: baseUnitName,
+            description: description,
+            creatorName: currentUserDisplay,
+            savedAt: formatNowDateTime()
+        }, {
+            mrId: null,
+            qty: rawQty, unit: rawUnitId, unitName: rawUnitName,
+            baseQty: baseQty,
+            refLink: refLink,
+            description: description,
+            creatorName: currentUserDisplay,
+            savedAt: formatNowDateTime()
+        });
     }
 
     saveCartToSession();
@@ -1438,6 +1669,14 @@ function renderPrDetailCart(){
 //-------- PR- Detail -----------
 function createPrCard(item,index,prDetailId){
     const safeQty = Number(item.qty) || 0;
+	const pending = prDetailId ? (pendingExistingSources[String(prDetailId)] || []) : [];
+	const pendingQty = pending.reduce(function(a, s){
+		return a + (Number(s.baseQty != null ? s.baseQty : s.qty) || 0);
+	}, 0);
+	const displayQty = safeQty + pendingQty;
+	const existingSources = item.sources || [];
+	const allSources = existingSources.concat(pending);
+	const pendingStartIndex = existingSources.length; // index ตั้งแต่ตรงนี้เป็นต้นไป = source ใหม่ที่ยังไม่ save
 
     let icon = "";
     let category = "";
@@ -1488,6 +1727,26 @@ function createPrCard(item,index,prDetailId){
 
     const groupId = prDetailId ? ("existing_" + prDetailId) : ("cart_" + index);
     const badgeNew = prDetailId ? "" : `<span class="badge badge-light-success me-3">New</span>`;
+    const displayProductName = item.parentProductName
+        ? item.parentProductName + ' > ' + (item.productName || '')
+        : (item.productName || '');
+		
+	const descriptionHtml = item.description
+        ? '<div class="d-flex align-items-center">'
+            + '<i class="ki-duotone ki-document fs-2 text-muted me-2">'
+                + '<span class="path1"></span><span class="path2"></span>'
+            + '</i>'
+            + '<span class="text-gray-900 fs-5 fw-normal">' + item.description + '</span>'
+        + '</div>'
+        : '';
+
+	const manualSrc = allSources.find(function(s){
+		return !s.mrId && s.refLink;
+	});
+	const headerRefLinkHtml = manualSrc ? `
+		<a href="\${manualSrc.refLink}" target="_blank" rel="noopener" class="text-primary d-inline-flex ms-2" onclick="event.stopPropagation();" title="Ref Link">
+			<i class="ki-duotone ki-fasten fs-2 text-primary"><span class="path1"></span><span class="path2"></span></i>
+		</a>` : '';
 
     let actionButtons = '';
     if (canEditPrDetail) {
@@ -1507,30 +1766,22 @@ function createPrCard(item,index,prDetailId){
 	}
 
     return `<div class="pr-item-group border-gray-400 border-bottom py-9 px-6">
-    			<div class="d-flex align-items-center justify-content-between row">
-    				<div class="col-7 d-flex align-items-center">\${icon}
+    			<div class="d-flex align-items-center justify-content-between row g-3">
+    				<div class="col-12 col-lg-7 d-flex flex-wrap align-items-center">\${icon}
 						<span class="text-gray-900 fs-5 fw-normal me-3">\${category}</span>
-						<span class="text-gray-900 fs-5 fw-normal me-3">\${item.productName}</span>
-		
-						<div class="d-flex align-items-center">
-							<i class="ki-duotone ki-document fs-2 text-muted me-2">
-								<span class="path1"></span>
-								<span class="path2"></span>
-							</i>
-		
-							<span class="text-gray-900 fs-5 fw-normal">\${item.description} \${badgeNew}</span> 
-		
-						</div>
+						<span class="text-gray-900 fs-5 fw-normal me-3">\${displayProductName}</span>
+
+						\${descriptionHtml} \${headerRefLinkHtml} \${badgeNew}
 					</div>
 		
-					<div class="col-1 d-flex align-items-center justify-content-between px-0">
-						<div class="col-12 d-flex flex-column text-end">
+					<div class="col-5 col-lg-2 d-flex align-items-center justify-content-between px-0">
+						<div class="col-12 d-flex flex-column text-start text-lg-end">
 							<span class="fs-6 fw-normal text-gray-900">\${item.unitName}</span>
-							<span class="fw-semibold text-gray-800 fs-5">\${item.qty}</span>
+							<span class="fw-semibold text-gray-800 fs-5">\${displayQty}</span>
 						</div>
 					</div>
 		
-					<div class="col-2 d-flex justify-content-end align-items-center gap-2 px-0">
+					<div class="col-7 col-lg-3 d-flex justify-content-end align-items-center gap-2 px-0">
 						\${actionButtons}
 						<a class="collapsed pr-group-toggle" data-target="\${groupId}">
 							<i class="ki-duotone ki-up-square fs-2hx">
@@ -1548,49 +1799,101 @@ function createPrCard(item,index,prDetailId){
 			</div>
 			
 			<div class="collapse border-gray-300 border-top mt-3" id="prGroup_\${groupId}">
-	            <div class="ps-9 pt-9">
-	                <div class="d-flex align-items-center justify-content-between row">
-	                    <div class="col-11">
-	                        <div class="d-flex align-items-center fs-7 gap-3">
-	                            <div class="col-4">
-	                                <i class="ki-duotone ki-user-tick fs-3 text-muted me-2">
-	                                    <span class="path1"></span><span class="path2"></span><span class="path3"></span>
-	                                </i>
-	                                <span class="text-gray-800 fs-5">\${currentUserDisplay}</span>
-	                            </div>
-	                            <div class="col-5 d-flex align-items-center">
-	                                <i class="ki-duotone ki-calendar-2 fs-3 me-2">
-	                                    <span class="path1"></span><span class="path2"></span><span class="path3"></span>
-	                                    <span class="path4"></span><span class="path5"></span>
-	                                </i>
-	                                <span class="text-gray-800 fs-5">\${item.savedAt}</span>
-	                            </div>
-	                            <div class="col-3 d-flex align-items-center">
-				                    <i class="ki-duotone ki-tablet-book fs-3 me-2">
-					                     <span class="path1"></span><span class="path2"></span>
-									</i>
-									<span class="badge badge-lg badge-light-primary text-primary fs-7 fw-semibold d-inline-block text-center me-3">-</span>
-									\${item.refLink 
-										? `<a href="\${item.refLink}" target="_blank" class="my-0 d-flex align-items-center">
-											<i class="ki-duotone ki-fasten fs-2 me-2 text-primary">
-					                     		<span class="path1"></span><span class="path2"></span>
-											</i>
-											</a>`
-										: ''
-									}
-		                    	</div>
-	                        </div>
-	                    </div>
-	                    <div class="col-1 text-end">
-	                        <span class="text-gray-800 fs-5">\${item.qty} \${item.unitName}</span>
-	                    </div>
-	                </div>
+	            <div class="ps-0 ps-md-9 pt-5">
+	                \${
+						(allSources.length > 0)
+							? allSources.map(function(s, i){
+								var srcBaseQty = (s.baseQty != null) ? s.baseQty : s.qty;
+								var isNewSource = !!prDetailId && i >= pendingStartIndex;
+								var rowRefLink = s.mrId ? s.refLink : '';
+								
+								// เมนูแสดงทุกแถว (ทั้งที่ยังไม่ save และที่ save ลง DB แล้ว) เมื่อ PR เป็น Draft
+								var menuCtx = null;
+								if (canEditPrDetail) {
+									if (!prDetailId) menuCtx = { scope: 'cart', a: index, b: i };
+									else if (isNewSource) menuCtx = { scope: 'pending', a: prDetailId, b: i - pendingStartIndex };
+									else menuCtx = { scope: 'db', a: prDetailId, b: i };
+								}
+								return createPrSourceRow(s.qty, s.unitName || item.unitName, srcBaseQty, item.unitName,
+														s.savedAt, s.mrId, rowRefLink, s.creatorName, isNewSource, menuCtx);
+							}).join('')
+							: createPrSourceRow(item.qty, item.unitName, item.qty, item.unitName, item.savedAt, null, '', currentUserDisplay, false, null)
+					}
 	            </div>
 	        </div>
-		
+
 		</div>
-		
+
 		`;
+}
+
+function createMrBadge(mrId, refLink){
+    const linkColor = mrId ? 'info' : 'primary';
+
+    const link = refLink ? `
+        <a href="\${refLink}" target="_blank" rel="noopener" class="text-\${linkColor} d-inline-flex ms-1" onclick="event.stopPropagation();">
+            <i class="ki-duotone ki-fasten fs-2 text-\${linkColor}"><span class="path1"></span><span class="path2"></span></i>
+        </a>` : '';
+
+    if (!mrId) {
+        return `
+        <span class="d-inline-flex align-items-center flex-shrink-0">
+            <span class="badge badge-lg fs-7 fw-semibold d-inline-block text-center badge-light-primary text-primary">-</span>\${link}
+        </span>`;
+    }
+
+    return `
+    <span class="d-inline-flex align-items-center flex-shrink-0">
+        <a href="\${ctx}/equipment_request_mr_approve?mrId=\${mrId}" target="_blank" onclick="event.stopPropagation();"
+           class="badge badge-lg fs-7 fw-semibold text-center text-decoration-none text-nowrap badge-light-info text-info">\${mrId}</a>\${link}
+    </span>`;
+}
+
+function createPrSourceRow(qty, unitName, baseQty, baseUnitName, savedAt, mrId, refLink, creatorName, isNew, menuCtx){
+    const qtyUnitDisplay = qty + ' ' + unitName + ' (= ' + baseQty + ' ' + baseUnitName + ')';
+    const newBadge = isNew ? '<span class="badge badge-light-success ms-3">New</span>' : '';
+
+    const menuHtml = menuCtx ? `
+            <div class="pr-src-menu position-relative d-inline-block flex-shrink-0">
+                <a href="#" class="btn btn-icon btn-sm btn-light-primary w-30px h-30px"
+                   onclick="return toggleSrcMenu(this, event);" aria-label="More actions" aria-haspopup="true">
+                    <i class="ki-outline ki-dots-horizontal fs-2"></i>
+                </a>
+
+                <div class="pr-src-actions position-absolute end-0 top-100 mt-2 bg-body rounded-3 shadow z-index-3">
+                    <div class="py-2">
+                        <a href="#" class="pr-src-item d-block px-6 py-3 fs-6 fw-normal text-gray-800 bg-hover-light"
+                           onclick="event.stopPropagation(); return editSource('\${menuCtx.scope}', '\${menuCtx.a}', \${menuCtx.b});">Edit</a>
+                        <a href="#" class="pr-src-item d-block px-6 py-3 fs-6 fw-normal text-gray-800 bg-hover-light"
+                           onclick="event.stopPropagation(); return removeSource('\${menuCtx.scope}', '\${menuCtx.a}', \${menuCtx.b});">Delete</a>
+                    </div>
+                </div>
+            </div>` : '';
+
+    return `
+    <div class="pr-src-row row g-2 align-items-center mb-4 py-2">
+        <div class="col-12 col-xl-9">
+            <div class="row g-2 align-items-center fs-7">
+                <div class="col-12 col-md-4">
+                    <i class="ki-duotone ki-user-tick fs-3 text-muted me-2"><span class="path1"></span><span class="path2"></span><span class="path3"></span></i>
+                    <span class="text-gray-800 fs-5 fw-normal">\${creatorName || currentUserDisplay}</span>
+                </div>
+                <div class="col-12 col-md-4 d-flex align-items-center">
+                    <i class="ki-duotone ki-calendar-2 fs-3 me-2"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span><span class="path5"></span></i>
+                    <span class="text-gray-800 fs-5 fw-normal">\${savedAt}</span>\${newBadge}
+                </div>
+                <div class="col-12 col-md-4 d-flex align-items-center gap-2">
+                    <i class="ki-duotone ki-tablet-book fs-3 flex-shrink-0"><span class="path1"></span><span class="path2"></span></i>
+                    <div class="d-flex flex-wrap align-items-center gap-2">\${createMrBadge(mrId, refLink)}</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 col-xl-3 d-flex align-items-center justify-content-between justify-content-xl-end gap-3">
+            <span class="text-gray-800 fs-5 fw-normal">\${qtyUnitDisplay}</span>
+            \${menuHtml}
+        </div>
+    </div>`;
 }
 
 function editCartItem(index){
@@ -1623,8 +1926,9 @@ function editCartItem(index){
 
     $('#pr_qty').val(item.qty);
     // $('#unit').val(item.unit);
-    $('#pr_ref_link').val(item.refLink || '');
     $('#pr_description').val(item.description);
+	const manualSrc = getManualRefSource(item);
+	$('#pr_ref_link').val(manualSrc ? (manualSrc.refLink || '') : '');
 
     const modalEl = document.getElementById("modal_create_pr");
     const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
@@ -1648,12 +1952,269 @@ function removeCartItem(index){
         }
     }).then((result) => {
         if (result.isConfirmed) {
+            const removedItem = prDetailCart[index];
             prDetailCart.splice(index, 1);
             saveCartToSession();
             renderPrDetailCart();
+            uncheckMrCheckboxesForItem(removedItem);
         }
     });
     return false;
+}
+
+function mapSelectToDbItemsType(val){
+    switch(String(val)){
+        case 'equipment':   return '1';
+        case 'consumables': return '2';
+        case 'accessory':   return '3';
+        case 'office':      return '4';
+        default:            return String(val);
+    }
+}
+
+function closeAllSrcMenus(){
+    document.querySelectorAll('.pr-src-menu.menu-open').forEach(function(m){ m.classList.remove('menu-open'); });
+}
+document.addEventListener('click', closeAllSrcMenus);
+
+function toggleSrcMenu(btn, e){
+    e.preventDefault(); e.stopPropagation();
+    const menu = btn.closest('.pr-src-menu');
+    const wasOpen = menu.classList.contains('menu-open');
+    closeAllSrcMenus();
+    if (!wasOpen) menu.classList.add('menu-open');
+    return false;
+}
+
+// หา item / src / list จาก scope: 'cart' = การ์ดใหม่ (prDetailCart), 'pending' = source ใหม่ของการ์ดเดิม
+// ที่ยังไม่ save, 'db' = source ที่ save ลง pr_parent จริงแล้ว (list = item.sources)
+function resolveSrc(scope, a, b){
+    if (scope === 'cart') {
+        const item = prDetailCart[Number(a)];
+        const list = item && item.sources;
+        return { item: item, list: list, src: list && list[b] };
+    }
+    if (scope === 'db') {
+        const item = existingPrDetailList.find(function(it){ return String(it.prDetailId) === String(a); });
+        const list = item && item.sources;
+        return { item: item, list: list, src: list && list[b] };
+    }
+    const item = existingPrDetailList.find(function(it){ return String(it.prDetailId) === String(a); });
+    const list = pendingExistingSources[String(a)];
+    return { item: item, list: list, src: list && list[b] };
+}
+
+function removeSource(scope, a, b){
+    closeAllSrcMenus();
+    Swal.fire({
+        title: "Are you sure?!",
+        text: "Are you sure you want to delete this row?",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonText: "Yes, delete it",
+        cancelButtonText: "Cancel",
+        buttonsStyling: false,
+        customClass: { confirmButton: "btn btn-danger", cancelButton: "btn btn-secondary" }
+    }).then(function(result){
+        if (!result.isConfirmed) return;
+
+        const r = resolveSrc(scope, a, b);
+        if (!r.item || !r.src) return;
+        const removed = r.src;
+
+        if (scope === 'db') {
+            const prDetailIdVal = a;
+            const onDone = function (resp) {
+                if (resp.data && resp.data.success) {
+                    if (r.list.length <= 1) {
+						delete pendingExistingSources[String(prDetailIdVal)];
+					}
+                    saveCartToSession();
+                    toastOk('ลบรายการสำเร็จ', function(){ window.location.reload(); });
+                } else {
+                    toastFail('ไม่สามารถลบรายการได้');
+                }
+            };
+            const onFail = function () {
+                toastFail('เกิดข้อผิดพลาดในการลบรายการ');
+            };
+
+            if (r.list.length <= 1) {
+                // แถวสุดท้ายของการ์ด ลบทั้งการ์ด (pr_detail) เหมือน removeExistingCartItem
+                $.ajax({
+                    url: ctx + '/delete_pr_detail',
+                    type: 'POST',
+                    dataType: 'json',
+                    data: { prDetailId: prDetailIdVal, prId: EDIT_PR_ID },
+                    success: onDone,
+                    error: onFail
+                });
+            } else {
+                $.ajax({
+                    url: ctx + '/delete_pr_source',
+                    type: 'POST',
+                    dataType: 'json',
+                    data: { prParentId: removed.prParentId, prDetailId: prDetailIdVal, prId: EDIT_PR_ID },
+                    success: onDone,
+                    error: onFail
+                });
+            }
+            return;
+        }
+
+        if (scope === 'cart') {
+            const baseQty = Number(removed.baseQty != null ? removed.baseQty : removed.qty) || 0;
+            r.list.splice(b, 1);
+            if (r.list.length === 0) {
+                prDetailCart.splice(Number(a), 1);
+            } else {
+                r.item.qty = Math.max(0, (Number(r.item.qty) || 0) - baseQty);
+            }
+        } else {
+            // ยอดรวมของการ์ดเดิมคำนวณจาก pending ตอน render อยู่แล้ว แค่เอาแถวออก
+            r.list.splice(b, 1);
+            if (r.list.length === 0) delete pendingExistingSources[String(a)];
+        }
+
+        saveCartToSession();
+        renderPrDetailCart();
+        uncheckMrCheckboxesForItem({ sources: [removed] });
+    });
+    return false;
+}
+
+let editingSrc = null;
+
+function editSource(scope, a, b){
+    closeAllSrcMenus();
+    const r = resolveSrc(scope, a, b);
+    if (!r.item || !r.src) return false;
+    const item = r.item, src = r.src;
+
+    editingSrc = { scope: scope, a: a, b: b };
+    const baseQty = (src.baseQty != null) ? src.baseQty : src.qty;
+    const cat = getCategoryIcon(mapSelectToDbItemsType(item.itemsType));
+    const fullName = item.parentProductName
+        ? item.parentProductName + ' > ' + (item.productName || '')
+        : (item.productName || '');
+
+    $('#editSrcTypeIcon').html(cat.icon);
+    $('#editSrcTypeName').text(cat.name);
+    $('#editSrcProduct').text(fullName);
+    $('#editSrcCreator').text(src.creatorName || currentUserDisplay);
+    $('#editSrcDate').text(src.savedAt);
+    $('#editSrcMr').html(createMrBadge(src.mrId, src.refLink));
+    $('#editSrcCurrent').text(src.qty + ' ' + (src.unitName || item.unitName) + ' (= ' + baseQty + ' ' + item.unitName + ')');
+    $('#edit_src_qty').val(src.qty);
+    $('#editSrcPreview').text('');
+
+    loadEditSrcUnits(item.productId, src.unit);
+    bootstrap.Modal.getOrCreateInstance(document.getElementById('modal_edit_source')).show();
+    return false;
+}
+
+function loadEditSrcUnits(productId, selectedUnitId){
+    $('#edit_src_unit').html('<option value=""></option>');
+    $.ajax({
+        url: ctx + '/get_unit_of_measure',
+        type: 'POST',
+        dataType: 'json',
+        data: { productId: productId },
+        success: function (resp) {
+            const list = (resp.data && resp.data.unitList) || [];
+            let opts = '';
+            list.forEach(function (u) {
+                opts += '<option value="' + u.id + '"'
+                    + ' data-conversion-rate="' + (u.conversionRate != null ? u.conversionRate : 1) + '"'
+                    + (String(u.id) === String(selectedUnitId) ? ' selected' : '') + '>' + u.name + '</option>';
+            });
+            $('#edit_src_unit').html(opts).trigger('change');
+        },
+        error: function () {
+            Swal.fire('Error', 'ไม่สามารถโหลดข้อมูล Unit ได้', 'error');
+        }
+    });
+}
+
+function updateEditSrcPreview(){
+    if (!editingSrc) return;
+    const r = resolveSrc(editingSrc.scope, editingSrc.a, editingSrc.b);
+    if (!r.item) return;
+    const qty = Number($('#edit_src_qty').val()) || 0;
+    const rate = Number($('#edit_src_unit option:selected').data('conversion-rate')) || 1;
+    $('#editSrcPreview').text('= ' + (Math.round(qty * rate * 1000) / 1000) + ' ' + r.item.unitName);
+}
+$(document.body).on('input change', '#edit_src_qty, #edit_src_unit', updateEditSrcPreview);
+
+function saveEditSource(){
+    if (!editingSrc) return;
+
+    const qty = Number($('#edit_src_qty').val()) || 0;
+    const unitId = $('#edit_src_unit').val();
+    const errors = [];
+    if (qty <= 0) errors.push('จำนวน');
+    if (!unitId) errors.push('Unit');
+    if (errors.length > 0) {
+        Swal.fire({
+            title: 'Please complete the form!',
+            html: "Please fill in the following fields:<br><strong>" + errors.join(", ") + "</strong>",
+            icon: "error",
+            confirmButtonText: "OK"
+        });
+        return;
+    }
+
+    const r = resolveSrc(editingSrc.scope, editingSrc.a, editingSrc.b);
+    if (!r.item || !r.src) return;
+
+    const old = r.src;
+
+    if (editingSrc.scope === 'db') {
+        // source ที่ save ลง pr_parent จริงแล้ว ต้องอัปเดต backend จริง
+        $.ajax({
+            url: ctx + '/update_pr_source',
+            type: 'POST',
+            dataType: 'json',
+            data: {
+                prParentId: old.prParentId,
+                prDetailId: editingSrc.a,
+                prId: EDIT_PR_ID,
+                qty: qty,
+                unit: unitId
+            },
+            success: function (resp) {
+                if (resp.data && resp.data.success) {
+                    hideModalThen('modal_edit_source', function(){
+						toastOk('แก้ไขรายการสำเร็จ', function(){ window.location.reload(); });
+					});
+                } else {
+                    toastFail('ไม่สามารถแก้ไขรายการได้');
+                }
+            },
+            error: function () {
+                toastFail('เกิดข้อผิดพลาดในการแก้ไขรายการ');
+            }
+        });
+        return;
+    }
+
+    const unitName = $('#edit_src_unit option:selected').text();
+    const rate = Number($('#edit_src_unit option:selected').data('conversion-rate')) || 1;
+    const baseQty = qty * rate;
+    const oldBase = Number(old.baseQty != null ? old.baseQty : old.qty) || 0;
+    const updated = { ...old, qty: qty, unit: unitId, unitName: unitName, baseQty: baseQty };
+
+    r.list[editingSrc.b] = updated;
+    if (editingSrc.scope === 'cart') {
+        r.item.qty = (Number(r.item.qty) || 0) + (baseQty - oldBase);   // ปรับยอดรวมของการ์ดใหม่
+    }
+    // scope 'pending': ยอดรวมคำนวณจาก pending 
+
+    saveCartToSession();
+    renderPrDetailCart();
+
+    if (document.activeElement) document.activeElement.blur();
+    bootstrap.Modal.getOrCreateInstance(document.getElementById('modal_edit_source')).hide();
 }
 
 /* ──────── แก้ไข / ลบ รายการที่มีอยู่แล้วใน DB ──────── */
@@ -1687,9 +2248,9 @@ function editExistingCartItem(prDetailId){
     setTimeout(function(){ clearInterval(waitForProductList); }, 3000);
 
     $('#pr_qty').val(item.qty);
-    // $('#unit').val(item.unit);
-    $('#pr_ref_link').val(item.refLink || '');
     $('#pr_description').val(item.description);
+	const manualSrc = getManualRefSource(item);
+	$('#pr_ref_link').val(manualSrc ? (manualSrc.refLink || '') : '');
 
     const modalEl = document.getElementById("modal_create_pr");
     const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
@@ -1720,18 +2281,38 @@ function removeExistingCartItem(prDetailId){
                 data: { prDetailId: prDetailId, prId: EDIT_PR_ID },
                 success: function (resp) {
                     if (resp.data && resp.data.success) {
-                        window.location.reload();
+						delete pendingExistingSources[String(prDetailId)];
+						saveCartToSession();
+                        toastOk('ลบรายการสำเร็จ', function(){ window.location.reload(); });
                     } else {
-                        Swal.fire('Error', 'ไม่สามารถลบรายการได้', 'error');
+                        toastFail('ไม่สามารถลบรายการได้');
                     }
                 },
                 error: function () {
-                    Swal.fire('Error', 'เกิดข้อผิดพลาดในการลบรายการ', 'error');
+                    toastFail('เกิดข้อผิดพลาดในการลบรายการ');
                 }
             });
         }
     });
     return false;
+}
+
+// ปิด modal ให้เสร็จก่อน (รอ hidden.bs.modal) แล้วค่อยทำ after()
+function hideModalThen(modalId, after){
+    var el = document.getElementById(modalId);
+    if (!el || !el.classList.contains('show')) { if (after) after(); return; }
+    el.addEventListener('hidden.bs.modal', function(){ if (after) after(); }, { once: true });
+    bootstrap.Modal.getOrCreateInstance(el).hide();
+}
+
+function toastOk(msg, after){
+    Swal.fire({ toast: true, position: 'top-end', icon: 'success',
+        title: msg, showConfirmButton: false, timer: 1200 })
+    .then(function(){ if (after) after(); });
+}
+
+function toastFail(msg){
+    Swal.fire('Error', msg || 'บันทึกไม่สำเร็จ', 'error');
 }
 
 function updateExistingPrDetail(prDetailId, item){
@@ -1745,21 +2326,24 @@ function updateExistingPrDetail(prDetailId, item){
             productId: item.productId,
             qty: item.qty,
             unit: item.unit,
-            refLink: item.refLink,
-            description: item.description
+            description: item.description,
+    		refLink: item.refLink
         },
         success: function (resp) {
             if (resp.data && resp.data.success) {
-                editingExistingDetailId = null;
-                const modalEl = document.getElementById("modal_create_pr");
-                bootstrap.Modal.getOrCreateInstance(modalEl).hide();
-                window.location.reload();
+                // editingExistingDetailId = null;
+                // const modalEl = document.getElementById("modal_create_pr");
+                // bootstrap.Modal.getOrCreateInstance(modalEl).hide();
+                // toastOk('บันทึกแล้ว', function(){ window.location.reload(); });
+				hideModalThen('modal_create_pr', function(){
+					toastOk('บันทึกแล้ว', function(){ window.location.reload(); });
+				});
             } else {
-                Swal.fire('Error', 'ไม่สามารถแก้ไขรายการได้', 'error');
+                 toastFail('ไม่สามารถแก้ไขรายการได้');
             }
         },
         error: function () {
-            Swal.fire('Error', 'เกิดข้อผิดพลาดในการแก้ไขรายการ', 'error');
+            toastFail('เกิดข้อผิดพลาดในการแก้ไขรายการ');
         }
     });
 }
@@ -1768,6 +2352,314 @@ function parseFormattedNumber(str) {
     if (!str) return 0;
     return Number(String(str).replace(/,/g, ''));
 }
+
+//-------- Modal MR (Search MR) -----------
+let inprogressMrDetailList = [];
+let mrDetailTable = null;
+let selectedMrCategory = '';
+let mrSearchRequestToken = 0;
+let isSearchMrModalOpen = false;
+
+$.fn.dataTable.ext.search.push(function (settings, data, dataIndex) {
+    if (settings.nTable.id !== 'mrResultTable') return true;
+    if (!selectedMrCategory) return true;
+
+    var item = inprogressMrDetailList[dataIndex];
+    if (!item) return true;
+
+    return mapDbItemsTypeToSelect(item.product_type) === selectedMrCategory;
+});
+
+function loadInprogressMrDetail(){
+    var requestToken = ++mrSearchRequestToken;
+    $.ajax({
+		url: ctx + '/search_approved_mr',
+        type: 'POST',
+        dataType: 'json',
+        success: function (resp) {
+            if (requestToken !== mrSearchRequestToken || !isSearchMrModalOpen) {
+                return;
+            }
+            var data = resp.data;
+            inprogressMrDetailList = (data && data.mrDetailList) || [];
+            renderMrResultTable(inprogressMrDetailList);
+        },
+        error: function () {
+            Swal.fire('Error', 'ไม่สามารถโหลดข้อมูล MR ได้', 'error');
+        }
+    });
+}
+
+function getCategoryIcon(productType){
+    switch(String(productType)){
+        case '1': return { name: 'Equipment', icon: '<i class="ki-duotone ki-monitor-mobile fs-2 text-primary"><span class="path1"></span><span class="path2"></span></i>' };
+        case '2': return { name: 'Consumables', icon: '<i class="ki-duotone ki-lots-shopping fs-2 text-orange"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span><span class="path5"></span><span class="path6"></span><span class="path7"></span><span class="path8"></span></i>' };
+        case '3': return { name: 'Accessory', icon: '<i class="ki-duotone ki-medal-star fs-2 text-teal"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span></i>' };
+        case '4': return { name: 'Office supplies', icon: '<i class="ki-duotone ki-parcel fs-2 text-success"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span><span class="path5"></span></i>' };
+        default:  return { name: '-', icon: '' };
+    }
+}
+
+$(document.body).on('keyup input', '#searchMrKeyword', function () {
+    if (mrDetailTable) {
+        mrDetailTable.search(this.value).draw();
+    }
+});
+
+$(document.body).on('change', '#searchMrCategory', function () {
+    selectedMrCategory = $(this).val();
+    if (mrDetailTable) {
+        mrDetailTable.draw();
+    }
+});
+
+function isMrDetailIdHiddenFromSearch(mrId){
+    return existingPrDetailList.some(function(it){
+        return (it.sources || []).some(function(s){ return String(s.mrId) === String(mrId); });
+    });
+}
+
+function isMrDetailIdInNewCart(mrId){
+    var inNewCart = prDetailCart.some(function(it){
+        return (it.sources || []).some(function(s){ return String(s.mrId) === String(mrId); });
+    });
+    if (inNewCart) return true;
+
+    return Object.keys(pendingExistingSources).some(function(pid){
+        return pendingExistingSources[pid].some(function(s){ return String(s.mrId) === String(mrId); });
+    });
+}
+
+function renderMrResultTable(fullList){
+    var tbody = document.getElementById('mrResultBody');
+    var html = '';
+
+    // รายการที่ดึงมาใหม่ ยังโผล่และถูกติ๊กไว้ ให้ถอดติ๊กเพื่อลบออกจาก cart ได้
+    var list = (fullList || []).filter(function(item){
+        return !isMrDetailIdHiddenFromSearch(item.mr_id);
+    });
+
+    list.forEach(function(item, index){
+        var cat = getCategoryIcon(item.product_type);
+        var qty = item.amount_total || 0;
+        var unitName = item.unit_name || '';
+        var userName = item.user_create_name || '-';
+        var timeCreate = formatNowDateTime(item.time_create);
+        var initial = userName.charAt(0).toUpperCase();
+        var userPath = item.user_create_path || '';
+        var statusBadge = item.mr_status == '3'
+            ? '<span class="badge badge-lg bg-success fw-semibold fs-7 text-white">Approved</span>'
+            : '';
+        var fullProductName = item.parent_product_name
+            ? item.parent_product_name + ' > ' + (item.product_name || '')
+            : (item.product_name || '');
+
+        html += `
+        <tr class="fw-semibold fs-6 text-gray-800 border-bottom border-gray-200">
+            <td>
+                <div class="form-check form-check-sm">
+                    <input class="form-check-input mr-row-check" type="checkbox"
+                        data-mr-detail-id="\${item.mr_id}"\${isMrDetailIdInNewCart(item.mr_id) ? ' checked' : ''} />
+                </div>
+            </td>
+            <td class="fw-bold text-gray-900 fs-7 row-number text-start"></td>
+            <td class="text-gray-900 fs-6 fw-normal">\${item.mr_id}</td>
+            <td>
+                <div class="d-flex align-items-center">
+                    <div class="symbol symbol-40px me-4">\${cat.icon}</div>
+                    <span class="text-gray-900 fs-5 fw-normal">\${cat.name}</span>
+                </div>
+            </td>
+            <td>
+                <div class="d-flex align-items-center">
+                    <div class="symbol symbol-35px symbol-circle me-3">
+                        <div class="symbol symbol-35px symbol-circle me-3">
+                            \${userPath
+                                ? '<img src="' + userPath + '" alt="' + userName + '" class="object-fit-cover" />'
+                                : '<span class="symbol-label bg-light-primary text-primary fw-bold">' + initial + '</span>'
+                            }
+                        </div>
+                    </div>
+                    <div class="d-flex flex-column">
+                        <span class="text-gray-900 fs-6 fw-normal">\${userName}</span>
+                        <span class="text-gray-900 fs-6 fw-normal">\${timeCreate}</span>
+                    </div>
+                </div>
+            </td>
+            <td>
+                <div class="d-flex flex-column">
+                    <span class="text-gray-900 fs-6 fw-normal">\${fullProductName}</span>
+                    <span class="text-gray-900 fs-6 fw-normal">\${qty} \${unitName}</span>
+                </div>
+            </td>
+            <td class="text-end pe-2">
+                \${statusBadge}
+            </td>
+        </tr>`;
+    });
+    tbody.innerHTML = html;
+
+    if (mrDetailTable) {
+        mrDetailTable.destroy();
+        mrDetailTable = null;
+    }
+    mrDetailTable = $('#mrResultTable').DataTable({
+        ordering : true,
+        searching : true,
+        autoWidth : false,
+        info: false,
+        paging: false,
+        columnDefs : [
+            { orderable: false, targets: [0,6] },
+            { orderable: true, targets: [1,2,3,4,5] },
+            { targets: -1, orderable: false }
+        ],
+        order: [],
+        drawCallback: function(settings) {
+            var api = this.api();
+
+            api.column(1, { search: 'applied', order: 'applied' })
+                .nodes()
+                .each(function (cell, i) {
+                    cell.innerHTML = i + 1;
+                });
+
+            document.getElementById('mrItemsFoundCount').textContent = api.rows({ search: 'applied' }).count();
+        }
+    });
+    updateMrSelectedCountReal();
+
+	var checkAll = document.getElementById('checkAllMr');
+
+	function syncCheckAllState(){
+		var allBoxes = document.querySelectorAll('.mr-row-check');
+		checkAll.checked = allBoxes.length > 0 && Array.prototype.every.call(allBoxes, function (box) { return box.checked; });
+	}
+
+	document.querySelectorAll('.mr-row-check').forEach(function (cb) {
+		cb.addEventListener('change', function () {
+			updateMrSelectedCountReal();
+			syncCheckAllState();
+		});
+	});
+
+	checkAll.checked = list.length > 0 && list.every(function (d) { return isMrDetailIdInNewCart(d.mr_id); });
+	checkAll.onchange = function(){
+		document.querySelectorAll('.mr-row-check').forEach(cb => cb.checked = this.checked);
+		updateMrSelectedCountReal();
+	};
+}
+
+function updateMrSelectedCountReal(){
+    var count = document.querySelectorAll('.mr-row-check:checked').length;
+    document.getElementById('mrSelectedCount').textContent = count;
+}
+
+function uncheckMrCheckboxesForItem(item){
+    if (!item || !item.sources) return;
+
+    item.sources.forEach(function(s){
+        if (!s.mrId) return;
+        var cb = document.querySelector('.mr-row-check[data-mr-detail-id="' + s.mrId + '"]');
+        if (cb) cb.checked = false;
+    });
+
+    updateMrSelectedCountReal();
+
+    var checkAll = document.getElementById('checkAllMr');
+    if (checkAll) {
+        var allBoxes = document.querySelectorAll('.mr-row-check');
+        checkAll.checked = allBoxes.length > 0 &&
+            Array.prototype.every.call(allBoxes, function (box) { return box.checked; });
+    }
+}
+
+document.getElementById('btnSubmitMr').addEventListener('click', function(){
+    var selectedIds = [];
+    document.querySelectorAll('.mr-row-check:checked').forEach(function(cb){
+        selectedIds.push(cb.getAttribute('data-mr-detail-id'));
+    });
+    var selectedIdSet = {};
+    selectedIds.forEach(function(id){ selectedIdSet[String(id)] = true; });
+
+    inprogressMrDetailList.forEach(function(d){
+        var mrId = String(d.mr_id);
+        if (selectedIdSet[mrId]) return; // ยังติ๊กอยู่ ไม่ต้องลบ
+
+        // เอาออกจาก prDetailCart (การ์ดใหม่)
+        for (var i = prDetailCart.length - 1; i >= 0; i--) {
+            var cartItem = prDetailCart[i];
+            if (!cartItem.sources) continue;
+
+            var srcIdx = cartItem.sources.findIndex(function(s){ return String(s.mrId) === mrId; });
+            if (srcIdx === -1) continue;
+
+            var removedSrc = cartItem.sources[srcIdx];
+            var removedBaseQty = Number(removedSrc.baseQty != null ? removedSrc.baseQty : removedSrc.qty) || 0;
+            cartItem.sources.splice(srcIdx, 1);
+
+            if (cartItem.sources.length === 0) {
+                prDetailCart.splice(i, 1);
+            } else {
+                cartItem.qty = Math.max(0, (Number(cartItem.qty) || 0) - removedBaseQty);
+            }
+        }
+
+        // เอาออกจาก pendingExistingSources (source ใหม่ที่ต่อเข้าการ์ดเดิม ยังไม่ save)
+        Object.keys(pendingExistingSources).forEach(function(pid){
+            var pending = pendingExistingSources[pid];
+            var idx = pending.findIndex(function(s){ return String(s.mrId) === mrId; });
+            if (idx === -1) return;
+            pending.splice(idx, 1);
+            if (pending.length === 0) delete pendingExistingSources[pid];
+        });
+    });
+
+    // รายการที่ดึงมาจาก Search MR ทั้งหมดเป็นของใหม่ (ยังไม่ save ลง DB)
+	// group ตาม productId เฉพาะกับรายการใหม่ใน prDetailCart เท่านั้น ไม่ยุ่งกับ existingPrDetailList
+    selectedIds.forEach(function(mrId){
+        var src = inprogressMrDetailList.find(function(d){ return String(d.mr_id) === String(mrId); });
+        if (!src) return;
+        if (isMrDetailIdInNewCart(mrId)) return; // กันเพิ่มซ้ำ
+
+        var qty = Number(src.amount_total) || 0;
+        var creator = (src.user_create_emp_id ? src.user_create_emp_id + ' - ' : '') + (src.user_create_name || '');
+        var savedAt = formatNowDateTime(src.time_create);
+        var cartProductName = src.parent_product_name
+            ? src.parent_product_name + ' > ' + (src.product_name || '')
+            : (src.product_name || '');
+
+        addSourceToCart({
+            itemsType: mapDbItemsTypeToSelect(src.product_type),
+            itemsTypeText: getCategoryIcon(src.product_type).name,
+            productId: src.product_id,
+            productName: cartProductName,
+            unit: src.unit,
+            unitName: src.unit_name || '',
+            description: '',
+            creatorName: creator,
+            savedAt: savedAt
+        }, {
+            mrId: src.mr_id,
+            qty: qty, unit: src.unit, unitName: src.unit_name || '',
+            baseQty: qty, // MR เก็บเป็นหน่วยเล็กสุดอยู่แล้ว
+            refLink: src.ref_link || '',
+            description: src.description || '',
+            creatorName: creator,
+            savedAt: savedAt
+        });
+    });
+
+    saveCartToSession();
+    renderPrDetailCart();
+
+    if (document.activeElement) {
+        document.activeElement.blur();
+    }
+
+    var modalEl = document.getElementById('modal_search_mr');
+    bootstrap.Modal.getOrCreateInstance(modalEl).hide();
+});
 
 //────────── Confirm Receiver ──────────
 function confirmReceiver(slot) {
@@ -1782,7 +2674,6 @@ function confirmReceiver(slot) {
         dataType: 'json',
         data: { prId: EDIT_PR_ID },
         success: function (resp) {
-            // if (resp.debug) console.log('[confirm_pr_sign debug]', resp.debug);
 
             if (resp.data && resp.data.success) {
                 confirmed1 = true;
@@ -1818,11 +2709,33 @@ function confirmReceiver(slot) {
     });
 }
 
+function buildCartPayload(){
+    const merged = [];
+    Object.keys(pendingExistingSources).forEach(function(pid){
+        const srcs = pendingExistingSources[pid];
+        if (!srcs || srcs.length === 0) return;
+        const ex = existingPrDetailList.find(function(it){ return String(it.prDetailId) === String(pid); });
+        if (!ex) return;
+        merged.push({
+            prDetailId: pid,
+            productId: ex.productId,
+            itemsType: ex.itemsType,
+            unit: ex.unit,
+            description: '',
+            qty: srcs.reduce(function(a, s){
+                return a + (Number(s.baseQty != null ? s.baseQty : s.qty) || 0);
+            }, 0),
+            sources: srcs
+        });
+    });
+    return prDetailCart.concat(merged);
+}
+
 function saveDraftForm(){
     const payload = {
 		prId: EDIT_PR_ID || '',
         description: $('#description').val() || '',
-        prDetailCartJson: JSON.stringify(prDetailCart)
+        prDetailCartJson: JSON.stringify(buildCartPayload())
     };
     const fd = new FormData();
     Object.keys(payload).forEach(function (k) { fd.append(k, payload[k]); });
@@ -1842,6 +2755,7 @@ function saveDraftForm(){
         success: function (resp) {
             if (resp.data && resp.data.prId) {
                 sessionStorage.removeItem(PR_CART_STORAGE_KEY);
+				sessionStorage.removeItem(PR_EXISTING_SRC_KEY);
                 Swal.fire({ title: 'Success!', text: 'Pr saved draft successfully!', icon: 'success' })
                     .then(() => { window.location.href = ctx + '/purchase_requisition_list'; });
             } else {
@@ -1875,8 +2789,6 @@ function submitPR(){
     if (errors.length > 0) {
         Swal.fire({
             title: 'Please complete the form!',
-            /* html: errors.join('<br>'),
-            icon: 'warning' */
             html: "Please fill in the following fields:<br><strong>" + errors.join(", ") + "</strong>",
  	        icon: "error",
  	        confirmButtonText: "OK",
@@ -1902,7 +2814,7 @@ function submitPR(){
         const payload = {
         	prId: EDIT_PR_ID || '',
             description: $('#description').val().trim() || '',
-            prDetailCartJson: JSON.stringify(prDetailCart),
+            prDetailCartJson: JSON.stringify(buildCartPayload()),
             status: '2'
         };
         
@@ -1924,6 +2836,7 @@ function submitPR(){
             success: function (resp) {
                 if (resp.data && resp.data.prId) {
                     sessionStorage.removeItem(PR_CART_STORAGE_KEY);
+                    sessionStorage.removeItem(PR_EXISTING_SRC_KEY);
                     Swal.fire({
                         title: 'Success!',
                         text: 'Pr saved successfully!',
@@ -2004,13 +2917,13 @@ function returnPR(){
             success: function (resp) {
                 if (resp.data && resp.data.prId) {
                     sessionStorage.removeItem(PR_CART_STORAGE_KEY);
+					sessionStorage.removeItem(PR_EXISTING_SRC_KEY);
                     Swal.fire({
                         title: 'Success!',
                         text: 'Pr returned successfully!',
                         icon: 'success'
                     }).then(() => {
 						location.reload();
-                        // window.location.href = ctx + '/purchase_requisition_list';
                     });
                 } else {
                     Swal.fire('Error', 'ไม่สามารถคืน PR ได้', 'error');
@@ -2090,13 +3003,13 @@ function rejectPR(){
             success: function (resp) {
                 if (resp.data && resp.data.prId) {
                     sessionStorage.removeItem(PR_CART_STORAGE_KEY);
+					sessionStorage.removeItem(PR_EXISTING_SRC_KEY);
                     Swal.fire({
                         title: 'Success!',
                         text: 'Pr rejected successfully!',
                         icon: 'success'
                     }).then(() => {
                         location.reload();
-                        // window.location.href = ctx + '/purchase_requisition_list';
                     });
                 } else {
                     Swal.fire('Error', 'ไม่สามารถปฏิเสธ PR ได้', 'error');
@@ -2113,6 +3026,9 @@ function rejectPR(){
 }
 
 function approvePR(){
+	const reasonVal = validateReason();
+    if (reasonVal === null) return;
+
     Swal.fire({
         title: "Are you sure?!",
         text: "Do you want to approve this PR?",
@@ -2130,6 +3046,7 @@ function approvePR(){
 
         const payload = {
             prId: EDIT_PR_ID || '',
+			reason: reasonVal,
             status: '3' 
         };
 
@@ -2143,6 +3060,7 @@ function approvePR(){
             success: function (resp) {
                 if (resp.data && resp.data.prId) {
                     sessionStorage.removeItem(PR_CART_STORAGE_KEY);
+					sessionStorage.removeItem(PR_EXISTING_SRC_KEY);
                     Swal.fire({
                         title: 'Success!',
                         text: 'PR approved successfully!',
@@ -2196,6 +3114,7 @@ function inProgressPR(){
             success: function (resp) {
                 if (resp.data && resp.data.prId) {
                     sessionStorage.removeItem(PR_CART_STORAGE_KEY);
+					sessionStorage.removeItem(PR_EXISTING_SRC_KEY);
                     Swal.fire({
                         title: 'Success!',
                         text: 'PR in progress successfully!',
@@ -2249,6 +3168,7 @@ function cancelPR(){
             success: function (resp) {
                 if (resp.data && resp.data.prId) {
                     sessionStorage.removeItem(PR_CART_STORAGE_KEY);
+					sessionStorage.removeItem(PR_EXISTING_SRC_KEY);
                     Swal.fire({
                         title: 'Success!',
                         text: 'PR cancel successfully!',

@@ -49,7 +49,7 @@ public class PoParentDAOImpl implements PoParentDAO {
 	}
 
 	@Override
-	public PoParent findById(Long poParentId) throws Exception {
+	public PoParent findById(String poParentId) throws Exception {
 		Session session = sessionFactory.getCurrentSession();
 		PoParent poParent = null;
 		try {
@@ -108,21 +108,21 @@ public class PoParentDAOImpl implements PoParentDAO {
 			Session session = sessionFactory.getCurrentSession();
 
 			String sql = "SELECT po.*, " +
-					"uc.employee_id AS userEmployeeId, " +
-					"uc.name_en AS user_create_nameEN, " +
-					"uc.name AS user_create_name, " +
-					"uu.name_en AS user_update_name, " +
-					"(SELECT prd.ref_link FROM pr_detail prd " +
-					" WHERE prd.pr_id = po.pr_id AND prd.product_id = po.product_id " +
-					" ORDER BY prd.pr_detail_id LIMIT 1) AS ref_link, " +
-					"(SELECT prd.time_create FROM pr_detail prd " +
-					" WHERE prd.pr_id = po.pr_id AND prd.product_id = po.product_id " +
-					" ORDER BY prd.pr_detail_id LIMIT 1) AS pr_time_create " +
-					"FROM po_parent po " +
-					"LEFT JOIN user uc ON po.user_create = uc.id " +
-					"LEFT JOIN user uu ON po.user_update = uu.id " +
-					"WHERE po.po_detail_id = :poDetailId " +
-					"ORDER BY po.time_create ASC";
+						"uc.employee_id AS userEmployeeId, " +
+						"uc.name_en AS user_create_nameEN, " +
+						"uc.name AS user_create_name, " +
+						"uu.name_en AS user_update_name, " +
+						"prd.ref_link AS ref_link, " +
+						"COALESCE(prd.time_create, po.time_create) AS pr_time_create " +
+						"FROM po_parent po " +
+						"LEFT JOIN pr_detail prd ON prd.pr_detail_id = ( " +
+						"    SELECT prd2.pr_detail_id FROM pr_detail prd2 " +
+						"    WHERE prd2.pr_id = po.pr_id AND prd2.product_id = po.product_id " +
+						"    ORDER BY prd2.pr_detail_id LIMIT 1) " +
+						"LEFT JOIN user uc ON uc.id = COALESCE(prd.user_create, po.user_create) " +
+						"LEFT JOIN user uu ON po.user_update = uu.id " +
+						"WHERE po.po_detail_id = :poDetailId " +
+						"ORDER BY CAST(po.po_parent_id AS UNSIGNED) ASC";
 
 			SQLQuery query = session.createSQLQuery(sql);
 			query.setParameter("poDetailId", poDetailId);
@@ -152,7 +152,5 @@ public class PoParentDAOImpl implements PoParentDAO {
 	        throw e;
 	    }
 	}
-
-	
 
 }

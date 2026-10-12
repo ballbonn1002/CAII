@@ -53,9 +53,6 @@
 	margin-top: 4px;
 }
 
-/* .border-cyan {
-	border-color: #0DCAF0 !important;
-}  */
 </style>
 
 </head>

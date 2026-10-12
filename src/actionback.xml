@@ -2446,6 +2446,14 @@
             class="com.cubesofttech.action.PurchaseRequisitionAction" method="updatePrDetail">
         </action>
 
+        <action name="update_pr_source"
+            class="com.cubesofttech.action.PurchaseRequisitionAction" method="updatePrSource">
+        </action>
+
+        <action name="delete_pr_source"
+            class="com.cubesofttech.action.PurchaseRequisitionAction" method="deletePrSource">
+        </action>
+
         <action name="confirm_pr_sign"
             class="com.cubesofttech.action.PurchaseRequisitionAction" method="confirmPrSign">
         </action>
@@ -2454,8 +2462,12 @@
             class="com.cubesofttech.action.PurchaseRequisitionAction" method="deletePrAttachment">
         </action>
 
+        <action name="search_approved_mr"
+            class="com.cubesofttech.action.PurchaseRequisitionAction" method="searchApprovedMr">
+        </action>
+
 		<!-- MR -->
-		<action name="equipment_request_list" 
+		<action name="equipment_request_list"
 		class="com.cubesofttech.action.EquipmentRequestAction" method="myEquipmentRequest">
 		    <result name="success" type="tiles">equipment_request_list</result>
 		    <result name="error">/index.jsp</result>
