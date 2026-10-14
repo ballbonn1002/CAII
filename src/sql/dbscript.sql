@@ -1200,7 +1200,7 @@ JOIN (SELECT parent_product_id
 SET p.sequence = CAST(CAST(p.sequence AS UNSIGNED) + 1 AS CHAR)
 WHERE p.parent_product_id <> '0' AND p.sequence REGEXP '^[0-9]+$';
 
-#PROD 30 SEP 2025
+#PROD 30 SEP 2026
 
 -- 02/10/2026 June: Alter 'mr' table: rename product/parent columns, change date types, add 'reason' and 'user_create', drop 'item_type'
   ALTER TABLE `mr`
@@ -1219,5 +1219,7 @@ WHERE p.parent_product_id <> '0' AND p.sequence REGEXP '^[0-9]+$';
       CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   MODIFY COLUMN `time_create` TIMESTAMP NULL DEFAULT NULL,
   DROP COLUMN `item_type`;
+  
+  -- PROD 14 OCT 2026
 
 
