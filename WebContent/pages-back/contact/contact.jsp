@@ -282,7 +282,7 @@
 
 											<div class="min-w-0">
 
-												<div class="fw-medium text-gray-800 contact-name">
+												<div class="fw-medium text-gray-700 contact-name">
 
 													<c:choose>
 
@@ -298,7 +298,7 @@
 
 												</div>
 
-												<div class="text-muted fs-7 contact-position">
+												<div class="fw-medium text-gray-500 contact-position">
 													<c:out value="${contact.position}" />
 												</div>
 
@@ -337,7 +337,7 @@
 													</c:otherwise>
 												</c:choose>
 
-												<span class="text-gray-700 contact-company">
+												<span class="fw-medium text-gray-700 contact-company">
 
 												<c:choose>
 
@@ -363,10 +363,10 @@
 										<div class="d-flex align-items-center mb-3 ">
 
 											<i
-												class="ki-duotone ki-map fs-2x text-gray-400 me-4 mt-1">
-
+												class="ki-duotone ki-map me-2 fs-1">
 												<span class="path1"></span>
 												<span class="path2"></span>
+												<span class="path3"></span>
 
 											</i>
 
@@ -390,7 +390,7 @@
 
 										</div>
 
-										<div class="text-muted fs-7 lh-lg contact-address">
+										<div class="fw-medium text-gray-500 contact-address">
 
 											<c:choose>
 
@@ -416,7 +416,7 @@
 
 										<div class="d-flex align-items-center mb-3">
 
-											<i class="ki-duotone ki-phone fs-3 text-gray-400 me-3">
+											<i class="ki-duotone ki-phone fs-3 text-gray-700 me-3">
 
 												<span class="path1"></span>
 												<span class="path2"></span>
@@ -443,7 +443,7 @@
 
 										<div class="d-flex align-items-center mb-3">
 
-											<i class="ki-duotone ki-sms fs-3 text-gray-400 me-3">
+											<i class="ki-duotone ki-sms fs-3 text-gray-700 me-3">
 
 												<span class="path1"></span>
 												<span class="path2"></span>
