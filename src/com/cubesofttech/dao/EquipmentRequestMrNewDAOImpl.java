@@ -124,7 +124,9 @@ public class EquipmentRequestMrNewDAOImpl implements EquipmentRequestMrNewDAO {
 			String sql =
 				"SELECT p.product_id, p.product_no, p.product_name, p.sequence " +
 				"FROM product p " +
-				"WHERE p.parent_product_id = :parentProductId AND p.sub_product_active = '1' " +
+				"JOIN product parent ON parent.product_id = CAST(p.parent_product_id AS UNSIGNED) " +
+				"WHERE p.parent_product_id = :parentProductId " +
+				"AND parent.sub_product_active = '1' " +
 				"ORDER BY p.sequence ASC, p.product_name";
 
 			SQLQuery query = session.createSQLQuery(sql);
