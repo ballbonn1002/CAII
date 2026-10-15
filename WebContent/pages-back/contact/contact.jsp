@@ -282,7 +282,7 @@
 
 											<div class="min-w-0">
 
-												<div class="fw-medium text-gray-700 contact-name">
+												<div class="fw-medium text-gray-800 contact-name">
 
 													<c:choose>
 
@@ -363,7 +363,7 @@
 										<div class="d-flex align-items-center mb-3 ">
 
 											<i
-												class="ki-duotone ki-map me-2 fs-1">
+												class="ki-duotone ki-map me-2 fs-1 text-gray-500 me-4 mt-1">
 												<span class="path1"></span>
 												<span class="path2"></span>
 												<span class="path3"></span>
@@ -416,7 +416,7 @@
 
 										<div class="d-flex align-items-center mb-3">
 
-											<i class="ki-duotone ki-phone fs-3 text-gray-700 me-3">
+											<i class="ki-duotone ki-phone fs-3 text-gray-500 me-3">
 
 												<span class="path1"></span>
 												<span class="path2"></span>
@@ -443,7 +443,7 @@
 
 										<div class="d-flex align-items-center mb-3">
 
-											<i class="ki-duotone ki-sms fs-3 text-gray-700 me-3">
+											<i class="ki-duotone ki-sms fs-3 text-gray-500 me-3">
 
 												<span class="path1"></span>
 												<span class="path2"></span>
@@ -724,7 +724,7 @@
 					if (branch && branch !== "-") {
 						addressHtml =
 							'<div class="d-flex gap-2">' +
-								'<i class="ki-duotone ki-map fs-2 text-gray-400 mt-1 flex-shrink-0"><span class="path1"></span><span class="path2"></span><span class="path3"></span></i>' +
+								'<i class="ki-duotone ki-map fs-2 mt-1 flex-shrink-0"><span class="path1"></span><span class="path2"></span><span class="path3"></span></i>' +
 								'<div>' +
 									'<div class="fw-medium text-gray-700">' + escapeHtml(branch) + '</div>' +
 									'<div class="text-gray-500 fs-7" style="overflow-wrap:anywhere;">' + escapeHtml(address || "-") + '</div>' +
@@ -733,7 +733,7 @@
 					} else {
 						addressHtml =
 							'<div class="d-flex gap-2 align-items-center">' +
-								'<i class="ki-duotone ki-map fs-2 text-gray-400 flex-shrink-0"><span class="path1"></span><span class="path2"></span><span class="path3"></span></i>' +
+								'<i class="ki-duotone ki-map fs-2  flex-shrink-0"><span class="path1"></span><span class="path2"></span><span class="path3"></span></i>' +
 								'<span class="text-gray-700">-</span>' +
 							'</div>';
 					}
@@ -757,12 +757,12 @@
 									'<div class="fw-bold text-gray-800">' + escapeHtml(company) + '</div>' +
 
 									'<div class="d-flex align-items-center gap-2">' +
-										'<i class="ki-duotone ki-phone fs-3 text-gray-400"><span class="path1"></span><span class="path2"></span></i>' +
+										'<i class="ki-duotone ki-phone fs-3 "><span class="path1"></span><span class="path2"></span></i>' +
 										'<span class="text-gray-700">' + escapeHtml(phone) + '</span>' +
 									'</div>' +
 
 									'<div class="d-flex align-items-center gap-2">' +
-										'<i class="ki-duotone ki-sms fs-3 text-gray-400"><span class="path1"></span><span class="path2"></span></i>' +
+										'<i class="ki-duotone ki-sms fs-3 "><span class="path1"></span><span class="path2"></span></i>' +
 										'<span class="text-gray-700" style="overflow-wrap:anywhere;">' + escapeHtml(email) + '</span>' +
 									'</div>' +
 
