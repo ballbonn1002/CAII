@@ -47,12 +47,12 @@ pageEncoding="UTF-8"%>
               <div class="card-body">
                 <div class="d-flex gap-4">
                   <a
-                    href="equipment_request_list"
+                    href="equipment_request_mr_list"
                     class="btn btn-light-primary d-inline-flex align-items-center px-6 py-3"
                     >MR - Material Request</a
                   >
                   <a
-                    href="#"
+                    href="equipment_request_mr_list_admin"
                     class="btn btn-light-success d-inline-flex align-items-center px-6 py-3"
                     >MR - Approval</a
                   >
@@ -77,16 +77,6 @@ pageEncoding="UTF-8"%>
                     href="purchase_requisition_list"
                     class="btn btn-light-warning d-inline-flex align-items-center px-6 py-3"
                     >PR New - Purchase Requisition</a
-                  >
-                  <a
-                    href="equipment_request_mr_list"
-                    class="btn btn-light-primary d-inline-flex align-items-center px-6 py-3"
-                    >MR New - Material Request</a
-                  >
-                   <a
-                    href="equipment_request_mr_list_admin"
-                    class="btn btn-light-success d-inline-flex align-items-center px-6 py-3"
-                    >MR New - Approval</a
                   >
                 </div>
               </div>

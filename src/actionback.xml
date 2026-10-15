@@ -2385,6 +2385,14 @@
 			class="com.cubesofttech.action.PurchaseOrderAction" method="updatePoDetail">
 		</action>
 
+		<action name="update_po_source"
+            class="com.cubesofttech.action.PurchaseOrderAction" method="updatePoSource">
+        </action>
+
+        <action name="delete_po_source"
+            class="com.cubesofttech.action.PurchaseOrderAction" method="deletePoSource">
+        </action>
+
 		<action name="confirm_po_sign"
 			class="com.cubesofttech.action.PurchaseOrderAction" method="confirmPoSign">
 		</action>
@@ -2465,64 +2473,6 @@
         <action name="search_approved_mr"
             class="com.cubesofttech.action.PurchaseRequisitionAction" method="searchApprovedMr">
         </action>
-
-		<!-- MR -->
-		<action name="equipment_request_list"
-		class="com.cubesofttech.action.EquipmentRequestAction" method="myEquipmentRequest">
-		    <result name="success" type="tiles">equipment_request_list</result>
-		    <result name="error">/index.jsp</result>
-		    <result name="login" type="redirect">/index.jsp</result>
-		</action>
-		<action name="equipment_request_listdelete" 
-		class="com.cubesofttech.action.EquipmentRequestAction" method="EquipmentDelete">
-		    <result name="success" type="tiles">equipment_request_listdelete</result>
-		    <result name="error">/index.jsp</result>
-		    <result name="login" type="redirect">/index.jsp</result>
-		</action>
-		<action name="equipment_request_updatestatus" 
-		class="com.cubesofttech.action.EquipmentRequestAction" method="updateStatus">
-		    <result name="success" type="tiles">equipment_request_updatestatus</result>
-		    <result name="error">/index.jsp</result>
-		    <result name="login" type="redirect">/index.jsp</result>
-		</action>
-		
-		<action name="equipment_request_create"
-		    class="com.cubesofttech.action.EquipmentRequestAction" method="initgetMaster">
-		    <result name="success" type="tiles">equipment_request_create</result>
-		    <result name="error">/index.jsp</result>
-		</action>
-		
-			<action name="equipment_request_update"
-			class="com.cubesofttech.action.EquipmentRequestAction"
-			method="EquipmentPreview">
-			<result name="success" type="tiles">equipment_request_update</result>
-			<result name="error">/index.jsp</result>
-		</action>
-		
-		<action name="equipment_request_admin"
-			class="com.cubesofttech.action.EquipmentRequestAction"
-			method="EquipmentPreview">
-			<result name="success" type="tiles">equipment_request_admin</result>
-			<result name="error">/index.jsp</result>
-		</action>
-		
-		
-		<action name="equipment_request_save"
-		    class="com.cubesofttech.action.EquipmentRequestAction" method="equipment_request_save">
-		    <result name="success" type="tiles">equipment_request_save</result>
-		    <result name="error">/index.jsp</result>
-		</action>
-		
-		<action name="equipment_request_signature"
-		    class="com.cubesofttech.action.UserAction" method="update_my_profile">
-		    <result name="error">/index.jsp</result>
-		</action>
-		
-		<action name="getauto_id_load"
-		    class="com.cubesofttech.action.EquipmentRequestAction" method="getauto_id_load">
-		    <result name="success" type="tiles">getauto_id_load</result>
-		    <result name="error">/index.jsp</result>
-		</action>
 
 		<!-- MR - Material Request (New) -->
 		<action name="equipment_request_mr_list"
