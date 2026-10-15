@@ -1220,6 +1220,6 @@ WHERE p.parent_product_id <> '0' AND p.sequence REGEXP '^[0-9]+$';
   MODIFY COLUMN `time_create` TIMESTAMP NULL DEFAULT NULL,
   DROP COLUMN `item_type`;
   
-  -- PROD 14 OCT 2026
+  -- PROD 15 OCT 2026
 
 
