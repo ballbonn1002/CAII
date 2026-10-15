@@ -26,6 +26,34 @@
 <script
 	src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/1.1.3/sweetalert.min.js">
 </script>
+
+<style>
+[data-bs-theme="dark"] .swal2-popup {
+	background: var(--bs-body-bg) !important;
+	color: var(--bs-body-color) !important;
+}
+[data-bs-theme="dark"] .swal2-popup .swal2-title,
+[data-bs-theme="dark"] .swal2-popup #swal2-content,
+[data-bs-theme="dark"] .swal2-popup .swal2-html-container {
+	color: var(--bs-body-color) !important;
+}
+
+.swal2-icon.swal2-success.swal2-icon-show .swal2-success-line-tip {
+	animation: swal2-animate-success-line-tip 0.75s;
+}
+.swal2-icon.swal2-success.swal2-icon-show .swal2-success-line-long {
+	animation: swal2-animate-success-line-long 0.75s;
+}
+.swal2-icon.swal2-success.swal2-icon-show .swal2-success-circular-line-right {
+	animation: swal2-rotate-success-circular-line 4.25s ease-in;
+}
+.swal2-icon.swal2-error.swal2-icon-show {
+	animation: swal2-animate-error-icon 0.5s;
+}
+.swal2-icon.swal2-error.swal2-icon-show .swal2-x-mark {
+	animation: swal2-animate-error-x-mark 0.5s;
+}
+</style>
 </head>
 
 <body>
@@ -768,7 +796,12 @@
 		    }).fail(function () {
 		        currentAddresses = [];
 		        $("#company_location_id").empty();
-		        swal("Error", "ไม่สามารถโหลดที่อยู่บริษัทได้", "error");
+		        Swal.fire({
+		            icon: "error",
+		            title: "Error",
+		            text: "Unable to load company address",
+		            confirmButtonColor: "#1B84FF"
+		        });
 		    });
 		}
 
@@ -1031,11 +1064,12 @@
 
 			if (!allowedTypes.includes(file.type)) {
 
-				swal(
-					"Error",
-					"รองรับเฉพาะไฟล์ png, jpg, jpeg และ webp",
-					"error"
-				);
+				Swal.fire({
+					icon: "error",
+					title: "Error",
+					text: "Only png, jpg, jpeg and webp files are supported",
+					confirmButtonColor: "#1B84FF"
+				});
 
 				$(this).val("");
 
@@ -1125,11 +1159,12 @@
 
 			if (!addressName || !address) {
 
-				swal(
-					"Error",
-					"กรุณากรอกข้อมูล Customer Address ให้ครบ",
-					"error"
-				);
+				Swal.fire({
+					icon: "error",
+					title: "Error",
+					text: "Please fill in the Customer Address completely",
+					confirmButtonColor: "#1B84FF"
+				});
 
 				return;
 			}
@@ -1182,11 +1217,12 @@
 				!companyId
 			) {
 
-				swal(
-					"Error",
-					"กรุณากรอกข้อมูลที่จำเป็นให้ครบ",
-					"error"
-				);
+				Swal.fire({
+					icon: "error",
+					title: "Error",
+					text: "Please fill in all required fields",
+					confirmButtonColor: "#1B84FF"
+				});
 
 				return;
 			}
@@ -1253,7 +1289,12 @@
 		 * แจ้งบันทึกสำเร็จ (มาจาก contact_save → ?saved=1)
 		 */
 		if ("${param.saved}" === "1") {
-			swal("สำเร็จ", "บันทึกข้อมูล Contact เรียบร้อยแล้ว", "success");
+			Swal.fire({
+				icon: "success",
+				title: "Success",
+				text: "Contact saved successfully",
+				confirmButtonColor: "#1B84FF"
+			});
 
 			// ลบ saved=1 ออกจาก URL กด Refresh จะได้ไม่ขึ้นข้อความซ้ำ
 			if (window.history.replaceState) {

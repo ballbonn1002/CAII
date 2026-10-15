@@ -74,6 +74,23 @@
 #contact_table td:nth-child(1) {
 	text-align: left !important;
 }
+
+.swal2-icon.swal2-success.swal2-icon-show .swal2-success-line-tip {
+	animation: swal2-animate-success-line-tip 0.75s;
+}
+.swal2-icon.swal2-success.swal2-icon-show .swal2-success-line-long {
+	animation: swal2-animate-success-line-long 0.75s;
+}
+.swal2-icon.swal2-success.swal2-icon-show .swal2-success-circular-line-right {
+	animation: swal2-rotate-success-circular-line 4.25s ease-in;
+}
+.swal2-icon.swal2-error.swal2-icon-show {
+	animation: swal2-animate-error-icon 0.5s;
+}
+.swal2-icon.swal2-error.swal2-icon-show .swal2-x-mark {
+	animation: swal2-animate-error-x-mark 0.5s;
+}
+
 </style>
 
 <body>
@@ -1193,45 +1210,67 @@
 						return;
 					}
 
-					swal(
-						{
-							title: "ยืนยันการลบ",
-							text: "คุณต้องการลบ Contact นี้หรือไม่",
-							type: "warning",
-							showCancelButton: true,
-							confirmButtonText: "ใช่",
-							cancelButtonText: "ไม่ใช่",
-							closeOnConfirm: false
+					Swal.fire({
+						icon: "warning",
+						title: "Are you sure?",
+						text: "Are you sure you want to delete this contact?",
+						showCancelButton: true,
+						confirmButtonText: "Yes, delete it!",
+						cancelButtonText: "Cancel",
+						buttonsStyling: false,
+						customClass: {
+							confirmButton: "btn btn btn-primary px-3",
+							cancelButton: "btn btn btn-danger px-3"
 						},
-						function (isConfirm) {
+						focusConfirm: false,
+						focusCancel: false,
+						reverseButtons: false
+					}).then(function (result) {
 
-							if (!isConfirm) {
-								return;
+						if (!result.isConfirmed) {
+							return;
+						}
+
+						$.ajax({
+
+							url: "${pageContext.request.contextPath}/contact_delete.action",
+							type: "POST",
+							data: { companyContactId: id },
+
+							beforeSend: function () {
+								Swal.fire({
+									title: "Deleting...",
+									text: "Please wait",
+									allowOutsideClick: false,
+									allowEscapeKey: false,
+									showConfirmButton: false,
+									didOpen: function () {
+										Swal.showLoading();
+									}
+								});
+							},
+
+							success: function () {
+								Swal.fire({
+									icon: "success",
+									title: "Deleted",
+									text: "Contact deleted successfully"
+								}).then(function () {
+									location.reload();
+								});
+							},
+
+							error: function () {
+								Swal.fire({
+									icon: "error",
+									title: "Error",
+									text: "Cannot delete contact"
+								});
 							}
 
-							 $.ajax({
-				                    url: "${pageContext.request.contextPath}/contact_delete.action",
-				                    type: "POST",
-				                    data: { companyContactId: id },
-				                    success: function () {
-				                        swal(
-				                            {
-				                                title: "สำเร็จ",
-				                                text: "ลบ Contact เรียบร้อยแล้ว",
-				                                type: "success"
-				                            },
-				                            function () {
-				                                location.reload();
-				                            }
-				                        );
-				                    },
-				                    error: function () {
-				                        swal("เกิดข้อผิดพลาด", "ไม่สามารถลบ Contact ได้", "error");
-				                    }
-				                });
+						});
 
-				            }
-				        );
+					});
 
 				    }
 				);
