@@ -892,7 +892,7 @@
 							<c:when test="${mrStatus.statusCode == '1'}">
 								<div class="d-flex">
 									<button type="button" id="saveDraftBtn" onclick="saveMr('1')"
-										class="btn btn-lg btn-secondary text-inverse-secondary fw-medium px-6 py-4 me-4">Save Draft
+										class="btn btn-lg btn-cyan text-white fw-medium px-6 py-4 me-4">Save Draft
 									</button>
 									<button type="button" id="submitMrBtn" onclick="submitMr()"
 										class="btn btn-success text-white fw-medium px-6 py-4">Submit MR
