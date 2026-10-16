@@ -254,17 +254,50 @@ public class EquipmentRequestMrAction extends ActionSupport {
 
             List<Map<String, Object>> subItemList = new ArrayList<>();
             if (productId != null && !productId.trim().isEmpty()) {
-                List<Map<String, Object>> rows = equipmentRequestMrNewDAO.findSubItems(productId.trim());
-                if (rows != null) {
-                    for (Map<String, Object> p : rows) {
-                        Map<String, Object> item = new HashMap<>();
-                        item.put("id", p.get("product_id"));
-                        item.put("name", p.get("product_name"));
-                        subItemList.add(item);
+                String mainIdStr = productId.trim();
+
+                //ดู sub_product_active ที่ตัวแม่
+                Product main = productDAO.findById(Integer.valueOf(mainIdStr));
+                debugLog.add("main = " + (main == null ? "null"
+                        : main.getProductId() + ", active=[" + main.getActive()
+                        + "], subProductActive=[" + main.getSubProductActive() + "]"));
+
+                if (main != null && "1".equals(main.getSubProductActive() != null
+                        ? main.getSubProductActive().trim() : null)) {
+
+                    List<Product> subs = productDAO.findByParentProductIds(
+                            java.util.Collections.singletonList(mainIdStr));
+
+                    if (subs != null) {
+                        // เรียงตาม sequence
+                        subs.sort(Comparator
+                                .comparing(Product::getSequence, Comparator.nullsLast(Comparator.naturalOrder()))
+                                .thenComparing(Product::getProductName, Comparator.nullsLast(Comparator.naturalOrder())));
+
+                        for (Product s : subs) {
+                            Map<String, Object> item = new HashMap<>();
+                            item.put("id", s.getProductId());
+                            item.put("name", s.getProductName());
+                            subItemList.add(item);
+                        }
                     }
                 }
             }
             debugLog.add("subItemList size = " + subItemList.size());
+
+            // List<Map<String, Object>> subItemList = new ArrayList<>();
+            // if (productId != null && !productId.trim().isEmpty()) {
+            //     List<Map<String, Object>> rows = equipmentRequestMrNewDAO.findSubItems(productId.trim());
+            //     if (rows != null) {
+            //         for (Map<String, Object> p : rows) {
+            //             Map<String, Object> item = new HashMap<>();
+            //             item.put("id", p.get("product_id"));
+            //             item.put("name", p.get("product_name"));
+            //             subItemList.add(item);
+            //         }
+            //     }
+            // }
+            // debugLog.add("subItemList size = " + subItemList.size());
 
             Map<String, Object> data = new HashMap<>();
             data.put("subItemList", subItemList);
