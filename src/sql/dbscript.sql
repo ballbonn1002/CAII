@@ -1222,4 +1222,10 @@ WHERE p.parent_product_id <> '0' AND p.sequence REGEXP '^[0-9]+$';
   
   -- PROD 15 OCT 2026
 
-
+-- 16/10/2026 Koy: add permission 'session.timeout.extended' in 'authorized_object' table
+INSERT INTO `authorized_object` (`authorized_object_id`, `name`, `description`, `active`, `time_create`, `time_update`, `authorized_object_group_id`)
+VALUES
+('session.timeout.extended', 'session.timeout.extended', 'ขยาย session timeout เป็น 60 นาที (ค่าปกติ 30 นาที)', '1', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '2');
+-- 16/10/2026 Koy: add permission 'session.timeout.extended' to 'HR' role in 'role_authorized_object' table  
+INSERT INTO `role_authorized_object` (`role_id`, `authorized_object_id`, `time_create`, `time_update`)
+VALUES ('HR', 'session.timeout.extended', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);

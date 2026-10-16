@@ -41,6 +41,9 @@ public class LineLoginAction extends ActionSupport {
     
     @Autowired
 	private UserDAO userDAO;
+
+    @Autowired
+	private LoginService loginService;
     
     private String authUrl;
     
@@ -240,8 +243,8 @@ public class LineLoginAction extends ActionSupport {
     			session.setAttribute("userImgPath", imgPath);
                 session.setAttribute("user", user);
     			session.setAttribute("onlineUser", user);
-    			// HR ได้ session timeout นานกว่า role อื่น
-    			LoginService.applySessionTimeout(session, user);
+    			// role ที่มีสิทธิ์ session.timeout.extended ได้ session timeout นานกว่าปกติ (ส่ง null ให้ query เอง)
+    			loginService.applySessionTimeout(session, user, null);
 
     			switch (typeAction) {
     		    case "1":

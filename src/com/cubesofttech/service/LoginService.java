@@ -33,20 +33,47 @@ public class LoginService {
 	private JavaMailSender mailSender;
 
 	/**
-	 * ตั้งเวลา session timeout ตาม role ของ user ที่เพิ่งล็อกอิน
-	 * HR ได้ Constant.HR_SESSION_TIMEOUT_MINUTES นาที, role อื่นใช้ค่า default จาก web.xml
+	 * ตั้งเวลา session timeout ตามสิทธิ์ของ user ที่เพิ่งล็อกอิน
+	 * ถ้า role ใน user.role_id มีสิทธิ์ Constant.AUTH_SESSION_TIMEOUT_EXTENDED ในตาราง role_authorized_object
+	 * จะได้ Constant.EXTENDED_SESSION_TIMEOUT_MINUTES นาที, ไม่มีสิทธิ์ใช้ค่า default จาก web.xml
+	 * ไม่นับตาราง user_role (และไม่ใช้ session "userAuthority" ที่รวม user_role ไว้แล้ว)
 	 * เรียกหลัง session.setAttribute("onlineUser", user)
-	 * ใช้เฉพาะ user.role_id (ไม่นับตาราง user_role)
+	 *
+	 * @param roleAuthorizedObjectList สิทธิ์ของ user.role_id ที่ query ไว้แล้ว (login ปกติส่งมา);
+	 *                                 ถ้าเป็น null จะ query เองด้วย user.role_id (เช่นตอน login ผ่าน LINE)
+	 * ถ้า query ล้มเหลวจะ log error แล้วใช้ค่า default ไม่ทำให้ login พัง
 	 */
-	public static void applySessionTimeout(HttpSession session, User user) {
+	public void applySessionTimeout(HttpSession session, User user,
+			List<RoleAuthorizedObject> roleAuthorizedObjectList) {
 		if (session == null || user == null) {
 			return;
 		}
-		String roleId = user.getRoleId();
-		if (roleId != null && Constant.HR_ROLE_ID.equalsIgnoreCase(roleId.trim())) {
-			// setMaxInactiveInterval รับหน่วยวินาที
-			session.setMaxInactiveInterval(Constant.HR_SESSION_TIMEOUT_MINUTES * 60);
-			log.info("set session timeout user=" + user.getId() + " minutes=" + Constant.HR_SESSION_TIMEOUT_MINUTES);
+		try {
+			List<RoleAuthorizedObject> list = roleAuthorizedObjectList;
+			if (list == null) {
+				String roleId = user.getRoleId();
+				if (roleId == null || roleId.trim().isEmpty()) {
+					return;
+				}
+				list = roleAuthorizedObjectDAO.findByRoleId(roleId);
+			}
+			if (list == null) {
+				return;
+			}
+			for (RoleAuthorizedObject rao : list) {
+				if (rao == null || rao.getAuthorizedObjectId() == null) {
+					continue;
+				}
+				if (Constant.AUTH_SESSION_TIMEOUT_EXTENDED.equals(rao.getAuthorizedObjectId().trim())) {
+					// setMaxInactiveInterval รับหน่วยวินาที
+					session.setMaxInactiveInterval(Constant.EXTENDED_SESSION_TIMEOUT_MINUTES * 60);
+					log.info("set session timeout user=" + user.getId() + " minutes=" + Constant.EXTENDED_SESSION_TIMEOUT_MINUTES);
+					return;
+				}
+			}
+		} catch (Exception e) {
+			// ใช้ค่า default (30 นาที) ต่อไป ห้ามทำให้ login พัง
+			log.error("apply session timeout failed user=" + user.getId(), e);
 		}
 	}
 
