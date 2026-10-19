@@ -628,8 +628,8 @@
 .leave-summary-pager { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
 .leave-summary-pager::-webkit-scrollbar { display: none; }
 .leave-summary-page { flex: 0 0 100%; scroll-snap-align: start; min-width: 0; }
-.leave-summary-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; }
-.leave-summary-item { display: flex; align-items: center; gap: 15px; min-width: 0; overflow: hidden; padding-right: 13px; }
+.leave-summary-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.leave-summary-item { display: flex; min-width: 0; overflow: hidden; }
 .leave-summary-item .d-flex.flex-column { min-width: 0; overflow: hidden; gap: 4px; }
 .leave-summary-item .text-gray-600 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 .leave-summary-dots { display: flex; justify-content: center; gap: 6px; margin-top: 19.5px; }
@@ -680,9 +680,9 @@
 	<!-- Summary Leave -->
 	<div class="mb-6">
 		<div class="card card-bordered">
-			<div class="card-body p-10">
+			<div class="card-body px-8 py-10">
 				<div class="leave-summary-pager" id="leaveSummaryPager">
-					<div class="leave-summary-item">
+					<div class="leave-summary-item align-items-start gap-4">
 						<span class="symbol symbol-50px">
 							<span class="symbol-label bg-success-subtle">
 								<i class="ki-duotone ki-airplane text-success" style="font-size:1.75rem;">
@@ -690,19 +690,19 @@
 								</i>
 							</span>
 						</span>
-						<div class="d-flex flex-column">
-							<span class="fw-bold text-gray-800 fs-3 lh-sm">
-								<fmt:formatNumber type="number" pattern="#.##" value="${leave_1}"/>/<fmt:formatNumber type="number" pattern="#.##" value="${quota_1}"/>
+						<div class="d-flex flex-column pt-2">
+							<span class="fw-bold text-gray-800 fs-3 lh-sm d-flex align-items-center flex-wrap gap-1">
+								<span class="d-flex flex-wrap"><fmt:formatNumber type="number" pattern="#.###" value="${leave_1}"/><c:if test="${quota_1 > 0}"><span>/<fmt:formatNumber type="number" pattern="#.###" value="${quota_1}"/></span></c:if></span>
 								<c:set var="leaveWA1" value="${empty LeaveWAnumT1 ? 0 : LeaveWAnumT1}" />
 								<c:if test="${leaveWA1 > 0}">
-									<span class="badge badge-sm badge-warning"><fmt:formatNumber type="number" pattern="#.##" value="${leaveWA1}"/></span>
+									<span class="badge badge-sm badge-warning"><fmt:formatNumber type="number" pattern="#.###" value="${leaveWA1}"/></span>
 								</c:if>
 							</span>
 							<span class="text-gray-600 fs-base lh-sm">${fn:escapeXml(type_1)}</span>
 						</div>
 					</div>
 
-					<div class="leave-summary-item">
+					<div class="leave-summary-item align-items-start gap-4">
 						<span class="symbol symbol-50px">
 							<span class="symbol-label bg-primary-subtle">
 								<i class="ki-duotone ki-car-2 text-primary" style="font-size:1.75rem;">
@@ -711,12 +711,12 @@
 								</i>
 							</span>
 						</span>
-						<div class="d-flex flex-column">
-							<span class="fw-bold text-gray-800 fs-3 lh-sm">
-								<fmt:formatNumber type="number" pattern="#.##" value="${leave_2}"/>/<fmt:formatNumber type="number" pattern="#.##" value="${quota_2}"/>
+						<div class="d-flex flex-column pt-2">
+							<span class="fw-bold text-gray-800 fs-3 lh-sm d-flex align-items-center flex-wrap gap-1">
+								<span class="d-flex flex-wrap"><fmt:formatNumber type="number" pattern="#.###" value="${leave_2}"/><c:if test="${quota_2 > 0}"><span>/<fmt:formatNumber type="number" pattern="#.###" value="${quota_2}"/></span></c:if></span>
 								<c:set var="leaveWA2" value="${empty LeaveWAnumT2 ? 0 : LeaveWAnumT2}" />
 								<c:if test="${leaveWA2 > 0}">
-									<span class="badge badge-sm badge-warning"><fmt:formatNumber type="number" pattern="#.##" value="${leaveWA2}"/></span>
+									<span class="badge badge-sm badge-warning"><fmt:formatNumber type="number" pattern="#.###" value="${leaveWA2}"/></span>
 								</c:if>
 							</span>
 							<span class="text-gray-600 fs-base lh-sm">${fn:escapeXml(type_2)}</span>
@@ -744,7 +744,7 @@
 						</div>
 					</div> -->
 
-					<div class="leave-summary-item">
+					<div class="leave-summary-item align-items-start gap-4">
 						<span class="symbol symbol-50px">
 							<span class="symbol-label bg-light-info">
 								<i class="ki-duotone ki-pulse text-info" style="font-size:1.75rem;">
@@ -752,18 +752,18 @@
 								</i>
 							</span>
 						</span>
-						<div class="d-flex flex-column">
-							<span class="fw-bold text-gray-800 fs-3 lh-sm">
-								<fmt:formatNumber type="number" pattern="#.##" value="${leave_3}"/>
+						<div class="d-flex flex-column pt-2">
+							<span class="fw-bold text-gray-800 fs-3 lh-sm d-flex align-items-center flex-wrap gap-1">
+								<fmt:formatNumber type="number" pattern="#.###" value="${leave_3}"/>
 								<c:if test="${LeaveWAnumT3.doubleValue() > 0}">
-									<span class="badge badge-sm badge-warning"><fmt:formatNumber type="number" pattern="#.##" value="${LeaveWAnumT3}"/></span>
+									<span class="badge badge-sm badge-warning"><fmt:formatNumber type="number" pattern="#.###" value="${LeaveWAnumT3}"/></span>
 								</c:if>
 							</span>
 							<span class="text-gray-600 fs-base lh-sm">${fn:escapeXml(type_3)}</span>
 						</div>
 					</div>
 
-					<div class="leave-summary-item">
+					<div class="leave-summary-item align-items-start gap-4">
 						<span class="symbol symbol-50px">
 							<span class="symbol-label bg-light-danger">
 								<i class="ki-duotone ki-calendar-remove text-danger" style="font-size:1.75rem;">
@@ -772,18 +772,18 @@
 								</i>
 							</span>
 						</span>
-						<div class="d-flex flex-column">
-							<span class="fw-bold text-gray-800 fs-3 lh-sm">
-								<fmt:formatNumber type="number" pattern="#.##" value="${leave_4}"/>
+						<div class="d-flex flex-column pt-2">
+							<span class="fw-bold text-gray-800 fs-3 lh-sm d-flex align-items-center flex-wrap gap-1">
+								<fmt:formatNumber type="number" pattern="#.###" value="${leave_4}"/>
 								<c:if test="${LeaveWAnumT4.doubleValue() > 0}">
-									<span class="badge badge-sm badge-warning"><fmt:formatNumber type="number" pattern="#.##" value="${LeaveWAnumT4}"/></span>
+									<span class="badge badge-sm badge-warning"><fmt:formatNumber type="number" pattern="#.###" value="${LeaveWAnumT4}"/></span>
 								</c:if>
 							</span>
 							<span class="text-gray-600 fs-base lh-sm">${fn:escapeXml(type_4)}</span>
 						</div>
 					</div>
 
-					<div class="leave-summary-item">
+					<div class="leave-summary-item align-items-start gap-4">
 						<span class="symbol symbol-50px">
 							<span class="symbol-label bg-light-dark">
 								<i class="ki-duotone ki-brifecase-cros text-dark" style="font-size:1.75rem;">
@@ -791,18 +791,18 @@
 								</i>
 							</span>
 						</span>
-						<div class="d-flex flex-column">
-							<span class="fw-bold text-gray-800 fs-3 lh-sm">
-								<fmt:formatNumber type="number" pattern="#.##" value="${leave_5}"/>
+						<div class="d-flex flex-column pt-2">
+							<span class="fw-bold text-gray-800 fs-3 lh-sm d-flex align-items-center flex-wrap gap-1">
+								<fmt:formatNumber type="number" pattern="#.###" value="${leave_5}"/>
 								<c:if test="${LeaveWAnumT5.doubleValue() > 0}">
-									<span class="badge badge-sm badge-warning"><fmt:formatNumber type="number" pattern="#.##" value="${LeaveWAnumT5}"/></span>
+									<span class="badge badge-sm badge-warning"><fmt:formatNumber type="number" pattern="#.###" value="${LeaveWAnumT5}"/></span>
 								</c:if>
 							</span>
 							<span class="text-gray-600 fs-base lh-sm">${fn:escapeXml(type_5)}</span>
 						</div>
 					</div>
 
-					<div class="leave-summary-item">
+					<div class="leave-summary-item align-items-start gap-4">
 						<span class="symbol symbol-50px">
 							<span class="symbol-label bg-gray-700">
 								<i class="ki-duotone ki-abstract-12 text-white" style="font-size:1.75rem;">
@@ -810,11 +810,11 @@
 								</i>
 							</span>
 						</span>
-						<div class="d-flex flex-column">
-							<span class="fw-bold text-gray-800 fs-3 lh-sm">
-								<fmt:formatNumber type="number" pattern="#.##" value="${leave_7}"/>
+						<div class="d-flex flex-column pt-2">
+							<span class="fw-bold text-gray-800 fs-3 lh-sm d-flex align-items-center flex-wrap gap-1">
+								<fmt:formatNumber type="number" pattern="#.###" value="${leave_7}"/>
 								<c:if test="${LeaveWAnumT7.doubleValue() > 0}">
-									<span class="badge badge-sm badge-warning"><fmt:formatNumber type="number" pattern="#.##" value="${LeaveWAnumT7}"/></span>
+									<span class="badge badge-sm badge-warning"><fmt:formatNumber type="number" pattern="#.###" value="${LeaveWAnumT7}"/></span>
 								</c:if>
 							</span>
 							<span class="text-gray-600 fs-base lh-sm">${fn:escapeXml(type_7)}</span>
@@ -903,7 +903,8 @@
 							</c:if>
 						</div>
 						<div class="d-flex flex-column align-items-center justify-content-center flex-shrink-0 w-65px gap-1 lh-1 border-start border-gray-200">
-							<span class="fs-2x fw-bold text-gray-900"><fmt:formatNumber type="number" pattern="#.###" value="${leave.no_day}"/></span>
+							<fmt:formatNumber var="noDayText" type="number" pattern="#.###" value="${leave.no_day}"/>
+							<span class="${fn:length(noDayText) > 3 ? 'fs-2' : 'fs-2x'} fw-bold text-gray-900">${noDayText}</span>
 							<span class="fs-base fw-semibold text-gray-500">${leave.no_day > 1 ? 'days' : 'day'}</span>
 						</div>
 					</div>
