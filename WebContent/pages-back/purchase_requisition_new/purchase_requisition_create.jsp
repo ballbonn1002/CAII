@@ -196,8 +196,8 @@
 			<div id="kt_app_content" class="app-content flex-column-fluid">
 				<div id="kt_app_content_container" class="app-container container-fluid">
 					<div class="row g-5 gx-xl-10">
-						<div class="col-md-12 col-lg-7 col-xl-7 col-xxl-8 mb-md-5">
-							<div class="card h-100">
+						<div class="col-md-12 col-lg-7 col-xl-7 col-xxl-8 mb-10">
+							<div class="card h-100 ">
 								<div class="card-header border-0 px-9 pt-7 d-flex align-items-center justify-content-between">
 									<div class="card-title">
 										<h3 class="fw-semibold text-gray-900">PR - Header</h3>
@@ -234,7 +234,7 @@
 								</div>
 							</div>
 						</div>
-						<div class="col-md-12 col-lg-5 col-xl-5 col-xxl-4 mb-md-5">
+						<div class="col-md-12 col-lg-5 col-xl-5 col-xxl-4 mb-10 mt-0 mt-lg-5">
 							<div class="card h-100 d-flex flex-column">
 								<div class="card-header border-0 px-9 pt-7 d-flex align-items-center justify-content-between">
 									<div class="card-title">
@@ -246,7 +246,7 @@
 											accept="image/jpeg,image/png,image/gif,image/webp,image/bmp,application/pdf,application/zip,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document">
 									</label>
 								</div>
-								<div class="card-body filter-card px-5 px-lg-10 py-9 rounded-3">
+								<div class="card-body filter-card px-5 px-lg-10 py-5 rounded-3">
 									<div id="attachFileWarningBox"
 										class="border border-2 border-warning rounded border-active active w-100">
 										<div class="py-5 d-flex flex-column align-items-center">
@@ -264,7 +264,7 @@
 										</div>
 									</div>
 									<div class="d-flex flex-column h-100" style="min-height: 0;">
-										<div id="attachFileList" class="d-flex flex-column gap-2 mt-2"></div>
+										<div id="attachFileList" class="d-flex flex-column gap-5"></div>
 										<div id="errorMsgAF" class="text-danger fs-8 mt-1"></div>
 									</div>
 								</div>
@@ -455,7 +455,7 @@
 					            <div class="modal-body">
 					                <div class="row g-5 mb-3">
 					                    <div class="col-lg-6 col-md-6 col-12 d-flex flex-column">
-					                        <label class="required fw-medium text-gray-800 mb-2">Search MR</label>
+					                        <label class="required fw-medium text-gray-800 mb-2">Search</label>
 					                        <div class="input-group">
 					                            <input type="text" class="form-control text-gray-700 h-45px" name="searchMrKeyword" id="searchMrKeyword" />
 
@@ -708,7 +708,15 @@
 
 		    searchMrModalEl.addEventListener('hidden.bs.modal', function () {
 		        isSearchMrModalOpen = false;
+                // ล้างติ๊กค้างใน modal Search MR
+                if (mrDetailTable) { mrDetailTable.destroy(); mrDetailTable = null; }
+                $('#mrResultBody').empty();
+                $('#checkAllMr').prop('checked', false);
+                $('#mrSelectedCount').text('0');
+
 		        selectedMrCategory = '';
+				pendingMrKeyword = null;
+        		$('#searchMrKeyword').val('');
 		        $('#searchMrCategory').val('').trigger('change.select2');
 		    });
 
@@ -861,7 +869,7 @@
 		var fileListDiv = document.getElementById('attachFileList');
 		if (!fileListDiv) return;
 		fileListDiv.innerHTML = '';
-		fileListDiv.className = 'd-flex flex-column mt-3 gap-2';
+		fileListDiv.className = 'd-flex flex-column gap-5';
 
 		selectedFiles.forEach(function (file) {
 			const fileName = file.name;
@@ -874,7 +882,7 @@
 			outerDiv.className = 'd-flex align-items-center justify-content-center mb-2';
 
 			outerDiv.innerHTML =
-				'<div class="d-flex align-items-center justify-content-between w-100 p-2 rounded">' +
+				'<div class="d-flex align-items-center justify-content-between w-100 rounded">' +
 					'<div class="d-flex align-items-center text-decoration-none text-gray-800 overflow-hidden" style="flex-grow: 1; min-width: 0;">' +
 						'<img src="' + iconPath + '" class="w-25px h-25px me-3 flex-shrink-0" alt="icon" />' +
 						'<span class="fs-6 fw-medium d-flex" style="min-width: 0;" title="' + fileName + '">' +
@@ -1350,7 +1358,7 @@ function createPrCard(item,index){
 			<i class="ki-duotone ki-fasten fs-2 text-primary"><span class="path1"></span><span class="path2"></span></i>
 		</a>` : '';
 		
-    return `<div class="pr-item-group border-gray-400 border-bottom py-9 px-6">
+    return `<div class="pr-item-group border-gray-400 border-bottom pt-9 pb-6 px-6">
     			<div class="d-flex align-items-center justify-content-between row g-3">
     				<div class="col-12 col-lg-7 d-flex flex-wrap align-items-center">\${icon}
 						<span class="text-gray-900 fs-5 fw-normal me-3">\${category}</span>
@@ -1382,7 +1390,7 @@ function createPrCard(item,index){
 			</div>
 			
 			<div class="collapse border-gray-300 border-top mt-3" id="prGroup_\${groupId}">
-				<div class="ps-0 ps-md-9 pt-5">
+				<div class="ps-9 pt-9">
 					\${(item.sources || []).map(function(s, si){
 						var srcBaseQty = (s.baseQty != null) ? s.baseQty : s.qty;
 						var rowRefLink = s.mrId ? s.refLink : '';
@@ -1421,11 +1429,6 @@ function createMrBadge(mrId, refLink){
 
 function createPrSourceRow(qty, unitName, baseQty, baseUnitName, savedAt, mrId, refLink, creatorName, itemIndex, srcIndex){
     const qtyUnitDisplay = qty + ' ' + unitName + ' (= ' + baseQty + ' ' + baseUnitName + ')';
-
-    // แถวที่มาจาก MR แก้ไม่ได้ → ไม่แสดง Edit
-    // const editItem = mrId ? '' : `
-    //     <a href="#" class="pr-src-item d-block px-6 py-3 fs-6 fw-normal text-gray-800 bg-hover-light"
-    //        onclick="event.stopPropagation(); return editSource(\${itemIndex}, \${srcIndex});">Edit</a>`;
 
     return `
     <div class="pr-src-row row g-2 align-items-center mb-4 py-2">
@@ -1599,6 +1602,11 @@ function editSource(itemIndex, srcIndex){
     const src = item && item.sources && item.sources[srcIndex];
     if (!src) return false;
 
+	if (src.mrId) {
+        openSearchMrWithKeyword(item.productName);
+        return false;
+    }
+
     editingSrc = { itemIndex: itemIndex, srcIndex: srcIndex };
     const baseQty = (src.baseQty != null) ? src.baseQty : src.qty;
 	const cat = getCategoryIcon(mapSelectToDbItemsType(item.itemsType));
@@ -1696,6 +1704,13 @@ let mrDetailTable = null;
 let selectedMrCategory = '';
 let mrSearchRequestToken = 0;
 let isSearchMrModalOpen = false;
+let pendingMrKeyword = null;
+
+function openSearchMrWithKeyword(keyword){
+    pendingMrKeyword = keyword;
+    $('#searchMrKeyword').val(keyword);
+    bootstrap.Modal.getOrCreateInstance(document.getElementById('modal_search_mr')).show();
+}
 
 $.fn.dataTable.ext.search.push(function (settings, data, dataIndex) {
     if (settings.nTable.id !== 'mrResultTable') return true;
@@ -1715,7 +1730,6 @@ function loadInprogressMrDetail(){
         dataType: 'json',
         success: function (resp) {
             if (requestToken !== mrSearchRequestToken || !isSearchMrModalOpen) return;
-            // SQL คืน 1 แถวต่อ mr_id และเรียงมาให้แล้ว ใช้ตามนั้นได้เลย
             inprogressMrDetailList = (resp.data && resp.data.mrDetailList) || [];
             renderMrResultTable(inprogressMrDetailList);
         },
@@ -1862,6 +1876,12 @@ function renderMrResultTable(list){
 	});
     updateMrSelectedCountReal();
 
+    if (pendingMrKeyword !== null) {
+        $('#searchMrKeyword').val(pendingMrKeyword);
+        mrDetailTable.search(pendingMrKeyword).draw();
+        pendingMrKeyword = null;
+    }
+
     var checkAll = document.getElementById('checkAllMr');
 
     function syncCheckAllState(){
@@ -1944,7 +1964,7 @@ document.getElementById('btnSubmitMr').addEventListener('click', function(){
  	
         var qty = Number(src.amount_total) || 0;
         var creator = (src.user_create_emp_id ? src.user_create_emp_id + ' - ' : '') + (src.user_create_name || '');
-        var savedAt = formatNowDateTime(src.time_create);
+        var savedAt = formatNowDateTime();
 		var cartProductName = src.parent_product_name
 			? src.parent_product_name + ' > ' + (src.product_name || '')
 			: (src.product_name || '');
@@ -1978,7 +1998,7 @@ document.getElementById('btnSubmitMr').addEventListener('click', function(){
     if (modal) modal.hide();
 });
 
-//── Confirm Receiver ──────────────────────────────────────
+//────────────────── Confirm Receiver ──────────────────
 function confirmReceiver(slot) {
     const now = new Date();
     const pad = n => String(n).padStart(2, '0');

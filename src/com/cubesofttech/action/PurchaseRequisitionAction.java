@@ -167,6 +167,7 @@ public class PurchaseRequisitionAction extends ActionSupport {
     private String refLink;
     private String signUser;
     private String signDate;
+    private String keepDetail;
 
     public String getPrDetailId() {
         return prDetailId;
@@ -230,6 +231,14 @@ public class PurchaseRequisitionAction extends ActionSupport {
 
     public void setSignDate(String signDate) {
         this.signDate = signDate;
+    }
+
+    public String getKeepDetail() { 
+        return keepDetail; 
+    }
+
+    public void setKeepDetail(String keepDetail) { 
+        this.keepDetail = keepDetail; 
     }
 
     // --- Multi-file attach ---
@@ -576,6 +585,36 @@ public class PurchaseRequisitionAction extends ActionSupport {
             if (!existingDetailId.isEmpty()) {
                 PrDetail existing = prDetailDAO.findById(existingDetailId);
                 if (existing != null && targetPrId.equals(existing.getPrId())) {
+
+                    applyExistingDetailEdits(existing, existingDetailId, item, loginUserId);
+
+                    // แก้ qty/unit ของ pr_parent เดิมที่มี sourceEdits
+                    double editDeltaBase = 0d;
+                    Object editsObj = item.get("sourceEdits");
+                    if (editsObj instanceof JSONArray) {
+                        JSONArray editArr = (JSONArray) editsObj;
+                        for (int i = 0; i < editArr.length(); i++) {
+                            Map<String, Object> ed = jsonObjectToMap(editArr.getJSONObject(i));
+                            String editParentId = ed.get("prParentId") != null ? String.valueOf(ed.get("prParentId")).trim() : "";
+                            double newQty = toDouble(ed.get("qty"));
+                            String newUnit = ed.get("unit") != null ? String.valueOf(ed.get("unit")).trim() : "";
+                            if (editParentId.isEmpty() || newQty <= 0 || newUnit.isEmpty()) continue;
+
+                            PrParent parent = prParentDAO.findById(editParentId);
+                            if (parent == null || !existingDetailId.equals(parent.getPrDetailId())) continue;
+
+                            double oldBase = toDouble(parent.getAmount()) * unitRate(parent.getUnit());
+                            double newBase = newQty * unitRate(newUnit);
+                            editDeltaBase += (newBase - oldBase);
+
+                            parent.setAmount(newQty);
+                            parent.setUnit(newUnit);
+                            parent.setUserUpdate(loginUserId);
+                            parent.setTimeUpdate(DateUtil.getCurrentTime());
+                            prParentDAO.update(parent);
+                        }
+                    }
+
                     double addBaseQty = 0d;
                     for (Map<String, Object> src : sources) {
                         String mrIdVal = src.get("mrId") != null ? String.valueOf(src.get("mrId")).trim() : null;
@@ -593,7 +632,7 @@ public class PurchaseRequisitionAction extends ActionSupport {
                                 dbProductId, dbParentId, srcQty, srcUnitVal, srcDesc, loginUserId);
                     }
                     double current = existing.getAmountTotal() == null ? 0d : existing.getAmountTotal();
-                    existing.setAmountTotal(current + addBaseQty);
+                    existing.setAmountTotal(current + addBaseQty + editDeltaBase);
                     if (manualRefLink != null && (existing.getRefLink() == null || existing.getRefLink().trim().isEmpty())) {
                         existing.setRefLink(manualRefLink);
                     }
@@ -646,6 +685,51 @@ public class PurchaseRequisitionAction extends ActionSupport {
             }
         }
         return pulledMrIds;
+    }
+
+    private void applyExistingDetailEdits(PrDetail detail, String detailId, Map<String, Object> item, String loginUserId) throws Exception {
+        String editProductId = item.get("editProductId") != null ? String.valueOf(item.get("editProductId")).trim() : "";
+        if (!editProductId.isEmpty() && !editProductId.equals(detail.getProductId())) {
+            changeDetailProduct(detail, detailId, editProductId, loginUserId);
+        }
+        if (item.get("editDescription") != null) {
+            detail.setDescription(cleanText(String.valueOf(item.get("editDescription"))));
+        }
+        if (item.get("editRefLink") != null) {
+            detail.setRefLink(String.valueOf(item.get("editRefLink")).trim());
+        }
+    }
+
+    private void changeDetailProduct(PrDetail detail, String detailId, String newProductId, String loginUserId) throws Exception {
+        Product np = productDAO.findById(Integer.valueOf(newProductId));
+        if (np == null) throw new IllegalStateException("ไม่พบสินค้าที่เลือก: " + newProductId);
+        String newParentId = String.valueOf(np.getParentProductId());
+
+        String eff = (newParentId != null && !newParentId.trim().isEmpty() && !"0".equals(newParentId.trim()))
+                ? newParentId.trim() : newProductId;
+        List<UnitOfMeasure> mains = unitOfMeasureDAO.findMainUnitsByProductIds(
+                java.util.Collections.singletonList(eff));
+        if (mains == null || mains.isEmpty()) throw new IllegalStateException("สินค้าที่เลือกยังไม่มีหน่วยนับ: " + eff);
+        String newBaseUnit = String.valueOf(mains.get(0).getUnitId());
+
+        List<Map<String, Object>> rows = prParentDAO.findPrParentByPrDetailId(detailId);
+        if (rows != null) {
+            for (Map<String, Object> row : rows) {
+                PrParent pp = prParentDAO.findById(String.valueOf(row.get("pr_parent_id")));
+                if (pp == null) continue;
+                double baseQty = toDouble(pp.getAmount()) * unitRate(pp.getUnit());
+                pp.setProductId(newProductId);
+                pp.setParentId(newParentId);
+                pp.setUnit(newBaseUnit);
+                pp.setAmount(baseQty);
+                pp.setUserUpdate(loginUserId);
+                pp.setTimeUpdate(DateUtil.getCurrentTime());
+                prParentDAO.update(pp);
+            }
+        }
+        detail.setProductId(newProductId);
+        detail.setParentId(newParentId);
+        detail.setUnit(newBaseUnit);
     }
 
     private void savePrParent(String prParentId, String prDetailId, String mrId, String productId,
@@ -752,7 +836,7 @@ public class PurchaseRequisitionAction extends ActionSupport {
             }
 
             // --- Detail + Parent ---
-            // prDetailCartJson มีเฉพาะรายการใหม่ที่เพิ่มระหว่างแก้ไข (ยังไม่ save ลง DB) เท่านั้น
+            // prDetailCartJson เฉพาะรายการใหม่ที่เพิ่มระหว่างแก้ไข (ยังไม่ save ลง DB) เท่านั้น
             List<String> pulledMrIds = saveCartItems(prId, prDetailCartJson, loginUserId, debugLog);
             debugLog.add("pulledMrIds = " + pulledMrIds);
 
@@ -830,7 +914,7 @@ public class PurchaseRequisitionAction extends ActionSupport {
                 }
                 String newParentId = String.valueOf(np.getParentProductId());
 
-                // หน่วยเล็กสุดของสินค้าใหม่ (ถ้าเป็นสินค้าลูกให้ใช้ของตัวแม่ เหมือน searchApprovedMr)
+                // หน่วยเล็กสุดของสินค้าใหม่ (ถ้าเป็นสินค้าลูกให้ใช้ของตัวแม่)
                 String eff = (newParentId != null && !newParentId.trim().isEmpty() && !"0".equals(newParentId.trim()))
                         ? newParentId.trim() : newProductId;
                 List<UnitOfMeasure> mains = unitOfMeasureDAO.findMainUnitsByProductIds(
@@ -991,7 +1075,7 @@ public class PurchaseRequisitionAction extends ActionSupport {
                 return NONE;
             }
 
-            // mr_id ของแถวนี้ (ถ้ามี) ไม่ถูกแตะต้อง อนุญาตแก้ qty/unit ได้อิสระตามกฎธุรกิจ
+            // mr_id ของแถวนี้ (ถ้ามี) ไม่ถูกแก้
             parent.setAmount(qtyVal);
             parent.setUnit(unit);
             parent.setUserUpdate(onlineUser.getId());
@@ -1082,13 +1166,15 @@ public class PurchaseRequisitionAction extends ActionSupport {
             }
 
             List<Map<String, Object>> parentsBefore = prParentDAO.findPrParentByPrDetailId(prDetailId);
-            if (parentsBefore == null || parentsBefore.size() <= 1) {
+            boolean keep = "true".equals(keepDetail); //มี source ใหม่ค้างรอ save
+            if (!keep && (parentsBefore == null || parentsBefore.size() <= 1)) {
                 debugLog.add("only one pr_parent row left, use delete_pr_detail instead");
                 Map<String, Object> result = new HashMap<>();
                 result.put("success", null);
                 writeJson(result, debugLog);
                 return NONE;
             }
+
 
             prParentDAO.delete(parent);
 
@@ -1379,6 +1465,15 @@ public class PurchaseRequisitionAction extends ActionSupport {
             writeJson(null, debugLog);
             return NONE;
         }
+    }
+
+    private double unitRate(String unitId) {
+        try {
+            if (unitId == null || unitId.trim().isEmpty()) return 1d;
+            UnitOfMeasure u = unitOfMeasureDAO.findById(Integer.valueOf(unitId.trim()));
+            if (u != null && u.getConversionRate() != null) return u.getConversionRate();
+        } catch (Exception e) { }
+        return 1d;
     }
 
     private String effectiveProductId(Map<String, Object> row) {

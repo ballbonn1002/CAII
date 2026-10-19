@@ -235,6 +235,8 @@ public class PurchaseOrderAction extends ActionSupport {
     private String price;
     private String signUser;
     private String signDate;
+    private String poParentId;
+    private String keepDetail;
     
     public String getPoDetailId() {
         return poDetailId;
@@ -290,6 +292,22 @@ public class PurchaseOrderAction extends ActionSupport {
 
     public void setSignDate(String signDate) {
         this.signDate = signDate;
+    }
+
+    public String getPoParentId() {
+        return poParentId;
+    }
+
+    public void setPoParentId(String poParentId) {
+        this.poParentId = poParentId;
+    }
+
+    public String getKeepDetail() { 
+        return keepDetail; 
+    }
+
+    public void setKeepDetail(String keepDetail) { 
+        this.keepDetail = keepDetail; 
     }
 
     // --- Multi-file attach ---
@@ -357,19 +375,6 @@ public class PurchaseOrderAction extends ActionSupport {
         }
     }
 
-    // private String mapStatusToLabel(String status) {
-    //     switch (status) {
-    //         case "0": return "Draft";
-    //         case "1": return "In-Progress";
-    //         case "2": return "Pending";
-    //         case "3": return "Return";
-    //         case "4": return "Approved";
-    //         case "5": return "Rejected";
-    //         case "6": return "Cancel";
-    //         default: return null;
-    //     }
-    // }
-    
     public String purchaseOrderAdd() {
         try {
             if (onlineUser == null) {
@@ -458,6 +463,28 @@ public class PurchaseOrderAction extends ActionSupport {
                     if (poDetailIdObj != null) {
                         List<Map<String, Object>> parents = poParentDAO.findPoParentByPoDetailId(String.valueOf(poDetailIdObj));
                         if (parents != null) {
+                            for (Map<String, Object> p : parents) {
+                                Object prIdObj = p.get("pr_id");
+                                Object parentProductIdObj = p.get("product_id");
+                                if (prIdObj != null && parentProductIdObj != null) {
+                                    p.put("mrList", prDetailDAO.findMrByPrIdAndProductId(String.valueOf(prIdObj), parentProductIdObj));
+                                }
+
+                                Object parentUnitIdObj = p.get("unit");
+                                if (parentUnitIdObj != null && !String.valueOf(parentUnitIdObj).trim().isEmpty()) {
+                                    Integer parentUnitId = Integer.valueOf(String.valueOf(parentUnitIdObj).trim());
+                                    UnitOfMeasure parentUom = unitOfMeasureDAO.findById(parentUnitId);
+                                    if (parentUom != null) {
+                                        p.put("unit_name", parentUom.getUnitName());
+
+                                        Object amountObj = p.get("amount");
+                                        double srcAmount = amountObj != null ? Double.parseDouble(String.valueOf(amountObj)) : 0d;
+                                        Integer conversionRate = parentUom.getConversionRate();
+                                        double rate = (conversionRate != null) ? conversionRate : 1d;
+                                        p.put("base_qty", srcAmount * rate);
+                                    }
+                                }
+                            }
                             poParentList.addAll(parents);
                             detail.put("poParentList", parents);
                         }
@@ -469,6 +496,14 @@ public class PurchaseOrderAction extends ActionSupport {
                         if (product != null) {
                             detail.put("product_name", product.getProductName());
                             detail.put("product_type", product.getProductType());
+
+                            String pp = product.getParentProductId() == null ? "" : product.getParentProductId().trim();
+                            if (!pp.isEmpty() && !"0".equals(pp)) {
+                                Product parentProduct = productDAO.findById(Integer.valueOf(pp));
+                                if (parentProduct != null) {
+                                    detail.put("parent_product_name", parentProduct.getProductName());
+                                }
+                            }
                         }
                     }
 
@@ -545,7 +580,8 @@ public class PurchaseOrderAction extends ActionSupport {
         java.util.Iterator<String> keys = obj.keys();
         while (keys.hasNext()) {
             String key = keys.next();
-            map.put(key, obj.get(key));
+            Object val = obj.get(key);
+            map.put(key, (val == JSONObject.NULL) ? null : val);
         }
         return map;
     }
@@ -601,6 +637,8 @@ public class PurchaseOrderAction extends ActionSupport {
             po.setDescriptionVendor(descriptionVendor);
             po.setUserCreate(loginUserId);
             po.setTimeCreate(DateUtil.getCurrentTime());
+            po.setUserUpdate(loginUserId);
+            po.setTimeUpdate(DateUtil.getCurrentTime());
             po.setPoTotal(grandTotal);
             String poStatus = (status != null && !status.trim().isEmpty()) ? status : "1";
             po.setStatus(poStatus); // 1 = Draft
@@ -666,7 +704,7 @@ public class PurchaseOrderAction extends ActionSupport {
 
                 poDetailDAO.save(detail);
 
-                // --- PoParent: อ่านจาก item.sources (ถ้ามี) ---
+                // --- PoParent อ่านจาก item.sources (ถ้ามี) ---
                 List<Map<String, Object>> sources = new ArrayList<>();
                 Object sourcesObj = item.get("sources");
                 if (sourcesObj instanceof JSONArray) {
@@ -697,6 +735,7 @@ public class PurchaseOrderAction extends ActionSupport {
                         String prIdVal = src.get("prId") != null ? String.valueOf(src.get("prId")) : null;
                         String prDetailIdVal = src.get("prDetailId") != null ? String.valueOf(src.get("prDetailId")) : null;
                         double srcQty = toDouble(src.get("qty"));
+                        String srcUnitVal = src.get("unit") != null ? String.valueOf(src.get("unit")) : unitVal;
 
                         if (prDetailIdVal != null && !prDetailIdVal.trim().isEmpty()) {
                             pulledPrDetailIds.add(prDetailIdVal);
@@ -710,7 +749,7 @@ public class PurchaseOrderAction extends ActionSupport {
                         parent.setProductId(dbProductId);
                         parent.setParentId(dbParentId);
                         parent.setAmount(srcQty);
-                        parent.setUnit(unitVal);
+                        parent.setUnit(srcUnitVal);
                         parent.setDescription(descVal);
                         parent.setUserCreate(loginUserId);
                         parent.setTimeCreate(DateUtil.getCurrentTime());
@@ -766,7 +805,6 @@ public class PurchaseOrderAction extends ActionSupport {
 
             // --- Header ---
             Po po = poDAO.findById(poId);
-
             if (po == null) {
                 debugLog.add("PO not found : " + poId);
                 writeJson(null, debugLog);
@@ -810,58 +848,157 @@ public class PurchaseOrderAction extends ActionSupport {
             long nextParentSeq = lastParentId + 1;
 
             int seq = 0;
+            long parentSeq = 0;
             List<String> pulledPrDetailIds = new ArrayList<>();
             for (Map<String, Object> item : cartItems) {
+                // --- ต่อเข้า po_detail เดิม ใส่ poDetailId มาให้) ---
+                String existingDetailId = item.get("poDetailId") != null
+                        ? String.valueOf(item.get("poDetailId")).trim() : "";
+                if (!existingDetailId.isEmpty()) {
+                    PoDetail existing = poDetailDAO.findById(existingDetailId);
+                    if (existing == null || !poId.equals(String.valueOf(existing.getPoId()))) {
+                        throw new IllegalStateException("po_detail not found / not in this PO: " + existingDetailId);
+                    }
+
+                    List<Map<String, Object>> exSources = new ArrayList<>();
+                    Object exSourcesObj = item.get("sources");
+                    if (exSourcesObj instanceof JSONArray) {
+                        JSONArray arr = (JSONArray) exSourcesObj;
+                        for (int i = 0; i < arr.length(); i++) {
+                            exSources.add(jsonObjectToMap(arr.getJSONObject(i)));
+                        }
+                    }
+
+                    double addBaseQty = 0d, addTotal = 0d;
+                    for (Map<String, Object> src : exSources) {
+                        String prIdVal = src.get("prId") != null ? String.valueOf(src.get("prId")) : null;
+                        String prDetailIdVal = src.get("prDetailId") != null ? String.valueOf(src.get("prDetailId")) : null;
+                        double srcQty = toDouble(src.get("qty"));
+                        String srcUnitVal = src.get("unit") != null ? String.valueOf(src.get("unit")) : existing.getUnit();
+
+                        if (prDetailIdVal != null && !prDetailIdVal.trim().isEmpty()) {
+                            pulledPrDetailIds.add(prDetailIdVal);
+                        }
+
+                        PoParent parent = new PoParent();
+                        parent.setPoParentId(String.valueOf(nextParentSeq + parentSeq++));
+                        parent.setPoDetailId(existingDetailId);
+                        parent.setPrId(prIdVal);
+                        parent.setProductId(existing.getProductId());
+                        parent.setParentId(existing.getParentId());
+                        parent.setAmount(srcQty);
+                        parent.setUnit(srcUnitVal);
+                        parent.setDescription(existing.getDescription());
+                        parent.setUserCreate(loginUserId);
+                        parent.setTimeCreate(DateUtil.getCurrentTime());
+                        parent.setUserUpdate(loginUserId);
+                        parent.setTimeUpdate(DateUtil.getCurrentTime());
+                        poParentDAO.save(parent);
+
+                        addBaseQty += src.get("baseQty") != null ? toDouble(src.get("baseQty")) : srcQty;
+                        addTotal   += toDouble(src.get("total"));
+                    }
+
+                    // แก้ qty/unit ของ po_parent เดิม 
+                    double editBaseQtyDelta = 0d;
+                    List<Map<String, Object>> srcEdits = new ArrayList<>();
+                    Object srcEditsObj = item.get("sourceEdits");
+                    if (srcEditsObj instanceof JSONArray) {
+                        JSONArray arr = (JSONArray) srcEditsObj;
+                        for (int i = 0; i < arr.length(); i++) {
+                            srcEdits.add(jsonObjectToMap(arr.getJSONObject(i)));
+                        }
+                    }
+                    for (Map<String, Object> se : srcEdits) {
+                        String ppId = se.get("poParentId") != null ? String.valueOf(se.get("poParentId")).trim() : "";
+                        if (ppId.isEmpty()) continue;
+
+                        PoParent p = poParentDAO.findById(ppId);
+                        if (p == null || !existingDetailId.equals(String.valueOf(p.getPoDetailId()))) {
+                            // กัน poParentId ผิด/เป็นของการ์ดอื่นหลุดเข้ามาแก้
+                            continue;
+                        }
+
+                        double oldBase = toDouble(p.getAmount()) * conversionRateOf(p.getUnit());
+                        double newQtyVal = toDouble(se.get("qty"));
+                        String newUnitVal = se.get("unit") != null ? String.valueOf(se.get("unit")) : p.getUnit();
+                        double newBase = newQtyVal * conversionRateOf(newUnitVal);
+
+                        p.setAmount(newQtyVal);
+                        p.setUnit(newUnitVal);
+                        p.setUserUpdate(loginUserId);
+                        p.setTimeUpdate(DateUtil.getCurrentTime());
+                        poParentDAO.update(p);
+
+                        editBaseQtyDelta += (newBase - oldBase);
+                    }
+
+                    double newQty = toDouble(existing.getAmountTotal()) + addBaseQty + editBaseQtyDelta;
+
+                    // ถ้าผู้ใช้แก้ราคารวมของการ์ดเดิม (editTotal) ให้ใช้แทนยอดเดิมใน db แล้วค่อยบวกยอด pending
+                    boolean hasEditTotal = item.get("editTotal") != null;
+                    double baseTotal = hasEditTotal ? toDouble(item.get("editTotal")) : toDouble(existing.getPriceTotal());
+                    double newTot = baseTotal + addTotal;
+
+                    if (item.get("editDescription") != null) {
+                        String newDesc = String.valueOf(item.get("editDescription"));
+                        existing.setDescription(newDesc);
+
+                        // sync ไปแถว po_parent เดิมของการ์ดนี้
+                        List<Map<String, Object>> parentRows = poParentDAO.findPoParentByPoDetailId(existingDetailId);
+                        if (parentRows != null) {
+                            for (Map<String, Object> p : parentRows) {
+                                Object ppId = p.get("po_parent_id");
+                                if (ppId == null) continue;
+                                PoParent pp = poParentDAO.findById(String.valueOf(ppId));
+                                if (pp == null) continue;
+                                pp.setDescription(newDesc);
+                                pp.setUserUpdate(loginUserId);
+                                pp.setTimeUpdate(DateUtil.getCurrentTime());
+                                poParentDAO.update(pp);
+                            }
+                        }
+                    }
+
+                    existing.setAmountTotal(newQty);
+                    existing.setPriceTotal(newTot);
+                    existing.setUnitPrice(String.valueOf(newQty > 0 ? newTot / newQty : 0d)); // unitPrice เป็น String
+                    existing.setUserUpdate(loginUserId);
+                    existing.setTimeUpdate(DateUtil.getCurrentTime());
+                    poDetailDAO.update(existing);
+
+                    continue;
+                }
+
                 double qty = toDouble(item.get("qty"));
                 double price = toDouble(item.get("price"));
 
                 String poDetailId = String.valueOf(nextDetailSeq + seq);
-                String poParentIdVal = String.valueOf(nextParentSeq + seq);
 
                 String productId = item.get("productId") != null ? String.valueOf(item.get("productId")) : null;
                 String unitVal = item.get("unit") != null ? String.valueOf(item.get("unit")) : null;
                 String descVal = item.get("description") != null ? String.valueOf(item.get("description")) : null;
-                String prIdVal = item.get("prId") != null ? String.valueOf(item.get("prId")) : null;
-                String prDetailIdVal = item.get("prDetailId") != null ? String.valueOf(item.get("prDetailId")) : null;
-                if (prDetailIdVal != null && !prDetailIdVal.trim().isEmpty()) {
-                    pulledPrDetailIds.add(prDetailIdVal);
-                } 
+
                 String dbProductId = productId;
                 String dbParentId = null;
                 String dbItemsType = null;
                 String itemsTypeVal = String.valueOf(item.get("itemsType"));
-                
-                if(itemsTypeVal != null){
+
+                if (itemsTypeVal != null) {
                     if ("equipment".equals(itemsTypeVal)) {
                         dbItemsType = "1";
                     } else if ("consumables".equals(itemsTypeVal)) {
                         dbItemsType = "2";
                     } else if ("accessory".equals(itemsTypeVal)) {
                         dbItemsType = "3";
-                    }else if ("office".equals(itemsTypeVal)) {
+                    } else if ("office".equals(itemsTypeVal)) {
                         dbItemsType = "4";
                     }
-                    
+
                     Product p = productDAO.findById(Integer.valueOf(productId));
                     dbProductId = p.getProductId().toString();
                     dbParentId = String.valueOf(p.getParentProductId());
                 }
-                // if ("equipment".equals(itemsTypeVal)) {
-                //     dbItemsType = "1";
-                //     Product p = productDAO.findById(Integer.valueOf(productId));
-                //     dbProductId = p.getProductId().toString();
-                //     dbParentId = null;
-                // } else if ("consumables".equals(itemsTypeVal)) {
-                //     dbItemsType = "2";
-                //     Product p = productDAO.findById(Integer.valueOf(productId));
-                //     dbProductId = p.getProductId().toString();
-                //     dbParentId = String.valueOf(p.getParentProductId());
-                // } else if ("office".equals(itemsTypeVal)) {
-                //     dbItemsType = "3";
-                //     Product p = productDAO.findById(Integer.valueOf(productId));
-                //     dbProductId = p.getProductId().toString();
-                //     dbParentId = String.valueOf(p.getParentProductId());
-                // }
 
                 // --- PoDetail ---
                 PoDetail detail = new PoDetail();
@@ -881,23 +1018,61 @@ public class PurchaseOrderAction extends ActionSupport {
 
                 poDetailDAO.save(detail);
 
-                // --- PoParent ---
-                PoParent parent = new PoParent();
-                parent.setPoParentId(poParentIdVal);
-                parent.setPoDetailId(poDetailId);
-                parent.setPrId(prIdVal);
-                parent.setProductId(dbProductId);
-                parent.setParentId(dbParentId);
-                parent.setAmount(qty); 
-                parent.setUnit(unitVal);
-                parent.setDescription(descVal);
-                parent.setUserCreate(loginUserId);
-                parent.setTimeCreate(DateUtil.getCurrentTime());
-                parent.setUserUpdate(loginUserId);
-                parent.setTimeUpdate(DateUtil.getCurrentTime());
-                
+                // --- PoParent อ่านจาก item.sources (ถ้ามี) ---
+                List<Map<String, Object>> sources = new ArrayList<>();
+                Object sourcesObj = item.get("sources");
+                if (sourcesObj instanceof JSONArray) {
+                    JSONArray arr = (JSONArray) sourcesObj;
+                    for (int i = 0; i < arr.length(); i++) {
+                        sources.add(jsonObjectToMap(arr.getJSONObject(i)));
+                    }
+                }
 
-                poParentDAO.save(parent);
+                if (sources.isEmpty()) {
+                    String poParentIdVal = String.valueOf(nextParentSeq + parentSeq++);
+                    PoParent parent = new PoParent();
+                    parent.setPoParentId(poParentIdVal);
+                    parent.setPoDetailId(poDetailId);
+                    parent.setPrId(null);
+                    parent.setProductId(dbProductId);
+                    parent.setParentId(dbParentId);
+                    parent.setAmount(qty);
+                    parent.setUnit(unitVal);
+                    parent.setDescription(descVal);
+                    parent.setUserCreate(loginUserId);
+                    parent.setTimeCreate(DateUtil.getCurrentTime());
+                    parent.setUserUpdate(loginUserId);
+                    parent.setTimeUpdate(DateUtil.getCurrentTime());
+                    poParentDAO.save(parent);
+                } else {
+                    for (Map<String, Object> src : sources) {
+                        String prIdVal = src.get("prId") != null ? String.valueOf(src.get("prId")) : null;
+                        String prDetailIdVal = src.get("prDetailId") != null ? String.valueOf(src.get("prDetailId")) : null;
+                        double srcQty = toDouble(src.get("qty"));
+                        String srcUnitVal = src.get("unit") != null ? String.valueOf(src.get("unit")) : unitVal;
+
+                        if (prDetailIdVal != null && !prDetailIdVal.trim().isEmpty()) {
+                            pulledPrDetailIds.add(prDetailIdVal);
+                        }
+
+                        String poParentIdVal = String.valueOf(nextParentSeq + parentSeq++);
+                        PoParent parent = new PoParent();
+                        parent.setPoParentId(poParentIdVal);
+                        parent.setPoDetailId(poDetailId);
+                        parent.setPrId(prIdVal);
+                        parent.setProductId(dbProductId);
+                        parent.setParentId(dbParentId);
+                        parent.setAmount(srcQty);
+                        parent.setUnit(srcUnitVal);
+                        parent.setDescription(descVal);
+                        parent.setUserCreate(loginUserId);
+                        parent.setTimeCreate(DateUtil.getCurrentTime());
+                        parent.setUserUpdate(loginUserId);
+                        parent.setTimeUpdate(DateUtil.getCurrentTime());
+                        poParentDAO.save(parent);
+                    }
+                }
+
                 seq++;
             }
             if (!pulledPrDetailIds.isEmpty()) {
@@ -959,6 +1134,24 @@ public class PurchaseOrderAction extends ActionSupport {
             detail.setTimeUpdate(DateUtil.getCurrentTime());
 
             poDetailDAO.update(detail);
+
+            // po_parent เป็น row ย่อยของ po_detail เดียวกัน
+            // ต้อง sync productId/unit/description ให้ตรงกับ po_detail ที่เพิ่งแก้ ไม่งั้นข้อมูลจะค้างค่าตอนสร้างครั้งแรก
+            List<Map<String, Object>> parents = poParentDAO.findPoParentByPoDetailId(poDetailId);
+            if (parents != null) {
+                for (Map<String, Object> p : parents) {
+                    Object poParentIdObj = p.get("po_parent_id");
+                    if (poParentIdObj == null) continue;
+                    PoParent parent = poParentDAO.findById(String.valueOf(poParentIdObj));
+                    if (parent == null) continue;
+                    parent.setProductId(productId);
+                    parent.setUnit(unit);
+                    parent.setDescription(description);
+                    parent.setUserUpdate(onlineUser.getId());
+                    parent.setTimeUpdate(DateUtil.getCurrentTime());
+                    poParentDAO.update(parent);
+                }
+            }
 
             Po po = poDAO.findById(detail.getPoId());
             if (po != null) {
@@ -1034,6 +1227,122 @@ public class PurchaseOrderAction extends ActionSupport {
         }
     }
 
+    public String updatePoSource() {
+        List<String> debugLog = new ArrayList<>();
+        try {
+            if (onlineUser == null) {
+                writeJsonError();
+                return NONE;
+            }
+
+            double newQty = toDouble(qty);
+            Po po = poDAO.findById(poId);
+            if (po == null || !"1".equals(po.getStatus())) {// Draft เท่านั้น
+                debugLog.add("PO not found or not draft");
+                writeJson(null, debugLog);
+                return NONE;
+            }
+
+            PoDetail detail = poDetailDAO.findById(poDetailId);
+            if (detail == null || !poId.equals(String.valueOf(detail.getPoId()))) {
+                debugLog.add("po_detail not in this PO");
+                writeJson(null, debugLog);
+                return NONE;
+            }
+
+            PoParent parent = poParentDAO.findById(poParentId);
+            double oldBase = toDouble(parent.getAmount()) * conversionRateOf(parent.getUnit());
+            double newBase = newQty * conversionRateOf(unit);
+
+            // แก้เฉพาะ amount/unit
+            parent.setAmount(newQty);
+            parent.setUnit(unit.trim());
+            parent.setUserUpdate(onlineUser.getId());
+            parent.setTimeUpdate(DateUtil.getCurrentTime());
+            poParentDAO.update(parent);
+
+            applyDetailQty(detail, toDouble(detail.getAmountTotal()) + newBase - oldBase, onlineUser.getId());
+
+            po.setPoTotal(poDetailDAO.getTotalByPoId(poId));
+            poDAO.update(po);
+
+            Map<String, Object> result = new HashMap<>();
+            result.put("success", true);
+            writeJson(result, debugLog);
+            return NONE;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            debugLog.add("EXCEPTION: " + e.toString());
+            writeJson(null, debugLog);
+            return NONE;
+        }
+    }
+
+    public String deletePoSource() {
+        List<String> debugLog = new ArrayList<>();
+        try {
+            if (onlineUser == null) {
+                writeJsonError();
+                return NONE;
+            }
+
+            Po po = poDAO.findById(poId);
+            if (po == null || !"1".equals(po.getStatus())) {
+                debugLog.add("PO not found or not draft");
+                writeJson(null, debugLog);
+                return NONE;
+            }
+
+            PoDetail detail = poDetailDAO.findById(poDetailId);
+            if (detail == null || !poId.equals(String.valueOf(detail.getPoId()))) {
+                debugLog.add("po_detail not in this PO");
+                writeJson(null, debugLog);
+                return NONE;
+            }
+
+            PoParent parent = poParentDAO.findById(poParentId);
+            if (parent == null || !poDetailId.equals(String.valueOf(parent.getPoDetailId()))) {
+                debugLog.add("po_parent not in this po_detail");
+                writeJson(null, debugLog);
+                return NONE;
+            }
+
+            List<Map<String, Object>> parentsBefore = poParentDAO.findPoParentByPoDetailId(poDetailId);
+            boolean keep = "true".equals(keepDetail);   // frontend แจ้งว่ายังมี source ใหม่ค้างรอ save
+            if (!keep && (parentsBefore == null || parentsBefore.size() <= 1)) {
+                debugLog.add("last source - use delete_po_detail");
+                writeJson(null, debugLog);
+                return NONE;
+            }
+
+            double oldBase = toDouble(parent.getAmount()) * conversionRateOf(parent.getUnit());
+
+            // ให้ PR detail กลับมาเลือกใน Search PR ได้อีก
+            if (!blank(parent.getPrId()) && !blank(parent.getProductId())) {
+                prDetailDAO.revertPulledStatusByPrProduct(parent.getPrId(), parent.getProductId());
+            }
+
+            poParentDAO.delete(parent);
+
+            applyDetailQty(detail, toDouble(detail.getAmountTotal()) - oldBase, onlineUser.getId());
+
+            po.setPoTotal(poDetailDAO.getTotalByPoId(poId));
+            poDAO.update(po);
+
+            Map<String, Object> result = new HashMap<>();
+            result.put("success", true);
+            writeJson(result, debugLog);
+            return NONE;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            debugLog.add("EXCEPTION: " + e.toString());
+            writeJson(null, debugLog);
+            return NONE;
+        }
+    }
+
     public String updateStatusPo() {
         List<String> debugLog = new ArrayList<>();
         try {
@@ -1059,12 +1368,23 @@ public class PurchaseOrderAction extends ActionSupport {
             String loginUserId = onlineUser.getId();
 
             Po po = poDAO.findById(poId);
+
+            String oldStatus = po.getStatus();
+            boolean toRejectOrCancel = "5".equals(status) || "6".equals(status);
+            boolean wasRejectOrCancel = "5".equals(oldStatus) || "6".equals(oldStatus);
+            if (toRejectOrCancel && !wasRejectOrCancel) {
+                revertPrPulledByPo(poId); // คืน PR เป็น pulled=0
+            }
+
             po.setStatus(status);
-            if ("1".equals(status)) {
-                po.setReason(null);
-            } else if (reason != null) {
+            if (reason != null && !reason.trim().isEmpty()) {
                 po.setReason(reason.trim());
             }
+
+            if ("1".equals(status)) {
+                po.setReason(null);
+            } 
+
             if ("3".equals(status)) {
                 po.setApproveUser(loginUserId);
                 po.setApproveDate(DateUtil.getCurrentTime());
@@ -1111,8 +1431,6 @@ public class PurchaseOrderAction extends ActionSupport {
             result.put("taxId", profile.get("tax_number"));
             result.put("locationList", profile.get("addressList"));
 
-            // log.debug("getCompanyProfile result: " + result);
-
             writeJson(result, debugLog);
             return NONE;
 
@@ -1147,16 +1465,14 @@ public class PurchaseOrderAction extends ActionSupport {
                 }
 
                 if (dbItemsType != null) {
-                    boolean withSubProducts = "true".equals(includeSubProducts);
-                    List<Map<String, Object>> itemCatalog = withSubProducts
-                            ? productDAO.findByItemsTypeIncludingSubProducts(dbItemsType)
-                            : productDAO.findByItemsType(dbItemsType);
+                    List<Map<String, Object>> itemCatalog = productDAO.findByItemsTypeIncludingSubProducts(dbItemsType);
 
                     for (Map<String, Object> p : itemCatalog) {
                         Map<String, Object> item = new HashMap<>();
                         item.put("id", p.get("product_id"));
                         item.put("name", p.get("product_name"));
                         productList.add(item);
+                        
                     }
                 }
 
@@ -1192,7 +1508,6 @@ public class PurchaseOrderAction extends ActionSupport {
             CompanyAddress address = companyAddressDAO.findById(addressId);
             debugLog.add("address = " + address);
 
-            // แก้ให้ผูกกับ address ไม่ใช่ company ทั้งก้อน
             List<Map<String, Object>> contactList = companyContactDAO.findByAddressId(addressId);
             debugLog.add("contactList size = " + (contactList != null ? contactList.size() : 0));
 
@@ -1226,7 +1541,6 @@ public class PurchaseOrderAction extends ActionSupport {
 
             CompanyContact contact = companyContactDAO.findById(contactId);
             debugLog.add("contact = " + contact);
-
 //            log.debug("getCompanyContact result: " + contact);
 
             writeJson(contact, debugLog);
@@ -1281,32 +1595,14 @@ public class PurchaseOrderAction extends ActionSupport {
             String loginUserId = onlineUser.getId();
             Po po = poDAO.findById(poId);
             if (po != null) {
-                List<Map<String, Object>> poDetailList = poDetailDAO.findPoDetailByPoId(poId);
-                if (poDetailList != null) {
-                    for (Map<String, Object> d : poDetailList) {
-                        Object poDetailIdObj = d.get("po_detail_id");
-                        if (poDetailIdObj != null) {
-                            List<Map<String, Object>> parents = poParentDAO.findPoParentByPoDetailId(String.valueOf(poDetailIdObj));
-                            if (parents != null) {
-                                for (Map<String, Object> p : parents) {
-                                    Object prIdObj = p.get("pr_id");
-                                    Object productIdObj = p.get("product_id");
-                                    if (prIdObj != null && productIdObj != null) {
-                                        prDetailDAO.revertPulledStatusByPrProduct(String.valueOf(prIdObj), String.valueOf(productIdObj));
-                                    }
-                                }
-                            }
-                        }
-                    }
+                if (!"6".equals(po.getStatus()) && !"5".equals(po.getStatus())) {
+                    revertPrPulledByPo(poId);
                 }
-
                 po.setStatus("6");
                 po.setUserUpdate(loginUserId);
                 po.setTimeUpdate(DateUtil.getCurrentTime());
-
                 poDAO.update(po);
             }
-
             return SUCCESS;
 
         } catch (Exception e) {
@@ -1383,15 +1679,27 @@ public class PurchaseOrderAction extends ActionSupport {
             List<Map<String, Object>> unitList = new ArrayList<>();
 
             if (productId != null && !productId.trim().isEmpty()) {
-                List<UnitOfMeasure> units = unitOfMeasureDAO.findByProductId(productId);
+                String lookupProductId = productId;
+
+                // ถ้าเป็น sub product ให้ใช้ product id ของตัวแม่แทน
+                Product product = productDAO.findById(Integer.valueOf(productId.trim()));
+                if (product != null && product.getParentProductId() != null
+                        && !"0".equals(String.valueOf(product.getParentProductId()).trim())) {
+                    lookupProductId = String.valueOf(product.getParentProductId()).trim();
+                }
+                debugLog.add("productId = " + productId + ", lookupProductId(for unit) = " + lookupProductId);
+                
+                List<UnitOfMeasure> units = unitOfMeasureDAO.findByProductId(lookupProductId);
                 for (UnitOfMeasure u : units) {
                     Map<String, Object> item = new HashMap<>();
                     item.put("id", u.getUnitId());
                     item.put("name", u.getUnitName());
+                    item.put("conversionRate", u.getConversionRate());
+                    item.put("sequence", u.getSequence());
                     unitList.add(item);
                 }
             }
-            debugLog.add("productId = " + productId + ", unitList size = " + unitList.size());
+            debugLog.add("unitList size = " + unitList.size());
 
             Map<String, Object> data = new HashMap<>();
             data.put("unitList", unitList);
@@ -1444,7 +1752,12 @@ public class PurchaseOrderAction extends ActionSupport {
                 return NONE;
             }
             List<Map<String, Object>> prDetailList = prDetailDAO.findInprogressPrDetailForPrSearch();
-    
+
+            Map<String, String> parentNameCache = new HashMap<>();
+            for (Map<String, Object> row : prDetailList) {
+                row.put("parent_product_name", findParentProductName(row.get("product_id"), parentNameCache));
+            }
+
             Map<String, Object> data = new HashMap<>();
             data.put("prDetailList", prDetailList);
             // log.debug("searchApprovedPr result: " + data);
@@ -1459,4 +1772,72 @@ public class PurchaseOrderAction extends ActionSupport {
         }
     }
 
+    private String findParentProductName(Object productIdObj, Map<String, String> cache) {
+        if (productIdObj == null) return "";
+        String key = String.valueOf(productIdObj).trim();
+        if (key.isEmpty()) return "";
+        if (cache.containsKey(key)) return cache.get(key);
+
+        String name = "";
+        try {
+            Product product = productDAO.findById(Integer.valueOf(key));
+            if (product != null && product.getParentProductId() != null) {
+                String pp = String.valueOf(product.getParentProductId()).trim();
+                if (!pp.isEmpty() && !"0".equals(pp)) {
+                    Product parent = productDAO.findById(Integer.valueOf(pp));
+                    if (parent != null) name = parent.getProductName();
+                }
+            }
+        } catch (Exception e) {
+            log.error("findParentProductName failed for " + key, e);
+        }
+        cache.put(key, name);
+        return name;
+    }
+
+    private boolean blank(String s) {
+        return s == null || s.trim().isEmpty();
+    }
+
+    // คืน status=0 ของ PR detail ทุกตัวที่ PO นี้ดึงไป (ตอน Reject / Cancel / Delete)
+    private void revertPrPulledByPo(String poIdVal) throws Exception {
+        List<Map<String, Object>> poDetailList = poDetailDAO.findPoDetailByPoId(poIdVal);
+        if (poDetailList == null) return;
+        for (Map<String, Object> d : poDetailList) {
+            Object poDetailIdObj = d.get("po_detail_id");
+            if (poDetailIdObj == null) continue;
+            List<Map<String, Object>> parents = poParentDAO.findPoParentByPoDetailId(String.valueOf(poDetailIdObj));
+            if (parents == null) continue;
+            for (Map<String, Object> p : parents) {
+                Object prIdObj = p.get("pr_id");
+                Object productIdObj = p.get("product_id");
+                if (prIdObj != null && productIdObj != null) {
+                    prDetailDAO.revertPulledStatusByPrProduct(String.valueOf(prIdObj), String.valueOf(productIdObj));
+                }
+            }
+        }
+    }
+
+    private double conversionRateOf(String unitId) {
+        try {
+            if (blank(unitId)) return 1d;
+            UnitOfMeasure u = unitOfMeasureDAO.findById(Integer.valueOf(unitId.trim()));
+            if (u != null && u.getConversionRate() != null) return u.getConversionRate().doubleValue();
+        } catch (Exception e) {
+            log.error("conversionRateOf failed for " + unitId, e);
+        }
+        return 1d;
+    }
+
+    private void applyDetailQty(PoDetail detail, double newQty, String userId) throws Exception {
+        double tot = toDouble(detail.getPriceTotal());
+        double q = Math.max(0d, newQty);
+
+        detail.setAmountTotal(q);
+        detail.setUnitPrice(String.valueOf(q > 0 ? tot / q : 0d));
+        detail.setUserUpdate(userId);
+        detail.setTimeUpdate(DateUtil.getCurrentTime());
+
+        poDetailDAO.update(detail);
+    }
 }
