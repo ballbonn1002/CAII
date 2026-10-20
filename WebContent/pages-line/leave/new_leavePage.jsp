@@ -721,7 +721,7 @@
 				</label>
 			</div>
 			<div id="exitingFilePreviewContainer" class="d-flex flex-wrap gap-2 mb-3"></div>
-			<div id="modalFilePreviewName" class="text-muted fs-6 mt-2"></div>
+			<div id="modalFilePreviewName" class="d-flex flex-wrap gap-2"></div>
 		</div>
 
 		<!-- Approver -->
@@ -1833,7 +1833,7 @@ function initFileInput() {
 }
 
 /* ---------- ไฟล์แนบตอน Approved: เลือกไฟล์ → ดูก่อน → กด Submit ถึงส่ง ---------- */
-function toggleAfterFileSubmit() {
+function showSubmitFile() {
 	var input = document.getElementById('afterFile');
 	var hasFile = !!(input && input.files && input.files.length > 0);
 	$('#afterFileSubmitBtn').toggleClass('d-none', !hasFile);
@@ -1848,7 +1848,7 @@ function previewAfterFile(input) {
 		if (lfIsHeic(file)) {
 			input.value = '';
 			container.innerHTML = '';
-			toggleAfterFileSubmit();
+			showSubmitFile();
 			lfAlertHeic();
 			return;
 		}
@@ -1856,31 +1856,30 @@ function previewAfterFile(input) {
 		if (LF_FORBIDDEN.test(file.name)) {
 			input.value = '';
 			container.innerHTML = '';
-			toggleAfterFileSubmit();
+			showSubmitFile();
 			lfAlertBadName(file.name);
 			return;
 		}
 
 		const tempUrl = URL.createObjectURL(file);
-		renderSingleFilePreview(file.name, tempUrl, false, null, 'modalFilePreviewName', 'afterFile');
-		$('#removeFileBtn_modalFilePreviewName').on('click', toggleAfterFileSubmit);
+		container.innerHTML = '';
+		container.appendChild(lfMakeItem(file.name, tempUrl, clearAfterFile, false));
 	} else {
 		container.innerHTML = '';
 	}
-	toggleAfterFileSubmit();
+	showSubmitFile();
 }
 
 function clearAfterFile() {
 	const input = document.getElementById('afterFile');
 	if (input) input.value = '';
 	removeSingleFile(false, null, 'modalFilePreviewName', 'afterFile');
-	toggleAfterFileSubmit();
+	showSubmitFile();
 }
 
 function submitAfterFile() {
 	const input = document.getElementById('afterFile');
 	if (!input.files || input.files.length === 0) return;
-	// เช็คขนาด/บีบอัดก่อน ผ่านแล้วค่อยส่ง
 	window.__lfAddFilesCallback = function (success) {
 		if (!success) return;
 		clearAfterFile();
@@ -1901,7 +1900,6 @@ function handleAfterFileSelect(input) {
 		return;
 	}
 
-	// ส่งไฟล์ต่อให้ #myFile ใช้ handler เดิม
 	try {
 		window.filePreviewTarget = 'modalFilePreviewName';
 		const dataTransfer = new DataTransfer();
@@ -1911,7 +1909,6 @@ function handleAfterFileSelect(input) {
 			myFile.files = dataTransfer.files;
 			const evt = new Event('change', { bubbles: true });
 			myFile.dispatchEvent(evt);
-			// ล้าง #afterFile กันส่งซ้ำ
 			try { input.value = ''; } catch (e) { /* ignore */ }
 			return;
 		}
@@ -1919,7 +1916,6 @@ function handleAfterFileSelect(input) {
 		console.warn('Forward to #myFile failed, fallback to direct preview', err);
 	}
 
-	// สำรองกรณี DataTransfer ใช้ไม่ได้
 	const tempUrl = URL.createObjectURL(file);
 	renderSingleFilePreview(file.name, tempUrl, false, null, 'modalFilePreviewName', 'afterFile');
 
