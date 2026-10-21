@@ -449,32 +449,7 @@ public class CompanyContactAction extends ActionSupport {
 	            }
 
 	            companyAddressId = String.valueOf(freelancerAddressRow.getCompanyAddressId());
-	            
-	            
-//	        } else if (companyLogo != null && contactCompanyId != null && !contactCompanyId.trim().isEmpty()) {
-//
-//	            // อัปโหลดโลโก้ให้ Company ปกติ (ไม่ใช่ Freelancer)
-//	            try {
-//	                Company selectedCompany = companyDAO.findById(Long.parseLong(contactCompanyId.trim()));
-//	                if (selectedCompany != null) {
-//	                    List<FileUpload> savedLogoFiles = fileAttachmentService.attach(
-//	                        Arrays.asList(companyLogo),
-//	                        Arrays.asList(companyLogoFileName),
-//	                        "company", contactCompanyId, username,
-//	                        request.getServletContext().getRealPath("/")
-//	                    );
-//	                    if (savedLogoFiles != null && !savedLogoFiles.isEmpty()) {
-//	                        selectedCompany.setFileId(String.valueOf(savedLogoFiles.get(0).getFileId()));
-//	                        selectedCompany.setUserUpdate(username);
-//	                        selectedCompany.setTimeUpdate(now);
-//	                        companyDAO.update(selectedCompany);
-//	                    }
-//	                }
-//	            } catch (NumberFormatException nfe) {
-//	            } catch (Exception ex) {
-//	                log.error("Unable to save Company logo", ex);
-//	                addActionError("DEBUG company logo: " + ex.getMessage());
-//	            }
+	            	         
 
 	        }
             ////

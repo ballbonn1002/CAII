@@ -151,6 +151,7 @@
 							</div>
 
 						</div>
+						
 					
 					
 
@@ -397,7 +398,7 @@
 
 
 				<!-- Company Information -->
-				<div class="col-xl-4">
+				<div class="col-xl-4 ms-6">
 
 					<div class="card shadow-sm">
 
@@ -520,13 +521,12 @@
 							<!-- ข้อมูลสำหรับ Freelancer -->
 							<div id="freelancer_section" style="display: none;">
 
-																<!-- Company Name EN -->
-								<div class="mb-7">
+								<!-- Company Name EN -->
+								<div class="mb-7 company-name-en-validate-container">
 
-									<label for="company_name_en" class="form-label fw-medium required">
-										Company Name EN </label>
-
-									<input type="text" id="company_name_en"
+									<label for="company_name_en"
+										class="form-label fw-medium required"> Company Name EN
+									</label> <input type="text" id="company_name_en"
 										name="freelancerCompanyNameEn" class="form-control py-4"
 										value="<c:out value="${freelancerCompanySharedInfo.companyEn}" />"
 										placeholder="Company Name EN">
@@ -535,14 +535,15 @@
 
 
 								<!-- Company Name TH -->
-								<div class="mb-7">
-								<label for="company_name_th" class="form-label fw-medium">
-                                Company Name TH </label> <input type="text" id="company_name_th"
-                                name="freelancerCompanyNameTh" class="form-control py-4"
-                                value="<c:out value="${freelancerCompanySharedInfo.companyTh}" />"
-                                placeholder="Company Name TH">
+								<div class="mb-7 company-name-th-validate-container">
+									<label for="company_name_th"
+										class="form-label fw-medium required"> Company Name TH
+									</label> <input type="text" id="company_name_th"
+										name="freelancerCompanyNameTh" class="form-control py-4"
+										value="<c:out value="${freelancerCompanySharedInfo.companyTh}" />"
+										placeholder="Company Name TH">
 
-									
+
 								</div>
 
 
@@ -751,6 +752,112 @@
         
 		let currentAddresses = [];
 		let freelancerOriginalData = null;
+
+		
+
+		function setFieldInvalid(selector, message) {
+
+		    const input = $(selector);
+
+		    input.addClass("is-invalid");
+
+		    const container = input.closest("[class$='-validate-container']")
+
+		    let feedback = container.find(".invalid-feedback");
+
+		    if (!feedback.length) {
+		        feedback = $('<div class="invalid-feedback d-block"></div>');
+		        container.append(feedback);
+		    }
+
+		    feedback.text(message);
+		}
+
+		function clearFieldError(selector) {
+
+		    const input = $(selector);
+
+		    input.removeClass("is-invalid");
+
+		    input.closest("[class$='-validate-container']")
+		         .find(".invalid-feedback")
+		         .remove();
+		}
+
+		/* debounce function */
+		function debounce(fn, delay) {
+		    let timer;
+
+		    return function (...args) {
+
+		        const context = this;
+
+		        clearTimeout(timer);
+
+		        timer = setTimeout(() => {
+		            fn.apply(context, args);
+		        }, delay);
+		    };
+		}
+
+		function validateFreelancerNameEn() {
+
+		    const value = $(this).val().trim();
+
+		    if (value === "") {
+		        setFieldInvalid(
+		            "#company_name_en",
+		            "Company name is required"
+		        );
+		        return;
+		    }
+
+		    const regex = /^[A-Za-z0-9\s.,&()\/'@+_-]+$/;
+
+		    if (!regex.test(value)) {
+		        setFieldInvalid(
+		            "#company_name_en",
+		            "Only English letters are allowed"
+		        );
+		        return;
+		    }
+
+		    clearFieldError("#company_name_en");
+		}
+
+		function validateFreelancerNameTh() {
+
+		    const value = $(this).val().trim();
+
+		    if (value === "") {
+		        setFieldInvalid(
+		            "#company_name_th",
+		            "Company name is required"
+		        );
+		        return;
+		    }
+
+		    const regex = /^[ก-๙0-9\s().,&/-]+$/;
+
+		    if (!regex.test(value)) {
+		        setFieldInvalid(
+		            "#company_name_th",
+		            "Only Thai characters are allowed"
+		        );
+		    } else {
+		        clearFieldError("#company_name_th");
+		    }
+		}
+
+		$("#company_name_en").on(
+		    "input",
+		    debounce(validateFreelancerNameEn, 300)
+		);
+
+		$("#company_name_th").on(
+		    "input",
+		    debounce(validateFreelancerNameTh, 300)
+		);
 
 		function loadCompanyAddresses(companyId, preselectAddressId) {
 
