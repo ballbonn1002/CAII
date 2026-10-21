@@ -92,7 +92,7 @@
 					</div>
 
 					<div class="d-flex align-items-center gap-4">
-						<span class="fs-2hx fw-bold text-primary">#<c:out value="${mr.mrId}" /></span>
+						<span class="fs-2x fw-bold text-primary">#<c:out value="${mr.mrId}" /></span>
 						<span class="badge badge-lg badge-${mrStatus.color} fw-semibold fs-7 p-4 ${mrStatus.color == 'secondary' ? 'text-dark' : 'text-white'}">
 							<c:out value="${empty mrStatus ? '-' : mrStatus.statusName}" />
 						</span>

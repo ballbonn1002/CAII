@@ -29,4 +29,6 @@ public interface EquipmentRequestMrNewDAO {
 
 	List<Map<String, Object>> findApprovedMrForMrSearch() throws Exception;
 
+	List<Map<String, Object>> findApprovedMrForMrSearch(String prId) throws Exception;
+
 }

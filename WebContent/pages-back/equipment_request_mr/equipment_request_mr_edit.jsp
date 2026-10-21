@@ -92,7 +92,7 @@
 					</div>
 
 					<div class="d-flex align-items-center gap-4">
-						<span class="fs-2hx fw-bold text-primary">#<c:out value="${mr.mrId}" /></span>
+						<span class="fs-2x fw-bold text-primary">#<c:out value="${mr.mrId}" /></span>
 						<span class="badge badge-lg badge-${mrStatus.color} fw-semibold fs-7 p-4 ${mrStatus.color == 'secondary' ? 'text-dark' : 'text-white'}">
 							<c:out value="${empty mrStatus ? '-' : mrStatus.statusName}" />
 						</span>
@@ -229,7 +229,14 @@
 												<span class="path1"></span><span class="path2"></span><span class="path3"></span>
 											</i>
 											<span class="text-gray-900 fs-6 fw-normal">
-												<c:out value="${userRequest.employeeId}" /> - <c:out value="${userRequest.nameEN}" />
+												<c:choose>
+													<c:when test="${not empty userRequest}">
+														<c:out value="${userRequest.employeeId}" /> - <c:out value="${userRequest.nameEN}" />
+													</c:when>
+													<c:otherwise>
+														<c:out value="${userCreate.employeeId}" /> - <c:out value="${userCreate.nameEN}" />
+													</c:otherwise>
+												</c:choose>
 											</span>
 										</div>
 									</div>
@@ -242,7 +249,14 @@
 												<span class="path4"></span><span class="path5"></span>
 											</i>
 											<span class="text-gray-900 fs-6 fw-normal">
-												<fmt:formatDate value="${mr.requestDate}" pattern="d MMM yyyy, HH:mm" />
+												<c:choose>
+													<c:when test="${not empty mr.requestDate}">
+														<fmt:formatDate value="${mr.requestDate}" pattern="d MMM yyyy, HH:mm" />
+													</c:when>
+													<c:otherwise>
+														<fmt:formatDate value="${mr.timeCreate}" pattern="d MMM yyyy, HH:mm" />
+													</c:otherwise>
+												</c:choose>
 											</span>
 										</div>
 									</div>
@@ -453,6 +467,39 @@
 							</div>
 						
 							<div class="card-body filter-card px-10 py-9 rounded-3 row g-5">
+								<%-- ยังไม่ลงชื่อผู้ขอเบิก --%>
+								<c:if test="${empty mr.requestUser}">
+									<div class="col-12 col-md-6">
+										<div class="d-flex flex-column align-items-center gap-2">
+											<c:choose>
+												<c:when test="${not empty userCreate.pathSignature}">
+													<div class="sig-box locked">
+														<img src="${pageContext.request.contextPath}${userCreate.pathSignature}"
+															style="max-height: 150px; max-width: 360px; object-fit: contain;" />
+														<div class="sig-lock-badge">
+															<i class="ki-duotone ki-lock fs-7"><span class="path1"></span><span class="path2"></span></i>
+															Signature on file
+														</div>
+													</div>
+												</c:when>
+												<c:otherwise>
+													<div class="sig-box unuploadable">
+														<span class="text-muted fs-8">No signature</span>
+													</div>
+												</c:otherwise>
+											</c:choose>
+										</div>
+									</div>
+
+									<div class="col-12 col-md-6">
+										<div class="border border-gray-300 rounded-3 h-100 d-flex flex-column align-items-center justify-content-center text-center py-8">
+											<div class="d-flex flex-fill flex-column align-items-center justify-content-center gap-2">
+												<span class="text-muted fs-7">ยังไม่มีการลงชื่อ ผู้ขอเบิก</span>
+											</div>
+										</div>
+									</div>
+								</c:if>
+
 								<!-- Pending status -->
 								<c:if test="${mrStatus.statusCode == '2'  || mrStatus.statusCode == '5' || mrStatus.statusCode == '6'}">
 									<c:if test="${not empty mr.requestUser}">
@@ -1348,7 +1395,9 @@ function loadSubItems(productId) {
 						Swal.fire({
 							title: 'Success!',
 							text: 'MR cancel successfully!',
-							icon: 'success'
+							icon: 'success',
+							timer: 1500,
+							showConfirmButton: false
 						}).then(() => {
 							location.reload();
 						});

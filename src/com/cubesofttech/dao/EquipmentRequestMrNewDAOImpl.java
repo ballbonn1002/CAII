@@ -268,5 +268,57 @@ public class EquipmentRequestMrNewDAOImpl implements EquipmentRequestMrNewDAO {
 		return list;
 	}
 
+	@Override
+	public List<Map<String, Object>> findApprovedMrForMrSearch(String prId) throws Exception {
+
+		List<Map<String, Object>> list = new ArrayList<>();
+
+		try {
+			Session session = sessionFactory.getCurrentSession();
+
+			String sql = "SELECT mr.mr_id, mr.product_id, mr.parent_id, " +
+				"  mr.amount AS amount_total, mr.description, mr.url_ref AS ref_link, " +
+				"  mr.status_id AS mr_status, " +
+				"  mr.request_user, mr.request_date, mr.time_create, " +
+				"  COALESCE(mr.time_update, mr.time_create) AS time_sort, " +
+				"  pd.product_name, pp.product_name AS parent_product_name, " +
+				"  COALESCE(pp.product_type, pd.product_type) AS product_type, " +
+				"  ur.employee_id AS user_create_emp_id, " +
+				"  ur.name_en AS user_create_name, " +
+				"  ur.path AS user_create_path, " +
+				"  cur.pr_parent_id AS pr_parent_id, cur.pr_detail_id AS pr_detail_id " +
+				"FROM mr mr " +
+				"LEFT JOIN product pd ON pd.product_id = mr.product_id " +
+				"LEFT JOIN product pp ON pp.product_id = mr.parent_id " +
+				"LEFT JOIN user ur ON ur.id = mr.request_user " +
+				"LEFT JOIN (SELECT c.mr_id, MIN(c.pr_parent_id) AS pr_parent_id, MIN(c.pr_detail_id) AS pr_detail_id " +
+				"  FROM pr_parent c " +
+				"  JOIN pr_detail cd ON cd.pr_detail_id = c.pr_detail_id " +
+				"  WHERE cd.pr_id = :prId " +
+				"  GROUP BY c.mr_id) cur ON cur.mr_id = mr.mr_id " +
+				"WHERE mr.status_id = '3' " +
+				"AND NOT EXISTS (" +
+				"  SELECT 1 FROM pr_parent x " +
+				"  JOIN pr_detail xd ON xd.pr_detail_id = x.pr_detail_id " +
+				"  JOIN pr xp ON xp.pr_id = xd.pr_id " +
+				"  WHERE x.mr_id = mr.mr_id " +
+				"  AND xp.status NOT IN ('5','6')" +
+				"  AND xp.pr_id <> :prId" +
+				") " +
+				"ORDER BY COALESCE(mr.request_date, mr.time_create) DESC";
+
+			SQLQuery query = session.createSQLQuery(sql);
+			query.setParameter("prId", prId);
+			query.setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
+
+			list = query.list();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw e;
+		}
+
+		return list;
+	}
 
 }

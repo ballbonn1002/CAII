@@ -293,14 +293,14 @@
 		if (!mrId) return;
 
 		Swal.fire({
-			title: 'ลบรายการนี้?',
-			html: 'MR <strong>#' + $('<div>').text(mrId).html() + '</strong> จะถูกเปลี่ยนสถานะเป็น Cancel',
-			icon: 'warning',
+			title: "Are you sure?!",
+			text: "Are you sure you want to delete this item?",
+			icon: "warning",
 			showCancelButton: true,
-			confirmButtonText: 'ลบ',
-			cancelButtonText: 'ยกเลิก',
-			confirmButtonColor: '#F64E60',
-			reverseButtons: true
+			confirmButtonText: "Yes, delete it",
+			cancelButtonText: "Cancel",
+			buttonsStyling: false,
+			customClass: { confirmButton: "btn btn-danger", cancelButton: "btn btn-secondary" }
 		}).then(function (result) {
 			if (!result.isConfirmed) return;
 
@@ -316,8 +316,8 @@
 					if (resp.data && resp.data.success) {
 						Swal.fire({
 							icon: 'success',
-							title: 'ลบแล้ว',
-							text: 'MR #' + mrId + ' ถูกยกเลิกเรียบร้อย',
+							title: 'Success!',
+							text: 'MR cancel successfully!',
 							timer: 1500,
 							showConfirmButton: false
 						}).then(function () {
@@ -326,7 +326,7 @@
 					} else {
 						btn.disabled = false;
 						btn.innerHTML = TRASH_ICON_HTML;
-						Swal.fire('Error', 'ไม่สามารถลบ MR นี้ได้ (ลบได้เฉพาะ MR ของตัวเองที่ยังเป็น Draft)', 'error');
+						Swal.fire('Error', 'ไม่สามารถลบ MR นี้ได้', 'error');
 					}
 				},
 				error: function () {

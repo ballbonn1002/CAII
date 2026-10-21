@@ -494,6 +494,11 @@ public class EquipmentRequestMrAction extends ActionSupport {
                 request.setAttribute("userRequest", userRequest);
                 request.setAttribute("requestDate", mr.getRequestDate());
             }
+            //--- Get Create User (fallback เมื่อยังไม่ได้ลงชื่อผู้ขอเบิก) ---
+            if (mr.getUserCreate() != null && !mr.getUserCreate().trim().isEmpty()) {
+                User userCreate = userDAO.findById(mr.getUserCreate());
+                request.setAttribute("userCreate", userCreate);
+            }
 
             //--- Get Approve User ---
             if (mr.getApproveUser() != null && !mr.getApproveUser().trim().isEmpty()) {
