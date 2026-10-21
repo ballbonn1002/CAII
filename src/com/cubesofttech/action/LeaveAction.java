@@ -1743,6 +1743,24 @@ public class LeaveAction extends ActionSupport {
 				log.info("Leave saved successfully: " + leave.getLeaveId());
 			}
 			log.debug("new_leaveAdd_Do Success!!");
+			
+			//sending data to notification
+			String leaveTypeName = leave.getLeaveTypeId();
+			LeaveType leaveType = leavetypeDAO.findById(leave.getLeaveTypeId());
+			if (leaveType != null && leaveType.getLeaveTypeName() != null) {
+				leaveTypeName = leaveType.getLeaveTypeName();
+			}
+			SimpleDateFormat sdfNoti = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
+			String startDateNoti = leave.getStartDate() != null ? sdfNoti.format(leave.getStartDate()) : "";
+			String endDateNoti = leave.getEndDate() != null ? sdfNoti.format(leave.getEndDate()) : "";
+			
+			JSONObject messageJson = new JSONObject();
+			messageJson.put("leaveId", id);
+			messageJson.put("typeName", leaveTypeName);
+			messageJson.put("status", "Wait for approve");
+			messageJson.put("startDate", startDateNoti);
+			messageJson.put("endDate", endDateNoti);
+			notificationService.create(user, "Leave Approve", messageJson.toString(), null, onlineUser.getId(), leave.getLeaveId().toString());
 
 			return SUCCESS;
 		} catch (Throwable e) {
@@ -1895,10 +1913,13 @@ public class LeaveAction extends ActionSupport {
 	        leave.setStartTime(time_from);
 	        leave.setEndTime(time_to);
 	        leave.setNoDay(noDay);
-	        //leave.setUserUpdate(onlineUser.getId());
-	        //leave.setTimeUpdate(DateUtil.getCurrentTime());
+	        leave.setUserUpdate(onlineUser.getId());
+	        leave.setTimeUpdate(DateUtil.getCurrentTime());
 	        leaveDAO.update(leave);
-	        notifyLeaveStatusChange(leave, oldStatus, status, onlineUser.getId());
+	        
+	        if(status.equals("1") || status.equals("2")) {
+	        	notifyLeaveStatusChange(leave, oldStatus, status, onlineUser.getId());
+	        }
 
 	        return SUCCESS;
 	    } catch (Exception e) {
@@ -2142,7 +2163,7 @@ public class LeaveAction extends ActionSupport {
 			messageJson.put("startDate", startDate);
 			messageJson.put("endDate", endDate);
 
-			notificationService.create(leave.getUserId(), "Leave", messageJson.toString(), leave.getReason(), actorId, leave.getLeaveId().toString());
+			notificationService.create(leave.getUserId(), "My Leave", messageJson.toString(), leave.getReason(), actorId, leave.getLeaveId().toString());
 		} catch (Exception e) {
 			log.error("Unable to create leave status notification", e);
 		}

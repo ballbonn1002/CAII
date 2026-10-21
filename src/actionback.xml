@@ -1323,7 +1323,7 @@
 			class="com.cubesofttech.action.AnnouncementAction"
 			method="readcardannounce">
 			<result name="success" type="tiles">AnnouncementRead</result>
-			<result name="error">/index.jsp</result>
+			<result name="error" type="tiles">pageNotFound</result>
 		</action>
 		<action name="announcementAdd"
 			class="com.cubesofttech.action.AnnouncementAction" method="save">
@@ -2718,7 +2718,7 @@
 
 		<action name="notification_read"
 			class="com.cubesofttech.action.NotificationAction" method="read">
-			<result name="success" type="redirect">notification_detail?id=${id}</result>
+			<result name="success"></result>
 			<result name="error">/index.jsp</result>
 		</action>
 

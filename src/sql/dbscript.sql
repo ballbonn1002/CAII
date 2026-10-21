@@ -1082,3 +1082,6 @@ CREATE TABLE `pr_parent` (
   `time_update` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+-- 07/10/2026 Eric: Add column send_to to notification
+ALTER TABLE `notification` ADD `send_to` VARCHAR(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL AFTER `is_read`;
+ALTER TABLE `notification` ADD `type_sending` VARCHAR(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL AFTER `user_id`;

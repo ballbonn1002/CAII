@@ -28,6 +28,13 @@
 		<put-attribute name="body"
 			value="/pages-back/_layout/blank_template.jsp" />
 	</definition>
+	
+	<!-- PAGE NOT FOUND -->
+	<definition name="pageNotFound" extends="baseLayout">
+		<put-attribute name="title" value="Page Not Found" />
+		<put-attribute name="body"
+			value="/pages-back/common/error/page_not_found.jsp" />
+	</definition>
 
 	<!-- DASHBOARD -->
 	<definition name="demoDashboard" extends="baseLayout">
