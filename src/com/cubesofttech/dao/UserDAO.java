@@ -77,4 +77,8 @@ public interface UserDAO {
 			boolean allowExcluded, boolean allowIntern, boolean allowEnable, boolean allowDisable) throws Exception;
 	
 	public String findStartYear(String userId) throws Exception;
+
+	public List<User> findEnabledUsersByAuthorizedObjectId(String authorizedObjectId) throws Exception;
+
+	public List<User> findEnabledUsers() throws Exception;
 }

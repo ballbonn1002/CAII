@@ -15,6 +15,13 @@
     line-height: 1;
 }
 
+.one-line-text {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: 170px;
+}
+
 </style>
 
 <!--begin::Header-->
@@ -68,61 +75,8 @@
 			<!--end::Menu wrapper-->
 			<!--begin::Navbar-->
 			<div class="app-navbar flex-shrink-0">
-				<!--begin::Theme mode-->
-				<div class="app-navbar-item ms-1 ms-md-4">
-					<!--begin::Menu toggle-->
-					<a href="#"
-						class="btn btn-icon btn-custom btn-icon-muted btn-active-light btn-active-color-primary w-35px h-35px"
-						data-kt-menu-trigger="{default:'click', lg: 'hover'}"
-						data-kt-menu-attach="parent" data-kt-menu-placement="bottom-end">
-						<i class="ki-outline ki-night-day theme-light-show fs-1"></i> <i
-						class="ki-outline ki-moon theme-dark-show fs-1"></i>
-					</a>
-					<!--begin::Menu toggle-->
-					<!--begin::Menu-->
-					<div
-						class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-title-gray-700 menu-icon-gray-500 menu-active-bg menu-state-color fw-semibold py-4 fs-base w-150px"
-						data-kt-menu="true" data-kt-element="theme-mode-menu">
-						<!--begin::Menu item-->
-						<!-- Light -->
-						<div class="menu-item px-3 my-0">
-							<a href="#" class="menu-link px-3 py-2" data-kt-element="mode"
-								data-kt-value="light"> <span class="menu-icon"
-								data-kt-element="icon"> <i
-									class="ki-outline ki-night-day fs-2"></i>
-							</span> <span class="menu-title">Light</span>
-							</a>
-						</div>
-						<!--end::Menu item-->
-						<!--begin::Menu item-->
-						<!-- Dark -->
-						<div class="menu-item px-3 my-0">
-							<a href="#" class="menu-link px-3 py-2" data-kt-element="mode"
-								data-kt-value="dark"> <span class="menu-icon"
-								data-kt-element="icon"> <i
-									class="ki-outline ki-moon fs-2"></i>
-							</span> <span class="menu-title">Dark</span>
-							</a>
-						</div>
-						<!--end::Menu item-->
-						<!--begin::Menu item-->
-						<!-- System -->
-						<div class="menu-item px-3 my-0">
-							<a href="#" class="menu-link px-3 py-2" data-kt-element="mode"
-								data-kt-value="system"> <span class="menu-icon"
-								data-kt-element="icon"> <i
-									class="ki-outline ki-screen fs-2"></i>
-							</span> <span class="menu-title">System</span>
-							</a>
-						</div>
-						<!--end::Menu item-->
-					</div>
-					<!--end::Menu-->
-				</div>
-				<!--end::Theme mode-->
 				<!--begin::Notifications-->
-				<%--
-				<div class="app-navbar-item ms-1 ms-md-4">
+				<div class="app-navbar-item ms-1 ms-md-4" id="notification-bell">
 					<!--begin::Menu toggle-->
 					<div
 						class="btn btn-icon btn-custom btn-icon-muted btn-active-light btn-active-color-primary w-35px h-35px position-relative"
@@ -180,33 +134,123 @@
 					</div>
 					<!--end::Menu-->
 				</div>
-				--%>
 				<!--end::Notifications-->
+				<!--begin::Theme mode-->
+				<div class="app-navbar-item ms-1 ms-md-4">
+					<!--begin::Menu toggle-->
+					<a href="#"
+						class="btn btn-icon btn-custom btn-icon-muted btn-active-light btn-active-color-primary w-35px h-35px"
+						data-kt-menu-trigger="{default:'click', lg: 'hover'}"
+						data-kt-menu-attach="parent" data-kt-menu-placement="bottom-end">
+						<i class="ki-outline ki-night-day theme-light-show fs-1"></i> <i
+						class="ki-outline ki-moon theme-dark-show fs-1"></i>
+					</a>
+					<!--begin::Menu toggle-->
+					<!--begin::Menu-->
+					<div
+						class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-title-gray-700 menu-icon-gray-500 menu-active-bg menu-state-color fw-semibold py-4 fs-base w-150px"
+						data-kt-menu="true" data-kt-element="theme-mode-menu">
+						<!--begin::Menu item-->
+						<!-- Light -->
+						<div class="menu-item px-3 my-0">
+							<a href="#" class="menu-link px-3 py-2" data-kt-element="mode"
+								data-kt-value="light"> <span class="menu-icon"
+								data-kt-element="icon"> <i
+									class="ki-outline ki-night-day fs-2"></i>
+							</span> <span class="menu-title">Light</span>
+							</a>
+						</div>
+						<!--end::Menu item-->
+						<!--begin::Menu item-->
+						<!-- Dark -->
+						<div class="menu-item px-3 my-0">
+							<a href="#" class="menu-link px-3 py-2" data-kt-element="mode"
+								data-kt-value="dark"> <span class="menu-icon"
+								data-kt-element="icon"> <i
+									class="ki-outline ki-moon fs-2"></i>
+							</span> <span class="menu-title">Dark</span>
+							</a>
+						</div>
+						<!--end::Menu item-->
+						<!--begin::Menu item-->
+						<!-- System -->
+						<div class="menu-item px-3 my-0">
+							<a href="#" class="menu-link px-3 py-2" data-kt-element="mode"
+								data-kt-value="system"> <span class="menu-icon"
+								data-kt-element="icon"> <i
+									class="ki-outline ki-screen fs-2"></i>
+							</span> <span class="menu-title">System</span>
+							</a>
+						</div>
+						<!--end::Menu item-->
+					</div>
+					<!--end::Menu-->
+				</div>
+				<!--end::Theme mode-->
 				<script>
 					$(document).ready(function() {
 						var MONTH_ABBR = [ "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" ];
 
-						// leave_type_id -> icon/color, mirrors leave_type table usage in new_leave_approved.jsp
-						var LEAVE_TYPE_ICON = {
-							"1" : { icon : "ki-airplane", paths : 2, bg : "bg-light-success", color : "text-success" },
-							"2" : { icon : "ki-car-2", paths : 6, bg : "bg-light-primary", color : "text-primary" },
-							"3" : { icon : "ki-pulse", paths : 2, bg : "bg-light-info", color : "text-info" },
-							"4" : { icon : "ki-calendar-remove", paths : 6, bg : "bg-light-danger", color : "text-danger" },
-							"5" : { icon : "ki-brifecase-cros", paths : 3, bg : "bg-light-dark", color : "text-dark" },
-							"6" : { icon : "ki-timer", paths : 3, bg : "bg-light-warning", color : "text-warning" },
-							"7" : { icon : "ki-abstract-12", paths : 2, custom : true },
-							"9" : { icon : "ki-abstract-12", paths : 2, custom : true }
+						// Icon (duotone) mapping keyed by the "typeName" value stored in notification.message JSON
+						// ต้องตรงกับ TYPE_ICON ใน my_notification.jsp
+						var TYPE_ICON = {
+							"ลากิจ"            : { icon : "ki-car-2",          paths : 6, bg : "bg-light-primary", color : "text-primary" },
+							"ลาพักร้อน"        : { icon : "ki-airplane",        paths : 2, bg : "bg-light-warning", color : "text-warning" },
+							"ลาป่วย"           : { icon : "ki-pulse",           paths : 2, bg : "bg-light-info",    color : "text-info" },
+							"Equipment"        : { icon : "ki-monitor-mobile",  paths : 5, bg : "bg-light-primary", color : "text-primary" },
+							"Material Request" : { icon : "ki-delivery-3",      paths : 5, bg : "bg-light-success", color : "text-success" },
+							"เบิกค่าเดินทาง"           : { icon : "ki-car-2",           paths : 6, bg : "bg-light-success", color : "text-success" },
+							"Announcement"       : { icon : "ki-notification-status", paths : 6, bg : "bg-light-danger", color : "text-danger" },
 						};
 						var DEFAULT_ICON = { icon : "ki-notification-status", paths : 4, bg : "bg-light-primary", color : "text-primary" };
+
+						// Row click routing, mirrors NOTIF_ROUTES in my_notification.jsp
+						var NOTIF_ROUTES = {
+							"My Leave" : function (userId, functionId) {
+								return "new_myleave_list?Id=" + encodeURIComponent(userId)
+									+ "&leaveId=" + encodeURIComponent(functionId);
+							},
+							"Leave Approve" : function (userId, functionId) {
+								return "new_leave_approved?leaveId=" + encodeURIComponent(functionId);
+							},
+							"My Travel" : function (userId, functionId) {
+								return "my_travel_group?expense_group_id=" + encodeURIComponent(functionId);
+							},
+							"Travel Approve" : function (userId, functionId) {
+								return "travel_approve_preview?expense_group_id=" + encodeURIComponent(functionId);
+							},
+							"Announcement" : function (userId, functionId) {
+								return "announcementRead?id=" + encodeURIComponent(functionId);
+							},
+							"My Borrow" : function (userId, functionId) {
+								return "my_profile?tab=borrow&borrowId=" + encodeURIComponent(functionId);
+							},
+							"Borrow" : function (userId, functionId) {
+								return "borrow_edit?id=" + encodeURIComponent(functionId);
+							}
+						};
 
 						function formatShortDate(d) {
 							return d.getDate() + " " + MONTH_ABBR[d.getMonth()];
 						}
 
+						// Format a "yyyy-MM-dd" string as "d MMM yyyy", appending ", HH:mm" when the string carries a time,
+						// มิเรอร์ fmtDate ใน my_notification.jsp
 						function formatLongDate(dateStr) {
 							if (!dateStr) return "";
-							var d = new Date(dateStr + "T00:00:00");
-							return d.getDate() + " " + MONTH_ABBR[d.getMonth()] + " " + d.getFullYear();
+							var trimmed = String(dateStr).trim();
+							var match = trimmed.match(/^(\d{4})-(\d{1,2})-(\d{1,2})(?:[,\sT]+(\d{1,2}):(\d{2}))?/);
+							if (!match) return trimmed;
+							var y = parseInt(match[1], 10);
+							var m = parseInt(match[2], 10);
+							var d = parseInt(match[3], 10);
+							if (m < 1 || m > 12) return trimmed;
+							var result = d + " " + MONTH_ABBR[m - 1] + " " + y;
+							if (match[4] !== undefined) {
+								var hh = match[4].length === 1 ? "0" + match[4] : match[4];
+								result += ", " + hh + ":" + match[5];
+							}
+							return result;
 						}
 
 						function notifTimeLabel(timeCreateStr) {
@@ -232,15 +276,20 @@
 							for (var i = 1; i <= typeInfo.paths; i++) {
 								pathSpans += '<span class="path' + i + '"></span>';
 							}
-							var wrapStyle = typeInfo.custom ? ' style="background-color:#4B5675;"' : '';
-							var iconStyle = typeInfo.custom ? ' style="color:#FFFFFF;"' : '';
-							var bgClass = typeInfo.custom ? '' : typeInfo.bg;
-							var colorClass = typeInfo.custom ? '' : typeInfo.color;
 							return '<div class="symbol symbol-35px mb-1">'
-								+ '<span class="symbol-label ' + bgClass + '"' + wrapStyle + '>'
-								+ '<i class="ki-duotone ' + typeInfo.icon + ' fs-3 ' + colorClass + '"' + iconStyle + '>' + pathSpans + '</i>'
+								+ '<span class="symbol-label ' + typeInfo.bg + '">'
+								+ '<i class="ki-duotone ' + typeInfo.icon + ' fs-3 ' + typeInfo.color + '">' + pathSpans + '</i>'
 								+ '</span>'
 								+ '</div>';
+						}
+
+						// Status badge, มิเรอร์ .js-notif-status ใน my_notification.jsp
+						function statusBadgeClass(status) {
+							if (status === "Reject" || status === "Cancel") return "badge-light-danger";
+							if (status === "Approve" || status === "Confirm Received" || status === "Confirm Returned") return "badge-light-success";
+							if (status === "Wait for approve" || status === "Waiting Approve" || status === "Wait Confirm Received" || status === "Wait Returned") return "badge-light-warning";
+							if (status === "Paid") return "badge-light-info";
+							return "badge-light-primary";
 						}
 
 						function buildNotifRow(n) {
@@ -251,29 +300,43 @@
 								data = {};
 							}
 
-							var typeInfo = LEAVE_TYPE_ICON[String(data.leaveTypeId)] || DEFAULT_ICON;
-							var titleText = data.leaveTypeName || n.title || "";
+							var typeInfo = (data.typeName && TYPE_ICON[data.typeName]) ? TYPE_ICON[data.typeName] : DEFAULT_ICON;
+							var titleText = data.typeName || n.title || "";
 
 							var statusBadge = "";
 							if (data.status) {
-								var statusClass = data.status === "Approve" ? "badge-light-success" : "badge-light-danger";
-								statusBadge = ' <span class="badge ' + statusClass + ' fs-8">' + data.status + '</span>';
+								statusBadge = ' <span class="badge ' + statusBadgeClass(data.status) + ' fs-8">' + data.status + '</span>';
 							}
 
 							var dateRow = "";
 							if (data.startDate && data.endDate) {
 								dateRow = '<div class="text-gray-500 fs-7">' + formatLongDate(data.startDate) + ' - ' + formatLongDate(data.endDate) + '</div>';
+							} else if (data.startDate) {
+								dateRow = '<div class="text-gray-500 fs-7">' + formatLongDate(data.startDate) + '</div>';
+							}
+							
+							var headRow = "";
+							if (data.typeName === "Announcement") {
+								headRow = '<div class="text-gray-500 fs-7 one-line-text">' + n.topic + '</div>';
 							}
 
 							var dotHtml = n.isRead ? '' : '<span class="bullet bullet-dot bg-danger"></span>';
 
-							var $row = $('<a href="notification_read?id=' + n.id + '" class="notif-row py-4 text-decoration-none"></a>');
+							var builder = NOTIF_ROUTES[n.title];
+							var url = builder ? builder(n.userId, n.functionId) : ("notification_read?id=" + encodeURIComponent(n.id));
+
+							var $row = $('<a href="' + url + '" target="_blank" class="notif-row py-4 text-decoration-none"></a>');
+							$row.on("click", function() {
+								// mark this notification as read in the background, มิเรอร์ my_notification.jsp
+								$.get("notification_read?id=" + encodeURIComponent(n.id));
+							});
 							$row.append(
 								buildIconHtml(typeInfo)
 								+ '<div>'
 									+ '<div class="mb-0 me-2">'
 									+ '<span class="fs-6 text-gray-800 text-hover-primary fw-bold">' + titleText + '</span>' + statusBadge
 									+ dateRow
+									+ headRow
 									+ '</div>'
 								+ '</div>'
 								+ '<div class="d-flex flex-column align-items-center">'

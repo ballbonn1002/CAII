@@ -25,5 +25,7 @@ public interface RoleAuthorizedObjectDAO {
 	public List<RoleAuthorizedObject> findLeaveViewAllByRoleId(String roleId) throws Exception;
 
 //	public RoleAuthorizedObject findByRoleIdAndAuthorizedObjectId(String roleId, String authorizedObjectId) throws Exception;
+	
+	public List<RoleAuthorizedObject> findByRoleIdAndAuthId(String roleId, String authId) throws Exception;
 
 }

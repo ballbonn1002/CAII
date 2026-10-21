@@ -15,6 +15,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
 import org.apache.struts2.ServletActionContext;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cubesofttech.dao.ExpTravelTypeDAO;
@@ -32,6 +33,7 @@ import com.cubesofttech.model.FileUpload;
 import com.cubesofttech.model.User;
 
 import com.cubesofttech.service.FileAttachmentService;
+import com.cubesofttech.service.NotificationService;
 import com.cubesofttech.util.DateUtil;
 import com.cubesofttech.util.FileUtil;
 import com.cubesofttech.util.ReportUtil;
@@ -67,6 +69,8 @@ public class TravelAction extends ActionSupport {
 	private FileUploadDAO fileuploadDAO;
 	@Autowired
 	private FileAttachmentService fileAttachmentService;
+	@Autowired
+	private NotificationService notificationService;
 
 	private java.io.File[] files;
 	private String[] filesFileName;
@@ -848,8 +852,8 @@ public class TravelAction extends ActionSupport {
 	// ===================== Travel Cancel =====================
 	public String travelCancel() {
 		try {
-
 			HttpServletRequest request = ServletActionContext.getRequest();
+			User onlineUser = (User) request.getSession().getAttribute("onlineUser");
 			String expenseGroupIdStr = request.getParameter("expense_group_id");
 
 			Long expenseGroupId = Long.parseLong(expenseGroupIdStr);
@@ -860,6 +864,8 @@ public class TravelAction extends ActionSupport {
 			expense.setTimeUpdate(now);
 
 			expenseGroupDAO.update(expense);
+			
+			notifyTravelSubmitted(expense, onlineUser.getId());
 
 			return SUCCESS;
 		} catch (Exception e) {
@@ -879,7 +885,6 @@ public class TravelAction extends ActionSupport {
 			String[] ids = request.getParameterValues("ids");
 
 			String expenseGroupIdStr = request.getParameter("expense_group_id");
-			String status = request.getParameter("status");
 
 			List<Long> expenseIds = new ArrayList<>();
 			if (ids != null) {
@@ -896,6 +901,7 @@ public class TravelAction extends ActionSupport {
 				List<Expense> expenseList = expenseDAO.findByGroupId(expenseGroupId);
 
 				ExpenseGroup expenseGroup = expenseGroupDAO.findById(expenseGroupId);
+				String status = expenseGroup.getStatusId();
 				String userApprId = expenseGroup.getAppr_user_id();
 
 				for (Expense expense : expenseList) {
@@ -1055,6 +1061,9 @@ public class TravelAction extends ActionSupport {
 				expenseDAO.update(exp);
 			}
 
+			// ── ส่ง notification แจ้งผู้มีสิทธิ์อนุมัติ travel ──────────
+			notifyTravelSubmitted(group, onlineUser.getId());
+
 			// ── 5. บันทึก Signature ใหม่ (ถ้ามี upload) ─────────────
 			if (files != null && files.length > 0 && filesFileName != null && filesFileName.length > 0) {
 				try {
@@ -1092,6 +1101,76 @@ public class TravelAction extends ActionSupport {
 		} catch (Exception e) {
 			e.printStackTrace();
 			return ERROR;
+		}
+	}
+
+	// ===================== Notification =====================
+
+	private void notifyTravelSubmitted(ExpenseGroup group, String actorId) {
+		if (!"W".equals(group.getStatusId()) && !"C".equals(group.getStatusId())) {
+			return;
+		}
+		try {
+			String statusWord = "";
+			if ("W".equals(group.getStatusId())) {
+				statusWord = "Waiting Approve";
+			} else if ("C".equals(group.getStatusId())) {
+				statusWord = "Cancel";
+			}
+			Timestamp startDate = group.getRequestedAt();
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd, HH:mm", Locale.ENGLISH);
+			String startDateNoti = startDate != null ? sdf.format(startDate) : "";
+			String endDateNoti = "";
+
+			JSONObject messageJson = new JSONObject();
+			messageJson.put("expenseGroupId", group.getExpenseGroupId());
+			messageJson.put("typeName", "เบิกค่าเดินทาง");
+			messageJson.put("status", statusWord);
+			messageJson.put("startDate", startDateNoti);
+			messageJson.put("endDate", endDateNoti);
+			messageJson.put("total_amount", group.getTotalAmount());
+
+			notificationService.create(group.getUserId(), "Travel Approve", messageJson.toString(), null, actorId,
+					group.getExpenseGroupId().toString());
+		} catch (Exception e) {
+			log.error("Unable to create travel submitted notification", e);
+		}
+	}
+
+	private void notifyTravelStatusChange(ExpenseGroup group, String oldStatus, String newStatus, String actorId) {
+		if (oldStatus != null && oldStatus.equals(newStatus)) {
+			return;
+		}
+		if (!"A".equals(newStatus) && !"R".equals(newStatus) && !"P".equals(newStatus)) {
+			return;
+		}
+		try {
+			String statusWord;
+			if ("A".equals(newStatus)) {
+				statusWord = "Approve";
+			} else if ("R".equals(newStatus)) {
+				statusWord = "Reject";
+			} else {
+				statusWord = "Paid";
+			}
+			
+			Timestamp startDate = group.getRequestedAt();
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd, HH:mm", Locale.ENGLISH);
+			String startDateNoti = startDate != null ? sdf.format(startDate) : "";
+			String endDateNoti = "";
+
+			JSONObject messageJson = new JSONObject();
+			messageJson.put("expenseGroupId", group.getExpenseGroupId());
+			messageJson.put("typeName", "เบิกค่าเดินทาง");
+			messageJson.put("status", statusWord);
+			messageJson.put("startDate", startDateNoti);
+			messageJson.put("endDate", endDateNoti);
+			messageJson.put("total_amount", group.getTotalAmount());
+
+			notificationService.create(group.getUserId(), "My Travel", messageJson.toString(),
+					group.getDescription_appr(), actorId, group.getExpenseGroupId().toString());
+		} catch (Exception e) {
+			log.error("Unable to create travel status notification", e);
 		}
 	}
 
@@ -1256,7 +1335,6 @@ public class TravelAction extends ActionSupport {
 
 			String[] ids = request.getParameterValues("ids");
 			String expenseGroupIdStr = request.getParameter("expense_group_id");
-			String status = request.getParameter("status");
 			String userId = null;
 
 			List<Long> expenseIds = new ArrayList<>();
@@ -1266,6 +1344,7 @@ public class TravelAction extends ActionSupport {
 				List<Expense> expenseList = expenseDAO.findByGroupId(expenseGroupId);
 				ExpenseGroup expenseGroup = expenseGroupDAO.findById(expenseGroupId);
 				userId = expenseGroup.getUserId();
+				String status = expenseGroup.getStatusId();
 				String userApprId = expenseGroup.getAppr_user_id();
 
 				if (userApprId != null && !userApprId.isEmpty()) {
@@ -1387,6 +1466,7 @@ public class TravelAction extends ActionSupport {
 
 			Long expenseGroupId = Long.parseLong(expenseGroupIdStr);
 			ExpenseGroup expense = expenseGroupDAO.findById(expenseGroupId);
+			String oldStatus = expense.getStatusId();
 
 			Timestamp now = DateUtil.getCurrentTime();
 			expense.setStatusId("A");
@@ -1395,6 +1475,8 @@ public class TravelAction extends ActionSupport {
 			expense.setDescription_appr(descriptionAppr == null || descriptionAppr.isEmpty() ? null : descriptionAppr);
 
 			expenseGroupDAO.update(expense);
+
+			notifyTravelStatusChange(expense, oldStatus, "A", onlineUser.getId());
 
 			return SUCCESS;
 		} catch (Exception e) {
@@ -1416,6 +1498,7 @@ public class TravelAction extends ActionSupport {
 
 			Long expenseGroupId = Long.parseLong(expenseGroupIdStr);
 			ExpenseGroup expense = expenseGroupDAO.findById(expenseGroupId);
+			String oldStatus = expense.getStatusId();
 
 			Timestamp now = DateUtil.getCurrentTime();
 			Calendar cal = Calendar.getInstance();
@@ -1439,6 +1522,8 @@ public class TravelAction extends ActionSupport {
 			expense.setPaidYear(currentYear);
 			expenseGroupDAO.update(expense);
 
+			notifyTravelStatusChange(expense, oldStatus, "P", onlineUser.getId());
+
 			return SUCCESS;
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -1459,6 +1544,7 @@ public class TravelAction extends ActionSupport {
 
 			Long expenseGroupId = Long.parseLong(expenseGroupIdStr);
 			ExpenseGroup expense = expenseGroupDAO.findById(expenseGroupId);
+			String oldStatus = expense.getStatusId();
 
 			Timestamp now = DateUtil.getCurrentTime();
 			expense.setStatusId("R");
@@ -1467,6 +1553,8 @@ public class TravelAction extends ActionSupport {
 			expense.setDescription_appr(descriptionAppr == null || descriptionAppr.isEmpty() ? null : descriptionAppr);
 
 			expenseGroupDAO.update(expense);
+
+			notifyTravelStatusChange(expense, oldStatus, "R", onlineUser.getId());
 
 			return SUCCESS;
 		} catch (Exception e) {

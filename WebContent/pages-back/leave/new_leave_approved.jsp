@@ -712,7 +712,13 @@ $(document).ready(function(){
 		value = "All2";
 		CreateListUsers(value, user_login, userSelect2);
 	}
-	
+
+	// เปิด modal อนุมัติลาอัตโนมัติ เมื่อมาจากลิงก์แจ้งเตือนที่ระบุ leaveId มาใน query string
+	var autoOpenLeaveId = new URLSearchParams(window.location.search).get("leaveId");
+	if (autoOpenLeaveId) {
+		leaveApproveStatus(autoOpenLeaveId);
+	}
+
  	//if(userSelect2 == null || userSelect2 == ""){
 	 	$("#name2").select2({
 		    placeholder: "Select Employee",

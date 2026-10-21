@@ -167,9 +167,12 @@ a.btn-open-return-modal:hover, a.btn-receive-instead:hover{
 
 			<div id="kt_app_content" class="app-content flex-column-fluid">
 				<div id="kt_app_content_container" class="app-container container-fluid">
-
 					<div class="row g-5 g-xl-10">
-
+					<c:if test="${borrowObj.status == 'R'}">
+					<span class="alert alert-danger mb-0" id="ErrorMessage" aria-hidden="true">
+						<span class="text-danger"><i class="ki-outline ki-information-2 text-danger"></i> รายการนี้ทำรายการสำเร็จแล้วจะถูกซ่อนไว้</span>
+					</span>
+					</c:if>
 						<!-- LEFT : FORM -->
 						<div class="col-xl-8">
 							<form action="${pageContext.request.contextPath}/eBorrowUpdate.action" method="post" class="card shadow-none"
@@ -250,10 +253,12 @@ a.btn-open-return-modal:hover, a.btn-receive-instead:hover{
 								</div>
 
 								<div class="card-footer d-flex justify-content-end">
-									<a href="${pageContext.request.contextPath}/borrow_list" class="btn btn-light me-3">Cancel</a>
+									<a href="${pageContext.request.contextPath}/borrow_list" class="btn btn-light me-3">Close</a>
+									<c:if test="${borrowObj.status != 'R'}">
 									<button type="submit" class="btn btn-success">
 										<span class="indicator-label">Save</span>
 									</button>
+									</c:if>
 								</div>
 								
 							</form>

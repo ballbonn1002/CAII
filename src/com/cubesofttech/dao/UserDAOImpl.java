@@ -772,4 +772,46 @@ public class UserDAOImpl implements UserDAO {
 	            .toString();
 	}
 
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<User> findEnabledUsersByAuthorizedObjectId(String authorizedObjectId) throws Exception {
+		Session session = this.sessionFactory.getCurrentSession();
+		List<User> list = null;
+		try {
+			String sql = "SELECT DISTINCT u.* FROM `user` u "
+					+ "INNER JOIN `role_authorized_object` rao ON rao.role_id = u.role_id "
+					+ "WHERE rao.authorized_object_id = :authorizedObjectId AND u.enable = '1' ";
+			SQLQuery query = session.createSQLQuery(sql);
+			query.addEntity(User.class);
+			query.setParameter("authorizedObjectId", authorizedObjectId);
+			list = query.list();
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		} finally {
+
+		}
+		return list;
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<User> findEnabledUsers() throws Exception {
+		Session session = this.sessionFactory.getCurrentSession();
+		List<User> list = null;
+		try {
+			String sql = "SELECT * FROM `user` u "
+					+ "WHERE u.enable = '1' ";
+			SQLQuery query = session.createSQLQuery(sql);
+			query.addEntity(User.class);
+			list = query.list();
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		} finally {
+
+		}
+		return list;
+	}
+
 }

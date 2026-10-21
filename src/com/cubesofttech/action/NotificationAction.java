@@ -1,7 +1,9 @@
 package com.cubesofttech.action;
 
 import java.io.PrintWriter;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -11,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.apache.struts2.ServletActionContext;
 
 import com.cubesofttech.dao.NotificationDAO;
+import com.cubesofttech.dao.UserDAO;
 import com.cubesofttech.model.Notification;
 import com.cubesofttech.model.User;
 import com.cubesofttech.util.DateUtil;
@@ -25,6 +28,9 @@ public class NotificationAction extends ActionSupport {
 
 	@Autowired
 	private NotificationDAO notificationDAO;
+
+	@Autowired
+	private UserDAO userDAO;
 
 	HttpServletRequest request = ServletActionContext.getRequest();
 	HttpServletResponse response = ServletActionContext.getResponse();
@@ -42,7 +48,7 @@ public class NotificationAction extends ActionSupport {
 	public String listJson() {
 		try {
 			User onlineUser = (User) request.getSession().getAttribute("onlineUser");
-			List<Notification> list = notificationDAO.findLatestByUserId(onlineUser.getId(), 10);
+			List<Map<String, Object>> list = notificationDAO.findLatestByUserId(onlineUser.getId(), 10);
 
 			Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd'T'HH:mm:ss").create();
 			String json = gson.toJson(list);
@@ -63,8 +69,35 @@ public class NotificationAction extends ActionSupport {
 	public String list() {
 		try {
 			User onlineUser = (User) request.getSession().getAttribute("onlineUser");
-			List<Notification> list = notificationDAO.findByUserId(onlineUser.getId());
+			List<Map<String, Object>> list = notificationDAO.findByUserId(onlineUser.getId());
+
+			// Resolve "employee_id - name" for each notification's user_id (used in the Message column)
+			Map<String, String> actorMap = new HashMap<String, String>();
+			for (Map<String, Object> n : list) {
+				String uid = (String) n.get("userId");
+				if (uid == null || actorMap.containsKey(uid)) {
+					continue;
+				}
+				try {
+					User u = userDAO.findById(uid);
+					if (u != null) {
+						String empId = u.getEmployeeId() == null ? "" : u.getEmployeeId().trim();
+						String name = u.getNameEN() == null ? "" : u.getNameEN().trim();
+						String label;
+						if (!empId.isEmpty() && !name.isEmpty()) {
+							label = empId + " - " + name;
+						} else {
+							label = empId + name;
+						}
+						actorMap.put(uid, label);
+					}
+				} catch (Exception ex) {
+					log.error("Unable to resolve notification actor for user_id " + uid, ex);
+				}
+			}
+
 			request.setAttribute("notificationList", list);
+			request.setAttribute("actorMap", actorMap);
 			return SUCCESS;
 		} catch (Exception e) {
 			log.error(e);
@@ -76,9 +109,8 @@ public class NotificationAction extends ActionSupport {
 		try {
 			User onlineUser = (User) request.getSession().getAttribute("onlineUser");
 			Notification notification = notificationDAO.findById(id);
-			if (notification != null && notification.getUserId().equals(onlineUser.getId())) {
+			if (notification != null && notification.getSendTo().equals(onlineUser.getId()) && notification.getIsRead() == false) {
 				notification.setIsRead(true);
-				notification.setUserUpdate(onlineUser.getId());
 				notification.setTimeUpdate(DateUtil.getCurrentTime());
 				notificationDAO.update(notification);
 			}

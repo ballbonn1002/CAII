@@ -26,15 +26,21 @@ import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 import org.apache.struts2.ServletActionContext;
 import org.apache.struts2.dispatcher.multipart.MultiPartRequestWrapper;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cubesofttech.dao.AnnouncementDAO;
 import com.cubesofttech.dao.FileUploadDAO;
+import com.cubesofttech.dao.RoleAuthorizedObjectDAO;
 import com.cubesofttech.dao.UserDAO;
 import com.cubesofttech.model.Announcement;
 import com.cubesofttech.model.FileUpload;
+import com.cubesofttech.model.LeaveType;
+import com.cubesofttech.model.Leaves;
+import com.cubesofttech.model.RoleAuthorizedObject;
 import com.cubesofttech.model.User;
 import com.cubesofttech.service.FileAttachmentService;
+import com.cubesofttech.service.NotificationService;
 import com.cubesofttech.util.DateUtil;
 import com.cubesofttech.util.FileUtil;
 import com.google.gson.Gson;
@@ -61,6 +67,12 @@ public class AnnouncementAction extends ActionSupport {
 
 	@Autowired
 	public UserDAO userDAO;
+	
+	@Autowired
+	private NotificationService notificationService;
+	
+	@Autowired
+	private RoleAuthorizedObjectDAO roleAuthorizedObjectDAO;
 
 	private String topic;
 	private String anndate;
@@ -301,6 +313,12 @@ public class AnnouncementAction extends ActionSupport {
 			Announcement announce = announcementDAO.findById(announceId);
 			if (announce != null) {
 				if (onlineUser != null) {
+					if(announce.getStatus().equals("0")) {
+						List<RoleAuthorizedObject> roleAuth = roleAuthorizedObjectDAO.findByRoleIdAndAuthId(onlineUser.getRoleId(), "announcement.edit");
+						if (roleAuth.isEmpty()) {
+							return ERROR;
+						}
+					}
 					String userId = onlineUser.getId();
 					String viewerLogsStr = announce.getViewerLogs();
 					
@@ -347,6 +365,8 @@ public class AnnouncementAction extends ActionSupport {
 				Integer currentCount = announce.getReadcount() != null ? announce.getReadcount() : 0;
 				announce.setReadcount(currentCount + 1);
 				announcementDAO.update(announce);
+			} else {
+				return ERROR;
 			}
 			List<Map<String, Object>> announcement = announcementDAO.readcardannounce(Integer.parseInt(id));
 			request.setAttribute("announcement", announcement);
@@ -402,32 +422,39 @@ public class AnnouncementAction extends ActionSupport {
 
 			Announcement announcement;
 			boolean isEdit = announcementId != null && !announcementId.isEmpty();
+			String oldStatus = null;
 
 			// Check Add or Edit
 			if (isEdit) {
 				announcement = announcementDAO.findById(Integer.parseInt(announcementId));
+				oldStatus = announcement.getStatus();
+				
+				announcement.setTopic(topic);
+				announcement.setDetail(detail);
+				announcement.setStatus(status);
+				announcement.setannouncement_date(date);
+				announcement.setHighlight(highlight);
 				announcement.setUserUpdate(onlineUser.getId());
 				announcement.setTimeUpdate(DateUtil.getCurrentTime());
-			} else {
-				announcement = new Announcement();
-				announcement.setAnnouncementId(announcementDAO.getMaxId() + 1);
-				announcement.setUserCreate(onlineUser.getId());
-				announcement.setTimeCreate(DateUtil.getCurrentTime());
-			}
-
-			announcement.setTopic(topic);
-			announcement.setDetail(detail);
-			announcement.setStatus(status);
-			announcement.setannouncement_date(date);
-			announcement.setHighlight(highlight);
-			
-
-			// Then save or update
-			if (isEdit) {
 				announcementDAO.update(announcement);
 			} else {
+				announcement = new Announcement();
+				Integer id = announcementDAO.getMaxId() + 1;
+				announcement.setAnnouncementId(id);
+				announcement.setTopic(topic);
+				announcement.setDetail(detail);
+				announcement.setStatus(status);
+				announcement.setannouncement_date(date);
+				announcement.setHighlight(highlight);
+				announcement.setAnnouncementId(id);
+				announcement.setUserCreate(onlineUser.getId());
+				announcement.setTimeCreate(DateUtil.getCurrentTime());
 				announcementDAO.save(announcement);
 			}
+			
+			log.debug(oldStatus);
+			log.debug(status);
+			notifyAnnouncementStatusChange(announcement, oldStatus, status, onlineUser.getId());
 
 			String announcementIdStr = String.valueOf(announcement.getAnnouncementId());
 
@@ -528,6 +555,38 @@ public class AnnouncementAction extends ActionSupport {
 			log.error("Error saving announcement", e);
 			e.printStackTrace();
 			return ERROR;
+		}
+	}
+	
+	private void notifyAnnouncementStatusChange(Announcement announcement, String oldStatus, String newStatus, String actorId) {
+		
+		if (oldStatus != null && oldStatus.equals(newStatus)) {
+			return;
+		}
+		if (!"1".equals(newStatus)) {
+			return;
+		}
+		if (announcement.getannouncement_date() != null) {
+			LocalDate announcementDate = announcement.getannouncement_date().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+			if (announcementDate.isAfter(LocalDate.now())) {
+				return;
+			}
+		}
+
+		try {
+			//sending data to notification
+			SimpleDateFormat sdfNoti = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
+			String startDateNoti = announcement.getannouncement_date() != null ? sdfNoti.format(announcement.getannouncement_date()) : "";
+			
+			JSONObject messageJson = new JSONObject();
+			messageJson.put("announcementId", announcement.getAnnouncementId());
+			messageJson.put("typeName", "Announcement");
+			messageJson.put("status", "");
+			messageJson.put("startDate", startDateNoti);
+			messageJson.put("endDate", "");
+			notificationService.create(null, "Announcement", messageJson.toString(), null, actorId, announcement.getAnnouncementId().toString());
+		} catch (Exception e) {
+			log.error("Unable to create announcement notification", e);
 		}
 	}
 

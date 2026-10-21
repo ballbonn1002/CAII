@@ -172,5 +172,27 @@ public class RoleAuthorizedObjectDAOImpl implements RoleAuthorizedObjectDAO{
 //				.uniqueResult();
 //		return roleAuthorizedObject;
 //	}
+	
+	@Override
+	public List<RoleAuthorizedObject> findByRoleIdAndAuthId(String roleId, String authId) throws Exception {
+		Session session = this.sessionFactory.getCurrentSession();
+		List<RoleAuthorizedObject> role_authorized = null;
+        try {
+            String sql = "SELECT * FROM `role_authorized_object` WHERE role_id = :roleId AND authorized_object_id = :authId ";
+            SQLQuery query = session.createSQLQuery(sql);
+            query.setParameter("roleId", roleId);
+            query.setParameter("authId", authId);
+			query.setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
+			role_authorized = query.list();
+  
+        } catch (Exception e) {
+        	e.printStackTrace();
+        	return null;
+
+        } finally {
+
+        }
+        return role_authorized;
+	}
     
 }

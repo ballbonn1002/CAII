@@ -2,13 +2,16 @@ package com.cubesofttech.dao;
 
 import java.sql.Timestamp;
 import java.util.List;
+import java.util.Map;
 
 import org.hibernate.Criteria;
 import org.hibernate.Query;
+import org.hibernate.SQLQuery;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
+import org.hibernate.transform.AliasToEntityMapResultTransformer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -43,23 +46,50 @@ public class NotificationDAOImpl implements NotificationDAO {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public List<Notification> findByUserId(String userId) throws Exception {
+	public List<Map<String, Object>> findByUserId(String userId) throws Exception {
 		Session session = this.sessionFactory.getCurrentSession();
-		Criteria criteria = session.createCriteria(Notification.class)
-				.add(Restrictions.eq("userId", userId))
-				.addOrder(Order.desc("timeCreate"));
-		return criteria.list();
+
+		String sql = "SELECT n.id AS id, n.title AS title, n.function_id AS functionId, n.message AS message, "
+				+ "n.description AS description, n.is_read AS isRead, n.send_to As sendTo, n.user_id AS userId, n.type_sending AS typeSending, "
+				+ "n.user_create AS userCreate, n.user_update AS userUpdate, "
+				+ "n.time_create AS timeCreate, n.time_update AS timeUpdate, "
+				+ "CASE WHEN n.title = 'Announcement' THEN a.topic ELSE NULL END AS topic, "
+				+ "CASE WHEN n.title = 'Announcement' THEN a.detail ELSE NULL END AS detail "
+				+ "FROM notification n "
+				+ "LEFT JOIN announcement a ON a.announcement_id = n.function_id "
+				+ "WHERE n.send_to = :userId "
+				+ "ORDER BY n.time_create DESC ";
+
+		SQLQuery query = session.createSQLQuery(sql);
+		query.setParameter("userId", userId);
+		query.setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
+
+		return query.list();
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public List<Notification> findLatestByUserId(String userId, int maxResults) throws Exception {
+	public List<Map<String, Object>> findLatestByUserId(String userId, int maxResults) throws Exception {
 		Session session = this.sessionFactory.getCurrentSession();
-		Criteria criteria = session.createCriteria(Notification.class)
-				.add(Restrictions.eq("userId", userId))
-				.addOrder(Order.desc("timeCreate"))
-				.setMaxResults(maxResults);
-		return criteria.list();
+
+		String sql = "SELECT n.id AS id, n.title AS title, n.function_id AS functionId, n.message AS message, "
+				+ "n.description AS description, n.is_read AS isRead, n.send_to As sendTo, n.user_id AS userId, n.type_sending AS typeSending, "
+				+ "n.user_create AS userCreate, n.user_update AS userUpdate, "
+				+ "n.time_create AS timeCreate, n.time_update AS timeUpdate, "
+				+ "CASE WHEN n.title = 'Announcement' THEN a.topic ELSE NULL END AS topic, "
+				+ "CASE WHEN n.title = 'Announcement' THEN a.detail ELSE NULL END AS detail "
+				+ "FROM notification n "
+				+ "LEFT JOIN announcement a ON a.announcement_id = n.function_id "
+				+ "WHERE n.send_to = :userId "
+				+ "ORDER BY n.time_create DESC "
+				+ "LIMIT :maxResults";
+
+		SQLQuery query = session.createSQLQuery(sql);
+		query.setParameter("userId", userId);
+		query.setParameter("maxResults", maxResults);
+		query.setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
+
+		return query.list();
 	}
 
 	@Override
@@ -68,7 +98,7 @@ public class NotificationDAOImpl implements NotificationDAO {
 		Timestamp now = DateUtil.getCurrentTime();
 		Query query = session.createQuery(
 				"update Notification set isRead = true, userUpdate = :actorId, timeUpdate = :now "
-						+ "where userId = :userId and isRead = false");
+						+ "where sendTo = :userId and isRead = false");
 		query.setParameter("actorId", actorId);
 		query.setParameter("now", now);
 		query.setParameter("userId", userId);

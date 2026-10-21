@@ -18,6 +18,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
 import org.apache.struts2.ServletActionContext;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cubesofttech.dao.BorrowDAO;
@@ -31,6 +32,7 @@ import com.cubesofttech.model.EquipmentStatus;
 import com.cubesofttech.model.EquipmentType;
 import com.cubesofttech.model.FileUpload;
 import com.cubesofttech.model.User;
+import com.cubesofttech.service.NotificationService;
 import com.cubesofttech.util.DateUtil;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -59,6 +61,9 @@ public class BorrowingAction extends ActionSupport {
 	
 	@Autowired
 	private EquipmentTypeDAO equipmentTypeDAO;
+
+	@Autowired
+	private NotificationService notificationService;
 
 	public EquipmentDAO getEquipmentDAO() {
 		return equipmentDAO;
@@ -1126,7 +1131,9 @@ public class BorrowingAction extends ActionSupport {
 				borrow.setTimeUpdate(timestamp);
 				borrow.setDateEnd(timestamp);
 				borrowDAO.update(borrow);
-				
+
+				notifyBorrow(borrow, "Borrow Approve", "Confirm Returned", onlineUser.getId());
+
 				map.put("message", "success");
 			} else {
 				map.put("message", "something wrong");
@@ -1154,8 +1161,10 @@ public class BorrowingAction extends ActionSupport {
 					borrow.setTime_receive(timestamp);
 					borrow.setUserUpdate(onlineUser.getId());
 					borrow.setTimeUpdate(timestamp);
-				
+
 					borrowDAO.update(borrow);
+
+					notifyBorrow(borrow, "My Borrow", "Confirm Received", onlineUser.getId());
 				}
 				map.put("message", "success"); 
 			} else {
@@ -1450,7 +1459,9 @@ public class BorrowingAction extends ActionSupport {
 			borrow.setUserUpdate(u.getId());
 			borrow.setTimeUpdate(timestamp);
 			borrowDAO.update(borrow);
-			
+
+			notifyBorrow(borrow, "My Borrow", "Wait Confirm Received", logonUser);
+
 			return SUCCESS;
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -1472,7 +1483,9 @@ public class BorrowingAction extends ActionSupport {
 			borrow.setUserUpdate(u.getId());
 			borrow.setTimeUpdate(timestamp);
 			borrowDAO.update(borrow);
-			
+
+			notifyBorrow(borrow, "Borrow Approve", "Confirm Received", logonUser);
+
 			return SUCCESS;
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -1498,6 +1511,8 @@ public class BorrowingAction extends ActionSupport {
 
 	            borrowDAO.update(borrow);
 
+	            notifyBorrow(borrow, "My Borrow", "Wait Returned", user != null ? user.getId() : null);
+
 	            map.put("message", "success");
 	        } else {
 	            map.put("message", "invalid status: " + (borrow != null ? borrow.getStatus() : "null"));
@@ -1516,7 +1531,40 @@ public class BorrowingAction extends ActionSupport {
 	        e.printStackTrace();
 	    }
 	}
-	
+
+	// ===================== Notification =====================
+
+	/**
+	 * ส่ง notification ของระบบยืม-คืน
+	 * title = "My Borrow"      -> แจ้งเจ้าของรายการ (borrow.userBorrowid)
+	 * title = "Borrow Approve" -> แจ้งผู้มีสิทธิ์ borrow.approved ทั้งหมด
+	 * ถ้าส่งไม่สำเร็จจะ log ไว้เฉยๆ ไม่ให้กระทบการทำงานหลัก
+	 */
+	private void notifyBorrow(Borrow borrow, String title, String statusWord, String actorId) {
+		if (borrow == null || borrow.getBorrowId() == null) {
+			return;
+		}
+		try {
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
+			String startDateNoti = borrow.getDateStart() != null ? sdf.format(borrow.getDateStart()) : "";
+			String endDateNoti = borrow.getDateEnd() != null ? sdf.format(borrow.getDateEnd()) : "";
+			
+			Equipment eq = equipmentDAO.findById(borrow.getEquipmentId());
+
+			JSONObject messageJson = new JSONObject();
+			messageJson.put("borrowId", borrow.getBorrowId());
+			messageJson.put("typeName", "Equipment");
+			messageJson.put("status", statusWord);
+			messageJson.put("startDate", startDateNoti);
+			messageJson.put("endDate", endDateNoti);
+
+			notificationService.create(borrow.getUserBorrowid(), title, messageJson.toString(), null, actorId,
+					eq.getItemNo());
+		} catch (Exception e) {
+			log.error("Unable to create borrow notification. borrowId = " + borrow.getBorrowId() + ", title = " + title, e);
+		}
+	}
+
 	//เช็คข้อมูล borrow เดิม ก่อนเพิ่ม process
 //	private boolean isLegacyBorrow(Borrow borrow) {
 //	    if (borrow == null) {

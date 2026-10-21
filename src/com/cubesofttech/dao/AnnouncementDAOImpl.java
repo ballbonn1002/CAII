@@ -163,4 +163,21 @@ public class AnnouncementDAOImpl implements AnnouncementDAO {
 	    }
 	    return announcementList;
 	}
+
+	@Override
+	public List<Announcement> findByAnnouncementDateAndStatus(String announcementDate, String status) throws Exception {
+		Session session = this.sessionFactory.getCurrentSession();
+		List<Announcement> announcementList = null;
+		try {
+			String hql = "SELECT a FROM Announcement a WHERE FUNCTION('DATE_FORMAT', a.announcement_date, '%Y-%m-%d') = :announcementDate AND a.status = :status";
+			Query query = session.createQuery(hql);
+			query.setParameter("announcementDate", announcementDate);
+			query.setParameter("status", status);
+
+			announcementList = query.list();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return announcementList;
+	}
 }

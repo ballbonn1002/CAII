@@ -70,6 +70,7 @@ import com.cubesofttech.model.Role;
 import com.cubesofttech.model.Tag;
 import com.cubesofttech.model.User;
 import com.cubesofttech.service.FileAttachmentService;
+import com.cubesofttech.service.NotificationService;
 import com.cubesofttech.system.Constant;
 import com.cubesofttech.util.Convert;
 import com.cubesofttech.util.DateUtil;
@@ -136,6 +137,9 @@ public class UserAction extends ActionSupport {
 
 	@Autowired
 	private BorrowDAO borrowDAO;
+
+	@Autowired
+	private NotificationService notificationService;
 
 	private String endDate;
 
@@ -1748,7 +1752,9 @@ public class UserAction extends ActionSupport {
 
 			request.setAttribute("workPeriod", workPeriod);
 			request.setAttribute("user", u);
-			
+
+			// โหลดลายเซ็น + รายการ borrow + สถานะแจ้งเตือน (ใช้ logic เดียวกับ WorkHoursAction)
+			notificationService.loadNotification(request, logonUser, ur);
 
 			return SUCCESS;
 		} catch (Exception e) {

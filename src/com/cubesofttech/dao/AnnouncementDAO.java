@@ -19,4 +19,6 @@ public interface AnnouncementDAO {
 	public void delete(Announcement announcement) throws Exception;
 	
 	public Integer getMaxId() throws Exception;
-	public List<Announcement> search(String keyword, Date startDate, Date endDate) throws Exception;}
+	public List<Announcement> search(String keyword, Date startDate, Date endDate) throws Exception;
+	public List<Announcement> findByAnnouncementDateAndStatus(String announcementDate, String status) throws Exception;
+}

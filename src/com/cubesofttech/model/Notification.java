@@ -38,9 +38,15 @@ public class Notification implements Serializable {
 
 	@Column(name = "is_read")
 	private Boolean isRead;
+	
+	@Column(name = "send_to")
+	private String sendTo;
 
 	@Column(name = "user_id")
 	private String userId;
+	
+	@Column(name = "type_sending")
+	private String typeSending;
 
 	@Column(name = "user_create")
 	private String userCreate;
@@ -102,12 +108,28 @@ public class Notification implements Serializable {
 		this.isRead = isRead;
 	}
 
+	public String getSendTo() {
+		return sendTo;
+	}
+
+	public void setSendTo(String sendTo) {
+		this.sendTo = sendTo;
+	}
+
 	public String getUserId() {
 		return this.userId;
 	}
 
 	public void setUserId(String userId) {
 		this.userId = userId;
+	}
+
+	public String getTypeSending() {
+		return typeSending;
+	}
+
+	public void setTypeSending(String typeSending) {
+		this.typeSending = typeSending;
 	}
 
 	public String getUserCreate() {

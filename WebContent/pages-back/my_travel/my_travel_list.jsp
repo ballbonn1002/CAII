@@ -436,7 +436,7 @@
 																<td class="text-end">
 																	<div class="d-flex justify-content-end gap-2">
 																		<a
-																			href="${ctx}/my_travel_group?expense_group_id=${row.expense_group_id}&&status=${statusActiveSafe}"
+																			href="${ctx}/my_travel_group?expense_group_id=${row.expense_group_id}"
 																			class="btn btn-icon btn-light-info" title="View">
 																			<i class="ki-duotone ki-document fs-1"> <span
 																				class="path1"></span><span class="path2"></span>
@@ -497,7 +497,7 @@
 																<td class="text-end">
 																	<div class="d-flex justify-content-end gap-2">
 																		<a
-																			href="${ctx}/my_travel_group?expense_group_id=${row.expense_group_id}&&status=${statusActiveSafe}"
+																			href="${ctx}/my_travel_group?expense_group_id=${row.expense_group_id}"
 																			class="btn btn-icon btn-light-info" title="View">
 																			<i class="ki-duotone ki-document fs-1"> <span
 																				class="path1"></span><span class="path2"></span>
