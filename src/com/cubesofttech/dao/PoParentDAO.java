@@ -12,7 +12,7 @@ public interface PoParentDAO {
 	
 	void save(PoParent PoParent) throws Exception;
 	
-	PoParent findById(Long poParentId) throws Exception;
+	PoParent findById(String poParentId) throws Exception;
 
 	Long getMaxId() throws Exception;
 

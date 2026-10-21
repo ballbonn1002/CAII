@@ -34,17 +34,22 @@ public class CompanyContactDAOImpl implements CompanyContactDAO {
 		Session session = sessionFactory.getCurrentSession();
 
 		String sql =
-				"SELECT " +
-				"cc.*, " +
-				"f.path AS file_path, "  +
-				"co.company_en AS companyEn, " +
-				"cf.path AS company_logo_path, " +
-				"ca.address_name " +
-				"FROM company_contact cc " +
+		        "SELECT " +
+		        "cc.*, " +
+		        "f.path AS file_path, "  +
+		        "co.company_en AS companyEn, " +
+		        "co.company_code AS companyCode, " +
+		        "co.tax_number AS taxNumber, " +
+		        "co.is_active AS companyActive, " +
+		        "cf.path AS company_logo_path, " +
+		        "ca.address_name, " +
+		        "ca.address AS companyAddress " +
+		        "FROM company_contact cc " +
 				"LEFT JOIN file f ON cc.file_id = f.file_id " +
 				"LEFT JOIN company co ON cc.company_id = co.company_id " +
 				"LEFT JOIN file cf ON co.file_id = cf.file_id " +
-				"LEFT JOIN company_address ca ON ca.company_address_id = cc.company_address_id";
+				"LEFT JOIN company_address ca ON ca.company_address_id = cc.company_address_id " +
+				"ORDER BY cc.company_contact_id";
 		SQLQuery query = session.createSQLQuery(sql);
 		query.setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
 

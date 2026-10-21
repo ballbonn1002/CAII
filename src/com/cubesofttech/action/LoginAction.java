@@ -191,6 +191,8 @@ public class LoginAction extends ActionSupport {
 				
 				session.setAttribute("user", user);
 				session.setAttribute("onlineUser", user);
+				// role ที่มีสิทธิ์ session.timeout.extended ได้ session timeout นานกว่าปกติ (ใช้ list ที่ query ไว้แล้ว)
+				loginService.applySessionTimeout(session, user, roleAuthorizedObjectList);
 				session.setAttribute("userAuthority", userAuthority);
 				
 				request.setAttribute("token", tokenId);

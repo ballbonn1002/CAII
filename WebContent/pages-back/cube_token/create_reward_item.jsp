@@ -769,12 +769,12 @@
 		        
 		        return
 
-		    } else if (Number(value) <= 0) {
+		    } else if (Number(value) < 0) {
 
 		    	validationState.itemQuantity = false;
 		        setFieldInvalid(
 		            "#itemQuantity",
-		            "Item quantity must be greater than zero."
+		            "Item quantity must be positive."
 		        );
 		        
 		        return
@@ -1055,6 +1055,7 @@
 		    }).then(async function (result) {
 
 		        if (!result.isConfirmed) {
+		        	updateBtnState();
 		            return;
 		        }
 
@@ -1086,12 +1087,42 @@
 		        if (coverInput.files.length > 0) {
 
 		            const originalFile = coverInput.files[0];
-
+		            
+		            
 		            try {
+
+		            	const cover = await compressImage(originalFile, 1280, 1280, 0.8)
+		            	
+		            	formData.append("cover", cover);
+		                formData.append("coverFileName", cover.name); 
+		            	
+		            } catch (error) {
+                        console.error("Image compression error:", error);
+
+                        Swal.fire({
+                            title: "Error!",
+                            text: "Unable to compress cover image.",
+                            icon: "error",
+                            confirmButtonText: "OK",
+                            buttonsStyling: false,
+                            customClass: {
+                                confirmButton: "btn btn-primary"
+                            }
+                        });
+
+                        updateBtnState();
+                        return;
+                    }
+		            
+		           /*  formData.append("cover", originalFile);
+	                formData.append("coverFileName", originalFile.name);  */
+	                
+
+		          /*  try {
 		                const processedFile = await processAndRemoveWhiteBg(originalFile);
 
 		                formData.append("cover", processedFile);
-		                formData.append("coverFileName", processedFile.name);
+		                formData.append("coverFileName", processedFile.name);	
 
 		            } catch (error) {
 		                console.error("Image processing error:", error);
@@ -1109,16 +1140,42 @@
 
 		                updateBtnState();
 		                return;
-		            }
+		            }  */
 		        }
 
 		        // =========================
 		        // Additional images
 		        // =========================
-		        additionalImageFiles.forEach(function (file) {
-		            formData.append("additionalImages", file);
-		            formData.append("additionalImagesFileName", file.name);
-		        });
+		        for (const file of additionalImageFiles) {
+				    try {
+				        const compressedFile = await compressImage(
+				            file,
+				            1280,
+				            1280,
+				            0.8
+				        );
+				
+				        formData.append("additionalImages", compressedFile);
+				        formData.append("additionalImagesFileName", compressedFile.name);
+				
+				    } catch (error) {
+				        console.error("Image compression error:", error);
+				
+				        Swal.fire({
+				            title: "Error!",
+				            text: "Unable to compress additional image: " + file.name,
+				            icon: "error",
+				            confirmButtonText: "OK",
+				            buttonsStyling: false,
+				            customClass: {
+				                confirmButton: "btn btn-primary"
+				            }
+				        });
+				
+				        updateBtnState();
+				        return;
+				    }
+				}
 
 		        // =========================
 		        // Loading

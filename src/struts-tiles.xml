@@ -812,16 +812,16 @@
 
 	<!-- Stock -->
 	<!-- หน้า list เดียวแสดงรวมทั้ง Equipment / Consumables / Accessory -->
-	<definition name="stockConsList" extends="baseLayout">
-		<put-attribute name="title" value="Stock - Product" />
+	<definition name="productList" extends="baseLayout">
+		<put-attribute name="title" value="Product List" />
 		<put-attribute name="body"
-			value="/pages-back/stock/stock_cons_list.jsp" />
+			value="/pages-back/stock/product_list.jsp" />
 	</definition>
 
-	<definition name="stockConsAdd" extends="baseLayout">
-		<put-attribute name="title" value="Stock - Consumables" />
+	<definition name="productAdd" extends="baseLayout">
+		<put-attribute name="title" value="Add Product" />
 		<put-attribute name="body"
-			value="/pages-back/stock/stock_cons_add.jsp" />
+			value="/pages-back/stock/product_add.jsp" />
 	</definition>
 
 	<!-- UI mockup เท่านั้น - ยังไม่ต่อ backend จริง -->
@@ -837,16 +837,16 @@
 			value="/pages-back/stock/stock_by_location_list.jsp" />
 	</definition>
 
-	<definition name="stockConsEdit" extends="baseLayout">
-		<put-attribute name="title" value="Stock - Consumables" />
+	<definition name="productEdit" extends="baseLayout">
+		<put-attribute name="title" value="Edit Product" />
 		<put-attribute name="body"
-			value="/pages-back/stock/stock_cons_edit.jsp" />
+			value="/pages-back/stock/product_edit.jsp" />
 	</definition>
 
-	<definition name="stockConsBalance" extends="baseLayout">
+	<definition name="stockBalance" extends="baseLayout">
 		<put-attribute name="title" value="Stock - Consumables" />
 		<put-attribute name="body"
-			value="/pages-back/stock/stock_cons_balance.jsp" />
+			value="/pages-back/stock/stock_balance.jsp" />
 	</definition>
 
 	<!-- Equipment ใช้หน้า settings คนละไฟล์กับ Consumables เพราะยอดคงเหลือ
@@ -869,14 +869,6 @@
 			value="/pages-back/stock/stock_offs_list.jsp" />
 	</definition>
 
-	<!-- Product -->
-	<definition name="productList" extends="baseLayout">
-		<put-attribute name="title" value="Product List" />
-		<put-attribute name="body"
-			value="/pages-back/product/product_list.jsp" />
-	</definition>
-
-	
 	<!-- PO - Purchase Order -->
 	<definition name="purchaseOrderList" extends="baseLayout">
 		<put-attribute name="title" value="Purchase Order List" />
@@ -895,6 +887,37 @@
 		<put-attribute name="body"
 			value="/pages-back/purchase_order/purchase_order_create.jsp" />
 	</definition>
+
+	<!-- MR - Material Request (New) -->
+	<definition name="equipmentRequestMrList" extends="baseLayout">
+		<put-attribute name="title" value="Material Request List" />
+		<put-attribute name="body"
+			value="/pages-back/equipment_request_mr/equipment_request_mr_list.jsp" />
+	</definition>
+
+	<definition name="equipmentRequestMrAdd" extends="baseLayout">
+		<put-attribute name="title" value="Equipment Request" />
+		<put-attribute name="body"
+			value="/pages-back/equipment_request_mr/equipment_request_mr_create.jsp" />
+	</definition>
+
+	<definition name="equipmentRequestMrEdit" extends="baseLayout">
+		<put-attribute name="title" value="Equipment Request Edit" />
+		<put-attribute name="body"
+			value="/pages-back/equipment_request_mr/equipment_request_mr_edit.jsp" />
+	</definition>
+
+	<definition name="equipmentRequestMrListAdmin" extends="baseLayout">
+		<put-attribute name="title" value="Material Request List (Admin)" />
+		<put-attribute name="body"
+			value="/pages-back/equipment_request_mr/equipment_request_mr_list_admin.jsp" />
+	</definition>
+
+	<definition name="equipmentRequestMrApprove" extends="baseLayout">
+		<put-attribute name="title" value="Equipment Request Approve" />
+		<put-attribute name="body"
+			value="/pages-back/equipment_request_mr/equipment_request_mr_approve.jsp" />
+	</definition>
 	
 	<!-- Line OA -->
 	<definition name="bind_account" template="/pages-back/LineOA/BindAccountLineOA.jsp">
@@ -911,38 +934,10 @@
 			value="/pages-back/contact/contact.jsp" />
 	</definition>
 	
-	
     <definition name="contact_add" extends="baseLayout">
 	   <put-attribute name="title" value="Contact Add" />
 	   <put-attribute name="body"
 		value="/pages-back/contact/contact_add.jsp" />
-</definition>
-	
-	
-		<!-- Equipment Request -->
-	<definition name="equipment_request_list" extends="baseLayout">
-		<put-attribute name="title" value="Equipment Request" />
-		<put-attribute name="body"
-			value="/pages-back/equipment_request/equipment_request_list.jsp" />
-	</definition>
-	
-			<!-- Equipment Request Create -->
-	<definition name="equipment_request_create" extends="baseLayout">
-		<put-attribute name="title" value="Equipment Request Create" />
-		<put-attribute name="body"
-			value="/pages-back/equipment_request/equipment_request_create.jsp" />
-	</definition>
-	
-		<definition name="equipment_request_update" extends="baseLayout">
-		<put-attribute name="title" value="Equipment Request Update" />
-		<put-attribute name="body"
-			value="/pages-back/equipment_request/equipment_request_update.jsp" />
-	</definition>
-
-		<definition name="equipment_request_admin" extends="baseLayout">
-		<put-attribute name="title" value="Equipment Request Admin" />
-		<put-attribute name="body"
-			value="/pages-back/equipment_request/equipment_request_admin.jsp" />
 	</definition>
 
 	<!-- Notification -->
@@ -964,6 +959,13 @@
 		<put-attribute name="title" value="Doc Status" />
 		<put-attribute name="body"
 			value="/pages-back/doc_status/doc_status_list.jsp" />
+	</definition>
+
+	<!-- Unit Master -->
+	<definition name="unitMasterList" extends="baseLayout">
+		<put-attribute name="title" value="Unit Master" />
+		<put-attribute name="body"
+			value="/pages-back/unit_master/unit_master_list.jsp" />
 	</definition>
 
 </tiles-definitions>

@@ -30,95 +30,105 @@
 <script
 	src="${pageContext.request.contextPath}/assets/js/custom/utilities/attachFile/attcahfile.js"></script>
 <style>
-/* Table MR */
-/* [data-bs-theme="light"] #mrResultTable.table.table-striped > tbody > tr:nth-of-type(odd) > * {
-    background-color: #FBFBFB !important; 
-    box-shadow: none !important;
-  }
- [data-bs-theme="dark"] #mrResultTable.table.table-striped > tbody > tr:nth-of-type(odd) > * {
-    background-color: #191B20 !important; 
-    box-shadow: none !important;
-  }
+/* ===== Table Header ===== */
 
-#mrResultTable thead th {
-	white-space: nowrap !important;
-	position: relative !important;
-	padding-right: 35px !important;
-	cursor: pointer;
+#prResultTable thead th {
+    white-space: nowrap !important;
+    vertical-align: middle !important;
+    padding-right: 35px !important;
 }
 
-#mrResultTable thead th.sorting:after, #mrResultTable thead th.sorting_asc:after,
-#mrResultTable thead th.sorting_desc:after, #mrResultTable thead th.sorting:before,	
-#mrResultTable thead th.sorting_asc:before, #mrResultTable thead th.sorting_desc:before
-	{
-	position: absolute !important;
-	top: 10px !important;
-	right: 10px !important;
-	display: block !important;
-	opacity: 0.5;
+
+/* ===== DataTables Header ===== */
+ 
+#prResultTable thead th .dt-column-header {
+    display: inline-flex !important;
+    align-items: center !important;
+    width: auto !important;
+    white-space: nowrap !important;
 }
 
-#mrResultTable thead th.sorting:before {
-	margin-top: -6px;
+#prResultTable thead th .dt-column-title {
+    display: inline-block !important;
+    white-space: nowrap !important;
 }
 
-#mrResultTable thead th.sorting:after {
-	margin-top: 4px;
+/* ===== Remove old DataTables arrow ===== */
+
+#prResultTable thead th.sorting::before,
+#prResultTable thead th.sorting::after,
+#prResultTable thead th.sorting_asc::before,
+#prResultTable thead th.sorting_asc::after,
+#prResultTable thead th.sorting_desc::before,
+#prResultTable thead th.sorting_desc::after {
+    display: none !important;
 }
 
-#mrResultTable thead th:first-child, th:last-child {
+/* ===== First / Last Column ===== */
+
+#prResultTable thead th:first-child{
     padding-right: 0 !important;
 }
 
-#mrResultTable thead th:last-child {
-    text-align: right !important;
-    padding-right: 0 !important;
-} */
+/* ===== PR Search Modal ===== */
 
-/* ===== Signature Box ===== */
+#modal_search_pr .table-responsive {
+    max-height: 45vh;
+    overflow-y: auto;
+}
+
+/* ======= Signature Box ======= */
+
 .sig-box {
-	width: 100%;
-	height: 200px;
-	border-radius: 10px;
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	justify-content: center;
-	position: relative;
-	overflow: hidden;
+    width: 100%;
+    height: 200px;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
 }
 
 .sig-box.locked {
-	border: 2px solid #E4E6EF;
-	background: #F9F9F9;
-	cursor: default;
+    border: 2px solid #E4E6EF;
+    background: #F9F9F9;
+    cursor: default;
 }
 
 .sig-box.uploadable {
-	border: 2px dashed #C9D0E0;
-	background: #FAFAFA;
-	cursor: pointer;
+    border: 2px dashed #C9D0E0;
+    background: #FAFAFA;
+    cursor: pointer;
 }
 
 .sig-box.uploadable:hover {
-	border-color: #009EF7;
-	background: #F0FAFF;
+    border-color: #009EF7;
+    background: #F0FAFF;
 }
 
 .sig-box.unuploadable {
-	border: 2px dashed #C9D0E0;
-	background: #FAFAFA;
+    border: 2px dashed #C9D0E0;
+    background: #FAFAFA;
 }
 
 .sig-lock-badge {
-	position: absolute;
-	top: 6px;
-	right: 8px;
-	font-size: .7rem;
-	color: #A1A5B7;
-	display: flex;
-	align-items: center;
-	gap: 3px;
+    position: absolute;
+    top: 6px;
+    right: 8px;
+    font-size: .7rem;
+    color: #A1A5B7;
+    display: flex;
+    align-items: center;
+    gap: 3px;
+}
+
+.po-src-actions { display: none; min-width: 80px; }
+.po-src-menu.menu-open .po-src-actions { display: block; }
+.po-src-menu.menu-open > .btn { background-color: var(--bs-primary); color: #fff; }
+@media (max-width: 767.98px) {
+	.po-src-actions { max-width: calc(100vw - 32px); }
 }
 </style>
 
@@ -167,7 +177,7 @@
 											<i class="ki-duotone ki-user-tick fs-3 me-3">
 												<span class="path1"></span><span class="path2"></span><span class="path3"></span>
 											</i>
-											<span class="fs-6 fw-medium text-gray-800">${empty loginUser.employeeId ? '' : loginUser.employeeId} - ${empty loginUser.nameEN ? '' : loginUser.nameEN}</span>
+											<span class="fs-6 fw-medium text-gray-800">${empty userCreate.employeeId ? '' : userCreate.employeeId} - ${empty userCreate.nameEN ? '' : userCreate.nameEN}</span>
 										</div>
 
 										<div class="col-lg-6 col-md-6 col-12 d-flex align-items-center">
@@ -175,7 +185,7 @@
 												<span class="path1"></span><span class="path2"></span><span class="path3"></span>
 												<span class="path4"></span><span class="path5"></span>
 											</i>
-											<span class="fs-6 fw-medium text-gray-800"><fmt:formatDate value="${requestDateTime}" pattern="d MMM yyyy" /></span>
+											<span class="fs-6 fw-medium text-gray-800"><fmt:formatDate value="${poList.timeCreate}" pattern="d MMM yyyy" /></span>
 										</div>
 
 										<c:choose>
@@ -299,7 +309,7 @@
 								<div class="col-lg-6 col-md-6 col-12 d-flex flex-column">
 									<label class="fw-medium text-gray-800 mb-2">Reference Invoice/Quotation NO</label>
 									<input type="text" class="form-control text-gray-700 h-45px"
-											name="reference_no" id="reference_no" value="${poList.refNo}" ${poList.status != '1' ? 'disabled' : ''} />
+											name="reference_no" id="reference_no" placeholder="Reference Invoice/Quotation NO" value="${poList.refNo}" ${poList.status != '1' ? 'disabled' : ''} />
 								</div>
 								
 								<div class="col-lg-6 col-md-6 col-12 d-flex flex-column">
@@ -387,7 +397,7 @@
 								
 								<div class="col-lg-6 col-md-6 col-12 d-flex flex-column">
 									<label class="fw-medium text-gray-800 mb-2">Description</label>
-									<textarea class="form-control text-gray-700" rows="3" name="vendor_description" id="vendor_description" ${poList.status != '1' ? 'disabled' : ''}>${poList.descriptionVendor}</textarea>
+									<textarea class="form-control text-gray-700" rows="3" name="vendor_description" id="vendor_description" placeholder="Description" ${poList.status != '1' ? 'disabled' : ''}>${poList.descriptionVendor}</textarea>
 								</div>
 							</div>
 						</div>
@@ -404,9 +414,9 @@
 										<i class="ki-outline ki-plus fs-3 me-1"></i>Create
 									</button>
 									
-									<button type="button" class="btn btn-lg btn-primary fw-medium text-white px-6 py-4" data-bs-toggle="modal" data-bs-target="#modal_search_mr">
+									<button type="button" id="btnOpenSearchPr" class="btn btn-lg btn-primary fw-medium text-white px-6 py-4">
 										<i class="ki-duotone ki-magnifier fs-3 me-1">
-											<span class="path1"></span><span class="path2"></span></i>Search MR
+											<span class="path1"></span><span class="path2"></span></i>Search PR
 									</button>
 								</div>
 							</c:if>
@@ -504,7 +514,7 @@
 								<!-- Approved status -->
 								<c:if test="${poList.status == '3' or poList.status == '7'}">
 									<c:if test="${not empty poList.signDate}">
-										<div class="col-6">
+										<div class="col-6 p-16 m-0">
 											<div class="d-flex flex-column align-items-center gap-3">
 												<c:if test="${not empty imgPathSignature}">
 													<img src="${pageContext.request.contextPath}${imgPathSignature}"
@@ -522,7 +532,7 @@
 									</c:if>
 									
 									<c:if test="${not empty poList.approveDate}">
-										<div class="col-6">
+										<div class="col-6 p-16 m-0">
 											<div class="d-flex flex-column align-items-center gap-3">
 												<c:if test="${not empty imgPathApproveSignature}">
 													<img src="${pageContext.request.contextPath}${imgPathApproveSignature}"
@@ -648,7 +658,7 @@
 					</c:if>
 
 					<div class="modal fade" tabindex="-1" id="modal_create_po">
-						<div class="modal-dialog modal-lg">
+						<div class="modal-dialog modal-lg modal-dialog-centered">
 						    <div class="modal-content">
 						        <div class="modal-header">
 						            <h3 class="modal-title">Create PO - Detail</h3>
@@ -683,36 +693,34 @@
 										</div>
 									</div>
 									
-									<div class="row g-5 mb-6">
+									<div class="row g-5 mb-6" id="poQtyUnitRow">
 										<div class="col-lg-6 col-md-6 col-12 d-flex flex-column">
 											<label class="required fw-medium text-gray-800 mb-2">จำนวน</label>
 											<input type="number" class="form-control text-gray-700 h-45px" min="1"
 													name="po_qty" id="po_qty" placeholder="1" value="1" />
 										</div>
-										
+
 										<div class="col-lg-6 col-md-6 col-12 d-flex flex-column">
 											<label class="required fw-medium text-gray-800 mb-2">Unit</label>
 											<div class="position-relative d-flex align-items-center">
 												<select id="unit" class="form-select h-45px" data-control="select2">
 													<option value=""></option>
 												</select>
-												
+
 											</div>
 										</div>
 									</div>
-									
+
 									<div class="row g-5 mb-6">
-										<div class="col-lg-6 col-md-6 col-12 d-flex flex-column">
-											<label class="required fw-medium text-gray-800 mb-2">ราคาต่อหน่วย</label>
+										<div class="col-lg-6 col-md-6 col-12 d-flex flex-column" id="poPriceRow">
+											<label class="required fw-medium text-gray-800 mb-2">ราคารวม</label>
 											<input type="text" class="form-control text-gray-700 h-45px"
 													name="po_price" id="po_price" placeholder="0.00" />
 										</div>
-									<!-- </div>
 									
-									<div class="row g-5 mb-6"> -->
-										<div class="col-6 d-flex flex-column">
-											<label class="required fw-medium text-gray-800 mb-2">Description / Detail</label>
-											<textarea class="form-control text-gray-700" rows="3" name="description" id="po_description" placeholder="Description"></textarea>
+										<div class="col-lg-6 col-md-6 col-12 d-flex flex-column" id="poDescRow">
+											<label class="fw-medium text-gray-800 mb-2">Description / Detail</label>
+											<textarea class="form-control text-gray-700" rows="3" name="po_item_description" id="po_description" placeholder="Description"></textarea>
 										</div>
 									</div>
 						        </div>
@@ -720,23 +728,169 @@
 						        <div class="modal-footer">
 						            <button type="button" class="btn btn-light" data-bs-dismiss="modal">Close</button>
 						            <button type="button" class="btn btn-success" id="btnSavePoDetail"
-        									onclick="addPoDetailToCart()">Save</button>
+        									onclick="addPoDetailToCart()">
+        									<span class="indicator-label">Save</span>
+        									<span class="indicator-progress">Saving...<span class="spinner-border spinner-border-sm align-middle ms-2"></span></span>
+        								</button>
 						        </div>
 						    </div>
 						</div>
 					</div>
 					
 					
+					<div class="modal fade" tabindex="-1" id="modal_search_pr">
+					    <div class="modal-dialog modal-xl">
+					        <div class="modal-content px-3">
+					            <div class="modal-header border-0">
+					                <h3 class="modal-title">Search PR</h3>
+					                <div class="btn btn-icon btn-sm btn-active-light-primary ms-2" data-bs-dismiss="modal" aria-label="Close">
+					                    <i class="ki-duotone ki-cross fs-1"><span class="path1"></span><span class="path2"></span></i>
+					                </div>
+					            </div>
+					
+					            <div class="modal-body">
+					                <div class="row g-5 mb-3">
+					                    <div class="col-lg-6 col-md-6 col-12 d-flex flex-column">
+					                        <label class="required fw-medium text-gray-800 mb-2">Search PR</label>
+					                        <div class="input-group">
+					                            <input type="text" class="form-control text-gray-700 h-45px" name="searchPrKeyword" id="searchPrKeyword" />
+					                        </div>
+					                    </div>
+					
+					                    <div class="col-lg-6 col-md-6 col-12 d-flex flex-column">
+					                        <label class="required fw-medium text-gray-800 mb-2">Category</label>
+					                        <select name="searchPrCategory" id="searchPrCategory" class="form-select h-45px" data-control="select2">
+					                            <option value="" selected>All</option>
+					                            <option value="equipment">Equipment</option>
+					                            <option value="consumables">Consumables</option>
+												<option value="accessory">Accessory</option>
+					                            <option value="office">Office supplies</option>
+					                        </select>
+					                    </div>
+					                </div>
+					
+					                <div class="row g-5 mb-6 mt-3">
+					                    <div class="d-flex align-items-center justify-content-between mb-4 ">
+					                        <div class="d-flex align-items-center gap-2">
+					                            <h3 class="text-gray-900 fw-bold">
+					                                <span id="prItemsFoundCount"></span> Items Found
+					                            </h3>
+					                            <span id="prSortLabel" class="fw-bold fs-6 text-gray-500">by Recent Updates ↓</span>
+					                        </div>
+					                        <h3 class="text-primary fw-bold">
+					                            <span id="prSelectedCount"></span> Selected
+					                        </h3>
+					                    </div>
+					                    <div class="table-responsive">
+					                        <table class="table align-middle gy-4 gs-7 border-bottom border-gray-200" id="prResultTable">
+					                            <thead>
+					                                <tr class="fs-7 fw-bold text-gray-500 text-uppercase border-bottom border-gray-200 mb-0">
+					                                    <th class="min-w-15px ">
+					                                        <div class="text-center form-check form-check-sm">
+					                                            <input class="form-check-input" type="checkbox" id="checkAllPr" />
+					                                        </div>
+					                                    </th>
+					                                    <th class="min-w-40px text-start mx-0">#</th>
+					                                    <th class="min-w-80px">PR ID</th>
+					                                    <th class="min-w-100px">Category</th>
+					                                    <th class="min-w-200px">Request Name</th>
+					                                    <th class="min-w-200px">Product</th>
+					                                    <th class="min-w-100px text-end px-2">Status</th>
+					                                </tr>
+					                            </thead>
+					                            <tbody id="prResultBody"></tbody>
+					                        </table>
+					                    </div>
+					                    <div class="text-muted fs-7 mt-2" id="prNoResult" style="display:none;">No matching PR found.</div>
+					                </div>
+					            </div>
+					
+					            <div class="modal-footer pt-0 mt-0 mb-2 border-0">
+					                <button type="button" class="btn btn-light" data-bs-dismiss="modal">Close</button>
+					                <button type="button" class="btn btn-success" id="btnSubmitPr">Submit</button>
+					            </div>
+					        </div>
+					    </div>
+					</div>
+
+					<div class="modal fade" tabindex="-1" id="modal_edit_source">
+						<div class="modal-dialog modal-lg modal-dialog-centered">
+							<div class="modal-content">
+								<div class="modal-header">
+									<h3 class="modal-title">Edit PO - Detail</h3>
+									<div class="btn btn-icon btn-sm btn-active-light-primary ms-2" data-bs-dismiss="modal" aria-label="Close">
+										<i class="ki-duotone ki-cross fs-1"><span class="path1"></span><span class="path2"></span></i>
+									</div>
+								</div>
+
+								<div class="modal-body">
+									<div class="d-flex align-items-center mb-4">
+										<div class="symbol symbol-40px me-3" id="editSrcTypeIcon"></div>
+										<span class="fs-6 fw-normal text-gray-900" id="editSrcTypeName"></span>
+										<i class="ki-duotone ki-black-right mx-2 text-gray-500 fs-2">
+											<span class="path1"></span><span class="path2"></span><span class="path3"></span>
+										</i>
+										<span class="fs-6 fw-normal text-gray-900" id="editSrcProduct"></span>
+									</div>
+
+									<div class="d-flex align-items-start justify-content-between gap-5 bg-light rounded p-5 mb-8">
+                                        <div class="d-grid align-items-center flex-grow-1" style="grid-template-columns: auto 1fr; gap: .75rem 1rem;">
+
+                                            <i class="ki-duotone ki-user-tick fs-3 text-muted"><span class="path1"></span><span class="path2"></span><span class="path3"></span></i>
+                                            <span class="text-gray-800 fs-5" id="editSrcCreator"></span>
+
+                                            <i class="ki-duotone ki-calendar-2 fs-3"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span><span class="path5"></span></i>
+                                            <span class="text-gray-800 fs-5" id="editSrcDate"></span>
+
+                                            <i class="ki-duotone ki-tablet-book fs-3"><span class="path1"></span><span class="path2"></span></i>
+                                            <span class="d-flex flex-wrap align-items-center gap-2" id="editSrcMr"></span>
+                                        </div>
+
+                                        <div class="text-end flex-shrink-0">
+                                            <div class="text-muted fs-8">ปัจจุบัน</div>
+                                            <div class="text-gray-900 fs-5 fw-no" id="editSrcCurrent"></div>
+                                        </div>
+
+                                    </div>
+
+									<div class="row g-5">
+										<div class="col-12 col-sm-6 d-flex flex-column">
+											<label class="required fw-medium text-gray-800 mb-2">จำนวน</label>
+											<input type="number" class="form-control text-gray-700 h-45px" min="1" id="edit_src_qty" />
+										</div>
+										<div class="col-12 col-sm-6 d-flex flex-column">
+											<label class="required fw-medium text-gray-800 mb-2">Unit</label>
+											<select id="edit_src_unit" class="form-select h-45px" data-control="select2"
+													data-dropdown-parent="#modal_edit_source" data-hide-search="true">
+												<option value=""></option>
+											</select>
+										</div>
+									</div>
+									<div class="text-muted fs-7 mt-3" id="editSrcPreview"></div>
+								</div>
+
+								<div class="modal-footer">
+									<button type="button" class="btn btn-light" data-bs-dismiss="modal">Close</button>
+									<button type="button" class="btn btn-success" id="btnSaveEditSource" onclick="saveEditSource()">
+										<span class="indicator-label">Update</span>
+										<span class="indicator-progress">Updating...<span class="spinner-border spinner-border-sm align-middle ms-2"></span></span>
+									</button>
+								</div>
+							</div>
+						</div>
+					</div>
+					
 					<div class="d-flex justify-content-between g-10">
 						<div class="d-flex">
-							<button type="button" id="backFormBtn"
-								onclick="sessionStorage.removeItem('poDetailCart_draft'); location.href='purchase_order_list'"
-    							class="btn btn-lg btn-light fw-medium text-light-inverse px-6 py-4 me-4 border">Back
+							<button type="button" id="backFormBtn" onclick="goBack()" 
+                                class="btn btn-lg btn-light fw-medium text-light-inverse px-6 py-4 me-4 border">Back
 							</button>
 							<c:if test="${poList.status == '1' or poList.status == '4'}">
 								<button type="button" id="cancelFormBtn"
 									onclick="cancelPO()"
-									class="btn btn-lg btn-dark fw-medium px-6 py-4">Cancel
+									class="btn btn-lg btn-dark fw-medium px-6 py-4">
+									<span class="indicator-label">Cancel</span>
+									<span class="indicator-progress">Cancelling...<span class="spinner-border spinner-border-sm align-middle ms-2"></span></span>
 								</button>
 							</c:if>
 						</div>
@@ -744,22 +898,36 @@
 							<c:when test="${poList.status == '1'}">
 								<div class="d-flex">
 									<button type="button" id="saveDraft" onclick="saveDraftForm()"
-										class="btn btn-lg btn-cyan text-white fw-medium px-6 py-4 me-4">Save Draft
+										class="btn btn-lg btn-cyan text-white fw-medium px-6 py-4 me-4">
+										<span class="indicator-label">Save Draft</span>
+										<span class="indicator-progress">Saving...<span class="spinner-border spinner-border-sm align-middle ms-2"></span></span>
 									</button>
 									<button type="button" id="savePOFormBtn"
 										class="btn btn-success text-white fw-medium px-6 py-4"
-										onclick="submitPO()">Submit PO</button>
+										onclick="submitPO()">
+										<span class="indicator-label">Submit PO</span>
+										<span class="indicator-progress">Submitting...<span class="spinner-border spinner-border-sm align-middle ms-2"></span></span>
+									</button>
 								</div>
 							</c:when>
 							
 							<c:when test="${poList.status == '2'}">
 									<div class="d-flex">
 										<button type="button" id="returnPOBtn" onclick="returnPO()"
-												class="btn btn-lg btn-info text-white fw-medium px-6 py-4 me-4">Return</button>
+												class="btn btn-lg btn-info text-white fw-medium px-6 py-4 me-4">
+												<span class="indicator-label">Return</span>
+												<span class="indicator-progress">Returning...<span class="spinner-border spinner-border-sm align-middle ms-2"></span></span>
+											</button>
 										<button type="button" id="rejectPOBtn" onclick="rejectPO()"
-												class="btn btn-lg btn-danger text-white fw-medium px-6 py-4 me-4">Reject</button>
+												class="btn btn-lg btn-danger text-white fw-medium px-6 py-4 me-4">
+												<span class="indicator-label">Reject</span>
+												<span class="indicator-progress">Rejecting...<span class="spinner-border spinner-border-sm align-middle ms-2"></span></span>
+											</button>
 										<button type="button" id="approvePOBtn" onclick="approvePO()"
-													class="btn btn-lg btn-success text-white fw-medium px-6 py-4">Approve</button>
+													class="btn btn-lg btn-success text-white fw-medium px-6 py-4">
+													<span class="indicator-label">Approve</span>
+													<span class="indicator-progress">Approving...<span class="spinner-border spinner-border-sm align-middle ms-2"></span></span>
+												</button>
 									</div>
 								
 							</c:when>
@@ -768,7 +936,10 @@
 								<div class="d-flex">
 									<button type="button" id="editPOFormBtn"
 										class="btn btn-lg btn-primary fw-medium px-6 py-4"
-										onclick="editPO()">Edit</button>
+										onclick="editPO()">
+										<span class="indicator-label">Edit</span>
+										<span class="indicator-progress">Loading...<span class="spinner-border spinner-border-sm align-middle ms-2"></span></span>
+									</button>
 								</div>
 							</c:when>
 
@@ -776,7 +947,10 @@
 								<div class="d-flex">
 									<button type="button" id="inProgressPOFormBtn"
 										class="btn btn-lg bg-cyan text-white fw-medium px-6 py-4"
-										onclick="inProgressPO()">In-Progress</button>
+										onclick="inProgressPO()">
+										<span class="indicator-label">In-Progress</span>
+										<span class="indicator-progress">Processing...<span class="spinner-border spinner-border-sm align-middle ms-2"></span></span>
+									</button>
 								</div>
 							</c:when>
 
@@ -812,7 +986,8 @@
 	    {
 	        poDetailId: "${d.po_detail_id}",
 	        productId: "${d.product_id}",
-	        productName: "${empty d.product_name ? '' : d.product_name}",
+	        productName: "${fn:replace(fn:replace(empty d.product_name ? '' : d.product_name, '\\', '\\\\'), '"', '\\"')}",
+            parentProductName: "${fn:replace(fn:replace(empty d.parent_product_name ? '' : d.parent_product_name, '\\', '\\\\'), '"', '\\"')}",
 	        itemsType: "${empty d.product_type ? '' : d.product_type}",
 	        qty: ${empty d.amount_total ? 0 : d.amount_total},
 	        unit: "${empty d.unit ? '' : d.unit}",
@@ -820,19 +995,41 @@
 	        price: ${empty d.unit_price ? 0 : d.unit_price},
 	        total: ${empty d.price_total ? 0 : d.price_total},
 	        description: "${fn:replace(fn:replace(empty d.description ? '' : d.description, '\\', '\\\\'), '"', '\\"')}",
-	        savedAt: "<fmt:formatDate value="${d.time_create}" pattern="d MMM yyyy, HH:mm"/>"
+	        savedAt: "<fmt:formatDate value="${d.time_create}" pattern="d MMM yyyy, HH:mm"/>",
+			sources: [
+				<c:forEach var="p" items="${d.poParentList}" varStatus="ps">
+				{
+					poParentId: "${empty p.po_parent_id ? '' : p.po_parent_id}",
+					prId: "${p.pr_id}",
+					refLink: "${empty p.ref_link ? '' : p.ref_link}",
+					qty: ${empty p.amount ? 0 : p.amount},
+					unit: "${empty p.unit ? '' : p.unit}",
+					unitName: "${empty p.unit_name ? '' : p.unit_name}",
+					baseQty: ${empty p.base_qty ? (empty p.amount ? 0 : p.amount) : p.base_qty},
+					creatorName: "${empty p.userEmployeeId ? '' : p.userEmployeeId} ${empty p.user_create_nameEN ? '' : ' - '.concat(p.user_create_nameEN)}",
+					savedAt: "<fmt:formatDate value="${p.time_create}" pattern="d MMM yyyy, HH:mm"/>",
+					mrIds: [
+						<c:forEach var="m" items="${p.mrList}" varStatus="ms">
+						{
+							id: "${m.mr_id}",
+							url: "${fn:replace(fn:replace(empty m.url_ref ? '' : m.url_ref, '\\', '\\\\'), '"', '\\"')}"
+						}${!ms.last ? ',' : ''}
+						</c:forEach>
+					]
+				}${!ps.last ? ',' : ''}
+				</c:forEach>
+			]
 	    }${!st.last ? ',' : ''}
 	    </c:forEach>
 	];
 
 	let existingAttachmentCount = ${not empty attachmentList ? fn:length(attachmentList) : 0};
 
-	function formatNowDateTime(){
-	    const d = new Date();
+	function formatNowDateTime(inputDate){
+	    const d = inputDate ? new Date(String(inputDate).replace(' ', 'T')) : new Date();
 	    const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
 	    const pad = n => String(n).padStart(2,'0');
 	    return `\${d.getDate()} \${months[d.getMonth()]} \${d.getFullYear()}, \${pad(d.getHours())}:\${pad(d.getMinutes())}`;
-	    /* return `\${d.getDate()} \${months[d.getMonth()]} \${d.getFullYear()}, \${pad(d.getHours())}:\${pad(d.getMinutes())}`; */
 	}
 	
 	document.addEventListener("DOMContentLoaded", function () {
@@ -843,36 +1040,6 @@
 	        locale: "en",        
 	        allowInput: false
 	    });
-		
-		// Table MR
-		// var table = $('#mrResultTable').DataTable({
-		// 	ordering : true,
-		// 	searching : true,
-		// 	autoWidth : false,
-		// 	info: false, 
-		// 	paging: false,
-		// 	columnDefs : [ {
-		// 		orderable : false,
-		// 		targets : [ 0 ]
-		// 	}, {
-		// 		orderable : true,
-		// 		targets : [ 1, 2, 3, 4, 5 ]
-		// 	}, {
-		// 		targets: [ 5 ],
-		// 		type: 'string'
-		// 	} ],
-		// 	order : [],
-		// 	headerCallback : function(thead) {
-		// 		$(thead).find('th').each(
-		// 				function(index) {
-		// 					if (index === 0) return;
-		// 					if ($(this).find('.th-wrapper').length === 0) {
-		// 						$(this).wrapInner(
-		// 								'<span class="th-wrapper" style="display:inline-flex; align-items:center; white-space:nowrap; pointer-events:none;"></span>');
-		// 						}
-		// 					});
-		// 		}
-		// });
 		
 		document.querySelector('#kt_app_content_container').addEventListener('click', function(e){
 			const btn = e.target.closest('.po-group-toggle');
@@ -896,47 +1063,6 @@
 				icon.classList.add('ki-down-square');
 			}
 		});
-		// document.querySelector('#kt_app_content_container').addEventListener('click', function(e){
-		//     const btn = e.target.closest('.collapsed, [data-target^="cart_"], a[id^="poGroupBtn_"]');
-		//     if (!btn) return;
-
-		//     let collapseEl;
-		//     if (btn.dataset.target) {
-		//         collapseEl = document.getElementById('poGroup_' + btn.dataset.target);
-		//     } else if (btn.id.startsWith('poGroupBtn_')) {
-		//         collapseEl = document.getElementById(btn.id.replace('poGroupBtn_', 'poGroup_'));
-		//     }
-		//     if (!collapseEl) return;
-
-		//     const icon = btn.querySelector('i');
-		//     const isOpen = collapseEl.classList.contains('show');
-
-		//     if (isOpen) {
-		//         collapseEl.classList.remove('show');
-		//         btn.classList.add('collapsed');
-		//         icon.classList.remove('ki-down-square');
-		//         icon.classList.add('ki-up-square');
-		//     } else {
-		//         collapseEl.classList.add('show');
-		//         btn.classList.remove('collapsed');
-		//         icon.classList.remove('ki-up-square');
-		//         icon.classList.add('ki-down-square');
-		//     }
-		// });
-		
-		//running number
-		/* function runNumber() {
-			const info = table.page.info();
-			table.column(1, {
-				page : 'current'
-					}).nodes().each(function(cell, i) {
-						cell.innerHTML = info.start + i + 1;
-						});
-			}
-		
-		table.on('draw.dt order.dt search.dt', runNumber);
-		runNumber();
-		 */
 		
 		// --- Modal ---
 		 var elements = Array.prototype.slice.call(document.querySelectorAll("[data-bs-stacked-modal]"));
@@ -961,7 +1087,7 @@
 		        });
 		    }
 		    
-		    if (!editCompanyId) { // เฉพาะโหมด add เท่านั้น
+		    if (!editCompanyId) { // เฉพาะ add เท่านั้น
 		        var $vendorId = $('#vendor_id');
 		        var $firstCompany = $vendorId.find('option').filter(function () {
 		            return $(this).val() !== '';
@@ -974,6 +1100,7 @@
 		    const createPoModalEl = document.getElementById('modal_create_po');
 
 		    createPoModalEl.addEventListener('show.bs.modal', function () {
+		        setBtnLoading('#btnSavePoDetail', false);
 		        if (editingIndex === -1 && !editingExistingDetailId) {
 		            $('#items_type').val('equipment').trigger('change');
 		            $('#po_qty').val('1');
@@ -981,25 +1108,30 @@
 		            $('#po_price').val('');
 		            $('#po_description').val('');
 		            $('#modal_create_po .modal-title').text('Create PO - Detail');
-		            $('#btnSavePoDetail').text('Save');
-		        }
-		    });
-
-		    createPoModalEl.addEventListener('shown.bs.modal', function () {
-		        document.body.classList.add('modal-open');
-		        document.body.style.overflow = 'hidden';
-		        document.documentElement.style.overflow = 'hidden';
+		            $('#btnSavePoDetail .indicator-label').text('Save');
+					$('#poQtyUnitRow').removeClass('d-none');
+					$('#poPriceRow').addClass('d-none');
+        			$('#poDescRow').removeClass('col-lg-6 col-md-6');
+				} else {
+					// Edit
+					$('#poQtyUnitRow').addClass('d-none');
+					$('#poPriceRow').removeClass('d-none');
+					$('#poDescRow').addClass('col-lg-6 col-md-6');
+				}
 		    });
 
 		    createPoModalEl.addEventListener('hidden.bs.modal', function () {
-		        editingIndex = -1;
-		        editingExistingDetailId = null;
-		        document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
-		        document.body.classList.remove('modal-open');
-		        document.body.style.removeProperty('padding-right');
-		        document.body.style.removeProperty('overflow');
-		        document.documentElement.style.removeProperty('overflow');
-		    });
+				editingIndex = -1;
+				editingExistingDetailId = null;
+			});
+
+			document.getElementById('modal_edit_source').addEventListener('hidden.bs.modal', function () {
+				editingSrc = null;
+			});
+
+			document.getElementById('modal_edit_source').addEventListener('show.bs.modal', function () {
+				setBtnLoading('#btnSaveEditSource', false);
+			});
 		    
 			const btnOpenCreatePo = document.getElementById('btnOpenCreatePo');
 			if (btnOpenCreatePo) {
@@ -1007,6 +1139,39 @@
 					editingIndex = -1;
 					editingExistingDetailId = null;
 					bootstrap.Modal.getOrCreateInstance(createPoModalEl, { backdrop: true }).show();
+				});
+			}
+
+			const searchPrModalEl = document.getElementById('modal_search_pr');
+
+			searchPrModalEl.addEventListener('hide.bs.modal', function () {
+				if (document.activeElement && searchPrModalEl.contains(document.activeElement)) {
+					document.activeElement.blur();
+				}
+			});
+
+			searchPrModalEl.addEventListener('hidden.bs.modal', function () {
+				isSearchPrModalOpen = false;
+
+				// ล้างติ๊กค้างใน modal Search PR
+				if (prDetailTable) { prDetailTable.destroy(); prDetailTable = null; }
+				$('#prResultBody').empty();
+				$('#checkAllPr').prop('checked', false);
+				$('#prSelectedCount').text('0');
+			
+				selectedPrCategory = '';
+				$('#searchPrCategory').val('').trigger('change.select2');
+			});
+
+			searchPrModalEl.addEventListener('show.bs.modal', function () {
+				isSearchPrModalOpen = true;
+				loadInprogressPrDetail();
+			});
+
+			const btnOpenSearchPr = document.getElementById('btnOpenSearchPr');
+			if (btnOpenSearchPr) {
+				btnOpenSearchPr.addEventListener('click', function () {
+					bootstrap.Modal.getOrCreateInstance(searchPrModalEl).show();
 				});
 			}
 
@@ -1034,6 +1199,9 @@
 	    }).then((result) => {
 	        if (result.isConfirmed) {
 	        	sessionStorage.removeItem(PO_CART_STORAGE_KEY);
+				sessionStorage.removeItem(PO_EXISTING_SRC_KEY);
+				sessionStorage.removeItem(PO_EXISTING_EDIT_KEY);
+				sessionStorage.removeItem(PO_SOURCE_EDIT_KEY);
 	            window.location.href = redirectUrl;
 	        }
 	    });
@@ -1159,7 +1327,6 @@
 							'<span class="text-gray-800 fw-medium flex-shrink-0">' + fileExt + '</span>' +
 						'</span>' +
 					'</div>' +
-					'<span class="badge badge-light-success ms-2 flex-shrink-0">New</span>' +
 					'<span class="badge badge-light-danger bg-hover cursor-pointer ms-2 flex-shrink-0" title="Delete">' +
 						'<i class="ki-duotone ki-trash text-danger fs-2">' +
 							'<span class="path1"></span><span class="path2"></span>' +
@@ -1218,12 +1385,13 @@
 	                    $(el).closest('[data-file-id]').remove();
 						existingAttachmentCount = Math.max(0, existingAttachmentCount - 1);
         				updateWarningBoxVisibility();
+                        toastOk('ลบไฟล์สำเร็จ');
 	                } else {
-	                    Swal.fire('Error', 'ไม่สามารถลบไฟล์ได้', 'error');
+	                    toastFail('ไม่สามารถลบไฟล์ได้');
 	                }
 	            },
 	            error: function () {
-	                Swal.fire('Error', 'เกิดข้อผิดพลาดในการลบไฟล์', 'error');
+	              toastFail('เกิดข้อผิดพลาดในการลบไฟล์');
 	            }
 	        });
 	    });
@@ -1330,7 +1498,6 @@
 	        dataType: 'json',
 	        data: { companyId: companyId },
 	        success: function (resp) {
-	            // if (resp.debug) console.log('[get_company_profile debug]', resp.debug);
 	            var data = resp.data;
 	            if (!data) return;
 
@@ -1422,7 +1589,6 @@
 	        dataType: 'json',
 	        data: { contactId: contactId },
 	        success: function (resp) {
-	            // if (resp.debug) console.log('[get_company_contact debug]', resp.debug);
 	            var data = resp.data;
 	            if (!data) return;
 
@@ -1447,7 +1613,6 @@
 		        dataType: 'json',
 		        data: { itemsType: itemsType },
 		        success: function (resp) {
-		            // if (resp.debug) console.log('[get_items_catalog debug]', resp.debug);
 		            var data = resp.data;
 		            if (!data) return;
 		            var list = (data && data.productList) || [];
@@ -1471,7 +1636,7 @@
 
 	$('#product_name').on('change', function(){
 		var productId = $(this).val();
-		$('#unit').html('<option value=""></option>').trigger('change');
+		$('#unit').html('<option value=""></option>').data('base-unit-id', '').data('base-unit-name', '').trigger('change');
 		if(!productId) return;
 
 		$.ajax({
@@ -1485,15 +1650,23 @@
 				var list = (data && data.unitList) || [];
 
 				var options = '';
+				var baseUnit = null;
 				if (list.length === 0) {
 					options = '<option value=""></option>';
 				} else {
 					list.forEach(function (item, index) {
-						options += '<option value="' + item.id + '"' + (index === 0 ? ' selected' : '') + '>' + item.name + '</option>';
+						if (String(item.sequence) === '0') baseUnit = item;
+						options += '<option value="' + item.id + '"'
+							+ ' data-conversion-rate="' + (item.conversionRate != null ? item.conversionRate : 1) + '"'
+							+ ' data-sequence="' + (item.sequence != null ? item.sequence : '') + '"'
+							+ (index === 0 ? ' selected' : '') + '>' + item.name + '</option>';
 					});
 				}
 
-				$('#unit').html(options).trigger('change');
+				$('#unit').html(options)
+					.data('base-unit-id', baseUnit ? baseUnit.id : '')
+					.data('base-unit-name', baseUnit ? baseUnit.name : '')
+					.trigger('change');
 			},
 			error: function () {
 				Swal.fire('Error', 'ไม่สามารถโหลดข้อมูล Unit ได้', 'error');
@@ -1505,14 +1678,53 @@
 
 <script>
 let poDetailCart = []; // เก็บรายการใหม่ ที่เพิ่มระหว่างแก้ไข ยังไม่ถูกบันทึกลง DB
-let existingPoDetailList = (typeof serverPoDetailCart !== 'undefined') ? serverPoDetailCart : []; // รายการเดิมที่มีอยู่แล้วใน DB (แก้/ลบผ่าน AJAX ทันที)
+let existingPoDetailList = (typeof serverPoDetailCart !== 'undefined') ? serverPoDetailCart : []; // รายการเดิมที่มีอยู่แล้วใน DB
 let poDetailCounter = 0;
 let editingIndex = -1;
 let editingExistingDetailId = null; // po_detail_id ของรายการเดิมที่กำลังแก้ (ถ้ามี)
+let pendingExistingPoSources = {}; //source ใหม่ที่ต่อเข้าการ์ดเดิม ยังไม่ save
+let prUnitCatalogCache = {};
 let confirmed1 = ${empty poList.signDate ? 'false' : 'true'}; //track ว่าลงชื่อ ผู้ขอเบิก แล้วหรือยัง
 
+let pendingExistingEdits = {}; // { poDetailId: { total, description } } ส่วนของ db ที่ผู้ใช้แก้ไว้ ยังไม่ save
+const PO_EXISTING_EDIT_KEY = 'poExistingEdit_draft_' + (EDIT_PO_ID || 'new');
+
+let pendingSourceEdits = {}; // { poDetailId: { poParentId: { qty, unit, unitName, baseQty } } } แก้ qty/unit ของ source เดิมใน db ยังไม่ save
+const PO_SOURCE_EDIT_KEY = 'poSourceEdit_draft_' + (EDIT_PO_ID || 'new');
+
 const PO_CART_STORAGE_KEY = 'poDetailCart_draft_' + (EDIT_PO_ID || 'new');
+const PO_EXISTING_SRC_KEY = 'poExistingSrc_draft_' + (EDIT_PO_ID || 'new');
 loadCartFromSession();
+
+
+function pendingSrcTotal(poDetailId){
+    return (pendingExistingPoSources[String(poDetailId)] || [])
+        .reduce(function(a, s){ return a + (Number(s.total) || 0); }, 0);
+}
+function dbTotalOf(item){   // ยอดส่วนของ db (รวมที่แก้ค้างไว้)
+    const e = pendingExistingEdits[String(item.poDetailId)];
+    return e ? Number(e.total) : (Number(item.total) || 0);
+}
+function dbDescOf(item){
+    const e = pendingExistingEdits[String(item.poDetailId)];
+    return e ? e.description : (item.description || '');
+}
+
+function hasUnsavedChanges(){
+    if (!canEditPoDetail) return false;   // เตือนเฉพาะ status = 1
+    if (poDetailCart.length > 0) return true;
+    if (Object.keys(pendingExistingEdits).length > 0) return true;
+    const hasPendingSrc = Object.keys(pendingExistingPoSources).some(function(k){
+        return (pendingExistingPoSources[k] || []).length > 0;
+    });
+    if (hasPendingSrc) return true;
+    const hasPendingSrcEdit = Object.keys(pendingSourceEdits).some(function(k){
+        return Object.keys(pendingSourceEdits[k] || {}).length > 0;
+    });
+    if (hasPendingSrcEdit) return true;
+    if (typeof selectedFiles !== 'undefined' && selectedFiles.length > 0) return true;
+    return false;
+}
 
 function mapDbItemsTypeToSelect(val){
     switch(String(val)){
@@ -1520,15 +1732,39 @@ function mapDbItemsTypeToSelect(val){
         case '2': return 'consumables';
 		case '3': return 'accessory';
         case '4': return 'office';
-        default:  return val; // เผื่อเป็น 'equipment'/'consumables'/'office' อยู่แล้ว
+        default:  return val;
     }
 }
+
+// ถ้าสินค้านี้มีการ์ดอยู่ใน DB แล้ว เก็บเป็น source ใหม่ของการ์ดนั้น คืน true ถ้าจัดการให้แล้ว
+function addToExistingPoDetail(productId, sourceEntry, addTotal){
+    const ex = existingPoDetailList.find(function(it){
+        return String(it.productId) === String(productId);
+    });
+    if (!ex) return false;
+
+    const pid = String(ex.poDetailId);
+    const pending = pendingExistingPoSources[pid] || [];
+
+    // กันดึง PR detail ซ้ำ
+    if (sourceEntry.prDetailId) {
+        const dup = (ex.sources || []).concat(pending).some(function(s){
+            return String(s.prDetailId) === String(sourceEntry.prDetailId);
+        });
+        if (dup) return true;
+    }
+    pending.push({ ...sourceEntry, total: Number(addTotal) || 0 });
+    pendingExistingPoSources[pid] = pending;
+    return true;
+}
+
 function saveCartToSession(){
     try {
         sessionStorage.setItem(PO_CART_STORAGE_KEY, JSON.stringify(poDetailCart));
-    } catch (e) {
-        console.error('ไม่สามารถบันทึก cart ลง sessionStorage ได้', e);
-    }
+        sessionStorage.setItem(PO_EXISTING_SRC_KEY, JSON.stringify(pendingExistingPoSources));
+        sessionStorage.setItem(PO_EXISTING_EDIT_KEY, JSON.stringify(pendingExistingEdits));
+        sessionStorage.setItem(PO_SOURCE_EDIT_KEY, JSON.stringify(pendingSourceEdits));
+    } catch (e) { console.error('ไม่สามารถบันทึก cart ลง sessionStorage ได้', e); }
 }
 
 function loadCartFromSession(){
@@ -1544,10 +1780,20 @@ function loadCartFromSession(){
                 total: Number(item.total) || (Number(item.qty) || 0) * (Number(item.price) || 0),
                 savedAt: item.savedAt || formatNowDateTime()
             }));
+
+			const savedEx = sessionStorage.getItem(PO_EXISTING_SRC_KEY);
+			if (savedEx) pendingExistingPoSources = JSON.parse(savedEx) || {};
         }
+        const savedEdit = sessionStorage.getItem(PO_EXISTING_EDIT_KEY);
+if (savedEdit) pendingExistingEdits = JSON.parse(savedEdit) || {};
+        const savedSrcEdit = sessionStorage.getItem(PO_SOURCE_EDIT_KEY);
+        if (savedSrcEdit) pendingSourceEdits = JSON.parse(savedSrcEdit) || {};
     } catch (e) {
         console.error('ไม่สามารถโหลด cart จาก sessionStorage ได้', e);
         poDetailCart = [];
+		pendingExistingPoSources = {};
+        pendingExistingEdits = {};
+        pendingSourceEdits = {};
     }
 }
 
@@ -1569,12 +1815,19 @@ function validatePoDetailForm(){
 
     if (!$('#unit').val().trim()) errors.push('Unit');
 
-    const price = $('#po_price').val().trim();
-    if (!price || parseFormattedNumber(price) < 0) errors.push('ราคาต่อหน่วย');
-
-    if (!$('#po_description').val().trim()) errors.push('Description / Detail');
+    if (editingIndex >= 0 || editingExistingDetailId) {
+        const price = $('#po_price').val().trim();
+        if (!price || parseFormattedNumber(price) < 0) errors.push('ราคารวม');
+    }
 
     return errors;
+}
+
+function setBtnLoading(selector, loading){
+    const el = document.querySelector(selector);
+    if (!el) return;
+    if (loading) { el.setAttribute('data-kt-indicator', 'on'); el.disabled = true; }
+    else { el.removeAttribute('data-kt-indicator'); el.disabled = false; }
 }
 
 function addPoDetailToCart(){
@@ -1591,32 +1844,120 @@ function addPoDetailToCart(){
         return;
     }
 
+    setBtnLoading('#btnSavePoDetail', true);
+
+    setTimeout(function(){
+    // po_qty/unit คือหน่วยที่ user เลือก (อาจไม่ใช่หน่วยเล็กสุด) 
+    // ส่วน po_price (base unit) ก่อนเก็บลง cart เสมอ
+    const rawQty = Number($("#po_qty").val()) || 0;
+    const rawUnitId = $("#unit").val();
+    const rawUnitName = $("#unit option:selected").text();
+    const conversionRate = Number($("#unit option:selected").data('conversion-rate')) || 1;
+    const baseUnitId = $('#unit').data('base-unit-id') || rawUnitId;
+    const baseUnitName = $('#unit').data('base-unit-name') || rawUnitName;
+    const baseQty = rawQty * conversionRate;
+    const total = parseFormattedNumber($("#po_price").val());
+    const price = baseQty > 0 ? (total / baseQty) : 0;
+    const description = $("#po_description").val();
+
     const item = {
         itemsType: $("#items_type").val(),
         itemsTypeText: $("#items_type option:selected").text(),
         productId: $("#product_name").val(),
         productName: $("#product_name option:selected").text(),
-        qty: Number($("#po_qty").val()),
-        unit: $("#unit").val(),
-		unitName: $("#unit option:selected").text(), 
-        price: parseFormattedNumber($("#po_price").val()),
-        description: $("#po_description").val(),
+        qty: baseQty,
+        unit: baseUnitId,
+		unitName: baseUnitName,
+        price: price,
+        total: total,
+        description: description,
         savedAt: formatNowDateTime()
     };
 
-    item.total = item.qty * item.price;
-
     if (editingExistingDetailId) {
-        // แก้ไขรายการเดิมที่มีอยู่แล้วใน DB -> เรียก AJAX update ทันที
-        updateExistingPoDetail(editingExistingDetailId, item);
+        const id = String(editingExistingDetailId);
+        const newDbTotal = total - pendingSrcTotal(id);
+        if (newDbTotal < 0) {
+            Swal.fire('Error', 'ราคารวมต้องไม่น้อยกว่ายอดของรายการที่เพิ่มใหม่ที่ยังไม่ได้บันทึก', 'error');
+            setBtnLoading('#btnSavePoDetail', false);
+            return;
+        }
+        pendingExistingEdits[id] = { total: newDbTotal, description: description };
+        editingExistingDetailId = null;
+        saveCartToSession();
+        renderPoDetailCart();
+        if (document.activeElement) document.activeElement.blur();
+        bootstrap.Modal.getOrCreateInstance(document.getElementById("modal_create_po")).hide();
         return;
     }
 
     if (editingIndex >= 0) {
+		const old = poDetailCart[editingIndex];
+
+		// เก็บ sources เดิมไว้ ถ้ายังเป็น product เดิม
+		if (old && old.sources && old.sources.length > 0
+				&& String(old.productId) === String(item.productId)) {
+			item.sources = old.sources;
+		}
+
         poDetailCart[editingIndex] = item;
         editingIndex = -1;
     } else {
-        poDetailCart.push(item);
+		// สร้างใหม่ เช็คก่อนว่ามี item productId เดียวกันอยู่แล้วใน cart มั้ย ไม่ว่าจะมาจากการสร้างเองมาก่อน หรือดึงจาก PR มาก่อน ก็ต้อง group เข้าด้วยกัน
+        const sourceEntry = {
+            prId: null,
+            prDetailId: null,
+            mrIds: [],
+            qty: rawQty,
+            unit: rawUnitId,
+            unitName: rawUnitName,
+            baseQty: baseQty,
+            refLink: '',
+            creatorName: currentUserDisplay,
+            savedAt: formatNowDateTime()
+        };
+
+		if (addToExistingPoDetail(item.productId, sourceEntry, 0)) {
+			saveCartToSession();
+			renderPoDetailCart();
+			if (document.activeElement) document.activeElement.blur();
+			bootstrap.Modal.getOrCreateInstance(document.getElementById("modal_create_po")).hide();
+			return;
+		}
+
+        const existingIndex = poDetailCart.findIndex(function(it){
+            return String(it.productId) === String(item.productId);
+        });
+
+        if (existingIndex >= 0) {
+            const existing = poDetailCart[existingIndex];
+            // ถ้า item เดิมยังไม่มี sources (สร้างเองรายการเดียวไม่เคยดึงจาก PR) ให้ห่อตัวเอง เป็น source แรกก่อน
+            if (!existing.sources || existing.sources.length === 0) {
+         // existing.unit ตอนนี้เป็นหน่วยเล็กสุด (base) ไปแล้วตั้งแต่ตอนสร้างไม่ใช่หน่วยดิบที่ user เลือกตอนนั้นจริงๆ (เก็บไว้เฉพาะ item ใหม่ที่สร้างหลังแก้นี้)
+                existing.sources = [{
+                    prId: existing.prId || null,
+                    prDetailId: existing.prDetailId || null,
+                    mrIds: existing.mrIds || [],
+                    qty: existing.qty,
+                    unit: existing.unit,
+                    unitName: existing.unitName,
+                    baseQty: existing.qty,
+                    refLink: existing.refLink || '',
+                    creatorName: existing.creatorName || currentUserDisplay,
+                    savedAt: existing.savedAt || formatNowDateTime()
+                }];
+            }
+
+            existing.sources.push(sourceEntry);
+            existing.qty = (Number(existing.qty) || 0) + baseQty;
+            existing.price = existing.qty > 0 ? (existing.total / existing.qty) : 0;
+            if (!existing.description && description) {
+                existing.description = description;
+            }
+        } else {
+            item.sources = [sourceEntry];
+            poDetailCart.push(item);
+        }
     }
 
     saveCartToSession();
@@ -1629,6 +1970,7 @@ function addPoDetailToCart(){
     const modalEl = document.getElementById("modal_create_po");
     const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
     modal.hide();
+    }, 300);
 }
 
 function renderPoDetailCart(){
@@ -1639,9 +1981,13 @@ function renderPoDetailCart(){
     existingPoDetailList.forEach(function(item){
 
         html += createPoCard(item, null, item.poDetailId);
-        grandTotal += item.total;
+        grandTotal += dbTotalOf(item);
 
     });
+
+	Object.keys(pendingExistingPoSources).forEach(function(pid){
+		pendingExistingPoSources[pid].forEach(function(s){ grandTotal += Number(s.total) || 0; });
+	});
 
     poDetailCart.forEach(function(item,index){
 
@@ -1678,7 +2024,35 @@ function renderPoDetailCart(){
 function createPoCard(item,index,poDetailId){
 	const safePrice = Number(item.price) || 0;
     const safeQty = Number(item.qty) || 0;
-    const safeTotal = Number(item.total) || (safeQty * safePrice);
+    const safeTotal = poDetailId ? dbTotalOf(item) : (Number(item.total) || (safeQty * safePrice));
+	const pending = poDetailId ? (pendingExistingPoSources[String(poDetailId)] || []) : [];
+	const pendingQty = pending.reduce(function(a, s){ return a + (Number(s.baseQty != null ? s.baseQty : s.qty) || 0); }, 0);
+	const pendingTotal = pending.reduce(function(a, s){ return a + (Number(s.total) || 0); }, 0);
+	const srcEditsMap = poDetailId ? (pendingSourceEdits[String(poDetailId)] || {}) : {};
+	// แก้ qty ของ source เดิมที่ยัง pending ยอด qty รวมของการ์ดต้องขยับตาม แต่ total คงเดิม
+	const editQtyDelta = (item.sources || []).reduce(function(a, s){
+		if (!s.poParentId || !srcEditsMap[String(s.poParentId)]) return a;
+		const oldBase = Number(s.baseQty != null ? s.baseQty : s.qty) || 0;
+		const newBase = Number(srcEditsMap[String(s.poParentId)].baseQty) || 0;
+		return a + (newBase - oldBase);
+	}, 0);
+	const displayQty = safeQty + pendingQty + editQtyDelta;
+	const displayTotal = safeTotal + pendingTotal;
+	const displayPrice = displayQty > 0 ? (displayTotal / displayQty) : 0;
+	const totalColorClass = displayTotal <= 0 ? 'text-danger' : 'text-primary';
+
+	let baseSources = (item.sources || []).map(function(s){
+		if (!s.poParentId) return s;
+		const e = srcEditsMap[String(s.poParentId)];
+		return e ? { ...s, qty: e.qty, unit: e.unit, unitName: e.unitName, baseQty: e.baseQty, edited: true } : s;
+	});
+	if (baseSources.length === 0 && pending.length > 0 && safeQty > 0) {
+		// การ์ดเดิมไม่มี po_parent ห่อตัวเองเป็นแถวแรก ไม่งั้นยอดเดิมจะหายจากการแสดงผล
+		baseSources = [{ prId: null, mrIds: [], qty: safeQty, unitName: item.unitName, baseQty: safeQty,
+						refLink: '', creatorName: '', savedAt: item.savedAt }];
+	}
+	const allSources = baseSources.concat(pending);
+	const pendingStartIndex = baseSources.length;
 
     let icon = "";
     let category = "";
@@ -1728,7 +2102,17 @@ function createPoCard(item,index,poDetailId){
     }
 
     const groupId = poDetailId ? ("existing_" + poDetailId) : ("cart_" + index);
-    const badgeNew = poDetailId ? "" : `<span class="badge badge-light-success me-3">New</span>`;
+	const displayProductName = item.parentProductName
+		? item.parentProductName + ' > ' + (item.productName || '')
+		: (item.productName || '');
+
+    const descText = poDetailId ? dbDescOf(item) : (item.description || '');
+    const descriptionHtml = (descText
+        ? '<i class="ki-duotone ki-document fs-2 text-muted me-2">'
+            + '<span class="path1"></span><span class="path2"></span>'
+        + '</i>'
+        + '<span class="text-gray-900 fs-5 fw-normal">' + descText + '</span> '
+        : '');
 
     let actionButtons = '';
     if (canEditPoDetail) {
@@ -1747,37 +2131,31 @@ function createPoCard(item,index,poDetailId){
             </a>`;
 	}
 
-    return `<div class="po-item-group border-gray-400 border-bottom py-9 px-6">
+    return `<div class="po-item-group border-gray-400 border-bottom pt-9 pb-6 px-6">
     			<div class="d-flex align-items-center justify-content-between row">
     				<div class="col-7 d-flex align-items-center">\${icon}
 						<span class="text-gray-900 fs-5 fw-normal me-3">\${category}</span>
-						<span class="text-gray-900 fs-5 fw-normal me-3">\${item.productName}</span>
-		
+						<span class="text-gray-900 fs-5 fw-normal me-3">\${displayProductName}</span>
+
 						<div class="d-flex align-items-center">
-							<i class="ki-duotone ki-document fs-2 text-muted me-2">
-								<span class="path1"></span>
-								<span class="path2"></span>
-							</i>
-		
-							<span class="text-gray-900 fs-5 fw-normal">\${item.description} \${badgeNew}</span> 
-		
+							\${descriptionHtml}
 						</div>
 					</div>
 		
 					<div class="col-3 d-flex align-items-center justify-content-between px-0">
 						<div class="col-2 d-flex flex-column text-end">
 							<span class="fs-6 fw-normal text-gray-900">\${item.unitName}</span>
-							<span class="fw-semibold text-gray-800 fs-5">\${item.qty}</span>
+							<span class="fw-semibold text-gray-800 fs-5">\${displayQty}</span>
 					</div>
 		
 					<div class="col-4 d-flex flex-column text-end">
-						<span class="fs-6 fw-normal text-gray-900">Price</span>
-						<span class="fw-semibold text-gray-800 fs-5">\${safePrice.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span>
+						<span class="fs-6 fw-normal text-gray-900">Price/Unit</span>
+						<span class="fw-semibold text-gray-800 fs-5">\${displayPrice.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span>
 					</div>
 					
 					<div class="col-4 d-flex flex-column text-end">
 						<span class="fs-6 fw-normal text-gray-900">Total</span>
-						<span class="fs-5 fw-semibold text-primary">\${safeTotal.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span>
+						<span class="fs-5 fw-semibold \${totalColorClass}">\${displayTotal.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span>
 					</div>
 		
 				</div>
@@ -1794,34 +2172,23 @@ function createPoCard(item,index,poDetailId){
 			
 			<div class="collapse border-gray-300 border-top mt-3" id="poGroup_\${groupId}">
 	            <div class="ps-9 pt-9">
-	                <div class="d-flex align-items-center justify-content-between row">
-	                    <div class="col-11">
-	                        <div class="d-flex align-items-center fs-7">
-	                            <div class="col-4">
-	                                <i class="ki-duotone ki-user-tick fs-3 text-muted me-2">
-	                                    <span class="path1"></span><span class="path2"></span><span class="path3"></span>
-	                                </i>
-	                                <span class="text-gray-800 fs-5">\${currentUserDisplay}</span>
-	                            </div>
-	                            <div class="col-4 d-flex align-items-center">
-	                                <i class="ki-duotone ki-calendar-2 fs-3 me-2">
-	                                    <span class="path1"></span><span class="path2"></span><span class="path3"></span>
-	                                    <span class="path4"></span><span class="path5"></span>
-	                                </i>
-	                                <span class="text-gray-800 fs-5">\${item.savedAt}</span>
-	                            </div>
-	                            <div class="col-3 d-flex align-items-center">
-				                    <i class="ki-duotone ki-tablet-book fs-3 me-2">
-					                     <span class="path1"></span><span class="path2"></span>
-									</i>
-				                    <span class="badge badge-lg badge-light-primary text-primary fs-7 fw-semibold d-inline-block text-center">-</span>
-		                    	</div>
-	                        </div>
-	                    </div>
-	                    <div class="col-1 text-end">
-	                        <span class="text-gray-800 fs-5">\${item.qty} \${item.unitName}</span>
-	                    </div>
-	                </div>
+	                \${
+						(allSources.length > 0)
+							? allSources.map(function(s, i){
+								var srcBaseQty = (s.baseQty != null) ? s.baseQty : s.qty;
+								var isNewSource = !!poDetailId && i >= pendingStartIndex;
+
+								var menuCtx = null;
+								if (canEditPoDetail) {
+									if (!poDetailId) menuCtx = { scope: 'cart', a: index, b: i };
+									else if (isNewSource) menuCtx = { scope: 'pending', a: poDetailId, b: i - pendingStartIndex };
+									else if (s.poParentId) menuCtx = { scope: 'db', a: poDetailId, b: i };
+								}
+								return createPoSourceRow(s.qty, s.unitName || item.unitName, srcBaseQty, item.unitName,
+										s.savedAt, s.prId, s.mrIds, s.refLink, s.creatorName, isNewSource, menuCtx, !!s.edited);
+							}).join('')
+							: createPoSourceRow(item.qty, item.unitName, item.qty, item.unitName, item.savedAt, item.prId, item.mrIds, item.refLink, item.creatorName, false, null, false)
+					}
 	            </div>
 	        </div>
 		
@@ -1837,7 +2204,7 @@ function editCartItem(index){
     editingIndex = index;
 
     $('#modal_create_po .modal-title').text('Edit PO - Detail');
-    $('#btnSavePoDetail').text('Update');
+    $('#btnSavePoDetail .indicator-label').text('Update');
 
     $('#items_type').val(mapDbItemsTypeToSelect(item.itemsType)).trigger('change');
 
@@ -1859,8 +2226,7 @@ function editCartItem(index){
     setTimeout(function(){ clearInterval(waitForProductList); }, 3000);
 
     $('#po_qty').val(item.qty);
-    // $('#unit').val(item.unit);
-    $('#po_price').val(Number(item.price).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2}));
+    $('#po_price').val(Number(item.total).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2}));
     $('#po_description').val(item.description);
 
     const modalEl = document.getElementById("modal_create_po");
@@ -1885,9 +2251,11 @@ function removeCartItem(index){
         }
     }).then((result) => {
         if (result.isConfirmed) {
+			const removedItem = poDetailCart[index];
             poDetailCart.splice(index, 1);
             saveCartToSession();
             renderPoDetailCart();
+			uncheckPrCheckboxesForItem(removedItem);
         }
     });
     return false;
@@ -1902,7 +2270,7 @@ function editExistingCartItem(poDetailId){
     editingIndex = -1;
 
     $('#modal_create_po .modal-title').text('Edit PO - Detail');
-    $('#btnSavePoDetail').text('Update');
+    $('#btnSavePoDetail .indicator-label').text('Update');
 
     $('#items_type').val(mapDbItemsTypeToSelect(item.itemsType)).trigger('change');
 
@@ -1924,9 +2292,9 @@ function editExistingCartItem(poDetailId){
     setTimeout(function(){ clearInterval(waitForProductList); }, 3000);
 
     $('#po_qty').val(item.qty);
-    // $('#unit').val(item.unit);
-    $('#po_price').val(Number(item.price).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2}));
-    $('#po_description').val(item.description);
+	$('#po_price').val((dbTotalOf(item) + pendingSrcTotal(poDetailId))
+        .toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2}));
+    $('#po_description').val(dbDescOf(item));
 
     const modalEl = document.getElementById("modal_create_po");
     const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
@@ -1957,8 +2325,11 @@ function removeExistingCartItem(poDetailId){
                 data: { poDetailId: poDetailId, poId: EDIT_PO_ID },
                 success: function (resp) {
                     if (resp.data && resp.data.success) {
-                        window.location.reload();
-                    } else {
+						delete pendingExistingPoSources[String(poDetailId)];
+                        delete pendingExistingEdits[String(poDetailId)];
+						saveCartToSession();
+						toastOk('ลบรายการสำเร็จ', function(){ window.location.reload(); });
+					} else {
                         Swal.fire('Error', 'ไม่สามารถลบรายการได้', 'error');
                     }
                 },
@@ -1969,6 +2340,18 @@ function removeExistingCartItem(poDetailId){
         }
     });
     return false;
+}
+
+
+function toastOk(msg, after){
+    Swal.fire({ toast: true, position: 'top-end', icon: 'success',
+        title: msg, showConfirmButton: false, timer: 1200 })
+    .then(function(){ if (after) after(); });
+}
+
+function toastFail(msg){
+    Swal.fire({ toast: true, position: 'top-end', icon: 'error',
+        title: msg || 'บันทึกไม่สำเร็จ', showConfirmButton: false, timer: 1200 });
 }
 
 function updateExistingPoDetail(poDetailId, item){
@@ -1990,15 +2373,259 @@ function updateExistingPoDetail(poDetailId, item){
                 editingExistingDetailId = null;
                 const modalEl = document.getElementById("modal_create_po");
                 bootstrap.Modal.getOrCreateInstance(modalEl).hide();
-                window.location.reload();
+               window.location.reload();
             } else {
-                Swal.fire('Error', 'ไม่สามารถแก้ไขรายการได้', 'error');
+                 toastFail('ไม่สามารถแก้ไขรายการได้');
             }
         },
         error: function () {
-            Swal.fire('Error', 'เกิดข้อผิดพลาดในการแก้ไขรายการ', 'error');
+            toastFail('เกิดข้อผิดพลาดในการแก้ไขรายการ');
         }
     });
+}
+
+function mapSelectToDbItemsType(val){
+    switch(String(val)){
+        case 'equipment':   return '1';
+        case 'consumables': return '2';
+        case 'accessory':   return '3';
+        case 'office':      return '4';
+        default:            return String(val);
+    }
+}
+
+function closeAllSrcMenus(){
+    document.querySelectorAll('.po-src-menu.menu-open').forEach(function(m){ m.classList.remove('menu-open'); });
+}
+document.addEventListener('click', closeAllSrcMenus);
+
+function toggleSrcMenu(btn, e){
+    e.preventDefault(); e.stopPropagation();
+    const menu = btn.closest('.po-src-menu');
+    const wasOpen = menu.classList.contains('menu-open');
+    closeAllSrcMenus();
+    if (!wasOpen) menu.classList.add('menu-open');
+    return false;
+}
+
+// cart = การ์ดใหม่, pending = source ใหม่ของการ์ดเดิม (ยังไม่ save), db = แถว po_parent ที่อยู่ใน DB
+function resolveSrc(scope, a, b){
+    if (scope === 'cart') {
+        const item = poDetailCart[Number(a)];
+        const list = item && item.sources;
+        return { item: item, list: list, src: list && list[b] };
+    }
+    const item = existingPoDetailList.find(function(it){ return String(it.poDetailId) === String(a); });
+    if (scope === 'db') {
+        const list = item && item.sources;
+        let src = list && list[b];
+        // มี pending edit ค้างไว้สำหรับ po_parent แถวนี้ ให้เห็นค่าล่าสุดที่ยังไม่ save แทนค่าเดิมใน db
+        if (src && src.poParentId) {
+            const e = (pendingSourceEdits[String(a)] || {})[String(src.poParentId)];
+            if (e) src = { ...src, ...e };
+        }
+        return { item: item, list: list, src: src };
+    }
+    const list = pendingExistingPoSources[String(a)];
+    return { item: item, list: list, src: list && list[b] };
+}
+
+function removeSource(scope, a, b){
+    closeAllSrcMenus();
+    Swal.fire({
+        title: "Are you sure?!",
+        text: "Are you sure you want to delete this row?",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonText: "Yes, delete it",
+        cancelButtonText: "Cancel",
+        buttonsStyling: false,
+        customClass: { confirmButton: "btn btn-danger", cancelButton: "btn btn-secondary" }
+    }).then(function(result){
+        if (!result.isConfirmed) return;
+
+        const r = resolveSrc(scope, a, b);
+        if (!r.item || !r.src) return;
+        const removed = r.src;
+
+        if (scope === 'db') {
+            const hasPendingNew = (pendingExistingPoSources[String(a)] || []).length > 0;
+            const isLast = r.list.length <= 1 && !hasPendingNew;   // มี pending ค้างอยู่ = ยังไม่ใช่แถวสุดท้ายจริง
+            $.ajax({
+                url: ctx + (isLast ? '/delete_po_detail' : '/delete_po_source'),
+                type: 'POST',
+                dataType: 'json',
+                data: isLast
+                    ? { poDetailId: a, poId: EDIT_PO_ID }
+                    : { poParentId: removed.poParentId, poDetailId: a, poId: EDIT_PO_ID,
+                        keepDetail: (r.list.length <= 1) ? 'true' : 'false' },
+                success: function (resp) {
+                    if (resp.data && resp.data.success) {
+                        // source นี้ไม่อยู่แล้ว เคลียร์ pending edit ของมันทิ้งไปด้วย กันค้างไว้ส่งซ้ำตอน save
+                        if (pendingSourceEdits[String(a)]) {
+                            delete pendingSourceEdits[String(a)][String(removed.poParentId)];
+                        }
+                        if (isLast) {
+                            delete pendingExistingPoSources[String(a)];
+                            delete pendingExistingEdits[String(a)];
+                            delete pendingSourceEdits[String(a)];
+                        }
+                        saveCartToSession();
+                        toastOk('ลบรายการสำเร็จ', function(){ window.location.reload(); });
+                    } else {
+                        toastFail('ไม่สามารถลบรายการได้');
+                    }
+                },
+                error: function () {
+                    toastFail('เกิดข้อผิดพลาดในการลบรายการ');
+                }
+            });
+            return;
+        }
+
+        if (scope === 'cart') {
+            const baseQty = Number(removed.baseQty != null ? removed.baseQty : removed.qty) || 0;
+            r.list.splice(b, 1);
+            if (r.list.length === 0) {
+                poDetailCart.splice(Number(a), 1);
+            } else {
+                r.item.qty = Math.max(0, (Number(r.item.qty) || 0) - baseQty);
+                r.item.price = r.item.qty > 0 ? ((Number(r.item.total) || 0) / r.item.qty) : 0; // total คงเดิม
+            }
+        } else {
+            r.list.splice(b, 1);
+            if (r.list.length === 0) delete pendingExistingPoSources[String(a)];
+        }
+
+        saveCartToSession();
+        renderPoDetailCart();
+        uncheckPrCheckboxesForItem({ sources: [removed] });
+    });
+    return false;
+}
+
+let editingSrc = null;
+
+function editSource(scope, a, b){
+    closeAllSrcMenus();
+    const r = resolveSrc(scope, a, b);
+    if (!r.item || !r.src) return false;
+    const item = r.item, src = r.src;
+
+    editingSrc = { scope: scope, a: a, b: b };
+    const baseQty = (src.baseQty != null) ? src.baseQty : src.qty;
+    const cat = getCategoryIcon(mapSelectToDbItemsType(item.itemsType));
+    const fullName = item.parentProductName
+        ? item.parentProductName + ' > ' + (item.productName || '')
+        : (item.productName || '');
+
+    $('#editSrcTypeIcon').html(cat.icon);
+    $('#editSrcTypeName').text(cat.name);
+    $('#editSrcProduct').text(fullName);
+    $('#editSrcCreator').text(src.creatorName || currentUserDisplay);
+    $('#editSrcDate').text(src.savedAt);
+    $('#editSrcMr').html(createPrMrBadges(src.prId, src.mrIds, src.refLink));
+    $('#editSrcCurrent').text(src.qty + ' ' + (src.unitName || item.unitName) + ' (= ' + baseQty + ' ' + item.unitName + ')');
+    $('#edit_src_qty').val(src.qty);
+    $('#editSrcPreview').text('');
+
+    loadEditSrcUnits(item.productId, src.unit);
+    bootstrap.Modal.getOrCreateInstance(document.getElementById('modal_edit_source')).show();
+    return false;
+}
+
+function loadEditSrcUnits(productId, selectedUnitId){
+    $('#edit_src_unit').html('<option value=""></option>');
+    $.ajax({
+        url: ctx + '/get_unit_of_measure',
+        type: 'POST',
+        dataType: 'json',
+        data: { productId: productId },
+        success: function (resp) {
+            const list = (resp.data && resp.data.unitList) || [];
+            let opts = '';
+            list.forEach(function (u) {
+                opts += '<option value="' + u.id + '"'
+                    + ' data-conversion-rate="' + (u.conversionRate != null ? u.conversionRate : 1) + '"'
+                    + (String(u.id) === String(selectedUnitId) ? ' selected' : '') + '>' + u.name + '</option>';
+            });
+            $('#edit_src_unit').html(opts).trigger('change');
+        },
+        error: function () {
+            Swal.fire('Error', 'ไม่สามารถโหลดข้อมูล Unit ได้', 'error');
+        }
+    });
+}
+
+function updateEditSrcPreview(){
+    if (!editingSrc) return;
+    const r = resolveSrc(editingSrc.scope, editingSrc.a, editingSrc.b);
+    if (!r.item) return;
+    const qty = Number($('#edit_src_qty').val()) || 0;
+    const rate = Number($('#edit_src_unit option:selected').data('conversion-rate')) || 1;
+    $('#editSrcPreview').text('= ' + (Math.round(qty * rate * 1000) / 1000) + ' ' + r.item.unitName);
+}
+$(document.body).on('input change', '#edit_src_qty, #edit_src_unit', updateEditSrcPreview);
+
+function saveEditSource(){
+    if (!editingSrc) return;
+
+    const qty = Number($('#edit_src_qty').val()) || 0;
+    const unitId = $('#edit_src_unit').val();
+    const errors = [];
+    if (qty <= 0) errors.push('จำนวน');
+    if (!unitId) errors.push('Unit');
+    if (errors.length > 0) {
+        Swal.fire({
+            title: 'Please complete the form!',
+            html: "Please fill in the following fields:<br><strong>" + errors.join(", ") + "</strong>",
+            icon: "error", confirmButtonText: "OK"
+        });
+        return;
+    }
+
+    setBtnLoading('#btnSaveEditSource', true);
+
+    setTimeout(function(){
+    const r = resolveSrc(editingSrc.scope, editingSrc.a, editingSrc.b);
+    if (!r.item || !r.src) { setBtnLoading('#btnSaveEditSource', false); return; }
+    const old = r.src;
+
+    if (editingSrc.scope === 'db') {
+        const dbUnitName = $('#edit_src_unit option:selected').text();
+        const dbRate = Number($('#edit_src_unit option:selected').data('conversion-rate')) || 1;
+        const dbBaseQty = qty * dbRate;
+
+        const pid = String(editingSrc.a);
+        const ppid = String(old.poParentId);
+        pendingSourceEdits[pid] = pendingSourceEdits[pid] || {};
+        pendingSourceEdits[pid][ppid] = { qty: qty, unit: unitId, unitName: dbUnitName, baseQty: dbBaseQty };
+
+        saveCartToSession();
+        renderPoDetailCart();
+
+        if (document.activeElement) document.activeElement.blur();
+        bootstrap.Modal.getOrCreateInstance(document.getElementById('modal_edit_source')).hide();
+        return;
+    }
+
+    const unitName = $('#edit_src_unit option:selected').text();
+    const rate = Number($('#edit_src_unit option:selected').data('conversion-rate')) || 1;
+    const baseQty = qty * rate;
+    const oldBase = Number(old.baseQty != null ? old.baseQty : old.qty) || 0;
+
+    r.list[editingSrc.b] = { ...old, qty: qty, unit: unitId, unitName: unitName, baseQty: baseQty };
+    if (editingSrc.scope === 'cart') {
+        r.item.qty = (Number(r.item.qty) || 0) + (baseQty - oldBase);
+        r.item.price = r.item.qty > 0 ? ((Number(r.item.total) || 0) / r.item.qty) : 0; // total คงเดิม
+    }
+
+    saveCartToSession();
+    renderPoDetailCart();
+
+    if (document.activeElement) document.activeElement.blur();
+    bootstrap.Modal.getOrCreateInstance(document.getElementById('modal_edit_source')).hide();
+    }, 300);
 }
 
 function parseFormattedNumber(str) {
@@ -2046,8 +2673,6 @@ function confirmReceiver(slot) {
         dataType: 'json',
         data: { poId: EDIT_PO_ID },
         success: function (resp) {
-            // if (resp.debug) console.log('[confirm_po_sign debug]', resp.debug);
-
             if (resp.data && resp.data.success) {
                 confirmed1 = true;
 
@@ -2082,6 +2707,40 @@ function confirmReceiver(slot) {
     });
 }
 
+function buildPoCartPayload(){
+    const merged = [];
+    const ids = {};
+    Object.keys(pendingExistingPoSources).forEach(function(k){ ids[k] = true; });
+    Object.keys(pendingExistingEdits).forEach(function(k){ ids[k] = true; });
+    Object.keys(pendingSourceEdits).forEach(function(k){ ids[k] = true; });
+
+    Object.keys(ids).forEach(function(pid){
+        const ex = existingPoDetailList.find(function(it){ return String(it.poDetailId) === String(pid); });
+        if (!ex) return;
+        const srcs = pendingExistingPoSources[pid] || [];
+        const edit = pendingExistingEdits[pid];
+        const srcEditsMap = pendingSourceEdits[pid] || {};
+        const srcEditIds = Object.keys(srcEditsMap);
+        if (srcs.length === 0 && !edit && srcEditIds.length === 0) return;
+
+        const addQty = srcs.reduce(function(a, s){ return a + (Number(s.baseQty != null ? s.baseQty : s.qty) || 0); }, 0);
+        const addTotal = srcs.reduce(function(a, s){ return a + (Number(s.total) || 0); }, 0);
+        const row = {
+            poDetailId: pid, productId: ex.productId, itemsType: ex.itemsType, unit: ex.unit,
+            description: '', qty: addQty, total: addTotal, sources: srcs
+        };
+        if (edit) { row.editTotal = edit.total; row.editDescription = edit.description; }
+        if (srcEditIds.length > 0) {
+            // แก้ qty/unit ของ po_parent เดิม (ไม่ใช่ source ใหม่) — ไม่กระทบ total ของการ์ด
+            row.sourceEdits = srcEditIds.map(function(ppid){
+                return { poParentId: ppid, qty: srcEditsMap[ppid].qty, unit: srcEditsMap[ppid].unit };
+            });
+        }
+        merged.push(row);
+    });
+    return poDetailCart.concat(merged);
+}
+
 function saveDraftForm(){
     const payload = {
 		poId: EDIT_PO_ID || '',
@@ -2092,7 +2751,7 @@ function saveDraftForm(){
         descriptionVendor: $('#vendor_description').val() || '',
         referenceNo: $('#reference_no').val() || '',
         referenceDate: $('#kt_reference_datepicker').val() || '',
-        poDetailCartJson: JSON.stringify(poDetailCart)
+        poDetailCartJson: JSON.stringify(buildPoCartPayload())
     };
     const fd = new FormData();
     Object.keys(payload).forEach(function (k) { fd.append(k, payload[k]); });
@@ -2100,7 +2759,7 @@ function saveDraftForm(){
         selectedFiles.forEach(function (file) { fd.append('files', file, file.name); });
     }
     
- 	$('#saveDraft').prop('disabled', true);
+ 	setBtnLoading('#saveDraft', true);
  
     $.ajax({
     	url: ctx + (EDIT_PO_ID ? '/update_po' : '/save_po'),
@@ -2112,6 +2771,9 @@ function saveDraftForm(){
         success: function (resp) {
             if (resp.data && resp.data.poId) {
                 sessionStorage.removeItem(PO_CART_STORAGE_KEY);
+				sessionStorage.removeItem(PO_EXISTING_SRC_KEY);
+                sessionStorage.removeItem(PO_EXISTING_EDIT_KEY);
+				sessionStorage.removeItem(PO_SOURCE_EDIT_KEY);
                 Swal.fire({ title: 'Success!', text: 'Po saved draft successfully!', icon: 'success' })
                     .then(() => { window.location.href = ctx + '/purchase_order_list'; });
             } else {
@@ -2121,7 +2783,7 @@ function saveDraftForm(){
         error: function () {
             Swal.fire('Error', 'เกิดข้อผิดพลาดในการบันทึก', 'error');
         },
-        complete: function(){ $('#saveDraft').prop('disabled', false); }
+        complete: function(){ setBtnLoading('#saveDraft', false); }
     });
 }
 
@@ -2131,8 +2793,24 @@ function validatePOForm(){
     if (!($('#vendor_id').val() || '').trim()) errors.push('Company Name');
     if (!($('#vendor_location_id').val() || '').trim()) errors.push('Company Location');
     if (!($('#contact_id').val() || '').trim()) errors.push('Contact Name');
-    const totalDetailCount = (existingPoDetailList ? existingPoDetailList.length : 0) + (poDetailCart ? poDetailCart.length : 0);
-    if (totalDetailCount === 0) errors.push('Please add at least 1 Po Detail');
+
+    const existingList = existingPoDetailList || [];
+    const cartList = poDetailCart || [];
+    const totalDetailCount = existingList.length + cartList.length;
+
+    if (totalDetailCount === 0) {
+        errors.push('Please add at least 1 Po Detail');
+    } else {
+        // เช็คว่ามีรายการไหนราคารวมยังเป็น 0 / ยังไม่ได้ใส่ราคา
+        const zeroPriceItems = existingList.concat(cartList).filter(function(item){
+            if (item.poDetailId) return dbTotalOf(item) + pendingSrcTotal(item.poDetailId) <= 0;
+            return (Number(item.total) || 0) <= 0;
+        });
+        if (zeroPriceItems.length > 0) {
+            const names = zeroPriceItems.map(i => i.productName).join(', ');
+            errors.push('กรุณาใส่ราคารวมให้ครบทุกรายการ (' + names + ')');
+        }
+    }
 
     const hasSignature = $('#hasSignature').val() === 'true';
     if (!hasSignature) errors.push('ลายเซ็น (Signature)');
@@ -2148,8 +2826,6 @@ function submitPO(){
     if (errors.length > 0) {
         Swal.fire({
             title: 'Please complete the form!',
-            /* html: errors.join('<br>'),
-            icon: 'warning' */
             html: "Please fill in the following fields:<br><strong>" + errors.join(", ") + "</strong>",
  	        icon: "error",
  	        confirmButtonText: "OK",
@@ -2181,7 +2857,7 @@ function submitPO(){
             descriptionVendor: $('#vendor_description').val().trim() || '',
             referenceNo: $('#reference_no').val().trim() || '',
             referenceDate: $('#kt_reference_datepicker').val() || '',
-            poDetailCartJson: JSON.stringify(poDetailCart),
+            poDetailCartJson: JSON.stringify(buildPoCartPayload()),
             status: '2'
         };
         
@@ -2191,7 +2867,7 @@ function submitPO(){
             selectedFiles.forEach(function (file) { fd.append('files', file, file.name); });
         }
 
-        $('#savePOFormBtn').prop('disabled', true);
+        setBtnLoading('#savePOFormBtn', true);
 
         $.ajax({
         	url: ctx + (EDIT_PO_ID ? '/update_po' : '/save_po'),
@@ -2203,6 +2879,9 @@ function submitPO(){
             success: function (resp) {
                 if (resp.data && resp.data.poId) {
                     sessionStorage.removeItem(PO_CART_STORAGE_KEY);
+					sessionStorage.removeItem(PO_EXISTING_SRC_KEY);
+					sessionStorage.removeItem(PO_EXISTING_EDIT_KEY);
+				sessionStorage.removeItem(PO_SOURCE_EDIT_KEY);
                     Swal.fire({
                         title: 'Success!',
                         text: 'Po saved successfully!',
@@ -2218,7 +2897,7 @@ function submitPO(){
                 Swal.fire('Error', 'เกิดข้อผิดพลาดในการส่งข้อมูล', 'error');
             },
             complete: function(){
-                $('#savePOFormBtn').prop('disabled', false);
+                setBtnLoading('#savePOFormBtn', false);
             }
         });
     });
@@ -2273,7 +2952,7 @@ function returnPO(){
             status: '4'
         };
 
-        $('#returnPOBtn').prop('disabled', true);
+        setBtnLoading('#returnPOBtn', true);
 
         $.ajax({
             url: ctx + ('/update_status_po'),
@@ -2283,12 +2962,15 @@ function returnPO(){
             success: function (resp) {
                 if (resp.data && resp.data.poId) {
                     sessionStorage.removeItem(PO_CART_STORAGE_KEY);
+                    sessionStorage.removeItem(PO_EXISTING_SRC_KEY);
+					sessionStorage.removeItem(PO_EXISTING_EDIT_KEY);
+				sessionStorage.removeItem(PO_SOURCE_EDIT_KEY);
                     Swal.fire({
                         title: 'Success!',
                         text: 'Po returned successfully!',
                         icon: 'success'
                     }).then(() => {
-						location.reload();
+                        location.reload();
                         // window.location.href = ctx + '/purchase_order_list';
                     });
                 } else {
@@ -2299,52 +2981,35 @@ function returnPO(){
                 Swal.fire('Error', 'เกิดข้อผิดพลาดในการส่งข้อมูล', 'error');
             },
             complete: function(){
-                $('#returnPOBtn').prop('disabled', false);
+                setBtnLoading('#returnPOBtn', false);
             }
         });
     });
 }
 
 function editPO(){
+    const payload = {
+        poId: EDIT_PO_ID || '',
+		status: '1'
+    };
 
-    // Swal.fire({
-    //     title: "Are you sure?!",
-    //     text: "Do you want to return this PO?",
-    //     icon: "warning",
-    //     showCancelButton: true,
-    //     confirmButtonText: "Save",
-    //     cancelButtonText: "Close",
-    //     buttonsStyling: false,
-    //     customClass: {
-    //         confirmButton: "btn btn-success",
-    //         cancelButton: "btn btn-secondary"
-    //     }
-    // }).then((result) => {
-    //     if (!result.isConfirmed) return;
+    setBtnLoading('#editPOFormBtn', true);
 
-        const payload = {
-            poId: EDIT_PO_ID || '',
-            status: '1'
-        };
-
-        $('#returnPOBtn').prop('disabled', true);
-
-        $.ajax({
-            url: ctx + ('/update_status_po'),
-            type: 'POST',
-            dataType: 'json',
-            data: payload,
-            success: function (resp) {
-                location.reload();
-            },
-            error: function () {
-                Swal.fire('Error', 'เกิดข้อผิดพลาดในการส่งข้อมูล', 'error');
-            },
-            complete: function(){
-                $('#returnPOBtn').prop('disabled', false);
-            }
-        });
-    // });
+    $.ajax({
+    	url: ctx + ('/update_status_po'),
+    	type: 'POST',
+        dataType: 'json',
+        data: payload,
+        success: function (resp) {
+            location.reload();
+        },
+		error: function () {
+            Swal.fire('Error', 'เกิดข้อผิดพลาดในการส่งข้อมูล', 'error');
+        },
+        complete: function(){
+            setBtnLoading('#editPOFormBtn', false);
+        }
+    });
 }
 
 
@@ -2375,7 +3040,7 @@ function rejectPO(){
             status: '5'
         };
 
-        $('#rejectPOBtn').prop('disabled', true);
+        setBtnLoading('#rejectPOBtn', true);
 
         $.ajax({
             url: ctx + ('/update_status_po'),
@@ -2385,6 +3050,9 @@ function rejectPO(){
             success: function (resp) {
                 if (resp.data && resp.data.poId) {
                     sessionStorage.removeItem(PO_CART_STORAGE_KEY);
+					sessionStorage.removeItem(PO_EXISTING_SRC_KEY);
+					sessionStorage.removeItem(PO_EXISTING_EDIT_KEY);
+				sessionStorage.removeItem(PO_SOURCE_EDIT_KEY);
                     Swal.fire({
                         title: 'Success!',
                         text: 'Po rejected successfully!',
@@ -2401,13 +3069,15 @@ function rejectPO(){
                 Swal.fire('Error', 'เกิดข้อผิดพลาดในการส่งข้อมูล', 'error');
             },
             complete: function(){
-                $('#rejectPOBtn').prop('disabled', false);
+                setBtnLoading('#rejectPOBtn', false);
             }
         });
     });
 }
 
 function approvePO(){
+	const reasonVal = ($('#reason').val() || '').trim();
+
     Swal.fire({
         title: "Are you sure?!",
         text: "Do you want to approve this PO?",
@@ -2425,10 +3095,11 @@ function approvePO(){
 
         const payload = {
             poId: EDIT_PO_ID || '',
+			reason: reasonVal,
             status: '3' 
         };
 
-        $('#approvePOBtn').prop('disabled', true);
+        setBtnLoading('#approvePOBtn', true);
 
         $.ajax({
             url: ctx + '/update_status_po',
@@ -2438,6 +3109,9 @@ function approvePO(){
             success: function (resp) {
                 if (resp.data && resp.data.poId) {
                     sessionStorage.removeItem(PO_CART_STORAGE_KEY);
+					sessionStorage.removeItem(PO_EXISTING_SRC_KEY);
+					sessionStorage.removeItem(PO_EXISTING_EDIT_KEY);
+				sessionStorage.removeItem(PO_SOURCE_EDIT_KEY);
                     Swal.fire({
                         title: 'Success!',
                         text: 'PO approved successfully!',
@@ -2454,7 +3128,7 @@ function approvePO(){
                 Swal.fire('Error', 'เกิดข้อผิดพลาดในการส่งข้อมูล', 'error');
             },
             complete: function(){
-                $('#approvePOBtn').prop('disabled', false);
+                setBtnLoading('#approvePOBtn', false);
             }
         });
     });
@@ -2481,7 +3155,7 @@ function inProgressPO(){
             status: '7' 
         };
 
-        $('#inProgressPOFormBtn').prop('disabled', true);
+        setBtnLoading('#inProgressPOFormBtn', true);
 
         $.ajax({
             url: ctx + '/update_status_po',
@@ -2491,6 +3165,9 @@ function inProgressPO(){
             success: function (resp) {
                 if (resp.data && resp.data.poId) {
                     sessionStorage.removeItem(PO_CART_STORAGE_KEY);
+					sessionStorage.removeItem(PO_EXISTING_SRC_KEY);
+					sessionStorage.removeItem(PO_EXISTING_EDIT_KEY);
+				sessionStorage.removeItem(PO_SOURCE_EDIT_KEY);
                     Swal.fire({
                         title: 'Success!',
                         text: 'PO in progress successfully!',
@@ -2507,10 +3184,22 @@ function inProgressPO(){
                 Swal.fire('Error', 'เกิดข้อผิดพลาดในการส่งข้อมูล', 'error');
             },
             complete: function(){
-                $('#inProgressPOFormBtn').prop('disabled', false);
+                setBtnLoading('#inProgressPOFormBtn', false);
             }
         });
     });
+}
+
+function goBack(){
+    if (hasUnsavedChanges()) {
+        confirmLeaveForm('purchase_order_list');
+    } else {
+        sessionStorage.removeItem(PO_CART_STORAGE_KEY);
+        sessionStorage.removeItem(PO_EXISTING_SRC_KEY);
+        sessionStorage.removeItem(PO_EXISTING_EDIT_KEY);
+		sessionStorage.removeItem(PO_SOURCE_EDIT_KEY);
+        location.href = 'purchase_order_list';
+    }
 }
 
 function cancelPO(){
@@ -2534,7 +3223,7 @@ function cancelPO(){
             status: '6' 
         };
 
-        $('#cancelFormBtn').prop('disabled', true);
+        setBtnLoading('#cancelFormBtn', true);
 
         $.ajax({
             url: ctx + '/update_status_po',
@@ -2544,6 +3233,9 @@ function cancelPO(){
             success: function (resp) {
                 if (resp.data && resp.data.poId) {
                     sessionStorage.removeItem(PO_CART_STORAGE_KEY);
+					sessionStorage.removeItem(PO_EXISTING_SRC_KEY);
+					sessionStorage.removeItem(PO_EXISTING_EDIT_KEY);
+				sessionStorage.removeItem(PO_SOURCE_EDIT_KEY);
                     Swal.fire({
                         title: 'Success!',
                         text: 'PO cancel successfully!',
@@ -2560,11 +3252,577 @@ function cancelPO(){
                 Swal.fire('Error', 'เกิดข้อผิดพลาดในการส่งข้อมูล', 'error');
             },
             complete: function(){
-                $('#cancelFormBtn').prop('disabled', false);
+                setBtnLoading('#cancelFormBtn', false);
             }
         });
     });
 }
+
+
+function createPrMrBadges(prId, mrIds, refLink){
+    mrIds = mrIds || [];
+    let html = '';
+
+    if (prId) {
+        html += `
+        <a href="\${ctx}/purchase_requisition_edit?prId=\${prId}"
+            target="_blank" onclick="event.stopPropagation();"
+            class="badge badge-lg fs-7 fw-semibold d-inline-block text-center text-decoration-none text-nowrap badge-light-primary text-primary">
+            \${prId}
+        </a>`;
+
+        if (refLink) {
+            html += `
+            <a href="\${refLink}" target="_blank" class="text-primary d-inline-flex mx-1" onclick="event.stopPropagation();">
+                <i class="ki-duotone ki-fasten fs-2 text-primary">
+                    <span class="path1"></span><span class="path2"></span>
+                </i>
+            </a>`;
+        }
+    }
+
+    mrIds.forEach(function(m){
+        html += `
+        <a href="\${ctx}/equipment_request_mr_approve?mrId=\${m.id}"
+            target="_blank" onclick="event.stopPropagation();"
+            class="badge badge-lg fs-7 fw-semibold d-inline-block text-center text-decoration-none text-nowrap badge-light-info text-info">
+            \${m.id}
+        </a>`;
+
+        if (m.url) {
+            html += `
+            <a href="\${m.url}" target="_blank" class="text-info d-inline-flex mx-1" onclick="event.stopPropagation();">
+                <i class="ki-duotone ki-fasten fs-2 text-info">
+                    <span class="path1"></span><span class="path2"></span>
+                </i>
+            </a>`;
+        }
+    });
+
+    if (!prId && mrIds.length === 0) {
+        html = `<span class="badge badge-lg fs-7 fw-semibold d-inline-block text-center badge-light-primary text-primary">-</span>`;
+    }
+
+    return html;
+}
+
+function createPoSourceRow(qty, unitName, baseQty, baseUnitName, savedAt, prId, mrIds, refLink, creatorName, isNew, menuCtx, isEdited){
+    const qtyUnitDisplay = (qty + ' ' + unitName + ' (= ' + baseQty + ' ' + baseUnitName + ')');
+
+    const menuHtml = menuCtx ? `
+        <div class="po-src-menu position-relative d-inline-block flex-shrink-0">
+            <a href="#" class="btn btn-icon btn-sm btn-light-primary w-30px h-30px"
+               onclick="return toggleSrcMenu(this, event);" aria-label="More actions" aria-haspopup="true">
+                <i class="ki-outline ki-dots-horizontal fs-2"></i>
+            </a>
+            <div class="po-src-actions position-absolute end-0 top-100 mt-2 bg-body rounded-3 shadow z-index-3">
+                <div class="py-2">
+                    <a href="#" class="d-block px-6 py-3 fs-6 fw-normal text-gray-800 bg-hover-light"
+                       onclick="event.stopPropagation(); return editSource('\${menuCtx.scope}', '\${menuCtx.a}', \${menuCtx.b});">Edit</a>
+                    <a href="#" class="d-block px-6 py-3 fs-6 fw-normal text-gray-800 bg-hover-light"
+                       onclick="event.stopPropagation(); return removeSource('\${menuCtx.scope}', '\${menuCtx.a}', \${menuCtx.b});">Delete</a>
+                </div>
+            </div>
+        </div>` : '';
+
+    return `
+    <div class="d-flex align-items-center justify-content-between row mb-4 py-2">
+        <div class="col-12 col-xl-9">
+            <div class="d-flex align-items-center fs-7">
+                <div class="col-12 col-md-4">
+                    <i class="ki-duotone ki-user-tick fs-3 text-muted me-2">
+                        <span class="path1"></span><span class="path2"></span><span class="path3"></span>
+                    </i>
+                    <span class="text-gray-800 fs-5 fw-normal">\${creatorName || currentUserDisplay}</span>
+                </div>
+                <div class="col-12 col-md-4 d-flex align-items-center">
+                    <i class="ki-duotone ki-calendar-2 fs-3 me-2">
+                        <span class="path1"></span><span class="path2"></span><span class="path3"></span>
+                        <span class="path4"></span><span class="path5"></span>
+                    </i>
+                    <span class="text-gray-800 fs-5 fw-normal">\${savedAt}</span>
+                </div>
+                <div class="col-12 col-md-4 d-flex align-items-center gap-2">
+					<i class="ki-duotone ki-tablet-book fs-3 flex-shrink-0">
+						<span class="path1"></span><span class="path2"></span>
+					</i>
+					<div class="d-flex flex-wrap align-items-center gap-2">
+						\${createPrMrBadges(prId, mrIds, refLink)}
+					</div>
+				</div>
+            </div>
+        </div>
+		<div class="col-12 col-xl-3 d-flex align-items-center justify-content-between justify-content-xl-end gap-3">
+            <span class="text-gray-800 fs-5 fw-normal">\${qtyUnitDisplay}</span>
+            \${menuHtml}
+        </div>
+		
+    </div>`;
+}
+
+// Modal Search PR
+let inprogressPrDetailList = [];
+let prDetailTable = null;
+let selectedPrCategory = '';
+let prSearchRequestToken = 0;
+let isSearchPrModalOpen = false; 
+
+$.fn.dataTable.ext.search.push(function (settings, data, dataIndex) {
+    if (settings.nTable.id !== 'prResultTable') return true;
+    if (!selectedPrCategory) return true;
+
+    var item = inprogressPrDetailList[dataIndex];
+    if (!item) return true;
+
+    return mapDbItemsTypeToSelect(item.product_type) === selectedPrCategory;
+});
+
+function getCategoryIcon(productType){
+    switch(String(productType)){
+        case '1': return { name: 'Equipment', icon: '<i class="ki-duotone ki-monitor-mobile fs-2 text-primary"><span class="path1"></span><span class="path2"></span></i>' };
+        case '2': return { name: 'Consumables', icon: '<i class="ki-duotone ki-lots-shopping fs-2 text-orange"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span><span class="path5"></span><span class="path6"></span><span class="path7"></span><span class="path8"></span></i>' };
+        case '3': return { name: 'Accessory', icon: '<i class="ki-duotone ki-medal-star fs-2 text-teal"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span></i>' };
+        case '4': return { name: 'Office supplies', icon: '<i class="ki-duotone ki-parcel fs-2 text-success"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span><span class="path5"></span></i>' };
+        default:  return { name: '-', icon: '' };
+    }
+}
+
+function loadInprogressPrDetail(){
+    var requestToken = ++prSearchRequestToken;
+    $.ajax({
+        url: ctx + '/search_inprogress_pr',
+        type: 'POST',
+        dataType: 'json',
+        success: function (resp) {
+            if (requestToken !== prSearchRequestToken || !isSearchPrModalOpen) {
+                return;
+            }
+            var data = resp.data;
+            var rows = (data && data.prDetailList) || [];
+
+            // pr_detail อาจมีหลาย MR รวมให้เหลือ 1 แถวต่อ pr_detail
+            var map = {};
+            inprogressPrDetailList = [];
+
+            rows.forEach(function(r){
+                var key = String(r.pr_detail_id);
+                if (!map[key]) {
+                    r.mrs = [];
+                    map[key] = r;
+                    inprogressPrDetailList.push(r);
+                }
+                if (r.mr_id) {
+                    map[key].mrs.push({ id: r.mr_id, url: r.url_ref || '' });
+                }
+            });
+
+			// เรียงให้ pr_id เดียวกันอยู่ติดกัน
+            var groupTime = {};
+            inprogressPrDetailList.forEach(function(r){
+                var t = new Date(String(r.time_sort || r.time_create || '').replace(' ', 'T')).getTime() || 0;
+                groupTime[r.pr_id] = Math.max(groupTime[r.pr_id] || 0, t);
+            });
+            inprogressPrDetailList.sort(function(a, b){
+                if (String(a.pr_id) !== String(b.pr_id)) {
+                    var d = groupTime[b.pr_id] - groupTime[a.pr_id];
+                    if (d !== 0) return d;
+                    return String(a.pr_id) < String(b.pr_id) ? -1 : 1;
+                }
+                return Number(a.pr_detail_id) - Number(b.pr_detail_id);
+            });
+
+            renderPrResultTable(inprogressPrDetailList);
+        },
+        error: function () {
+            Swal.fire('Error', 'ไม่สามารถโหลดข้อมูล PR ได้', 'error');
+        }
+    });
+}
+
+$(document.body).on('keyup input', '#searchPrKeyword', function () {
+    if (prDetailTable) {
+        prDetailTable.search(this.value).draw();
+    }
+});
+
+$(document.body).on('change', '#searchPrCategory', function () {
+    selectedPrCategory = $(this).val();
+    if (prDetailTable) {
+        prDetailTable.draw();
+    }
+});
+
+function isPrDetailIdInCart(prDetailId){
+    var inCart = poDetailCart.some(function(it){
+        return (it.sources || []).some(function(s){ return String(s.prDetailId) === String(prDetailId); });
+    });
+    if (inCart) return true;
+    return Object.keys(pendingExistingPoSources).some(function(pid){
+        return pendingExistingPoSources[pid].some(function(s){ return String(s.prDetailId) === String(prDetailId); });
+    });
+}
+
+function renderPrResultTable(list){
+    var tbody = document.getElementById('prResultBody');
+    var html = '';
+
+    list.forEach(function(item, index){
+        var cat = getCategoryIcon(item.product_type);
+        var qty = item.amount_total || 0;
+        var unitName = item.unit_name || '';
+        var userName = item.user_create_name || '-';
+        var timeCreate = formatNowDateTime(item.time_create);
+        var initial = userName.charAt(0).toUpperCase();
+        var userPath = item.user_create_path || '';
+        var statusBadge = item.pr_status == '3'
+            ? '<span class="badge badge-lg bg-success fw-semibold fs-7 text-white">Approved</span>'
+            : item.pr_status == '7'
+            ? '<span class="badge badge-lg bg-cyan fw-semibold fs-7 text-white">In-Progress</span>'
+            : '';
+		var fullProductName = item.parent_product_name
+			? item.parent_product_name + ' > ' + (item.product_name || '')
+			: (item.product_name || '');
+
+        html += `
+        <tr class="fw-semibold fs-6 text-gray-800 border-bottom border-gray-200" data-pr-id="\${item.pr_id}">
+            <td>
+                <div class="form-check form-check-sm">
+                    <input class="form-check-input pr-row-check" type="checkbox"
+                            data-pr-detail-id="\${item.pr_detail_id}"\${isPrDetailIdInCart(item.pr_detail_id) ? ' checked' : ''} />
+                </div>
+            </td>
+            <td class="fw-bold text-gray-900 fs-7 row-number text-start"></td>
+            <td class="text-gray-900 fs-6 fw-normal">\${item.pr_id}</td>
+            <td>
+                <div class="d-flex align-items-center">
+                    <div class="symbol symbol-40px me-4">\${cat.icon}</div>
+                    <span class="text-gray-900 fs-5 fw-normal">\${cat.name}</span>
+                </div>
+            </td>
+            <td>
+                <div class="d-flex align-items-center">
+                    <div class="symbol symbol-35px symbol-circle me-3">
+                        <div class="symbol symbol-35px symbol-circle me-3">
+                            \${userPath
+                                ? '<img src="' + userPath + '" alt="' + userName + '" class="object-fit-cover" />'
+                                : '<span class="symbol-label bg-light-primary text-primary fw-bold">' + initial + '</span>'
+                            }
+                        </div>
+                    </div>
+                    <div class="d-flex flex-column">
+                        <span class="text-gray-900 fs-6 fw-normal">\${userName}</span>
+                        <span class="text-gray-900 fs-6 fw-normal">\${timeCreate}</span>
+                    </div>
+                </div>
+            </td>
+            <td>
+                <div class="d-flex flex-column">\${fullProductName}</span>
+                    <span class="text-gray-900 fs-6 fw-normal">\${qty} \${unitName}</span>
+                </div>
+            </td>
+            <td class="text-end pe-2">
+                \${statusBadge}
+            </td>
+        </tr>`;
+    });
+    tbody.innerHTML = html;
+
+    if (prDetailTable) {
+        prDetailTable.destroy();
+        prDetailTable = null;
+    }
+    prDetailTable = $('#prResultTable').DataTable({
+        ordering : false,
+        searching : true,
+        autoWidth : false,
+        info: false,
+        paging: false,
+        drawCallback: function () {
+            var api = this.api();
+            var $rows = $(api.rows({ search: 'applied', order: 'applied' }).nodes());
+
+            // ลบหัวกลุ่มเก่า แล้วสร้างใหม่ทุกครั้งที่ draw (search / filter)
+            $(api.table().body()).find('tr.pr-group-row').remove();
+
+            var counts = {};
+            $rows.each(function () {
+                var id = String($(this).data('pr-id'));
+                counts[id] = (counts[id] || 0) + 1;
+            });
+
+            var lastPr = null;
+            $rows.each(function (i) {
+                $(this).find('.row-number').text(i + 1);
+
+                var prId = String($(this).data('pr-id'));
+                if (prId !== lastPr) {
+                    $(this).before(buildPrGroupRow(prId, counts[prId]));
+                    lastPr = prId;
+                }
+            });
+
+            document.getElementById('prItemsFoundCount').textContent = $rows.length;
+            syncGroupChecks();
+        }
+    });
+    updatePrSelectedCountReal();
+
+    var checkAll = document.getElementById('checkAllPr');
+
+    function syncCheckAllState(){
+        var allBoxes = document.querySelectorAll('.pr-row-check');
+        checkAll.checked = allBoxes.length > 0 && Array.prototype.every.call(allBoxes, function (box) { return box.checked; });
+    }
+
+    document.querySelectorAll('.pr-row-check').forEach(function (cb) {
+        cb.addEventListener('change', function () {
+            updatePrSelectedCountReal();
+            syncCheckAllState();
+            syncGroupChecks();
+        });
+    });
+
+    checkAll.checked = list.length > 0 && list.every(function (d) { return isPrDetailIdInCart(d.pr_detail_id); });
+    checkAll.onchange = function(){
+        document.querySelectorAll('.pr-row-check').forEach(cb => cb.checked = this.checked);
+        updatePrSelectedCountReal();
+        syncGroupChecks();
+    };
+}
+
+function buildPrGroupRow(prId, count){
+    return '<tr class="pr-group-row" data-pr-id="' + prId + '">'
+        + '<td colspan="7" class="bg-light-primary">'
+            + '<div class="d-flex align-items-center gap-4">'
+                + '<div class="form-check form-check-sm">'
+                    + '<input class="form-check-input pr-group-check" type="checkbox" data-pr-id="' + prId + '" />'
+                + '</div>'
+                + '<span class="fw-bold fs-5 text-primary">' + prId + '</span>'
+                + '<span class="text-muted fs-7">' + count + ' item' + (count > 1 ? 's' : '') + '</span>'
+            + '</div>'
+        + '</td>'
+    + '</tr>';
+}
+
+// ติ๊กหัวกลุ่มให้ตรงกับสถานะของแถวข้างใต้
+function syncGroupChecks(){
+    document.querySelectorAll('.pr-group-check').forEach(function (g) {
+        var boxes = document.querySelectorAll(
+            'tr:not(.pr-group-row)[data-pr-id="' + g.getAttribute('data-pr-id') + '"] .pr-row-check');
+        g.checked = boxes.length > 0 &&
+            Array.prototype.every.call(boxes, function (b) { return b.checked; });
+    });
+}
+
+// ติ๊กที่หัวกลุ่ม = ติ๊กทุกแถวใน PR นั้น
+$(document.body).on('change', '.pr-group-check', function () {
+    var checked = this.checked;
+    var prId = this.getAttribute('data-pr-id');
+    document.querySelectorAll('tr:not(.pr-group-row)[data-pr-id="' + prId + '"] .pr-row-check')
+        .forEach(function (cb) { cb.checked = checked; });
+
+    updatePrSelectedCountReal();
+
+    var checkAll = document.getElementById('checkAllPr');
+    var allBoxes = document.querySelectorAll('.pr-row-check');
+    checkAll.checked = allBoxes.length > 0 &&
+        Array.prototype.every.call(allBoxes, function (b) { return b.checked; });
+});
+
+function updatePrSelectedCountReal(){
+    var count = document.querySelectorAll('.pr-row-check:checked').length;
+    document.getElementById('prSelectedCount').textContent = count;
+}
+
+function uncheckPrCheckboxesForItem(item){
+    if (!item || !item.sources || item.sources.length === 0) return;
+
+    item.sources.forEach(function(s){
+        if (!s.prDetailId) return;
+        var cb = document.querySelector('.pr-row-check[data-pr-detail-id="' + s.prDetailId + '"]');
+        if (cb) cb.checked = false;
+    });
+
+    updatePrSelectedCountReal();
+
+    var checkAll = document.getElementById('checkAllPr');
+    if (checkAll) {
+        var allBoxes = document.querySelectorAll('.pr-row-check');
+        checkAll.checked = allBoxes.length > 0 &&
+            Array.prototype.every.call(allBoxes, function (box) { return box.checked; });
+    }
+}
+
+// หา unit, base ของ unitId ที่กำหนด จาก unit catalog 
+// unit = entry ของ unitId นั้น(เอา conversionRate), base = entry ที่ sequence === '0' (หน่วยเล็กสุด)
+function findUnitAndBase(catalog, unitId){
+    var unit = null, base = null;
+    (catalog || []).forEach(function(u){
+        if (String(u.id) === String(unitId)) unit = u;
+        if (String(u.sequence) === '0') base = u;
+    });
+    return { unit: unit, base: base };
+}
+
+document.getElementById('btnSubmitPr').addEventListener('click', function(){
+    var selectedIds = [];
+    document.querySelectorAll('.pr-row-check:checked').forEach(function(cb){
+        selectedIds.push(cb.getAttribute('data-pr-detail-id'));
+    });
+    var selectedIdSet = {};
+    selectedIds.forEach(function(id){ selectedIdSet[String(id)] = true; });
+
+    // เอาออกจาก poDetailCart รายการที่เคยดึงเข้ามาจากตารางนี้ แต่ตอนนี้ถูกเลิกติ๊กแล้ว
+    inprogressPrDetailList.forEach(function(d){
+        var prDetailId = String(d.pr_detail_id);
+        if (selectedIdSet[prDetailId]) return;
+
+        for (var i = poDetailCart.length - 1; i >= 0; i--) {
+            var cartItem = poDetailCart[i];
+            if (!cartItem.sources) continue;
+
+            var srcIdx = cartItem.sources.findIndex(function (s) {
+                return String(s.prDetailId) === prDetailId;
+            });
+            if (srcIdx === -1) continue;
+
+            var removedSrc = cartItem.sources[srcIdx];
+            var removedBaseQty = Number(removedSrc.baseQty != null ? removedSrc.baseQty : removedSrc.qty) || 0;
+            cartItem.sources.splice(srcIdx, 1);
+
+            if (cartItem.sources.length === 0) {
+                poDetailCart.splice(i, 1);
+            } else {
+                cartItem.qty = Math.max(0, (Number(cartItem.qty) || 0) - removedBaseQty);
+                cartItem.price = cartItem.qty > 0 ? ((Number(cartItem.total) || 0) / cartItem.qty) : 0;
+            }
+        }
+    });
+
+    // search_inprogress_pr ไม่มี conversion rate ติดมาด้วย ต้อง fetch unit catalog ของแต่ละ product_id ที่เลือกเอง
+    var productIdsToFetch = [];
+    selectedIds.forEach(function(prDetailId){
+        var src = inprogressPrDetailList.find(function(d){ return String(d.pr_detail_id) === String(prDetailId); });
+        if (!src || !src.product_id) return;
+        var pid = String(src.product_id);
+        if (!prUnitCatalogCache[pid] && productIdsToFetch.indexOf(pid) === -1) {
+            productIdsToFetch.push(pid);
+        }
+    });
+
+    var fetches = productIdsToFetch.map(function(pid){
+        return $.ajax({
+            url: ctx + '/get_unit_of_measure',
+            type: 'POST',
+            dataType: 'json',
+            data: { productId: pid }
+        }).then(function(resp){
+            prUnitCatalogCache[pid] = (resp.data && resp.data.unitList) || [];
+        }, function(){
+            prUnitCatalogCache[pid] = []; // โหลดไม่สำเร็จ ใช้ conversionRate=1 (ไม่แปลงหน่วย)
+        });
+    });
+
+    $.when.apply($, fetches).always(function(){
+        // รายการที่ดึงมาจาก Search PR ทั้งหมดเป็นของใหม่ (ยังไม่ save ลง DB)
+        selectedIds.forEach(function(prDetailId){
+            var src = inprogressPrDetailList.find(function(d){ return String(d.pr_detail_id) === String(prDetailId); });
+            if (!src) return;
+
+            var qty = Number(src.amount_total) || 0;
+            var price = Number(src.unit_price) || 0;
+            var mrs = src.mrs || [];
+
+            var catalog = prUnitCatalogCache[String(src.product_id)] || [];
+            var found = findUnitAndBase(catalog, src.unit);
+            var conversionRate = (found.unit && Number(found.unit.conversionRate)) || 1;
+            var baseUnit = found.base || found.unit;
+            var baseQty = qty * conversionRate;
+            var baseUnitId = baseUnit ? baseUnit.id : src.unit;
+            var baseUnitName = baseUnit ? baseUnit.name : (src.unit_name || '');
+
+            // ข้อมูลที่มา (ต่อ PR แต่ละใบ) — qty/unitName เป็นหน่วยดิบตามที่ PR บันทึกไว้
+            var sourceEntry = {
+                prId: src.pr_id,
+                prDetailId: src.pr_detail_id,
+                mrIds: mrs,
+                qty: qty,
+                unit: src.unit,
+                unitName: src.unit_name || '',
+                baseQty: baseQty,
+                refLink: src.ref_link || '',
+                creatorName: (src.user_create_emp_id ? src.user_create_emp_id + ' - ' : '') + (src.user_create_name || ''),
+                savedAt: formatNowDateTime()
+            };
+
+			if (addToExistingPoDetail(src.product_id, sourceEntry, baseQty * price)) return;
+
+            // group ตาม productId เฉพาะกับรายการใหม่ใน poDetailCart (ไม่ยุ่งกับ existingPoDetailList)
+            var existingIndex = poDetailCart.findIndex(function(it){
+                return String(it.productId) === String(src.product_id);
+            });
+
+            if (existingIndex >= 0) {
+                var existing = poDetailCart[existingIndex];
+
+                if (!existing.sources || existing.sources.length === 0) {
+                    existing.sources = [{
+                        prId: existing.prId || null,
+                        prDetailId: existing.prDetailId || null,
+                        mrIds: existing.mrIds || [],
+                        qty: existing.qty,
+                        unit: existing.unit,
+                        unitName: existing.unitName,
+                        baseQty: existing.qty,
+                        refLink: existing.refLink || '',
+                        creatorName: existing.creatorName || currentUserDisplay,
+                        savedAt: existing.savedAt || formatNowDateTime()
+                    }];
+                }
+
+                var alreadyAdded = (existing.sources || []).some(function(s){
+                    return String(s.prDetailId) === String(src.pr_detail_id);
+                });
+                if (alreadyAdded) return;
+
+                existing.sources.push(sourceEntry);
+                existing.qty = (Number(existing.qty) || 0) + baseQty;
+                existing.total = (Number(existing.total) || 0) + (baseQty * price);
+                existing.price = existing.qty > 0 ? (existing.total / existing.qty) : 0;
+            } else {
+				var cartProductName = src.parent_product_name
+					? src.parent_product_name + ' > ' + (src.product_name || '')
+					: (src.product_name || '');
+
+                var item = {
+                    itemsType: mapDbItemsTypeToSelect(src.product_type),
+                    itemsTypeText: getCategoryIcon(src.product_type).name,
+                    productId: src.product_id,
+                    productName: src.product_name || '',
+    				parentProductName: src.parent_product_name || '',
+                    qty: baseQty,
+                    unit: baseUnitId,
+                    unitName: baseUnitName,
+                    price: price,
+                    description: '',
+                    sources: [sourceEntry]
+                };
+                item.total = baseQty * price;
+                poDetailCart.push(item);
+            }
+        });
+
+        saveCartToSession();
+        renderPoDetailCart();
+
+        if (document.activeElement) {
+            document.activeElement.blur();
+        }
+
+        var modalEl = document.getElementById('modal_search_pr');
+        bootstrap.Modal.getOrCreateInstance(modalEl).hide();
+    });
+});
 
 </script>
 

@@ -161,22 +161,26 @@ public class PrDetailDAOImpl implements PrDetailDAO {
 			Session session = sessionFactory.getCurrentSession();
 
 			String sql = "SELECT pd.pr_detail_id, pd.pr_id, pd.product_id, " +
-					"  pd.amount_total, pd.unit, pd.description, " +
-					"  pd.ref_link, " +
-					"  pd.user_create, pd.time_create, " +
-					"  p.status AS pr_status, " +
-					"  pr_pd.product_name, pr_pd.product_type, " +
-					"  uom.unit_name, " +
-					"  uc.name_en AS user_create_name, " +
-					"  uc.path AS user_create_path " +
-					"FROM pr_detail pd " +
-					"JOIN pr p ON pd.pr_id = p.pr_id " +
-					"LEFT JOIN product pr_pd ON pd.product_id = pr_pd.product_id " +
-					"LEFT JOIN unit_of_measure uom ON pd.unit = uom.unit_id " +
-					"LEFT JOIN user uc ON pd.user_create = uc.id " +
-					"WHERE p.status IN ('7') " +
-					"AND pd.status = '0' " +
-					"ORDER BY pd.time_create DESC";
+						"  pd.amount_total, pd.unit, pd.description, " +
+						"  pd.user_create, pd.time_create, pd.ref_link, " +
+						"  COALESCE(p.time_update, p.time_create) AS time_sort, " +
+						"  p.status AS pr_status, " +
+						"  pr_pd.product_name, pr_pd.product_type, " +
+						"  uom.unit_name, " +
+						"  uc.employee_id AS user_create_emp_id, " +
+						"  uc.name_en AS user_create_name, " +
+						"  uc.path AS user_create_path, " +
+						"  pp.mr_id, m.url_ref " +
+						"FROM pr_detail pd " +
+						"JOIN pr p ON pd.pr_id = p.pr_id " +
+						"LEFT JOIN product pr_pd ON pd.product_id = pr_pd.product_id " +
+						"LEFT JOIN unit_of_measure uom ON pd.unit = uom.unit_id " +
+						"LEFT JOIN user uc ON pd.user_create = uc.id " +
+						"LEFT JOIN pr_parent pp ON pp.pr_detail_id = pd.pr_detail_id " +
+						"LEFT JOIN mr m ON m.mr_id = pp.mr_id " +
+						"WHERE p.status IN ('7') " +
+						"AND pd.status = '0' " +
+						"ORDER BY COALESCE(p.time_update, p.time_create) DESC, p.pr_id, pd.pr_detail_id";
 
 			SQLQuery query = session.createSQLQuery(sql);
 			query.setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
@@ -254,5 +258,36 @@ public class PrDetailDAOImpl implements PrDetailDAO {
 		}
 	}
 	
+	@Override
+	public List<Map<String, Object>> findMrByPrIdAndProductId(String prId, Object productId) throws Exception {
+
+		List<Map<String, Object>> mrList = new ArrayList<>();
+
+		try {
+			Session session = sessionFactory.getCurrentSession();
+
+			String sql = "SELECT DISTINCT pp.mr_id AS mr_id, m.url_ref AS url_ref " +
+					"FROM pr_detail prd " +
+					"JOIN pr_parent pp ON pp.pr_detail_id = prd.pr_detail_id " +
+					"LEFT JOIN mr m ON m.mr_id = pp.mr_id " +
+					"WHERE prd.pr_id = :prId " +
+					"AND prd.product_id = :productId " +
+					"AND pp.mr_id IS NOT NULL " +
+					"ORDER BY pp.mr_id";
+
+			SQLQuery query = session.createSQLQuery(sql);
+			query.setParameter("prId", prId);
+			query.setParameter("productId", productId);
+			query.setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
+
+			mrList = query.list();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw e;
+		}
+
+		return mrList;
+	}
 
 }

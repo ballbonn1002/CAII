@@ -14,7 +14,7 @@
 <meta charset="utf-8">
 <meta name="description" content="The most advanced Tailwind CSS & Bootstrap 5 Admin Theme with 40 unique prebuilt layouts on Themeforest trusted by 100,000 beginners and professionals. Multi-demo, Dark Mode, RTL support and complete React, Angular, Vue, Asp.Net Core, Rails, Spring, Blazor, Django, Express.js, Node.js, Flask, Symfony & Laravel versions. Grab your copy now and get life-time updates for free." />
 <meta name="keywords" content="tailwind, tailwindcss, metronic, bootstrap, bootstrap 5, angular, VueJs, React, Asp.Net Core, Rails, Spring, Blazor, Django, Express.js, Node.js, Flask, Symfony & Laravel starter kits, admin themes, web design, figma, web development, free templates, free admin themes, bootstrap theme, bootstrap template, bootstrap dashboard, bootstrap dak mode, bootstrap button, bootstrap datepicker, bootstrap timepicker, fullcalendar, datatables, flaticon" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
 <meta property="og:locale" content="en_US" />
 <meta property="og:type" content="article" />
 <meta property="og:title" content="Metronic - The World's #1 Selling Tailwind CSS & Bootstrap Admin Template by KeenThemes" />
@@ -24,7 +24,7 @@
 <link rel="shortcut icon" href="assets/media/logos/cube-small-ico.ico" />
 
 <!--begin::Fonts(mandatory for all pages)-->
-<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inter:300,400,500,600,700" />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@300;400;500;600;700&display=swap" />
 <!--end::Fonts-->
 <!--begin::Vendor Stylesheets(used for this page only)-->
 <link href="assets/plugins/custom/fullcalendar/fullcalendar.bundle.css" rel="stylesheet" type="text/css" />
@@ -35,6 +35,84 @@
 <link href="assets/plugins/global/plugins.bundle.css" rel="stylesheet" type="text/css" />
 <link href="assets/css/style.bundle.css" rel="stylesheet" type="text/css" />
 <!--end::Global Stylesheets Bundle-->
+
+<!--begin::LIFF app-shell standards (มาตรฐาน webview ของ LINE LIFF ทุกหน้า)-->
+<style>
+html, body {
+	max-width: 100%;
+	overflow-x: hidden;             /* กันเลื่อนลากแกน X โผล่ขอบจอ */
+}
+body {
+	overscroll-behavior-y: contain; /* กัน pull-to-refresh / bounce ของ webview */
+	-webkit-tap-highlight-color: transparent; /* กันไฮไลต์ฟ้าตอนแตะปุ่มบน Android */
+	padding-top: env(safe-area-inset-top); /* เผื่อ notch/status bar เวลาเปิดแบบ full-screen */
+	font-family: 'IBM Plex Sans Thai', Helvetica, Arial, sans-serif;
+}
+.liff-page-title {
+	font-weight: 700;
+	font-size: 23.1px;
+	line-height: 27.72px;
+	letter-spacing: 0px;
+}
+.liff-shell { --liff-gutter: 1.5rem; width: calc(100% - 32px); max-width: 393px; margin: 0 auto; }
+.liff-back-btn { display: inline-flex; align-items: center; justify-content: center; width: 36px; height: 36px; border-radius: 10px; background: #F8F9FB; border: 1px solid #E4E6EF; }
+.liff-loading-overlay {
+	position: fixed; inset: 0;
+	background: rgba(255,255,255,.7);
+	display: none;
+	align-items: center; justify-content: center;
+	z-index: 200;
+}
+.liff-initializing { visibility: hidden; }
+/* overlay โผล่เมื่อรอเกิน 300ms */
+.liff-loading-delayed { animation: liffDelayShow 0s .3s both; }
+@keyframes liffDelayShow { from { visibility: hidden; } to { visibility: visible; } }
+.liff-skel { display: inline-block; height: 12px; border-radius: 6px; flex: none; background: linear-gradient(90deg, var(--bs-gray-200) 25%, var(--bs-gray-300) 37%, var(--bs-gray-200) 63%); background-size: 400% 100%; animation: liffShimmer 1.2s ease-in-out infinite; }
+.liff-skel-box { width: 35px; height: 35px; border-radius: .475rem; }
+.liff-skel-row { display: flex; align-items: center; gap: .5rem; min-height: 20px; }
+.liff-skel-dot { width: 14px; height: 14px; border-radius: 50%; }
+@keyframes liffShimmer { 0% { background-position: 100% 50%; } 100% { background-position: 0 50%; } }
+@media (prefers-reduced-motion: reduce) { .liff-skel { animation: none; } }
+.liff-input-underline { border: none; border-bottom: 1.5px solid #E4E6EF; border-radius: 0; background: transparent; padding: 8px 2px; box-shadow: none !important; }
+.liff-input-underline:focus { border-bottom-color: var(--bs-primary); background: transparent; }
+.liff-input-underline:disabled, .liff-input-underline[readonly] { background: transparent; border-bottom-style: dashed; color: var(--bs-gray-600); }
+textarea.liff-input-underline { padding-left: 2px; padding-right: 2px; }
+.liff-field-row { box-sizing: border-box; display: flex; flex-direction: row; align-items: center; padding: 0; gap: 6.5px; width: 100%; min-height: 55.25px; border-bottom: 1px solid #DBDFE9; }
+.liff-field-row .liff-field-label { flex: none; font-size: 13.5px; font-weight: 500; color: var(--bs-gray-700); white-space: nowrap; }
+.liff-field-row .liff-field-value { flex: 1 1 auto; min-width: 0; border: none !important; background-color: transparent !important; padding: 0 !important; text-align: right; box-shadow: none !important; }
+.liff-field-row .liff-field-value:disabled, .liff-field-row .liff-field-value[readonly] { color: var(--bs-gray-600); cursor: default; }
+.liff-field-row .liff-field-value::placeholder { color: var(--bs-gray-300); opacity: 1; }
+.liff-field-grow { flex: 1 1 auto; min-width: 0; }
+.liff-field-row .liff-field-value.liff-field-dropdown {
+	appearance: none; -webkit-appearance: none; -moz-appearance: none;
+	padding-right: 18px !important;
+	background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%2399A1B7' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.6' d='m2 5 6 6 6-6'/%3e%3c/svg%3e") !important;
+	background-repeat: no-repeat !important;
+	background-position: right center !important;
+	background-size: 11px 8px !important;
+	cursor: pointer;
+}
+.liff-field-row .liff-field-value.liff-field-dropdown:disabled { cursor: default; background-image: none !important; padding-right: 0 !important; }
+.liff-select-hidden { position: absolute !important; width: 1px !important; height: 1px !important; overflow: hidden !important; clip: rect(0 0 0 0) !important; white-space: nowrap !important; }
+.liff-field-row .liff-select-dropdown { position: relative; flex: 1 1 auto; min-width: 0; }
+.liff-select-dropdown .liff-dropdown-trigger { width: 100%; border: none !important; background-color: transparent !important; }
+.liff-select-dropdown .liff-dropdown-menu {
+	display: none;
+	position: absolute; top: 100%; right: 0; margin-top: 4px;
+	z-index: 300; list-style: none;
+	min-width: 140px; max-width: 260px;
+	border-radius: 10px; border: 1px solid #E4E6EF; box-shadow: 0 4px 20px rgba(0,0,0,.08);
+	padding: 6px; margin-block: 0; margin-inline-start: 0;
+	max-height: 260px; overflow-y: auto;
+	background: #fff;
+}
+.liff-select-dropdown.liff-dropdown-open .liff-dropdown-menu { display: block; }
+.liff-dropdown-menu .dropdown-item { display: block; width: 100%; text-align: left; font-size: 13px; font-weight: 500; border-radius: 6px; padding: 8px 12px; color: var(--bs-gray-700); white-space: normal; text-decoration: none; background: none; border: none; }
+.liff-dropdown-menu .dropdown-item:hover { background-color: var(--bs-gray-100); }
+.liff-dropdown-menu .dropdown-item.active { background-color: var(--bs-primary); color: #fff; }
+.liff-dropdown-menu .dropdown-item.disabled { color: var(--bs-gray-400); pointer-events: none; }
+</style>
+<!--end::LIFF app-shell standards-->
 <!--begin::Javascript-->
 <script>var hostUrl = "assets/";</script>
 <!--begin::Global Javascript Bundle(mandatory for all pages)-->
@@ -65,10 +143,53 @@
 <script src="assets/js/custom/utilities/modals/new-target.js"></script>
 <script src="assets/js/custom/utilities/modals/users-search.js"></script>
 <!--end::Custom Javascript-->
+<!--begin::LIFF toast (ใช้ร่วมทุกหน้า LIFF)-->
+<script>
+var liffToastOptions = {
+	"closeButton": false,
+	"debug": false,
+	"newestOnTop": false,
+	"progressBar": false,
+	"positionClass": "toastr-top-right",
+	"preventDuplicates": false,
+	"onclick": null,
+	"showDuration": "300",
+	"hideDuration": "1000",
+	"showEasing": "swing",
+	"hideEasing": "linear",
+	"showMethod": "fadeIn",
+	"hideMethod": "fadeOut"
+};
+
+function liffToastSuccess(message, title) {
+	toastr.options = $.extend({}, liffToastOptions, { "timeOut": "2000", "extendedTimeOut": "1000" });
+	toastr.success(message, title);
+}
+
+function liffToastError(message, title) {
+	toastr.options = $.extend({}, liffToastOptions, { "timeOut": "5000", "extendedTimeOut": "5000" });
+	toastr.error(message, title);
+}
+</script>
+<!--end::LIFF toast-->
+<!--begin::LIFF form init-->
+<script>
+function liffInitDone(formSelector) {
+	$(formSelector).removeClass('liff-initializing').removeAttr('aria-busy');
+	// หลัง init แล้ว spinner ตอน submit ต้องโผล่ทันที
+	$('#liffLoadingOverlay').hide().removeClass('liff-loading-delayed');
+}
+
+function liffShowLoading() {
+	document.getElementById('liffLoadingOverlay').style.display = 'flex';
+}
+</script>
+<!--end::LIFF form init-->
 <!--end::Javascript-->
 </head>
 <!--begin::Body-->
-<body id="kt_app_body" data-kt-app-layout="light-sidebar" data-kt-app-header-fixed="true" data-kt-app-sidebar-enabled="true" data-kt-app-sidebar-fixed="true" data-kt-app-sidebar-hoverable="true" data-kt-app-sidebar-push-header="true" data-kt-app-sidebar-push-toolbar="true" data-kt-app-sidebar-push-footer="true" data-kt-app-toolbar-enabled="true" class="app-default">
+<%-- LIFF ไม่มี sidebar/header attribute = false --%>
+<body id="kt_app_body" data-kt-app-layout="light-sidebar" data-kt-app-header-fixed="false" data-kt-app-sidebar-enabled="false" data-kt-app-sidebar-fixed="false" data-kt-app-sidebar-hoverable="false" data-kt-app-sidebar-push-header="false" data-kt-app-sidebar-push-toolbar="false" data-kt-app-sidebar-push-footer="false" data-kt-app-toolbar-enabled="true" class="app-default">
 	<!--begin::Theme mode setup on page load-->
 	<script>
 			var defaultThemeMode = "light"; 
@@ -132,8 +253,8 @@ function showSessionAlert() {
         allowEscapeKey: false
     }).then((result) => {
         if (result.isConfirmed) {
-            //window.location.reload(); 
-        	window.location.href = 'index.jsp';
+            //window.location.reload();
+        	window.location.href = '<%=request.getContextPath()%>/pages-line/index.jsp';
         }
     });
 }
@@ -149,5 +270,37 @@ document.onmousemove = resetTimer;
 document.onkeypress = resetTimer;
 document.onclick = resetTimer;
 document.onscroll = resetTimer;
+
+// มือถือ: keypress/click ไม่ครอบคลุมการแตะ-ลาก (เช่น แผนที่) และคีย์บอร์ดบนจอ จึงเพิ่ม touch/input/keydown
+// (capture เพื่อให้จับ scroll ใน element ย่อยได้ด้วย)
+['touchstart', 'touchmove', 'input', 'keydown', 'scroll'].forEach(function (evt) {
+    document.addEventListener(evt, resetTimer, { passive: true, capture: true });
+});
+
+// Keep-alive: ผู้ใช้ที่ยังใช้งานหน้าเว็บอยู่ (ขยับเมาส์/พิมพ์/คลิก/เลื่อน/แตะ) ให้ยิงไป server เป็นระยะ
+// เพื่อต่ออายุ session ฝั่ง server ให้ตรงกับตัวจับเวลาในหน้านี้
+(function () {
+    // ยิงทุก 1/4 ของ timeout แต่ไม่เกิน 5 นาที และไม่ถี่กว่า 30 วินาที
+    const pingInterval = Math.max(30000, Math.min(300000, Math.floor(timeoutDuration / 4)));
+    let userActive = false;
+
+    ['mousemove', 'keydown', 'click', 'scroll', 'touchstart'].forEach(function (evt) {
+        document.addEventListener(evt, function () { userActive = true; }, { passive: true, capture: true });
+    });
+
+    setInterval(function () {
+        if (!userActive) return;
+        userActive = false;
+        fetch('session_keepalive.action', { credentials: 'same-origin', cache: 'no-store' })
+            .then(function (res) {
+                // redirected = session หมดอายุไปแล้ว (ถูกส่งกลับหน้า login)
+                if (res.redirected) {
+                    clearTimeout(sessionTimer);
+                    showSessionAlert();
+                }
+            })
+            .catch(function () { /* เน็ตหลุดชั่วคราว: ข้ามรอบนี้ */ });
+    }, pingInterval);
+})();
 
 </script>

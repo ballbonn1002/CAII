@@ -34,4 +34,6 @@ public interface PrDetailDAO {
 
 	Map<String, Integer[]> countPrDetailProgressGroupByPr() throws Exception;
 
+	List<Map<String, Object>> findMrByPrIdAndProductId(String prId, Object productId) throws Exception;
+
 }

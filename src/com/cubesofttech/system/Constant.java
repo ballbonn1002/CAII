@@ -15,6 +15,10 @@ import java.util.List;
 
 public class Constant {
     public static List<String> onlineUserList = new ArrayList<>();
+    // สิทธิ์ (authorized_object_id) ที่ทำให้ session timeout ยาวขึ้น — ตรวจจาก role_authorized_object ของ user.role_id
+    public static final String AUTH_SESSION_TIMEOUT_EXTENDED = "session.timeout.extended";
+    // session timeout ของ user ที่มีสิทธิ์ข้างบน (นาที) — ไม่มีสิทธิ์ใช้ค่า default 30 นาทีจาก web.xml
+    public static final int EXTENDED_SESSION_TIMEOUT_MINUTES = 60;
     private String test;
     private String googleApiKey;
     private String webPath;

@@ -94,4 +94,11 @@ public interface EquipmentDAO {
 	 */
 	List<Equipment> findUnlinked() throws Exception;
 
+	/**
+	 * ตั้ง/เคลียร์ warehouse ของเครื่อง (อัปเดตเฉพาะ warehouse_id + user/time update)
+	 *
+	 * @param warehouseId null = เคลียร์เป็น NULL (ไม่ระบุ)
+	 */
+	void updateWarehouse(Integer equipmentId, Long warehouseId, String userUpdate, java.sql.Timestamp timeUpdate) throws Exception;
+
 }

@@ -6,6 +6,11 @@
 <fmt:setLocale value="en_US" />
 <fmt:setTimeZone value="Asia/Bangkok" />
 
+<%-- Hide leave type 6 (ลาพักร้อนที่เหลือ) after 31-12-2026 --%>
+<c:set var="now" value="<%=new java.util.Date()%>" />
+<fmt:formatDate value="${now}" pattern="yyyyMMdd" var="today_ymd" />
+<c:set var="hideLeave6" value="${today_ymd > '20261231'}" />
+
 <!--begin::Main-->
 <div class="app-main flex-column flex-row-fluid">
 	<div class="d-flex flex-column flex-column-fluid">
@@ -162,6 +167,7 @@
 									</div>
 
 									<!-- ลาพักร้อนที่เหลือ -->
+									<c:if test="${!hideLeave6}">
 									<div class="col-6 col-xs-4 col-sm-4 col-md-4 col-xl-3">
 										<div class="d-flex align-items-center">
 											<div class="symbol symbol-50px me-4">
@@ -191,6 +197,7 @@
 											</div>
 										</div>
 									</div>
+									</c:if>
 
 									<!-- ลาป่วย -->
 									<div class="col-6 col-xs-4 col-sm-4 col-md-4 col-xl-3">
@@ -489,10 +496,10 @@
 								<!--end::Header -->
 
 								<!--begin::Footer -->
-								<div class="card-header fs-5">
-									<div class="d-flex align-items-center mt-3 mb-2">
+								<div class="card-header fs-5 flex-nowrap">
+									<div class="d-flex align-items-center mt-3 mb-2 flex-grow-1" style="min-width: 0;">
 										<div class="d-flex flex-wrap align-items-center gap-3 row-gap-1">
-											<div class="fw-bold fs-6 text-dark">${leave.name}</div>
+											<div class="fw-bold fs-6 text-dark text-break">${leave.name}</div>
 											<div class="d-flex align-items-center">
 												<i class="ki-duotone ki-calendar-2 fs-5">
 													<span class="path1"></span>
@@ -554,7 +561,7 @@
 										</div>
 									</div>
 
-									<div class="card-toolbar">
+									<div class="card-toolbar flex-shrink-0 ms-3">
 										<div class="d-inline-flex align-items-center justify-content-end gap-2">
 
 											<span class="text-muted fs-7">

@@ -6,15 +6,20 @@
   หน้า Settings ของ catalog item หนึ่งตัว - ใช้ร่วมกันระหว่าง Consumables กับ Equipment
   เพราะทั้งสองอ่าน/เขียนตาราง product + unit_of_measure ชุดเดียวกัน
 
-  urlPrefix ('stock_cons' / 'stock_equ') ดูจาก product.productType ไม่ใช่จาก URL ที่เข้ามา
-  เพื่อให้ปุ่ม Stock Balance ชี้ถูกหน้าเสมอ แม้จะถูก redirect มาลงผิดทาง
-  (เช่น สร้าง item type Equipment จากหน้า stock_cons_add แล้วถูกส่งมาที่ stock_cons_edit)
+  urlPrefix ('product' / 'stock_equ') ดูจาก product.productType ไม่ใช่จาก URL ที่เข้ามา
+  เพื่อให้ปุ่ม _edit/_uom_*/_sub_* ชี้ถูกหน้าเสมอ แม้จะถูก redirect มาลงผิดทาง
+  (เช่น สร้าง item type Equipment จากหน้า product_add แล้วถูกส่งมาที่ product_edit)
 
-  action ที่ตอบ JSON (stock_cons_update / stock_cons_sub_active_update / *_reorder)
+  balanceUrl แยกออกมาต่างหากจาก urlPrefix เพราะฝั่ง Consumables action ของหน้า Stock Balance
+  ชื่อ "stock_balance" (ไม่ใช่ "product_balance") ในขณะที่ฝั่ง Equipment ยังเป็น "stock_equ_balance" อยู่
+  - prefix เดียวกันแทนไม่ได้เหมือน _edit/_uom_*/_sub_* จึงต้องมีตัวแปรของตัวเอง
+
+  action ที่ตอบ JSON (product_update / product_sub_active_update / *_reorder)
   ใช้ตัวเดียวกันทั้งสองฝั่งได้เลย เพราะไม่มี redirect
 --%>
 <c:set var="isEquipment" value="${product.productType eq '1'}" />
-<c:set var="urlPrefix" value="${isEquipment ? 'stock_equ' : 'stock_cons'}" />
+<c:set var="urlPrefix" value="${isEquipment ? 'stock_equ' : 'product'}" />
+<c:set var="balanceUrl" value="${isEquipment ? 'stock_equ_balance' : 'stock_balance'}" />
 <c:set var="pageTitle" value="${isEquipment ? 'Stock - Equipment' : 'Stock - Consumables'}" />
 
 <div class="app-main flex-column flex-row-fluid" id="kt_app_main">
@@ -26,7 +31,7 @@
                     <ul class="breadcrumb breadcrumb-separatorless fw-semibold fs-7 my-0 pt-1">
                         <li class="breadcrumb-item text-muted"><a href="${pageContext.request.contextPath}/check_in_out" class="text-muted text-hover-primary fw-medium fs-7">Home</a></li>
                         <li class="breadcrumb-item"><span class="bullet bg-gray-500 fw-medium fs-7 w-5px h-2px"></span></li>
-                        <li class="breadcrumb-item text-muted fw-medium fs-7"><a href="${pageContext.request.contextPath}/stock_cons_list" class="text-muted text-hover-primary">Product</a></li>
+                        <li class="breadcrumb-item text-muted fw-medium fs-7"><a href="${pageContext.request.contextPath}/product_list" class="text-muted text-hover-primary">Product</a></li>
                     </ul>
                 </div>
 
@@ -35,18 +40,18 @@
                         <i class="ki-duotone ki-setting-2 fs-3 me-2"><span class="path1"></span><span class="path2"></span></i>
                         <span class="fw-semibold">Product</span>
                     </a>
-                    <a href="${pageContext.request.contextPath}/stock_by_product_list" class="btn btn-light d-inline-flex align-items-center px-5 py-3">
+                    <!-- <a href="${pageContext.request.contextPath}/stock_by_product_list" class="btn btn-light d-inline-flex align-items-center px-5 py-3">
                         <i class="ki-duotone ki-barcode fs-3 me-2 text-gray-500">
                             <span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span>
                             <span class="path5"></span><span class="path6"></span><span class="path7"></span><span class="path8"></span>
                         </i>
                         <span class="fw-semibold text-gray-700">Stock By Product</span>
-                    </a>
-                    <a href="${pageContext.request.contextPath}/stock_by_location_list" class="btn btn-light d-inline-flex align-items-center px-5 py-3">
+                    </a> -->
+                    <!-- <a href="${pageContext.request.contextPath}/stock_by_location_list" class="btn btn-light d-inline-flex align-items-center px-5 py-3">
                         <i class="ki-duotone ki-home-2 fs-3 me-2 text-gray-500"><span class="path1"></span><span class="path2"></span></i>
                         <span class="fw-semibold text-gray-700">Stock By Location</span>
-                    </a>
-                    <a href="${urlPrefix}_balance?productId=${product.productId}" class="btn btn-light d-inline-flex align-items-center px-5 py-3">
+                    </a> -->
+                    <a href="${balanceUrl}?productId=${product.productId}" class="btn btn-light d-inline-flex align-items-center px-5 py-3">
                         <i class="ki-duotone ki-cube-2 fs-3 me-2 text-gray-500"><span class="path1"></span><span class="path2"></span><span class="path3"></span></i>
                         <span class="fw-semibold text-gray-700">Stock Balance</span>
                     </a>
@@ -58,122 +63,157 @@
             <div id="kt_app_content_container" class="app-container container-fluid">
 
                 <%-- ============ Product Detail ============ --%>
-                <form id="stockConsEditForm" method="POST" action="stock_cons_update" enctype="multipart/form-data">
+                <form id="stockConsEditForm" method="POST" action="product_update" enctype="multipart/form-data">
                     <input type="hidden" name="productId" value="${product.productId}" />
 
-                    <div class="card mb-8">
-                        <div class="card-border-radius">
-                            <div class="card-body">
-                                <div class="d-flex align-items-center justify-content-between flex-wrap gap-3 mb-8">
-                                    <h3 class="page-heading text-gray-900 fw-bold mb-0">Product Detail</h3>
-                                    <div class="form-check form-switch form-check-custom form-check-solid">
-                                        <%-- hidden ถือค่าจริงที่ส่งไป backend (checkbox ที่ไม่ติ๊กจะไม่ถูกส่ง) --%>
-                                        <input type="hidden" name="active" id="activeValue"
-                                               value="${product.active eq '1' ? '1' : '0'}" />
-                                        <input class="form-check-input h-25px w-45px" type="checkbox" id="activeToggle"
-                                               <c:if test="${product.active eq '1'}">checked</c:if> />
-                                        <label class="form-check-label fw-semibold text-gray-700" for="activeToggle">Active</label>
-                                    </div>
-                                </div>
-
-                                <div class="row g-6">
-                                    <div class="col-12">
-                                        <label class="form-label fw-semibold text-gray-700 d-block">Product Image</label>
-                                        <div id="productImageErrorMsg" class="text-danger mb-2"></div>
-                                        <%-- Cover Photo pattern เดียวกับ announcement_add.jsp - image-input widget ของ Metronic
-                                             preload รูปเดิมจาก product.fileUpload (Hibernate join อัตโนมัติผ่าน Product.fileUpload) --%>
-                                        <div class="image-input image-input-outline"
-                                             data-kt-image-input="true"
-                                             style="background-image: url('${pageContext.request.contextPath}${not empty product.fileUpload.path ? product.fileUpload.path : '/assets/media/svg/avatars/blank.svg'}')">
-                                            <div class="image-input-wrapper w-150px h-150px"
-                                                 style="background-image: url('${pageContext.request.contextPath}${not empty product.fileUpload.path ? product.fileUpload.path : '/assets/media/svg/avatars/blank.svg'}')"></div>
-
-                                            <label class="btn btn-icon btn-circle btn-color-muted btn-active-color-primary w-25px h-25px bg-body shadow"
-                                                   data-kt-image-input-action="change" data-bs-toggle="tooltip"
-                                                   data-bs-dismiss="click" title="Change image">
-                                                <i class="ki-duotone ki-pencil fs-6"><span class="path1"></span><span class="path2"></span></i>
-                                                <input id="productImageInput" type="file" name="productImage" accept=".png, .jpg, .jpeg" />
-                                            </label>
-
-                                            <span class="btn btn-icon btn-circle btn-color-muted btn-active-color-primary w-25px h-25px bg-body shadow"
-                                                  data-kt-image-input-action="cancel" data-bs-toggle="tooltip"
-                                                  data-bs-dismiss="click" title="Cancel image">
-                                                <i class="ki-outline ki-cross fs-3"></i>
-                                            </span>
+                    <div class="row g-5 g-xl-10">
+                        <div class="col-xl-8">
+                            <div class="card mb-8">
+                                <div class="card-border-radius">
+                                    <div class="card-body">
+                                        <div class="d-flex align-items-center justify-content-between flex-wrap gap-3 mb-8">
+                                            <h3 class="page-heading text-gray-900 fw-bold mb-0">Product Detail</h3>
+                                            <div class="d-flex align-items-center gap-4">
+                                                <%-- QR เฉพาะฝั่ง Consumables/Accessories/Office Supplies (ไม่ใช่ Equipment) --%>
+                                                <c:if test="${!isEquipment}">
+                                                    <button type="button" class="btn btn-icon btn-sm btn-light-primary btn-generate-qr"
+                                                            data-qr-value="${fn:escapeXml(product.productNo)}" title="Generate QR">
+                                                        <i class="bi bi-qr-code fs-3"></i>
+                                                    </button>
+                                                </c:if>
+                                                <div class="form-check form-switch form-check-custom form-check-solid">
+                                                    <%-- hidden ถือค่าจริงที่ส่งไป backend (checkbox ที่ไม่ติ๊กจะไม่ถูกส่ง) --%>
+                                                    <input type="hidden" name="active" id="activeValue"
+                                                           value="${product.active eq '1' ? '1' : '0'}" />
+                                                    <input class="form-check-input h-25px w-45px" type="checkbox" id="activeToggle"
+                                                           <c:if test="${product.active eq '1'}">checked</c:if> />
+                                                    <label class="form-check-label fw-semibold text-gray-700" for="activeToggle">Catalog MR</label>
+                                                </div>
+                                            </div>
                                         </div>
-                                        <div class="form-text">Allowed file types: png, jpg, jpeg. Max 2MB.</div>
-                                    </div>
 
-                                    <div class="col-12 col-lg-6">
-                                        <label class="form-label fw-semibold text-gray-700" for="productNo">
-                                            Item ID <span class="text-danger">*</span>
-                                        </label>
-                                        <input type="text" id="productNo" name="productNo" required maxlength="100"
-                                               class="form-control text-gray-700"
-                                               value="${fn:escapeXml(product.productNo)}" autocomplete="off" />
-                                        <div class="invalid-feedback" id="productNoFeedback"></div>
-                                    </div>
+                                        <div class="row g-6">
+                                            <div class="col-12 col-lg-6">
+                                                <label class="form-label fw-semibold text-gray-700" for="productNo">
+                                                    Item ID <span class="text-danger">*</span>
+                                                </label>
+                                                <input type="text" id="productNo" name="productNo" required maxlength="100"
+                                                       class="form-control text-gray-700"
+                                                       value="${fn:escapeXml(product.productNo)}" autocomplete="off" />
+                                                <div class="invalid-feedback" id="productNoFeedback"></div>
+                                            </div>
 
-                                    <div class="col-12 col-lg-6">
-                                        <label class="form-label fw-semibold text-gray-700" for="productName">
-                                            Item Name <span class="text-danger">*</span>
-                                        </label>
-                                        <input type="text" id="productName" name="productName" required maxlength="255"
-                                               class="form-control text-gray-700"
-                                               value="${fn:escapeXml(product.productName)}" />
-                                    </div>
+                                            <div class="col-12 col-lg-6">
+                                                <label class="form-label fw-semibold text-gray-700" for="productName">
+                                                    Item Name <span class="text-danger">*</span>
+                                                </label>
+                                                <input type="text" id="productName" name="productName" required maxlength="255"
+                                                       class="form-control text-gray-700"
+                                                       value="${fn:escapeXml(product.productName)}" />
+                                            </div>
 
-                                    <div class="col-12 col-lg-6">
-                                        <label class="form-label fw-semibold text-gray-700" for="productType">
-                                            Item Type <span class="text-danger">*</span>
-                                        </label>
-                                        <select id="productType" name="productType" required class="form-select text-gray-700">
-                                            <c:choose>
-                                                <c:when test="${not empty productTypes}">
-                                                    <c:forEach var="type" items="${productTypes}">
-                                                        <option value="${fn:escapeXml(type.product_type)}"
-                                                            <c:if test="${type.product_type eq product.productType}">selected</c:if>>
-                                                            ${fn:escapeXml(type.product_type_name)}
-                                                        </option>
+                                            <div class="col-12 col-lg-6">
+                                                <label class="form-label fw-semibold text-gray-700" for="productType">
+                                                    Item Type <span class="text-danger">*</span>
+                                                </label>
+                                                <select id="productType" name="productType" required class="form-select text-gray-700">
+                                                    <c:choose>
+                                                        <c:when test="${not empty productTypes}">
+                                                            <c:forEach var="type" items="${productTypes}">
+                                                                <option value="${fn:escapeXml(type.product_type)}"
+                                                                    <c:if test="${type.product_type eq product.productType}">selected</c:if>>
+                                                                    ${fn:escapeXml(type.product_type_name)}
+                                                                </option>
+                                                            </c:forEach>
+                                                        </c:when>
+                                                        <c:otherwise>
+                                                            <%-- TODO: ยังไม่มีตาราง master ของ product_type --%>
+                                                            <option value="1" <c:if test="${product.productType eq '1'}">selected</c:if>>Equipment</option>
+                                                            <option value="2" <c:if test="${product.productType eq '2'}">selected</c:if>>Consumables</option>
+                                                            <option value="3" <c:if test="${product.productType eq '3'}">selected</c:if>>Accessories</option>
+                                                            <option value="4" <c:if test="${product.productType eq '4'}">selected</c:if>>Office Supplies</option>
+                                                        </c:otherwise>
+                                                    </c:choose>
+                                                </select>
+                                            </div>
+
+                                            <%-- แสดงเฉพาะตอน Item Type = Equipment (value '1') - คุมด้วย JS ด้านล่าง (#toggleEquipmentType) --%>
+                                            <div class="col-12 col-lg-6 d-none" id="equipmentTypeWrap">
+                                                <label class="form-label fw-semibold text-gray-700" for="equipmentType">
+                                                    Equipment Type <span class="text-danger">*</span>
+                                                </label>
+                                                <%-- ดึงจากตาราง equipment_type ผ่าน EquipmentTypeDAO.getall() --%>
+                                                <select id="equipmentType" name="equipmentType" class="form-select text-gray-700">
+                                                    <option value="">- เลือก Equipment Type -</option>
+                                                    <c:forEach var="eqType" items="${equipmentTypes}">
+                                                        <option value="${fn:escapeXml(eqType.typeID)}"
+                                                            <c:if test="${eqType.typeID eq product.equipmentType}">selected</c:if>>${fn:escapeXml(eqType.description)}</option>
                                                     </c:forEach>
-                                                </c:when>
-                                                <c:otherwise>
-                                                    <%-- TODO: ยังไม่มีตาราง master ของ product_type --%>
-                                                    <option value="1" <c:if test="${product.productType eq '1'}">selected</c:if>>Equipment</option>
-                                                    <option value="2" <c:if test="${product.productType eq '2'}">selected</c:if>>Consumables</option>
-                                                    <option value="3" <c:if test="${product.productType eq '3'}">selected</c:if>>Accessories</option>
-                                                    <option value="4" <c:if test="${product.productType eq '4'}">selected</c:if>>Office Supplies</option>
-                                                </c:otherwise>
-                                            </c:choose>
-                                        </select>
-                                    </div>
+                                                </select>
+                                            </div>
 
-                                    <%-- แสดงเฉพาะตอน Item Type = Equipment (value '1') - คุมด้วย JS ด้านล่าง (#toggleEquipmentType) --%>
-                                    <div class="col-12 col-lg-6 d-none" id="equipmentTypeWrap">
-                                        <label class="form-label fw-semibold text-gray-700" for="equipmentType">
-                                            Equipment Type <span class="text-danger">*</span>
-                                        </label>
-                                        <%-- ดึงจากตาราง equipment_type ผ่าน EquipmentTypeDAO.getall() --%>
-                                        <select id="equipmentType" name="equipmentType" class="form-select text-gray-700">
-                                            <option value="">- เลือก Equipment Type -</option>
-                                            <c:forEach var="eqType" items="${equipmentTypes}">
-                                                <option value="${fn:escapeXml(eqType.typeID)}"
-                                                    <c:if test="${eqType.typeID eq product.equipmentType}">selected</c:if>>${fn:escapeXml(eqType.description)}</option>
-                                            </c:forEach>
-                                        </select>
-                                    </div>
-
-                                    <div class="col-12 col-lg-6">
-                                        <label class="form-label fw-semibold text-gray-700" for="description">Description</label>
-                                        <input type="text" id="description" name="description" maxlength="255"
-                                               class="form-control text-gray-700"
-                                               value="${fn:escapeXml(product.description)}" />
+                                            <div class="col-12 col-lg-6">
+                                                <label class="form-label fw-semibold text-gray-700" for="description">Description</label>
+                                                <input type="text" id="description" name="description" maxlength="255"
+                                                       class="form-control text-gray-700"
+                                                       value="${fn:escapeXml(product.description)}" />
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
 
-                            <%-- footer จะแสดงเมื่อผู้ใช้แก้ไขค่าในช่อง input เท่านั้น (ดู JS: toggle .d-none) --%>
-                            <div id="stockConsEditFooter" class="card-footer d-none justify-content-end gap-3 py-6">
+                            <%-- footer จะแสดงเมื่อผู้ใช้แก้ไขค่าในช่อง input เท่านั้น (ดู JS: toggle .d-none/.d-flex)
+                                 ย้ายไปอยู่เป็น col-12 แยกต่างหากท้าย row แล้ว (ดูด้านล่าง หลัง col-xl-4)
+                                 เพราะเดิมเป็นลูกตรงของ row โดยไม่มี col-* ห่อ ทำให้โดน negative margin ของ Bootstrap
+                                 row ดึงเยื้องไม่ตรงแนวกับการ์ดด้านบน - เก็บโค้ดสำรองไว้เผื่อดึงกลับมาใช้ --%>
+                            <!-- <div id="stockConsEditFooter" class="d-none justify-content-end gap-3 mt-3 pt-6 border-top border-gray-300">
+                                <button type="button" id="stockConsEditCancel" class="btn btn-light px-6 py-3 fw-bold">Cancel</button>
+                                <button type="submit" class="btn btn-success px-8 py-3 fw-bold">Save</button>
+                            </div> -->
+                        </div>
+
+                        <div class="col-xl-4">
+                            <%-- ============ Product Image ============
+                                 การ์ดแยกต่างหาก สไตล์เดียวกับการ์ด "Cover Photo" ใน announcement_add.jsp
+                                 (card-header/card-body ตรงกลาง/card-footer) ยังอยู่ใน form เดิม เพราะ productImage
+                                 ต้อง submit ไปพร้อมกับ Product Detail ทีเดียว --%>
+                            <div class="card mb-8">
+                                <div class="card-header pt-5 flex-column align-items-start">
+                                    <h3 class="card-title fw-semibold text-gray-900 mb-1">Product Image</h3>
+                                </div>
+                                <div id="productImageErrorMsg" class="text-center text-danger"></div>
+                                <div class="pb-5 text-center">
+                                    <%-- Cover Photo pattern เดียวกับ announcement_add.jsp - image-input widget ของ Metronic
+                                         preload รูปเดิมจาก product.fileUpload (Hibernate join อัตโนมัติผ่าน Product.fileUpload) --%>
+                                    <div class="image-input image-input-outline"
+                                         data-kt-image-input="true"
+                                         style="background-image: url('${pageContext.request.contextPath}${not empty product.fileUpload.path ? product.fileUpload.path : '/assets/media/svg/avatars/blank.svg'}')">
+                                        <div class="image-input-wrapper w-125px h-125px"
+                                             style="background-image: url('${pageContext.request.contextPath}${not empty product.fileUpload.path ? product.fileUpload.path : '/assets/media/svg/avatars/blank.svg'}')"></div>
+
+                                        <label class="btn btn-icon btn-circle btn-color-muted btn-active-color-primary w-25px h-25px bg-body shadow"
+                                               data-kt-image-input-action="change" data-bs-toggle="tooltip"
+                                               data-bs-dismiss="click" title="Change image">
+                                            <i class="ki-duotone ki-pencil fs-6"><span class="path1"></span><span class="path2"></span></i>
+                                            <input id="productImageInput" type="file" name="productImage" accept=".png, .jpg, .jpeg" />
+                                        </label>
+
+                                        <span class="btn btn-icon btn-circle btn-color-muted btn-active-color-primary w-25px h-25px bg-body shadow"
+                                              data-kt-image-input-action="cancel" data-bs-toggle="tooltip"
+                                              data-bs-dismiss="click" title="Cancel image">
+                                            <i class="ki-outline ki-cross fs-3"></i>
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="card-footer pt-0">
+                                    <span class="d-block fw-medium text-muted text-center">Allowed file types: png, jpg, jpeg. Max 2MB.</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-12">
+                            <div id="stockConsEditFooter" class="d-none justify-content-end gap-3 mt-3 pt-6">
                                 <button type="button" id="stockConsEditCancel" class="btn btn-light px-6 py-3 fw-bold">Cancel</button>
                                 <button type="submit" class="btn btn-success px-8 py-3 fw-bold">Save</button>
                             </div>
@@ -265,12 +305,12 @@
                     <div class="card-border-radius">
                         <div class="card-header border-0 pt-6 d-flex align-items-center justify-content-between">
                             <h3 class="page-heading text-gray-900 fw-bold mb-0">Sub product</h3>
-                            <%-- ผูกกับ product.sub_product_active - บันทึกทันทีผ่าน AJAX (stock_cons_sub_active_update) --%>
+                            <%-- ผูกกับ product.sub_product_active - บันทึกทันทีผ่าน AJAX (product_sub_active_update) --%>
                             <div class="form-check form-switch form-check-custom form-check-solid">
                                 <input class="form-check-input h-25px w-45px" type="checkbox" id="subProductActiveToggle"
                                        data-product-id="${product.productId}"
                                        <c:if test="${product.subProductActive eq '1'}">checked</c:if> />
-                                <label class="form-check-label fw-semibold text-gray-700" for="subProductActiveToggle">Active</label>
+                                <label class="form-check-label fw-semibold text-gray-700" for="subProductActiveToggle">Select Sub Product</label>
                             </div>
                         </div>
                         <div class="separator"></div>
@@ -514,6 +554,13 @@
                                                             </td>
                                                         </c:if>
                                                         <td class="text-end text-nowrap">
+                                                            <%-- QR เฉพาะฝั่ง Consumables/Accessories/Office Supplies (ไม่ใช่ Equipment) --%>
+                                                            <c:if test="${!isEquipment}">
+                                                                <button type="button" class="btn btn-icon btn-sm btn-light-primary me-1 btn-generate-qr"
+                                                                        data-qr-value="${fn:escapeXml(sub.productNo)}" title="Generate QR">
+                                                                    <i class="bi bi-qr-code fs-3"></i>
+                                                                </button>
+                                                            </c:if>
                                                             <button type="button" class="btn btn-icon btn-sm btn-light-primary me-1 btn-edit-sub" title="Edit">
                                                                 <i class="ki-duotone ki-pencil fs-3"><span class="path1"></span><span class="path2"></span></i>
                                                             </button>
@@ -629,7 +676,7 @@
 
                 <%-- ปุ่ม Back กลับไปหน้ารายการ Product --%>
                 <div class="d-flex justify-content-start mt-8">
-                    <a href="stock_cons_list" class="btn btn-light d-inline-flex align-items-center px-6 py-3">
+                    <a href="product_list" class="btn btn-light d-inline-flex align-items-center px-6 py-3">
                         <i class="ki-duotone ki-arrow-left fs-3 me-2"><span class="path1"></span><span class="path2"></span></i>
                         <span class="fw-bold text-gray-700">Back</span>
                     </a>
@@ -953,6 +1000,42 @@
     </div>
 </div>
 
+<%-- ============ Modal: Generate QR Code (qrcode.js เก็บไว้ในโปรเจกต์ ไม่พึ่ง CDN) - เฉพาะฝั่ง Consumables/Accessories/Office Supplies
+     เนื้อหาที่เข้ารหัสแก้ไขได้เอง - ช่อง input ตั้งค่า default มาจากปุ่มที่กด (Item ID ของตัวแม่ หรือของ sub product) ============ --%>
+<div class="modal fade" id="qrGenerateModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title fw-bold text-gray-900">Generate QR Code</h3>
+                <button type="button" class="btn btn-icon btn-sm btn-active-light-primary" data-bs-dismiss="modal" aria-label="Close">
+                    <i class="ki-duotone ki-cross fs-1"><span class="path1"></span><span class="path2"></span></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-5">
+                    <label class="form-label fw-semibold text-gray-700" for="qrGenerateInput">ข้อมูลที่จะเข้ารหัสใน QR</label>
+                    <input type="text" id="qrGenerateInput" class="form-control form-control-solid" maxlength="500" autocomplete="off" />
+                </div>
+                <div class="text-center">
+                    <div id="qrGenerateCanvas" class="d-inline-block p-4 bg-white rounded border"></div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-light" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-light-primary" id="btnQrPrint">
+                    <i class="ki-duotone ki-printer fs-3 me-1"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span><span class="path5"></span></i>
+                    Print
+                </button>
+                <button type="button" class="btn btn-primary" id="btnQrDownload">
+                    <i class="ki-duotone ki-exit-down fs-3 me-1"><span class="path1"></span><span class="path2"></span></i>
+                    Download
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="${pageContext.request.contextPath}/assets/plugins/custom/qrcode/qrcode.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
 <script>
     $(document).ready(function () {
@@ -1030,7 +1113,7 @@
             $form.submit();
         }
 
-        // ---- แสดง/ซ่อน Equipment Type ตาม Item Type (เหมือนหน้า stock_cons_add.jsp) ----
+        // ---- แสดง/ซ่อน Equipment Type ตาม Item Type (เหมือนหน้า product_add.jsp) ----
         // product_type '1' = Equipment เท่านั้นที่ต้องเลือก Equipment Type ต่อ
         function toggleEquipmentType() {
             var isEquipment = $('#productType').val() === '1';
@@ -1123,7 +1206,7 @@
 
         $editForm.on('input change', 'input, select, textarea', refreshEditFooter);
 
-        // ---- Product Image: compress ก่อนแนบไฟล์ (maxSize 2MB เหมือนหน้า stock_cons_add.jsp) ----
+        // ---- Product Image: compress ก่อนแนบไฟล์ (maxSize 2MB เหมือนหน้า product_add.jsp) ----
         var productImageInput = document.getElementById('productImageInput');
         productImageInput.addEventListener('change', async function () {
             const file = this.files[0];
@@ -1220,7 +1303,7 @@
                     var excludeId = getExcludeId ? getExcludeId() : null;
                     if (excludeId) { params.productId = excludeId; }
                     $.ajax({
-                        url: CONTEXT + '/stock_cons_check_duplicate',
+                        url: CONTEXT + '/product_check_duplicate',
                         type: 'GET',
                         dataType: 'json',
                         data: params,
@@ -1258,7 +1341,7 @@
             $btn.prop('disabled', true).attr('data-kt-indicator', 'on');
 
             $.ajax({
-                url: CONTEXT + '/stock_cons_update',
+                url: CONTEXT + '/product_update',
                 type: 'POST',
                 dataType: 'json',
                 // $editForm.serialize() ไม่ส่งไฟล์ - ต้องใช้ FormData ถึงจะอัปโหลดรูปได้จริง
@@ -1480,7 +1563,7 @@
             $toggle.prop('disabled', true);
 
             $.ajax({
-                url: CONTEXT + '/stock_cons_sub_active_update',
+                url: CONTEXT + '/product_sub_active_update',
                 type: 'POST',
                 dataType: 'json',
                 data: { productId: PRODUCT_ID, subProductActive: checked ? '1' : '0' },
@@ -1538,7 +1621,7 @@
         });
 
         // ==================== Reorder ด้วย SortableJS ====================
-        // ส่งลำดับ id (คั่น comma) ไป backend แล้ว backend รัน sequence ใหม่ 0..n
+        // ส่งลำดับ id (คั่น comma) ไป backend แล้ว backend รัน sequence ใหม่ (UOM 0..n, Sub product 1..n)
         // toast แจ้งผลสำเร็จมุมขวาบน (ถ้าไม่มี Swal ก็ข้ามไปเงียบๆ)
         function notifySuccess(msg) {
             if (window.Swal) {
@@ -1587,9 +1670,11 @@
                             success: function (res) {
                                 if (res && res.success === true) {
                                     // อัปเดตเลข sequence ที่โชว์ (UOM ใช้ .uom-seq, Sub product ใช้ .sub-seq)
+                                    // Sub product เริ่มที่ 1, UOM เริ่มที่ 0 (ให้ตรงกับที่ backend รันเลขใหม่)
                                     $rows.each(function (index) {
-                                        $(this).find('.uom-seq, .sub-seq').text(index);
-                                        $(this).attr('data-sequence', index);
+                                        var seqNo = $(this).find('.sub-seq').length ? index + 1 : index;
+                                        $(this).find('.uom-seq, .sub-seq').text(seqNo);
+                                        $(this).attr('data-sequence', seqNo);
                                     });
                                     // เผื่อแถวพิเศษหลุดตำแหน่งจากการลากของแถวอื่นรอบๆ - ดันกลับไปท้ายสุดเสมอ
                                     if (excludeSelector) {
@@ -1636,7 +1721,81 @@
             });
         }
 
-        initSortable('uomTableBody', '.uom-drag-handle', 'stock_cons_uom_reorder', { productId: PRODUCT_ID });
-        initSortable('subTableBody', '.sub-drag-handle', 'stock_cons_sub_reorder', { parentProductId: PRODUCT_ID }, '.equ-unassigned-row');
+        initSortable('uomTableBody', '.uom-drag-handle', 'product_uom_reorder', { productId: PRODUCT_ID });
+        initSortable('subTableBody', '.sub-drag-handle', 'product_sub_reorder', { parentProductId: PRODUCT_ID }, '.equ-unassigned-row');
+    });
+</script>
+
+<%-- ==================== Generate QR Code: ปุ่มที่ Product Detail (ตัวแม่) + แต่ละแถว Sub product
+     (เฉพาะฝั่ง Consumables/Accessories/Office Supplies) เปิด modal พรีวิว QR แก้ไขเนื้อหาได้ก่อน generate ====================
+     qrcodejs วาดเป็น <canvas> ทำให้ Print/Download อ่านรูปจาก canvas.toDataURL() ได้ตรงๆ --%>
+<script>
+    $(document).ready(function () {
+        function notifyQrError(msg) {
+            if (window.Swal) { Swal.fire('Error', msg || 'เกิดข้อผิดพลาด', 'error'); }
+            else { alert(msg || 'เกิดข้อผิดพลาด'); }
+        }
+
+        var qrGenerateInstance = null;
+
+        function renderQrPreview(text) {
+            var $box = $('#qrGenerateCanvas');
+            $box.empty();
+            qrGenerateInstance = null;
+            var value = $.trim(text);
+            if (!value || typeof QRCode === 'undefined') {
+                return;
+            }
+            qrGenerateInstance = new QRCode($box.get(0), {
+                text: value,
+                width: 220,
+                height: 220,
+                correctLevel: QRCode.CorrectLevel.M
+            });
+        }
+
+        $(document).on('click', '.btn-generate-qr', function () {
+            var defaultValue = $(this).data('qr-value');
+            $('#qrGenerateInput').val(defaultValue != null ? String(defaultValue) : '');
+            $('#qrGenerateModal').modal('show');
+        });
+
+        $('#qrGenerateModal').on('shown.bs.modal', function () {
+            renderQrPreview($('#qrGenerateInput').val());
+            $('#qrGenerateInput').trigger('focus').trigger('select');
+        });
+
+        // พิมพ์แก้เนื้อหาในช่อง input แล้ว generate ใหม่ทันที
+        $('#qrGenerateInput').on('input', function () {
+            renderQrPreview($(this).val());
+        });
+
+        $('#btnQrDownload').on('click', function () {
+            var $canvas = $('#qrGenerateCanvas canvas');
+            if ($canvas.length === 0) {
+                notifyQrError('ยังไม่มี QR ให้ดาวน์โหลด กรุณากรอกข้อมูลก่อน');
+                return;
+            }
+            var link = document.createElement('a');
+            link.download = 'qrcode.png';
+            link.href = $canvas.get(0).toDataURL('image/png');
+            link.click();
+        });
+
+        $('#btnQrPrint').on('click', function () {
+            var $canvas = $('#qrGenerateCanvas canvas');
+            if ($canvas.length === 0) {
+                notifyQrError('ยังไม่มี QR ให้พิมพ์ กรุณากรอกข้อมูลก่อน');
+                return;
+            }
+            var dataUrl = $canvas.get(0).toDataURL('image/png');
+            var printWin = window.open('', '_blank');
+            if (!printWin) {
+                notifyQrError('เบราว์เซอร์บล็อกหน้าต่างพิมพ์ กรุณาอนุญาต popup แล้วลองใหม่');
+                return;
+            }
+            printWin.document.write('<img src="' + dataUrl + '" style="width:300px;height:300px;" onload="window.print();window.close();" />');
+            printWin.document.close();
+        });
     });
 </script>

@@ -1082,6 +1082,154 @@ CREATE TABLE `pr_parent` (
   `time_update` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- 07/10/2026 Eric: Add column send_to to notification
+-- PROD 15 SEP 2026 14:30
+
+-- 15/09/2026 June: CREATE TABLE pr, pr_detail and pr_parent
+CREATE TABLE `pr` (
+  `pr_id` varchar(16) NOT NULL,
+  `description` text DEFAULT NULL,
+  `sign_user` varchar(32) DEFAULT NULL,
+  `sign_date` datetime DEFAULT NULL,
+  `approve_user` varchar(32) DEFAULT NULL,
+  `approve_date` datetime DEFAULT NULL,
+  `status` varchar(32) NOT NULL,
+  `reason` varchar(1024) DEFAULT NULL,
+  `user_create` varchar(32) NOT NULL,
+  `user_update` varchar(32) DEFAULT NULL,
+  `time_create` timestamp NULL DEFAULT NULL,
+  `time_update` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE `pr_detail` (
+  `pr_detail_id` varchar(16) NOT NULL,
+  `pr_id` varchar(16) NOT NULL,
+  `product_id` varchar(16) DEFAULT NULL,
+  `parent_id` varchar(32) DEFAULT NULL,
+  `amount_total` double NOT NULL,
+  `unit` varchar(32) NOT NULL,
+  `description` text DEFAULT NULL,
+  `ref_link` text DEFAULT NULL,
+  `status` varchar(8) DEFAULT '0',
+  `user_create` varchar(32) NOT NULL,
+  `user_update` varchar(32) DEFAULT NULL,
+  `time_create` timestamp NULL DEFAULT NULL,
+  `time_update` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE `pr_parent` (
+  `pr_parent_id` varchar(16) NOT NULL,
+  `pr_detail_id` varchar(16) NOT NULL,
+  `mr_id` varchar(16) DEFAULT NULL,
+  `product_id` varchar(16) DEFAULT NULL,
+  `parent_id` varchar(32) DEFAULT NULL,
+  `amount` double NOT NULL,
+  `unit` varchar(32) NOT NULL,
+  `description` text DEFAULT NULL,
+  `user_create` varchar(32) NOT NULL,
+  `user_update` varchar(32) DEFAULT NULL,
+  `time_create` timestamp NULL DEFAULT NULL,
+  `time_update` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- PROD 15 SEP 2026 14:30
+
+-- 18/09/2026 Best(Intern) เพิ่ม table สําหรับเก็บข้อมูลการกดถูกใจของรางวัล
+CREATE TABLE `user_favorite` (
+  `user_favorite_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `user_id` varchar(32) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `item_id` int(11) NOT NULL,
+  `description` varchar(1024) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `user_create` varchar(32) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `user_update` varchar(32) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `time_create` timestamp NULL DEFAULT NULL,
+  `time_update` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`user_favorite_id`),
+  UNIQUE KEY `uk_user_favorite_user_item` (`user_id`, `item_id`)
+) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci;
+
+-- เพิ่ม table สําหรับเก็บประวัติการแลกของรางวัล
+CREATE TABLE `user_redeem` (
+  `user_redeem_id` int(11) NOT NULL AUTO_INCREMENT,
+  `user_id` varchar(32) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `item_id` int(11) NOT NULL,
+  `token` double DEFAULT NULL,
+  `cash` double DEFAULT NULL,
+  `redeem_status` varchar(20) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `description` varchar(1024) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `user_create` varchar(32) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `user_update` varchar(32) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `time_create` timestamp NULL DEFAULT NULL,
+  `time_update` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`user_redeem_id`)
+) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci;
+
+-- 22/09/2026 Koy: add unit_master table + unit_of_measure.unit_master_id
+CREATE TABLE `unit_master` (
+    `unit_master_id` INT(11) NOT NULL AUTO_INCREMENT,
+    `unit_name` VARCHAR(32) NOT NULL,
+    `user_create` VARCHAR(32) NOT NULL,
+    `user_update` varchar(32) DEFAULT NULL,
+    `time_create` timestamp NULL NOT NULL,
+    `time_update` timestamp NULL DEFAULT NULL,
+    PRIMARY KEY (`unit_master_id`),
+    UNIQUE KEY `uq_unit_master_name` (`unit_name`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+INSERT INTO unit_master (unit_name, user_create, time_create)
+SELECT DISTINCT unit_name, 'system', NOW() FROM unit_of_measure WHERE unit_name IS NOT NULL AND TRIM(unit_name) <> '';
+
+ALTER TABLE unit_of_measure ADD COLUMN unit_master_id INT(11) NULL AFTER product_id;
+
+UPDATE unit_of_measure uom
+JOIN unit_master um ON um.unit_name = uom.unit_name
+SET uom.unit_master_id = um.unit_master_id;
+
+# PROD 25 SEP 2026
+
+-- 28/09/2026 Koy: add column 'warehouse_id' to 'equipment' table to link equipment to warehouse
+ALTER TABLE equipment ADD COLUMN warehouse_id BIGINT NULL, ADD INDEX idx_equipment_warehouse_id (warehouse_id);
+
+-- 29/09/2026 Koy: เลื่อน sequence ของ sub product เก่าให้เริ่มที่ 1 (เฉพาะกลุ่มที่ยังมี sequence = 0, ตัวแม่ไม่แตะ, รันซ้ำได้)
+UPDATE product p
+JOIN (SELECT parent_product_id
+      FROM product
+      WHERE parent_product_id <> '0'
+        AND sequence REGEXP '^[0-9]+$'
+        AND CAST(sequence AS UNSIGNED) = 0
+      GROUP BY parent_product_id) g ON g.parent_product_id = p.parent_product_id
+SET p.sequence = CAST(CAST(p.sequence AS UNSIGNED) + 1 AS CHAR)
+WHERE p.parent_product_id <> '0' AND p.sequence REGEXP '^[0-9]+$';
+
+#PROD 30 SEP 2026
+
+-- 02/10/2026 June: Alter 'mr' table: rename product/parent columns, change date types, add 'reason' and 'user_create', drop 'item_type'
+  ALTER TABLE `mr`
+  CHANGE COLUMN `catalog_items_id` `product_id` VARCHAR(16)
+      CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  CHANGE COLUMN `item_sub_id` `parent_id` VARCHAR(32)
+      CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  MODIFY COLUMN `request_date` TIMESTAMP NULL DEFAULT NULL,
+  MODIFY COLUMN `approve_date` TIMESTAMP NULL DEFAULT NULL,
+  MODIFY COLUMN `receive_date` TIMESTAMP NULL DEFAULT NULL,
+  ADD COLUMN `reason` varchar(1024)
+      CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL AFTER `description`,
+  ADD COLUMN `user_create` VARCHAR(32)
+      CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL AFTER `url_ref`,
+  MODIFY COLUMN `user_update` VARCHAR(32)
+      CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  MODIFY COLUMN `time_create` TIMESTAMP NULL DEFAULT NULL,
+  DROP COLUMN `item_type`;
+  
+  -- PROD 15 OCT 2026
+
+-- 16/10/2026 Koy: add permission 'session.timeout.extended' in 'authorized_object' table
+INSERT INTO `authorized_object` (`authorized_object_id`, `name`, `description`, `active`, `time_create`, `time_update`, `authorized_object_group_id`)
+VALUES
+('session.timeout.extended', 'session.timeout.extended', 'ขยาย session timeout เป็น 60 นาที (ค่าปกติ 30 นาที)', '1', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '2');
+-- 16/10/2026 Koy: add permission 'session.timeout.extended' to 'HR' role in 'role_authorized_object' table  
+INSERT INTO `role_authorized_object` (`role_id`, `authorized_object_id`, `time_create`, `time_update`)
+VALUES ('HR', 'session.timeout.extended', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+
+-- 21/10/2026 Eric: Add column send_to, type_sending in 'notification' table
 ALTER TABLE `notification` ADD `send_to` VARCHAR(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL AFTER `is_read`;
 ALTER TABLE `notification` ADD `type_sending` VARCHAR(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL AFTER `user_id`;

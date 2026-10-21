@@ -47,12 +47,12 @@ pageEncoding="UTF-8"%>
               <div class="card-body">
                 <div class="d-flex gap-4">
                   <a
-                    href="/equipment_request_list"
+                    href="equipment_request_mr_list"
                     class="btn btn-light-primary d-inline-flex align-items-center px-6 py-3"
                     >MR - Material Request</a
                   >
                   <a
-                    href="#"
+                    href="equipment_request_mr_list_admin"
                     class="btn btn-light-success d-inline-flex align-items-center px-6 py-3"
                     >MR - Approval</a
                   >
@@ -71,6 +71,8 @@ pageEncoding="UTF-8"%>
                     class="btn btn-light-danger d-inline-flex align-items-center px-6 py-3"
                     >GR - Goods Receipt</a
                   >
+                  </div>
+                  <div class="d-flex gap-4 mt-6">
                   <a
                     href="purchase_requisition_list"
                     class="btn btn-light-warning d-inline-flex align-items-center px-6 py-3"
@@ -121,7 +123,7 @@ pageEncoding="UTF-8"%>
               <div class="card-body">
                 <div class="d-flex gap-4">
                   <a
-                    href="stock_cons_list"
+                    href="product_list"
                     class="btn btn-light-warning d-inline-flex align-items-center px-6 py-3"
                     >Product</a
                   >
@@ -163,6 +165,12 @@ pageEncoding="UTF-8"%>
                     href="doc_status_list"
                     class="btn btn-light-success d-inline-flex align-items-center px-6 py-3"
                     >Doc Status</a
+                  >
+
+                  <a
+                    href="unit_master_list"
+                    class="btn btn-light-warning d-inline-flex align-items-center px-6 py-3"
+                    >Unit Master</a
                   >
                 </div>
               </div>

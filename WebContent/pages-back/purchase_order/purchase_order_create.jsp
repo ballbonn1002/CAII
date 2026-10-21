@@ -32,31 +32,14 @@
 	src="${pageContext.request.contextPath}/assets/js/custom/utilities/attachFile/attcahfile.js"></script>
 
 <style>
-/* ==================== Table PR ==================== */
-
-[data-bs-theme="light"] #prResultTable.table.table-striped > tbody > tr:nth-of-type(odd) > * {
-    background-color: #FBFBFB !important;
-    box-shadow: none !important;
-}
-
-[data-bs-theme="dark"] #prResultTable.table.table-striped > tbody > tr:nth-of-type(odd) > * {
-    background-color: #191B20 !important;
-    box-shadow: none !important;
-}
-
-
 /* ===== Table Header ===== */
-
 #prResultTable thead th {
     white-space: nowrap !important;
     vertical-align: middle !important;
     padding-right: 35px !important;
-    cursor: pointer;
 }
 
-
 /* ===== DataTables Header ===== */
- 
 #prResultTable thead th .dt-column-header {
     display: inline-flex !important;
     align-items: center !important;
@@ -70,7 +53,6 @@
 }
 
 /* ===== Remove old DataTables arrow ===== */
-
 #prResultTable thead th.sorting::before,
 #prResultTable thead th.sorting::after,
 #prResultTable thead th.sorting_asc::before,
@@ -81,20 +63,17 @@
 }
 
 /* ===== First / Last Column ===== */
-
 #prResultTable thead th:first-child{
     padding-right: 0 !important;
 }
 
 /* ===== PR Search Modal ===== */
-
 #modal_search_pr .table-responsive {
-    max-height: 300px;
+    max-height: 45vh;
     overflow-y: auto;
 }
 
 /* ======= Signature Box ======= */
-
 .sig-box {
     width: 100%;
     height: 200px;
@@ -138,6 +117,21 @@
     display: flex;
     align-items: center;
     gap: 3px;
+}
+
+.po-src-actions {
+	display: none;
+	min-width: 80px;
+}
+.po-src-menu.menu-open .po-src-actions {
+	display: block;
+}
+.po-src-menu.menu-open > .btn {
+	background-color: var(--bs-primary);
+	color: #fff;
+}
+@media (max-width: 767.98px) {
+	.po-src-actions { max-width: calc(100vw - 32px); }
 }
 
 </style>
@@ -205,14 +199,6 @@
 											<textarea class="form-control text-gray-700" id="description" name="description"
 												placeholder="Description" rows="3"></textarea>
 										</div>
-										<!-- <div class="col-12 mt-5">
-											<label for="myFile" id="lbFile" class="btn btn-primary d-inline-flex align-items-center justify-content-center gap-2 fw-medium mb-3">
-													Attach files
-												<input type="file" id="myFile" name="files" style="display:none;" accept="image/*,application/pdf,application/zip,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document" multiple>
-											</label>
-											<div id="attachFileList" class="d-flex flex-column mt-3 gap-2"></div>
-											<div id="errorMsgAF" class="text-danger fs-8 mt-1"></div>
-										</div> -->
 									</div>
 
 								</div>
@@ -368,7 +354,7 @@
 									<i class="ki-outline ki-plus fs-3 me-1"></i>Create
 								</button>
 								
-								<button type="button" class="btn btn-lg btn-primary fw-medium text-white px-6 py-4" data-bs-toggle="modal" data-bs-target="#modal_search_pr">
+								<button type="button" id="btnOpenSearchPr" class="btn btn-lg btn-primary fw-medium text-white px-6 py-4">
 									<i class="ki-duotone ki-magnifier fs-3 me-1">
 						                <span class="path1"></span><span class="path2"></span></i>Search PR
 								</button>
@@ -461,7 +447,7 @@
 					
 					
 					<div class="modal fade" tabindex="-1" id="modal_create_po">
-						<div class="modal-dialog modal-lg">
+						<div class="modal-dialog modal-lg modal-dialog-centered">
 						    <div class="modal-content">
 						        <div class="modal-header">
 						            <h3 class="modal-title">Create PO - Detail</h3>
@@ -481,7 +467,6 @@
 						                            <option value="consumables">Consumables</option>
 													<option value="accessory">Accessory</option>
 						                            <option value="office">Office supplies</option>
-													<option value="accessory">Accessory</option>
 												</select>
 											</div>
 										</div>
@@ -496,7 +481,7 @@
 										</div>
 									</div>
 									
-									<div class="row g-5 mb-6">
+									<div class="row g-5 mb-6" id="poQtyUnitRow">
 										<div class="col-lg-6 col-md-6 col-12 d-flex flex-column">
 											<label class="required fw-medium text-gray-800 mb-2">จำนวน</label>
 											<input type="number" class="form-control text-gray-700 h-45px" min="1"
@@ -512,25 +497,29 @@
 											</div>
 										</div>
 									</div>
-									
+
 									<div class="row g-5 mb-6">
-										<div class="col-lg-6 col-md-6 col-12 d-flex flex-column">
-											<label class="required fw-medium text-gray-800 mb-2">ราคาต่อหน่วย</label>
+										<div class="col-lg-6 col-md-6 col-12 d-flex flex-column" id="poPriceRow">
+											<label class="required fw-medium text-gray-800 mb-2">ราคารวม</label>
 											<input type="text" class="form-control text-gray-700 h-45px"
 													name="po_price" id="po_price" placeholder="0.00" />
 										</div>
-								
-										<div class="col-6 d-flex flex-column">
-											<label class="required fw-medium text-gray-800 mb-2">Description / Detail</label>
-											<textarea class="form-control text-gray-700" rows="3" name="description" id="po_description" placeholder="Description"></textarea>
+
+										<div class="col-lg-6 col-md-6 col-12 d-flex flex-column" id="poDescRow">
+											<label class="fw-medium text-gray-800 mb-2">Description / Detail</label>
+											<textarea class="form-control text-gray-700" rows="3" name="po_item_description" id="po_description" placeholder="Description"></textarea>
 										</div>
 									</div>
-						        </div>
-						
+							        </div>
+
 						        <div class="modal-footer">
 						            <button type="button" class="btn btn-light" data-bs-dismiss="modal">Close</button>
-						            <button type="button" class="btn btn-success" id="btnSavePoDetail"
-        									onclick="addPoDetailToCart()">Save</button>
+						            <button type="button" class="btn btn-success" id="btnSavePoDetail" onclick="addPoDetailToCart()">
+										<span class="indicator-label">Save</span>
+										<span class="indicator-progress">Saving...
+											<span class="spinner-border spinner-border-sm align-middle ms-2"></span>
+										</span>
+									</button>
 						        </div>
 						    </div>
 						</div>
@@ -562,6 +551,7 @@
 					                            <option value="" selected>All</option>
 					                            <option value="equipment">Equipment</option>
 					                            <option value="consumables">Consumables</option>
+												<option value="accessory">Accessory</option>
 					                            <option value="office">Office supplies</option>
 					                        </select>
 					                    </div>
@@ -575,7 +565,7 @@
 												    </h3>
 												
 												  
-												    <span id="mrSortLabel" class="fw-bold fs-6 text-gray-500">by Recent Updates</span>
+												    <span id="prSortLabel" class="fw-bold fs-6 text-gray-500">by Recent Updates ↓</span>
 												</div>
 												        <h3 class="text-primary fw-bold">
 												            <span id="prSelectedCount"></span> Selected
@@ -585,7 +575,7 @@
 											    
 											</div>
 					                        <div class="table-responsive">
-					                            <table class="table table-striped align-middle gy-4 gs-7" id="prResultTable">
+					                            <table class="table align-middle gy-4 gs-7 border-bottom border-gray-200" id="prResultTable">
 					                                <thead>
 					                                    <tr class="fs-7 fw-bold text-gray-500 text-uppercase border-bottom border-gray-200 mb-0">
 					                                        <th class="min-w-15px ">
@@ -616,6 +606,76 @@
 					        </div>
 					    </div>
 					</div>
+
+					<div class="modal fade" tabindex="-1" id="modal_edit_source">
+						<div class="modal-dialog modal-lg modal-dialog-centered">
+							<div class="modal-content">
+								<div class="modal-header">
+									<h3 class="modal-title">Edit PO - Detail</h3>
+									<div class="btn btn-icon btn-sm btn-active-light-primary ms-2" data-bs-dismiss="modal" aria-label="Close">
+										<i class="ki-duotone ki-cross fs-1"><span class="path1"></span><span class="path2"></span></i>
+									</div>
+								</div>
+
+								<div class="modal-body">
+									<div class="d-flex align-items-center mb-4">
+										<div class="symbol symbol-40px me-3" id="editSrcTypeIcon"></div>
+										<span class="fs-6 fw-normal text-gray-900" id="editSrcTypeName"></span>
+										<i class="ki-duotone ki-black-right mx-2 text-gray-500 fs-2">
+											<span class="path1"></span><span class="path2"></span><span class="path3"></span>
+										</i>
+										<span class="fs-6 fw-normal text-gray-900" id="editSrcProduct"></span>
+									</div>
+
+									<div class="d-flex align-items-start justify-content-between gap-5 bg-light rounded p-5 mb-8">
+                                        <div class="d-grid align-items-center flex-grow-1" style="grid-template-columns: auto 1fr; gap: .75rem 1rem;">
+
+                                            <i class="ki-duotone ki-user-tick fs-3 text-muted"><span class="path1"></span><span class="path2"></span><span class="path3"></span></i>
+                                            <span class="text-gray-800 fs-5" id="editSrcCreator"></span>
+
+                                            <i class="ki-duotone ki-calendar-2 fs-3"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span><span class="path5"></span></i>
+                                            <span class="text-gray-800 fs-5" id="editSrcDate"></span>
+
+                                            <i class="ki-duotone ki-tablet-book fs-3"><span class="path1"></span><span class="path2"></span></i>
+                                            <span class="d-flex flex-wrap align-items-center gap-2" id="editSrcMr"></span>
+                                        </div>
+
+                                        <div class="text-end flex-shrink-0">
+                                            <div class="text-muted fs-8">ปัจจุบัน</div>
+                                            <div class="text-gray-900 fs-5 fw-no" id="editSrcCurrent"></div>
+                                        </div>
+
+                                    </div>
+
+
+									<div class="row g-5">
+										<div class="col-12 col-sm-6 d-flex flex-column">
+											<label class="required fw-medium text-gray-800 mb-2">จำนวน</label>
+											<input type="number" class="form-control text-gray-700 h-45px" min="1" id="edit_src_qty" />
+										</div>
+										<div class="col-12 col-sm-6 d-flex flex-column">
+											<label class="required fw-medium text-gray-800 mb-2">Unit</label>
+											<select id="edit_src_unit" class="form-select h-45px" data-control="select2"
+													data-dropdown-parent="#modal_edit_source" data-hide-search="true">
+												<option value=""></option>
+											</select>
+										</div>
+									</div>
+									<div class="text-muted fs-7 mt-3" id="editSrcPreview"></div>
+								</div>
+
+								<div class="modal-footer">
+									<button type="button" class="btn btn-light" data-bs-dismiss="modal">Close</button>
+									<button type="button" class="btn btn-success" id="btnSaveEditSource" onclick="saveEditSource()">
+										<span class="indicator-label">Update</span>
+										<span class="indicator-progress">Updating...
+											<span class="spinner-border spinner-border-sm align-middle ms-2"></span>
+										</span>
+									</button>
+								</div>
+							</div>
+						</div>
+					</div>
 					
 					<div class="d-flex justify-content-between g-10">
 						<div class="d-flex">
@@ -626,16 +686,22 @@
 						</div>
 						<div class="d-flex">
 							
-							<button type="button" id="saveDraft" onclick="saveDraftForm()"
-								class="btn btn-lg btn-cyan text-white fw-medium px-6 py-4 me-4">Save Draft
+							<button type="button" id="saveDraft" onclick="saveDraftForm()" class="btn btn-lg btn-cyan text-white fw-medium px-6 py-4 me-4">
+								<span class="indicator-label">Save Draft</span>
+								<span class="indicator-progress">Saving...
+									<span class="spinner-border spinner-border-sm align-middle ms-2"></span>
+								</span>
 							</button>
-							<button type="button" id="savePOFormBtn"
-								class="btn btn-success text-white fw-medium px-6 py-4"
-								onclick="submitPO()">Submit PO</button>
+							<button type="button" id="savePOFormBtn" class="btn btn-success text-white fw-medium px-6 py-4" onclick="submitPO()">
+								<span class="indicator-label">Submit PO</span>
+								<span class="indicator-progress">Submitting...
+									<span class="spinner-border spinner-border-sm align-middle ms-2"></span>
+								</span>
+							</button>
 						</div>
 					</div>
 				</div>
-			</div>
+			</div> 
 		</div>
 	</div>
 
@@ -700,7 +766,7 @@
 	        allowInput: false,
 	        defaultDate: new Date()
 	    });
-		// ทับ default date ด้วยค่าที่ save ไว้
+		// กำหนด date ด้วยค่าที่ save ไว้
 		if (poHeaderDraft && poHeaderDraft.reference_date) {
 			_refFp.setDate(poHeaderDraft.reference_date, false);
 		}
@@ -733,20 +799,6 @@
 		    }
 		});
 		
-		//running number
-		// function runNumber() {
-		// 	const info = table.page.info();
-		// 	table.column(1, {
-		// 		page : 'current'
-		// 			}).nodes().each(function(cell, i) {
-		// 				cell.innerHTML = info.start + i + 1;
-		// 				});
-		// 	}
-		
-		// table.on('draw.dt order.dt search.dt', runNumber);
-		// runNumber();
-		
-		
 		// --- Modal ---
 		 var elements = Array.prototype.slice.call(document.querySelectorAll("[data-bs-stacked-modal]"));
 		    if (elements && elements.length > 0) {
@@ -763,7 +815,7 @@
 		                const modalEl = document.querySelector(this.getAttribute("data-bs-stacked-modal"));
 
 		                if (modalEl) {
-		                    const modal = new bootstrap.Modal(modalEl);
+		                    const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
 		                    modal.show();
 		                }
 		            });
@@ -772,7 +824,7 @@
 		    
 		    var $vendorId = $('#vendor_id');
 		    if (poHeaderDraft && poHeaderDraft.vendor_id) {
-		        // มี draft -> ใช้ค่าที่ save ไว้ ไม่ auto-select บริษัทแรก
+		        // มี draft ใช้ค่าที่ save ไว้ ไม่ auto-select บริษัทแรก
 		        $vendorId.val(poHeaderDraft.vendor_id).trigger('change');
 		    } else {
 		        var $firstCompany = $vendorId.find('option').filter(function () {
@@ -784,30 +836,12 @@
 		        }
 		    }
 		    
-		   /*  const createPoModalEl = document.getElementById('modal_create_po');
-		    const createPoModal = bootstrap.Modal.getOrCreateInstance(createPoModalEl);
-
-		    createPoModalEl.addEventListener('hidden.bs.modal', function () {
-		        $('#items_type').val('equipment').trigger('change');
-		        $('#po_qty').val('');
-		        $('#unit').val('');
-		        $('#po_price').val('');
-		        $('#po_description').val('');
-		        
-		        editingIndex = -1;
-		        $('#modal_create_po .modal-title').text('Create PO - Detail');
-		        $('#btnSavePoDetail').text('Save');
-
-		        if (!document.querySelector('.modal.show')) {
-		            document.body.classList.remove('modal-open');
-		            document.body.style.removeProperty('overflow');
-		            document.body.style.removeProperty('padding-right');
-		            document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
-		        }
-		    }); */
 		    const createPoModalEl = document.getElementById('modal_create_po');
 
 		    createPoModalEl.addEventListener('show.bs.modal', function () {
+				
+				setBtnLoading('#btnSavePoDetail', false);
+
 		        if (editingIndex === -1) {
 		            $('#items_type').val('equipment').trigger('change');
 		            $('#po_qty').val('1');
@@ -815,24 +849,29 @@
 		            $('#po_price').val('');
 		            $('#po_description').val('');
 		            $('#modal_create_po .modal-title').text('Create PO - Detail');
-		            $('#btnSavePoDetail').text('Save');
-		        }
-		    });
-
-		    createPoModalEl.addEventListener('shown.bs.modal', function () {
-		        document.body.classList.add('modal-open');
-		        document.body.style.overflow = 'hidden';
-		        document.documentElement.style.overflow = 'hidden';
+		            $('#btnSavePoDetail .indicator-label').text('Save');
+					$('#poQtyUnitRow').removeClass('d-none');
+					$('#poPriceRow').addClass('d-none');
+        			$('#poDescRow').removeClass('col-lg-6 col-md-6');
+					} else {
+						// Edit
+						$('#poQtyUnitRow').addClass('d-none');
+						$('#poPriceRow').removeClass('d-none');
+						$('#poDescRow').addClass('col-lg-6 col-md-6');
+					}
 		    });
 
 		    createPoModalEl.addEventListener('hidden.bs.modal', function () {
 		        editingIndex = -1;
-		        document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
-		        document.body.classList.remove('modal-open');
-		        document.body.style.removeProperty('padding-right');
-		        document.body.style.removeProperty('overflow');
-		        document.documentElement.style.removeProperty('overflow');
 		    });
+
+			document.getElementById('modal_edit_source').addEventListener('hidden.bs.modal', function () {
+				editingSrc = null;
+			});
+
+			document.getElementById('modal_edit_source').addEventListener('show.bs.modal', function () {
+				setBtnLoading('#btnSaveEditSource', false);
+			});
 
 		    document.getElementById('btnOpenCreatePo').addEventListener('click', function () {
 		        editingIndex = -1;
@@ -841,27 +880,32 @@
 
 			const searchPrModalEl = document.getElementById('modal_search_pr');
 
-			searchPrModalEl.addEventListener('shown.bs.modal', function () {
-				document.body.classList.add('modal-open');
-				document.body.style.overflow = 'hidden';
-				document.documentElement.style.overflow = 'hidden';
+			searchPrModalEl.addEventListener('hide.bs.modal', function () {
+				if (document.activeElement && searchPrModalEl.contains(document.activeElement)) {
+					document.activeElement.blur();
+				}
 			});
 			
 			searchPrModalEl.addEventListener('hidden.bs.modal', function () {
-				selectedPrCategory = '';
-    			$('#searchPrCategory').val('').trigger('change.select2');
-				document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
+				isSearchPrModalOpen = false;
 
-				if (!document.querySelector('.modal.show')) {
-					document.body.classList.remove('modal-open');
-					document.body.style.removeProperty('padding-right');
-					document.body.style.removeProperty('overflow');
-					document.documentElement.style.removeProperty('overflow');
-				}
+				// ล้างติ๊กค้างใน modal Search PR
+				if (prDetailTable) { prDetailTable.destroy(); prDetailTable = null; }
+				$('#prResultBody').empty();
+				$('#checkAllPr').prop('checked', false);
+				$('#prSelectedCount').text('0');
+			
+				selectedPrCategory = '';
+				$('#searchPrCategory').val('').trigger('change.select2');
 			});
 
 			searchPrModalEl.addEventListener('show.bs.modal', function () {
+				isSearchPrModalOpen = true;
 				loadInprogressPrDetail();
+			});
+
+			document.getElementById('btnOpenSearchPr').addEventListener('click', function () {
+				bootstrap.Modal.getOrCreateInstance(searchPrModalEl).show();
 			});
 		    
 		    
@@ -1114,7 +1158,6 @@
 	        dataType: 'json',
 	        data: { companyId: companyId },
 	        success: function (resp) {
-	            // if (resp.debug) console.log('[get_company_profile debug]', resp.debug);
 	            var data = resp.data;
 	            if (!data) return;
 
@@ -1158,7 +1201,6 @@
 	        dataType: 'json',
 	        data: { addressId: addressId },
 	        success: function (resp) {
-	            // if (resp.debug) console.log('[get_company_location debug]', resp.debug);
 	            var data = resp.data;
 	            if (!data) return;
 
@@ -1179,7 +1221,7 @@
 	                });
 	            }
 	            $('#contact_id').html(options).prop('disabled', false).trigger('change');
-	            pendingContactId = null; // consume ครั้งเดียว
+	            pendingContactId = null;
 	        },
 	        error: function () {
 	            Swal.fire('Error', 'ไม่สามารถโหลดข้อมูล Location ได้', 'error');
@@ -1199,7 +1241,6 @@
 	        dataType: 'json',
 	        data: { contactId: contactId },
 	        success: function (resp) {
-	            // if (resp.debug) console.log('[get_company_contact debug]', resp.debug);
 	            var data = resp.data;
 	            if (!data) return;
 
@@ -1223,7 +1264,6 @@
 		        dataType: 'json',
 		        data: { itemsType: itemsType },
 		        success: function (resp) {
-		            // if (resp.debug) console.log('[get_items_catalog debug]', resp.debug);
 		            var data = resp.data;
 		            if (!data) return;
 		            var list = (data && data.productList) || [];
@@ -1247,7 +1287,7 @@
 
 	$('#product_name').on('change', function(){
 		var productId = $(this).val();
-		$('#unit').html('<option value=""></option>').trigger('change');
+		$('#unit').html('<option value=""></option>').data('base-unit-id', '').data('base-unit-name', '').trigger('change');
 		if(!productId) return;
 
 		$.ajax({
@@ -1261,15 +1301,23 @@
 				var list = (data && data.unitList) || [];
 
 				var options = '';
+				var baseUnit = null;
 				if (list.length === 0) {
 					options = '<option value=""></option>';
 				} else {
 					list.forEach(function (item, index) {
-						options += '<option value="' + item.id + '"' + (index === 0 ? ' selected' : '') + '>' + item.name + '</option>';
+						if (String(item.sequence) === '0') baseUnit = item;
+						options += '<option value="' + item.id + '"'
+							+ ' data-conversion-rate="' + (item.conversionRate != null ? item.conversionRate : 1) + '"'
+							+ ' data-sequence="' + (item.sequence != null ? item.sequence : '') + '"'
+							+ (index === 0 ? ' selected' : '') + '>' + item.name + '</option>';
 					});
 				}
 
-				$('#unit').html(options).trigger('change');
+				$('#unit').html(options)
+					.data('base-unit-id', baseUnit ? baseUnit.id : '')
+					.data('base-unit-name', baseUnit ? baseUnit.name : '')
+					.trigger('change');
 			},
 			error: function () {
 				Swal.fire('Error', 'ไม่สามารถโหลดข้อมูล Unit ได้', 'error');
@@ -1284,9 +1332,23 @@
 </script>
 
 <script>
+function setBtnLoading(selector, loading){
+    const el = document.querySelector(selector);
+    if (!el) return;
+    if (loading) {
+        el.setAttribute('data-kt-indicator', 'on');
+        el.disabled = true;
+    } else {
+        el.removeAttribute('data-kt-indicator');
+        el.disabled = false;
+    }
+}
+
+
 let poDetailCart = [];
 let poDetailCounter = 0;
 let editingIndex = -1;
+let prUnitCatalogCache = {};
 let confirmed1 = ${empty statusActiveSafe ? 'false' : 'true'}; //track ว่าลงชื่อ ผู้ขอเบิก แล้วหรือยัง
 
 let requesterSign = null;
@@ -1339,10 +1401,10 @@ function validatePoDetailForm(){
 
     if (!$('#unit').val().trim()) errors.push('Unit');
 
-    const price = $('#po_price').val().trim();
-    if (!price || parseFormattedNumber(price) < 0) errors.push('ราคาต่อหน่วย');
-
-    if (!$('#po_description').val().trim()) errors.push('Description / Detail');
+	if (editingIndex >= 0) {
+		const price = $('#po_price').val().trim();
+		if (!price || parseFormattedNumber(price) < 0) errors.push('ราคารวม');
+	}
 
     return errors;
 }
@@ -1361,78 +1423,119 @@ function addPoDetailToCart(){
         return;
     }
 
-	// ถ้ากำลัง edit ของเดิม ให้เอา object เดิมมาเป็นฐานก่อน (เก็บ prId, mrId, prDetailId, refLink ไว้)
-    const baseItem = (editingIndex >= 0 && poDetailCart[editingIndex]) ? poDetailCart[editingIndex] : {};
+	setBtnLoading('#btnSavePoDetail', true);
+	setTimeout(function(){
+		// po_qty/unit คือหน่วยที่ user เลือก (อาจไม่ใช่หน่วยเล็กสุด) 
+		// ส่วน po_price (base unit) ก่อนเก็บลง cart เสมอ
+		const rawQty = Number($("#po_qty").val()) || 0;
+		const rawUnitId = $("#unit").val();
+		const rawUnitName = $("#unit option:selected").text();
+		const conversionRate = Number($("#unit option:selected").data('conversion-rate')) || 1;
+		const baseUnitId = $('#unit').data('base-unit-id') || rawUnitId;
+		const baseUnitName = $('#unit').data('base-unit-name') || rawUnitName;
+		const baseQty = rawQty * conversionRate;
+		const total = (editingIndex >= 0) ? parseFormattedNumber($("#po_price").val()) : 0;
+		const price = baseQty > 0 ? (total / baseQty) : 0;
+		const description = $("#po_description").val();
 
-    const item = {
-		...baseItem,
-        itemsType: $("#items_type").val(),
-        itemsTypeText: $("#items_type option:selected").text(),
-        productId: $("#product_name").val(),
-        productName: $("#product_name option:selected").text(),
-        qty: Number($("#po_qty").val()),
-        unit: $("#unit").val(),
-        unitName: $("#unit option:selected").text(), 
-        price: parseFormattedNumber($("#po_price").val()),
-        description: $("#po_description").val(),
-        savedAt: formatNowDateTime()
-    };
+		if (editingIndex >= 0) {
+			// แก้ไขรายการเดิมตรงๆ ตาม index นั้น ไม่ไปยุ่งกับ group อื่นใน cart
+			const baseItem = poDetailCart[editingIndex] || {};
+			const item = {
+				...baseItem,
+				itemsType: $("#items_type").val(),
+				itemsTypeText: $("#items_type option:selected").text(),
+				productId: $("#product_name").val(),
+				productName: $("#product_name option:selected").text(),
+				qty: baseQty,
+				unit: baseUnitId,
+				unitName: baseUnitName,
+				price: price,
+				total: total,
+				description: description,
+				creatorName: baseItem.creatorName || currentUserDisplay,
+				savedAt: baseItem.savedAt || formatNowDateTime()
+			};
+			poDetailCart[editingIndex] = item;
+			editingIndex = -1;
+		} else {
+			// สร้างใหม่ เช็คก่อนว่ามี item productId เดียวกันอยู่แล้วใน cart มั้ย ไม่ว่าจะมาจากการสร้างเองมาก่อน หรือดึงจาก PR มาก่อน ก็ต้อง group เข้าด้วยกัน
+			const productId = $("#product_name").val();
+			const sourceEntry = {
+				prId: null,
+				prDetailId: null,
+				mrIds: [],
+				qty: rawQty,
+				unit: rawUnitId,
+				unitName: rawUnitName,
+				baseQty: baseQty,
+				refLink: '',
+				creatorName: currentUserDisplay,
+				savedAt: formatNowDateTime()
+			};
 
-    item.total = item.qty * item.price;
+			const existingIndex = poDetailCart.findIndex(function(it){
+				return String(it.productId) === String(productId);
+			});
 
-    if (editingIndex >= 0) {
-        poDetailCart[editingIndex] = item;
-        editingIndex = -1;
-    } else {
-        poDetailCart.push(item);
-    }
+			if (existingIndex >= 0) {
+				const existing = poDetailCart[existingIndex];
+				// ถ้า item เดิมยังไม่มี sources (สร้างเองรายการเดียวไม่เคยดึงจาก PR) ให้ห่อตัวเอง เป็น source แรกก่อน
+				if (!existing.sources || existing.sources.length === 0) {
+					// existing.unit ตอนนี้เป็นหน่วยเล็กสุด (base) ไปแล้วตั้งแต่ตอนสร้างไม่ใช่หน่วยดิบที่ user เลือกตอนนั้นจริงๆ (เก็บไว้เฉพาะ item ใหม่ที่สร้างหลังแก้นี้)
+					existing.sources = [{
+						prId: existing.prId || null,
+						prDetailId: existing.prDetailId || null,
+						mrIds: existing.mrIds || [],
+						qty: existing.qty,
+						unit: existing.unit,
+						unitName: existing.unitName,
+						baseQty: existing.qty,
+						refLink: existing.refLink || '',
+						creatorName: existing.creatorName || currentUserDisplay,
+						savedAt: existing.savedAt || formatNowDateTime()
+					}];
+				}
 
-    // console.log(item);
-    // console.log(poDetailCart);
-    
-    saveCartToSession();
-    renderPoDetailCart();
-    
-    if (document.activeElement) {
-        document.activeElement.blur();
-    }
+				existing.sources.push(sourceEntry);
+				existing.qty = (Number(existing.qty) || 0) + baseQty;
+				existing.price = existing.qty > 0 ? (existing.total / existing.qty) : 0;
+				// description ของ group ใช้ของรายการใหม่เฉพาะตอนที่ group เดิมยังไม่มี ไม่ทับของเดิม
+				if (!existing.description && description) {
+					existing.description = description;
+				}
+			} else {
+				const item = {
+					itemsType: $("#items_type").val(),
+					itemsTypeText: $("#items_type option:selected").text(),
+					productId: productId,
+					productName: $("#product_name option:selected").text(),
+					qty: baseQty,
+					unit: baseUnitId,
+					unitName: baseUnitName,
+					price: price,
+					total: total,
+					description: description,
+					creatorName: currentUserDisplay,
+					savedAt: formatNowDateTime(),
+					sources: [sourceEntry]
+				};
+				poDetailCart.push(item);
+			}
+		}
 
-    const modalEl = document.getElementById("modal_create_po");
-    const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
-    modal.hide();
+		saveCartToSession();
+		renderPoDetailCart();
+		
+		if (document.activeElement) {
+			document.activeElement.blur();
+		}
+
+		const modalEl = document.getElementById("modal_create_po");
+		const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
+		modal.hide();
+	}, 300);        
 }
-
-/* function addPoDetailToCart(){
-    const item = {
-        itemsType: $("#items_type").val(),
-        itemsTypeText: $("#items_type option:selected").text(),
-        productId: $("#product_name").val(),
-        productName: $("#product_name option:selected").text(),
-        qty: Number($("#po_qty").val()),
-        unit: $("#unit").val(),
-        price: parseFormattedNumber($("#po_price").val()),
-        description: $("#po_description").val(),
-        savedAt: formatNowDateTime()
-    };
-
-    item.total = item.qty * item.price;
-
-    if (editingIndex >= 0) {
-        poDetailCart[editingIndex] = item;
-        editingIndex = -1; 
-    } else {
-        poDetailCart.push(item);
-    }
-
-    saveCartToSession(); 
-    renderPoDetailCart();
-
-    renderPoDetailCart();
-
-    const modalEl = document.getElementById("modal_create_po");
-    const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
-    modal.hide();
-} */
 
 function renderPoDetailCart(){
 
@@ -1477,6 +1580,7 @@ function createPoCard(item,index){
 	const safePrice = Number(item.price) || 0;
     const safeQty = Number(item.qty) || 0;
     const safeTotal = Number(item.total) || (safeQty * safePrice);
+	const totalColorClass = safeTotal <= 0 ? 'text-danger' : 'text-primary';
 
     let icon = "";
     let category = "";
@@ -1526,22 +1630,23 @@ function createPoCard(item,index){
     }
 
     const groupId = "cart_" + index;
+	
+	const descriptionHtml = item.description
+        ? '<div class="d-flex align-items-center">'
+            + '<i class="ki-duotone ki-document fs-2 text-muted me-2">'
+                + '<span class="path1"></span><span class="path2"></span>'
+            + '</i>'
+            + '<span class="text-gray-900 fs-5 fw-normal">' + item.description + '</span>'
+        + '</div>'
+        : '';
 
-    return `<div class="po-item-group border-gray-400 border-bottom py-9 px-6">
-    			<div class="d-flex align-items-center justify-content-between row">
+    return `<div class="po-item-group border-gray-400 border-bottom pt-9 pb-6 px-6">
+    			<div class="d-flex align-items-center justify-content-between row g-3">
     				<div class="col-7 d-flex align-items-center">\${icon}
 						<span class="text-gray-900 fs-5 fw-normal me-3">\${category}</span>
 						<span class="text-gray-900 fs-5 fw-normal me-3">\${item.productName}</span>
-		
-						<div class="d-flex align-items-center">
-							<i class="ki-duotone ki-document fs-2 text-muted me-2">
-								<span class="path1"></span>
-								<span class="path2"></span>
-							</i>
-		
-							<span class="text-gray-900 fs-5 fw-normal">\${item.description}</span>
-		
-						</div>
+
+						\${descriptionHtml}
 					</div>
 		
 					<div class="col-3 d-flex align-items-center justify-content-between px-0">
@@ -1551,13 +1656,13 @@ function createPoCard(item,index){
 					</div>
 		
 					<div class="col-4 d-flex flex-column text-end">
-						<span class="fs-6 fw-normal text-gray-900">Price</span>
+						<span class="fs-6 fw-normal text-gray-900">Price/Unit</span>
 						<span class="fw-semibold text-gray-800 fs-5">\${safePrice.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span>
 					</div>
 					
 					<div class="col-4 d-flex flex-column text-end">
 						<span class="fs-6 fw-normal text-gray-900">Total</span>
-						<span class="fs-5 fw-semibold text-primary">\${safeTotal.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span>
+						<span class="fs-5 fw-semibold \${totalColorClass}">\${safeTotal.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span>
 					</div>
 		
 				</div>
@@ -1579,56 +1684,121 @@ function createPoCard(item,index){
 			
 			<div class="collapse border-gray-300 border-top mt-3" id="poGroup_\${groupId}">
 	            <div class="ps-9 pt-9">
-	                <div class="d-flex align-items-center justify-content-between row">
-	                    <div class="col-11">
-	                        <div class="d-flex align-items-center fs-7">
-	                            <div class="col-4">
-	                                <i class="ki-duotone ki-user-tick fs-3 text-muted me-2">
-	                                    <span class="path1"></span><span class="path2"></span><span class="path3"></span>
-	                                </i>
-	                                <span class="text-gray-800 fs-5">\${currentUserDisplay}</span>
-	                            </div>
-	                            <div class="col-4 d-flex align-items-center">
-	                                <i class="ki-duotone ki-calendar-2 fs-3 me-2">
-	                                    <span class="path1"></span><span class="path2"></span><span class="path3"></span>
-	                                    <span class="path4"></span><span class="path5"></span>
-	                                </i>
-	                                <span class="text-gray-800 fs-5">\${item.savedAt}</span>
-	                            </div>
-	                            <div class="col-3 d-flex align-items-center gap-2">
-				                    <i class="ki-duotone ki-tablet-book fs-3">
-					                     <span class="path1"></span><span class="path2"></span>
-									</i>
-				                    <a href="\${item.mrId ? ctx + '/material_requisition_edit?mrId=' + item.mrId : ctx + '/purchase_requisition_edit?prId=' + item.prId}"
-										target="_blank"
-										onclick="event.stopPropagation();"
-										class="badge badge-lg fs-7 fw-semibold d-inline-block text-center text-decoration-none
-											\${item.mrId ? 'badge-light-purple text-purple' : 'badge-light-primary text-primary'}"
-										style="\${(!item.prId && !item.mrId) ? 'pointer-events:none;' : ''}">
-										\${item.prId || item.mrId || '-'}
-									</a>
-
-									\${item.refLink
-										? `<a href="\${item.refLink}" target="_blank" class="text-primary d-inline-flex" onclick="event.stopPropagation();">
-											<i class="ki-duotone ki-fasten fs-2 text-primary">
-												<span class="path1"></span><span class="path2"></span>
-											</i>
-										</a>`
-										: ''
-									}
-		                    	</div>
-	                        </div>
-	                    </div>
-	                    <div class="col-1 text-end">
-	                        <span class="text-gray-800 fs-5">\${item.qty} \${item.unitName}</span>
-	                    </div>
-	                </div>
+				\${
+					(item.sources && item.sources.length > 0)
+						? item.sources.map(function(s, si){
+							var srcBaseQty = (s.baseQty != null) ? s.baseQty : s.qty;
+							return createPoSourceRow(s.qty, s.unitName || item.unitName, srcBaseQty, item.unitName,
+									s.savedAt, s.prId, s.mrIds, s.refLink, s.creatorName, index, si);
+						}).join('')
+						: createPoSourceRow(item.qty, item.unitName, item.qty, item.unitName, item.savedAt, item.prId, item.mrIds, item.refLink, item.creatorName)
+				}
 	            </div>
 	        </div>
 		
 		</div>
 		
 		`;
+}
+
+function createPrMrBadges(prId, mrIds, refLink){
+    mrIds = mrIds || [];
+    let html = '';
+
+    if (prId) {
+        const prLink = refLink ? `
+            <a href="\${refLink}" target="_blank" class="text-primary d-inline-flex ms-1" onclick="event.stopPropagation();">
+                <i class="ki-duotone ki-fasten fs-2 text-primary">
+                    <span class="path1"></span><span class="path2"></span>
+                </i>
+            </a>` : '';
+
+        html += `
+        <span class="d-inline-flex align-items-center flex-shrink-0">
+            <a href="\${ctx}/purchase_requisition_edit?prId=\${prId}"
+                target="_blank" onclick="event.stopPropagation();"
+                class="badge badge-lg fs-7 fw-semibold text-center text-decoration-none text-nowrap badge-light-primary text-primary">
+                \${prId}
+            </a>\${prLink}
+        </span>`;
+    }
+
+    mrIds.forEach(function(m){
+        const mrLink = m.url ? `
+            <a href="\${m.url}" target="_blank" class="text-info d-inline-flex ms-1" onclick="event.stopPropagation();">
+                <i class="ki-duotone ki-fasten fs-2 text-info">
+                    <span class="path1"></span><span class="path2"></span>
+                </i>
+            </a>` : '';
+
+        html += `
+        <span class="d-inline-flex align-items-center flex-shrink-0">
+            <a href="\${ctx}/equipment_request_mr_approve?mrId=\${m.id}"
+                target="_blank" onclick="event.stopPropagation();"
+                class="badge badge-lg fs-7 fw-semibold text-center text-decoration-none text-nowrap badge-light-info text-info">
+                \${m.id}
+            </a>\${mrLink}
+        </span>`;
+    });
+
+    if (!prId && mrIds.length === 0) {
+        html = `<span class="badge badge-lg fs-7 fw-semibold d-inline-block text-center badge-light-primary text-primary">-</span>`;
+    }
+
+    return html;
+}
+
+function createPoSourceRow(qty, unitName, baseQty, baseUnitName, savedAt, prId, mrIds, refLink, creatorName, itemIndex, srcIndex){
+    const qtyUnitDisplay = (qty + ' ' + unitName + ' (= ' + baseQty + ' ' + baseUnitName + ')');
+
+	const menuHtml = (itemIndex == null) ? '' : `
+        <div class="po-src-menu position-relative d-inline-block flex-shrink-0">
+            <a href="#" class="btn btn-icon btn-sm btn-light-primary w-30px h-30px"
+               onclick="return toggleSrcMenu(this, event);" aria-label="More actions" aria-haspopup="true">
+                <i class="ki-outline ki-dots-horizontal fs-2"></i>
+            </a>
+            <div class="po-src-actions position-absolute end-0 top-100 mt-2 bg-body rounded-3 shadow z-index-3">
+                <div class="py-2">
+                    <a href="#" class="d-block px-6 py-3 fs-6 fw-normal text-gray-800 bg-hover-light"
+                       onclick="event.stopPropagation(); return editSource(\${itemIndex}, \${srcIndex});">Edit</a>
+                    <a href="#" class="d-block px-6 py-3 fs-6 fw-normal text-gray-800 bg-hover-light"
+                       onclick="event.stopPropagation(); return removeSource(\${itemIndex}, \${srcIndex});">Delete</a>
+                </div>
+            </div>
+        </div>`;
+
+    return `
+    <div class="d-flex align-items-center justify-content-between row mb-4 py-2">
+        <div class="col-12 col-xl-9">
+            <div class="d-flex align-items-center fs-7">
+                <div class="col-12 col-md-4">
+                    <i class="ki-duotone ki-user-tick fs-3 text-muted me-2">
+                        <span class="path1"></span><span class="path2"></span><span class="path3"></span>
+                    </i>
+                    <span class="text-gray-800 fs-5 fw-normal">\${creatorName || currentUserDisplay}</span>
+                </div>
+                <div class="col-12 col-md-4 d-flex align-items-center">
+                    <i class="ki-duotone ki-calendar-2 fs-3 me-2">
+                        <span class="path1"></span><span class="path2"></span><span class="path3"></span>
+                        <span class="path4"></span><span class="path5"></span>
+                    </i>
+                    <span class="text-gray-800 fs-5 fw-normal">\${savedAt}</span>
+                </div>
+                <div class="col-12 col-md-4 d-flex align-items-center gap-2">
+                    <i class="ki-duotone ki-tablet-book fs-3 flex-shrink-0">
+                         <span class="path1"></span><span class="path2"></span>
+                    </i>
+                    <div class="d-flex flex-wrap align-items-center gap-2">
+						\${createPrMrBadges(prId, mrIds, refLink)}
+					</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-12 col-xl-3 d-flex align-items-center justify-content-end gap-3">
+			<span class="text-gray-800 fs-5 fw-normal">\${qtyUnitDisplay}</span>
+			\${menuHtml}
+		</div>
+    </div>`;
 }
 
 function editCartItem(index){
@@ -1638,7 +1808,7 @@ function editCartItem(index){
     editingIndex = index;
 
     $('#modal_create_po .modal-title').text('Edit PO - Detail');
-    $('#btnSavePoDetail').text('Update');
+    $('#btnSavePoDetail .indicator-label').text('Update');
 
     $('#items_type').val(item.itemsType).trigger('change');
 
@@ -1661,7 +1831,7 @@ function editCartItem(index){
 
     $('#po_qty').val(item.qty);
     $('#unit').val(item.unit).trigger('change');
-    $('#po_price').val(Number(item.price).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2}));
+    $('#po_price').val(Number(item.total).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2}));
     $('#po_description').val(item.description);
 
     const modalEl = document.getElementById("modal_create_po");
@@ -1686,13 +1856,173 @@ function removeCartItem(index){
         }
     }).then((result) => {
         if (result.isConfirmed) {
+			const removedItem = poDetailCart[index];
             poDetailCart.splice(index, 1);
             saveCartToSession();    
             renderPoDetailCart();
+			uncheckPrCheckboxesForItem(removedItem);
         }
     });
     return false;
 }
+
+function mapSelectToDbItemsType(val){
+    switch(String(val)){
+        case 'equipment':   return '1';
+        case 'consumables': return '2';
+        case 'accessory':   return '3';
+        case 'office':      return '4';
+        default:            return String(val);
+    }
+}
+
+function closeAllSrcMenus(){
+    document.querySelectorAll('.po-src-menu.menu-open').forEach(function(m){ m.classList.remove('menu-open'); });
+}
+document.addEventListener('click', closeAllSrcMenus);
+
+function toggleSrcMenu(btn, e){
+    e.preventDefault(); e.stopPropagation();
+    const menu = btn.closest('.po-src-menu');
+    const wasOpen = menu.classList.contains('menu-open');
+    closeAllSrcMenus();
+    if (!wasOpen) menu.classList.add('menu-open');
+    return false;
+}
+
+function removeSource(itemIndex, srcIndex){
+    closeAllSrcMenus();
+    Swal.fire({
+        title: "Are you sure?!",
+        text: "Are you sure you want to delete this row?",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonText: "Yes, delete it",
+        cancelButtonText: "Cancel",
+        buttonsStyling: false,
+        customClass: { confirmButton: "btn btn-danger", cancelButton: "btn btn-secondary" }
+    }).then(function(result){
+        if (!result.isConfirmed) return;
+
+        const item = poDetailCart[itemIndex];
+        const src = item && item.sources && item.sources[srcIndex];
+        if (!src) return;
+
+        const baseQty = Number(src.baseQty != null ? src.baseQty : src.qty) || 0;
+        item.sources.splice(srcIndex, 1);
+
+        if (item.sources.length === 0) {
+            poDetailCart.splice(itemIndex, 1);
+        } else {
+            item.qty = Math.max(0, (Number(item.qty) || 0) - baseQty);
+            item.price = item.qty > 0 ? ((Number(item.total) || 0) / item.qty) : 0;
+        }
+
+        saveCartToSession();
+        renderPoDetailCart();
+        uncheckPrCheckboxesForItem({ sources: [src] });
+    });
+    return false;
+}
+
+let editingSrc = null;
+
+function editSource(itemIndex, srcIndex){
+    closeAllSrcMenus();
+    const item = poDetailCart[itemIndex];
+    const src = item && item.sources && item.sources[srcIndex];
+    if (!src) return false;
+
+    editingSrc = { itemIndex: itemIndex, srcIndex: srcIndex };
+    const baseQty = (src.baseQty != null) ? src.baseQty : src.qty;
+    const cat = getCategoryIcon(mapSelectToDbItemsType(item.itemsType));
+
+    $('#editSrcTypeIcon').html(cat.icon);
+    $('#editSrcTypeName').text(cat.name);
+    $('#editSrcProduct').text(item.productName);
+    $('#editSrcCreator').text(src.creatorName || currentUserDisplay);
+    $('#editSrcDate').text(src.savedAt);
+    $('#editSrcMr').html(createPrMrBadges(src.prId, src.mrIds, src.refLink));
+    $('#editSrcCurrent').text(src.qty + ' ' + (src.unitName || item.unitName) + ' (= ' + baseQty + ' ' + item.unitName + ')');
+    $('#edit_src_qty').val(src.qty);
+    $('#editSrcPreview').text('');
+
+    loadEditSrcUnits(item.productId, src.unit);
+    bootstrap.Modal.getOrCreateInstance(document.getElementById('modal_edit_source')).show();
+    return false;
+}
+
+function loadEditSrcUnits(productId, selectedUnitId){
+    $('#edit_src_unit').html('<option value=""></option>');
+    $.ajax({
+        url: ctx + '/get_unit_of_measure',
+        type: 'POST',
+        dataType: 'json',
+        data: { productId: productId },
+        success: function (resp) {
+            const list = (resp.data && resp.data.unitList) || [];
+            let opts = '';
+            list.forEach(function (u) {
+                opts += '<option value="' + u.id + '"'
+                    + ' data-conversion-rate="' + (u.conversionRate != null ? u.conversionRate : 1) + '"'
+                    + (String(u.id) === String(selectedUnitId) ? ' selected' : '') + '>' + u.name + '</option>';
+            });
+            $('#edit_src_unit').html(opts).trigger('change');
+        },
+        error: function () {
+            Swal.fire('Error', 'ไม่สามารถโหลดข้อมูล Unit ได้', 'error');
+        }
+    });
+}
+
+function updateEditSrcPreview(){
+    if (!editingSrc) return;
+    const item = poDetailCart[editingSrc.itemIndex];
+    if (!item) return;
+    const qty = Number($('#edit_src_qty').val()) || 0;
+    const rate = Number($('#edit_src_unit option:selected').data('conversion-rate')) || 1;
+    $('#editSrcPreview').text('= ' + (Math.round(qty * rate * 1000) / 1000) + ' ' + item.unitName);
+}
+$(document.body).on('input change', '#edit_src_qty, #edit_src_unit', updateEditSrcPreview);
+
+function saveEditSource(){
+    if (!editingSrc) return;
+
+    const qty = Number($('#edit_src_qty').val()) || 0;
+    const unitId = $('#edit_src_unit').val();
+    const errors = [];
+    if (qty <= 0) errors.push('จำนวน');
+    if (!unitId) errors.push('Unit');
+    if (errors.length > 0) {
+        Swal.fire({
+            title: 'Please complete the form!',
+            html: "Please fill in the following fields:<br><strong>" + errors.join(", ") + "</strong>",
+            icon: "error", confirmButtonText: "OK"
+        });
+        return;
+    }
+
+	setBtnLoading('#btnSaveEditSource', true);
+	setTimeout(function(){
+		const item = poDetailCart[editingSrc.itemIndex];
+		const old = item.sources[editingSrc.srcIndex];
+		const unitName = $('#edit_src_unit option:selected').text();
+		const rate = Number($('#edit_src_unit option:selected').data('conversion-rate')) || 1;
+		const baseQty = qty * rate;
+		const oldBase = Number(old.baseQty != null ? old.baseQty : old.qty) || 0;
+
+		item.sources[editingSrc.srcIndex] = { ...old, qty: qty, unit: unitId, unitName: unitName, baseQty: baseQty };
+		item.qty = (Number(item.qty) || 0) + (baseQty - oldBase);
+		item.price = item.qty > 0 ? ((Number(item.total) || 0) / item.qty) : 0;
+
+		saveCartToSession();
+		renderPoDetailCart();
+
+		if (document.activeElement) document.activeElement.blur();
+		bootstrap.Modal.getOrCreateInstance(document.getElementById('modal_edit_source')).hide();
+	}, 300);
+}
+
 
 function parseFormattedNumber(str) {
     if (!str) return 0;
@@ -1724,7 +2054,6 @@ $(document.body).on('blur', '#po_price', function() {
         maximumFractionDigits: 2
     }));
 });
-
 
 //──────── Confirm Receiver ───────────
 function confirmReceiver(slot) {
@@ -1791,6 +2120,7 @@ function saveDraftForm(){
     Object.keys(payload).forEach(function (k) { fd.append(k, payload[k]); });
     selectedFiles.forEach(function (file) { fd.append('files', file, file.name); });
 
+	setBtnLoading('#saveDraft', true);
     $.ajax({
         url: ctx + '/save_po',
         type: 'POST',
@@ -1799,7 +2129,6 @@ function saveDraftForm(){
         processData: false,
         contentType: false,
         success: function (resp) {
-            // if (resp.debug) console.log('[save_po debug]', resp.debug);
             if (resp.data && resp.data.poId) {
                 sessionStorage.removeItem(PO_CART_STORAGE_KEY);
                 sessionStorage.removeItem(PO_HEADER_STORAGE_KEY);
@@ -1816,7 +2145,8 @@ function saveDraftForm(){
         },
         error: function () {
             Swal.fire('Error', 'เกิดข้อผิดพลาดในการบันทึก', 'error');
-        }
+        },
+		complete: function(){ setBtnLoading('#saveDraft', false); }
     });
 }
 
@@ -1829,11 +2159,11 @@ function validatePOForm(){
     if (!poDetailCart || poDetailCart.length === 0) {
         errors.push('Please add at least 1 Po Detail');
     } else {
-        // เช็คว่ามีรายการไหนราคายังเป็น 0 / ยังไม่ได้ใส่ราคา
-        const zeroPriceItems = poDetailCart.filter(item => !item.price || Number(item.price) <= 0);
+        // เช็คว่ามีรายการไหนราคารวมยังเป็น 0 / ยังไม่ได้ใส่ราคา
+        const zeroPriceItems = poDetailCart.filter(item => !item.total || Number(item.total) <= 0);
         if (zeroPriceItems.length > 0) {
             const names = zeroPriceItems.map(i => i.productName).join(', ');
-            errors.push('กรุณาใส่ราคาต่อหน่วยให้ครบทุกรายการ (' + names + ')');
+            errors.push('กรุณาใส่ราคารวมให้ครบทุกรายการ (' + names + ')');
         }
     }
     
@@ -1890,7 +2220,7 @@ function submitPO(){
         Object.keys(payload).forEach(function (k) { fd.append(k, payload[k]); });
         selectedFiles.forEach(function (file) { fd.append('files', file, file.name); });
 
-        $('#savePOFormBtn').prop('disabled', true);
+        setBtnLoading('#savePOFormBtn', true)
 
         $.ajax({
             url: ctx + '/save_po',
@@ -1900,7 +2230,6 @@ function submitPO(){
             processData: false,
             contentType: false,
             success: function (resp) {
-                // if (resp.debug) console.log('[save_po debug]', resp.debug);
                 if (resp.data && resp.data.poId) {
                     sessionStorage.removeItem(PO_CART_STORAGE_KEY);
                     sessionStorage.removeItem(PO_HEADER_STORAGE_KEY);
@@ -1919,7 +2248,7 @@ function submitPO(){
                 Swal.fire('Error', 'เกิดข้อผิดพลาดในการส่งข้อมูล', 'error');
             },
             complete: function(){
-                $('#savePOFormBtn').prop('disabled', false);
+                setBtnLoading('#savePOFormBtn', false)
             }
         });
     });
@@ -1929,6 +2258,8 @@ function submitPO(){
 let inprogressPrDetailList = [];
 let prDetailTable = null;
 let selectedPrCategory = '';
+let prSearchRequestToken = 0;
+let isSearchPrModalOpen = false;
 
 $.fn.dataTable.ext.search.push(function (settings, data, dataIndex) {
     if (settings.nTable.id !== 'prResultTable') return true;
@@ -1938,18 +2269,52 @@ $.fn.dataTable.ext.search.push(function (settings, data, dataIndex) {
     if (!item) return true;
 
     var mapped = mapDbItemsTypeToSelect(item.product_type);
-    console.log('[DEBUG] row', dataIndex, '| product_type:', item.product_type, '| mapped:', mapped, '| selected:', selectedPrCategory, '| match:', mapped === selectedPrCategory);
     return mapped === selectedPrCategory;
 });
 
 function loadInprogressPrDetail(){
+    var requestToken = ++prSearchRequestToken;
     $.ajax({
         url: ctx + '/search_inprogress_pr',
         type: 'POST',
         dataType: 'json',
         success: function (resp) {
+            if (requestToken !== prSearchRequestToken || !isSearchPrModalOpen) {
+                return;
+            }
             var data = resp.data;
-            inprogressPrDetailList = (data && data.prDetailList) || [];
+            var rows = (data && data.prDetailList) || [];
+
+            var map = {};
+            inprogressPrDetailList = [];
+
+            rows.forEach(function(r){
+                var key = String(r.pr_detail_id);
+                if (!map[key]) {
+                    r.mrs = [];
+                    map[key] = r;
+                    inprogressPrDetailList.push(r);
+                }
+                if (r.mr_id) {
+                    map[key].mrs.push({ id: r.mr_id, url: r.url_ref || '' });
+                }
+            });
+
+			//เรียงpr_id เดียวกันอยู่ติดกัน (กลุ่มที่อัปเดตล่าสุดขึ้นก่อน)
+            var groupTime = {};
+            inprogressPrDetailList.forEach(function(r){
+                var t = new Date(String(r.time_sort || r.time_create || '').replace(' ', 'T')).getTime() || 0;
+                groupTime[r.pr_id] = Math.max(groupTime[r.pr_id] || 0, t);
+            });
+            inprogressPrDetailList.sort(function(a, b){
+                if (String(a.pr_id) !== String(b.pr_id)) {
+                    var d = groupTime[b.pr_id] - groupTime[a.pr_id];
+                    if (d !== 0) return d;
+                    return String(a.pr_id) < String(b.pr_id) ? -1 : 1;
+                }
+                return Number(a.pr_detail_id) - Number(b.pr_detail_id);
+            });
+
             renderPrResultTable(inprogressPrDetailList);
         },
         error: function () {
@@ -1978,12 +2343,6 @@ function mapDbItemsTypeToSelect(val){
     }
 }
 
-// function formatTimeCreate(inputDate){
-//     const d = inputDate ? new Date(String(inputDate).replace(' ', 'T')) : new Date();
-//     const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
-//     const pad = n => String(n).padStart(2,'0');
-//     return `\${d.getDate()} \${months[d.getMonth()]} \${d.getFullYear()}, \${pad(d.getHours())}:\${pad(d.getMinutes())}`;
-// }
 function formatNowDateTime(inputDate){
     const d = inputDate ? new Date(String(inputDate).replace(' ', 'T')) : new Date();
     const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
@@ -1999,11 +2358,18 @@ $(document.body).on('keyup input', '#searchPrKeyword', function () {
 
 $(document.body).on('change', '#searchPrCategory', function () {
     selectedPrCategory = $(this).val();
-	console.log('[DEBUG] category changed →', selectedPrCategory, '| table exists:', !!prDetailTable);
     if (prDetailTable) {
         prDetailTable.draw();
     }
 });
+
+function isPrDetailIdInCart(prDetailId){
+    return poDetailCart.some(function(it){
+        return (it.sources || []).some(function(s){
+            return String(s.prDetailId) === String(prDetailId);
+        });
+    });
+}
 
 function renderPrResultTable(list){
     var tbody = document.getElementById('prResultBody');
@@ -2023,13 +2389,16 @@ function renderPrResultTable(list){
 			: item.pr_status == '7'
 			? '<span class="badge badge-lg bg-cyan fw-semibold fs-7 text-white">In-Progress</span>'
 			: '';
+		var fullProductName = item.parent_product_name
+			? item.parent_product_name + ' > ' + (item.product_name || '')
+			: (item.product_name || '');
 
 		html += `
-		<tr class="fw-semibold fs-6 text-gray-800 border-bottom border-gray-200">
+		<tr class="fw-semibold fs-6 text-gray-800 border-bottom border-gray-200" data-pr-id="\${item.pr_id}">
 			<td>
 				<div class="form-check form-check-sm">
 					<input class="form-check-input pr-row-check" type="checkbox"
-						data-pr-detail-id="\${item.pr_detail_id}" />
+						data-pr-detail-id="\${item.pr_detail_id}"\${isPrDetailIdInCart(item.pr_detail_id) ? ' checked' : ''} />
 				</div>
 			</td>
 			<td class="fw-bold text-gray-900 fs-7 row-number text-start"></td>
@@ -2058,7 +2427,7 @@ function renderPrResultTable(list){
 			</td>
 			<td>
 				<div class="d-flex flex-column">
-					<span class="text-gray-900 fs-6 fw-normal">\${item.product_name || ''}</span>
+					<span class="text-gray-900 fs-6 fw-normal">\${fullProductName}</span>
 					
 					<span class="text-gray-900 fs-6 fw-normal">\${qty} \${unitName}</span>
 				</div>
@@ -2075,51 +2444,136 @@ function renderPrResultTable(list){
         prDetailTable = null;
     }
     prDetailTable = $('#prResultTable').DataTable({
-		ordering : true,
+		ordering : false,
 		searching : true,
 		autoWidth : false,
 		info: false,
 		paging: false,
-		columnDefs : [
-			{ orderable: false, targets: [0,6] },
-			{ orderable: true, targets: [1,2,3,4,5] },
-			{
-				targets: -1,
-				orderable: false
-			}
-		],
-		order: [],
-		drawCallback: function(settings) {
+		drawCallback: function () {
 			var api = this.api();
+			var $rows = $(api.rows({ search: 'applied', order: 'applied' }).nodes());
 
-			// อัปเดตเลขลำดับแถว (running number) ตามที่แสดงจริง
-			api.column(1, { search: 'applied', order: 'applied' })
-				.nodes()
-				.each(function (cell, i) {
-					cell.innerHTML = i + 1;
-				});
+			// ลบหัวกลุ่มเก่า แล้วสร้างใหม่ทุกครั้งที่ draw (search / filter)
+			$(api.table().body()).find('tr.pr-group-row').remove();
 
-			// อัปเดตจำนวน Items Found ตามที่ filter/search เหลือจริง
-			document.getElementById('prItemsFoundCount').textContent = api.rows({ search: 'applied' }).count();
+			var counts = {};
+			$rows.each(function () {
+				var id = String($(this).data('pr-id'));
+				counts[id] = (counts[id] || 0) + 1;
+			});
+
+			var lastPr = null;
+			$rows.each(function (i) {
+				$(this).find('.row-number').text(i + 1);
+
+				var prId = String($(this).data('pr-id'));
+				if (prId !== lastPr) {
+					$(this).before(buildPrGroupRow(prId, counts[prId]));
+					lastPr = prId;
+				}
+			});
+
+			document.getElementById('prItemsFoundCount').textContent = $rows.length;
+			syncGroupChecks();
 		}
 	});
     updatePrSelectedCountReal();
 
+    var checkAll = document.getElementById('checkAllPr');
+
+    function syncCheckAllState(){
+        var allBoxes = document.querySelectorAll('.pr-row-check');
+        checkAll.checked = allBoxes.length > 0 && Array.prototype.every.call(allBoxes, function (box) { return box.checked; });
+    }
+
     document.querySelectorAll('.pr-row-check').forEach(function (cb) {
-        cb.addEventListener('change', updatePrSelectedCountReal);
+        cb.addEventListener('change', function () {
+            updatePrSelectedCountReal();
+            syncCheckAllState();
+            syncGroupChecks();
+        });
     });
 
-    var checkAll = document.getElementById('checkAllPr');
-    checkAll.checked = false;
+    checkAll.checked = list.length > 0 && list.every(function (d) { return isPrDetailIdInCart(d.pr_detail_id); });
     checkAll.onchange = function(){
         document.querySelectorAll('.pr-row-check').forEach(cb => cb.checked = this.checked);
         updatePrSelectedCountReal();
+        syncGroupChecks();
     };
 }
+
+function buildPrGroupRow(prId, count){
+    return '<tr class="pr-group-row" data-pr-id="' + prId + '">'
+        + '<td colspan="7" class="bg-light-primary">'
+            + '<div class="d-flex align-items-center gap-4">'
+                + '<div class="form-check form-check-sm">'
+                    + '<input class="form-check-input pr-group-check" type="checkbox" data-pr-id="' + prId + '" />'
+                + '</div>'
+                + '<span class="fw-bold fs-5 text-primary">' + prId + '</span>'
+                + '<span class="text-muted fs-7">' + count + ' item' + (count > 1 ? 's' : '') + '</span>'
+            + '</div>'
+        + '</td>'
+    + '</tr>';
+}
+
+// ติ๊กหัวกลุ่มให้ตรงกับสถานะของแถวข้างใต้
+function syncGroupChecks(){
+    document.querySelectorAll('.pr-group-check').forEach(function (g) {
+        var boxes = document.querySelectorAll(
+            'tr:not(.pr-group-row)[data-pr-id="' + g.getAttribute('data-pr-id') + '"] .pr-row-check');
+        g.checked = boxes.length > 0 &&
+            Array.prototype.every.call(boxes, function (b) { return b.checked; });
+    });
+}
+
+// ติ๊กที่หัวกลุ่ม = ติ๊กทุกแถวใน PR นั้น
+$(document.body).on('change', '.pr-group-check', function () {
+    var checked = this.checked;
+    var prId = this.getAttribute('data-pr-id');
+    document.querySelectorAll('tr:not(.pr-group-row)[data-pr-id="' + prId + '"] .pr-row-check')
+        .forEach(function (cb) { cb.checked = checked; });
+
+    updatePrSelectedCountReal();
+
+    var checkAll = document.getElementById('checkAllPr');
+    var allBoxes = document.querySelectorAll('.pr-row-check');
+    checkAll.checked = allBoxes.length > 0 &&
+        Array.prototype.every.call(allBoxes, function (b) { return b.checked; });
+});
 
 function updatePrSelectedCountReal(){
     var count = document.querySelectorAll('.pr-row-check:checked').length;
     document.getElementById('prSelectedCount').textContent = count;
+}
+
+function uncheckPrCheckboxesForItem(item){
+    if (!item || !item.sources || item.sources.length === 0) return;
+
+    item.sources.forEach(function(s){
+        if (!s.prDetailId) return;
+        var cb = document.querySelector('.pr-row-check[data-pr-detail-id="' + s.prDetailId + '"]');
+        if (cb) cb.checked = false;
+    });
+
+    updatePrSelectedCountReal();
+
+    var checkAll = document.getElementById('checkAllPr');
+    if (checkAll) {
+        var allBoxes = document.querySelectorAll('.pr-row-check');
+        checkAll.checked = allBoxes.length > 0 &&
+            Array.prototype.every.call(allBoxes, function (box) { return box.checked; });
+    }
+}
+
+// หา { unit, base } ของ unitId ที่กำหนด จาก unit catalog (list ที่ได้จาก /get_unit_of_measure)
+// unit = entry ของ unitId นั้น(เอา conversionRate), base = entry ที่ sequence === '0' (หน่วยเล็กสุด)
+function findUnitAndBase(catalog, unitId){
+    var unit = null, base = null;
+    (catalog || []).forEach(function(u){
+        if (String(u.id) === String(unitId)) unit = u;
+        if (String(u.sequence) === '0') base = u;
+    });
+    return { unit: unit, base: base };
 }
 
 document.getElementById('btnSubmitPr').addEventListener('click', function(){
@@ -2127,47 +2581,162 @@ document.getElementById('btnSubmitPr').addEventListener('click', function(){
     document.querySelectorAll('.pr-row-check:checked').forEach(function(cb){
         selectedIds.push(cb.getAttribute('data-pr-detail-id'));
     });
+    var selectedIdSet = {};
+    selectedIds.forEach(function(id){ selectedIdSet[String(id)] = true; });
 
-    if (selectedIds.length === 0) {
-        Swal.fire('แจ้งเตือน', 'กรุณาเลือกอย่างน้อย 1 รายการ', 'warning');
-        return;
-    }
+    // เอารายการออกจาก poDetailCart: รายการที่เคยดึงเข้ามาจากตารางนี้
+    inprogressPrDetailList.forEach(function(d){
+        var prDetailId = String(d.pr_detail_id);
+        if (selectedIdSet[prDetailId]) return; //ถ้ายังติ๊กอยู่ ไม่ต้องลบ
 
-    selectedIds.forEach(function(prDetailId){
-        var src = inprogressPrDetailList.find(function(d){ return String(d.pr_detail_id) === String(prDetailId); });
-        if (!src) return;
+        for (var i = poDetailCart.length - 1; i >= 0; i--) {
+            var cartItem = poDetailCart[i];
+            if (!cartItem.sources) continue;
 
-        var qty = Number(src.amount_total) || 0;
-        var price = Number(src.unit_price) || 0;
+            var srcIdx = cartItem.sources.findIndex(function (s) {
+                return String(s.prDetailId) === prDetailId;
+            });
+            if (srcIdx === -1) continue;
 
-        var item = {
-            prId: src.pr_id,
-            prDetailId: src.pr_detail_id,
-            itemsType: mapDbItemsTypeToSelect(src.product_type),
-            itemsTypeText: getCategoryIcon(src.product_type).name,
-            productId: src.product_id,
-            productName: src.product_name || '',
-            qty: qty,
-            unit: src.unit,
-            unitName: src.unit_name || '',
-            price: price,
-            description: src.description || '',
-			refLink: src.ref_link || '',
-            savedAt: formatNowDateTime()
-        };
-        item.total = item.qty * item.price;
+            var removedSrc = cartItem.sources[srcIdx];
+            var removedBaseQty = Number(removedSrc.baseQty != null ? removedSrc.baseQty : removedSrc.qty) || 0;
+            cartItem.sources.splice(srcIdx, 1);
 
-        poDetailCart.push(item);
+            if (cartItem.sources.length === 0) {
+                poDetailCart.splice(i, 1);
+            } else {
+                cartItem.qty = Math.max(0, (Number(cartItem.qty) || 0) - removedBaseQty);
+                cartItem.price = cartItem.qty > 0 ? ((Number(cartItem.total) || 0) / cartItem.qty) : 0;
+            }
+        }
     });
 
-    saveCartToSession();
-    renderPoDetailCart();
+    // search_inprogress_pr ไม่มี conversion rate ติดมาด้วย ต้อง fetch unit catalog ของแต่ละ product_id ที่เลือกเอง
+    var productIdsToFetch = [];
+    selectedIds.forEach(function(prDetailId){
+        var src = inprogressPrDetailList.find(function(d){ return String(d.pr_detail_id) === String(prDetailId); });
+        if (!src || !src.product_id) return;
+        var pid = String(src.product_id);
+        if (!prUnitCatalogCache[pid] && productIdsToFetch.indexOf(pid) === -1) {
+            productIdsToFetch.push(pid);
+        }
+    });
 
-    var modalEl = document.getElementById('modal_search_pr');
-    bootstrap.Modal.getOrCreateInstance(modalEl).hide();
+    var fetches = productIdsToFetch.map(function(pid){
+        return $.ajax({
+            url: ctx + '/get_unit_of_measure',
+            type: 'POST',
+            dataType: 'json',
+            data: { productId: pid }
+        }).then(function(resp){
+            prUnitCatalogCache[pid] = (resp.data && resp.data.unitList) || [];
+        }, function(){
+            prUnitCatalogCache[pid] = []; // โหลดไม่สำเร็จ ใช้ conversionRate=1 (ไม่แปลงหน่วย) ต่อไป
+        });
+    });
+
+    $.when.apply($, fetches).always(function(){
+        // เพิ่มเข้า poDetailCart รายการที่ติ๊กใหม่ (ยังไม่มีใน poDetailCart) หรือรายการที่เคยติ๊กแล้วแต่ถูกลบออกไปก่อนหน้านี้
+        selectedIds.forEach(function(prDetailId){
+            var src = inprogressPrDetailList.find(function(d){ return String(d.pr_detail_id) === String(prDetailId); });
+            if (!src) return;
+
+            var qty = Number(src.amount_total) || 0;
+            var price = Number(src.unit_price) || 0;
+            var mrs = src.mrs || [];
+
+            var catalog = prUnitCatalogCache[String(src.product_id)] || [];
+            var found = findUnitAndBase(catalog, src.unit);
+            var conversionRate = (found.unit && Number(found.unit.conversionRate)) || 1;
+            var baseUnit = found.base || found.unit;
+            var baseQty = qty * conversionRate;
+            var baseUnitId = baseUnit ? baseUnit.id : src.unit;
+            var baseUnitName = baseUnit ? baseUnit.name : (src.unit_name || '');
+
+            // ข้อมูลที่มา (ต่อ PR แต่ละใบ) — qty/unitName เป็นหน่วยดิบตามที่ PR บันทึกไว้
+            var sourceEntry = {
+				prId: src.pr_id,
+				prDetailId: src.pr_detail_id,
+				mrIds: mrs,
+				qty: qty,
+				unit: src.unit,
+				unitName: src.unit_name || '',
+				baseQty: baseQty,
+				refLink: src.ref_link || '',
+				creatorName: (src.user_create_emp_id ? src.user_create_emp_id + ' - ' : '') + (src.user_create_name || ''),
+				savedAt: formatNowDateTime()
+			};
+
+            // หา item ที่ productId เดียวกันใน cart อยู่แล้วหรือยัง (group ตาม Product)
+            var existingIndex = poDetailCart.findIndex(function(it){
+                return String(it.productId) === String(src.product_id);
+            });
+
+            if (existingIndex >= 0) {
+                var existing = poDetailCart[existingIndex];
+
+				if (!existing.sources || existing.sources.length === 0) {
+					existing.sources = [{
+						prId: existing.prId || null,
+						prDetailId: existing.prDetailId || null,
+						mrIds: existing.mrIds || [],
+						qty: existing.qty,
+						unit: existing.unit,
+						unitName: existing.unitName,
+						baseQty: existing.qty,
+						refLink: existing.refLink || '',
+						creatorName: existing.creatorName || currentUserDisplay,
+						savedAt: existing.savedAt || formatNowDateTime()
+					}];
+				}
+
+                // กันเพิ่มซ้ำ ถ้า pr_detail_id นี้ถูกดึงมาแล้ว
+                var alreadyAdded = (existing.sources || []).some(function(s){
+                    return String(s.prDetailId) === String(src.pr_detail_id);
+                });
+                if (alreadyAdded) return;
+
+                existing.sources.push(sourceEntry);
+                existing.qty = (Number(existing.qty) || 0) + baseQty;
+                existing.total = (Number(existing.total) || 0) + (baseQty * price);
+                existing.price = existing.qty > 0 ? (existing.total / existing.qty) : 0;
+            } else {
+				var cartProductName = src.parent_product_name
+					? src.parent_product_name + ' > ' + (src.product_name || '')
+					: (src.product_name || '');
+
+                var item = {
+                    itemsType: mapDbItemsTypeToSelect(src.product_type),
+                    itemsTypeText: getCategoryIcon(src.product_type).name,
+                    productId: src.product_id,
+                    productName: cartProductName,
+                    qty: baseQty,
+                    unit: baseUnitId,
+                    unitName: baseUnitName,
+                    price: price,
+                    description: '',
+                    sources: [sourceEntry]
+                };
+                item.total = baseQty * price;
+                poDetailCart.push(item);
+            }
+        });
+
+        saveCartToSession();
+        renderPoDetailCart();
+
+        if (document.activeElement) {
+            document.activeElement.blur();
+        }
+
+        var modalEl = document.getElementById('modal_search_pr');
+        var modal = bootstrap.Modal.getInstance(modalEl);
+
+        if (modal) {
+            modal.hide();
+        }
+    });
 });
-
-
 
 </script>
 </html>

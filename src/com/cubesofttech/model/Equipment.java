@@ -125,7 +125,19 @@ public class Equipment implements Serializable {
      */
     @Column(name = "product_id")
     private String productId;
+    /**
+     * warehouse ระดับบนสุด (warehouse.parent = 0) ที่เครื่องนี้อยู่ - ระบุได้เฉพาะตอน status = Available
+     * FK ไป warehouse.warehouse_id (BIGINT) / null = ยังไม่ระบุ
+     */
+    @Column(name = "warehouse_id")
+    private Long warehouseId;
 
+	public Long getWarehouseId() {
+		return warehouseId;
+	}
+	public void setWarehouseId(Long warehouseId) {
+		this.warehouseId = warehouseId;
+	}
 	public String getProductId() {
 		return productId;
 	}

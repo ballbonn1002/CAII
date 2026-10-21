@@ -447,8 +447,8 @@ String targetURL = Constant.getWebContext2() + "/authorization?token=" + token;
 							</span>
 							<div class="menu-sub menu-sub-accordion">
 								<div class="menu-item">
-									<a class="menu-link" href="stock_cons_list"
-										data-route="stock_cons_list"> <span class="menu-icon">
+									<a class="menu-link" href="product_list"
+										data-route="product_list"> <span class="menu-icon">
 											<span class="bullet bullet-dot"></span>
 									</span> <span class="menu-title">Consumables</span>
 									</a>

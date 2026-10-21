@@ -2,7 +2,6 @@
 	pageEncoding="UTF-8"%>
 
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 
 <!DOCTYPE html>
@@ -19,9 +18,6 @@
 		rel="stylesheet"
 		type="text/css" />
 
-	<script
-		src="${pageContext.request.contextPath}/assets/plugins/global/plugins.bundle.js">
-	</script>
 
 	<!-- DataTables -->
 	<link
@@ -33,7 +29,6 @@
 
 	</script>
 
-	
 <!-- SweetAlert -->
 	<link
 		rel="stylesheet"
@@ -43,52 +38,93 @@
 		src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/1.1.3/sweetalert.min.js">
 	</script>
 	
-	<style>
-		#contact_table thead th {
-			font-weight: 600 !important;
-			text-transform: uppercase;
-			white-space: nowrap;
-			vertical-align: middle;
-		}
-
-		#contact_table thead th .dt-column-header {
-			display: inline-flex !important;
-			flex-direction: row !important;
-			align-items: center !important;
-		}
-
-		#contact_table thead th .dt-column-order {
-			margin: 0 !important;
-		}
-	</style>
 </head>
+
+<style>
+#contact_table thead th {
+	font-weight: 600 !important;
+	white-space: nowrap;
+	vertical-align: middle;
+}
+#contact_table tbody td {
+	vertical-align: middle;
+	padding-top: 20px;
+	padding-bottom: 20px;
+}
+#contact_table th:nth-child(1),
+#contact_table td:nth-child(1) {
+	width: 70px;
+	padding-left: 16px !important;
+}
+#contact_table th:nth-child(2) { width: 200px; }
+#contact_table th:nth-child(3) { width: 150px; padding-right: 50px !important; }
+#contact_table th:nth-child(5) { width: 300px; }
+#contact_table th:nth-child(6) { width: 100px; }
+#contact_table th:nth-child(7) { width: 120px; }
+#contact_table thead th .dt-column-header {
+	display: inline-flex !important;
+	flex-direction: row !important;
+	align-items: center !important;
+}
+#contact_table thead th .dt-column-order {
+	margin: 0 !important;
+}
+
+#contact_table th:nth-child(1),
+#contact_table td:nth-child(1) {
+	text-align: left !important;
+}
+
+.swal2-icon.swal2-success.swal2-icon-show .swal2-success-line-tip {
+	animation: swal2-animate-success-line-tip 0.75s;
+}
+.swal2-icon.swal2-success.swal2-icon-show .swal2-success-line-long {
+	animation: swal2-animate-success-line-long 0.75s;
+}
+.swal2-icon.swal2-success.swal2-icon-show .swal2-success-circular-line-right {
+	animation: swal2-rotate-success-circular-line 4.25s ease-in;
+}
+.swal2-icon.swal2-error.swal2-icon-show {
+	animation: swal2-animate-error-icon 0.5s;
+}
+.swal2-icon.swal2-error.swal2-icon-show .swal2-x-mark {
+	animation: swal2-animate-error-x-mark 0.5s;
+}
+
+</style>
 
 <body>
 
 	<!-- Main -->
-	<div class="app-main flex-column px-16">
+	<div class="app-container container-fluid">
 
 		<!-- Toolbar -->
-		<div class="page-title">
+				<div class="page-title position-relative mb-5" style="z-index: 5;">
 
 			<h1 class="page-heading text-gray-700 fw-semibold">
 				Contact
 			</h1>
 
-			<ul class="list-unstyled d-inline-flex gap-2 text-muted fs-7 fw-medium">
-
-				<li>Dashboard</li>
-				<li>-</li>
-				<li>Contact</li>
-
+						<ul class="breadcrumb breadcrumb-separatorless fw-semibold fs-7 my-0 pt-1">
+				<li class="breadcrumb-item text-muted">
+					<a href="${pageContext.request.contextPath}/check_in_out"
+						class="text-muted text-hover-primary">Home</a>
+				</li>
+				<li class="breadcrumb-item">
+					<span class="bullet bg-gray-500 w-5px h-2px"></span>
+				</li>
+				  <li class="breadcrumb-item text-muted">
+					<a class="text-muted ">Contact</a>
+				</li>
 			</ul>
 
 		</div>
+		
 
 		<!-- Search -->
-		<div class="card shadow-sm mb-8">
+		<div class="card shadow-sm mb-5">
 
-			<div class="card-body py-5">
+			<div class="card-body">
 
 				<div class="position-relative">
 
@@ -111,7 +147,7 @@
 		</div>
 
 		<!-- Contact title -->
-		<div class="d-flex justify-content-between align-items-center mb-5">
+		<div class="d-flex justify-content-between align-items-center mt-8 mb-6">
 
 			<h3 class="fw-semibold text-gray-900 mb-0">
 				Contact (<span id="contact_count">0</span>)
@@ -161,15 +197,15 @@
 		</div>
 
 		<!-- Contact content -->
-		<div class="card shadow-sm">
+				<div class="card shadow-sm" id="contactContentCard">
 
-			<div class="card-body">
-		     <div class="table-responsive">
+			<div class="card-body" id="contactContentBody">
+		     <div>
 
 				<!-- Grid View -->
 				<div
 					id="gridViewContainer"
-					class="row g-5 d-none">
+					class="row g-10 d-none">
 				</div>
 
 				<!-- Table View -->
@@ -179,9 +215,9 @@
 
 					<table
                         id="contact_table"
-                        class="table table-striped table-row-bordered table-row-gray-200 align-middle table-hover">
+                        class="table table-striped table-row-bordered table-row-gray-200 gy-5 align-middle table-hover">
 						<thead>
-										<tr class="text-muted text-uppercase text-gray-500">
+										<tr class="text-muted text-uppercase text-gray-500 fw-bold text-nowrap">
 											<th>#</th>
 											<th>company name</th>
 											<th>company </th>
@@ -201,10 +237,17 @@
 
 								<tr
 									class="contact-row"
-									data-id="${contact.company_contact_id}">
+									data-id="${contact.company_contact_id}"
+									data-company-id="${fn:escapeXml(contact.company_id)}"
+									data-company-code="${fn:escapeXml(contact.companyCode)}"
+									data-tax="${fn:escapeXml(contact.taxNumber)}"
+									data-company-active="${contact.companyActive}"
+									data-title="${fn:escapeXml(contact.title_name_en)}"
+									data-time-update="${contact.time_update}"
+									data-time-create="${contact.time_create}">
 
 									<!-- Number -->
-									<td class="text-center row-number">
+									<td class="row-number">
 										${status.count}
 									</td>
 
@@ -213,12 +256,29 @@
 
 										<div class="d-flex align-items-center gap-3">
 
-											<img
-												src="<c:choose>
-												<c:when test="${not empty contact.file_path}">${pageContext.request.contextPath}${contact.file_path}</c:when>
-												<c:otherwise>${pageContext.request.contextPath}/assets/media/avatars/blank.png</c:otherwise>
-	                                            </c:choose>"
-												class="rounded-circle" width="42" height="42" alt="Profile">
+											<c:choose>
+												<c:when test="${not empty contact.file_path}">
+													<img src="${pageContext.request.contextPath}${contact.file_path}"
+														class="rounded-circle flex-shrink-0" width="42" height="42"
+														style="object-fit:cover; object-position: center top;"
+														alt="Profile">
+												</c:when>
+												<c:otherwise>
+													<div class="symbol symbol-circle symbol-40px flex-shrink-0">
+														<span class="symbol-label bg-light-primary text-primary fw-bold fs-5">
+															<c:choose>
+																<c:when test="${not empty contact.contact_name}">
+																	${fn:toUpperCase(fn:substring(contact.contact_name, 0, 1))}
+																</c:when>
+																<c:when test="${not empty contact.contact_name_th}">
+																	${fn:substring(contact.contact_name_th, 0, 1)}
+																</c:when>
+																<c:otherwise>?</c:otherwise>
+															</c:choose>
+														</span>
+													</div>
+												</c:otherwise>
+											</c:choose>
 
 											<div class="min-w-0">
 
@@ -231,14 +291,14 @@
 														</c:when>
 
 														<c:otherwise>
-															<c:out value="${contact.contactNameTh}" />
+															<c:out value="${contact.contact_name_th}" />
 														</c:otherwise>
 
 													</c:choose>
 
 												</div>
 
-												<div class="text-muted fs-7 contact-position">
+												<div class="fw-medium text-gray-500 contact-position">
 													<c:out value="${contact.position}" />
 												</div>
 
@@ -255,20 +315,20 @@
 
 												<c:choose>
 													<c:when test="${not empty contact.company_logo_path}">
-														<div class="symbol symbol-35px symbol-circle">
-															<img src="${contact.company_logo_path}" alt="Company">
-														</div>
+														<div class="symbol symbol-35px flex-shrink-0">
+	                                                      <img src="${contact.company_logo_path}" alt="Company" style="object-fit: contain;">
+                                                        </div>
 													</c:when>
 													<c:otherwise>
-														<div class="symbol symbol-35px symbol-circle">
+														<div class="symbol symbol-35px flex-shrink-0">
 															<span
 																class="symbol-label bg-light-primary text-primary fw-bold fs-7">
 																<c:choose>
 																	<c:when test="${not empty contact.companyEn}">
                                                                        ${fn:toUpperCase(fn:substring(contact.companyEn, 0, 1))}
                                                                     </c:when>
-																	<c:when test="${not empty contact.companyId}">
-                                                                       ${fn:toUpperCase(fn:substring(contact.companyId, 0, 1))}
+																	<c:when test="${not empty contact.company_id}">
+                                                                       ${fn:toUpperCase(fn:substring(contact.company_id, 0, 1))}
                                                                     </c:when>
 																	<c:otherwise>?</c:otherwise>
 																</c:choose>
@@ -277,16 +337,16 @@
 													</c:otherwise>
 												</c:choose>
 
-												<span class="text-gray-700 contact-company">
+												<span class="fw-medium text-gray-700 contact-company">
 
 												<c:choose>
 
-													<c:when test="${not empty contact.company_en}">
-														<c:out value="${contact.company_en}" />
+													<c:when test="${not empty contact.companyEn}">
+														<c:out value="${contact.companyEn}" />
 													</c:when>
 
 													<c:otherwise>
-														<c:out value="${contact.companyId}" />
+														<c:out value="${contact.company_id}" />
 													</c:otherwise>
 
 												</c:choose>
@@ -300,13 +360,13 @@
 									<!-- Address -->
 									<td>
 
-										<div class="d-flex align-items-center mb- ">
+										<div class="d-flex align-items-center mb-3 ">
 
 											<i
-												class="ki-duotone ki-map fs-2x text-gray-400 me-4 mt-1">
-
+												class="ki-duotone ki-map me-2 fs-1 text-gray-500 me-4 mt-1">
 												<span class="path1"></span>
 												<span class="path2"></span>
+												<span class="path3"></span>
 
 											</i>
 
@@ -314,13 +374,11 @@
 
 												<c:choose>
 
-													<c:when test="${not empty contact.address_location}">
-													<c:out value="${contact.address_location}" />
+													<c:when test="${not empty contact.address_name}">
+													<c:out value="${contact.address_name}" />
 												</c:when>
 													
-													<c:when test="${not empty contact.location_name}">
-													<c:out value="${contact.location_name}" />
-												</c:when>
+													 
 
 													<c:otherwise>
 														-
@@ -332,21 +390,19 @@
 
 										</div>
 
-										<div class="text-muted fs-7 lh-lg contact-address">
+										<div class="fw-medium text-gray-500 contact-address">
 
 											<c:choose>
 
-												<c:when test="${not empty contact.address_location}">
-													<c:out value="${contact.address_location}" />
-												</c:when>
+												<c:when test="${not empty contact.companyAddress}">
+                                                <c:out value="${contact.companyAddress}" />
+                                            </c:when>
 												
 												
-												<c:when test="${not empty contact.location_name}">
-													<c:out value="${contact.location_name}" />
-												</c:when>
+												
 
 												<c:otherwise>
-											
+											          -
 												</c:otherwise>
 
 											</c:choose>
@@ -360,7 +416,7 @@
 
 										<div class="d-flex align-items-center mb-3">
 
-											<i class="ki-duotone ki-phone fs-3 text-gray-400 me-3">
+											<i class="ki-duotone ki-phone fs-3 text-gray-500 me-3">
 
 												<span class="path1"></span>
 												<span class="path2"></span>
@@ -387,7 +443,7 @@
 
 										<div class="d-flex align-items-center mb-3">
 
-											<i class="ki-duotone ki-sms fs-3 text-gray-400 me-3">
+											<i class="ki-duotone ki-sms fs-3 text-gray-500 me-3">
 
 												<span class="path1"></span>
 												<span class="path2"></span>
@@ -418,14 +474,18 @@
 
 									<!-- Active -->
 									<td class="text-center">
-
-										<input
+									
+									
+                                        <div class="form-check form-check-custom form-check-solid justify-content-center">
+										<input										
 											type="checkbox"
 											class="form-check-input js-isactive-input contact-active"
 											data-id="${contact.company_contact_id}"
 											<c:if test="${contact.is_active eq '1'}">
 												checked
 											</c:if>>
+											
+											</div>
 
 									</td>
 
@@ -436,10 +496,8 @@
 
 											<button type="button"
 												class="btn btn-icon btn-light-primary btn-sm edit-contact"
-												data-id="${contact.company_contact_id}"
-												<c:if test="${contact.is_active eq 'Y'}">   
-                                                     checked
-                                                </c:if>>
+												data-id="${contact.company_contact_id}">
+												
 
 												<i class="ki-duotone ki-pencil fs-3"> <span
 													class="path1"></span> <span class="path2"></span>
@@ -520,26 +578,33 @@
 
 	</div>
 
+</div>
+
 	<script type="text/javascript">
 
-		$(document).ready(function () {
-			const table = $('#contact_table').DataTable({
-				dom: "rt",
-				paging: false, 
-				ordering: true,
-				searching: true,
-				autoWidth: false,
-				columnDefs: [
-					{ orderable: false, targets: [5,6] },
-					{ orderable: true, targets: [0, 1, 2, 3 ,4 ,5] }
-				],
-				order: []
-			});
+	$(document).ready(function () {
+	    const table = $('#contact_table').DataTable({
+	        dom: "rt",
+	        paging: false,
+	        ordering: true,
+	        searching: true,
+	        autoWidth: true,
+	        columnDefs: [
+	            { orderable: false, targets: [5,6] },
+	            { orderable: true, targets: [0, 1, 2, 3 ,4 ,5] }
+	        ],
+	        order: [],
+	        headerCallback: function (thead) {
+	            $(thead).find('.dt-column-header').addClass('d-inline-flex align-items-center');
+	            $(thead).find('.dt-column-order').addClass('m-0');
+	        }
 
-			let rowsPerPage = Number($("#page_size").val()) || 25;
-			let currentPage = 1;
-			let searchKeyword = "";
-			let isGridView = false;
+	    });
+
+	    let currentPage = 1;      
+	    let rowsPerPage = Number($("#page_size").val()) || 25;
+	    let searchKeyword = "";
+	    let isGridView = false;
 
 			/*
 			 * ป้องกัน HTML ที่อ่านมาจาก Table
@@ -600,228 +665,131 @@
 				});
 
 			}
-
 			/*
-			 * สร้าง Grid Card จากข้อมูลใน Table
+			 * Grid View: 1 การ์ดต่อ 1 คน (Contact)
 			 */
-			function buildGridCards() {
+			function formatThaiDate(dateStr) {
+				if (!dateStr) return "-";
+				const datePart = String(dateStr).substring(0, 10); // YYYY-MM-DD
+				const parts = datePart.split("-");
+				if (parts.length !== 3) return "-";
+				const thaiMonths = ["ม.ค.", "ก.พ.", "มี.ค.", "เม.ย.", "พ.ค.", "มิ.ย.",
+				                     "ก.ค.", "ส.ค.", "ก.ย.", "ต.ค.", "พ.ย.", "ธ.ค."];
+				const year  = parts[0];
+				const month = parseInt(parts[1], 10);
+				const day   = parts[2];
+				if (!year || !month || !day || month < 1 || month > 12) return "-";
+				return day + " " + thaiMonths[month - 1] + " " + year;
+			}
+
+			function buildGridCards($rows) {
 
 				const $gridContainer = $("#gridViewContainer");
 
+				$rows = $rows || getFilteredRows();
 				$gridContainer.empty();
 
-				$(".contact-row").each(function () {
+				$rows.each(function () {
 
 					const $row = $(this);
+					const $cells = $row.children("td");
 
-					const id = String(
-						$row.attr("data-id") || ""
-					);
+					const id = String($row.attr("data-id") || "");
 
-					const contactName = $row
-						.find(".contact-name")
-						.text()
-						.trim();
+					const title    = $row.attr("data-title") || "";
+					const name     = $row.find(".contact-name").text().trim() || "-";
+					const fullName = (title ? title + " " : "") + name;
 
-					const position = $row
-						.find(".contact-position")
-						.text()
-						.trim();
+					const position = $row.find(".contact-position").text().trim();
+					const company  = $row.find(".contact-company").text().trim() || "-";
 
-					const company = $row
-						.find(".contact-company")
-						.text()
-						.trim();
+					const phone = $row.find(".contact-phone").text().trim() || "-";
+					const email = $row.find(".contact-email").text().trim() || "-";
 
-					const branch = $row
-						.find(".contact-branch")
-						.text()
-						.trim();
+					const branch  = $row.find(".contact-branch").text().trim();
+					const address = $row.find(".contact-address").text().trim();
 
-					const address = $row
-						.find(".contact-address")
-						.text()
-						.trim();
+					const $photo  = $cells.eq(1).find("img").first();
+					const photo   = $photo.length ? ($photo.attr("src") || "") : "";
+					const initial = $cells.eq(1).find(".symbol-label").first().text().trim()
+					                || (name.charAt(0) || "?").toUpperCase();
 
-					const phone = $row
-						.find(".contact-phone")
-						.text()
-						.trim();
+					const lastUpdate = $row.attr("data-time-update") || $row.attr("data-time-create") || "";
 
-					const email = $row
-						.find(".contact-email")
-						.text()
-						.trim();
+					const avatarHtml = photo
+						? '<img src="' + escapeHtml(photo) + '" style="object-fit: cover; object-position: center top;">'
+						: '<div class="symbol-label fs-4 fw-bold bg-light-primary text-primary">' + escapeHtml(initial) + '</div>';
 
-					const $companyLogoImg = $row
-				    .children("td")
-				    .eq(2)
-				    .find("img");
-
-				const companyLogo = $companyLogoImg.length
-				    ? ($companyLogoImg.attr("src") || "")
-				    : "";
-
-				const companyInitial = (
-				    (company || "?").trim().charAt(0) || "?"
-				).toUpperCase();
-
-				const companyLogoHtml = companyLogo
-				    ? (
-				        '<img ' +
-				            'src="' + escapeHtml(companyLogo) + '" ' +
-				            'class="rounded border border-gray-300 p-1" ' +
-				            'alt="' + escapeHtml(company) + '">'
-				    )
-				    : (
-				        '<span class="symbol-label bg-light-primary text-primary fw-bold fs-3">' +
-				            escapeHtml(companyInitial) +
-				        '</span>'
-				    );
-
-				const isActive = $row
-				    .find(".contact-active")
-				    .is(":checked");
+					let addressHtml;
+					if (branch && branch !== "-") {
+						addressHtml =
+							'<div class="d-flex gap-2">' +
+								'<i class="ki-duotone ki-map fs-2 mt-1 flex-shrink-0"><span class="path1"></span><span class="path2"></span><span class="path3"></span></i>' +
+								'<div>' +
+									'<div class="fw-medium text-gray-700">' + escapeHtml(branch) + '</div>' +
+									'<div class="text-gray-500 fs-7" style="overflow-wrap:anywhere;">' + escapeHtml(address || "-") + '</div>' +
+								'</div>' +
+							'</div>';
+					} else {
+						addressHtml =
+							'<div class="d-flex gap-2 align-items-center">' +
+								'<i class="ki-duotone ki-map fs-2  flex-shrink-0"><span class="path1"></span><span class="path2"></span><span class="path3"></span></i>' +
+								'<span class="text-gray-700">-</span>' +
+							'</div>';
+					}
 
 					const cardHtml =
-						'<div class="col-12 col-md-6 col-xl-4 contact-grid-item d-none" ' +
-						'data-id="' + escapeHtml(id) + '">' +
+						'<div class="col-md-6 col-xl-4 contact-grid-item" data-id="' + escapeHtml(id) + '">' +
+						'<div class="card shadow-sm border border-gray-200 h-100">' +
 
-							'<div class="card h-100 shadow-sm overflow-hidden">' +
+							'<div class="card-body px-6 pt-6 pb-0">' +
 
-								'<div class="card-body p-7">' +
-
-									'<div class="d-flex align-items-start gap-4 mb-7">' +
-
-									'<div class="symbol symbol-50px flex-shrink-0">' +
-
-								    companyLogoHtml +
-
+								'<div class="d-flex align-items-start mb-5">' +
+									'<div class="symbol symbol-50px symbol-circle me-4 flex-shrink-0">' + avatarHtml + '</div>' +
+									'<div class="d-flex flex-column">' +
+										'<span class="fs-6 fw-bold text-gray-900">' + escapeHtml(fullName) + '</span>' +
+										'<span class="fs-7 text-muted">' + escapeHtml(position || "-") + '</span>' +
+									'</div>' +
 								'</div>' +
 
-										'<div class="flex-grow-1 min-w-0 pt-1">' +
+								'<div class="d-flex flex-column gap-4 pb-6">' +
 
-											'<div class="fw-semibold text-gray-900 fs-4 text-truncate">' +
-												escapeHtml(company || contactName || "-") +
-											'</div>' +
+									'<div class="fw-bold text-gray-800">' + escapeHtml(company) + '</div>' +
 
-											'<div class="text-muted fs-7 mt-2 text-truncate">' +
-												escapeHtml(position || "-") +
-											'</div>' +
-
-										'</div>' +
-
+									'<div class="d-flex align-items-center gap-2">' +
+										'<i class="ki-duotone ki-phone fs-3 "><span class="path1"></span><span class="path2"></span></i>' +
+										'<span class="text-gray-700">' + escapeHtml(phone) + '</span>' +
 									'</div>' +
 
-									'<div class="d-flex align-items-center mb-5">' +
-
-										'<i class="ki-outline ki-credit-cart fs-3 text-gray-500 me-4"></i>' +
-
-										'<span class="text-gray-800 fs-6">' +
-											escapeHtml(phone || "-") +
-										'</span>' +
-
+									'<div class="d-flex align-items-center gap-2">' +
+										'<i class="ki-duotone ki-sms fs-3 "><span class="path1"></span><span class="path2"></span></i>' +
+										'<span class="text-gray-700" style="overflow-wrap:anywhere;">' + escapeHtml(email) + '</span>' +
 									'</div>' +
 
-									'<div class="d-flex align-items-start">' +
-
-										'<i class="ki-outline ki-geolocation fs-3 text-gray-500 me-4 mt-1"></i>' +
-
-										'<div class="min-w-0 flex-grow-1">' +
-
-											'<div class="text-gray-800 fs-6 mb-4">' +
-												escapeHtml(branch || "-") +
-											'</div>' +
-
-											'<div class="text-gray-700 fs-7 lh-lg text-wrap">' +
-												escapeHtml(address || "-") +
-											'</div>' +
-
-										'</div>' +
-
-									'</div>' +
-
-								'</div>' +
-
-								'<div class="separator"></div>' +
-
-								'<div class="card-footer px-7 py-5">' +
-
-									'<div class="d-flex justify-content-between align-items-center">' +
-
-										'<div class="form-check form-check-custom form-check-solid">' +
-
-											'<input ' +
-												'type="checkbox" ' +
-												'class="form-check-input grid-contact-active" ' +
-												'data-id="' + escapeHtml(id) + '" ' +
-												(isActive ? "checked" : "") +
-											'>' +
-
-											'<label class="form-check-label text-gray-800 fs-6">' +
-												'Is Active' +
-											'</label>' +
-
-										'</div>' +
-
-										'<div class="d-flex align-items-center gap-2">' +
-
-											'<button ' +
-												'type="button" ' +
-												'class="btn btn-icon btn-sm btn-light-primary favorite-contact" ' +
-												'data-id="' + escapeHtml(id) + '" ' +
-												'title="Favorite">' +
-
-												'<i class="ki-outline ki-star fs-5"></i>' +
-
-											'</button>' +
-
-											'<button ' +
-												'type="button" ' +
-												'class="btn btn-icon btn-sm btn-light-primary view-contact" ' +
-												'data-id="' + escapeHtml(id) + '" ' +
-												'title="View">' +
-
-												'<i class="ki-outline ki-message-text-2 fs-5"></i>' +
-
-											'</button>' +
-
-											'<button ' +
-												'type="button" ' +
-												'class="btn btn-icon btn-sm btn-light-primary edit-contact" ' +
-												'data-id="' + escapeHtml(id) + '" ' +
-												'title="Edit">' +
-
-												'<i class="ki-outline ki-notepad-edit fs-5"></i>' +
-
-											'</button>' +
-
-											'<button ' +
-												'type="button" ' +
-												'class="btn btn-icon btn-sm btn-light-danger delete-contact" ' +
-												'data-id="' + escapeHtml(id) + '" ' +
-												'title="Delete">' +
-
-												'<i class="ki-outline ki-trash fs-5"></i>' +
-
-											'</button>' +
-
-										'</div>' +
-
-									'</div>' +
+									addressHtml +
 
 								'</div>' +
 
 							'</div>' +
 
+							'<div class="card-footer px-6 d-flex justify-content-between align-items-center py-4">' +
+								'<span class="text-muted fs-7">Last update: ' + formatThaiDate(lastUpdate) + '</span>' +
+								'<div class="d-flex gap-2">' +
+									'<button type="button" class="btn btn-icon btn-sm btn-light-primary edit-contact" data-id="' + escapeHtml(id) + '">' +
+										'<i class="ki-duotone ki-pencil fs-4"><span class="path1"></span><span class="path2"></span></i>' +
+									'</button>' +
+									'<button type="button" class="btn btn-icon btn-sm btn-light-danger delete-contact" data-id="' + escapeHtml(id) + '">' +
+										'<i class="ki-duotone ki-trash fs-4"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span><span class="path5"></span></i>' +
+									'</button>' +
+								'</div>' +
+							'</div>' +
+
+						'</div>' +
 						'</div>';
 
 					$gridContainer.append(cardHtml);
-
 				});
-
 			}
-
 			/*
 			 * แสดงข้อมูลตามหน้าปัจจุบัน
 			 */
@@ -852,33 +820,27 @@
 				$(".contact-grid-item").addClass("d-none");
 
 				const $rowsOnCurrentPage = $filteredRows.slice(
-					startIndex,
-					endIndex
-				);
+						startIndex,
+						endIndex
+					);
 
-				if (!isGridView) {
+					if (!isGridView) {
 
-					 $rowsOnCurrentPage.each(function () {
-					        $(this).show();
-					    });
+						$rowsOnCurrentPage.each(function () {
+							$(this).show();
+						});
+						renderPagination(totalPages);
 
-				} else {
+					} else {
 
-				    $rowsOnCurrentPage.each(function () {
+						// Grid: 1 การ์ดต่อ 1 บริษัท แสดงทุกคนที่ค้นเจอ
+						buildGridCards($filteredRows);
+						renderPagination(1);
 
-				        const id = String(
-				            $(this).attr("data-id") || ""
-				        );
+					}
 
-				        $("#gridViewContainer")
-				            .find(
-				                '.contact-grid-item[data-id="' + id + '"]'
-				            )
-				            .removeClass("d-none");
-
-				    });
-
-				}
+					updateRowNumber($filteredRows);
+					updateContactCount(totalRows);
 
 				updateRowNumber($filteredRows);
 				updateContactCount(totalRows);
@@ -1065,11 +1027,12 @@
 				isGridView = true;
 				currentPage = 1;
 
-				buildGridCards();
-
 				$("#tableViewContainer").addClass("d-none");
-
 				$("#gridViewContainer").removeClass("d-none");
+
+				// การ์ดลอยบนพื้นหลัง ไม่อยู่ในกล่องขาว
+				$("#contactContentCard").addClass("bg-transparent shadow-none border-0");
+				$("#contactContentBody").addClass("p-0");
 
 				$("#btnGridView")
 					.addClass("active btn-primary")
@@ -1092,8 +1055,11 @@
 				currentPage = 1;
 
 				$("#gridViewContainer").addClass("d-none");
-
 				$("#tableViewContainer").removeClass("d-none");
+
+				// กลับมาเป็นกล่องขาวครอบตาราง
+				$("#contactContentCard").removeClass("bg-transparent shadow-none border-0");
+				$("#contactContentBody").removeClass("p-0");
 
 				$("#btnTableView")
 					.addClass("active btn-primary")
@@ -1106,7 +1072,6 @@
 				showPage(1);
 
 			});
-
 			/*
 			 * Pagination
 			 */
@@ -1245,36 +1210,67 @@
 						return;
 					}
 
-					swal(
-						{
-							title: "ยืนยันการลบ",
-							text: "คุณต้องการลบ Contact นี้หรือไม่",
-							type: "warning",
-							showCancelButton: true,
-							confirmButtonText: "ใช่",
-							cancelButtonText: "ไม่ใช่",
-							closeOnConfirm: false
+					Swal.fire({
+						icon: "warning",
+						title: "Are you sure?",
+						text: "Are you sure you want to delete this contact?",
+						showCancelButton: true,
+						confirmButtonText: "Yes, delete it!",
+						cancelButtonText: "Cancel",
+						buttonsStyling: false,
+						customClass: {
+							confirmButton: "btn btn btn-primary px-3",
+							cancelButton: "btn btn btn-danger px-3"
 						},
-						function (isConfirm) {
+						focusConfirm: false,
+						focusCancel: false,
+						reverseButtons: false
+					}).then(function (result) {
 
-							if (!isConfirm) {
-								return;
+						if (!result.isConfirmed) {
+							return;
+						}
+
+						$.ajax({
+
+							url: "${pageContext.request.contextPath}/contact_delete.action",
+							type: "POST",
+							data: { companyContactId: id },
+
+							beforeSend: function () {
+								Swal.fire({
+									title: "Deleting...",
+									text: "Please wait",
+									allowOutsideClick: false,
+									allowEscapeKey: false,
+									showConfirmButton: false,
+									didOpen: function () {
+										Swal.showLoading();
+									}
+								});
+							},
+
+							success: function () {
+								Swal.fire({
+									icon: "success",
+									title: "Deleted",
+									text: "Contact deleted successfully"
+								}).then(function () {
+									location.reload();
+								});
+							},
+
+							error: function () {
+								Swal.fire({
+									icon: "error",
+									title: "Error",
+									text: "Cannot delete contact"
+								});
 							}
 
-							 $.ajax({
-				                    url: "${pageContext.request.contextPath}/contact_delete.action",
-				                    type: "POST",
-				                    data: { companyContactId: id },
-				                    success: function () {
-				                        location.reload();
-				                    },
-				                    error: function () {
-				                        swal("เกิดข้อผิดพลาด", "ไม่สามารถลบ Contact ได้", "error");
-				                    }
-				                });
+						});
 
-				            }
-				        );
+					});
 
 				    }
 				);
@@ -1385,6 +1381,63 @@
 
 				}
 			);
+			
+			/*
+			 * การ์ด: เปิด/ปิด Is Active ของบริษัท (ใช้ action เดียวกับหน้า Company)
+			 */
+			$(document).on("change", ".grid-company-active", function () {
+				const $cb = $(this);
+				const companyId = String($cb.attr("data-company-id") || "");
+				const prev = !$cb.is(":checked");
+
+				$.ajax({
+					url: "${pageContext.request.contextPath}/update_company_status",
+					type: "POST",
+					dataType: "json",
+					data: { companyId: companyId }
+				}).done(function (res) {
+					if (res && res.success) {
+						const on = (res.isActive === "1" || res.isActive === 1);
+						$('.contact-row[data-company-id="' + companyId + '"]').attr("data-company-active", on ? "1" : "0");
+						$cb.prop("checked", on);
+						if (window.toastr) { toastr.success(on ? "เปิดใช้งานบริษัท" : "ปิดใช้งานบริษัท"); }
+					} else {
+						$cb.prop("checked", prev);
+						swal("Error", (res && res.message) || "ไม่สามารถอัปเดตสถานะบริษัทได้", "error");
+					}
+				}).fail(function () {
+					$cb.prop("checked", prev);
+					swal("Error", "ไม่สามารถอัปเดตสถานะบริษัทได้", "error");
+				});
+			});
+
+			/*
+			 * การ์ด: ลบบริษัท (ใช้ action เดียวกับหน้า Company)
+			 */
+			$(document).on("click", ".grid-company-delete", function () {
+				const companyId = String($(this).attr("data-company-id") || "");
+
+				swal({
+					title: "ยืนยันการลบบริษัท",
+					text: "ต้องการลบบริษัทนี้หรือไม่",
+					type: "warning",
+					showCancelButton: true,
+					confirmButtonText: "ใช่",
+					cancelButtonText: "ไม่ใช่",
+					closeOnConfirm: false
+				}, function (isConfirm) {
+					if (!isConfirm) { return; }
+					$.ajax({
+						url: "${pageContext.request.contextPath}/delete_company?companyId=" + encodeURIComponent(companyId),
+						type: "POST"
+					}).done(function () {
+						swal({ title: "สำเร็จ", text: "ลบบริษัทเรียบร้อยแล้ว", type: "success" },
+							function () { location.reload(); });
+					}).fail(function () {
+						swal("เกิดข้อผิดพลาด", "ไม่สามารถลบบริษัทได้", "error");
+					});
+				});
+			});
 
 			/*
 			 * Favorite

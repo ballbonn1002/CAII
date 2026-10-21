@@ -11,6 +11,12 @@
 <!DOCTYPE html>
 <html>
 	<c:set var="now" value="<%=new java.util.Date()%>" />
+	<%-- Hide leave type 6 (ลาพักร้อนที่เหลือ) after 31-12-2026 --%>
+	<fmt:formatDate value="${now}" pattern="yyyyMMdd" var="today_ymd" />
+	<c:set var="hideLeave6" value="${today_ymd > '20261231'}" />
+	<%-- Server month 1-12 : show checkbox ลาปีหน้า only in Nov, Dec --%>
+	<fmt:formatDate value="${now}" pattern="M" var="serverMonth" />
+	<c:set var="showNextYearLeave" value="${serverMonth == 11 || serverMonth == 12}" />
 	<fmt:formatDate type="date" value="${now}" pattern="dd-MM-yyyy" var="date_now" />
 	<fmt:formatDate type="date" value="${now}" pattern="dd-MM-yyyy" var="lastday" />
 	<head>
@@ -127,6 +133,7 @@
 											</div>
 
 											<!-- ลาพักร้อนที่เหลือ -->
+											<c:if test="${!hideLeave6}">
 											<div class="col-6 col-md-4 col-xl-3">
 												<div class="d-flex align-items-center">
 													<div class="symbol symbol-50px me-4">
@@ -154,6 +161,7 @@
 													</div>
 												</div>
 											</div>
+											</c:if>
 
 											<!-- ลาป่วย -->
 											<div class="col-6 col-md-4 col-xl-3">
@@ -315,6 +323,8 @@
 											</div>
 
 											<!-- Next Year Leave-->
+											<%-- render only month nov or dec (server time) --%>
+											<c:if test="${showNextYearLeave}">
 											<div class="mb-10" id="nextYearLeaveContainer">
 												<div class="form-check form-check-custom form-check-solid">
 													<input class="form-check-input me-3" type="checkbox" id="nextYearLeave" name="nextYearLeave" value="1" />
@@ -323,6 +333,7 @@
 													</label>
 												</div>
 											</div>
+											</c:if>
 											<!-- Next Year Leave-->
 
 
@@ -672,6 +683,7 @@ $(function () {
 	leaveTypes = JSON.parse('${leaveType}');
 	let leaveCheck = [${leave1Check},${leave2Check},${leave3Check},'','',${leave6Check}];
 	for (let i = 0; i < leaveTypes.length; i++) {
+		if (${hideLeave6} && leaveTypes[i].id == '6') continue; // hide after 31-12-2026
 		if (leaveTypes[i].id == '1' || leaveTypes[i].id == '2' || leaveTypes[i].id == '3' || leaveTypes[i].id == '6') {
 			if (leaveTypes[i].id == '6') {
 				if (leaveCheck[i] == '1') {
@@ -1113,23 +1125,8 @@ $(() => {
 
 
 	// begin checkbox ลาปีหน้า ==============================================================
-	// display hide checkbox ลาปีหน้า
-	//debugger;
-	const currentMonth = new Date().getMonth(); // JavaScript: 0 = ม.ค. ถึง 11 = ธ.ค.
-	//const currentMonth = 0 //for test display "ลาพักร้อนที่เหลือจากปีก่อน"
-	//const currentMonth = 1 //for test hide "ลาพักร้อนที่เหลือจากปีก่อน"
-
-	const $nextYearCheckboxContainer = $('#nextYearLeaveContainer');
-
-	// display only month nov or dec : nov=10,dec=11
-	if (currentMonth === 10 || currentMonth === 11) {
-		$nextYearCheckboxContainer.show();
-	} else {
-		$nextYearCheckboxContainer.hide();
-		// if hide checkbox = false
-		$('#nextYearLeave').prop('checked', false); // if nextYearLeave = hide : uncheck nextYearLeave
-	}
-	// display hide checkbox ลาปีหน้า
+	// display hide checkbox ลาปีหน้า : rendered by server (showNextYearLeave) only month nov or dec
+	const serverMonth = ${serverMonth}; // server month : 1 = ม.ค. ถึง 12 = ธ.ค.
 
 	function updateDatePickerRange(isNextYear) {
 		var currentYear = new Date().getFullYear();
@@ -1185,9 +1182,9 @@ $(() => {
 
 	//updateDatePickerRange(false);
 
-	$('#nextYearLeave').on('change', function () {
+	function nextYearLeaveOnChange() {
 		//debugger;
-		var isNextYear = $(this).is(':checked');
+		var isNextYear = $('#nextYearLeave').is(':checked'); // checkbox not rendered = false
 		updateDatePickerRange(isNextYear);
 		const leave6Container = $('#label_lt_6');
 
@@ -1214,10 +1211,7 @@ $(() => {
 
 			// if nextYearLeave = false : control visibility by month logic
 			if (leave6Container.length) {
-				const currentMonth = new Date().getMonth();
-				//const currentMonth = 0 //for test display "ลาพักร้อนที่เหลือจากปีก่อน"
-				//const currentMonth = 1 //for test hide "ลาพักร้อนที่เหลือจากปีก่อน"
-				if (currentMonth > 2) {
+				if (serverMonth > 3) { // after มี.ค.
 					leave6Container.hide();
 					$('#lt_6').prop('checked', false);
 					//console.log("Leave ID 6: HIDE (Reverted to month check > 2)");
@@ -1228,9 +1222,10 @@ $(() => {
 			}
 		}
 
-	});
+	}
 
-	$('#nextYearLeave').trigger('change');
+	$('#nextYearLeave').on('change', nextYearLeaveOnChange);
+	nextYearLeaveOnChange(); // run on load even if checkbox not rendered
 	// end checkbox ลาปีหน้า ==============================================================
 
 	// แจ้งเตือนตอนเปิดหน้า (informational) — เฉพาะ Add หรือ Edit ที่ยังรออนุมัติ (status '0')

@@ -6,6 +6,10 @@
 <fmt:setLocale value="en_US" />
 <fmt:setTimeZone value="Asia/Bangkok" />
 
+<%-- =====================================================================
+     OLD: desktop My Leave list (disabled, kept for reference)
+     ===================================================================== --%>
+<%--
 <!--begin::Main-->
 <div class="app-main flex-column flex-row-fluid">
 	<div class="d-flex flex-column flex-column-fluid">
@@ -102,6 +106,7 @@
 							<div class="card-body">
 								<div class="row g-5">
 									<!-- ลาพักร้อน -->
+								--%>
 								<%-- 	<div class="col-6 col-xs-4 col-sm-4 col-md-4 col-xl-3">
 										<div class="d-flex align-items-center">
 											<div class="symbol symbol-50px me-4">
@@ -126,6 +131,7 @@
 											</div>	
 										</div>
 									</div>	 --%>
+<%--
 
 									<!-- ลาพักร้อน + ลากิจ -->
 									<div class="col-6 col-xs-4 col-sm-4 col-md-4 col-xl-3">
@@ -594,100 +600,356 @@
 	</div>
 </div>
 <!--end:::Main-->
+--%>
+<!-- ===== END: old desktop-clone content (commented out) ===== -->
 
+<%-- =====================================================================
+     NEW: LINE LIFF
+     ===================================================================== --%>
+<style>
+.liff-shell {
+	padding-bottom: 80px; /* เว้นที่ให้ปุ่ม + */
+}
+.liff-sort-btn { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 600; color: var(--bs-gray-700); border: 1px solid var(--bs-gray-300); border-radius: 8px; padding: 6px 12px; background-color: var(--bs-gray-100); }
+.liff-sort-btn:hover, .liff-sort-btn:focus { border-color: var(--bs-primary); }
+.liff-sort-btn .spinner-border { width: 12px; height: 12px; border-width: 2px; }
+#yearFilterBtn { font-size: 13px; font-weight: 600; color: var(--bs-gray-700); border: 1px solid var(--bs-gray-300); border-radius: 8px; padding: 6px 16px; background-color: var(--bs-gray-100); }
+#yearFilterBtn:hover, #yearFilterBtn:focus, #yearFilterBtn:active { background-color: var(--bs-gray-100); border-color: var(--bs-primary); box-shadow: none; }
+#yearFilterBtn::after { vertical-align: 1px; }
+.dropdown-menu[aria-labelledby="yearFilterBtn"] { min-width: 92px; border-radius: 10px; border: 1px solid var(--bs-gray-300); box-shadow: 0 4px 20px rgba(0,0,0,.08); padding: 6px; max-height: 260px; overflow-y: auto; }
+.dropdown-menu[aria-labelledby="yearFilterBtn"] .dropdown-item { font-size: 13px; font-weight: 500; border-radius: 6px; padding: 8px 12px; }
+.dropdown-menu[aria-labelledby="yearFilterBtn"] .dropdown-item.active, .dropdown-menu[aria-labelledby="yearFilterBtn"] .dropdown-item:active { background-color: var(--bs-primary); color: #fff; }
+.card-header .bg-info-subtle:hover { background-color: var(--bs-info) !important; }
+.card-header .bg-info-subtle:hover i { color: var(--bs-info-inverse) !important; }
+.card-header .bg-primary-subtle:hover { background-color: var(--bs-primary) !important; }
+.card-header .bg-primary-subtle:hover i { color: var(--bs-primary-inverse) !important; }
+.card-header .bg-danger-subtle:hover { background-color: var(--bs-danger) !important; }
+.card-header .bg-danger-subtle:hover i { color: var(--bs-danger-inverse) !important; }
+.leave-summary-pager { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+.leave-summary-pager::-webkit-scrollbar { display: none; }
+.leave-summary-page { flex: 0 0 100%; scroll-snap-align: start; min-width: 0; }
+.leave-summary-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; }
+.leave-summary-item { display: flex; align-items: center; gap: 15px; min-width: 0; overflow: hidden; padding-right: 13px; }
+.leave-summary-item .d-flex.flex-column { min-width: 0; overflow: hidden; gap: 4px; }
+.leave-summary-item .text-gray-600 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.leave-summary-dots { display: flex; justify-content: center; gap: 6px; margin-top: 19.5px; }
+.leave-summary-dots span { width: 6px; height: 6px; border-radius: 50%; background: var(--bs-gray-300); transition: background .2s; }
+.leave-summary-dots span.active { background: var(--bs-primary); }
+.card.card-bordered.liff-leave-card { box-shadow: var(--bs-root-card-box-shadow); }
+.liff-fab {
+	position: fixed;
+	right: max(16px, calc((100vw - 393px) / 2 + 16px)); /* ชิดขวา .liff-shell */
+	bottom: calc(90px + 16px + env(safe-area-inset-bottom)); /* ลอยเหนือ .liff-nav */
+	width: 56px; height: 56px;
+	border-radius: 16px;
+	background: var(--bs-success);
+	display: flex; align-items: center; justify-content: center;
+	box-shadow: 0 4px 16px rgba(0,0,0,.2);
+	z-index: 100;
+}
+</style>
 
-<script>
-	/* $("#kt_daterangepicker").daterangepicker({
-		startDate : moment().startOf("year"),
-		endDate : moment().endOf("year"),
-		locale : {
-			format : "DD MMM YYYY"
-		}
-	}); */
+<div class="liff-shell">
 
-	$(document).ready(function () {
-		// กำหนดค่าเริ่มต้น
-		/* var start = moment("2025-01-01", "YYYY-MM-DD");
-		var end = moment("2025-12-31", "YYYY-MM-DD"); */
-		var start = moment("<fmt:formatDate value='${startdate}' pattern='dd-MM-yyyy'/>", "DD-MM-YYYY");
-		var end = moment("<fmt:formatDate value='${enddate}' pattern='dd-MM-yyyy'/>", "DD-MM-YYYY");
+	<div id="liffLoadingOverlay" class="liff-loading-overlay liff-loading-delayed">
+		<div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading...</span></div>
+	</div>
 
-		// สร้าง Date Range Picker
-		/* $("#kt_daterangepicker").daterangepicker({
-			startDate: start,
-			endDate: end,
-			locale: {
-				format: "DD MMM YYYY"
-			}
-		}, function (start, end) {
-			// อัปเดต hidden input ทุกครั้งที่เลือกช่วงวันใหม่
-			$("#startdate").val(start.format("DD-MM-YYYY"));
-			$("#enddate").val(end.format("DD-MM-YYYY"));
+	<c:set var="currentYearInt"><%= java.time.Year.now().getValue() %></c:set>
+	<c:set var="startYearInt" value="${currentYearInt - 1}" />
+	<fmt:formatDate value="${startdate}" pattern="yyyy" var="selectedYear"/>
+	<div class="d-flex justify-content-between align-items-center mb-6 pt-6">
+		<h1 class="liff-page-title text-gray-700 mb-0">My Leave</h1>
+		<div class="dropdown">
+			<button class="btn btn-sm dropdown-toggle" type="button" id="yearFilterBtn" data-bs-toggle="dropdown" aria-expanded="false">
+				${selectedYear}
+			</button>
+			<ul class="dropdown-menu dropdown-menu-end" aria-labelledby="yearFilterBtn">
+				<c:forEach var="i" begin="0" end="${currentYearInt - startYearInt}">
+					<c:set var="y" value="${currentYearInt - i}"/>
+					<li><a class="dropdown-item ${selectedYear == y ? 'active' : ''}" href="javascript:void(0)" onclick="filterByYear(${y})">${y}</a></li>
+				</c:forEach>
+			</ul>
+		</div>
+	</div>
 
-			// auto-submit form
-			$("#searchForm").submit();
-		}); */
-		$("#kt_daterangepicker").daterangepicker({
-	        startDate: start,
-	        endDate: end,
-			locale: {
-				format: "DD MMM YYYY",  // รูปแบบวันที่
-				monthNames: [
-				  "January", "February", "March", "April", "May", "June",
-				  "July", "August", "September", "October", "November", "December"
-				],  // กำหนดชื่อเดือนเต็ม
-	        },
-	        showDropdowns: true,     // มี dropdown เดือน/ปี
-	        autoApply: true,  // ยืนยันโดยอัตโนมัติเมื่อเลือกวันที่
-	        linkedCalendars: false,  // เดือนซ้าย-ขวาอิสระ ไม่ fix
-	        alwaysShowCalendars: true,
-	        opens: 'center'
-		}, function (start, end) {
-			// อัปเดต hidden input ทุกครั้งที่เลือกช่วงวันใหม่
-			$("#startdate").val(start.format("DD-MM-YYYY"));
-			$("#enddate").val(end.format("DD-MM-YYYY"));
+	<a href="javascript:void(0)" class="liff-fab" onclick="add()" aria-label="Add">
+		<i class="ki-duotone ki-plus text-white" style="font-size:1.75rem;"></i>
+	</a>
 
-			// auto-submit form
-			$("#searchForm").submit();
-		});
+	<!-- Summary Leave -->
+	<div class="mb-6">
+		<div class="card card-bordered">
+			<div class="card-body p-10">
+				<div class="leave-summary-pager" id="leaveSummaryPager">
+					<div class="leave-summary-item">
+						<span class="symbol symbol-50px">
+							<span class="symbol-label bg-success-subtle">
+								<i class="ki-duotone ki-airplane text-success" style="font-size:1.75rem;">
+									<span class="path1"></span><span class="path2"></span>
+								</i>
+							</span>
+						</span>
+						<div class="d-flex flex-column">
+							<span class="fw-bold text-gray-800 fs-3 lh-sm">
+								<fmt:formatNumber type="number" pattern="#.##" value="${leave_1}"/>/<fmt:formatNumber type="number" pattern="#.##" value="${quota_1}"/>
+								<c:set var="leaveWA1" value="${empty LeaveWAnumT1 ? 0 : LeaveWAnumT1}" />
+								<c:if test="${leaveWA1 > 0}">
+									<span class="badge badge-sm badge-warning"><fmt:formatNumber type="number" pattern="#.##" value="${leaveWA1}"/></span>
+								</c:if>
+							</span>
+							<span class="text-gray-600 fs-base lh-sm">${fn:escapeXml(type_1)}</span>
+						</div>
+					</div>
 
-		// ตั้งค่าเริ่มต้นตอนโหลด
-		$("#startdate").val(start.format("DD-MM-YYYY"));
-		$("#enddate").val(end.format("DD-MM-YYYY"));
+					<div class="leave-summary-item">
+						<span class="symbol symbol-50px">
+							<span class="symbol-label bg-primary-subtle">
+								<i class="ki-duotone ki-car-2 text-primary" style="font-size:1.75rem;">
+									<span class="path1"></span><span class="path2"></span><span class="path3"></span>
+									<span class="path4"></span><span class="path5"></span><span class="path6"></span>
+								</i>
+							</span>
+						</span>
+						<div class="d-flex flex-column">
+							<span class="fw-bold text-gray-800 fs-3 lh-sm">
+								<fmt:formatNumber type="number" pattern="#.##" value="${leave_2}"/>/<fmt:formatNumber type="number" pattern="#.##" value="${quota_2}"/>
+								<c:set var="leaveWA2" value="${empty LeaveWAnumT2 ? 0 : LeaveWAnumT2}" />
+								<c:if test="${leaveWA2 > 0}">
+									<span class="badge badge-sm badge-warning"><fmt:formatNumber type="number" pattern="#.##" value="${leaveWA2}"/></span>
+								</c:if>
+							</span>
+							<span class="text-gray-600 fs-base lh-sm">${fn:escapeXml(type_2)}</span>
+						</div>
+					</div>
 
+					<!-- LIFF ยกเลิกการลาประเภทนี้ (type 6 ลาพักร้อนที่เหลือจากปีก่อน) -->
+					<!-- <div class="leave-summary-item">
+						<span class="symbol symbol-50px">
+							<span class="symbol-label bg-light-warning">
+								<i class="ki-duotone ki-timer text-warning" style="font-size:1.75rem;">
+									<span class="path1"></span><span class="path2"></span><span class="path3"></span>
+								</i>
+							</span>
+						</span>
+						<div class="d-flex flex-column">
+							<span class="fw-bold text-gray-800" style="font-size:15.88px; line-height:1.21;">
+								<fmt:formatNumber type="number" pattern="#.##" value="${leave_6}"/>
+								<c:if test="${quotaLastYear.doubleValue() > 0}">/<fmt:formatNumber type="number" pattern="#.##" value="${quotaLastYear}"/></c:if>
+								<c:if test="${LeaveWAnumT6.doubleValue() > 0}">
+									<span class="badge badge-sm badge-warning"><fmt:formatNumber type="number" pattern="#.##" value="${LeaveWAnumT6}"/></span>
+								</c:if>
+							</span>
+							<span class="text-gray-600" style="font-size:12.35px; line-height:1.21;">${type_6}</span>
+						</div>
+					</div> -->
 
-	    /* $('#kt_daterangepicker_single').daterangepicker({
-	        startDate: moment().startOf('year'),
-	        endDate: moment().endOf('year'),
-	        locale: {
-	            format: 'DD MMM YYYY'
-	        },
-	        singleDatePicker: false,    // false = ใช้ช่วงวัน (range)
-	        showDropdowns: true,        // เพิ่ม dropdown เดือน/ปี
-	        linkedCalendars: false,     // ทำให้แต่ละปฏิทินอิสระ
-	        alwaysShowCalendars: true,  // คงแสดงปฏิทินไว้
-	        opens: 'center'             // เปิดกลางหน้าจอ
-	    }, function(start, end) {
-	        console.log("Selected range: " + start.format("DD MMM YYYY") + " - " + end.format("DD MMM YYYY"));
-	    }); */
+					<div class="leave-summary-item">
+						<span class="symbol symbol-50px">
+							<span class="symbol-label bg-light-info">
+								<i class="ki-duotone ki-pulse text-info" style="font-size:1.75rem;">
+									<span class="path1"></span><span class="path2"></span>
+								</i>
+							</span>
+						</span>
+						<div class="d-flex flex-column">
+							<span class="fw-bold text-gray-800 fs-3 lh-sm">
+								<fmt:formatNumber type="number" pattern="#.##" value="${leave_3}"/>
+								<c:if test="${LeaveWAnumT3.doubleValue() > 0}">
+									<span class="badge badge-sm badge-warning"><fmt:formatNumber type="number" pattern="#.##" value="${LeaveWAnumT3}"/></span>
+								</c:if>
+							</span>
+							<span class="text-gray-600 fs-base lh-sm">${fn:escapeXml(type_3)}</span>
+						</div>
+					</div>
 
-/* 	    $('#kt_daterangepicker_dual').daterangepicker({
-	        startDate: moment().startOf('year'),
-	        endDate: moment().endOf('year'),
-	        locale: {
-	            format: 'DD MMM YYYY'
-	        },
-	        showDropdowns: true,     // มี dropdown เดือน/ปี
-	        linkedCalendars: false,  // เดือนซ้าย-ขวาอิสระ ไม่ fix
-	        alwaysShowCalendars: true,
-	        opens: 'center'
-	    }, function(start, end) {
-	        console.log("Selected range: " + start.format("DD MMM YYYY") + " - " + end.format("DD MMM YYYY"));
-	    });
- */		
-	});
-	
-</script>
+					<div class="leave-summary-item">
+						<span class="symbol symbol-50px">
+							<span class="symbol-label bg-light-danger">
+								<i class="ki-duotone ki-calendar-remove text-danger" style="font-size:1.75rem;">
+									<span class="path1"></span><span class="path2"></span><span class="path3"></span>
+									<span class="path4"></span><span class="path5"></span><span class="path6"></span>
+								</i>
+							</span>
+						</span>
+						<div class="d-flex flex-column">
+							<span class="fw-bold text-gray-800 fs-3 lh-sm">
+								<fmt:formatNumber type="number" pattern="#.##" value="${leave_4}"/>
+								<c:if test="${LeaveWAnumT4.doubleValue() > 0}">
+									<span class="badge badge-sm badge-warning"><fmt:formatNumber type="number" pattern="#.##" value="${LeaveWAnumT4}"/></span>
+								</c:if>
+							</span>
+							<span class="text-gray-600 fs-base lh-sm">${fn:escapeXml(type_4)}</span>
+						</div>
+					</div>
+
+					<div class="leave-summary-item">
+						<span class="symbol symbol-50px">
+							<span class="symbol-label bg-light-dark">
+								<i class="ki-duotone ki-brifecase-cros text-dark" style="font-size:1.75rem;">
+									<span class="path1"></span><span class="path2"></span><span class="path3"></span>
+								</i>
+							</span>
+						</span>
+						<div class="d-flex flex-column">
+							<span class="fw-bold text-gray-800 fs-3 lh-sm">
+								<fmt:formatNumber type="number" pattern="#.##" value="${leave_5}"/>
+								<c:if test="${LeaveWAnumT5.doubleValue() > 0}">
+									<span class="badge badge-sm badge-warning"><fmt:formatNumber type="number" pattern="#.##" value="${LeaveWAnumT5}"/></span>
+								</c:if>
+							</span>
+							<span class="text-gray-600 fs-base lh-sm">${fn:escapeXml(type_5)}</span>
+						</div>
+					</div>
+
+					<div class="leave-summary-item">
+						<span class="symbol symbol-50px">
+							<span class="symbol-label bg-gray-700">
+								<i class="ki-duotone ki-abstract-12 text-white" style="font-size:1.75rem;">
+									<span class="path1"></span><span class="path2"></span>
+								</i>
+							</span>
+						</span>
+						<div class="d-flex flex-column">
+							<span class="fw-bold text-gray-800 fs-3 lh-sm">
+								<fmt:formatNumber type="number" pattern="#.##" value="${leave_7}"/>
+								<c:if test="${LeaveWAnumT7.doubleValue() > 0}">
+									<span class="badge badge-sm badge-warning"><fmt:formatNumber type="number" pattern="#.##" value="${LeaveWAnumT7}"/></span>
+								</c:if>
+							</span>
+							<span class="text-gray-600 fs-base lh-sm">${fn:escapeXml(type_7)}</span>
+						</div>
+					</div>
+				</div>
+				<div class="leave-summary-dots" id="leaveSummaryDots"></div>
+			</div>
+		</div>
+	</div>
+
+	<!-- Leave List -->
+	<div class="d-flex align-items-center justify-content-between mt-2 mb-4">
+		<span class="fw-bold text-gray-900 fs-4 lh-1">${fn:length(leavelist)} Items Found</span>
+		<c:set var="isLatestStatus" value="${param.sort == 'latest_status'}" />
+		<button type="button" id="sortToggleBtn" class="liff-sort-btn" onclick="toggleSort()" aria-pressed="${isLatestStatus}">
+			<span>${isLatestStatus ? 'Latest Status' : 'Leave Date'}</span><span class="liff-sort-icon">↓</span>
+		</button>
+	</div>
+
+	<div id="leaveList">
+		<c:forEach var="leave" items="${leavelist}" varStatus="status">
+
+			<div class="card card-bordered liff-leave-card mb-5">
+				<div class="card-header p-5 min-h-auto flex-nowrap">
+					<div class="d-flex align-items-center gap-2 overflow-hidden" style="min-width:0;">
+						<span class="fw-bold text-primary fs-4 flex-shrink-0 lh-1" style="letter-spacing:0;">#${leave.leave_id}</span>
+						<span class="fs-4 fw-bold text-gray-800 text-truncate" style="line-height:1.4;">${fn:escapeXml(leave.leave_type_name)}</span>
+					</div>
+					<div class="d-inline-flex align-items-center gap-3 flex-shrink-0">
+						<a href="javascript:void(0)" class="btn btn-icon btn-sm bg-info-subtle" onclick="leaveStatus(${leave.leave_id})">
+							<i class="ki-duotone ki-document text-info fs-1"><span class="path1"></span><span class="path2"></span></i>
+						</a>
+						<a data-note="btn edit" href="line_NewLeaveEdit?id=${leave.leave_id}" title="Edit" class="btn btn-icon btn-sm bg-primary-subtle">
+							<i class="ki-duotone ki-pencil text-primary fs-1"><span class="path1"></span><span class="path2"></span></i>
+						</a>
+						<c:choose>
+							<c:when test="${leave.leave_status_id.toString() == 0}">
+								<a data-note="btn delete" onclick="changeStatus(${leave.leave_id});" title="Delete" class="btn btn-icon btn-sm bg-danger-subtle">
+									<i class="ki-duotone ki-trash text-danger fs-1"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span><span class="path5"></span></i>
+								</a>
+							</c:when>
+							<c:when test="${leave.leave_status_id.toString() != 0}">
+								<a data-note="btn delete" class="btn btn-icon btn-sm btn-light-secondary disabled">
+									<i class="ki-duotone ki-trash fs-1"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span><span class="path5"></span></i>
+								</a>
+							</c:when>
+						</c:choose>
+					</div>
+				</div>
+				<div class="card-body p-5">
+
+					<div class="fw-bold fs-5 text-dark mb-3">${fn:escapeXml(leave.name)}</div>
+
+					<div class="d-flex align-items-stretch justify-content-between gap-3 mb-3">
+						<div class="d-flex flex-column gap-3 fs-6 text-gray-700" style="min-width:0;">
+							<div class="d-inline-flex align-items-center gap-1">
+								<i class="ki-duotone ki-calendar-2 fs-6"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span><span class="path5"></span></i>
+								<span><fmt:formatDate value="${leave.start_date}" type="date" pattern="d MMM yyyy"/> - <fmt:formatDate value="${leave.end_date}" type="date" pattern="d MMM yyyy"/></span>
+							</div>
+							<c:if test="${leave.half_day != null}">
+								<div class="d-inline-flex align-items-center gap-1">
+									<i class="ki-duotone ki-calendar-8 fs-6"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span><span class="path5"></span><span class="path6"></span></i>
+									<c:if test="${leave.half_day.toString() == 0}">เต็มวัน</c:if>
+									<c:if test="${leave.half_day.toString() == 1}">ช่วงเช้า</c:if>
+									<c:if test="${leave.half_day.toString() == 2}">ช่วงบ่าย</c:if>
+									<c:if test="${leave.half_day.toString() == 3}">ช่วงเวลา</c:if>
+								</div>
+							</c:if>
+							<div class="d-inline-flex align-items-center gap-1">
+								<i class="ki-duotone ki-time fs-6"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span></i>
+								${leave.start_time} - ${leave.end_time}
+							</div>
+							<c:set var="leaveFiles" value="${leaveFilesMap[leave.leave_id.toString()]}" />
+							<c:if test="${not empty leaveFiles or not empty leave.leave_file}">
+								<c:set var="fileId" value="${not empty leaveFiles ? leaveFiles[0].fileId : leave.leave_file}" />
+								<c:set var="fileName" value="${not empty leaveFiles ? leaveFiles[0].name : leave.file_name}" />
+								<c:set var="fileType" value="${not empty leaveFiles ? leaveFiles[0].type : leave.type}" />
+								<div class="d-flex align-items-center gap-1" style="min-width:0;">
+									<i class="ki-duotone ki-document flex-shrink-0"><span class="path1"></span><span class="path2"></span></i>
+									<a href="line_preview_File?id=${fileId}" target="_blank" title="${fn:escapeXml(fileName)}${fn:escapeXml(fileType)}" class="d-flex text-primary text-hover-underline" style="min-width:0;"><span class="text-truncate">${fn:escapeXml(fileName)}</span><span class="flex-shrink-0">${fn:escapeXml(fileType)}</span></a>
+									<c:if test="${fn:length(leaveFiles) > 1}">
+										<a href="javascript:void(0)" onclick="leaveStatus(${leave.leave_id})" class="flex-shrink-0 ms-1 badge badge-light-primary fs-base">+${fn:length(leaveFiles) - 1}</a>
+									</c:if>
+								</div>
+							</c:if>
+						</div>
+						<div class="d-flex flex-column align-items-center justify-content-center flex-shrink-0 w-65px gap-1 lh-1 border-start border-gray-200">
+							<span class="fs-2x fw-bold text-gray-900"><fmt:formatNumber type="number" pattern="#.###" value="${leave.no_day}"/></span>
+							<span class="fs-base fw-semibold text-gray-500">${leave.no_day > 1 ? 'days' : 'day'}</span>
+						</div>
+					</div>
+
+					<span class="fs-base text-muted">Request Date: <fmt:formatDate value="${leave.time_create}" type="both" pattern="d MMM yyyy, H:mm"/></span>
+
+				</div>
+
+				<c:set var="st" value="${leave.leave_status_id.toString()}" />
+				<c:set var="stColor" value="${st == '1' ? 'success' : st == '2' ? 'danger' : st == '3' ? 'dark' : 'warning'}" />
+				<div class="card-footer d-flex align-items-center justify-content-between gap-3 px-5 py-3">
+					<span class="badge badge-light-${stColor} fs-6 fw-semibold">
+						<c:if test="${st == '0'}">Wait for approve</c:if>
+						<c:if test="${st == '1'}">Approved</c:if>
+						<c:if test="${st == '2'}">Reject</c:if>
+						<c:if test="${st == '3'}">Cancel</c:if>
+					</span>
+					<c:if test="${st != '0'}">
+						<span class="fs-base text-gray-600"><fmt:formatDate value="${leave.time_update}" type="both" pattern="d MMM yyyy, H:mm"/></span>
+					</c:if>
+				</div>
+			</div>
+		</c:forEach>
+
+		<c:if test="${empty leavelist}">
+			<div class="text-center py-10">
+				<div class="d-inline-flex align-items-center justify-content-center mb-4" style="width:88px; height:88px; border-radius:50%; background:#EFF3FA;">
+					<i class="ki-duotone ki-calendar-search text-primary" style="font-size:2.5rem;">
+						<span class="path1"></span><span class="path2"></span><span class="path3"></span>
+						<span class="path4"></span><span class="path5"></span><span class="path6"></span>
+					</i>
+				</div>
+				<div class="fs-6 fw-semibold text-gray-800 mb-1">No leave records found</div>
+				<div class="fs-8 text-muted">ยังไม่มีข้อมูลการลาในช่วงเวลานี้</div>
+			</div>
+		</c:if>
+	</div>
+
+</div>
+
+<%-- ===== OLD: modal ที่ใช้ร่วมกับ desktop (disabled, kept for reference) =====
+<jsp:include page="/pages-back/common/leave_modal.jsp">
+    <jsp:param name="showApproverInfo" value="true"/>
+</jsp:include>
+--%>
+<%-- ===== OLD: leaveStatus() ของ desktop (disabled, kept for reference) ===== --%>
 <!-- <script>
 function leaveStatus(id) {
 	const modal = new bootstrap.Modal(document.getElementById('leaveDetailModal'));
@@ -825,14 +1087,156 @@ function leaveStatus(id) {
 	});
 }
 </script>  -->
+
+<%-- ===== NEW: modal รายละเอียดใบลา LIFF (ตัวกลาง) ===== --%>
+<jsp:include page="/pages-line/common/leave_modal.jsp">
+	<jsp:param name="showDescFiles" value="true"/>
+</jsp:include>
+
+<%-- ===== NEW: script หน้า My Leave ===== --%>
 <script>
+/* ---------- ไปหน้าอื่น + spinner ---------- */
+	function filterByYear(year) {
+		const sort = new URLSearchParams(window.location.search).get('sort');
+		liffShowLoading();
+		window.location.href = 'line_new_myleave_list?Id=${onlineUser.id}&startdate=01-01-' + year + '&enddate=31-12-' + year
+			+ (sort ? '&sort=' + sort : '');
+	}
+
+	function toggleSort() {
+		const params = new URLSearchParams(window.location.search);
+		if (params.has('sort')) {
+			params.delete('sort');
+		} else {
+			params.set('sort', 'latest_status');
+		}
+		showSortLoading();
+		window.location.href = 'line_new_myleave_list?' + params.toString();
+	}
+
+	function showSortLoading() {
+		const btn = document.getElementById('sortToggleBtn');
+		btn.disabled = true;
+		btn.querySelector('.liff-sort-icon').innerHTML = '<span class="spinner-border text-primary" role="status"></span>';
+		$('#leaveList').addClass('d-none');
+		// skeleton loading
+		const bar = (w, h) => '<span class="liff-skel" style="width:' + w + '; height:' + (h || 12) + 'px;"></span>';
+		const row = (w) => '<div class="liff-skel-row"><span class="liff-skel liff-skel-dot"></span>' + bar(w) + '</div>';
+		const skel = '<div class="card card-bordered liff-leave-card mb-5">'
+			+ '<div class="card-header p-5 min-h-auto flex-nowrap">'
+			+ '<div class="d-flex align-items-center gap-2">' + bar('56px', 20) + bar('88px', 20) + '</div>'
+			+ '<div class="d-inline-flex align-items-center gap-3">'
+			+ '<span class="liff-skel liff-skel-box"></span><span class="liff-skel liff-skel-box"></span><span class="liff-skel liff-skel-box"></span></div>'
+			+ '</div>'
+			+ '<div class="card-body d-flex flex-column gap-3 p-5">'
+			+ bar('55%', 16)
+			+ '<div class="d-flex align-items-stretch justify-content-between gap-3">'
+			+ '<div class="d-flex flex-column gap-3">' + row('150px') + row('60px') + row('90px') + '</div>'
+			+ '<div class="d-flex flex-column align-items-center justify-content-center flex-shrink-0 w-65px gap-1 lh-1 border-start border-gray-200">' + bar('22px', 20) + bar('28px', 10) + '</div>'
+			+ '</div>'
+			+ bar('130px', 10)
+			+ '</div>'
+			+ '<div class="card-footer d-flex align-items-center justify-content-between gap-3 px-5 py-3">' + bar('100px', 14) + bar('110px', 10) + '</div>'
+			+ '</div>';
+		$('#leaveList').before('<div id="sortSkeleton">' + skel + skel + skel + '</div>');
+	}
+
+	function hideSortLoading() {
+		const btn = document.getElementById('sortToggleBtn');
+		btn.disabled = false;
+		btn.querySelector('.liff-sort-icon').textContent = '↓';
+		$('#sortSkeleton').remove();
+		$('#leaveList').removeClass('d-none');
+	}
+
+	function add() {
+		liffShowLoading();
+		document.location = "line_NewLeaveAdd";
+	}
+
+	$(document).on('click', 'a[href^="line_NewLeaveEdit"]', function() {
+		liffShowLoading();
+	});
+	// กด Back กลับมา (bfcache) ซ่อน spinner / skeleton
+	window.addEventListener('pageshow', function(e) {
+		if (!e.persisted) return;
+		document.getElementById('liffLoadingOverlay').style.display = 'none';
+		hideSortLoading();
+	});
+</script>
+
+<script>
+/* ---------- Summary pager ---------- */
+	(function () {
+		var pager = document.getElementById('leaveSummaryPager');
+		var dots = document.getElementById('leaveSummaryDots');
+		if (!pager || !dots) return;
+		var items = Array.prototype.slice.call(pager.querySelectorAll('.leave-summary-item'));
+		if (items.length === 0) return;
+
+		var pageCount = Math.ceil(items.length / 4);
+		var pages = [];
+		for (var p = 0; p < pageCount; p++) {
+			var pageEl = document.createElement('div');
+			pageEl.className = 'leave-summary-page';
+			var gridEl = document.createElement('div');
+			gridEl.className = 'leave-summary-grid';
+			items.slice(p * 4, p * 4 + 4).forEach(function (item) { gridEl.appendChild(item); });
+			pageEl.appendChild(gridEl);
+			pages.push(pageEl);
+		}
+		pager.innerHTML = '';
+		pages.forEach(function (pageEl) { pager.appendChild(pageEl); });
+
+		dots.innerHTML = '';
+		for (var i = 0; i < pageCount; i++) {
+			var dot = document.createElement('span');
+			if (i === 0) dot.className = 'active';
+			dots.appendChild(dot);
+		}
+		if (pageCount <= 1) { dots.hidden = true; return; }
+
+		var dotEls = dots.querySelectorAll('span');
+		pager.addEventListener('scroll', function () {
+			var page = Math.round(pager.scrollLeft / pager.clientWidth);
+			dotEls.forEach(function (dot, i) {
+				dot.classList.toggle('active', i === page);
+			});
+		}, { passive: true });
+	})();
+</script>
+
+<script>
+/* ---------- toast ---------- */
+// ?saved=add / edit มาจาก doSubmit() หน้า Add/Edit
+$(function () {
+	const params = new URLSearchParams(window.location.search);
+	const saved = params.get('saved');
+	if (saved === 'add') {
+		liffToastSuccess("Your leave request has been submitted.", "Saved successfully!");
+	} else if (saved === 'edit') {
+		liffToastSuccess("Your leave request has been updated.", "Updated successfully!");
+	}
+	if (saved) {
+		params.delete('saved'); // เอาออกจาก URL กัน refresh แล้วขึ้นซ้ำ
+		const qs = params.toString();
+		history.replaceState(null, '', window.location.pathname + (qs ? '?' + qs : ''));
+	}
+});
+
+/* ---------- ยกเลิกใบลา ---------- */
+// ได้ HTTP 200 ทั้งสำเร็จ/ไม่สำเร็จ เช็กจากหน้าที่ได้กลับมา
+function isCancelSuccess(html) {
+	return typeof html === 'string' && html.indexOf('id="leaveDetailModal"') !== -1;
+}
+
 function changeStatus(id) {
     Swal.fire({
         title: "Are you sure?",
         html: `
             <p>You want to cancel this leave!</p>
             <span class="col-lg-12 d-block text-start">
-                Please enter a reason.<span style="color:red;">*</span>
+                Please enter a reason.<span class="text-danger">*</span>
             </span>
             <textarea id="text" rows="4" class="form-control mt-2" placeholder="Enter reason..."></textarea>
         `,
@@ -847,7 +1251,6 @@ function changeStatus(id) {
         buttonsStyling: false,
         focusConfirm: false,
 
-        // ฟังก์ชันตรวจสอบก่อนกด "Confirm"
         preConfirm: () => {
             const val = document.getElementById('text').value.trim();
             if (!val) {
@@ -857,7 +1260,6 @@ function changeStatus(id) {
             return val;
         }
     }).then((result) => {
-        // ถ้ากดยืนยัน (เหมือน if(inputValue == true))
         if (result.isConfirmed) {
             const val = result.value;
 
@@ -870,34 +1272,31 @@ function changeStatus(id) {
                         reason: val
                     },
                     success: function(response) {
-                        window.location.reload(true); // reload หน้าทันทีเหมือนโค้ดเดิม
+                        if (!isCancelSuccess(response)) {
+                            liffToastError("Unable to cancel leave. Please try again.", "Cancel failed");
+                            return;
+                        }
+                        liffToastSuccess("Your leave has been cancelled.", "Cancelled successfully!");
+                        setTimeout(function () {
+                            window.location.reload(true);
+                        }, 2000);
                     },
                     error: function() {
-                        Swal.fire("Error", "Unable to cancel leave. Please try again.", "error");
+                        liffToastError("Unable to cancel leave. Please try again.", "Cancel failed");
                     }
                 });
             }
         }
 
-        // ถ้ากด Cancel (เหมือน if(inputValue == false))
         if (result.isDismissed) {
             return false;
         }
     });
 }
 </script>
-<jsp:include page="/pages-back/common/leave_modal.jsp">
-    <jsp:param name="showApproverInfo" value="true"/>
-</jsp:include>
 
 <script>
-	function add() {
-		document.location = "line_NewLeaveAdd";
-	}
-</script>
-
-<script>
-	// When opened from a notification (?leaveId=...), pop the leave status modal
+	// เปิดจาก notification (?leaveId=) ให้เปิด modal
 	$(function () {
 		var leaveId = new URLSearchParams(window.location.search).get("leaveId");
 		if (leaveId && typeof leaveStatus === "function") {

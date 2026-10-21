@@ -11,7 +11,7 @@
                     <ul class="breadcrumb breadcrumb-separatorless fw-semibold fs-7 my-0 pt-1">
                         <li class="breadcrumb-item text-muted"><a href="${pageContext.request.contextPath}/check_in_out" class="text-muted text-hover-primary fw-medium fs-7">Home</a></li>
                         <li class="breadcrumb-item"><span class="bullet bg-gray-500 fw-medium fs-7 w-5px h-2px"></span></li>
-                        <li class="breadcrumb-item text-muted fw-medium fs-7"><a href="${pageContext.request.contextPath}/stock_cons_list" class="text-muted text-hover-primary">Product</a></li>
+                        <li class="breadcrumb-item text-muted fw-medium fs-7"><a href="${pageContext.request.contextPath}/product_list" class="text-muted text-hover-primary">Product</a></li>
                     </ul>
                 </div>
             </div>
@@ -26,15 +26,22 @@
 
                             <div class="d-flex align-items-center justify-content-between flex-wrap gap-3 mb-6">
                                 <h3 class="page-heading text-gray-900 fw-bold mb-0">Product List</h3>
-                                <a href="stock_cons_add" class="btn btn-success d-inline-flex align-items-center px-6 py-3">
+                                <a href="product_add" class="btn btn-success d-inline-flex align-items-center px-6 py-3">
                                     <i class="ki-duotone ki-plus fs-3 me-2"><span class="path1"></span><span class="path2"></span></i>
                                     <span class="fw-bold">Create</span>
                                 </a>
                             </div>
 
-                            <div class="d-flex align-items-center position-relative mb-6">
-                                <i class="ki-duotone ki-magnifier fs-3 position-absolute ms-5"><span class="path1"></span><span class="path2"></span></i>
-                                <input type="text" id="searchInput" class="form-control form-control-solid ps-14 text-gray-700" placeholder="Search" />
+                            <div class="d-flex align-items-center gap-3 mb-6">
+                                <div class="d-flex align-items-center position-relative flex-grow-1">
+                                    <i class="ki-duotone ki-magnifier fs-3 position-absolute ms-5"><span class="path1"></span><span class="path2"></span></i>
+                                    <input type="text" id="searchInput" class="form-control form-control-solid ps-14 text-gray-700" placeholder="Search" />
+                                </div>
+                                <%-- สแกนบาร์โค้ด/QR ด้วยกล้อง แล้วเติมค่าลงช่องค้นหา (modal #barcodeScanModal ด้านล่าง) --%>
+                                <button type="button" id="btnScanBarcode" class="btn btn-light-primary btn-icon"
+                                        data-bs-toggle="modal" data-bs-target="#barcodeScanModal" title="Scan Barcode / QR" aria-label="Scan Barcode / QR">
+                                    <i class="ki-duotone ki-scan-barcode fs-2"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span><span class="path5"></span><span class="path6"></span><span class="path7"></span><span class="path8"></span></i>
+                                </button>
                             </div>
 
                             <%-- การ์ดสรุป/filter ตาม type - กดเพื่อกรองตาราง (กดซ้ำ = ยกเลิก)
@@ -79,6 +86,34 @@
                                 </div>
                             </div>
 
+                            <%-- filter ย่อยตาม Equipment Type - โชว์เฉพาะตอนเลือกการ์ด Equipment (data-type="1")
+                                 คุมด้วย JS (#equipmentTypeFilterWrap) ไม่ต้องพึ่ง JSTL เพราะขึ้นกับการคลิกฝั่ง client
+                                 dropdown checkbox เลือกได้หลายตัว (pattern เดียวกับ filter "Type" ใน equipment_list.jsp)
+                                 checkbox list ใช้ JSTL loop ตรงๆ เพราะ ${equipmentTypes} มีอยู่แล้วในฝั่ง server --%>
+                            <div id="equipmentTypeFilterWrap" class="d-flex align-items-center gap-3 mb-6 d-none">
+                                <label class="form-label fw-semibold text-gray-700 mb-0">Equipment Type</label>
+                                <div class="dropdown">
+                                    <button class="btn btn-white border border-gray-300 rounded-3 d-flex justify-content-between align-items-center gap-3 px-4 py-3" type="button" data-bs-toggle="dropdown" style="min-width: 250px;">
+                                        <span id="equipmentTypeFilterBtnText">All</span>
+                                        <i class="ki-duotone ki-down fs-4"><span class="path1"></span><span class="path2"></span></i>
+                                    </button>
+                                    <div class="dropdown-menu dropdown-menu-end p-4 shadow rounded-4" style="min-width: 254px;">
+                                        <div class="mb-4" id="equipmentTypeFilterContainer">
+                                            <c:forEach var="eqType" items="${equipmentTypes}">
+                                                <label class="form-check form-check-custom form-check-solid mb-3">
+                                                    <input class="form-check-input filter-equipment-type" type="checkbox" value="${fn:escapeXml(eqType.typeID)}">
+                                                    <span class="form-check-label text-gray-600 fw-normal menu-heading">${fn:escapeXml(eqType.description)}</span>
+                                                </label>
+                                            </c:forEach>
+                                        </div>
+                                        <div class="d-flex justify-content-between pt-3 border-top">
+                                            <button type="button" class="btn btn-light btn-equipment-type-deselect-all">Deselect All</button>
+                                            <button type="button" class="btn btn-primary btn-equipment-type-select-all">Select All</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
                             <table id="stockConsTable" class="table align-middle fs-6 mb-0">
                                 <thead class="fs-7 text-gray-500 text-uppercase">
                                     <tr class="fw-semibold">
@@ -93,7 +128,8 @@
                                 </thead>
                                 <tbody>
                                     <c:forEach var="product" items="${products}" varStatus="st">
-                                        <tr data-type="${fn:escapeXml(product.product_type)}">
+                                        <tr data-type="${fn:escapeXml(product.product_type)}"
+                                            data-equipment-type="${fn:escapeXml(product.equipment_type)}">
                                             <td class="text-gray-900 fw-bold">${st.index + 1}</td>
                                             <td class="text-gray-700 fw-normal">
                                                 <div class="d-flex align-items-center gap-2">
@@ -166,7 +202,7 @@
                                             </td>
                                             <%-- Equipment ไปหน้า settings คนละตัวเพราะ Stock Balance คิดจากเครื่องจริง
                                                  ไม่ได้คิดจากตาราง stock เหมือน Consumables/Accessory --%>
-                                            <c:set var="editUrl" value="${product.product_type eq '1' ? 'stock_equ_edit' : 'stock_cons_edit'}" />
+                                            <c:set var="editUrl" value="${product.product_type eq '1' ? 'stock_equ_edit' : 'product_edit'}" />
                                             <td class="text-end text-nowrap">
                                                 <a href="${editUrl}?productId=${product.product_id}" class="btn btn-icon btn-sm btn-light-primary me-1" title="Edit">
                                                     <i class="ki-duotone ki-pencil fs-3"><span class="path1"></span><span class="path2"></span></i>
@@ -195,17 +231,48 @@
     </div>
 </div>
 
+<%-- ============ Modal: สแกนบาร์โค้ด / QR code ด้วยกล้อง (html5-qrcode เก็บไว้ในโปรเจกต์ ไม่พึ่ง CDN) ============
+     กล้องเปิดได้เฉพาะหน้าที่เข้าผ่าน HTTPS หรือ localhost เท่านั้น (ข้อกำหนดของเบราว์เซอร์) --%>
+<div class="modal fade" id="barcodeScanModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title fw-bold text-gray-900">Scan Barcode / QR Code</h3>
+                <button type="button" class="btn btn-icon btn-sm btn-active-light-primary" data-bs-dismiss="modal" aria-label="Close">
+                    <i class="ki-duotone ki-cross fs-1"><span class="path1"></span><span class="path2"></span></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div id="barcodeScanReader" class="w-100 rounded overflow-hidden"></div>
+                <div id="barcodeScanError" class="alert alert-danger d-none mt-4 mb-0"></div>
+                <div class="text-gray-600 fs-7 mt-4">เล็งกล้องไปที่บาร์โค้ดหรือ QR code ของสินค้า ระบบจะเติมค่าลงช่องค้นหาให้อัตโนมัติ</div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="${pageContext.request.contextPath}/assets/plugins/custom/html5-qrcode/html5-qrcode.min.js"></script>
 <script>
     $(document).ready(function () {
         // จำนวนต่อ type render มาจาก backend (typeCounts) แล้ว ไม่ต้องนับจาก DOM
 
         // custom filter ตาม type ที่เลือกจากการ์ด ('' = แสดงทั้งหมด)
+        // + filter ย่อยตาม equipment_type (มีผลเฉพาะตอน selectedType === '1' เท่านั้น)
         var selectedType = '';
+        // Equipment Type ตอนนี้เลือกได้หลายตัว (dropdown checkbox) เก็บเป็น array ของ value ที่ติ๊กไว้
+        var selectedEquipmentTypes = [];
         $.fn.dataTable.ext.search.push(function (settings, data, dataIndex) {
             if (settings.nTable.id !== 'stockConsTable') { return true; }
-            if (!selectedType) { return true; }
             var tr = settings.aoData[dataIndex].nTr;
-            return String($(tr).data('type')) === selectedType;
+
+            if (selectedType && String($(tr).data('type')) !== selectedType) { return false; }
+            if (selectedType === '1' && selectedEquipmentTypes.length > 0
+                && selectedEquipmentTypes.indexOf(String($(tr).data('equipmentType'))) === -1) { return false; }
+
+            return true;
         });
 
         var table = $('#stockConsTable').DataTable({
@@ -226,7 +293,82 @@
             table.search(this.value).draw();
         });
 
+        // ==================== สแกนบาร์โค้ด / QR ด้วยกล้อง -> เติมช่องค้นหา ====================
+        var barcodeScanner = null;
+        var barcodeScanHandled = false;
+
+        function showScanError(msg) {
+            $('#barcodeScanError').text(msg).removeClass('d-none');
+        }
+
+        function stopBarcodeScanner() {
+            if (!barcodeScanner) { return; }
+            var scanner = barcodeScanner;
+            barcodeScanner = null;
+            // stop() ตอนกล้องยังไม่เริ่ม/เริ่มไม่สำเร็จจะ reject - ไม่ต้องสนใจ
+            scanner.stop().then(function () { scanner.clear(); }).catch(function () {});
+        }
+
+        function onBarcodeScanned(text) {
+            if (barcodeScanHandled) { return; }   // callback ถูกเรียกซ้ำทุกเฟรมที่เห็นโค้ด รับแค่ครั้งแรก
+            barcodeScanHandled = true;
+            var value = $.trim(text);
+            $('#searchInput').val(value);
+            table.search(value).draw();
+            $('#barcodeScanModal').modal('hide');
+
+            if (table.rows({ search: 'applied' }).count() === 0 && window.Swal) {
+                Swal.fire({ icon: 'info', title: 'ไม่พบสินค้าที่ตรงกับค่าที่สแกน',
+                            text: 'ลองตรวจสอบตัวกรองประเภทสินค้า หรือค่าที่สแกนได้: ' + value });
+            }
+        }
+
+        $('#barcodeScanModal').on('shown.bs.modal', function () {
+            barcodeScanHandled = false;
+            $('#barcodeScanError').addClass('d-none').text('');
+
+            if (!window.isSecureContext) {
+                showScanError('เปิดกล้องไม่ได้: ต้องเข้าเว็บผ่าน HTTPS หรือ localhost เท่านั้น');
+                return;
+            }
+            if (typeof Html5Qrcode === 'undefined') {
+                showScanError('โหลดตัวสแกนไม่สำเร็จ กรุณารีเฟรชหน้าแล้วลองใหม่');
+                return;
+            }
+
+            barcodeScanner = new Html5Qrcode('barcodeScanReader');
+            barcodeScanner.start({ facingMode: 'environment' }, { fps: 10 }, onBarcodeScanned, function () {})
+                .catch(function (err) {
+                    var name = (err && err.name) ? err.name : '';
+                    if (name === 'NotAllowedError' || String(err).indexOf('Permission') !== -1) {
+                        showScanError('ไม่ได้รับอนุญาตให้ใช้กล้อง กรุณาอนุญาตในเบราว์เซอร์แล้วลองใหม่');
+                    } else if (name === 'NotFoundError' || String(err).indexOf('NotFound') !== -1) {
+                        showScanError('ไม่พบกล้องในอุปกรณ์นี้');
+                    } else {
+                        showScanError('เปิดกล้องไม่สำเร็จ: ' + err);
+                    }
+                    barcodeScanner = null;
+                });
+        });
+
+        $('#barcodeScanModal').on('hide.bs.modal', stopBarcodeScanner);
+
         // กดการ์ด type เพื่อ filter (กดซ้ำ = ยกเลิก filter)
+        // สลับออกจาก Equipment (หรือยกเลิก filter) ทุกครั้งต้องล้างค่า Equipment Type filter ด้วย
+        // ไม่งั้นจะค้างเป็นตัวกรองที่มองไม่เห็น (dropdown ซ่อนอยู่แต่ค่ายังเลือกไว้)
+        var $equipmentTypeFilterWrap = $('#equipmentTypeFilterWrap');
+        var $equipmentTypeFilterContainer = $('#equipmentTypeFilterContainer');
+        var $equipmentTypeFilterBtnText = $('#equipmentTypeFilterBtnText');
+
+        function toggleEquipmentTypeFilter(isEquipment) {
+            $equipmentTypeFilterWrap.toggleClass('d-none', !isEquipment);
+            if (!isEquipment) {
+                selectedEquipmentTypes = [];
+                $equipmentTypeFilterContainer.find('input[type="checkbox"]').prop('checked', false);
+                $equipmentTypeFilterBtnText.text('All');
+            }
+        }
+
         $('.type-filter-card').on('click', function () {
             var t = String($(this).data('type'));
             if (selectedType === t) {
@@ -237,8 +379,48 @@
                 $('.type-filter-card').removeClass('active border-primary bg-light-primary');
                 $(this).addClass('active border-primary bg-light-primary');
             }
+            toggleEquipmentTypeFilter(selectedType === '1');
             table.draw();
         });
+
+        // อ่าน checkbox ที่ติ๊กไว้ทั้งหมด -> selectedEquipmentTypes + อัปเดตข้อความบนปุ่ม dropdown
+        // (pattern เดียวกับ updateFilter ของ equipment_list.jsp แต่ไม่มีคอลัมน์ DataTables ให้ search
+        // เพราะ equipment_type ไม่ได้แสดงเป็นคอลัมน์ในตารางนี้ - ใช้ custom search ข้างบนกรองแทน)
+        function updateEquipmentTypeFilter() {
+            var checked = $equipmentTypeFilterContainer.find('input[type="checkbox"]:checked');
+            var labels = [];
+            selectedEquipmentTypes = [];
+
+            checked.each(function () {
+                selectedEquipmentTypes.push(String($(this).val()));
+                labels.push($(this).siblings('span').text().trim());
+            });
+
+            if (selectedEquipmentTypes.length === 0) {
+                $equipmentTypeFilterBtnText.text('All');
+            } else {
+                $equipmentTypeFilterBtnText.text(labels.length <= 2 ? labels.join(', ') : labels.length + ' Selected');
+            }
+
+            table.draw();
+        }
+
+        $equipmentTypeFilterContainer.on('change', '.filter-equipment-type', updateEquipmentTypeFilter);
+
+        $('.btn-equipment-type-select-all').on('click', function (e) {
+            e.stopPropagation();
+            $equipmentTypeFilterContainer.find('input[type="checkbox"]').prop('checked', true);
+            updateEquipmentTypeFilter();
+        });
+
+        $('.btn-equipment-type-deselect-all').on('click', function (e) {
+            e.stopPropagation();
+            $equipmentTypeFilterContainer.find('input[type="checkbox"]').prop('checked', false);
+            updateEquipmentTypeFilter();
+        });
+
+        // กันไม่ให้ dropdown ปิดเวลาคลิกพื้นที่ว่างในเมนู (ติ๊ก checkbox / กดปุ่ม select all)
+        $equipmentTypeFilterWrap.find('.dropdown-menu').on('click', function (e) { e.stopPropagation(); });
 
         // ---- กดติ๊ก Catalog MR / Select Subproduct แล้วเซฟทันที (AJAX) ----
         var CONTEXT = '${pageContext.request.contextPath}';
@@ -279,11 +461,11 @@
         }
 
         $('#stockConsTable').on('change', '.js-active-toggle', function () {
-            toggleFlag($(this), 'stock_cons_active_update', 'active');
+            toggleFlag($(this), 'product_active_update', 'active');
         });
 
         $('#stockConsTable').on('change', '.js-subactive-toggle', function () {
-            toggleFlag($(this), 'stock_cons_sub_active_update', 'subProductActive');
+            toggleFlag($(this), 'product_sub_active_update', 'subProductActive');
         });
 
         // ---- ลบ product (AJAX) - ตอบ JSON แทน redirect เพื่อโชว์เหตุผลตอนลบไม่ได้ ----
@@ -300,7 +482,7 @@
                 $btn.prop('disabled', true);
 
                 $.ajax({
-                    url: CONTEXT + '/stock_cons_delete',
+                    url: CONTEXT + '/product_delete',
                     type: 'POST',
                     dataType: 'json',
                     data: { productId: id },

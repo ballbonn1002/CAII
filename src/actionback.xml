@@ -38,6 +38,14 @@
 			<result name="login" type="redirect">/index.jsp</result>
 		</global-results>
 
+		<!-- Session keep-alive: หน้าเว็บยิงเป็นระยะเพื่อต่ออายุ session (ใช้ร่วมกับ pages-line) -->
+		<action name="session_keepalive"
+			class="com.cubesofttech.system.SessionKeepAlive" method="ping">
+			<result name="success" type="json">
+				<param name="includeProperties">status</param>
+			</result>
+		</action>
+
 		<action name="blank_template"
 			class="com.cubesofttech.action.NewsAction" method="demoDashboard">
 			<result name="success" type="tiles">blankTemplate</result>
@@ -1065,6 +1073,18 @@
 			class="com.cubesofttech.action.DocStatusAction" method="performEdit">
 		</action>
 
+		<!-- Unit Master -->
+		<action name="unit_master_list"
+			class="com.cubesofttech.action.UnitMasterAction" method="list">
+			<result name="success" type="tiles">unitMasterList</result>
+			<result name="error">/index.jsp</result>
+		</action>
+
+		<action name="unit_master_update"
+			class="com.cubesofttech.action.UnitMasterAction" method="update">
+		</action>
+		<!-- Unit Master -->
+
 		<!-- Employee Profile Edit User Security -->
 		<action name="admin_update_password"
 			class="com.cubesofttech.action.UserAction"
@@ -1785,6 +1805,11 @@
 			<result name="success" type="json"/>
 		</action>
 		
+		<action name="update_company_status"
+			class="com.cubesofttech.action.CompanyAction" method="updateIsActiveStatus">
+			<result name="success" type="json"/>
+		</action>
+		
 		<action name="check_company_code"
         	class="com.cubesofttech.action.CompanyAction" method="checkCompanyCode">
         </action>
@@ -1918,6 +1943,18 @@
 			<result name="success" type="tiles">privilege</result>
 			<result name="error">/pages-back/common/error/error_500.jsp</result>
 		</action>
+		
+		<action name="getRewardItemList"
+        class="com.cubesofttech.action.CubeTokenAction"
+        method="getRewardItemList" />
+        
+        <action name="redeemRewardItem"
+        class="com.cubesofttech.action.CubeTokenAction"
+        method="redeemRewardItem" />
+        
+        <action name="toggleFavorite"
+        class="com.cubesofttech.action.CubeTokenAction"
+        method="toggleFavorite" />
         
         <!-- Privilege Management -->
 		<action name="privilegeMangementPage"
@@ -2348,6 +2385,14 @@
 			class="com.cubesofttech.action.PurchaseOrderAction" method="updatePoDetail">
 		</action>
 
+		<action name="update_po_source"
+            class="com.cubesofttech.action.PurchaseOrderAction" method="updatePoSource">
+        </action>
+
+        <action name="delete_po_source"
+            class="com.cubesofttech.action.PurchaseOrderAction" method="deletePoSource">
+        </action>
+
 		<action name="confirm_po_sign"
 			class="com.cubesofttech.action.PurchaseOrderAction" method="confirmPoSign">
 		</action>
@@ -2409,6 +2454,14 @@
             class="com.cubesofttech.action.PurchaseRequisitionAction" method="updatePrDetail">
         </action>
 
+        <action name="update_pr_source"
+            class="com.cubesofttech.action.PurchaseRequisitionAction" method="updatePrSource">
+        </action>
+
+        <action name="delete_pr_source"
+            class="com.cubesofttech.action.PurchaseRequisitionAction" method="deletePrSource">
+        </action>
+
         <action name="confirm_pr_sign"
             class="com.cubesofttech.action.PurchaseRequisitionAction" method="confirmPrSign">
         </action>
@@ -2417,74 +2470,87 @@
             class="com.cubesofttech.action.PurchaseRequisitionAction" method="deletePrAttachment">
         </action>
 
-		<!-- MR -->
-		<action name="equipment_request_list" 
-		class="com.cubesofttech.action.EquipmentRequestAction" method="myEquipmentRequest">
-		    <result name="success" type="tiles">equipment_request_list</result>
-		    <result name="error">/index.jsp</result>
-		    <result name="login" type="redirect">/index.jsp</result>
-		</action>
-		<action name="equipment_request_listdelete" 
-		class="com.cubesofttech.action.EquipmentRequestAction" method="EquipmentDelete">
-		    <result name="success" type="tiles">equipment_request_listdelete</result>
-		    <result name="error">/index.jsp</result>
-		    <result name="login" type="redirect">/index.jsp</result>
-		</action>
-		<action name="equipment_request_updatestatus" 
-		class="com.cubesofttech.action.EquipmentRequestAction" method="updateStatus">
-		    <result name="success" type="tiles">equipment_request_updatestatus</result>
-		    <result name="error">/index.jsp</result>
-		    <result name="login" type="redirect">/index.jsp</result>
-		</action>
-		
-		<action name="equipment_request_create"
-		    class="com.cubesofttech.action.EquipmentRequestAction" method="initgetMaster">
-		    <result name="success" type="tiles">equipment_request_create</result>
-		    <result name="error">/index.jsp</result>
-		</action>
-		
-			<action name="equipment_request_update"
-			class="com.cubesofttech.action.EquipmentRequestAction"
-			method="EquipmentPreview">
-			<result name="success" type="tiles">equipment_request_update</result>
+        <action name="search_approved_mr"
+            class="com.cubesofttech.action.PurchaseRequisitionAction" method="searchApprovedMr">
+        </action>
+
+		<!-- MR - Material Request (New) -->
+		<action name="equipment_request_mr_list"
+			class="com.cubesofttech.action.EquipmentRequestMrAction" method="equipmentRequestMrList">
+			<result name="success" type="tiles">equipmentRequestMrList</result>
 			<result name="error">/index.jsp</result>
+			<result name="login" type="redirect">/index.jsp</result>
 		</action>
-		
-		<action name="equipment_request_admin"
-			class="com.cubesofttech.action.EquipmentRequestAction"
-			method="EquipmentPreview">
-			<result name="success" type="tiles">equipment_request_admin</result>
+
+		<action name="equipment_request_mr_add"
+			class="com.cubesofttech.action.EquipmentRequestMrAction" method="equipmentRequestMrAdd">
+			<result name="success" type="tiles">equipmentRequestMrAdd</result>
 			<result name="error">/index.jsp</result>
+			<result name="login" type="redirect">/index.jsp</result>
+		</action>
+
+		<action name="get_mr_sub_item"
+			class="com.cubesofttech.action.EquipmentRequestMrAction" method="getMrSubItem">
+		</action>
+
+		<action name="get_mr_unit"
+			class="com.cubesofttech.action.EquipmentRequestMrAction" method="getMrUnit">
+		</action>
+
+		<action name="save_mr"
+			class="com.cubesofttech.action.EquipmentRequestMrAction" method="saveMr">
+		</action>
+
+		<action name="equipment_request_mr_edit"
+			class="com.cubesofttech.action.EquipmentRequestMrAction" method="equipmentRequestMrEdit">
+			<result name="success" type="tiles">equipmentRequestMrEdit</result>
+			<result name="notallowed" type="redirect">equipment_request_mr_list?msg=${msg}</result>
+			<result name="error">/index.jsp</result>
+			<result name="login" type="redirect">/index.jsp</result>
+		</action>
+
+		<action name="update_mr"
+			class="com.cubesofttech.action.EquipmentRequestMrAction" method="updateMr">
+		</action>
+
+		<action name="delete_mr_attachment"
+			class="com.cubesofttech.action.EquipmentRequestMrAction" method="deleteMrAttachment">
+		</action>
+
+		<action name="delete_mr"
+			class="com.cubesofttech.action.EquipmentRequestMrAction" method="deleteMr">
+		</action>
+
+		<!-- MR admin  -->
+		<action name="equipment_request_mr_list_admin"
+			class="com.cubesofttech.action.EquipmentRequestMrAction" method="equipmentRequestMrListAdmin">
+			<result name="success" type="tiles">equipmentRequestMrListAdmin</result>
+			<result name="error">/index.jsp</result>
+			<result name="login" type="redirect">/index.jsp</result>
+		</action>
+
+		<action name="equipment_request_mr_approve"
+			class="com.cubesofttech.action.EquipmentRequestMrAction" method="equipmentRequestMrApprove">
+			<result name="success" type="tiles">equipmentRequestMrApprove</result>
+			<result name="notallowed" type="redirect">equipment_request_mr_list_admin?msg=${msg}</result>
+			<result name="error">/index.jsp</result>
+			<result name="login" type="redirect">/index.jsp</result>
+		</action>
+
+		<action name="update_status_mr"
+		    class="com.cubesofttech.action.EquipmentRequestMrAction" method="updateStatusMr">
 		</action>
 		
-		
-		<action name="equipment_request_save"
-		    class="com.cubesofttech.action.EquipmentRequestAction" method="equipment_request_save">
-		    <result name="success" type="tiles">equipment_request_save</result>
-		    <result name="error">/index.jsp</result>
-		</action>
-		
-		<action name="equipment_request_signature"
-		    class="com.cubesofttech.action.UserAction" method="update_my_profile">
-		    <result name="error">/index.jsp</result>
-		</action>
-		
-		<action name="getauto_id_load"
-		    class="com.cubesofttech.action.EquipmentRequestAction" method="getauto_id_load">
-		    <result name="success" type="tiles">getauto_id_load</result>
-		    <result name="error">/index.jsp</result>
-		</action>
-		
-		<!-- Stock -->
-		<action name="stock_cons_list"
-			class="com.cubesofttech.action.ProductAction" method="stockConsList">
-			<result name="success" type="tiles">stockConsList</result>
+		<!-- Stock / Product -->
+		<action name="product_list"
+			class="com.cubesofttech.action.ProductAction" method="productList">
+			<result name="success" type="tiles">productList</result>
 			<result name="error">/index.jsp</result>
 		</action>
 
-		<action name="stock_cons_add"
-			class="com.cubesofttech.action.ProductAction" method="showStockAddPage">
-			<result name="success" type="tiles">stockConsAdd</result>
+		<action name="product_add"
+			class="com.cubesofttech.action.ProductAction" method="showProductAddPage">
+			<result name="success" type="tiles">productAdd</result>
 			<result name="error">/index.jsp</result>
 		</action>
 
@@ -2501,100 +2567,100 @@
 			<result name="error">/index.jsp</result>
 		</action>
 
-		<action name="stock_cons_edit"
-			class="com.cubesofttech.action.ProductAction" method="showStockEditPage">
-			<result name="success" type="tiles">stockConsEdit</result>
+		<action name="product_edit"
+			class="com.cubesofttech.action.ProductAction" method="showProductEditPage">
+			<result name="success" type="tiles">productEdit</result>
 			<result name="error">/index.jsp</result>
 		</action>
 
-		<action name="stock_cons_save"
-			class="com.cubesofttech.action.ProductAction" method="stockConsSave">
+		<action name="product_save"
+			class="com.cubesofttech.action.ProductAction" method="productSave">
 			<!-- PRG: redirect หลังบันทึกกัน refresh แล้ว submit ซ้ำ -->
-			<result name="success" type="redirect">stock_cons_edit?productId=${productId}</result>
+			<result name="success" type="redirect">product_edit?productId=${productId}</result>
 			<result name="error">/index.jsp</result>
 		</action>
 
-		<!-- stockConsUpdate ตอบ JSON เอง (AJAX) จึงไม่ต้องมี result -->
-		<action name="stock_cons_update"
-			class="com.cubesofttech.action.ProductAction" method="stockConsUpdate">
+		<!-- productUpdate ตอบ JSON เอง (AJAX) จึงไม่ต้องมี result -->
+		<action name="product_update"
+			class="com.cubesofttech.action.ProductAction" method="productUpdate">
 		</action>
 
-		<action name="stock_cons_balance"
+		<action name="stock_balance"
 			class="com.cubesofttech.action.ProductAction" method="showStockBalancePage">
-			<result name="success" type="tiles">stockConsBalance</result>
+			<result name="success" type="tiles">stockBalance</result>
 			<result name="error">/index.jsp</result>
 		</action>
 
 		<!-- Add Stock (บันทึกรับเข้า/Good Receipt) จากหน้า Stock Balance -->
-		<action name="stock_cons_stock_add"
-			class="com.cubesofttech.action.ProductAction" method="stockConsStockAdd">
+		<action name="stock_add"
+			class="com.cubesofttech.action.ProductAction" method="stockAdd">
 			<!-- PRG: redirect กลับหน้า Stock Balance กัน refresh แล้ว submit ซ้ำ -->
-			<result name="success" type="redirect">stock_cons_balance?productId=${productId}</result>
+			<result name="success" type="redirect">stock_balance?productId=${productId}</result>
 			<result name="error">/index.jsp</result>
 		</action>
 
 		<!-- Stock: Sub product active toggle (AJAX, ตอบ JSON) -->
-		<action name="stock_cons_sub_active_update"
+		<action name="product_sub_active_update"
 			class="com.cubesofttech.action.ProductAction" method="subProductActiveUpdate">
 		</action>
 
 		<!-- Stock: product active toggle / Catalog MR (AJAX, ตอบ JSON) -->
-		<action name="stock_cons_active_update"
+		<action name="product_active_update"
 			class="com.cubesofttech.action.ProductAction" method="productActiveUpdate">
 		</action>
 
 		<!-- Stock: ลบ product (AJAX, ตอบ JSON) - ใช้ร่วมกันทั้ง Consumables/Accessory/Equipment -->
-		<action name="stock_cons_delete"
-			class="com.cubesofttech.action.ProductAction" method="stockConsDelete">
+		<action name="product_delete"
+			class="com.cubesofttech.action.ProductAction" method="productDelete">
 		</action>
 
 		<!-- Stock: Unit of Measure (UOM) -->
-		<action name="stock_cons_uom_add"
-			class="com.cubesofttech.action.ProductAction" method="stockConsUomSave">
-			<result name="success" type="redirect">stock_cons_edit?productId=${productId}</result>
+		<action name="product_uom_add"
+			class="com.cubesofttech.action.ProductAction" method="productUomSave">
+			<result name="success" type="redirect">product_edit?productId=${productId}</result>
 			<result name="error">/index.jsp</result>
 		</action>
-		<action name="stock_cons_uom_edit"
-			class="com.cubesofttech.action.ProductAction" method="stockConsUomUpdate">
-			<result name="success" type="redirect">stock_cons_edit?productId=${productId}</result>
+		<action name="product_uom_edit"
+			class="com.cubesofttech.action.ProductAction" method="productUomUpdate">
+			<result name="success" type="redirect">product_edit?productId=${productId}</result>
 			<result name="error">/index.jsp</result>
 		</action>
-		<action name="stock_cons_uom_delete"
-			class="com.cubesofttech.action.ProductAction" method="stockConsUomDelete">
-			<result name="success" type="redirect">stock_cons_edit?productId=${productId}</result>
+		<action name="product_uom_delete"
+			class="com.cubesofttech.action.ProductAction" method="productUomDelete">
+			<result name="success" type="redirect">product_edit?productId=${productId}</result>
 			<result name="error">/index.jsp</result>
 		</action>
-		<action name="stock_cons_uom_reorder"
-			class="com.cubesofttech.action.ProductAction" method="stockConsUomReorder">
+		<action name="product_uom_reorder"
+			class="com.cubesofttech.action.ProductAction" method="productUomReorder">
 		</action>
 
 		<!-- Stock: Sub product -->
-		<action name="stock_cons_sub_add"
-			class="com.cubesofttech.action.ProductAction" method="stockConsSubSave">
-			<result name="success" type="redirect">stock_cons_edit?productId=${parentProductId}</result>
+		<action name="product_sub_add"
+			class="com.cubesofttech.action.ProductAction" method="productSubSave">
+			<result name="success" type="redirect">product_edit?productId=${parentProductId}</result>
 			<result name="error">/index.jsp</result>
 		</action>
-		<action name="stock_cons_sub_edit"
-			class="com.cubesofttech.action.ProductAction" method="stockConsSubUpdate">
-			<result name="success" type="redirect">stock_cons_edit?productId=${parentProductId}</result>
+		<action name="product_sub_edit"
+			class="com.cubesofttech.action.ProductAction" method="productSubUpdate">
+			<result name="success" type="redirect">product_edit?productId=${parentProductId}</result>
 			<result name="error">/index.jsp</result>
 		</action>
-		<action name="stock_cons_sub_delete"
-			class="com.cubesofttech.action.ProductAction" method="stockConsSubDelete">
-			<result name="success" type="redirect">stock_cons_edit?productId=${parentProductId}</result>
+		<action name="product_sub_delete"
+			class="com.cubesofttech.action.ProductAction" method="productSubDelete">
+			<result name="success" type="redirect">product_edit?productId=${parentProductId}</result>
 			<result name="error">/index.jsp</result>
 		</action>
-		<action name="stock_cons_sub_reorder"
-			class="com.cubesofttech.action.ProductAction" method="stockConsSubReorder">
+		<action name="product_sub_reorder"
+			class="com.cubesofttech.action.ProductAction" method="productSubReorder">
 		</action>
 
 		<!-- Stock: Equipment (product_type = 1)
-		     ใช้ method เดียวกับฝั่ง consumables ทั้งหมด ต่างกันแค่หน้าปลายทาง
+		     ใช้ method เดียวกับฝั่ง product ทั้งหมด ต่างกันแค่หน้าปลายทาง
 		     ที่ redirect กลับ จึงต้องมี action name แยก
-		     ส่วน action ที่ตอบ JSON (update / toggle / reorder) ใช้ของ stock_cons_* ร่วมกันได้เลย
+		     ส่วน action ที่ตอบ JSON (update / toggle / reorder) ใช้ของ product_* ร่วมกันได้เลย
 		     เพราะไม่มี redirect -->
 		<action name="stock_equ_edit"
-			class="com.cubesofttech.action.ProductAction" method="showStockEditPage">
+			class="com.cubesofttech.action.ProductAction" method="showProductEditPage">
 			<result name="success" type="tiles">stockEquEdit</result>
 			<result name="error">/index.jsp</result>
 		</action>
@@ -2610,47 +2676,52 @@
 			class="com.cubesofttech.action.ProductAction" method="stockEquLinkSave">
 		</action>
 
+		<!-- Stock: Equipment - ตั้ง/เคลียร์ warehouse ของเครื่อง Available (AJAX, ตอบ JSON) -->
+		<action name="stock_equ_warehouse_save"
+			class="com.cubesofttech.action.ProductAction" method="stockEquWarehouseSave">
+		</action>
+
 		<!-- Stock: Equipment - เอาเครื่องออกจาก catalog (AJAX, ตอบ JSON) -->
 		<action name="stock_equ_unlink_save"
 			class="com.cubesofttech.action.ProductAction" method="stockEquUnlinkSave">
 		</action>
 
 		<!-- Stock: เช็ค Item ID (product_no) ซ้ำ ใช้ทั้งหน้า add/edit ของ Consumables และ Equipment (AJAX, ตอบ JSON) -->
-		<action name="stock_cons_check_duplicate"
-			class="com.cubesofttech.action.ProductAction" method="stockCheckProductNoDuplicate">
+		<action name="product_check_duplicate"
+			class="com.cubesofttech.action.ProductAction" method="productCheckDuplicate">
 		</action>
 
 		<action name="stock_equ_uom_add"
-			class="com.cubesofttech.action.ProductAction" method="stockConsUomSave">
+			class="com.cubesofttech.action.ProductAction" method="productUomSave">
 			<result name="success" type="redirect">stock_equ_edit?productId=${productId}</result>
 			<result name="error">/index.jsp</result>
 		</action>
 		<action name="stock_equ_uom_edit"
-			class="com.cubesofttech.action.ProductAction" method="stockConsUomUpdate">
+			class="com.cubesofttech.action.ProductAction" method="productUomUpdate">
 			<result name="success" type="redirect">stock_equ_edit?productId=${productId}</result>
 			<result name="error">/index.jsp</result>
 		</action>
 		<action name="stock_equ_uom_delete"
-			class="com.cubesofttech.action.ProductAction" method="stockConsUomDelete">
+			class="com.cubesofttech.action.ProductAction" method="productUomDelete">
 			<result name="success" type="redirect">stock_equ_edit?productId=${productId}</result>
 			<result name="error">/index.jsp</result>
 		</action>
 
-		<!-- Stock: Equipment - Sub product (ใช้ method เดียวกับฝั่ง consumables เหมือน uom ด้านบน
-		     ต้องมี action name แยกเพราะ redirect กลับไปต้องเป็น stock_equ_edit ไม่ใช่ stock_cons_edit
-		     ส่วน stock_cons_sub_reorder ตอบ JSON ไม่มี redirect ใช้ร่วมกันได้เลย ไม่ต้องมี stock_equ_sub_reorder -->
+		<!-- Stock: Equipment - Sub product (ใช้ method เดียวกับฝั่ง product เหมือน uom ด้านบน
+		     ต้องมี action name แยกเพราะ redirect กลับไปต้องเป็น stock_equ_edit ไม่ใช่ product_edit
+		     ส่วน product_sub_reorder ตอบ JSON ไม่มี redirect ใช้ร่วมกันได้เลย ไม่ต้องมี stock_equ_sub_reorder -->
 		<action name="stock_equ_sub_add"
-			class="com.cubesofttech.action.ProductAction" method="stockConsSubSave">
+			class="com.cubesofttech.action.ProductAction" method="productSubSave">
 			<result name="success" type="redirect">stock_equ_edit?productId=${parentProductId}</result>
 			<result name="error">/index.jsp</result>
 		</action>
 		<action name="stock_equ_sub_edit"
-			class="com.cubesofttech.action.ProductAction" method="stockConsSubUpdate">
+			class="com.cubesofttech.action.ProductAction" method="productSubUpdate">
 			<result name="success" type="redirect">stock_equ_edit?productId=${parentProductId}</result>
 			<result name="error">/index.jsp</result>
 		</action>
 		<action name="stock_equ_sub_delete"
-			class="com.cubesofttech.action.ProductAction" method="stockConsSubDelete">
+			class="com.cubesofttech.action.ProductAction" method="productSubDelete">
 			<result name="success" type="redirect">stock_equ_edit?productId=${parentProductId}</result>
 			<result name="error">/index.jsp</result>
 		</action>
@@ -2670,7 +2741,11 @@
 
 		<action name="contact_save"
 			class="com.cubesofttech.action.CompanyContactAction" method="save">
-			<result name="success" type="redirectAction">contact</result>
+			<result name="success" type="redirectAction">
+				<param name="actionName">contact_add</param>
+				<param name="id">${contact.companyContactId}</param>
+				<param name="saved">1</param>
+			</result>
 			<result name="error" type="tiles">contact_add</result>
 		</action>
 

@@ -32,59 +32,66 @@
 	src="${pageContext.request.contextPath}/assets/js/custom/utilities/attachFile/attcahfile.js"></script>
 
 <style>
-/* Table MR */
-/* [data-bs-theme="light"] #mrResultTable.table.table-striped > tbody > tr:nth-of-type(odd) > * {
-    background-color: #FBFBFB !important; 
+/* ==================== Table MR ==================== */
+
+[data-bs-theme="light"] #mrResultTable.table.table-striped > tbody > tr:nth-of-type(odd) > * {
+    background-color: #FBFBFB !important;
     box-shadow: none !important;
-  }
- [data-bs-theme="dark"] #mrResultTable.table.table-striped > tbody > tr:nth-of-type(odd) > * {
-    background-color: #191B20 !important; 
+}
+
+[data-bs-theme="dark"] #mrResultTable.table.table-striped > tbody > tr:nth-of-type(odd) > * {
+    background-color: #191B20 !important;
     box-shadow: none !important;
-  }
+}
+
+
+/* ===== Table Header ===== */
 
 #mrResultTable thead th {
-	white-space: nowrap !important;
-	position: relative !important;
-	padding-right: 35px !important;
-	cursor: pointer;
+    white-space: nowrap !important;
+    vertical-align: middle !important;
+    padding-right: 35px !important;
+    cursor: pointer;
 }
 
-#mrResultTable thead th.sorting:after, #mrResultTable thead th.sorting_asc:after,
-#mrResultTable thead th.sorting_desc:after, #mrResultTable thead th.sorting:before,	
-#mrResultTable thead th.sorting_asc:before, #mrResultTable thead th.sorting_desc:before
-	{
-	position: absolute !important;
-	top: 10px !important;
-	right: 10px !important;
-	display: block !important;
-	opacity: 0.5;
+
+/* ===== DataTables Header ===== */
+
+#mrResultTable thead th .dt-column-header {
+    display: inline-flex !important;
+    align-items: center !important;
+    width: auto !important;
+    white-space: nowrap !important;
 }
 
-#mrResultTable thead th.sorting:before {
-	margin-top: -6px;
+#mrResultTable thead th .dt-column-title {
+    display: inline-block !important;
+    white-space: nowrap !important;
 }
 
-#mrResultTable thead th.sorting:after {
-	margin-top: 4px;
+/* ===== Remove old DataTables arrow ===== */
+
+#mrResultTable thead th.sorting::before,
+#mrResultTable thead th.sorting::after,
+#mrResultTable thead th.sorting_asc::before,
+#mrResultTable thead th.sorting_asc::after,
+#mrResultTable thead th.sorting_desc::before,
+#mrResultTable thead th.sorting_desc::after {
+    display: none !important;
 }
 
-#mrResultTable thead th:first-child, th:last-child {
+/* ===== First / Last Column ===== */
+
+#mrResultTable thead th:first-child{
     padding-right: 0 !important;
 }
 
-#mrResultTable thead th:last-child {
-    text-align: right !important;
-    padding-right: 0 !important;
-} */
+/* ===== MR Search Modal ===== */
 
-
-.text-orange{
-	color: #FD7E14 ;
+#modal_search_mr .table-responsive {
+    max-height: 50vh;
+    overflow-y: auto;
 }
-.btn-cyan{
-	background-color: #0DCAF0 !important;
-}
-
 
 /* ===== Signature Box ===== */
 .sig-box {
@@ -132,7 +139,32 @@
 	gap: 3px;
 }
 
+.pr-src-actions {
+	display: none;
+	min-width: 80px;
+}
+.pr-src-menu.menu-open .pr-src-actions {
+	display: block;
+}
+.pr-src-menu.menu-open > .btn {
+	background-color: var(--bs-primary);
+	color: #fff;
+}
 
+/* ===== Responsive (mobile < 768px) ===== */
+@media (max-width: 767.98px) {
+	.sig-box {
+		height: 160px;
+	}
+
+	.pr-src-actions {
+		max-width: calc(100vw - 32px);
+	}
+
+	#kt_scrolltop {
+		bottom: 90px !important;
+	}
+}
 </style>
 
 </head>
@@ -141,7 +173,7 @@
 	<div class="app-main flex-column flex-row-fluid">
 		<div class="d-flex flex-column flex-column-fluid">
 			<div id="kt_app_toolbar" class="app-toolbar py-3 py-lg-6">
-				<div id="kt_app_toolbar_container" class="app-container container-fluid d-flex flex-stack">
+				<div id="kt_app_toolbar_container" class="app-container container-fluid d-flex flex-stack flex-wrap gap-3">
 				
 					<div class="page-title d-flex flex-column justify-content-center flex-wrap me-3">
 						<h1 class="page-heading d-flex text-gray-700 fw-semibold flex-column justify-content-center my-0">
@@ -164,14 +196,14 @@
 			<div id="kt_app_content" class="app-content flex-column-fluid">
 				<div id="kt_app_content_container" class="app-container container-fluid">
 					<div class="row g-5 gx-xl-10">
-						<div class="col-md-12 col-lg-7 col-xl-7 col-xxl-8 mb-md-5">
-							<div class="card h-100">
+						<div class="col-md-12 col-lg-7 col-xl-7 col-xxl-8 mb-10">
+							<div class="card h-100 ">
 								<div class="card-header border-0 px-9 pt-7 d-flex align-items-center justify-content-between">
 									<div class="card-title">
 										<h3 class="fw-semibold text-gray-900">PR - Header</h3>
 									</div>
 								</div>
-								<div class="card-body filter-card px-10 py-9 rounded-3">
+								<div class="card-body filter-card px-5 px-lg-10 py-9 rounded-3">
 									<div class="row g-5">
 								<div class="col-lg-6 col-md-6 col-12 d-flex align-items-center">
 									<i class="ki-duotone ki-user-tick fs-3 me-3">
@@ -202,7 +234,7 @@
 								</div>
 							</div>
 						</div>
-						<div class="col-md-12 col-lg-5 col-xl-5 col-xxl-4 mb-md-5">
+						<div class="col-md-12 col-lg-5 col-xl-5 col-xxl-4 mb-10 mt-0 mt-lg-5">
 							<div class="card h-100 d-flex flex-column">
 								<div class="card-header border-0 px-9 pt-7 d-flex align-items-center justify-content-between">
 									<div class="card-title">
@@ -211,10 +243,10 @@
 									<label for="myFile" id="lbFile" class="btn btn-lg btn-primary d-inline-flex align-items-center justify-content-center fw-medium h-40px my-0">
 										Upload
 										<input type="file" id="myFile" name="files" multiple style="display: none;"
-											accept="image/*,application/pdf,application/zip,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document">
+											accept="image/jpeg,image/png,image/gif,image/webp,image/bmp,application/pdf,application/zip,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document">
 									</label>
 								</div>
-								<div class="card-body filter-card px-10 py-9 rounded-3">
+								<div class="card-body filter-card px-5 px-lg-10 py-5 rounded-3">
 									<div id="attachFileWarningBox"
 										class="border border-2 border-warning rounded border-active active w-100">
 										<div class="py-5 d-flex flex-column align-items-center">
@@ -232,7 +264,7 @@
 										</div>
 									</div>
 									<div class="d-flex flex-column h-100" style="min-height: 0;">
-										<div id="attachFileList" class="d-flex flex-column gap-2 mt-2"></div>
+										<div id="attachFileList" class="d-flex flex-column gap-5"></div>
 										<div id="errorMsgAF" class="text-danger fs-8 mt-1"></div>
 									</div>
 								</div>
@@ -241,23 +273,23 @@
 					</div>
 
 					<div class="card mb-10">
-						<div class="card-header border-0 px-9 pt-7 d-flex align-items-center justify-content-between">
+						<div class="card-header border-0 px-9 pt-7 d-flex flex-wrap align-items-center justify-content-between gap-3">
 					        <div class="card-title">
 					            <h3 class="fw-semibold text-gray-900">PR - Detail</h3>
 					        </div>
-					        <div class="card-title gap-3">
+					        <div class="card-title flex-wrap gap-3">
 						         <button type="button" id="btnOpenCreatePr" class="btn btn-lg btn-success fw-medium text-white px-6 py-4">
 									<i class="ki-outline ki-plus fs-3 me-1"></i>Create
 								</button>
 								
-								<button type="button" class="btn btn-lg btn-primary fw-medium text-white px-6 py-4" data-bs-toggle="modal" data-bs-target="#modal_search_mr">
+								<button type="button" id="btnOpenSearchMr" class="btn btn-lg btn-primary fw-medium text-white px-6 py-4">
 									<i class="ki-duotone ki-magnifier fs-3 me-1">
 						                <span class="path1"></span><span class="path2"></span></i>Search MR
 								</button>
 					            
 					        </div>
 					    </div>
-						<div class="card-body filter-card px-9 py-8 rounded-3">
+						<div class="card-body filter-card px-5 px-lg-10 py-8 rounded-3">
 							<div id="prDetailCartContainer"></div>
 						</div>
 					</div>
@@ -271,9 +303,9 @@
 							</div>
 						</div>
 					<form id="signatureForm" method="post" action="update_signature" enctype="multipart/form-data">
-						<div class="card-body filter-card px-10 py-9 rounded-3 row g-5">
+						<div class="card-body filter-card px-5 px-lg-10 py-9 rounded-3 row g-5">
 						
-							<div class="col-6">
+							<div class="col-12 col-md-6">
 								<div class="d-flex flex-column align-items-center gap-2">
 									<c:choose>
 										<c:when test="${not empty imgPathSignature}">
@@ -303,7 +335,7 @@
 								</div>
 							</div>
 
-							<div class="col-6">
+							<div class="col-12 col-md-6">
 								<div class="border border-gray-200 rounded-3 h-100 d-flex flex-column align-items-center justify-content-center text-center py-8" id="receiverCard1">
 										<div class="receiver-box d-flex flex-fill flex-column align-items-center justify-content-center gap-2" id="receiverBox1">
 							            <c:choose>
@@ -336,7 +368,7 @@
 					
 					
 					<div class="modal fade" tabindex="-1" id="modal_create_pr">
-						<div class="modal-dialog modal-lg">
+						<div class="modal-dialog modal-lg modal-fullscreen-sm-down modal-dialog-centered">
 						    <div class="modal-content">
 						        <div class="modal-header">
 						            <h3 class="modal-title">Create PR - Detail</h3>
@@ -370,7 +402,7 @@
 										</div>
 									</div>
 									
-									<div class="row g-5 mb-6">
+									<div class="row g-5 mb-6" id="prQtyUnitRow">
 										<div class="col-lg-6 col-md-6 col-12 d-flex flex-column">
 											<label class="required fw-medium text-gray-800 mb-2">จำนวน</label>
 											<input type="number" class="form-control text-gray-700 h-45px" min="1"
@@ -388,15 +420,14 @@
 									</div>
 									
 									<div class="row g-5 mb-6">
-										<div class="col-6 d-flex flex-column">
-											<label class="required fw-medium text-gray-800 mb-2">Description / Detail</label>
-											<textarea class="form-control text-gray-700" rows="3" name="description" id="pr_description" placeholder="Description"></textarea>
+										<div class="col-12 col-md-6 d-flex flex-column">
+											<label class="fw-medium text-gray-800 mb-2">Description / Detail</label>
+											<textarea class="form-control text-gray-700" rows="3" name="pr_description" id="pr_description" placeholder="Description"></textarea>
 										</div>
 
-										<div class="col-lg-6 col-md-6 col-12 d-flex flex-column">
+										<div class="col-lg-6 col-md-6 col-12 d-flex flex-column" id="prRefLinkRow">
 											<label class="fw-medium text-gray-800 mb-2">Ref Link</label>
-											<input type="text" class="form-control text-gray-700 h-45px"
-													name="pr_ref_link" id="pr_ref_link" placeholder="https://..." />
+											<textarea class="form-control text-gray-700" rows="3" name="pr_ref_link" id="pr_ref_link" placeholder="https://..."></textarea>
 										</div>
 
 									</div>
@@ -412,7 +443,7 @@
 					</div>
 				
 					<div class="modal fade" tabindex="-1" id="modal_search_mr">
-					    <div class="modal-dialog modal-lg">
+					    <div class="modal-dialog modal-xl modal-fullscreen-lg-down">
 					        <div class="modal-content px-3">
 					            <div class="modal-header border-0">
 					                <h3 class="modal-title">Search MR</h3>
@@ -420,285 +451,68 @@
 					                    <i class="ki-duotone ki-cross fs-1"><span class="path1"></span><span class="path2"></span></i>
 					                </div>
 					            </div>
-					
+
 					            <div class="modal-body">
 					                <div class="row g-5 mb-3">
 					                    <div class="col-lg-6 col-md-6 col-12 d-flex flex-column">
-					                        <label class="required fw-medium text-gray-800 mb-2">Search MR</label>
+					                        <label class="required fw-medium text-gray-800 mb-2">Search</label>
 					                        <div class="input-group">
-					                            <input type="text" class="form-control text-gray-700 h-45px"
-					                                    name="" id="" />
-					                            
+					                            <input type="text" class="form-control text-gray-700 h-45px" name="searchMrKeyword" id="searchMrKeyword" />
+
 					                        </div>
 					                    </div>
-					
+
 					                    <div class="col-lg-6 col-md-6 col-12 d-flex flex-column">
 					                        <label class="required fw-medium text-gray-800 mb-2">Category</label>
 					                        <select name="searchMrCategory" id="searchMrCategory" class="form-select h-45px" data-control="select2">
 					                            <option value="" selected>All</option>
 					                            <option value="equipment">Equipment</option>
 					                            <option value="consumables">Consumables</option>
+												<option value="accessory">Accessory</option>
 					                            <option value="office">Office supplies</option>
 					                        </select>
 					                    </div>
 					                </div>
-					
+
 					                <div class="row g-5 mb-6 mt-3">
-						                    <div class="d-flex align-items-center justify-content-between mb-4 ">
+						                    <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-4">
 							                    <div class="d-flex align-items-center gap-2">
 								                    <h3 class="text-gray-900 fw-bold">
-												        <span id="mrItemsFoundCount"></span> Items Found 
-												    </h3>
-												
-												  
-												    <span id="mrSortLabel" class="fw-bold fs-6 text-gray-500">by Recent Updates</span>
-												</div>
-												        <h3 class="text-primary fw-bold">
-												            <span id="mrSelectedCount"></span> Selected
-												        </h3>
-												    
-							        
-											    
+													        <span id="mrItemsFoundCount"></span> Items Found
+													    </h3>
+
+														<span id="mrSortLabel" class="fw-bold fs-6 text-gray-500">by Recent Updates ↓</span>
+													</div>
+													<h3 class="text-primary fw-bold">
+													    <span id="mrSelectedCount"></span> Selected
+													</h3>
+
 											</div>
 					                        <div class="table-responsive">
 					                            <table class="table table-striped align-middle gy-4 gs-7" id="mrResultTable">
 					                                <thead>
 					                                    <tr class="fs-7 fw-bold text-gray-500 text-uppercase border-bottom border-gray-200 mb-0">
-					                                        <th class="w-25px ">
+					                                        <th class="min-w-15px ">
 					                                            <div class="text-center form-check form-check-sm">
 					                                                <input class="form-check-input" type="checkbox" id="checkAllMr" />
 					                                            </div>
 					                                        </th>
-					                                        <th class="min-w-40px">#</th>
+					                                        <th class="min-w-40px text-start mx-0 d-none d-md-table-cell">#</th>
 					                                        <th class="min-w-80px">MR ID</th>
 					                                        <th class="min-w-100px">Category</th>
 					                                         <th class="min-w-200px">Request Name</th>
 					                                        <th class="min-w-200px">Product</th>
-					                                        <th class="min-w-100px text-center">Status</th>
+					                                        <th class="min-w-100px text-end px-2 d-none d-md-table-cell">Status</th>
 					                                    </tr>
 					                                </thead>
-					                                <tbody id="mrResultBody">
-					                                    <tr class="fw-semibold fs-6 text-gray-800 border-bottom border-gray-200">
-					                                        <td>
-					                                            <div class="form-check form-check-sm">
-					                                                <input class="form-check-input mr-row-check" type="checkbox" />
-					                                            </div>
-					                                        </td>
-					                                        <td class="fw-semibold text-gray-900 fs-7 row-number"></td>
-					                                        <td class="fw-normal text-gray-900 fs-5">MR001</td>
-					                                        <td>
-					                                        	<div class="d-flex align-items-center">
-							                                        <div class="symbol symbol-40px me-4">
-														                 <i class="ki-duotone ki-monitor-mobile fs-2 text-primary">
-														                     <span class="path1"></span><span class="path2"></span></i>
-														            </div>
-							                                        <span class="fw-normal text-gray-900 fs-5">Equipment</span>
-						                                        </div>
-					                                        </td>
-					                                        <td>
-															    <div class="d-flex align-items-center gap-3">
-															        
-															        <div class="symbol symbol-35px"
-															             data-kt-menu-trigger="{default: 'click', lg: 'hover'}"
-															             data-kt-menu-attach="parent" data-kt-menu-placement="bottom-end">
-															            <c:choose>
-															                <c:when test="${not empty sessionScope.userImgPath}">
-															                    <img id="avatarPreview" src="${sessionScope.userImgPath}" alt="${not empty onlineUser.nameEN ? onlineUser.nameEN : onlineUser.name}"
-															                         class="rounded-circle w-35px h-35px" style="object-fit: cover;"> 
-															                </c:when>
-															                <c:otherwise>
-															                  
-															                    <div id="avatarPreview" class="rounded-circle w-35px h-35px bg-light text-primary d-flex justify-content-center align-items-center fw-bold">
-															                        <c:choose>
-															                            <c:when test="${not empty onlineUser.nameEN and fn:length(onlineUser.nameEN) >= 1}">
-															                                ${fn:toUpperCase(fn:substring(onlineUser.nameEN, 0, 1))}
-															                            </c:when>
-															                            <c:when test="${not empty onlineUser.name and fn:length(onlineUser.name) >= 1}">
-															                                ${fn:toUpperCase(fn:substring(onlineUser.name, 0, 1))}
-															                            </c:when>
-															                            <c:otherwise>-</c:otherwise>
-															                        </c:choose>
-															                    </div>
-															                </c:otherwise>
-															            </c:choose>
-															        </div>
-															
-															        <div class="d-flex flex-column">
-															            <span class="fw-normal text-gray-900 fs-6">Kridsada Ninpetch</span>
-															            <span class="fw-normal text-gray-900 fs-6">1 Jan 2026, 12:33</span>
-															        </div>
-															        
-															    </div>
-															</td>
-					                                        <td>
-					                                        	<div class="d-flex flex-column">
-															        <span class="fw-normal text-gray-900 fs-6">Lenovo LOQ 15IAXB</span>
-															        <span class="fw-normal text-gray-900 fs-6">1 เครื่อง</span>
-															 	</div>
-															</td>
-					                                        <td class="text-end">
-					                                        <c:choose>
-																<c:when test="${item.status == 'B'}">
-																	<span class="badge badge-lg bg-light fw-semibold fs-7 text-gray-600">Draft</span>
-																</c:when>
-																<c:when test="${item.status == 'W'}">
-																	<span class="badge badge-lg badge-warning fw-semibold fs-7">Pending</span>
-																</c:when>
-																<c:when test="${item.status == 'C'}">
-																	<span class="badge badge-lg bg-success fw-semibold fs-7">Approved</span>
-																</c:when>
-																<c:when test="${item.status == 'T'}">
-																	<span class="badge badge-lg bg-cyan text-white fw-semibold fs-7">In-Progress</span>
-																</c:when>
-																<c:when test="${item.status == 'W'}">
-																	<span class="badge badge-lg badge-info fw-semibold fs-7">Return</span>
-																</c:when>
-																<c:when test="${item.status == 'C'}">
-																	<span class="badge badge-lg bg-danger fw-semibold fs-7">Rejected</span>
-																</c:when>
-																<c:when test="${item.status == 'T'}">
-																	<span class="badge badge-lg bg-dark fw-semibold fs-7">Closed</span>
-																</c:when>
-																<c:otherwise>
-																</c:otherwise>
-															</c:choose>
-															
-															<span class="badge badge-lg bg-light-secondary fw-semibold fs-7">Draft</span>
-					                                        </td>
-					                                    </tr>
-					                                    <tr class="fw-semibold fs-6 text-gray-800 border-bottom border-gray-200">
-					                                        <td>
-					                                            <div class="form-check form-check-sm">
-					                                                <input class="form-check-input mr-row-check" type="checkbox" />
-					                                            </div>
-					                                        </td>
-					                                        <td class="fw-semibold text-gray-900 fs-7 row-number"></td>
-					                                        <td class="fw-normal text-gray-900 fs-5">MR002</td>
-					                                        <td>
-					                                        	<div class="d-flex align-items-center">
-							                                        <div class="symbol symbol-40px me-4">
-							                                        <i class="ki-duotone ki-lots-shopping fs-2 text-orange">
-													                     <span class="path1"></span><span class="path2"></span>
-													                     <span class="path3"></span><span class="path4"></span>
-													                     <span class="path5"></span><span class="path6"></span>
-													                     <span class="path7"></span><span class="path8"></span>
-												                     </i>
-														            </div>
-							                                        <span class="fw-normal text-gray-900 fs-5">Consumables</span>
-						                                        </div>
-					                                        </td>
-					                                        <td>
-															    <div class="d-flex align-items-center gap-3">
-															        
-															        <div class="symbol symbol-35px"
-															             data-kt-menu-trigger="{default: 'click', lg: 'hover'}"
-															             data-kt-menu-attach="parent" data-kt-menu-placement="bottom-end">
-															            <c:choose>
-															                <c:when test="${not empty sessionScope.userImgPath}">
-															                    <img id="avatarPreview" src="${sessionScope.userImgPath}" alt="${not empty onlineUser.nameEN ? onlineUser.nameEN : onlineUser.name}"
-															                         class="rounded-circle w-35px h-35px" style="object-fit: cover;"> 
-															                </c:when>
-															                <c:otherwise>
-															                  
-															                    <div id="avatarPreview" class="rounded-circle w-35px h-35px bg-light text-primary d-flex justify-content-center align-items-center fw-bold">
-															                        <c:choose>
-															                            <c:when test="${not empty onlineUser.nameEN and fn:length(onlineUser.nameEN) >= 1}">
-															                                ${fn:toUpperCase(fn:substring(onlineUser.nameEN, 0, 1))}
-															                            </c:when>
-															                            <c:when test="${not empty onlineUser.name and fn:length(onlineUser.name) >= 1}">
-															                                ${fn:toUpperCase(fn:substring(onlineUser.name, 0, 1))}
-															                            </c:when>
-															                            <c:otherwise>-</c:otherwise>
-															                        </c:choose>
-															                    </div>
-															                </c:otherwise>
-															            </c:choose>
-															        </div>
-															
-															        <div class="d-flex flex-column">
-															            <span class="fw-normal text-gray-900 fs-6">Kridsada Ninpetch</span>
-															            <span class="fw-normal text-gray-900 fs-6">1 Jan 2026, 12:33</span>
-															        </div>
-															        
-															    </div>
-															</td>
-					                                        <td>
-					                                        	<div class="d-flex flex-column">
-															        <span class="fw-normal text-gray-900 fs-6">A4</span>
-															        <span class="fw-normal text-gray-900 fs-6">1 รีม</span>
-															 	</div>
-															</td>
-															
-					                                        <td class="text-end"><span class="badge badge-lg badge-warning fw-semibold fs-7">Pending</span></td>
-					                                    </tr>
-					                                    <tr class="fw-semibold fs-6 text-gray-800 border-bottom border-gray-200">
-					                                        <td>
-					                                            <div class="form-check form-check-sm">
-					                                                <input class="form-check-input mr-row-check" type="checkbox" />
-					                                            </div>
-					                                        </td>
-					                                        <td class="fw-normal text-gray-900 fs-7 row-number"></td>
-					                                        <td class="fw-normal text-gray-900 fs-5">MR003</td>
-					                                        <td>
-					                                        	<div class="d-flex align-items-center">
-							                                        <div class="symbol symbol-40px me-4">
-														                 <i class="ki-duotone ki-keyboard fs-2 text-dark">
-														                     <span class="path1"></span><span class="path2"></span></i>
-														            </div>
-							                                        <span class="fw-normal text-gray-900 fs-5">Instrument</span>
-						                                        </div>
-					                                        </td>
-					                                        <td>
-															    <div class="d-flex align-items-center gap-3">
-															        
-															        <div class="symbol symbol-35px"
-															             data-kt-menu-trigger="{default: 'click', lg: 'hover'}"
-															             data-kt-menu-attach="parent" data-kt-menu-placement="bottom-end">
-															            <c:choose>
-															                <c:when test="${not empty sessionScope.userImgPath}">
-															                    <img id="avatarPreview" src="${sessionScope.userImgPath}" alt="${not empty onlineUser.nameEN ? onlineUser.nameEN : onlineUser.name}"
-															                         class="rounded-circle w-35px h-35px" style="object-fit: cover;"> 
-															                </c:when>
-															                <c:otherwise>
-															                  
-															                    <div id="avatarPreview" class="rounded-circle w-35px h-35px bg-light text-primary d-flex justify-content-center align-items-center fw-bold">
-															                        <c:choose>
-															                            <c:when test="${not empty onlineUser.nameEN and fn:length(onlineUser.nameEN) >= 1}">
-															                                ${fn:toUpperCase(fn:substring(onlineUser.nameEN, 0, 1))}
-															                            </c:when>
-															                            <c:when test="${not empty onlineUser.name and fn:length(onlineUser.name) >= 1}">
-															                                ${fn:toUpperCase(fn:substring(onlineUser.name, 0, 1))}
-															                            </c:when>
-															                            <c:otherwise>-</c:otherwise>
-															                        </c:choose>
-															                    </div>
-															                </c:otherwise>
-															            </c:choose>
-															        </div>
-															
-															        <div class="d-flex flex-column">
-															            <span class="fw-normal text-gray-900 fs-6">Kridsada Ninpetch</span>
-															            <span class="fw-normal text-gray-900 fs-6">1 Jan 2026, 12:33</span>
-															        </div>
-															        
-															    </div>
-															</td>
-					                                        <td>
-					                                        	<div class="d-flex flex-column">
-															        <span class="fw-normal text-gray-900 fs-6">ต้นคริสมาส</span>
-															        <span class="fw-normal text-gray-900 fs-6">1 ต้น</span>
-															 	</div>
-															</td>
-					                                         <td class="text-end"><span class="badge badge-lg badge-warning fw-semibold fs-7">Pending</span></td>
-					                                    </tr>
-					                                </tbody>
-					                            </table>
+					                                <tbody id="mrResultBody"></tbody>
+												</table>
 					                        </div>
 					                        <div class="text-muted fs-7 mt-2" id="mrNoResult" style="display:none;">No matching MR found.</div>
-					                    
+
 					                </div>
 					            </div>
-					
+
 					            <div class="modal-footer pt-0 mt-0 mb-2 border-0">
 					                <button type="button" class="btn btn-light" data-bs-dismiss="modal">Close</button>
 					                <button type="button" class="btn btn-success" id="btnSubmitMr">Submit</button>
@@ -706,18 +520,83 @@
 					        </div>
 					    </div>
 					</div>
+
+					<div class="modal fade" tabindex="-1" id="modal_edit_source">
+						<div class="modal-dialog modal-lg modal-dialog-centered">
+							<div class="modal-content">
+								<div class="modal-header">
+									<h3 class="modal-title">Edit PR - Detail</h3>
+									<div class="btn btn-icon btn-sm btn-active-light-primary ms-2" data-bs-dismiss="modal" aria-label="Close">
+										<i class="ki-duotone ki-cross fs-1"><span class="path1"></span><span class="path2"></span></i>
+									</div>
+								</div>
+
+								<div class="modal-body">
+									<div class="d-flex align-items-center mb-4">
+										<div class="symbol symbol-40px me-3" id="editSrcTypeIcon"></div>
+										<span class="fs-6 fw-normal text-gray-900" id="editSrcTypeName"></span>
+										<i class="ki-duotone ki-black-right mx-2 text-gray-500 fs-2">
+											<span class="path1"></span><span class="path2"></span><span class="path3"></span>
+										</i>
+										<span class="fs-6 fw-normal text-gray-900" id="editSrcProduct"></span>
+									</div>
+
+									<div class="d-flex align-items-center justify-content-between flex-wrap gap-5 bg-light rounded p-5 mb-8">
+										<div class="d-flex align-items-center flex-wrap gap-8">
+											<div class="d-flex align-items-center">
+												<i class="ki-duotone ki-user-tick fs-3 text-muted me-2"><span class="path1"></span><span class="path2"></span><span class="path3"></span></i>
+												<span class="text-gray-800 fs-5" id="editSrcCreator"></span>
+											</div>
+											<div class="d-flex align-items-center">
+												<i class="ki-duotone ki-calendar-2 fs-3 me-2"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span><span class="path5"></span></i>
+												<span class="text-gray-800 fs-5" id="editSrcDate"></span>
+											</div>
+											<div class="d-flex align-items-center gap-2">
+												<i class="ki-duotone ki-tablet-book fs-3"><span class="path1"></span><span class="path2"></span></i>
+												<span id="editSrcMr"></span>
+											</div>
+										</div>
+										<div class="text-end">
+											<div class="text-muted fs-8">ปัจจุบัน</div>
+											<div class="text-gray-900 fs-5 fw-no" id="editSrcCurrent"></div>
+										</div>
+									</div>
+
+									<div class="row g-5">
+										<div class="col-12 col-sm-6 d-flex flex-column">
+											<label class="required fw-medium text-gray-800 mb-2">จำนวน</label>
+											<input type="number" class="form-control text-gray-700 h-45px" min="1" id="edit_src_qty" />
+										</div>
+										<div class="col-12 col-sm-6 d-flex flex-column">
+											<label class="required fw-medium text-gray-800 mb-2">Unit</label>
+											<select id="edit_src_unit" class="form-select h-45px" data-control="select2"
+													data-dropdown-parent="#modal_edit_source" data-hide-search="true">
+												<option value=""></option>
+											</select>
+										</div>
+									</div>
+									<div class="text-muted fs-7 mt-3" id="editSrcPreview"></div>
+								</div>
+
+								<div class="modal-footer">
+									<button type="button" class="btn btn-light" data-bs-dismiss="modal">Close</button>
+									<button type="button" class="btn btn-success" onclick="saveEditSource()">Update</button>
+								</div>
+							</div>
+						</div>
+					</div>
 					
-					<div class="d-flex justify-content-between g-10">
-						<div class="d-flex">
+					<div class="pr-action-bar d-flex flex-wrap justify-content-between gap-3">
+						<div class="d-flex flex-wrap gap-3">
 							<button type="button" id="backFormBtn"
 								onclick="location.href='purchase_requisition_list'"
-								class="btn btn-lg btn-light fw-medium text-light-inverse px-6 py-4 me-4 border">Back
+								class="btn btn-lg btn-light fw-medium text-light-inverse px-6 py-4 border">Back
 							</button>
 						</div>
-						<div class="d-flex">
+						<div class="d-flex flex-wrap gap-3">
 							
 							<button type="button" id="saveDraft" onclick="saveDraftForm()"
-								class="btn btn-lg btn-cyan text-white fw-medium px-6 py-4 me-4">Save Draft
+								class="btn btn-lg btn-cyan text-white fw-medium px-6 py-4">Save Draft
 							</button>
 							<button type="button" id="savePRFormBtn"
 								class="btn btn-success text-white fw-medium px-6 py-4"
@@ -734,16 +613,15 @@
 	const ctx = "${pageContext.request.contextPath}";
 	const currentUserDisplay = "${empty loginUser.employeeId ? '' : loginUser.employeeId} - ${empty loginUser.nameEN ? '' : loginUser.nameEN}";
 
-	function formatNowDateTime(){
-	    const d = new Date();
-	    const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
-	    const pad = n => String(n).padStart(2,'0');
-	    return `\${d.getDate()} \${months[d.getMonth()]} \${d.getFullYear()}, \${pad(d.getHours())}:\${pad(d.getMinutes())}`;
-
+	function formatNowDateTime(inputDate){
+		const d = inputDate ? new Date(String(inputDate).replace(' ', 'T')) : new Date();
+		const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+		const pad = n => String(n).padStart(2,'0');
+		return `\${d.getDate()} \${months[d.getMonth()]} \${d.getFullYear()}, \${pad(d.getHours())}:\${pad(d.getMinutes())}`;
 	}
 
 	// --- PO Header/Vendor draft (sessionStorage) ---
-	var prHeaderDraft = null;      // ค่าที่โหลดจาก session ตอน init
+	var prHeaderDraft = null; // ค่าที่โหลดจาก session ตอน init
 
 	function saveHeaderToSession(){
 		try {
@@ -769,37 +647,6 @@
 	document.addEventListener("DOMContentLoaded", function () {
 		loadHeaderFromSession();
 
-		// Table MR
-		var table = $('#mrResultTable').DataTable({
-			ordering : true,
-			searching : true,
-			autoWidth : false,
-			info: false, 
-			paging: false,
-			columnDefs : [ {
-				orderable : false,
-				targets : [ 0 ]
-			}, {
-				orderable : true,
-				targets : [ 1, 2, 3, 4, 5 ]
-			}, {
-				targets: [ 5 ],
-				type: 'string'
-			} ],
-			order : [],
-			headerCallback : function(thead) {
-				$(thead).find('th').each(
-						function(index) {
-							if (index === 0) return;
-							if ($(this).find('.th-wrapper').length === 0) {
-								$(this).wrapInner(
-										'<span class="th-wrapper" style="display:inline-flex; align-items:center; white-space:nowrap; pointer-events:none;"></span>');
-								}
-							});
-				}
-		});
-		
-		
 		document.querySelector('#kt_app_content_container').addEventListener('click', function(e){
 		    const btn = e.target.closest('.collapsed, [data-target^="cart_"], a[id^="prGroupBtn_"]');
 		    if (!btn) return;
@@ -827,21 +674,7 @@
 		        icon.classList.add('ki-down-square');
 		    }
 		});
-		
-		//running number
-		function runNumber() {
-			const info = table.page.info();
-			table.column(1, {
-				page : 'current'
-					}).nodes().each(function(cell, i) {
-						cell.innerHTML = info.start + i + 1;
-						});
-			}
-		
-		table.on('draw.dt order.dt search.dt', runNumber);
-		runNumber();
-		
-		
+
 		// --- Modal ---
 		 var elements = Array.prototype.slice.call(document.querySelectorAll("[data-bs-stacked-modal]"));
 		    if (elements && elements.length > 0) {
@@ -864,77 +697,55 @@
 		            });
 		        });
 		    }
-		    // MR
-		    // document.querySelectorAll('a.btn-primary[href="#"]').forEach(function (btn) {
-		    //     if (btn.textContent.trim().includes('Search MR')) {
-		    //         btn.setAttribute('data-bs-toggle', 'modal');
-		    //         btn.setAttribute('data-bs-target', '#modal_search_mr');
-		    //     }
-		    // });
 
-		    document.getElementById('checkAllMr').addEventListener('change', function () {
-		        document.querySelectorAll('.mr-row-check').forEach(cb => cb.checked = this.checked);
-		        updateMrSelectedCount();
-		    });
+		    const searchMrModalEl = document.getElementById('modal_search_mr');
 
-		    document.querySelectorAll('.mr-row-check').forEach(function (cb) {
-		        cb.addEventListener('change', updateMrSelectedCount);
-		    });
-
-		    function updateMrSelectedCount() {
-		        var count = document.querySelectorAll('.mr-row-check:checked').length;
-		        document.getElementById('mrSelectedCount').textContent = count;
-		    }
-		    updateMrSelectedCount();  
-
-		    function updateItemsFoundCount() {
-		        var count = table.rows({ search: 'applied' }).count();
-		        document.getElementById('mrItemsFoundCount').textContent = count;
-		    }
-
-		    table.on('draw.dt search.dt', updateItemsFoundCount);
-		    updateItemsFoundCount();
-		    
-		    /* $('#modal_create_pr').on('shown.bs.modal', function () {
-		        $('#items_type').val('equipment').trigger('change');
-		    });
-		     */
-		    
-		    
-		   /*  const createPrModalEl = document.getElementById('modal_create_pr');
-		    const createPrModal = bootstrap.Modal.getOrCreateInstance(createPrModalEl);
-
-		    createPrModalEl.addEventListener('hidden.bs.modal', function () {
-		        $('#items_type').val('equipment').trigger('change');
-		        $('#pr_qty').val('');
-		        $('#unit').val('');
-		        $('#pr_price').val('');
-		        $('#pr_description').val('');
-		        
-		        editingIndex = -1;
-		        $('#modal_create_pr .modal-title').text('Create PR - Detail');
-		        $('#btnSavePrDetail').text('Save');
-
-		        if (!document.querySelector('.modal.show')) {
-		            document.body.classList.remove('modal-open');
-		            document.body.style.removeProperty('overflow');
-		            document.body.style.removeProperty('padding-right');
-		            document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
+		    searchMrModalEl.addEventListener('hide.bs.modal', function () {
+		        if (document.activeElement && searchMrModalEl.contains(document.activeElement)) {
+		            document.activeElement.blur();
 		        }
-		    }); */
+		    });
+
+		    searchMrModalEl.addEventListener('hidden.bs.modal', function () {
+		        isSearchMrModalOpen = false;
+                // ล้างติ๊กค้างใน modal Search MR
+                if (mrDetailTable) { mrDetailTable.destroy(); mrDetailTable = null; }
+                $('#mrResultBody').empty();
+                $('#checkAllMr').prop('checked', false);
+                $('#mrSelectedCount').text('0');
+
+		        selectedMrCategory = '';
+				pendingMrKeyword = null;
+        		$('#searchMrKeyword').val('');
+		        $('#searchMrCategory').val('').trigger('change.select2');
+		    });
+
+		    searchMrModalEl.addEventListener('show.bs.modal', function () {
+		        isSearchMrModalOpen = true;
+		        loadInprogressMrDetail();
+		    });
+
+		    document.getElementById('btnOpenSearchMr').addEventListener('click', function () {
+		        bootstrap.Modal.getOrCreateInstance(searchMrModalEl).show();
+		    });
+
 		    const createPrModalEl = document.getElementById('modal_create_pr');
 
 		    createPrModalEl.addEventListener('show.bs.modal', function () {
-		        if (editingIndex === -1) {
-		            $('#items_type').val('equipment').trigger('change');
-		            $('#pr_qty').val('1');
-		            $('#unit').val('');
-		            $('#pr_ref_link').val('');
-		            $('#pr_description').val('');
-		            $('#modal_create_pr .modal-title').text('Create PR - Detail');
-		            $('#btnSavePrDetail').text('Save');
-		        }
-		    });
+				if (editingIndex === -1) {
+					$('#items_type').val('equipment').trigger('change');
+					$('#pr_qty').val('1');
+					$('#unit').val('');
+					$('#pr_ref_link').val('');
+					$('#pr_description').val('');
+					$('#modal_create_pr .modal-title').text('Create PR - Detail');
+					$('#btnSavePrDetail').text('Save');
+					$('#prQtyUnitRow').removeClass('d-none');
+					$('#prRefLinkRow').removeClass('d-none');
+				}  else {
+					$('#prQtyUnitRow').addClass('d-none');
+				}
+			});
 
 		    createPrModalEl.addEventListener('shown.bs.modal', function () {
 		        document.body.classList.add('modal-open');
@@ -944,12 +755,19 @@
 
 		    createPrModalEl.addEventListener('hidden.bs.modal', function () {
 		        editingIndex = -1;
+		        editAllowProductChange = false;
+		        $('#items_type').prop('disabled', false);
+		        $('#product_name').prop('disabled', false);
 		        document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
 		        document.body.classList.remove('modal-open');
 		        document.body.style.removeProperty('padding-right');
 		        document.body.style.removeProperty('overflow');
 		        document.documentElement.style.removeProperty('overflow');
 		    });
+
+			document.getElementById('modal_edit_source').addEventListener('hidden.bs.modal', function () {
+				editingSrc = null;
+			});
 
 		    document.getElementById('btnOpenCreatePr').addEventListener('click', function () {
 		        editingIndex = -1;
@@ -1051,7 +869,7 @@
 		var fileListDiv = document.getElementById('attachFileList');
 		if (!fileListDiv) return;
 		fileListDiv.innerHTML = '';
-		fileListDiv.className = 'd-flex flex-column mt-3 gap-2';
+		fileListDiv.className = 'd-flex flex-column gap-5';
 
 		selectedFiles.forEach(function (file) {
 			const fileName = file.name;
@@ -1064,7 +882,7 @@
 			outerDiv.className = 'd-flex align-items-center justify-content-center mb-2';
 
 			outerDiv.innerHTML =
-				'<div class="d-flex align-items-center justify-content-between w-100 p-2 rounded">' +
+				'<div class="d-flex align-items-center justify-content-between w-100 rounded">' +
 					'<div class="d-flex align-items-center text-decoration-none text-gray-800 overflow-hidden" style="flex-grow: 1; min-width: 0;">' +
 						'<img src="' + iconPath + '" class="w-25px h-25px me-3 flex-shrink-0" alt="icon" />' +
 						'<span class="fs-6 fw-medium d-flex" style="min-width: 0;" title="' + fileName + '">' +
@@ -1222,7 +1040,7 @@
 
 	$('#product_name').on('change', function(){
 		var productId = $(this).val();
-		$('#unit').html('<option value=""></option>').trigger('change');
+		$('#unit').html('<option value=""></option>').data('base-unit-id', '').data('base-unit-name', '').trigger('change');
 		if(!productId) return;
 
 		$.ajax({
@@ -1236,15 +1054,22 @@
 				var list = (data && data.unitList) || [];
 
 				var options = '';
+				var baseUnit = null;
 				if (list.length === 0) {
 					options = '<option value=""></option>';
 				} else {
 					list.forEach(function (item, index) {
-						options += '<option value="' + item.id + '"' + (index === 0 ? ' selected' : '') + '>' + item.name + '</option>';
+						if (String(item.sequence) === '0') baseUnit = item;
+						options += '<option value="' + item.id + '"'
+							+ ' data-conversion-rate="' + (item.conversionRate != null ? item.conversionRate : 1) + '"'
+							+ ' data-sequence="' + (item.sequence != null ? item.sequence : '') + '"'
+							+ (index === 0 ? ' selected' : '') + '>' + item.name + '</option>';
 					});
 				}
-
-				$('#unit').html(options).trigger('change');
+				$('#unit').html(options)
+					.data('base-unit-id', baseUnit ? baseUnit.id : '')
+					.data('base-unit-name', baseUnit ? baseUnit.name : '')
+					.trigger('change');
 			},
 			error: function () {
 				Swal.fire('Error', 'ไม่สามารถโหลดข้อมูล Unit ได้', 'error');
@@ -1261,12 +1086,71 @@
 let prDetailCart = [];
 let prDetailCounter = 0;
 let editingIndex = -1;
+let editAllowProductChange = false;
 let confirmed1 = ${empty statusActiveSafe ? 'false' : 'true'}; //track ว่าลงชื่อ ผู้ขอเบิก แล้วหรือยัง
 
 let requesterSign = null;
 
 const PR_HEADER_STORAGE_KEY = 'prHeader_draft';
 const PR_CART_STORAGE_KEY = 'prDetailCart_draft';
+
+function addSourceToCart(itemBase, source){
+    const idx = prDetailCart.findIndex(function(it){
+        return String(it.productId) === String(itemBase.productId);
+    });
+    if (idx >= 0) {
+        const ex = prDetailCart[idx];
+
+        // item เดิมที่ยังไม่มี sources → ห่อตัวเองเป็น source แรกก่อน (เหมือน PO)
+        if (!ex.sources || ex.sources.length === 0) {
+            ex.sources = [{
+                mrId: null,
+                qty: ex.qty, unit: ex.unit, unitName: ex.unitName, baseQty: ex.qty,
+                refLink: '', description: ex.description || '',
+                creatorName: ex.creatorName || currentUserDisplay,
+                savedAt: ex.savedAt || formatNowDateTime()
+            }];
+        }
+
+        // กันเพิ่มซ้ำ ถ้า mr_id นี้ถูกดึงมาแล้ว
+        if (source.mrId && ex.sources.some(function(s){ return String(s.mrId) === String(source.mrId); })) return;
+
+        ex.sources.push(source);
+        ex.qty = (Number(ex.qty) || 0) + source.baseQty;
+        if (!ex.description && itemBase.description) ex.description = itemBase.description;
+    } else {
+        prDetailCart.push({ ...itemBase, qty: source.baseQty, sources: [source] });
+    }
+}
+
+// draft เก่าใน sessionStorage ที่ยังไม่มี sources ห่อเป็นโครงสร้างใหม่
+function normalizeCartItem(item){
+    const qty = Number(item.qty) || 0;
+    if (!item.sources || item.sources.length === 0) {
+        item.sources = [{
+            mrId: item.mrId || null,
+            qty: qty, unit: item.unit, unitName: item.unitName, baseQty: qty,
+            refLink: item.refLink || '',
+            description: item.description || '',
+            creatorName: item.creatorName || currentUserDisplay,
+            savedAt: item.savedAt || formatNowDateTime()
+        }];
+    }
+    delete item.mrId; delete item.refLink; delete item.total;
+    item.qty = qty;
+    item.savedAt = item.savedAt || formatNowDateTime();
+    return item;
+}
+
+function loadCartFromSession(){
+    try {
+        const saved = sessionStorage.getItem(PR_CART_STORAGE_KEY);
+        if (saved) prDetailCart = JSON.parse(saved).map(normalizeCartItem);
+    } catch (e) {
+        console.error('ไม่สามารถโหลด cart จาก sessionStorage ได้', e);
+        prDetailCart = [];
+    }
+}
 
 function saveCartToSession(){
     try {
@@ -1276,28 +1160,9 @@ function saveCartToSession(){
     }
 }
 
-function loadCartFromSession(){
-    try {
-        const saved = sessionStorage.getItem(PR_CART_STORAGE_KEY);
-        if (saved) {
-            prDetailCart = JSON.parse(saved);
-            
-            prDetailCart = prDetailCart.map(item => ({
-                ...item,
-                qty: Number(item.qty) || 0,
-                refLink: item.refLink || '',
-                total: 0,
-                savedAt: item.savedAt || formatNowDateTime()
-            }));
-        }
-    } catch (e) {
-        console.error('ไม่สามารถโหลด cart จาก sessionStorage ได้', e);
-        prDetailCart = [];
-    }
-}
-
 //กันข้อมูลหายตอน refresh
 loadCartFromSession();
+
 document.addEventListener('DOMContentLoaded', function(){
     renderPrDetailCart();
 });
@@ -1308,20 +1173,28 @@ function validatePrDetailForm(){
     if (!$('#items_type').val() || !$('#items_type').val().trim()) errors.push('Category');
     if (!$('#product_name').val() || !$('#product_name').val().trim()) errors.push('Product Name');
 
-    const qty = $('#pr_qty').val().trim();
-    if (!qty || Number(qty) <= 0) errors.push('จำนวน');
-
-    if (!$('#unit').val().trim()) errors.push('Unit');
-
-    if (!$('#pr_description').val().trim()) errors.push('Description / Detail');
+    if (editingIndex === -1 || editAllowProductChange) {
+        const qty = $('#pr_qty').val().trim();
+        if (!qty || Number(qty) <= 0) errors.push('จำนวน');
+        if (!$('#unit').val().trim()) errors.push('Unit');
+    }
 
     return errors;
 }
 
+function getManualRefSourceIndex(item){
+    const srcs = item.sources || [];
+    let idx = srcs.findIndex(function(s){ return !s.mrId && s.refLink; });
+    if (idx === -1) idx = srcs.findIndex(function(s){ return !s.mrId; });
+    return idx;
+}
+function getManualRefSource(item){
+    const idx = getManualRefSourceIndex(item);
+    return idx >= 0 ? item.sources[idx] : null;
+}
+
 function addPrDetailToCart(){
-
     const errors = validatePrDetailForm();
-
     if (errors.length > 0) {
         Swal.fire({
             title: 'Please complete the form!',
@@ -1332,74 +1205,63 @@ function addPrDetailToCart(){
         return;
     }
 
-    const item = {
-        itemsType: $("#items_type").val(),
-        itemsTypeText: $("#items_type option:selected").text(),
-        productId: $("#product_name").val(),
-        productName: $("#product_name option:selected").text(),
-        qty: Number($("#pr_qty").val()),
-        unit: $("#unit").val(),
-        unitName: $("#unit option:selected").text(),
-        refLink: $("#pr_ref_link").val().trim(),
-        description: $("#pr_description").val(),
-        savedAt: formatNowDateTime()
-    };
+    const description = $("#pr_description").val();
+    const refLink = $("#pr_ref_link").val().trim();
 
-    item.total = 0;
-
-    if (editingIndex >= 0) {
-        prDetailCart[editingIndex] = item;
+    if (editingIndex >= 0 && editAllowProductChange) {
+        prDetailCart.splice(editingIndex, 1);
         editingIndex = -1;
-    } else {
-        prDetailCart.push(item);
     }
 
-    // console.log(item);
-    // console.log(prDetailCart);
-    
+    if (editingIndex >= 0) {
+		// Edit
+		const old = prDetailCart[editingIndex] || {};
+		const updated = { ...old, description: description };
+
+		const targetIdx = getManualRefSourceIndex(old);
+		updated.sources = (old.sources || []).map(function(s, i){
+			if (i !== targetIdx) return s;
+			return { ...s, description: description, refLink: refLink };
+		});
+
+		prDetailCart[editingIndex] = updated;
+		editingIndex = -1;
+	} else {
+        const rawQty = Number($("#pr_qty").val()) || 0;
+        const rawUnitId = $("#unit").val();
+        const rawUnitName = $("#unit option:selected").text();
+        const conversionRate = Number($("#unit option:selected").data('conversion-rate')) || 1;
+        const baseUnitId = $('#unit').data('base-unit-id') || rawUnitId;
+        const baseUnitName = $('#unit').data('base-unit-name') || rawUnitName;
+        const baseQty = rawQty * conversionRate;
+
+        addSourceToCart({
+            itemsType: $("#items_type").val(),
+            itemsTypeText: $("#items_type option:selected").text(),
+            productId: $("#product_name").val(),
+            productName: $("#product_name option:selected").text(),
+            unit: baseUnitId,
+            unitName: baseUnitName,
+           	description: description, 
+            creatorName: currentUserDisplay,
+            savedAt: formatNowDateTime()
+        }, {
+            mrId: null,
+            qty: rawQty, unit: rawUnitId, unitName: rawUnitName,
+            baseQty: baseQty,
+            refLink: refLink,
+			description: description, 
+            creatorName: currentUserDisplay,
+            savedAt: formatNowDateTime()
+        });
+    }
+
     saveCartToSession();
     renderPrDetailCart();
-    
-    if (document.activeElement) {
-        document.activeElement.blur();
-    }
 
-    const modalEl = document.getElementById("modal_create_pr");
-    const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
-    modal.hide();
+    if (document.activeElement) document.activeElement.blur();
+    bootstrap.Modal.getOrCreateInstance(document.getElementById("modal_create_pr")).hide();
 }
-
-/* function addPrDetailToCart(){
-    const item = {
-        itemsType: $("#items_type").val(),
-        itemsTypeText: $("#items_type option:selected").text(),
-        productId: $("#product_name").val(),
-        productName: $("#product_name option:selected").text(),
-        qty: Number($("#pr_qty").val()),
-        unit: $("#unit").val(),
-        price: parseFormattedNumber($("#pr_price").val()),
-        description: $("#pr_description").val(),
-        savedAt: formatNowDateTime()
-    };
-
-    item.total = item.qty * item.price;
-
-    if (editingIndex >= 0) {
-        prDetailCart[editingIndex] = item;
-        editingIndex = -1; 
-    } else {
-        prDetailCart.push(item);
-    }
-
-    saveCartToSession(); 
-    renderPrDetailCart();
-
-    renderPrDetailCart();
-
-    const modalEl = document.getElementById("modal_create_pr");
-    const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
-    modal.hide();
-} */
 
 function renderPrDetailCart(){
 
@@ -1478,32 +1340,41 @@ function createPrCard(item,index){
     }
 
     const groupId = "cart_" + index;
+	
+	const descriptionHtml = item.description
+        ? '<div class="d-flex align-items-center">'
+            + '<i class="ki-duotone ki-document fs-2 text-muted me-2">'
+                + '<span class="path1"></span><span class="path2"></span>'
+            + '</i>'
+            + '<span class="text-gray-900 fs-5 fw-normal">' + item.description + '</span>'
+        + '</div>'
+        : '';
 
-    return `<div class="pr-item-group border-gray-400 border-bottom py-9 px-6">
-    			<div class="d-flex align-items-center justify-content-between row">
-    				<div class="col-7 d-flex align-items-center">\${icon}
+	const manualSrc = (item.sources || []).find(function(s){
+		return !s.mrId && s.refLink;
+	});
+	const headerRefLinkHtml = manualSrc ? `
+		<a href="\${manualSrc.refLink}" target="_blank" rel="noopener" class="text-primary d-inline-flex ms-2" onclick="event.stopPropagation();" title="Ref Link">
+			<i class="ki-duotone ki-fasten fs-2 text-primary"><span class="path1"></span><span class="path2"></span></i>
+		</a>` : '';
+		
+    return `<div class="pr-item-group border-gray-400 border-bottom pt-9 pb-6 px-6">
+    			<div class="d-flex align-items-center justify-content-between row g-3">
+    				<div class="col-12 col-lg-7 d-flex flex-wrap align-items-center">\${icon}
 						<span class="text-gray-900 fs-5 fw-normal me-3">\${category}</span>
 						<span class="text-gray-900 fs-5 fw-normal me-3">\${item.productName}</span>
 		
-						<div class="d-flex align-items-center">
-							<i class="ki-duotone ki-document fs-2 text-muted me-2">
-								<span class="path1"></span>
-								<span class="path2"></span>
-							</i>
-		
-							<span class="text-gray-900 fs-5 fw-normal me-3">\${item.description}</span>
-
-						</div>
+						\${descriptionHtml} \${headerRefLinkHtml}
 					</div>
 		
-					<div class="col-1 d-flex align-items-center justify-content-between px-0">
-						<div class="col-12 d-flex flex-column text-end">
+					<div class="col-5 col-lg-2 d-flex align-items-center justify-content-between px-0">
+						<div class="col-12 d-flex flex-column text-start text-lg-end">
 							<span class="fs-6 fw-normal text-gray-900">\${item.unitName}</span>
 							<span class="fw-semibold text-gray-800 fs-5">\${item.qty}</span>
 						</div>
 					</div>
 		
-				<div class="col-2 d-flex justify-content-end align-items-center gap-2 px-0">
+				<div class="col-7 col-lg-3 d-flex justify-content-end align-items-center gap-2 px-0">
 	                <a href="#" onclick="return editCartItem(\${index});" class="btn btn-icon btn-light-primary btn-sm" title="Edit">
 	                    <i class="ki-duotone ki-pencil fs-2"><span class="path1"></span><span class="path2"></span></i>
 	                </a>
@@ -1519,49 +1390,85 @@ function createPrCard(item,index){
 			</div>
 			
 			<div class="collapse border-gray-300 border-top mt-3" id="prGroup_\${groupId}">
-	            <div class="ps-9 pt-9">
-	                <div class="d-flex align-items-center justify-content-between row">
-	                    <div class="col-11">
-	                        <div class="d-flex align-items-center fs-7 gap-3">
-	                            <div class="col-4">
-	                                <i class="ki-duotone ki-user-tick fs-3 text-muted me-2">
-	                                    <span class="path1"></span><span class="path2"></span><span class="path3"></span>
-	                                </i>
-	                                <span class="text-gray-800 fs-5">\${currentUserDisplay}</span>
-	                            </div>
-	                            <div class="col-5 d-flex align-items-center">
-	                                <i class="ki-duotone ki-calendar-2 fs-3 me-2">
-	                                    <span class="path1"></span><span class="path2"></span><span class="path3"></span>
-	                                    <span class="path4"></span><span class="path5"></span>
-	                                </i>
-	                                <span class="text-gray-800 fs-5">\${item.savedAt}</span>
-	                            </div>
-	                            <div class="col-3 d-flex align-items-center">
-				                    <i class="ki-duotone ki-tablet-book fs-3 me-2">
-					                     <span class="path1"></span><span class="path2"></span>
-									</i>
-									<span class="badge badge-lg badge-light-primary text-primary fs-7 fw-semibold d-inline-block text-center me-3">-</span>
-									\${item.refLink 
-										? `<a href="\${item.refLink}" target="_blank" class="my-0 d-flex align-items-center">
-											<i class="ki-duotone ki-fasten fs-2 me-2 text-primary">
-					                     		<span class="path1"></span><span class="path2"></span>
-											</i>
-											</a>`
-										: ''
-									}
-		                    	</div>
-	                        </div>
-	                    </div>
-	                    <div class="col-1 text-end">
-	                        <span class="text-gray-800 fs-5">\${item.qty} \${item.unitName}</span>
-	                    </div>
-	                </div>
-	            </div>
-	        </div>
+				<div class="ps-9 pt-9">
+					\${(item.sources || []).map(function(s, si){
+						var srcBaseQty = (s.baseQty != null) ? s.baseQty : s.qty;
+						var rowRefLink = s.mrId ? s.refLink : '';
+						return createPrSourceRow(s.qty, s.unitName || item.unitName, srcBaseQty, item.unitName,
+												s.savedAt, s.mrId, rowRefLink, s.creatorName, index, si);
+					}).join('')}
+				</div>
+			</div>
 		
 		</div>
 		
 		`;
+}
+
+function createMrBadge(mrId, refLink){
+    const linkColor = mrId ? 'info' : 'primary';
+
+    const link = refLink ? `
+        <a href="\${refLink}" target="_blank" rel="noopener" class="text-\${linkColor} d-inline-flex ms-1" onclick="event.stopPropagation();">
+            <i class="ki-duotone ki-fasten fs-2 text-\${linkColor}"><span class="path1"></span><span class="path2"></span></i>
+        </a>` : '';
+
+    if (!mrId) {
+        return `
+        <span class="d-inline-flex align-items-center flex-shrink-0">
+            <span class="badge badge-lg fs-7 fw-semibold d-inline-block text-center badge-light-primary text-primary">-</span>\${link}
+        </span>`;
+    }
+
+    return `
+    <span class="d-inline-flex align-items-center flex-shrink-0">
+        <a href="\${ctx}/equipment_request_mr_approve?mrId=\${mrId}" target="_blank" onclick="event.stopPropagation();"
+           class="badge badge-lg fs-7 fw-semibold text-center text-decoration-none text-nowrap badge-light-info text-info">\${mrId}</a>\${link}
+    </span>`;
+}
+
+function createPrSourceRow(qty, unitName, baseQty, baseUnitName, savedAt, mrId, refLink, creatorName, itemIndex, srcIndex){
+    const qtyUnitDisplay = qty + ' ' + unitName + ' (= ' + baseQty + ' ' + baseUnitName + ')';
+
+    return `
+    <div class="pr-src-row row g-2 align-items-center mb-4 py-2">
+        <div class="col-12 col-xl-9">
+            <div class="row g-2 align-items-center fs-7">
+                <div class="col-12 col-md-4">
+                    <i class="ki-duotone ki-user-tick fs-3 text-muted me-2"><span class="path1"></span><span class="path2"></span><span class="path3"></span></i>
+                    <span class="text-gray-800 fs-5 fw-normal">\${creatorName || currentUserDisplay}</span>
+                </div>
+                <div class="col-12 col-md-4 d-flex align-items-center">
+                    <i class="ki-duotone ki-calendar-2 fs-3 me-2"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span><span class="path5"></span></i>
+                    <span class="text-gray-800 fs-5 fw-normal">\${savedAt}</span>
+                </div>
+                <div class="col-12 col-md-4 d-flex align-items-center gap-2">
+                    <i class="ki-duotone ki-tablet-book fs-3 flex-shrink-0"><span class="path1"></span><span class="path2"></span></i>
+                    <div class="d-flex flex-wrap align-items-center gap-2">\${createMrBadge(mrId, refLink)}</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 col-xl-3 d-flex align-items-center justify-content-between justify-content-xl-end gap-3">
+            <span class="text-gray-800 fs-5 fw-normal">\${qtyUnitDisplay}</span>
+
+            <div class="pr-src-menu position-relative d-inline-block flex-shrink-0">
+                <a href="#" class="btn btn-icon btn-sm btn-light-primary w-30px h-30px"
+                   onclick="return toggleSrcMenu(this, event);" aria-label="More actions" aria-haspopup="true">
+                    <i class="ki-outline ki-dots-horizontal fs-2"></i>
+                </a>
+
+                <div class="pr-src-actions position-absolute end-0 top-100 mt-2 bg-body rounded-3 shadow z-index-3">
+                    <div class="py-2">
+                        <a href="#" class="pr-src-item d-block px-6 py-3 fs-6 fw-normal text-gray-800 bg-hover-light"
+                           onclick="event.stopPropagation(); return editSource(\${itemIndex}, \${srcIndex});">Edit</a>
+                        <a href="#" class="pr-src-item d-block px-6 py-3 fs-6 fw-normal text-gray-800 bg-hover-light"
+                           onclick="event.stopPropagation(); return removeSource(\${itemIndex}, \${srcIndex});">Delete</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>`;
 }
 
 function editCartItem(index){
@@ -1570,8 +1477,17 @@ function editCartItem(index){
 
     editingIndex = index;
 
+
+    const srcs = item.sources || [];
+    editAllowProductChange = srcs.length <= 1 && !(srcs[0] && srcs[0].mrId);
+    const prefillSrc = srcs[0] || null;
+    const prefillUnit = prefillSrc ? prefillSrc.unit : item.unit;
+    const prefillQty = prefillSrc ? prefillSrc.qty : item.qty;
+
     $('#modal_create_pr .modal-title').text('Edit PR - Detail');
     $('#btnSavePrDetail').text('Update');
+    $('#items_type').prop('disabled', !editAllowProductChange);
+    $('#product_name').prop('disabled', !editAllowProductChange);
 
     $('#items_type').val(item.itemsType).trigger('change');
 
@@ -1581,8 +1497,8 @@ function editCartItem(index){
             clearInterval(waitForProductList);
 
 			const waitForUnitList = setInterval(function(){
-                if ($('#unit option[value="' + item.unit + '"]').length > 0) {
-                    $('#unit').val(item.unit);
+                if ($('#unit option[value="' + prefillUnit + '"]').length > 0) {
+                    $('#unit').val(prefillUnit).trigger('change');
                     clearInterval(waitForUnitList);
                 }
             }, 100);
@@ -1592,10 +1508,11 @@ function editCartItem(index){
 
     setTimeout(function(){ clearInterval(waitForProductList); }, 3000);
 
-    $('#pr_qty').val(item.qty);
-    $('#unit').val(item.unit);
-    $('#pr_ref_link').val(item.refLink || '');
+    $('#pr_qty').val(prefillQty);
+    $('#unit').val(prefillUnit).trigger('change');
     $('#pr_description').val(item.description);
+	const manualSrc = getManualRefSource(item);
+	$('#pr_ref_link').val(manualSrc ? (manualSrc.refLink || '') : '');
 
     const modalEl = document.getElementById("modal_create_pr");
     const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
@@ -1619,12 +1536,161 @@ function removeCartItem(index){
         }
     }).then((result) => {
         if (result.isConfirmed) {
+            const removedItem = prDetailCart[index];
             prDetailCart.splice(index, 1);
-            saveCartToSession();    
+            saveCartToSession();
             renderPrDetailCart();
+            uncheckMrCheckboxesForItem(removedItem);
         }
     });
     return false;
+}
+
+function closeAllSrcMenus(){
+    document.querySelectorAll('.pr-src-menu.menu-open').forEach(function(m){ m.classList.remove('menu-open'); });
+}
+document.addEventListener('click', closeAllSrcMenus);
+
+function toggleSrcMenu(btn, e){
+    e.preventDefault(); e.stopPropagation();
+    const menu = btn.closest('.pr-src-menu');
+    const wasOpen = menu.classList.contains('menu-open');
+    closeAllSrcMenus();
+    if (!wasOpen) menu.classList.add('menu-open');
+    return false;
+}
+
+function removeSource(itemIndex, srcIndex){
+    closeAllSrcMenus();
+    Swal.fire({
+        title: "Are you sure?!",
+        text: "Are you sure you want to delete this row?",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonText: "Yes, delete it",
+        cancelButtonText: "Cancel",
+        buttonsStyling: false,
+        customClass: { confirmButton: "btn btn-danger", cancelButton: "btn btn-secondary" }
+    }).then(function(result){
+        if (!result.isConfirmed) return;
+
+        const item = prDetailCart[itemIndex];
+        const src = item && item.sources && item.sources[srcIndex];
+        if (!src) return;
+
+        const baseQty = Number(src.baseQty != null ? src.baseQty : src.qty) || 0;
+        item.sources.splice(srcIndex, 1);
+
+        if (item.sources.length === 0) {
+            prDetailCart.splice(itemIndex, 1);
+        } else {
+            item.qty = Math.max(0, (Number(item.qty) || 0) - baseQty);
+        }
+
+        saveCartToSession();
+        renderPrDetailCart();
+        uncheckMrCheckboxesForItem({ sources: [src] });
+    });
+    return false;
+}
+
+let editingSrc = null;
+
+function editSource(itemIndex, srcIndex){
+    closeAllSrcMenus();
+    const item = prDetailCart[itemIndex];
+    const src = item && item.sources && item.sources[srcIndex];
+    if (!src) return false;
+
+	if (src.mrId) {
+        openSearchMrWithKeyword(item.productName);
+        return false;
+    }
+
+    editingSrc = { itemIndex: itemIndex, srcIndex: srcIndex };
+    const baseQty = (src.baseQty != null) ? src.baseQty : src.qty;
+	const cat = getCategoryIcon(mapSelectToDbItemsType(item.itemsType));
+	$('#editSrcTypeIcon').html(cat.icon);
+	$('#editSrcTypeName').text(cat.name);
+    $('#editSrcProduct').text(item.productName);
+    $('#editSrcCreator').text(src.creatorName || currentUserDisplay);
+    $('#editSrcDate').text(src.savedAt);
+    $('#editSrcMr').html(createMrBadge(src.mrId, src.refLink));
+    $('#editSrcCurrent').text(src.qty + ' ' + (src.unitName || item.unitName) + ' (= ' + baseQty + ' ' + item.unitName + ')');
+    $('#edit_src_qty').val(src.qty);
+    $('#editSrcPreview').text('');
+
+    loadEditSrcUnits(item.productId, src.unit);
+    bootstrap.Modal.getOrCreateInstance(document.getElementById('modal_edit_source')).show();
+    return false;
+}
+
+function loadEditSrcUnits(productId, selectedUnitId){
+    $('#edit_src_unit').html('<option value=""></option>');
+    $.ajax({
+        url: ctx + '/get_unit_of_measure',
+        type: 'POST',
+        dataType: 'json',
+        data: { productId: productId },
+        success: function (resp) {
+            const list = (resp.data && resp.data.unitList) || [];
+            let opts = '';
+            list.forEach(function (u) {
+                opts += '<option value="' + u.id + '"'
+                    + ' data-conversion-rate="' + (u.conversionRate != null ? u.conversionRate : 1) + '"'
+                    + (String(u.id) === String(selectedUnitId) ? ' selected' : '') + '>' + u.name + '</option>';
+            });
+            $('#edit_src_unit').html(opts).trigger('change');
+        },
+        error: function () {
+            Swal.fire('Error', 'ไม่สามารถโหลดข้อมูล Unit ได้', 'error');
+        }
+    });
+}
+
+function updateEditSrcPreview(){
+    if (!editingSrc) return;
+    const item = prDetailCart[editingSrc.itemIndex];
+    if (!item) return;
+    const qty = Number($('#edit_src_qty').val()) || 0;
+    const rate = Number($('#edit_src_unit option:selected').data('conversion-rate')) || 1;
+    $('#editSrcPreview').text('= ' + (Math.round(qty * rate * 1000) / 1000) + ' ' + item.unitName);
+}
+$(document.body).on('input change', '#edit_src_qty, #edit_src_unit', updateEditSrcPreview);
+
+function saveEditSource(){
+    if (!editingSrc) return;
+
+    const qty = Number($('#edit_src_qty').val()) || 0;
+    const unitId = $('#edit_src_unit').val();
+    const errors = [];
+    if (qty <= 0) errors.push('จำนวน');
+    if (!unitId) errors.push('Unit');
+    if (errors.length > 0) {
+        Swal.fire({
+            title: 'Please complete the form!',
+            html: "Please fill in the following fields:<br><strong>" + errors.join(", ") + "</strong>",
+            icon: "error",
+            confirmButtonText: "OK"
+        });
+        return;
+    }
+
+    const item = prDetailCart[editingSrc.itemIndex];
+    const old = item.sources[editingSrc.srcIndex];
+    const unitName = $('#edit_src_unit option:selected').text();
+    const rate = Number($('#edit_src_unit option:selected').data('conversion-rate')) || 1;
+    const baseQty = qty * rate;
+    const oldBase = Number(old.baseQty != null ? old.baseQty : old.qty) || 0;
+
+    item.sources[editingSrc.srcIndex] = { ...old, qty: qty, unit: unitId, unitName: unitName, baseQty: baseQty };
+    item.qty = (Number(item.qty) || 0) + (baseQty - oldBase);   // ปรับยอดรวมของรายการหลัก
+
+    saveCartToSession();
+    renderPrDetailCart();
+
+    if (document.activeElement) document.activeElement.blur();
+    bootstrap.Modal.getOrCreateInstance(document.getElementById('modal_edit_source')).hide();
 }
 
 function parseFormattedNumber(str) {
@@ -1632,7 +1698,307 @@ function parseFormattedNumber(str) {
     return Number(String(str).replace(/,/g, ''));
 }
 
-//── Confirm Receiver ──────────────────────────────────────
+//-------- Modal MR (Search MR) -----------
+let inprogressMrDetailList = [];
+let mrDetailTable = null;
+let selectedMrCategory = '';
+let mrSearchRequestToken = 0;
+let isSearchMrModalOpen = false;
+let pendingMrKeyword = null;
+
+function openSearchMrWithKeyword(keyword){
+    pendingMrKeyword = keyword;
+    $('#searchMrKeyword').val(keyword);
+    bootstrap.Modal.getOrCreateInstance(document.getElementById('modal_search_mr')).show();
+}
+
+$.fn.dataTable.ext.search.push(function (settings, data, dataIndex) {
+    if (settings.nTable.id !== 'mrResultTable') return true;
+    if (!selectedMrCategory) return true;
+
+    var item = inprogressMrDetailList[dataIndex];
+    if (!item) return true;
+
+    return mapDbItemsTypeToSelect(item.product_type) === selectedMrCategory;
+});
+
+function loadInprogressMrDetail(){
+    var requestToken = ++mrSearchRequestToken;
+    $.ajax({
+        url: ctx + '/search_approved_mr',
+        type: 'POST',
+        dataType: 'json',
+        success: function (resp) {
+            if (requestToken !== mrSearchRequestToken || !isSearchMrModalOpen) return;
+            inprogressMrDetailList = (resp.data && resp.data.mrDetailList) || [];
+            renderMrResultTable(inprogressMrDetailList);
+        },
+        error: function () {
+            Swal.fire('Error', 'ไม่สามารถโหลดข้อมูล MR ได้', 'error');
+        }
+    });
+}
+
+function getCategoryIcon(productType){
+    switch(String(productType)){
+        case '1': return { name: 'Equipment', icon: '<i class="ki-duotone ki-monitor-mobile fs-2 text-primary"><span class="path1"></span><span class="path2"></span></i>' };
+        case '2': return { name: 'Consumables', icon: '<i class="ki-duotone ki-lots-shopping fs-2 text-orange"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span><span class="path5"></span><span class="path6"></span><span class="path7"></span><span class="path8"></span></i>' };
+        case '3': return { name: 'Accessory', icon: '<i class="ki-duotone ki-medal-star fs-2 text-teal"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span></i>' };
+        case '4': return { name: 'Office supplies', icon: '<i class="ki-duotone ki-parcel fs-2 text-success"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span><span class="path5"></span></i>' };
+        default:  return { name: '-', icon: '' };
+    }
+}
+
+function mapDbItemsTypeToSelect(val){
+    switch(String(val)){
+        case '1': return 'equipment';
+        case '2': return 'consumables';
+        case '3': return 'accessory';
+        case '4': return 'office';
+        default:  return val;
+    }
+}
+
+function mapSelectToDbItemsType(val){
+    switch(String(val)){
+        case 'equipment':   return '1';
+        case 'consumables': return '2';
+        case 'accessory':   return '3';
+        case 'office':      return '4';
+        default:            return String(val);
+    }
+}
+
+$(document.body).on('keyup input', '#searchMrKeyword', function () {
+    if (mrDetailTable) {
+        mrDetailTable.search(this.value).draw();
+    }
+});
+
+$(document.body).on('change', '#searchMrCategory', function () {
+    selectedMrCategory = $(this).val();
+    if (mrDetailTable) {
+        mrDetailTable.draw();
+    }
+});
+
+function isMrDetailIdInCart(mrId){
+    return prDetailCart.some(function(it){
+        return (it.sources || []).some(function(s){ return String(s.mrId) === String(mrId); });
+    });
+}
+
+function renderMrResultTable(list){
+    var tbody = document.getElementById('mrResultBody');
+    var html = '';
+
+    list.forEach(function(item, index){
+        var cat = getCategoryIcon(item.product_type);
+        var qty = item.amount_total || 0;
+        var unitName = item.unit_name || '';
+        var userName = item.user_create_name || '-';
+        var timeCreate = formatNowDateTime(item.time_create);
+        var initial = userName.charAt(0).toUpperCase();
+        var userPath = item.user_create_path || '';
+        var statusBadge = item.mr_status == '3'
+            ? '<span class="badge badge-lg bg-success fw-semibold fs-7 text-white">Approved</span>'
+            : '';
+		var fullProductName = item.parent_product_name
+			? item.parent_product_name + ' > ' + (item.product_name || '')
+			: (item.product_name || '');
+
+        html += `
+        <tr class="fw-semibold fs-6 text-gray-800 border-bottom border-gray-200">
+            <td>
+                <div class="form-check form-check-sm">
+                    <input class="form-check-input mr-row-check" type="checkbox"
+                        data-mr-detail-id="\${item.mr_id}"\${isMrDetailIdInCart(item.mr_id) ? ' checked' : ''} />
+                </div>
+            </td>
+            <td class="fw-bold text-gray-900 fs-7 row-number text-start d-none d-md-table-cell"></td>
+            <td class="text-gray-900 fs-6 fw-normal">\${item.mr_id}</td>
+            <td>
+                <div class="d-flex align-items-center">
+                    <div class="symbol symbol-40px me-4">\${cat.icon}</div>
+                    <span class="text-gray-900 fs-5 fw-normal">\${cat.name}</span>
+                </div>
+            </td>
+            <td>
+                <div class="d-flex align-items-center">
+                    <div class="symbol symbol-35px symbol-circle me-3">
+                        <div class="symbol symbol-35px symbol-circle me-3">
+                            \${userPath
+                                ? '<img src="' + userPath + '" alt="' + userName + '" class="object-fit-cover" />'
+                                : '<span class="symbol-label bg-light-primary text-primary fw-bold">' + initial + '</span>'
+                            }
+                        </div>
+                    </div>
+                    <div class="d-flex flex-column">
+                        <span class="text-gray-900 fs-6 fw-normal">\${userName}</span>
+                        <span class="text-gray-900 fs-6 fw-normal">\${timeCreate}</span>
+                    </div>
+                </div>
+            </td>
+            <td>
+                <div class="d-flex flex-column">
+                    <span class="text-gray-900 fs-6 fw-normal">\${fullProductName}</span>
+
+                    <span class="text-gray-900 fs-6 fw-normal">\${qty} \${unitName}</span>
+                </div>
+            </td>
+            <td class="text-end pe-2 d-none d-md-table-cell">
+                \${statusBadge}
+            </td>
+        </tr>`;
+    });
+    tbody.innerHTML = html;
+
+    if (mrDetailTable) {
+        mrDetailTable.destroy();
+        mrDetailTable = null;
+    }
+    mrDetailTable = $('#mrResultTable').DataTable({
+		ordering : false,
+		searching : true,
+		autoWidth : false,
+		info: false,
+		paging: false,
+		drawCallback: function () {
+			var api = this.api();
+			var $rows = $(api.rows({ search: 'applied', order: 'applied' }).nodes());
+
+			$rows.each(function (i) {
+				$(this).find('.row-number').text(i + 1);
+			});
+
+			document.getElementById('mrItemsFoundCount').textContent = $rows.length;
+		}
+	});
+    updateMrSelectedCountReal();
+
+    if (pendingMrKeyword !== null) {
+        $('#searchMrKeyword').val(pendingMrKeyword);
+        mrDetailTable.search(pendingMrKeyword).draw();
+        pendingMrKeyword = null;
+    }
+
+    var checkAll = document.getElementById('checkAllMr');
+
+    function syncCheckAllState(){
+        var allBoxes = document.querySelectorAll('.mr-row-check');
+        checkAll.checked = allBoxes.length > 0 && Array.prototype.every.call(allBoxes, function (box) { return box.checked; });
+    }
+
+    document.querySelectorAll('.mr-row-check').forEach(function (cb) {
+        cb.addEventListener('change', function () {
+            updateMrSelectedCountReal();
+            syncCheckAllState();
+        });
+    });
+
+    checkAll.checked = list.length > 0 && list.every(function (d) { return isMrDetailIdInCart(d.mr_id); });
+    checkAll.onchange = function(){
+        document.querySelectorAll('.mr-row-check').forEach(cb => cb.checked = this.checked);
+        updateMrSelectedCountReal();
+    };
+}
+
+function updateMrSelectedCountReal(){
+    var count = document.querySelectorAll('.mr-row-check:checked').length;
+    document.getElementById('mrSelectedCount').textContent = count;
+}
+
+function uncheckMrCheckboxesForItem(item){
+    if (!item || !item.sources) return;
+    item.sources.forEach(function(s){
+        if (!s.mrId) return;
+        var cb = document.querySelector('.mr-row-check[data-mr-detail-id="' + s.mrId + '"]');
+        if (cb) cb.checked = false;
+    });
+    updateMrSelectedCountReal();
+
+    var checkAll = document.getElementById('checkAllMr');
+    if (checkAll) {
+        var allBoxes = document.querySelectorAll('.mr-row-check');
+        checkAll.checked = allBoxes.length > 0 &&
+            Array.prototype.every.call(allBoxes, function (box) { return box.checked; });
+    }
+}
+
+document.getElementById('btnSubmitMr').addEventListener('click', function(){
+    var selectedIds = [];
+    document.querySelectorAll('.mr-row-check:checked').forEach(function(cb){
+        selectedIds.push(cb.getAttribute('data-mr-detail-id'));
+    });
+    var selectedIdSet = {};
+    selectedIds.forEach(function(id){ selectedIdSet[String(id)] = true; });
+
+    //เอา source ของ MR ที่ติ๊กออกแล้วออกจาก cart
+    inprogressMrDetailList.forEach(function(d){
+        var mrId = String(d.mr_id);
+        if (selectedIdSet[mrId]) return;
+
+        for (var i = prDetailCart.length - 1; i >= 0; i--) {
+            var cartItem = prDetailCart[i];
+            if (!cartItem.sources) continue;
+
+            var srcIdx = cartItem.sources.findIndex(function(s){ return String(s.mrId) === mrId; });
+            if (srcIdx === -1) continue;
+
+            var removedSrc = cartItem.sources[srcIdx];
+            var removedBaseQty = Number(removedSrc.baseQty != null ? removedSrc.baseQty : removedSrc.qty) || 0;
+            cartItem.sources.splice(srcIdx, 1);
+
+            if (cartItem.sources.length === 0) {
+                prDetailCart.splice(i, 1);
+            } else {
+                cartItem.qty = Math.max(0, (Number(cartItem.qty) || 0) - removedBaseQty);
+            }
+        }
+    });
+
+    //เพิ่มรายการที่ติ๊กใหม่ (productId เดียวกันจะ group เข้า item เดิม, mr_id ซ้ำจะถูกข้าม)
+    selectedIds.forEach(function(mrId){
+        var src = inprogressMrDetailList.find(function(d){ return String(d.mr_id) === String(mrId); });
+        if (!src) return;
+ 	
+        var qty = Number(src.amount_total) || 0;
+        var creator = (src.user_create_emp_id ? src.user_create_emp_id + ' - ' : '') + (src.user_create_name || '');
+        var savedAt = formatNowDateTime();
+		var cartProductName = src.parent_product_name
+			? src.parent_product_name + ' > ' + (src.product_name || '')
+			: (src.product_name || '');
+
+		addSourceToCart({
+			itemsType: mapDbItemsTypeToSelect(src.product_type),
+			itemsTypeText: getCategoryIcon(src.product_type).name,
+			productId: src.product_id,
+    		productName: cartProductName,
+			unit: src.unit,
+			unitName: src.unit_name || '',
+			description: '',
+			creatorName: creator,
+			savedAt: savedAt
+        }, {
+            mrId: src.mr_id,
+            qty: qty, unit: src.unit, unitName: src.unit_name || '',
+            baseQty: qty, // MR เก็บเป็นหน่วยเล็กสุดอยู่แล้ว
+            refLink: src.ref_link || '',
+            description: src.description || '',
+            creatorName: creator,
+            savedAt: savedAt
+        });
+    });
+
+    saveCartToSession();
+    renderPrDetailCart();
+
+    if (document.activeElement) document.activeElement.blur();
+    var modal = bootstrap.Modal.getInstance(document.getElementById('modal_search_mr'));
+    if (modal) modal.hide();
+});
+
+//────────────────── Confirm Receiver ──────────────────
 function confirmReceiver(slot) {
     const now = new Date();
     const pad = n => String(n).padStart(2, '0');
@@ -1683,11 +2049,6 @@ function confirmReceiver(slot) {
 }
 
 function saveDraftForm(){
-   /*  if (!prDetailCart || prDetailCart.length === 0) {
-        Swal.fire('error', 'กรุณาเพิ่มรายการ PO อย่างน้อย 1 รายการ', 'warning');
-        return;
-    }
- */
     const payload = {
         description: $('#description').val().trim() || '',
         prDetailCartJson: JSON.stringify(prDetailCart),

@@ -4,6 +4,7 @@ import okhttp3.*;
 
 import com.cubesofttech.dao.UserDAO;
 import com.cubesofttech.model.User;
+import com.cubesofttech.service.LoginService;
 import com.cubesofttech.service.FileAttachmentService;
 import com.cubesofttech.system.Constant;
 import com.google.gson.JsonObject;
@@ -40,6 +41,9 @@ public class LineLoginAction extends ActionSupport {
     
     @Autowired
 	private UserDAO userDAO;
+
+    @Autowired
+	private LoginService loginService;
     
     private String authUrl;
     
@@ -239,7 +243,9 @@ public class LineLoginAction extends ActionSupport {
     			session.setAttribute("userImgPath", imgPath);
                 session.setAttribute("user", user);
     			session.setAttribute("onlineUser", user);
-    			
+    			// role ที่มีสิทธิ์ session.timeout.extended ได้ session timeout นานกว่าปกติ (ส่ง null ให้ query เอง)
+    			loginService.applySessionTimeout(session, user, null);
+
     			switch (typeAction) {
     		    case "1":
     		    	return "returnCheck";

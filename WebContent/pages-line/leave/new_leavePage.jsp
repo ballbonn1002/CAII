@@ -1,46 +1,15 @@
-<%@page import="org.apache.velocity.runtime.directive.Foreach"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
 <%@ taglib uri="/WEB-INF/tlds/permission.tld" prefix="perm"%>
 <%@ page trimDirectiveWhitespaces="true"%>
-<%@ taglib uri="http://tiles.apache.org/tags-tiles" prefix="tiles"%>
 
+<c:set var="now" value="<%=new java.util.Date()%>" />
+<fmt:formatDate type="date" value="${now}" pattern="dd-MM-yyyy" var="lastday" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/compressorjs/1.2.1/compressor.min.js"></script>
 
-<!DOCTYPE html>
-<html>
-	<c:set var="now" value="<%=new java.util.Date()%>" />
-	<fmt:formatDate type="date" value="${now}" pattern="dd-MM-yyyy" var="date_now" />
-	<fmt:formatDate type="date" value="${now}" pattern="dd-MM-yyyy" var="lastday" />
-	<head>
-		<meta charset="utf-8">
-		<title>
-			<tiles:insertAttribute name="title" ignore="true" />
-		</title>
-		<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-		<!--begin::Javascript-->
-		<script>var hostUrl = "assets/";</script>
-
-		<!--begin::Custom Javascript(used for this page only)-->
-		<script src="assets/js/widgets.bundle.js"></script>
-		<script src="assets/js/custom/widgets.js"></script>
-		<script src="assets/js/custom/apps/chat/chat.js"></script>
-		<script src="assets/js/custom/utilities/modals/upgrade-plan.js"></script>
-		<!-- <script src="assets/js/custom/utilities/modals/create-app.js"></script> -->
-		<script src="assets/js/custom/utilities/modals/new-target.js"></script>
-		<!-- <script src="assets/js/custom/utilities/modals/users-search.js"></script> -->
-		<!--end::Custom Javascript-->
-		<!--end::Javascript-->
-		<link href="assets/plugins/global/plugins.bundle.css" rel="stylesheet" type="text/css"/>
-		<script src="assets/plugins/global/plugins.bundle.js"></script>
-		<link href="https://cdn.jsdelivr.net/npm/summernote@0.9.0/dist/summernote-bs4.min.css" rel="stylesheet">
-    	<script src="https://cdn.jsdelivr.net/npm/summernote@0.9.0/dist/summernote-bs4.min.js"></script>
-    	
-    	<script src="https://cdnjs.cloudflare.com/ajax/libs/compressorjs/1.2.1/compressor.min.js"></script>
-	</head>
-	<body class="app-default">
-
+<%-- ===== OLD: desktop-clone content (commented out) =====
 		<%
 			//comment for fix ClassCastException
 			//var action = '${action}'; can still be used
@@ -530,12 +499,438 @@
 
 		</div>
 		<!--end:::Main-->
-	</body>
+--%>
+<!-- ===== END: old desktop-clone content (commented out) ===== -->
+
+<%-- =====================================================================
+     NEW: LINE LIFF
+     ===================================================================== --%>
+
+<style>
+/* ของที่ใช้ร่วมอยู่ใน baseLayout เหลือเฉพาะของฟอร์มนี้ */
+.liff-leave-card { border-radius: 14px; }
+.liff-day-badges { flex: 1 1 auto; display: flex; justify-content: flex-end; gap: 10px; }
+.liff-day-badge { box-sizing: border-box; display: inline-flex; align-items: center; justify-content: center; min-width: 26px; height: 26px; padding: 4.23px 6.5px; border-radius: 5.52px; opacity: 1; background: var(--bs-gray-300); color: var(--bs-gray-700); font-weight: 600; font-size: 12px; white-space: nowrap; }
+/* radio ประเภทลาเดิม ซ่อนไว้ให้ script legacy ใช้ต่อ (sync กับ #leaveTypeSelect) */
+#leaveTypes { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.liff-upload-badge { box-sizing: border-box; display: inline-flex; align-items: center; justify-content: center; gap: 10px; margin-left: auto; width: 84px; height: 24px; padding: 0 8px; border-radius: 5.53px; opacity: 1; background: var(--bs-primary-bg-subtle); color: var(--bs-primary); font-weight: 600; font-size: 12px; white-space: nowrap; cursor: pointer; }
+.liff-upload-badge i { color: var(--bs-primary); }
+.liff-submit-bar { display: flex; gap: 10px; margin-top: 20px; }
+.liff-submit-bar .btn { flex: 1; }</style>
+
+<div class="liff-shell">
+
+	<div id="liffLoadingOverlay" class="liff-loading-overlay liff-loading-delayed" style="display:flex;">
+		<div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading...</span></div>
+	</div>
+
+	<div class="d-flex align-items-center gap-3 mb-6 pt-6">
+		<a href="javascript:void(0)" class="liff-back-btn" onclick="liffShowLoading(); window.history.go(-1); return false;" aria-label="Back">
+			<i class="ki-outline ki-left fs-2 text-gray-700"></i>
+		</a>
+		<h1 class="liff-page-title text-gray-700 mb-0 flex-grow-1">${action == 'Edit' ? 'Edit Leave' : 'Create Leave'}</h1>
+		<!-- <div class="d-flex align-items-center" id="leaveidInfo" style="display:none;">
+			<span class="fw-bold fs-6 text-primary">#<span id="leaveId"></span></span>
+		</div> -->
+	</div>
+
+	<!-- Summary Leave: ซ่อน -->
+	<!-- <div class="mb-6">
+		<div class="card card-bordered liff-leave-card">
+			<div class="card-body p-4">
+				<div class="d-flex overflow-auto gap-5" style="scrollbar-width:none;">
+					<div class="d-flex align-items-center gap-2" style="white-space:nowrap;">
+						<span class="symbol symbol-40px">
+							<span class="symbol-label bg-primary-subtle">
+								<i class="ki-duotone ki-car-2 text-primary fs-3">
+									<span class="path1"></span><span class="path2"></span><span class="path3"></span>
+									<span class="path4"></span><span class="path5"></span><span class="path6"></span>
+								</i>
+							</span>
+						</span>
+						<div class="d-flex flex-column">
+							<span class="fw-bold text-gray-800 fs-7">
+								<fmt:formatNumber type="number" pattern="#.##" value="${leave_1}"/>+<fmt:formatNumber type="number" pattern="#.##" value="${leave_2}"/>
+								/<fmt:formatNumber type="number" pattern="#.##" value="${quota_1+quota_2}"/>
+							</span>
+							<span class="text-gray-500" style="font-size:11px;">${type_1}+${type_2}</span>
+						</div>
+					</div>
+					<div class="d-flex align-items-center gap-2" style="white-space:nowrap;">
+						<span class="symbol symbol-40px">
+							<span class="symbol-label bg-info-subtle">
+								<i class="ki-duotone ki-pulse text-info fs-3"><span class="path1"></span><span class="path2"></span></i>
+							</span>
+						</span>
+						<div class="d-flex flex-column">
+							<span class="fw-bold text-gray-800 fs-7"><fmt:formatNumber type="number" pattern="#.##" value="${leave_3}"/></span>
+							<span class="text-gray-500" style="font-size:11px;">${type_3}</span>
+						</div>
+					</div>
+					<div class="d-flex align-items-center gap-2" style="white-space:nowrap;">
+						<span class="symbol symbol-40px">
+							<span class="symbol-label bg-warning-subtle">
+								<i class="ki-duotone ki-timer text-warning fs-3"><span class="path1"></span><span class="path2"></span><span class="path3"></span></i>
+							</span>
+						</span>
+						<div class="d-flex flex-column">
+							<span class="fw-bold text-gray-800 fs-7">
+								<fmt:formatNumber type="number" pattern="#.##" value="${leave_6}"/>
+								<c:if test="${quota_4.doubleValue() > 0}">/<fmt:formatNumber type="number" pattern="#.##" value="${quota_4}"/></c:if>
+							</span>
+							<span class="text-gray-500" style="font-size:11px;">${type_6}</span>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div> -->
+
+	<!--begin::Leave form card-->
+	<div class="card card-flush mb-7">
+		<div class="card-body pt-6 pb-7">
+	<form method="post" id="formid" class="form-horizontal liff-initializing" aria-busy="true" action="line_new_LeaveEdit_Do" enctype="multipart/form-data">
+
+		<div class="d-none">
+			<select class="form-select" id="status" name="status" disabled required>
+				<option value="0">Wait for approve</option>
+				<option value="1">Approved</option>
+				<option value="2">Reject</option>
+				<option value="3">Cancel</option>
+			</select>
+		</div>
+		<input type="hidden" name="status_hidden" id="status_hidden">
+
+		<!-- LIFF ยกเลิกการลาข้ามปี ซ่อน checkbox ไว้ให้ script legacy ใช้ต่อ -->
+		<div class="d-none">
+			<div class="mb-6" id="nextYearLeaveContainer">
+				<div class="form-check form-check-custom form-check-solid">
+					<input class="form-check-input me-3" type="checkbox" id="nextYearLeave" name="nextYearLeave" value="1" />
+					<label class="form-check-label" for="nextYearLeave">
+						<div class="fw-bold fs-6 text-primary">เลือกวันลาปีหน้า</div>
+					</label>
+				</div>
+			</div>
+		</div>
+
+		<!-- DDL User: ซ่อน แต่ต้องมีใน DOM เพราะ userOnChange() อ่านค่า -->
+		<div class="mb-6 liff-select-hidden">
+			<select id="user" name="user" class="form-select liff-input-underline" onchange="userOnChange()" disabled required>
+				<option></option>
+				<optgroup id='u_enable' label="Enable"></optgroup>
+				<optgroup id='u_disable' label="Disable"></optgroup>
+			</select>
+		</div>
+		<input hidden name="user_hidden" id="user_hidden" type="text">
+		<input hidden name="leaveId_hidden" id="leaveId_hidden" type="text">
+
+		<!-- Type of leave: dropdown ที่ sync กับ radio ข้างล่าง -->
+		<div class="liff-field-row mb-6">
+			<label class="liff-field-label" for="leaveTypeSelect">Type of leave <span class="text-danger">*</span></label>
+			<select class="form-select liff-field-value liff-field-dropdown" id="leaveTypeSelect" required></select>
+		</div>
+		<div id="leaveTypes" class="row g-3 fs-7" aria-hidden="true">
+			<!-- radio ประเภทลา (สร้างด้วย JS) -->
+		</div>
+
+		<!-- Date range & half-day -->
+		<div class="liff-field-row mb-3">
+			<label class="liff-field-label" for="date_from">Start Date <span class="text-danger">*</span></label>
+			<div class="input-group date date-picker input-daterange liff-field-grow" data-provide="datepicker" data-date-format="dd M yyyy">
+				<input type="text" class="form-control liff-field-value" id="date_from" name="from" autocomplete="off" placeholder="DD MMM YYYY" required>
+				<input class="hide" name="from_hidden" id="date_from_hidden" type="text" hidden>
+			</div>
+			<i class="ki-duotone ki-calendar fs-4 text-gray-500"><span class="path1"></span><span class="path2"></span></i>
+		</div>
+
+		<div class="liff-field-row mb-3">
+			<label class="liff-field-label" for="date_to">End Date <span class="text-danger">*</span></label>
+			<div class="input-group date date-picker input-daterange liff-field-grow" data-provide="datepicker" data-date-format="dd M yyyy">
+				<input type="text" class="form-control liff-field-value" id="date_to" name="to" autocomplete="off" placeholder="DD MMM YYYY" required>
+				<input class="hide" name="to_hidden" id="date_to_hidden" type="text" hidden>
+			</div>
+			<i class="ki-duotone ki-calendar fs-4 text-gray-500"><span class="path1"></span><span class="path2"></span></i>
+		</div>
+
+		<div class="liff-field-row mb-6">
+			<label class="liff-field-label" for="halfDay">ช่วงเวลาในการลา <span class="text-danger">*</span></label>
+			<select class="form-select liff-field-value liff-field-dropdown input-daterange" id="halfDay" name="halfDay" required>
+				<option value="0" selected>เต็มวัน</option>
+				<option value="1">ช่วงเช้า</option>
+				<option value="2">ช่วงบ่าย</option>
+				<option value="3">กำหนดเวลาเอง</option>
+			</select>
+		</div>
+
+		<div class="liff-field-row mb-3">
+			<label class="liff-field-label" for="time_from">Start Time <span class="text-danger">*</span></label>
+			<input type="text" class="form-control liff-field-value liff-field-dropdown timepicker timepicker-24 checkHours" id="time_from" name="time_from" autocomplete="off" required disabled>
+			<input class="hide" id="time_from_hidden" name="time_from_hidden" hidden>
+		</div>
+		<div class="liff-field-row mb-3">
+			<label class="liff-field-label" for="time_to">End Time <span class="text-danger">*</span></label>
+			<input type="text" class="form-control liff-field-value liff-field-dropdown timepicker timepicker-24 checkHours" id="time_to" name="time_to" autocomplete="off" required disabled>
+			<input class="hide" id="time_to_hidden" name="time_to_hidden" hidden>
+		</div>
+		<div class="form-text text-danger mb-3" id="alert_time_to"></div>
+
+		<div class="liff-field-row mb-6">
+			<label class="liff-field-label">Day</label>
+			<div class="liff-day-badges">
+				<span class="liff-day-badge" id="amountDisplayDay">0D</span>
+				<span class="liff-day-badge" id="amountDisplayHour">0H</span>
+			</div>
+			<!-- ค่าจริงที่ script legacy ใช้ (ซ่อน) -->
+			<input type="text" id="amount" name="amount" class="checkHours" hidden>
+			<input id="amount_hidden" name="amount_hidden" hidden>
+			<input type="text" id="amount_sub" name="amount_sub" class="checkHours" value="0" hidden>
+			<input value="0" id="amount_sub_hidden" name="amount_sub_hidden" hidden>
+		</div>
+
+		<!-- Description -->
+		<div class="mb-6">
+			<label class="form-label required fs-6">Description</label>
+			<textarea class="form-control liff-input-underline" style="word-break: break-all; white-space: normal;" maxlength="1024"
+				name="description" id="description" rows="3" placeholder="Enter a reason." required></textarea>
+			<input hidden class="hide" name="description_hidden" id="description_hidden" type="text">
+			<div class="text-danger mt-2 fs-8">กรุณาระบุเหตุผลในการลา ตัวอย่าง ลางานเนื่องจากท้องเสีย</div>
+		</div>
+
+		<!-- File Upload -->
+		<div class="liff-field-row mb-3" id="fileUploadSection">
+			<label class="liff-field-label" for="myFile" id="fileUploadLabel">Attach files</label>
+			<label for="myFile" id="lbFile" class="liff-upload-badge">
+				<i class="ki-duotone ki-file-up fs-7"><span class="path1"></span><span class="path2"></span></i>
+				Upload
+				<input type="file" id="myFile" name="fileUpload" class="d-none" accept="image/*,application/pdf,application/zip" multiple>
+			</label>
+			<input type="hidden" name="deleteFileId" id="deleteFileId">
+			<input type="hidden" name="fileUploadSize" value="${size}" id="size">
+			<input type="hidden" name="fileUploadId" id="fileUploadId">
+		</div>
+		<div class="form-text text-danger mb-3" id="alert_evidence"></div>
+		<div id="filePreviewContainer" class="d-flex flex-wrap gap-2 mb-3"></div>
+
+		<div class="mb-6" id="exitingFileSection">
+			<div class="liff-field-row mb-3" id="afterFileRow">
+				<label class="liff-field-label" for="afterFile">Attach files</label>
+				<label for="afterFile" id="lbafterFile" class="liff-upload-badge">
+					<i class="ki-duotone ki-file-up fs-7"><span class="path1"></span><span class="path2"></span></i>
+					Upload
+					<input type="file" id="afterFile" name="afterFileUpload" class="d-none" accept="image/*,application/pdf" onchange="previewAfterFile(this)">
+				</label>
+			</div>
+			<div id="exitingFilePreviewContainer" class="d-flex flex-wrap gap-2 mb-3"></div>
+			<div id="modalFilePreviewName" class="text-muted fs-6 mt-2"></div>
+		</div>
+
+		<!-- Approver -->
+		<div class="liff-field-row mb-10">
+			<label class="liff-field-label" for="approver">Approvers <span class="text-danger">*</span></label>
+			<select id="approver" name="approver" class="form-select liff-field-value liff-field-dropdown" required>
+				<option value="admin">แอดมิน</option>
+			</select>
+			<input hidden name="approver_hidden" id="approver_hidden" type="text">
+		</div>
+
+		<!-- Buttons -->
+		<div class="liff-submit-bar">
+			<button type="button" class="btn btn-light" onclick="window.history.go(-1); return false;">Cancel</button>
+			<button type="button" class="btn btn-success" id="submitBtn" onclick="beforeSubmit();">Submit</button>
+			<button type="button" class="btn btn-success d-none" id="afterFileSubmitBtn" onclick="submitAfterFile();">Submit</button>
+		</div>
+
+	</form>
+		</div>
+	</div>
+	<!--end::Leave form card-->
+
+	<!-- ข้อมูลผู้ขอ/ผู้อนุมัติ: ซ่อน -->
+	<!-- <div class="py-6" id="infoBlock">
+		<div class="fs-8 text-gray-500" id="requestInfo">
+			Request By : <span id="ucEmpId"></span> <span id="ucName"></span> , <span id="timeCreate"></span>
+		</div>
+		<div class="fs-8 text-gray-500" id="approveInfo">
+			Approved By : <span id="aprEmpId"></span> <span id="aprName"></span> - <span id="aprRole"></span> , <span id="timeUpdate"></span>
+		</div>
+	</div> -->
+
+</div>
+
 <script>
-//var action = '${action}';
+/* ---------- dropdown ประเภทการลา + badge วัน/ชั่วโมง ---------- */
+/* sync dropdown ประเภทการลา กับ radio เดิม (#leaveTypes) ทั้งสองทาง */
+(function () {
+	var $select = null;
+	var syncing = false;
+
+	function labelTextFor(radio) {
+		// ชื่อประเภทอยู่หลัง <input> เป็น text node
+		var text = '';
+		var node = radio.nextSibling;
+		while (node) {
+			if (node.nodeType === 3) text += node.textContent;
+			node = node.nextSibling;
+		}
+		return text.trim();
+	}
+
+	function rebuildOptions() {
+		if (!$select) return;
+		var radios = document.querySelectorAll('#leaveTypes input[name="leaveType"]');
+		var current = $select.value;
+		$select.innerHTML = '<option value="" disabled ' + (current ? '' : 'selected') + '>เลือกประเภทการลา</option>';
+		radios.forEach(function (radio) {
+			// LIFF ยกเลิกการลาประเภทนี้ (type 6 ลาพักร้อนที่เหลือจากปีก่อน) เหลือไว้แค่ตอน Edit ใบเดิม
+			if (radio.value === '6' && !radio.checked) return;
+			var opt = document.createElement('option');
+			opt.value = radio.value;
+			opt.textContent = labelTextFor(radio) || radio.value;
+			opt.disabled = radio.disabled;
+			if (radio.checked) opt.selected = true;
+			$select.appendChild(opt);
+		});
+	}
+
+	function onSelectChange() {
+		if (syncing) return;
+		var radio = document.getElementById('lt_' + $select.value);
+		if (!radio) return;
+		syncing = true;
+		radio.checked = true;
+		$(radio).trigger('change');
+		syncing = false;
+	}
+
+	document.addEventListener('DOMContentLoaded', function () {
+		$select = document.getElementById('leaveTypeSelect');
+		var container = document.getElementById('leaveTypes');
+		if (!$select || !container) return;
+		$select.addEventListener('change', onSelectChange);
+
+		// radio ถูกตั้ง checked/disabled ผ่าน property ซึ่ง MutationObserver มองไม่เห็น เลย sync ซ้ำตามเวลา
+		new MutationObserver(rebuildOptions).observe(container, { childList: true, subtree: true });
+		[0, 150, 400, 900, 1600].forEach(function (ms) { setTimeout(rebuildOptions, ms); });
+
+		// la=1: เปลี่ยนผู้ลาแล้ว quota โหลดใหม่
+		var userSelect = document.getElementById('user');
+		if (userSelect) userSelect.addEventListener('change', function () { setTimeout(rebuildOptions, 900); });
+	});
+})();
+
+/* badge วัน/ชั่วโมง: script legacy ตั้ง #amount ด้วย .val() ไม่มี event เลย poll */
+(function () {
+	var lastDay = null, lastHour = null;
+	function tick() {
+		var dayEl = document.getElementById('amount');
+		var hourEl = document.getElementById('amount_sub');
+		var dayBadge = document.getElementById('amountDisplayDay');
+		var hourBadge = document.getElementById('amountDisplayHour');
+		if (!dayEl || !hourEl || !dayBadge || !hourBadge) return;
+		var day = dayEl.value || '0';
+		var hour = hourEl.value || '0';
+		if (day !== lastDay || hour !== lastHour) {
+			lastDay = day; lastHour = hour;
+			dayBadge.textContent = day + 'D';
+			hourBadge.textContent = hour + 'H';
+		}
+	}
+	document.addEventListener('DOMContentLoaded', function () {
+		tick();
+		setInterval(tick, 250);
+	});
+})();
+
+function liffMountSelectDropdown(selectEl) {
+	if (!selectEl || selectEl.dataset.liffMounted) return;
+	selectEl.dataset.liffMounted = '1';
+
+	selectEl.classList.add('liff-select-hidden');
+
+	var wrap = document.createElement('div');
+	wrap.className = 'liff-select-dropdown';
+	selectEl.parentNode.insertBefore(wrap, selectEl);
+	wrap.appendChild(selectEl);
+
+	var triggerClass = selectEl.className.replace('liff-select-hidden', '').trim();
+	var btn = document.createElement('button');
+	btn.type = 'button';
+	btn.className = (triggerClass + ' liff-dropdown-trigger').trim();
+	wrap.appendChild(btn);
+
+	var menu = document.createElement('ul');
+	menu.className = 'liff-dropdown-menu';
+	wrap.appendChild(menu);
+
+	function closeMenu() { wrap.classList.remove('liff-dropdown-open'); }
+	function openMenu() {
+		document.querySelectorAll('.liff-select-dropdown.liff-dropdown-open').forEach(function (el) {
+			if (el !== wrap) el.classList.remove('liff-dropdown-open');
+		});
+		wrap.classList.add('liff-dropdown-open');
+	}
+
+	btn.addEventListener('click', function (e) {
+		e.stopPropagation();
+		if (btn.disabled) return;
+		if (wrap.classList.contains('liff-dropdown-open')) closeMenu(); else openMenu();
+	});
+	document.addEventListener('click', function (e) {
+		if (!wrap.contains(e.target)) closeMenu();
+	});
+
+	function sync() {
+		var opts = selectEl.options;
+		menu.innerHTML = '';
+		var seenValues = {}; // option value ซ้ำได้ (เช่น approver) แสดงครั้งเดียว
+		for (var i = 0; i < opts.length; i++) {
+			(function (opt) {
+				if (opt.value === '') return; // skip placeholder options
+				if (Object.prototype.hasOwnProperty.call(seenValues, opt.value)) return;
+				seenValues[opt.value] = true;
+				var li = document.createElement('li');
+				// ใช้ <button> แทน <a href="javascript:"> เพราะ webview ของ LINE
+				var a = document.createElement('button');
+				a.type = 'button';
+				a.className = 'dropdown-item' + (opt.selected ? ' active' : '') + (opt.disabled ? ' disabled' : '');
+				a.textContent = opt.textContent;
+				a.disabled = !!opt.disabled;
+				if (!opt.disabled) {
+					a.addEventListener('click', function (e) {
+						e.preventDefault();
+						e.stopPropagation();
+						selectEl.value = opt.value;
+						selectEl.dispatchEvent(new Event('change', { bubbles: true }));
+						closeMenu();
+					});
+				}
+				li.appendChild(a);
+				menu.appendChild(li);
+			})(opts[i]);
+		}
+		var selectedOpt = selectEl.options[selectEl.selectedIndex];
+		btn.textContent = selectedOpt ? selectedOpt.textContent : '';
+		btn.disabled = selectEl.disabled;
+	}
+
+	sync();
+	$(selectEl).on('change', sync);
+	new MutationObserver(sync).observe(selectEl, { childList: true, subtree: true, attributes: true, attributeFilter: ['disabled'] });
+}
+
+document.addEventListener('DOMContentLoaded', function () {
+	['leaveTypeSelect', 'halfDay', 'approver'].forEach(function (id) {
+		liffMountSelectDropdown(document.getElementById(id));
+	});
+});
+</script>
+
+<script>
+/* ---------- halfDay: เต็มวัน / ครึ่งเช้า / ครึ่งบ่าย / ชั่วโมง ---------- */
 var action = '${empty action ? "" : action}';
-console.log("action = " + action);
-$(document).ready(function () {
+$(document).ready(initHalfDay);
+
+function initHalfDay() {
 	$('#halfDay').on('change', function () {
 		if (action == 'Edit' && $('#status_hidden').val() != '0') return;
 		if (this.value == 3) {
@@ -579,41 +974,11 @@ $(document).ready(function () {
 			$('#alert_time_to').text('')
 		}
 	});
-
-	$('#myFile').on("change", function () {
-		const file = this.files[0];
-		const fileName = this.files[0].name;
-		const forbiddenChars = /[\/:*?"<>|]/;
-
-		if (forbiddenChars.test(fileName)) {
-			alert("File name contains invalid characters for Windows");
-			$(this).val('');
-			$('#linkImage').text('');
-			$('#size').val('');
-			return;
-		}
-
-		$('#linkImage').text(fileName);
-
-		var fSExt = new Array('Bytes', 'KB', 'MB', 'GB');
-		fSize = this.files[0].size;
-		i = 0;
-		while (fSize > 900) {
-			fSize /= 1024;
-			i++;
-		}
-		var size_n = (Math.round(fSize * 100) / 100);
-		var size = size_n + ' ' + fSExt[i];
-		console.log(size)
-		$('#size').val(size);
-	});
-
-
-});
-
+}
 </script>
 
 <script>
+/* ---------- date helpers ---------- */
 var toISODate = (date) => {
 	return date.substring(3, 6) + "-" + date.substring(0, 2) + "-" + date.substring(7, 11);
 }
@@ -634,56 +999,34 @@ var toDisplayDate = (date) => {
 <!-- Start leaveType Radio -->
 <c:if test="${leaveType != null}">
 <script>
-$(function () {
+/* ---------- ประเภทการลา ---------- */
+$(initLeaveTypeRadios);
+
+function initLeaveTypeRadios() {
 	var leaveTypes;
 	leaveTypes = JSON.parse('${leaveType}');
 	let leaveCheck = [${leave1Check},${leave2Check},${leave3Check},'','',${leave6Check}];
+	// radio 1 ตัว (id 6 มี wrapper id ไว้ซ่อน/แสดงตามเดือน)
+	function leaveTypeRadioHtml(type, disabled) {
+		var labelHtml = $('<div>').text(type.name).html();
+		return '<div class="col-6 col-sm-6 col-md-3"' + (type.id == '6' ? ' id="label_lt_6"' : '') + '><div class="form-check form-check-custom form-check-solid mb-3">'
+			+ '<input class="form-check-input me-3" type="radio" name="leaveType" id="lt_' + type.id + '" value="' + type.id + '"' + (disabled ? ' disabled' : '') + ' required>' + labelHtml
+			+ '</div></div>'
+			+ '<input type="hidden" class="hide" name="leaveType_hidden" id="lt_hidden">';
+	}
+
 	for (let i = 0; i < leaveTypes.length; i++) {
-		if (leaveTypes[i].id == '1' || leaveTypes[i].id == '2' || leaveTypes[i].id == '3' || leaveTypes[i].id == '6') {
-			if (leaveTypes[i].id == '6') {
-				if (leaveCheck[i] == '1') {
-					let radio =	'<div class="col-6 col-sm-6 col-md-3" id="label_lt_6"><div class="form-check form-check-custom form-check-solid mb-3">'
-					+'<input class="form-check-input me-3" type="radio" name="leaveType" id="lt_'+leaveTypes[i].id+'" value="'+leaveTypes[i].id+'" disabled required>'+leaveTypes[i].name
-					+'</div></div>'
-					+'<input type="hidden" class="hide" name="leaveType_hidden" id="lt_hidden">';
-					$('#leaveTypes').addClass('row g-6').append(radio);
-				} else {
-					let radio =	'<div class="col-6 col-sm-6 col-md-3" id="label_lt_6"><div class="form-check form-check-custom form-check-solid mb-3">'
-						+'<input class="form-check-input me-3" type="radio" name="leaveType" id="lt_'+leaveTypes[i].id+'" value="'+leaveTypes[i].id+'" required>'+leaveTypes[i].name
-						+'</div></div>'
-						+'<input type="hidden" class="hide" name="leaveType_hidden" id="lt_hidden">';
-					$('#leaveTypes').addClass('row g-6').append(radio);
-				}
-			} else {
-				if (leaveCheck[i] == '1') {
-					let radio =	'<div class="col-6 col-sm-6 col-md-3"><div class="form-check form-check-custom form-check-solid mb-3">'
-						+'<input class="form-check-input me-3" type="radio" name="leaveType" id="lt_'+leaveTypes[i].id+'" value="'+leaveTypes[i].id+'" disabled required>'+leaveTypes[i].name
-						+'</div></div>'
-						+'<input type="hidden" class="hide" name="leaveType_hidden" id="lt_hidden">';
-					$('#leaveTypes').addClass('row g-6').append(radio);
-				} else {
-					let radio =	'<div class="col-6 col-sm-6 col-md-3"><div class="form-check form-check-custom form-check-solid mb-3">'
-						+'<input class="form-check-input me-3" type="radio" name="leaveType" id="lt_'+leaveTypes[i].id+'" value="'+leaveTypes[i].id+'" required>'+leaveTypes[i].name
-						+'</div></div>'
-						+'<input type="hidden" class="hide" name="leaveType_hidden" id="lt_hidden">';
-					$('#leaveTypes').addClass('row g-6').append(radio);
-				}
-			}
-		} else if (leaveTypes[i].id == '5') {
+		const id = leaveTypes[i].id;
+		if (id == '1' || id == '2' || id == '3' || id == '6') {
+			// quota เต็ม = disabled
+			$('#leaveTypes').addClass('row g-6').append(leaveTypeRadioHtml(leaveTypes[i], leaveCheck[i] == '1'));
+		} else if (id == '5') {
 			// Leave w/o pay can be created by user who has 'leave.approve'
 			<perm:permission object="leave.approve">
-				let radio =	'<div class="col-6 col-sm-6 col-md-3"><div class="form-check form-check-custom form-check-solid mb-3">'
-					+'<input class="form-check-input me-3" type="radio" name="leaveType" id="lt_'+leaveTypes[i].id+'" value="'+leaveTypes[i].id+'" required>'+leaveTypes[i].name
-					+'</div></div>'
-					+'<input type="hidden" class="hide" name="leaveType_hidden" id="lt_hidden">';
-			$('#leaveTypes').addClass('row g-6').append(radio);
+				$('#leaveTypes').addClass('row g-6').append(leaveTypeRadioHtml(leaveTypes[i], false));
 			</perm:permission>
-		} else if (leaveTypes[i].id != '9') {
-			let radio =	'<div class="col-6 col-sm-6 col-md-3"><div class="form-check form-check-custom form-check-solid mb-3">'
-				+'<input class="form-check-input me-3" type="radio" name="leaveType" id="lt_'+leaveTypes[i].id+'" value="'+leaveTypes[i].id+'" required>'+leaveTypes[i].name
-				+'</div></div>'
-				+'<input type="hidden" class="hide" name="leaveType_hidden" id="lt_hidden">';
-			$('#leaveTypes').addClass('row g-6').append(radio);
+		} else if (id != '9') {
+			$('#leaveTypes').addClass('row g-6').append(leaveTypeRadioHtml(leaveTypes[i], false));
 		}
 	}
 
@@ -719,7 +1062,7 @@ $(function () {
 			}
 		}
 	});
-});
+}
 </script>
 </c:if>
 <!-- End leaveType Radio -->
@@ -730,23 +1073,51 @@ $(function () {
 <c:if test="${fileLeave == null}">
 	<c:set var="fileLeave" value="''" />
 </c:if>
+<c:if test="${fileLeaveList == null}">
+	<c:set var="fileLeaveList" value="[]" />
+</c:if>
 
 <script>
+/* ---------- Add / Edit leave form ---------- */
 $(() => {
 	var userList = ${userList};
 	var action = '${action}';
 	var user;
 	var manager;
+	var leave;
+	var fileLeave;
 	const queryString = window.location.search;
 	const urlParams = new URLSearchParams(queryString);
 	const la = urlParams.get('la');
-	if (action == 'Edit') {
-		var leave = ${leave};
-		var fileLeave = ${fileLeave};
-		var leaveInfo = ${empty leaveInfo ? '[]' : leaveInfo};
+
+	try {
+		initFormMode();
+		initDefaultDate();
+		initLeaveAmount();
+		initUserApprover();
+		initEditValues();
+		initNextYearLeave();
+	} finally {
+		liffInitDone('#formid');
+	}
+
+	// ตั้งค่าฟอร์มตามโหมด Add / Edit
+	function initFormMode() {
+		if (action == 'Edit') {
+			initEditMode();
+		} else {
+			initAddMode();
+		}
+		user = user.toLowerCase();
+		manager = manager.toLowerCase();
+	}
+
+	// Edit: โหลดใบลาเดิม
+	function initEditMode() {
+		leave = ${leave};
+		fileLeave = ${fileLeave};
 		user = leave.userId;
 		manager = leave.apprUserId;
-		department = leave.leaveStatusId.toString();
 
 		if (la == '1') {
 			$('form').attr('action','line_new_LeaveEdit_Do_LA');
@@ -756,98 +1127,59 @@ $(() => {
 		} else {
 			$('form').attr('action', 'line_new_LeaveEdit_Do');
 		}
-		
-		var aprEmpId;
-		var aprName;
-        var apprUserId;
-        var aprRole;
-        var ucEmpId;
-        var ucName;
-        var timeCreate;
-        var timeUpdate;
-		if (leaveInfo && leaveInfo.length > 0) {
-			
-			aprEmpId = leaveInfo[0].apr_emp_id;
-			aprName = leaveInfo[0].apr_name;
-	        apprUserId = leaveInfo[0].appr_user_id;
-	        aprRole = leaveInfo[0].apr_role;
-	        ucEmpId = leaveInfo[0].uc_emp_id;
-	        ucName = leaveInfo[0].uc_name;
-	        timeCreate = moment(leaveInfo[0].time_create).format("DD MMM YYYY HH:mm");
-	        timeUpdate = moment(leaveInfo[0].time_update).format("DD MMM YYYY HH:mm");
-		}
+
+		// สถานะใบลา: 0 Wait for approve / 1 Approved / 2 Reject / 3 Cancel
 		if (leave.leaveStatusId.toString() != '0') {
+			initEditReadOnly();
+		}
+		// Wait for approve แก้ข้อมูลได้
+		else if(leave.leaveStatusId.toString() == '0'){
+			initEditPending();
+		}
+		
+
+		function initEditReadOnly() {
+			// ล็อกทุกช่อง
 		    $('input[name="leaveType"]').prop('disabled', true);
-			$('#status, #date_from, #date_to, #halfDay, #description, #myFile, #removeFileBtn, #approver, #submitBtn').prop('disabled', true);
+			$('#status, #date_from, #date_to, #halfDay, #description, #myFile, #approver, #submitBtn').prop('disabled', true);
 		    $('input[name="leaveType"]').closest('.form-check').css('pointer-events', 'none').css('opacity', '0.6');
-			$('#leaveidInfo').show();
-			$('#requestInfo').show();
-		    $('#approveInfo').show();
+			$('#leaveTypeSelect').prop('disabled', true);
 		    
-		    // Hide file upload section and show existing file preview
+		    // ไฟล์เดิมแสดงแบบดูอย่างเดียว + ซ่อนปุ่ม Submit
 		    $('#fileUploadSection').addClass('d-none');
+			$('#filePreviewContainer').addClass('d-none'); // อยู่นอก #fileUploadSection ต้องซ่อนเอง
 			$('#exitingFileSection').addClass('d-block');
-			
-			// Render existing file in exitingFilePreviewContainer
-			if (fileLeave != '' && fileLeave != null) {
-				const fullFileName = fileLeave.name + fileLeave.type;
-				const downloadPath = 'line_preview_File?id=' + fileLeave.fileId;
-				const exitingContainer = document.getElementById('exitingFilePreviewContainer');
-				if (exitingContainer) {
-					exitingContainer.innerHTML = '';
-					renderSingleFilePreview(fullFileName, downloadPath, true, fileLeave.fileId, 'exitingFilePreviewContainer', 'myFile', true);
-				}
-			}
+			lfLoadExisting(${fileLeaveList}, fileLeave);
+			lfRenderExistingReadonly('exitingFilePreviewContainer');
 		    $('#submitBtn').addClass('d-none');
-		    
-		    // Hide afterFile button unless status is Approved (1)
+
 		    if (leave.leaveStatusId.toString() != '1') {
 		    	$('#lbafterFile').addClass('d-none');
 		    }
 		    
-		    $('#aprEmpId').text(aprEmpId);
-	        $('#aprName').text(aprName);
-	        $('#aprRole').text(aprRole);
-	        $('#timeUpdate').text(timeUpdate);
 	        
-	        $('#ucEmpId').text(ucEmpId);
-	        $('#ucName').text(ucName);
-	        $('#timeCreate').text(timeCreate);
 		}
-		else if(leave.leaveStatusId.toString() == '0'){
-			$('#leaveidInfo').show();
-			$('#requestInfo').show();
-		    $('#approveInfo').hide();
-		    // Hide afterFile button for 'Wait for approve' status
-		    $('#lbafterFile').hide();
+
+		function initEditPending() {
+		    // แนบไฟล์ด้วย #fileUploadSection (เพิ่ม/ลบได้ ส่งตอนกด Submit) ซ่อน #afterFileRow
+		    $('#afterFileRow').hide();
 			$('#fileUploadSection').removeClass('d-none');
 			$('#exitingFileSection').addClass('d-none');
-			if (fileLeave != '' && fileLeave != null && fileLeave.fileId) {
-				const fullFileName = fileLeave.name + fileLeave.type;
-				const downloadPath = 'line_preview_File?id=' + fileLeave.fileId;
-				renderSingleFilePreview(fullFileName, downloadPath, true, fileLeave.fileId, 'filePreviewContainer', 'myFile');
-				$('#fileUploadId').val(fileLeave.fileId);
-			}
-			$('#ucEmpId').text(ucEmpId);
-	        $('#ucName').text(ucName);
-	        $('#timeCreate').text(timeCreate);
+			lfLoadExisting(${fileLeaveList}, fileLeave);
+			lfRenderAll();
 		}
-		
-		$('#leaveId').text('${leaveId}');
+	}
 
-	} else {	//Add
+	// Add: ใบลาใหม่
+	function initAddMode() {
 		user = "${onlineUser.id}";
 		manager = "${onlineUser.managerId}";
 		if (la == '1') {
 			$('form').attr('action', 'new_LeaveAdd_Do_LA');
 		} else {
-			$('form').attr('action', 'new_LeaveAdd_Do');
+			$('form').attr('action', 'line_new_LeaveAdd_Do');
 		}
-		$('#leaveidInfo').hide();
-		$('#requestInfo').hide();
-		$('#approveInfo').hide();
-		// Hide afterFile button in Add mode
-		$('#lbafterFile').hide();
+		$('#afterFileRow').hide(); // แนบไฟล์หลังอนุมัติ ใช้เฉพาะ Approved
 		
 		if (la == '1') {
 			<perm:permission object="leave.viewall">
@@ -855,363 +1187,331 @@ $(() => {
 			</perm:permission>
 
 		}
-
 	}
-	user = user.toLowerCase();
-	manager = manager.toLowerCase();
 
-	/* Date from leave calendar */
-	$('#date_from').val('${date}');
-	$('#date_to').val('${date}');
-	$('#amount').val(1);
+	// วันที่เริ่มต้น (มาจากปฏิทินลา)
+	function initDefaultDate() {
+		/* Date from leave calendar */
+		$('#date_from').val('${fn:escapeXml(date)}');
+		$('#date_to').val('${fn:escapeXml(date)}');
+		$('#amount').val(1);
+	}
 
-	/* Set time format from Add Leave */
+	// คำนวณจำนวนวัน / ชั่วโมงที่ลา
+	function initLeaveAmount() {
+		/* Start amount of day from Add Leave */
+		var holiday;
+		var holidays = [];
+		holiday = JSON.parse('${holiday}');
 
-
-	/* Start amount of day from Add Leave */
-	var holiday;
-	var holidays = [];
-	holiday = JSON.parse('${holiday}');
-
-	for (let i = 0; i < holiday.length; i++) {
-		let start = new Date(holiday[i].start);
-		let end = new Date(holiday[i].end);
-		for (let j = start; j <= end; j.setDate(j.getDate() + 1)) {
-			holidays.push(toDisplayDate(j));
+		for (let i = 0; i < holiday.length; i++) {
+			let start = new Date(holiday[i].start);
+			let end = new Date(holiday[i].end);
+			for (let j = start; j <= end; j.setDate(j.getDate() + 1)) {
+				holidays.push(toDisplayDate(j));
+			}
 		}
+
+		function handleDateChange() {
+			let amount = 0;
+			let holiday_count = 0;
+			let from = new Date(toISODate($('#date_from').val()));
+			let to = new Date(toISODate($('#date_to').val()));
+			let halfDay = $('#halfDay').val();
+
+			if (halfDay !== "0") {
+				$('#date_to').val($('#date_from').val());
+				$('#date_to_hidden').val($('#date_from').val());
+				$('#amount').val(0);
+				$('#amount_hidden').val(0);
+			} else {
+				if (from < to) {
+					amount = ((to - from) / 86400000) + 1;
+					for (let i = from; i < to; i.setDate(i.getDate() + 1)) {
+						for (let j = 0; j < holidays.length; j++) {
+							let holiday_ts = toTimestamp2(holidays[j]);
+							if (i.getTime() == holiday_ts) holiday_count++;
+						}
+						if (i.getDay() == '0' || i.getDay() == '6') holiday_count++;
+					}
+					amount -= holiday_count;
+				} else if (from > to) {
+					$('#date_from').val('');
+					$('#date_to').val('');
+				} else if (from.getTime() === to.getTime() && halfDay === "0") {
+					amount = 1;
+				} else if (from.getTime() === to.getTime() && halfDay !== "0") {
+					amount = 0;
+				}
+				$('#amount').val(amount);
+				$('#amount_hidden').val(amount);
+			}
+		}
+
+		$('.input-daterange').on('change', handleDateChange);
+
+		$('.checkHours').change(function () {
+			let timeFrom = new Date("01/01/2007 " + $('#time_from').val()).getHours();
+			let timeTo = new Date("01/01/2007 " + $('#time_to').val()).getHours();
+			let hourDiff = timeTo - timeFrom;
+			if (hourDiff <= 0) {
+				hourDiff = 0;
+				$('#time_to').val('');
+				$('#alert_time_to').text('กรุณาระบุเวลาสิ้นสุดใหม่').css({
+					fontSize: "12px",
+					color: "red"
+				});
+			} else if (hourDiff > 0 && hourDiff < 8) {
+				$('#time_to').css('color', 'black');
+				$('#alert_time_to').text('');
+			} else if (hourDiff >= 8) {
+				hourDiff = 0;
+				$('#time_to').val('');
+				$('#alert_time_to').text('8 ชม. ขึ้นไป กรุณาเลือกการลาแบบเต็มวัน').css({
+					fontSize: "12px",
+					color: "red"
+				});
+			} else {
+				hourDiff = null;
+			}
+			$('#amount_sub').val(hourDiff);
+			$('#amount_sub_hidden').val(hourDiff);
+		});
+
+		/* End amount of day from Add Leave */
 	}
 
-	function handleDateChange() {
-		let amount = 0;
-		let holiday_count = 0;
-		let from = new Date(toISODate($('#date_from').val()));
-		let to = new Date(toISODate($('#date_to').val()));
-		let halfDay = $('#halfDay').val();
+	// รายชื่อผู้ลา / ผู้อนุมัติ
+	function initUserApprover() {
+		/* Start Applicant/Approver List */
+		for (let i = 0; i < userList.length; i++) {
+			let id = userList[i].id.toLowerCase();
+			let name = userList[i].name;
+			let name_en = userList[i].name_en;
+			let employee_id = userList[i].employee_id;
+			let status = userList[i].enable;
+			userList = ${userList};
+			
+			userList.sort(function(a, b){
 
-		if (halfDay !== "0") {
-			$('#date_to').val($('#date_from').val());
-			$('#date_to_hidden').val($('#date_from').val());
-			$('#amount').val(0);
-			$('#amount_hidden').val(0);
-		} else {
-			if (from < to) {
-				amount = ((to - from) / 86400000) + 1;
-				for (let i = from; i < to; i.setDate(i.getDate() + 1)) {
-					for (let j = 0; j < holidays.length; j++) {
-						let holiday_ts = toTimestamp2(holidays[j]);
-						if (i.getTime() == holiday_ts) holiday_count++;
-					}
-					if (i.getDay() == '0' || i.getDay() == '6') holiday_count++;
+			    if(a.employee_id && b.employee_id){
+			        let empCompare = a.employee_id.localeCompare(b.employee_id);
+			        if(empCompare !== 0) return empCompare;
+			    }
+
+			    if(a.employee_id) return -1;
+			    if(b.employee_id) return 1;
+
+			    if(a.name_en && b.name_en){
+			        let nameEnCompare = a.name_en.localeCompare(b.name_en);
+			        if(nameEnCompare !== 0) return nameEnCompare;
+			    }
+
+			    if(a.name_en) return -1;
+			    if(b.name_en) return 1;
+
+			    return (a.name || "").localeCompare(b.name || "");
+			});
+			
+			let displayText = '';
+
+			if (employee_id) {
+				displayText += employee_id;
+			}
+			
+			if (name_en) {
+				if (displayText) displayText += ' - ';
+				displayText += name_en;
+			}
+			
+			if (name) {
+				if (displayText) displayText += ' - ';
+				displayText += name;
+			}
+
+			let option = $('<option>').val(id).text(displayText);
+
+			if (status == '1') {
+				$('#u_enable').append(option);
+			} else {
+				$('#u_disable').append(option);
+			}
+			if (id == manager) {
+				$('#approver').append($('<option>').val(id).text(displayText));
+			}
+		}
+		$('#user').val(user);
+		$('#user').trigger('change');
+		$('#user_hidden').val(user);
+		$('#status_hidden').val(0);
+		$('#approver').val(manager);
+		$('#approver').trigger('change');
+		$('#user').change(() => {
+			let val = $('#user').val();
+			for (let i = 0; i < userList.length; i++) {
+				let user = userList[i].id.toLowerCase();
+				let mng = userList[i].manager;
+				if (user == val) {
+					$('#approver').val(mng.toLowerCase());
+					$('#approver').trigger('change');
 				}
-				amount -= holiday_count;
-			} else if (from > to) {
-				$('#date_from').val('');
-				$('#date_to').val('');
-			} else if (from.getTime() === to.getTime() && halfDay === "0") {
-				amount = 1;
-			} else if (from.getTime() === to.getTime() && halfDay !== "0") {
-				amount = 0;
+			}
+		});
+		/* End Applicant/Approver List */
+	}
+
+	// เติมค่าจากใบลาเดิม (Edit)
+	function initEditValues() {
+		/* Start Leave Edit init */
+		if (leave != null) {
+			$('#user_hidden').val(leave.userCreate);
+			$('#leaveId_hidden').val(leave.leaveId);
+			$('#status_hidden').val(leave.leaveStatusId);
+			var noDay = leave.noDay.toString().split(".");
+			var amount = noDay[0];
+			var amount_sub = (leave.noDay % 1) * 8;
+			if (isNaN(amount_sub)) {
+				amount_sub = 0;
+			}
+			var s_date = moment(leave.startDate, 'MMM D, Y').format('DD MMM YYYY');
+			var e_date = moment(leave.endDate, 'MMM D, Y').format('DD MMM YYYY');
+			$('#date_from').val(s_date);
+			$('#date_to').val(e_date);
+			if (leave.halfDay === '3') {
+				$('#time_from').val(leave.startTime);
+				$('#time_to').val(leave.endTime);
 			}
 			$('#amount').val(amount);
 			$('#amount_hidden').val(amount);
+			$('#amount_sub').val(amount_sub);
+			$('#amount_sub_hidden').val(amount_sub);
+			$('#description').val(leave.description);
+			$('#status').val(leave.leaveStatusId).change();
+			$('#lt_' + leave.leaveTypeId).prop('checked', 'checked');
+			$('#halfDay').val(leave.halfDay).change();
+			$('#approver').val(leave.apprUserId).change();
 		}
+		/* End Leave Edit init */
 	}
 
-	const dateFrom = document.getElementById("date_from");
-	const dateTo = document.getElementById("date_to");
-	const dateRangeDiv = document.querySelector(".input-daterange");
+	// checkbox ลาปีหน้า
+	function initNextYearLeave() {
 
-	dateFrom.addEventListener("change.td", function () {
-		$(dateRangeDiv).trigger("change");
-	});
-	dateTo.addEventListener("change.td", function () {
-		$(dateRangeDiv).trigger("change");
-	});
 
-	$('.input-daterange').on('change', handleDateChange);
+		// begin checkbox ลาปีหน้า ==============================================================
+		// display hide checkbox ลาปีหน้า
+		const currentMonth = new Date().getMonth(); // JavaScript: 0 = ม.ค. ถึง 11 = ธ.ค.
 
-	$('.checkHours').change(function () {
-		let timeFrom = new Date("01/01/2007 " + $('#time_from').val()).getHours();
-		let timeTo = new Date("01/01/2007 " + $('#time_to').val()).getHours();
-		let hourDiff = timeTo - timeFrom;
-		if (hourDiff <= 0) {
-			hourDiff = 0;
-			$('#time_to').val('');
-			$('#alert_time_to').text('กรุณาระบุเวลาสิ้นสุดใหม่').css({
-				fontSize: "12px",
-				color: "red"
-			});
-		} else if (hourDiff > 0 && hourDiff < 8) {
-			$('#time_to').css('color', 'black');
-			$('#alert_time_to').text('');
-		} else if (hourDiff >= 8) {
-			hourDiff = 0;
-			$('#time_to').val('');
-			$('#alert_time_to').text('8 ชม. ขึ้นไป กรุณาเลือกการลาแบบเต็มวัน').css({
-				fontSize: "12px",
-				color: "red"
-			});
+		const $nextYearCheckboxContainer = $('#nextYearLeaveContainer');
+
+		// display only month nov or dec : nov=10,dec=11
+		if (currentMonth === 10 || currentMonth === 11) {
+			$nextYearCheckboxContainer.show();
 		} else {
-			hourDiff = null;
+			$nextYearCheckboxContainer.hide();
+			// if hide checkbox = false
+			$('#nextYearLeave').prop('checked', false); // if nextYearLeave = hide : uncheck nextYearLeave
 		}
-		$('#amount_sub').val(hourDiff);
-		$('#amount_sub_hidden').val(hourDiff);
+		// display hide checkbox ลาปีหน้า
 
-		updateLeaveDisplay();
+		function updateDatePickerRange(isNextYear) {
+			var currentYear = new Date().getFullYear();
+			var targetYear = isNextYear ? (currentYear + 1) : currentYear;
 
-	});
+			var startDate = '01 Jan ' + targetYear;
+			var endDate = '31 Dec ' + targetYear;
 
-	function updateLeaveDisplay() {
-		const day = parseFloat($('#amount').val()) || 0;
-		const hour = parseFloat($('#amount_sub').val()) || 0;
-		const total = day + (hour / 8); // 8 ชม. = 1 วัน
-		$('#amount_display').text(`${total.toFixed(2)} day`);
-	}
+			var $inputs = $('#date_from, #date_to');
 
-	$('.input-daterange').on('change', updateLeaveDisplay);
-
-	/* End amount of day from Add Leave */
-
-
-	/* Start Applicant/Approver List */
-	for (let i = 0; i < userList.length; i++) {
-		let id = userList[i].id.toLowerCase();
-		let name = userList[i].name;
-		let name_en = userList[i].name_en;
-		let employee_id = userList[i].employee_id;
-		let status = userList[i].enable;
-		var userList = ${userList};
-		
-		userList.sort(function(a, b){
-
-		    if(a.employee_id && b.employee_id){
-		        let empCompare = a.employee_id.localeCompare(b.employee_id);
-		        if(empCompare !== 0) return empCompare;
-		    }
-
-		    if(a.employee_id) return -1;
-		    if(b.employee_id) return 1;
-
-		    if(a.name_en && b.name_en){
-		        let nameEnCompare = a.name_en.localeCompare(b.name_en);
-		        if(nameEnCompare !== 0) return nameEnCompare;
-		    }
-
-		    if(a.name_en) return -1;
-		    if(b.name_en) return 1;
-
-		    return (a.name || "").localeCompare(b.name || "");
-		});
-		
-		let displayText = '';
-
-		if (employee_id) {
-			displayText += employee_id;
-		}
-		
-		if (name_en) {
-			if (displayText) displayText += ' - ';
-			displayText += name_en;
-		}
-		
-		if (name) {
-			if (displayText) displayText += ' - ';
-			displayText += name;
-		}
-
-		let option = '<option value="' + id + '">' + displayText + '</option>';
-
-		if (status == '1') {
-			$('#u_enable').append(option);
-		} else {
-			$('#u_disable').append(option);
-		}
-		if (id == manager) {
-			$('#approver').append(option);
-		}
-	}
-	$('#user').val(user);
-	$('#user').trigger('change');
-	$('#user_hidden').val(user);
-	$('#status_hidden').val(0);
-	$('#approver').val(manager);
-	$('#approver').trigger('change');
-	$('#user').change(() => {
-		let val = $('#user').val();
-		for (let i = 0; i < userList.length; i++) {
-			let user = userList[i].id.toLowerCase();
-			let mng = userList[i].manager;
-			if (user == val) {
-				$('#approver').val(mng.toLowerCase());
-				$('#approver').trigger('change');
-			}
-		}
-	});
-	/* End Applicant/Approver List */
-
-	console.log(leave);
-	/* Start Leave Edit init */
-	if (leave != null) {
-		$('#user_hidden').val(leave.userCreate);
-		//$('#leaveId').val(leave.leaveId);
-		$('#leaveId_hidden').val(leave.leaveId);
-		console.log($('#leaveId_hidden').val());
-		$('#status_hidden').val(leave.leaveStatusId);
-		var noDay = leave.noDay.toString().split(".");
-		var amount = noDay[0];
-		var amount_sub = (leave.noDay % 1) * 8;
-		if (isNaN(amount_sub)) {
-			amount_sub = 0;
-		}
-		var s_date = moment(leave.startDate, 'MMM D, Y').format('DD MMM YYYY');
-		var e_date = moment(leave.endDate, 'MMM D, Y').format('DD MMM YYYY');
-		$('#date_from').val(s_date);
-		$('#date_to').val(e_date);
-		if (leave.halfDay === '3') {
-			$('#time_from').val(leave.startTime);
-			$('#time_to').val(leave.endTime);
-		}
-		$('#amount').val(amount);
-		$('#amount_hidden').val(amount);
-		$('#amount_sub').val(amount_sub);
-		$('#amount_sub_hidden').val(amount_sub);
-		$('#description').val(leave.description);
-		$('#status').val(leave.leaveStatusId).change();
-		$('#lt_' + leave.leaveTypeId).prop('checked', 'checked');
-		$('#halfDay').val(leave.halfDay).change();
-		$('#approver').val(leave.apprUserId).change();
-	}
-	/* End Leave Edit init */
-
-	const qThisYear = '${quotaThisYear}';
-
-
-	// begin checkbox ลาปีหน้า ==============================================================
-	// display hide checkbox ลาปีหน้า
-	//debugger;
-	const currentMonth = new Date().getMonth(); // JavaScript: 0 = ม.ค. ถึง 11 = ธ.ค.
-	//const currentMonth = 0 //for test display "ลาพักร้อนที่เหลือจากปีก่อน"
-	//const currentMonth = 1 //for test hide "ลาพักร้อนที่เหลือจากปีก่อน"
-
-	const $nextYearCheckboxContainer = $('#nextYearLeaveContainer');
-
-	// display only month nov or dec : nov=10,dec=11
-	if (currentMonth === 10 || currentMonth === 11) {
-		$nextYearCheckboxContainer.show();
-	} else {
-		$nextYearCheckboxContainer.hide();
-		// if hide checkbox = false
-		$('#nextYearLeave').prop('checked', false); // if nextYearLeave = hide : uncheck nextYearLeave
-	}
-	// display hide checkbox ลาปีหน้า
-
-	function updateDatePickerRange(isNextYear) {
-		var currentYear = new Date().getFullYear();
-		var targetYear = isNextYear ? (currentYear + 1) : currentYear;
-
-		var startDate = '01 Jan ' + targetYear;
-		var endDate = '31 Dec ' + targetYear;
-
-		var $inputs = $('#date_from, #date_to');
-
-		// ล้างค่าที่เลือกไว้เดิม เพื่อให้ User เลือกใหม่ในช่วงปีที่ถูกต้อง
-		var action = '${empty action ? "" : action}';
-		if (action === 'Add') {
-			$inputs.val('');
-			$('#date_from_hidden, #date_from, #date_to, #date_to_hidden').val('');
-		}
-
-		$inputs.daterangepicker({
-			singleDatePicker: true,
-			showDropdowns: true,
-			autoUpdateInput: false,
-			autoApply: true,
-			minDate: startDate,
-			maxDate: endDate,
-			locale: {
-				format: "DD MMM YYYY",
-				monthNames: [
-					"January", "February", "March", "April", "May", "June",
-					"July", "August", "September", "October", "November", "December"
-				],
-			},
-			drops: "down",
-			theme: 'light'
-		});
-
-		// for fix : autoUpdateInput: false,
-		$inputs.on('apply.daterangepicker', function (ev, picker) {
-			$(this).val(picker.startDate.format('DD MMM YYYY'));
-
-			var hiddenId = '#' + $(this).attr('id') + '_hidden';
-			$(hiddenId).val(picker.startDate.format('DD-MM-YYYY'));
-
-			$(this).trigger('change');
-		});
-
-		$inputs.on('cancel.daterangepicker', function (ev, picker) {
-			$(this).val('');
-			var hiddenId = '#' + $(this).attr('id') + '_hidden';
-			$(hiddenId).val('');
-		});
-
-	}
-
-	//updateDatePickerRange(false);
-
-	$('#nextYearLeave').on('change', function () {
-		//debugger;
-		var isNextYear = $(this).is(':checked');
-		updateDatePickerRange(isNextYear);
-		const leave6Container = $('#label_lt_6');
-
-		const leaveTypeRadios = $('input:radio[name="leaveType"]');
-
-		var action = '${empty action ? "" : action}';
-		if (action !== 'Edit') {
-			leaveTypeRadios.prop('checked', false); // nextYearLeave onChange : uncheck radio leave type
-		}
-
-		$('#lt_hidden').val('');
-		if (isNextYear) {
-			leaveTypeRadios.prop('disabled', false); // if nextYearLeave = true : ignore quota : radio leave type = enable all
-			console.log("Next Year Leave: All leave types enabled.");
-
-			// if nextYearLeave = true : display "ลาพักร้อนที่เหลือจากปีก่อน"
-			if (leave6Container.length) {
-				leave6Container.show();
-				console.log("Leave ID 6: SHOW (Next Year Leave checked)");
+			// ล้างค่าที่เลือกไว้เดิม เพื่อให้ User เลือกใหม่ในช่วงปีที่ถูกต้อง
+			var action = '${empty action ? "" : action}';
+			if (action === 'Add') {
+				$inputs.val('');
+				$('#date_from_hidden, #date_from, #date_to, #date_to_hidden').val('');
 			}
 
-		} else {
-			userOnChange();
+			$inputs.daterangepicker({
+				singleDatePicker: true,
+				showDropdowns: true,
+				autoUpdateInput: false,
+				autoApply: true,
+				minDate: startDate,
+				maxDate: endDate,
+				locale: {
+					format: "DD MMM YYYY",
+					monthNames: [
+						"January", "February", "March", "April", "May", "June",
+						"July", "August", "September", "October", "November", "December"
+					],
+				},
+				drops: "down",
+				theme: 'light'
+			});
 
-			// if nextYearLeave = false : control visibility by month logic
-			if (leave6Container.length) {
-				const currentMonth = new Date().getMonth();
-				//const currentMonth = 0 //for test display "ลาพักร้อนที่เหลือจากปีก่อน"
-				//const currentMonth = 1 //for test hide "ลาพักร้อนที่เหลือจากปีก่อน"
-				if (currentMonth > 2) {
-					leave6Container.hide();
-					$('#lt_6').prop('checked', false);
-					//console.log("Leave ID 6: HIDE (Reverted to month check > 2)");
-				} else {
+			// for fix : autoUpdateInput: false,
+			$inputs.on('apply.daterangepicker', function (ev, picker) {
+				$(this).val(picker.startDate.format('DD MMM YYYY'));
+
+				var hiddenId = '#' + $(this).attr('id') + '_hidden';
+				$(hiddenId).val(picker.startDate.format('DD-MM-YYYY'));
+
+				$(this).trigger('change');
+			});
+
+			$inputs.on('cancel.daterangepicker', function (ev, picker) {
+				$(this).val('');
+				var hiddenId = '#' + $(this).attr('id') + '_hidden';
+				$(hiddenId).val('');
+			});
+
+		}
+
+
+		$('#nextYearLeave').on('change', function () {
+			var isNextYear = $(this).is(':checked');
+			updateDatePickerRange(isNextYear);
+			const leave6Container = $('#label_lt_6');
+
+			const leaveTypeRadios = $('input:radio[name="leaveType"]');
+
+			var action = '${empty action ? "" : action}';
+			if (action !== 'Edit') {
+				leaveTypeRadios.prop('checked', false); // nextYearLeave onChange : uncheck radio leave type
+			}
+
+			$('#lt_hidden').val('');
+			if (isNextYear) {
+				leaveTypeRadios.prop('disabled', false); // if nextYearLeave = true : ignore quota : radio leave type = enable all
+
+				// if nextYearLeave = true : display "ลาพักร้อนที่เหลือจากปีก่อน"
+				if (leave6Container.length) {
 					leave6Container.show();
-					//console.log("Leave ID 6: SHOW (Month <= 2, keeping shown)");
+				}
+
+			} else {
+				userOnChange();
+
+				// if nextYearLeave = false : control visibility by month logic
+				if (leave6Container.length) {
+					const currentMonth = new Date().getMonth();
+					if (currentMonth > 2) {
+						leave6Container.hide();
+						$('#lt_6').prop('checked', false);
+					} else {
+						leave6Container.show();
+					}
 				}
 			}
-		}
 
-	});
+		});
 
-	$('#nextYearLeave').trigger('change');
-	// end checkbox ลาปีหน้า ==============================================================
-
+		$('#nextYearLeave').trigger('change');
+		// end checkbox ลาปีหน้า ==============================================================
+	}
 });
 
 function userOnChange() {
 
-	var empId = $('#user').find(":selected").text().split(" ")[0];
 	var userId = $('#user').val();
 
 	$.ajax({
@@ -1222,7 +1522,6 @@ function userOnChange() {
 			"userId": userId
 		},
 		success: function (data) {
-			//console.log(data);
 			var dataObj = JSON.parse(data);
 			$("#approver option[value != 'admin']").remove();
 			$('#approver').append(dataObj.option)
@@ -1238,7 +1537,6 @@ function userOnChange() {
 			"userId": userId
 		},
 		success: function (data) {
-			//console.log(data);
 			const responseData = JSON.parse(data);
 			const leaveStatus = responseData.leaveCheckStatus;
 
@@ -1250,17 +1548,12 @@ function userOnChange() {
 					const elementId = "lt_" + leaveTypeId; //ref id leaveType Radio
 
 					const targetElement = document.getElementById(elementId);
-					//const targetElement = $(elementId);
 					if (targetElement) {
 						if (isQuotaFull === true) {
-							//console.log("Quota full for leaveTypeId : " + leaveTypeId);
 							targetElement.disabled = true;
 						} else {
-							//console.log("Quota available for leaveTypeId : " + leaveTypeId);
 							targetElement.disabled = false;
 						}
-					} else {
-						console.log("Element with ID : " + leaveTypeId + "not found in the DOM.");
 					}
 				}
 			}
@@ -1271,9 +1564,18 @@ function userOnChange() {
 </script>
 
 <script>
-document.addEventListener("DOMContentLoaded", function () {
-	// Start Time picker
-	const startTimePicker = new tempusDominus.TempusDominus(document.getElementById("time_from"), {
+/* ---------- time picker ---------- */
+document.addEventListener("DOMContentLoaded", initTimePickers);
+
+function initTimePickers() {
+	// Start Time picker ค่าเริ่มต้น 09:00
+	createTimePicker("time_from", 9);
+	// End Time picker ค่าเริ่มต้น 18:00
+	createTimePicker("time_to", 18);
+}
+
+function createTimePicker(inputId, defaultHour) {
+	const picker = new tempusDominus.TempusDominus(document.getElementById(inputId), {
 		display: {
 			components: {
 				calendar: false, // ไม่ต้องมีปฏิทิน
@@ -1292,75 +1594,112 @@ document.addEventListener("DOMContentLoaded", function () {
 		useCurrent: false
 	});
 
-	// ตั้งค่าเริ่มต้นเป็น 09:00
-	startTimePicker.dates.setValue(tempusDominus.DateTime.convert(new Date(0, 0, 0, 9, 0)));
+	picker.dates.setValue(tempusDominus.DateTime.convert(new Date(0, 0, 0, defaultHour, 0)));
+}
+</script>
 
-	// End Time picker
-	const endTimePicker = new tempusDominus.TempusDominus(document.getElementById("time_to"), {
-		display: {
-			components: {
-				calendar: false,
-				clock: true,
-				hours: true,
-				minutes: true,
-				seconds: false,
-				useTwentyfourHour: true
-			},
-			theme: "light"
-		},
-		localization: {
-			hourCycle: 'h23',
-			format: "HH:mm"
-		},
-		useCurrent: false
-	});
+<script>
+/* ---------- submit ---------- */
+var leaveSubmitting = false; // กันกดซ้ำ
 
-	// ตั้งค่าเริ่มต้นเป็น 18:00
-	endTimePicker.dates.setValue(tempusDominus.DateTime.convert(new Date(0, 0, 0, 18, 0)));
+// บันทึกสำเร็จ redirect ไปหน้า list
+function isLeaveSaved(res) {
+	return res.ok && res.redirected && res.url.indexOf('line_new_myleave_list') !== -1;
+}
+
+// session หมด AuthInterceptor redirect ไปหน้า login
+function isSessionExpired(res) {
+	return res.redirected && res.url.indexOf('/pages-line/index.jsp') !== -1;
+}
+
+function doSubmit() {
+	if (leaveSubmitting) { return; }
+	leaveSubmitting = true;
+
+	var spinner = $('#liffLoadingOverlay');
+	var form = $('#formid');
+	if (typeof lfSyncInput === 'function') { lfSyncInput(); } // รวมไฟล์แนบเข้า #myFile
+	spinner.css('display', 'flex');
+	// field ที่ disabled ไม่ถูกส่ง เปิดชั่วคราว
+	var disabledInputs = form.find(':input:disabled').prop('disabled', false);
+	var formData = new FormData(form[0]);
+	disabledInputs.prop('disabled', true);
+	$('#submitBtn, #lbafterFile, #afterFileSubmitBtn').prop('disabled', true).addClass('disabled');
+
+	fetch(form.attr('action'), { method: 'POST', body: formData })
+		.then(function (res) {
+			// session หมด ไปหน้า login
+			if (isSessionExpired(res)) {
+				window.location.href = res.url;
+				return;
+			}
+			// บันทึกไม่สำเร็จ ไป catch
+			if (!isLeaveSaved(res)) { throw new Error('save failed'); }
+
+			// บันทึกสำเร็จ ไปหน้า My Leave พร้อม toast
+			if (window.opener) {
+				window.opener.location.reload();
+			}
+			var savedParam = (action == 'Add') ? 'saved=add' : 'saved=edit';
+			var separator = (res.url.indexOf('?') === -1) ? '?' : '&';
+			window.location.href = res.url + separator + savedParam;
+		})
+		.catch(function () {
+			leaveSubmitting = false;
+			spinner.css('display', 'none');
+			$('#submitBtn, #lbafterFile, #afterFileSubmitBtn').prop('disabled', false).removeClass('disabled');
+			liffToastError("Unable to submit your leave request. Please try again.", "Submit failed");
+		});
+}
+
+// มีไฟล์แนบอยู่ไหม (pending ใหม่ + existing เดิมที่ยังไม่ถูกลบ)
+function lfHasAnyFile() {
+	if (typeof LeaveFiles === 'undefined') return false;
+	var activeExisting = LeaveFiles.existing.filter(function (ex) {
+		return LeaveFiles.deleted.indexOf(ex.fileId) === -1;
+	}).length;
+	return (LeaveFiles.pending.length + activeExisting) > 0;
+}
+
+function beforeSubmit() {
+	if (leaveSubmitting) { return; } // กำลังส่งอยู่ ไม่ต้องทำอะไรเพิ่ม
+	if (LeaveFiles.loading.length > 0) { return; } // ไฟล์ยังประมวลผลไม่เสร็จ disabled ปุ่มไว้
+	var form = $('#formid');
+	if (!form[0].reportValidity()) {
+		return;
+	}
+
+	// เช็คชื่อ leave type
+	var typeName = $('#leaveTypeSelect option:selected').text() || '';
+	var isSickOrPersonal = (typeName.indexOf('ลาป่วย') !== -1 || typeName.indexOf('ลากิจ') !== -1);
+
+	if (isSickOrPersonal && !lfHasAnyFile()) {
+		// ลาป่วย/ลากิจ แต่ยังไม่มีไฟล์แนบ -> เตือนใต้แถวแนบไฟล์
+		$('#alert_evidence').text('กรณีลากิจ และลาป่วย ต้องแนบไฟล์การขออนุมัติจากหัวหน้าทุกครั้ง');
+		document.getElementById('fileUploadSection').scrollIntoView({ behavior: 'smooth', block: 'center' });
+		return;
+	}
+	doSubmit();
+}
+
+// กด back กลับมาหน้านี้ให้โหลดใหม่
+window.addEventListener('pageshow', function (e) {
+	if (e.persisted) location.reload();
 });
 </script>
 
 <script>
-function showFileName(input) {
-	const fileDisplay = document.getElementById("fileNameDisplay");
-	if (input.files.length > 0) {
-		fileDisplay.textContent = input.files[0].name;
-	} else {
-		fileDisplay.textContent = "ยังไม่ได้เลือกไฟล์";
-	}
-}
-</script>
+/* ---------- select ผู้ลา + date picker ---------- */
+document.addEventListener("DOMContentLoaded", initSelectAndDatePickers);
 
-<script>
-function beforeSubmit() {
-	var spinner = $('#loader');
-	var form = $('#formid');
-	var reportValidity = form[0].reportValidity();
-	if (reportValidity) {
-		spinner.show();
-		$('#btn_submit').prop('disabled', true);
-		$('#formid').find(':input').prop('disabled', false);
-		console.log(form);
-		form.submit();
-
-		// Refresh the window that opened this one, if it exists to show the latest data
-		if (window.opener) {
-			window.opener.location.reload();
-		}
-	}
-}
-</script>
-
-<script>
-document.addEventListener("DOMContentLoaded", function () {
-
+function initSelectAndDatePickers() {
 	$("#user").select2({
 		allowClear: true,
 		width: '100%'
 	});
 
-	//Start Date Picker
-	$("#date_from").daterangepicker({
+	// Start / End Date Picker
+	$("#date_from, #date_to").daterangepicker({
 		singleDatePicker: true,
 		showDropdowns: true,
 		autoApply: true, // ยืนยันโดยอัตโนมัติเมื่อเลือกวันที่
@@ -1375,37 +1714,11 @@ document.addEventListener("DOMContentLoaded", function () {
 		theme: 'light', // ใช้ธีมแสง
 	});
 
-	// End Date Picker
-	$("#date_to").daterangepicker({
-		singleDatePicker: true,
-		showDropdowns: true,
-		autoApply: true, // ยืนยันโดยอัตโนมัติเมื่อเลือกวันที่
-		locale: {
-			format: "DD MMM YYYY", // รูปแบบวันที่
-			monthNames: [
-				"January", "February", "March", "April", "May", "June",
-				"July", "August", "September", "October", "November", "December"
-			], // กำหนดชื่อเดือนเต็ม
-		},
-		drops: "down",
-		theme: 'light', // ใช้ธีมแสง
-	});
-
-	// ซิงค์ค่า hidden input
-	document.getElementById("date_from").addEventListener("change.td", function (e) {
-		const val = e.detail.date ? e.detail.date.format("DD-MM-YYYY") : "";
-		document.getElementById("date_from_hidden").value = val;
-	});
-
-	document.getElementById("date_to").addEventListener("change.td", function (e) {
-		const val = e.detail.date ? e.detail.date.format("DD-MM-YYYY") : "";
-		document.getElementById("date_to_hidden").value = val;
-	});
-
-});
+}
 </script>
 
 <script>
+/* ---------- ไฟล์แนบ: preview / ลบไฟล์ ---------- */
 function renderSingleFilePreview(fileName, fileUrl, isExisting = false, fileId = null, containerId = 'filePreviewContainer', fileInputId = 'myFile', disableTrash = false) {
 	const container = document.getElementById(containerId) || document.getElementById('filePreviewContainer');
 	if (!container) return;
@@ -1455,7 +1768,6 @@ function renderSingleFilePreview(fileName, fileUrl, isExisting = false, fileId =
 	trashIcon.className = 'ki-duotone ki-trash fs-3';
 	trashIcon.innerHTML = `<span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span><span class="path5"></span>`;
 	removeBtn.appendChild(trashIcon);
-	console.log("Disable Trash: " + disableTrash);
 	if (disableTrash === true) {
 		removeBtn.style.opacity = '0.5';
 		removeBtn.style.pointerEvents = 'none';
@@ -1503,163 +1815,94 @@ window.removeSingleFile = function (isExisting, fileId, containerId = 'filePrevi
 	if (window.filePreviewTarget) delete window.filePreviewTarget;
 };
 
-document.addEventListener('DOMContentLoaded', function () {
+document.addEventListener('DOMContentLoaded', initFileInput);
+
+function initFileInput() {
 	const fileInput = document.getElementById('myFile');
-
-	if (typeof action !== 'undefined' && action === 'Edit' && typeof fileLeave !== 'undefined' && fileLeave != null && fileLeave != '') {
-		const fullFileName = fileLeave.name + fileLeave.type;
-		const downloadPath = 'line_preview_File?id=' + fileLeave.fileId;
-		renderSingleFilePreview(fullFileName, downloadPath, true, fileLeave.fileId);
-		$('#fileUploadId').val(fileLeave.fileId);
-		$('#deleteFileId').val('');
-	}
-
 	if (!fileInput) {
 		console.error("Critical Error: File input element with ID 'myFile' not found.");
 		return;
 	}
-
+	// เลือกได้หลายไฟล์ สะสมใน LeaveFiles.pending (__lfAddFilesCallback ใช้ตอนแนบหลังอนุมัติ)
 	fileInput.addEventListener('change', function (event) {
-		const file = event.target.files[0];
-		if (!file) return;
-		const forbiddenChars = /[\/:*?"<>|]/;
-		if (forbiddenChars.test(file.name)) {
-			alert("File name contains invalid characters.");
-			this.value = '';
-			const def = document.getElementById('filePreviewContainer'); if (def) def.innerHTML = '';
-			const exf = document.getElementById('exitingFilePreviewContainer'); if (exf) exf.innerHTML = '';
-			const mdf = document.getElementById('modalFilePreviewName'); if (mdf) mdf.innerText = 'No file selected';
-			const sz = document.getElementById('size'); if (sz) sz.value = '';
+		var cb = window.__lfAddFilesCallback;
+		window.__lfAddFilesCallback = null;
+		$('#alert_evidence').text(''); // แนบไฟล์แล้ว ซ่อนข้อความเตือน
+		lfAddFiles(event.target.files, cb);
+	});
+}
+
+/* ---------- ไฟล์แนบตอน Approved: เลือกไฟล์ → ดูก่อน → กด Submit ถึงส่ง ---------- */
+function toggleAfterFileSubmit() {
+	var input = document.getElementById('afterFile');
+	var hasFile = !!(input && input.files && input.files.length > 0);
+	$('#afterFileSubmitBtn').toggleClass('d-none', !hasFile);
+}
+
+function previewAfterFile(input) {
+	const container = document.getElementById('modalFilePreviewName');
+	if (!container) return;
+	if (input.files && input.files[0]) {
+		const file = input.files[0];
+
+		if (lfIsHeic(file)) {
+			input.value = '';
+			container.innerHTML = '';
+			toggleAfterFileSubmit();
+			lfAlertHeic();
 			return;
 		}
 
-		const containerId = window.filePreviewTarget || 'filePreviewContainer';
-		if (window.filePreviewTarget) delete window.filePreviewTarget;
-
-		const defC = document.getElementById('filePreviewContainer'); if (defC) defC.innerHTML = '';
-		const mdfC = document.getElementById('modalFilePreviewName'); if (mdfC) mdfC.innerText = 'No file selected';
-		const exfC = document.getElementById('exitingFilePreviewContainer'); if (exfC) exfC.innerHTML = '';
-
-		var fSExt = new Array('Bytes', 'KB', 'MB', 'GB');
-		var fSize = file.size;
-		var i = 0;
-		while (fSize > 900) {
-			fSize /= 1024;
-			i++;
+		if (LF_FORBIDDEN.test(file.name)) {
+			input.value = '';
+			container.innerHTML = '';
+			toggleAfterFileSubmit();
+			lfAlertBadName(file.name);
+			return;
 		}
-		var size_n = (Math.round(fSize * 100) / 100);
-		const sizeEl = document.getElementById('size'); if (sizeEl) sizeEl.value = size_n + ' ' + fSExt[i];
 
 		const tempUrl = URL.createObjectURL(file);
-		renderSingleFilePreview(file.name, tempUrl, false, null, containerId, 'myFile');
-
-		const delEl = document.getElementById('deleteFileId'); if (delEl) delEl.value = '';
-		const fupEl = document.getElementById('fileUploadId'); if (fupEl) fupEl.value = '';
-	});
-
-});
-
-document.getElementById('myFile').addEventListener('change', function(e) {
-    console.log("fileUpload");
-	const file = e.target.files[0];
-
-    if (!file) {
-        return;
-    }
-
-    if (!file.type.startsWith('image/')) {
-        return;
-    }
-    
-    const limitSize = 500 * 1024;
-    if (file.size <= limitSize) {
-        console.log("ขนาดไฟล์เล็กอยู่แล้ว (" + (file.size / 1024).toFixed(2) + " KB) ข้ามการย่อขนาด");
-        return;
-    }
-    
-    console.log("Before resize: " + (file.size / 1024 / 1024).toFixed(2) + " MB");
-
-    new Compressor(file, {
-        quality: 0.8,
-        maxWidth: 1024, 
-        maxHeight: 1024,   
-        success(result) {
-
-            const compressedFile = new File([result], file.name, {
-                type: result.type,
-                lastModified: Date.now()
-            });
-
-            console.log("After resize: " + (compressedFile.size / 1024 / 1024).toFixed(2) + " MB");
-
-            const dataTransfer = new DataTransfer();
-            dataTransfer.items.add(compressedFile);
-            
-            document.getElementById('myFile').files = dataTransfer.files;
-            
-        },
-        error(err) {
-            console.error("Error resize: ", err.message);
-        },
-    });
-});
-
-function previewModalFile(input) {
-	const container = document.getElementById('modalFilePreviewName');
-    if (!container) return;
-	if (input.files && input.files[0]) {
-		const file = input.files[0];
-        const tempUrl = URL.createObjectURL(file);
-        renderSingleFilePreview(file.name, tempUrl, false, null, 'modalFilePreviewName', 'afterFile');
-
+		renderSingleFilePreview(file.name, tempUrl, false, null, 'modalFilePreviewName', 'afterFile');
+		$('#removeFileBtn_modalFilePreviewName').on('click', toggleAfterFileSubmit);
 	} else {
-		container.innerHTML = '<div class="text-muted fs-6">No file selected</div>';
+		container.innerHTML = '';
 	}
+	toggleAfterFileSubmit();
 }
-function clearModalFile() {
-    const input = document.getElementById('afterFile');
-    if (input) input.value = '';
-    
-    removeSingleFile(false, null, 'modalFilePreviewName', 'afterFile');
-    
-    const container = document.getElementById('modalFilePreviewName');
-    if (container) {
-        container.innerHTML = '<div class="text-muted fs-6">No file selected</div>';
-    }
-}
-function submitModalFile() {
+
+function clearAfterFile() {
 	const input = document.getElementById('afterFile');
-	if (input.files && input.files.length > 0) {
-		handleAfterFileSelect(input);
-		var modalEl = document.getElementById('attachFileModal');
-		var modalInstance = bootstrap.Modal.getInstance(modalEl);
-		if (modalInstance) {
-			modalInstance.hide();
-		} else {
-			$('#attachFileModal').modal('hide');
-		}
-		clearModalFile();
-		beforeSubmit();
-	} else {
-		alert('Please select a file first.');
-	}
+	if (input) input.value = '';
+	removeSingleFile(false, null, 'modalFilePreviewName', 'afterFile');
+	toggleAfterFileSubmit();
+}
+
+function submitAfterFile() {
+	const input = document.getElementById('afterFile');
+	if (!input.files || input.files.length === 0) return;
+	// เช็คขนาด/บีบอัดก่อน ผ่านแล้วค่อยส่ง
+	window.__lfAddFilesCallback = function (success) {
+		if (!success) return;
+		clearAfterFile();
+		doSubmit();
+	};
+	handleAfterFileSelect(input);
 }
 </script>
 
 <script>
+/* ---------- ไฟล์แนบ: แนบไฟล์ตอน Approved ---------- */
 function handleAfterFileSelect(input) {
 	const file = input.files[0];
 	if (!file) return;
-	const forbiddenChars = /[\/:*?"<>|]/;
-	if (forbiddenChars.test(file.name)) {
-		alert("File name contains invalid characters.");
+	if (LF_FORBIDDEN.test(file.name)) {
+		lfAlertBadName(file.name);
 		input.value = '';
 		return;
 	}
 
-	// Forward the chosen file to the existing #myFile input so existing handlers run
+	// ส่งไฟล์ต่อให้ #myFile ใช้ handler เดิม
 	try {
-		// render into the afterFile preview container
 		window.filePreviewTarget = 'modalFilePreviewName';
 		const dataTransfer = new DataTransfer();
 		dataTransfer.items.add(file);
@@ -1668,7 +1911,7 @@ function handleAfterFileSelect(input) {
 			myFile.files = dataTransfer.files;
 			const evt = new Event('change', { bubbles: true });
 			myFile.dispatchEvent(evt);
-			// clear the afterFile input so the form doesn't submit both
+			// ล้าง #afterFile กันส่งซ้ำ
 			try { input.value = ''; } catch (e) { /* ignore */ }
 			return;
 		}
@@ -1676,7 +1919,7 @@ function handleAfterFileSelect(input) {
 		console.warn('Forward to #myFile failed, fallback to direct preview', err);
 	}
 
-	// Fallback: render preview directly and set hidden fields
+	// สำรองกรณี DataTransfer ใช้ไม่ได้
 	const tempUrl = URL.createObjectURL(file);
 	renderSingleFilePreview(file.name, tempUrl, false, null, 'modalFilePreviewName', 'afterFile');
 
@@ -1694,4 +1937,285 @@ function handleAfterFileSelect(input) {
 }
 </script>
 
-</html>
+<script>
+/* ---------- ไฟล์แนบ: หลายไฟล์ ---------- */
+window.LeaveFiles = window.LeaveFiles || { pending: [], existing: [], deleted: [], loading: [] };
+var LF_LOADING_SEQ = 0;
+
+var LF_FORBIDDEN = /[\/:*?"<>|]/;
+var LF_IMG_LIMIT = 500 * 1024;
+var LF_TOTAL_LIMIT = 2 * 1024 * 1024;
+
+function getFileIconPath(fileName) {
+	var ext = fileName.split('.').pop().toLowerCase();
+	switch (ext) {
+		case 'pdf': return 'assets/media/svg/files/pdf.svg';
+		case 'doc': case 'docx': return 'assets/media/svg/files/doc.svg';
+		case 'png': case 'jpg': case 'jpeg': case 'gif': case 'webp':
+			return 'assets/media/svg/files/blank-image.svg';
+		// xls / zip ยังไม่มีไอคอน ใช้ไอคอนกลาง
+		default: return 'assets/media/svg/files/folder-document.svg';
+	}
+}
+
+function lfLoadExisting(list, legacyFile) {
+	LeaveFiles.existing = [];
+	LeaveFiles.deleted = [];
+	if (list && list.length) {
+		for (var i = 0; i < list.length; i++) {
+			var f = list[i];
+			if (!f || f.fileId == null) continue;
+			LeaveFiles.existing.push({ fileId: f.fileId, name: (f.name || 'file'), type: (f.type || '') });
+		}
+	}
+	if (legacyFile && legacyFile.fileId != null && !LeaveFiles.existing.some(function (e) { return e.fileId == legacyFile.fileId; })) {
+		LeaveFiles.existing.push({ fileId: legacyFile.fileId, name: (legacyFile.name || 'file'), type: (legacyFile.type || '') });
+	}
+}
+
+function lfMakeItem(name, url, onRemove, disableTrash) {
+	var wrapper = document.createElement('div');
+	wrapper.className = 'd-flex w-100 justify-content-between align-items-center p-2 border border-gray-300 rounded bg-white';
+
+	var leftGroup = document.createElement('div');
+	leftGroup.className = 'd-flex align-items-center overflow-hidden me-4';
+
+	var icon = document.createElement('img');
+	icon.src = getFileIconPath(name);
+	icon.className = 'w-25px h-25px me-3 flex-shrink-0';
+	icon.alt = 'icon';
+
+	var link = document.createElement('a');
+	link.href = url || '#';
+	link.target = '_blank';
+	link.className = 'text-gray-800 fw-medium text-hover-primary text-truncate';
+	link.textContent = name;
+	link.style.maxWidth = '250px';
+
+	leftGroup.appendChild(icon);
+	leftGroup.appendChild(link);
+
+	var removeBtn = document.createElement('span');
+	removeBtn.className = 'btn btn-icon btn-sm btn-light-danger';
+	var trashIcon = document.createElement('i');
+	trashIcon.className = 'ki-duotone ki-trash fs-3';
+	trashIcon.innerHTML = '<span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span><span class="path5"></span>';
+	removeBtn.appendChild(trashIcon);
+	if (disableTrash) {
+		removeBtn.style.opacity = '0.5';
+		removeBtn.style.pointerEvents = 'none';
+	} else {
+		removeBtn.classList.add('cursor-pointer');
+		removeBtn.onclick = onRemove;
+	}
+
+	wrapper.appendChild(leftGroup);
+	wrapper.appendChild(removeBtn);
+	return wrapper;
+}
+
+function lfMakeLoadingItem(name) {
+	var wrapper = document.createElement('div');
+	wrapper.className = 'd-flex w-100 align-items-center p-2 border border-gray-300 rounded bg-white';
+
+	var spinner = document.createElement('span');
+	spinner.className = 'spinner-border spinner-border-sm text-primary me-3 flex-shrink-0';
+	spinner.setAttribute('role', 'status');
+
+	var label = document.createElement('span');
+	label.className = 'text-gray-600 fs-6 text-truncate';
+	label.textContent = 'กำลังประมวลผล ' + name + '...';
+	label.style.maxWidth = '250px';
+
+	wrapper.appendChild(spinner);
+	wrapper.appendChild(label);
+	return wrapper;
+}
+
+function lfRemoveLoading(loadingId) {
+	LeaveFiles.loading = LeaveFiles.loading.filter(function (l) { return l.id !== loadingId; });
+}
+
+function lfUpdateSubmitState() {
+	var hasLoading = LeaveFiles.loading.length > 0;
+	$('#submitBtn')
+		.prop('disabled', hasLoading)
+		.toggleClass('disabled', hasLoading)
+		.attr('title', hasLoading ? 'กำลังประมวลผลไฟล์แนบ กรุณารอสักครู่' : '');
+}
+
+function lfPaint(containerId, opts) {
+	var c = document.getElementById(containerId);
+	if (!c) return;
+	opts = opts || {};
+	c.innerHTML = '';
+	for (var i = 0; i < LeaveFiles.existing.length; i++) {
+		(function (ex) {
+			if (LeaveFiles.deleted.indexOf(ex.fileId) !== -1) return;
+			c.appendChild(lfMakeItem(ex.name + (ex.type || ''), 'line_preview_File?id=' + ex.fileId, function () {
+				LeaveFiles.deleted.push(ex.fileId);
+				lfSyncInput();
+				lfRenderAll();
+			}, !!opts.readonly));
+		})(LeaveFiles.existing[i]);
+	}
+	for (var j = 0; j < LeaveFiles.pending.length; j++) {
+		(function (idx, file) {
+			c.appendChild(lfMakeItem(file.name, URL.createObjectURL(file), function () {
+				LeaveFiles.pending.splice(idx, 1);
+				lfSyncInput();
+				lfRenderAll();
+			}, !!opts.readonly));
+		})(j, LeaveFiles.pending[j]);
+	}
+	if (!opts.readonly) {
+		for (var k = 0; k < LeaveFiles.loading.length; k++) {
+			c.appendChild(lfMakeLoadingItem(LeaveFiles.loading[k].name));
+		}
+	}
+	if (!c.children.length && opts.emptyText) {
+		c.innerHTML = '<div class="text-muted fs-6">' + opts.emptyText + '</div>';
+	}
+
+	lfUpdateSubmitState();
+}
+
+function lfRenderAll() {
+	lfPaint('filePreviewContainer', {});
+}
+
+function lfRenderExistingReadonly(containerId) {
+	lfPaint(containerId, { readonly: true });
+}
+
+function lfDup(file) {
+	return LeaveFiles.pending.some(function (f) { return f.name === file.name && f.size === file.size; });
+}
+
+function lfCurrentTotalSize() {
+	var total = 0;
+	LeaveFiles.pending.forEach(function (f) { total += f.size; });
+	return total;
+}
+
+// popup ไฟล์ HEIC / ชื่อไฟล์มีอักขระต้องห้าม (ใช้ร่วมทุกจุดที่แนบไฟล์)
+function lfAlertHeic() {
+	Swal.fire({
+		icon: 'error',
+		title: 'ไม่รองรับไฟล์ HEIC',
+		html: 'ไม่รองรับไฟล์นามสกุล .heic กรุณาแปลงก่อนแนบไฟล์'
+			+ '<br><br><span class="text-muted fs-7">ไฟล์ที่รองรับ: PNG, JPG, JPEG, GIF, WEBP, PDF, ZIP</span>',
+		confirmButtonText: 'รับทราบ',
+		buttonsStyling: false,
+		customClass: { confirmButton: "btn btn-primary" }
+	});
+}
+
+function lfAlertBadName(fileName) {
+	Swal.fire({
+		icon: 'error',
+		title: 'Invalid file name',
+		text: 'File name contains invalid characters: ' + fileName,
+		confirmButtonText: 'OK',
+		buttonsStyling: false,
+		customClass: { confirmButton: "btn btn-primary" }
+	});
+}
+
+function lfIsHeic(file) {
+	var name = (file.name || '').toLowerCase();
+	return name.endsWith('.heic') || name.endsWith('.heif')
+		|| file.type === 'image/heic' || file.type === 'image/heif';
+}
+
+function lfCompressIfNeeded(file, loadingId, onDone) {
+	if (file.type && file.type.indexOf('image/') === 0 && file.size > LF_IMG_LIMIT && typeof Compressor !== 'undefined') {
+		new Compressor(file, {
+			quality: 0.8, maxWidth: 1024, maxHeight: 1024,
+			success: function (result) {
+				var compressed = new File([result], file.name, { type: result.type, lastModified: Date.now() });
+				lfTryAddFile(compressed, loadingId, onDone);
+			},
+			error: function (err) {
+				console.error('resize error:', err && err.message);
+				lfTryAddFile(file, loadingId, onDone);
+			}
+		});
+	} else {
+		lfTryAddFile(file, loadingId, onDone);
+	}
+}
+
+function lfProcessFile(file, loadingId, onDone) {
+	if (lfIsHeic(file)) {
+		lfRemoveLoading(loadingId);
+		lfRenderAll();
+		lfAlertHeic();
+		if (onDone) onDone(false);
+		return;
+	}
+	lfCompressIfNeeded(file, loadingId, onDone);
+}
+
+function lfTryAddFile(file, loadingId, onDone) {
+	lfRemoveLoading(loadingId);
+	var currentTotal = lfCurrentTotalSize();
+	if (currentTotal + file.size > LF_TOTAL_LIMIT) {
+		Swal.fire({
+			icon: 'warning',
+			title: 'ไฟล์มีขนาดเกินกำหนด',
+			text: 'ไม่สามารถแนบไฟล์ "' + file.name + '" ได้ เนื่องจากขนาดไฟล์รวมเกินขนาดสูงสุดที่กำหนดไว้',
+			confirmButtonText: 'รับทราบ',
+			buttonsStyling: false,
+			customClass: { confirmButton: "btn btn-primary" }
+		});
+		lfRenderAll();
+		if (onDone) onDone(false);
+		return;
+	}
+	LeaveFiles.pending.push(file);
+	lfSyncInput();
+	lfRenderAll();
+	if (onDone) onDone(true);
+}
+
+function lfAddFiles(fileList, onDone) {
+	if (!fileList || !fileList.length) {
+		if (onDone) onDone(false);
+		return;
+	}
+
+	Array.prototype.slice.call(fileList).forEach(function (file) {
+		if (LF_FORBIDDEN.test(file.name)) {
+			lfAlertBadName(file.name);
+			if (onDone) onDone(false);
+			return;
+		}
+		if (lfDup(file)) {
+			if (onDone) onDone(true);
+			return;
+		}
+
+		var loadingId = ++LF_LOADING_SEQ;
+		LeaveFiles.loading.push({ id: loadingId, name: file.name });
+		lfRenderAll();
+
+		lfProcessFile(file, loadingId, onDone);
+	});
+}
+
+function lfSyncInput() {
+	var myFile = document.getElementById('myFile');
+	if (myFile) {
+		try {
+			var dt = new DataTransfer();
+			LeaveFiles.pending.forEach(function (f) { dt.items.add(f); });
+			myFile.files = dt.files;
+		} catch (e) { console.warn('lfSyncInput DataTransfer failed', e); }
+	}
+	var del = document.getElementById('deleteFileId');
+	if (del) del.value = LeaveFiles.deleted.join(',');
+	var sz = document.getElementById('size');
+	if (sz) sz.value = LeaveFiles.pending.length ? (LeaveFiles.pending.length + ' file(s)') : '';
+}
+</script>

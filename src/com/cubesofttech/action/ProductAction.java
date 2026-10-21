@@ -23,12 +23,14 @@ import org.apache.log4j.Logger;
 import org.apache.struts2.ServletActionContext;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.cubesofttech.dao.BorrowDAO;
 import com.cubesofttech.dao.EquipmentDAO;
 import com.cubesofttech.dao.EquipmentStatusDAO;
 import com.cubesofttech.dao.EquipmentTypeDAO;
 import com.cubesofttech.dao.FileUploadDAO;
 import com.cubesofttech.dao.ProductDAO;
 import com.cubesofttech.dao.StockDAO;
+import com.cubesofttech.dao.UnitMasterDAO;
 import com.cubesofttech.dao.UnitOfMeasureDAO;
 import com.cubesofttech.dao.UserDAO;
 import com.cubesofttech.dao.WarehouseDAO;
@@ -37,6 +39,7 @@ import com.cubesofttech.model.EquipmentStatus;
 import com.cubesofttech.model.FileUpload;
 import com.cubesofttech.model.Product;
 import com.cubesofttech.model.Stock;
+import com.cubesofttech.model.UnitMaster;
 import com.cubesofttech.model.UnitOfMeasure;
 import com.cubesofttech.model.User;
 import com.cubesofttech.model.Warehouse;
@@ -63,6 +66,9 @@ public class ProductAction extends ActionSupport {
     private UnitOfMeasureDAO unitOfMeasureDAO;
 
     @Autowired
+    private UnitMasterDAO unitMasterDAO;
+
+    @Autowired
     private WarehouseDAO warehouseDAO;
 
     @Autowired
@@ -73,6 +79,9 @@ public class ProductAction extends ActionSupport {
 
     @Autowired
     private EquipmentDAO equipmentDAO;
+
+    @Autowired
+    private BorrowDAO borrowDAO;
 
     @Autowired
     private EquipmentTypeDAO equipmentTypeDAO;
@@ -116,6 +125,9 @@ public class ProductAction extends ActionSupport {
 
     // ---- popup เลือกเครื่องมาผูกกับ catalog Equipment - ส่ง equipment_id คั่นด้วย comma ----
     private String equipmentIds;
+
+    // ---- ตั้ง warehouse ให้เครื่องเดียว (stock_equ_warehouse_save) - ใช้ field warehouseId ด้านล่างร่วมกับ Add Stock ----
+    private Integer equipmentId;
 
     // ---- fields สำหรับ Add Stock (บันทึกรับเข้า/Good Receipt) ในหน้า Stock Balance ----
     private String warehouseId;
@@ -234,6 +246,14 @@ public class ProductAction extends ActionSupport {
         this.equipmentIds = equipmentIds;
     }
 
+    public Integer getEquipmentId() {
+        return equipmentId;
+    }
+
+    public void setEquipmentId(Integer equipmentId) {
+        this.equipmentId = equipmentId;
+    }
+
     public String getProductNo() {
         return productNo;
     }
@@ -290,7 +310,7 @@ public class ProductAction extends ActionSupport {
         this.receiveDate = receiveDate;
     }
 
-    public String stockConsList() {
+    public String productList() {
         try {
             // null = เอาทุก type (1 Equipment / 2 Consumables / 3 Accessory) มาแสดงรวมในตารางเดียว
             List<Map<String, Object>> products = productDAO.findAllWithSubProducts(null);
@@ -303,10 +323,12 @@ public class ProductAction extends ActionSupport {
             //log.debug(products);
             request.setAttribute("products", products);
             request.setAttribute("typeCounts", countByType(products));
+            // ใช้เติม dropdown filter equipment_type ที่โชว์เฉพาะตอนเลือกการ์ด Equipment
+            request.setAttribute("equipmentTypes", equipmentTypeDAO.getall());
 
             return SUCCESS;
         } catch (Exception e) {
-            log.error("stockConsList failed", e);
+            log.error("productList failed", e);
             return ERROR;
         }
     }
@@ -393,7 +415,7 @@ public class ProductAction extends ActionSupport {
      * หน้า Stock By Product - สรุปยอดคงเหลือรวม (ตัวแม่ + sub product) ต่อ 1 catalog item
      *  - On Hand ของ type '1' (Equipment) นับจำนวนเครื่องจริงในตาราง equipment (ไม่นับ EquipmentDAO.RETIRED_STATUSES)
      *  - On Hand ของ type '2','3','4' รวม stock.reconcile แถวล่าสุดของแต่ละ sub product (reconcile คือยอดสะสม
-     *    ทุกคลังรวมกันอยู่แล้ว - ดู stockConsStockAdd)
+     *    ทุกคลังรวมกันอยู่แล้ว - ดู stockAdd)
      *  - Warehouses = จำนวนคลัง (type 2/3/4) หรือจำนวน location ที่ต่างกัน (type 1) ที่ "มียอดคงเหลือจริง"
      *    ไม่ใช่จำนวนคลังทั้งหมดในระบบ
      */
@@ -848,10 +870,10 @@ public class ProductAction extends ActionSupport {
         }
     }
 
-    public String showStockAddPage() {
+    public String showProductAddPage() {
         try {
             if (getOnlineUser() == null) {
-                log.warn("showStockAddPage: no online user in session");
+                log.warn("showProductAddPage: no online user in session");
                 return ERROR;
             }
 
@@ -860,30 +882,30 @@ public class ProductAction extends ActionSupport {
 
             return SUCCESS;
         } catch (Exception e) {
-            log.error("showStockAddPage failed", e);
+            log.error("showProductAddPage failed", e);
             return ERROR;
         }
     }
 
-    public String showStockEditPage() {
+    public String showProductEditPage() {
         try {
             if (getOnlineUser() == null) {
-                log.warn("showStockEditPage: no online user in session");
+                log.warn("showProductEditPage: no online user in session");
                 return ERROR;
             }
             if (productId == null) {
-                log.warn("showStockEditPage: productId is required");
+                log.warn("showProductEditPage: productId is required");
                 return ERROR;
             }
 
             Product product = productDAO.findById(productId);
             if (product == null) {
-                log.warn("showStockEditPage: product not found, productId=" + productId);
+                log.warn("showProductEditPage: product not found, productId=" + productId);
                 return ERROR;
             }
             // กันการยิง id ของ product ประเภทอื่น หรือ sub-product เข้ามาที่หน้านี้
             if (!isEditableStockItem(product)) {
-                log.warn("showStockEditPage: not a consumable, productId=" + productId
+                log.warn("showProductEditPage: not a consumable, productId=" + productId
                         + ", productType=" + product.getProductType());
                 return ERROR;
             }
@@ -902,8 +924,7 @@ public class ProductAction extends ActionSupport {
             // ใช้เติม dropdown Equipment Type - โผล่เฉพาะตอน Item Type = Equipment (type '1')
             request.setAttribute("equipmentTypes", equipmentTypeDAO.getall());
             // ใช้เติม dropdown Unit Name ใน modal Create/Edit Unit of Measure - กันสร้างชื่อหน่วยซ้ำ
-            // (unit_of_measure ไม่มีตาราง master กลาง - ดึง distinct จากทุก product แทน)
-            request.setAttribute("allUnitNames", unitOfMeasureDAO.getDistinctUnitNames());
+            request.setAttribute("allUnitNames", unitMasterDAO.findAllNames());
 
             // Equipment เท่านั้นที่ต้องมีตัวเลือกผูกเครื่องจริง - รองรับทั้งมี sub product (ผูกแยกตามรุ่น)
             // และไม่มี sub product เลย (ผูกตรงกับตัวแม่ได้เหมือนเดิม) แสดงรวมในการ์ด "Sub product"
@@ -938,7 +959,7 @@ public class ProductAction extends ActionSupport {
 
             return SUCCESS;
         } catch (Exception e) {
-            log.error("showStockEditPage failed, productId=" + productId, e);
+            log.error("showProductEditPage failed, productId=" + productId, e);
             return ERROR;
         }
     }
@@ -998,6 +1019,63 @@ public class ProductAction extends ActionSupport {
             return writeJson(true, "เพิ่มเครื่องสำเร็จ " + linked + " รายการ");
         } catch (Exception e) {
             log.error("stockEquLinkSave failed, productId=" + productId, e);
+            return writeJson(false, "เกิดข้อผิดพลาด ไม่สามารถบันทึกได้");
+        }
+    }
+
+    /**
+     * ตั้ง/เคลียร์ warehouse ของเครื่องหนึ่งเครื่อง (AJAX ตอบ JSON) - ใช้กับคอลัมน์ "ที่ตั้ง" หน้า stock_equ_balance
+     * รับ equipmentId + warehouseId (ว่าง = เคลียร์เป็น NULL)
+     * ทำได้เฉพาะเครื่อง status = 'A' (Available) และ warehouse ต้องเป็นระดับบนสุด (parent = 0) เท่านั้น
+     * ไม่ผ่าน validation ตอบ success:false พร้อมข้อความ ไม่ throw
+     */
+    public String stockEquWarehouseSave() {
+        try {
+            User onlineUser = getOnlineUser();
+            if (onlineUser == null) {
+                log.warn("stockEquWarehouseSave: no online user in session");
+                return writeJson(false, "กรุณาเข้าสู่ระบบใหม่");
+            }
+            if (equipmentId == null) {
+                log.warn("stockEquWarehouseSave: equipmentId is required");
+                return writeJson(false, "ไม่พบรหัสเครื่อง");
+            }
+
+            Equipment equipment = equipmentDAO.getById(equipmentId.intValue());
+            if (equipment == null) {
+                log.warn("stockEquWarehouseSave: equipment not found, equipmentId=" + equipmentId);
+                return writeJson(false, "ไม่พบเครื่องนี้ในระบบ");
+            }
+            String status = (equipment.getStatus() == null) ? "" : equipment.getStatus().trim();
+            if (!"A".equals(status)) {
+                log.warn("stockEquWarehouseSave: status is not Available, equipmentId=" + equipmentId
+                        + ", status=" + status);
+                return writeJson(false, "ระบุ warehouse ได้เฉพาะเครื่องที่สถานะ Available เท่านั้น");
+            }
+
+            Long newWarehouseId = null;
+            if (!isBlank(warehouseId)) {
+                try {
+                    newWarehouseId = Long.valueOf(warehouseId.trim());
+                } catch (NumberFormatException nfe) {
+                    log.warn("stockEquWarehouseSave: invalid warehouseId=" + warehouseId);
+                    return writeJson(false, "รหัส warehouse ไม่ถูกต้อง");
+                }
+                Warehouse warehouse = warehouseDAO.findById(newWarehouseId);
+                if (warehouse == null) {
+                    log.warn("stockEquWarehouseSave: warehouse not found, warehouseId=" + newWarehouseId);
+                    return writeJson(false, "ไม่พบ warehouse ที่เลือก");
+                }
+                if (warehouse.getParent() == null || warehouse.getParent().longValue() != 0L) {
+                    log.warn("stockEquWarehouseSave: warehouse is not top level, warehouseId=" + newWarehouseId);
+                    return writeJson(false, "เลือกได้เฉพาะ warehouse ระดับบนสุดเท่านั้น");
+                }
+            }
+
+            equipmentDAO.updateWarehouse(equipmentId, newWarehouseId, onlineUser.getId(), DateUtil.getCurrentTime());
+            return writeJson(true, "บันทึกสำเร็จ");
+        } catch (Exception e) {
+            log.error("stockEquWarehouseSave failed, equipmentId=" + equipmentId + ", warehouseId=" + warehouseId, e);
             return writeJson(false, "เกิดข้อผิดพลาด ไม่สามารถบันทึกได้");
         }
     }
@@ -1063,7 +1141,7 @@ public class ProductAction extends ActionSupport {
      * ตอน edit ต้องส่ง productId ของตัวเองมาด้วย กันเช็คซ้ำกับตัวมันเอง
      * success = true หมายถึง "ไม่ซ้ำ ใช้ได้" / false หมายถึง "ซ้ำ" หรือเกิด error
      */
-    public String stockCheckProductNoDuplicate() {
+    public String productCheckDuplicate() {
         try {
             if (isBlank(productNo)) {
                 return writeJson(false, "กรุณากรอก Item ID");
@@ -1074,7 +1152,7 @@ public class ProductAction extends ActionSupport {
             }
             return writeJson(true, null);
         } catch (Exception e) {
-            log.error("stockCheckProductNoDuplicate failed, productNo=" + productNo, e);
+            log.error("productCheckDuplicate failed, productNo=" + productNo, e);
             return writeJson(false, "เกิดข้อผิดพลาด ไม่สามารถตรวจสอบได้");
         }
     }
@@ -1136,7 +1214,7 @@ public class ProductAction extends ActionSupport {
             }
 
             // ไม่มี sub product จริง -> ใช้ตัวแม่เองเป็นกลุ่มเดียวแทน กันยอด/ประวัติรับเข้าหายไปจากหน้านี้
-            // (สอดคล้องกับ stockConsStockAdd ที่ fallback ไปผูกกับตัวแม่โดยตรงเมื่อไม่มี sub product)
+            // (สอดคล้องกับ stockAdd ที่ fallback ไปผูกกับตัวแม่โดยตรงเมื่อไม่มี sub product)
             List<Product> balanceGroups = subProducts.isEmpty() ? Collections.singletonList(product) : subProducts;
 
             // (3) จำนวนคงเหลือต่อ sub product ดึงจาก stock.reconcile (แถวล่าสุด)
@@ -1151,7 +1229,7 @@ public class ProductAction extends ActionSupport {
             }
 
             // ความเคลื่อนไหว "รับเข้า" (IN) จากตาราง stock โดยตรง (ใช้กับ History + รายการแยกคลัง)
-            // ไม่ผ่าน good_receipt แล้ว (เปลี่ยนจากเดิม 26/08/2026 - ดู stockConsStockAdd)
+            // ไม่ผ่าน good_receipt แล้ว (เปลี่ยนจากเดิม 26/08/2026 - ดู stockAdd)
             List<Stock> inRows = stockDAO.findByProductIds(balanceGroupIds);
 
             Map<String, String> subNameById = buildSubProductNameMap(balanceGroups);
@@ -1184,23 +1262,23 @@ public class ProductAction extends ActionSupport {
      * ลงบัญชีตรงที่ตาราง stock เท่านั้น (action_type = direct_issue) - ไม่สร้างเอกสาร good_receipt /
      * good_receipt_detail แล้ว (เปลี่ยนจากเดิม 26/08/2026 ตามที่ระบุว่าให้บันทึกลงแค่ตาราง stock)
      * - รองรับทั้งกรณีมี sub product (amount_&lt;subProductId&gt; ต่อแถว) และไม่มี sub product
-     *   (amount_&lt;productId&gt; ของตัวแม่เอง - ดู fallback ในหน้า stock_cons_balance.jsp และ showStockBalancePage)
+     *   (amount_&lt;productId&gt; ของตัวแม่เอง - ดู fallback ในหน้า stock_balance.jsp และ showStockBalancePage)
      */
-    public String stockConsStockAdd() {
+    public String stockAdd() {
         try {
             User onlineUser = getOnlineUser();
             if (onlineUser == null) {
-                log.warn("stockConsStockAdd: no online user in session");
+                log.warn("stockAdd: no online user in session");
                 return ERROR;
             }
             if (productId == null || isBlank(warehouseId) || unitId == null) {
-                log.warn("stockConsStockAdd: productId/warehouseId/unitId is required");
+                log.warn("stockAdd: productId/warehouseId/unitId is required");
                 return ERROR;
             }
 
             Product product = productDAO.findById(productId);
             if (product == null || !isEditableStockItem(product) || isEquipmentProduct(product)) {
-                log.warn("stockConsStockAdd: product not found or not a consumable/accessory/office item, productId="
+                log.warn("stockAdd: product not found or not a consumable/accessory/office item, productId="
                         + productId);
                 return ERROR;
             }
@@ -1217,7 +1295,7 @@ public class ProductAction extends ActionSupport {
                 }
             }
             if (selectedUnit == null) {
-                log.warn("stockConsStockAdd: unitId does not belong to product, productId=" + productId
+                log.warn("stockAdd: unitId does not belong to product, productId=" + productId
                         + ", unitId=" + unitId);
                 return ERROR;
             }
@@ -1252,7 +1330,7 @@ public class ProductAction extends ActionSupport {
             }
 
             if (amountByTargetId.isEmpty()) {
-                log.warn("stockConsStockAdd: no positive amount entered, productId=" + productId);
+                log.warn("stockAdd: no positive amount entered, productId=" + productId);
                 return ERROR;
             }
 
@@ -1306,7 +1384,7 @@ public class ProductAction extends ActionSupport {
 
             return SUCCESS;
         } catch (Exception e) {
-            log.error("stockConsStockAdd failed, productId=" + productId, e);
+            log.error("stockAdd failed, productId=" + productId, e);
             return ERROR;
         }
     }
@@ -1342,7 +1420,7 @@ public class ProductAction extends ActionSupport {
                 log.warn("showEquipmentBalancePage: product not found, productId=" + productId);
                 return ERROR;
             }
-            // หน้านี้รับเฉพาะ catalog ฝั่ง Equipment (type '1') - type อื่นให้ไป stock_cons_balance
+            // หน้านี้รับเฉพาะ catalog ฝั่ง Equipment (type '1') - type อื่นให้ไป stock_balance
             if (!isEditableStockItem(product) || !isEquipmentProduct(product)) {
                 log.warn("showEquipmentBalancePage: not an equipment catalog, productId=" + productId
                         + ", productType=" + product.getProductType());
@@ -1396,6 +1474,29 @@ public class ProductAction extends ActionSupport {
             // buildEquipmentGroupsForCatalog() ไม่ต้องแก้ query ฝั่ง DAO
             List<EquipmentStatus> statuses = equipmentStatusDAO.getall();
             request.setAttribute("equipmentStatusList", new Gson().toJson(statuses));
+
+            // เครื่องที่ยังไม่ผูกกับ catalog ไหนเลย - ใช้เป็นตัวเลือกใน popup Link Equipment (เหมือนหน้า edit)
+            request.setAttribute("unlinkedEquipment", equipmentDAO.findUnlinked());
+
+            // ข้อมูลให้ JS แสดงคอลัมน์ "ที่ตั้ง": Borrowed -> ชื่อผู้ยืม + modal ข้อมูลการยืม (pattern เดียวกับ EquipmentAction.table())
+            request.setAttribute("borrows", new Gson().toJson(borrowDAO.findAll()));
+            request.setAttribute("userList", userDAO.userListJSON());
+
+            // Available -> warehouse ระดับบนสุด (parent = 0) ให้เลือก - ส่งเฉพาะ id/ชื่อ ไม่ส่ง field อื่นของ Warehouse
+            List<Map<String, Object>> warehouseOptions = new ArrayList<Map<String, Object>>();
+            List<Warehouse> topWarehouses = warehouseDAO.findByParentId(Long.valueOf(0L));
+            if (topWarehouses != null) {
+                for (Warehouse w : topWarehouses) {
+                    if (w == null || w.getWarehouseId() == null) {
+                        continue;
+                    }
+                    Map<String, Object> option = new LinkedHashMap<String, Object>();
+                    option.put("warehouseId", w.getWarehouseId());
+                    option.put("warehouseName", w.getWarehouseName());
+                    warehouseOptions.add(option);
+                }
+            }
+            request.setAttribute("warehouseList", new Gson().toJson(warehouseOptions));
 
             return SUCCESS;
         } catch (Exception e) {
@@ -1456,6 +1557,7 @@ public class ProductAction extends ActionSupport {
                 row.put("serialNo", equipment.getSerialNo());
                 row.put("status", equipment.getStatus());
                 row.put("location", equipment.getLocation());
+                row.put("warehouseId", equipment.getWarehouseId());
                 row.put("retired", Boolean.valueOf(isRetired));
                 rows.add(row);
             }
@@ -1570,7 +1672,7 @@ public class ProductAction extends ActionSupport {
     /**
      * group แถว stock เป็น 1 การ์ดต่อ 1 ครั้งที่กด Add Stock (ไม่มีเอกสาร good_receipt ให้ group ตามแล้ว)
      * แถวที่มาจากการกด Add Stock ครั้งเดียวกันจะมี warehouseId/timeCreate/actionRef ตรงกันทุกแถวเสมอ
-     * เพราะ stockConsStockAdd() คำนวณค่าพวกนี้ครั้งเดียวก่อน loop ต่อ sub product จึงใช้ 3 ค่านี้รวมกันเป็น key ได้
+     * เพราะ stockAdd() คำนวณค่าพวกนี้ครั้งเดียวก่อน loop ต่อ sub product จึงใช้ 3 ค่านี้รวมกันเป็น key ได้
      */
     private List<Map<String, Object>> buildHistoriesIn(List<Stock> stockRows,
             Map<String, String> subNameById, Map<String, String> whNameById,
@@ -1854,25 +1956,25 @@ public class ProductAction extends ActionSupport {
     }
 
     /**
-     * บันทึก consumable ใหม่จากหน้า stock_cons_add
+     * บันทึก consumable ใหม่จากหน้า product_add
      * หลังบันทึกจะ redirect ไปหน้า edit ของ product ที่เพิ่งสร้าง เพื่อให้ผู้ใช้ตั้งค่า UOM / sub-product ต่อได้
      */
-    public String stockConsSave() {
+    public String productSave() {
         try {
             User onlineUser = getOnlineUser();
             if (onlineUser == null) {
-                log.warn("stockConsSave: no online user in session");
+                log.warn("productSave: no online user in session");
                 return ERROR;
             }
             // server-side validation กัน request ที่ bypass required ฝั่ง client
             if (isBlank(productNo) || isBlank(productName) || isBlank(productType)) {
-                log.warn("stockConsSave: missing required fields");
+                log.warn("productSave: missing required fields");
                 return ERROR;
             }
             // Item Type = Equipment ('1') บังคับเลือก Equipment Type ต่อ (เหมือน required ฝั่ง client)
             boolean isEquipmentType = "1".equals(productType.trim());
             if (isEquipmentType && isBlank(equipmentType)) {
-                log.warn("stockConsSave: equipmentType is required when productType=1");
+                log.warn("productSave: equipmentType is required when productType=1");
                 return ERROR;
             }
 
@@ -1891,8 +1993,8 @@ public class ProductAction extends ActionSupport {
             product.setParentProductId("0");
             product.setSequence("0");
             // สร้างใหม่ให้ active/sub_product_active default = "0" เสมอ (หน้า add ยังไม่มี toggle ให้เลือก
-            // ต้องมาเปิดทีหลังจากหน้า stock_cons_list/stock_item_edit_fragment เอง)
-            // ใช้ pattern เดียวกับ stockConsUpdate() ("1".equals(x) ? "1" : "0") กันพลาดค่า default สลับกัน
+            // ต้องมาเปิดทีหลังจากหน้า product_list/stock_item_edit_fragment เอง)
+            // ใช้ pattern เดียวกับ productUpdate() ("1".equals(x) ? "1" : "0") กันพลาดค่า default สลับกัน
             product.setActive("1".equals(active) ? "1" : "0");
             product.setSubProductActive("1".equals(subProductActive) ? "1" : "0");
             product.setUserCreate(onlineUser.getId());
@@ -1902,7 +2004,7 @@ public class ProductAction extends ActionSupport {
 
             productDAO.save(product);
 
-            // ตั้งค่าให้ result redirect ไป stock_cons_edit?productId=${productId} ได้
+            // ตั้งค่าให้ result redirect ไป product_edit?productId=${productId} ได้
             // (product.getProductId() มีค่าแล้วหลัง save เพราะใช้ IDENTITY generator)
             this.productId = product.getProductId();
 
@@ -1924,45 +2026,45 @@ public class ProductAction extends ActionSupport {
             return SUCCESS;
         } catch (Exception e) {
             e.printStackTrace();
-            log.error("stockConsSave failed", e);
+            log.error("productSave failed", e);
             return ERROR;
         }
     }
 
     /**
-     * แก้ไข product detail ของ consumable จากหน้า stock_cons_edit
+     * แก้ไข product detail ของ consumable จากหน้า product_edit
      * ตอบกลับเป็น JSON (ฟอร์ม submit แบบ AJAX) เพื่อโชว์ SweetAlert โดยไม่ reload หน้า
      */
-    public String stockConsUpdate() {
+    public String productUpdate() {
         try {
             User onlineUser = getOnlineUser();
             if (onlineUser == null) {
-                log.warn("stockConsUpdate: no online user in session");
+                log.warn("productUpdate: no online user in session");
                 return writeJson(false, "unauthorized");
             }
             if (productId == null) {
-                log.warn("stockConsUpdate: productId is required");
+                log.warn("productUpdate: productId is required");
                 return writeJson(false, "productId required");
             }
             if (isBlank(productNo) || isBlank(productName) || isBlank(productType)) {
-                log.warn("stockConsUpdate: missing required fields, productId=" + productId);
+                log.warn("productUpdate: missing required fields, productId=" + productId);
                 return writeJson(false, "missing required fields");
             }
-            // Item Type = Equipment ('1') บังคับเลือก Equipment Type ต่อ (เหมือน stockConsSave)
+            // Item Type = Equipment ('1') บังคับเลือก Equipment Type ต่อ (เหมือน productSave)
             boolean isEquipmentType = "1".equals(productType.trim());
             if (isEquipmentType && isBlank(equipmentType)) {
-                log.warn("stockConsUpdate: equipmentType is required when productType=1, productId=" + productId);
+                log.warn("productUpdate: equipmentType is required when productType=1, productId=" + productId);
                 return writeJson(false, "กรุณาเลือก Equipment Type");
             }
 
             Product product = productDAO.findById(productId);
             if (product == null) {
-                log.warn("stockConsUpdate: product not found, productId=" + productId);
+                log.warn("productUpdate: product not found, productId=" + productId);
                 return writeJson(false, "product not found");
             }
             // กันการยิง id ของ product ประเภทอื่น หรือ sub-product เข้ามาแก้ที่หน้านี้
             if (!isEditableStockItem(product)) {
-                log.warn("stockConsUpdate: not a consumable, productId=" + productId
+                log.warn("productUpdate: not a consumable, productId=" + productId
                         + ", productType=" + product.getProductType());
                 return writeJson(false, "invalid product");
             }
@@ -1970,7 +2072,7 @@ public class ProductAction extends ActionSupport {
             product.setProductNo(productNo.trim());
             product.setProductName(productName.trim());
             product.setProductType(productType.trim());
-            // ค่ามีความหมายเฉพาะตอน productType = '1' เท่านั้น (เหมือน stockConsSave)
+            // ค่ามีความหมายเฉพาะตอน productType = '1' เท่านั้น (เหมือน productSave)
             product.setEquipmentType(isEquipmentType ? equipmentType.trim() : null);
             product.setDescription(trimToNull(description));
             // active มาจาก hidden ในฟอร์ม (toggle) - ส่งมาเสมอเป็น '1'/'0'
@@ -2002,13 +2104,13 @@ public class ProductAction extends ActionSupport {
 
             return writeJson(true, null, newImagePath);
         } catch (Exception e) {
-            log.error("stockConsUpdate failed, productId=" + productId, e);
+            log.error("productUpdate failed, productId=" + productId, e);
             return writeJson(false, "error");
         }
     }
 
     /**
-     * ลบ product ตัวแม่พร้อม sub product / UOM ของมัน (ยิงจากปุ่มถังขยะในหน้า stock_cons_list)
+     * ลบ product ตัวแม่พร้อม sub product / UOM ของมัน (ยิงจากปุ่มถังขยะในหน้า product_list)
      * ใช้ได้ทั้ง Consumables / Accessory / Equipment เพราะเช็คแค่ product_type อยู่ใน STOCK_ITEM_TYPES
      *
      * ก่อนลบต้องเช็คว่ามีใครอ้างถึงอยู่ไหม (กันข้อมูลกำพร้า) - ถ้ามีให้ตอบ JSON แจ้งแหล่งที่อ้างถึง
@@ -2016,26 +2118,26 @@ public class ProductAction extends ActionSupport {
      * equipment (เครื่องจริงที่ผูก product_id ไว้ - เฉพาะฝั่ง Equipment)
      * ตอบกลับเป็น JSON เพื่อโชว์ SweetAlert โดยไม่ redirect หนีออกจากหน้า list
      */
-    public String stockConsDelete() {
+    public String productDelete() {
         try {
             User onlineUser = getOnlineUser();
             if (onlineUser == null) {
-                log.warn("stockConsDelete: no online user in session");
+                log.warn("productDelete: no online user in session");
                 return writeJson(false, "unauthorized");
             }
             if (productId == null) {
-                log.warn("stockConsDelete: productId is required");
+                log.warn("productDelete: productId is required");
                 return writeJson(false, "productId required");
             }
 
             Product product = productDAO.findById(productId);
             if (product == null) {
-                log.warn("stockConsDelete: product not found, productId=" + productId);
+                log.warn("productDelete: product not found, productId=" + productId);
                 return writeJson(false, "ไม่พบข้อมูลที่ต้องการลบ");
             }
             // กันการยิง id ของ sub-product หรือ product ประเภทอื่นเข้ามาลบผ่านปุ่มนี้
             if (!isEditableStockItem(product)) {
-                log.warn("stockConsDelete: not deletable from this page, productId=" + productId
+                log.warn("productDelete: not deletable from this page, productId=" + productId
                         + ", productType=" + product.getProductType());
                 return writeJson(false, "ไม่สามารถลบรายการนี้ได้");
             }
@@ -2063,7 +2165,7 @@ public class ProductAction extends ActionSupport {
                     message.append(entry.getKey()).append(" (").append(entry.getValue()).append(")");
                     first = false;
                 }
-                log.warn("stockConsDelete: blocked by references, productId=" + productId
+                log.warn("productDelete: blocked by references, productId=" + productId
                         + ", refs=" + refs);
                 return writeJson(false, message.toString());
             }
@@ -2072,7 +2174,7 @@ public class ProductAction extends ActionSupport {
 
             return writeJson(true, "ลบข้อมูลสำเร็จ");
         } catch (Exception e) {
-            log.error("stockConsDelete failed, productId=" + productId, e);
+            log.error("productDelete failed, productId=" + productId, e);
             return writeJson(false, "เกิดข้อผิดพลาด ไม่สามารถลบข้อมูลได้");
         }
     }
@@ -2141,20 +2243,20 @@ public class ProductAction extends ActionSupport {
     // ==================== Unit of Measure (UOM) ====================
 
     /** เพิ่ม unit ใหม่ให้ product (ยิงจาก modal Create UOM) */
-    public String stockConsUomSave() {
+    public String productUomSave() {
         try {
             User onlineUser = getOnlineUser();
             if (onlineUser == null) {
-                log.warn("stockConsUomSave: no online user in session");
+                log.warn("productUomSave: no online user in session");
                 return ERROR;
             }
             if (productId == null || isBlank(unitName) || isBlank(sequence)) {
-                log.warn("stockConsUomSave: missing required fields, productId=" + productId);
+                log.warn("productUomSave: missing required fields, productId=" + productId);
                 return ERROR;
             }
             Product parent = productDAO.findById(productId);
             if (parent == null || !isEditableStockItem(parent)) {
-                log.warn("stockConsUomSave: parent not found/not consumable, productId=" + productId);
+                log.warn("productUomSave: parent not found/not consumable, productId=" + productId);
                 return ERROR;
             }
 
@@ -2162,6 +2264,9 @@ public class ProductAction extends ActionSupport {
             UnitOfMeasure unit = new UnitOfMeasure();
             // unit_of_measure.product_id เป็น varchar
             unit.setProductId(String.valueOf(productId));
+            // ผูกกับชื่อหน่วยกลาง (unit_master) - หาแถวที่ชื่อตรงกันก่อน ไม่เจอค่อยสร้างใหม่
+            UnitMaster master = unitMasterDAO.findOrCreateByName(unitName.trim(), onlineUser.getId());
+            unit.setUnitMasterId(master.getUnitMasterId());
             unit.setSequence(sequence.trim());
             unit.setUnitName(unitName.trim());
             unit.setConversionRate(conversionRate != null ? conversionRate : Integer.valueOf(1));
@@ -2175,34 +2280,37 @@ public class ProductAction extends ActionSupport {
 
             return SUCCESS;
         } catch (Exception e) {
-            log.error("stockConsUomSave failed, productId=" + productId, e);
+            log.error("productUomSave failed, productId=" + productId, e);
             return ERROR;
         }
     }
 
     /** แก้ไข unit (ยิงจาก modal Edit UOM) */
-    public String stockConsUomUpdate() {
+    public String productUomUpdate() {
         try {
             User onlineUser = getOnlineUser();
             if (onlineUser == null) {
-                log.warn("stockConsUomUpdate: no online user in session");
+                log.warn("productUomUpdate: no online user in session");
                 return ERROR;
             }
             if (productId == null || unitId == null || isBlank(unitName) || isBlank(sequence)) {
-                log.warn("stockConsUomUpdate: missing required fields, unitId=" + unitId);
+                log.warn("productUomUpdate: missing required fields, unitId=" + unitId);
                 return ERROR;
             }
             UnitOfMeasure unit = unitOfMeasureDAO.findById(unitId);
             if (unit == null) {
-                log.warn("stockConsUomUpdate: unit not found, unitId=" + unitId);
+                log.warn("productUomUpdate: unit not found, unitId=" + unitId);
                 return ERROR;
             }
             // ownership: unit ต้องอยู่ใต้ product นี้ กัน id ข้ามสินค้า
             if (!String.valueOf(productId).equals(unit.getProductId())) {
-                log.warn("stockConsUomUpdate: unit not under product, unitId=" + unitId + ", productId=" + productId);
+                log.warn("productUomUpdate: unit not under product, unitId=" + unitId + ", productId=" + productId);
                 return ERROR;
             }
 
+            // ผูกกับชื่อหน่วยกลาง (unit_master) - หาแถวที่ชื่อตรงกันก่อน ไม่เจอค่อยสร้างใหม่
+            UnitMaster master = unitMasterDAO.findOrCreateByName(unitName.trim(), onlineUser.getId());
+            unit.setUnitMasterId(master.getUnitMasterId());
             unit.setSequence(sequence.trim());
             unit.setUnitName(unitName.trim());
             unit.setConversionRate(conversionRate != null ? conversionRate : unit.getConversionRate());
@@ -2214,30 +2322,30 @@ public class ProductAction extends ActionSupport {
 
             return SUCCESS;
         } catch (Exception e) {
-            log.error("stockConsUomUpdate failed, unitId=" + unitId, e);
+            log.error("productUomUpdate failed, unitId=" + unitId, e);
             return ERROR;
         }
     }
 
     /** ลบ unit */
-    public String stockConsUomDelete() {
+    public String productUomDelete() {
         try {
             User onlineUser = getOnlineUser();
             if (onlineUser == null) {
-                log.warn("stockConsUomDelete: no online user in session");
+                log.warn("productUomDelete: no online user in session");
                 return ERROR;
             }
             if (productId == null || unitId == null) {
-                log.warn("stockConsUomDelete: productId/unitId required");
+                log.warn("productUomDelete: productId/unitId required");
                 return ERROR;
             }
             UnitOfMeasure unit = unitOfMeasureDAO.findById(unitId);
             if (unit == null) {
-                log.warn("stockConsUomDelete: unit not found, unitId=" + unitId);
+                log.warn("productUomDelete: unit not found, unitId=" + unitId);
                 return ERROR;
             }
             if (!String.valueOf(productId).equals(unit.getProductId())) {
-                log.warn("stockConsUomDelete: unit not under product, unitId=" + unitId + ", productId=" + productId);
+                log.warn("productUomDelete: unit not under product, unitId=" + unitId + ", productId=" + productId);
                 return ERROR;
             }
 
@@ -2245,13 +2353,13 @@ public class ProductAction extends ActionSupport {
 
             return SUCCESS;
         } catch (Exception e) {
-            log.error("stockConsUomDelete failed, unitId=" + unitId, e);
+            log.error("productUomDelete failed, unitId=" + unitId, e);
             return ERROR;
         }
     }
 
     /** จัดลำดับ unit ใหม่ตามที่ลากใน SortableJS (AJAX) - sequence รันใหม่ 0..n */
-    public String stockConsUomReorder() {
+    public String productUomReorder() {
         try {
             User onlineUser = getOnlineUser();
             if (onlineUser == null) {
@@ -2278,7 +2386,7 @@ public class ProductAction extends ActionSupport {
 
             return writeJson(true, null);
         } catch (Exception e) {
-            log.error("stockConsUomReorder failed, productId=" + productId, e);
+            log.error("productUomReorder failed, productId=" + productId, e);
             return writeJson(false, "error");
         }
     }
@@ -2286,29 +2394,43 @@ public class ProductAction extends ActionSupport {
     // ==================== Sub product ====================
 
     /** เพิ่ม sub product ใหม่ (ยิงจาก modal Create Sub product) */
-    public String stockConsSubSave() {
+    public String productSubSave() {
         try {
             User onlineUser = getOnlineUser();
             if (onlineUser == null) {
-                log.warn("stockConsSubSave: no online user in session");
+                log.warn("productSubSave: no online user in session");
                 return ERROR;
             }
             Integer parentId = toInteger(parentProductId);
             if (parentId == null || isBlank(productNo) || isBlank(productName)) {
-                log.warn("stockConsSubSave: missing required fields, parentProductId=" + parentProductId);
+                log.warn("productSubSave: missing required fields, parentProductId=" + parentProductId);
                 return ERROR;
             }
             Product parent = productDAO.findById(parentId);
             if (parent == null || !isEditableStockItem(parent)) {
-                log.warn("stockConsSubSave: parent not found/not consumable, parentId=" + parentId);
+                log.warn("productSubSave: parent not found/not consumable, parentId=" + parentId);
                 return ERROR;
             }
             java.sql.Timestamp now = DateUtil.getCurrentTime();
 
-            // sequence ต่อท้ายของเดิม
+            // sequence ต่อท้ายของเดิม - sub product เริ่มที่ 1 (ตัวแม่ parent_product_id = '0' คง sequence '0')
+            // ใช้ค่า max ของ sequence ที่เป็นตัวเลข + 1 (ไม่ใช้จำนวนแถว กันซ้ำเมื่อลำดับมีช่องว่างหลังลบ sub)
             List<Product> siblings = productDAO.findByParentProductIds(
                     Collections.singletonList(String.valueOf(parentId)));
-            int nextSeq = (siblings != null) ? siblings.size() : 0;
+            int maxSeq = 0;
+            if (siblings != null) {
+                for (Product sibling : siblings) {
+                    if (sibling == null || sibling.getSequence() == null) {
+                        continue;
+                    }
+                    try {
+                        maxSeq = Math.max(maxSeq, Integer.parseInt(sibling.getSequence().trim()));
+                    } catch (NumberFormatException ignore) {
+                        // sequence ที่ไม่ใช่ตัวเลขข้ามไป
+                    }
+                }
+            }
+            int nextSeq = maxSeq + 1;
 
             Product sub = new Product();
             // ไม่ต้องตั้ง productId เอง - product_id เป็น AUTO_INCREMENT แล้ว (10/08/2026)
@@ -2322,7 +2444,7 @@ public class ProductAction extends ActionSupport {
             sub.setActive("1");
             // ต้องตั้งค่าเสมอ - บาง environment คอลัมน์นี้เป็น NOT NULL (ไม่งั้น insert พังตรง productDAO.save())
             // ค่านี้ไม่มีความหมายกับ sub product เอง (ใช้แค่ฝั่ง product แม่ - ดู subProductActiveUpdate())
-            // จึงใช้ "0" เป็นค่า default เดียวกับตอนสร้าง product แม่ใหม่ใน stockConsSave()
+            // จึงใช้ "0" เป็นค่า default เดียวกับตอนสร้าง product แม่ใหม่ใน productSave()
             sub.setSubProductActive("0");
             sub.setUserCreate(onlineUser.getId());
             sub.setTimeCreate(now);
@@ -2333,31 +2455,31 @@ public class ProductAction extends ActionSupport {
 
             return SUCCESS;
         } catch (Exception e) {
-            log.error("stockConsSubSave failed, parentProductId=" + parentProductId, e);
+            log.error("productSubSave failed, parentProductId=" + parentProductId, e);
             return ERROR;
         }
     }
 
     /** แก้ไข sub product (ยิงจาก modal Edit Sub product) */
-    public String stockConsSubUpdate() {
+    public String productSubUpdate() {
         try {
             User onlineUser = getOnlineUser();
             if (onlineUser == null) {
-                log.warn("stockConsSubUpdate: no online user in session");
+                log.warn("productSubUpdate: no online user in session");
                 return ERROR;
             }
             if (subProductId == null || isBlank(parentProductId) || isBlank(productNo) || isBlank(productName)) {
-                log.warn("stockConsSubUpdate: missing required fields, subProductId=" + subProductId);
+                log.warn("productSubUpdate: missing required fields, subProductId=" + subProductId);
                 return ERROR;
             }
             Product sub = productDAO.findById(subProductId);
             if (sub == null) {
-                log.warn("stockConsSubUpdate: sub not found, subProductId=" + subProductId);
+                log.warn("productSubUpdate: sub not found, subProductId=" + subProductId);
                 return ERROR;
             }
             // ownership: ต้องเป็นลูกของ parent ที่ส่งมา
             if (!parentProductId.trim().equals(sub.getParentProductId())) {
-                log.warn("stockConsSubUpdate: sub not under parent, subProductId=" + subProductId
+                log.warn("productSubUpdate: sub not under parent, subProductId=" + subProductId
                         + ", parentProductId=" + parentProductId);
                 return ERROR;
             }
@@ -2372,30 +2494,30 @@ public class ProductAction extends ActionSupport {
 
             return SUCCESS;
         } catch (Exception e) {
-            log.error("stockConsSubUpdate failed, subProductId=" + subProductId, e);
+            log.error("productSubUpdate failed, subProductId=" + subProductId, e);
             return ERROR;
         }
     }
 
     /** ลบ sub product */
-    public String stockConsSubDelete() {
+    public String productSubDelete() {
         try {
             User onlineUser = getOnlineUser();
             if (onlineUser == null) {
-                log.warn("stockConsSubDelete: no online user in session");
+                log.warn("productSubDelete: no online user in session");
                 return ERROR;
             }
             if (subProductId == null || isBlank(parentProductId)) {
-                log.warn("stockConsSubDelete: subProductId/parentProductId required");
+                log.warn("productSubDelete: subProductId/parentProductId required");
                 return ERROR;
             }
             Product sub = productDAO.findById(subProductId);
             if (sub == null) {
-                log.warn("stockConsSubDelete: sub not found, subProductId=" + subProductId);
+                log.warn("productSubDelete: sub not found, subProductId=" + subProductId);
                 return ERROR;
             }
             if (!parentProductId.trim().equals(sub.getParentProductId())) {
-                log.warn("stockConsSubDelete: sub not under parent, subProductId=" + subProductId);
+                log.warn("productSubDelete: sub not under parent, subProductId=" + subProductId);
                 return ERROR;
             }
 
@@ -2403,13 +2525,13 @@ public class ProductAction extends ActionSupport {
 
             return SUCCESS;
         } catch (Exception e) {
-            log.error("stockConsSubDelete failed, subProductId=" + subProductId, e);
+            log.error("productSubDelete failed, subProductId=" + subProductId, e);
             return ERROR;
         }
     }
 
-    /** จัดลำดับ sub product ใหม่ตามที่ลากใน SortableJS (AJAX) - sequence รันใหม่ 0..n */
-    public String stockConsSubReorder() {
+    /** จัดลำดับ sub product ใหม่ตามที่ลากใน SortableJS (AJAX) - sequence รันใหม่ 1..n */
+    public String productSubReorder() {
         try {
             User onlineUser = getOnlineUser();
             if (onlineUser == null) {
@@ -2421,7 +2543,8 @@ public class ProductAction extends ActionSupport {
 
             String parentKey = parentProductId.trim();
             java.sql.Timestamp now = DateUtil.getCurrentTime();
-            int seq = 0;
+            // sub product เริ่มที่ 1 (ต่างจาก unit_of_measure ที่ยังเริ่มที่ 0)
+            int seq = 1;
             for (Integer sid : parseIds(orderedIds)) {
                 Product sub = productDAO.findById(sid);
                 // ข้ามตัวที่ไม่พบ หรือไม่ได้เป็นลูกของ parent นี้
@@ -2437,7 +2560,7 @@ public class ProductAction extends ActionSupport {
 
             return writeJson(true, null);
         } catch (Exception e) {
-            log.error("stockConsSubReorder failed, parentProductId=" + parentProductId, e);
+            log.error("productSubReorder failed, parentProductId=" + parentProductId, e);
             return writeJson(false, "error");
         }
     }
@@ -2475,7 +2598,7 @@ public class ProductAction extends ActionSupport {
         return writeJson(success, message, null);
     }
 
-    /** overload เพิ่ม imagePath (ใช้ตอน stockConsUpdate อัปโหลดรูปใหม่ - ฝั่ง JS เอาไปอัปเดต preview โดยไม่ reload หน้า) */
+    /** overload เพิ่ม imagePath (ใช้ตอน productUpdate อัปโหลดรูปใหม่ - ฝั่ง JS เอาไปอัปเดต preview โดยไม่ reload หน้า) */
     private String writeJson(boolean success, String message, String imagePath) {
         try {
             response.setContentType("application/json;charset=UTF-8");

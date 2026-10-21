@@ -486,6 +486,21 @@ public class EquipmentDAOImpl implements EquipmentDAO {
 		return (list != null) ? list : new ArrayList<Equipment>();
 	}
 
+	@Override
+	public void updateWarehouse(Integer equipmentId, Long warehouseId, String userUpdate, java.sql.Timestamp timeUpdate) throws Exception {
+		Session session = this.sessionFactory.getCurrentSession();
+		Query query = session.createQuery(
+				"update Equipment set warehouseId = :warehouseId, userUpdate = :userUpdate, timeUpdate = :timeUpdate"
+				+ " where equipmentId = :equipmentId");
+		// ระบุ type ตรงๆ เพราะ warehouseId อาจเป็น null (เคลียร์) ซึ่ง Hibernate เดา type จาก null ไม่ได้
+		query.setParameter("warehouseId", warehouseId, org.hibernate.type.LongType.INSTANCE);
+		query.setParameter("userUpdate", userUpdate);
+		query.setParameter("timeUpdate", timeUpdate);
+		query.setParameter("equipmentId", equipmentId);
+		query.executeUpdate();
+		session.flush();
+	}
+
 
 //	@Override
 //	public Object[] getUserCreateByEquipmentId(int id){

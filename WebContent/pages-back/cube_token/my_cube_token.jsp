@@ -1164,9 +1164,12 @@
 										<div class="d-flex align-items-center gap-2 gap-md-4">
 											<div class="d-flex align-items-center justify-content-center gap-2 gap-md-3">
 												<!-- Cube Token Icon -->
-												<i class="ki-duotone ki-triangle fs-1 text-primary"> <span
+												<i class="ki-duotone ki-cube-3 fs-1 text-primary"> <span
 													class="path1"></span> <span class="path2"></span> <span
 													class="path3"></span>
+													<span class="path4"></span>
+													<span class="path5"></span>
+													<span class="path6"></span>
 												</i>
 			
 												<!-- Label -->

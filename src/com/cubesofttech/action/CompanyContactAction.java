@@ -19,6 +19,8 @@ import com.cubesofttech.dao.CompanyAddressDAO;
 import com.cubesofttech.dao.CompanyContactDAO;
 import com.cubesofttech.dao.CompanyDAO;
 import com.cubesofttech.model.User;
+import com.cubesofttech.model.CompanyAddress;
+import com.cubesofttech.model.Company;
 import com.cubesofttech.service.FileAttachmentService;
 import com.cubesofttech.model.CompanyContact;
 import com.opensymphony.xwork2.ActionSupport;
@@ -72,6 +74,21 @@ public class CompanyContactAction extends ActionSupport {
 	private String profileImageFileName;
 	private String profileImageContentType;
 	private String removeProfileImage;
+	
+	private String freelancerCompanyNameEn;
+	private String freelancerAddress;
+	private String freelancerGoogleMap;
+	
+	private String freelancerCompanyNameTh;
+	
+	private File companyLogo;
+	private String companyLogoFileName;
+	private String companyLogoContentType;
+	
+	private String freelancerRealCompanyId;
+	private String freelancerAddressName;
+	
+	private String removeCompanyLogo;
 
 	public String getRemoveProfileImage() { return removeProfileImage; }
 	public void setRemoveProfileImage(String removeProfileImage) { this.removeProfileImage = removeProfileImage; }
@@ -79,6 +96,10 @@ public class CompanyContactAction extends ActionSupport {
 	public String list() {
 
 		try {
+			
+			response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
+			response.setHeader("Pragma", "no-cache");
+			response.setDateHeader("Expires", 0);
 
 			List<Map<String, Object>> contactList = companyContactDAO.findAll();
 
@@ -96,8 +117,7 @@ public class CompanyContactAction extends ActionSupport {
 
 	public String add() {
 
-		try {
-			
+		try {							
 			List<Map<String, Object>> companyList = companyDAO.findAll();
 			log.debug("CompanyList = "+companyList);
 
@@ -190,22 +210,67 @@ public class CompanyContactAction extends ActionSupport {
 					addActionError("ไม่พบข้อมูล Contact ที่ต้องการแก้ไข");
 					return ERROR;
 				}
-				
+				String profileImage = null;
 				String fileId = contact.getFileId();
 				if (fileId != null && !fileId.isEmpty()) {
 				    FileUpload file = fileUploadDAO.findById(Integer.parseInt(fileId));
 				    if( file !=null) {
-				    	String profileImage = file.getPath();
+				    	 profileImage = file.getPath();
 				    }
 				}
-				
-				log.debug("companylist= "+companyDAO.findAll());
-				log.debug("profileImage= "+profileImage);
-				
 				request.setAttribute("profileImage", profileImage);
-				request.setAttribute("companyList", companyDAO.findAll());
+
+				// Freelancer
+	            String contactCompanyId = contact.getCompanyId();
+	            String contactCompanyAddressId = contact.getCompanyAddressId();
+
+	            boolean isFreelancerContact = false;
+
+	            if (contactCompanyId != null && !contactCompanyId.trim().isEmpty()) {
+	                try {
+	                    Company company = companyDAO.findById(Long.parseLong(contactCompanyId.trim()));
+	                    isFreelancerContact = (company != null && "FREELANCE".equals(company.getIndustryId()));
+
+	                    if (isFreelancerContact) {
+	                        request.setAttribute("freelancerCompanySharedInfo", company);
+
+	                        // โลโก้บริษัท Freelancer 
+	                        String companyLogoPath = null;
+	                        String companyLogoFileId = company.getFileId();
+	                        if (companyLogoFileId != null && !companyLogoFileId.trim().isEmpty()) {
+	                            try {
+	                                FileUpload logoFile = fileUploadDAO.findById(Integer.parseInt(companyLogoFileId.trim()));
+	                                if (logoFile != null) {
+	                                    companyLogoPath = logoFile.getPath();
+	                                }
+	                            } catch (NumberFormatException nfe2) {
+	                                
+	                            }
+	                        }
+	                        request.setAttribute("companyLogoPath", companyLogoPath);
+	                    }
+	                } catch (NumberFormatException nfe) {
+	                  
+	                }
+	            }
+
+	            request.setAttribute("isFreelancerContact", isFreelancerContact);
+
+	          
+	            if (isFreelancerContact && contactCompanyAddressId != null && !contactCompanyAddressId.trim().isEmpty()) {
+	                try {
+	                    CompanyAddress freelancerAddressInfo =
+	                            companyAddressDAO.findById(Long.parseLong(contactCompanyAddressId.trim()));
+	                    request.setAttribute("freelancerAddressInfo", freelancerAddressInfo);
+	                } catch (NumberFormatException nfe) {
+	                    // company_address_id ไม่ใช่ตัวเลข ข้ามไป ไม่ต้อง set
+	                }
+	            }
 			}
-			
+
+			List<Map<String, Object>> companyList = companyDAO.findAll();
+			request.setAttribute("companyList", companyList);
+
 			return SUCCESS;
 		} catch (Exception e) {
 		    log.error("Unable to open Company Contact form", e);
@@ -217,14 +282,14 @@ public class CompanyContactAction extends ActionSupport {
 	public String save() {
 
 	    try {
-	    	User onlineUser = (User) session.getAttribute("onlineUser");
-	    	String username = onlineUser.getId();
-	        
+	        User onlineUser = (User) session.getAttribute("onlineUser");
+	        String username = onlineUser.getId();
+
 	        Long companyContactId = contact.getCompanyContactId();
 	        boolean isNew = (companyContactId == null);
-	      
+
 	        String contactCompanyId    = contact.getCompanyId();
-	        String companyAddressId    = contact.getCompanyAddressId();	      
+	        String companyAddressId    = contact.getCompanyAddressId();
 	        String titleNameTh         = contact.getTitleNameTh();
 	        String contactNameTh       = contact.getContactNameTh();
 	        String titleNameEn         = contact.getTitleNameEn();
@@ -235,13 +300,159 @@ public class CompanyContactAction extends ActionSupport {
 	        String isActiveParam       = contact.getIsActive();
 	        String removeImageParam    = this.removeProfileImage;
 
-	        
 	        CompanyContact target = isNew ? new CompanyContact() : companyContactDAO.findById(companyContactId);
 	        if (target == null) {
 	            addActionError("ไม่พบข้อมูล Contact ที่ต้องการแก้ไข");
 	            return ERROR;
 	        }
 
+	        Timestamp now = new Timestamp(System.currentTimeMillis());
+
+	        //Freelancer
+	        boolean isFreelancerSave = "freelancer".equals(contactCompanyId);
+	        Company freelancerCompanyRow = null;
+
+	        if (!isFreelancerSave && contactCompanyId != null && !contactCompanyId.trim().isEmpty()) {
+	            try {
+	                Company existingCompany = companyDAO.findById(Long.parseLong(contactCompanyId.trim()));
+	                if (existingCompany != null && "FREELANCE".equals(existingCompany.getIndustryId())) {
+	                    isFreelancerSave = true;
+	                    freelancerCompanyRow = existingCompany;
+	                }
+	            } catch (NumberFormatException nfe) {	       
+	            }
+	        }
+
+	        if (isFreelancerSave && freelancerCompanyRow == null
+	                && freelancerRealCompanyId != null && !freelancerRealCompanyId.trim().isEmpty()) {
+	            try {
+	                Company existingFreelancerCompany =
+	                        companyDAO.findById(Long.parseLong(freelancerRealCompanyId.trim()));
+	                if (existingFreelancerCompany != null
+	                        && "FREELANCE".equals(existingFreelancerCompany.getIndustryId())) {
+	                    freelancerCompanyRow = existingFreelancerCompany;
+	                }
+	            } catch (NumberFormatException nfe) {
+	            }
+	        }
+
+	        if (isFreelancerSave) {
+
+	            
+
+	            boolean isNewCompany = (freelancerCompanyRow == null);
+	            if (isNewCompany) {
+	                freelancerCompanyRow = new Company();
+	                freelancerCompanyRow.setIndustryId("FREELANCE");
+	                freelancerCompanyRow.setTaxNumber("00000");
+	                freelancerCompanyRow.setIsActive("1");
+	                freelancerCompanyRow.setUserCreate(username);
+	                freelancerCompanyRow.setTimeCreate(now);
+	            } else {
+	                freelancerCompanyRow.setUserUpdate(username);
+	                freelancerCompanyRow.setTimeUpdate(now);
+	            }
+
+	            if (freelancerCompanyNameEn != null && !freelancerCompanyNameEn.trim().isEmpty()) {
+	                freelancerCompanyRow.setCompanyEn(freelancerCompanyNameEn);
+	            }
+
+	            if (freelancerCompanyNameTh != null && !freelancerCompanyNameTh.trim().isEmpty()) {
+	                freelancerCompanyRow.setCompanyTh(freelancerCompanyNameTh);
+	            } else if (freelancerCompanyNameEn != null && !freelancerCompanyNameEn.trim().isEmpty()) {
+	                freelancerCompanyRow.setCompanyTh(freelancerCompanyNameEn);
+	            }
+
+	            try {
+	            	if (isNewCompany) {
+	            	    freelancerCompanyRow.setCompanyCode("FREELANCE-TEMP-" + System.currentTimeMillis());
+	            	    companyDAO.save(freelancerCompanyRow);          
+
+	            	    freelancerCompanyRow.setCompanyCode("FREELANCE-" + freelancerCompanyRow.getCompanyId());
+	            	    companyDAO.update(freelancerCompanyRow);        
+	            	} else {
+	            	    companyDAO.update(freelancerCompanyRow);
+	            	}
+	            } catch (Exception ex) {
+	                log.error("Unable to save Freelancer company row", ex);
+	                addActionError("DEBUG company table: " + ex.getMessage());
+	            }
+
+	            contactCompanyId = String.valueOf(freelancerCompanyRow.getCompanyId());
+	            
+	            if (companyLogo != null) {
+	                try {
+	                    List<FileUpload> savedLogoFiles = fileAttachmentService.attach(
+	                        Arrays.asList(companyLogo),
+	                        Arrays.asList(companyLogoFileName),
+	                        "company", contactCompanyId, username,
+	                        request.getServletContext().getRealPath("/")
+	                    );
+	                    if (savedLogoFiles != null && !savedLogoFiles.isEmpty()) {
+	                        freelancerCompanyRow.setFileId(String.valueOf(savedLogoFiles.get(0).getFileId()));
+	                        companyDAO.update(freelancerCompanyRow);
+	                    }
+	                } catch (Exception ex) {
+	                    log.error("Unable to save Freelancer company logo", ex);
+	                    addActionError("DEBUG company logo: " + ex.getMessage());
+	                }
+	            } else if ("Y".equals(removeCompanyLogo)) {
+	                // ผู้ใช้กดลบโลโก้ และไม่ได้เลือกรูปใหม่
+	                freelancerCompanyRow.setFileId(null);
+	                companyDAO.update(freelancerCompanyRow);
+	            }
+
+
+	            CompanyAddress freelancerAddressRow = null;
+	            if (companyAddressId != null && !companyAddressId.trim().isEmpty()) {
+	                try {
+	                    freelancerAddressRow = companyAddressDAO.findById(Long.parseLong(companyAddressId.trim()));
+	                    
+	                    if (freelancerAddressRow != null
+	                            && !contactCompanyId.equals(freelancerAddressRow.getCompanyId())) {
+	                        freelancerAddressRow = null;
+	                    }
+	                } catch (NumberFormatException nfe) {
+	                    freelancerAddressRow = null;
+	                }
+	            }
+
+	            boolean isNewAddress = (freelancerAddressRow == null);
+
+	            if (isNewAddress) {
+	                freelancerAddressRow = new CompanyAddress();
+	                freelancerAddressRow.setUserCreate(username);
+	                freelancerAddressRow.setTimeCreate(now);
+	            } else {
+	                freelancerAddressRow.setUserUpdate(username);
+	                freelancerAddressRow.setTimeUpdate(now);
+	            }
+
+	            freelancerAddressRow.setCompanyId(contactCompanyId);
+	           
+	            if (freelancerAddressName != null && !freelancerAddressName.trim().isEmpty()) {
+	                freelancerAddressRow.setAddressName(freelancerAddressName.trim());
+	            } else if (freelancerCompanyNameEn != null && !freelancerCompanyNameEn.trim().isEmpty()) {
+	                freelancerAddressRow.setAddressName(freelancerCompanyNameEn);
+	            }
+	           
+	            if (freelancerAddress != null && !freelancerAddress.trim().isEmpty()) {
+	                freelancerAddressRow.setAddress(freelancerAddress);
+	            }
+	            if (freelancerGoogleMap != null && !freelancerGoogleMap.trim().isEmpty()) {
+	                freelancerAddressRow.setGoogleMap(freelancerGoogleMap);
+	            }
+	            if (isNewAddress) {
+	                companyAddressDAO.save(freelancerAddressRow);
+	            } else {
+	                companyAddressDAO.update(freelancerAddressRow);
+	            }
+
+	            companyAddressId = String.valueOf(freelancerAddressRow.getCompanyAddressId());
+	            	         
+
+	        }
+            ////
 	        target.setCompanyId(contactCompanyId);
 	        target.setCompanyAddressId(companyAddressId);
 	        target.setTitleNameTh(titleNameTh);
@@ -257,42 +468,28 @@ public class CompanyContactAction extends ActionSupport {
 	            target.setFileId(null);
 	        }
 
-	        Timestamp now = new Timestamp(System.currentTimeMillis());
-
 	        if (isNew) {
 	            target.setUserCreate(username);
 	            target.setTimeCreate(now);
 	            companyContactDAO.save(target);
 	        } else {
 	            target.setUserUpdate(username);
-	            target.setTimeUpdate(now);   
+	            target.setTimeUpdate(now);
 	            companyContactDAO.update(target);
 	        }
 
-//	        if (profileImage != null) {
-//	            String fileId = processFileUpload(
-//	                    "/upload/contact/", profileImage, profileImageFileName,
-//	                    "contact", target.getCompanyContactId().toString(), username);
-//	            target.setFileId(fileId);
-//	            companyContactDAO.update(target);
-//	        }
-	        
-	        if (profileImage  != null) {
-				List<FileUpload> savedFiles = fileAttachmentService.attach(
-					Arrays.asList(profileImage),
-					Arrays.asList(profileImageFileName),
-					"contact",
-					username,
-					username,
-					request.getServletContext().getRealPath("/")
-				);
-
-				if (savedFiles != null && !savedFiles.isEmpty()) {
-					target.setFileId(String.valueOf(savedFiles.get(0).getFileId()));
-		            companyContactDAO.update(target);
-				}
-			}
-
+	        if (profileImage != null) {
+	            List<FileUpload> savedFiles = fileAttachmentService.attach(
+	                Arrays.asList(profileImage),
+	                Arrays.asList(profileImageFileName),
+	                "contact", String.valueOf(target.getCompanyContactId()), username,
+	                request.getServletContext().getRealPath("/")
+	            );
+	            if (savedFiles != null && !savedFiles.isEmpty()) {
+	                target.setFileId(String.valueOf(savedFiles.get(0).getFileId()));
+	                companyContactDAO.update(target);
+	            }
+	        }
 
 	        this.contact = target;
 
@@ -300,7 +497,7 @@ public class CompanyContactAction extends ActionSupport {
 
 	    } catch (Exception e) {
 	        log.error("Error saving company contact", e);
-	        addActionError("ไม่สามารถบันทึกข้อมูล Contact ได้");
+	        addActionError("ไม่สามารถบันทึกข้อมูล Contact ได้"+ e.getMessage()) ;
 	        return ERROR;
 	    }
 	}
@@ -448,5 +645,76 @@ public class CompanyContactAction extends ActionSupport {
 	public void setProfileImageContentType(String profileImageContentType) { 
 		this.profileImageContentType = profileImageContentType; 
 		}
+	
+	public String getFreelancerCompanyNameEn() { 
+		return freelancerCompanyNameEn; 
+		}
+	
+	public void setFreelancerCompanyNameEn(String freelancerCompanyNameEn){ 
+		this.freelancerCompanyNameEn = freelancerCompanyNameEn; 
+		}
+
+	public String getFreelancerAddress() { 
+		return freelancerAddress; 
+		}
+	public void setFreelancerAddress(String freelancerAddress) { 
+		this.freelancerAddress = freelancerAddress; 
+		}
+
+	public String getFreelancerGoogleMap() { 
+		return freelancerGoogleMap; 
+		}
+	public void setFreelancerGoogleMap(String freelancerGoogleMap) { 
+		this.freelancerGoogleMap = freelancerGoogleMap; 
+		}
+	
+	public String getFreelancerCompanyNameTh() { 
+		return freelancerCompanyNameTh; 
+		}
+	public void setFreelancerCompanyNameTh(String freelancerCompanyNameTh) { 
+		this.freelancerCompanyNameTh = freelancerCompanyNameTh; 
+		}
+	
+	public String getFreelancerRealCompanyId() { 
+		return freelancerRealCompanyId; 
+		}
+	public void setFreelancerRealCompanyId(String freelancerRealCompanyId) { 
+		this.freelancerRealCompanyId = freelancerRealCompanyId; 
+		}
+	
+	public File getCompanyLogo() { 
+		return companyLogo; 
+		}
+	public void setCompanyLogo(File companyLogo) { 
+		this.companyLogo = companyLogo; 
+		}
+
+	public String getCompanyLogoFileName() { 
+		return companyLogoFileName; 
+		}
+	public void setCompanyLogoFileName(String companyLogoFileName) { 
+		this.companyLogoFileName = companyLogoFileName; 
+		}
+
+	public String getCompanyLogoContentType() { 
+		return companyLogoContentType; 
+		}
+	public void setCompanyLogoContentType(String companyLogoContentType) { 
+		this.companyLogoContentType = companyLogoContentType; 
+		}
+	
+	public String getFreelancerAddressName() {
+	    return freelancerAddressName;
+	}
+	public void setFreelancerAddressName(String freelancerAddressName) {
+	    this.freelancerAddressName = freelancerAddressName;
+	}
+	
+	public String getRemoveCompanyLogo() {
+	    return removeCompanyLogo;
+	}
+	public void setRemoveCompanyLogo(String removeCompanyLogo) {
+	    this.removeCompanyLogo = removeCompanyLogo;
+	}
 
 }
