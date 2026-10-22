@@ -305,6 +305,7 @@ function leaveStatus(id) {
 			
 			// ไฟล์แนบ
 			renderLeaveModalFiles(obj);
+			  $('#btn_edit_leave').attr({ href: 'NewLeaveEdit?id=' + obj.leave_id + '&la=1', target: '_blank' });
 
 	      // leave type name
 			if (obj.leave_type_id == 1) { $('#leavetype').html("ลาพักร้อน"); }
