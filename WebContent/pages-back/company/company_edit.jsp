@@ -181,10 +181,16 @@
 							</div>
 
 							<div class="col-md-6 company-tax-number-validate-container">
-								<label class="form-label required"> Tax ID </label> <input
-									type="text" class="form-control " value="${company.taxNumber }"
-									id="company-tax-number">
-							</div>
+	<label class="form-label required"> Tax ID </label>
+	<div class="position-relative">
+		<input type="text" class="form-control pe-10" value="${company.taxNumber}"
+			id="company-tax-number">
+		<i id="company-tax-number-valid-icon"
+			class="ki-duotone ki-check-circle fs-1 text-success position-absolute top-50 end-0 translate-middle-y me-4">
+			<span class="path1"></span> <span class="path2"></span>
+		</i>
+	</div>
+</div>
 
 						</div>
 
@@ -349,10 +355,10 @@
 												id="address-value-create"></textarea>
 										</div>
 										<div class="col-md-12 create-ggMap-validate-container">
-											<label for="Google map URL" class="form-label required">
+											<label for="Google map URL" class="form-label">
 												Google Map URL </label> <input type="url"
 												class="form-control form-control-lg"
-												placeholder="https://maps.google.com/...." required
+												placeholder="https://maps.google.com/...."
 												id="ggMap-create" />
 
 										</div>
@@ -413,7 +419,8 @@
 												</div>
 											</div>
 
-											<div class="text-break lh-lg">
+											<div class="text-break lh-lg ${empty address.google_map ? 'd-none' : ''}"
+     id="googleMapRow_${address.address_id}">
 												<div
 													class="fw-semibold mb-1 d-flex align-items-center gap-3">
 
@@ -493,7 +500,7 @@
 										</div>
 
 										<div class="col-md-12 ggMap-update-validate-container">
-											<label class="form-label required"> Google Map URL </label> <input
+											<label class="form-label"> Google Map URL </label> <input
 												type="text" class="form-control form-control-lg"
 												id="ggMap-update" />
 										</div>
@@ -1104,6 +1111,24 @@
 			}
 	
 			$(document).ready(function(){
+				
+				/*
+				 * แจ้งบันทึกสำเร็จ (มาจาก create_company → ?saved=1)
+				 */
+				if ("${param.saved}" === "1") {
+					Swal.fire({
+						icon: "success",
+						title: "Success",
+						text: "Company saved successfully",
+						confirmButtonColor: "#1B84FF"
+					});
+
+					// ลบ saved=1 ออกจาก URL กด Refresh จะได้ไม่ขึ้นข้อความซ้ำ
+					if (window.history.replaceState) {
+						const cleanUrl = window.location.pathname + "?companyId=" + encodeURIComponent("${param.companyId}");
+						window.history.replaceState(null, "", cleanUrl);
+					}
+				}
 
 				const validationState = {
 					    companyCode: true,
@@ -1340,8 +1365,22 @@
 				            "Tax ID must contain 1-13 digits"
 				        );
 				    } else {
-				        validationState.taxNumber = true;
-				        clearFieldError("#company-tax-number");
+				        $.ajax({
+				            url: "check_tax_number",
+				            type: "GET",
+				            data: { taxNumber: value, companyId: ${company.companyId} },
+				            success: function (res) {
+				                const result = typeof res === "string" ? JSON.parse(res) : res;
+
+				                if (result.exists) {
+				                    validationState.taxNumber = false;
+				                    setFieldInvalid("#company-tax-number", "This Tax ID already exists");
+				                } else {
+				                    validationState.taxNumber = true;
+				                    clearFieldError("#company-tax-number");
+				                }
+				            }
+				        });
 				    }
 					return
 				}
@@ -1423,6 +1462,7 @@
 				    $("#name_" + addressId).text(data.address_name);
 				    $("#address_" + addressId).text(data.address);
 				    $("#googleMap_" + addressId).text(data.google_map);
+				    $("#googleMapRow_" + addressId).toggleClass("d-none", !data.google_map);
 					
 				    // Close modal
 				    bootstrap.Modal.getOrCreateInstance(document.getElementById("editAddressModal")).hide();
@@ -1740,7 +1780,8 @@
 									</div>
 								</div>
 	
-								<div class="text-break lh-lg">
+								<div class="text-break lh-lg \${data.google_map ? '' : 'd-none'}"
+								     id="googleMapRow_\${addressId}">
 									<div
 										class="fw-semibold mb-1 d-flex align-items-center gap-3">
 	
@@ -2106,8 +2147,7 @@
 	
 		const addressValidationState = {
 			    addressName: false,
-			    addressVal: false,
-			    ggMap: false
+			    addressVal: false,			   
 			};
 
 		function bindAddressValidation(selector, errMsg, key) {
@@ -2162,12 +2202,7 @@
 				    "Address is required",
 				    "addressVal"
 				);
-
-			bindAddressValidation(
-				    "#ggMap-create, #ggMap-update",
-				    "Google Map URL is required",
-				    "ggMap"
-				);
+			
 			
 		});
 	</script>
@@ -2533,11 +2568,12 @@
     		        },
 
     		        error: function (xhr) {
-
     		            Swal.fire({
     		                icon: "error",
     		                title: "Error",
-    		                text: "Cannot create industry"
+    		                text: xhr.status === 409
+    		                    ? "Industry name already exists"
+    		                    : "Cannot create industry"
     		            });
     		        },
 
@@ -2583,7 +2619,7 @@
 
 		    $.ajax({
 		        url: "check_industry_name",
-		        type: "GET",
+		        type: "POST",
 		        data: {
 		            industryName: value
 		        },

@@ -1788,10 +1788,14 @@
 		</action>
 		
 		<action name="create_company"
-			class="com.cubesofttech.action.CompanyAction" method="save">
-			<result name="success" type="redirect">company_list</result>
-			<result name="error">/index.jsp</result>
-		</action>
+	class="com.cubesofttech.action.CompanyAction" method="save">
+	<result name="success" type="redirectAction">
+		<param name="actionName">company_edit</param>
+		<param name="companyId">${companyId}</param>
+		<param name="saved">1</param>
+	</result>
+	<result name="error">/index.jsp</result>
+</action>
 		
 		<action name="delete_company"
 			class="com.cubesofttech.action.CompanyAction" method="delete">
@@ -1812,6 +1816,10 @@
 		
 		<action name="check_company_code"
         	class="com.cubesofttech.action.CompanyAction" method="checkCompanyCode">
+        </action>
+        
+        <action name="check_tax_number"
+	        class="com.cubesofttech.action.CompanyAction" method="checkTaxNumber">
         </action>
         
         <action name="create_industry"

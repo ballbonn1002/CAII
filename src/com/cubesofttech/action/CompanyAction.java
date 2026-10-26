@@ -344,6 +344,7 @@ public class CompanyAction extends ActionSupport {
 			company.setUserCreate(onlineUser.getId());
 			company.setTimeCreate(DateUtil.getCurrentTime());
 			companyDAO.save(company);
+			this.companyId = company.getCompanyId();
 
 			if (logo != null) {
 				String fileName = logoFileName;
@@ -719,6 +720,11 @@ public class CompanyAction extends ActionSupport {
 				return ERROR;
 			}
 			
+			if (industryDAO.findByName(industryName.trim()) != null) {
+			    response.setStatus(HttpServletResponse.SC_CONFLICT); // 409
+			    return ERROR;
+			}
+			
 			CompanyIndustry industry = new CompanyIndustry();
 			
 			industry.setIndustryName(industryName);
@@ -759,6 +765,7 @@ public class CompanyAction extends ActionSupport {
 	    try {
 
 	        String industryName = request.getParameter("industryName");
+	        industryName = industryName == null ? "" : industryName.trim();
 
 	        CompanyIndustry industry = industryDAO.findByName(industryName);
 
@@ -855,6 +862,30 @@ public class CompanyAction extends ActionSupport {
 	        } catch (Exception ignored) {
 	        }
 	        return NONE;
+	    }
+	}
+	
+	public String checkTaxNumber() {
+	    try {
+	        String taxNumber = request.getParameter("taxNumber");
+	        taxNumber = taxNumber == null ? "" : taxNumber.trim();
+
+	        Long companyId = null;
+	        String companyIdString = request.getParameter("companyId");
+	        if (companyIdString != null && !companyIdString.isEmpty()
+	                && !"null".equals(companyIdString)) {
+	            companyId = Long.valueOf(companyIdString);
+	        }
+
+	        boolean exists = companyDAO.existsTaxNumber(taxNumber, companyId);
+
+	        response.setContentType("application/json");
+	        response.getWriter().write("{\"exists\":" + exists + "}");
+	        return NONE;
+
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        return ERROR;
 	    }
 	}
 }

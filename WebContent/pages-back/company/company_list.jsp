@@ -113,7 +113,7 @@
 					<div class="d-flex align-items-baseline gap-1">
 						<h3
 							class="page-heading text-gray-900 fw-bold mb-0 d-flex align-items-baseline flex-nowrap">
-							<span id="itemsFound" class="me-2">Compana (${empty companyList ? 0 : fn:length(companyList)})
+							<span id="itemsFound" class="me-2">Company (${empty companyList ? 0 : fn:length(companyList)})
 							</span>
 						</h3>
 					</div>
@@ -161,7 +161,7 @@
 											<th>company code</th>
 											<th>address location</th>
 											<th>contact company</th>
-											<th class="text-center">is active</th>
+											<th class="text-center">active</th>
 											<th class="text-center">action</th>
 										</tr>
 									</thead>
@@ -177,7 +177,7 @@
 												<td>
 													<div class="d-flex align-items-center">
 
-														<div class="symbol symbol-40px symbol-circle me-3">
+														<div class="symbol symbol-40px me-3">
 
 															<c:choose>
 																<c:when test="${not empty company.file_path}">
@@ -407,27 +407,37 @@
 											<c:choose>
 
 												<c:when test="${not empty company.address_location}">
-													<div class="d-flex flex-column gap-3">
+	<div class="d-flex flex-column gap-3 address-group">
 
-														<c:forEach items="${company.address_location}"
-															var="address">
+		<c:forEach items="${company.address_location}"
+			var="address" varStatus="st">
 
-															<div class="d-flex gap-2 align-items-center">
-																<i class="ki-duotone ki-map fs-2"> <span
-																	class="path1"></span> <span class="path2"></span> <span
-																	class="path3"></span>
-																</i> <span class="fw-medium text-gray-700">
-																	${address.address_name} </span>
-															</div>
+			<%-- ที่อยู่แรกแสดงเสมอ ที่เหลือซ่อนไว้จนกว่าจะกด See More --%>
+			<div class="d-flex flex-column gap-3 ${st.index > 0 ? 'extra-address d-none' : ''}">
 
-															<div class="ps-8">
-																<span class="text-gray-500"> ${address.address} </span>
-															</div>
+				<div class="d-flex gap-2 align-items-center">
+					<i class="ki-duotone ki-map fs-2"> <span
+						class="path1"></span> <span class="path2"></span> <span
+						class="path3"></span>
+					</i> <span class="fw-medium text-gray-700">
+						${address.address_name} </span>
+				</div>
 
-														</c:forEach>
+				<div class="ps-8">
+					<span class="text-gray-500"> ${address.address} </span>
+				</div>
 
-													</div>
-												</c:when>
+			</div>
+
+		</c:forEach>
+
+		<c:if test="${fn:length(company.address_location) > 1}">
+			<a href="javascript:void(0)"
+				class="btn-see-more align-self-start fw-semibold text-primary">See More</a>
+		</c:if>
+
+	</div>
+</c:when>
 
 												<c:otherwise>
 
@@ -750,6 +760,16 @@
 				
 				$("#tableView").removeClass("d-none");
 				$(this).removeClass("btn-light").addClass("btn-primary");
+			});
+
+			// See More / See Less ของที่อยู่ในการ์ด
+			$(document).on("click", ".btn-see-more", function () {
+				const group = $(this).closest(".address-group");
+				const extra = group.find(".extra-address");
+				const isHidden = extra.first().hasClass("d-none");
+
+				extra.toggleClass("d-none", !isHidden);
+				$(this).text(isHidden ? "See Less" : "See More");
 			});
 
 		});
