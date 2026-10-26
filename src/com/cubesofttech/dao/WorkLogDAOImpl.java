@@ -33,6 +33,7 @@ public class WorkLogDAOImpl implements WorkLogDAO {
             sql.append("   SELECT ");
             sql.append("     wh.work_hours_id, wh.work_hours_type, wh.work_hours_time_work, wh.time_create, ");
             sql.append("     wh.time_update, wh.work_type, wh.description, wh.user_agent, wh.ip_address, wh.latitude, wh.longitude, ");
+            sql.append("     wh.submit_channel, wh.click_token_status, ");
             sql.append("     u.id as user_id, u.name, u.name_en, u.position_id, u.employee_id, u.role_id, ");
             sql.append("     j.id_sitejob, j.name_site, ");
 

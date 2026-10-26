@@ -69,7 +69,15 @@ public class WorkHours implements Serializable {
     @Column(name = "user_agent")
     private String userAgent;	
     @Column(name = "ip_address")
-    private String ipAddress;	
+    private String ipAddress;
+    @Column(name = "submit_channel")
+    private String submitChannel;
+    @Column(name = "request_uri")
+    private String requestUri;
+    @Column(name = "request_referer")
+    private String requestReferer;
+    @Column(name = "click_token_status")
+    private String clickTokenStatus;
     @Column(name = "user_create")
     private String userCreate;	
     @Column(name = "user_update")
@@ -136,6 +144,30 @@ public class WorkHours implements Serializable {
     }		
     public void setIpAddress(String ipAddress) {
         this.ipAddress = ipAddress;
+    }
+    public String getSubmitChannel() {
+        return this.submitChannel;
+    }
+    public void setSubmitChannel(String submitChannel) {
+        this.submitChannel = submitChannel;
+    }
+    public String getRequestUri() {
+        return this.requestUri;
+    }
+    public void setRequestUri(String requestUri) {
+        this.requestUri = requestUri;
+    }
+    public String getRequestReferer() {
+        return this.requestReferer;
+    }
+    public void setRequestReferer(String requestReferer) {
+        this.requestReferer = requestReferer;
+    }
+    public String getClickTokenStatus() {
+        return this.clickTokenStatus;
+    }
+    public void setClickTokenStatus(String clickTokenStatus) {
+        this.clickTokenStatus = clickTokenStatus;
     }
     public String getUserCreate() {
         return this.userCreate;

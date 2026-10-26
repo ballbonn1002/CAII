@@ -1226,6 +1226,7 @@ WHERE p.parent_product_id <> '0' AND p.sequence REGEXP '^[0-9]+$';
 INSERT INTO `authorized_object` (`authorized_object_id`, `name`, `description`, `active`, `time_create`, `time_update`, `authorized_object_group_id`)
 VALUES
 ('session.timeout.extended', 'session.timeout.extended', 'ขยาย session timeout เป็น 60 นาที (ค่าปกติ 30 นาที)', '1', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '2');
+
 -- 16/10/2026 Koy: add permission 'session.timeout.extended' to 'HR' role in 'role_authorized_object' table  
 INSERT INTO `role_authorized_object` (`role_id`, `authorized_object_id`, `time_create`, `time_update`)
 VALUES ('HR', 'session.timeout.extended', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
@@ -1233,3 +1234,15 @@ VALUES ('HR', 'session.timeout.extended', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 -- 21/10/2026 Eric: Add column send_to, type_sending in 'notification' table
 ALTER TABLE `notification` ADD `send_to` VARCHAR(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL AFTER `is_read`;
 ALTER TABLE `notification` ADD `type_sending` VARCHAR(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL AFTER `user_id`;
+
+-- 26/10/2026: add 'submit_channel', 'request_uri', 'request_referer' columns to 'work_hours' table
+ALTER TABLE `work_hours`
+	ADD `submit_channel` VARCHAR(20) NULL DEFAULT NULL AFTER `ip_address`,
+	ADD `request_uri` VARCHAR(255) NULL DEFAULT NULL AFTER `submit_channel`,
+	ADD `request_referer` VARCHAR(255) NULL DEFAULT NULL AFTER `request_uri`;
+
+-- 26/10/2026 Koy: add 'click_token_status' column to 'work_hours' table
+ALTER TABLE `work_hours`
+	ADD `click_token_status` VARCHAR(20) NULL DEFAULT NULL AFTER `request_referer`;
+
+

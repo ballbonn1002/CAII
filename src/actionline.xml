@@ -43,6 +43,23 @@
 			<result name="success" type="tiles">line_checkInOut</result>
 			<result name="error">/pages-line/index.jsp</result>
 		</action>
+
+		<!-- CHECK-IN/CHECK-OUT (TEST): ทดสอบระบบตรวจ token ว่ากดปุ่มจริง แยกจากของเดิม ไม่มีเมนู เข้าด้วย URL เท่านั้น -->
+		<action name="line_check_in_out_test"
+			class="com.cubesofttech.action.WorkHoursAction" method="initTest">
+			<result name="success" type="tiles">line_checkInOutTest</result>
+			<result name="error">/pages-line/index.jsp</result>
+		</action>
+
+		<action name="line_saveCheckInTest"
+			class="com.cubesofttech.action.WorkHoursAction" method="savecheckTest">
+			<result name="error">/pages-line/index.jsp</result>
+		</action>
+
+		<action name="line_saveCheckOutTest"
+			class="com.cubesofttech.action.WorkHoursAction" method="savecheckTest">
+			<result name="error">/pages-line/index.jsp</result>
+		</action>
 		
 		<!-- Check All Calendar -->
 		<action name="line_Calendar_Checklist"

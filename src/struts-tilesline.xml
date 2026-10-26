@@ -29,6 +29,13 @@
 			value="/pages-line/check/check_in_out.jsp" />
 	</definition>
 	
+	<!-- CHECK-IN/CHECK-OUT (TEST) -->
+	<definition name="line_checkInOutTest" extends="line_baseLayout">
+		<put-attribute name="title" value="Check-In/Check-Out (Test)" />
+		<put-attribute name="body"
+			value="/pages-line/check/check_in_out_test.jsp" />
+	</definition>
+
 	<!-- Check All Calendar -->
 	<definition name="line_NewCheckAllCalendar" extends="line_baseLayout">
 		<put-attribute name="title" value="Check All Calendar" />

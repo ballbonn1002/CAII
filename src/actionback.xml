@@ -278,6 +278,40 @@
 			<result name="error">/index.jsp</result>
 		</action>
 
+		<!-- CHECK-IN/CHECK-OUT (TEST): ทดสอบระบบตรวจ token ว่ากดปุ่มจริง แยกจากของเดิม ไม่มีเมนู เข้าด้วย URL เท่านั้น -->
+		<action name="check_in_out_test"
+			class="com.cubesofttech.action.WorkHoursAction" method="initTest">
+			<result name="success" type="tiles">checkInOutTest</result>
+			<result name="error">/index.jsp</result>
+		</action>
+
+		<action name="saveCheckInTest"
+			class="com.cubesofttech.action.WorkHoursAction" method="savecheckTest">
+			<result name="error">/index.jsp</result>
+		</action>
+
+		<action name="saveCheckOutTest"
+			class="com.cubesofttech.action.WorkHoursAction" method="savecheckTest">
+			<result name="error">/index.jsp</result>
+		</action>
+
+		<!-- Retroactive (TEST): ลงเวลาย้อนหลังแบบทดสอบ แยกจากของเดิม เข้าผ่านปุ่มในหน้า check_in_out_test -->
+		<action name="retroactive_test"
+			class="com.cubesofttech.action.WorkHoursAction" method="initTest">
+			<result name="success" type="tiles">retroactivePageTest</result>
+			<result name="error">/index.jsp</result>
+		</action>
+
+		<action name="retroSaveCheckInTest"
+			class="com.cubesofttech.action.WorkHoursAction" method="savecheckTest">
+			<result name="error">/index.jsp</result>
+		</action>
+
+		<action name="retroSaveCheckOutTest"
+			class="com.cubesofttech.action.WorkHoursAction" method="savecheckTest">
+			<result name="error">/index.jsp</result>
+		</action>
+
 		<!-- Retroactive -->
 		<action name="retroactive"
 			class="com.cubesofttech.action.WorkHoursAction" method="init">

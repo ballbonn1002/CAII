@@ -45,7 +45,9 @@ import com.cubesofttech.service.FileAttachmentService;
 import com.cubesofttech.service.LogService;
 import com.cubesofttech.service.NotificationService;
 import com.cubesofttech.service.WorkHoursService;
+import com.cubesofttech.util.ClickTokenUtil;
 import com.cubesofttech.util.DateUtil;
+import com.cubesofttech.util.SubmitChannelUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.opensymphony.xwork2.ActionSupport;
 
@@ -448,6 +450,369 @@ public class WorkHoursAction extends ActionSupport {
 			wh.setUserAgent("CA-II | " + userAgent);
 			wh.setIpAddress(ipAddress);
 			
+			if ("retro".equals(checkMode)) {
+				wh.setTimeCreate(Timestamp.valueOf(now));
+				wh.setTimeUpdate(Timestamp.valueOf(now));
+			} else {
+				wh.setTimeCreate(Timestamp.valueOf(now));
+				wh.setTimeUpdate(Timestamp.valueOf(now));
+			}
+			
+			wh.setUserCreate(userId);
+			wh.setUserUpdate(userId);
+			wh.setWorkinghours(workinghour);
+			workHoursDAO.save(wh);
+
+			DateTimeFormatter fmt = DateTimeFormatter.ofPattern("HH:mm");
+			result.put("status", "success");
+			result.put("type", checkType);
+			if ("retro".equals(checkMode)) {
+				result.put("time", checkTime);
+			} else {
+				result.put("time", timeString.substring(0, 5));
+			}
+		} catch (Exception e) {
+			try {
+				String uriLog = request.getRequestURI();
+	    		String methodLog = request.getMethod();
+	    		String statusLog = "ERROR";
+	    		String descLog = e.getClass().getName() + ": " + e.getMessage();
+	    		String dateLog = LocalDateTime.now().toLocalDate().toString() + '%';
+	    		
+	    		logService.updateRequestLog(uriLog, methodLog, statusLog, descLog, dateLog, ur.getId());
+			} catch (Exception logEx) {
+				log.debug("Log can't write to DB: " + logEx.getMessage());
+			}
+			e.printStackTrace();
+			result.put("status", "error");
+			result.put("message", "Failed to record your check-in/out time. Please try again.");
+		}
+		log.debug(result);
+		try {
+			ObjectMapper mapper = new ObjectMapper();
+			response.setContentType("application/json;charset=UTF-8");
+			response.getWriter().write(mapper.writeValueAsString(result));
+			response.getWriter().flush();
+			response.getWriter().close();
+		} catch (Exception e) {
+			try {
+				String uriLog = request.getRequestURI();
+	    		String methodLog = request.getMethod();
+	    		String statusLog = "ERROR";
+	    		String descLog = e.getClass().getName() + ": " + e.getMessage();
+	    		String dateLog = LocalDateTime.now().toLocalDate().toString() + '%';
+	    		
+	    		logService.updateRequestLog(uriLog, methodLog, statusLog, descLog, dateLog, ur.getId());
+			} catch (Exception logEx) {
+				log.debug("Log can't write to DB: " + logEx.getMessage());
+			}
+			e.printStackTrace();
+		}
+		
+		try {
+			String uriLog = request.getRequestURI();
+			String methodLog = request.getMethod();
+			String statusLog = "SUCCESS";
+			String descLog = null;
+			String dateLog = LocalDateTime.now().toLocalDate().toString() + '%';
+			
+			logService.updateRequestLog(uriLog, methodLog, statusLog, descLog, dateLog, ur.getId());
+		} catch (Exception logEx) {
+			log.debug("Log can't write to DB: " + logEx.getMessage());
+		}
+		
+		return null;
+	}
+
+	/**
+	 * [ทดสอบ] เปิดหน้าลงเวลาแบบมี token — ใช้กับ route check_in_out_test
+	 * เรียก init() เดิมทั้งหมด แล้วเพิ่มแค่การออก token ให้หน้าเว็บ (ดู ClickTokenUtil)
+	 * ถ้าจะใช้จริงกับหน้าเดิม: ย้าย request.setAttribute("clickToken", ...) ไปไว้ใน init() แล้วลบเมธอดนี้
+	 */
+	public String initTest() {
+		String result = init();
+		if (SUCCESS.equals(result)) {
+			request.setAttribute("clickToken", ClickTokenUtil.issue(request.getSession()));
+		}
+		return result;
+	}
+
+	/**
+	 * [ทดสอบ] บันทึกการลงเวลาแบบเก็บ submit_channel และตรวจ token — ใช้กับ route saveCheckInTest / saveCheckOutTest
+	 * ก็อปจาก savecheck() เดิมทุกอย่าง แล้วเพิ่มบล็อก "เก็บ submit_channel" และ "ตรวจ token" ก่อน save
+	 * (ติดป้ายลง work_hours.click_token_status ไม่ปฏิเสธการบันทึก)
+	 * ถ้าจะใช้จริงกับหน้าเดิม: เอาสองบล็อกนั้นไปใส่ใน savecheck() แล้วลบเมธอดนี้ หรือเปลี่ยนชื่อเมธอดนี้ทับ savecheck()
+	 */
+	public String savecheckTest() {
+		User ur = (User) request.getSession().getAttribute("onlineUser");
+
+		Map<String, Object> result = new HashMap<>();
+
+		// หมดเวลา session -> ตอบ JSON ให้ฝั่ง AJAX จัดการเอง
+		if (ur == null) {
+			result.put("status", "error");
+			result.put("message", "หมดเวลาการใช้งาน กรุณาเข้าสู่ระบบใหม่อีกครั้ง");
+			writeJson(result);
+			return null;
+		}
+
+		try {
+			// ล็อก userId ให้เป็นคนที่ login อยู่เสมอ ไม่เชื่อค่าจาก client
+			// (เดิมรับ request.getParameter("userId") ตรงๆ -> ยิง POST ใส่ userId ของคนอื่น
+			// แล้วปลอมลงเวลาแทนได้ ทั้งลงเวลาปกติและย้อนหลัง)
+			String userId = ur.getId();
+			String checkDate = request.getParameter("date");
+			String checkTime = request.getParameter("time");
+			String checkType = request.getParameter("checkType");
+			String workType = request.getParameter("workType");
+			String checkMode = request.getParameter("mode");
+			log.debug(checkType + "/" + workType+"/"+checkDate+ "/"+userId);
+
+			// ===== ตรวจสอบกรอบวันลงเวลาย้อนหลังฝั่ง server =====
+			// ฝั่ง client (flatpickr) จำกัด minDate ไว้แล้ว แต่ป้องกันไม่ได้ถ้ายิง request ตรง
+			// หรือเปิดหน้าค้างไว้ข้ามวัน จึงต้องตรวจซ้ำที่นี่เสมอ
+			if ("retro".equals(checkMode)) {
+				LocalDate today = LocalDate.now(ZONE);
+				LocalDate targetDate;
+				try {
+					targetDate = LocalDate.parse(checkDate); // คาดหวังรูปแบบ yyyy-MM-dd
+				} catch (Exception e) {
+					log.error("Retro date parse failed: " + checkDate, e);
+					result.put("status", "error");
+					result.put("message", "รูปแบบวันที่ไม่ถูกต้อง");
+					writeJson(result);
+					return null;
+				}
+
+				if (targetDate.isAfter(today)) {
+					result.put("status", "error");
+					result.put("message", "ไม่สามารถลงเวลาย้อนหลังเป็นวันในอนาคตได้");
+					writeJson(result);
+					return null;
+				}
+
+				LocalDate earliestAllowed;
+				try {
+					earliestAllowed = workHoursService.calculateAllowedWorkDate(today);
+				} catch (Exception e) {
+					log.error("calculateAllowedWorkDate failed", e);
+					result.put("status", "error");
+					result.put("message", "ระบบไม่สามารถตรวจสอบวันหยุดได้ กรุณาลองใหม่อีกครั้ง");
+					writeJson(result);
+					return null;
+				}
+
+				if (targetDate.isBefore(earliestAllowed)) {
+					result.put("status", "error");
+					result.put("message", "ลงเวลาย้อนหลังได้ไม่เกิน 1 วันทำการ "
+							+ "(ย้อนหลังได้ถึงวันที่ " + earliestAllowed + " เท่านั้น)");
+					writeJson(result);
+					return null;
+				}
+			}
+
+			if ("2".equals(checkType)) {
+				LocalDate targetDate = LocalDate.now(ZoneId.of("Asia/Bangkok"));
+				if ("retro".equals(checkMode) && checkDate != null && !checkDate.isEmpty()) {
+					try {
+						targetDate = LocalDate.parse(checkDate);
+					} catch (Exception e) {
+						try {
+							String uriLog = request.getRequestURI();
+				    		String methodLog = request.getMethod();
+				    		String statusLog = "ERROR";
+				    		String descLog = e.getClass().getName() + ": " + e.getMessage();
+				    		String dateLog = LocalDateTime.now().toLocalDate().toString() + '%';
+				    		
+				    		logService.updateRequestLog(uriLog, methodLog, statusLog, descLog, dateLog, ur.getId());
+						} catch (Exception logEx) {
+							log.debug("Log can't write to DB: " + logEx.getMessage());
+						}
+						log.error("Invalid date format", e);
+					}
+				} else {	// normal
+					checkDate = targetDate.toString();
+				}
+				List<Map<String, Object>> targetDateCheckIn = workHoursDAO.getCheckinByDate(userId, checkDate);
+				boolean isCheckedIn = false;
+				if (targetDateCheckIn != null && !targetDateCheckIn.isEmpty()) {
+				    isCheckedIn = true;
+				    log.debug("Found Check-in for date: " + targetDate);
+				}
+
+				if (!isCheckedIn) {
+					result.put("status", "error");
+					if ("retro".equals(checkMode)) {
+						result.put("message", "ไม่สามารถ Check-out ย้อนหลังได้ เนื่องจากไม่พบเวลา Check-in ของวันที่ " + targetDate);
+					} else {
+						result.put("message", "ไม่สามารถ Check-out ได้ เนื่องจากคุณยังไม่ได้ Check-in วันนี้");
+					}
+
+					try {
+						ObjectMapper mapper = new ObjectMapper();
+						response.setContentType("application/json;charset=UTF-8");
+						response.getWriter().write(mapper.writeValueAsString(result));
+						response.getWriter().flush();
+						response.getWriter().close();
+					} catch (Exception e) {
+						try {
+							String uriLog = request.getRequestURI();
+				    		String methodLog = request.getMethod();
+				    		String statusLog = "ERROR";
+				    		String descLog = e.getClass().getName() + ": " + e.getMessage();
+				    		String dateLog = LocalDateTime.now().toLocalDate().toString() + '%';
+				    		
+				    		logService.updateRequestLog(uriLog, methodLog, statusLog, descLog, dateLog, ur.getId());
+						} catch (Exception logEx) {
+							log.debug("Log can't write to DB: " + logEx.getMessage());
+						}
+						e.printStackTrace();
+					}
+					return null;
+				}
+			}
+
+			String desRaw = null;
+			String des = null;
+			desRaw = request.getParameter("reason");
+			des = (desRaw != null && !desRaw.trim().isEmpty()) ? desRaw.trim() : "";
+			log.debug(desRaw);
+
+			String lat = request.getParameter("latitude");
+			String lng = request.getParameter("longitude");
+			
+			//set latitude/longitude ลง session
+			HttpSession session = request.getSession();
+
+			if (lat == null || "".equals(lat.trim())) {
+			    lat = (String) session.getAttribute("latitude");
+			} else {
+			    session.setAttribute("latitude", lat);
+			}
+
+			if (lng == null || "".equals(lng.trim())) {
+			    lng = (String) session.getAttribute("longitude");
+			} else {
+			    session.setAttribute("longitude", lng);
+			}
+
+			Map<String, String> headersInfo = getHeadersInfo(request);
+			String userAgent = (String) headersInfo.get("user-agent");
+			String ipAddress = (String) headersInfo.get("ipAddress");
+
+			LocalDateTime now = LocalDateTime.now(ZoneId.of("Asia/Bangkok"));
+			DateTimeFormatter timeFormat = DateTimeFormatter.ofPattern("HH:mm:ss");
+
+			Timestamp ts = null;
+			String timeString = null;
+			int date;
+			int month;
+			int year;
+			if ("retro".equals(checkMode) && checkDate != null && checkTime != null) {
+				ts = Timestamp.valueOf(checkDate + " " + checkTime + ":00");
+				LocalDateTime ldt = ts.toLocalDateTime();
+				date = ldt.getDayOfMonth();
+				month = ldt.getMonthValue();
+				year = ldt.getYear();
+				log.debug(ldt.getDayOfMonth() + "|" + ldt.getMonthValue() + "|" + ldt.getYear());
+				log.debug(ts.getTime());
+				timeString = ldt.format(timeFormat);
+				if (ldt.isAfter(now)) {
+					result.put("status", "error");
+					result.put("message", "Can't check-in/out time in future. Please try again.");
+					// เดิมจุดนี้ไม่มี return -> โค้ดไหลต่อไป save จริงแล้วตอบ success ทับ error ที่เพิ่งตั้ง
+					writeJson(result);
+					return null;
+				} else {
+					result.put("status", "success");
+					result.put("type", checkType);
+					result.put("time", checkTime);
+				}
+			} else {
+
+				LocalDateTime officialLdt = now;
+
+				if ("2".equals(checkType)) {
+					LocalDateTime cutOffTime = now.withHour(18).withMinute(30).withSecond(0).withNano(0);
+
+					if (now.isAfter(cutOffTime)) {
+						officialLdt = cutOffTime;
+						log.info("Cut-off applied | User: " + userId + " | Real: " + now + " -> Official: "
+								+ officialLdt);
+					}
+				}
+
+				ts = Timestamp.valueOf(officialLdt);
+				timeString = officialLdt.format(timeFormat);
+				date = now.getDayOfMonth();
+				month = now.getMonthValue();
+				year = now.getYear();
+			}
+			
+			if ("retro".equals(checkMode)) {
+				des = desRaw != null && !desRaw.trim().isEmpty() ? desRaw.trim() : "";
+	
+				log.debug(des);
+				des = des.replaceAll("[:;']", "")
+				        .replaceAll("[\\n\\r\\t]", "")
+				        .replaceAll("[<>\"&]", "")
+				        .trim();
+				des = des.replaceAll("[\\p{So}\\p{Cn}]", "");
+				
+				if (des.isEmpty()) {
+				    result.put("status", "error");
+				    result.put("message", "Please provide a reason.");
+				    
+				    ObjectMapper mapper = new ObjectMapper();
+				    response.setContentType("application/json;charset=UTF-8");
+				    response.getWriter().write(mapper.writeValueAsString(result));
+				    response.getWriter().flush();
+				    response.getWriter().close();
+				    return null;
+				}
+	
+				if (des.length() < 10) {
+				    result.put("status", "error");
+				    result.put("message", "Reason must be at least 10 characters long.");
+	
+				    ObjectMapper mapper = new ObjectMapper();
+				    response.setContentType("application/json;charset=UTF-8");
+				    response.getWriter().write(mapper.writeValueAsString(result));
+				    response.getWriter().flush();
+				    response.getWriter().close();
+				    return null;
+				}
+			}
+			log.debug(timeString);
+			int workinghour = workHoursService.calculateWorkingHours(userId, checkType, date, month, year, timeString);
+
+			WorkHours wh = new WorkHours();
+			wh.setWorkHoursId(workHoursDAO.getMaxId() + 1);
+			wh.setWorkHoursType(checkType);
+			wh.setWorkHoursTimeWork(ts);
+			wh.setWorkType(workType);
+			wh.setLatitude(lat);
+			wh.setLongitude(lng);
+			wh.setDescription(des);
+			wh.setUserAgent("CA-II | " + userAgent);
+			wh.setIpAddress(ipAddress);
+
+			// บันทึกไว้เป็นหมายเหตุให้ HR ดูภายหลัง ไม่ได้ใช้ block การบันทึก
+			// (ดูรายละเอียดที่ SubmitChannelUtil ว่าทำไมถึงไม่ใช่ระบบป้องกันแบบปลอมไม่ได้ 100%)
+			wh.setSubmitChannel(SubmitChannelUtil.determineWebChannel(request));
+			wh.setRequestUri(request.getRequestURI());
+			wh.setRequestReferer(request.getHeader("Referer"));
+
+			// ตรวจ token จากการกดปุ่มจริง -> ติดป้ายไว้ให้ HR ตรวจ ไม่ block การบันทึก
+			String clickTokenStatus = ClickTokenUtil.verifyAndConsume(session, request.getHeader(ClickTokenUtil.HEADER));
+			wh.setClickTokenStatus(clickTokenStatus);
+			if (ClickTokenUtil.TOKEN_OK.equals(clickTokenStatus)) {
+				// ออกใบใหม่ให้หน้าเดิมกดต่อได้ แจกเฉพาะ request ที่ผ่าน ไม่งั้น script ที่ยิงตรงจะได้ token ไปใช้รอบหน้า
+				result.put("nextToken", ClickTokenUtil.issue(session));
+			} else {
+				log.warn("Click token " + clickTokenStatus + " | User: " + userId + " | URI: " + request.getRequestURI());
+			}
+
 			if ("retro".equals(checkMode)) {
 				wh.setTimeCreate(Timestamp.valueOf(now));
 				wh.setTimeUpdate(Timestamp.valueOf(now));

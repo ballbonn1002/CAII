@@ -207,6 +207,20 @@
 			value="/pages-back/check/check_in_out.jsp" />
 	</definition>
 
+	<!-- CHECK-IN/CHECK-OUT (TEST) -->
+	<definition name="checkInOutTest" extends="baseLayout">
+		<put-attribute name="title" value="Check-In/Check-Out (Test)" />
+		<put-attribute name="body"
+			value="/pages-back/check/check_in_out_test.jsp" />
+	</definition>
+
+	<!-- Retroactive (TEST) -->
+	<definition name="retroactivePageTest" extends="baseLayout">
+		<put-attribute name="title" value="Retroactive (Test)" />
+		<put-attribute name="body"
+			value="/pages-back/check/retroactive_form_test.jsp" />
+	</definition>
+
 	<!-- Retroactive -->
 	<definition name="retroactivePage" extends="baseLayout">
 		<put-attribute name="title" value="Retroactive" />

@@ -181,6 +181,13 @@
                             <span class="badge badge-warning fw-bold fs-7 py-2">Late</span>
                             <span class="badge badge-warning fw-bold fs-7 py-2">Early Out</span>
                             <span class="badge badge-danger fw-bold fs-7 py-2">Unfinished Work</span>
+                            <span class="vr mx-1 opacity-25"></span>
+                            <span class="badge badge-light fw-bold fs-7 py-2">Web</span>
+                            <span class="badge badge-light-success fw-bold fs-7 py-2">LINE</span>
+                            <span class="badge badge-danger fw-bold fs-7 py-2" title="ไม่มีลายเซ็น AJAX จากหน้าเว็บของเราเอง ควรตรวจสอบเพิ่มเติม">Unverified</span>
+                            <span class="badge badge-light-danger fw-bold fs-7 py-2" title="ไม่ได้เกิดจากการกดปุ่มจริง อาจเป็น script สั่งคลิกหรือยิง API ตรง">No click</span>
+                            <span class="badge badge-light-danger fw-bold fs-7 py-2" title="ใช้ token ซ้ำ อาจเป็นการก็อป request เดิมไปยิงซ้ำ">Replay</span>
+                            <span class="badge badge-light-warning fw-bold fs-7 py-2" title="token ไม่ตรงกับที่ระบบออกให้ ควรตรวจสอบเพิ่มเติม">Bad token</span>
                         </div>
                     </div>
                 
@@ -197,7 +204,8 @@
                                             <th style="width: 150px; max-width: 150px;">Type</th>
                                             <th style="width: 300px; max-width: 300px;">Date - Time</th>
                                             <th class="min-w-100px">Time stamp / IP</th>
-                                            <th class="text-center min-w-60px">GPS</th> 
+                                            <th class="min-w-100px">Channel</th>
+                                            <th class="text-center min-w-60px">GPS</th>
                                             <th class="min-w-100px">Status</th>
                                             <th class="text-end min-w-70px pe-4">Action</th>
                                         </tr>
@@ -540,6 +548,47 @@
         return badge;
     }
 
+    // badge บอกที่มาของการลงเวลา (ดูรายละเอียดที่ com.cubesofttech.util.SubmitChannelUtil)
+    // WEB_UNVERIFIED = ไม่มีลายเซ็น AJAX จากหน้าเว็บของเราเอง ควรตรวจสอบเพิ่มเติม ไม่ใช่การบล็อกการบันทึก
+    function getChannelBadge(channel) {
+        channel = String(channel || '').trim();
+        if (channel === 'WEB_FORM') {
+            return '<span class="badge badge-light fw-bold fs-7 py-2">Web</span>';
+        } else if (channel === 'LINE_LIFF') {
+            return '<span class="badge badge-light-success fw-bold fs-7 py-2">LINE</span>';
+        } else if (channel === 'LINE_WEBHOOK') {
+            return '<span class="badge badge-light-success fw-bold fs-7 py-2">LINE Chat</span>';
+        } else if (channel === 'WEB_UNVERIFIED') {
+            return '<span class="badge badge-danger fw-bold fs-7 py-2" data-bs-toggle="popover" data-bs-trigger="hover" ' +
+                   'data-bs-placement="top" data-bs-content="ไม่มีลายเซ็น AJAX จากหน้าเว็บของเราเอง ควรตรวจสอบเพิ่มเติม">' +
+                   '<i class="ki-duotone ki-shield-cross fs-6 me-1"><span class="path1"></span><span class="path2"></span><span class="path3"></span></i>Unverified</span>';
+        }
+        // รายการเก่าก่อนมีฟีเจอร์นี้ ไม่มีค่าเก็บไว้
+        return '<span class="text-muted fs-7">-</span>';
+    }
+
+    // badge ผลตรวจว่ากดปุ่มลงเวลาจริงหรือไม่ (ดูรายละเอียดที่ com.cubesofttech.util.ClickTokenUtil)
+    // TOKEN_OK / ค่าว่าง (LINE Chat, รายการเก่า) ไม่แสดงอะไร แสดงเฉพาะรายการที่ HR ควรตรวจ
+    function getClickProofBadge(status) {
+        status = String(status || '').trim();
+        var label = '', css = '', tip = '';
+        if (status === 'TOKEN_MISSING') {
+            label = 'No click'; css = 'badge-light-danger';
+            tip = 'ไม่ได้เกิดจากการกดปุ่มจริง อาจเป็น script สั่งคลิกหรือยิง API ตรง';
+        } else if (status === 'TOKEN_REUSED') {
+            label = 'Replay'; css = 'badge-light-danger';
+            tip = 'ใช้ token ซ้ำ อาจเป็นการก็อป request เดิมไปยิงซ้ำ';
+        } else if (status === 'TOKEN_INVALID') {
+            label = 'Bad token'; css = 'badge-light-warning';
+            tip = 'token ไม่ตรงกับที่ระบบออกให้ ควรตรวจสอบเพิ่มเติม';
+        } else {
+            return '';
+        }
+        return '<span class="badge ' + css + ' fw-bold fs-7 py-2" data-bs-toggle="popover" data-bs-trigger="hover" ' +
+               'data-bs-placement="top" data-bs-content="' + tip + '">' +
+               '<i class="ki-duotone ki-information-5 fs-6 me-1"><span class="path1"></span><span class="path2"></span><span class="path3"></span></i>' + label + '</span>';
+    }
+
     // --- Progress Bar Functions ---
     function startProgressSimulation() {
         clearInterval(progressInterval);
@@ -710,6 +759,8 @@
                 '<div class="d-flex align-items-center mt-1 ms-4"><i class="ki-solid ki-message-text-2 fs-4 text-gray-400 fw-normal me-2"></i><span class="fw-normal text-gray-700 fs-6">' + item.description + '</span></div>' : '';
 
             var createTimeStr = item.time_update ? formatDate(item.time_update) + ', ' + formatTime(item.time_update) : '';
+            var channelBadge = getChannelBadge(item.submit_channel);
+            var clickProofBadge = getClickProofBadge(item.click_token_status);
             var ipAddress = item.ip_address || '';
             if (ipAddress.includes(',')) {
                 ipAddress = ipAddress.split(',')[0].trim(); 
@@ -757,6 +808,7 @@
                         '<span class="text-gray-800 fw-normal fs-6 d-block">' + createTimeStr + '</span>' +
                         '<span class="fw-normal text-gray-600 fs-6">' + ipAddress + '</span>' +
                     '</td>' +
+                    '<td><div class="d-flex flex-column align-items-start gap-1">' + channelBadge + clickProofBadge + '</div></td>' +
                     '<td class="text-center">'+
                     	gpsButtonHtml +
                     '</td>' +
