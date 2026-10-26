@@ -318,7 +318,7 @@
 							icon: 'success',
 							title: 'Success!',
 							text: 'MR cancel successfully!',
-							timer: 1500,
+							timer: 800,
 							showConfirmButton: false
 						}).then(function () {
 							window.location.reload();

@@ -903,8 +903,8 @@ prefix="c"%> <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
               title: "Save Success",
               text: "Signature has been successfully recorded.",
               icon: "success",
-              timer: 1200,
-              showConfirmButton: false,
+							timer: 800,
+							showConfirmButton: false
             }).then(() => {
               saveFormToSession();
               location.reload();
@@ -1065,6 +1065,8 @@ prefix="c"%> <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
                   ? "MR submitted successfully! "
                   : "MR saved draft successfully! ") + resp.data.mrId,
               icon: "success",
+							timer: 800,
+							showConfirmButton: false
             }).then(() => {
               window.location.href = ctx + "/equipment_request_mr_list";
             });

@@ -149,10 +149,16 @@
 								</div>
 
 								<div class="col-md-6 company-tax-number-container">
-									<label class="form-label required"> Tax ID </label> <input
-										type="text" class="form-control" name="taxNumber"
-										id="company-tax-number">
-								</div>
+	<label class="form-label required"> Tax ID </label>
+	<div class="position-relative">
+		<input type="text" class="form-control pe-10" name="taxNumber"
+			id="company-tax-number">
+		<i id="company-tax-number-valid-icon"
+			class="ki-duotone ki-check-circle fs-1 text-success position-absolute top-50 end-0 translate-middle-y me-4 d-none">
+			<span class="path1"></span> <span class="path2"></span>
+		</i>
+	</div>
+</div>
 
 							</div>
 
@@ -534,7 +540,8 @@
 				console.log(value)
 
 			    if (value === "") {
-
+			    	
+			    	$("#company-tax-number-valid-icon").addClass("d-none"); 
 			        validationState.taxNumber = false;
 			        setFieldInvalid(
 				            "#company-tax-number",
@@ -545,6 +552,8 @@
 			    }
 
 			    if (!/^\d{1,13}$/.test(value)) {
+			    	
+			    	$("#company-tax-number-valid-icon").addClass("d-none");
 
 			        validationState.taxNumber = false;
 			        
@@ -556,11 +565,29 @@
 			        );
 			        
 			    } else {
-			        validationState.taxNumber = true;
-			        clearFieldError("#company-tax-number");
+			        $.ajax({
+			            url: "check_tax_number",
+			            type: "GET",
+			            data: { taxNumber: value, companyId: null },
+			            success: function (res) {
+			                const result = typeof res === "string" ? JSON.parse(res) : res;
+
+			                if (result.exists) {
+			                    validationState.taxNumber = false;
+			                    setFieldInvalid("#company-tax-number", "This Tax ID already exists");
+			                    $("#company-tax-number-valid-icon").addClass("d-none");
+			                } else {
+			                    validationState.taxNumber = true;
+			                    clearFieldError("#company-tax-number");
+			                    $("#company-tax-number-valid-icon").removeClass("d-none"); 
+			                }
+			                updateBtnState("#submit-btn", hasValidationErrors());
+			            }
+			        });
+			        return;
 			    }
 			    updateBtnState("#submit-btn", hasValidationErrors());
-				return
+			    return
 			}
 			
 			function validateIndustry() {
@@ -742,7 +769,7 @@
 
 		    $.ajax({
 		        url: "check_industry_name",
-		        type: "GET",
+		        type: "POST",
 		        data: {
 		            industryName: value
 		        },

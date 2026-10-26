@@ -135,6 +135,32 @@ public class CompanyDAOImpl implements CompanyDAO {
 	    return result;
 
 	}
+	
+	@Override
+	public boolean existsTaxNumber(String taxNumber, Long companyId) {
+
+	    Session session = sessionFactory.getCurrentSession();
+
+	    String sql =
+	        "SELECT COUNT(*) " +
+	        "FROM company " +
+	        "WHERE tax_number = :taxNumber ";
+
+	    // ตอน edit ไม่นับบริษัทตัวเอง
+	    if (companyId != null && companyId > 0L) {
+	        sql += "AND company_id <> :companyId ";
+	    }
+
+	    Query query = session.createSQLQuery(sql);
+	    query.setParameter("taxNumber", taxNumber);
+
+	    if (companyId != null && companyId > 0L) {
+	        query.setParameter("companyId", companyId);
+	    }
+
+	    Long count = ((Number) query.uniqueResult()).longValue();
+	    return count > 0;
+	}
 
 
 }

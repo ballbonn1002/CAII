@@ -1206,7 +1206,7 @@ function loadSubItems(productId) {
 					title: 'Save Success',
 					text: 'Signature has been successfully recorded.',
 					icon: 'success',
-					timer: 1200,
+					timer: 800,
 					showConfirmButton: false
 				}).then(() => {
 					window.location.href = window.location.href;
@@ -1349,7 +1349,9 @@ function loadSubItems(productId) {
 					Swal.fire({
 						title: 'Success!',
 						text: (status === '2' ? 'MR submitted successfully! ' : 'MR updated successfully! ') + resp.data.mrId,
-						icon: 'success'
+						icon: 'success',
+						timer: 800,
+						showConfirmButton: false
 					}).then(() => {
 						window.location.href = ctx + '/equipment_request_mr_list';
 					});
@@ -1396,7 +1398,7 @@ function loadSubItems(productId) {
 							title: 'Success!',
 							text: 'MR cancel successfully!',
 							icon: 'success',
-							timer: 1500,
+							timer: 800,
 							showConfirmButton: false
 						}).then(() => {
 							location.reload();

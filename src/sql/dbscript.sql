@@ -1235,6 +1235,8 @@ VALUES ('HR', 'session.timeout.extended', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 ALTER TABLE `notification` ADD `send_to` VARCHAR(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL AFTER `is_read`;
 ALTER TABLE `notification` ADD `type_sending` VARCHAR(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL AFTER `user_id`;
 
+-- PROD 22 OCT 2026
+
 -- 26/10/2026: add 'submit_channel', 'request_uri', 'request_referer' columns to 'work_hours' table
 ALTER TABLE `work_hours`
 	ADD `submit_channel` VARCHAR(20) NULL DEFAULT NULL AFTER `ip_address`,
@@ -1244,5 +1246,3 @@ ALTER TABLE `work_hours`
 -- 26/10/2026 Koy: add 'click_token_status' column to 'work_hours' table
 ALTER TABLE `work_hours`
 	ADD `click_token_status` VARCHAR(20) NULL DEFAULT NULL AFTER `request_referer`;
-
-
