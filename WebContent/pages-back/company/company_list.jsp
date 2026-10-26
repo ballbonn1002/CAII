@@ -529,7 +529,8 @@
 															<c:choose>
 																<c:when test="${not empty contact.file_path}">
 																	<img
-																		src="${pageContext.request.contextPath}${contact.file_path}">
+																		src="${pageContext.request.contextPath}${contact.file_path}"
+																		style="object-fit: cover; object-position: center top;">
 																</c:when>
 
 																<c:otherwise>
