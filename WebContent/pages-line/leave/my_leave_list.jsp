@@ -607,18 +607,9 @@
      NEW: LINE LIFF
      ===================================================================== --%>
 <style>
-.liff-shell {
-	padding-bottom: 80px; /* เว้นที่ให้ปุ่ม + */
-}
 .liff-sort-btn { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 600; color: var(--bs-gray-700); border: 1px solid var(--bs-gray-300); border-radius: 8px; padding: 6px 12px; background-color: var(--bs-gray-100); }
 .liff-sort-btn:hover, .liff-sort-btn:focus { border-color: var(--bs-primary); }
 .liff-sort-btn .spinner-border { width: 12px; height: 12px; border-width: 2px; }
-#yearFilterBtn { font-size: 13px; font-weight: 600; color: var(--bs-gray-700); border: 1px solid var(--bs-gray-300); border-radius: 8px; padding: 6px 16px; background-color: var(--bs-gray-100); }
-#yearFilterBtn:hover, #yearFilterBtn:focus, #yearFilterBtn:active { background-color: var(--bs-gray-100); border-color: var(--bs-primary); box-shadow: none; }
-#yearFilterBtn::after { vertical-align: 1px; }
-.dropdown-menu[aria-labelledby="yearFilterBtn"] { min-width: 92px; border-radius: 10px; border: 1px solid var(--bs-gray-300); box-shadow: 0 4px 20px rgba(0,0,0,.08); padding: 6px; max-height: 260px; overflow-y: auto; }
-.dropdown-menu[aria-labelledby="yearFilterBtn"] .dropdown-item { font-size: 13px; font-weight: 500; border-radius: 6px; padding: 8px 12px; }
-.dropdown-menu[aria-labelledby="yearFilterBtn"] .dropdown-item.active, .dropdown-menu[aria-labelledby="yearFilterBtn"] .dropdown-item:active { background-color: var(--bs-primary); color: #fff; }
 .card-header .bg-info-subtle:hover { background-color: var(--bs-info) !important; }
 .card-header .bg-info-subtle:hover i { color: var(--bs-info-inverse) !important; }
 .card-header .bg-primary-subtle:hover { background-color: var(--bs-primary) !important; }
@@ -636,20 +627,9 @@
 .leave-summary-dots span { width: 6px; height: 6px; border-radius: 50%; background: var(--bs-gray-300); transition: background .2s; }
 .leave-summary-dots span.active { background: var(--bs-primary); }
 .card.card-bordered.liff-leave-card { box-shadow: var(--bs-root-card-box-shadow); }
-.liff-fab {
-	position: fixed;
-	right: max(16px, calc((100vw - 393px) / 2 + 16px)); /* ชิดขวา .liff-shell */
-	bottom: calc(90px + 16px + env(safe-area-inset-bottom)); /* ลอยเหนือ .liff-nav */
-	width: 56px; height: 56px;
-	border-radius: 16px;
-	background: var(--bs-success);
-	display: flex; align-items: center; justify-content: center;
-	box-shadow: 0 4px 16px rgba(0,0,0,.2);
-	z-index: 100;
-}
 </style>
 
-<div class="liff-shell">
+<div class="liff-shell liff-has-floating-btn">
 
 	<div id="liffLoadingOverlay" class="liff-loading-overlay liff-loading-delayed">
 		<div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading...</span></div>
@@ -661,7 +641,7 @@
 	<div class="d-flex justify-content-between align-items-center mb-6 pt-6">
 		<h1 class="liff-page-title text-gray-700 mb-0">My Leave</h1>
 		<div class="dropdown">
-			<button class="btn btn-sm dropdown-toggle" type="button" id="yearFilterBtn" data-bs-toggle="dropdown" aria-expanded="false">
+			<button class="btn btn-sm" type="button" id="yearFilterBtn" data-bs-toggle="dropdown" aria-expanded="false">
 				${selectedYear}
 			</button>
 			<ul class="dropdown-menu dropdown-menu-end" aria-labelledby="yearFilterBtn">
@@ -673,8 +653,8 @@
 		</div>
 	</div>
 
-	<a href="javascript:void(0)" class="liff-fab" onclick="add()" aria-label="Add">
-		<i class="ki-duotone ki-plus text-white" style="font-size:1.75rem;"></i>
+	<a href="javascript:void(0)" class="liff-floating-btn" onclick="add()" aria-label="Add">
+		<i class="ki-duotone ki-plus text-white"></i>
 	</a>
 
 	<!-- Summary Leave -->
@@ -931,8 +911,8 @@
 
 		<c:if test="${empty leavelist}">
 			<div class="text-center py-10">
-				<div class="d-inline-flex align-items-center justify-content-center mb-4" style="width:88px; height:88px; border-radius:50%; background:#EFF3FA;">
-					<i class="ki-duotone ki-calendar-search text-primary" style="font-size:2.5rem;">
+				<div class="d-inline-flex align-items-center justify-content-center rounded-circle bg-light-primary mb-4 liff-empty-icon">
+					<i class="ki-duotone ki-calendar-search text-primary">
 						<span class="path1"></span><span class="path2"></span><span class="path3"></span>
 						<span class="path4"></span><span class="path5"></span><span class="path6"></span>
 					</i>

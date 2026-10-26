@@ -74,6 +74,31 @@
 	<!-- File -->
 	<!-- My Leave -->
 
+	<!-- My Travel -->
+	<definition name="line_myTravel" extends="line_baseLayout">
+		<put-attribute name="title" value="My Travel" />
+		<put-attribute name="body"
+			value="/pages-line/my_travel/my_travel_list.jsp" />
+	</definition>
+	<definition name="line_myTravelV" extends="line_baseLayout">
+		<put-attribute name="title" value="Travel Expense" />
+		<put-attribute name="body"
+			value="/pages-line/my_travel/my_travel_view.jsp" />
+	</definition>
+	<definition name="line_myTravelG" extends="line_baseLayout">
+		<put-attribute name="title" value="Travel Expense" />
+		<put-attribute name="body"
+			value="/pages-line/my_travel/my_travel_group.jsp" />
+	</definition>
+	<!-- Edit: ยังไม่เปิดใช้
+	<definition name="line_myTravelE" extends="line_baseLayout">
+		<put-attribute name="title" value="My Travel Edit" />
+		<put-attribute name="body"
+			value="/pages-line/my_travel/my_travel_edit.jsp" />
+	</definition>
+	-->
+	<!-- My Travel -->
+
 	<!-- Line OA -->
 	<definition name="line_bind_account" template="/pages-line/LineOA/BindAccountLineOA.jsp">
 		<put-attribute name="title" value="Bind Account" />

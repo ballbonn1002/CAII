@@ -154,6 +154,52 @@
 		
 		<!-- MyLeave =========================================================================================================== -->
 		
+		<!-- My Travel =========================================================================================================== -->
+
+		<!-- Listing -->
+		<action name="line_my_travel"
+			class="com.cubesofttech.action.TravelAction" method="myTravelList">
+			<result name="success" type="tiles">line_myTravel</result>
+			<result name="error">/pages-line/index.jsp</result>
+		</action>
+		<!-- Listing -->
+
+		<!-- View -->
+		<action name="line_my_travelV"
+			class="com.cubesofttech.action.TravelAction" method="travelEdit">
+			<result name="success" type="tiles">line_myTravelV</result>
+			<result name="error">/pages-line/index.jsp</result>
+		</action>
+		<!-- View -->
+
+		<!-- Group View -->
+		<action name="line_my_travel_group"
+			class="com.cubesofttech.action.TravelAction" method="submitTravelPreview">
+			<result name="success" type="tiles">line_myTravelG</result>
+			<result name="error">/pages-line/index.jsp</result>
+		</action>
+		<!-- Group View -->
+
+		<!-- Edit: ยังไม่เปิดใช้ -->
+		<!--
+		<action name="line_my_travelE"
+			class="com.cubesofttech.action.TravelAction" method="travelEdit">
+			<result name="success" type="tiles">line_myTravelE</result>
+			<result name="error">/pages-line/index.jsp</result>
+		</action>
+
+		<action name="line_travel_update"
+			class="com.cubesofttech.action.TravelAction" method="travelUpdate">
+			<result name="success" type="redirectAction">
+				<param name="actionName">line_my_travel</param>
+			</result>
+			<result name="error">/pages-line/index.jsp</result>
+		</action>
+		-->
+		<!-- Edit -->
+
+		<!-- My Travel =========================================================================================================== -->
+		
 		<!-- POST /webhook/LineOA/LineLiff -->
 		<action name="line_checkAccount" class="com.cubesofttech.actionline.LineLoginAction" method="">
 			<result name="success" type="tiles">line_bind_account</result>

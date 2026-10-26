@@ -73,6 +73,35 @@ body {
 .liff-skel-dot { width: 14px; height: 14px; border-radius: 50%; }
 @keyframes liffShimmer { 0% { background-position: 100% 50%; } 100% { background-position: 0 50%; } }
 @media (prefers-reduced-motion: reduce) { .liff-skel { animation: none; } }
+/* ปุ่ม + ลอยมุมขวาล่าง (My Leave / My Travel) */
+.liff-shell.liff-has-floating-btn { padding-bottom: 80px; }
+.liff-floating-btn {
+	position: fixed;
+	right: max(16px, calc((100vw - 393px) / 2 + 16px));
+	bottom: calc(90px + 16px + env(safe-area-inset-bottom));
+	width: 56px; height: 56px;
+	border-radius: 16px;
+	background: var(--bs-success);
+	display: flex; align-items: center; justify-content: center;
+	box-shadow: 0 4px 16px rgba(0,0,0,.2);
+	z-index: 100;
+}
+.liff-floating-btn .ki-duotone { font-size: 1.75rem; }
+/* ปุ่มเลือกปี */
+#yearFilterBtn { font-size: 13px; font-weight: 600; color: var(--bs-gray-700); border: 1px solid var(--bs-gray-300); border-radius: 8px; padding: 6px 16px; background-color: var(--bs-gray-100); }
+#yearFilterBtn:hover, #yearFilterBtn:focus, #yearFilterBtn:active { background-color: var(--bs-gray-100); border-color: var(--bs-primary); box-shadow: none; }
+.dropdown-menu[aria-labelledby="yearFilterBtn"] { min-width: 92px; border-radius: 10px; border: 1px solid var(--bs-gray-300); box-shadow: 0 4px 20px rgba(0,0,0,.08); padding: 6px; max-height: 260px; overflow-y: auto; }
+.dropdown-menu[aria-labelledby="yearFilterBtn"] .dropdown-item { font-size: 13px; font-weight: 500; border-radius: 6px; padding: 8px 12px; }
+.dropdown-menu[aria-labelledby="yearFilterBtn"] .dropdown-item.active, .dropdown-menu[aria-labelledby="yearFilterBtn"] .dropdown-item:active { background-color: var(--bs-primary); color: #fff; }
+/* วงกลมไอคอนตอนไม่มีข้อมูล */
+.liff-empty-icon { width: 88px; height: 88px; }
+.liff-empty-icon .ki-duotone { font-size: 2.5rem; }
+/* เส้นทางต้นทาง-ปลายทาง (การ์ด Draft) */
+.liff-route { --bs-timeline-icon-size: 14px; --bs-timeline-icon-space: 0px; }
+.liff-route .timeline-icon { margin-top: 3px; }
+.liff-route .timeline-line { border-left-color: var(--bs-gray-400); transform: translate(45%); top: calc(var(--bs-timeline-icon-size) + 3px); bottom: -3px; }
+.liff-route .timeline-content { min-width: 0; line-height: 20px; }
+.liff-route-times { line-height: 20px; gap: 1rem; }
 .liff-input-underline { border: none; border-bottom: 1.5px solid #E4E6EF; border-radius: 0; background: transparent; padding: 8px 2px; box-shadow: none !important; }
 .liff-input-underline:focus { border-bottom-color: var(--bs-primary); background: transparent; }
 .liff-input-underline:disabled, .liff-input-underline[readonly] { background: transparent; border-bottom-style: dashed; color: var(--bs-gray-600); }
