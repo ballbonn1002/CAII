@@ -2402,11 +2402,10 @@
 		    <result name="success" type="tiles">purchaseOrderList</result>
 		    <result name="error">/index.jsp</result>
 		</action>
-		
-		<action name="po_perform_delete"
+
+		 <action name="po_perform_delete"
 			class="com.cubesofttech.action.PurchaseOrderAction" method="poPerformDelete">
-			<result name="success" type="redirect">purchase_order_list</result>
-		    <result name="error">/index.jsp</result>
+				<result name="error">/index.jsp</result>
 		</action>
 
 		<action name="update_po"
@@ -2418,6 +2417,10 @@
 		<action name="update_status_po"
 		    class="com.cubesofttech.action.PurchaseOrderAction" method="updateStatusPo">
 		</action>
+
+		<action name="add_po_detail"
+            class="com.cubesofttech.action.PurchaseOrderAction" method="addPoDetail">
+        </action>
 
 		<action name="delete_po_detail"
 			class="com.cubesofttech.action.PurchaseOrderAction" method="deletePoDetail">
@@ -2473,10 +2476,9 @@
         </action>
         
         <action name="pr_perform_delete"
-            class="com.cubesofttech.action.PurchaseRequisitionAction" method="prPerformDelete">
-            <result name="success" type="redirect">purchase_requisition_list</result>
-            <result name="error">/index.jsp</result>
-        </action>
+				class="com.cubesofttech.action.PurchaseRequisitionAction" method="prPerformDelete">
+				<result name="error">/index.jsp</result>
+		</action>
 
         <action name="update_pr"
             class="com.cubesofttech.action.PurchaseRequisitionAction" method="updatePr">
@@ -2486,6 +2488,10 @@
 
         <action name="update_status_pr"
             class="com.cubesofttech.action.PurchaseRequisitionAction" method="updateStatusPr">
+        </action>
+
+		<action name="add_pr_detail"
+            class="com.cubesofttech.action.PurchaseRequisitionAction" method="addPrDetail">
         </action>
 
         <action name="delete_pr_detail"

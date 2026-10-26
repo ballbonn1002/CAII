@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.Comparator;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -272,11 +273,16 @@ public class PurchaseRequisitionAction extends ActionSupport {
 
             // --- Summary (อิง doc_status, page=pr) ---
             List<DocStatus> statuses = docStatusDAO.findByPage("pr");
+            statuses.sort(Comparator.comparingInt(ds -> ds.getStatusCode() != null && ds.getStatusCode().matches("\\d+")
+                    ? Integer.parseInt(ds.getStatusCode()) : Integer.MAX_VALUE));
 
-            // นับจำนวนตาม status_code
             Map<String, Integer> summary = new HashMap<>();
+            Map<String, String> statusNames = new HashMap<>();
+            Map<String, String> statusColors = new HashMap<>();
             for (DocStatus ds : statuses) {
                 summary.put(ds.getStatusCode(), 0);
+                statusNames.put(ds.getStatusCode(), ds.getStatusName());
+                statusColors.put(ds.getStatusCode(), ds.getColor());
             }
             for (Map<String, Object> pr : prList) {
                 String code = String.valueOf(pr.get("status"));
@@ -285,15 +291,7 @@ public class PurchaseRequisitionAction extends ActionSupport {
                 }
             }
 
-            // ชื่อสถานะและสีตาม code
-            Map<String, String> statusNames = new HashMap<>();
-            Map<String, String> statusColors = new HashMap<>();
-
-            for (DocStatus ds : statuses) {
-                statusNames.put(ds.getStatusCode(), ds.getStatusName());
-                statusColors.put(ds.getStatusCode(), ds.getColor());
-            }
-
+            request.setAttribute("prStatuses", statuses); 
             request.setAttribute("prSummary", summary);
             request.setAttribute("prStatusNames", statusNames);
             request.setAttribute("prStatusColors", statusColors);
@@ -437,7 +435,7 @@ public class PurchaseRequisitionAction extends ActionSupport {
                             detail.put("product_name", product.getProductName());
                             detail.put("product_type", product.getProductType());
 
-                            // ตัวแม่ parent_product_id = "0" → ไม่ใส่ parent_product_name
+                            // ตัวแม่ parent_product_id = "0" ไม่ใส่ parent_product_name
                             String pp = product.getParentProductId() == null ? "" : product.getParentProductId().trim();
                             if (!pp.isEmpty() && !"0".equals(pp)) {
                                 Product parentProduct = productDAO.findById(Integer.valueOf(pp));
@@ -523,6 +521,26 @@ public class PurchaseRequisitionAction extends ActionSupport {
         }
     }
 
+    private boolean isPositiveInteger(double v) {
+        return v > 0 && v == Math.floor(v);
+    }
+
+    // ตรวจ qty ของทุก source ใน cart ก่อนบันทึก
+    private void validateCartQty(String cartJson) throws Exception {
+        if (cartJson == null || cartJson.trim().isEmpty()) return;
+        JSONArray arr = new JSONArray(cartJson);
+        for (int i = 0; i < arr.length(); i++) {
+            JSONObject item = arr.getJSONObject(i);
+            JSONArray srcs = item.optJSONArray("sources");
+            if (srcs != null && srcs.length() > 0) {
+                for (int j = 0; j < srcs.length(); j++) {
+                    double q = toDouble(srcs.getJSONObject(j).opt("qty"));
+                    if (!isPositiveInteger(q)) throw new IllegalArgumentException("จำนวนต้องเป็นจำนวนเต็มมากกว่า 0");
+                }
+            }
+        }
+    }
+
     private Map<String, Object> jsonObjectToMap(JSONObject obj) {
         Map<String, Object> map = new HashMap<>();
         java.util.Iterator<String> keys = obj.keys();
@@ -545,7 +563,7 @@ public class PurchaseRequisitionAction extends ActionSupport {
         for (int i = 0; i < jsonArray.length(); i++) {
             cartItems.add(jsonObjectToMap(jsonArray.getJSONObject(i)));
         }
-        debugLog.add("cartItems size = " + cartItems.size());
+        // log.debug("cartItems size = " + cartItems.size());
 
         long nextDetailSeq = prDetailDAO.getMaxId() + 1;
         long nextParentSeq = prParentDAO.getMaxId() + 1;
@@ -578,6 +596,10 @@ public class PurchaseRequisitionAction extends ActionSupport {
                 String mr = src.get("mrId") != null ? String.valueOf(src.get("mrId")).trim() : "";
                 String r = src.get("refLink") != null ? String.valueOf(src.get("refLink")).trim() : "";
                 if (mr.isEmpty() && !r.isEmpty()) { manualRefLink = r; break; }
+            }
+            if (manualRefLink == null) {
+                String itemRef = item.get("refLink") != null ? String.valueOf(item.get("refLink")).trim() : "";
+                if (!itemRef.isEmpty()) manualRefLink = itemRef;
             }
 
             // --- item ที่ต่อเข้ากับ pr_detail เดิมใน DB: เพิ่มเฉพาะ pr_parent แล้วบวก amount_total ---
@@ -633,9 +655,11 @@ public class PurchaseRequisitionAction extends ActionSupport {
                     }
                     double current = existing.getAmountTotal() == null ? 0d : existing.getAmountTotal();
                     existing.setAmountTotal(current + addBaseQty + editDeltaBase);
-                    if (manualRefLink != null && (existing.getRefLink() == null || existing.getRefLink().trim().isEmpty())) {
-                        existing.setRefLink(manualRefLink);
-                    }
+
+                    String newDesc = cleanText(descVal);
+                    if (newDesc != null) existing.setDescription(newDesc);
+
+                    if (manualRefLink != null) existing.setRefLink(manualRefLink);
                     existing.setUserUpdate(loginUserId);
                     existing.setTimeUpdate(DateUtil.getCurrentTime());
                     prDetailDAO.update(existing);
@@ -759,8 +783,10 @@ public class PurchaseRequisitionAction extends ActionSupport {
             }
             String loginUserId = onlineUser.getId();
 
+            validateCartQty(prDetailCartJson);
+
             String newPrId = generateNewPrId();
-            debugLog.add("newPrId = " + newPrId);
+            log.debug("newPrId = " + newPrId);
 
             // --- Header ---
             Pr pr = new Pr();
@@ -774,6 +800,8 @@ public class PurchaseRequisitionAction extends ActionSupport {
             pr.setDescription(cleanText(description));
             pr.setUserCreate(loginUserId);
             pr.setTimeCreate(DateUtil.getCurrentTime());
+            pr.setUserUpdate(loginUserId);
+            pr.setTimeUpdate(DateUtil.getCurrentTime());
             String prStatus = (status != null && !status.trim().isEmpty()) ? status : "1";
             pr.setStatus(prStatus); // 1 = Draft
 
@@ -781,7 +809,7 @@ public class PurchaseRequisitionAction extends ActionSupport {
 
             // --- Detail + Parent  ---
             List<String> pulledMrIds = saveCartItems(newPrId, prDetailCartJson, loginUserId, debugLog);
-            debugLog.add("pulledMrIds = " + pulledMrIds);
+            // log.debug("pulledMrIds = " + pulledMrIds);
 
             // --- Attach files (page='pr', pageId= newPrId) ---
             fileAttachmentService.attach(files, filesFileName, "pr", newPrId, loginUserId,
@@ -837,8 +865,9 @@ public class PurchaseRequisitionAction extends ActionSupport {
 
             // --- Detail + Parent ---
             // prDetailCartJson เฉพาะรายการใหม่ที่เพิ่มระหว่างแก้ไข (ยังไม่ save ลง DB) เท่านั้น
+            validateCartQty(prDetailCartJson);
             List<String> pulledMrIds = saveCartItems(prId, prDetailCartJson, loginUserId, debugLog);
-            debugLog.add("pulledMrIds = " + pulledMrIds);
+            // log.debug("pulledMrIds = " + pulledMrIds);
 
             // --- Attach files (page='pr', pageId=prId) ---
             String serverRealPath = ServletActionContext.getServletContext().getRealPath("/");
@@ -1022,6 +1051,34 @@ public class PurchaseRequisitionAction extends ActionSupport {
         }
     }
 
+    public String addPrDetail() {
+        List<String> debugLog = new ArrayList<>();
+        try {
+            if (onlineUser == null) { writeJsonError(); return NONE; }
+
+            Pr pr = (prId == null || prId.trim().isEmpty()) ? null : prDAO.findById(prId);
+            if (pr == null || !"1".equals(pr.getStatus())) {
+                debugLog.add("PR not found or not Draft: " + prId);
+                writeJson(null, debugLog);
+                return NONE;
+            }
+
+            validateCartQty(prDetailCartJson);
+            List<String> pulledMrIds = saveCartItems(prId, prDetailCartJson, onlineUser.getId(), debugLog);
+            // log.debug("pulledMrIds = " + pulledMrIds);
+
+            Map<String, Object> result = new HashMap<>();
+            result.put("success", true);
+            writeJson(result, debugLog);
+            return NONE;
+        } catch (Exception e) {
+            e.printStackTrace();
+            debugLog.add("EXCEPTION: " + e.toString());
+            writeJson(null, debugLog);
+            return NONE;
+        }
+    }
+
     public String updatePrSource() {
         List<String> debugLog = new ArrayList<>();
         try {
@@ -1042,6 +1099,14 @@ public class PurchaseRequisitionAction extends ActionSupport {
             double qtyVal = toDouble(qty);
             if (qtyVal <= 0 || unit == null || unit.trim().isEmpty()) {
                 debugLog.add("invalid qty/unit");
+                Map<String, Object> result = new HashMap<>();
+                result.put("success", null);
+                writeJson(result, debugLog);
+                return NONE;
+            }
+
+            if (!isPositiveInteger(qtyVal)) {
+                debugLog.add("qty must be positive integer");
                 Map<String, Object> result = new HashMap<>();
                 result.put("success", null);
                 writeJson(result, debugLog);
@@ -1307,25 +1372,52 @@ public class PurchaseRequisitionAction extends ActionSupport {
     }
 
     public String prPerformDelete() {
+        List<String> debugLog = new ArrayList<>();
         try {
             if (onlineUser == null || prId == null || prId.trim().isEmpty()) {
                 return ERROR;
             }
-            String loginUserId = onlineUser.getId();
-            Pr pr = prDAO.findById(prId);
-            if (pr != null) {
-                pr.setStatus("6");
-                pr.setUserUpdate(loginUserId);
-                pr.setTimeUpdate(DateUtil.getCurrentTime());
 
-                prDAO.update(pr);
+            if (!"POST".equalsIgnoreCase(request.getMethod())) {
+                return ERROR;
             }
 
-            return SUCCESS;
+            Pr pr = prDAO.findById(prId);
+            if (pr == null) {
+                Map<String, Object> result = new HashMap<>();
+                result.put("success", false);
+                result.put("message", "ไม่พบ PR นี้");
+                writeJson(result, debugLog);
+                return NONE;
+            }
+
+            //ลบได้เฉพาะ Draft(1) / Return(4)
+            if (!"1".equals(pr.getStatus()) && !"4".equals(pr.getStatus())) {
+                debugLog.add("cancel not allowed from status " + pr.getStatus());
+                Map<String, Object> result = new HashMap<>();
+                result.put("success", false);
+                result.put("message", "PR นี้อยู่ในสถานะที่ยกเลิกไม่ได้");
+                writeJson(result, debugLog);
+                return NONE;
+            }
+
+            String loginUserId = onlineUser.getId();
+            pr.setStatus("6");
+            pr.setUserUpdate(loginUserId);
+            pr.setTimeUpdate(DateUtil.getCurrentTime());
+            prDAO.update(pr);
+
+            Map<String, Object> result = new HashMap<>();
+            result.put("success", true);
+            result.put("prId", prId);
+            writeJson(result, debugLog);
+            return NONE;
 
         } catch (Exception e) {
             e.printStackTrace();
-            return ERROR;
+            debugLog.add("EXCEPTION: " + e.toString());
+            writeJson(null, debugLog);
+            return NONE;
         }
     }
 
@@ -1423,7 +1515,10 @@ public class PurchaseRequisitionAction extends ActionSupport {
                 return NONE;
             }
             // MR ที่ pr_parent และ PR status ไม่ใช่ 5,6 จะถูกตัดออก
-            List<Map<String, Object>> mrDetailList = equipmentRequestMrDAO.findApprovedMrForMrSearch();
+            List<Map<String, Object>> mrDetailList =
+                (prId != null && !prId.trim().isEmpty())
+                    ? equipmentRequestMrDAO.findApprovedMrForMrSearch(prId.trim())
+                    : equipmentRequestMrDAO.findApprovedMrForMrSearch();
 
             //รวม product_id ที่ต้องใช้หา unit
             Set<String> productIds = new LinkedHashSet<>();

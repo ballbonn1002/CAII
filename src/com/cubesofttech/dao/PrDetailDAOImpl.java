@@ -196,6 +196,56 @@ public class PrDetailDAOImpl implements PrDetailDAO {
 	}
 
 	@Override
+	public List<Map<String, Object>> findInprogressPrDetailForPrSearch(String poId) throws Exception {
+
+		List<Map<String, Object>> list = new ArrayList<>();
+
+		try {
+			Session session = sessionFactory.getCurrentSession();
+
+			String sql = "SELECT pd.pr_detail_id, pd.pr_id, pd.product_id, " +
+						"  pd.amount_total, pd.unit, pd.description, " +
+						"  pd.user_create, pd.time_create, pd.ref_link, " +
+						"  COALESCE(p.time_update, p.time_create) AS time_sort, " +
+						"  p.status AS pr_status, " +
+						"  pr_pd.product_name, pr_pd.product_type, " +
+						"  uom.unit_name, " +
+						"  uc.employee_id AS user_create_emp_id, " +
+						"  uc.name_en AS user_create_name, " +
+						"  uc.path AS user_create_path, " +
+						"  pp.mr_id, m.url_ref, " +
+						"  mine.po_parent_id, mine.po_detail_id " +
+						"FROM pr_detail pd " +
+						"JOIN pr p ON pd.pr_id = p.pr_id " +
+						"LEFT JOIN product pr_pd ON pd.product_id = pr_pd.product_id " +
+						"LEFT JOIN unit_of_measure uom ON pd.unit = uom.unit_id " +
+						"LEFT JOIN user uc ON pd.user_create = uc.id " +
+						"LEFT JOIN pr_parent pp ON pp.pr_detail_id = pd.pr_detail_id " +
+						"LEFT JOIN mr m ON m.mr_id = pp.mr_id " +
+						"LEFT JOIN ( " +
+						"   SELECT ppar.po_parent_id, ppar.po_detail_id, ppar.pr_id, ppar.product_id " +
+						"   FROM po_parent ppar JOIN po_detail pod ON pod.po_detail_id = ppar.po_detail_id " +
+						"   WHERE pod.po_id = :poId AND ppar.pr_id IS NOT NULL " +
+						") mine ON mine.pr_id = pd.pr_id AND mine.product_id = pd.product_id " +
+						"WHERE p.status IN ('7') " +
+						"AND (pd.status = '0' OR mine.po_parent_id IS NOT NULL) " +
+						"ORDER BY COALESCE(p.time_update, p.time_create) DESC, p.pr_id, pd.pr_detail_id";
+
+			SQLQuery query = session.createSQLQuery(sql);
+			query.setParameter("poId", poId);
+			query.setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
+
+			list = query.list();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw e;
+		}
+
+		return list;
+	}
+
+	@Override
 	public void markPulled(List<String> prDetailIds) throws Exception {
 		if (prDetailIds == null || prDetailIds.isEmpty()) return;
 		Session session = sessionFactory.getCurrentSession();

@@ -132,6 +132,14 @@
 }
 @media (max-width: 767.98px) {
 	.po-src-actions { max-width: calc(100vw - 32px); }
+
+	.sig-box {
+		height: 160px;
+	}
+
+	#kt_scrolltop {
+		bottom: 90px !important;
+	}
 }
 
 </style>
@@ -142,8 +150,8 @@
 	<div class="app-main flex-column flex-row-fluid">
 		<div class="d-flex flex-column flex-column-fluid">
 			<div id="kt_app_toolbar" class="app-toolbar py-3 py-lg-6">
-				<div id="kt_app_toolbar_container" class="app-container container-fluid d-flex flex-stack">
-				
+				<div id="kt_app_toolbar_container" class="app-container container-fluid d-flex flex-stack flex-wrap gap-3">
+
 					<div class="page-title d-flex flex-column justify-content-center flex-wrap me-3">
 						<h1 class="page-heading d-flex text-gray-700 fw-semibold flex-column justify-content-center my-0">
 							Add PO - Purchase Order
@@ -165,7 +173,7 @@
 			<div id="kt_app_content" class="app-content flex-column-fluid">
 				<div id="kt_app_content_container" class="app-container container-fluid">
 					<div class="row g-5 gx-xl-10">
-						<div class="col-md-12 col-lg-7 col-xl-7 col-xxl-8 mb-md-5">
+						<div class="col-md-12 col-lg-7 col-xl-7 col-xxl-8 mb-10">
 							<div class="card h-100">
 								<div class="card-header border-0 px-9 pt-7 d-flex align-items-center justify-content-between">
 									<div class="card-title">
@@ -204,7 +212,7 @@
 								</div>
 							</div>
 						</div>
-						<div class="col-md-12 col-lg-5 col-xl-5 col-xxl-4 mb-md-5">
+						<div class="col-md-12 col-lg-5 col-xl-5 col-xxl-4 mb-10 mt-0 mt-lg-5">
 							<div class="card h-100 d-flex flex-column">
 								<div class="card-header border-0 px-9 pt-7 d-flex align-items-center justify-content-between">
 									<div class="card-title">
@@ -380,74 +388,86 @@
 							<div class="card-title">
 								<h3 class="fw-semibold text-gray-900">Signature</h3>
 							</div>
-						</div>
-					<form id="signatureForm" method="post" action="update_signature" enctype="multipart/form-data">
-						<div class="card-body filter-card px-10 py-9 rounded-3 row g-5">
-						
-							<div class="col-6">
-								<div class="d-flex flex-column align-items-center gap-2">
-									<c:choose>
-										<c:when test="${not empty imgPathSignature}">
-											<div class="sig-box locked">
-												<img src="${pageContext.request.contextPath}${imgPathSignature}"
-													style="max-height: 150px; max-width: 360px; object-fit: contain;" />													<div class="sig-lock-badge">
-														<i class="ki-duotone ki-lock fs-7"> <span
-															class="path1"></span><span class="path2"></span>
-														</i> Signature on file
-													</div>
-												</div>
-										</c:when>
-	
-										<c:otherwise>
-							                <div class="sig-box uploadable" id="uploadSignatureBox">
-							                    <img id="signaturePreview" style="max-height:150px; max-width:360px; object-fit:contain; display:none;" />
-							                    <div id="uploadPlaceholder" class="d-flex flex-column align-items-center">
-							                        <i class="ki-duotone ki-cloud-add fs-2x text-muted">
-							                            <span class="path1"></span><span class="path2"></span>
-							                        </i>
-							                        <span class="text-muted fs-8 mt-2">Click to upload your signature</span>
-							                    </div>
-							                </div>
-							                <input type="file" id="signatureFileInput" name="fileUpload" accept="image/*" class="d-none" />
-							            </c:otherwise>
-									</c:choose>
-								</div>
-							</div>
 
-							<div class="col-6">
-								<div class="border border-gray-200 rounded-3 h-100 d-flex flex-column align-items-center justify-content-center text-center py-8" id="receiverCard1">
-										<div class="receiver-box d-flex flex-fill flex-column align-items-center justify-content-center gap-2" id="receiverBox1">
-							            <c:choose>
-							                <c:when test="${empty statusActiveSafe}">
-							                    <span class="text-muted fs-7" id="receiverLabel1">คลิ๊ก เพื่อยืนยันผู้ขอเบิกเงิน</span>
-							                    <div id="receiverPreview1" style="min-height: 44px; display: flex; flex-direction: column; align-items: center;"></div>
-							                    <button type="button" class="btn btn-primary btn-sm px-5" id="receiverBtn1" onclick="confirmReceiver(1)">
-							                        ลงชื่อ ผู้ขอเบิก
-							                    </button>
-							                </c:when>
-							
-							                <c:otherwise>
-							                    <div id="receiverPreview1" style="min-height: 44px; display: flex; flex-direction: column; align-items: center;">
-							                        <span class="text-primary pb-2 fs-7 fw-semibold">ชื่อ ผู้ขอเบิก</span>
-							                        <div class="d-flex flex-column align-items-center">
-							                            <span class="text-dark fw-semibold fs-7">${userObj.nameEN}</span>
-							                            <span class="text-muted fs-8">
-							                                <fmt:formatDate value="${requestAt}" pattern="d MMM yyyy, H:mm" />
-							                            </span>
-							                        </div>
-							                    </div>
-							                </c:otherwise>
-							            </c:choose>
-							        </div>
-								</div>
+							<div class="card-toolbar">
+								<a href="#" id="btnToggleSignature" class="pr-sig-toggle" role="button" aria-expanded="true">
+									<i class="ki-duotone ki-down-square fs-2hx">
+										<span class="path1"></span><span class="path2"></span>
+									</i>
+								</a>
 							</div>
 						</div>
-						</form>
+						<div id="signatureCollapse" class="collapse show">
+							
+							<form id="signatureForm" method="post" action="update_signature" enctype="multipart/form-data">
+								<div class="card-body filter-card px-10 py-9 rounded-3 row g-5">
+								
+									<div class="col-6">
+										<div class="d-flex flex-column align-items-center gap-2">
+											<c:choose>
+												<c:when test="${not empty imgPathSignature}">
+													<div class="sig-box locked">
+														<img src="${pageContext.request.contextPath}${imgPathSignature}"
+															style="max-height: 150px; max-width: 360px; object-fit: contain;" />													<div class="sig-lock-badge">
+																<i class="ki-duotone ki-lock fs-7"> <span
+																	class="path1"></span><span class="path2"></span>
+																</i> Signature on file
+															</div>
+														</div>
+												</c:when>
+			
+												<c:otherwise>
+													<div class="sig-box uploadable" id="uploadSignatureBox">
+														<img id="signaturePreview" style="max-height:150px; max-width:360px; object-fit:contain; display:none;" />
+														<div id="uploadPlaceholder" class="d-flex flex-column align-items-center">
+															<i class="ki-duotone ki-cloud-add fs-2x text-muted">
+																<span class="path1"></span><span class="path2"></span>
+															</i>
+															<span class="text-muted fs-8 mt-2">Click to upload your signature</span>
+														</div>
+													</div>
+													<input type="file" id="signatureFileInput" name="fileUpload" accept="image/*" class="d-none" />
+												</c:otherwise>
+											</c:choose>
+										</div>
+									</div>
+
+									<div class="col-6">
+										<div class="border border-gray-200 rounded-3 h-100 d-flex flex-column align-items-center justify-content-center text-center py-8" id="receiverCard1">
+												<div class="receiver-box d-flex flex-fill flex-column align-items-center justify-content-center gap-2" id="receiverBox1">
+												<c:choose>
+													<c:when test="${empty statusActiveSafe}">
+														<span class="text-muted fs-7" id="receiverLabel1">คลิ๊ก เพื่อยืนยันผู้ขอเบิกเงิน</span>
+														<div id="receiverPreview1" style="min-height: 44px; display: flex; flex-direction: column; align-items: center;"></div>
+														<button type="button" class="btn btn-primary btn-sm px-5" id="receiverBtn1" onclick="confirmReceiver(1)">
+															ลงชื่อ ผู้ขอเบิก
+														</button>
+													</c:when>
+									
+													<c:otherwise>
+														<div id="receiverPreview1" style="min-height: 44px; display: flex; flex-direction: column; align-items: center;">
+															<span class="text-primary pb-2 fs-7 fw-semibold">ชื่อ ผู้ขอเบิก</span>
+															<div class="d-flex flex-column align-items-center">
+																<span class="text-dark fw-semibold fs-7">${userObj.nameEN}</span>
+																<span class="text-muted fs-8">
+																	<fmt:formatDate value="${requestAt}" pattern="d MMM yyyy, H:mm" />
+																</span>
+															</div>
+														</div>
+													</c:otherwise>
+												</c:choose>
+											</div>
+										</div>
+									</div>
+								</div>
+							</form>
+
+						</div>
 					</div>
 					
 					
 					<div class="modal fade" tabindex="-1" id="modal_create_po">
-						<div class="modal-dialog modal-lg modal-dialog-centered">
+						<div class="modal-dialog modal-lg modal-fullscreen-sm-down modal-dialog-centered">
 						    <div class="modal-content">
 						        <div class="modal-header">
 						            <h3 class="modal-title">Create PO - Detail</h3>
@@ -526,7 +546,7 @@
 					</div>
 				
 					<div class="modal fade" tabindex="-1" id="modal_search_pr">
-					    <div class="modal-dialog modal-xl">
+					    <div class="modal-dialog modal-xl modal-fullscreen-lg-down">
 					        <div class="modal-content px-3">
 					            <div class="modal-header border-0">
 					                <h3 class="modal-title">Search PR</h3>
@@ -627,7 +647,7 @@
 										<span class="fs-6 fw-normal text-gray-900" id="editSrcProduct"></span>
 									</div>
 
-									<div class="d-flex align-items-start justify-content-between gap-5 bg-light rounded p-5 mb-8">
+									<!-- <div class="d-flex align-items-start justify-content-between gap-5 bg-light rounded p-5 mb-8">
                                         <div class="d-grid align-items-center flex-grow-1" style="grid-template-columns: auto 1fr; gap: .75rem 1rem;">
 
                                             <i class="ki-duotone ki-user-tick fs-3 text-muted"><span class="path1"></span><span class="path2"></span><span class="path3"></span></i>
@@ -645,7 +665,28 @@
                                             <div class="text-gray-900 fs-5 fw-no" id="editSrcCurrent"></div>
                                         </div>
 
-                                    </div>
+                                    </div> -->
+
+									<div class="d-flex align-items-center justify-content-between flex-wrap gap-5 bg-light rounded p-5 mb-8">
+										<div class="d-flex align-items-center flex-wrap gap-8">
+											<div class="d-flex align-items-center">
+												<i class="ki-duotone ki-user-tick fs-3 text-muted me-2"><span class="path1"></span><span class="path2"></span><span class="path3"></span></i>
+												<span class="text-gray-800 fs-5" id="editSrcCreator"></span>
+											</div>
+											<div class="d-flex align-items-center">
+												<i class="ki-duotone ki-calendar-2 fs-3 me-2"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span><span class="path5"></span></i>
+												<span class="text-gray-800 fs-5" id="editSrcDate"></span>
+											</div>
+											<div class="d-flex align-items-center gap-2">
+												<i class="ki-duotone ki-tablet-book fs-3"><span class="path1"></span><span class="path2"></span></i>
+												<span id="editSrcMr"></span>
+											</div>
+										</div>
+										<div class="text-end">
+											<div class="text-muted fs-8">ปัจจุบัน</div>
+											<div class="text-gray-900 fs-5 fw-no" id="editSrcCurrent"></div>
+										</div>
+									</div>
 
 
 									<div class="row g-5">
@@ -677,16 +718,16 @@
 						</div>
 					</div>
 					
-					<div class="d-flex justify-content-between g-10">
-						<div class="d-flex">
+					<div class="po-action-bar d-flex flex-wrap justify-content-between gap-3">
+						<div class="d-flex flex-wrap gap-3">
 							<button type="button" id="backFormBtn"
 								onclick="location.href='purchase_order_list'"
-								class="btn btn-lg btn-light fw-medium text-light-inverse px-6 py-4 me-4 border">Back
+								class="btn btn-lg btn-light fw-medium text-light-inverse px-6 py-4 border">Back
 							</button>
 						</div>
-						<div class="d-flex">
-							
-							<button type="button" id="saveDraft" onclick="saveDraftForm()" class="btn btn-lg btn-cyan text-white fw-medium px-6 py-4 me-4">
+						<div class="d-flex flex-wrap gap-3">
+
+							<button type="button" id="saveDraft" onclick="saveDraftForm()" class="btn btn-lg btn-cyan text-white fw-medium px-6 py-4">
 								<span class="indicator-label">Save Draft</span>
 								<span class="indicator-progress">Saving...
 									<span class="spinner-border spinner-border-sm align-middle ms-2"></span>
@@ -878,6 +919,19 @@
 		        bootstrap.Modal.getOrCreateInstance(createPoModalEl, { backdrop: true }).show();
 		    });
 
+			document.getElementById('btnToggleSignature').addEventListener('click', function (e) {
+				e.preventDefault();
+				const collapseEl = document.getElementById('signatureCollapse');
+				const icon = this.querySelector('i');
+				const isOpen = collapseEl.classList.contains('show');
+
+				collapseEl.classList.toggle('show', !isOpen);
+				this.setAttribute('aria-expanded', String(!isOpen));
+				icon.classList.toggle('ki-down-square', !isOpen);
+				icon.classList.toggle('ki-up-square', isOpen);
+			});
+		    
+
 			const searchPrModalEl = document.getElementById('modal_search_pr');
 
 			searchPrModalEl.addEventListener('hide.bs.modal', function () {
@@ -896,6 +950,8 @@
 				$('#prSelectedCount').text('0');
 			
 				selectedPrCategory = '';
+				pendingPrKeyword = null;
+				$('#searchPrKeyword').val('');
 				$('#searchPrCategory').val('').trigger('change.select2');
 			});
 
@@ -1125,7 +1181,7 @@
 					title: 'Save Success',
 					text: 'Signature has been successfully recorded.',
 					icon: 'success',
-					timer: 1200,
+					timer: 800,
 					showConfirmButton: false
 				}).then(() => {
 					window.location.href = window.location.href;
@@ -1356,6 +1412,12 @@ let requesterSign = null;
 const PO_HEADER_STORAGE_KEY = 'poHeader_draft';
 const PO_CART_STORAGE_KEY = 'poDetailCart_draft';
 
+document.addEventListener('hide.bs.modal', function (e) {
+	if (document.activeElement && e.target.contains(document.activeElement)) {
+		document.activeElement.blur();
+	}
+});
+
 function saveCartToSession(){
     try {
         sessionStorage.setItem(PO_CART_STORAGE_KEY, JSON.stringify(poDetailCart));
@@ -1396,8 +1458,9 @@ function validatePoDetailForm(){
     if (!$('#items_type').val() || !$('#items_type').val().trim()) errors.push('Category');
     if (!$('#product_name').val() || !$('#product_name').val().trim()) errors.push('Product Name');
 
-    const qty = $('#po_qty').val().trim();
+    const qty = ($('#po_qty').val() || '').trim();
     if (!qty || Number(qty) <= 0) errors.push('จำนวน');
+    else if (!Number.isInteger(Number(qty))) errors.push('จำนวน (ต้องเป็นจำนวนเต็ม)');
 
     if (!$('#unit').val().trim()) errors.push('Unit');
 
@@ -1425,8 +1488,6 @@ function addPoDetailToCart(){
 
 	setBtnLoading('#btnSavePoDetail', true);
 	setTimeout(function(){
-		// po_qty/unit คือหน่วยที่ user เลือก (อาจไม่ใช่หน่วยเล็กสุด) 
-		// ส่วน po_price (base unit) ก่อนเก็บลง cart เสมอ
 		const rawQty = Number($("#po_qty").val()) || 0;
 		const rawUnitId = $("#unit").val();
 		const rawUnitName = $("#unit option:selected").text();
@@ -1500,8 +1561,7 @@ function addPoDetailToCart(){
 				existing.sources.push(sourceEntry);
 				existing.qty = (Number(existing.qty) || 0) + baseQty;
 				existing.price = existing.qty > 0 ? (existing.total / existing.qty) : 0;
-				// description ของ group ใช้ของรายการใหม่เฉพาะตอนที่ group เดิมยังไม่มี ไม่ทับของเดิม
-				if (!existing.description && description) {
+				if (description && description.trim() !== '') {
 					existing.description = description;
 				}
 			} else {
@@ -1642,32 +1702,32 @@ function createPoCard(item,index){
 
     return `<div class="po-item-group border-gray-400 border-bottom pt-9 pb-6 px-6">
     			<div class="d-flex align-items-center justify-content-between row g-3">
-    				<div class="col-7 d-flex align-items-center">\${icon}
+    				<div class="col-12 col-lg-7 d-flex flex-wrap align-items-center">\${icon}
 						<span class="text-gray-900 fs-5 fw-normal me-3">\${category}</span>
 						<span class="text-gray-900 fs-5 fw-normal me-3">\${item.productName}</span>
 
 						\${descriptionHtml}
 					</div>
-		
-					<div class="col-3 d-flex align-items-center justify-content-between px-0">
+
+					<div class="col-12 col-lg-3 d-flex align-items-center justify-content-between px-0">
 						<div class="col-2 d-flex flex-column text-end">
 							<span class="fs-6 fw-normal text-gray-900">\${item.unitName}</span>
 							<span class="fw-semibold text-gray-800 fs-5">\${item.qty}</span>
 					</div>
-		
+
 					<div class="col-4 d-flex flex-column text-end">
 						<span class="fs-6 fw-normal text-gray-900">Price/Unit</span>
 						<span class="fw-semibold text-gray-800 fs-5">\${safePrice.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span>
 					</div>
-					
+
 					<div class="col-4 d-flex flex-column text-end">
 						<span class="fs-6 fw-normal text-gray-900">Total</span>
 						<span class="fs-5 fw-semibold \${totalColorClass}">\${safeTotal.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span>
 					</div>
-		
+
 				</div>
-		
-				<div class="col-2 d-flex justify-content-end align-items-center gap-2 px-0">
+
+				<div class="col-12 col-lg-2 d-flex justify-content-end align-items-center gap-2 px-0">
 	                <a href="#" onclick="return editCartItem(\${index});" class="btn btn-icon btn-light-primary btn-sm" title="Edit">
 	                    <i class="ki-duotone ki-pencil fs-2"><span class="path1"></span><span class="path2"></span></i>
 	                </a>
@@ -1794,7 +1854,7 @@ function createPoSourceRow(qty, unitName, baseQty, baseUnitName, savedAt, prId, 
                 </div>
             </div>
         </div>
-        <div class="col-12 col-xl-3 d-flex align-items-center justify-content-end gap-3">
+        <div class="col-12 col-xl-3 d-flex align-items-center justify-content-between justify-content-xl-end gap-3">
 			<span class="text-gray-800 fs-5 fw-normal">\${qtyUnitDisplay}</span>
 			\${menuHtml}
 		</div>
@@ -1809,6 +1869,8 @@ function editCartItem(index){
 
     $('#modal_create_po .modal-title').text('Edit PO - Detail');
     $('#btnSavePoDetail .indicator-label').text('Update');
+	$('#items_type').prop('disabled', true);
+	$('#product_name').prop('disabled', true);
 
     $('#items_type').val(item.itemsType).trigger('change');
 
@@ -1933,6 +1995,12 @@ function editSource(itemIndex, srcIndex){
     const src = item && item.sources && item.sources[srcIndex];
     if (!src) return false;
 
+	// แถวจาก PR โยนชื่อไป Search PR
+    if (src.prId) {
+        openSearchPrWithKeyword(item.productName);
+        return false;
+    }
+
     editingSrc = { itemIndex: itemIndex, srcIndex: srcIndex };
     const baseQty = (src.baseQty != null) ? src.baseQty : src.qty;
     const cat = getCategoryIcon(mapSelectToDbItemsType(item.itemsType));
@@ -2029,6 +2097,11 @@ function parseFormattedNumber(str) {
     return Number(String(str).replace(/,/g, ''));
 }
 
+$(document.body).on('keydown', '#po_qty, #edit_src_qty', function(e){
+    if (['.', ',', 'e', 'E', '+', '-'].indexOf(e.key) !== -1) e.preventDefault();
+});
+
+
 $(document.body).on('input', '#po_price', function() {
     let value = $(this).val();
 
@@ -2104,6 +2177,7 @@ function confirmReceiver(slot) {
 }
 
 function saveDraftForm(){
+	
     const payload = {
         companyId: $('#vendor_id').val().trim() || '',
         companyLocation: $('#vendor_location_id').val().trim() || '',
@@ -2135,7 +2209,9 @@ function saveDraftForm(){
                 Swal.fire({
                     title: 'Success!',
                     text: 'Po saved draft successfully!',
-                    icon: 'success'
+                    icon: 'success',
+					timer: 800,
+					showConfirmButton: false
                 }).then(() => {
                     window.location.href = ctx + '/purchase_order_list';
                 });
@@ -2161,10 +2237,14 @@ function validatePOForm(){
     } else {
         // เช็คว่ามีรายการไหนราคารวมยังเป็น 0 / ยังไม่ได้ใส่ราคา
         const zeroPriceItems = poDetailCart.filter(item => !item.total || Number(item.total) <= 0);
-        if (zeroPriceItems.length > 0) {
-            const names = zeroPriceItems.map(i => i.productName).join(', ');
-            errors.push('กรุณาใส่ราคารวมให้ครบทุกรายการ (' + names + ')');
-        }
+		if (zeroPriceItems.length > 0) {
+			const names = zeroPriceItems.map(function(i){
+				return i.parentProductName
+					? i.parentProductName + ' > ' + (i.productName || '')
+					: (i.productName || '');
+			}).join(', ');
+			errors.push('กรุณาใส่ราคารวม ' + names);
+		}
     }
     
     const hasSignature = $('#hasSignature').val() === 'true';
@@ -2236,7 +2316,9 @@ function submitPO(){
                     Swal.fire({
                         title: 'Success!',
                         text: 'Po saved successfully!',
-                        icon: 'success'
+                        icon: 'success',
+						timer: 800,
+						showConfirmButton: false
                     }).then(() => {
                         window.location.href = ctx + '/purchase_order_list';
                     });
@@ -2260,6 +2342,13 @@ let prDetailTable = null;
 let selectedPrCategory = '';
 let prSearchRequestToken = 0;
 let isSearchPrModalOpen = false;
+let pendingPrKeyword = null;
+
+function openSearchPrWithKeyword(keyword){
+    pendingPrKeyword = keyword;
+    $('#searchPrKeyword').val(keyword);
+    bootstrap.Modal.getOrCreateInstance(document.getElementById('modal_search_pr')).show();
+}
 
 $.fn.dataTable.ext.search.push(function (settings, data, dataIndex) {
     if (settings.nTable.id !== 'prResultTable') return true;
@@ -2477,6 +2566,13 @@ function renderPrResultTable(list){
 			syncGroupChecks();
 		}
 	});
+
+	if (pendingPrKeyword !== null) {
+        $('#searchPrKeyword').val(pendingPrKeyword);
+        prDetailTable.search(pendingPrKeyword).draw();
+        pendingPrKeyword = null;
+    }
+
     updatePrSelectedCountReal();
 
     var checkAll = document.getElementById('checkAllPr');

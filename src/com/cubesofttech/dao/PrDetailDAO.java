@@ -28,6 +28,8 @@ public interface PrDetailDAO {
 
 	List<Map<String, Object>> findInprogressPrDetailForPrSearch() throws Exception;
 
+	List<Map<String, Object>> findInprogressPrDetailForPrSearch(String poId) throws Exception;
+
 	void markPulled(List<String> prDetailIds) throws Exception;
 
 	void revertPulledStatusByPrProduct(String prId, String productId) throws Exception;

@@ -134,124 +134,27 @@
 										data-border-color="border-primary"
 										style="cursor: pointer;">
 
-										<span class="fs-2hx me-2 text-primary" id="summaryPRAll">
+										<span class="fs-2hx me-2 text-primary summary-count" id="summaryPRAll">
 											${prSummaryTotal}
 										</span>
 
 										<span class="badge badge-primary fs-7">All</span>
 									</div>
 
-									<!-- Draft -->
-									<div class="col-lg-3 col-md-4 col-6 d-flex align-items-center justify-content-center mb-5 summary-card border border-1 border-transparent rounded-3 p-3"
-										data-status="1"
-										data-border-color="${prStatusColors['1'] == 'secondary' ? 'border-gray-400' : 'border-'.concat(prStatusColors['1'])}"
-										style="cursor: pointer;">
-
-										<span class="fs-2hx me-2 ${prStatusColors['1'] == 'secondary' ? 'text-gray-600' : 'text-'.concat(prStatusColors['1'])}"
-											id="summaryPRDraft">
-											${prSummary['1']}
-										</span>
-
-										<span class="badge badge-${prStatusColors['1']} fs-7">
-											${prStatusNames['1']}
-										</span>
-									</div>
-
-									<!-- Pending -->
-									<div class="col-lg-3 col-md-4 col-6 d-flex align-items-center justify-content-center mb-5 summary-card border border-1 border-transparent rounded-3 p-3"
-										data-status="2"
-										data-border-color="${prStatusColors['2'] == 'secondary' ? 'border-gray-400' : 'border-'.concat(prStatusColors['2'])}"
-										style="cursor: pointer;">
-
-										<span class="fs-2hx me-2 ${prStatusColors['2'] == 'secondary' ? 'text-gray-600' : 'text-'.concat(prStatusColors['2'])}"
-											id="summaryPRPending">
-											${prSummary['2']}
-										</span>
-
-										<span class="badge badge-${prStatusColors['2']} fs-7">
-											${prStatusNames['2']}
-										</span>
-									</div>
-
-									<!-- Approved -->
-									<div class="col-lg-3 col-md-4 col-6 d-flex align-items-center justify-content-center mb-5 summary-card border border-1 border-transparent rounded-3 p-3"
-										data-status="3"
-										data-border-color="${prStatusColors['3'] == 'secondary' ? 'border-gray-400' : 'border-'.concat(prStatusColors['3'])}"
-										style="cursor: pointer;">
-
-										<span class="fs-2hx me-2 ${prStatusColors['3'] == 'secondary' ? 'text-gray-600' : 'text-'.concat(prStatusColors['3'])}"
-											id="summaryPRApproved">
-											${prSummary['3']}
-										</span>
-
-										<span class="badge badge-${prStatusColors['3']} fs-7">
-											${prStatusNames['3']}
-										</span>
-									</div>
-
-									<!-- Return -->
-									<div class="col-lg-3 col-md-4 col-6 d-flex align-items-center justify-content-center mb-5 summary-card border border-1 border-transparent rounded-3 p-3"
-										data-status="4"
-										data-border-color="${prStatusColors['4'] == 'secondary' ? 'border-gray-400' : 'border-'.concat(prStatusColors['4'])}"
-										style="cursor: pointer;">
-
-										<span class="fs-2hx me-2 ${prStatusColors['4'] == 'secondary' ? 'text-gray-600' : 'text-'.concat(prStatusColors['4'])}"
-											id="summaryPRReturn">
-											${prSummary['4']}
-										</span>
-
-										<span class="badge badge-${prStatusColors['4']} fs-7 lh-base">
-											${prStatusNames['4']}
-										</span>
-									</div>
-
-									<!-- Rejected -->
-									<div class="col-lg-3 col-md-4 col-6 d-flex align-items-center justify-content-center mb-5 summary-card border border-1 border-transparent rounded-3 p-3"
-										data-status="5"
-										data-border-color="${prStatusColors['5'] == 'secondary' ? 'border-gray-400' : 'border-'.concat(prStatusColors['5'])}"
-										style="cursor: pointer;">
-
-										<span class="fs-2hx me-2 ${prStatusColors['5'] == 'secondary' ? 'text-gray-600' : 'text-'.concat(prStatusColors['5'])}"
-											id="summaryPRRejected">
-											${prSummary['5']}
-										</span>
-
-										<span class="badge badge-${prStatusColors['5']} fs-7">
-											${prStatusNames['5']}
-										</span>
-									</div>
-
-									<!-- Cancel -->
-									<div class="col-lg-3 col-md-4 col-6 d-flex align-items-center justify-content-center mb-5 summary-card border border-1 border-transparent rounded-3 p-3"
-										data-status="6"
-										data-border-color="${prStatusColors['6'] == 'secondary' ? 'border-gray-400' : 'border-'.concat(prStatusColors['6'])}"
-										style="cursor: pointer;">
-
-										<span class="fs-2hx me-2 ${prStatusColors['6'] == 'secondary' ? 'text-gray-600' : 'text-'.concat(prStatusColors['6'])}"
-											id="summaryPRCancel">
-											${prSummary['6']}
-										</span>
-
-										<span class="badge badge-${prStatusColors['6']} fs-7">
-											${prStatusNames['6']}
-										</span>
-									</div>
-
-									<!-- In-Progress -->
-									<div class="col-lg-3 col-md-4 col-6 d-flex align-items-center justify-content-center mb-5 summary-card border border-1 border-transparent rounded-3 p-3"
-										data-status="7"
-										data-border-color="${prStatusColors['7'] == 'secondary' ? 'border-gray-400' : 'border-'.concat(prStatusColors['7'])}"
-										style="cursor: pointer;">
-
-										<span class="fs-2hx me-2 ${prStatusColors['7'] == 'secondary' ? 'text-gray-600' : 'text-'.concat(prStatusColors['7'])}"
-											id="summaryPRInProgress">
-											${prSummary['7']}
-										</span>
-
-										<span class="badge badge-${prStatusColors['7']} fs-7">
-											${prStatusNames['7']}
-										</span>
-									</div>
+									<c:forEach var="st" items="${prStatuses}">
+										<c:set var="stColor" value="${prStatusColors[st.statusCode]}" />
+										<div class="col-lg-3 col-md-4 col-6 d-flex align-items-center justify-content-center mb-5 summary-card border border-1 border-transparent rounded-3 p-3"
+											data-status="${st.statusCode}"
+											data-border-color="${stColor == 'secondary' ? 'border-gray-400' : 'border-'.concat(stColor)}"
+											style="cursor: pointer;">
+											<span class="fs-2hx me-2 summary-count ${stColor == 'secondary' ? 'text-gray-600' : 'text-'.concat(stColor)}">
+												${prSummary[st.statusCode]}
+											</span>
+											<span class="badge badge-${stColor} fs-7">
+												${prStatusNames[st.statusCode]}
+											</span>
+										</div>
+									</c:forEach>
 
 								</div>
 							</div>
@@ -292,18 +195,16 @@
 											<td class="text-gray-900 fs-6 fw-normal text-start">
 												${prItem.user_create_name}
 											</td>
-											<td class="text-gray-900 fs-6 fw-normal text-start">
-												<fmt:formatDate value="${prItem.time_create}" pattern="dd MMM yyyy, HH:mm" />
+											<td class="text-gray-900 fs-6 fw-normal text-start"
+												data-date="<c:if test='${not empty prItem.time_create}'><fmt:formatDate value='${prItem.time_create}' pattern='yyyy-MM-dd' /></c:if>">
+												<c:if test="${not empty prItem.time_create}">
+													<fmt:formatDate value="${prItem.time_create}" pattern="dd MMM yyyy, HH:mm" />
+												</c:if>
 											</td>
 											<td class="text-gray-900 fs-6 fw-normal text-end">
 												${prItem.detail_count}
 											</td>
 											
-											<!-- <td class="text-gray-900 fs-6 fw-normal text-end" data-code="${prItem.status}">
-												<span class="badge badge-lg badge-${prItem.status_color} fw-semibold fs-7 ${prItem.status_color == 'secondary' ? 'text-dark' : 'text-white'}">
-													${prItem.status_name}
-												</span>
-											</td> -->
 											<td class="text-gray-900 fs-6 fw-normal text-end" data-code="${prItem.status}">
 												<c:if test="${prItem.status == '7'}">
 													<c:set var="progress" value="${prDetailProgress[prItem.pr_id]}" />
@@ -345,13 +246,11 @@
 													</a> -->
 													<c:choose>
 														<c:when test="${prItem.status == '1' or prItem.status == '4'}">
-															<a href="pr_perform_delete?prId=${prItem.pr_id}" onclick="return confirmDelete(this.href);"
-																class="btn btn-icon btn-light-danger btn-sm" title="Delete">
-																<i class="ki-duotone ki-trash fs-2"><span
-																	class="path1"></span><span class="path2"></span><span
-																	class="path3"></span><span class="path4"></span><span
-																	class="path5"></span></i>
-															</a>
+															<button type="button" class="btn btn-icon btn-light-danger btn-sm btn-delete-pr"
+																	data-id="${prItem.pr_id}" title="Delete">
+																<i class="ki-duotone ki-trash fs-2"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span><span class="path5"></span></i>
+															</button>
+															
 														</c:when>
 														<c:otherwise>
 															<a class="btn btn-icon btn-light-danger btn-sm disabled"
@@ -382,128 +281,204 @@
 
 </body>
 <script type="text/javascript">
-	
-		document.addEventListener("DOMContentLoaded", function () {
-			$("#kt_daterangepicker_2").daterangepicker({
-			    startDate: moment().startOf("month"),
-			    endDate: moment().endOf("month"),
-			    locale: {
-			        format: "D MMM YYYY"
-			    }
-			});
-			
-			var table = $('#purchaseRequisitionList').DataTable({
-				pageLength : 25,
-				lengthMenu : [ 25, 50, 100 ],
-				ordering : true,
-				searching : true,
-				autoWidth : false,
-				info: false,
-				language: {
-				    zeroRecords: "No data found",
-				    emptyTable: "No data available in table"
-				},
-				columnDefs : [ {
-					orderable : false,
-					targets : [ 7 ]
-				}, {
-					orderable : true,
-					targets : [ 0, 1, 2, 3, 4, 5, 6 ]
-				}, {
-					targets: [ 5 ],
-					type: 'string'
-				} ],
-				order : [],
-				headerCallback : function(thead) {
-					$(thead).find('th').each(
-						function() {
-							if ($(this).find('.th-wrapper').length === 0) {
-								$(this).wrapInner(
-									'<span class="th-wrapper" style="display:inline-flex; align-items:center; white-space:nowrap; pointer-events:none;"></span>');
-							}
-					});
-				}
-			});
-			
-			//search
-			$('#tableSearch').on('keyup', function() {
-				table.search(this.value).draw();
-		    });
-			
-			/* ---- Summary Card Filter ---- */
-			var selectedStatusCode = null; // null = All
-			$.fn.dataTable.ext.search.push(function(settings, searchData, dataIndex) {
-				if (settings.nTable.id !== 'purchaseRequisitionList') {
-					return true;
-				}
-				if (selectedStatusCode === null) {
-					return true;
-				}
-				var cellCode = $(settings.aoData[dataIndex].anCells[6]).data('code');
-				return String(cellCode) === String(selectedStatusCode);
-			});
+	var ctx = '${pageContext.request.contextPath}';
+	document.addEventListener("DOMContentLoaded", function () {
+		var COL_REQUEST_DATE = 4;
+		var COL_STATUS = 6;
+		var dateFrom = null;
+		var dateTo = null;
 
-			$('.summary-card').on('click', function() {
-			    $('.summary-card').each(function() {
-			        var colorClass = $(this).data('border-color');
-			        $(this).removeClass(colorClass).addClass('border-transparent');
-			    });
+		var defaultStart = moment().startOf("year");
+		var defaultEnd = moment().endOf("year");
 
-			    var activeColor = $(this).data('border-color');
-			    $(this).removeClass('border-transparent').addClass(activeColor);
+		var $datePicker = $("#kt_daterangepicker_2");
+		$datePicker.daterangepicker({
+			startDate: defaultStart,
+			endDate: defaultEnd,
+			autoUpdateInput: false,
+			locale: {
+				format: "D MMM YYYY",
+				cancelLabel: "Show all"
+			}
+		});
 
-			    var status = $(this).data('status');
-			    selectedStatusCode = (status === "All") ? null : status;
-			    table.draw();
-			});
-			
-			
-			//running number
-			function runNumber() {
-				const info = table.page.info();
-				table.column(0, {
-					page : 'current'
-				}).nodes().each(function(cell, i) {
-					cell.innerHTML = info.start + i + 1;
+		function setDateRange(start, end) {
+			dateFrom = start.format('YYYY-MM-DD');
+			dateTo = end.format('YYYY-MM-DD');
+			$datePicker.val(start.clone().locale('en').format('D MMM YYYY') + ' - ' + end.clone().locale('en').format('D MMM YYYY'));
+		}
+
+		var table = $('#purchaseRequisitionList').DataTable({
+			pageLength : 25,
+			lengthMenu : [ 25, 50, 100 ],
+			ordering : true,
+			searching : true,
+			autoWidth : false,
+			info: false,
+			language: {
+				zeroRecords: "No data found",
+				emptyTable: "No data available in table"
+			},
+			columnDefs : [ {
+				orderable : false,
+				targets : [ 7 ]
+			}, {
+				orderable : true,
+				targets : [ 0, 1, 2, 3, 4, 5, 6 ]
+			}, {
+				targets: [ 5 ],
+				type: 'num'
+			} ],
+			order : [],
+			headerCallback : function(thead) {
+				$(thead).find('th').each(function() {
+					if ($(this).find('.th-wrapper').length === 0) {
+						$(this).wrapInner(
+							'<span class="th-wrapper" style="display:inline-flex; align-items:center; white-space:nowrap; pointer-events:none;"></span>');
+					}
 				});
 			}
-			
-			table.on('draw.dt order.dt search.dt', runNumber);
-			runNumber();
-			
-			//search
-			$('#tableSearch').on('keyup', function() {
-				table.search(this.value).draw();
-		    });
+		});
 
-			$(document).ready(function() {
-				$('[data-kt-select2="true"]').select2({
-					closeOnSelect : false
-				});
-			});			
-		
-	});
-		
-		
-		function confirmDelete(url) {
-		    Swal.fire({
-		    	title: "Are you sure?!",
-		        text: "Are you sure you want to delete this item?",
-		        icon: "warning",
-		        showCancelButton: true,
-		        confirmButtonText: "Yes, delete it",
-		        cancelButtonText: "Cancel",
-		        buttonsStyling: false,
-		        customClass: {
-		            confirmButton: "btn btn-danger",
-		            cancelButton: "btn btn-secondary"
-		        }
-		    }).then((result) => {
-		        if (result.isConfirmed) {
-		            window.location.href = url;
-		        }
-		    });
-		    return false;
+		//search
+		$('#tableSearch').on('keyup', function() {
+			table.search(this.value).draw();
+		});
+
+		function passDateRange(rowDate) {
+			if (dateFrom === null || dateTo === null) {
+				return true;
+			}
+			if (!rowDate) {
+				return false;
+			}
+			return rowDate >= dateFrom && rowDate <= dateTo;
 		}
+
+		function rowDateOf(tdNode) {
+			return String($(tdNode).attr('data-date') || '').trim();
+		}
+
+		/* ---- Summary Card + Date Filter ---- */
+		var selectedStatusCode = null; // = All
+		$.fn.dataTable.ext.search.push(function(settings, searchData, dataIndex) {
+			if (settings.nTable.id !== 'purchaseRequisitionList') {
+				return true;
+			}
+			var cells = settings.aoData[dataIndex].anCells;
+			if (!passDateRange(rowDateOf(cells[COL_REQUEST_DATE]))) {
+				return false;
+			}
+			if (selectedStatusCode === null) {
+				return true;
+			}
+			var cellCode = $(cells[COL_STATUS]).data('code');
+			return String(cellCode) === String(selectedStatusCode);
+		});
+
+		$datePicker.on('apply.daterangepicker', function(ev, picker) {
+			setDateRange(picker.startDate, picker.endDate);
+			table.draw();
+		});
+
+		// ปุ่ม Show all ยกเลิกตัวกรองวันที่
+		$datePicker.on('cancel.daterangepicker', function() {
+			dateFrom = null;
+			dateTo = null;
+			$(this).val('');
+			table.draw();
+		});
+
+		// ตัวเลขบน card นับตามช่วงวันที่
+		function updateSummaryCounts() {
+			var counts = {};
+			var total = 0;
+			table.rows().nodes().each(function(tr) {
+				var cells = tr.cells;
+				if (!passDateRange(rowDateOf(cells[COL_REQUEST_DATE]))) {
+					return;
+				}
+				total++;
+				var code = String($(cells[COL_STATUS]).data('code'));
+				counts[code] = (counts[code] || 0) + 1;
+			});
+			$('.summary-card').each(function() {
+				var status = String($(this).data('status'));
+				var n = (status === 'All') ? total : (counts[status] || 0);
+				$(this).find('.summary-count').text(n);
+			});
+		}
+
+		$('.summary-card').on('click', function() {
+			$('.summary-card').each(function() {
+				var colorClass = $(this).data('border-color');
+				$(this).removeClass(colorClass).addClass('border-transparent');
+			});
+
+			var activeColor = $(this).data('border-color');
+			$(this).removeClass('border-transparent').addClass(activeColor);
+
+			var status = $(this).data('status');
+			selectedStatusCode = (status === "All") ? null : status;
+			table.draw();
+		});
+
+		//running number
+		function runNumber() {
+			const info = table.page.info();
+			table.column(0, { page : 'current' }).nodes().each(function(cell, i) {
+				cell.innerHTML = info.start + i + 1;
+			});
+		}
+
+		table.on('draw.dt order.dt search.dt', runNumber);
+		table.on('draw.dt', updateSummaryCounts);
+
+		setDateRange(defaultStart, defaultEnd);
+		table.draw();
+		updateSummaryCounts();
+	});
+	
+	$(document).on('click', '.btn-delete-pr', function () {
+		var prId = $(this).data('id');
+		if (!prId) { return; }
+
+		Swal.fire({
+			title: "Are you sure?!",
+			text: "Are you sure you want to delete this item?",
+			icon: "warning",
+			showCancelButton: true,
+			confirmButtonText: "Yes, delete it",
+			cancelButtonText: "Cancel",
+			buttonsStyling: false,
+			customClass: { confirmButton: "btn btn-danger", cancelButton: "btn btn-secondary" }
+		}).then(function (result) {
+			if (!result.isConfirmed) { return; }
+
+			$.ajax({
+				url: ctx + '/pr_perform_delete',
+				type: 'POST',
+				dataType: 'json',
+				data: { prId: prId },
+				success: function (res) {
+					if (res && res.data && res.data.success === true) {
+						Swal.fire({ icon: 'success', title: 'Success!', text: 'PR cancel successfully!',
+							timer: 800,
+							showConfirmButton: false
+						}).then(function () {
+							window.location.reload();
+						});
+					} else {
+						var msg = (res && res.data && res.data.message) || 'ยกเลิกไม่สำเร็จ';
+						Swal.fire('Error', msg, 'error')
+							.then(function () { window.location.reload(); });
+					}
+				},
+				error: function () {
+					Swal.fire('Error', 'ยกเลิกไม่สำเร็จ', 'error');
+				}
+			});
+		});
+	});
 	</script>
 </html>

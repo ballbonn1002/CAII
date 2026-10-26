@@ -301,69 +301,79 @@
 							<div class="card-title">
 								<h3 class="fw-semibold text-gray-900">Signature</h3>
 							</div>
-						</div>
-					<form id="signatureForm" method="post" action="update_signature" enctype="multipart/form-data">
-						<div class="card-body filter-card px-5 px-lg-10 py-9 rounded-3 row g-5">
-						
-							<div class="col-12 col-md-6">
-								<div class="d-flex flex-column align-items-center gap-2">
-									<c:choose>
-										<c:when test="${not empty imgPathSignature}">
-											<div class="sig-box locked">
-												<img src="${pageContext.request.contextPath}${imgPathSignature}"
-													style="max-height: 150px; max-width: 360px; object-fit: contain;" />													<div class="sig-lock-badge">
-														<i class="ki-duotone ki-lock fs-7"> <span
-															class="path1"></span><span class="path2"></span>
-														</i> Signature on file
-													</div>
-												</div>
-										</c:when>
-	
-										<c:otherwise>
-							                <div class="sig-box uploadable" id="uploadSignatureBox">
-							                    <img id="signaturePreview" style="max-height:150px; max-width:360px; object-fit:contain; display:none;" />
-							                    <div id="uploadPlaceholder" class="d-flex flex-column align-items-center">
-							                        <i class="ki-duotone ki-cloud-add fs-2x text-muted">
-							                            <span class="path1"></span><span class="path2"></span>
-							                        </i>
-							                        <span class="text-muted fs-8 mt-2">Click to upload your signature</span>
-							                    </div>
-							                </div>
-							                <input type="file" id="signatureFileInput" name="fileUpload" accept="image/*" class="d-none" />
-							            </c:otherwise>
-									</c:choose>
-								</div>
-							</div>
 
-							<div class="col-12 col-md-6">
-								<div class="border border-gray-200 rounded-3 h-100 d-flex flex-column align-items-center justify-content-center text-center py-8" id="receiverCard1">
-										<div class="receiver-box d-flex flex-fill flex-column align-items-center justify-content-center gap-2" id="receiverBox1">
-							            <c:choose>
-							                <c:when test="${empty statusActiveSafe}">
-							                    <span class="text-muted fs-7" id="receiverLabel1">คลิ๊ก เพื่อยืนยันผู้ขอเบิกเงิน</span>
-							                    <div id="receiverPreview1" style="min-height: 44px; display: flex; flex-direction: column; align-items: center;"></div>
-							                    <button type="button" class="btn btn-primary btn-sm px-5" id="receiverBtn1" onclick="confirmReceiver(1)">
-							                        ลงชื่อ ผู้ขอเบิก
-							                    </button>
-							                </c:when>
-							
-							                <c:otherwise>
-							                    <div id="receiverPreview1" style="min-height: 44px; display: flex; flex-direction: column; align-items: center;">
-							                        <span class="text-primary pb-2 fs-7 fw-semibold">ชื่อ ผู้ขอเบิก</span>
-							                        <div class="d-flex flex-column align-items-center">
-							                            <span class="text-dark fw-semibold fs-7">${userObj.nameEN}</span>
-							                            <span class="text-muted fs-8">
-							                                <fmt:formatDate value="${requestAt}" pattern="d MMM yyyy, H:mm" />
-							                            </span>
-							                        </div>
-							                    </div>
-							                </c:otherwise>
-							            </c:choose>
-							        </div>
-								</div>
+							<div class="card-toolbar">
+								<a href="#" id="btnToggleSignature" class="pr-sig-toggle" role="button" aria-expanded="true">
+									<i class="ki-duotone ki-down-square fs-2hx">
+										<span class="path1"></span><span class="path2"></span>
+									</i>
+								</a>
 							</div>
 						</div>
-						</form>
+						<div id="signatureCollapse" class="collapse show">
+							<form id="signatureForm" method="post" action="update_signature" enctype="multipart/form-data">
+								<div class="card-body filter-card px-5 px-lg-10 py-9 rounded-3 row g-5">
+								
+									<div class="col-12 col-md-6">
+										<div class="d-flex flex-column align-items-center gap-2">
+											<c:choose>
+												<c:when test="${not empty imgPathSignature}">
+													<div class="sig-box locked">
+														<img src="${pageContext.request.contextPath}${imgPathSignature}"
+															style="max-height: 150px; max-width: 360px; object-fit: contain;" />													<div class="sig-lock-badge">
+																<i class="ki-duotone ki-lock fs-7"> <span
+																	class="path1"></span><span class="path2"></span>
+																</i> Signature on file
+															</div>
+														</div>
+												</c:when>
+			
+												<c:otherwise>
+													<div class="sig-box uploadable" id="uploadSignatureBox">
+														<img id="signaturePreview" style="max-height:150px; max-width:360px; object-fit:contain; display:none;" />
+														<div id="uploadPlaceholder" class="d-flex flex-column align-items-center">
+															<i class="ki-duotone ki-cloud-add fs-2x text-muted">
+																<span class="path1"></span><span class="path2"></span>
+															</i>
+															<span class="text-muted fs-8 mt-2">Click to upload your signature</span>
+														</div>
+													</div>
+													<input type="file" id="signatureFileInput" name="fileUpload" accept="image/*" class="d-none" />
+												</c:otherwise>
+											</c:choose>
+										</div>
+									</div>
+
+									<div class="col-12 col-md-6">
+										<div class="border border-gray-200 rounded-3 h-100 d-flex flex-column align-items-center justify-content-center text-center py-8" id="receiverCard1">
+												<div class="receiver-box d-flex flex-fill flex-column align-items-center justify-content-center gap-2" id="receiverBox1">
+												<c:choose>
+													<c:when test="${empty statusActiveSafe}">
+														<span class="text-muted fs-7" id="receiverLabel1">คลิ๊ก เพื่อยืนยันผู้ขอเบิกเงิน</span>
+														<div id="receiverPreview1" style="min-height: 44px; display: flex; flex-direction: column; align-items: center;"></div>
+														<button type="button" class="btn btn-primary btn-sm px-5" id="receiverBtn1" onclick="confirmReceiver(1)">
+															ลงชื่อ ผู้ขอเบิก
+														</button>
+													</c:when>
+									
+													<c:otherwise>
+														<div id="receiverPreview1" style="min-height: 44px; display: flex; flex-direction: column; align-items: center;">
+															<span class="text-primary pb-2 fs-7 fw-semibold">ชื่อ ผู้ขอเบิก</span>
+															<div class="d-flex flex-column align-items-center">
+																<span class="text-dark fw-semibold fs-7">${userObj.nameEN}</span>
+																<span class="text-muted fs-8">
+																	<fmt:formatDate value="${requestAt}" pattern="d MMM yyyy, H:mm" />
+																</span>
+															</div>
+														</div>
+													</c:otherwise>
+												</c:choose>
+											</div>
+										</div>
+									</div>
+								</div>
+							</form>
+						</div>
 					</div>
 					
 					
@@ -405,7 +415,7 @@
 									<div class="row g-5 mb-6" id="prQtyUnitRow">
 										<div class="col-lg-6 col-md-6 col-12 d-flex flex-column">
 											<label class="required fw-medium text-gray-800 mb-2">จำนวน</label>
-											<input type="number" class="form-control text-gray-700 h-45px" min="1"
+											<input type="number" class="form-control text-gray-700 h-45px" min="1" step="1"
 													name="pr_qty" id="pr_qty" placeholder="1" value="1" />
 										</div>
 										
@@ -436,12 +446,17 @@
 						        <div class="modal-footer">
 						            <button type="button" class="btn btn-light" data-bs-dismiss="modal">Close</button>
 						            <button type="button" class="btn btn-success" id="btnSavePrDetail"
-        									onclick="addPrDetailToCart()">Save</button>
+        									onclick="addPrDetailToCart()">
+        									<span class="indicator-label">Save</span>
+        									<span class="indicator-progress">Saving...
+        									    <span class="spinner-border spinner-border-sm align-middle ms-2"></span>
+        									</span>
+        								</button>
 						        </div>
 						    </div>
 						</div>
 					</div>
-				
+
 					<div class="modal fade" tabindex="-1" id="modal_search_mr">
 					    <div class="modal-dialog modal-xl modal-fullscreen-lg-down">
 					        <div class="modal-content px-3">
@@ -565,7 +580,7 @@
 									<div class="row g-5">
 										<div class="col-12 col-sm-6 d-flex flex-column">
 											<label class="required fw-medium text-gray-800 mb-2">จำนวน</label>
-											<input type="number" class="form-control text-gray-700 h-45px" min="1" id="edit_src_qty" />
+											<input type="number" class="form-control text-gray-700 h-45px" min="1" step="1" id="edit_src_qty" />
 										</div>
 										<div class="col-12 col-sm-6 d-flex flex-column">
 											<label class="required fw-medium text-gray-800 mb-2">Unit</label>
@@ -580,12 +595,17 @@
 
 								<div class="modal-footer">
 									<button type="button" class="btn btn-light" data-bs-dismiss="modal">Close</button>
-									<button type="button" class="btn btn-success" onclick="saveEditSource()">Update</button>
+									<button type="button" class="btn btn-success" id="btnSaveEditSource" onclick="saveEditSource()">
+										<span class="indicator-label">Update</span>
+										<span class="indicator-progress">Updating...
+										    <span class="spinner-border spinner-border-sm align-middle ms-2"></span>
+										</span>
+									</button>
 								</div>
 							</div>
 						</div>
 					</div>
-					
+
 					<div class="pr-action-bar d-flex flex-wrap justify-content-between gap-3">
 						<div class="d-flex flex-wrap gap-3">
 							<button type="button" id="backFormBtn"
@@ -594,13 +614,22 @@
 							</button>
 						</div>
 						<div class="d-flex flex-wrap gap-3">
-							
+
 							<button type="button" id="saveDraft" onclick="saveDraftForm()"
-								class="btn btn-lg btn-cyan text-white fw-medium px-6 py-4">Save Draft
+								class="btn btn-lg btn-cyan text-white fw-medium px-6 py-4">
+								<span class="indicator-label">Save Draft</span>
+								<span class="indicator-progress">Saving...
+								    <span class="spinner-border spinner-border-sm align-middle ms-2"></span>
+								</span>
 							</button>
 							<button type="button" id="savePRFormBtn"
 								class="btn btn-success text-white fw-medium px-6 py-4"
-								onclick="submitPR()">Submit PR</button>
+								onclick="submitPR()">
+								<span class="indicator-label">Submit PR</span>
+								<span class="indicator-progress">Submitting...
+								    <span class="spinner-border spinner-border-sm align-middle ms-2"></span>
+								</span>
+							</button>
 						</div>
 					</div>
 				</div>
@@ -620,7 +649,6 @@
 		return `\${d.getDate()} \${months[d.getMonth()]} \${d.getFullYear()}, \${pad(d.getHours())}:\${pad(d.getMinutes())}`;
 	}
 
-	// --- PO Header/Vendor draft (sessionStorage) ---
 	var prHeaderDraft = null; // ค่าที่โหลดจาก session ตอน init
 
 	function saveHeaderToSession(){
@@ -648,7 +676,8 @@
 		loadHeaderFromSession();
 
 		document.querySelector('#kt_app_content_container').addEventListener('click', function(e){
-		    const btn = e.target.closest('.collapsed, [data-target^="cart_"], a[id^="prGroupBtn_"]');
+			const btn = e.target.closest('.pr-group-toggle');
+		    // const btn = e.target.closest('.collapsed, [data-target^="cart_"], a[id^="prGroupBtn_"]');
 		    if (!btn) return;
 
 		    let collapseEl;
@@ -732,6 +761,7 @@
 		    const createPrModalEl = document.getElementById('modal_create_pr');
 
 		    createPrModalEl.addEventListener('show.bs.modal', function () {
+				setBtnLoading('#btnSavePrDetail', false);
 				if (editingIndex === -1) {
 					$('#items_type').val('equipment').trigger('change');
 					$('#pr_qty').val('1');
@@ -739,7 +769,7 @@
 					$('#pr_ref_link').val('');
 					$('#pr_description').val('');
 					$('#modal_create_pr .modal-title').text('Create PR - Detail');
-					$('#btnSavePrDetail').text('Save');
+					$('#btnSavePrDetail .indicator-label').text('Save');
 					$('#prQtyUnitRow').removeClass('d-none');
 					$('#prRefLinkRow').removeClass('d-none');
 				}  else {
@@ -768,12 +798,27 @@
 			document.getElementById('modal_edit_source').addEventListener('hidden.bs.modal', function () {
 				editingSrc = null;
 			});
+			document.getElementById('modal_edit_source').addEventListener('show.bs.modal', function () {
+				setBtnLoading('#btnSaveEditSource', false);
+			});
 
 		    document.getElementById('btnOpenCreatePr').addEventListener('click', function () {
 		        editingIndex = -1;
 		        bootstrap.Modal.getOrCreateInstance(createPrModalEl, { backdrop: true }).show();
 		    });
 		    
+
+			document.getElementById('btnToggleSignature').addEventListener('click', function (e) {
+				e.preventDefault();
+				const collapseEl = document.getElementById('signatureCollapse');
+				const icon = this.querySelector('i');
+				const isOpen = collapseEl.classList.contains('show');
+
+				collapseEl.classList.toggle('show', !isOpen);
+				this.setAttribute('aria-expanded', String(!isOpen));
+				icon.classList.toggle('ki-down-square', !isOpen);
+				icon.classList.toggle('ki-up-square', isOpen);
+			});
 		    
 	});
 	
@@ -991,7 +1036,7 @@
 					title: 'Save Success',
 					text: 'Signature has been successfully recorded.',
 					icon: 'success',
-					timer: 1200,
+					timer: 800,
 					showConfirmButton: false
 				}).then(() => {
 					window.location.href = window.location.href;
@@ -1083,6 +1128,18 @@
 </script>
 
 <script>
+function setBtnLoading(selector, loading){
+    const el = document.querySelector(selector);
+    if (!el) return;
+    if (loading) {
+        el.setAttribute('data-kt-indicator', 'on');
+        el.disabled = true;
+    } else {
+        el.removeAttribute('data-kt-indicator');
+        el.disabled = false;
+    }
+}
+
 let prDetailCart = [];
 let prDetailCounter = 0;
 let editingIndex = -1;
@@ -1101,12 +1158,12 @@ function addSourceToCart(itemBase, source){
     if (idx >= 0) {
         const ex = prDetailCart[idx];
 
-        // item เดิมที่ยังไม่มี sources → ห่อตัวเองเป็น source แรกก่อน (เหมือน PO)
+        // item เดิมที่ยังไม่มี sources ห่อเป็น source แรกก่อน
         if (!ex.sources || ex.sources.length === 0) {
             ex.sources = [{
                 mrId: null,
                 qty: ex.qty, unit: ex.unit, unitName: ex.unitName, baseQty: ex.qty,
-                refLink: '', description: ex.description || '',
+                refLink: ex.refLink || '', description: ex.description || '',
                 creatorName: ex.creatorName || currentUserDisplay,
                 savedAt: ex.savedAt || formatNowDateTime()
             }];
@@ -1117,7 +1174,8 @@ function addSourceToCart(itemBase, source){
 
         ex.sources.push(source);
         ex.qty = (Number(ex.qty) || 0) + source.baseQty;
-        if (!ex.description && itemBase.description) ex.description = itemBase.description;
+        if (itemBase.description) ex.description = itemBase.description;
+		if (itemBase.refLink)     ex.refLink     = itemBase.refLink;
     } else {
         prDetailCart.push({ ...itemBase, qty: source.baseQty, sources: [source] });
     }
@@ -1136,7 +1194,8 @@ function normalizeCartItem(item){
             savedAt: item.savedAt || formatNowDateTime()
         }];
     }
-    delete item.mrId; delete item.refLink; delete item.total;
+    delete item.mrId; delete item.total;
+	item.refLink = item.refLink || '';
     item.qty = qty;
     item.savedAt = item.savedAt || formatNowDateTime();
     return item;
@@ -1176,6 +1235,7 @@ function validatePrDetailForm(){
     if (editingIndex === -1 || editAllowProductChange) {
         const qty = $('#pr_qty').val().trim();
         if (!qty || Number(qty) <= 0) errors.push('จำนวน');
+        else if (!Number.isInteger(Number(qty))) errors.push('จำนวน (ต้องเป็นจำนวนเต็ม)');
         if (!$('#unit').val().trim()) errors.push('Unit');
     }
 
@@ -1205,6 +1265,8 @@ function addPrDetailToCart(){
         return;
     }
 
+    setBtnLoading('#btnSavePrDetail', true);
+    setTimeout(function(){
     const description = $("#pr_description").val();
     const refLink = $("#pr_ref_link").val().trim();
 
@@ -1216,8 +1278,9 @@ function addPrDetailToCart(){
     if (editingIndex >= 0) {
 		// Edit
 		const old = prDetailCart[editingIndex] || {};
-		const updated = { ...old, description: description };
+		const updated = { ...old, description: description, refLink: refLink };
 
+		// sync เข้า manual source ที่มีอยู่แล้ว (ถ้ามี) ไม่สร้างใหม่
 		const targetIdx = getManualRefSourceIndex(old);
 		updated.sources = (old.sources || []).map(function(s, i){
 			if (i !== targetIdx) return s;
@@ -1226,7 +1289,7 @@ function addPrDetailToCart(){
 
 		prDetailCart[editingIndex] = updated;
 		editingIndex = -1;
-	} else {
+	}else {
         const rawQty = Number($("#pr_qty").val()) || 0;
         const rawUnitId = $("#unit").val();
         const rawUnitName = $("#unit option:selected").text();
@@ -1243,6 +1306,7 @@ function addPrDetailToCart(){
             unit: baseUnitId,
             unitName: baseUnitName,
            	description: description, 
+			refLink: refLink,
             creatorName: currentUserDisplay,
             savedAt: formatNowDateTime()
         }, {
@@ -1261,6 +1325,7 @@ function addPrDetailToCart(){
 
     if (document.activeElement) document.activeElement.blur();
     bootstrap.Modal.getOrCreateInstance(document.getElementById("modal_create_pr")).hide();
+    }, 300);
 }
 
 function renderPrDetailCart(){
@@ -1350,13 +1415,11 @@ function createPrCard(item,index){
         + '</div>'
         : '';
 
-	const manualSrc = (item.sources || []).find(function(s){
-		return !s.mrId && s.refLink;
-	});
-	const headerRefLinkHtml = manualSrc ? `
-		<a href="\${manualSrc.refLink}" target="_blank" rel="noopener" class="text-primary d-inline-flex ms-2" onclick="event.stopPropagation();" title="Ref Link">
-			<i class="ki-duotone ki-fasten fs-2 text-primary"><span class="path1"></span><span class="path2"></span></i>
-		</a>` : '';
+	const headerRefLink = item.refLink || '';
+const headerRefLinkHtml = headerRefLink ? `
+    <a href="\${headerRefLink}" target="_blank" rel="noopener" class="text-primary d-inline-flex ms-2" onclick="event.stopPropagation();" title="Ref Link">
+        <i class="ki-duotone ki-fasten fs-2 text-primary"><span class="path1"></span><span class="path2"></span></i>
+    </a>` : '';
 		
     return `<div class="pr-item-group border-gray-400 border-bottom pt-9 pb-6 px-6">
     			<div class="d-flex align-items-center justify-content-between row g-3">
@@ -1485,9 +1548,9 @@ function editCartItem(index){
     const prefillQty = prefillSrc ? prefillSrc.qty : item.qty;
 
     $('#modal_create_pr .modal-title').text('Edit PR - Detail');
-    $('#btnSavePrDetail').text('Update');
-    $('#items_type').prop('disabled', !editAllowProductChange);
-    $('#product_name').prop('disabled', !editAllowProductChange);
+    $('#btnSavePrDetail .indicator-label').text('Update');
+	$('#items_type').prop('disabled', true);
+	$('#product_name').prop('disabled', true);
 
     $('#items_type').val(item.itemsType).trigger('change');
 
@@ -1511,8 +1574,7 @@ function editCartItem(index){
     $('#pr_qty').val(prefillQty);
     $('#unit').val(prefillUnit).trigger('change');
     $('#pr_description').val(item.description);
-	const manualSrc = getManualRefSource(item);
-	$('#pr_ref_link').val(manualSrc ? (manualSrc.refLink || '') : '');
+	$('#pr_ref_link').val(item.refLink || '');
 
     const modalEl = document.getElementById("modal_create_pr");
     const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
@@ -1563,12 +1625,12 @@ function toggleSrcMenu(btn, e){
 function removeSource(itemIndex, srcIndex){
     closeAllSrcMenus();
     Swal.fire({
-        title: "Are you sure?!",
-        text: "Are you sure you want to delete this row?",
+        title: "ยืนยันการลบ?!",
+        text: "รายการนี้จะถูกลบออกจากฐานข้อมูล และไม่สามารถกู้คืนได้",
         icon: "warning",
         showCancelButton: true,
-        confirmButtonText: "Yes, delete it",
-        cancelButtonText: "Cancel",
+        confirmButtonText: "ยืนยัน",
+        cancelButtonText: "ยกเลิก",
         buttonsStyling: false,
         customClass: { confirmButton: "btn btn-danger", cancelButton: "btn btn-secondary" }
     }).then(function(result){
@@ -1658,6 +1720,10 @@ function updateEditSrcPreview(){
 }
 $(document.body).on('input change', '#edit_src_qty, #edit_src_unit', updateEditSrcPreview);
 
+$(document.body).on('keydown', '#pr_qty, #edit_src_qty', function(e){
+    if (['.', ',', 'e', 'E', '+', '-'].indexOf(e.key) !== -1) e.preventDefault();
+});
+
 function saveEditSource(){
     if (!editingSrc) return;
 
@@ -1665,6 +1731,7 @@ function saveEditSource(){
     const unitId = $('#edit_src_unit').val();
     const errors = [];
     if (qty <= 0) errors.push('จำนวน');
+    else if (!Number.isInteger(qty)) errors.push('จำนวน (ต้องเป็นจำนวนเต็ม)');
     if (!unitId) errors.push('Unit');
     if (errors.length > 0) {
         Swal.fire({
@@ -1676,21 +1743,24 @@ function saveEditSource(){
         return;
     }
 
-    const item = prDetailCart[editingSrc.itemIndex];
-    const old = item.sources[editingSrc.srcIndex];
-    const unitName = $('#edit_src_unit option:selected').text();
-    const rate = Number($('#edit_src_unit option:selected').data('conversion-rate')) || 1;
-    const baseQty = qty * rate;
-    const oldBase = Number(old.baseQty != null ? old.baseQty : old.qty) || 0;
+    setBtnLoading('#btnSaveEditSource', true);
+    setTimeout(function(){
+        const item = prDetailCart[editingSrc.itemIndex];
+        const old = item.sources[editingSrc.srcIndex];
+        const unitName = $('#edit_src_unit option:selected').text();
+        const rate = Number($('#edit_src_unit option:selected').data('conversion-rate')) || 1;
+        const baseQty = qty * rate;
+        const oldBase = Number(old.baseQty != null ? old.baseQty : old.qty) || 0;
 
-    item.sources[editingSrc.srcIndex] = { ...old, qty: qty, unit: unitId, unitName: unitName, baseQty: baseQty };
-    item.qty = (Number(item.qty) || 0) + (baseQty - oldBase);   // ปรับยอดรวมของรายการหลัก
+        item.sources[editingSrc.srcIndex] = { ...old, qty: qty, unit: unitId, unitName: unitName, baseQty: baseQty };
+        item.qty = (Number(item.qty) || 0) + (baseQty - oldBase);   // ปรับยอดรวมของรายการหลัก
 
-    saveCartToSession();
-    renderPrDetailCart();
+        saveCartToSession();
+        renderPrDetailCart();
 
-    if (document.activeElement) document.activeElement.blur();
-    bootstrap.Modal.getOrCreateInstance(document.getElementById('modal_edit_source')).hide();
+        if (document.activeElement) document.activeElement.blur();
+        bootstrap.Modal.getOrCreateInstance(document.getElementById('modal_edit_source')).hide();
+    }, 300);
 }
 
 function parseFormattedNumber(str) {
@@ -2059,6 +2129,8 @@ function saveDraftForm(){
     Object.keys(payload).forEach(function (k) { fd.append(k, payload[k]); });
     selectedFiles.forEach(function (file) { fd.append('files', file, file.name); });
 
+    setBtnLoading('#saveDraft', true);
+
     $.ajax({
         url: ctx + '/save_pr',
         type: 'POST',
@@ -2074,15 +2146,19 @@ function saveDraftForm(){
                 Swal.fire({
                     title: 'Success!',
                     text: 'Pr saved draft successfully!',
-                    icon: 'success'
+                    icon: 'success',
+					timer: 800,
+					showConfirmButton: false
                 }).then(() => {
                     window.location.href = ctx + '/purchase_requisition_list';
                 });
             } else {
+                setBtnLoading('#saveDraft', false);
                 Swal.fire('Error', 'ไม่สามารถบันทึก Draft ได้', 'error');
             }
         },
         error: function () {
+            setBtnLoading('#saveDraft', false);
             Swal.fire('Error', 'เกิดข้อผิดพลาดในการบันทึก', 'error');
         }
     });
@@ -2142,7 +2218,7 @@ function submitPR(){
         Object.keys(payload).forEach(function (k) { fd.append(k, payload[k]); });
         selectedFiles.forEach(function (file) { fd.append('files', file, file.name); });
 
-        $('#savePRFormBtn').prop('disabled', true);
+        setBtnLoading('#savePRFormBtn', true);
 
         $.ajax({
             url: ctx + '/save_pr',
@@ -2159,19 +2235,20 @@ function submitPR(){
                     Swal.fire({
                         title: 'Success!',
                         text: 'Pr saved successfully!',
-                        icon: 'success'
+                        icon: 'success',
+						timer: 800,
+						showConfirmButton: false
                     }).then(() => {
                         window.location.href = ctx + '/purchase_requisition_list';
                     });
                 } else {
+                    setBtnLoading('#savePRFormBtn', false);
                     Swal.fire('Error', 'ไม่สามารถส่ง PR ได้', 'error');
                 }
             },
             error: function () {
+                setBtnLoading('#savePRFormBtn', false);
                 Swal.fire('Error', 'เกิดข้อผิดพลาดในการส่งข้อมูล', 'error');
-            },
-            complete: function(){
-                $('#savePRFormBtn').prop('disabled', false);
             }
         });
     });

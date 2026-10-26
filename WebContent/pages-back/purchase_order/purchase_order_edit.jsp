@@ -138,8 +138,8 @@
 	<div class="app-main flex-column flex-row-fluid">
 		<div class="d-flex flex-column flex-column-fluid">
 			<div id="kt_app_toolbar" class="app-toolbar py-3 py-lg-6">
-				<div id="kt_app_toolbar_container" class="app-container container-fluid d-flex flex-stack">
-				
+				<div id="kt_app_toolbar_container" class="app-container container-fluid d-flex flex-stack flex-wrap gap-3">
+
 					<div class="page-title d-flex flex-column justify-content-center flex-wrap me-3">
 						<h1 class="page-heading d-flex text-gray-700 fw-semibold flex-column justify-content-center my-0">
 							Edit PO - Purchase Order
@@ -151,7 +151,7 @@
 						</ul>
 					</div>
 					<div class="d-flex align-items-center gap-2">
-						<span class="fs-2hx text-primary fw-bold" id="">#${poList.poId}</span>
+						<span class="fs-1 fs-md-2x text-primary fw-bold" id="">#${poList.poId}</span>
 						<span class="badge badge-lg bg-${poStatusColors[poList.status]} fw-semibold fs-7 p-4
 									${poStatusColors[poList.status] == 'secondary' ? 'text-dark' : 'text-white'}">
 							${poStatusNames[poList.status]}
@@ -164,7 +164,7 @@
 			<div id="kt_app_content" class="app-content flex-column-fluid">
 				<div id="kt_app_content_container" class="app-container container-fluid">
 					<div class="row g-5 gx-xl-10">
-						<div class="col-md-12 col-lg-7 col-xl-7 col-xxl-8 mb-md-5">
+						<div class="col-md-12 col-lg-7 col-xl-7 col-xxl-8 mb-10">
 							<div class="card h-100">
 								<div class="card-header border-0 px-9 pt-7 d-flex align-items-center justify-content-between">
 									<div class="card-title">
@@ -210,7 +210,7 @@
 							</div>
 						</div>
 						
-						<div class="col-md-12 col-lg-5 col-xl-5 col-xxl-4 mb-md-5">
+						<div class="col-md-12 col-lg-5 col-xl-5 col-xxl-4 mb-10 mt-0 mt-lg-5">
 							<div class="card h-100 d-flex flex-column">
 								<div class="card-header border-0 px-9 pt-7 d-flex align-items-center justify-content-between">
 									<div class="card-title">
@@ -440,62 +440,168 @@
 							<div class="card-title">
 								<h3 class="fw-semibold text-gray-900">Signature</h3>
 							</div>
+
+							<div class="card-toolbar">
+								<a href="#" id="btnToggleSignature" class="pr-sig-toggle" role="button" aria-expanded="true">
+									<i class="ki-duotone ki-down-square fs-2hx">
+										<span class="path1"></span><span class="path2"></span>
+									</i>
+								</a>
+							</div>
 						</div>
-						<form id="signatureForm" method="post" action="update_signature" enctype="multipart/form-data">
-							<div class="card-body filter-card px-10 py-9 rounded-3 row g-5">
-								<!-- Draft status -->
-								<c:if test="${poList.status == '1'}">
-									<div class="col-6">
-										<div class="d-flex flex-column align-items-center gap-2">
-											<c:choose>
-												<c:when test="${not empty imgPathSignature}">
-													<div class="sig-box locked">
-														<img src="${pageContext.request.contextPath}${imgPathSignature}"
-															style="max-height: 150px; max-width: 360px; object-fit: contain;" />
-														<div class="sig-lock-badge">
-															<i class="ki-duotone ki-lock fs-7"> <span
-																class="path1"></span><span class="path2"></span>
-															</i> Signature on file
-														</div>
-													</div>
-												</c:when>
-
-												<c:when test="${poList.status == '1'}">
-													<div class="sig-box uploadable" id="uploadSignatureBox">
-														<img id="signaturePreview" style="max-height:150px; max-width:360px; object-fit:contain; display:none;" />
-														<div id="uploadPlaceholder" class="d-flex flex-column align-items-center">
-															<i class="ki-duotone ki-cloud-add fs-2x text-muted">
-																<span class="path1"></span><span class="path2"></span>
-															</i>
-															<span class="text-muted fs-8 mt-2">Click to upload your signature</span>
-														</div>
-													</div>
-													<input type="file" id="signatureFileInput" name="fileUpload" accept="image/*" class="d-none" />
-												</c:when>
-
-												<c:otherwise>
-													<div class="sig-box unuploadable">
-														<span class="text-muted fs-8">No signature</span>
-													</div>
-												</c:otherwise>
-											</c:choose>
-										</div>
-									</div>
-
-									<div class="col-6">
-										<div class="border ${empty poList.signDate ? 'border-gray-300' : 'border-success bg-light-success'} rounded-3 h-100 d-flex flex-column align-items-center justify-content-center text-center py-8" id="receiverCard1">
-											<div class="receiver-box d-flex flex-fill flex-column align-items-center justify-content-center gap-2" id="receiverBox1">
+						<div id="signatureCollapse" class="collapse show">
+							<form id="signatureForm" method="post" action="update_signature" enctype="multipart/form-data">
+								<div class="card-body filter-card px-10 py-9 rounded-3 row g-5">
+									<!-- Draft status -->
+									<c:if test="${poList.status == '1'}">
+										<div class="col-6">
+											<div class="d-flex flex-column align-items-center gap-2">
 												<c:choose>
-													<c:when test="${empty poList.signDate}">
-														<span class="text-muted fs-7" id="receiverLabel1">คลิ๊ก เพื่อยืนยันผู้ขอเบิกเงิน</span>
-														<div id="receiverPreview1" style="min-height: 44px; display: flex; flex-direction: column; align-items: center;"></div>
-														<button type="button" class="btn btn-primary btn-sm px-5" id="receiverBtn1" onclick="confirmReceiver(1)">
-															ลงชื่อ ผู้ขอเบิก
-														</button>
+													<c:when test="${not empty imgPathSignature}">
+														<div class="sig-box locked">
+															<img src="${pageContext.request.contextPath}${imgPathSignature}"
+																style="max-height: 150px; max-width: 360px; object-fit: contain;" />
+															<div class="sig-lock-badge">
+																<i class="ki-duotone ki-lock fs-7"> <span
+																	class="path1"></span><span class="path2"></span>
+																</i> Signature on file
+															</div>
+														</div>
+													</c:when>
+
+													<c:when test="${poList.status == '1'}">
+														<div class="sig-box uploadable" id="uploadSignatureBox">
+															<img id="signaturePreview" style="max-height:150px; max-width:360px; object-fit:contain; display:none;" />
+															<div id="uploadPlaceholder" class="d-flex flex-column align-items-center">
+																<i class="ki-duotone ki-cloud-add fs-2x text-muted">
+																	<span class="path1"></span><span class="path2"></span>
+																</i>
+																<span class="text-muted fs-8 mt-2">Click to upload your signature</span>
+															</div>
+														</div>
+														<input type="file" id="signatureFileInput" name="fileUpload" accept="image/*" class="d-none" />
 													</c:when>
 
 													<c:otherwise>
-														<div id="receiverPreview1" style="min-height: 44px; display: flex; flex-direction: column; align-items: center;">
+														<div class="sig-box unuploadable">
+															<span class="text-muted fs-8">No signature</span>
+														</div>
+													</c:otherwise>
+												</c:choose>
+											</div>
+										</div>
+
+										<div class="col-6">
+											<div class="border ${empty poList.signDate ? 'border-gray-300' : 'border-success bg-light-success'} rounded-3 h-100 d-flex flex-column align-items-center justify-content-center text-center py-8" id="receiverCard1">
+												<div class="receiver-box d-flex flex-fill flex-column align-items-center justify-content-center gap-2" id="receiverBox1">
+													<c:choose>
+														<c:when test="${empty poList.signDate}">
+															<span class="text-muted fs-7" id="receiverLabel1">คลิ๊ก เพื่อยืนยันผู้ขอเบิกเงิน</span>
+															<div id="receiverPreview1" style="min-height: 44px; display: flex; flex-direction: column; align-items: center;"></div>
+															<button type="button" class="btn btn-primary btn-sm px-5" id="receiverBtn1" onclick="confirmReceiver(1)">
+																ลงชื่อ ผู้ขอเบิก
+															</button>
+														</c:when>
+
+														<c:otherwise>
+															<div id="receiverPreview1" style="min-height: 44px; display: flex; flex-direction: column; align-items: center;">
+																<span class="text-primary pb-2 fs-7 fw-semibold">ชื่อ ผู้ขอเบิก</span>
+																<div class="d-flex flex-column align-items-center">
+																	<span class="text-dark fw-semibold fs-7">${empty userSignUser.nameEN ? userSignUser.name : userSignUser.nameEN}</span>
+																	<span class="text-muted fs-8">
+																		<fmt:formatDate value="${poList.signDate}" pattern="d MMM yyyy , H:mm" />
+																	</span>
+																</div>
+															</div>
+														</c:otherwise>
+													</c:choose>
+												</div>
+											</div>
+										</div>
+									</c:if>
+
+									<!-- Approved status -->
+									<c:if test="${poList.status == '3' or poList.status == '7'}">
+										<c:if test="${not empty poList.signDate}">
+											<div class="col-6 p-16 m-0">
+												<div class="d-flex flex-column align-items-center gap-3">
+													<c:if test="${not empty imgPathSignature}">
+														<img src="${pageContext.request.contextPath}${imgPathSignature}"
+															style="max-height: 150px; max-width: 360px; object-fit: contain;" />
+													</c:if>
+													<span class="text-primary pt-3 fs-4 fw-medium">ชื่อ ผู้ขอเบิก</span>
+													<div class="d-flex flex-column align-items-center">
+														<span class="text-gray-900 fw-medium fs-5 pb-2">${empty userSignUser.nameEN ? userSignUser.name : userSignUser.nameEN}</span>
+														<span class="text-gray-900 fw-medium fs-6">
+															<fmt:formatDate value="${poList.signDate}" pattern="d MMM yyyy , H:mm" />
+														</span>
+													</div>
+												</div>
+											</div>
+										</c:if>
+										
+										<c:if test="${not empty poList.approveDate}">
+											<div class="col-6 p-16 m-0">
+												<div class="d-flex flex-column align-items-center gap-3">
+													<c:if test="${not empty imgPathApproveSignature}">
+														<img src="${pageContext.request.contextPath}${imgPathApproveSignature}"
+															style="max-height: 150px; max-width: 360px; object-fit: contain;" />
+													</c:if>
+												
+													<span class="text-primary pt-3 fs-4 fw-medium">ชื่อ ผู้อนุมัติ</span>
+													<div class="d-flex flex-column align-items-center">
+														<span class="text-gray-900 fw-medium fs-5 pb-2">${empty userApproveUser.nameEN ? userApproveUser.name : userApproveUser.nameEN}</span>
+														<span class="text-gray-900 fw-medium fs-6">
+															<fmt:formatDate value="${poList.approveDate}" pattern="d MMM yyyy , H:mm" />
+														</span>
+
+														<c:if test="${not empty poList.reason}">
+															<span class="d-flex align-items-center mt-3">
+																<i class="ki-duotone ki-document fs-2 fw-normal text-muted me-2">
+																	<span class="path1"></span>
+																	<span class="path2"></span>
+																</i>
+																<span class="fs-5 fw-normal text-gray-900">${poList.reason}</span>
+															</span>
+														</c:if>
+													</div>
+												</div>
+											</div>
+										</c:if>
+									</c:if>
+
+									<!-- Pending status -->
+									<c:if test="${poList.status == '2' or poList.status == '4' or poList.status == '5' or poList.status == '6'}">
+										<div class="col-6">
+											<div class="d-flex flex-column align-items-center gap-2">
+												<c:choose>
+													<c:when test="${not empty imgPathSignature}">
+														<div class="sig-box locked">
+															<img src="${pageContext.request.contextPath}${imgPathSignature}"
+																style="max-height: 150px; max-width: 360px; object-fit: contain;" />
+															<div class="sig-lock-badge">
+																<i class="ki-duotone ki-lock fs-7"><span class="path1"></span><span class="path2"></span></i>
+																Signature on file
+															</div>
+														</div>
+													</c:when>
+													<c:otherwise>
+														<div class="sig-box unuploadable">
+															<span class="text-muted fs-8">No signature</span>
+														</div>
+													</c:otherwise>
+												</c:choose>
+											</div>
+										</div>
+
+										<div class="col-6">
+											<div class="border ${empty poList.signDate ? 'border-gray-300' : 'border-success bg-light-success'} rounded-3 h-100 d-flex flex-column align-items-center justify-content-center text-center py-8">
+												<div class="d-flex flex-fill flex-column align-items-center justify-content-center gap-2">
+													<c:choose>
+														<c:when test="${empty poList.signDate}">
+															<span class="text-muted fs-7">ยังไม่มีการลงชื่อ ผู้ขอเบิก</span>
+														</c:when>
+														<c:otherwise>
 															<span class="text-primary pb-2 fs-7 fw-semibold">ชื่อ ผู้ขอเบิก</span>
 															<div class="d-flex flex-column align-items-center">
 																<span class="text-dark fw-semibold fs-7">${empty userSignUser.nameEN ? userSignUser.name : userSignUser.nameEN}</span>
@@ -503,111 +609,15 @@
 																	<fmt:formatDate value="${poList.signDate}" pattern="d MMM yyyy , H:mm" />
 																</span>
 															</div>
-														</div>
-													</c:otherwise>
-												</c:choose>
-											</div>
-										</div>
-									</div>
-								</c:if>
-
-								<!-- Approved status -->
-								<c:if test="${poList.status == '3' or poList.status == '7'}">
-									<c:if test="${not empty poList.signDate}">
-										<div class="col-6 p-16 m-0">
-											<div class="d-flex flex-column align-items-center gap-3">
-												<c:if test="${not empty imgPathSignature}">
-													<img src="${pageContext.request.contextPath}${imgPathSignature}"
-														style="max-height: 150px; max-width: 360px; object-fit: contain;" />
-												</c:if>
-												<span class="text-primary pt-3 fs-4 fw-medium">ชื่อ ผู้ขอเบิก</span>
-												<div class="d-flex flex-column align-items-center">
-													<span class="text-gray-900 fw-medium fs-5 pb-2">${empty userSignUser.nameEN ? userSignUser.name : userSignUser.nameEN}</span>
-													<span class="text-gray-900 fw-medium fs-6">
-														<fmt:formatDate value="${poList.signDate}" pattern="d MMM yyyy , H:mm" />
-													</span>
+														</c:otherwise>
+													</c:choose>
 												</div>
 											</div>
 										</div>
 									</c:if>
-									
-									<c:if test="${not empty poList.approveDate}">
-										<div class="col-6 p-16 m-0">
-											<div class="d-flex flex-column align-items-center gap-3">
-												<c:if test="${not empty imgPathApproveSignature}">
-													<img src="${pageContext.request.contextPath}${imgPathApproveSignature}"
-														style="max-height: 150px; max-width: 360px; object-fit: contain;" />
-												</c:if>
-											
-												<span class="text-primary pt-3 fs-4 fw-medium">ชื่อ ผู้อนุมัติ</span>
-												<div class="d-flex flex-column align-items-center">
-													<span class="text-gray-900 fw-medium fs-5 pb-2">${empty userApproveUser.nameEN ? userApproveUser.name : userApproveUser.nameEN}</span>
-													<span class="text-gray-900 fw-medium fs-6">
-														<fmt:formatDate value="${poList.approveDate}" pattern="d MMM yyyy , H:mm" />
-													</span>
-
-													<c:if test="${not empty poList.reason}">
-														<span class="d-flex align-items-center mt-3">
-															<i class="ki-duotone ki-document fs-2 fw-normal text-muted me-2">
-																<span class="path1"></span>
-																<span class="path2"></span>
-															</i>
-															<span class="fs-5 fw-normal text-gray-900">${poList.reason}</span>
-														</span>
-													</c:if>
-												</div>
-											</div>
-										</div>
-									</c:if>
-								</c:if>
-
-								<!-- Pending status -->
-								<c:if test="${poList.status == '2' or poList.status == '4' or poList.status == '5' or poList.status == '6'}">
-									<div class="col-6">
-										<div class="d-flex flex-column align-items-center gap-2">
-											<c:choose>
-												<c:when test="${not empty imgPathSignature}">
-													<div class="sig-box locked">
-														<img src="${pageContext.request.contextPath}${imgPathSignature}"
-															style="max-height: 150px; max-width: 360px; object-fit: contain;" />
-														<div class="sig-lock-badge">
-															<i class="ki-duotone ki-lock fs-7"><span class="path1"></span><span class="path2"></span></i>
-															Signature on file
-														</div>
-													</div>
-												</c:when>
-												<c:otherwise>
-													<div class="sig-box unuploadable">
-														<span class="text-muted fs-8">No signature</span>
-													</div>
-												</c:otherwise>
-											</c:choose>
-										</div>
-									</div>
-
-									<div class="col-6">
-										<div class="border ${empty poList.signDate ? 'border-gray-300' : 'border-success bg-light-success'} rounded-3 h-100 d-flex flex-column align-items-center justify-content-center text-center py-8">
-											<div class="d-flex flex-fill flex-column align-items-center justify-content-center gap-2">
-												<c:choose>
-													<c:when test="${empty poList.signDate}">
-														<span class="text-muted fs-7">ยังไม่มีการลงชื่อ ผู้ขอเบิก</span>
-													</c:when>
-													<c:otherwise>
-														<span class="text-primary pb-2 fs-7 fw-semibold">ชื่อ ผู้ขอเบิก</span>
-														<div class="d-flex flex-column align-items-center">
-															<span class="text-dark fw-semibold fs-7">${empty userSignUser.nameEN ? userSignUser.name : userSignUser.nameEN}</span>
-															<span class="text-muted fs-8">
-																<fmt:formatDate value="${poList.signDate}" pattern="d MMM yyyy , H:mm" />
-															</span>
-														</div>
-													</c:otherwise>
-												</c:choose>
-											</div>
-										</div>
-									</div>
-								</c:if>
-							</div>
-						</form>
+								</div>
+							</form>
+						</div>
 					</div>
 					
 					<c:if test="${poList.status == '2'}">
@@ -658,7 +668,7 @@
 					</c:if>
 
 					<div class="modal fade" tabindex="-1" id="modal_create_po">
-						<div class="modal-dialog modal-lg modal-dialog-centered">
+						<div class="modal-dialog modal-lg modal-fullscreen-sm-down modal-dialog-centered">
 						    <div class="modal-content">
 						        <div class="modal-header">
 						            <h3 class="modal-title">Create PO - Detail</h3>
@@ -696,7 +706,7 @@
 									<div class="row g-5 mb-6" id="poQtyUnitRow">
 										<div class="col-lg-6 col-md-6 col-12 d-flex flex-column">
 											<label class="required fw-medium text-gray-800 mb-2">จำนวน</label>
-											<input type="number" class="form-control text-gray-700 h-45px" min="1"
+											<input type="number" class="form-control text-gray-700 h-45px" min="1" step="1"
 													name="po_qty" id="po_qty" placeholder="1" value="1" />
 										</div>
 
@@ -739,7 +749,7 @@
 					
 					
 					<div class="modal fade" tabindex="-1" id="modal_search_pr">
-					    <div class="modal-dialog modal-xl">
+					    <div class="modal-dialog modal-xl modal-fullscreen-lg-down">
 					        <div class="modal-content px-3">
 					            <div class="modal-header border-0">
 					                <h3 class="modal-title">Search PR</h3>
@@ -807,7 +817,12 @@
 					
 					            <div class="modal-footer pt-0 mt-0 mb-2 border-0">
 					                <button type="button" class="btn btn-light" data-bs-dismiss="modal">Close</button>
-					                <button type="button" class="btn btn-success" id="btnSubmitPr">Submit</button>
+					                <button type="button" class="btn btn-success" id="btnSubmitPr">
+					                    <span class="indicator-label">Submit</span>
+					                    <span class="indicator-progress">Saving...
+					                        <span class="spinner-border spinner-border-sm align-middle ms-2"></span>
+					                    </span>
+					                </button>
 					            </div>
 					        </div>
 					    </div>
@@ -856,7 +871,7 @@
 									<div class="row g-5">
 										<div class="col-12 col-sm-6 d-flex flex-column">
 											<label class="required fw-medium text-gray-800 mb-2">จำนวน</label>
-											<input type="number" class="form-control text-gray-700 h-45px" min="1" id="edit_src_qty" />
+											<input type="number" class="form-control text-gray-700 h-45px" min="1" step="1" id="edit_src_qty" />
 										</div>
 										<div class="col-12 col-sm-6 d-flex flex-column">
 											<label class="required fw-medium text-gray-800 mb-2">Unit</label>
@@ -880,10 +895,10 @@
 						</div>
 					</div>
 					
-					<div class="d-flex justify-content-between g-10">
-						<div class="d-flex">
-							<button type="button" id="backFormBtn" onclick="goBack()" 
-                                class="btn btn-lg btn-light fw-medium text-light-inverse px-6 py-4 me-4 border">Back
+					<div class="po-action-bar d-flex flex-wrap justify-content-between gap-3">
+						<div class="d-flex flex-wrap gap-3">
+							<button type="button" id="backFormBtn" onclick="goBack()"
+                                class="btn btn-lg btn-light fw-medium text-light-inverse px-6 py-4 border">Back
 							</button>
 							<c:if test="${poList.status == '1' or poList.status == '4'}">
 								<button type="button" id="cancelFormBtn"
@@ -896,9 +911,9 @@
 						</div>
 						<c:choose>
 							<c:when test="${poList.status == '1'}">
-								<div class="d-flex">
+								<div class="d-flex flex-wrap gap-3">
 									<button type="button" id="saveDraft" onclick="saveDraftForm()"
-										class="btn btn-lg btn-cyan text-white fw-medium px-6 py-4 me-4">
+										class="btn btn-lg btn-cyan text-white fw-medium px-6 py-4">
 										<span class="indicator-label">Save Draft</span>
 										<span class="indicator-progress">Saving...<span class="spinner-border spinner-border-sm align-middle ms-2"></span></span>
 									</button>
@@ -910,16 +925,16 @@
 									</button>
 								</div>
 							</c:when>
-							
+
 							<c:when test="${poList.status == '2'}">
-									<div class="d-flex">
+									<div class="d-flex flex-wrap gap-3">
 										<button type="button" id="returnPOBtn" onclick="returnPO()"
-												class="btn btn-lg btn-info text-white fw-medium px-6 py-4 me-4">
+												class="btn btn-lg btn-info text-white fw-medium px-6 py-4">
 												<span class="indicator-label">Return</span>
 												<span class="indicator-progress">Returning...<span class="spinner-border spinner-border-sm align-middle ms-2"></span></span>
 											</button>
 										<button type="button" id="rejectPOBtn" onclick="rejectPO()"
-												class="btn btn-lg btn-danger text-white fw-medium px-6 py-4 me-4">
+												class="btn btn-lg btn-danger text-white fw-medium px-6 py-4">
 												<span class="indicator-label">Reject</span>
 												<span class="indicator-progress">Rejecting...<span class="spinner-border spinner-border-sm align-middle ms-2"></span></span>
 											</button>
@@ -929,11 +944,11 @@
 													<span class="indicator-progress">Approving...<span class="spinner-border spinner-border-sm align-middle ms-2"></span></span>
 												</button>
 									</div>
-								
+
 							</c:when>
 
 							<c:when test="${poList.status == '4'}">
-								<div class="d-flex">
+								<div class="d-flex flex-wrap gap-3">
 									<button type="button" id="editPOFormBtn"
 										class="btn btn-lg btn-primary fw-medium px-6 py-4"
 										onclick="editPO()">
@@ -944,7 +959,7 @@
 							</c:when>
 
 							<c:when test="${poList.status == '3'}">
-								<div class="d-flex">
+								<div class="d-flex flex-wrap gap-3">
 									<button type="button" id="inProgressPOFormBtn"
 										class="btn btn-lg bg-cyan text-white fw-medium px-6 py-4"
 										onclick="inProgressPO()">
@@ -955,7 +970,7 @@
 							</c:when>
 
 							<c:otherwise>
-								
+
 							</c:otherwise>
 						</c:choose>
 					</div>
@@ -1000,7 +1015,7 @@
 				<c:forEach var="p" items="${d.poParentList}" varStatus="ps">
 				{
 					poParentId: "${empty p.po_parent_id ? '' : p.po_parent_id}",
-					prId: "${p.pr_id}",
+					prId: "${empty p.pr_id ? '' : p.pr_id}",
 					refLink: "${empty p.ref_link ? '' : p.ref_link}",
 					qty: ${empty p.amount ? 0 : p.amount},
 					unit: "${empty p.unit ? '' : p.unit}",
@@ -1033,14 +1048,44 @@
 	}
 	
 	document.addEventListener("DOMContentLoaded", function () {
-		flatpickr("#kt_reference_datepicker", {
-	        dateFormat: "Y-m-d",  
+
+		// จับค่า header ตั้งต้นจาก DB ก่อนกู้ค่า stash เสมอ (กู้ค่าแล้วยังต้องถือว่า ยังไม่ save )
+		initialHeader = currentHeaderValues();
+		initialHeader.vendorLocationId = editLocationId || '';
+		initialHeader.contactId = editContactId || '';
+
+		// กู้ค่า Header/Vendor ที่ stash ไว้ก่อน reloadPage() — เฉพาะตอน reload จริงเท่านั้น (ไม่ใช่เปิดหน้าใหม่/ย้อนกลับ)
+		let restoredHeader = null;
+		if (canEditPoDetail) {
+			try {
+				const nav = performance.getEntriesByType('navigation')[0];
+				const stash = sessionStorage.getItem(HEADER_STASH_KEY);
+				if (stash !== null && nav && nav.type === 'reload') {
+					restoredHeader = JSON.parse(stash);
+				}
+			} catch(e){}
+			try { sessionStorage.removeItem(HEADER_STASH_KEY); } catch(e){}
+		}
+
+		if (restoredHeader) {
+			$('#description').val(restoredHeader.description || '');
+			$('#reference_no').val(restoredHeader.referenceNo || '');
+			$('#vendor_description').val(restoredHeader.descriptionVendor || '');
+			pendingLocationId = restoredHeader.vendorLocationId || null;
+			pendingContactId = restoredHeader.contactId || null;
+		}
+
+		const fp = flatpickr("#kt_reference_datepicker", {
+	        dateFormat: "Y-m-d",
 	        altInput: true,
-	        altFormat: "d M Y",   
-	        locale: "en",        
+	        altFormat: "d M Y",
+	        locale: "en",
 	        allowInput: false
 	    });
-		
+		if (restoredHeader && restoredHeader.referenceDate) {
+			fp.setDate(restoredHeader.referenceDate, true);
+		}
+
 		document.querySelector('#kt_app_content_container').addEventListener('click', function(e){
 			const btn = e.target.closest('.po-group-toggle');
 			if (!btn) return;
@@ -1087,7 +1132,9 @@
 		        });
 		    }
 		    
-		    if (!editCompanyId) { // เฉพาะ add เท่านั้น
+		    if (restoredHeader && restoredHeader.vendorId) {
+		        $('#vendor_id').val(restoredHeader.vendorId).trigger('change');
+		    } else if (!editCompanyId) { // เฉพาะ add เท่านั้น
 		        var $vendorId = $('#vendor_id');
 		        var $firstCompany = $vendorId.find('option').filter(function () {
 		            return $(this).val() !== '';
@@ -1096,12 +1143,13 @@
 		            $vendorId.val($firstCompany.val()).trigger('change');
 		        }
 		    }
-		    
+
 		    const createPoModalEl = document.getElementById('modal_create_po');
 
 		    createPoModalEl.addEventListener('show.bs.modal', function () {
 		        setBtnLoading('#btnSavePoDetail', false);
-		        if (editingIndex === -1 && !editingExistingDetailId) {
+		        if (!editingExistingDetailId) {
+		            $('#items_type, #product_name').prop('disabled', false);
 		            $('#items_type').val('equipment').trigger('change');
 		            $('#po_qty').val('1');
 		            $('#unit').val('');
@@ -1114,6 +1162,7 @@
         			$('#poDescRow').removeClass('col-lg-6 col-md-6');
 				} else {
 					// Edit
+					$('#items_type, #product_name').prop('disabled', true);
 					$('#poQtyUnitRow').addClass('d-none');
 					$('#poPriceRow').removeClass('d-none');
 					$('#poDescRow').addClass('col-lg-6 col-md-6');
@@ -1121,8 +1170,8 @@
 		    });
 
 		    createPoModalEl.addEventListener('hidden.bs.modal', function () {
-				editingIndex = -1;
 				editingExistingDetailId = null;
+				$('#items_type, #product_name').prop('disabled', false);
 			});
 
 			document.getElementById('modal_edit_source').addEventListener('hidden.bs.modal', function () {
@@ -1136,7 +1185,6 @@
 			const btnOpenCreatePo = document.getElementById('btnOpenCreatePo');
 			if (btnOpenCreatePo) {
 				btnOpenCreatePo.addEventListener('click', function () {
-					editingIndex = -1;
 					editingExistingDetailId = null;
 					bootstrap.Modal.getOrCreateInstance(createPoModalEl, { backdrop: true }).show();
 				});
@@ -1158,13 +1206,16 @@
 				$('#prResultBody').empty();
 				$('#checkAllPr').prop('checked', false);
 				$('#prSelectedCount').text('0');
-			
+
 				selectedPrCategory = '';
+				pendingPrKeyword = null;
+				$('#searchPrKeyword').val('');
 				$('#searchPrCategory').val('').trigger('change.select2');
 			});
 
 			searchPrModalEl.addEventListener('show.bs.modal', function () {
 				isSearchPrModalOpen = true;
+				setBtnLoading('#btnSubmitPr', false);
 				loadInprogressPrDetail();
 			});
 
@@ -1175,10 +1226,21 @@
 				});
 			}
 
-			if (editCompanyId) {
+			if (!restoredHeader && editCompanyId) {
 				$('#vendor_id').val(editCompanyId).trigger('change');
 			}
-		    
+
+			document.getElementById('btnToggleSignature').addEventListener('click', function (e) {
+				e.preventDefault();
+				const collapseEl = document.getElementById('signatureCollapse');
+				const icon = this.querySelector('i');
+				const isOpen = collapseEl.classList.contains('show');
+
+				collapseEl.classList.toggle('show', !isOpen);
+				this.setAttribute('aria-expanded', String(!isOpen));
+				icon.classList.toggle('ki-down-square', !isOpen);
+				icon.classList.toggle('ki-up-square', isOpen);
+			});
 		    
 });
 	
@@ -1198,10 +1260,8 @@
 	        }
 	    }).then((result) => {
 	        if (result.isConfirmed) {
-	        	sessionStorage.removeItem(PO_CART_STORAGE_KEY);
-				sessionStorage.removeItem(PO_EXISTING_SRC_KEY);
-				sessionStorage.removeItem(PO_EXISTING_EDIT_KEY);
-				sessionStorage.removeItem(PO_SOURCE_EDIT_KEY);
+	        	skipLeaveWarning = true;
+	        	clearDraftStorage();
 	            window.location.href = redirectUrl;
 	        }
 	    });
@@ -1464,10 +1524,10 @@
 					title: 'Save Success',
 					text: 'Signature has been successfully recorded.',
 					icon: 'success',
-					timer: 1200,
+					timer: 800,
 					showConfirmButton: false
 				}).then(() => {
-					window.location.href = window.location.href;
+					reloadPage();
 				});
 			})
 			.catch(err => {
@@ -1677,54 +1737,49 @@
 </script>
 
 <script>
-let poDetailCart = []; // เก็บรายการใหม่ ที่เพิ่มระหว่างแก้ไข ยังไม่ถูกบันทึกลง DB
-let existingPoDetailList = (typeof serverPoDetailCart !== 'undefined') ? serverPoDetailCart : []; // รายการเดิมที่มีอยู่แล้วใน DB
-let poDetailCounter = 0;
-let editingIndex = -1;
+let existingPoDetailList = (typeof serverPoDetailCart !== 'undefined') ? serverPoDetailCart : []; // รายการเดิมที่มีอยู่แล้วใน DB (แก้/ลบผ่าน AJAX ทันที)
 let editingExistingDetailId = null; // po_detail_id ของรายการเดิมที่กำลังแก้ (ถ้ามี)
-let pendingExistingPoSources = {}; //source ใหม่ที่ต่อเข้าการ์ดเดิม ยังไม่ save
-let prUnitCatalogCache = {};
 let confirmed1 = ${empty poList.signDate ? 'false' : 'true'}; //track ว่าลงชื่อ ผู้ขอเบิก แล้วหรือยัง
 
-let pendingExistingEdits = {}; // { poDetailId: { total, description } } ส่วนของ db ที่ผู้ใช้แก้ไว้ ยังไม่ save
-const PO_EXISTING_EDIT_KEY = 'poExistingEdit_draft_' + (EDIT_PO_ID || 'new');
+let skipLeaveWarning = false; //ตั้ง true ตอน Save/Submit/Back สำเร็จ เพื่อไม่ให้เตือน
 
-let pendingSourceEdits = {}; // { poDetailId: { poParentId: { qty, unit, unitName, baseQty } } } แก้ qty/unit ของ source เดิมใน db ยังไม่ save
-const PO_SOURCE_EDIT_KEY = 'poSourceEdit_draft_' + (EDIT_PO_ID || 'new');
+// เก็บ header/vendor ระหว่าง reload
+let initialHeader = {}; // ค่าตั้งต้นจาก DB จับไว้ตอน DOMContentLoaded (ก่อนกู้ค่า stash) ใช้เทียบว่า header เปลี่ยนไปหรือยัง
+const HEADER_STASH_KEY = 'poHeaderStash_' + (EDIT_PO_ID || 'new');
 
-const PO_CART_STORAGE_KEY = 'poDetailCart_draft_' + (EDIT_PO_ID || 'new');
-const PO_EXISTING_SRC_KEY = 'poExistingSrc_draft_' + (EDIT_PO_ID || 'new');
-loadCartFromSession();
-
-
-function pendingSrcTotal(poDetailId){
-    return (pendingExistingPoSources[String(poDetailId)] || [])
-        .reduce(function(a, s){ return a + (Number(s.total) || 0); }, 0);
+function currentHeaderValues(){
+    return {
+        description: $('#description').val() || '',
+        vendorId: $('#vendor_id').val() || '',
+        vendorLocationId: $('#vendor_location_id').val() || '',
+        contactId: $('#contact_id').val() || '',
+        referenceNo: $('#reference_no').val() || '',
+        referenceDate: $('#kt_reference_datepicker').val() || '',
+        descriptionVendor: $('#vendor_description').val() || ''
+    };
 }
-function dbTotalOf(item){   // ยอดส่วนของ db (รวมที่แก้ค้างไว้)
-    const e = pendingExistingEdits[String(item.poDetailId)];
-    return e ? Number(e.total) : (Number(item.total) || 0);
+
+function headerChanged(){
+    const cur = currentHeaderValues();
+    return Object.keys(cur).some(function(k){ return cur[k] !== (initialHeader[k] != null ? initialHeader[k] : ''); });
 }
-function dbDescOf(item){
-    const e = pendingExistingEdits[String(item.poDetailId)];
-    return e ? e.description : (item.description || '');
+
+function clearDraftStorage(){
+    try { sessionStorage.removeItem(HEADER_STASH_KEY); } catch(e){}
 }
 
 function hasUnsavedChanges(){
     if (!canEditPoDetail) return false;   // เตือนเฉพาะ status = 1
-    if (poDetailCart.length > 0) return true;
-    if (Object.keys(pendingExistingEdits).length > 0) return true;
-    const hasPendingSrc = Object.keys(pendingExistingPoSources).some(function(k){
-        return (pendingExistingPoSources[k] || []).length > 0;
-    });
-    if (hasPendingSrc) return true;
-    const hasPendingSrcEdit = Object.keys(pendingSourceEdits).some(function(k){
-        return Object.keys(pendingSourceEdits[k] || {}).length > 0;
-    });
-    if (hasPendingSrcEdit) return true;
+    if (headerChanged()) return true;
     if (typeof selectedFiles !== 'undefined' && selectedFiles.length > 0) return true;
     return false;
 }
+
+window.addEventListener('beforeunload', function(e){
+    if (!canEditPoDetail || skipLeaveWarning || !hasUnsavedChanges()) return;
+    e.preventDefault();
+    e.returnValue = ''; // เบราว์เซอร์จะแสดงข้อความมาตรฐานของตัวเอง ปรับข้อความเองไม่ได้
+});
 
 function mapDbItemsTypeToSelect(val){
     switch(String(val)){
@@ -1736,87 +1791,28 @@ function mapDbItemsTypeToSelect(val){
     }
 }
 
-// ถ้าสินค้านี้มีการ์ดอยู่ใน DB แล้ว เก็บเป็น source ใหม่ของการ์ดนั้น คืน true ถ้าจัดการให้แล้ว
-function addToExistingPoDetail(productId, sourceEntry, addTotal){
-    const ex = existingPoDetailList.find(function(it){
-        return String(it.productId) === String(productId);
-    });
-    if (!ex) return false;
-
-    const pid = String(ex.poDetailId);
-    const pending = pendingExistingPoSources[pid] || [];
-
-    // กันดึง PR detail ซ้ำ
-    if (sourceEntry.prDetailId) {
-        const dup = (ex.sources || []).concat(pending).some(function(s){
-            return String(s.prDetailId) === String(sourceEntry.prDetailId);
-        });
-        if (dup) return true;
-    }
-    pending.push({ ...sourceEntry, total: Number(addTotal) || 0 });
-    pendingExistingPoSources[pid] = pending;
-    return true;
+function findExistingDetailByProduct(productId){
+    return existingPoDetailList.find(function(it){ return String(it.productId) === String(productId); });
 }
 
-function saveCartToSession(){
-    try {
-        sessionStorage.setItem(PO_CART_STORAGE_KEY, JSON.stringify(poDetailCart));
-        sessionStorage.setItem(PO_EXISTING_SRC_KEY, JSON.stringify(pendingExistingPoSources));
-        sessionStorage.setItem(PO_EXISTING_EDIT_KEY, JSON.stringify(pendingExistingEdits));
-        sessionStorage.setItem(PO_SOURCE_EDIT_KEY, JSON.stringify(pendingSourceEdits));
-    } catch (e) { console.error('ไม่สามารถบันทึก cart ลง sessionStorage ได้', e); }
-}
-
-function loadCartFromSession(){
-    try {
-        const saved = sessionStorage.getItem(PO_CART_STORAGE_KEY);
-        if (saved) {
-            poDetailCart = JSON.parse(saved);
-            
-            poDetailCart = poDetailCart.map(item => ({
-                ...item,
-                price: Number(item.price) || 0,
-                qty: Number(item.qty) || 0,
-                total: Number(item.total) || (Number(item.qty) || 0) * (Number(item.price) || 0),
-                savedAt: item.savedAt || formatNowDateTime()
-            }));
-
-			const savedEx = sessionStorage.getItem(PO_EXISTING_SRC_KEY);
-			if (savedEx) pendingExistingPoSources = JSON.parse(savedEx) || {};
-        }
-        const savedEdit = sessionStorage.getItem(PO_EXISTING_EDIT_KEY);
-if (savedEdit) pendingExistingEdits = JSON.parse(savedEdit) || {};
-        const savedSrcEdit = sessionStorage.getItem(PO_SOURCE_EDIT_KEY);
-        if (savedSrcEdit) pendingSourceEdits = JSON.parse(savedSrcEdit) || {};
-    } catch (e) {
-        console.error('ไม่สามารถโหลด cart จาก sessionStorage ได้', e);
-        poDetailCart = [];
-		pendingExistingPoSources = {};
-        pendingExistingEdits = {};
-        pendingSourceEdits = {};
-    }
-}
-
-//กันข้อมูลหายตอน refresh
-loadCartFromSession();
 document.addEventListener('DOMContentLoaded', function(){
     renderPoDetailCart();
-   
 });
 
 function validatePoDetailForm(){
     let errors = [];
 
-    if (!$('#items_type').val() || !$('#items_type').val().trim()) errors.push('Category');
-    if (!$('#product_name').val() || !$('#product_name').val().trim()) errors.push('Product Name');
+    if (!editingExistingDetailId) {
+        if (!$('#items_type').val()) errors.push('Category');
+        if (!$('#product_name').val()) errors.push('Product Name');
 
-    const qty = $('#po_qty').val().trim();
-    if (!qty || Number(qty) <= 0) errors.push('จำนวน');
+        const qty = ($('#po_qty').val() || '').trim();
+        if (!qty || Number(qty) <= 0) errors.push('จำนวน');
+        else if (!Number.isInteger(Number(qty))) errors.push('จำนวน (ต้องเป็นจำนวนเต็ม)');
 
-    if (!$('#unit').val().trim()) errors.push('Unit');
-
-    if (editingIndex >= 0 || editingExistingDetailId) {
-        const price = $('#po_price').val().trim();
+        if (!$('#unit').val()) errors.push('Unit');
+    } else {
+        const price = ($('#po_price').val() || '').trim();
         if (!price || parseFormattedNumber(price) < 0) errors.push('ราคารวม');
     }
 
@@ -1830,147 +1826,92 @@ function setBtnLoading(selector, loading){
     else { el.removeAttribute('data-kt-indicator'); el.disabled = false; }
 }
 
+function reloadPage(){
+    skipLeaveWarning = true;
+    try {
+        if (headerChanged()) sessionStorage.setItem(HEADER_STASH_KEY, JSON.stringify(currentHeaderValues()));
+    } catch(e){}
+    location.reload();
+}
+
+function ajaxAction(opts){
+    if (opts.btn) setBtnLoading(opts.btn, true);
+    $.ajax({
+        url: ctx + opts.url, type: 'POST', dataType: 'json', data: opts.data,
+        success: function(resp){
+            if (resp.data && resp.data.success) {
+                toastOk(opts.okMsg || 'บันทึกรายการสำเร็จ', reloadPage); // ปุ่มโหลดค้างจนกว่าจะ reload
+            } else {
+                toastFail(opts.failMsg || 'ไม่สามารถบันทึกรายการได้');
+                if (opts.btn) setBtnLoading(opts.btn, false);
+            }
+        },
+        error: function(){
+            toastFail('เกิดข้อผิดพลาด');
+            if (opts.btn) setBtnLoading(opts.btn, false);
+        }
+    });
+}
+
+// ปิด modal ให้เสร็จก่อน (รอ hidden.bs.modal) แล้วค่อยทำ after
+function hideModalThen(modalId, after){
+    var el = document.getElementById(modalId);
+    if (!el || !el.classList.contains('show')) { if (after) after(); return; }
+    el.addEventListener('hidden.bs.modal', function(){ if (after) after(); }, { once: true });
+    bootstrap.Modal.getOrCreateInstance(el).hide();
+}
+
 function addPoDetailToCart(){
-
     const errors = validatePoDetailForm();
-
     if (errors.length > 0) {
         Swal.fire({
             title: 'Please complete the form!',
             html: "Please fill in the following fields:<br><strong>" + errors.join(", ") + "</strong>",
-            icon: "error",
-            confirmButtonText: "OK",
+            icon: "error", confirmButtonText: "OK"
         });
         return;
     }
 
-    setBtnLoading('#btnSavePoDetail', true);
+    const description = $('#po_description').val();
 
-    setTimeout(function(){
-    // po_qty/unit คือหน่วยที่ user เลือก (อาจไม่ใช่หน่วยเล็กสุด) 
-    // ส่วน po_price (base unit) ก่อนเก็บลง cart เสมอ
-    const rawQty = Number($("#po_qty").val()) || 0;
-    const rawUnitId = $("#unit").val();
-    const rawUnitName = $("#unit option:selected").text();
-    const conversionRate = Number($("#unit option:selected").data('conversion-rate')) || 1;
+    // Edit: ใช้ productId เดิมจาก DB (select ถูก disable) แก้ได้แค่ราคารวม/description
+    if (editingExistingDetailId) {
+        const totalVal = parseFormattedNumber($('#po_price').val());
+        ajaxAction({
+            url: '/update_po_detail',
+            data: { poId: EDIT_PO_ID, poDetailId: editingExistingDetailId, total: totalVal, description: description },
+            btn: '#btnSavePoDetail',
+            okMsg: 'แก้ไขรายการสำเร็จ', failMsg: 'ไม่สามารถแก้ไขรายการได้'
+        });
+        return;
+    }
+
+    // Create
+    const rawQty = Number($('#po_qty').val()) || 0;
+    const rawUnitId = $('#unit').val();
+    const rate = Number($('#unit option:selected').data('conversion-rate')) || 1;
     const baseUnitId = $('#unit').data('base-unit-id') || rawUnitId;
-    const baseUnitName = $('#unit').data('base-unit-name') || rawUnitName;
-    const baseQty = rawQty * conversionRate;
-    const total = parseFormattedNumber($("#po_price").val());
-    const price = baseQty > 0 ? (total / baseQty) : 0;
-    const description = $("#po_description").val();
+    const baseQty = rawQty * rate;
+    const productId = $('#product_name').val();
+    const ex = findExistingDetailByProduct(productId);
 
     const item = {
-        itemsType: $("#items_type").val(),
-        itemsTypeText: $("#items_type option:selected").text(),
-        productId: $("#product_name").val(),
-        productName: $("#product_name option:selected").text(),
-        qty: baseQty,
+        poDetailId: ex ? ex.poDetailId : '',
+        productId: productId,
+        itemsType: $('#items_type').val(),
         unit: baseUnitId,
-		unitName: baseUnitName,
-        price: price,
-        total: total,
         description: description,
-        savedAt: formatNowDateTime()
+        qty: baseQty,
+        sources: [{ prId: null, prDetailId: null, mrIds: [], qty: rawQty, unit: rawUnitId, baseQty: baseQty,
+                    refLink: '', description: description }]
     };
 
-    if (editingExistingDetailId) {
-        const id = String(editingExistingDetailId);
-        const newDbTotal = total - pendingSrcTotal(id);
-        if (newDbTotal < 0) {
-            Swal.fire('Error', 'ราคารวมต้องไม่น้อยกว่ายอดของรายการที่เพิ่มใหม่ที่ยังไม่ได้บันทึก', 'error');
-            setBtnLoading('#btnSavePoDetail', false);
-            return;
-        }
-        pendingExistingEdits[id] = { total: newDbTotal, description: description };
-        editingExistingDetailId = null;
-        saveCartToSession();
-        renderPoDetailCart();
-        if (document.activeElement) document.activeElement.blur();
-        bootstrap.Modal.getOrCreateInstance(document.getElementById("modal_create_po")).hide();
-        return;
-    }
-
-    if (editingIndex >= 0) {
-		const old = poDetailCart[editingIndex];
-
-		// เก็บ sources เดิมไว้ ถ้ายังเป็น product เดิม
-		if (old && old.sources && old.sources.length > 0
-				&& String(old.productId) === String(item.productId)) {
-			item.sources = old.sources;
-		}
-
-        poDetailCart[editingIndex] = item;
-        editingIndex = -1;
-    } else {
-		// สร้างใหม่ เช็คก่อนว่ามี item productId เดียวกันอยู่แล้วใน cart มั้ย ไม่ว่าจะมาจากการสร้างเองมาก่อน หรือดึงจาก PR มาก่อน ก็ต้อง group เข้าด้วยกัน
-        const sourceEntry = {
-            prId: null,
-            prDetailId: null,
-            mrIds: [],
-            qty: rawQty,
-            unit: rawUnitId,
-            unitName: rawUnitName,
-            baseQty: baseQty,
-            refLink: '',
-            creatorName: currentUserDisplay,
-            savedAt: formatNowDateTime()
-        };
-
-		if (addToExistingPoDetail(item.productId, sourceEntry, 0)) {
-			saveCartToSession();
-			renderPoDetailCart();
-			if (document.activeElement) document.activeElement.blur();
-			bootstrap.Modal.getOrCreateInstance(document.getElementById("modal_create_po")).hide();
-			return;
-		}
-
-        const existingIndex = poDetailCart.findIndex(function(it){
-            return String(it.productId) === String(item.productId);
-        });
-
-        if (existingIndex >= 0) {
-            const existing = poDetailCart[existingIndex];
-            // ถ้า item เดิมยังไม่มี sources (สร้างเองรายการเดียวไม่เคยดึงจาก PR) ให้ห่อตัวเอง เป็น source แรกก่อน
-            if (!existing.sources || existing.sources.length === 0) {
-         // existing.unit ตอนนี้เป็นหน่วยเล็กสุด (base) ไปแล้วตั้งแต่ตอนสร้างไม่ใช่หน่วยดิบที่ user เลือกตอนนั้นจริงๆ (เก็บไว้เฉพาะ item ใหม่ที่สร้างหลังแก้นี้)
-                existing.sources = [{
-                    prId: existing.prId || null,
-                    prDetailId: existing.prDetailId || null,
-                    mrIds: existing.mrIds || [],
-                    qty: existing.qty,
-                    unit: existing.unit,
-                    unitName: existing.unitName,
-                    baseQty: existing.qty,
-                    refLink: existing.refLink || '',
-                    creatorName: existing.creatorName || currentUserDisplay,
-                    savedAt: existing.savedAt || formatNowDateTime()
-                }];
-            }
-
-            existing.sources.push(sourceEntry);
-            existing.qty = (Number(existing.qty) || 0) + baseQty;
-            existing.price = existing.qty > 0 ? (existing.total / existing.qty) : 0;
-            if (!existing.description && description) {
-                existing.description = description;
-            }
-        } else {
-            item.sources = [sourceEntry];
-            poDetailCart.push(item);
-        }
-    }
-
-    saveCartToSession();
-    renderPoDetailCart();
-
-    if (document.activeElement) {
-        document.activeElement.blur();
-    }
-
-    const modalEl = document.getElementById("modal_create_po");
-    const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
-    modal.hide();
-    }, 300);
+    ajaxAction({
+        url: '/add_po_detail',
+        data: { poId: EDIT_PO_ID, poDetailCartJson: JSON.stringify([item]) },
+        btn: '#btnSavePoDetail',
+        okMsg: 'เพิ่มรายการสำเร็จ', failMsg: 'ไม่สามารถเพิ่มรายการได้'
+    });
 }
 
 function renderPoDetailCart(){
@@ -1981,22 +1922,11 @@ function renderPoDetailCart(){
     existingPoDetailList.forEach(function(item){
 
         html += createPoCard(item, null, item.poDetailId);
-        grandTotal += dbTotalOf(item);
+        grandTotal += Number(item.total) || 0;
 
     });
 
-	Object.keys(pendingExistingPoSources).forEach(function(pid){
-		pendingExistingPoSources[pid].forEach(function(s){ grandTotal += Number(s.total) || 0; });
-	});
-
-    poDetailCart.forEach(function(item,index){
-
-        html += createPoCard(item, index, null);
-        grandTotal += item.total;
-
-    });
-
-	const totalCount = existingPoDetailList.length + poDetailCart.length;
+	const totalCount = existingPoDetailList.length;
 
     if (totalCount === 0 ) {
         html = `
@@ -2022,37 +1952,14 @@ function renderPoDetailCart(){
 
 //-------- PO- Detail -----------
 function createPoCard(item,index,poDetailId){
-	const safePrice = Number(item.price) || 0;
     const safeQty = Number(item.qty) || 0;
-    const safeTotal = poDetailId ? dbTotalOf(item) : (Number(item.total) || (safeQty * safePrice));
-	const pending = poDetailId ? (pendingExistingPoSources[String(poDetailId)] || []) : [];
-	const pendingQty = pending.reduce(function(a, s){ return a + (Number(s.baseQty != null ? s.baseQty : s.qty) || 0); }, 0);
-	const pendingTotal = pending.reduce(function(a, s){ return a + (Number(s.total) || 0); }, 0);
-	const srcEditsMap = poDetailId ? (pendingSourceEdits[String(poDetailId)] || {}) : {};
-	// แก้ qty ของ source เดิมที่ยัง pending ยอด qty รวมของการ์ดต้องขยับตาม แต่ total คงเดิม
-	const editQtyDelta = (item.sources || []).reduce(function(a, s){
-		if (!s.poParentId || !srcEditsMap[String(s.poParentId)]) return a;
-		const oldBase = Number(s.baseQty != null ? s.baseQty : s.qty) || 0;
-		const newBase = Number(srcEditsMap[String(s.poParentId)].baseQty) || 0;
-		return a + (newBase - oldBase);
-	}, 0);
-	const displayQty = safeQty + pendingQty + editQtyDelta;
-	const displayTotal = safeTotal + pendingTotal;
-	const displayPrice = displayQty > 0 ? (displayTotal / displayQty) : 0;
-	const totalColorClass = displayTotal <= 0 ? 'text-danger' : 'text-primary';
+    const safeTotal = Number(item.total) || 0;
+    const displayQty = safeQty;
+    const displayTotal = safeTotal;
+    const displayPrice = displayQty > 0 ? (displayTotal / displayQty) : 0;
+    const totalColorClass = displayTotal <= 0 ? 'text-danger' : 'text-primary';
 
-	let baseSources = (item.sources || []).map(function(s){
-		if (!s.poParentId) return s;
-		const e = srcEditsMap[String(s.poParentId)];
-		return e ? { ...s, qty: e.qty, unit: e.unit, unitName: e.unitName, baseQty: e.baseQty, edited: true } : s;
-	});
-	if (baseSources.length === 0 && pending.length > 0 && safeQty > 0) {
-		// การ์ดเดิมไม่มี po_parent ห่อตัวเองเป็นแถวแรก ไม่งั้นยอดเดิมจะหายจากการแสดงผล
-		baseSources = [{ prId: null, mrIds: [], qty: safeQty, unitName: item.unitName, baseQty: safeQty,
-						refLink: '', creatorName: '', savedAt: item.savedAt }];
-	}
-	const allSources = baseSources.concat(pending);
-	const pendingStartIndex = baseSources.length;
+    const allSources = item.sources || [];
 
     let icon = "";
     let category = "";
@@ -2101,12 +2008,12 @@ function createPoCard(item,index,poDetailId){
         `;
     }
 
-    const groupId = poDetailId ? ("existing_" + poDetailId) : ("cart_" + index);
+    const groupId = "existing_" + poDetailId;
 	const displayProductName = item.parentProductName
 		? item.parentProductName + ' > ' + (item.productName || '')
 		: (item.productName || '');
 
-    const descText = poDetailId ? dbDescOf(item) : (item.description || '');
+    const descText = item.description || '';
     const descriptionHtml = (descText
         ? '<i class="ki-duotone ki-document fs-2 text-muted me-2">'
             + '<span class="path1"></span><span class="path2"></span>'
@@ -2116,24 +2023,17 @@ function createPoCard(item,index,poDetailId){
 
     let actionButtons = '';
     if (canEditPoDetail) {
-        actionButtons = poDetailId
-        ? `<a href="#" onclick="return editExistingCartItem('\${poDetailId}');" class="btn btn-icon btn-light-primary btn-sm" title="Edit">
+        actionButtons = `<a href="#" onclick="return editExistingCartItem('\${poDetailId}');" class="btn btn-icon btn-light-primary btn-sm" title="Edit">
                 <i class="ki-duotone ki-pencil fs-2"><span class="path1"></span><span class="path2"></span></i>
             </a>
             <a href="#" onclick="return removeExistingCartItem('\${poDetailId}');" class="btn btn-icon btn-light-danger btn-sm" title="Delete">
-                <i class="ki-duotone ki-trash fs-2"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span><span class="path5"></span></i>
-            </a>`
-        : `<a href="#" onclick="return editCartItem(\${index});" class="btn btn-icon btn-light-primary btn-sm" title="Edit">
-                <i class="ki-duotone ki-pencil fs-2"><span class="path1"></span><span class="path2"></span></i>
-            </a>
-            <a href="#" onclick="return removeCartItem(\${index});" class="btn btn-icon btn-light-danger btn-sm" title="Delete">
                 <i class="ki-duotone ki-trash fs-2"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span><span class="path5"></span></i>
             </a>`;
 	}
 
     return `<div class="po-item-group border-gray-400 border-bottom pt-9 pb-6 px-6">
-    			<div class="d-flex align-items-center justify-content-between row">
-    				<div class="col-7 d-flex align-items-center">\${icon}
+    			<div class="d-flex align-items-center justify-content-between row g-3">
+    				<div class="col-12 col-lg-7 d-flex flex-wrap align-items-center">\${icon}
 						<span class="text-gray-900 fs-5 fw-normal me-3">\${category}</span>
 						<span class="text-gray-900 fs-5 fw-normal me-3">\${displayProductName}</span>
 
@@ -2141,26 +2041,26 @@ function createPoCard(item,index,poDetailId){
 							\${descriptionHtml}
 						</div>
 					</div>
-		
-					<div class="col-3 d-flex align-items-center justify-content-between px-0">
+
+					<div class="col-12 col-lg-3 d-flex align-items-center justify-content-between px-0">
 						<div class="col-2 d-flex flex-column text-end">
 							<span class="fs-6 fw-normal text-gray-900">\${item.unitName}</span>
 							<span class="fw-semibold text-gray-800 fs-5">\${displayQty}</span>
 					</div>
-		
+
 					<div class="col-4 d-flex flex-column text-end">
 						<span class="fs-6 fw-normal text-gray-900">Price/Unit</span>
 						<span class="fw-semibold text-gray-800 fs-5">\${displayPrice.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span>
 					</div>
-					
+
 					<div class="col-4 d-flex flex-column text-end">
 						<span class="fs-6 fw-normal text-gray-900">Total</span>
 						<span class="fs-5 fw-semibold \${totalColorClass}">\${displayTotal.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span>
 					</div>
-		
+
 				</div>
-		
-				<div class="col-2 d-flex justify-content-end align-items-center gap-2 px-0">
+
+				<div class="col-12 col-lg-2 d-flex justify-content-end align-items-center gap-2 px-0">
 	                \${actionButtons}
 	                <a class="collapsed po-group-toggle" data-target="\${groupId}">
 	                    <i class="ki-duotone ki-up-square fs-2hx">
@@ -2176,89 +2076,18 @@ function createPoCard(item,index,poDetailId){
 						(allSources.length > 0)
 							? allSources.map(function(s, i){
 								var srcBaseQty = (s.baseQty != null) ? s.baseQty : s.qty;
-								var isNewSource = !!poDetailId && i >= pendingStartIndex;
-
-								var menuCtx = null;
-								if (canEditPoDetail) {
-									if (!poDetailId) menuCtx = { scope: 'cart', a: index, b: i };
-									else if (isNewSource) menuCtx = { scope: 'pending', a: poDetailId, b: i - pendingStartIndex };
-									else if (s.poParentId) menuCtx = { scope: 'db', a: poDetailId, b: i };
-								}
+								var menuCtx = (canEditPoDetail && s.poParentId) ? { scope: 'db', a: poDetailId, b: i } : null;
 								return createPoSourceRow(s.qty, s.unitName || item.unitName, srcBaseQty, item.unitName,
-										s.savedAt, s.prId, s.mrIds, s.refLink, s.creatorName, isNewSource, menuCtx, !!s.edited);
+										s.savedAt, s.prId, s.mrIds, s.refLink, s.creatorName, false, menuCtx);
 							}).join('')
-							: createPoSourceRow(item.qty, item.unitName, item.qty, item.unitName, item.savedAt, item.prId, item.mrIds, item.refLink, item.creatorName, false, null, false)
+							: createPoSourceRow(item.qty, item.unitName, item.qty, item.unitName, item.savedAt, item.prId, item.mrIds, item.refLink, item.creatorName, false, null)
 					}
 	            </div>
 	        </div>
-		
+
 		</div>
-		
+
 		`;
-}
-
-function editCartItem(index){
-    const item = poDetailCart[index];
-    if (!item) return false;
-
-    editingIndex = index;
-
-    $('#modal_create_po .modal-title').text('Edit PO - Detail');
-    $('#btnSavePoDetail .indicator-label').text('Update');
-
-    $('#items_type').val(mapDbItemsTypeToSelect(item.itemsType)).trigger('change');
-
-    const waitForProductList = setInterval(function(){
-        if ($('#product_name option[value="' + item.productId + '"]').length > 0) {
-            $('#product_name').val(item.productId).trigger('change');
-            clearInterval(waitForProductList);
-			
-			const waitForUnitList = setInterval(function(){
-                if ($('#unit option[value="' + item.unit + '"]').length > 0) {
-                    $('#unit').val(item.unit).trigger('change');
-                    clearInterval(waitForUnitList);
-                }
-            }, 100);
-            setTimeout(function(){ clearInterval(waitForUnitList); }, 3000);
-        }
-    }, 100);
-
-    setTimeout(function(){ clearInterval(waitForProductList); }, 3000);
-
-    $('#po_qty').val(item.qty);
-    $('#po_price').val(Number(item.total).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2}));
-    $('#po_description').val(item.description);
-
-    const modalEl = document.getElementById("modal_create_po");
-    const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
-    modal.show();
-
-    return false;
-}
-
-function removeCartItem(index){
-    Swal.fire({
-        title: "Are you sure?!",
-        text: "Are you sure you want to delete this item?",
-        icon: "warning",
-        showCancelButton: true,
-        confirmButtonText: "Yes, delete it",
-        cancelButtonText: "Cancel",
-        buttonsStyling: false,
-        customClass: {
-            confirmButton: "btn btn-danger",
-            cancelButton: "btn btn-secondary"
-        }
-    }).then((result) => {
-        if (result.isConfirmed) {
-			const removedItem = poDetailCart[index];
-            poDetailCart.splice(index, 1);
-            saveCartToSession();
-            renderPoDetailCart();
-			uncheckPrCheckboxesForItem(removedItem);
-        }
-    });
-    return false;
 }
 
 /* ──────── แก้ไข / ลบ รายการที่มีอยู่แล้วใน DB ───── */
@@ -2267,7 +2096,6 @@ function editExistingCartItem(poDetailId){
     if (!item) return false;
 
     editingExistingDetailId = poDetailId;
-    editingIndex = -1;
 
     $('#modal_create_po .modal-title').text('Edit PO - Detail');
     $('#btnSavePoDetail .indicator-label').text('Update');
@@ -2292,9 +2120,9 @@ function editExistingCartItem(poDetailId){
     setTimeout(function(){ clearInterval(waitForProductList); }, 3000);
 
     $('#po_qty').val(item.qty);
-	$('#po_price').val((dbTotalOf(item) + pendingSrcTotal(poDetailId))
+	$('#po_price').val((Number(item.total) || 0)
         .toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2}));
-    $('#po_description').val(dbDescOf(item));
+    $('#po_description').val(item.description);
 
     const modalEl = document.getElementById("modal_create_po");
     const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
@@ -2305,12 +2133,12 @@ function editExistingCartItem(poDetailId){
 
 function removeExistingCartItem(poDetailId){
     Swal.fire({
-        title: "Are you sure?!",
-        text: "Are you sure you want to delete this item?",
+        title: "ยืนยันการลบ?!",
+        text: "รายการนี้จะถูกลบออกจากฐานข้อมูล และไม่สามารถกู้คืนได้",
         icon: "warning",
         showCancelButton: true,
-        confirmButtonText: "Yes, delete it",
-        cancelButtonText: "Cancel",
+        confirmButtonText: "ยืนยัน",
+        cancelButtonText: "ยกเลิก",
         buttonsStyling: false,
         customClass: {
             confirmButton: "btn btn-danger",
@@ -2318,30 +2146,15 @@ function removeExistingCartItem(poDetailId){
         }
     }).then((result) => {
         if (result.isConfirmed) {
-            $.ajax({
-                url: ctx + '/delete_po_detail',
-                type: 'POST',
-                dataType: 'json',
+            ajaxAction({
+                url: '/delete_po_detail',
                 data: { poDetailId: poDetailId, poId: EDIT_PO_ID },
-                success: function (resp) {
-                    if (resp.data && resp.data.success) {
-						delete pendingExistingPoSources[String(poDetailId)];
-                        delete pendingExistingEdits[String(poDetailId)];
-						saveCartToSession();
-						toastOk('ลบรายการสำเร็จ', function(){ window.location.reload(); });
-					} else {
-                        Swal.fire('Error', 'ไม่สามารถลบรายการได้', 'error');
-                    }
-                },
-                error: function () {
-                    Swal.fire('Error', 'เกิดข้อผิดพลาดในการลบรายการ', 'error');
-                }
+                okMsg: 'ลบรายการสำเร็จ', failMsg: 'ไม่สามารถลบรายการได้'
             });
         }
     });
     return false;
 }
-
 
 function toastOk(msg, after){
     Swal.fire({ toast: true, position: 'top-end', icon: 'success',
@@ -2349,39 +2162,10 @@ function toastOk(msg, after){
     .then(function(){ if (after) after(); });
 }
 
-function toastFail(msg){
+function toastFail(msg, after){
     Swal.fire({ toast: true, position: 'top-end', icon: 'error',
-        title: msg || 'บันทึกไม่สำเร็จ', showConfirmButton: false, timer: 1200 });
-}
-
-function updateExistingPoDetail(poDetailId, item){
-    $.ajax({
-        url: ctx + '/update_po_detail',
-        type: 'POST',
-        dataType: 'json',
-        data: {
-            poDetailId: poDetailId,
-            poId: EDIT_PO_ID,
-            productId: item.productId,
-            qty: item.qty,
-            unit: item.unit,
-            price: item.price,
-            description: item.description
-        },
-        success: function (resp) {
-            if (resp.data && resp.data.success) {
-                editingExistingDetailId = null;
-                const modalEl = document.getElementById("modal_create_po");
-                bootstrap.Modal.getOrCreateInstance(modalEl).hide();
-               window.location.reload();
-            } else {
-                 toastFail('ไม่สามารถแก้ไขรายการได้');
-            }
-        },
-        error: function () {
-            toastFail('เกิดข้อผิดพลาดในการแก้ไขรายการ');
-        }
-    });
+        title: msg || 'บันทึกไม่สำเร็จ', showConfirmButton: false, timer: 1200 })
+    .then(function(){ if (after) after(); });
 }
 
 function mapSelectToDbItemsType(val){
@@ -2408,98 +2192,38 @@ function toggleSrcMenu(btn, e){
     return false;
 }
 
-// cart = การ์ดใหม่, pending = source ใหม่ของการ์ดเดิม (ยังไม่ save), db = แถว po_parent ที่อยู่ใน DB
 function resolveSrc(scope, a, b){
-    if (scope === 'cart') {
-        const item = poDetailCart[Number(a)];
-        const list = item && item.sources;
-        return { item: item, list: list, src: list && list[b] };
-    }
     const item = existingPoDetailList.find(function(it){ return String(it.poDetailId) === String(a); });
-    if (scope === 'db') {
-        const list = item && item.sources;
-        let src = list && list[b];
-        // มี pending edit ค้างไว้สำหรับ po_parent แถวนี้ ให้เห็นค่าล่าสุดที่ยังไม่ save แทนค่าเดิมใน db
-        if (src && src.poParentId) {
-            const e = (pendingSourceEdits[String(a)] || {})[String(src.poParentId)];
-            if (e) src = { ...src, ...e };
-        }
-        return { item: item, list: list, src: src };
-    }
-    const list = pendingExistingPoSources[String(a)];
+    const list = item && item.sources;
     return { item: item, list: list, src: list && list[b] };
 }
 
 function removeSource(scope, a, b){
     closeAllSrcMenus();
+    const r = resolveSrc(scope, a, b);
+    if (!r.item || !r.src) return false;
+    const isLast = r.list.length <= 1;
+
     Swal.fire({
-        title: "Are you sure?!",
-        text: "Are you sure you want to delete this row?",
+        title: "ยืนยันการลบ?!",
+        text: "รายการนี้จะถูกลบออกจากฐานข้อมูล และไม่สามารถกู้คืนได้",
         icon: "warning",
         showCancelButton: true,
-        confirmButtonText: "Yes, delete it",
-        cancelButtonText: "Cancel",
+        confirmButtonText: "ยืนยัน",
+        cancelButtonText: "ยกเลิก",
         buttonsStyling: false,
         customClass: { confirmButton: "btn btn-danger", cancelButton: "btn btn-secondary" }
     }).then(function(result){
         if (!result.isConfirmed) return;
-
-        const r = resolveSrc(scope, a, b);
-        if (!r.item || !r.src) return;
-        const removed = r.src;
-
-        if (scope === 'db') {
-            const hasPendingNew = (pendingExistingPoSources[String(a)] || []).length > 0;
-            const isLast = r.list.length <= 1 && !hasPendingNew;   // มี pending ค้างอยู่ = ยังไม่ใช่แถวสุดท้ายจริง
-            $.ajax({
-                url: ctx + (isLast ? '/delete_po_detail' : '/delete_po_source'),
-                type: 'POST',
-                dataType: 'json',
-                data: isLast
-                    ? { poDetailId: a, poId: EDIT_PO_ID }
-                    : { poParentId: removed.poParentId, poDetailId: a, poId: EDIT_PO_ID,
-                        keepDetail: (r.list.length <= 1) ? 'true' : 'false' },
-                success: function (resp) {
-                    if (resp.data && resp.data.success) {
-                        // source นี้ไม่อยู่แล้ว เคลียร์ pending edit ของมันทิ้งไปด้วย กันค้างไว้ส่งซ้ำตอน save
-                        if (pendingSourceEdits[String(a)]) {
-                            delete pendingSourceEdits[String(a)][String(removed.poParentId)];
-                        }
-                        if (isLast) {
-                            delete pendingExistingPoSources[String(a)];
-                            delete pendingExistingEdits[String(a)];
-                            delete pendingSourceEdits[String(a)];
-                        }
-                        saveCartToSession();
-                        toastOk('ลบรายการสำเร็จ', function(){ window.location.reload(); });
-                    } else {
-                        toastFail('ไม่สามารถลบรายการได้');
-                    }
-                },
-                error: function () {
-                    toastFail('เกิดข้อผิดพลาดในการลบรายการ');
-                }
-            });
-            return;
-        }
-
-        if (scope === 'cart') {
-            const baseQty = Number(removed.baseQty != null ? removed.baseQty : removed.qty) || 0;
-            r.list.splice(b, 1);
-            if (r.list.length === 0) {
-                poDetailCart.splice(Number(a), 1);
-            } else {
-                r.item.qty = Math.max(0, (Number(r.item.qty) || 0) - baseQty);
-                r.item.price = r.item.qty > 0 ? ((Number(r.item.total) || 0) / r.item.qty) : 0; // total คงเดิม
-            }
+        if (isLast) {
+            ajaxAction({ url: '/delete_po_detail',
+                data: { poDetailId: a, poId: EDIT_PO_ID },
+                okMsg: 'ลบรายการสำเร็จ', failMsg: 'ไม่สามารถลบรายการได้' });
         } else {
-            r.list.splice(b, 1);
-            if (r.list.length === 0) delete pendingExistingPoSources[String(a)];
+            ajaxAction({ url: '/delete_po_source',
+                data: { poParentId: r.src.poParentId, poDetailId: a, poId: EDIT_PO_ID, keepDetail: 'false' },
+                okMsg: 'ลบรายการสำเร็จ', failMsg: 'ไม่สามารถลบรายการได้' });
         }
-
-        saveCartToSession();
-        renderPoDetailCart();
-        uncheckPrCheckboxesForItem({ sources: [removed] });
     });
     return false;
 }
@@ -2512,12 +2236,20 @@ function editSource(scope, a, b){
     if (!r.item || !r.src) return false;
     const item = r.item, src = r.src;
 
-    editingSrc = { scope: scope, a: a, b: b };
-    const baseQty = (src.baseQty != null) ? src.baseQty : src.qty;
-    const cat = getCategoryIcon(mapSelectToDbItemsType(item.itemsType));
     const fullName = item.parentProductName
         ? item.parentProductName + ' > ' + (item.productName || '')
         : (item.productName || '');
+
+    // แถวจาก PR โยนชื่อไป Search PR
+    if (src.prId) {
+        openSearchPrWithKeyword(fullName);
+        return false;
+    }
+
+    // แถวสร้างเอง เปิด modal_edit_source
+    editingSrc = { scope: scope, a: a, b: b };
+    const baseQty = (src.baseQty != null) ? src.baseQty : src.qty;
+    const cat = getCategoryIcon(mapSelectToDbItemsType(item.itemsType));
 
     $('#editSrcTypeIcon').html(cat.icon);
     $('#editSrcTypeName').text(cat.name);
@@ -2574,6 +2306,7 @@ function saveEditSource(){
     const unitId = $('#edit_src_unit').val();
     const errors = [];
     if (qty <= 0) errors.push('จำนวน');
+    else if (!Number.isInteger(qty)) errors.push('จำนวน (ต้องเป็นจำนวนเต็ม)');
     if (!unitId) errors.push('Unit');
     if (errors.length > 0) {
         Swal.fire({
@@ -2584,54 +2317,25 @@ function saveEditSource(){
         return;
     }
 
-    setBtnLoading('#btnSaveEditSource', true);
-
-    setTimeout(function(){
     const r = resolveSrc(editingSrc.scope, editingSrc.a, editingSrc.b);
-    if (!r.item || !r.src) { setBtnLoading('#btnSaveEditSource', false); return; }
-    const old = r.src;
+    if (!r.item || !r.src) return;
 
-    if (editingSrc.scope === 'db') {
-        const dbUnitName = $('#edit_src_unit option:selected').text();
-        const dbRate = Number($('#edit_src_unit option:selected').data('conversion-rate')) || 1;
-        const dbBaseQty = qty * dbRate;
-
-        const pid = String(editingSrc.a);
-        const ppid = String(old.poParentId);
-        pendingSourceEdits[pid] = pendingSourceEdits[pid] || {};
-        pendingSourceEdits[pid][ppid] = { qty: qty, unit: unitId, unitName: dbUnitName, baseQty: dbBaseQty };
-
-        saveCartToSession();
-        renderPoDetailCart();
-
-        if (document.activeElement) document.activeElement.blur();
-        bootstrap.Modal.getOrCreateInstance(document.getElementById('modal_edit_source')).hide();
-        return;
-    }
-
-    const unitName = $('#edit_src_unit option:selected').text();
-    const rate = Number($('#edit_src_unit option:selected').data('conversion-rate')) || 1;
-    const baseQty = qty * rate;
-    const oldBase = Number(old.baseQty != null ? old.baseQty : old.qty) || 0;
-
-    r.list[editingSrc.b] = { ...old, qty: qty, unit: unitId, unitName: unitName, baseQty: baseQty };
-    if (editingSrc.scope === 'cart') {
-        r.item.qty = (Number(r.item.qty) || 0) + (baseQty - oldBase);
-        r.item.price = r.item.qty > 0 ? ((Number(r.item.total) || 0) / r.item.qty) : 0; // total คงเดิม
-    }
-
-    saveCartToSession();
-    renderPoDetailCart();
-
-    if (document.activeElement) document.activeElement.blur();
-    bootstrap.Modal.getOrCreateInstance(document.getElementById('modal_edit_source')).hide();
-    }, 300);
+    ajaxAction({
+        url: '/update_po_source',
+        data: { poId: EDIT_PO_ID, poDetailId: editingSrc.a, poParentId: r.src.poParentId, qty: qty, unit: unitId },
+        btn: '#btnSaveEditSource',
+        okMsg: 'แก้ไขรายการสำเร็จ', failMsg: 'ไม่สามารถแก้ไขรายการได้'
+    });
 }
 
 function parseFormattedNumber(str) {
     if (!str) return 0;
     return Number(String(str).replace(/,/g, ''));
 }
+
+$(document.body).on('keydown', '#po_qty, #edit_src_qty', function(e){
+    if (['.', ',', 'e', 'E', '+', '-'].indexOf(e.key) !== -1) e.preventDefault();
+});
 
 $(document.body).on('input', '#po_price', function() {
     let value = $(this).val();
@@ -2707,40 +2411,6 @@ function confirmReceiver(slot) {
     });
 }
 
-function buildPoCartPayload(){
-    const merged = [];
-    const ids = {};
-    Object.keys(pendingExistingPoSources).forEach(function(k){ ids[k] = true; });
-    Object.keys(pendingExistingEdits).forEach(function(k){ ids[k] = true; });
-    Object.keys(pendingSourceEdits).forEach(function(k){ ids[k] = true; });
-
-    Object.keys(ids).forEach(function(pid){
-        const ex = existingPoDetailList.find(function(it){ return String(it.poDetailId) === String(pid); });
-        if (!ex) return;
-        const srcs = pendingExistingPoSources[pid] || [];
-        const edit = pendingExistingEdits[pid];
-        const srcEditsMap = pendingSourceEdits[pid] || {};
-        const srcEditIds = Object.keys(srcEditsMap);
-        if (srcs.length === 0 && !edit && srcEditIds.length === 0) return;
-
-        const addQty = srcs.reduce(function(a, s){ return a + (Number(s.baseQty != null ? s.baseQty : s.qty) || 0); }, 0);
-        const addTotal = srcs.reduce(function(a, s){ return a + (Number(s.total) || 0); }, 0);
-        const row = {
-            poDetailId: pid, productId: ex.productId, itemsType: ex.itemsType, unit: ex.unit,
-            description: '', qty: addQty, total: addTotal, sources: srcs
-        };
-        if (edit) { row.editTotal = edit.total; row.editDescription = edit.description; }
-        if (srcEditIds.length > 0) {
-            // แก้ qty/unit ของ po_parent เดิม (ไม่ใช่ source ใหม่) — ไม่กระทบ total ของการ์ด
-            row.sourceEdits = srcEditIds.map(function(ppid){
-                return { poParentId: ppid, qty: srcEditsMap[ppid].qty, unit: srcEditsMap[ppid].unit };
-            });
-        }
-        merged.push(row);
-    });
-    return poDetailCart.concat(merged);
-}
-
 function saveDraftForm(){
     const payload = {
 		poId: EDIT_PO_ID || '',
@@ -2750,17 +2420,16 @@ function saveDraftForm(){
         description: $('#description').val() || '',
         descriptionVendor: $('#vendor_description').val() || '',
         referenceNo: $('#reference_no').val() || '',
-        referenceDate: $('#kt_reference_datepicker').val() || '',
-        poDetailCartJson: JSON.stringify(buildPoCartPayload())
+        referenceDate: $('#kt_reference_datepicker').val() || ''
     };
     const fd = new FormData();
     Object.keys(payload).forEach(function (k) { fd.append(k, payload[k]); });
     if (typeof selectedFiles !== 'undefined') {
         selectedFiles.forEach(function (file) { fd.append('files', file, file.name); });
     }
-    
+
  	setBtnLoading('#saveDraft', true);
- 
+
     $.ajax({
     	url: ctx + (EDIT_PO_ID ? '/update_po' : '/save_po'),
         type: 'POST',
@@ -2770,20 +2439,25 @@ function saveDraftForm(){
         contentType: false,
         success: function (resp) {
             if (resp.data && resp.data.poId) {
-                sessionStorage.removeItem(PO_CART_STORAGE_KEY);
-				sessionStorage.removeItem(PO_EXISTING_SRC_KEY);
-                sessionStorage.removeItem(PO_EXISTING_EDIT_KEY);
-				sessionStorage.removeItem(PO_SOURCE_EDIT_KEY);
-                Swal.fire({ title: 'Success!', text: 'Po saved draft successfully!', icon: 'success' })
-                    .then(() => { window.location.href = ctx + '/purchase_order_list'; });
+                skipLeaveWarning = true;
+                clearDraftStorage();
+                Swal.fire({ 
+					title: 'Success!', 
+					text: 'Po saved draft successfully!', 
+					icon: 'success',
+					timer: 800,
+					showConfirmButton: false
+				})
+                .then(() => { window.location.href = ctx + '/purchase_order_list'; });
             } else {
+                setBtnLoading('#saveDraft', false);
                 Swal.fire('Error', 'ไม่สามารถบันทึก Draft ได้', 'error');
             }
         },
         error: function () {
+            setBtnLoading('#saveDraft', false);
             Swal.fire('Error', 'เกิดข้อผิดพลาดในการบันทึก', 'error');
-        },
-        complete: function(){ setBtnLoading('#saveDraft', false); }
+        }
     });
 }
 
@@ -2794,22 +2468,23 @@ function validatePOForm(){
     if (!($('#vendor_location_id').val() || '').trim()) errors.push('Company Location');
     if (!($('#contact_id').val() || '').trim()) errors.push('Contact Name');
 
-    const existingList = existingPoDetailList || [];
-    const cartList = poDetailCart || [];
-    const totalDetailCount = existingList.length + cartList.length;
+    const totalDetailCount = existingPoDetailList ? existingPoDetailList.length : 0;
 
     if (totalDetailCount === 0) {
         errors.push('Please add at least 1 Po Detail');
     } else {
         // เช็คว่ามีรายการไหนราคารวมยังเป็น 0 / ยังไม่ได้ใส่ราคา
-        const zeroPriceItems = existingList.concat(cartList).filter(function(item){
-            if (item.poDetailId) return dbTotalOf(item) + pendingSrcTotal(item.poDetailId) <= 0;
+        const zeroPriceItems = existingPoDetailList.filter(function(item){
             return (Number(item.total) || 0) <= 0;
         });
         if (zeroPriceItems.length > 0) {
-            const names = zeroPriceItems.map(i => i.productName).join(', ');
-            errors.push('กรุณาใส่ราคารวมให้ครบทุกรายการ (' + names + ')');
-        }
+			const names = zeroPriceItems.map(function(i){
+				return i.parentProductName
+					? i.parentProductName + ' > ' + (i.productName || '')
+					: (i.productName || '');
+			}).join(', ');
+			errors.push('กรุณาใส่ราคารวม ' + names);
+		}
     }
 
     const hasSignature = $('#hasSignature').val() === 'true';
@@ -2832,7 +2507,7 @@ function submitPO(){
         });
         return;
     }
-    
+
     Swal.fire({
     	title: "Are you sure?!",
         text: "Do you want to save the changes?",
@@ -2857,10 +2532,9 @@ function submitPO(){
             descriptionVendor: $('#vendor_description').val().trim() || '',
             referenceNo: $('#reference_no').val().trim() || '',
             referenceDate: $('#kt_reference_datepicker').val() || '',
-            poDetailCartJson: JSON.stringify(buildPoCartPayload()),
             status: '2'
         };
-        
+
         const fd = new FormData();
         Object.keys(payload).forEach(function (k) { fd.append(k, payload[k]); });
         if (typeof selectedFiles !== 'undefined') {
@@ -2878,26 +2552,25 @@ function submitPO(){
             contentType: false,
             success: function (resp) {
                 if (resp.data && resp.data.poId) {
-                    sessionStorage.removeItem(PO_CART_STORAGE_KEY);
-					sessionStorage.removeItem(PO_EXISTING_SRC_KEY);
-					sessionStorage.removeItem(PO_EXISTING_EDIT_KEY);
-				sessionStorage.removeItem(PO_SOURCE_EDIT_KEY);
+                    skipLeaveWarning = true;
+                    clearDraftStorage();
                     Swal.fire({
                         title: 'Success!',
                         text: 'Po saved successfully!',
-                        icon: 'success'
+                        icon: 'success',
+						timer: 800,
+						showConfirmButton: false
                     }).then(() => {
                         window.location.href = ctx + '/purchase_order_list';
                     });
                 } else {
+                    setBtnLoading('#savePOFormBtn', false);
                     Swal.fire('Error', 'ไม่สามารถส่ง PO ได้', 'error');
                 }
             },
             error: function () {
-                Swal.fire('Error', 'เกิดข้อผิดพลาดในการส่งข้อมูล', 'error');
-            },
-            complete: function(){
                 setBtnLoading('#savePOFormBtn', false);
+                Swal.fire('Error', 'เกิดข้อผิดพลาดในการส่งข้อมูล', 'error');
             }
         });
     });
@@ -2961,14 +2634,14 @@ function returnPO(){
             data: payload,
             success: function (resp) {
                 if (resp.data && resp.data.poId) {
-                    sessionStorage.removeItem(PO_CART_STORAGE_KEY);
-                    sessionStorage.removeItem(PO_EXISTING_SRC_KEY);
-					sessionStorage.removeItem(PO_EXISTING_EDIT_KEY);
-				sessionStorage.removeItem(PO_SOURCE_EDIT_KEY);
+                    skipLeaveWarning = true;
+                    clearDraftStorage();
                     Swal.fire({
                         title: 'Success!',
                         text: 'Po returned successfully!',
-                        icon: 'success'
+                        icon: 'success',
+						timer: 800,
+						showConfirmButton: false
                     }).then(() => {
                         location.reload();
                         // window.location.href = ctx + '/purchase_order_list';
@@ -3001,6 +2674,7 @@ function editPO(){
         dataType: 'json',
         data: payload,
         success: function (resp) {
+            skipLeaveWarning = true;
             location.reload();
         },
 		error: function () {
@@ -3049,14 +2723,14 @@ function rejectPO(){
             data: payload,
             success: function (resp) {
                 if (resp.data && resp.data.poId) {
-                    sessionStorage.removeItem(PO_CART_STORAGE_KEY);
-					sessionStorage.removeItem(PO_EXISTING_SRC_KEY);
-					sessionStorage.removeItem(PO_EXISTING_EDIT_KEY);
-				sessionStorage.removeItem(PO_SOURCE_EDIT_KEY);
+                    skipLeaveWarning = true;
+                    clearDraftStorage();
                     Swal.fire({
                         title: 'Success!',
                         text: 'Po rejected successfully!',
-                        icon: 'success'
+                        icon: 'success',
+						timer: 800,
+						showConfirmButton: false
                     }).then(() => {
 						location.reload();
                         // window.location.href = ctx + '/purchase_order_list';
@@ -3108,14 +2782,14 @@ function approvePO(){
             data: payload,
             success: function (resp) {
                 if (resp.data && resp.data.poId) {
-                    sessionStorage.removeItem(PO_CART_STORAGE_KEY);
-					sessionStorage.removeItem(PO_EXISTING_SRC_KEY);
-					sessionStorage.removeItem(PO_EXISTING_EDIT_KEY);
-				sessionStorage.removeItem(PO_SOURCE_EDIT_KEY);
+                    skipLeaveWarning = true;
+                    clearDraftStorage();
                     Swal.fire({
                         title: 'Success!',
                         text: 'PO approved successfully!',
-                        icon: 'success'
+                        icon: 'success',
+						timer: 800,
+						showConfirmButton: false
                     }).then(() => {
 						location.reload();
                         // window.location.href = ctx + '/purchase_order_list';
@@ -3164,14 +2838,14 @@ function inProgressPO(){
             data: payload,
             success: function (resp) {
                 if (resp.data && resp.data.poId) {
-                    sessionStorage.removeItem(PO_CART_STORAGE_KEY);
-					sessionStorage.removeItem(PO_EXISTING_SRC_KEY);
-					sessionStorage.removeItem(PO_EXISTING_EDIT_KEY);
-				sessionStorage.removeItem(PO_SOURCE_EDIT_KEY);
+                    skipLeaveWarning = true;
+                    clearDraftStorage();
                     Swal.fire({
                         title: 'Success!',
                         text: 'PO in progress successfully!',
-                        icon: 'success'
+                        icon: 'success',
+						timer: 800,
+						showConfirmButton: false
                     }).then(() => {
                         location.reload();
                         // window.location.href = ctx + '/purchase_order_list';
@@ -3194,10 +2868,8 @@ function goBack(){
     if (hasUnsavedChanges()) {
         confirmLeaveForm('purchase_order_list');
     } else {
-        sessionStorage.removeItem(PO_CART_STORAGE_KEY);
-        sessionStorage.removeItem(PO_EXISTING_SRC_KEY);
-        sessionStorage.removeItem(PO_EXISTING_EDIT_KEY);
-		sessionStorage.removeItem(PO_SOURCE_EDIT_KEY);
+        skipLeaveWarning = true;
+        clearDraftStorage();
         location.href = 'purchase_order_list';
     }
 }
@@ -3232,14 +2904,14 @@ function cancelPO(){
             data: payload,
             success: function (resp) {
                 if (resp.data && resp.data.poId) {
-                    sessionStorage.removeItem(PO_CART_STORAGE_KEY);
-					sessionStorage.removeItem(PO_EXISTING_SRC_KEY);
-					sessionStorage.removeItem(PO_EXISTING_EDIT_KEY);
-				sessionStorage.removeItem(PO_SOURCE_EDIT_KEY);
+                    skipLeaveWarning = true;
+                    clearDraftStorage();
                     Swal.fire({
                         title: 'Success!',
                         text: 'PO cancel successfully!',
-                        icon: 'success'
+                        icon: 'success',
+						timer: 800,
+						showConfirmButton: false
                     }).then(() => {
                         location.reload();
                         // window.location.href = ctx + '/purchase_order_list';
@@ -3306,7 +2978,7 @@ function createPrMrBadges(prId, mrIds, refLink){
     return html;
 }
 
-function createPoSourceRow(qty, unitName, baseQty, baseUnitName, savedAt, prId, mrIds, refLink, creatorName, isNew, menuCtx, isEdited){
+function createPoSourceRow(qty, unitName, baseQty, baseUnitName, savedAt, prId, mrIds, refLink, creatorName, isNew, menuCtx){
     const qtyUnitDisplay = (qty + ' ' + unitName + ' (= ' + baseQty + ' ' + baseUnitName + ')');
 
     const menuHtml = menuCtx ? `
@@ -3365,7 +3037,14 @@ let inprogressPrDetailList = [];
 let prDetailTable = null;
 let selectedPrCategory = '';
 let prSearchRequestToken = 0;
-let isSearchPrModalOpen = false; 
+let isSearchPrModalOpen = false;
+let pendingPrKeyword = null;
+
+function openSearchPrWithKeyword(keyword){
+    pendingPrKeyword = keyword;
+    $('#searchPrKeyword').val(keyword);
+    bootstrap.Modal.getOrCreateInstance(document.getElementById('modal_search_pr')).show();
+}
 
 $.fn.dataTable.ext.search.push(function (settings, data, dataIndex) {
     if (settings.nTable.id !== 'prResultTable') return true;
@@ -3392,6 +3071,7 @@ function loadInprogressPrDetail(){
     $.ajax({
         url: ctx + '/search_inprogress_pr',
         type: 'POST',
+        data: { poId: EDIT_PO_ID },
         dataType: 'json',
         success: function (resp) {
             if (requestToken !== prSearchRequestToken || !isSearchPrModalOpen) {
@@ -3452,16 +3132,6 @@ $(document.body).on('change', '#searchPrCategory', function () {
     }
 });
 
-function isPrDetailIdInCart(prDetailId){
-    var inCart = poDetailCart.some(function(it){
-        return (it.sources || []).some(function(s){ return String(s.prDetailId) === String(prDetailId); });
-    });
-    if (inCart) return true;
-    return Object.keys(pendingExistingPoSources).some(function(pid){
-        return pendingExistingPoSources[pid].some(function(s){ return String(s.prDetailId) === String(prDetailId); });
-    });
-}
-
 function renderPrResultTable(list){
     var tbody = document.getElementById('prResultBody');
     var html = '';
@@ -3488,7 +3158,11 @@ function renderPrResultTable(list){
             <td>
                 <div class="form-check form-check-sm">
                     <input class="form-check-input pr-row-check" type="checkbox"
-                            data-pr-detail-id="\${item.pr_detail_id}"\${isPrDetailIdInCart(item.pr_detail_id) ? ' checked' : ''} />
+                        data-pr-detail-id="\${item.pr_detail_id}"
+                        data-pulled="\${item.po_parent_id ? '1' : '0'}"
+                        data-po-detail-id="\${item.po_detail_id || ''}"
+                        data-po-parent-id="\${item.po_parent_id || ''}"
+                        \${item.po_parent_id ? ' checked' : ''} />
                 </div>
             </td>
             <td class="fw-bold text-gray-900 fs-7 row-number text-start"></td>
@@ -3516,7 +3190,8 @@ function renderPrResultTable(list){
                 </div>
             </td>
             <td>
-                <div class="d-flex flex-column">\${fullProductName}</span>
+                <div class="d-flex flex-column">
+                    <span class="text-gray-900 fs-6 fw-normal">\${fullProductName}</span>
                     <span class="text-gray-900 fs-6 fw-normal">\${qty} \${unitName}</span>
                 </div>
             </td>
@@ -3565,6 +3240,13 @@ function renderPrResultTable(list){
             syncGroupChecks();
         }
     });
+
+    if (pendingPrKeyword !== null) {
+        $('#searchPrKeyword').val(pendingPrKeyword);
+        prDetailTable.search(pendingPrKeyword).draw();
+        pendingPrKeyword = null;
+    }
+
     updatePrSelectedCountReal();
 
     var checkAll = document.getElementById('checkAllPr');
@@ -3582,7 +3264,7 @@ function renderPrResultTable(list){
         });
     });
 
-    checkAll.checked = list.length > 0 && list.every(function (d) { return isPrDetailIdInCart(d.pr_detail_id); });
+    checkAll.checked = list.length > 0 && list.every(function (d) { return !!d.po_parent_id; });
     checkAll.onchange = function(){
         document.querySelectorAll('.pr-row-check').forEach(cb => cb.checked = this.checked);
         updatePrSelectedCountReal();
@@ -3634,194 +3316,129 @@ function updatePrSelectedCountReal(){
     document.getElementById('prSelectedCount').textContent = count;
 }
 
-function uncheckPrCheckboxesForItem(item){
-    if (!item || !item.sources || item.sources.length === 0) return;
+function buildAddItems(addIds){
+    var groups = {}; // productId -> item
+    addIds.forEach(function(prDetailId){
+        var src = inprogressPrDetailList.find(function(d){ return String(d.pr_detail_id) === String(prDetailId); });
+        if (!src) return;
 
-    item.sources.forEach(function(s){
-        if (!s.prDetailId) return;
-        var cb = document.querySelector('.pr-row-check[data-pr-detail-id="' + s.prDetailId + '"]');
-        if (cb) cb.checked = false;
+        var productId = src.product_id;
+        var qty = Number(src.amount_total) || 0;
+        // pr_detail ไม่มีคอลัมน์ราคาสินค้า ค่านี้จะเป็น 0 เสมอ
+        // ผู้ใช้ต้องกดแก้ เพื่อกรอกราคารวมเองทีหลัง เหมือนการ์ดที่สร้างเอง
+        var price = Number(src.unit_price) || 0;
+
+        if (!groups[productId]) {
+            var existing = findExistingDetailByProduct(productId);
+            groups[productId] = {
+                poDetailId: existing ? existing.poDetailId : '',
+                productId: productId,
+                itemsType: mapDbItemsTypeToSelect(src.product_type),
+                unit: src.unit,
+                description: '',
+                qty: 0,
+                price: 0,
+                sources: []
+            };
+        }
+
+        groups[productId].qty += qty;
+        groups[productId].sources.push({
+            prId: src.pr_id,
+            prDetailId: src.pr_detail_id,
+            mrIds: src.mrs || [],
+            qty: qty,
+            unit: src.unit,
+            baseQty: qty, // pr_detail.unit เป็นหน่วยเล็กสุดอยู่แล้ว ไม่ต้องแปลงหน่วยอีก
+            refLink: src.ref_link || '',
+            description: src.description || '',
+            total: qty * price
+        });
     });
-
-    updatePrSelectedCountReal();
-
-    var checkAll = document.getElementById('checkAllPr');
-    if (checkAll) {
-        var allBoxes = document.querySelectorAll('.pr-row-check');
-        checkAll.checked = allBoxes.length > 0 &&
-            Array.prototype.every.call(allBoxes, function (box) { return box.checked; });
-    }
+    return Object.keys(groups).map(function(k){ return groups[k]; });
 }
 
-// หา unit, base ของ unitId ที่กำหนด จาก unit catalog 
-// unit = entry ของ unitId นั้น(เอา conversionRate), base = entry ที่ sequence === '0' (หน่วยเล็กสุด)
-function findUnitAndBase(catalog, unitId){
-    var unit = null, base = null;
-    (catalog || []).forEach(function(u){
-        if (String(u.id) === String(unitId)) unit = u;
-        if (String(u.sequence) === '0') base = u;
+function runSubmitPr(removeCbs, addIds){
+    setBtnLoading('#btnSubmitPr', true);
+
+    var removeList = removeCbs.map(function(cb){
+        return { poDetailId: cb.getAttribute('data-po-detail-id'), poParentId: cb.getAttribute('data-po-parent-id') };
     });
-    return { unit: unit, base: base };
+
+    function fail(){
+        toastFail('ไม่สามารถบันทึกรายการได้', function(){
+            setBtnLoading('#btnSubmitPr', false);
+            reloadPage();
+        });
+    }
+
+    function finishRemoves(){
+        if (addIds.length === 0) { toastOk('บันทึกรายการสำเร็จ', reloadPage); return; }
+        var items = buildAddItems(addIds);
+        if (items.length === 0) { toastOk('บันทึกรายการสำเร็จ', reloadPage); return; }
+        ajaxAction({
+            url: '/add_po_detail',
+            data: { poId: EDIT_PO_ID, poDetailCartJson: JSON.stringify(items) },
+            btn: '#btnSubmitPr',
+            okMsg: 'บันทึกรายการสำเร็จ', failMsg: 'ไม่สามารถบันทึกรายการได้'
+        });
+    }
+
+    // ลบทีละรายการ (sequential) เพราะการ์ดเดียวกันอาจมีหลายแถวถูกถอด ต้องคำนวณ isLast ใหม่ทุกรอบ
+    function doRemoves(i){
+        if (i >= removeList.length) { finishRemoves(); return; }
+        var r = removeList[i];
+        var item = existingPoDetailList.find(function(d){ return String(d.poDetailId) === String(r.poDetailId); });
+        var isLast = !item || (item.sources || []).length <= 1;
+        var url = isLast ? '/delete_po_detail' : '/delete_po_source';
+        var data = isLast
+            ? { poDetailId: r.poDetailId, poId: EDIT_PO_ID }
+            : { poParentId: r.poParentId, poDetailId: r.poDetailId, poId: EDIT_PO_ID, keepDetail: 'false' };
+
+        $.ajax({
+            url: ctx + url, type: 'POST', dataType: 'json', data: data,
+            success: function(resp){
+                if (!resp.data || !resp.data.success) { fail(); return; }
+
+                // อัปเดต existingPoDetailList ใน memory ให้ตรงกับ DB (ไม่ render ตรงนี้ รอ reloadPage)
+                if (item) {
+                    var srcIdx = (item.sources || []).findIndex(function(s){ return String(s.poParentId) === String(r.poParentId); });
+                    if (srcIdx !== -1) {
+                        var removed = item.sources[srcIdx];
+                        var removedBaseQty = Number(removed.baseQty != null ? removed.baseQty : removed.qty) || 0;
+                        item.sources.splice(srcIdx, 1);
+                        item.qty = Math.max(0, (Number(item.qty) || 0) - removedBaseQty);
+                    }
+                    if (item.sources.length === 0) {
+                        var idx = existingPoDetailList.indexOf(item);
+                        if (idx !== -1) existingPoDetailList.splice(idx, 1);
+                    }
+                }
+
+                doRemoves(i + 1);
+            },
+            error: fail
+        });
+    }
+
+    doRemoves(0);
 }
 
 document.getElementById('btnSubmitPr').addEventListener('click', function(){
-    var selectedIds = [];
-    document.querySelectorAll('.pr-row-check:checked').forEach(function(cb){
-        selectedIds.push(cb.getAttribute('data-pr-detail-id'));
-    });
-    var selectedIdSet = {};
-    selectedIds.forEach(function(id){ selectedIdSet[String(id)] = true; });
-
-    // เอาออกจาก poDetailCart รายการที่เคยดึงเข้ามาจากตารางนี้ แต่ตอนนี้ถูกเลิกติ๊กแล้ว
-    inprogressPrDetailList.forEach(function(d){
-        var prDetailId = String(d.pr_detail_id);
-        if (selectedIdSet[prDetailId]) return;
-
-        for (var i = poDetailCart.length - 1; i >= 0; i--) {
-            var cartItem = poDetailCart[i];
-            if (!cartItem.sources) continue;
-
-            var srcIdx = cartItem.sources.findIndex(function (s) {
-                return String(s.prDetailId) === prDetailId;
-            });
-            if (srcIdx === -1) continue;
-
-            var removedSrc = cartItem.sources[srcIdx];
-            var removedBaseQty = Number(removedSrc.baseQty != null ? removedSrc.baseQty : removedSrc.qty) || 0;
-            cartItem.sources.splice(srcIdx, 1);
-
-            if (cartItem.sources.length === 0) {
-                poDetailCart.splice(i, 1);
-            } else {
-                cartItem.qty = Math.max(0, (Number(cartItem.qty) || 0) - removedBaseQty);
-                cartItem.price = cartItem.qty > 0 ? ((Number(cartItem.total) || 0) / cartItem.qty) : 0;
-            }
-        }
+    var removeCbs = Array.prototype.slice.call(
+        document.querySelectorAll('.pr-row-check[data-pulled="1"]:not(:checked)'));
+    var addIds = [];
+    document.querySelectorAll('.pr-row-check:checked:not([data-pulled="1"])').forEach(function(cb){
+        addIds.push(cb.getAttribute('data-pr-detail-id'));
     });
 
-    // search_inprogress_pr ไม่มี conversion rate ติดมาด้วย ต้อง fetch unit catalog ของแต่ละ product_id ที่เลือกเอง
-    var productIdsToFetch = [];
-    selectedIds.forEach(function(prDetailId){
-        var src = inprogressPrDetailList.find(function(d){ return String(d.pr_detail_id) === String(prDetailId); });
-        if (!src || !src.product_id) return;
-        var pid = String(src.product_id);
-        if (!prUnitCatalogCache[pid] && productIdsToFetch.indexOf(pid) === -1) {
-            productIdsToFetch.push(pid);
-        }
-    });
+    if (removeCbs.length === 0 && addIds.length === 0) {
+        if (document.activeElement) document.activeElement.blur();
+        bootstrap.Modal.getOrCreateInstance(document.getElementById('modal_search_pr')).hide();
+        return;
+    }
 
-    var fetches = productIdsToFetch.map(function(pid){
-        return $.ajax({
-            url: ctx + '/get_unit_of_measure',
-            type: 'POST',
-            dataType: 'json',
-            data: { productId: pid }
-        }).then(function(resp){
-            prUnitCatalogCache[pid] = (resp.data && resp.data.unitList) || [];
-        }, function(){
-            prUnitCatalogCache[pid] = []; // โหลดไม่สำเร็จ ใช้ conversionRate=1 (ไม่แปลงหน่วย)
-        });
-    });
-
-    $.when.apply($, fetches).always(function(){
-        // รายการที่ดึงมาจาก Search PR ทั้งหมดเป็นของใหม่ (ยังไม่ save ลง DB)
-        selectedIds.forEach(function(prDetailId){
-            var src = inprogressPrDetailList.find(function(d){ return String(d.pr_detail_id) === String(prDetailId); });
-            if (!src) return;
-
-            var qty = Number(src.amount_total) || 0;
-            var price = Number(src.unit_price) || 0;
-            var mrs = src.mrs || [];
-
-            var catalog = prUnitCatalogCache[String(src.product_id)] || [];
-            var found = findUnitAndBase(catalog, src.unit);
-            var conversionRate = (found.unit && Number(found.unit.conversionRate)) || 1;
-            var baseUnit = found.base || found.unit;
-            var baseQty = qty * conversionRate;
-            var baseUnitId = baseUnit ? baseUnit.id : src.unit;
-            var baseUnitName = baseUnit ? baseUnit.name : (src.unit_name || '');
-
-            // ข้อมูลที่มา (ต่อ PR แต่ละใบ) — qty/unitName เป็นหน่วยดิบตามที่ PR บันทึกไว้
-            var sourceEntry = {
-                prId: src.pr_id,
-                prDetailId: src.pr_detail_id,
-                mrIds: mrs,
-                qty: qty,
-                unit: src.unit,
-                unitName: src.unit_name || '',
-                baseQty: baseQty,
-                refLink: src.ref_link || '',
-                creatorName: (src.user_create_emp_id ? src.user_create_emp_id + ' - ' : '') + (src.user_create_name || ''),
-                savedAt: formatNowDateTime()
-            };
-
-			if (addToExistingPoDetail(src.product_id, sourceEntry, baseQty * price)) return;
-
-            // group ตาม productId เฉพาะกับรายการใหม่ใน poDetailCart (ไม่ยุ่งกับ existingPoDetailList)
-            var existingIndex = poDetailCart.findIndex(function(it){
-                return String(it.productId) === String(src.product_id);
-            });
-
-            if (existingIndex >= 0) {
-                var existing = poDetailCart[existingIndex];
-
-                if (!existing.sources || existing.sources.length === 0) {
-                    existing.sources = [{
-                        prId: existing.prId || null,
-                        prDetailId: existing.prDetailId || null,
-                        mrIds: existing.mrIds || [],
-                        qty: existing.qty,
-                        unit: existing.unit,
-                        unitName: existing.unitName,
-                        baseQty: existing.qty,
-                        refLink: existing.refLink || '',
-                        creatorName: existing.creatorName || currentUserDisplay,
-                        savedAt: existing.savedAt || formatNowDateTime()
-                    }];
-                }
-
-                var alreadyAdded = (existing.sources || []).some(function(s){
-                    return String(s.prDetailId) === String(src.pr_detail_id);
-                });
-                if (alreadyAdded) return;
-
-                existing.sources.push(sourceEntry);
-                existing.qty = (Number(existing.qty) || 0) + baseQty;
-                existing.total = (Number(existing.total) || 0) + (baseQty * price);
-                existing.price = existing.qty > 0 ? (existing.total / existing.qty) : 0;
-            } else {
-				var cartProductName = src.parent_product_name
-					? src.parent_product_name + ' > ' + (src.product_name || '')
-					: (src.product_name || '');
-
-                var item = {
-                    itemsType: mapDbItemsTypeToSelect(src.product_type),
-                    itemsTypeText: getCategoryIcon(src.product_type).name,
-                    productId: src.product_id,
-                    productName: src.product_name || '',
-    				parentProductName: src.parent_product_name || '',
-                    qty: baseQty,
-                    unit: baseUnitId,
-                    unitName: baseUnitName,
-                    price: price,
-                    description: '',
-                    sources: [sourceEntry]
-                };
-                item.total = baseQty * price;
-                poDetailCart.push(item);
-            }
-        });
-
-        saveCartToSession();
-        renderPoDetailCart();
-
-        if (document.activeElement) {
-            document.activeElement.blur();
-        }
-
-        var modalEl = document.getElementById('modal_search_pr');
-        bootstrap.Modal.getOrCreateInstance(modalEl).hide();
-    });
+    runSubmitPr(removeCbs, addIds);
 });
 
 </script>

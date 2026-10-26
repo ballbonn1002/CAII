@@ -285,20 +285,6 @@ public class EquipmentRequestMrAction extends ActionSupport {
             }
             debugLog.add("subItemList size = " + subItemList.size());
 
-            // List<Map<String, Object>> subItemList = new ArrayList<>();
-            // if (productId != null && !productId.trim().isEmpty()) {
-            //     List<Map<String, Object>> rows = equipmentRequestMrNewDAO.findSubItems(productId.trim());
-            //     if (rows != null) {
-            //         for (Map<String, Object> p : rows) {
-            //             Map<String, Object> item = new HashMap<>();
-            //             item.put("id", p.get("product_id"));
-            //             item.put("name", p.get("product_name"));
-            //             subItemList.add(item);
-            //         }
-            //     }
-            // }
-            // debugLog.add("subItemList size = " + subItemList.size());
-
             Map<String, Object> data = new HashMap<>();
             data.put("subItemList", subItemList);
             writeJson(data, debugLog);
@@ -763,7 +749,6 @@ public class EquipmentRequestMrAction extends ActionSupport {
             mr.setDescription(description);
             mr.setUrlRef(urlRef);
 
-            // ลงชื่อผู้ขอเบิกแล้วจะไม่เขียนทับ — set เฉพาะกรณียังไม่เคยลงชื่อ
             if (mr.getRequestDate() == null && signDate != null && !signDate.trim().isEmpty()) {
                 mr.setRequestUser(loginUserId);
                 mr.setRequestDate(java.sql.Timestamp.valueOf(signDate.trim()));
@@ -833,7 +818,7 @@ public class EquipmentRequestMrAction extends ActionSupport {
         }
     }
 
-    //soft delete MR (status → Cancel) — ลบได้เฉพาะ MR ของตัวเองที่ยังเป็น Draft
+    //soft delete MR (Cancel) — ลบได้เฉพาะ MR ของตัวเองที่ยังเป็น Draft
     public String deleteMr() {
         List<String> debugLog = new ArrayList<>();
         try {

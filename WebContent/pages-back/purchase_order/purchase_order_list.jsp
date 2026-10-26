@@ -128,52 +128,6 @@
 						</div>
 						<div class="card-body filter-card px-10 py-9 rounded-3">
 						<!-- Summary PO -->
-						<!-- <div class="d-flex flex-row justify-content-center mb-10">					
-							<div class="row align-items-center mt-10 mx-5 fs-6 fw-bold">
-								
-								<div class="col-lg-3 col-md-4 col-6 d-flex align-items-center justify-content-center mb-5 summary-card border border-1 border-primary rounded-3 py-3 px-1" data-status="All" data-border-color="border-primary" style="cursor: pointer;">
-									<span class="fs-2hx me-2 text-primary" id="summaryPOAll">${poSummaryTotal}</span>
-									<span class="badge badge-primary fs-7">All</span>
-								</div>
-								
-								<div class="col-lg-3 col-md-4 col-6 d-flex align-items-center justify-content-center mb-5 summary-card border border-1 border-transparent rounded-3 p-3" data-status="${poStatusNames['1']}" data-border-color="border-gray-400" style="cursor: pointer;">
-									<span class="fs-2hx me-2 text-gray-600" id="summaryPODraft">${poSummary['1']}</span>
-									<span class="badge badge-light fs-7">${poStatusNames['1']}</span>
-								</div>
-								
-								<div class="col-lg-3 col-md-4 col-6 d-flex align-items-center justify-content-center mb-5 summary-card border border-1 border-transparent rounded-3 p-3" data-status="${poStatusNames['2']}" data-border-color="border-warning" style="cursor: pointer;">
-									<span class="fs-2hx me-2 text-warning" id="summaryPOPending">${poSummary['2']}</span>
-									<span class="badge badge-warning fs-7">${poStatusNames['2']}</span>
-								</div>
-								
-								
-								<div class="col-lg-3 col-md-4 col-6 d-flex align-items-center justify-content-center mb-5 summary-card border border-1 border-transparent rounded-3 p-3" data-status="${poStatusNames['3']}" data-border-color="border-success" style="cursor: pointer;">
-									<span class="fs-2hx me-2 text-success" id="summaryPOApproved">${poSummary['3']}</span>
-									<span class="badge badge-success fs-7">${poStatusNames['3']}</span>
-								</div>
-								
-								<div class="col-lg-3 col-md-4 col-6 d-flex align-items-center justify-content-center mb-5 summary-card border border-1 border-transparent rounded-3 p-3" data-status="${poStatusNames['4']}" data-border-color="border-info" style="cursor: pointer;">
-									<span class="fs-2hx me-2 text-info" id="summaryPOReturn">${poSummary['4']}</span>
-									<span class="badge badge-info fs-7 lh-base">${poStatusNames['4']}</span>
-								</div>
-								
-								<div class="col-lg-3 col-md-4 col-6 d-flex align-items-center justify-content-center mb-5 summary-card border border-1 border-transparent rounded-3 p-3" data-status="${poStatusNames['5']}" data-border-color="border-danger" style="cursor: pointer;">
-									<span class="fs-2hx me-2 text-danger" id="summaryPORejected">${poSummary['5']}</span>
-									<span class="badge badge-danger fs-7">${poStatusNames['5']}</span>
-								</div>
-								
-								<div class="col-lg-3 col-md-4 col-6 d-flex align-items-center justify-content-center mb-5 summary-card border border-1 border-transparent rounded-3 p-3" data-status="${poStatusNames['6']}" data-border-color="border-dark" style="cursor: pointer;">
-									<span class="fs-2hx me-2 text-dark" id="summaryPOCancel">${poSummary['6']}</span>
-									<span class="badge badge-dark fs-7">${poStatusNames['6']}</span>
-								</div>
-
-								<div class="col-lg-3 col-md-4 col-6 d-flex align-items-center justify-content-center mb-5 summary-card border border-1 border-transparent rounded-3 p-3" data-status="${poStatusNames['7']}" data-border-color="border-cyan" style="cursor: pointer;">
-									<span class="fs-2hx me-2 text-cyan" id="summaryPOInProgress">${poSummary['7']}</span>
-									<span class="badge badge-cyan fs-7">${poStatusNames['7']}</span>
-								</div>
-							</div>
-						</div> -->
-						<!-- Summary PO -->
 							<div class="d-flex flex-row justify-content-center mb-10">
 								<div class="row align-items-center mt-10 mx-5 fs-6 fw-bold">
 
@@ -183,126 +137,30 @@
 										data-border-color="border-primary"
 										style="cursor: pointer;">
 
-										<span class="fs-2hx me-2 text-primary" id="summaryPOAll">
+										<span class="fs-2hx me-2 text-primary summary-count" id="summaryPOAll">
 											${poSummaryTotal}
 										</span>
 
 										<span class="badge badge-primary fs-7">All</span>
 									</div>
 
-									<!-- Draft -->
-									<div class="col-lg-3 col-md-4 col-6 d-flex align-items-center justify-content-center mb-5 summary-card border border-1 border-transparent rounded-3 p-3"
-										data-status="1"
-										data-border-color="${poStatusColors['1'] == 'secondary' ? 'border-gray-400' : 'border-'.concat(poStatusColors['1'])}"
-										style="cursor: pointer;">
-
-										<span class="fs-2hx me-2 ${poStatusColors['1'] == 'secondary' ? 'text-gray-600' : 'text-'.concat(poStatusColors['1'])}"
-											id="summaryPODraft">
-											${poSummary['1']}
-										</span>
-
-										<span class="badge badge-${poStatusColors['1']} fs-7">
-											${poStatusNames['1']}
-										</span>
-									</div>
-
-									<!-- Pending -->
-									<div class="col-lg-3 col-md-4 col-6 d-flex align-items-center justify-content-center mb-5 summary-card border border-1 border-transparent rounded-3 p-3"
-										data-status="2"
-										data-border-color="${poStatusColors['2'] == 'secondary' ? 'border-gray-400' : 'border-'.concat(poStatusColors['2'])}"
-										style="cursor: pointer;">
-
-										<span class="fs-2hx me-2 ${poStatusColors['2'] == 'secondary' ? 'text-gray-600' : 'text-'.concat(poStatusColors['2'])}"
-											id="summaryPOPending">
-											${poSummary['2']}
-										</span>
-
-										<span class="badge badge-${poStatusColors['2']} fs-7">
-											${poStatusNames['2']}
-										</span>
-									</div>
-
-									<!-- Approved -->
-									<div class="col-lg-3 col-md-4 col-6 d-flex align-items-center justify-content-center mb-5 summary-card border border-1 border-transparent rounded-3 p-3"
-										data-status="3"
-										data-border-color="${poStatusColors['3'] == 'secondary' ? 'border-gray-400' : 'border-'.concat(poStatusColors['3'])}"
-										style="cursor: pointer;">
-
-										<span class="fs-2hx me-2 ${poStatusColors['3'] == 'secondary' ? 'text-gray-600' : 'text-'.concat(poStatusColors['3'])}"
-											id="summaryPOApproved">
-											${poSummary['3']}
-										</span>
-
-										<span class="badge badge-${poStatusColors['3']} fs-7">
-											${poStatusNames['3']}
-										</span>
-									</div>
-
-									<!-- Return -->
-									<div class="col-lg-3 col-md-4 col-6 d-flex align-items-center justify-content-center mb-5 summary-card border border-1 border-transparent rounded-3 p-3"
-										data-status="4"
-										data-border-color="${poStatusColors['4'] == 'secondary' ? 'border-gray-400' : 'border-'.concat(poStatusColors['4'])}"
-										style="cursor: pointer;">
-
-										<span class="fs-2hx me-2 ${poStatusColors['4'] == 'secondary' ? 'text-gray-600' : 'text-'.concat(poStatusColors['4'])}"
-											id="summaryPOReturn">
-											${poSummary['4']}
-										</span>
-
-										<span class="badge badge-${poStatusColors['4']} fs-7 lh-base">
-											${poStatusNames['4']}
-										</span>
-									</div>
-
-									<!-- Rejected -->
-									<div class="col-lg-3 col-md-4 col-6 d-flex align-items-center justify-content-center mb-5 summary-card border border-1 border-transparent rounded-3 p-3"
-										data-status="5"
-										data-border-color="${poStatusColors['5'] == 'secondary' ? 'border-gray-400' : 'border-'.concat(poStatusColors['5'])}"
-										style="cursor: pointer;">
-
-										<span class="fs-2hx me-2 ${poStatusColors['5'] == 'secondary' ? 'text-gray-600' : 'text-'.concat(poStatusColors['5'])}"
-											id="summaryPORejected">
-											${poSummary['5']}
-										</span>
-
-										<span class="badge badge-${poStatusColors['5']} fs-7">
-											${poStatusNames['5']}
-										</span>
-									</div>
-
-									<!-- Cancel -->
-									<div class="col-lg-3 col-md-4 col-6 d-flex align-items-center justify-content-center mb-5 summary-card border border-1 border-transparent rounded-3 p-3"
-										data-status="6"
-										data-border-color="${poStatusColors['6'] == 'secondary' ? 'border-gray-400' : 'border-'.concat(poStatusColors['6'])}"
-										style="cursor: pointer;">
-
-										<span class="fs-2hx me-2 ${poStatusColors['6'] == 'secondary' ? 'text-gray-600' : 'text-'.concat(poStatusColors['6'])}"
-											id="summaryPOCancel">
-											${poSummary['6']}
-										</span>
-
-										<span class="badge badge-${poStatusColors['6']} fs-7">
-											${poStatusNames['6']}
-										</span>
-									</div>
-
-									<!-- In-Progress -->
-									<div class="col-lg-3 col-md-4 col-6 d-flex align-items-center justify-content-center mb-5 summary-card border border-1 border-transparent rounded-3 p-3"
-										data-status="7"
-										data-border-color="${poStatusColors['7'] == 'secondary' ? 'border-gray-400' : 'border-'.concat(poStatusColors['7'])}"
-										style="cursor: pointer;">
-
-										<span class="fs-2hx me-2 ${poStatusColors['7'] == 'secondary' ? 'text-gray-600' : 'text-'.concat(poStatusColors['7'])}"
-											id="summaryPOInProgress">
-											${poSummary['7']}
-										</span>
-
-										<span class="badge badge-${poStatusColors['7']} fs-7">
-											${poStatusNames['7']}
-										</span>
-									</div>
-
+									<c:forEach var="st" items="${poStatuses}">
+										<c:set var="stColor" value="${poStatusColors[st.statusCode]}" />
+										<div class="col-lg-3 col-md-4 col-6 d-flex align-items-center justify-content-center mb-5 summary-card border border-1 border-transparent rounded-3 p-3"
+											data-status="${st.statusCode}"
+											data-border-color="${stColor == 'secondary' ? 'border-gray-400' : 'border-'.concat(stColor)}"
+											style="cursor: pointer;">
+											<span class="fs-2hx me-2 summary-count ${stColor == 'secondary' ? 'text-gray-600' : 'text-'.concat(stColor)}">
+												${poSummary[st.statusCode]}
+											</span>
+											<span class="badge badge-${stColor} fs-7">
+												${poStatusNames[st.statusCode]}
+											</span>
+										</div>
+									</c:forEach>
 								</div>
+
+								
 							</div>
 														
 							<div class="table-responsive ">
@@ -341,45 +199,21 @@
 											<td class="text-gray-900 fs-6 fw-normal text-start">
 												${poItem.user_create_name}
 											</td>
-											<td class="text-gray-900 fs-6 fw-normal text-start">
+
+											<!-- <td class="text-gray-900 fs-6 fw-normal text-start">
 												<fmt:formatDate value="${poItem.time_create}" pattern="dd MMM yyyy, HH:mm" />
+											</td> -->
+											<td class="text-gray-900 fs-6 fw-normal text-start"
+												data-date="<c:if test='${not empty poItem.time_create}'><fmt:formatDate value='${poItem.time_create}' pattern='yyyy-MM-dd' /></c:if>">
+												<c:if test="${not empty poItem.time_create}">
+													<fmt:formatDate value="${poItem.time_create}" pattern="dd MMM yyyy, HH:mm" />
+												</c:if>
 											</td>
+
 											<td class="text-gray-900 fs-6 fw-normal text-end">
 												${poItem.detail_count}
 											</td>
-											<!-- <td class="text-gray-900 fs-6 fw-normal text-end">
-												<c:choose>
-													<c:when test="${poItem.status == '1'}">
-														<span class="badge badge-lg bg-secondary fw-semibold fs-7">${poItem.status_name}</span>
-													</c:when>
-
-													<c:when test="${poItem.status == '3'}">
-														<span class="badge badge-lg bg-success text-white fw-semibold fs-7">${poItem.status_name}</span>
-													</c:when>
-
-													<c:when test="${poItem.status == '2'}">
-														<span class="badge badge-lg badge-warning text-white fw-semibold fs-7">${poItem.status_name}</span>
-													</c:when>
-
-													<c:when test="${poItem.status == '4'}">
-														<span class="badge badge-lg badge-info text-white fw-semibold fs-7">${poItem.status_name}</span>
-													</c:when>
-													
-													<c:when test="${poItem.status == '5'}">
-														<span class="badge badge-lg bg-danger text-white fw-semibold fs-7">${poItem.status_name}</span>
-													</c:when>
-
-													<c:when test="${poItem.status == '6'}">
-														<span class="badge badge-lg bg-dark text-white fw-semibold fs-7">${poItem.status_name}</span>
-													</c:when>
-
-													<c:when test="${poItem.status == '7'}">
-														<span class="badge badge-lg bg-cyan text-white fw-semibold fs-7">${poItem.status_name}</span>
-													</c:when>
-
-													<c:otherwise></c:otherwise>
-												</c:choose>
-											</td> -->
+											
 											<td class="text-gray-900 fs-6 fw-normal text-end" data-code="${poItem.status}">
 												<span class="badge badge-lg badge-${poItem.status_color} fw-semibold fs-7 ${poItem.status_color == 'secondary' ? 'text-dark' : 'text-white'}">
 													${poItem.status_name}
@@ -402,13 +236,17 @@
 													</a> -->
 													<c:choose>
 														<c:when test="${poItem.status == '1' or poItem.status == '4'}">
-															<a href="po_perform_delete?poId=${poItem.po_id}" onclick="return confirmDelete(this.href);"
+															<!-- <a href="po_perform_delete?poId=${poItem.po_id}" onclick="return confirmDelete(this.href);"
 																class="btn btn-icon btn-light-danger btn-sm" title="Delete">
 																<i class="ki-duotone ki-trash fs-2"><span
 																	class="path1"></span><span class="path2"></span><span
 																	class="path3"></span><span class="path4"></span><span
 																	class="path5"></span></i>
-															</a>
+															</a> -->
+															<button type="button" class="btn btn-icon btn-light-danger btn-sm btn-delete-po"
+																	data-id="${poItem.po_id}" title="Delete">
+																<i class="ki-duotone ki-trash fs-2"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span><span class="path5"></span></i>
+															</button>
 														</c:when>
 														<c:otherwise>
 															<a class="btn btn-icon btn-light-danger btn-sm disabled"
@@ -439,128 +277,226 @@
 
 </body>
 <script type="text/javascript">
-	
-		document.addEventListener("DOMContentLoaded", function () {
-			$("#kt_daterangepicker_2").daterangepicker({
-			    startDate: moment().startOf("month"),
-			    endDate: moment().endOf("month"),
-			    locale: {
-			        format: "D MMM YYYY"
-			    }
-			});
-			
-			var table = $('#purchaseOrderList').DataTable({
-				pageLength : 25,
-				lengthMenu : [ 25, 50, 100 ],
-				ordering : true,
-				searching : true,
-				autoWidth : false,
-				info: false,
-				language: {
-				    zeroRecords: "No data found",
-				    emptyTable: "No data available in table"
-				},
-				columnDefs : [ {
-					orderable : false,
-					targets : [ 7 ]
-				}, {
-					orderable : true,
-					targets : [ 0, 1, 2, 3, 4, 5, 6 ]
-				}, {
-					targets: [ 5 ],
-					type: 'string'
-				} ],
-				order : [],
-				headerCallback : function(thead) {
-					$(thead).find('th').each(
-						function() {
-							if ($(this).find('.th-wrapper').length === 0) {
-								$(this).wrapInner(
-									'<span class="th-wrapper" style="display:inline-flex; align-items:center; white-space:nowrap; pointer-events:none;"></span>');
-							}
-					});
-				}
-			});
-			
-			//search
-			$('#tableSearch').on('keyup', function() {
-				table.search(this.value).draw();
-		    });
-			
-			/* ---- Summary Card Filter ---- */
-			var selectedStatusCode = null; // null = All
-			$.fn.dataTable.ext.search.push(function(settings, searchData, dataIndex) {
-				if (settings.nTable.id !== 'purchaseOrderList') {
-					return true;
-				}
-				if (selectedStatusCode === null) {
-					return true;
-				}
-				var cellCode = $(settings.aoData[dataIndex].anCells[6]).data('code');
-				return String(cellCode) === String(selectedStatusCode);
-			});
+	var ctx = '${pageContext.request.contextPath}';
+	document.addEventListener("DOMContentLoaded", function () {
+		var COL_REQUEST_DATE = 4;
+		var COL_STATUS = 6;
+		var dateFrom = null;
+		var dateTo = null;
 
-			$('.summary-card').on('click', function() {
-			    $('.summary-card').each(function() {
-			        var colorClass = $(this).data('border-color');
-			        $(this).removeClass(colorClass).addClass('border-transparent');
-			    });
+		var defaultStart = moment().startOf("year");
+		var defaultEnd = moment().endOf("year");
 
-			    var activeColor = $(this).data('border-color');
-			    $(this).removeClass('border-transparent').addClass(activeColor);
+		var $datePicker = $("#kt_daterangepicker_2");
+		$datePicker.daterangepicker({
+			startDate: defaultStart,
+			endDate: defaultEnd,
+			autoUpdateInput: false,
+			locale: {
+				format: "D MMM YYYY",
+				cancelLabel: "Show all"
+			}
+		});
 
-			    var status = $(this).data('status');
-			    selectedStatusCode = (status === "All") ? null : status;
-			    table.draw();
-			});
-			
-			
-			//running number
-			function runNumber() {
-				const info = table.page.info();
-				table.column(0, {
-					page : 'current'
-				}).nodes().each(function(cell, i) {
-					cell.innerHTML = info.start + i + 1;
+		function setDateRange(start, end) {
+			dateFrom = start.format('YYYY-MM-DD');
+			dateTo = end.format('YYYY-MM-DD');
+			$datePicker.val(start.clone().locale('en').format('D MMM YYYY') + ' - ' + end.clone().locale('en').format('D MMM YYYY'));
+		}
+
+		var table = $('#purchaseOrderList').DataTable({
+			pageLength : 25,
+			lengthMenu : [ 25, 50, 100 ],
+			ordering : true,
+			searching : true,
+			autoWidth : false,
+			info: false,
+			language: {
+				zeroRecords: "No data found",
+				emptyTable: "No data available in table"
+			},
+			columnDefs : [ {
+				orderable : false,
+				targets : [ 7 ]
+			}, {
+				orderable : true,
+				targets : [ 0, 1, 2, 3, 4, 5, 6 ]
+			}, {
+				targets: [ 5 ],
+				type: 'num'
+			} ],
+			order : [],
+			headerCallback : function(thead) {
+				$(thead).find('th').each(function() {
+					if ($(this).find('.th-wrapper').length === 0) {
+						$(this).wrapInner(
+							'<span class="th-wrapper" style="display:inline-flex; align-items:center; white-space:nowrap; pointer-events:none;"></span>');
+					}
 				});
 			}
-			
-			table.on('draw.dt order.dt search.dt', runNumber);
-			runNumber();
-			
-			//search
-			$('#tableSearch').on('keyup', function() {
-				table.search(this.value).draw();
-		    });
+		});
 
-			$(document).ready(function() {
-				$('[data-kt-select2="true"]').select2({
-					closeOnSelect : false
-				});
-			});			
-		
+		//search
+		$('#tableSearch').on('keyup', function() {
+			table.search(this.value).draw();
+		});
+
+		function passDateRange(rowDate) {
+			if (dateFrom === null || dateTo === null) {
+				return true;
+			}
+			if (!rowDate) {
+				return false;
+			}
+			return rowDate >= dateFrom && rowDate <= dateTo;
+		}
+
+		function rowDateOf(tdNode) {
+			return String($(tdNode).attr('data-date') || '').trim();
+		}
+
+		/* ---- Summary Card + Date Filter ---- */
+		var selectedStatusCode = null; // null = All
+		$.fn.dataTable.ext.search.push(function(settings, searchData, dataIndex) {
+			if (settings.nTable.id !== 'purchaseOrderList') {
+				return true;
+			}
+			var cells = settings.aoData[dataIndex].anCells;
+			if (!passDateRange(rowDateOf(cells[COL_REQUEST_DATE]))) {
+				return false;
+			}
+			if (selectedStatusCode === null) {
+				return true;
+			}
+			var cellCode = $(cells[COL_STATUS]).data('code');
+			return String(cellCode) === String(selectedStatusCode);
+		});
+
+		$datePicker.on('apply.daterangepicker', function(ev, picker) {
+			setDateRange(picker.startDate, picker.endDate);
+			table.draw();
+		});
+
+		// ปุ่ม Show all ยกเลิกตัวกรองวันที่
+		$datePicker.on('cancel.daterangepicker', function() {
+			dateFrom = null;
+			dateTo = null;
+			$(this).val('');
+			table.draw();
+		});
+
+		// ตัวเลขบน card นับตามช่วงวันที่
+		function updateSummaryCounts() {
+			var counts = {};
+			var total = 0;
+			table.rows().nodes().each(function(tr) {
+				var cells = tr.cells;
+				if (!passDateRange(rowDateOf(cells[COL_REQUEST_DATE]))) {
+					return;
+				}
+				total++;
+				var code = String($(cells[COL_STATUS]).data('code'));
+				counts[code] = (counts[code] || 0) + 1;
+			});
+			$('.summary-card').each(function() {
+				var status = String($(this).data('status'));
+				var n = (status === 'All') ? total : (counts[status] || 0);
+				$(this).find('.summary-count').text(n);
+			});
+		}
+
+		$('.summary-card').on('click', function() {
+			$('.summary-card').each(function() {
+				var colorClass = $(this).data('border-color');
+				$(this).removeClass(colorClass).addClass('border-transparent');
+			});
+
+			var activeColor = $(this).data('border-color');
+			$(this).removeClass('border-transparent').addClass(activeColor);
+
+			var status = $(this).data('status');
+			selectedStatusCode = (status === "All") ? null : status;
+			table.draw();
+		});
+
+		//running number
+		function runNumber() {
+			const info = table.page.info();
+			table.column(0, { page : 'current' }).nodes().each(function(cell, i) {
+				cell.innerHTML = info.start + i + 1;
+			});
+		}
+
+		table.on('draw.dt order.dt search.dt', runNumber);
+		table.on('draw.dt', updateSummaryCounts);
+
+		setDateRange(defaultStart, defaultEnd);
+		table.draw();
+		updateSummaryCounts();
 	});
 		
-		
-		function confirmDelete(url) {
-		    Swal.fire({
-		    	title: "Are you sure?!",
-		        text: "Are you sure you want to delete this item?",
-		        icon: "warning",
-		        showCancelButton: true,
-		        confirmButtonText: "Yes, delete it",
-		        cancelButtonText: "Cancel",
-		        buttonsStyling: false,
-		        customClass: {
-		            confirmButton: "btn btn-danger",
-		            cancelButton: "btn btn-secondary"
-		        }
-		    }).then((result) => {
-		        if (result.isConfirmed) {
-		            window.location.href = url;
-		        }
-		    });
-		    return false;
-		}
+		$(document).on('click', '.btn-delete-po', function () {
+			var poId = $(this).data('id');
+			if (!poId) { return; }
+
+			Swal.fire({
+				title: "Are you sure?!",
+				text: "Are you sure you want to delete this item?",
+				icon: "warning",
+				showCancelButton: true,
+				confirmButtonText: "Yes, delete it",
+				cancelButtonText: "Cancel",
+				buttonsStyling: false,
+				customClass: { confirmButton: "btn btn-danger", cancelButton: "btn btn-secondary" }
+			}).then(function (result) {
+				if (!result.isConfirmed) { return; }
+
+				$.ajax({
+					url: ctx + '/po_perform_delete',
+					type: 'POST',
+					dataType: 'json',
+					data: { poId: poId },
+					success: function (res) {
+						if (res && res.data && res.data.success === true) {
+							Swal.fire({ icon: 'success', 
+							title: 'Success!', 
+							text: 'PO cancel successfully!',
+							timer: 800,
+							showConfirmButton: false
+						}).then(function () {
+							window.location.reload();
+						});
+						} else {
+							var msg = (res && res.data && res.data.message) || 'ยกเลิกไม่สำเร็จ';
+							Swal.fire('Error', msg, 'error')
+								.then(function () { window.location.reload(); });
+						}
+					},
+					error: function () {
+						Swal.fire('Error', 'ยกเลิกไม่สำเร็จ', 'error');
+					}
+				});
+			});
+		});
+		// function confirmDelete(url) {
+		//     Swal.fire({
+		//     	title: "Are you sure?!",
+		//         text: "Are you sure you want to delete this item?",
+		//         icon: "warning",
+		//         showCancelButton: true,
+		//         confirmButtonText: "Yes, delete it",
+		//         cancelButtonText: "Cancel",
+		//         buttonsStyling: false,
+		//         customClass: {
+		//             confirmButton: "btn btn-danger",
+		//             cancelButton: "btn btn-secondary"
+		//         }
+		//     }).then((result) => {
+		//         if (result.isConfirmed) {
+		//             window.location.href = url;
+		//         }
+		//     });
+		//     return false;
+		// }
 	</script>
 </html>
