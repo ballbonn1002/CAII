@@ -407,37 +407,40 @@
 											<c:choose>
 
 												<c:when test="${not empty company.address_location}">
-	<div class="d-flex flex-column gap-3 address-group">
+													<div class="d-flex flex-column gap-3 address-group">
 
-		<c:forEach items="${company.address_location}"
-			var="address" varStatus="st">
+														<c:forEach items="${company.address_location}"
+															var="address" varStatus="st">
 
-			<%-- ที่อยู่แรกแสดงเสมอ ที่เหลือซ่อนไว้จนกว่าจะกด See More --%>
-			<div class="d-flex flex-column gap-3 ${st.index > 0 ? 'extra-address d-none' : ''}">
+															<%-- ที่อยู่แรกแสดงเสมอ ที่เหลือซ่อนไว้จนกว่าจะกด See More --%>
+															<div
+																class="d-flex flex-column gap-3 ${st.index > 0 ? 'extra-address d-none' : ''}">
 
-				<div class="d-flex gap-2 align-items-center">
-					<i class="ki-duotone ki-map fs-2"> <span
-						class="path1"></span> <span class="path2"></span> <span
-						class="path3"></span>
-					</i> <span class="fw-medium text-gray-700">
-						${address.address_name} </span>
-				</div>
+																<div class="d-flex gap-2 align-items-center">
+																	<i class="ki-duotone ki-map fs-2"> <span
+																		class="path1"></span> <span class="path2"></span> <span
+																		class="path3"></span>
+																	</i> <span class="fw-medium text-gray-700">
+																		${address.address_name} </span>
+																</div>
 
-				<div class="ps-8">
-					<span class="text-gray-500"> ${address.address} </span>
-				</div>
+																<div class="ps-8">
+																	<span class="text-gray-500"> ${address.address}
+																	</span>
+																</div>
 
-			</div>
+															</div>
 
-		</c:forEach>
+														</c:forEach>
 
-		<c:if test="${fn:length(company.address_location) > 1}">
-			<a href="javascript:void(0)"
-				class="btn-see-more align-self-start fw-semibold text-primary">See More</a>
-		</c:if>
+														<c:if test="${fn:length(company.address_location) > 1}">
+															<a href="javascript:void(0)"
+																class="btn-see-more align-self-start fw-semibold text-primary">See
+																More</a>
+														</c:if>
 
-	</div>
-</c:when>
+													</div>
+												</c:when>
 
 												<c:otherwise>
 
