@@ -9,8 +9,8 @@
 			<!--begin::Header-->
 			<div class="modal-header">
 				<h2 class="modal-title">Leave</h2>
-				<div class="btn btn-icon btn-sm btn-active-light-primary ms-2" data-bs-dismiss="modal" aria-label="Close">
-					<i class="ki-duotone ki-cross fs-1"><span class="path1"></span><span class="path2"></span></i>
+				<div class="btn btn-icon btn-light w-45px h-45px flex-shrink-0 ms-2" data-bs-dismiss="modal" aria-label="Close">
+					<i class="ki-duotone ki-cross fs-2x"><span class="path1"></span><span class="path2"></span></i>
 				</div>
 			</div>
 			<!--end::Header-->
