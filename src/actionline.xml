@@ -180,6 +180,22 @@
 		</action>
 		<!-- Group View -->
 
+		<!-- Add -->
+		<action name="line_my_travelA"
+			class="com.cubesofttech.action.TravelAction" method="travelAdd">
+			<result name="success" type="tiles">line_myTravelA</result>
+			<result name="error">/pages-line/index.jsp</result>
+		</action>
+
+		<action name="line_travel_save"
+			class="com.cubesofttech.action.TravelAction" method="travelSave">
+			<result name="success" type="redirectAction">
+				<param name="actionName">line_my_travel</param>
+			</result>
+			<result name="error">/pages-line/index.jsp</result>
+		</action>
+		<!-- Add -->
+
 		<!-- Edit: ยังไม่เปิดใช้ -->
 		<!--
 		<action name="line_my_travelE"
