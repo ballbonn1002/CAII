@@ -57,7 +57,7 @@ pageEncoding="UTF-8"%>
                     >MR - Approval</a
                   >
                   <a
-                    href="purchase_requisition"
+                    href="purchase_requisition_list"
                     class="btn btn-light-warning d-inline-flex align-items-center px-6 py-3"
                     >PR - Purchase Requisition</a
                   >
@@ -67,17 +67,11 @@ pageEncoding="UTF-8"%>
                     >PO - Purchase Order</a
                   >
                   <a
-                    href="#"
+                    href="good_receipt_list"
                     class="btn btn-light-danger d-inline-flex align-items-center px-6 py-3"
                     >GR - Goods Receipt</a
                   >
                   </div>
-                  <div class="d-flex gap-4 mt-6">
-                  <a
-                    href="purchase_requisition_list"
-                    class="btn btn-light-warning d-inline-flex align-items-center px-6 py-3"
-                    >PR New - Purchase Requisition</a
-                  >
                 </div>
               </div>
             </div>
