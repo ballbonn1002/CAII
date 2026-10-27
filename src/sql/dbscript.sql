@@ -1246,3 +1246,6 @@ ALTER TABLE `work_hours`
 -- 26/10/2026 Koy: add 'click_token_status' column to 'work_hours' table
 ALTER TABLE `work_hours`
 	ADD `click_token_status` VARCHAR(20) NULL DEFAULT NULL AFTER `request_referer`;
+	
+-- PROD 27 OCT 2026	
+	
