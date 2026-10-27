@@ -83,11 +83,11 @@
 				</div>
 			</div>
 
-			<div class="fs-7 text-muted mb-8">Request Date: <fmt:formatDate value="${exp.timeCreate}" pattern="d MMM yyyy, H:mm" /></div>
+			<div class="fs-7 text-muted mb-6">Request Date: <fmt:formatDate value="${exp.timeCreate}" pattern="d MMM yyyy, H:mm" /></div>
 
-			<div class="separator separator-dashed mb-8"></div>
+			<div class="separator separator-dashed mb-6"></div>
 
-			<div class="d-flex align-items-center justify-content-between mb-4">
+			<div class="d-flex align-items-center justify-content-between mb-3">
 				<span class="text-gray-700 fw-medium fs-5">Expense form</span>
 				<span class="badge badge-primary fw-bold fs-6"><fmt:formatNumber value="${exp.amount}" pattern="#,##0.00" /> บาท</span>
 			</div>
@@ -98,7 +98,7 @@
 					<c:forEach var="t" items="${expTravelTypeList}">
 						<c:if test="${t.expTravelTypeId == det.goBy}"><c:set var="typeName" value="${t.name}" /></c:if>
 					</c:forEach>
-					<div class="d-flex align-items-start justify-content-between gap-3 py-3">
+					<div class="d-flex align-items-start justify-content-between gap-3 py-2">
 						<div class="d-flex align-items-start gap-2" style="min-width:0;">
 							<div class="d-flex align-items-center gap-2 flex-shrink-0">
 								<span class="d-flex justify-content-center flex-shrink-0 w-15px"><span class="rounded-circle flex-shrink-0 w-8px h-8px bg-gray-400" style="transform: translateY(-1px);"></span></span>
@@ -111,16 +111,16 @@
 								</div>
 							</c:if>
 						</div>
-						<div class="fw-bold text-gray-800 fs-7 text-nowrap"><fmt:formatNumber value="${det.total}" pattern="#,##0.00" /> บาท</div>
+						<div class="fw-bold text-primary fs-7 text-nowrap"><fmt:formatNumber value="${det.total}" pattern="#,##0.00" /> บาท</div>
 					</div>
 				</c:forEach>
 				<c:if test="${empty detailList}">
-					<div class="text-gray-500 fs-7 py-3">-</div>
+					<div class="text-gray-500 fs-7 py-2">-</div>
 				</c:if>
 			</div>
 
 			<c:if test="${not empty travelFiles}">
-				<div class="d-flex flex-column gap-2 mt-4">
+				<div class="d-flex flex-column gap-2 mt-3">
 					<c:forEach var="file" items="${travelFiles}">
 						<a href="${ctx}${fn:escapeXml(file.path)}" class="d-flex align-items-center text-primary fs-7" style="min-width:0;">
 							<i class="ki-duotone ki-document fs-3 me-2 flex-shrink-0"><span class="path1"></span><span class="path2"></span></i>

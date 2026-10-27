@@ -1413,7 +1413,12 @@
 	<form id="submitForm" method="post"
 		action="${ctx}/submit_travelR">
 
-	<c:url var="createUrl" value="/my_travelA" />
+	<c:url var="createUrl" value="/line_my_travelA" />
+
+	<%-- ปุ่ม + แสดงทุกแท็บ --%>
+	<a href="${createUrl}" class="liff-floating-btn" aria-label="Create">
+		<i class="ki-duotone ki-plus text-white"></i>
+	</a>
 
 	<div id="submitButtonContainer"
 		class="d-flex align-items-center justify-content-between gap-3 mb-4 ${statusActiveSafe != 'Draft' ? 'd-none' : ''}">
@@ -1428,10 +1433,6 @@
 				<button type="submit" class="btn btn-primary btn-lg fw-medium"
 					id="btn-submit-request" disabled>Submit</button>
 			</div>
-
-			<a href="${createUrl}" class="liff-floating-btn" aria-label="Create">
-				<i class="ki-duotone ki-plus text-white"></i>
-			</a>
 		</c:if>
 	</div>
 
@@ -1472,7 +1473,7 @@
 							</label>
 							<div class="d-flex flex-column gap-3 fs-6 text-gray-700 flex-grow-1" style="min-width:0;">
 								<div class="d-flex align-items-center justify-content-between gap-2">
-									<span class="fw-bold fs-5 text-gray-900 text-nowrap">
+									<span class="fw-bold fs-6 text-gray-900 text-nowrap">
 										<c:choose>
 											<c:when test="${not empty row.dt_start}"><fmt:formatDate value="${row.dt_start}" pattern="d MMM yyyy" /></c:when>
 											<c:otherwise>-</c:otherwise>
@@ -1518,12 +1519,6 @@
 							<i class="ki-duotone ki-document fs-1 p-0"><span class="path1"></span><span class="path2"></span></i>
 							<span class="fs-8 fw-semibold">View</span>
 						</a>
-						<a href="${ctx}/travel_report?expense_group_id=${row.expense_group_id}"
-							target="_blank" rel="noopener noreferrer"
-							class="btn btn-light-primary rounded-0 w-65px p-0 d-flex flex-column align-items-center justify-content-center gap-1">
-							<i class="ki-duotone ki-printer fs-1 p-0"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span><span class="path5"></span></i>
-							<span class="fs-8 fw-semibold">Print</span>
-						</a>
 					</div>
 					<div class="card card-bordered liff-travel-card">
 						<div class="card-body d-flex align-items-stretch gap-4 p-5">
@@ -1549,7 +1544,7 @@
 							</div>
 							<div class="d-flex flex-column gap-3 fs-6 text-gray-700 flex-grow-1" style="min-width:0;">
 								<div class="d-flex align-items-center justify-content-between gap-2">
-									<span class="fw-bold fs-5 text-gray-900">
+									<span class="fw-bold fs-6 text-gray-900 text-nowrap">
 										<c:choose>
 											<c:when test="${not empty row.requested_at}"><fmt:formatDate value="${row.requested_at}" pattern="d MMM yyyy, H:mm" /></c:when>
 											<c:otherwise><fmt:formatDate value="${row.time_create}" pattern="d MMM yyyy, H:mm" /></c:otherwise>

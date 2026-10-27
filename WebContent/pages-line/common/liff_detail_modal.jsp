@@ -11,13 +11,13 @@
 <div class="modal fade" id="liffDetailModal" tabindex="-1" aria-hidden="true">
 	<div class="modal-dialog modal-fullscreen-sm-down modal-dialog-scrollable">
 		<div class="modal-content">
-			<div class="modal-header px-5 py-4">
+			<div class="modal-header py-4" style="padding-left: 22px; padding-right: 22px;">
 				<h1 class="liff-page-title text-gray-700 mb-0">${fn:escapeXml(param.title)}</h1>
 				<button type="button" class="btn btn-icon btn-light w-45px h-45px flex-shrink-0" data-bs-dismiss="modal" aria-label="Close">
 					<i class="ki-duotone ki-cross fs-2x"><span class="path1"></span><span class="path2"></span></i>
 				</button>
 			</div>
-			<div class="modal-body px-4 pt-0" id="liffDetailBody"></div>
+			<div class="modal-body" id="liffDetailBody" style="padding: 22px;"></div>
 		</div>
 	</div>
 </div>

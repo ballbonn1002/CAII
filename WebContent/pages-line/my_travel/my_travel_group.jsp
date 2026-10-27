@@ -25,7 +25,7 @@
 	</div>
 
 	<div class="card card-bordered border-0 mb-5">
-		<div class="card-body p-5">
+		<div class="card-body p-0">
 
 			<div class="d-flex align-items-center justify-content-between gap-3 mb-6">
 				<span class="fw-bold fs-5 text-primary">#${fn:escapeXml(expense_group_id)}</span>
@@ -112,7 +112,7 @@
 				</div>
 			</div>
 
-			<div class="d-flex align-items-center justify-content-between gap-3 mb-5">
+			<div class="d-flex align-items-center justify-content-between gap-3 mb-3">
 				<div class="d-flex align-items-center gap-3" style="min-width:0;">
 					<i class="ki-duotone ki-geolocation fs-2 text-success"><span class="path1"></span><span class="path2"></span></i>
 					<div class="text-break" style="min-width:0;">
@@ -127,7 +127,7 @@
 			</div>
 
 			<c:forEach var="det" items="${exp['details']}">
-				<div class="d-flex align-items-start justify-content-between gap-3 py-3">
+				<div class="d-flex align-items-start justify-content-between gap-3 py-2">
 					<div class="d-flex align-items-start gap-2" style="min-width:0;">
 						<div class="d-flex align-items-center gap-2 flex-shrink-0">
 							<span class="d-flex justify-content-center flex-shrink-0 w-15px"><span class="rounded-circle flex-shrink-0 w-8px h-8px bg-gray-400" style="transform: translateY(-1px);"></span></span>
@@ -140,20 +140,20 @@
 							</div>
 						</c:if>
 					</div>
-					<div class="fw-bold text-gray-800 fs-7 text-nowrap"><fmt:formatNumber value="${det['total']}" pattern="#,##0.00" /> บาท</div>
+					<div class="fw-bold text-primary fs-7 text-nowrap"><fmt:formatNumber value="${det['total']}" pattern="#,##0.00" /> บาท</div>
 				</div>
 			</c:forEach>
 			<c:if test="${empty exp['details']}">
-				<div class="text-gray-500 fs-7 py-3">-</div>
+				<div class="text-gray-500 fs-7 py-2">-</div>
 			</c:if>
 
-			<div class="d-flex align-items-center gap-3 mt-4">
+			<div class="d-flex align-items-center gap-3 mt-3">
 				<i class="ki-duotone ki-notepad fs-2 text-muted"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span><span class="path5"></span></i>
 				<span class="fw-semibold text-gray-700 fs-6 text-break">${not empty exp['description'] ? fn:escapeXml(exp['description']) : '-'}</span>
 			</div>
 
 			<c:if test="${not empty exp['files']}">
-				<div class="d-flex flex-column gap-2 mt-4">
+				<div class="d-flex flex-column gap-2 mt-5">
 					<c:forEach var="file" items="${exp['files']}">
 						<a href="${ctx}${fn:escapeXml(file.path)}" class="d-flex align-items-center text-primary fs-7" style="min-width:0;">
 							<i class="ki-duotone ki-document fs-3 me-2 flex-shrink-0"><span class="path1"></span><span class="path2"></span></i>
@@ -170,14 +170,5 @@
 	<c:if test="${empty expenseListObj}">
 		<div class="text-center text-muted fs-7 py-10">No data.</div>
 	</c:if>
-
-	<div class="d-flex gap-3 mt-2">
-		<a href="${ctx}/travel_report?expense_group_id=${fn:escapeXml(expense_group_id)}"
-			target="_blank" rel="noopener noreferrer"
-			class="btn btn-light-primary flex-grow-1 d-flex align-items-center justify-content-center gap-2">
-			<i class="ki-duotone ki-printer fs-2"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span><span class="path5"></span></i>
-			Print
-		</a>
-	</div>
 
 </div>
