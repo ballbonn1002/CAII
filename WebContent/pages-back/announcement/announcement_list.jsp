@@ -375,13 +375,16 @@
         var startDate = picker.startDate.format('YYYY-MM-DD');
         var endDate = getEffectiveEndDate(picker.endDate);
 
-        var url = contextPath + "/announcementList?mode=ajax"
-                + "&xxAnnouncement=" + encodeURIComponent(keyword)
-                + "&sortOrder=" + sortOrder 
-                + "&startDate=" + startDate
-                + "&endDate=" + endDate;
+        // ส่งแบบ POST (ส่ง object เป็น data) เพื่อให้ภาษาไทยถูกอ่านเป็น UTF-8 เสมอ
+        var url = contextPath + "/announcementList?mode=ajax";
+        var params = {
+            xxAnnouncement : keyword,
+            sortOrder : sortOrder,
+            startDate : startDate,
+            endDate : endDate
+        };
 
-        $("#announcementListContainer").load(url + " #announcementListContainer > *", function() {
+        $("#announcementListContainer").load(url + " #announcementListContainer > *", params, function() {
         	var newCount = $("#announcementListContainer").children().length;
         	$("#itemCountDisplay").text(newCount);
         });
@@ -395,13 +398,16 @@
         
         var contextPath = "${pageContext.request.contextPath}";
 
-        var url = contextPath + "/announcementList?mode=ajax" 
-                + "&sortOrder=" + nextSortOrder 
-                + "&xxAnnouncement=" + encodeURIComponent(keyword) 
-                + "&startDate=" + picker.startDate.format('YYYY-MM-DD') 
-                + "&endDate=" + endDate;
+        // ส่งแบบ POST (ส่ง object เป็น data) เพื่อให้ภาษาไทยถูกอ่านเป็น UTF-8 เสมอ
+        var url = contextPath + "/announcementList?mode=ajax";
+        var params = {
+            sortOrder : nextSortOrder,
+            xxAnnouncement : keyword,
+            startDate : picker.startDate.format('YYYY-MM-DD'),
+            endDate : endDate
+        };
 
-        $("#announcementListContainer").load(url + " #announcementListContainer > *", function(response, status, xhr) {
+        $("#announcementListContainer").load(url + " #announcementListContainer > *", params, function(response, status, xhr) {
             if (status == "error") {
                 console.error("Load Error:", xhr.statusText);
             }
