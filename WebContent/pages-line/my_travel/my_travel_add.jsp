@@ -1189,7 +1189,6 @@
 					<input type="hidden" name="filesUploadFileName" id="filesUploadFileName" />
 					<input type="hidden" name="fileUploadId" id="fileUploadId" value="[]" />
 				</div>
-				<div class="text-muted fs-8 mb-3">Max 2 MB in total</div>
 				<div id="travelFileList" class="d-flex flex-wrap gap-2"></div>
 
 			</div>
@@ -1201,7 +1200,7 @@
 
 				<div class="d-flex align-items-center justify-content-between gap-3 mb-3">
 					<div class="d-flex align-items-center gap-2" style="min-width:0;">
-						<span class="text-gray-700 fw-medium fs-5 text-nowrap">Total</span>
+						<span class="text-gray-700 fw-medium fs-5 text-nowrap">Total <span class="text-danger">*</span></span>
 						<span class="fw-bold text-primary fs-5 text-nowrap"><span id="grandTotal">0.00</span> บาท</span>
 					</div>
 					<button type="button" class="btn btn-sm btn-success flex-shrink-0" id="btnCreateExpense">
@@ -1704,15 +1703,6 @@
 			var isCar = String(goByVal) === CAR_PRIVATE_ID;
 			var totalVal = fieldValue(isCar ? "mTotal" : "mTotalNormal");
 			var kmVal = isCar ? (document.getElementById("mKilometers").value || "0") : "0";
-
-			if (!goByVal) {
-				alert("Please select Go by.");
-				return;
-			}
-			if (!totalVal || isNaN(parseFloat(totalVal))) {
-				alert("Please enter Total.");
-				return;
-			}
 
 			var totalNum = Math.max(0, parseFloat(totalVal));
 			var editIdx = modalEl.dataset.editRow;
