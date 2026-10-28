@@ -1306,7 +1306,7 @@
 
 <div class="liff-shell liff-has-floating-btn">
 
-	<div id="liffLoadingOverlay" class="liff-loading-overlay liff-loading-delayed">
+	<div id="liffLoadingOverlay" class="liff-loading-overlay" style="display:flex; z-index:99;">
 		<div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading...</span></div>
 	</div>
 
@@ -1705,7 +1705,9 @@ function showLoading() {
 
 function hideLoading() {
     clearTimeout(state.loadingTimer);
-    document.getElementById('liffLoadingOverlay').style.display = 'none';
+    const overlay = document.getElementById('liffLoadingOverlay');
+    overlay.style.display = 'none';
+    overlay.style.zIndex = '';
     state.isLoading = false;
 }
 
@@ -2069,6 +2071,25 @@ document.addEventListener('DOMContentLoaded', function () {
 window.addEventListener('pageshow', function (e) {
     if (!e.persisted) return;
     document.getElementById('liffLoadingOverlay').style.display = 'none';
+});
+</script>
+
+<script>
+/* ---------- toast ---------- */
+// ?saved=add / edit มาจากหน้า Add/Edit
+$(function () {
+	const params = new URLSearchParams(window.location.search);
+	const saved = params.get('saved');
+	if (saved === 'add') {
+		liffToastSuccess("Your travel expense has been saved.", "Saved successfully!");
+	} else if (saved === 'edit') {
+		liffToastSuccess("Your travel expense has been updated.", "Updated successfully!");
+	}
+	if (saved) {
+		params.delete('saved'); // เอาออกจาก URL กัน refresh แล้วขึ้นซ้ำ
+		const qs = params.toString();
+		history.replaceState(null, '', window.location.pathname + (qs ? '?' + qs : ''));
+	}
 });
 </script>
 

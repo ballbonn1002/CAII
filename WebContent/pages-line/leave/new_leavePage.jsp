@@ -516,7 +516,8 @@
 .liff-upload-badge { box-sizing: border-box; display: inline-flex; align-items: center; justify-content: center; gap: 10px; margin-left: auto; width: 84px; height: 24px; padding: 0 8px; border-radius: 5.53px; opacity: 1; background: var(--bs-primary-bg-subtle); color: var(--bs-primary); font-weight: 600; font-size: 12px; white-space: nowrap; cursor: pointer; }
 .liff-upload-badge i { color: var(--bs-primary); }
 .liff-submit-bar { display: flex; gap: 10px; margin-top: 20px; }
-.liff-submit-bar .btn { flex: 1; }</style>
+.liff-submit-bar .btn { flex: 1; }
+#alert_evidence:empty, #filePreviewContainer:empty, #exitingFilePreviewContainer:empty { margin: 0 !important; }</style>
 
 <div class="liff-shell">
 
@@ -587,9 +588,9 @@
 	</div> -->
 
 	<!--begin::Leave form card-->
+	<form method="post" id="formid" class="form-horizontal liff-initializing" aria-busy="true" action="line_new_LeaveEdit_Do" enctype="multipart/form-data">
 	<div class="card card-flush mb-7">
 		<div class="card-body pt-6 pb-7">
-	<form method="post" id="formid" class="form-horizontal liff-initializing" aria-busy="true" action="line_new_LeaveEdit_Do" enctype="multipart/form-data">
 
 		<div class="d-none">
 			<select class="form-select" id="status" name="status" disabled required>
@@ -696,6 +697,12 @@
 			<div class="text-danger mt-2 fs-8">กรุณาระบุเหตุผลในการลา ตัวอย่าง ลางานเนื่องจากท้องเสีย</div>
 		</div>
 
+		</div>
+	</div>
+
+	<div class="card card-flush mb-7">
+		<div class="card-body pt-6 pb-7">
+
 		<!-- File Upload -->
 		<div class="liff-field-row mb-3" id="fileUploadSection">
 			<label class="liff-field-label" for="myFile" id="fileUploadLabel">Attach files</label>
@@ -711,7 +718,7 @@
 		<div class="form-text text-danger mb-3" id="alert_evidence"></div>
 		<div id="filePreviewContainer" class="d-flex flex-wrap gap-2 mb-3"></div>
 
-		<div class="mb-6" id="exitingFileSection">
+		<div id="exitingFileSection">
 			<div class="liff-field-row mb-3" id="afterFileRow">
 				<label class="liff-field-label" for="afterFile">Attach files</label>
 				<label for="afterFile" id="lbafterFile" class="liff-upload-badge">
@@ -724,8 +731,14 @@
 			<div id="modalFilePreviewName" class="d-flex flex-wrap gap-2"></div>
 		</div>
 
+		</div>
+	</div>
+
+	<div class="card card-flush mb-7">
+		<div class="card-body pt-6 pb-7">
+
 		<!-- Approver -->
-		<div class="liff-field-row mb-10">
+		<div class="liff-field-row">
 			<label class="liff-field-label" for="approver">Approvers <span class="text-danger">*</span></label>
 			<select id="approver" name="approver" class="form-select liff-field-value liff-field-dropdown" required>
 				<option value="admin">แอดมิน</option>
@@ -733,16 +746,17 @@
 			<input hidden name="approver_hidden" id="approver_hidden" type="text">
 		</div>
 
+		</div>
+	</div>
+
 		<!-- Buttons -->
-		<div class="liff-submit-bar">
+		<div class="liff-submit-bar mt-0">
 			<button type="button" class="btn btn-light" onclick="window.history.go(-1); return false;">Cancel</button>
 			<button type="button" class="btn btn-success" id="submitBtn" onclick="beforeSubmit();">Submit</button>
 			<button type="button" class="btn btn-success d-none" id="afterFileSubmitBtn" onclick="submitAfterFile();">Submit</button>
 		</div>
 
 	</form>
-		</div>
-	</div>
 	<!--end::Leave form card-->
 
 	<!-- ข้อมูลผู้ขอ/ผู้อนุมัติ: ซ่อน -->
@@ -840,83 +854,6 @@
 		setInterval(tick, 250);
 	});
 })();
-
-function liffMountSelectDropdown(selectEl) {
-	if (!selectEl || selectEl.dataset.liffMounted) return;
-	selectEl.dataset.liffMounted = '1';
-
-	selectEl.classList.add('liff-select-hidden');
-
-	var wrap = document.createElement('div');
-	wrap.className = 'liff-select-dropdown';
-	selectEl.parentNode.insertBefore(wrap, selectEl);
-	wrap.appendChild(selectEl);
-
-	var triggerClass = selectEl.className.replace('liff-select-hidden', '').trim();
-	var btn = document.createElement('button');
-	btn.type = 'button';
-	btn.className = (triggerClass + ' liff-dropdown-trigger').trim();
-	wrap.appendChild(btn);
-
-	var menu = document.createElement('ul');
-	menu.className = 'liff-dropdown-menu';
-	wrap.appendChild(menu);
-
-	function closeMenu() { wrap.classList.remove('liff-dropdown-open'); }
-	function openMenu() {
-		document.querySelectorAll('.liff-select-dropdown.liff-dropdown-open').forEach(function (el) {
-			if (el !== wrap) el.classList.remove('liff-dropdown-open');
-		});
-		wrap.classList.add('liff-dropdown-open');
-	}
-
-	btn.addEventListener('click', function (e) {
-		e.stopPropagation();
-		if (btn.disabled) return;
-		if (wrap.classList.contains('liff-dropdown-open')) closeMenu(); else openMenu();
-	});
-	document.addEventListener('click', function (e) {
-		if (!wrap.contains(e.target)) closeMenu();
-	});
-
-	function sync() {
-		var opts = selectEl.options;
-		menu.innerHTML = '';
-		var seenValues = {}; // option value ซ้ำได้ (เช่น approver) แสดงครั้งเดียว
-		for (var i = 0; i < opts.length; i++) {
-			(function (opt) {
-				if (opt.value === '') return; // skip placeholder options
-				if (Object.prototype.hasOwnProperty.call(seenValues, opt.value)) return;
-				seenValues[opt.value] = true;
-				var li = document.createElement('li');
-				// ใช้ <button> แทน <a href="javascript:"> เพราะ webview ของ LINE
-				var a = document.createElement('button');
-				a.type = 'button';
-				a.className = 'dropdown-item' + (opt.selected ? ' active' : '') + (opt.disabled ? ' disabled' : '');
-				a.textContent = opt.textContent;
-				a.disabled = !!opt.disabled;
-				if (!opt.disabled) {
-					a.addEventListener('click', function (e) {
-						e.preventDefault();
-						e.stopPropagation();
-						selectEl.value = opt.value;
-						selectEl.dispatchEvent(new Event('change', { bubbles: true }));
-						closeMenu();
-					});
-				}
-				li.appendChild(a);
-				menu.appendChild(li);
-			})(opts[i]);
-		}
-		var selectedOpt = selectEl.options[selectEl.selectedIndex];
-		btn.textContent = selectedOpt ? selectedOpt.textContent : '';
-		btn.disabled = selectEl.disabled;
-	}
-
-	sync();
-	$(selectEl).on('change', sync);
-	new MutationObserver(sync).observe(selectEl, { childList: true, subtree: true, attributes: true, attributeFilter: ['disabled'] });
-}
 
 document.addEventListener('DOMContentLoaded', function () {
 	['leaveTypeSelect', 'halfDay', 'approver'].forEach(function (id) {

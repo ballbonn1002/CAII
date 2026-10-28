@@ -214,6 +214,86 @@ function liffShowLoading() {
 }
 </script>
 <!--end::LIFF form init-->
+<!--begin::LIFF select dropdown (ใช้ร่วม leave / travel)-->
+<script>
+function liffMountSelectDropdown(selectEl) {
+	if (!selectEl || selectEl.dataset.liffMounted) return;
+	selectEl.dataset.liffMounted = '1';
+
+	selectEl.classList.add('liff-select-hidden');
+
+	var wrap = document.createElement('div');
+	wrap.className = 'liff-select-dropdown';
+	selectEl.parentNode.insertBefore(wrap, selectEl);
+	wrap.appendChild(selectEl);
+
+	var triggerClass = selectEl.className.replace('liff-select-hidden', '').trim();
+	var btn = document.createElement('button');
+	btn.type = 'button';
+	btn.className = (triggerClass + ' liff-dropdown-trigger').trim();
+	wrap.appendChild(btn);
+
+	var menu = document.createElement('ul');
+	menu.className = 'liff-dropdown-menu';
+	wrap.appendChild(menu);
+
+	function closeMenu() { wrap.classList.remove('liff-dropdown-open'); }
+	function openMenu() {
+		document.querySelectorAll('.liff-select-dropdown.liff-dropdown-open').forEach(function (el) {
+			if (el !== wrap) el.classList.remove('liff-dropdown-open');
+		});
+		wrap.classList.add('liff-dropdown-open');
+	}
+
+	btn.addEventListener('click', function (e) {
+		e.stopPropagation();
+		if (btn.disabled) return;
+		if (wrap.classList.contains('liff-dropdown-open')) closeMenu(); else openMenu();
+	});
+	document.addEventListener('click', function (e) {
+		if (!wrap.contains(e.target)) closeMenu();
+	});
+
+	function sync() {
+		var opts = selectEl.options;
+		menu.innerHTML = '';
+		var seenValues = {}; // option value ซ้ำได้ (เช่น approver) แสดงครั้งเดียว
+		for (var i = 0; i < opts.length; i++) {
+			(function (opt) {
+				if (opt.value === '') return; // skip placeholder options
+				if (Object.prototype.hasOwnProperty.call(seenValues, opt.value)) return;
+				seenValues[opt.value] = true;
+				var li = document.createElement('li');
+				// ใช้ <button> แทน <a href="javascript:"> เพราะ webview ของ LINE
+				var a = document.createElement('button');
+				a.type = 'button';
+				a.className = 'dropdown-item' + (opt.selected ? ' active' : '') + (opt.disabled ? ' disabled' : '');
+				a.textContent = opt.textContent;
+				a.disabled = !!opt.disabled;
+				if (!opt.disabled) {
+					a.addEventListener('click', function (e) {
+						e.preventDefault();
+						e.stopPropagation();
+						selectEl.value = opt.value;
+						selectEl.dispatchEvent(new Event('change', { bubbles: true }));
+						closeMenu();
+					});
+				}
+				li.appendChild(a);
+				menu.appendChild(li);
+			})(opts[i]);
+		}
+		var selectedOpt = selectEl.options[selectEl.selectedIndex];
+		btn.textContent = selectedOpt ? selectedOpt.textContent : '';
+		btn.disabled = selectEl.disabled;
+	}
+
+	sync();
+	$(selectEl).on('change', sync);
+	new MutationObserver(sync).observe(selectEl, { childList: true, subtree: true, attributes: true, attributeFilter: ['disabled'] });
+}
+</script>
+<!--end::LIFF select dropdown-->
 <!--end::Javascript-->
 </head>
 <!--begin::Body-->

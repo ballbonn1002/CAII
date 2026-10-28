@@ -323,7 +323,7 @@
 										<a href="${ctx}/my_travel?status=Draft" class="btn btn-light">Cancel</a>
 
 --%>
-										<%-- กำหนดปุ่ม Submit และใส่ disabled ไว้ตอนเริ่มต้น --%>
+										<%-- ปุ่ม Submit และใส่ disabled ไว้ตอนเริ่มต้น --%>
 <%--
 										<button type="submit" id="btnSubmitSave"
 											class="btn btn-success" disabled>Save</button>
@@ -590,7 +590,7 @@
 			var btnModalSave = document.getElementById("btnModalSave");
 			var btnSubmitSave = document.getElementById("btnSubmitSave");
 
-			// (เช็ค Required Fields ของฟอร์มหลัก):
+			// เช็ค Required Fields ของฟอร์มหลัก
 			function checkSubmitState() {
 				if (!btnSubmitSave)
 					return;
@@ -628,7 +628,7 @@
 				}
 			}
 
-			// (เช็ค Required Fields ของ Modal):
+			// เช็ค Required Fields ของ Modal
 			function checkModalSubmitState() {
 				if (!btnModalSave)
 					return;
@@ -1089,13 +1089,15 @@
 <%-- =====================================================================
      NEW: LINE LIFF
      ===================================================================== --%>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/compressorjs/1.2.1/compressor.min.js"></script>
 <style>
 .liff-upload-badge { box-sizing: border-box; display: inline-flex; align-items: center; justify-content: center; gap: 10px; margin-left: auto; width: 84px; height: 24px; padding: 0 8px; border-radius: 5.53px; background: var(--bs-primary-bg-subtle); color: var(--bs-primary); font-weight: 600; font-size: 12px; white-space: nowrap; cursor: pointer; }
 .liff-upload-badge i { color: var(--bs-primary); }
 .liff-submit-bar { display: flex; gap: 10px; margin-top: 20px; }
 .liff-submit-bar .btn { flex: 1; }
-#expenseModal .modal-body { overflow-y: auto !important; overflow-x: hidden !important; max-height: 60vh !important; }
-.select2-container--open, .select2-dropdown { z-index: 9999 !important; }
+#travelAddForm > .card { box-shadow: 0px 3px 4px 0px #00000008; }
+#expenseModal .liff-field-value[type=number] { -moz-appearance: textfield; }
+#expenseModal .liff-field-value[type=number]::-webkit-inner-spin-button, #expenseModal .liff-field-value[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
 </style>
 
 <c:set var="ctx" value="${pageContext.request.contextPath}" />
@@ -1118,6 +1120,7 @@
 
 		<input type="hidden" id="grandTotalInput" name="amount" value="0.00" />
 
+		<%-- ข้อมูล --%>
 		<div class="card card-flush mb-7">
 			<div class="card-body pt-6 pb-7">
 
@@ -1136,7 +1139,7 @@
 				<div class="liff-field-row mb-3">
 					<label class="liff-field-label" for="departureDate">Day of departure <span class="text-danger">*</span></label>
 					<input type="hidden" id="departureDateVal" name="departureDate" value="${fn:escapeXml(param.departureDate)}" />
-					<input type="text" class="form-control liff-field-value" id="departureDate" autocomplete="off" placeholder="DD MMM YYYY" required readonly />
+					<input type="text" class="form-control liff-field-value" id="departureDate" autocomplete="off" placeholder="DD MMM YYYY" required />
 					<i class="ki-duotone ki-calendar fs-4 text-gray-500"><span class="path1"></span><span class="path2"></span></i>
 				</div>
 
@@ -1153,7 +1156,8 @@
 
 				<div class="liff-field-row mb-3">
 					<label class="liff-field-label" for="beginTime">Beginning Time <span class="text-danger">*</span></label>
-					<input type="text" class="form-control liff-field-value liff-field-dropdown" id="beginTime" name="beginTime" autocomplete="off" placeholder="HH:mm" value="${fn:escapeXml(param.beginTime)}" required />
+					<input type="text" class="form-control liff-field-value" id="beginTime" name="beginTime" autocomplete="off" placeholder="HH:mm" value="${fn:escapeXml(param.beginTime)}" required />
+					<i class="ki-duotone ki-time fs-4 text-gray-500"><span class="path1"></span><span class="path2"></span></i>
 				</div>
 
 				<div class="liff-field-row mb-3">
@@ -1161,10 +1165,18 @@
 					<input type="text" class="form-control liff-field-value" name="destination" id="destination" placeholder="e.g. Customer site" value="${fn:escapeXml(param.destination)}" required />
 				</div>
 
-				<div class="liff-field-row mb-6">
+				<div class="liff-field-row">
 					<label class="liff-field-label" for="destTime">Destination Time <span class="text-danger">*</span></label>
-					<input type="text" class="form-control liff-field-value liff-field-dropdown" id="destTime" name="destTime" autocomplete="off" placeholder="HH:mm" value="${fn:escapeXml(param.destTime)}" required />
+					<input type="text" class="form-control liff-field-value" id="destTime" name="destTime" autocomplete="off" placeholder="HH:mm" value="${fn:escapeXml(param.destTime)}" required />
+					<i class="ki-duotone ki-time fs-4 text-gray-500"><span class="path1"></span><span class="path2"></span></i>
 				</div>
+
+			</div>
+		</div>
+
+		<%-- Attach file --%>
+		<div class="card card-flush mb-7">
+			<div class="card-body pt-6 pb-7">
 
 				<div class="liff-field-row mb-3">
 					<label class="liff-field-label" for="travelFiles">Attach files</label>
@@ -1177,49 +1189,36 @@
 					<input type="hidden" name="filesUploadFileName" id="filesUploadFileName" />
 					<input type="hidden" name="fileUploadId" id="fileUploadId" value="[]" />
 				</div>
-				<div id="travelFileList" class="d-flex flex-wrap gap-2 mb-6"></div>
+				<div class="text-muted fs-8 mb-3">Max 2 MB in total</div>
+				<div id="travelFileList" class="d-flex flex-wrap gap-2"></div>
 
-				<div class="d-flex align-items-center justify-content-between mb-4">
-					<span class="text-gray-700 fw-medium fs-5">Expense form</span>
-					<button type="button" class="btn btn-sm btn-success" id="btnCreateExpense">
-						<i class="ki-duotone ki-plus fs-5 me-1"></i> Create
+			</div>
+		</div>
+
+		<%-- Expense --%>
+		<div class="card card-flush mb-7">
+			<div class="card-body pt-6 pb-7">
+
+				<div class="d-flex align-items-center justify-content-between gap-3 mb-3">
+					<div class="d-flex align-items-center gap-2" style="min-width:0;">
+						<span class="text-gray-700 fw-medium fs-5 text-nowrap">Total</span>
+						<span class="fw-bold text-primary fs-5 text-nowrap"><span id="grandTotal">0.00</span> บาท</span>
+					</div>
+					<button type="button" class="btn btn-sm btn-success flex-shrink-0" id="btnCreateExpense">
+						<i class="ki-duotone ki-plus fs-5 me-1"></i> Expense
 					</button>
 				</div>
 
-				<div class="table-responsive">
-					<table class="table align-middle table-row-bordered fs-7" id="expenseTable">
-						<thead>
-							<tr>
-								<th style="width: 40px;">#</th>
-								<th>GO BY</th>
-								<th>DESCRIPTION</th>
-								<th class="text-end">TOTAL</th>
-								<th class="text-end">ACTION</th>
-							</tr>
-						</thead>
-						<tbody id="expenseTbody">
-							<tr id="noDataRow">
-								<td colspan="5" class="text-center text-muted py-8">No Data</td>
-							</tr>
-						</tbody>
-						<tfoot>
-							<tr class="border-top border-gray-200">
-								<td class="fw-normal text-gray-900 fs-6 py-4">Total</td>
-								<td></td>
-								<td></td>
-								<td class="text-end fw-normal text-gray-900 fs-6 py-4"><span id="grandTotal">0.00</span></td>
-								<td></td>
-							</tr>
-						</tfoot>
-					</table>
-				</div>
-
-				<div class="liff-submit-bar">
-					<a href="${ctx}/line_my_travel?status=Draft" class="btn btn-light">Cancel</a>
-					<button type="submit" id="btnSubmitSave" class="btn btn-success" disabled>Save</button>
+				<div id="expenseTbody">
+					<div id="noDataRow" class="text-center text-muted fs-7 py-8 mb-3 border border-dashed border-gray-300 rounded">No Data</div>
 				</div>
 
 			</div>
+		</div>
+
+		<div class="liff-submit-bar mt-0">
+			<a href="${ctx}/line_my_travel?status=Draft" class="btn btn-light">Cancel</a>
+			<button type="submit" id="btnSubmitSave" class="btn btn-success" disabled>Save</button>
 		</div>
 
 	</form>
@@ -1227,57 +1226,49 @@
 	<div class="modal fade" id="expenseModal" aria-hidden="true">
 		<div class="modal-dialog modal-dialog-scrollable modal-fullscreen-sm-down">
 			<div class="modal-content">
-				<div class="modal-header">
-					<h3 class="fw-bold m-0">Add expense detail</h3>
+				<div class="modal-header py-4" style="padding-left: 22px; padding-right: 22px;">
+					<h1 class="liff-page-title text-gray-700 mb-0">Expense detail</h1>
 					<button type="button" class="btn btn-icon btn-light w-45px h-45px flex-shrink-0" data-bs-dismiss="modal" aria-label="Close">
 						<i class="ki-duotone ki-cross fs-2x"><span class="path1"></span><span class="path2"></span></i>
 					</button>
 				</div>
-				<div class="modal-body">
-					<div class="mb-5">
-						<label class="form-label fw-semibold required">Go by</label>
-						<select id="mGoBy" class="form-select" data-control="select2" data-dropdown-parent="#expenseModal" data-placeholder="Select go by" required>
-							<option value=""></option>
+				<div class="modal-body" style="padding: 22px;">
+					<div class="liff-field-row mb-3">
+						<label class="liff-field-label" for="mGoBy">Go by <span class="text-danger">*</span></label>
+						<select id="mGoBy" class="form-select liff-field-value liff-field-dropdown" required>
+							<option value="">Select go by</option>
 							<c:forEach var="t" items="${expTravelTypeList}">
 								<option value="${t.expTravelTypeId}"><c:out value="${t.name}" /></option>
 							</c:forEach>
 						</select>
 					</div>
-					<div class="mb-5" id="distanceGroup" style="display: none;">
-						<div class="row g-4 align-items-end">
-							<div class="col-6">
-								<label class="form-label fw-semibold required">Distance</label>
-								<div class="input-group">
-									<input id="mKilometers" type="number" class="form-control" min="0" step="0.01" placeholder="0" />
-									<span class="input-group-text">Km.</span>
-								</div>
-							</div>
-							<div class="col-6">
-								<label class="form-label fw-semibold d-flex justify-content-between w-100">
-									<span class="required">Total</span> <span class="text-muted fw-normal">7 บาท / Km</span>
-								</label>
-								<div class="input-group">
-									<input id="mTotal" type="number" class="form-control" style="text-align: left;" min="0" step="0.01" placeholder="0.00" required />
-									<span class="input-group-text">บาท</span>
-								</div>
-							</div>
+					<div id="distanceGroup" style="display: none;">
+						<div class="liff-field-row mb-3">
+							<label class="liff-field-label" for="mKilometers">Distance <span class="text-danger">*</span></label>
+							<input id="mKilometers" type="number" inputmode="decimal" class="form-control liff-field-value" min="0" step="0.01" placeholder="0" />
+							<span class="text-gray-600 fs-7">Km.</span>
+						</div>
+						<div class="liff-field-row mb-3">
+							<label class="liff-field-label" for="mTotal">Total <span class="text-danger">*</span> <span class="text-muted fw-normal fs-8 ms-1">7 บาท / Km</span></label>
+							<input id="mTotal" type="number" inputmode="decimal" class="form-control liff-field-value" min="0" step="0.01" placeholder="0.00" required />
+							<span class="text-gray-600 fs-7">บาท</span>
 						</div>
 					</div>
-					<div class="mb-5" id="totalGroupNormal">
-						<label class="form-label fw-semibold required">Total</label>
-						<div class="input-group">
-							<input id="mTotalNormal" type="number" class="form-control" style="text-align: left;" min="0" step="0.01" placeholder="0.00" required />
-							<span class="input-group-text">บาท</span>
+					<div id="totalGroupNormal">
+						<div class="liff-field-row mb-3">
+							<label class="liff-field-label" for="mTotalNormal">Total <span class="text-danger">*</span></label>
+							<input id="mTotalNormal" type="number" inputmode="decimal" class="form-control liff-field-value" min="0" step="0.01" placeholder="0.00" required />
+							<span class="text-gray-600 fs-7">บาท</span>
 						</div>
 					</div>
-					<div class="mb-0">
-						<label class="form-label fw-semibold">Description</label>
-						<textarea id="mDescription" class="form-control" rows="3" placeholder="Description"></textarea>
+					<div class="mt-6">
+						<label class="form-label fs-6" for="mDescription">Description</label>
+						<textarea id="mDescription" class="form-control liff-input-underline" rows="3" placeholder="Description"></textarea>
 					</div>
-				</div>
-				<div class="modal-footer">
-					<button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
-					<button type="button" id="btnModalSave" class="btn btn-success" disabled>Save</button>
+					<div class="liff-submit-bar">
+						<button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
+						<button type="button" id="btnModalSave" class="btn btn-success" disabled>Save</button>
+					</div>
 				</div>
 			</div>
 		</div>
@@ -1292,7 +1283,20 @@
 		var CAR_PRIVATE_ID = "6";
 		var RATE_PER_KM = 7;
 
+		var TRAVEL_FILE_FORBIDDEN = /[\/:*?"<>|]/;
+		var TRAVEL_FILE_IMAGE_LIMIT = 500 * 1024;
+		var TRAVEL_FILE_TOTAL_LIMIT = 2 * 1024 * 1024;
+		var travelSelectedFiles = [];
+		var travelLoadingFiles = [];
+		var travelLoadingSeq = 0;
+
 		var ctx = "${ctx}";
+
+		function fieldValue(id) {
+			var el = document.getElementById(id);
+			return el ? el.value.trim() : "";
+		}
+
 		// ไอคอนไฟล์แบบเดียวกับ getFileIconPath ของ create leave (ใช้เฉพาะ svg ที่มีจริง)
 		function getTravelFileIcon(fileName) {
 			var ext = (fileName || '').split('.').pop().toLowerCase();
@@ -1311,19 +1315,6 @@
 				return base + 'blank-image.svg';
 			default:
 				return base + 'folder-document.svg';
-			}
-		}
-
-		function initSelect2(el, opts) {
-			if (!el)
-				return;
-			if (window.$ && $(el).select2) {
-				if ($(el).data("select2"))
-					return;
-				$(el).select2(Object.assign({
-					allowClear : true,
-					width : "resolve"
-				}, opts || {}));
 			}
 		}
 
@@ -1358,12 +1349,6 @@
 			});
 		}
 
-		function escapeAttr(s) {
-			return (s || "").replace(/["']/g, function(c) {
-				return c === '"' ? "&quot;" : "&#39;";
-			});
-		}
-
 		var reqDateEl = document.getElementById("requestDate");
 		var reqDateValEl = document.getElementById("requestDateVal");
 		if (reqDateEl) {
@@ -1375,10 +1360,8 @@
 		}
 
 		var modalEl = document.getElementById("expenseModal");
-		initSelect2(document.getElementById("mGoBy"), {
-			dropdownParent : $(modalEl),
-			width : "100%"
-		});
+		// Go by ใช้ dropdown แบบ create leave แทน select2
+		liffMountSelectDropdown(document.getElementById("mGoBy"));
 
 		// วันเดินทาง: daterangepicker แบบเดียวกับ create leave
 		var depDisplayEl = document.getElementById("departureDate");
@@ -1455,81 +1438,49 @@
 		createTimePicker("beginTime");
 		createTimePicker("destTime");
 
-		var tbody = document.getElementById("expenseTbody");
+		var expenseList = document.getElementById("expenseTbody");
 		var noDataRow = document.getElementById("noDataRow");
 		var grandTotalEl = document.getElementById("grandTotal");
 		var grandTotalInput = document.getElementById("grandTotalInput");
+		var mGoByEl = document.getElementById("mGoBy");
 		var btnModalSave = document.getElementById("btnModalSave");
 		var btnSubmitSave = document.getElementById("btnSubmitSave");
 
-		// (เช็ค Required Fields ของฟอร์มหลัก):
+		var requiredInputIds = [ "departureDate", "purposeOfJourney",
+				"beginning", "beginTime", "destination", "destTime" ];
+
+		// เช็ค Required Fields ของฟอร์มหลัก
 		function checkSubmitState() {
 			if (!btnSubmitSave)
 				return;
 
-			var rowCount = tbody.querySelectorAll("tr.expense-row").length;
-			var hasExpenseRows = (rowCount > 0);
+			var hasExpenseRows = expenseList.querySelectorAll(".expense-row").length > 0;
+			var allRequiredFilled = requiredInputIds.every(function(id) {
+				return fieldValue(id) !== "";
+			});
+			var isProcessingFiles = travelLoadingFiles.length > 0;
 
-			var valDeparture = document.getElementById("departureDate") ? document
-					.getElementById("departureDate").value.trim()
-					: "";
-			var valPurpose = document.getElementById("purposeOfJourney") ? document
-					.getElementById("purposeOfJourney").value.trim()
-					: "";
-			var valBeginning = document.getElementById("beginning") ? document
-					.getElementById("beginning").value.trim()
-					: "";
-			var valBeginTime = document.getElementById("beginTime") ? document
-					.getElementById("beginTime").value.trim()
-					: "";
-			var valDestination = document.getElementById("destination") ? document
-					.getElementById("destination").value.trim()
-					: "";
-			var valDestTime = document.getElementById("destTime") ? document
-					.getElementById("destTime").value.trim()
-					: "";
-
-			var allRequiredFilled = (valDeparture !== ""
-					&& valPurpose !== "" && valBeginning !== ""
-					&& valBeginTime !== "" && valDestination !== "" && valDestTime !== "");
-
-			if (hasExpenseRows && allRequiredFilled) {
+			if (hasExpenseRows && allRequiredFilled && !isProcessingFiles) {
 				btnSubmitSave.removeAttribute("disabled");
 			} else {
 				btnSubmitSave.setAttribute("disabled", "disabled");
 			}
 		}
 
-		// (เช็ค Required Fields ของ Modal):
+		// เช็ค Required Fields ของ Modal
 		function checkModalSubmitState() {
 			if (!btnModalSave)
 				return;
 
-			var goSel = document.getElementById("mGoBy");
-			var goByVal = goSel ? goSel.value.trim() : "";
-
+			var goByVal = fieldValue("mGoBy");
 			var isCar = (goByVal === CAR_PRIVATE_ID);
 			var isValid = false;
 
 			if (goByVal !== "") {
 				if (isCar) {
-					var kmVal = document.getElementById("mKilometers") ? document
-							.getElementById("mKilometers").value.trim()
-							: "";
-					var totalVal = document.getElementById("mTotal") ? document
-							.getElementById("mTotal").value.trim()
-							: "";
-					if (kmVal !== "" && totalVal !== "") {
-						isValid = true;
-					}
+					isValid = fieldValue("mKilometers") !== "" && fieldValue("mTotal") !== "";
 				} else {
-					var totalNormalVal = document
-							.getElementById("mTotalNormal") ? document
-							.getElementById("mTotalNormal").value.trim()
-							: "";
-					if (totalNormalVal !== "") {
-						isValid = true;
-					}
+					isValid = fieldValue("mTotalNormal") !== "";
 				}
 			}
 
@@ -1540,8 +1491,6 @@
 			}
 		}
 
-		var requiredInputIds = [ "departureDate", "purposeOfJourney",
-				"beginning", "beginTime", "destination", "destTime" ];
 		requiredInputIds.forEach(function(id) {
 			var el = document.getElementById(id);
 			if (el) {
@@ -1560,17 +1509,16 @@
 		});
 
 		function reindex() {
-			tbody.querySelectorAll("tr.expense-row").forEach(
-					function(row, idx) {
-						var no = row.querySelector(".row-no");
-						if (no)
-							no.textContent = String(idx + 1);
-					});
+			expenseList.querySelectorAll(".expense-row").forEach(function(row, idx) {
+				var no = row.querySelector(".row-no");
+				if (no)
+					no.textContent = String(idx + 1);
+			});
 		}
 
 		function calcTotal() {
 			var sum = 0;
-			tbody.querySelectorAll("tr.expense-row").forEach(function(row) {
+			expenseList.querySelectorAll(".expense-row").forEach(function(row) {
 				var inp = row.querySelector("input[name='detailTotal']");
 				if (!inp)
 					return;
@@ -1584,19 +1532,16 @@
 			if (grandTotalInput)
 				grandTotalInput.value = text;
 			if (noDataRow) {
-				noDataRow.style.display = tbody
-						.querySelectorAll("tr.expense-row").length === 0 ? ""
-						: "none";
+				noDataRow.style.display = expenseList.querySelectorAll(".expense-row").length === 0 ? "" : "none";
 			}
 		}
 
 		function removeRow(btn) {
-			var row = btn.closest("tr.expense-row");
+			var row = btn.closest(".expense-row");
 			if (row)
 				row.remove();
 			reindex();
 			calcTotal();
-
 			checkSubmitState();
 		}
 
@@ -1617,7 +1562,6 @@
 			}
 		}
 
-		var mGoByEl = document.getElementById("mGoBy");
 		if (mGoByEl && window.$) {
 			$(mGoByEl).on("change", function() {
 				var val = $(this).val() || "";
@@ -1631,8 +1575,6 @@
 				var kmEl = document.getElementById("mKilometers");
 				if (kmEl)
 					kmEl.value = "";
-
-				// เรียกตรวจสอบ
 				checkModalSubmitState();
 			});
 		}
@@ -1647,53 +1589,55 @@
 				} else {
 					totalEl.value = "";
 				}
-
-				// เรียกตรวจสอบ
 				checkModalSubmitState();
 			});
 		}
 
+		// การ์ดรายการ: ยอด | แก้ไข ลบ / ประเภท · รายละเอียด (hidden input ลำดับเดิม)
 		function buildRowHtml(goByText, goByVal, descVal, totalNum, kmVal) {
-			return ("<td class='row-no fs-6 fw-normal'>1</td>"
-					+ "<td class='fs-6 fw-normal'>"
+			return ("<div class='card-body p-4 d-flex flex-column gap-3'>"
+					+ "<div class='d-flex align-items-center justify-content-between gap-3'>"
+					+ "<span class='badge badge-primary fs-6 fw-bold text-nowrap'><span class='row-total'>"
+					+ totalNum.toFixed(2)
+					+ "</span>&nbsp;บาท</span>"
+					+ "<div class='d-flex align-items-center gap-2 flex-shrink-0'>"
+					+ "<button type='button' class='btn btn-icon btn-sm btn-light-primary w-30px h-30px btn-edit-row' title='Edit'>"
+					+ "<i class='ki-duotone ki-pencil fs-5'><span class='path1'></span><span class='path2'></span></i>"
+					+ "</button>"
+					+ "<button type='button' class='btn btn-icon btn-sm btn-light-danger w-30px h-30px btn-remove-row' title='Remove'>"
+					+ "<i class='ki-duotone ki-trash fs-5'><span class='path1'></span><span class='path2'></span><span class='path3'></span><span class='path4'></span><span class='path5'></span></i>"
+					+ "</button>" + "</div>"
+					+ "</div>"
+					+ "<div class='d-flex align-items-start gap-2 fs-7' style='min-width:0;'>"
+					+ "<span class='row-goby fw-semibold text-gray-800 flex-shrink-0'>"
 					+ escapeHtml(goByText)
+					+ "</span>"
 					+ "<input type='hidden' name='detailGoBy' value='"
-					+ escapeAttr(goByVal)
+					+ escapeHtml(goByVal)
 					+ "' />"
 					+ "<input type='hidden' name='detailKilometers' value='"
-					+ escapeAttr(kmVal || "0")
+					+ escapeHtml(kmVal || "0")
 					+ "' />"
-					+ "</td>"
-					+ "<td class='fs-6 fw-normal'>"
+					+ "<div class='d-flex align-items-start gap-1 text-gray-600' style='min-width:0;'>"
+					+ "<i class='ki-duotone ki-document fs-5 flex-shrink-0'><span class='path1'></span><span class='path2'></span></i>"
+					+ "<span class='row-desc text-break'>"
 					+ escapeHtml(descVal || "-")
+					+ "</span>"
+					+ "</div>"
 					+ "<input type='hidden' name='detailDescription' value='"
-					+ escapeAttr(descVal)
+					+ escapeHtml(descVal)
 					+ "' />"
-					+ "</td>"
-					+ "<td class='text-end fs-6 fw-normal'>"
-					+ totalNum.toFixed(2)
 					+ "<input type='hidden' name='detailTotal' value='"
 					+ totalNum.toFixed(2)
 					+ "' />"
-					+ "</td>"
-					+ "<td class='text-end'>"
-					+ "<div class='d-flex justify-content-end gap-2'>"
-					+ "<button type='button' class='btn btn-icon btn-sm btn-light-primary btn-edit-row' title='Edit'>"
-					+ "<i class='ki-duotone ki-pencil fs-4'><span class='path1'></span><span class='path2'></span></i>"
-					+ "</button>"
-					+ "<button type='button' class='btn btn-icon btn-sm btn-light-danger btn-remove-row' title='Remove'>"
-					+ "<i class='ki-duotone ki-trash fs-4'><span class='path1'></span><span class='path2'></span><span class='path3'></span></i>"
-					+ "</button>" + "</div>" + "</td>");
+					+ "</div>" + "</div>");
 		}
 
 		function resetModal() {
-			var goSel = document.getElementById("mGoBy");
-			if (window.$ && $(goSel).data("select2")) {
-				$(goSel).val(null).trigger("change");
-			} else {
-				goSel.value = "";
-				goSel.selectedIndex = 0;
-			}
+			mGoByEl.value = "";
+			mGoByEl.selectedIndex = 0;
+			// trigger change ให้ dropdown อัปเดตข้อความ
+			$(mGoByEl).trigger("change");
 			var t1 = document.getElementById("mTotal");
 			var t2 = document.getElementById("mTotalNormal");
 			if (t1)
@@ -1705,56 +1649,42 @@
 			document.getElementById("distanceGroup").style.display = "none";
 			document.getElementById("totalGroupNormal").style.display = "";
 			delete modalEl.dataset.editRow;
-
-			// เรียกตรวจสอบ
 			checkModalSubmitState();
 		}
 
 		function openEditModal(row) {
 			var goByVal = row.querySelector("input[name='detailGoBy']").value;
-			var kmInput = row
-					.querySelector("input[name='detailKilometers']");
+			var kmInput = row.querySelector("input[name='detailKilometers']");
 			var kmVal = kmInput ? kmInput.value : "0";
-			var descVal = row
-					.querySelector("input[name='detailDescription']").value;
+			var descVal = row.querySelector("input[name='detailDescription']").value;
 			var totalVal = row.querySelector("input[name='detailTotal']").value;
 
-			var goSel = document.getElementById("mGoBy");
-			if (window.$ && $(goSel).data("select2")) {
-				$(goSel).val(goByVal).trigger("change");
-			} else {
-				goSel.value = goByVal;
-			}
+			mGoByEl.value = goByVal;
+			$(mGoByEl).trigger("change");
 
-			setTimeout(
-					function() {
-						toggleDistanceField(goByVal);
-						if (String(goByVal) === CAR_PRIVATE_ID) {
-							document.getElementById("mKilometers").value = kmVal;
-							document.getElementById("mTotal").value = totalVal;
-						} else {
-							document.getElementById("mTotalNormal").value = totalVal;
-						}
-						document.getElementById("mDescription").value = descVal;
+			setTimeout(function() {
+				toggleDistanceField(goByVal);
+				if (String(goByVal) === CAR_PRIVATE_ID) {
+					document.getElementById("mKilometers").value = kmVal;
+					document.getElementById("mTotal").value = totalVal;
+				} else {
+					document.getElementById("mTotalNormal").value = totalVal;
+				}
+				document.getElementById("mDescription").value = descVal;
+				checkModalSubmitState();
+			}, 0);
 
-						// เรียกตรวจสอบ
-						checkModalSubmitState();
-					}, 0);
-
-			modalEl.dataset.editRow = Array.from(
-					tbody.querySelectorAll("tr.expense-row")).indexOf(row);
+			modalEl.dataset.editRow = Array.from(expenseList.querySelectorAll(".expense-row")).indexOf(row);
 			bootstrap.Modal.getOrCreateInstance(modalEl).show();
 		}
 
-		function bindRowEvents(tr) {
-			tr.querySelector(".btn-remove-row").addEventListener("click",
-					function() {
-						removeRow(this);
-					});
-			tr.querySelector(".btn-edit-row").addEventListener("click",
-					function() {
-						openEditModal(this.closest("tr.expense-row"));
-					});
+		function bindRowEvents(row) {
+			row.querySelector(".btn-remove-row").addEventListener("click", function() {
+				removeRow(this);
+			});
+			row.querySelector(".btn-edit-row").addEventListener("click", function() {
+				openEditModal(this.closest(".expense-row"));
+			});
 		}
 
 		var btnCreate = document.getElementById("btnCreateExpense");
@@ -1765,81 +1695,52 @@
 			});
 		}
 
-		btnModalSave
-				.addEventListener(
-						"click",
-						function() {
-							var goSel = document.getElementById("mGoBy");
-							var descEl = document
-									.getElementById("mDescription");
-							var kmEl = document
-									.getElementById("mKilometers");
+		btnModalSave.addEventListener("click", function() {
+			var selectedOption = mGoByEl.options[mGoByEl.selectedIndex];
+			var goByVal = (mGoByEl.value || "").trim();
+			var goByText = (selectedOption ? selectedOption.text : "").trim();
+			var descVal = (document.getElementById("mDescription").value || "").trim();
 
-							var goByVal = (goSel.value || "").trim();
-							var goByText = (goSel.options[goSel.selectedIndex] ? goSel.options[goSel.selectedIndex].text
-									: "").trim();
-							var descVal = (descEl.value || "").trim();
+			var isCar = String(goByVal) === CAR_PRIVATE_ID;
+			var totalVal = fieldValue(isCar ? "mTotal" : "mTotalNormal");
+			var kmVal = isCar ? (document.getElementById("mKilometers").value || "0") : "0";
 
-							var isCar = String(goByVal) === CAR_PRIVATE_ID;
-							var totalEl = isCar ? document
-									.getElementById("mTotal") : document
-									.getElementById("mTotalNormal");
-							var totalVal = (totalEl ? totalEl.value || ""
-									: "").trim();
-							var kmVal = isCar ? (kmEl.value || "0") : "0";
+			if (!goByVal) {
+				alert("Please select Go by.");
+				return;
+			}
+			if (!totalVal || isNaN(parseFloat(totalVal))) {
+				alert("Please enter Total.");
+				return;
+			}
 
-							if (!goByVal) {
-								alert("Please select Go by.");
-								return;
-							}
-							if (!totalVal || isNaN(parseFloat(totalVal))) {
-								alert("Please enter Total.");
-								return;
-							}
+			var totalNum = Math.max(0, parseFloat(totalVal));
+			var editIdx = modalEl.dataset.editRow;
 
-							var totalNum = Math
-									.max(0, parseFloat(totalVal));
-							var editIdx = modalEl.dataset.editRow;
+			if (editIdx !== undefined && editIdx !== "") {
+				var editRow = expenseList.querySelectorAll(".expense-row")[parseInt(editIdx, 10)];
+				if (editRow) {
+					editRow.querySelector("input[name='detailGoBy']").value = goByVal;
+					editRow.querySelector("input[name='detailKilometers']").value = kmVal;
+					editRow.querySelector("input[name='detailDescription']").value = descVal;
+					editRow.querySelector("input[name='detailTotal']").value = totalNum.toFixed(2);
+					editRow.querySelector(".row-goby").textContent = goByText;
+					editRow.querySelector(".row-desc").textContent = descVal || "-";
+					editRow.querySelector(".row-total").textContent = totalNum.toFixed(2);
+				}
+			} else {
+				var row = document.createElement("div");
+				row.className = "expense-row card card-bordered mb-3";
+				row.innerHTML = buildRowHtml(goByText, goByVal, descVal, totalNum, kmVal);
+				expenseList.appendChild(row);
+				bindRowEvents(row);
+			}
 
-							if (editIdx !== undefined && editIdx !== "") {
-								var rows = tbody
-										.querySelectorAll("tr.expense-row");
-								var editRow = rows[parseInt(editIdx, 10)];
-								if (editRow) {
-									editRow
-											.querySelector("input[name='detailGoBy']").value = goByVal;
-									editRow
-											.querySelector("input[name='detailKilometers']").value = kmVal;
-									editRow
-											.querySelector("input[name='detailDescription']").value = descVal;
-									editRow
-											.querySelector("input[name='detailTotal']").value = totalNum
-											.toFixed(2);
-									var tds = editRow
-											.querySelectorAll("td");
-									tds[1].childNodes[0].textContent = goByText;
-									tds[2].childNodes[0].textContent = descVal
-											|| "-";
-									tds[3].childNodes[0].textContent = totalNum
-											.toFixed(2);
-								}
-							} else {
-								var tr = document.createElement("tr");
-								tr.className = "expense-row";
-								tr.innerHTML = buildRowHtml(goByText,
-										goByVal, descVal, totalNum, kmVal);
-								tbody.appendChild(tr);
-								bindRowEvents(tr);
-							}
-
-							reindex();
-							calcTotal();
-
-							checkSubmitState();
-
-							bootstrap.Modal.getOrCreateInstance(modalEl)
-									.hide();
-						});
+			reindex();
+			calcTotal();
+			checkSubmitState();
+			bootstrap.Modal.getOrCreateInstance(modalEl).hide();
+		});
 
 		modalEl.addEventListener("shown.bs.modal", function() {
 			document.body.classList.add("modal-open");
@@ -1864,60 +1765,54 @@
 		// รันเช็คสถานะครั้งแรกตอนโหลดหน้าจอ
 		checkSubmitState();
 
-		var travelSelectedFiles = [];
-
 		function renderTravelFileList() {
 			var listDiv = document.getElementById('travelFileList');
 			listDiv.innerHTML = '';
 
 			// แถวไฟล์หน้าตาเดียวกับ lfMakeItem ของหน้า Create Leave
-			travelSelectedFiles
-					.forEach(function(file) {
-						var item = document.createElement('div');
-						item.className = 'd-flex w-100 justify-content-between align-items-center p-2 border border-gray-300 rounded bg-white';
+			travelSelectedFiles.forEach(function(file) {
+				var item = document.createElement('div');
+				item.className = 'd-flex w-100 justify-content-between align-items-center p-2 border border-gray-300 rounded bg-white';
 
-						var leftGroup = document.createElement('div');
-						leftGroup.className = 'd-flex align-items-center overflow-hidden me-4';
+				var leftGroup = document.createElement('div');
+				leftGroup.className = 'd-flex align-items-center overflow-hidden me-4';
 
-						var icon = document.createElement('img');
-						icon.src = getTravelFileIcon(file.name);
-						icon.className = 'w-25px h-25px me-3 flex-shrink-0';
-						icon.alt = 'icon';
+				var icon = document.createElement('img');
+				icon.src = getTravelFileIcon(file.name);
+				icon.className = 'w-25px h-25px me-3 flex-shrink-0';
+				icon.alt = 'icon';
 
-						var link = document.createElement('a');
-						link.href = URL.createObjectURL(file);
-						link.target = '_blank';
-						link.className = 'text-gray-800 fw-medium text-hover-primary text-truncate';
-						link.textContent = file.name;
-						link.style.maxWidth = '250px';
+				var link = document.createElement('a');
+				link.href = URL.createObjectURL(file);
+				link.target = '_blank';
+				link.className = 'text-gray-800 fw-medium text-hover-primary text-truncate';
+				link.textContent = file.name;
+				link.style.maxWidth = '250px';
 
-						leftGroup.appendChild(icon);
-						leftGroup.appendChild(link);
+				leftGroup.appendChild(icon);
+				leftGroup.appendChild(link);
 
-						var removeBtn = document.createElement('span');
-						removeBtn.className = 'btn btn-icon btn-sm btn-light-danger cursor-pointer btn-del-travel-file';
-						removeBtn.innerHTML = '<i class="ki-duotone ki-trash fs-3"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span><span class="path5"></span></i>';
-
-						item.appendChild(leftGroup);
-						item.appendChild(removeBtn);
-
-						(function(f) {
-							item
-									.querySelector('.btn-del-travel-file')
-									.addEventListener(
-											'click',
-											function() {
-												travelSelectedFiles = travelSelectedFiles
-														.filter(function(x) {
-															return !(x.name === f.name && x.size === f.size);
-														});
-												renderTravelFileList();
-												updateTravelInputFiles();
-											});
-						})(file);
-
-						listDiv.appendChild(item);
+				var removeBtn = document.createElement('span');
+				removeBtn.className = 'btn btn-icon btn-sm btn-light-danger cursor-pointer btn-del-travel-file';
+				removeBtn.innerHTML = '<i class="ki-duotone ki-trash fs-3"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span><span class="path5"></span></i>';
+				removeBtn.addEventListener('click', function() {
+					travelSelectedFiles = travelSelectedFiles.filter(function(x) {
+						return !(x.name === file.name && x.size === file.size);
 					});
+					renderTravelFileList();
+					updateTravelInputFiles();
+				});
+
+				item.appendChild(leftGroup);
+				item.appendChild(removeBtn);
+				listDiv.appendChild(item);
+			});
+
+			travelLoadingFiles.forEach(function(loading) {
+				listDiv.appendChild(makeTravelLoadingItem(loading.name));
+			});
+
+			checkSubmitState();
 		}
 
 		function updateTravelInputFiles() {
@@ -1931,31 +1826,182 @@
 			var fileNames = travelSelectedFiles.map(function(f) {
 				return f.name;
 			});
-			document.getElementById('filesUploadFileName').value = JSON
-					.stringify(fileNames);
+			document.getElementById('filesUploadFileName').value = JSON.stringify(fileNames);
 		}
 
-		document
-				.getElementById('travelFiles')
-				.addEventListener(
-						'change',
-						function(e) {
-							Array
-									.from(e.target.files)
-									.forEach(
-											function(file) {
-												var exists = travelSelectedFiles
-														.find(function(f) {
-															return f.name === file.name
-																	&& f.size === file.size;
-														});
-												if (!exists)
-													travelSelectedFiles
-															.push(file);
-											});
-							renderTravelFileList();
-							updateTravelInputFiles();
-						});
+		function makeTravelLoadingItem(name) {
+			var wrapper = document.createElement('div');
+			wrapper.className = 'd-flex w-100 align-items-center p-2 border border-gray-300 rounded bg-white';
+
+			var spinner = document.createElement('span');
+			spinner.className = 'spinner-border spinner-border-sm text-primary me-3 flex-shrink-0';
+			spinner.setAttribute('role', 'status');
+
+			var label = document.createElement('span');
+			label.className = 'text-gray-600 fs-6 text-truncate';
+			label.textContent = 'กำลังประมวลผล ' + name + '...';
+			label.style.maxWidth = '250px';
+
+			wrapper.appendChild(spinner);
+			wrapper.appendChild(label);
+			return wrapper;
+		}
+
+		function removeTravelLoading(loadingId) {
+			travelLoadingFiles = travelLoadingFiles.filter(function(l) { return l.id !== loadingId; });
+		}
+
+		function isTravelDuplicate(file) {
+			return travelSelectedFiles.some(function(f) { return f.name === file.name && f.size === file.size; });
+		}
+
+		function travelFilesTotalSize() {
+			var total = 0;
+			travelSelectedFiles.forEach(function(f) { total += f.size; });
+			return total;
+		}
+
+		function alertTravelHeic() {
+			Swal.fire({
+				icon: 'error',
+				title: 'ไม่รองรับไฟล์ HEIC',
+				html: 'ไม่รองรับไฟล์นามสกุล .heic กรุณาแปลงก่อนแนบไฟล์'
+					+ '<br><br><span class="text-muted fs-7">ไฟล์ที่รองรับ: PDF, DOC, DOCX, XLSX, PPTX, CSV, PNG, JPG, JPEG, GIF, WEBP, MP4</span>',
+				confirmButtonText: 'รับทราบ',
+				buttonsStyling: false,
+				customClass: { confirmButton: "btn btn-primary" }
+			});
+		}
+
+		function alertTravelBadName(fileName) {
+			Swal.fire({
+				icon: 'error',
+				title: 'Invalid file name',
+				text: 'File name contains invalid characters: ' + fileName,
+				confirmButtonText: 'OK',
+				buttonsStyling: false,
+				customClass: { confirmButton: "btn btn-primary" }
+			});
+		}
+
+		function isTravelHeic(file) {
+			var name = (file.name || '').toLowerCase();
+			return name.endsWith('.heic') || name.endsWith('.heif')
+				|| file.type === 'image/heic' || file.type === 'image/heif';
+		}
+
+		function compressTravelFileIfNeeded(file, loadingId) {
+			if (file.type && file.type.indexOf('image/') === 0 && file.size > TRAVEL_FILE_IMAGE_LIMIT && typeof Compressor !== 'undefined') {
+				new Compressor(file, {
+					quality: 0.8, maxWidth: 1024, maxHeight: 1024,
+					success: function(result) {
+						var compressed = new File([result], file.name, { type: result.type, lastModified: Date.now() });
+						tryAddTravelFile(compressed, loadingId);
+					},
+					error: function() {
+						tryAddTravelFile(file, loadingId);
+					}
+				});
+			} else {
+				tryAddTravelFile(file, loadingId);
+			}
+		}
+
+		function processTravelFile(file, loadingId) {
+			if (isTravelHeic(file)) {
+				removeTravelLoading(loadingId);
+				renderTravelFileList();
+				alertTravelHeic();
+				return;
+			}
+			compressTravelFileIfNeeded(file, loadingId);
+		}
+
+		function tryAddTravelFile(file, loadingId) {
+			removeTravelLoading(loadingId);
+			if (travelFilesTotalSize() + file.size > TRAVEL_FILE_TOTAL_LIMIT) {
+				Swal.fire({
+					icon: 'warning',
+					title: 'ไฟล์มีขนาดเกินกำหนด',
+					text: 'ไม่สามารถแนบไฟล์ "' + file.name + '" ได้ เนื่องจากขนาดไฟล์รวมเกินขนาดสูงสุดที่กำหนดไว้',
+					confirmButtonText: 'รับทราบ',
+					buttonsStyling: false,
+					customClass: { confirmButton: "btn btn-primary" }
+				});
+				renderTravelFileList();
+				return;
+			}
+			travelSelectedFiles.push(file);
+			updateTravelInputFiles();
+			renderTravelFileList();
+		}
+
+		function addTravelFiles(fileList) {
+			Array.prototype.slice.call(fileList).forEach(function(file) {
+				if (TRAVEL_FILE_FORBIDDEN.test(file.name)) {
+					alertTravelBadName(file.name);
+					return;
+				}
+				if (isTravelDuplicate(file)) {
+					return;
+				}
+
+				var loadingId = ++travelLoadingSeq;
+				travelLoadingFiles.push({ id: loadingId, name: file.name });
+				renderTravelFileList();
+
+				processTravelFile(file, loadingId);
+			});
+		}
+
+		document.getElementById('travelFiles').addEventListener('change', function(e) {
+			addTravelFiles(e.target.files);
+		});
+
+		// บันทึกสำเร็จ BE redirect ไป line_my_travel (error จะ forward ไป index.jsp ไม่ redirect)
+		function isTravelSaved(res) {
+			return res.ok && res.redirected && res.url.indexOf('line_my_travel') !== -1;
+		}
+
+		// session หมด AuthInterceptor redirect ไปหน้า login
+		function isSessionExpired(res) {
+			return res.redirected && res.url.indexOf('/pages-line/index.jsp') !== -1;
+		}
+
+		// ส่ง form ด้วย fetch แบบ doSubmit() ของ create leave จะได้รู้ผลแล้วขึ้น toast
+		var travelSubmitting = false;
+		document.getElementById('travelAddForm').addEventListener('submit', function (e) {
+			e.preventDefault();
+			if (travelSubmitting) { return; }
+			travelSubmitting = true;
+
+			var form = this;
+			var spinner = $('#liffLoadingOverlay');
+			spinner.css('display', 'flex');
+			btnSubmitSave.setAttribute('disabled', 'disabled');
+			updateTravelInputFiles();
+
+			fetch(form.action, { method: 'POST', body: new FormData(form) })
+				.then(function (res) {
+					// session หมด ไปหน้า login
+					if (isSessionExpired(res)) {
+						window.location.href = res.url;
+						return;
+					}
+					// บันทึกไม่สำเร็จ ไป catch
+					if (!isTravelSaved(res)) { throw new Error('save failed'); }
+
+					// บันทึกสำเร็จ ไปหน้า My Travel พร้อม toast
+					var separator = (res.url.indexOf('?') === -1) ? '?' : '&';
+					window.location.href = res.url + separator + 'saved=add';
+				})
+				.catch(function () {
+					travelSubmitting = false;
+					spinner.css('display', 'none');
+					checkSubmitState();
+					liffToastError("Unable to save your travel expense. Please try again.", "Save failed");
+				});
+		});
 
 	})();
 </script>
