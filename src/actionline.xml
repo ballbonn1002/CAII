@@ -196,8 +196,7 @@
 		</action>
 		<!-- Add -->
 
-		<!-- Edit: ยังไม่เปิดใช้ -->
-		<!--
+		<!-- Edit -->
 		<action name="line_my_travelE"
 			class="com.cubesofttech.action.TravelAction" method="travelEdit">
 			<result name="success" type="tiles">line_myTravelE</result>
@@ -211,7 +210,6 @@
 			</result>
 			<result name="error">/pages-line/index.jsp</result>
 		</action>
-		-->
 		<!-- Edit -->
 
 		<!-- My Travel =========================================================================================================== -->
