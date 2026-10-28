@@ -837,16 +837,7 @@
 		        return;
 		    }
 
-		    const regex = /^[ก-๙0-9\s().,&/-]+$/;
-
-		    if (!regex.test(value)) {
-		        setFieldInvalid(
-		            "#company_name_th",
-		            "Only Thai characters are allowed"
-		        );
-		    } else {
-		        clearFieldError("#company_name_th");
-		    }
+		    clearFieldError("#company_name_th");
 		}
 
 		$("#company_name_en").on(

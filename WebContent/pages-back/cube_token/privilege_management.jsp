@@ -15,33 +15,265 @@
 	href="${pageContext.request.contextPath}/assets/css/style.bundle.css"
 	rel="stylesheet" />
 <style>
-/* Header */
-#itemTable thead th {
-	font-weight: 600 !important;
-	text-transform: uppercase;
-	white-space: nowrap;
-	vertical-align: middle;
+.carousel {
+	overflow-x: auto;
+	display: flex;
+	scrollbar-width: none;
+	-ms-overflow-style: none;
+	scroll-behavior: smooth;
+	cursor: grab;
+	user-select: none;
+	max-width: 90%;
+	scrollbar-width: none;
 }
 
-#itemTable thead th .dt-column-header {
-	display: inline-flex !important;
-	flex-direction: row !important;
-	align-items: center !important;
+.carousel:active {
+	cursor: grabbing;
 }
 
-#itemTable thead th .dt-column-order {
-	margin: 0 !important;
+.carousel img {
+	pointer-events: none;
+	user-select: none;
+}
+
+.carousel::-webkit-scrollbar {
+	display: none;
+}
+
+.responsive-button {
+	padding: 0.775rem 1.5rem !important;
+	font-size: 1.1rem !important;
+	border-radius: 0.475rem !important;
+	/* Light theme */
+	background-color: var(--bs-white) !important;
+	color: var(--bs-primary) !important;
+	border: 1px solid var(--bs-primary-border-subtle) !important;
+	transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out,
+		border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out !important;
+}
+
+/* Icon */
+.responsive-button i {
+	color: var(--bs-primary) !important;
+	transition: color 0.2s ease-in-out !important;
+}
+
+/* Hover */
+.responsive-button:hover {
+	background-color: var(--bs-primary) !important;
+	color: var(--bs-white) !important;
+	border-color: var(--bs-primary) !important;
+}
+
+.responsive-button:hover i {
+	color: var(--bs-white) !important;
+}
+
+[data-bs-theme="dark"] .responsive-button {
+	background-color: transparent !important;
+	color: var(--bs-primary) !important;
+	border-color: var(--bs-primary) !important;
+}
+
+[data-bs-theme="dark"] .responsive-button i {
+	color: var(--bs-primary) !important;
+}
+
+[data-bs-theme="dark"] .responsive-button:hover {
+	background-color: var(--bs-primary) !important;
+	color: var(--bs-white) !important;
+	border-color: var(--bs-primary) !important;
+}
+
+[data-bs-theme="dark"] .responsive-button:hover i {
+	color: var(--bs-white) !important;
+}
+
+.image-cover {
+	object-fit: cover;
+	height: clamp(160px, 20vw, 313px);
+}
+
+.image-cover[id="redeemItemImage"] {
+	object-fit: cover;
+	height: clamp(250px, 30vw, 100%);
+}
+
+.redeem-image-container {
+	height: 300px;
+	overflow: hidden;
+}
+
+.bg-dark-light {
+	background-color: var(--bs-dark-light) !important;
+}
+
+.redeem-btn {
+	position: relative;
+	overflow: hidden;
+	background-color: var(--bs-light) !important;
+	border: 1px solid var(--bs-primary-border-subtle) !important;
+	color: var(--bs-primary) !important;
+	transition: background-color 0.25s ease, color 0.25s ease;
+}
+
+.redeem-btn[disabled] {
+	background-color: var(--bs-gray-200) !important;
+	border: 1px solid var(--bs-gray-200) !important;
+	color: var(--bs-text-muted) !important;
+}
+
+.redeem-btn .ki-parcel {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	opacity: 0 !important;
+	color: var(--bs-white) !important;
+	transform: translate(-50%, -50%) translateX(-35px);
+	transition: opacity 0.4s ease, transform 0.5s
+		cubic-bezier(0.22, 1, 0.36, 1) !important;
+}
+
+.redeem-text {
+	display: inline-block;
+	transform: translateX(0);
+	transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.redeem-btn:hover {
+	background-color: var(--bs-primary) !important;
+	color: var(--bs-white) !important;
+}
+
+.redeem-btn:hover .ki-parcel {
+	opacity: 1 !important;
+	transform: translate(-50%, -50%) translateX(-50px);
+}
+
+.redeem-btn:hover .redeem-text {
+	transform: translateX(12px);
 }
 
 .details-truncate {
-    display: -webkit-box;
-    -webkit-box-orient: vertical;
-    -webkit-line-clamp: 5;
-    overflow: hidden;
+	display: -webkit-box;
+	-webkit-box-orient: vertical;
+	-webkit-line-clamp: 2;
+	overflow: hidden;
+}
 
-    overflow-wrap: anywhere;
-    word-break: break-word;
-    white-space: normal;
+.image-carousel {
+	width: 70px !important;
+	min-width: 70px !important;
+	max-width: 70px !important;
+	flex: 0 0 70px !important;
+}
+
+.image-carousel.active {
+	border-color: var(--bs-dark) !important;
+}
+
+.effective-date {
+	background: rgba(0, 0, 0, 0.15);
+	transition: background 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.item-card:hover .effective-date {
+	background: rgba(0, 0, 0, 0.5);
+}
+
+.badge-gray-500 {
+	background-color: rgba(219, 223, 233, 1) !important;
+	color: var(--bs-text-muted) !important;
+}
+
+.timeline-horizontal {
+	--bs-timeline-icon-size: 38px;
+	--bs-timeline-icon-space: 0.35rem;
+	display: flex;
+	align-items: flex-start;
+	width: 100%;
+}
+
+.timeline-horizontal .timeline-h-item {
+	position: relative;
+	flex: 1;
+	text-align: center;
+}
+
+.timeline-horizontal .timeline-h-icon {
+	position: relative;
+	z-index: 1;
+	width: var(--bs-timeline-icon-size);
+	height: var(--bs-timeline-icon-size);
+	margin: 0 auto 1rem;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	border: 1px solid var(--bs-gray-300);
+	border-style: dashed;
+	border-radius: 50%;
+	background-color: var(--bs-body-bg);
+}
+
+.timeline-horizontal .timeline-h-item:not(:last-child)::after {
+	content: "";
+	position: absolute;
+	z-index: 0;
+	top: calc(var(--bs-timeline-icon-size)/2);
+	left: calc(50% + var(--bs-timeline-icon-size)/2);
+	right: calc(-50% + var(--bs-timeline-icon-size)/2);
+	border-top: 1px solid var(--bs-gray-300);
+}
+
+.timeline-horizontal.timeline-border-dashed .timeline-h-item:not(:last-child)::after
+	{
+	border-top-style: dashed;
+}
+
+/* Mobile */
+@media ( max-width : 767.98px) {
+	.responsive-button {
+		padding: 0.7rem 1rem !important;
+		font-size: 0.95rem !important;
+		border-radius: 0.425rem !important;
+		font-weight: 500 !important;
+		line-height: 1.5 !important;
+	}
+	.redeem-btn:hover .ki-parcel {
+		opacity: 1 !important;
+		transform: translate(-50%, -50%) translateX(-40px);
+	}
+	.border-end-dashed {
+		border-right: 0 !important;
+	}
+	.timeline-horizontal {
+		flex-direction: column;
+	}
+	.timeline-h-item {
+		width: 100%;
+		display: flex;
+		text-align: left;
+	}
+	.timeline-horizontal .timeline-h-item:not(:last-child)::after {
+		top: var(--bs-timeline-icon-size);
+		bottom: 0;
+		left: 19px;
+		right: auto;
+		height: 100%;
+		border-top: 0;
+		border-left: 1px solid var(--bs-gray-300);
+	}
+	.timeline-h-icon {
+		margin: 0 1rem 1rem 0;
+		flex-shrink: 0;
+	}
+}
+
+/* Tablet */
+@media ( min-width : 768px) and (max-width: 991.98px) {
+	.redeem-btn:hover .ki-parcel {
+		transform: translate(-50%, -50%) translateX(-45px);
+	}
 }
 </style>
 </head>
@@ -50,28 +282,44 @@
 		<div id="kt_app_toolbar" class="app-toolbar py-3 py-lg-6">
 			<div id="kt_app_toolbar_container"
 				class="app-container container-fluid d-flex flex-stack">
-				<div
-					class="page-title d-flex flex-column justify-content-center flex-wrap me-3">
-					<h1
-						class="page-heading d-flex text-gray-700 fw-semibold flex-column justify-content-center my-0">
-						Privilege Management</h1>
-					<ul
-						class="breadcrumb breadcrumb-separatorless fw-semibold fs-7 my-0 pt-1">
-						<li class="breadcrumb-item text-muted"><a
-							href="${pageContext.request.contextPath}/check_in_out"
-							class="text-muted text-hover-primary">Home</a></li>
-						<li class="breadcrumb-item"><span
-							class="bullet bg-gray-500 w-5px h-2px"></span></li>
-						<li class="breadcrumb-item text-muted"><a href="#"
-							class="text-muted text-hover-primary">Cube Token Privilege</a></li>
+				<div class="d-flex justify-content-between align-items-center w-100">
 
-						<li class="breadcrumb-item"><span
-							class="bullet bg-gray-500 w-5px h-2px"></span></li>
-						<li class="breadcrumb-item text-muted"><a
-							href="${pageContext.request.contextPath}/privilegeMangementPage"
-							class="text-muted text-hover-primary">Privilege Management</a></li>
-					</ul>
+					<div
+						class="page-title d-flex flex-column justify-content-center flex-wrap me-3">
+						<h1
+							class="page-heading d-flex text-gray-700 fw-semibold flex-column justify-content-center my-0">
+							Redeem Rewards Management</h1>
+						<ul
+							class="breadcrumb breadcrumb-separatorless fw-semibold fs-7 my-0 pt-1">
+							<li class="breadcrumb-item text-muted"><a
+								href="${pageContext.request.contextPath}/check_in_out"
+								class="text-muted text-hover-primary">Home</a></li>
+							<li class="breadcrumb-item"><span
+								class="bullet bg-gray-500 w-5px h-2px"></span></li>
+							<li class="breadcrumb-item text-muted"><a href="#"
+								class="text-muted text-hover-primary">Cube Token Management</a></li>
+
+							<li class="breadcrumb-item"><span
+								class="bullet bg-gray-500 w-5px h-2px"></span></li>
+							<li class="breadcrumb-item text-muted"><a
+								href="${pageContext.request.contextPath}/privilegePage"
+								class="text-muted text-hover-primary">Privilege</a></li>
+						</ul>
+					</div>
+
+					<div class="d-flex align-items-center justify-content-end">
+						<button
+							class="d-flex align-items-center justify-content-start gap-2 btn btn-success"
+							type="button"
+							onclick="window.location.href='${pageContext.request.contextPath}/createRewardItem'">
+							<i class="ki-duotone ki-plus fs-2"> <span class="path1"></span>
+								<span class="path2"></span> <span class="path3"></span>
+							</i> <span class="fs-6"> Create </span>
+
+						</button>
+					</div>
 				</div>
+
 			</div>
 		</div>
 
@@ -79,284 +327,1063 @@
 			<div id="kt_app_content_container"
 				class="app-container container-fluid">
 
-				<!--begin::Item List Card-->
-				<div class="card card-flush">
 
-					<!--begin::Card Header-->
-					<div class="card-header pt-5">
 
-						<!--begin::Card title-->
-						<div class="card-title">
-							<h3 class="fw-semibold text-gray-900">Item List</h3>
+				<div class="card mt-12">
+					<div class="card-body">
+						<div class="row g-6">
+
+							<!-- Search -->
+							<div class="col-12">
+								<div class="position-relative">
+									<i
+										class="ki-duotone ki-magnifier fs-5 position-absolute top-50 translate-middle-y ms-4 text-gray-500">
+										<span class="path1"></span> <span class="path2"></span>
+									</i> <input type="text" id="searchInput"
+										class="form-control form-control-lg ps-12"
+										placeholder="Search" />
+								</div>
+							</div>
+
 						</div>
-						<!--end::Card title-->
+					</div>
+				</div>
 
-						<!--begin::Card toolbar-->
-						<div class="card-toolbar">
-							<a href="createRewardItem" class="btn btn-success"> <i
-								class="ki-duotone ki-plus fs-3"> <span class="path1"></span>
-									<span class="path2"></span>
-							</i> Create
-							</a>
+
+				<div class="d-flex align-items-center justify-content-between mt-10">
+					<h3 class="fw-semibold text-gray-900">
+						Item List (<span id="itemCount">0</span>)
+					</h3>
+				</div>
+
+				<div
+					class="row row-cols-2 row-cols-md-3 row-cols-xl-4 g-4 g-md-6 mt-4 card-container">
+					<!-- item card will be rendered here -->
+				</div>
+
+				<div class="modal fade" tabindex="-1" id="redeemModal">
+					<div class="modal-dialog modal-lg modal-dialog-centered">
+						<div class="modal-content">
+							<div class="modal-header border-bottom-0">
+								<h2 class="modal-title fw-bold text-gray-900">แลกของรางวัล</h2>
+
+								<!--begin::Close-->
+								<div class="btn btn-icon btn-sm btn-active-light-primary ms-2"
+									data-bs-dismiss="modal" aria-label="Close">
+									<i class="ki-duotone ki-cross fs-1"><span class="path1"></span><span
+										class="path2"></span></i>
+								</div>
+								<!--end::Close-->
+							</div>
+
+							<div class="modal-body">
+								<div class="row g-6 ">
+									<div class="col-12 col-md-7">
+										<div class="d-flex align-items-center justify-content-center">
+
+											<input type="hidden" id="itemId" />
+
+											<button type="button" class="btn btn-icon rounded"
+												id="prevImageBtn">
+												<i class="ki-duotone ki-left-square fs-4x fs-md-2x"> <span
+													class="path1"></span> <span class="path2"></span>
+												</i>
+											</button>
+
+
+											<div
+												class="flex-grow-1 d-flex justify-content-center align-items-center redeem-image-container">
+												<img class="image-cover lozad" id="redeemItemImage" />
+											</div>
+
+
+											<button type="button" class="btn btn-icon rounded"
+												id="nextImageBtn">
+												<i class="ki-duotone ki-right-square fs-4x fs-md-2x"> <span
+													class="path1"></span> <span class="path2"></span>
+												</i>
+											</button>
+										</div>
+										<div class="carousel gap-2 p-2 mt-6" id="carouselContainer">
+										</div>
+
+									</div>
+									<div class="col-12 col-md-5">
+
+										<div class="card p-6 w-100">
+											<div class="fw-semibold fs-2 text-gray-800 mb-6"
+												id="redeemItemName"></div>
+											<div class="mb-6">
+												<span class="badge badge-lg badge-primary py-2"
+													id="redeemItemQuantity"></span>
+											</div>
+											<div class="mb-6">
+												<div class="d-flex align-items-center gap-4 mb-6">
+													<i class="ki-duotone ki-laptop fs-2x"> <span
+														class="path1"></span> <span class="path2"></span>
+													</i>
+													<div class="fw-bold fs-5 text-gray-800">Detail</div>
+												</div>
+												<div class="fw-normal fs-5 text-gray-800 lh-lg scroll"
+													style="height: 150px;" id="redeemItemDetails"></div>
+											</div>
+											<div
+												class="d-flex align-items-center flex-wrap fw-normal fs-5 text-primary">
+												<span class="me-1">ระยะเวลาการแลก : </span> <span
+													class="text-gray-800" id="effectiveDate"></span>
+											</div>
+
+											<div class="d-flex gap-3 align-items-center mt-6">
+												<i class="ki-duotone ki-information-5 text-primary fs-1">
+													<span class="path1"></span> <span class="path2"></span> <span
+													class="path3"></span>
+												</i>
+												<div class="fw-medium fs-7 text-gray-700">รูปภาพเพื่อประกอบการโฆษณาเท่านั้น</div>
+											</div>
+										</div>
+									</div>
+								</div>
+
+								<div class="card p-6 mt-7">
+									<div class="row g-10">
+										<div
+											class="col-12 col-md-6 border-end-dashed border-gray-300 pe-7">
+											<div
+												class="d-flex flex-column align-items-center justify-content-center h-100">
+												<div
+													class="d-flex justify-content-between align-items-center w-100">
+													<div class="text-gray-700 fs-6">ใช้แลกของรางวัล</div>
+													<div class="d-flex align-items-center gap-2">
+														<i class="ki-duotone ki-cube-2 fs-2x text-primary"> <span
+															class="path1"></span> <span class="path2"></span> <span
+															class="path3"></span>
+														</i>
+														<div class="fw-bold fs-3 text-gray-800"
+															id="redeemTokenAmount"></div>
+													</div>
+												</div>
+
+												<div
+													class="d-flex justify-content-between align-items-center mt-6 w-100">
+													<div class="text-gray-700 fs-6">+ เพิ่มเงิน</div>
+													<div class="d-flex align-items-center gap-3">
+														<i class="ki-duotone ki-text-bold fs-2x"> <span
+															class="path1"></span> <span class="path2"></span> <span
+															class="path3"></span>
+														</i>
+														<div class="fw-bold fs-3 text-gray-800">
+															&#3647;<span id="redeemExtraCash"></span>
+														</div>
+													</div>
+												</div>
+											</div>
+
+
+										</div>
+										<div class="col-12 col-md-6">
+											<div
+												class="d-flex flex-column gap-8 justify-content-center w-100 px-md-4">
+												<div class="fw-bold fs-5 text-gray-800">สรุปยอดหลังการแลก</div>
+												<div
+													class="d-flex align-items-center justify-content-between">
+													<div class="fs-5 text-gray-600">แต้มที่มีอยู่:</div>
+													<div class="fw-medium fs-5 user-current-balance"></div>
+												</div>
+												<div
+													class="d-flex align-items-center justify-content-between">
+													<div class="fs-5 text-gray-600">แต้มที่ใช้แลก:</div>
+													<div class="fw-medium fs-5 text-danger redeem-token-amount">
+													</div>
+												</div>
+												<div
+													class="d-flex align-items-center justify-content-between">
+													<div class="fs-5 text-gray-600">แต้มคงเหลือ:</div>
+													<div class="fw-medium fs-5" id="remainingBalance"></div>
+												</div>
+
+												<div
+													class="d-flex align-items-center gap-2 bg-light-danger rounded border border-danger py-2 px-3 mt-4"
+													id="insufficientBalanceWarning">
+													<i class="ki-duotone ki-information-3 fs-1 text-danger">
+														<span class="path1"></span> <span class="path2"></span> <span
+														class="path3"></span>
+													</i>
+													<div class="fw-medium fs-7 text-gray-700">ขออภัย
+														แต้มของคุณไม่เพียงพอในการแลกสินค้าชินนี้</div>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+
+							</div>
+
+							<div class="modal-footer border-top-0">
+								<div class="d-flex justify-content-end ">
+									<button type="button" class="btn btn-light me-3"
+										data-bs-dismiss="modal">ยกเลิก</button>
+									<button type="button" class="btn btn-success"
+										id="modalRedeemBtn">ยืนยันการแลก</button>
+
+								</div>
+							</div>
+
+
+
+
 						</div>
-						<!--end::Card toolbar-->
+
 
 					</div>
-					<!--end::Card Header-->
 
-
-					<!--begin::Card Body-->
-					<div class="card-body pt-5">
-
-						<!--begin::Table-->
-						<div class="table-responsive">
-
-							<table class="table table-striped align-middle gs-0 gy-4"
-								id="itemTable">
-
-								<!--begin::Table head-->
-								<thead>
-									<tr class="fw-bold fs-7 text-uppercase text-gray-500">
-										<th class="text-center w-100px">#</th>
-										<th class="w-150px">Item</th>
-										<th style="min-width: 130px">Item Name</th>
-										<th style="min-width: 160px">Detail</th>
-										<th style="min-width: 100px">Token</th>
-										<th style="min-width: 100px">Add Cash</th>
-										<th style="min-width: 100px">Quantity</th>
-										<th style="min-width: 205px">Effective Date</th>
-										<th class="text-center w-100px">Active</th>
-										<th class="text-end w-100px pe-4">Action</th>
-									</tr>
-								</thead>
-								<!--end::Table head-->
-
-
-								<!--begin::Table body-->
-								<jsp:include page="/pages-back/cube_token/itemTableBody.jsp" />
-								<!--end::Table body-->
-
-							</table>
-						</div>
-						<!--end::Table-->
-
-
-					</div>
-					<!--end::Card Body-->
 
 				</div>
-				<!--end::Item List Card-->
-
-
 			</div>
 		</div>
 	</div>
 
 	<script>
-		$(document).ready(function() {
-			$("#itemTable").DataTable({
+    let rewardItems = {};
+    let userCurrentBalance = 0;
+    const favoriteTimers = {};
+    const activeToggleTimers = {};
+    
+    toastr.options = {
+    		  "closeButton": true,
+    		  "debug": false,
+    		  "newestOnTop": true,
+    		  "progressBar": true,
+    		  "positionClass": "toastr-top-right",
+    		  "preventDuplicates": false,
+    		  "onclick": null,
+    		  "showDuration": "300",
+    		  "hideDuration": "1000",
+    		  "timeOut": "3000",
+    		  "extendedTimeOut": "1000",
+    		  "showEasing": "swing",
+    		  "hideEasing": "linear",
+    		  "showMethod": "fadeIn",
+    		  "hideMethod": "fadeOut"
+    		};
+    
+    $(document).ready(function() {
+		const currentYear  = new Date().getFullYear();
+		loadUserInfo(currentYear);
+		
+		$("#searchInput").on("input", function () {
+		    filterRewardItems();
+		});
+		
+		$(document).on("click", ".active-toggle", updateItemActiveStatus);
+    });
+    
+    function updateItemActiveStatus() {
+        const $toggle = $(this);
+        const itemId = String($toggle.data("item-id"));
+        const active = $toggle.is(":checked");
+        const item = rewardItems[itemId];
 
-			    columnDefs: [
-			        {
-			            targets: [1, 8, 9],
-			            orderable: false
-			        }
-			    ]
-			});
-			
-			toastr.options = {
-					  "closeButton": false,
-					  "debug": false,
-					  "newestOnTop": true,
-					  "progressBar": true,
-					  "positionClass": "toastr-top-right",
-					  "preventDuplicates": false,
-					  "onclick": null,
-					  "showDuration": "300",
-					  "hideDuration": "1000",
-					  "timeOut": "5000",
-					  "extendedTimeOut": "1000",
-					  "showEasing": "swing",
-					  "hideEasing": "linear",
-					  "showMethod": "fadeIn",
-					  "hideMethod": "fadeOut"
-			};
-			
-			$(document).on("change", ".active-input", function () {
+        if (!item) {
+            console.error("Item not found:", itemId);
+            return;
+        }
 
-                const itemId = $(this).data("item-id");
-                const activeFlag = $(this).is(":checked") ? "Y" : "N";
+        // ยกเลิก timer เดิมของ item นี้
+        clearTimeout(activeToggleTimers[itemId]);
 
-                $.ajax({
-                    url: "updateRewardItemActiveFlag",
-                    type: "POST",
-                    data: {
-                        itemId: itemId,
-                        activeFlag: activeFlag
-                    },
-                    success: function (response) {
+        // Debounce: รอให้ผู้ใช้หยุดเปลี่ยนสถานะก่อนส่ง AJAX
+        activeToggleTimers[itemId] = setTimeout(function () {
+            $.ajax({
+                url: "${pageContext.request.contextPath}/updateRewardItemActiveFlag",
+                type: "POST",
+                data: {
+                    itemId: itemId,
+                    activeFlag: active ? "Y" : "N"
+                },
+                success: function (response) {
+                    const data = response.data;
+                    const isSuccess = Boolean(data.activeFlag);
+                    $toggle.prop("checked", Boolean(data.activeFlag));
+                    
+                    toastr.success(
+                        isSuccess
+                            ? "Item activated successfully."
+                            : "Item deactivated successfully."
+                    );
+                },
+                error: function (xhr, status, error) {
+                    console.error(
+                        "Failed to update item active status:",
+                        error
+                    );
 
-                        if (!response.success) {
+                    // คืน checkbox เป็นสถานะล่าสุดที่บันทึกสำเร็จ
+                    $toggle.prop("checked", Boolean(item.isActive));
 
-                            toastr.error(response.message || "Unable to update reward item.");
-                            
-                            return;
-                        }
-                        
-                        const isActive = response.data.activeFlag;
-                        
-                        $("input.active-input[data-item-id='" + itemId + "']").prop("checked", isActive);
-                        
-                        toastr.success(response.message || "Reward item updated successfully.");
-                    },
-                    error: function (xhr) {
-
-                        let message =
-                            "Unable to update reward item.";
-
-                        if (
-                            xhr.responseJSON
-                            && xhr.responseJSON.message
-                        ) {
-                            message =
-                                xhr.responseJSON.message;
-                        }
-
-                        toastr.error(message);
-                    }
-                });
-
+                    toastr.error(
+                        "Failed to update item active status. Please try again."
+                    );
+                },
+                complete: function () {
+                    delete activeToggleTimers[itemId];
+                }
             });
-			
-		});
-		
-		function reloadItemTable() {
+        }, 400);
+    }
+    
+    function submitRedeem() {
 
-		    $.ajax({
-		        url: "reloadRewardItemTable",
-		        type: "GET",
+        const itemId = $("#itemId").val();
 
-		        success: function (html) {
+        // Confirm before redeem
+        Swal.fire({
+            icon: "question",
+            title: "Confirm Redemption",
+            text: "Are you sure you want to redeem this reward?",
+            showCancelButton: true,
+            confirmButtonText: "Yes, Redeem",
+            cancelButtonText: "Cancel",
+            allowOutsideClick: false,
+            allowEscapeKey: false,
+            buttonsStyling: false,
+	        customClass: {
+	            confirmButton: "btn btn btn-success px-3",
+	            cancelButton: "btn btn-light"
+	        },
+	        focusConfirm: false,
+	        focusCancel: false,
+	        reverseButtons: true
+        }).then(function (result) {
 
-		            const table =
-		                $("#itemTable").DataTable();
+            if (!result.isConfirmed) {
+                return;
+            }
 
-		            table.destroy();
+            // Show loading while waiting for AJAX
+            Swal.fire({
+                title: "Redeeming Reward",
+                text: "Please wait...",
+                allowOutsideClick: false,
+                allowEscapeKey: false,
+                showConfirmButton: false,
+                didOpen: function () {
+                    Swal.showLoading();
+                }
+            });
 
-		            $("#itemTable tbody").replaceWith(html);
+            $.ajax({
+                url: "${pageContext.request.contextPath}/redeemRewardItem",
+                type: "POST",
+                data: {
+                    itemId: itemId
+                },
+                dataType: "json",
 
-		            $("#itemTable").DataTable();
+                success: function (response) {
 
-		            Swal.fire({
-		                title: "Deleted!",
-		                text: "Reward item deleted successfully.",
-		                icon: "success",
-		                timer: 1200,
-		                showConfirmButton: false
-		            });
-		        },
+                    if (response.success) {
 
-		        error: function () {
+                        Swal.fire({
+                            icon: "success",
+                            title: "Redemption Successful",
+                            text: response.message || "You have successfully redeemed the reward.",
+                            confirmButtonText: "OK",
+                            buttonsStyling: false,
+                            allowOutsideClick: false,
+                            allowEscapeKey: false,
+                            customClass: {
+	                            confirmButton: "btn btn-success"
+	                        }
+                        }).then(function (result) {
 
-		            Swal.fire({
-		                title: "Error!",
-		                text: "Unable to reload item list.",
-		                icon: "error"
-		            });
-		        }
-		    });
-		}
-		
-		$(document).on("click", ".deleteItemBtn", function () {
+                            if (result.isConfirmed) {
+                                $("#redeemModal").modal("hide");
+                                loadUserInfo();
+                            }
 
-		    const itemId = $(this).data("item-id");
+                        });
 
-		    Swal.fire({
-		        title: "Delete Reward Item?",
-		        text: "Are you sure you want to delete this item?",
-		        icon: "warning",
-		        showCancelButton: true,
-		        confirmButtonText: "Yes, Delete",
-		        cancelButtonText: "Cancel",
-		        buttonsStyling: false,
-		        customClass: {
-		            confirmButton: "btn btn btn-danger px-3",
-		            cancelButton: "btn btn-light"
-		        },
-		        focusConfirm: false,
-		        focusCancel: false,
-		        reverseButtons: true
-		    }).then(function (result) {
+                    } else {
 
-		        if (!result.isConfirmed) {
-		            return;
-		        }
+                        Swal.fire({
+                            icon: "error",
+                            title: "Redemption Failed",
+                            text: response.message || "Unable to redeem the reward.",
+                            confirmButtonText: "OK",
+                            allowOutsideClick: false,
+                            allowEscapeKey: false,
+                            buttonsStyling: false,
+	                        customClass: {
+	                            confirmButton: "btn btn-light"
+	                        }
+                        });
+                        
+                        console.error("Error response:", response);
 
-		        Swal.fire({
-		            title: "Deleting...",
-		            text: "Please wait.",
-		            allowOutsideClick: false,
-		            allowEscapeKey: false,
-		            didOpen: function () {
-		                Swal.showLoading();
-		            }
-		        });
+                    }
+                },
 
-		        $.ajax({
-		            url: "deleteRewardItem",
-		            type: "POST",
-		            data: {
-		                itemId: itemId
-		            },
-		            success: function (response) {
+                error: function (xhr, status, error) {
 
-		                if (!response.success) {
+                    console.error("Error redeeming item:", error);
 
-		                    Swal.fire({
-		                        title: "Unable to Delete",
-		                        text: response.message
-		                            || "Unable to delete reward item.",
-		                        icon: "error",
-		                        buttonsStyling: false,
-		                        customClass: {
-		                            confirmButton: "btn btn-primary"
-		                        }
-		                    });
+                    let message = "An error occurred while redeeming the reward.";
 
-		                    return;
-		                }
+                    if (xhr.responseJSON && xhr.responseJSON.message) {
+                        message = xhr.responseJSON.message;
+                    }
 
-		                reloadItemTable();
+                    Swal.fire({
+	                    title: "Error!",
+	                    text: message,
+	                    icon: "error",
+	                    confirmButtonText: "OK",
+	                    buttonsStyling: false,
+	                    customClass: {
+	                        confirmButton: "btn btn-light"
+	                    }
+	                });
 
-		            },
-		            error: function (xhr) {
+                }
+            });
 
-		                let message =
-		                    "Unable to delete reward item.";
+        });
+    }
 
-		                if (
-		                    xhr.responseJSON
-		                    && xhr.responseJSON.message
-		                ) {
-		                    message =
-		                        xhr.responseJSON.message;
-		                }
+    function escapeHtml(value) {
+        if (value == null) return "";
 
-		                Swal.fire({
-		                    title: "Error!",
-		                    text: message,
-		                    icon: "error",
-		                    buttonsStyling: false,
-		                    customClass: {
-		                        confirmButton: "btn btn-primary"
-		                    }
-		                });
-		            }
-		        });
+        return String(value)
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
+    }
+    
+    function loadUserInfo() {
+        $.ajax({
+            url: "${pageContext.request.contextPath}/getUserAccumelatedToken",
+            type: "GET",
+            dataType: "json",
+            success: function(response) {
+                if (response.success) {
+                    userCurrentBalance = Number(response.data);
+                    loadRewardItems();
+                    loadTokenSummary("${userInfo.id}", new Date().getFullYear());
+                } else {
+                    console.error("Invalid user info response:", response);
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error("Error loading user info:", error);
+            }
+        });
+    }
 
-		    });
+    function loadRewardItems() {
 
-		});
+    	const $container = $(".card-container");
+    	
+    	// แสดง Loading
+        $container.html(`
+            <div class="w-100 d-flex justify-content-center align-items-center" style="height: 400px;">
+                <div class="d-flex flex-column align-items-center gap-3">
+                    <div
+                        class="spinner-border text-primary"
+                        role="status"
+                        style="width: 3rem; height: 3rem;">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+
+                    <span class="text-gray-600 fw-semibold">
+                        Loading...
+                    </span>
+                </div>
+            </div>
+        `);
+
+        $.ajax({
+            url: "${pageContext.request.contextPath}/getRewardItemList",
+            type: "GET",
+            dataType: "json",
+
+            success: function(response) {
+
+                const items = Array.isArray(response)
+                    ? response
+                    : response.data;
+
+                if (!Array.isArray(items)) {
+                    console.error("Invalid reward item response:", response);
+                    
+                    $container.html(`
+                            <div class="d-flex align-items-center justify-content-center text-center w-100" style="height: 400px;">
+                                <div class="d-flex flex-column align-items-center gap-3">
+
+                                    <i class="ki-duotone ki-information-5 fs-5tx fs-md-3x text-danger">
+                                        <span class="path1"></span>
+                                        <span class="path2"></span>
+                                        <span class="path3"></span>
+                                    </i>
+
+                                    <span class="text-danger fw-semibold">
+                                        Failed to load reward items.
+                                    </span>
+
+                                </div>
+                            </div>
+                        `);
+                    return;
+                }
+                
+
+                $container.empty();
+                
+                $("#itemCount").text(items.length);
+                
+                if (items.length === 0) {
+	                $(".card-container").append(`
+	                    <div class="reward-no-result w-100">
+	                        <div class="d-flex flex-column align-items-center justify-content-center text-center py-20">
+	                            <i class="ki-duotone ki-magnifier fs-5tx text-gray-400">
+	                                <span class="path1"></span>
+	                                <span class="path2"></span>
+	                            </i>
+	
+	                            <div class="fw-bold fs-3 text-gray-700 mt-5">
+	                                No items found
+	                            </div>
+	
+	                            <div class="text-gray-500 fs-6 mt-2">
+	                            	There are currently no rewards available.
+	                            </div>
+	                        </div>
+	                    </div>
+	                `);
+	                
+	                return;
+                }
+                
+                rewardItems = {};
+                items.forEach(function(item) {
+
+                	console.log(item)
+
+                	rewardItems[item.itemId] = item;
+
+                    const itemId = escapeHtml(item.itemId);
+                    const itemName = escapeHtml(item.itemName);
+                    const details = escapeHtml(item.details).replace(/\r\n/g, "<br>").replace(/\n/g, "<br>");
+                    const quantity = Number(item.quantity) || 0;
+                    const token = Number(item.token) || 0;
+                    const effectiveDate = `\${formatDate(item.startDate)} - \${formatDate(item.endDate)}`; 
+                    const addedMoney = Number(item.addedMoney) || 0;
+                    const isFavorite = Boolean(item.isFavorite);
+                    const isActive = Boolean(item.activeFlag === "Y");
+                    
+
+                    const coverPath =
+                        "${pageContext.request.contextPath}" +
+                        (item.coverPath || "");
+
+                    const soldOut = quantity <= 0;
+
+                    const html = `
+                        <div class="col">
+
+                            <!--begin::Card-->
+                            <div class="card card-px-0 h-100 item-card" data-item-id="\${itemId}">
+
+                                <!--begin::Image-->
+                                <div class="position-relative image-container">
+
+                                    <div
+                                        class="position-relative overflow-hidden bg-dark-light rounded-top">
+
+                                        <img
+                                            src="\${coverPath}"
+                                            class="w-100 image-cover lozad"
+                                            alt="\${itemName}">
+
+                                        \${soldOut ? `
+                                        <div
+                                            class="position-absolute translate-middle top-50 start-50 w-100">
+
+                                            <div
+                                                class="d-flex justify-content-center align-items-center bg-danger text-white text-uppercase fw-bold fs-2 py-2">
+
+                                                sold out
+
+                                            </div>
+
+                                        </div>
+                                        ` : ""}
+                                    </div>
+
+                                    <!--begin::Stock-->
+                                    <div
+                                        class="d-flex w-100 justify-content-between position-absolute top-0 start-0 mt-3 ms-3 p-0">
+
+                                        <div>
+
+                                            <span
+                                                class="badge badge-lg badge-primary fw-normal fs-7 py-2 px-3" style="border: 1px solid rgba(241, 241, 244, 1);">
+
+                                                \${quantity} Remaining
+
+                                            </span>
+
+                                        </div>
+                                        <!--end::Stock-->
+
+                                    </div>
+                                    
+                                    <div class="effective-date position-absolute translate-middle-x bottom-0 start-50 w-100 d-flex align-items-center justify-content-center text-center p-4">
+	                                	<div class="fs-7 text-white fw-normal">\${effectiveDate}</div>
+	                                </div>
+                                    
+                                </div>
+                                <!--end::Image-->
+ 
+
+                                <!--begin::Card body-->
+                                <div class="card-body d-flex flex-column p-6">
+
+                                    <!--begin::Title-->
+                                    <div class="mb-2">
+                                        <div
+                                            class="fw-bold fs-4 text-gray-700 text-truncate item-name">
+
+                                            \${itemName}
+
+                                        </div>
+
+                                        <div
+                                            class="fw-bold fs-6 text-gray-600 details-truncate mt-2">
+
+                                            \${details}
+
+                                        </div>
+
+                                    </div>
+                                    <!--end::Title-->
+
+
+                                    <!--begin::Price-->
+                                    <div class="mt-auto pt-10">
+
+                                        <div
+                                            class="d-flex align-items-center justify-content-between">
+
+                                            <!-- Token -->
+                                            <div
+                                                class="d-flex align-items-center gap-2">
+
+                                                <i
+                                                    class="ki-duotone ki-cube-2 fs-2x text-primary">
+
+                                                    <span class="path1"></span>
+                                                    <span class="path2"></span>
+                                                    <span class="path3"></span>
+
+                                                </i>
+
+                                                <span
+                                                    class="fw-bold fs-3 text-gray-800">
+
+                                                    \${token.toLocaleString()}
+
+                                                </span>
+                                            </div>
+
+
+                                            <!-- Additional -->
+                                            <div
+                                                class="fw-medium fs-5 text-gray-700">
+
+                                                + ฿ \${addedMoney.toLocaleString()}
+
+                                            </div>
+
+                                        </div>
+
+                                    </div>
+                                    <!--end::Price-->
+
+
+                                    <!--begin::Button-->
+                                    <div class="pt-3 border-top d-flex flex-wrap gap-3 gap-md-0 align-items-center justify-content-between mt-6">
+	                                    <div class="form-check form-switch form-check-custom form-check-solid">
+		                                    <input class="form-check-input h-20px w-30px active-toggle" type="checkbox" data-item-id="\${itemId}" \${isActive ? 'checked' : ''}/>
+		                                    <label class="form-check-label fw-bold fs-6 ms-2" for="activeToggle">
+		                                        Active
+		                                    </label>
+		                                </div>
+		                                <div class="d-flex align-items-center gap-3">
+		                                	<button class="btn btn-icon btn-sm btn-light-primary" onclick="window.location.href='${pageContext.request.contextPath}/editRewardItem?itemId=\${itemId}'">
+			                                	<i class="ki-duotone ki-pencil fs-2">
+			                                	 <span class="path1"></span>
+			                                	 <span class="path2"></span>
+			                                	</i>
+		                                	</button>
+		                                	<button class="btn btn-icon btn-sm btn-light-danger" onclick="deleteRewardItem('\${itemId}')">                           	
+		                                		<i class="ki-duotone ki-trash fs-2">
+				                                	 <span class="path1"></span>
+				                                	 <span class="path2"></span>
+				                                	 <span class="path3"></span>
+				                                	 <span class="path4"></span>
+				                                	 <span class="path5"></span>
+			                                	</i>
+		                                	</button>
+		                                </div>
+                                    </div>
+                                    <!--end::Button-->
+
+                                </div>
+                                <!--end::Card body-->
+
+                            </div>
+                            <!--end::Card-->
+
+                        </div>
+                    `;
+
+                    $container.append(html);
+                });
+            },
+
+            error: function(xhr, status, error) {
+                console.error("Error loading reward items:", error);
+                
+                // แสดง Error แทน Loading
+                $container.html(`
+                    <div class="d-flex align-items-center justify-content-center text-center w-100" style="height: 400px;">
+                        <div class="d-flex flex-column align-items-center gap-3">
+
+                            <i class="ki-duotone ki-information-5 fs-5tx fs-md-3x text-danger">
+                                <span class="path1"></span>
+                                <span class="path2"></span>
+                                <span class="path3"></span>
+                            </i>
+
+                            <span class="text-danger fw-semibold">
+                                Failed to load reward items.
+                            </span>
+
+                        </div>
+                    </div>
+                `);
+            }
+        });
+	
+    
+    }
+    
+    
+    function deleteRewardItem(itemId) {
+
+	    Swal.fire({
+	        title: "Delete Reward Item?",
+	        text: "Are you sure you want to delete this item?",
+	        icon: "warning",
+	        showCancelButton: true,
+	        confirmButtonText: "Yes, Delete",
+	        cancelButtonText: "Cancel",
+	        buttonsStyling: false,
+	        customClass: {
+	            confirmButton: "btn btn btn-danger px-3",
+	            cancelButton: "btn btn-light"
+	        },
+	        focusConfirm: false,
+	        focusCancel: false,
+	        reverseButtons: true
+	    }).then(function (result) {
+
+	        if (!result.isConfirmed) {
+	            return;
+	        }
+
+	        Swal.fire({
+	            title: "Deleting...",
+	            text: "Please wait.",
+	            allowOutsideClick: false,
+	            allowEscapeKey: false,
+	            didOpen: function () {
+	                Swal.showLoading();
+	            }
+	        });
+
+	        $.ajax({
+	            url: "deleteRewardItem",
+	            type: "POST",
+	            data: {
+	                itemId: itemId
+	            },
+	            success: function (response) {
+
+	                if (!response.success) {
+
+	                    Swal.fire({
+	                        title: "Unable to Delete",
+	                        text: response.message
+	                            || "Unable to delete reward item.",
+	                        icon: "error",
+	                        buttonsStyling: false,
+	                        customClass: {
+	                            confirmButton: "btn btn-primary"
+	                        }
+	                    });
+
+	                    return;
+	                }
+	                
+	                Swal.fire({
+                        title: "Deleted!",
+                        text: "Reward item has been deleted.",
+                        icon: "success",
+                        buttonsStyling: false,
+                        customClass: {
+                            confirmButton: "btn btn-success"
+                        }
+                    });
+
+	                loadRewardItems();
+
+	            },
+	            error: function (xhr) {
+
+	            	Swal.close();
+
+	                let message =
+	                    "Unable to delete reward item.";
+
+	                if (
+	                    xhr.responseJSON
+	                    && xhr.responseJSON.message
+	                ) {
+	                    message =
+	                        xhr.responseJSON.message;
+	                }
+
+	                Swal.fire({
+	                    title: "Error!",
+	                    text: message,
+	                    icon: "error",
+	                    buttonsStyling: false,
+	                    customClass: {
+	                        confirmButton: "btn btn-primary"
+	                    }
+	                });
+	            }
+	        });
+
+	    });
+
+	}
+    
+    function filterRewardItems() {
+        const searchText = $("#searchInput").val().trim().toLowerCase();
+        const filter = $("#filterSelect").val();
+
+        let visibleCount = 0;
+
+        $(".card-container .item-card").each(function () {
+            const $card = $(this);
+            const itemId = $card.data("item-id");
+            const item = rewardItems[itemId];
+
+            if (!item) {
+                $card.closest(".col").hide();
+                return;
+            }
+
+            const itemName = String(item.itemName || "").toLowerCase();
+            const details = String(item.details || "").toLowerCase();
+
+            // =========================
+            // Search
+            // =========================
+            const matchesSearch =
+                !searchText ||
+                itemName.includes(searchText) ||
+                details.includes(searchText);
+
+            // =========================
+            // Filter
+            // =========================
+            let matchesFilter = true;
+
+            const quantity = Number(item.quantity) || 0;
+            const token = Number(item.token) || 0;
+            const isFavorite = Number(item.isFavorite) === 1;
+            
+            if (filter === "available") {
+                matchesFilter = quantity > 0;
+            }
+
+            if (filter === "redeemable") {
+                matchesFilter =
+                    quantity > 0 &&
+                    userCurrentBalance >= token;
+            }
+
+            if (filter === "favorite") {
+                matchesFilter = isFavorite;
+            }
+
+            // =========================
+            // Show / Hide
+            // =========================
+            const visible = matchesSearch && matchesFilter;
+
+            $card.closest(".col").toggle(visible);
+
+            if (visible) {
+                visibleCount++;
+            }
+        });
+
+        // =========================
+        // Item count
+        // =========================
+        $("#itemCount").text(visibleCount);
+
+        // =========================
+        // No result message
+        // =========================
+        $(".reward-no-result").remove();
+
+        if (visibleCount === 0) {
+            $(".card-container").append(`
+                <div class="reward-no-result w-100">
+                    <div class="d-flex flex-column align-items-center justify-content-center text-center py-20">
+                        <i class="ki-duotone ki-magnifier fs-5tx text-gray-400">
+                            <span class="path1"></span>
+                            <span class="path2"></span>
+                        </i>
+
+                        <div class="fw-bold fs-3 text-gray-700 mt-5">
+                            No items found
+                        </div>
+
+                        <div class="text-gray-500 fs-6 mt-2">
+                            Try changing your search or filter.
+                        </div>
+                    </div>
+                </div>
+            `);
+        }
+    }
+    
+    function formatDate(timestamp) {
+        const date = new Date(timestamp);
+
+        const day = date.getDate();
+        const month = date.toLocaleString("en-US", { month: "short" });
+        const year = String(date.getFullYear()).slice(-2);
+
+        return `\${day} \${month} \${year}`;
+    }
+    
+    function formatToken(value) {
+	    if (value === null || value === undefined) {
+	        return "0";
+	    }
+
+	    const number = Number(value);
+
+	    if (Number.isNaN(number)) {
+	        return "0";
+	    }
+
+	    return number.toLocaleString("en-US", {
+	        minimumFractionDigits: 0,
+	        maximumFractionDigits: 2
+	    });
+	}
+    
+    function loadTokenSummary(userId, year) {
+    	
+	    $.ajax({
+	        url: `tokenSummary?year=\${year}\${userId ? '&userId=' + userId : ''}`,
+	        type: "GET",
+
+	        beforeSend: function() {
+	            $(".token-value").text("-");
+	        },
+
+	        success: function(res) {
+
+	            if (!res.success) {
+	                toastr.error(
+	                    res.message || "Unable to load token summary."
+	                );
+	                return;
+	            }
+	            
+	            const data = res.data;
+
+	            $("[data-field='cubeToken']").text(
+	                formatToken(data.accumulatedToken)
+	            );
+	            
+	            $("[data-field='yearlyCubeToken']").text(
+		                formatToken(data.yearlyToken)
+		        );
+
+/* 	            $("[data-field='gift']").text(
+	                formatToken(data.gift)
+	            );
+
+	            $("[data-field='reward']").text(
+	                formatToken(data.reward)
+	            );
+
+	            $("[data-field='return']").text(
+	                formatToken(data.return)
+	            );
+
+	            $("[data-field='exchange']").text(
+	                formatToken(data.exchange)
+	            );
+
+	            $("[data-field='late']").text(
+	                formatToken(data.late)
+	            );
+
+	            $("[data-field='earlyOut']").text(
+	                formatToken(data.earlyOut)
+	            );
+
+	            $("[data-field='leave']").text(
+	                formatToken(data.leave)
+	            );
+
+	            $("[data-field='backDate']").text(
+	                formatToken(data.backDate)
+	            );
+	            
+	            $("[data-field='noRecord']").text(
+		                formatToken(data.noRecord)
+		        );
+ */	        },
+
+	        error: function(xhr) {
+
+	            console.error("Get Token Summary error");
+
+	            $(".token-value").text("-");
+
+	            toastr.error("Unable to load token summary. Please try again.");
+	        }
+	    });
+	}
+    
+    
+    
+	
 	</script>
+
 </body>
 </html>

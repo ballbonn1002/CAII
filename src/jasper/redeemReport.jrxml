@@ -1,0 +1,743 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.21.5.final using JasperReports Library version 6.4.0  -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="test3" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="f0699def-a788-4291-8182-ba2ba6e32608">
+	<property name="ireport.zoom" value="1.8181818181818217"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="251"/>
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="MySQL Docker"/>
+	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
+	<parameter name="logoPath" class="java.lang.Object" isForPrompting="false"/>
+	<parameter name="basePath" class="java.lang.String">
+		<defaultValueExpression><![CDATA[""]]></defaultValueExpression>
+	</parameter>
+	<parameter name="redeemId" class="java.lang.Integer"/>
+	<queryString>
+		<![CDATA[SELECT
+    ur.token,
+    ur.cash,
+    ur.description,
+    ur.time_create,
+    ur.time_approve,
+    ur.time_deliver,
+    ur.time_receive,
+
+    u_owner.name AS user_name,
+    u_owner.path_signature AS user_signature,
+    u_owner.name_en AS user_name_en,
+    u_owner.phone_num AS user_phone_number,
+    pos.name AS user_pos,
+
+    u_approve.name AS user_approve_name,
+    u_approve.path_signature AS user_approve_signature,
+    u_approve.position_id AS user_approve_position,
+    u_approve.name_en AS user_approve_name_en,
+
+    u_deliver.name AS user_deliver_name,
+    u_deliver.path_signature AS user_deliver_signature,
+    u_deliver.position_id AS user_deliver_position,
+    u_deliver.name_en AS user_deliver_name_en,
+
+    u_receive.name AS user_receive_name,
+    u_receive.path_signature AS user_receive_signature,
+    u_receive.position_id AS user_receive_position,
+    u_receive.name_en AS user_receive_name_en,
+
+    ip.product_id,
+    ip.item_name,
+    ip.details,
+    
+    p.product_no AS product_number
+
+FROM cube.user_redeem ur
+
+INNER JOIN cube.user u_owner
+    ON u_owner.id = ur.user_id
+    
+LEFT JOIN cube.position pos
+    ON pos.position_id = u_owner.position_id
+
+INNER JOIN cube.user u_approve
+    ON u_approve.id = ur.user_approve
+
+INNER JOIN cube.user u_deliver
+    ON u_deliver.id = ur.user_deliver
+
+INNER JOIN cube.item_privilege ip
+    ON ip.item_id = ur.item_id
+    
+LEFT JOIN cube.product p
+ 	ON ip.item_id = p.product_id
+
+INNER JOIN cube.user u_receive
+    ON u_receive.id = ur.user_receive
+
+WHERE ur.user_redeem_id = $P{redeemId}]]>
+	</queryString>
+	<field name="token" class="java.lang.Double">
+		<property name="com.jaspersoft.studio.field.name" value="token"/>
+		<property name="com.jaspersoft.studio.field.label" value="token"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="user_redeem"/>
+	</field>
+	<field name="cash" class="java.lang.Double">
+		<property name="com.jaspersoft.studio.field.name" value="cash"/>
+		<property name="com.jaspersoft.studio.field.label" value="cash"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="user_redeem"/>
+	</field>
+	<field name="description" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="description"/>
+		<property name="com.jaspersoft.studio.field.label" value="description"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="user_redeem"/>
+	</field>
+	<field name="time_create" class="java.sql.Timestamp">
+		<property name="com.jaspersoft.studio.field.name" value="time_create"/>
+		<property name="com.jaspersoft.studio.field.label" value="time_create"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="user_redeem"/>
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="time_approve" class="java.sql.Timestamp">
+		<property name="com.jaspersoft.studio.field.name" value="time_approve"/>
+		<property name="com.jaspersoft.studio.field.label" value="time_approve"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="user_redeem"/>
+	</field>
+	<field name="time_deliver" class="java.sql.Timestamp">
+		<property name="com.jaspersoft.studio.field.name" value="time_deliver"/>
+		<property name="com.jaspersoft.studio.field.label" value="time_deliver"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="user_redeem"/>
+	</field>
+	<field name="time_receive" class="java.sql.Timestamp">
+		<property name="com.jaspersoft.studio.field.name" value="time_receive"/>
+		<property name="com.jaspersoft.studio.field.label" value="time_receive"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="user_redeem"/>
+	</field>
+	<field name="user_name" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="name"/>
+		<property name="com.jaspersoft.studio.field.label" value="user_name"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="user"/>
+	</field>
+	<field name="user_signature" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="path_signature"/>
+		<property name="com.jaspersoft.studio.field.label" value="user_signature"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="user"/>
+	</field>
+	<field name="user_name_en" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="name_en"/>
+		<property name="com.jaspersoft.studio.field.label" value="user_name_en"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="user"/>
+	</field>
+	<field name="user_phone_number" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="phone_num"/>
+		<property name="com.jaspersoft.studio.field.label" value="user_phone_number"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="user"/>
+	</field>
+	<field name="user_pos" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="name"/>
+		<property name="com.jaspersoft.studio.field.label" value="user_pos"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="position"/>
+	</field>
+	<field name="user_approve_name" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="name"/>
+		<property name="com.jaspersoft.studio.field.label" value="user_approve_name"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="user"/>
+	</field>
+	<field name="user_approve_signature" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="path_signature"/>
+		<property name="com.jaspersoft.studio.field.label" value="user_approve_signature"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="user"/>
+	</field>
+	<field name="user_approve_position" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="position_id"/>
+		<property name="com.jaspersoft.studio.field.label" value="user_approve_position"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="user"/>
+	</field>
+	<field name="user_approve_name_en" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="name_en"/>
+		<property name="com.jaspersoft.studio.field.label" value="user_approve_name_en"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="user"/>
+	</field>
+	<field name="user_deliver_name" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="name"/>
+		<property name="com.jaspersoft.studio.field.label" value="user_deliver_name"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="user"/>
+	</field>
+	<field name="user_deliver_signature" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="path_signature"/>
+		<property name="com.jaspersoft.studio.field.label" value="user_deliver_signature"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="user"/>
+	</field>
+	<field name="user_deliver_position" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="position_id"/>
+		<property name="com.jaspersoft.studio.field.label" value="user_deliver_position"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="user"/>
+	</field>
+	<field name="user_deliver_name_en" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="name_en"/>
+		<property name="com.jaspersoft.studio.field.label" value="user_deliver_name_en"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="user"/>
+	</field>
+	<field name="user_receive_name" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="name"/>
+		<property name="com.jaspersoft.studio.field.label" value="user_receive_name"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="user"/>
+	</field>
+	<field name="user_receive_signature" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="path_signature"/>
+		<property name="com.jaspersoft.studio.field.label" value="user_receive_signature"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="user"/>
+	</field>
+	<field name="user_receive_position" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="position_id"/>
+		<property name="com.jaspersoft.studio.field.label" value="user_receive_position"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="user"/>
+	</field>
+	<field name="user_receive_name_en" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="name_en"/>
+		<property name="com.jaspersoft.studio.field.label" value="user_receive_name_en"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="user"/>
+	</field>
+	<field name="product_id" class="java.lang.Integer">
+		<property name="com.jaspersoft.studio.field.name" value="product_id"/>
+		<property name="com.jaspersoft.studio.field.label" value="product_id"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="item_privilege"/>
+	</field>
+	<field name="item_name" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="item_name"/>
+		<property name="com.jaspersoft.studio.field.label" value="item_name"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="item_privilege"/>
+	</field>
+	<field name="details" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="details"/>
+		<property name="com.jaspersoft.studio.field.label" value="details"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="item_privilege"/>
+	</field>
+	<field name="product_number" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="product_no"/>
+		<property name="com.jaspersoft.studio.field.label" value="product_number"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="product"/>
+	</field>
+	<variable name="currDate" class="java.lang.String">
+		<variableExpression><![CDATA[new java.util.Date()]]></variableExpression>
+	</variable>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="156" splitType="Stretch">
+			<staticText>
+				<reportElement x="0" y="79" width="555" height="22" uuid="f297f229-1db1-4e52-aad6-920d8cf51467"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="THSarabun" size="16" isBold="true" isItalic="false" isUnderline="true" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+				</textElement>
+				<text><![CDATA[ใบแลกของรางวัล]]></text>
+			</staticText>
+			<image>
+				<reportElement x="2" y="13" width="146" height="40" uuid="b6555020-345a-49ea-b2d7-c524dc5591d3"/>
+				<imageExpression><![CDATA[$P{logoPath}]]></imageExpression>
+			</image>
+			<staticText>
+				<reportElement x="13" y="134" width="90" height="20" uuid="a5784671-93c2-4cac-82bb-413e82fa4249"/>
+				<textElement>
+					<font fontName="THSarabun" size="14" isBold="true" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+				</textElement>
+				<text><![CDATA[ชื่อ - นามสกุล]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="303" y="134" width="55" height="20" uuid="51ce0136-b9a0-4bef-8164-f1d4632236e2"/>
+				<textElement textAlignment="Right">
+					<font fontName="THSarabun" size="14" isBold="true" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+				</textElement>
+				<text><![CDATA[ตำแหน่ง]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="408" y="101" width="31" height="20" uuid="845b6a6f-0d0f-4493-b9a2-e1e13e4b2a3b"/>
+				<textElement>
+					<font fontName="THSarabun" size="14" isBold="true" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+				</textElement>
+				<text><![CDATA[วันที่]]></text>
+			</staticText>
+			<textField pattern="dd/MM/yyyy">
+				<reportElement x="439" y="99" width="100" height="20" uuid="dab1a487-53e0-44bc-acca-20c8349ef308"/>
+				<textElement>
+					<font fontName="THSarabun" size="16" isBold="true" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{time_receive}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="90" y="132" width="213" height="20" uuid="787402cb-b94f-4054-9e9f-b88fc775bede"/>
+				<textElement>
+					<font fontName="THSarabun" size="16" isBold="true" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{user_name}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="369" y="132" width="186" height="20" uuid="b1d34348-df4c-4afd-afa3-186db8cc6230"/>
+				<textElement>
+					<font fontName="THSarabun" size="16" isBold="true" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{user_pos}!=null&&!"".equals($F{user_pos})?$F{user_pos}:"................................................................................................................................................................................................"]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="355" y="50" width="200" height="17" forecolor="#000000" uuid="6d2b8997-528c-45c9-ac89-59b8f622cb21"/>
+				<textElement textAlignment="Right" verticalAlignment="Top">
+					<font fontName="THSarabun" size="14" isBold="true" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+				</textElement>
+				<text><![CDATA[(+66)2679 8855 , (+66)88022 9400-1]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="427" y="67" width="128" height="17" forecolor="#000000" uuid="6d2b8997-528c-45c9-ac89-59b8f622cb21"/>
+				<textElement textAlignment="Right" verticalAlignment="Top">
+					<font fontName="THSarabun" size="14" isBold="true" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+				</textElement>
+				<text><![CDATA[www.cubesofttech.com]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="202" y="0" width="352" height="50" forecolor="#000000" uuid="6d2b8997-528c-45c9-ac89-59b8f622cb21"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="THSarabun" size="14" isBold="true" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+				</textElement>
+				<text><![CDATA[ CubeSoftTech Co., Ltd.
+160/170-2, 12A Fl., ITF Silom Palace Building
+Silom Rd. Suriyawong, Bangrak, Bangkok 10500, Thailand]]></text>
+			</staticText>
+		</band>
+	</title>
+	<columnHeader>
+		<band height="20" splitType="Stretch">
+			<staticText>
+				<reportElement x="0" y="-1" width="45" height="20" uuid="52e680e3-ebda-4d19-a572-3c7b6c330af3"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="THSarabun" size="14" isBold="true" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+				</textElement>
+				<text><![CDATA[No.]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="338" y="-1" width="100" height="20" uuid="5008b0a8-caef-4a55-afba-4ee4d1af9faa"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="THSarabun" size="14" isBold="true" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+				</textElement>
+				<text><![CDATA[Product NO.]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="439" y="-1" width="116" height="20" uuid="bc82975b-efb3-4e09-945c-9119bb42cbfa"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="THSarabun" size="14" isBold="true" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+				</textElement>
+				<text><![CDATA[Remarks]]></text>
+			</staticText>
+			<line>
+				<reportElement x="0" y="0" width="555" height="1" uuid="c77259e1-79c2-4ed2-b024-3c89e80351ea"/>
+			</line>
+			<line>
+				<reportElement x="0" y="19" width="555" height="1" uuid="c77259e1-79c2-4ed2-b024-3c89e80351ea"/>
+			</line>
+			<line>
+				<reportElement x="0" y="0" width="1" height="19" uuid="c77259e1-79c2-4ed2-b024-3c89e80351ea"/>
+			</line>
+			<line>
+				<reportElement x="45" y="0" width="1" height="19" uuid="c77259e1-79c2-4ed2-b024-3c89e80351ea"/>
+			</line>
+			<line>
+				<reportElement x="338" y="0" width="1" height="19" uuid="c77259e1-79c2-4ed2-b024-3c89e80351ea"/>
+			</line>
+			<line>
+				<reportElement x="439" y="1" width="1" height="19" uuid="c77259e1-79c2-4ed2-b024-3c89e80351ea"/>
+			</line>
+			<line>
+				<reportElement x="554" y="0" width="1" height="19" uuid="c77259e1-79c2-4ed2-b024-3c89e80351ea"/>
+			</line>
+			<staticText>
+				<reportElement x="46" y="-1" width="293" height="20" uuid="23731539-0cb3-4a0a-a866-ecc8be472b27"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="THSarabun" size="14" isBold="true" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+				</textElement>
+				<text><![CDATA[Description]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="561" splitType="Stretch">
+			<property name="com.jaspersoft.studio.unit.height" value="px"/>
+			<textField>
+				<reportElement x="0" y="8" width="45" height="20" uuid="e22b154c-04d9-4ac5-b929-03209a73cc5b"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="THSarabun" size="16" isBold="true" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{COLUMN_COUNT}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="46" y="9" width="91" height="20" uuid="d15e8b15-2234-438d-bf51-24c8c6a98c7a"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="THSarabun" size="14" isBold="true" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+				</textElement>
+				<text><![CDATA[ชื่อรายการ: ]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="346" y="5" width="85" height="139" uuid="c13f8220-4380-4898-b00e-68de4684e48f"/>
+				<textElement textAlignment="Center">
+					<font fontName="THSarabun" size="16" isBold="true" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{product_number} != null && !$F{product_number}.isEmpty() ? $F{product_number} : ""]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="149" y="8" width="185" height="20" uuid="e8869027-a554-44b8-9a64-e17f0f82ed73"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="THSarabun" size="16" isBold="true" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{item_name}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="59" y="29" width="78" height="20" uuid="eff0ae25-b555-424b-ac46-3c4fccb28e34"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="THSarabun" size="14" isBold="true" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+				</textElement>
+				<text><![CDATA[รายละเอียด]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="149" y="28" width="185" height="116" uuid="1b1f86a7-4d6c-4a20-8e31-968871ae6f21"/>
+				<textElement verticalAlignment="Top">
+					<font fontName="THSarabun" size="16" isBold="true" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{details}]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement x="0" y="0" width="1" height="150" uuid="a0638b5e-607e-45dc-9beb-e3e176912ed0"/>
+			</line>
+			<line>
+				<reportElement x="45" y="0" width="1" height="150" uuid="a0638b5e-607e-45dc-9beb-e3e176912ed0"/>
+			</line>
+			<line>
+				<reportElement x="338" y="0" width="1" height="150" uuid="a0638b5e-607e-45dc-9beb-e3e176912ed0"/>
+			</line>
+			<line>
+				<reportElement x="439" y="0" width="1" height="150" uuid="a0638b5e-607e-45dc-9beb-e3e176912ed0"/>
+			</line>
+			<textField>
+				<reportElement x="448" y="5" width="100" height="139" uuid="53cdaf7c-b7d9-4788-91d9-f18f481d0a7c"/>
+				<textElement>
+					<font fontName="THSarabun" size="16" isBold="true" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{description} != null ? $F{description} : ""]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement x="0" y="150" width="1" height="407" uuid="a0638b5e-607e-45dc-9beb-e3e176912ed0">
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+				</reportElement>
+			</line>
+			<staticText>
+				<reportElement x="13" y="156" width="86" height="20" uuid="34be95a4-8700-44bc-9d39-5334f0c756e7"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="THSarabun" size="14" isBold="true" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+				</textElement>
+				<text><![CDATA[วันที่แลกของรางวัล:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="274" y="155" width="63" height="20" uuid="0b675435-8edb-44ca-978e-661bb56f2020"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="THSarabun" size="14" isBold="true" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+				</textElement>
+				<text><![CDATA[วันที่ส่งมอบ:]]></text>
+			</staticText>
+			<textField pattern="dd/MM/yyyy">
+				<reportElement x="338" y="155" width="122" height="20" uuid="6eb7a7b1-ec62-4c70-8012-6de549c3e86f"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="THSarabun" size="16" isBold="true" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{time_deliver} != null ? $F{time_deliver} : "..........................................................................................."]]></textFieldExpression>
+			</textField>
+			<textField pattern="dd/MM/yyyy">
+				<reportElement x="99" y="156" width="128" height="20" uuid="7ffc1a28-970a-44ab-8758-93caf5c29160"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="THSarabun" size="16" isBold="true" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{time_create}!=null?$F{time_create}:"..........................................................................."]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="13" y="179" width="76" height="20" uuid="ac717c18-3c84-4f92-95f4-fa056331c5a1"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="THSarabun" size="14" isBold="true" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+				</textElement>
+				<text><![CDATA[จํานวนโทเคน:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="274" y="179" width="92" height="20" uuid="3d12d8f6-3be4-4873-8f2c-3338a89eec6e"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="THSarabun" size="14" isBold="true" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+				</textElement>
+				<text><![CDATA[พร้อมจํานวนเงิน: ]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="13" y="202" width="76" height="20" uuid="b8fbb76a-2990-4ccb-a5a2-9fc68146521e"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="THSarabun" size="14" isBold="true" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+				</textElement>
+				<text><![CDATA[ติดต่อข้าพเจ้าได้ที่]]></text>
+			</staticText>
+			<textField isStretchWithOverflow="true">
+				<reportElement positionType="Float" x="99" y="200" width="448" height="20" uuid="787402cb-b94f-4054-9e9f-b88fc775bede"/>
+				<textElement>
+					<font fontName="THSarabun" size="16" isBold="true" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+					<paragraph lineSpacing="1_1_2"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{user_phone_number} == null ? "" : $F{user_phone_number}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="99" y="202" width="448" height="20" uuid="c123592b-249c-4095-9e6e-a456398264ba"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="THSarabun" size="16" isBold="true" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+				</textElement>
+				<text><![CDATA[......................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="13" y="226" width="535" height="20" uuid="7dbdf125-3000-4168-a873-a220da8a1f8a"/>
+				<textElement>
+					<font fontName="THSarabun" size="16" isBold="true" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+				</textElement>
+				<text><![CDATA[................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................]]></text>
+			</staticText>
+			<line>
+				<reportElement x="1" y="253" width="554" height="1" uuid="a0638b5e-607e-45dc-9beb-e3e176912ed0"/>
+			</line>
+			<line>
+				<reportElement x="554" y="151" width="1" height="406" uuid="a0638b5e-607e-45dc-9beb-e3e176912ed0"/>
+			</line>
+			<staticText>
+				<reportElement x="0" y="257" width="554" height="20" uuid="7dbdf125-3000-4168-a873-a220da8a1f8a"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="THSarabun" size="14" isBold="true" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+				</textElement>
+				<text><![CDATA[ทั้งสองฝ่ายทำการรับมอบและส่งมอบอุปกรณ์ตามรายงานข้างบนเป็นที่เรียบร้อยแล้วในสภาพที่ครบถ้วนทุกประการ]]></text>
+			</staticText>
+			<line>
+				<reportElement x="1" y="281" width="554" height="1" uuid="a0638b5e-607e-45dc-9beb-e3e176912ed0"/>
+			</line>
+			<line>
+				<reportElement x="1" y="150" width="554" height="1" uuid="a0638b5e-607e-45dc-9beb-e3e176912ed0"/>
+			</line>
+			<line>
+				<reportElement x="1" y="356" width="554" height="1" uuid="a0638b5e-607e-45dc-9beb-e3e176912ed0"/>
+			</line>
+			<line>
+				<reportElement x="1" y="381" width="554" height="1" uuid="a0638b5e-607e-45dc-9beb-e3e176912ed0"/>
+			</line>
+			<line>
+				<reportElement x="1" y="381" width="554" height="1" uuid="a0638b5e-607e-45dc-9beb-e3e176912ed0"/>
+			</line>
+			<line>
+				<reportElement x="275" y="282" width="1" height="124" uuid="a0638b5e-607e-45dc-9beb-e3e176912ed0">
+					<property name="com.jaspersoft.studio.unit.y" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+			</line>
+			<staticText>
+				<reportElement x="6" y="356" width="63" height="25" uuid="93db9f89-07b8-4a54-969b-b98fb119bb97"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="THSarabun" size="14" isBold="true" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+				</textElement>
+				<text><![CDATA[ผู้แลกของรางวัล]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="282" y="356" width="76" height="25" uuid="93db9f89-07b8-4a54-969b-b98fb119bb97"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="THSarabun" size="14" isBold="true" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+				</textElement>
+				<text><![CDATA[ผู้อนุมัติ]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="6" y="382" width="83" height="23" uuid="ea79a85f-43bf-4867-8255-312970369dbc"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="THSarabun" size="14" isBold="true" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+				</textElement>
+				<text><![CDATA[วันที่แลก]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="281" y="381" width="76" height="25" uuid="ea79a85f-43bf-4867-8255-312970369dbc"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="THSarabun" size="14" isBold="true" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+				</textElement>
+				<text><![CDATA[วันที่อนุมัติ]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="410" width="555" height="20" uuid="7dbdf125-3000-4168-a873-a220da8a1f8a"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="THSarabun" size="14" isBold="true" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+				</textElement>
+				<text><![CDATA[ทั้งสองฝ่ายทำการรับมอบและส่งมอบอุปกรณ์ตามรายงานข้างบนเป็นที่เรียบร้อยแล้วในสภาพที่ครบถ้วนทุกประการ]]></text>
+			</staticText>
+			<line>
+				<reportElement x="274" y="435" width="1" height="122" uuid="a0638b5e-607e-45dc-9beb-e3e176912ed0"/>
+			</line>
+			<staticText>
+				<reportElement x="282" y="509" width="76" height="25" uuid="93db9f89-07b8-4a54-969b-b98fb119bb97"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="THSarabun" size="14" isBold="true" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+				</textElement>
+				<text><![CDATA[ผู้ส่งมอบ]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="281" y="533" width="77" height="25" uuid="ea79a85f-43bf-4867-8255-312970369dbc"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="THSarabun" size="14" isBold="true" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+				</textElement>
+				<text><![CDATA[วันที่ส่งมอบ]]></text>
+			</staticText>
+			<line>
+				<reportElement x="1" y="406" width="554" height="1" uuid="a0638b5e-607e-45dc-9beb-e3e176912ed0"/>
+			</line>
+			<line>
+				<reportElement x="0" y="434" width="554" height="1" uuid="a0638b5e-607e-45dc-9beb-e3e176912ed0"/>
+			</line>
+			<line>
+				<reportElement x="0" y="510" width="554" height="1" uuid="a0638b5e-607e-45dc-9beb-e3e176912ed0"/>
+			</line>
+			<line>
+				<reportElement x="1" y="534" width="554" height="1" uuid="a0638b5e-607e-45dc-9beb-e3e176912ed0"/>
+			</line>
+			<staticText>
+				<reportElement x="6" y="510" width="63" height="23" uuid="93db9f89-07b8-4a54-969b-b98fb119bb97"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="THSarabun" size="14" isBold="true" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+				</textElement>
+				<text><![CDATA[ผู้รับของรางวัล]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="6" y="534" width="83" height="23" uuid="ea79a85f-43bf-4867-8255-312970369dbc"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="THSarabun" size="14" isBold="true" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+				</textElement>
+				<text><![CDATA[วันที่รับมอบ]]></text>
+			</staticText>
+			<line>
+				<reportElement x="0" y="557" width="555" height="1" uuid="a0638b5e-607e-45dc-9beb-e3e176912ed0"/>
+			</line>
+			<staticText>
+				<reportElement x="6" y="295" width="47" height="23" uuid="93db9f89-07b8-4a54-969b-b98fb119bb97"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="THSarabun" size="14" isBold="true" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+				</textElement>
+				<text><![CDATA[ลงนาม: ]]></text>
+			</staticText>
+			<image scaleImage="RetainShape" hAlign="Center">
+				<reportElement x="53" y="295" width="150" height="40" uuid="a1b2c3d4-e5f6-7890-abcd-ef1234567801">
+					<printWhenExpression><![CDATA[$F{user_receive_signature} != null]]></printWhenExpression>
+				</reportElement>
+				<imageExpression><![CDATA[$P{basePath} + $F{user_receive_signature}.replaceFirst("^/+", "").replace("/", java.io.File.separator)]]></imageExpression>
+			</image>
+			<staticText>
+				<reportElement x="282" y="295" width="47" height="23" uuid="93db9f89-07b8-4a54-969b-b98fb119bb97"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="THSarabun" size="14" isBold="true" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+				</textElement>
+				<text><![CDATA[ลงนาม: ]]></text>
+			</staticText>
+			<image scaleImage="RetainShape" hAlign="Center">
+				<reportElement x="329" y="295" width="150" height="40" uuid="a1b2c3d4-e5f6-7890-abcd-ef1234567802">
+					<printWhenExpression><![CDATA[$F{user_approve_signature} != null]]></printWhenExpression>
+				</reportElement>
+				<imageExpression><![CDATA[$P{basePath} + $F{user_approve_signature}.replaceFirst("^/+", "").replace("/", java.io.File.separator)]]></imageExpression>
+			</image>
+			<staticText>
+				<reportElement x="6" y="448" width="47" height="23" uuid="93db9f89-07b8-4a54-969b-b98fb119bb97"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="THSarabun" size="14" isBold="true" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+				</textElement>
+				<text><![CDATA[ลงนาม: ]]></text>
+			</staticText>
+			<image scaleImage="RetainShape" hAlign="Center">
+				<reportElement x="53" y="448" width="150" height="40" uuid="a1b2c3d4-e5f6-7890-abcd-ef1234567803">
+					<printWhenExpression><![CDATA[$F{user_receive_signature} != null]]></printWhenExpression>
+				</reportElement>
+				<imageExpression><![CDATA[$P{basePath} + $F{user_receive_signature}.replaceFirst("^/+", "").replace("/", java.io.File.separator)]]></imageExpression>
+			</image>
+			<staticText>
+				<reportElement x="281" y="448" width="47" height="23" uuid="93db9f89-07b8-4a54-969b-b98fb119bb97"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="THSarabun" size="14" isBold="true" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+				</textElement>
+				<text><![CDATA[ลงนาม: ]]></text>
+			</staticText>
+			<image scaleImage="RetainShape" hAlign="Center">
+				<reportElement x="328" y="448" width="150" height="40" uuid="a1b2c3d4-e5f6-7890-abcd-ef1234567804">
+					<printWhenExpression><![CDATA[$F{user_deliver_signature} != null]]></printWhenExpression>
+				</reportElement>
+				<imageExpression><![CDATA[$P{basePath} + $F{user_deliver_signature}.replaceFirst("^/+", "").replace("/", java.io.File.separator)]]></imageExpression>
+			</image>
+			<textField>
+				<reportElement x="79" y="358" width="175" height="20" uuid="787402cb-b94f-4054-9e9f-b88fc775bede"/>
+				<textElement>
+					<font fontName="THSarabun" size="16" isBold="true" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{user_receive_name} == null ? "" : $F{user_receive_name}]]></textFieldExpression>
+			</textField>
+			<textField pattern="dd/MM/yyyy">
+				<reportElement x="59" y="384" width="175" height="20" uuid="787402cb-b94f-4054-9e9f-b88fc775bede"/>
+				<textElement>
+					<font fontName="THSarabun" size="16" isBold="true" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{time_receive} == null ? "" : $F{time_receive}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="340" y="359" width="200" height="20" uuid="787402cb-b94f-4054-9e9f-b88fc775bede"/>
+				<textElement>
+					<font fontName="THSarabun" size="16" isBold="true" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{user_approve_name}== null ? "" : $F{user_approve_name}]]></textFieldExpression>
+			</textField>
+			<textField pattern="dd/MM/yyyy">
+				<reportElement x="340" y="384" width="175" height="20" uuid="787402cb-b94f-4054-9e9f-b88fc775bede"/>
+				<textElement>
+					<font fontName="THSarabun" size="16" isBold="true" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{time_approve}== null ? "" : $F{time_approve}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="80" y="511" width="172" height="20" uuid="787402cb-b94f-4054-9e9f-b88fc775bede"/>
+				<textElement>
+					<font fontName="THSarabun" size="16" isBold="true" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{user_receive_name} == null ? "" : $F{user_receive_name}]]></textFieldExpression>
+			</textField>
+			<textField pattern="dd/MM/yyyy">
+				<reportElement x="80" y="536" width="175" height="20" uuid="787402cb-b94f-4054-9e9f-b88fc775bede"/>
+				<textElement>
+					<font fontName="THSarabun" size="16" isBold="true" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{time_receive}== null ? "" :$F{time_receive}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="345" y="511" width="172" height="20" uuid="787402cb-b94f-4054-9e9f-b88fc775bede"/>
+				<textElement>
+					<font fontName="THSarabun" size="16" isBold="true" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{user_deliver_name} == null ? "" : $F{user_deliver_name}]]></textFieldExpression>
+			</textField>
+			<textField pattern="dd/MM/yyyy">
+				<reportElement x="345" y="536" width="175" height="20" uuid="787402cb-b94f-4054-9e9f-b88fc775bede"/>
+				<textElement>
+					<font fontName="THSarabun" size="16" isBold="true" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{time_deliver} == null ? "" : $F{time_deliver}]]></textFieldExpression>
+			</textField>
+			<break>
+				<reportElement x="0" y="560" width="100" height="1" uuid="e193d75e-7dbd-4c44-9142-17070bb5af25"/>
+			</break>
+			<textField>
+				<reportElement x="77" y="178" width="82" height="20" uuid="97376592-1977-4359-bab0-afcd78f55a74"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="THSarabun" size="16" isBold="true" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[new java.text.DecimalFormat("#,##0.##").format($F{token}) + " คิวบ์โทเคน"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="348" y="179" width="60" height="20" uuid="85be7618-c5c4-400c-a9dd-eca812485ba5"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="THSarabun" size="16" isBold="true" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[new java.text.DecimalFormat("#,##0.##").format($F{cash}) + " บาท"]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement x="554" y="0" width="1" height="150" uuid="acf157a4-f0ca-424f-bc10-ed0bae1ca28c">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+			</line>
+		</band>
+	</detail>
+</jasperReport>

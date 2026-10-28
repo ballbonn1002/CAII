@@ -725,6 +725,45 @@ public class ReportAction extends ActionSupport {
 
         return null;
     }
+    
+    public String redeemReport() {
+    	
+    	try {
+    		
+        	Integer redeemId = Integer.parseInt(request.getParameter("redeemId"));
+        	
+        	ServletContext context = request.getServletContext();
+            String jasperPath = context.getRealPath(JASPERPATH);
+            String imagePath = context.getRealPath(IMAGEPATH);
+            String serverPath = context.getRealPath("/");
+            
+            Map<String, Object> reportParameter = new HashMap<>();
+            
+            File logo = new File(imagePath + "/logo_cubesofttech.png");
+            BufferedImage logoimage = ImageIO.read(logo);
+            reportParameter.put(LOGOPATH, logoimage);
+            reportParameter.put("redeemId", redeemId);
+            reportParameter.put("basePath", serverPath);
+            
+			ReportUtil.printReportToBrowsePdf(
+				jasperPath + "/",
+				"redeemReport",
+				"redeemReport.pdf",
+				reportParameter,
+				request,
+				response
+			);
+			
+            return null;
+            
+		} catch (Exception e) {
+			
+			log.error("Error in redeemReport: " + e.getMessage());
+			return ERROR;
+			
+		}
+    	
+    }
 
     // Helper method โหลดรูปลายเซ็นจาก User
     private BufferedImage loadSignatureImage(String serverPath, User user) {

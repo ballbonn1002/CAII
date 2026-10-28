@@ -22,12 +22,15 @@ public class ItemPrivilege {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "item_id")
 	private Integer itemId;
+	
+	@Column(name = "product_id")
+	private Integer productId;
 
 	// ==========================================
 	// Item Information
 	// ==========================================
 
-	@Column(name = "item_name", length = 32, nullable = false)
+	@Column(name = "item_name", length = 128, nullable = false)
 	private String itemName;
 
 	@Column(name = "details", length = 1024)
@@ -106,6 +109,14 @@ public class ItemPrivilege {
 		this.itemId = itemId;
 	}
 
+	public Integer getProductId( ) {
+		return productId;
+	}
+	
+	public void setProductId(Integer productId) {
+		this.productId = productId;
+	}
+	
 	public String getItemName() {
 		return itemName;
 	}

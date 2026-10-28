@@ -743,7 +743,7 @@
 										</i>
 									</div>
 
-									<span class="fw-bold text-gray-800 fs-5" id="employeeInfo">
+									<span class="fw-normal text-gray-900 fs-4" id="employeeInfo">
 										- </span>
 								</div>
 								<!--end::User-->
@@ -756,7 +756,7 @@
 										class="path6"></span>
 									</i>
 
-									<div class="text-gray-800 fs-6" id="returnTokenAction">-
+									<div class="text-gray-800 fw-normal fs-5" id="returnTokenAction">-
 									</div>
 								</div>
 								<!--end::Activity Type-->
@@ -787,18 +787,18 @@
 											</i>
 
 											<div class="fw-medium text-gray-800 fs-6 lh-lg">
-												Description: <span id="actionType"></span>
-												<span id="returnTokenDescription"></span>
+												Description: <span id="actionType"></span> <span
+													id="returnTokenDescription"></span>
 											</div>
 
 											<div class="ms-2">
 												<span class="badge p-2 badge-light-primary d-none"
 													id="referenceBadge"></span>
 											</div>
-											
-											<div class="d-flex align-items-center ms-2 fs-6 fw-normal text-gray-700" id="eventDate">
-												
-											</div>
+
+											<div
+												class="d-flex align-items-center ms-2 fs-6 fw-normal text-gray-700"
+												id="eventDate"></div>
 
 										</div>
 										<!--end::Description-->
@@ -909,8 +909,7 @@
 							<div class="modal-body pt-7 px-8">
 
 								<!--begin::User-->
-								<div
-									class="d-flex align-items-center pb-5 border-bottom border-bottom-dashed border-gray-300">
+								<div class="d-flex align-items-center mb-8">
 
 									<div class="me-3">
 										<i class="ki-duotone ki-user-square fs-2 text-gray-400"> <span
@@ -919,63 +918,41 @@
 										</i>
 									</div>
 
-									<span class="fw-medium text-gray-900 fs-5"
+									<span class="fw-normal text-gray-900 fs-4"
 										id="rewardTokenUserName"> - </span>
+
+									<div
+										class="d-flex align-items-center ms-auto text-primary gap-3">
+										<span class="fw-bold fs-4" id="rewardCurrentBalance">0</span>
+										<i class="ki-duotone ki-cube-3 fs-1 text-primary"> <span
+											class="path1"></span> <span class="path2"></span>
+										</i>
+									</div>
 
 								</div>
 								<!--end::User-->
 
 
 								<!--begin::Reward Section-->
-								<div class="pt-5">
+								<div class="mb-8">
 
-									<!--begin::Label-->
-									<div class="d-flex align-items-center mb-2">
-
-										<span class="fw-bold text-gray-800 fs-6"> Reward Cube
-											Token </span> <i class="ki-duotone ki-crown-2 fs-3 ms-2"> <span
-											class="path1"></span> <span class="path2"></span> <span
-											class="path3"></span> <span class="path4"></span> <span
-											class="path5"></span> <span class="path6"></span>
-										</i>
-
-									</div>
-									<!--end::Label-->
-
-
-									<!--begin::Current Balance-->
-									<div class="text-gray-700 fw-normal fs-5 mb-4">
-
-										Current Balance: <span class="fw-normal text-gray-800">
-											<span id="rewardCurrentBalance">39</span> Cube Token
-										</span>
-
-									</div>
-									<!--end::Current Balance-->
-
+									<label for="rewardTokenAmount" class="required form-label">Input
+										Reward</label>
 
 									<!--begin::Token Input-->
 									<div class="input-group">
-
 										<input type="number" class="form-control form-control-lg"
 											id="rewardTokenAmount" min="1" value="1"
 											placeholder="Enter token amount" /> <span
 											class="input-group-text px-7"> Token </span>
-
 									</div>
 									<!--end::Token Input-->
 
 								</div>
 								<!--end::Reward Section-->
 
-
-								<!--begin::Divider-->
-								<div class="separator separator-dashed my-6"></div>
-								<!--end::Divider-->
-
-
 								<!--begin::Reason-->
-								<div class="mb-5">
+								<div class="mb-8">
 
 									<label class="form-label fw-medium text-gray-800">
 
@@ -988,18 +965,6 @@
 
 								</div>
 								<!--end::Reason-->
-
-
-								<!--begin::Receive Preview-->
-								<div
-									class="d-inline-flex align-items-center px-3 py-3 border border-dashed border-gray-300 rounded">
-
-									<span class="text-success fw-semibold fs-6"> Receive: </span> <span
-										class="fw-normal text-gray-600 fs-7 ms-1"
-										id="rewardReceiveAmount"> 2 Cube Token </span>
-
-								</div>
-								<!--end::Receive Preview-->
 
 							</div>
 							<!--end::Modal Body-->
@@ -1029,6 +994,7 @@
 		</div>
 	</div>
 	<script>
+	
 	
 		const iconMap = {
 				'gift': 'ki-award text-success',
@@ -1159,7 +1125,7 @@
 		    	$("#actionType").text("หัก").attr("class", "fw-semibold text-danger");
 		    }
 		    
-		    $("#employeeInfo").text("${userInfo.employee_id} - ${userInfo.name_en}");
+		    $("#employeeInfo").text("${userInfo.employee_id} - ${userInfo.name_en} - ${userInfo.name_th}"); 
 
 		    $("#transactionId").val(transaction.id);
 		    
@@ -1208,7 +1174,7 @@
 		
 		function openRewardTokenModal() {
 
-		    $("#rewardTokenUserName").text("${userInfo.employee_id} - ${userInfo.name_en}");
+		    $("#rewardTokenUserName").text("${userInfo.employee_id} - ${userInfo.name_en} - ${userInfo.name_th}");
 		    $("#rewardCurrentBalance").text(userCurrentMonthlyBalance);
 
 		    $("#rewardTokenAmount").val(1);
@@ -1349,6 +1315,17 @@
 						const isCurrentMonth =
 						    monthNumber === currentMonth &&
 						    Number(year) === currentYear;
+						
+						const transactionYear = Number(year);
+						const transactionMonth = Number(monthNumber);
+
+						const currentMonthIndex = currentYear * 12 + currentMonth;
+						const transactionMonthIndex = transactionYear * 12 + transactionMonth;
+
+						const canReturn =
+							transactionYear === currentYear &&
+						    transactionMonthIndex >= currentMonthIndex - 1 &&
+						    transactionMonthIndex <= currentMonthIndex;
 
 						const summary = month.summary || {};
 						const transactions = month.transactions || [];
@@ -1436,13 +1413,13 @@
 
 											<table
 												id="\${tableId}"
-												class="table table-striped table-row-bordered gy-5">
+												class="table align-middle table-striped table-row-bordered gy-5">
 
 												<thead>
 													<tr class="fw-semibold fs-7 text-gray-500 text-uppercase">
 
 														<th class="ps-4" style="min-width: 150px">Activity</th>
-														<th style="min-width: 150px">Date</th>
+														<th style="min-width: 150px">Transaction Date</th>
 														<th style="min-width: 170px">Description</th>
 														<th class="text-end" style="min-width: 150px">Get Token</th>
 														<th class="text-end" style="min-width: 150px">Deduct Token</th>
@@ -1508,7 +1485,7 @@
 																</td>
 																
 																<td class="text-end pe-4">
-																    \${!tx.returned &&  isCurrentMonth && (
+																    \${!tx.returned &&  canReturn && (
 																    	    !isAdd || tx.actionName.toLowerCase() === 'reward'
 																    )
 																        ? `
@@ -1592,7 +1569,7 @@
 		
 		function renderDescription(description) {
 
-			if (!description || description.trim() === "") return "-";
+			if (!description) return "-";
 			
 			let data = description;
 			
@@ -1610,7 +1587,7 @@
 			
 			switch (type) {
                 case "add":
-                    return `<div class="d-flex flex-column gap-2">
+                    return `<div class="d-flex flex-column gap-3">
                     			<div class="fw-normal text-gray-700 fs-6">
                     				<span class="\${action === 'return' ? 'text-info' : 'text-success'}">\${action === 'return' ? 'คืนแต้ม' : 'ได้รับ'}</span> \${reason}
                     			</div>
@@ -1620,17 +1597,59 @@
                     	`;	
                     
                 case "deduct":
-                    return `<div class="d-flex flex-column gap-2">
-			        			<div class="fw-normal text-gray-700 fs-6">
-				    				<span class="text-danger">หัก</span> \${reason}
-				    			</div>
-				    			\${referenceId ? `<div><span class="badge badge-lg badge-light-primary p-2">#\${referenceId}</span></div>` : ''}
-				    			\${eventDate ? `<div><span class="fw-normal fs-6 text-gray-700">\${eventDate}</span></div>` : ''}
-				    		</div>
-				    	`;	
+                	
+                	if (action === "leave") {
+
+                		const startDate = data.startDate || null;
+                		const endDate = data.endDate || null;
+                		
+                		const formatDate = (dateStr) => {
+                		    if (!dateStr) return null;
+                		    const date = new Date(dateStr);
+                		    const options = { day: 'numeric', month: 'short' };
+                		    return date.toLocaleDateString('en-US', options);
+                		};
+                		
+                		const displayDate = startDate === endDate ? formatDate(startDate) : `\${formatDate(startDate)} - \${formatDate(endDate)}`; 
+                		
+                		const halfDayLabels = {
+                		        "0": "เต็มวัน",
+                		        "1": "ครึ่งวัน",
+                		        "2": "ครึ่งวัน",
+                		        "3": "ตามช่วงเวลา"
+                		    };
+
+               		    const halfDay = data.halfDay != null
+                		        ? String(data.halfDay)
+                		        : null;
+
+               		    const leaveLabel = halfDayLabels[halfDay] || "";
+
+                		return `<div class="d-flex flex-column gap-2">
+				        			<div class="fw-normal text-gray-700 fs-6">
+					    				<span class="text-danger">หัก</span> \${reason} 
+					    				<span class="text-primary">\${leaveLabel}</span>
+					    				<span>\${displayDate ? `\${displayDate}` : ''}</span>
+					    			</div>
+					    			\${referenceId ? `<div><span class="badge badge-lg badge-light-primary p-2">#\${referenceId}</span></div>` : ''}
+					    		</div>
+						    	`;	
+                	}
+                	
+                	else {
+
+                		return `<div class="d-flex flex-column gap-2">
+				        			<div class="fw-normal text-gray-700 fs-6">
+					    				<span class="text-danger">หัก</span> \${reason}
+					    			</div>
+					    			\${referenceId ? `<div><span class="badge badge-lg badge-light-primary p-2">#\${referenceId}</span></div>` : ''}
+					    			\${eventDate ? `<div><span class="fw-normal fs-6 text-gray-700">\${eventDate}</span></div>` : ''}
+					    		</div>
+				    			`;	
+					}
 				    	
                 case "void":
-                    return `<div class="d-flex flex-column gap-2">
+                    return `<div class="d-flex flex-column gap-3">
 			        			<div>
 				    				<span class="text-info">ยกเลิก</span> การแจกแต้ม \${reason}
 				    			</div>
@@ -1641,6 +1660,7 @@
                 default:
                     return "-";
             }
+			
 		}
 		
 		function renderTokenSummary(summary) {
@@ -1930,20 +1950,20 @@
 		}
 		
 		function formatToken(value) {
+		    if (value === null || value === undefined) {
+		        return "0";
+		    }
 
-			if (value === null || value === undefined) {
-				return "0";
-			}
+		    const number = Number(value);
 
-			const number = Number(value);
+		    if (Number.isNaN(number)) {
+		        return "0";
+		    }
 
-			if (Number.isNaN(number)) {
-				return "0";
-			}
-
-			return Number.isInteger(number)
-				? number.toString()
-				: number.toFixed(2);
+		    return number.toLocaleString("en-US", {
+		        minimumFractionDigits: 0,
+		        maximumFractionDigits: 2
+		    });
 		}
 
 

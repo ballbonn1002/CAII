@@ -13,10 +13,18 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.log4j.Logger;
 import org.apache.struts2.ServletActionContext;
+import org.hibernate.ObjectNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.cubesofttech.dao.DocStatusDAO;
+import com.cubesofttech.dao.ProductDAO;
+import com.cubesofttech.dao.UserDAO;
+import com.cubesofttech.model.DocStatus;
 import com.cubesofttech.model.ItemPrivilege;
+import com.cubesofttech.model.Product;
+import com.cubesofttech.model.TokenMonthlyLog;
 import com.cubesofttech.model.User;
+import com.cubesofttech.model.UserRedeem;
 import com.cubesofttech.service.CubeTokenService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.opensymphony.xwork2.ActionSupport;
@@ -62,12 +70,31 @@ public class CubeTokenAction extends ActionSupport {
 	private String removedAdditionalImages;
 
 	private List<ItemPrivilege> itemPrivileges;
+	private List<Product> products;
+	private Integer productId;
 	private ItemPrivilege item;
 
 	private int year;
 
+	private Integer logId;
+
+	private Integer redeemId;
+	private String statusCode;
+	private File signature;
+	private String signatureFileName;
+	private String signatureContentType;
+
 	@Autowired
 	private CubeTokenService cubeTokenService;
+
+	@Autowired
+	private ProductDAO productDAO;
+
+	@Autowired
+	private DocStatusDAO docStatusDAO;
+
+	@Autowired
+	private UserDAO userDAO;
 
 	public String cubetokenManagementPage() {
 
@@ -87,6 +114,70 @@ public class CubeTokenAction extends ActionSupport {
 			return ERROR;
 
 		}
+	}
+
+	public String cubeTokenLogs() {
+
+		return SUCCESS;
+
+	}
+
+	public String getCubeTokenMonthlyLogs() {
+
+		try {
+
+			if (year <= 0) {
+				year = LocalDate.now().getYear();
+			}
+
+			List<TokenMonthlyLog> logs = cubeTokenService.getAllTokenMonthlyLogsByYear(year);
+			writeSuccessResponse(logs, HttpServletResponse.SC_OK, "Cube Token Monthly Logs retrieved successfully");
+
+		} catch (Exception e) {
+
+			log.error("Error in getCubeTokenMonthlyLogs: " + e.getMessage(), e);
+			writeErrorResponse(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Internal server error");
+
+		}
+
+		return NONE;
+
+	}
+
+	public String cubeTokenLogDetail() {
+
+		try {
+
+			List<Map<String, Object>> logDetail = cubeTokenService.getTokenMonthlyLogDetailsByLogId(logId);
+			request.setAttribute("detail", logDetail);
+
+			return SUCCESS;
+
+		} catch (Exception e) {
+
+			log.error("Error in cubeTokenLogs: " + e.getMessage(), e);
+			return ERROR;
+
+		}
+
+	}
+
+	public String retryDistributeMonthlyToken() {
+
+		try {
+
+			cubeTokenService.retryFailedTokenDistribution(logId);
+
+			writeSuccessResponse(null, HttpServletResponse.SC_OK,
+					"Retry of failed token distribution initiated successfully");
+
+		} catch (Exception e) {
+
+			log.error("Error in retryDistributeMonthlyToken: " + e.getMessage(), e);
+			writeErrorResponse(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Internal server error");
+		}
+
+		return NONE;
 	}
 
 	public String returnCubeTokenPage() {
@@ -138,7 +229,7 @@ public class CubeTokenAction extends ActionSupport {
 		try {
 
 			itemPrivileges = cubeTokenService.getAllRewardItems();
-			
+
 			return SUCCESS;
 
 		} catch (Exception e) {
@@ -151,18 +242,185 @@ public class CubeTokenAction extends ActionSupport {
 	}
 
 	public String privilegePage() {
-
-		return SUCCESS;
+		
+		try {
+			
+			User user = (User) session.getAttribute("user");
+			userInfo = cubeTokenService.getUserInfo(user.getId());
+			
+			return SUCCESS;
+			
+		} catch (Exception e) {
+			
+			log.error("Error in privilegePage: " + e.getMessage(), e);
+			return ERROR;
+		}
 
 	}
 
-	public String getRewardItemList() {
+	public String privilegeHistoryManagementPage() {
+
+		try {
+
+			List<Map<String, Object>> redeemList = cubeTokenService.getAllUserRedeemHistory();
+
+			request.setAttribute("redeemList", redeemList);
+			return SUCCESS;
+		} catch (Exception e) {
+
+			log.error("Error in privilegeHistoryManagementPage: " + e.getMessage(), e);
+			return ERROR;
+		}
+
+	}
+
+	public String privilegeHistoryPage() {
 
 		try {
 
 			User user = (User) session.getAttribute("user");
+
+			List<Map<String, Object>> redeemList = cubeTokenService.getUserRedeemHistory(user.getId());
+
+			request.setAttribute("redeemList", redeemList);
+			return SUCCESS;
+
+		} catch (Exception e) {
+
+			log.error("Error in privilegeHistoryPage: " + e.getMessage(), e);
+			return ERROR;
+
+		}
+
+	}
+
+	public String editRedeem() {
+
+		try {
+
+			User onlineUser = (User) session.getAttribute("user");
 			
+			Map<String, Object> redeem = cubeTokenService.getUserRedeemById(redeemId);
+			ItemPrivilege item = cubeTokenService.getRewardItemById(Integer.valueOf(redeem.get("itemId").toString()));
+			List<DocStatus> statusList = docStatusDAO.findByPage("cube token");
+			User user = userDAO.findById(redeem.get("userId").toString());
+			Product product;
+
+			if (item.getProductId() != null) {
+				product = productDAO.findById(item.getProductId());
+			} else {
+				product = null;
+			}
+
+			Map<String, Map<String, String>> statusMap = new LinkedHashMap<>();
+
+			for (DocStatus status : statusList) {
+
+				Map<String, String> statusInfo = new LinkedHashMap<>();
+				statusInfo.put("statusName", status.getStatusName());
+				statusInfo.put("color", status.getColor());
+
+				statusMap.put(status.getStatusCode(), statusInfo);
+			}
+
+			Set<String> userAuthority = (Set<String>) session.getAttribute("userAuthority");
+
+			boolean canEditRedeem = userAuthority != null && userAuthority.contains("redeem.edit");
+			boolean isOwner = onlineUser.getId().equals(redeem.get("userId").toString());
+			Map<String, Object> userInfo = new LinkedHashMap<>();
+			
+			userInfo.put("id", user.getId());
+			userInfo.put("employeeId", user.getEmployeeId());
+			userInfo.put("name", user.getNameEN());
+			userInfo.put("signaturePath", user.getPathSignature());
+			
+			ObjectMapper mapper = new ObjectMapper();
+
+			request.setAttribute("redeem", redeem);
+			request.setAttribute("user", user);
+			request.setAttribute("item", item);
+			request.setAttribute("userJSON", mapper.writeValueAsString(userInfo));
+			request.setAttribute("productJSON", product != null ? mapper.writeValueAsString(product) : "null");
+			request.setAttribute("itemJSON", mapper.writeValueAsString(item));
+			request.setAttribute("redeemJSON", mapper.writeValueAsString(redeem));
+			request.setAttribute("statusMapJSON", mapper.writeValueAsString(statusMap));
+			request.setAttribute("canEditRedeem", canEditRedeem);
+			request.setAttribute("isOwner", isOwner);
+
+			return SUCCESS;
+
+		}
+
+		catch (Exception e) {
+
+			log.error("Error in editRedeem: " + e.getMessage(), e);
+
+			return ERROR;
+
+		}
+	}
+
+	public String updateRedeemStatus() {
+
+		try {
+
+			Set<String> userAuthority = (Set<String>) session.getAttribute("userAuthority");
+
+			if (statusCode == null || statusCode.trim().isEmpty()) {
+				throw new IllegalArgumentException("Status code is required");
+			}
+
+			boolean hasRedeemEdit = userAuthority != null && userAuthority.contains("redeem.edit");
+
+			if (!hasRedeemEdit && !"4".equals(statusCode)) {
+				throw new IllegalArgumentException("User does not have permission to update redeem requests");
+			}
+
+			User user = (User) session.getAttribute("user");
+
+			cubeTokenService.updateRedeemStatus(redeemId, statusCode, reason, signature, user.getId(), request.getServletContext().getRealPath("/"));
+
+			writeSuccessResponse(null, HttpServletResponse.SC_OK, "Redeem status updated successfully");
+
+		} catch (IllegalArgumentException e) {
+
+			log.error("Invalid input: " + e.getMessage(), e);
+			writeErrorResponse(HttpServletResponse.SC_BAD_REQUEST, e.getMessage());
+
+		} catch (Exception e) {
+
+			log.error("Error in changeRedeemStatus: " + e.getMessage(), e);
+			writeErrorResponse(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Internal server error");
+		}
+
+		return NONE;
+	}
+
+	public String getRewardItemWithFavoriteList() {
+
+		try {
+
+			User user = (User) session.getAttribute("user");
+
 			List<Map<String, Object>> items = cubeTokenService.getAllRewardItemsWithFavoriteStatus(user.getId());
+
+			writeSuccessResponse(items, HttpServletResponse.SC_OK, "Reward item list retrieved successfully");
+
+		} catch (Exception e) {
+
+			log.error("Error in getRewardItemList: " + e.getMessage(), e);
+			writeErrorResponse(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Internal server error");
+
+		}
+
+		return NONE;
+	}
+	
+	public String getRewardItemList() {
+
+		try {
+
+			List<ItemPrivilege> items = cubeTokenService.getAllRewardItems();
 
 			writeSuccessResponse(items, HttpServletResponse.SC_OK, "Reward item list retrieved successfully");
 
@@ -177,7 +435,19 @@ public class CubeTokenAction extends ActionSupport {
 	}
 
 	public String createRewardItem() {
-		return SUCCESS;
+
+		try {
+
+			products = productDAO.findAll();
+			return SUCCESS;
+
+		} catch (Exception e) {
+
+			log.error("Error in createRewardItem: " + e.getMessage(), e);
+			return ERROR;
+
+		}
+
 	}
 
 	public String editRewardItem() {
@@ -187,6 +457,10 @@ public class CubeTokenAction extends ActionSupport {
 			Integer itemId = Integer.valueOf(request.getParameter("itemId"));
 
 			item = cubeTokenService.getRewardItemById(itemId);
+			products = productDAO.findAll();
+			List<Map<String, Object>> redeemHistory = cubeTokenService.getRedeemHistoryByItemId(itemId);
+			
+			request.setAttribute("redeemHistory", redeemHistory);
 
 			return SUCCESS;
 
@@ -206,56 +480,56 @@ public class CubeTokenAction extends ActionSupport {
 		}
 
 	}
-	
+
 	public String redeemRewardItem() {
-		
+
 		try {
-			
+
 			User user = (User) session.getAttribute("user");
-			
-			cubeTokenService.redeemRewardItem(user.getId(), itemId);
-			
+
+			cubeTokenService.redeemRewardItem(user, itemId);
+
 			writeSuccessResponse(null, HttpServletResponse.SC_CREATED, "Reward item redeemed successfully");
-			
+
 		} catch (IllegalArgumentException e) {
 
 			log.error("Invalid input: " + e.getMessage(), e);
 			writeErrorResponse(HttpServletResponse.SC_BAD_REQUEST, e.getMessage());
-			
-		} 
-		
+
+		}
+
 		catch (Exception e) {
 
 			log.error("Error in redeemRewardItem: " + e.getMessage(), e);
 			writeErrorResponse(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Internal server error");
 		}
-		
+
 		return NONE;
 	}
 	
 	public String toggleFavorite() {
 
-	    try {
-	    	
-	        User user  = (User) session.getAttribute("user");
-	        String userId = user.getId();
+		try {
 
-	        boolean favorite = cubeTokenService.toggleFavorite(userId, itemId);
+			User user = (User) session.getAttribute("user");
+			String userId = user.getId();
 
-	        writeSuccessResponse(favorite, HttpServletResponse.SC_OK, "Favorite status toggled successfully");
+			boolean favorite = cubeTokenService.toggleFavorite(userId, itemId);
 
-	    } catch (IllegalArgumentException e) {
-	        log.error("Invalid input: " + e.getMessage(), e);
-	        writeErrorResponse(HttpServletResponse.SC_BAD_REQUEST, e.getMessage());
-	    } 
-	    
-	    catch (Exception e) {
-	        log.error(e.getMessage(), e);
-	        writeErrorResponse(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Internal server error");
-	    }
+			writeSuccessResponse(favorite, HttpServletResponse.SC_OK, "Favorite status toggled successfully");
 
-	    return NONE;
-	    
+		} catch (IllegalArgumentException e) {
+			log.error("Invalid input: " + e.getMessage(), e);
+			writeErrorResponse(HttpServletResponse.SC_BAD_REQUEST, e.getMessage());
+		}
+
+		catch (Exception e) {
+			log.error(e.getMessage(), e);
+			writeErrorResponse(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Internal server error");
+		}
+
+		return NONE;
+
 	}
 
 	public String myCubeTokenPage() {
@@ -290,7 +564,7 @@ public class CubeTokenAction extends ActionSupport {
 
 			userInfo = cubeTokenService.getUserInfo(user.getId());
 			userInfo.put("currentBalance",
-					cubeTokenService.getUserAccumulatedBalanceByYear(user.getId(), LocalDate.now().getYear()));
+					cubeTokenService.getUserYearlyTokenBalance(user.getId(), LocalDate.now().getYear()));
 
 			return SUCCESS;
 
@@ -448,7 +722,7 @@ public class CubeTokenAction extends ActionSupport {
 
 		} catch (Exception e) {
 
-			log.error("Error in someMethod: ", e);
+			log.error("Error in getTokenSummaryForAllUsers: ", e);
 
 			Map<String, Object> errorResult = new LinkedHashMap<>();
 
@@ -861,8 +1135,6 @@ public class CubeTokenAction extends ActionSupport {
 				year = LocalDate.now().getYear();
 			}
 
-			System.out.println(year);
-
 			List<Map<String, Object>> data = cubeTokenService.getTop10AccumulatedTokenBalance(year);
 			writeSuccessResponse(data, HttpServletResponse.SC_OK,
 					"Top 10 accumulated token balance retrieved successfully");
@@ -1020,15 +1292,9 @@ public class CubeTokenAction extends ActionSupport {
 
 			cubeTokenService.createRewardItem(itemName, itemToken, itemAddedMoney, itemQuantity, itemDescription,
 					effectiveDate, cover, activeFlag, coverFileName, additionalImages, additionalImagesFileName,
-					user.getId(), request.getServletContext().getRealPath("/"));
+					user.getId(), request.getServletContext().getRealPath("/"), productId);
 
-			response.setStatus(HttpServletResponse.SC_CREATED);
-
-			Map<String, Object> result = new LinkedHashMap<>();
-			result.put("success", true);
-			result.put("message", "Reward item created successfully");
-
-			new ObjectMapper().writeValue(response.getWriter(), result);
+			writeSuccessResponse(null, HttpServletResponse.SC_CREATED, "Reward item created successfully");
 
 		} catch (IllegalArgumentException e) {
 
@@ -1055,15 +1321,9 @@ public class CubeTokenAction extends ActionSupport {
 			cubeTokenService.updateRewardItem(itemId, itemName, itemToken, itemAddedMoney, itemQuantity,
 					itemDescription, effectiveDate, activeFlag, cover, coverFileName, additionalImages,
 					additionalImagesFileName, removedAdditionalImages, user.getId(),
-					request.getServletContext().getRealPath("/"));
+					request.getServletContext().getRealPath("/"), productId);
 
-			response.setStatus(HttpServletResponse.SC_OK);
-
-			Map<String, Object> result = new LinkedHashMap<>();
-			result.put("success", true);
-			result.put("message", "Reward item updated successfully");
-
-			new ObjectMapper().writeValue(response.getWriter(), result);
+			writeSuccessResponse(null, HttpServletResponse.SC_OK, "Reward item updated successfully");
 
 		} catch (IllegalArgumentException e) {
 
@@ -1371,6 +1631,41 @@ public class CubeTokenAction extends ActionSupport {
 
 	public void setYear(int year) {
 		this.year = year;
+	}
+
+	public List<Product> getProducts() {
+		return products;
+	}
+
+	public void setProductId(int productId) {
+		this.productId = productId;
+	}
+
+	public void setLogId(Integer logId) {
+		this.logId = logId;
+	}
+
+	public void setRedeemId(Integer redeemId) {
+		this.redeemId = redeemId;
+	}
+
+	public void setStatusCode(String statusCode) {
+		this.statusCode = statusCode;
+	}
+	
+
+	public void setSignature(File signature) {
+		this.signature = signature;
+	}
+
+
+	public void setSignatureFileName(String signatureFileName) {
+		this.signatureFileName = signatureFileName;
+	}
+
+
+	public void setSignatureContentType(String signatureContentType) {
+		this.signatureContentType = signatureContentType;
 	}
 
 }

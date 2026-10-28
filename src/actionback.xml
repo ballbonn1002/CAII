@@ -1918,6 +1918,30 @@
 			<result name="error">/pages-back/common/error/error_500.jsp</result>
 		</action>
 		
+		<action name="cubeTokenLogs"
+			class="com.cubesofttech.action.CubeTokenAction" method="cubeTokenLogs">
+			<result name="success" type="tiles">cubeTokenLogPage</result>
+			<result name="login" type="redirect">/index.jsp</result>
+			<result name="error">/pages-back/common/error/error_500.jsp</result>
+		</action>
+		
+		<action name="getCubeTokenMonthlyLogs"
+			class="com.cubesofttech.action.CubeTokenAction" method="getCubeTokenMonthlyLogs">
+		</action>
+		
+		<action name="cubeTokenLogDetail"
+			class="com.cubesofttech.action.CubeTokenAction" method="cubeTokenLogDetail">
+			<result name="success" type="tiles">cubeTokenLogDetail</result>
+			<result name="login" type="redirect">/index.jsp</result>
+			<result name="error">/pages-back/common/error/error_500.jsp</result>
+		</action>
+		
+		<action name="retryDistributeMonthlyToken"
+			class="com.cubesofttech.action.CubeTokenAction" method="retryDistributeMonthlyToken">
+		</action>
+		
+		
+		
 		<action name="getTokenSummaryForAllUsers"
         class="com.cubesofttech.action.CubeTokenAction"
         method="getTokenSummaryForAllUsers" />
@@ -1937,7 +1961,30 @@
 			<result name="error">/pages-back/common/error/error_500.jsp</result>
 		</action>
 		
-		<action name="getRewardItemList"
+		
+		<action name="privilegeHistory"
+			class="com.cubesofttech.action.CubeTokenAction" method="privilegeHistoryPage">
+			<result name="success" type="tiles">privilegeHistory</result>
+			<result name="error">/pages-back/common/error/error_500.jsp</result>
+		</action>
+		
+		<action name="privilegeHistoryManagement"
+			class="com.cubesofttech.action.CubeTokenAction" method="privilegeHistoryManagementPage">
+			<result name="success" type="tiles">privilegeHistoryManagement</result>
+			<result name="error">/pages-back/common/error/error_500.jsp</result>
+		</action>
+		
+		<action name="editRedeem"
+			class="com.cubesofttech.action.CubeTokenAction" method="editRedeem">
+			<result name="success" type="tiles">editRedeem</result>
+			<result name="error">/pages-back/common/error/error_500.jsp</result>
+		</action>
+		
+		<action name="getRewardItemWithFavoriteList"
+        class="com.cubesofttech.action.CubeTokenAction"
+        method="getRewardItemWithFavoriteList" />
+        
+        <action name="getRewardItemList"
         class="com.cubesofttech.action.CubeTokenAction"
         method="getRewardItemList" />
         
@@ -1998,6 +2045,14 @@
         <action name="deleteRewardItem"
         class="com.cubesofttech.action.CubeTokenAction"
         method="deleteRewardItem" />
+        
+        <action name="updateRedeemStatus"
+		class="com.cubesofttech.action.CubeTokenAction"
+		method="updateRedeemStatus" />
+		
+		<action name="cancelRedeemRequest"
+		class="com.cubesofttech.action.CubeTokenAction"
+		method="updateRedeemStatus" />
 
 		<!-- ========================== Work Log ============================== -->
 		<action name="work_log"
@@ -2038,6 +2093,11 @@
 
 		<action name="borrowReport"
 			class="com.cubesofttech.action.ReportAction" method="borrowReport">
+			<result name="error">/index.jsp</result>
+		</action>
+		
+		<action name="redeemReport"
+			class="com.cubesofttech.action.ReportAction" method="redeemReport">
 			<result name="error">/index.jsp</result>
 		</action>
 

@@ -119,7 +119,7 @@
 										class="form-select" data-control="select2"
 										data-placeholder="All" data-hide-search="true">
 										<option>All</option>
-										<option value="1">Active</option>
+										<option value="1" selected>Active</option>
 										<option value="0">Inactive</option>
 									</select>
 								</div>
@@ -196,7 +196,7 @@
 		let table = null;
 		
 		let selectedUserId = "All";
-		let selectedActive = "All";
+		let selectedActive = "1";
 		let selectedEmployeeType = "All";
 		let selectedEmployeeStatus = "All";
 		
@@ -249,6 +249,9 @@
                     updateCounter();
                 }
             });
+             
+            
+            updateCounter();
             
         });
 		
@@ -558,8 +561,6 @@
 		            });
 
 					
-					$(".counter").text(response.data.length);
-
 					tbody.empty();
 
 					response.data.forEach(function(user, index) {
@@ -688,7 +689,6 @@
 								<!-- # -->
 								<td class="text-center">
 									<span class="fw-bold fs-7 text-gray-900">
-										\${index + 1}
 									</span>
 								</td>
 
@@ -793,7 +793,41 @@
 						
 					
 					});
-					table = $("#kt_datatable_zero_configuration").DataTable();
+					table = $("#kt_datatable_zero_configuration").DataTable({
+					    pageLength: 25,
+						lengthMenu: [10, 25, 50, 100],
+						drawCallback: function(settings) {
+					        const api = this.api();
+					        const pageInfo = api.page.info();
+
+					        const order = api.order();
+
+					        const isIndexDesc =
+					            order.length > 0 &&
+					            order[0][0] === 0 &&
+					            order[0][1] === "desc";
+
+					        api.rows({
+					            page: "current"
+					        }).nodes().each(function(row, index) {
+
+					            let rowNumber;
+
+					            if (isIndexDesc) {
+					                rowNumber = pageInfo.recordsDisplay - pageInfo.start - index;
+					            } else {
+					                rowNumber = pageInfo.start + index + 1;
+					            }
+
+					            $(row)
+					                .find("td:first span")
+					                .text(rowNumber);
+					        });
+					    }
+					});
+					
+					table.draw();
+					updateCounter();
 				},
 
 				error: function(xhr, status, error) {

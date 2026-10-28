@@ -13,7 +13,7 @@ import javax.persistence.Table;
 @Table(name = "user_redeem")
 public class UserRedeem {
 
-    @Id
+	@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_redeem_id")
     private Integer userRedeemId;
@@ -32,8 +32,29 @@ public class UserRedeem {
 
     @Column(name = "redeem_status", length = 20)
     private String redeemStatus;
+    
+    @Column(name = "user_approve", length = 32)
+    private String userApprove;
+    
+    @Column(name = "time_approve")
+    private Date timeApprove;
+    
+    @Column(name = "user_deliver", length = 32)
+    private String userDeliver;
+    
+    @Column(name = "time_deliver")
+    private Date timeDeliver;
+    
+    @Column(name = "user_receive", length = 32)
+    private String userReceive;
+    
+	@Column(name = "time_receive")
+    private Date timeReceive;
+    
+    @Column(name = "status_log")
+    private String statusLog;
 
-    @Column(name = "description", columnDefinition = "TEXT")
+	@Column(name = "description", columnDefinition = "TEXT")
     private String description;
 
     @Column(name = "user_create", length = 32)
@@ -103,6 +124,14 @@ public class UserRedeem {
     public void setRedeemStatus(String redeemStatus) {
         this.redeemStatus = redeemStatus;
     }
+    
+    public String getStatusLog() {
+		return statusLog;
+	}
+    
+    public void setStatusLog(String statusLog) {
+    	this.statusLog = statusLog;
+    }
 
     public String getDescription() {
         return description;
@@ -143,4 +172,52 @@ public class UserRedeem {
     public void setTimeUpdate(Date timeUpdate) {
         this.timeUpdate = timeUpdate;
     }
+    
+    public String getUserApprove() {
+		return userApprove;
+	}
+
+	public void setUserApprove(String userApprove) {
+		this.userApprove = userApprove;
+	}
+
+	public Date getTimeApprove() {
+		return timeApprove;
+	}
+
+	public void setTimeApprove(Date timeApprove) {
+		this.timeApprove = timeApprove;
+	}
+
+	public String getUserDeliver() {
+		return userDeliver;
+	}
+
+	public void setUserDeliver(String userDeliver) {
+		this.userDeliver = userDeliver;
+	}
+
+	public Date getTimeDeliver() {
+		return timeDeliver;
+	}
+
+	public void setTimeDeliver(Date timeDeliver) {
+		this.timeDeliver = timeDeliver;
+	}
+
+	public Date getTimeReceive() {
+		return timeReceive;
+	}
+
+	public void setTimeReceive(Date timeReceive) {
+		this.timeReceive = timeReceive;
+	}
+	
+	public String getUserReceive() {
+		return userReceive;
+	}
+
+	public void setUserReceive(String userId) {
+		this.userReceive = userId;
+	}
 }

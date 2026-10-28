@@ -519,18 +519,8 @@
 			        return
 			    }
 
-			    const regex = /^[ก-๙0-9\s().,&/-]+$/;
-
-			    if (!regex.test(value)) {
-			        validationState.companyNameTh = false;
-			        setFieldInvalid(
-			            "#company-name-th",
-			            "Only Thai characters are allowed"
-			        );
-			    } else {
-			        validationState.companyNameTh = true;
-			        clearFieldError("#company-name-th");
-			    }
+			    validationState.companyNameTh = true;
+			    clearFieldError("#company-name-th");
 			    updateBtnState("#submit-btn", hasValidationErrors());
 			    return
 			}

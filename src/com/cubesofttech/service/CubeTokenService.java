@@ -21,19 +21,27 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import javax.annotation.PostConstruct;
+
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import com.cubesofttech.dao.ActionPointDAO;
 import com.cubesofttech.dao.ActionTypeDAO;
+import com.cubesofttech.dao.DocStatusDAO;
 import com.cubesofttech.dao.HolidayDAO;
 import com.cubesofttech.dao.ItemPrivilegeDAO;
 import com.cubesofttech.dao.JobsiteDAO;
 import com.cubesofttech.dao.LeaveDAO;
 import com.cubesofttech.dao.LeaveTypeDAO;
+import com.cubesofttech.dao.TokenMonthlyLogDAO;
+import com.cubesofttech.dao.TokenMonthlyLogDetailDAO;
 import com.cubesofttech.dao.TokenSettingDAO;
 import com.cubesofttech.dao.TokenUsageDAO;
 import com.cubesofttech.dao.TokenUsageSummaryDAO;
@@ -43,10 +51,13 @@ import com.cubesofttech.dao.UserRedeemDAO;
 import com.cubesofttech.dao.WorkHoursDAO;
 import com.cubesofttech.model.ActionPoint;
 import com.cubesofttech.model.ActionType;
+import com.cubesofttech.model.DocStatus;
 import com.cubesofttech.model.FileUpload;
 import com.cubesofttech.model.ItemPrivilege;
 import com.cubesofttech.model.LeaveType;
 import com.cubesofttech.model.Leaves;
+import com.cubesofttech.model.TokenMonthlyLog;
+import com.cubesofttech.model.TokenMonthlyLogDetail;
 import com.cubesofttech.model.TokenSetting;
 import com.cubesofttech.model.TokenUsage;
 import com.cubesofttech.model.TokenUsageSummary;
@@ -54,12 +65,11 @@ import com.cubesofttech.model.User;
 import com.cubesofttech.model.UserFavorite;
 import com.cubesofttech.model.UserRedeem;
 import com.cubesofttech.util.DateUtil;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-
-import net.sf.jasperreports.engine.export.type.ImageAnchorTypeEnum;
 
 @Service
 public class CubeTokenService {
@@ -85,10 +95,19 @@ public class CubeTokenService {
 	private TokenUsageSummaryDAO tokenUsageSummaryDAO;
 
 	@Autowired
+	private TokenMonthlyLogDAO tokenMonthlyLogDAO;
+
+	@Autowired
+	private TokenMonthlyLogDetailDAO tokenMonthlyLogDetailDAO;
+
+	@Autowired
 	private JobsiteDAO jobsiteDAO;
 
 	@Autowired
 	private WorkHoursDAO workHoursDAO;
+
+	@Autowired
+	private DocStatusDAO docStatusDAO;
 
 	@Autowired
 	private LeaveDAO leaveDAO;
@@ -111,6 +130,11 @@ public class CubeTokenService {
 	@Autowired
 	private FileAttachmentService fileAttachmentService;
 
+	@Autowired
+	private PlatformTransactionManager transactionManager;
+
+	private TransactionTemplate transactionTemplate;
+
 	private static final Integer ACTION_TYPE_GIFT = 1;
 	private static final Integer ACTION_TYPE_DUDUCT = 2;
 	private static final Integer ACTION_TYPE_RETURN = 3;
@@ -119,6 +143,9 @@ public class CubeTokenService {
 	private static final Integer ACTION_TYPE_EXCHANGE = 6;
 	private static final Integer ACTION_TYPE_REDEEM = 7;
 	private static final Integer ACTION_TYPE_VOID = 8;
+	private static final Integer ACTION_TYPE_CARRY_OVER = 9;
+	private static final Integer ACTION_TYPE_SPEND_CARRYOVER = 10;
+	private static final Integer ACTION_TYPE_SPEND_CURRENT_YEAR = 11;
 
 	private static final Integer ACTION_POINT_LATE = 4;
 	private static final Integer ACTION_POINT_EARLY_OUT = 5;
@@ -126,159 +153,643 @@ public class CubeTokenService {
 	private static final Integer ACTION_POINT_BACKDATE = 7;
 	private static final Integer ACTION_POINT_NO_RECORD = 8;
 
-	private static final String STATUS_REDEEM_PENDING = "pending";
-	private static final String STATUS_REDEEM_CANCEL = "cancel";
-	private static final String STATUS_REDEEM_APPROVED = "approved";
-	private static final String STATUS_REDEEM_COMPLETE = "complete";
+	private static final String STATUS_REDEEM_PENDING = "1";
+	private static final String STATUS_REDEEM_APPROVED = "2";
+	private static final String STATUS_REDEEM_RECEIVED = "3";
+	private static final String STATUS_REDEEM_COMPLETE = "4";
+	private static final String STATUS_REDEEM_CANCEL = "5";
 
 	private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("dd MMM, HH:mm", Locale.ENGLISH);
 	private static final ObjectMapper MAPPER = new ObjectMapper();
 
-	@Scheduled(cron = "0 0 2 * * ?", zone = "Asia/Bangkok")
+	@PostConstruct
+	public void init() {
+		transactionTemplate = new TransactionTemplate(transactionManager);
+		transactionTemplate.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
+	}
+
+//	@Scheduled(cron = "0 0 2 * * ?", zone = "Asia/Bangkok")
 //	@Scheduled(fixedRate = 10000)
-	@Transactional
 	public void distributeMonthlyToken() {
 
 		log.info("Start distributeMonthlyToken");
 
 		LocalDate today = LocalDate.now();
-
 		int todayDay = today.getDayOfMonth();
 		int lastDay = today.lengthOfMonth();
 
 		try {
 
-			List<TokenSetting> settings = tokenSettingDAO.findAll();
+			DistributionData data = transactionTemplate.execute(status -> {
 
-			if (settings == null || settings.isEmpty()) {
-				log.info("No token settings found. Skipping monthly token distribution.");
-				return;
-			}
+				try {
 
-			// Find the activate date setting
-			TokenSetting activateDateSetting = settings.stream().filter(
-					s -> "activate_date".equalsIgnoreCase(s.getType()) && "day".equalsIgnoreCase(s.getTypeName()))
-					.findFirst().orElse(null);
+					List<TokenSetting> settings = tokenSettingDAO.findAll();
 
-			if (activateDateSetting == null || activateDateSetting.getStatus() == null) {
+					if (settings == null || settings.isEmpty()) {
+						return null;
+					}
 
-				log.warn("Activate date setting not found. Skipping distribution.");
-				return;
-			}
+					// =================================================
+					// Activate date
+					// =================================================
 
-			int activateDate;
+					TokenSetting activateDateSetting = settings.stream()
+							.filter(s -> "activate_date".equalsIgnoreCase(s.getType())
+									&& "day".equalsIgnoreCase(s.getTypeName()))
+							.findFirst().orElse(null);
 
-			try {
+					if (activateDateSetting == null || activateDateSetting.getStatus() == null) {
 
-				activateDate = Integer.parseInt(activateDateSetting.getStatus());
+						log.warn("Activate date setting not found.");
+						return null;
+					}
 
-			} catch (NumberFormatException e) {
+					int activateDate;
 
-				log.error("Invalid activate date setting", e);
+					try {
+						activateDate = Integer.parseInt(activateDateSetting.getStatus());
+					} catch (NumberFormatException e) {
 
-				return;
-			}
+						log.error("Invalid activate date setting", e);
+						return null;
+					}
 
-			int executeDay = Math.min(activateDate, lastDay);
+					int executeDay = Math.min(activateDate, lastDay);
 
-			if (executeDay != todayDay) {
+					if (executeDay != todayDay) {
 
-				log.info("Today is not token distribution day. Skipping.");
+						log.info("Today is not token distribution day. Skipping.");
 
-				return;
-			}
+						return null;
+					}
 
-			ActionType giftType = actionTypeDAO.findById(1);
+					// =================================================
+					// Gift action type
+					// =================================================
 
-			if (giftType == null || !"Y".equalsIgnoreCase(giftType.getActiveStatus())) {
-				log.info("Gift action type is not active. Skipping distribution.");
-				return;
-			}
+					ActionType giftType = actionTypeDAO.findById(1);
 
-			boolean allowActive = isSettingActive(settings, "user_status", "Active");
-			boolean allowProbation = isSettingActive(settings, "user_status", "Probation");
-			boolean allowExcluded = isSettingActive(settings, "user_status", "Excluded");
-			boolean allowIntern = isSettingActive(settings, "user_status", "Intern");
-			boolean allowEnable = isSettingActive(settings, "system_status", "Enable");
-			boolean allowDisable = isSettingActive(settings, "system_status", "Disable");
+					if (giftType == null || !"Y".equalsIgnoreCase(giftType.getActiveStatus())) {
 
-			List<ActionPoint> giftPoints = actionPointDAO.findByActionTypeIdAndActiveStatus(1, "Y");
+						log.info("Gift action type is not active. Skipping.");
 
-			if (giftPoints == null || giftPoints.isEmpty()) {
-				log.info("No active gift points found. Skipping distribution.");
+						return null;
+					}
+
+					// =================================================
+					// User settings
+					// =================================================
+
+					boolean allowActive = isSettingActive(settings, "user_status", "Active");
+
+					boolean allowProbation = isSettingActive(settings, "user_status", "Probation");
+
+					boolean allowExcluded = isSettingActive(settings, "user_status", "Excluded");
+
+					boolean allowIntern = isSettingActive(settings, "user_status", "Intern");
+
+					boolean allowEnable = isSettingActive(settings, "system_status", "Enable");
+
+					boolean allowDisable = isSettingActive(settings, "system_status", "Disable");
+
+					// =================================================
+					// Gift points
+					// =================================================
+
+					List<ActionPoint> giftPoints = actionPointDAO.findByActionTypeIdAndActiveStatus(1, "Y");
+
+					if (giftPoints == null || giftPoints.isEmpty()) {
+
+						log.info("No active gift points found. Skipping.");
+
+						return null;
+					}
+
+					/*
+					 * ================================================= Create monthly log
+					 * =================================================
+					 */
+
+					TokenMonthlyLog monthlyLog = new TokenMonthlyLog();
+
+					monthlyLog.setFailCase(0);
+					monthlyLog.setSuccessCase(0);
+
+					monthlyLog.setDateTime(DateUtil.getCurrentTime());
+
+					monthlyLog.setDescription(
+							"Monthly token distribution for " + today.getMonth() + " " + today.getYear());
+
+					monthlyLog.setUserCreate("system");
+					monthlyLog.setTimeCreate(DateUtil.getCurrentTime());
+
+					tokenMonthlyLogDAO.save(monthlyLog);
+
+					return new DistributionData(settings, giftPoints, allowActive, allowProbation, allowExcluded,
+							allowIntern, allowEnable, allowDisable, monthlyLog.getMonitorLogId());
+
+				} catch (Exception e) {
+
+					status.setRollbackOnly();
+
+					log.error("Failed to prepare monthly token distribution", e);
+
+					throw new RuntimeException(e);
+				}
+			});
+
+			/*
+			 * ========================================================= Nothing to process
+			 * =========================================================
+			 */
+
+			if (data == null) {
 				return;
 			}
 
 			int totalGiven = 0;
 			int totalSkipped = 0;
+			int totalFailed = 0;
 
-			for (ActionPoint point : giftPoints) {
+			/*
+			 * ========================================================= Distribute
+			 * =========================================================
+			 */
+
+			for (ActionPoint point : data.getGiftPoints()) {
 
 				String employeeTypeId = getEmployeeTypeId(point.getActionPointType());
 
 				if (employeeTypeId == null) {
 
-					log.warn("Unknown employee type");
-					continue;
+					log.warn("Unknown employee type: " + point.getActionPointType()
 
+					);
+
+					continue;
 				}
 
-				List<User> users = userDAO.findEligibleUsers(employeeTypeId, allowActive, allowProbation, allowExcluded,
-						allowIntern, allowEnable, allowDisable);
+				/*
+				 * ----------------------------------------------------- Query users
+				 * -----------------------------------------------------
+				 */
+
+				List<User> users = transactionTemplate.execute(status -> {
+					try {
+						return userDAO.findEligibleUsers(employeeTypeId, data.isAllowActive(), data.isAllowProbation(),
+								data.isAllowExcluded(), data.isAllowIntern(), data.isAllowEnable(),
+								data.isAllowDisable());
+					} catch (Exception e) {
+
+						log.error("Failed to query eligible users for employee type: " + point.getActionPointType(), e);
+						return null;
+					}
+				});
 
 				if (users == null || users.isEmpty()) {
+
 					log.info("No eligible users found for employee type: " + point.getActionPointType());
+
 					continue;
 				}
 
 				log.info("Distributing " + point.getPoint() + " tokens to " + users.size()
 						+ " users for employee type: " + point.getActionPointType());
 
+				/*
+				 * ===================================================== Each user = separate
+				 * transaction =====================================================
+				 */
+
 				for (User user : users) {
 
-					boolean alreadyGiven = usageTokenDAO.existsMonthlyGift(user.getId(), ACTION_TYPE_GIFT,
-							today.getMonthValue(), today.getYear());
+					try {
 
-					if (alreadyGiven) {
+						Boolean result = transactionTemplate.execute(status -> {
 
-						totalSkipped++;
-						continue;
+							try {
+
+								/*
+								 * --------------------------------- Check duplicate
+								 * ---------------------------------
+								 */
+
+								boolean alreadyGiven = usageTokenDAO.existsMonthlyGift(user.getId(), ACTION_TYPE_GIFT,
+										today.getMonthValue(), today.getYear());
+
+								if (alreadyGiven) {
+									return false;
+								}
+
+								/*
+								 * --------------------------------- Create TokenUsage
+								 * ---------------------------------
+								 * 
+								 */
+
+								TokenUsage usage = new TokenUsage();
+
+								usage.setUserId(user.getId());
+
+								usage.setActionTypeId(point.getActionTypeId());
+
+								usage.setActionPointId(point.getActionPointId());
+
+								usage.setValue(point.getPoint());
+
+								usage.setReconcile(null);
+
+								usage.setMonth(today.getMonthValue());
+
+								usage.setYear(today.getYear());
+
+								ObjectNode jsonData = MAPPER.createObjectNode();
+
+								jsonData.put("type", "add");
+
+								jsonData.put("reason", "รายเดือน");
+
+								usage.setDescription(MAPPER.writeValueAsString(jsonData));
+
+								usage.setReFlag("N");
+								usage.setUserCreate("system");
+
+								usage.setTimeCreate(DateUtil.getCurrentTime());
+
+								/*
+								 * --------------------------------- Save ---------------------------------
+								 */
+
+								usageTokenDAO.save(usage);
+
+								TokenMonthlyLogDetail detail = new TokenMonthlyLogDetail();
+								detail.setMonitorLogId(data.getMonitorLogId());
+								detail.setUserId(user.getId());
+								detail.setDateTime(DateUtil.getCurrentTime());
+								detail.setValue(point.getPoint());
+								detail.setStatus("success");
+								detail.setDescription("Monthly token distribution successful");
+								detail.setUserCreate("system");
+
+								tokenMonthlyLogDetailDAO.save(detail);
+
+								return true;
+
+							} catch (Exception e) {
+
+								status.setRollbackOnly();
+
+								throw new RuntimeException(e);
+							}
+						});
+
+						/*
+						 * ================================================= Result
+						 * =================================================
+						 */
+
+						if (Boolean.TRUE.equals(result)) {
+
+							totalGiven++;
+
+						} else {
+
+							totalSkipped++;
+						}
+
+					} catch (Exception e) {
+
+						/*
+						 * ================================================= User transaction failed
+						 * =================================================
+						 */
+
+						totalFailed++;
+
+						log.error("Token distribution failed for user: " + user.getId(), e);
+
+						/*
+						 * ================================================= Save failed log
+						 * =================================================
+						 */
+
+						try {
+
+							saveFailedTokenLog(data.getMonitorLogId(), user, point.getPoint(), e);
+
+						} catch (Exception logException) {
+
+							log.error("Failed to save monthly token failed log for user: " + user.getId(),
+									logException);
+						}
 					}
-
-					TokenUsage usage = new TokenUsage();
-
-					usage.setUserId(user.getId());
-					usage.setActionTypeId(point.getActionTypeId());
-					usage.setActionPointId(point.getActionPointId());
-					usage.setValue(point.getPoint());
-					usage.setReconcile(null);
-					usage.setMonth(today.getMonthValue());
-					usage.setYear(today.getYear());
-
-					ObjectNode jsonData = MAPPER.createObjectNode();
-
-					jsonData.put("type", "add");
-					jsonData.put("reason", "รายเดือน");
-
-					usage.setDescription(MAPPER.writeValueAsString(jsonData));
-					usage.setReFlag("N");
-					usage.setUserCreate("system");
-					usage.setTimeCreate(DateUtil.getCurrentTime());
-					usageTokenDAO.save(usage);
-
-					totalGiven++;
 				}
-
 			}
 
-			log.info(String.format("Monthly Token Distribution Completed. Given: %d, Skipped: %d", totalGiven,
-					totalSkipped));
+			/*
+			 * ========================================================= Update monthly log
+			 * =========================================================
+			 */
+
+			final int GIVEN = totalGiven;
+			final int FAILED = totalFailed;
+
+			transactionTemplate.execute(status -> {
+
+				try {
+
+					TokenMonthlyLog monthlyLog = tokenMonthlyLogDAO.findById(data.getMonitorLogId());
+
+					if (monthlyLog != null) {
+
+						monthlyLog.setSuccessCase(GIVEN);
+						monthlyLog.setFailCase(FAILED);
+
+						monthlyLog.setTimeUpdate(DateUtil.getCurrentTime());
+
+						monthlyLog.setUserUpdate("system");
+
+						tokenMonthlyLogDAO.update(monthlyLog);
+					}
+
+					return null;
+
+				} catch (Exception e) {
+
+					status.setRollbackOnly();
+
+					throw new RuntimeException("Failed to update monthly log", e);
+				}
+			});
+
+			/*
+			 * ========================================================= Completed
+			 * =========================================================
+			 */
+
+			log.info("Monthly Token Distribution Completed. Given: " + totalGiven + ", Skipped: " + totalSkipped
+					+ ", Failed: " + totalFailed);
 
 		} catch (Exception e) {
 
 			log.error("Error during monthly token distribution", e);
-
 		}
+	}
+
+	public void retryFailedTokenDistribution(Integer monitorLogId) throws Exception {
+
+		if (monitorLogId == null || monitorLogId <= 0) {
+			throw new IllegalArgumentException("Invalid logId");
+		}
+
+		log.info("Start retry monthly token. monitorLogId=" + monitorLogId);
+
+		// =========================================================
+		// 1. Query failed users
+		// =========================================================
+
+		List<TokenMonthlyLogDetail> failedDetails = transactionTemplate.execute(status -> {
+			try {
+				return tokenMonthlyLogDetailDAO.findFailedByMonitorLogId(monitorLogId);
+			} catch (Exception e) {
+				log.error("Failed to query failed token logs. monitorLogId=" + monitorLogId, e);
+
+				status.setRollbackOnly();
+				throw new RuntimeException(e);
+			}
+		});
+
+		if (failedDetails == null || failedDetails.isEmpty()) {
+			log.info("No failed token log details found. monitorLogId=" + monitorLogId);
+			return;
+		}
+
+		// =========================================================
+		// 2. Create new retry log
+		// =========================================================
+
+		Integer retryLogId = transactionTemplate.execute(status -> {
+
+			try {
+
+				TokenMonthlyLog monthlyLog = new TokenMonthlyLog();
+
+				monthlyLog.setFailCase(0);
+				monthlyLog.setSuccessCase(0);
+				monthlyLog.setDateTime(DateUtil.getCurrentTime());
+				monthlyLog.setDescription("Retry monthly token distribution");
+				monthlyLog.setUserCreate("system");
+				monthlyLog.setTimeCreate(DateUtil.getCurrentTime());
+
+				tokenMonthlyLogDAO.save(monthlyLog);
+
+				return monthlyLog.getMonitorLogId();
+
+			} catch (Exception e) {
+
+				status.setRollbackOnly();
+
+				log.error("Failed to create retry monthly log", e);
+
+				throw new RuntimeException(e);
+			}
+		});
+
+		int successCount = 0;
+		int failCount = 0;
+		int totalSkipped = 0;
+
+		// =========================================================
+		// 3. Retry each user
+		// =========================================================
+
+		for (TokenMonthlyLogDetail failedDetail : failedDetails) {
+
+			try {
+
+				boolean success = retryTokenForUser(failedDetail, retryLogId);
+
+				if (success) {
+					successCount++;
+				} else {
+					totalSkipped++;
+				}
+
+			} catch (Exception e) {
+
+				failCount++;
+
+				try {
+					saveFailedTokenLog(monitorLogId, userDAO.findById(failedDetail.getUserId()),
+							failedDetail.getValue(), e);
+				} catch (Exception logException) {
+					log.error("Failed to save retry failed log for userId=" + failedDetail.getUserId(), logException);
+				}
+
+				log.error("Retry failed for userId=" + failedDetail.getUserId(), e);
+			}
+		}
+
+		// =========================================================
+		// 4. Update retry log
+		// =========================================================
+
+		final int finalSuccessCount = successCount;
+		final int finalFailCount = failCount;
+
+		transactionTemplate.execute(status -> {
+
+			try {
+
+				TokenMonthlyLog monthlyLog = tokenMonthlyLogDAO.findById(retryLogId);
+
+				if (monthlyLog != null) {
+
+					monthlyLog.setSuccessCase(finalSuccessCount);
+					monthlyLog.setFailCase(finalFailCount);
+					monthlyLog.setUserUpdate("system");
+					monthlyLog.setTimeUpdate(DateUtil.getCurrentTime());
+
+					tokenMonthlyLogDAO.update(monthlyLog);
+				}
+
+				return null;
+
+			} catch (Exception e) {
+
+				status.setRollbackOnly();
+
+				throw new RuntimeException("Failed to update retry monthly log", e);
+			}
+		});
+
+		log.info("Retry monthly token completed. " + "monitorLogId=" + monitorLogId + ", retryLogId=" + retryLogId
+				+ ", success=" + successCount + ", failed=" + failCount + " skipped=" + totalSkipped);
+	}
+
+	private boolean retryTokenForUser(TokenMonthlyLogDetail failedDetail, Integer retryLogId) throws Exception {
+
+		Boolean result = transactionTemplate.execute(status -> {
+
+			try {
+
+				String userId = failedDetail.getUserId();
+				Double value = failedDetail.getValue();
+
+				if (userId == null || userId.isEmpty()) {
+					throw new IllegalArgumentException("Invalid userId");
+				}
+
+				if (value == null || value <= 0) {
+					throw new IllegalArgumentException("Invalid token value");
+				}
+
+				LocalDate targetDate = failedDetail.getDateTime().toInstant().atZone(ZoneId.systemDefault())
+						.toLocalDate();
+
+				boolean alreadyGiven = usageTokenDAO.existsMonthlyGift(userId, ACTION_TYPE_GIFT,
+						targetDate.getMonthValue(), targetDate.getYear());
+
+				if (alreadyGiven) {
+					return false;
+				}
+
+				// Create TokenUsage
+				TokenUsage usage = new TokenUsage();
+
+				usage.setUserId(userId);
+				usage.setActionTypeId(ACTION_TYPE_GIFT);
+				usage.setValue(value);
+				usage.setReconcile(null);
+				usage.setMonth(targetDate.getMonthValue());
+				usage.setYear(targetDate.getYear());
+
+				ObjectNode jsonData = MAPPER.createObjectNode();
+				jsonData.put("type", "add");
+				jsonData.put("reason", "รายเดือน");
+
+				usage.setDescription(MAPPER.writeValueAsString(jsonData));
+
+				usage.setReFlag("N");
+				usage.setUserCreate("system");
+				usage.setTimeCreate(DateUtil.getCurrentTime());
+
+				usageTokenDAO.save(usage);
+
+				// Success detail
+				TokenMonthlyLogDetail detail = new TokenMonthlyLogDetail();
+
+				detail.setMonitorLogId(retryLogId);
+				detail.setUserId(userId);
+				detail.setDateTime(DateUtil.getCurrentTime());
+				detail.setValue(value);
+				detail.setStatus("success");
+				detail.setDescription("Monthly token distribution successful on retry");
+				detail.setUserCreate("system");
+				detail.setTimeCreate(DateUtil.getCurrentTime());
+
+				tokenMonthlyLogDetailDAO.save(detail);
+
+				return true;
+
+			} catch (Exception e) {
+
+				status.setRollbackOnly();
+
+				throw new RuntimeException(e);
+			}
+		});
+
+		return Boolean.TRUE.equals(result);
+	}
+
+	private void saveFailedTokenLog(Integer monitorLogId, User user, Double value, Exception exception) {
+
+		if (user == null || user.getId() == null || user.getId().isEmpty()) {
+			log.error("Cannot save failed token log: invalid user");
+			return;
+		}
+
+		transactionTemplate.execute(status -> {
+
+			try {
+
+				TokenMonthlyLogDetail detail = new TokenMonthlyLogDetail();
+
+				detail.setMonitorLogId(monitorLogId);
+
+				detail.setUserId(user.getId());
+
+				detail.setDateTime(DateUtil.getCurrentTime());
+
+				detail.setValue(value);
+
+				detail.setStatus("failed");
+
+				String message = exception.getMessage();
+
+				if (message == null || message.isEmpty()) {
+					message = exception.getClass().getSimpleName();
+				}
+
+				detail.setDescription("Monthly token distribution failed: " + message);
+
+				detail.setUserCreate("system");
+
+				detail.setTimeCreate(DateUtil.getCurrentTime());
+
+				tokenMonthlyLogDetailDAO.save(detail);
+
+				return null;
+
+			} catch (Exception e) {
+
+				status.setRollbackOnly();
+
+				throw new RuntimeException("Cannot save failed token log", e);
+			}
+		});
 	}
 
 	@Scheduled(cron = "0 0 0 5 * ?", zone = "Asia/Bangkok")
@@ -329,9 +840,9 @@ public class CubeTokenService {
 				 * Insert Accumulated Token
 				 */
 				TokenUsage usage = new TokenUsage();
-				
+
 				ObjectNode description = MAPPER.createObjectNode();
-				
+
 				description.put("type", "accumulated");
 				description.put("reason", "โทเคนสะสมจากเดือน " + previousMonth.toString());
 
@@ -347,15 +858,45 @@ public class CubeTokenService {
 				usage.setTimeCreate(DateUtil.getCurrentTime());
 
 				usageTokenDAO.save(usage);
+				
+				if (previousMonth.getMonthValue() == 12) {
+				    int previousYear = previousMonth.getYear();
+				    int newYear = previousYear + 1;
+
+				    Double carryOverBalance = usageTokenDAO.findAccumulatedBalanceByYear(userId, previousYear);
+
+				    boolean carryOverExists =
+				            usageTokenDAO.existsCarryOver(userId, newYear);
+
+				    if (!carryOverExists) {
+				        TokenUsage carryOver = new TokenUsage();
+
+				        ObjectNode carryOverDescription = MAPPER.createObjectNode();
+				        carryOverDescription.put("type", "carry_over");
+				        carryOverDescription.put("reason", "Carry over token from " + previousYear);
+
+				        carryOver.setUserId(userId);
+				        carryOver.setActionTypeId(ACTION_TYPE_CARRY_OVER);
+				        carryOver.setValue(null);
+				        carryOver.setReconcile(carryOverBalance);
+				        carryOver.setDescription(MAPPER.writeValueAsString(carryOverDescription));
+				        carryOver.setYear(LocalDate.now().getYear());
+				        carryOver.setMonth(LocalDate.now().getMonthValue());
+				        carryOver.setReFlag("N");
+				        carryOver.setUserCreate("system");
+				        carryOver.setTimeCreate(DateUtil.getCurrentTime());
+
+				        usageTokenDAO.save(carryOver);
+				    }
+				}
 
 				TokenUsageSummary summary = new TokenUsageSummary();
-
 				Double userCurrentBalance = getUserCurrentAccumulatedBalance(userId);
-				
+
 				summary.setUserId(userId);
 				summary.setActionTypeId(ACTION_TYPE_ADD_RECONCILE);
-				summary.setYear(String.valueOf(previousMonth.getYear()));
-				summary.setMonth(String.format("%02d", previousMonth.getMonthValue()));
+				summary.setYear(previousMonth.getYear());
+				summary.setMonth(previousMonth.getMonthValue());
 				summary.setMonthlyToken(Math.max(monthlyBalance, 0));
 				summary.setTotalToken(Math.max(userCurrentBalance, 0));
 				summary.setDescription("Accumulated token from " + previousMonth.toString());
@@ -388,6 +929,8 @@ public class CubeTokenService {
 
 			LocalDate targetDate = LocalDate.now().minusDays(5);
 
+			log.info(targetDate.getDayOfMonth());
+
 			DayOfWeek dayOfWeek = targetDate.getDayOfWeek();
 
 			// =========================
@@ -411,6 +954,8 @@ public class CubeTokenService {
 
 				return;
 			}
+
+			checkApprovedLeavesForToken(targetDate);
 
 			// =========================
 			// Get work hours
@@ -481,13 +1026,13 @@ public class CubeTokenService {
 					// =========================
 					else if ("3".equals(halfDay) && startTime != null && endTime != null) {
 
-						LocalTime leaveStart = LocalTime.parse(startTime);
+						LocalTime leaveStart = parseTime(startTime);
 
-						LocalTime leaveEnd = LocalTime.parse(endTime);
+						LocalTime leaveEnd = parseTime(endTime);
 
-						LocalTime workStart = LocalTime.parse(workTimeStart);
+						LocalTime workStart = parseTime(workTimeStart);
 
-						LocalTime workEnd = LocalTime.parse(workTimeEnd);
+						LocalTime workEnd = parseTime(workTimeEnd);
 
 						LocalTime morningEnd = LocalTime.of(12, 0);
 
@@ -572,6 +1117,44 @@ public class CubeTokenService {
 		}
 	}
 
+	private void checkApprovedLeavesForToken(LocalDate targetDate) throws Exception {
+
+		List<Leaves> approvedLeaves = leaveDAO.findApprovedLeavesByStartDate(targetDate);
+
+		if (approvedLeaves == null || approvedLeaves.isEmpty()) {
+			log.info("No approved leaves found for date: " + targetDate);
+			return;
+		}
+
+		for (Leaves leave : approvedLeaves) {
+			try {
+				if (leave == null) {
+					continue;
+				}
+
+				String userId = leave.getUserId();
+
+				log.info("Processing approved leave. Leave ID: " + leave.getLeaveId() + ", User ID: " + userId
+						+ ", Start date: " + leave.getStartDate() + ", End date: " + leave.getEndDate());
+
+				// ตรวจสอบว่าหัก Token ของคำขอนี้ไปแล้วหรือยัง
+				if (usageTokenDAO.existsLeaveDeduction(leave.getLeaveId())) {
+					log.info("Token already deducted for leave ID: " + leave.getLeaveId());
+					continue;
+				}
+
+				// ใช้ logic การหัก Token เดิม
+				deductUserCubeTokenForLeave(userId, leave);
+
+			} catch (Exception e) {
+				// ถ้าคำขอใดผิดพลาด ให้ประมวลผลคำขอถัดไปต่อ
+				log.error("Failed to deduct token for leave ID: " + leave.getLeaveId(), e);
+			}
+		}
+
+		log.info("Approved leave token check completed for date: " + targetDate);
+	}
+
 	@Transactional(readOnly = true)
 	public Double getUserYearlyTokenBalance(String userId, Integer year) throws Exception {
 
@@ -590,11 +1173,10 @@ public class CubeTokenService {
 
 	@Transactional(readOnly = true)
 	public List<Map<String, Object>> getUserTokenTransactionByYear(String userId, Integer year) throws Exception {
-		
+
 		if (year == null || year <= 0) {
 			year = LocalDate.now().getYear();
 		}
-
 
 		if (year > LocalDate.now().getYear()) {
 			throw new IllegalArgumentException("Year cannot be in the future.");
@@ -853,7 +1435,7 @@ public class CubeTokenService {
 			row.put("id", point.getActionPointId());
 			row.put("name_en", point.getActionPointType());
 			row.put("name_th", point.getActionPointName());
-			row.put("point", point.getPoint().intValue());
+			row.put("point", point.getPoint());
 			row.put("active", "Y".equals(point.getActiveStatus()));
 
 			getStyle(row);
@@ -1014,8 +1596,8 @@ public class CubeTokenService {
 
 	public void deductUserCubeTokenForLeave(String userId, Leaves leave) throws Exception {
 
-		if (leave == null || leave.getLeaveId() == null) {
-			throw new IllegalArgumentException("Leave object or Leave ID is null.");
+		if (leave == null) {
+			throw new IllegalArgumentException("Leave object is null.");
 		}
 
 		if (userId == null || userId.trim().isEmpty()) {
@@ -1099,12 +1681,22 @@ public class CubeTokenService {
 		tokenUsage.setActionPointId(ACTION_POINT_LEAVE);
 		tokenUsage.setValue(leaveActionPoint.getPoint());
 		tokenUsage.setReconcile(null);
+		tokenUsage.setYear(leave.getStartDate().toInstant().atZone(ZoneId.systemDefault()).getYear());
+		tokenUsage.setMonth(leave.getStartDate().toInstant().atZone(ZoneId.systemDefault()).getMonthValue());
 		tokenUsage.setReFlag("Y");
 
 		ObjectNode jsonNode = MAPPER.createObjectNode();
+		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+
 		jsonNode.put("type", "deduct");
+		jsonNode.put("action", "leave");
 		jsonNode.put("reason", leaveType.getLeaveTypeName());
 		jsonNode.put("referenceId", leave.getLeaveId());
+		jsonNode.put("startDate", dateFormat.format(leave.getStartDate()));
+		jsonNode.put("endDate", dateFormat.format(leave.getEndDate()));
+		jsonNode.put("startTime", leave.getStartTime());
+		jsonNode.put("endTime", leave.getEndTime());
+		jsonNode.put("halfDay", leave.getHalfDay());
 
 		tokenUsage.setDescription(MAPPER.writeValueAsString(jsonNode));
 
@@ -1474,6 +2066,7 @@ public class CubeTokenService {
 
 	}
 
+	@Transactional(readOnly = true)
 	public String getUserCurrentRankByYear(String userId, int year) throws Exception {
 
 		int currentMonth = LocalDate.now().getMonthValue();
@@ -1619,6 +2212,7 @@ public class CubeTokenService {
 		return result;
 	}
 
+	@Transactional(readOnly = true)
 	public Double getUserCurrentMonthlyBalance(String userId) throws Exception {
 
 		if (userId == null || userId.trim().isEmpty()) {
@@ -1633,6 +2227,7 @@ public class CubeTokenService {
 		return monthlyBalance != null ? monthlyBalance : 0D;
 	}
 
+	@Transactional(readOnly = true)
 	public Double getUserCurrentAccumulatedBalance(String userId) throws Exception {
 
 		if (userId == null || userId.trim().isEmpty()) {
@@ -1644,6 +2239,7 @@ public class CubeTokenService {
 		return accumulatedBalance != null ? accumulatedBalance : 0D;
 	}
 
+	@Transactional(readOnly = true)
 	public Double getUserAccumulatedBalanceByYear(String userId, int year) throws Exception {
 
 		if (userId == null || userId.trim().isEmpty()) {
@@ -1658,11 +2254,13 @@ public class CubeTokenService {
 			throw new IllegalArgumentException("Year cannot be in the future.");
 		}
 
-		Double accumulatedBalance = usageTokenDAO.findYearlyBalance(userId, year);
+		Double accumulatedBalance = usageTokenDAO.findAccumulatedBalanceByYear(userId, year);
 
 		return accumulatedBalance != null ? accumulatedBalance : 0D;
 	}
+	
 
+	@Transactional(readOnly = true)
 	public List<Map<String, Object>> getAllUsersCurrentAccumulatedBalance() throws Exception {
 
 		int currentYear = LocalDate.now().getYear();
@@ -1715,6 +2313,35 @@ public class CubeTokenService {
 		}
 	}
 
+	@Transactional(readOnly = true)
+	public List<TokenMonthlyLog> getAllTokenMonthlyLogsByYear(int year) throws Exception {
+		return tokenMonthlyLogDAO.findByYear(year);
+	}
+
+	@Transactional(readOnly = true)
+	public List<Map<String, Object>> getTokenMonthlyLogDetailsByLogId(Integer logId) throws Exception {
+
+		if (logId == null || logId <= 0) {
+			throw new IllegalArgumentException("Invalid log ID.");
+		}
+
+		List<Map<String, Object>> details = tokenMonthlyLogDetailDAO.findByMonitorLogId(logId);
+
+		for (Map<String, Object> detail : details) {
+
+			String userId = (String) detail.get("userId");
+			List<Map<String, Object>> userJobsiteList = jobsiteDAO.getNameSiteListByUserId(userId);
+
+			if (userJobsiteList == null || userJobsiteList.isEmpty()) {
+				userJobsiteList = new ArrayList<>();
+			}
+
+			detail.put("jobsiteList", MAPPER.writeValueAsString(userJobsiteList));
+		}
+
+		return details;
+	}
+
 	@Transactional
 	public void rewardCubeToken(String targetUserId, String givenBy, Double value, String reason) throws Exception {
 
@@ -1752,6 +2379,20 @@ public class CubeTokenService {
 			throw new IllegalArgumentException(String.format("Transaction with an ID:%d not found.", transactionId));
 		}
 
+		if (!"Y".equals(originalTransaction.getReFlag())) {
+			throw new IllegalArgumentException("This transaction has already been returned or voided.");
+		}
+
+		// check if the original transaction is in the previous month or not
+
+		YearMonth currentMonth = YearMonth.now(ZoneId.of("Asia/Bangkok"));
+
+		YearMonth transactionMonth = YearMonth.of(originalTransaction.getYear(), originalTransaction.getMonth());
+
+		if (transactionMonth.isBefore(currentMonth.minusMonths(1))) {
+			throw new IllegalArgumentException("Cannot return transactions older than the previous month.");
+		}
+
 		Double returnValue = originalTransaction.getValue();
 
 		TokenUsage usage = new TokenUsage();
@@ -1775,8 +2416,8 @@ public class CubeTokenService {
 		usage.setActionTypeId(targetActionTypeId); // Return or Void
 		usage.setValue(returnValue);
 		usage.setReconcile(null);
-		usage.setYear(LocalDate.now().getYear());
-		usage.setMonth(LocalDate.now().getMonthValue());
+		usage.setYear(transactionMonth.getYear());
+		usage.setMonth(transactionMonth.getMonthValue());
 		usage.setReFlag("N");
 
 		jsonNode.put("type", targetActionTypeId == ACTION_TYPE_VOID ? "void" : "add");
@@ -1790,61 +2431,153 @@ public class CubeTokenService {
 		usageTokenDAO.save(usage);
 
 		originalTransaction.setReFlag("N");
-
 		usageTokenDAO.update(originalTransaction);
+
+		String targetUserId = originalTransaction.getUserId();
+		recalculateAccumulatedTokenBalance(targetUserId, userId, transactionMonth);
+
 	}
 
-	public void exchangeMonthlyToken(String userId, Double value) throws Exception {
+	private void recalculateAccumulatedTokenBalance(String targetUserId, String performBy, YearMonth yearMonth)
+			throws Exception {
 
-		Double currentBalance = usageTokenDAO.findAccumulatedTokenBalance(userId);
+		Double newReconcileValue = usageTokenDAO.findMonthlyBalance(targetUserId, yearMonth);
+		TokenUsage existsAccumulatedToken = usageTokenDAO.findExistsAccumulatedToken(targetUserId, yearMonth);
 
-		if (currentBalance == null || currentBalance < value) {
-			throw new IllegalArgumentException("Insufficient token balance for exchange.");
+		if (existsAccumulatedToken != null) {
+			existsAccumulatedToken.setReconcile(newReconcileValue);
+			existsAccumulatedToken.setTimeUpdate(DateUtil.getCurrentTime());
+			existsAccumulatedToken.setUserUpdate(performBy);
+			usageTokenDAO.update(existsAccumulatedToken);
+
 		}
 
-		TokenUsage usage = new TokenUsage();
-		LocalDate currentDate = LocalDate.now();
+		TokenUsageSummary existingSummary = tokenUsageSummaryDAO.findByUserIdAndYearMonth(targetUserId, yearMonth);
 
-		usage.setUserId(userId);
-		usage.setActionTypeId(ACTION_TYPE_EXCHANGE); // Exchange
-		usage.setValue(value);
-		usage.setReconcile(null);
+		if (existingSummary != null) {
+			existingSummary.setMonthlyToken(Math.max(usageTokenDAO.findMonthlyBalance(targetUserId, yearMonth), 0));
+			existingSummary.setTotalToken(Math.max(usageTokenDAO.findAccumulatedTokenBalance(targetUserId), 0));
+			existingSummary.setTimeUpdate(DateUtil.getCurrentTime());
+			existingSummary.setUserUpdate(performBy);
+			tokenUsageSummaryDAO.update(existingSummary);
+		}
+	}
 
-		ObjectNode jsonNode = MAPPER.createObjectNode();
+	@Transactional
+	public void exchangeMonthlyToken(String userId, Double value) throws Exception {
 
-		jsonNode.put("type", "add");
-		jsonNode.put("reason", "เบิกแต้มบุญ");
+	    if (userId == null || userId.trim().isEmpty()) {
+	        throw new IllegalArgumentException("User ID is required.");
+	    }
 
-		usage.setDescription(MAPPER.writeValueAsString(jsonNode));
-		usage.setYear(currentDate.getYear());
-		usage.setMonth(currentDate.getMonthValue());
-		usage.setReFlag("N");
-		usage.setUserCreate(userId);
-		usage.setTimeCreate(DateUtil.getCurrentTime());
+	    if (value == null || !Double.isFinite(value) || value <= 0) {
+	        throw new IllegalArgumentException("Exchange value must be greater than zero.");
+	    }
 
-		usageTokenDAO.save(usage);
+	    LocalDate currentDate = LocalDate.now(ZoneId.of("Asia/Bangkok"));
+	    int currentYear = currentDate.getYear();
+	    int currentMonth = currentDate.getMonthValue();
 
-		TokenUsage usageAccDeduct = new TokenUsage();
-		usageAccDeduct.setUserId(userId);
-		usageAccDeduct.setActionTypeId(ACTION_TYPE_EXCHANGE); // Exchange Duplicate for accumulated balance deduction
-		usageAccDeduct.setValue(null);
-		usageAccDeduct.setReconcile(value);
-		usageAccDeduct.setDescription("Auccumlated Deduct from Exchange");
-		usageAccDeduct.setYear(currentDate.getYear());
-		usageAccDeduct.setMonth(currentDate.getMonthValue());
-		usageAccDeduct.setReFlag("N");
-		usageAccDeduct.setUserCreate(userId);
-		usageAccDeduct.setTimeCreate(DateUtil.getCurrentTime());
+	    // 1. ตรวจสอบยอด Carry Over คงเหลือ
+	    Double carryOverBalance =
+	            usageTokenDAO.findCarryOverBalance(userId, currentYear);
 
-		usageTokenDAO.save(usageAccDeduct);
+	    if (carryOverBalance == null) {
+	        carryOverBalance = 0D;
+	    }
 
+	    // 2. ตรวจสอบยอดสะสมของปีปัจจุบัน
+	    Double currentYearBalance =
+	            usageTokenDAO.findYearlyBalance(userId, currentYear);
+
+	    if (currentYearBalance == null) {
+	        currentYearBalance = 0D;
+	    }
+
+	    // ป้องกันยอดติดลบจากข้อมูลเดิม
+	    carryOverBalance = Math.max(carryOverBalance, 0D);
+	    currentYearBalance = Math.max(currentYearBalance, 0D);
+
+	    // 3. ตรวจสอบยอดรวมที่สามารถใช้แลกได้
+	    double totalBalance = carryOverBalance + currentYearBalance;
+
+	    if (totalBalance < value) {
+	        throw new IllegalArgumentException(
+	                "Insufficient token balance for exchange."
+	        );
+	    }
+
+	    // 4. หัก Carry Over ก่อน
+	    double deductCarryOver = Math.min(carryOverBalance, value);
+
+	    // 5. ส่วนที่เหลือจึงหักจากแต้มของปีปัจจุบัน
+	    double deductCurrentYear = value - deductCarryOver;
+
+	    // 6. บันทึก Exchange เพียง 1 record
+	    ObjectNode description = MAPPER.createObjectNode();
+	    description.put("type", "exchange");
+	    description.put("reason", "เบิกแต้มบุญ");
+	    description.put("carryOverDeduct", deductCarryOver);
+	    description.put("currentYearDeduct", deductCurrentYear);
+
+	    TokenUsage exchangeUsage = new TokenUsage();
+	    exchangeUsage.setUserId(userId);
+	    exchangeUsage.setActionTypeId(ACTION_TYPE_EXCHANGE);
+	    exchangeUsage.setValue(value);
+	    exchangeUsage.setReconcile(null);
+	    exchangeUsage.setDescription(MAPPER.writeValueAsString(description));
+	    exchangeUsage.setYear(currentYear);
+	    exchangeUsage.setMonth(currentMonth);
+	    exchangeUsage.setReFlag("N");
+	    exchangeUsage.setUserCreate(userId);
+	    exchangeUsage.setTimeCreate(DateUtil.getCurrentTime());
+
+	    usageTokenDAO.save(exchangeUsage);
+
+	    // 7. บันทึกรายการหักจาก Carry Over
+	    if (deductCarryOver > 0) {
+	        TokenUsage carryOverDeduct = new TokenUsage();
+	        carryOverDeduct.setUserId(userId);
+	        carryOverDeduct.setActionTypeId(ACTION_TYPE_SPEND_CARRYOVER);
+	        carryOverDeduct.setValue(null);
+	        carryOverDeduct.setReconcile(deductCarryOver);
+	        carryOverDeduct.setDescription(
+	                "Carry Over deduction from Exchange"
+	        );
+	        carryOverDeduct.setYear(currentYear);
+	        carryOverDeduct.setMonth(currentMonth);
+	        carryOverDeduct.setReFlag("N");
+	        carryOverDeduct.setUserCreate(userId);
+	        carryOverDeduct.setTimeCreate(DateUtil.getCurrentTime());
+
+	        usageTokenDAO.save(carryOverDeduct);
+	    }
+
+	    // 8. บันทึกรายการหักจากแต้มปีปัจจุบัน
+	    if (deductCurrentYear > 0) {
+	        TokenUsage currentYearDeduct = new TokenUsage();
+	        currentYearDeduct.setUserId(userId);
+	        currentYearDeduct.setActionTypeId(ACTION_TYPE_SPEND_CURRENT_YEAR);
+	        currentYearDeduct.setValue(null);
+	        currentYearDeduct.setReconcile(deductCurrentYear);
+	        currentYearDeduct.setDescription(
+	                "Current Year deduction from Exchange"
+	        );
+	        currentYearDeduct.setYear(currentYear);
+	        currentYearDeduct.setMonth(currentMonth);
+	        currentYearDeduct.setReFlag("N");
+	        currentYearDeduct.setUserCreate(userId);
+	        currentYearDeduct.setTimeCreate(DateUtil.getCurrentTime());
+
+	        usageTokenDAO.save(currentYearDeduct);
+	    }
 	}
 
 	@Transactional
 	public void createRewardItem(String itemName, Double itemToken, Double itemAddedMoney, Integer itemQuantity,
 			String itemDescription, String effectiveDate, File cover, String activeFlag, String coverFileName,
-			File[] additionalImages, String[] additionalImagesFileName, String userId, String realPath)
-			throws Exception {
+			File[] additionalImages, String[] additionalImagesFileName, String userId, String realPath,
+			Integer productId) throws Exception {
 
 		// =========================
 		// Validation
@@ -1921,6 +2654,7 @@ public class CubeTokenService {
 
 		ItemPrivilege item = new ItemPrivilege();
 
+		item.setProductId(productId);
 		item.setItemName(itemName.trim());
 		item.setToken(itemToken);
 		item.setAddedMoney(itemAddedMoney);
@@ -2001,7 +2735,7 @@ public class CubeTokenService {
 	public void updateRewardItem(Integer itemId, String itemName, Double itemToken, Double itemAddedMoney,
 			Integer itemQuantity, String itemDescription, String effectiveDate, String activeFlag, File cover,
 			String coverFileName, File[] additionalImages, String[] additionalImagesFileName,
-			String removedAdditionalImages, String userId, String realPath) throws Exception {
+			String removedAdditionalImages, String userId, String realPath, Integer producId) throws Exception {
 
 		// =========================
 		// Validation
@@ -2089,6 +2823,7 @@ public class CubeTokenService {
 		// =========================
 
 		item.setItemName(itemName.trim());
+		item.setProductId(producId);
 		item.setToken(itemToken);
 		item.setAddedMoney(itemAddedMoney);
 		item.setQuantity(itemQuantity);
@@ -2253,6 +2988,7 @@ public class CubeTokenService {
 		itemPrivilegeDAO.delete(item);
 	}
 
+	@Transactional(readOnly = true)
 	public List<ItemPrivilege> getAllRewardItems() throws Exception {
 
 		return itemPrivilegeDAO.findAll();
@@ -2263,6 +2999,233 @@ public class CubeTokenService {
 		return itemPrivilegeDAO.findAllWithUserFavorite(userId);
 	}
 
+	@Transactional(readOnly = true)
+	public List<Map<String, Object>> getUserRedeemHistory(String userId) throws Exception {
+
+		if (userId == null || userId.trim().isEmpty()) {
+			throw new IllegalArgumentException("User ID is required.");
+		}
+
+		return userRedeemDAO.findByUserId(userId);
+	}
+
+	@Transactional(readOnly = true)
+	public List<Map<String, Object>> getAllUserRedeemHistory() throws Exception {
+
+		return userRedeemDAO.findAll();
+	}
+
+	@Transactional(readOnly = true)
+	public Map<String, Object> getUserRedeemById(Integer redeemId) throws Exception {
+
+		if (redeemId == null || redeemId <= 0) {
+			throw new IllegalArgumentException("Invalid redeem ID.");
+		}
+
+		Map<String, Object> redeem = userRedeemDAO.findWithReceiveSignatureById(redeemId);
+
+		if (redeem == null) {
+			throw new IllegalArgumentException("Redeem record with ID " + redeemId + " not found.");
+		}
+
+		List<Map<String, String>> statusLogList = MAPPER.readValue(redeem.get("statusLog").toString(),
+				new TypeReference<List<Map<String, String>>>() {
+				});
+
+		for (Map<String, String> statusLog : statusLogList) {
+
+			String userId = statusLog.get("userUpdate");
+
+			if (userId != null) {
+
+				User user = userDAO.findById(userId);
+
+				if (user != null) {
+					String disaplayName = (user.getNameEN() != null && !user.getNameEN().isEmpty()) ? user.getNameEN()
+							: user.getName();
+					statusLog.put("displayName", user.getEmployeeId() + " - " + disaplayName);
+				} else {
+					statusLog.put("displayName", userId);
+				}
+			}
+		}
+
+		redeem.put("statusLog", MAPPER.writeValueAsString(statusLogList));
+		return redeem;
+	}
+
+	@Transactional
+	public void updateRedeemStatus(Integer redeemId, String statusCode, String reason, File signature, String userId,
+			String realPath) throws Exception {
+
+		if (redeemId == null || redeemId <= 0) {
+			throw new IllegalArgumentException("Invalid redeemId");
+		}
+
+		if (statusCode == null || statusCode.isEmpty()) {
+			throw new IllegalArgumentException("Invalid status");
+		}
+
+		if (userId == null || userId.trim().isEmpty()) {
+			throw new IllegalArgumentException("User ID is required.");
+		}
+
+		List<DocStatus> statusList = docStatusDAO.findByPage("cube token");
+
+		UserRedeem redeem = userRedeemDAO.findById(redeemId);
+
+		boolean validStatus = statusList.stream().anyMatch(status -> statusCode.equals(status.getStatusCode()));
+
+		if (!validStatus) {
+			throw new IllegalArgumentException("Invalid status code: " + statusCode);
+		}
+
+		if (redeem == null) {
+			throw new IllegalArgumentException("Redeem record not found for redeemId: " + redeemId);
+		}
+
+		String currentStatus = redeem.getRedeemStatus();
+
+		if (!isValidTransition(currentStatus, statusCode)) {
+			throw new IllegalArgumentException("Invalid status transition: " + currentStatus + " -> " + statusCode);
+		}
+
+		if (STATUS_REDEEM_COMPLETE.equals(statusCode)) {
+
+			if (!redeem.getUserId().equals(userId)) {
+				throw new IllegalArgumentException("Only the user who initiated the redeem can complete it.");
+			}
+
+			if (signature != null && signature.exists()) {
+				List<File> signatureFiles = new ArrayList<>();
+				signatureFiles.add(signature);
+
+				List<String> signatureFileNames = new ArrayList<>();
+				signatureFileNames.add("signature.png");
+
+				List<FileUpload> signatureSaved = fileAttachmentService.attach(signatureFiles, signatureFileNames,
+						"privilegeManagement", String.valueOf(redeemId), userId, realPath);
+
+				if (signatureSaved.isEmpty()) {
+					throw new IllegalStateException("Unable to upload signature.");
+				}
+
+				FileUpload signatureFile = signatureSaved.get(0);
+
+				User user = userDAO.findById(userId);
+				user.setPathSignature(signatureFile.getPath());
+				user.setTimeUpdate(DateUtil.getCurrentTime());
+				userDAO.update(user);
+
+				redeem.setUserReceive(userId);
+
+			}
+
+			else {
+
+				User user = userDAO.findById(redeem.getUserId());
+				String signaturePath = user != null ? user.getPathSignature() : null;
+
+				if (signaturePath == null || signaturePath.trim().isEmpty()) {
+					throw new IllegalArgumentException("Signature is required for completing the redeem process.");
+				}
+
+				redeem.setUserReceive(userId);
+
+			}
+
+		}
+
+		redeem.setRedeemStatus(statusCode);
+
+		redeem.setUserUpdate(userId);
+		redeem.setTimeUpdate(DateUtil.getCurrentTime());
+
+		ArrayNode statusArray;
+
+		if (redeem.getStatusLog() != null && !redeem.getStatusLog().trim().isEmpty()) {
+
+			statusArray = (ArrayNode) MAPPER.readTree(redeem.getStatusLog());
+
+		} else {
+
+			statusArray = MAPPER.createArrayNode();
+		}
+
+		ObjectNode statusJson = MAPPER.createObjectNode();
+
+		switch (statusCode) {
+
+		case STATUS_REDEEM_APPROVED:
+			redeem.setUserApprove(userId);
+			redeem.setTimeApprove(DateUtil.getCurrentTime());
+			break;
+
+		case STATUS_REDEEM_RECEIVED:
+			redeem.setUserDeliver(userId);
+			redeem.setTimeDeliver(DateUtil.getCurrentTime());
+			break;
+
+		case STATUS_REDEEM_COMPLETE:
+			redeem.setTimeReceive(DateUtil.getCurrentTime());
+			break;
+
+		default:
+			break;
+
+		}
+
+		statusJson.put("status", statusCode);
+		statusJson.put("timeUpdate", DateUtil.getCurrentTime().toString());
+		statusJson.put("userUpdate", userId);
+
+		if (reason != null && !reason.isEmpty()) {
+			redeem.setDescription(reason);
+			statusJson.put("reason", reason);
+		}
+
+		statusArray.add(statusJson);
+
+		redeem.setStatusLog(MAPPER.writeValueAsString(statusArray));
+
+		userRedeemDAO.update(redeem);
+	}
+
+	private boolean isValidTransition(String currentStatus, String nextStatus) {
+
+		if (currentStatus == null || nextStatus == null) {
+			return false;
+		}
+
+		// 1 -> 2
+		if (STATUS_REDEEM_PENDING.equals(currentStatus) && STATUS_REDEEM_APPROVED.equals(nextStatus)) {
+			return true;
+		}
+
+		// 2 -> 3
+		if (STATUS_REDEEM_APPROVED.equals(currentStatus) && STATUS_REDEEM_RECEIVED.equals(nextStatus)) {
+			return true;
+		}
+
+		// 3 -> 4
+		if (STATUS_REDEEM_RECEIVED.equals(currentStatus) && STATUS_REDEEM_COMPLETE.equals(nextStatus)) {
+			return true;
+		}
+
+		// 1 -> 5 (Cancel)
+		if (STATUS_REDEEM_PENDING.equals(currentStatus) && STATUS_REDEEM_CANCEL.equals(nextStatus)) {
+			return true;
+		}
+
+		// 2 -> 5 (Cancel)
+		if (STATUS_REDEEM_APPROVED.equals(currentStatus) && STATUS_REDEEM_CANCEL.equals(nextStatus)) {
+			return true;
+		}
+
+		return false;
+	}
+
+	@Transactional(readOnly = true)
 	public ItemPrivilege getRewardItemById(Integer id) throws Exception {
 
 		if (id == null || id <= 0) {
@@ -2278,91 +3241,197 @@ public class CubeTokenService {
 		return item;
 	}
 
-	@Transactional
-	public void redeemRewardItem(String userId, Integer itemId) throws Exception {
-
-		if (userId == null || userId.trim().isEmpty()) {
-			throw new IllegalArgumentException("User ID is required.");
-		}
+	@Transactional(readOnly = true)
+	public List<Map<String, Object>> getRedeemHistoryByItemId(Integer itemId) throws Exception {
 
 		if (itemId == null || itemId <= 0) {
 			throw new IllegalArgumentException("Invalid item ID.");
 		}
 
-		ItemPrivilege item = itemPrivilegeDAO.findById(itemId);
-
-		if (item == null) {
-			throw new IllegalArgumentException("Item not found.");
-		}
-
-		if (item.getQuantity() <= 0) {
-			throw new IllegalArgumentException("Item is out of stock.");
-		}
-
-		if (item.getActiveFlag() == null || !"Y".equals(item.getActiveFlag())) {
-			throw new IllegalArgumentException("Item is not active.");
-		}
-
-		LocalDate today = LocalDate.now();
-
-		LocalDate startDate = item.getStartDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-
-		LocalDate endDate = item.getEndDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-
-		if (today.isBefore(startDate) || today.isAfter(endDate)) {
-			throw new IllegalArgumentException("Item is not available for redemption today.");
-		}
-
-		Double userBalance = getUserCurrentAccumulatedBalance(userId);
-
-		if (userBalance < item.getToken()) {
-			throw new IllegalArgumentException("Insufficient token balance.");
-		}
-
-		item.setQuantity(item.getQuantity() - 1);
-		item.setUserUpdate(userId);
-		item.setTimeUpdate(DateUtil.getCurrentTime());
-
-		itemPrivilegeDAO.update(item);
-
-		TokenUsage usage = new TokenUsage();
-
-		ObjectNode jsonNode = MAPPER.createObjectNode();
-
-		jsonNode.put("type", "redeem");
-		jsonNode.put("reason", "Redeem reward item: " + item.getItemName());
-		jsonNode.put("itemId", itemId);
-
-		usage.setUserId(userId);
-		usage.setActionTypeId(ACTION_TYPE_REDEEM);
-		usage.setValue(null);
-		usage.setReconcile(item.getToken());
-		usage.setYear(LocalDate.now().getYear());
-		usage.setMonth(LocalDate.now().getMonthValue());
-		usage.setReFlag("N");
-		usage.setDescription(MAPPER.writeValueAsString(jsonNode));
-		usage.setUserCreate(userId);
-		usage.setTimeCreate(DateUtil.getCurrentTime());
-
-		usageTokenDAO.save(usage);
-
-		UserRedeem redeem = new UserRedeem();
-
-		redeem.setUserId(userId);
-		redeem.setItemId(item.getItemId());
-		redeem.setCash(item.getAddedMoney());
-		redeem.setToken(item.getToken());
-		redeem.setRedeemStatus(STATUS_REDEEM_PENDING);
-		redeem.setUserCreate(userId);
-		redeem.setTimeCreate(DateUtil.getCurrentTime());
-
-		userRedeemDAO.save(redeem);
-
-		log.info("User " + userId + " redeemed reward item " + item.getItemName() + " costing " + item.getToken()
-				+ " tokens.");
-
+		return userRedeemDAO.findByItemId(itemId);
 	}
 
+	@Transactional
+	public void redeemRewardItem(User user, Integer itemId) throws Exception {
+
+	    if (user == null) {
+	        throw new IllegalArgumentException("User is required.");
+	    }
+
+	    if (itemId == null || itemId <= 0) {
+	        throw new IllegalArgumentException("Invalid item ID.");
+	    }
+
+	    ItemPrivilege item = itemPrivilegeDAO.findById(itemId);
+
+	    if (item == null) {
+	        throw new IllegalArgumentException("Item not found.");
+	    }
+
+	    if (item.getQuantity() <= 0) {
+	        throw new IllegalArgumentException("Item is out of stock.");
+	    }
+
+	    if (item.getActiveFlag() == null || !"Y".equals(item.getActiveFlag())) {
+	        throw new IllegalArgumentException("Item is not active.");
+	    }
+
+	    String userId = user.getId();
+
+	    LocalDate today = LocalDate.now(ZoneId.of("Asia/Bangkok"));
+
+	    LocalDate startDate = item.getStartDate().toInstant()
+	            .atZone(ZoneId.of("Asia/Bangkok"))
+	            .toLocalDate();
+
+	    LocalDate endDate = item.getEndDate().toInstant()
+	            .atZone(ZoneId.of("Asia/Bangkok"))
+	            .toLocalDate();
+
+	    if (today.isBefore(startDate) || today.isAfter(endDate)) {
+	        throw new IllegalArgumentException(
+	                "Item is not available for redemption today."
+	        );
+	    }
+
+	    int currentYear = today.getYear();
+	    int currentMonth = today.getMonthValue();
+
+	    double rewardCost = item.getToken().doubleValue();
+
+	    // 1. ตรวจสอบยอด Carry Over
+	    Double carryOverBalance =
+	            usageTokenDAO.findCarryOverBalance(userId, currentYear);
+
+	    if (carryOverBalance == null) {
+	        carryOverBalance = 0D;
+	    }
+
+	    // 2. ตรวจสอบยอดสะสมของปีปัจจุบัน
+	    Double currentYearBalance =
+	            usageTokenDAO.findYearlyBalance(userId, currentYear);
+
+	    if (currentYearBalance == null) {
+	        currentYearBalance = 0D;
+	    }
+
+	    carryOverBalance = Math.max(carryOverBalance, 0D);
+	    currentYearBalance = Math.max(currentYearBalance, 0D);
+
+	    // 3. ตรวจสอบยอดรวม
+	    if (carryOverBalance + currentYearBalance < rewardCost) {
+	        throw new IllegalArgumentException(
+	                "Insufficient token balance."
+	        );
+	    }
+
+	    // 4. หัก Carry Over ก่อน
+	    double deductCarryOver = Math.min(carryOverBalance, rewardCost);
+
+	    // 5. หักส่วนที่เหลือจากยอดปีปัจจุบัน
+	    double deductCurrentYear = rewardCost - deductCarryOver;
+
+	    // 6. ลดจำนวนสินค้าคงเหลือ
+	    item.setQuantity(item.getQuantity() - 1);
+	    item.setUserUpdate(userId);
+	    item.setTimeUpdate(DateUtil.getCurrentTime());
+
+	    itemPrivilegeDAO.update(item);
+
+	    // 7. บันทึก REDEEM เพียง 1 record
+	    ObjectNode jsonNode = MAPPER.createObjectNode();
+
+	    jsonNode.put("type", "redeem");
+	    jsonNode.put("reason", "Redeem reward item: " + item.getItemName());
+	    jsonNode.put("itemId", itemId);
+	    jsonNode.put("carryOverDeduct", deductCarryOver);
+	    jsonNode.put("currentYearDeduct", deductCurrentYear);
+
+	    TokenUsage usage = new TokenUsage();
+
+	    usage.setUserId(userId);
+	    usage.setActionTypeId(ACTION_TYPE_REDEEM);
+	    usage.setValue(rewardCost);
+	    usage.setReconcile(null);
+	    usage.setYear(currentYear);
+	    usage.setMonth(currentMonth);
+	    usage.setReFlag("N");
+	    usage.setDescription(MAPPER.writeValueAsString(jsonNode));
+	    usage.setUserCreate(userId);
+	    usage.setTimeCreate(DateUtil.getCurrentTime());
+
+	    usageTokenDAO.save(usage);
+
+	    // 8. บันทึกการหัก Carry Over
+	    if (deductCarryOver > 0) {
+	        TokenUsage carryOverDeduct = new TokenUsage();
+
+	        carryOverDeduct.setUserId(userId);
+	        carryOverDeduct.setActionTypeId(ACTION_TYPE_SPEND_CARRYOVER);
+	        carryOverDeduct.setValue(null);
+	        carryOverDeduct.setReconcile(deductCarryOver);
+	        carryOverDeduct.setDescription(
+	                "Carry Over deduction from Redeem item: " + item.getItemName()
+	        );
+	        carryOverDeduct.setYear(currentYear);
+	        carryOverDeduct.setMonth(currentMonth);
+	        carryOverDeduct.setReFlag("N");
+	        carryOverDeduct.setUserCreate(userId);
+	        carryOverDeduct.setTimeCreate(DateUtil.getCurrentTime());
+
+	        usageTokenDAO.save(carryOverDeduct);
+	    }
+
+	    // 9. บันทึกการหัก Token ของปีปัจจุบัน
+	    if (deductCurrentYear > 0) {
+	        TokenUsage currentYearDeduct = new TokenUsage();
+
+	        currentYearDeduct.setUserId(userId);
+	        currentYearDeduct.setActionTypeId(ACTION_TYPE_SPEND_CURRENT_YEAR);
+	        currentYearDeduct.setValue(null);
+	        currentYearDeduct.setReconcile(deductCurrentYear);
+	        currentYearDeduct.setDescription(
+	                "Current Year deduction from Redeem item: " + item.getItemName()
+	        );
+	        currentYearDeduct.setYear(currentYear);
+	        currentYearDeduct.setMonth(currentMonth);
+	        currentYearDeduct.setReFlag("N");
+	        currentYearDeduct.setUserCreate(userId);
+	        currentYearDeduct.setTimeCreate(DateUtil.getCurrentTime());
+
+	        usageTokenDAO.save(currentYearDeduct);
+	    }
+
+	    // 10. บันทึกประวัติการแลกของรางวัล
+	    UserRedeem redeem = new UserRedeem();
+
+	    redeem.setUserId(userId);
+	    redeem.setItemId(item.getItemId());
+	    redeem.setCash(item.getAddedMoney());
+	    redeem.setToken(item.getToken());
+	    redeem.setRedeemStatus(STATUS_REDEEM_PENDING);
+
+	    ObjectNode statusJson = MAPPER.createObjectNode()
+	            .put("status", STATUS_REDEEM_PENDING)
+	            .put("timeUpdate", DateUtil.getCurrentTime().toString())
+	            .put("userUpdate", userId);
+
+	    ArrayNode statusArray = MAPPER.createArrayNode().add(statusJson);
+
+	    redeem.setStatusLog(MAPPER.writeValueAsString(statusArray));
+	    redeem.setUserCreate(userId);
+	    redeem.setTimeCreate(DateUtil.getCurrentTime());
+
+	    userRedeemDAO.save(redeem);
+
+	    log.info(
+	            "User " + userId + " redeemed reward item " + item.getItemName()
+	            + " costing " + rewardCost + " tokens. Carry Over deducted: "
+	            + deductCarryOver + ", Current Year deducted: " + deductCurrentYear
+	    );
+	}
+
+	@Transactional
 	public ItemPrivilege updateRewardItemActiveFlag(Integer itemId, String activeFlag, String userId) throws Exception {
 
 		if (!"Y".equals(activeFlag) && !"N".equals(activeFlag)) {
@@ -2489,6 +3558,11 @@ public class CubeTokenService {
 		case "No Record":
 			row.put("style", "danger");
 			row.put("icon", "ki-calendar-remove");
+			break;
+
+		case "GPS Check-In/Out":
+			row.put("style", "warning");
+			row.put("icon", "ki-map");
 			break;
 
 		default:
@@ -2789,6 +3863,74 @@ public class CubeTokenService {
 		int minute = Integer.parseInt(parts[1]);
 
 		return LocalTime.of(hour, minute);
+	}
+
+	private static class DistributionData {
+
+		private final List<TokenSetting> settings;
+		private final List<ActionPoint> giftPoints;
+
+		private final boolean allowActive;
+		private final boolean allowProbation;
+		private final boolean allowExcluded;
+		private final boolean allowIntern;
+		private final boolean allowEnable;
+		private final boolean allowDisable;
+
+		private final Integer monitorLogId;
+
+		public DistributionData(List<TokenSetting> settings, List<ActionPoint> giftPoints, boolean allowActive,
+				boolean allowProbation, boolean allowExcluded, boolean allowIntern, boolean allowEnable,
+				boolean allowDisable, Integer monitorLogId) {
+
+			this.settings = settings;
+			this.giftPoints = giftPoints;
+
+			this.allowActive = allowActive;
+			this.allowProbation = allowProbation;
+			this.allowExcluded = allowExcluded;
+			this.allowIntern = allowIntern;
+			this.allowEnable = allowEnable;
+			this.allowDisable = allowDisable;
+
+			this.monitorLogId = monitorLogId;
+		}
+
+		public List<TokenSetting> getSettings() {
+			return settings;
+		}
+
+		public List<ActionPoint> getGiftPoints() {
+			return giftPoints;
+		}
+
+		public boolean isAllowActive() {
+			return allowActive;
+		}
+
+		public boolean isAllowProbation() {
+			return allowProbation;
+		}
+
+		public boolean isAllowExcluded() {
+			return allowExcluded;
+		}
+
+		public boolean isAllowIntern() {
+			return allowIntern;
+		}
+
+		public boolean isAllowEnable() {
+			return allowEnable;
+		}
+
+		public boolean isAllowDisable() {
+			return allowDisable;
+		}
+
+		public Integer getMonitorLogId() {
+			return monitorLogId;
+		}
 	}
 
 }

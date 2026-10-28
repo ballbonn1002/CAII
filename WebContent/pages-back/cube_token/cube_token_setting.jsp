@@ -191,7 +191,7 @@ input[type="checkbox"]:hover {
 						</div>
 					</div>
 				</div>
-
+				
 				<div class="card card-flush mt-10">
 					<div class="card-header mt-2">
 						<div class="card-title mt-6 d-flex flex-column gap-1">
@@ -220,7 +220,7 @@ input[type="checkbox"]:hover {
 
 					<div class="card-body ">
 						<div class="row g-6">
-							<div class="col-12 col-sm-6 col-lg-6 col-xl-3 ">
+							<div class="col-12 col-sm-6 col-lg-4 col-xl">
 
 								<div
 									class="bg-light
@@ -282,10 +282,10 @@ input[type="checkbox"]:hover {
 								</div>
 
 							</div>
-
+							
 							<c:forEach var="setting"
 								items="${tokenSettingPageData.giftSetting.data}">
-								<div class="col-12 col-sm-6 col-lg-6 col-xl-3">
+								<div class="col-12 col-sm-6 col-lg-4 col-xl">
 
 									<div
 										class="bg-light-${setting.style}
@@ -343,7 +343,7 @@ input[type="checkbox"]:hover {
 											<!-- Point -->
 											<input type="number"
 												class="form-control form-control-solid form-control-lg setting-input"
-												placeholder="0" value="${setting.point}"
+												placeholder="0" value="<fmt:formatNumber value='${setting.point}' pattern='#.##' />"
 												onblur="updateTokenSetting(
 												        'gift',
 												        ${setting.id},

@@ -544,17 +544,47 @@
 			value="/pages-back/cube_token/return_cube_token.jsp" />
 	</definition>
 	
+	<definition name="cubeTokenLogPage" extends="baseLayout">
+		<put-attribute name="title" value="Cube Token Logs" />
+		<put-attribute name="body"
+			value="/pages-back/cube_token/cube_token_logs.jsp" />
+	</definition>
+	
+		<definition name="cubeTokenLogDetail" extends="baseLayout">
+		<put-attribute name="title" value="Cube Token Log Detail" />
+		<put-attribute name="body"
+			value="/pages-back/cube_token/cube_token_log_detail.jsp" />
+	</definition>
+	
 
 	<definition name="privilegeManagement" extends="baseLayout">
-		<put-attribute name="title" value="Privilege Management" />
+		<put-attribute name="title" value="Redeem Rewards Management" />
 		<put-attribute name="body"
 			value="/pages-back/cube_token/privilege_management.jsp" />
 	</definition>
 	
 	<definition name="privilege" extends="baseLayout">
-		<put-attribute name="title" value="Privilege" />
+		<put-attribute name="title" value="Redeem Rewards" />
 		<put-attribute name="body"
 			value="/pages-back/cube_token/privilege.jsp" />
+	</definition>
+	
+	<definition name="privilegeHistory" extends="baseLayout">
+		<put-attribute name="title" value="Redeem History" />
+		<put-attribute name="body"
+			value="/pages-back/cube_token/privilege_history.jsp" />
+	</definition>
+	
+	<definition name="privilegeHistoryManagement" extends="baseLayout">
+		<put-attribute name="title" value="Redeem History Management" />
+		<put-attribute name="body"
+			value="/pages-back/cube_token/privilege_history_management.jsp" />
+	</definition>
+	
+	<definition name="editRedeem" extends="baseLayout">
+		<put-attribute name="title" value="Redeem Detail" />
+		<put-attribute name="body"
+			value="/pages-back/cube_token/edit_redeem.jsp" />
 	</definition>
 	
 	<definition name="createRewardItem" extends="baseLayout">

@@ -736,6 +736,9 @@ public class UserDAOImpl implements UserDAO {
 	    String hql =
 	            "FROM User u " +
 	            "WHERE u.employeeTypeId = :employeeType " +
+	            		
+				"AND u.startDate IS NOT NULL " +
+				"AND u.startDate <= current_date() " +
 
 	            "AND (" +
 	            "     (u.employeeStatus = 1 AND :allowActive = true) " +
