@@ -251,7 +251,7 @@ prefix="c"%> <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
                     </label>
                     <div
                       id="attachFileList"
-                      class="d-flex flex-wrap align-items-center gap-6 mt-4"
+                      class="d-flex flex-wrap align-items-center gap-6 mt-10"
                     ></div>
                     <div id="errorMsgAF" class="text-danger fs-8 mt-1"></div>
                   </div>
@@ -377,21 +377,23 @@ prefix="c"%> <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
               </form>
             </div>
 
-            <div class="d-flex justify-content-between mb-10">
+            <div
+              class="d-flex flex-column-reverse flex-md-row justify-content-md-between gap-5 gap-md-3 mb-10"
+            >
               <button
                 type="button"
                 id="backFormBtn"
                 onclick="goBackToList()"
-                class="btn btn-lg btn-light fw-medium text-light-inverse px-6 py-4 me-4 border"
+                class="btn btn-lg btn-light fw-medium text-light-inverse px-6 py-4 border"
               >
                 Back
               </button>
-              <div class="d-flex">
+              <div class="d-grid d-md-flex gap-5 gap-md-3">
                 <button
                   type="button"
                   id="saveDraftBtn"
                   onclick="saveMr('1')"
-                  class="btn btn-lg btn-cyan text-white fw-medium px-6 py-4 me-4"
+                  class="btn btn-lg btn-cyan text-white fw-medium px-6 py-4"
                 >
                   Save Draft
                 </button>
@@ -903,8 +905,8 @@ prefix="c"%> <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
               title: "Save Success",
               text: "Signature has been successfully recorded.",
               icon: "success",
-							timer: 800,
-							showConfirmButton: false
+              timer: 800,
+              showConfirmButton: false,
             }).then(() => {
               saveFormToSession();
               location.reload();
@@ -923,14 +925,49 @@ prefix="c"%> <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
     function confirmReceiver(slot) {
       const now = new Date();
       const pad = (n) => String(n).padStart(2, "0");
-      const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+      const months = [
+        "Jan",
+        "Feb",
+        "Mar",
+        "Apr",
+        "May",
+        "Jun",
+        "Jul",
+        "Aug",
+        "Sep",
+        "Oct",
+        "Nov",
+        "Dec",
+      ];
 
-      const timestamp = now.getFullYear() + "-" + pad(now.getMonth() + 1) + "-" + pad(now.getDate()) +
-        " " + pad(now.getHours()) + ":" + pad(now.getMinutes()) + ":" + pad(now.getSeconds());
-      const displayTimestamp = now.getDate() + " " +months[now.getMonth()] + " " + now.getFullYear() + ", " +
-        pad(now.getHours()) + ":" + pad(now.getMinutes());
+      const timestamp =
+        now.getFullYear() +
+        "-" +
+        pad(now.getMonth() + 1) +
+        "-" +
+        pad(now.getDate()) +
+        " " +
+        pad(now.getHours()) +
+        ":" +
+        pad(now.getMinutes()) +
+        ":" +
+        pad(now.getSeconds());
+      const displayTimestamp =
+        now.getDate() +
+        " " +
+        months[now.getMonth()] +
+        " " +
+        now.getFullYear() +
+        ", " +
+        pad(now.getHours()) +
+        ":" +
+        pad(now.getMinutes());
 
-      requesterSign = { userName: currentUserDisplay, requestAt: timestamp, displayAt: displayTimestamp};
+      requesterSign = {
+        userName: currentUserDisplay,
+        requestAt: timestamp,
+        displayAt: displayTimestamp,
+      };
 
       const labelEl = document.getElementById("receiverLabel" + slot);
       if (labelEl) labelEl.style.display = "none";
@@ -1065,8 +1102,8 @@ prefix="c"%> <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
                   ? "MR submitted successfully! "
                   : "MR saved draft successfully! ") + resp.data.mrId,
               icon: "success",
-							timer: 800,
-							showConfirmButton: false
+              timer: 800,
+              showConfirmButton: false,
             }).then(() => {
               window.location.href = ctx + "/equipment_request_mr_list";
             });

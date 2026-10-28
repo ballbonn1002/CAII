@@ -78,7 +78,7 @@
 	<div class="app-main flex-column flex-row-fluid">
 		<div class="d-flex flex-column flex-column-fluid">
 			<div id="kt_app_toolbar" class="app-toolbar py-3 py-lg-6">
-				<div id="kt_app_toolbar_container" class="app-container container-fluid d-flex flex-stack">
+				<div id="kt_app_toolbar_container" class="app-container container-fluid d-flex flex-stack flex-wrap me-3">
 
 					<div class="page-title d-flex flex-column justify-content-center flex-wrap me-3">
 						<h1 class="page-heading d-flex text-gray-700 fw-semibold flex-column justify-content-center my-0">
@@ -91,7 +91,7 @@
 						</ul>
 					</div>
 
-					<div class="d-flex align-items-center gap-4">
+					<div class="d-flex align-items-center justify-content-between gap-4 w-100 w-md-auto mt-5 mb-2 my-md-0">
 						<span class="fs-2x fw-bold text-primary">#<c:out value="${mr.mrId}" /></span>
 						<span class="badge badge-lg badge-${mrStatus.color} fw-semibold fs-7 p-4 ${mrStatus.color == 'secondary' ? 'text-dark' : 'text-white'}">
 							<c:out value="${empty mrStatus ? '-' : mrStatus.statusName}" />
@@ -204,7 +204,7 @@
 													</div>
 												</c:forEach>
 											</div>
-											<div id="attachFileList" class="d-flex flex-wrap align-items-center gap-6 mt-4"></div>
+											<div id="attachFileList" class="d-flex flex-wrap align-items-center gap-6 mt-10"></div>
 											<div id="errorMsgAF" class="text-danger fs-8 mt-1"></div>
 										</div>
 									
@@ -503,11 +503,11 @@
 								<!-- Pending status -->
 								<c:if test="${mrStatus.statusCode == '2'  || mrStatus.statusCode == '5' || mrStatus.statusCode == '6'}">
 									<c:if test="${not empty mr.requestUser}">
-										<div class="col-12 mb-4">
+										<div class="col-12 p-6 p-md-16 m-0">
 											<div class="d-flex flex-column align-items-center gap-3">
 												<c:if test="${not empty userRequest.pathSignature}">
 													<img src="${pageContext.request.contextPath}${userRequest.pathSignature}"
-														style="max-height: 150px; max-width: 360px; object-fit: contain;" />
+														class="img-fluid d-block mx-auto w-75 w-md-25" />
 												</c:if>
 												<span class="text-primary pt-3 fs-4 fw-medium">ชื่อ ผู้ขอเบิก</span>
 												<div class="d-flex flex-column align-items-center">
@@ -524,11 +524,11 @@
 								<!-- Approved status -->
 								<c:if test="${mrStatus.statusCode == '3'}">
 									<c:if test="${not empty mr.requestUser}">
-										<div class="col-6 p-16 m-0">
+										<div class="col-12 col-md-6 p-6 p-md-16 m-0">
 											<div class="d-flex flex-column align-items-center gap-3">
 												<c:if test="${not empty userRequest.pathSignature}">
 													<img src="${pageContext.request.contextPath}${userRequest.pathSignature}"
-														style="max-height: 150px; max-width: 360px; object-fit: contain;" />
+														class="img-fluid d-block mx-auto w-75" />
 												</c:if>
 												<span class="text-primary pt-3 fs-4 fw-medium">ชื่อ ผู้ขอเบิก</span>
 												<div class="d-flex flex-column align-items-center">
@@ -542,11 +542,11 @@
 									</c:if>
 
 									<c:if test="${not empty mr.approveUser}">
-										<div class="col-6 p-16 m-0">
+										<div class="col-12 col-md-6 p-6 p-md-16 m-0">
 											<div class="d-flex flex-column align-items-center gap-3">
 												<c:if test="${not empty userApprove.pathSignature}">
 													<img src="${pageContext.request.contextPath}${userApprove.pathSignature}"
-														style="max-height: 150px; max-width: 360px; object-fit: contain;" />
+														class="img-fluid d-block mx-auto w-75" />
 												</c:if>
 												<span class="text-primary pt-3 fs-4 fw-medium">ชื่อ ผู้อนุมัติ</span>
 												<div class="d-flex flex-column align-items-center">
@@ -573,7 +573,7 @@
 								<!-- Delivered status -->
 								<c:if test="${mrStatus.statusCode == '4' and not empty mr.receiveUser}">
 									<c:if test="${not empty mr.requestUser}">
-										<div class="col-4 mb-4">
+										<div class="col-12 col-md-4 mb-4">
 											<div class="d-flex flex-column align-items-center gap-3">
 												<c:if test="${not empty userRequest.pathSignature}">
 													<img src="${pageContext.request.contextPath}${userRequest.pathSignature}"
@@ -591,7 +591,7 @@
 									</c:if>
 
 									<c:if test="${not empty mr.receiveUser}">
-										<div class="col-4 mb-4">
+										<div class="col-12 col-md-4 mb-4">
 											<div class="d-flex flex-column align-items-center gap-3">
 												<c:if test="${not empty userReceive.pathSignature}">
 													<img src="${pageContext.request.contextPath}${userReceive.pathSignature}"
@@ -609,7 +609,7 @@
 									</c:if>
 
 									<c:if test="${not empty mr.approveUser}">
-										<div class="col-4 mb-4">
+										<div class="col-12 col-md-4 mb-4">
 											<div class="d-flex flex-column align-items-center gap-3">
 												<c:if test="${not empty userApprove.pathSignature}">
 													<img src="${pageContext.request.contextPath}${userApprove.pathSignature}"
@@ -783,13 +783,13 @@
 					</div>
 				</c:if>
 
-					<div class="d-flex justify-content-between mb-10">
-						<div class="d-flex">
+					<div class="d-flex flex-column-reverse flex-md-row justify-content-md-between gap-5 gap-md-3 mb-10">
+						<div class="d-flex flex-column-reverse flex-md-row gap-5 gap-md-3">
 							<button type="button" id="backFormBtn"
 								onclick="location.href='equipment_request_mr_list'"
-								class="btn btn-lg btn-light fw-medium text-light-inverse px-6 py-4 me-4 border">Back
+								class="btn btn-lg btn-light fw-medium text-light-inverse px-6 py-4 border">Back
 							</button>
-							
+
 							<c:if test="${mrStatus.statusCode == '1'}">
 								<button type="button" id="cancelFormBtn"
 									onclick="cancelMr()"
@@ -797,11 +797,12 @@
 								</button>
 							</c:if>
 						</div>
+
 						<c:choose>
 							<c:when test="${mrStatus.statusCode == '1'}">
-								<div class="d-flex">
+								<div class="d-flex flex-column flex-md-row gap-5 gap-md-3">
 									<button type="button" id="saveDraftBtn" onclick="saveMr('1')"
-										class="btn btn-lg btn-cyan text-white fw-medium px-6 py-4 me-4">Save Draft
+										class="btn btn-lg btn-cyan text-white fw-medium px-6 py-4">Save Draft
 									</button>
 									<button type="button" id="submitMrBtn" onclick="submitMr()"
 										class="btn btn-success text-white fw-medium px-6 py-4">Submit MR

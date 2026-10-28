@@ -67,11 +67,11 @@ pageEncoding="UTF-8"%>
                     >PO - Purchase Order</a
                   >
                   <a
-                    href="good_receipt_list"
+                    href="goods_receipt_list"
                     class="btn btn-light-danger d-inline-flex align-items-center px-6 py-3"
                     >GR - Goods Receipt</a
                   >
-                  </div>
+                  
                 </div>
               </div>
             </div>

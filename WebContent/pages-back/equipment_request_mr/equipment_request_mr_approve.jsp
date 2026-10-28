@@ -78,7 +78,7 @@
 	<div class="app-main flex-column flex-row-fluid">
 		<div class="d-flex flex-column flex-column-fluid">
 			<div id="kt_app_toolbar" class="app-toolbar py-3 py-lg-6">
-				<div id="kt_app_toolbar_container" class="app-container container-fluid d-flex flex-stack">
+				<div id="kt_app_toolbar_container" class="app-container container-fluid d-flex flex-stack flex-wrap me-3">
 
 					<div class="page-title d-flex flex-column justify-content-center flex-wrap me-3">
 						<h1 class="page-heading d-flex text-gray-700 fw-semibold flex-column justify-content-center my-0">
@@ -91,7 +91,7 @@
 						</ul>
 					</div>
 
-					<div class="d-flex align-items-center gap-4">
+					<div class="d-flex align-items-center justify-content-between gap-4 w-100 w-md-auto mt-5 mb-2 my-md-0">
 						<span class="fs-2x fw-bold text-primary">#<c:out value="${mr.mrId}" /></span>
 						<span class="badge badge-lg badge-${mrStatus.color} fw-semibold fs-7 p-4 ${mrStatus.color == 'secondary' ? 'text-dark' : 'text-white'}">
 							<c:out value="${empty mrStatus ? '-' : mrStatus.statusName}" />
@@ -353,11 +353,11 @@
 								<!-- Pending status -->
 								<c:if test="${mrStatus.statusCode == '2' || mrStatus.statusCode == '5'}">
 									<c:if test="${not empty mr.requestUser}">
-										<div class="col-12 p-16 m-0">
+										<div class="col-12 p-6 p-md-16 m-0">
 											<div class="d-flex flex-column align-items-center gap-3">
 												<c:if test="${not empty userRequest.pathSignature}">
 													<img src="${pageContext.request.contextPath}${userRequest.pathSignature}"
-														style="max-height: 150px; max-width: 360px; object-fit: contain;" />
+														class="img-fluid d-block mx-auto w-75 w-md-25" />
 												</c:if>
 												<span class="text-primary pt-3 fs-4 fw-medium">ชื่อ ผู้ขอเบิก</span>
 												<div class="d-flex flex-column align-items-center">
@@ -374,11 +374,11 @@
 								<!-- Approved status -->
 								<c:if test="${mrStatus.statusCode == '3'}">
 									<c:if test="${not empty mr.requestUser}">
-										<div class="col-6 p-16 m-0">
+										<div class="col-12 col-md-6 p-6 p-md-16 m-0">
 											<div class="d-flex flex-column align-items-center gap-3">
 												<c:if test="${not empty userRequest.pathSignature}">
 													<img src="${pageContext.request.contextPath}${userRequest.pathSignature}"
-														style="max-height: 150px; max-width: 360px; object-fit: contain;" />
+														class="img-fluid d-block mx-auto w-75" />
 												</c:if>
 												<span class="text-primary pt-3 fs-4 fw-medium">ชื่อ ผู้ขอเบิก</span>
 												<div class="d-flex flex-column align-items-center">
@@ -392,11 +392,11 @@
 									</c:if>
 
 									<c:if test="${not empty mr.approveUser}">
-										<div class="col-6 p-16 m-0">
+										<div class="col-12 col-md-6 p-6 p-md-16 m-0">
 											<div class="d-flex flex-column align-items-center gap-3">
 												<c:if test="${not empty userApprove.pathSignature}">
 													<img src="${pageContext.request.contextPath}${userApprove.pathSignature}"
-														style="max-height: 150px; max-width: 360px; object-fit: contain;" />
+														class="img-fluid d-block mx-auto w-75" />
 												</c:if>
 												<span class="text-primary pt-3 fs-4 fw-medium">ชื่อ ผู้อนุมัติ</span>
 												<div class="d-flex flex-column align-items-center">
@@ -549,25 +549,19 @@
 				</c:if>
 
 
-					<div class="d-flex justify-content-between mb-10">
-						<div class="d-flex">
+					<div class="d-flex flex-column-reverse flex-md-row justify-content-md-between gap-5 gap-md-3 mb-10">
+						<div class="d-flex flex-column-reverse flex-md-row">
 							<button type="button" id="backFormBtn"
 								onclick="location.href='equipment_request_mr_list_admin'"
-								class="btn btn-lg btn-light fw-medium text-light-inverse px-6 py-4 me-4 border">Back
+								class="btn btn-lg btn-light fw-medium text-light-inverse px-6 py-4 border">Back
 							</button>
-							
-							<!-- <c:if test="${mrStatus.statusCode == '1' || mrStatus.statusCode == '2'}">
-								<button type="button" id="cancelFormBtn"
-									onclick="cancelMr()"
-									class="btn btn-lg btn-dark fw-medium px-6 py-4">Cancel
-								</button>
-							</c:if> -->
 						</div>
+
 						<c:choose>
 							<c:when test="${mrStatus.statusCode == '2'}">
-								<div class="d-flex">
+								<div class="d-flex flex-column-reverse flex-md-row gap-5 gap-md-3">
 									<button type="button" id="rejectMRBtn" onclick="rejectMR()"
-										class="btn btn-lg btn-danger text-white fw-medium px-6 py-4 me-4">Reject</button>
+										class="btn btn-lg btn-danger text-white fw-medium px-6 py-4">Reject</button>
 									<button type="button" id="approveMRBtn" onclick="approveMR()"
 										class="btn btn-lg btn-success text-white fw-medium px-6 py-4">Approve</button>
 								</div>

@@ -111,20 +111,20 @@
 						</div>
 					</form>
 					<div class="card mb-10">
-						<div class="card-header border-0 px-9 pt-7 d-flex align-items-center justify-content-between">
+						<div class="card-header border-0 px-5 px-md-9 pt-7 d-flex align-items-center justify-content-between">
 							<div class="card-title">
 								<h3 class="fw-semibold text-gray-900">Equipment Request  List</h3>
 							</div>
 							<a class="btn btn-lg btn-success fw-medium text-white px-6 py-4"
-								href="/equipment_request_mr_add"><i class="ki-outline ki-plus fs-3 me-1"></i>Create</a>
+								href="/equipment_request_mr_add" target="_blank"><i class="ki-outline ki-plus fs-3 me-1"></i>Create</a>
 						</div>
-						<div class="card-body filter-card px-10 py-9 rounded-3">
+						<div class="card-body filter-card px-5 px-md-10 py-9 rounded-3">
 							<!-- Summary MR -->
 							<div class="d-flex flex-row justify-content-center mb-10">
-								<div class="d-flex flex-wrap justify-content-center align-items-center mt-10 mx-5 fs-6 fw-bold gap-12">
+								<div class="d-flex flex-nowrap flex-md-wrap overflow-auto justify-content-start justify-content-md-center align-items-center mt-5 mt-md-10 mx-0 mx-md-5 fs-6 fw-bold gap-3 gap-md-12 summary-wrap">
 
 									<!-- All -->
-									<div class="d-flex align-items-center justify-content-center summary-card border border-1 border-primary rounded-3 px-6 py-5 min-w-150px"
+									<div class="d-flex align-items-center justify-content-center flex-shrink-0 summary-card border border-1 border-primary rounded-3 px-6 py-5 min-w-150px"
 										data-status="All"
 										data-border-color="border-primary"
 										style="cursor: pointer;">
@@ -136,7 +136,7 @@
 
 									<c:forEach var="st" items="${mrStatuses}">
 										<c:set var="stColor" value="${mrStatusColors[st.statusCode]}" />
-										<div class="d-flex align-items-center justify-content-center summary-card border border-1 border-transparent rounded-3 px-6 py-5 min-w-150px"
+										<div class="d-flex align-items-center justify-content-center flex-shrink-0 summary-card border border-1 border-transparent rounded-3 px-6 py-5 min-w-150px"
 											data-status="${st.statusCode}"
 											data-border-color="${stColor == 'secondary' ? 'border-gray-400' : 'border-'.concat(stColor)}"
 											style="cursor: pointer;">
