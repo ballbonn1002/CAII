@@ -205,31 +205,31 @@
 								</div>
 								<div class="card-body filter-card px-5 px-lg-10 py-9 rounded-3">
 									<div class="row g-5">
-								<div class="col-lg-6 col-md-6 col-12 d-flex align-items-center">
-									<i class="ki-duotone ki-user-tick fs-3 me-3">
-										 <span class="path1"></span>
-										 <span class="path2"></span>
-										 <span class="path3"></span>
-									</i>
-									<span class="fs-6 fw-medium text-gray-800">${empty loginUser.employeeId ? '' : loginUser.employeeId} - ${empty loginUser.nameEN ? '' : loginUser.nameEN}</span>
-								</div>
-								
-								<div class="col-lg-6 col-md-6 col-12 d-flex align-items-center">
-									<i class="ki-duotone ki-calendar-2 fs-3 me-3">
-										 <span class="path1"></span>
-										 <span class="path2"></span>
-										 <span class="path3"></span>
-										 <span class="path4"></span>
- 										 <span class="path5"></span>
-									</i>
-									<span class="fs-6 fw-medium text-gray-800"><fmt:formatDate value="${requestDateTime}" pattern="d MMM yyyy" /></span>
-								</div>
-								
-								<div class="col-12 mt-9">
-									<label class="required fw-medium text-gray-800 mb-2">Description</label>
-									<textarea class="form-control text-gray-700" id="description" name="description"
-										placeholder="Description" rows="3"></textarea>
-								</div>
+										<div class="col-lg-6 col-md-6 col-12 d-flex align-items-center">
+											<i class="ki-duotone ki-user-tick fs-3 me-3">
+												<span class="path1"></span>
+												<span class="path2"></span>
+												<span class="path3"></span>
+											</i>
+											<span class="fs-6 fw-medium text-gray-800">${empty loginUser.employeeId ? '' : loginUser.employeeId} - ${empty loginUser.nameEN ? '' : loginUser.nameEN}</span>
+										</div>
+										
+										<div class="col-lg-6 col-md-6 col-12 d-flex align-items-center">
+											<i class="ki-duotone ki-calendar-2 fs-3 me-3">
+												<span class="path1"></span>
+												<span class="path2"></span>
+												<span class="path3"></span>
+												<span class="path4"></span>
+												<span class="path5"></span>
+											</i>
+											<span class="fs-6 fw-medium text-gray-800"><fmt:formatDate value="${requestDateTime}" pattern="d MMM yyyy" /></span>
+										</div>
+										
+										<div class="col-12 mt-9">
+											<label class="required fw-medium text-gray-800 mb-2">Description</label>
+											<textarea class="form-control text-gray-700" id="description" name="description"
+												placeholder="Description" rows="3"></textarea>
+										</div>
 									</div>
 								</div>
 							</div>
@@ -246,7 +246,7 @@
 											accept="image/jpeg,image/png,image/gif,image/webp,image/bmp,application/pdf,application/zip,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document">
 									</label>
 								</div>
-								<div class="card-body filter-card px-5 px-lg-10 py-5 rounded-3">
+								<div class="card-body filter-card px-5 px-lg-10 py-9 rounded-3">
 									<div id="attachFileWarningBox"
 										class="border border-2 border-warning rounded border-active active w-100">
 										<div class="py-5 d-flex flex-column align-items-center">
@@ -264,7 +264,7 @@
 										</div>
 									</div>
 									<div class="d-flex flex-column h-100" style="min-height: 0;">
-										<div id="attachFileList" class="d-flex flex-column gap-5"></div>
+										<div id="attachFileList" class="d-flex flex-column gap-3 gap-lg-5"></div>
 										<div id="errorMsgAF" class="text-danger fs-8 mt-1"></div>
 									</div>
 								</div>
@@ -436,8 +436,9 @@
 										</div>
 
 										<div class="col-lg-6 col-md-6 col-12 d-flex flex-column" id="prRefLinkRow">
-											<label class="fw-medium text-gray-800 mb-2">Ref Link</label>
+											<label class="fw-medium text-gray-800 mb-2">URL Reference</label>
 											<textarea class="form-control text-gray-700" rows="3" name="pr_ref_link" id="pr_ref_link" placeholder="https://..."></textarea>
+											<div id="prRefLinkError" class="text-danger fs-8 mt-1"></div>
 										</div>
 
 									</div>
@@ -537,7 +538,7 @@
 					</div>
 
 					<div class="modal fade" tabindex="-1" id="modal_edit_source">
-						<div class="modal-dialog modal-lg modal-dialog-centered">
+						<div class="modal-dialog modal-dialog-centered">
 							<div class="modal-content">
 								<div class="modal-header">
 									<h3 class="modal-title">Edit PR - Detail</h3>
@@ -556,33 +557,12 @@
 										<span class="fs-6 fw-normal text-gray-900" id="editSrcProduct"></span>
 									</div>
 
-									<div class="d-flex align-items-center justify-content-between flex-wrap gap-5 bg-light rounded p-5 mb-8">
-										<div class="d-flex align-items-center flex-wrap gap-8">
-											<div class="d-flex align-items-center">
-												<i class="ki-duotone ki-user-tick fs-3 text-muted me-2"><span class="path1"></span><span class="path2"></span><span class="path3"></span></i>
-												<span class="text-gray-800 fs-5" id="editSrcCreator"></span>
-											</div>
-											<div class="d-flex align-items-center">
-												<i class="ki-duotone ki-calendar-2 fs-3 me-2"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span><span class="path5"></span></i>
-												<span class="text-gray-800 fs-5" id="editSrcDate"></span>
-											</div>
-											<div class="d-flex align-items-center gap-2">
-												<i class="ki-duotone ki-tablet-book fs-3"><span class="path1"></span><span class="path2"></span></i>
-												<span id="editSrcMr"></span>
-											</div>
-										</div>
-										<div class="text-end">
-											<div class="text-muted fs-8">ปัจจุบัน</div>
-											<div class="text-gray-900 fs-5 fw-no" id="editSrcCurrent"></div>
-										</div>
-									</div>
-
 									<div class="row g-5">
-										<div class="col-12 col-sm-6 d-flex flex-column">
+										<div class="col-12 d-flex flex-column">
 											<label class="required fw-medium text-gray-800 mb-2">จำนวน</label>
 											<input type="number" class="form-control text-gray-700 h-45px" min="1" step="1" id="edit_src_qty" />
 										</div>
-										<div class="col-12 col-sm-6 d-flex flex-column">
+										<div class="col-12 d-flex flex-column">
 											<label class="required fw-medium text-gray-800 mb-2">Unit</label>
 											<select id="edit_src_unit" class="form-select h-45px" data-control="select2"
 													data-dropdown-parent="#modal_edit_source" data-hide-search="true">
@@ -914,7 +894,7 @@
 		var fileListDiv = document.getElementById('attachFileList');
 		if (!fileListDiv) return;
 		fileListDiv.innerHTML = '';
-		fileListDiv.className = 'd-flex flex-column gap-5';
+		fileListDiv.className = 'd-flex flex-column gap-3 gap-lg-5';
 
 		selectedFiles.forEach(function (file) {
 			const fileName = file.name;
@@ -1226,6 +1206,23 @@ document.addEventListener('DOMContentLoaded', function(){
     renderPrDetailCart();
 });
 
+// --- URL Reference ต้องเป็นลิงก์ (ปล่อยว่างได้) ---
+function validateRefLinkField() {
+    var $ta = $('#pr_ref_link');
+    var text = ($ta.val() || '').trim();
+
+    if (text !== '' && !/^https?:\/\/\S+$/i.test(text)) {
+        $ta.addClass('is-invalid');
+        $('#prRefLinkError').text('ต้องเป็นลิงก์ที่ขึ้นต้นด้วย http:// หรือ https:// เท่านั้น');
+        return false;
+    }
+    $ta.removeClass('is-invalid');
+    $('#prRefLinkError').text('');
+    return true;
+}
+
+$(document.body).on('input blur', '#pr_ref_link', validateRefLinkField);
+
 function validatePrDetailForm(){
     let errors = [];
 
@@ -1262,6 +1259,11 @@ function addPrDetailToCart(){
             icon: "error",
             confirmButtonText: "OK",
         });
+        return;
+    }
+
+	if (!validateRefLinkField()) {
+        $('#pr_ref_link').trigger('focus');
         return;
     }
 
@@ -1407,49 +1409,58 @@ function createPrCard(item,index){
     const groupId = "cart_" + index;
 	
 	const descriptionHtml = item.description
-        ? '<div class="d-flex align-items-center">'
-            + '<i class="ki-duotone ki-document fs-2 text-muted me-2">'
-                + '<span class="path1"></span><span class="path2"></span>'
+        ? '<i class="ki-duotone ki-document fs-2 text-muted me-2 flex-shrink-0">'
+			+ '<span class="path1"></span><span class="path2"></span>'
             + '</i>'
-            + '<span class="text-gray-900 fs-5 fw-normal">' + item.description + '</span>'
-        + '</div>'
-        : '';
+		+ '<span class="text-gray-900 fs-5 fw-normal pr-desc-clamp">' +  item.description + '</span>'
+		: '';
 
 	const headerRefLink = item.refLink || '';
-const headerRefLinkHtml = headerRefLink ? `
-    <a href="\${headerRefLink}" target="_blank" rel="noopener" class="text-primary d-inline-flex ms-2" onclick="event.stopPropagation();" title="Ref Link">
-        <i class="ki-duotone ki-fasten fs-2 text-primary"><span class="path1"></span><span class="path2"></span></i>
-    </a>` : '';
-		
+	const headerRefLinkHtml = headerRefLink ? `
+		<a href="\${headerRefLink}" target="_blank" rel="noopener" class="text-primary d-inline-flex ms-2" onclick="event.stopPropagation();" title="URL Reference">
+			<i class="ki-duotone ki-fasten fs-2 text-primary"><span class="path1"></span><span class="path2"></span></i>
+		</a>` : '';
+	const hasDesc = !!item.description;
+	// ไม่มี description
+	const inlineLinkHtml = (!hasDesc && headerRefLink) ? headerRefLinkHtml : '';
+	const descRowHtml = hasDesc
+		? '<div class="d-flex align-items-start ps-9 mt-3">' + descriptionHtml + headerRefLinkHtml + '</div>'
+		: '';
+	
+	
     return `<div class="pr-item-group border-gray-400 border-bottom pt-9 pb-6 px-6">
-    			<div class="d-flex align-items-center justify-content-between row g-3">
-    				<div class="col-12 col-lg-7 d-flex flex-wrap align-items-center">\${icon}
-						<span class="text-gray-900 fs-5 fw-normal me-3">\${category}</span>
-						<span class="text-gray-900 fs-5 fw-normal me-3">\${item.productName}</span>
-		
-						\${descriptionHtml} \${headerRefLinkHtml}
+    			<div class="row g-3 align-items-center flex-nowrap">
+					<div class="col" style="min-width:0;">
+						<div class="d-flex flex-wrap align-items-center">\${icon}
+							<span class="text-gray-900 fs-5 fw-normal me-3">\${category}</span>
+							<span class="text-gray-900 fs-5 fw-normal me-3">\${item.productName}</span>
+			
+							\${inlineLinkHtml}
+						</div>
+						\${descRowHtml}
 					</div>
-		
-					<div class="col-5 col-lg-2 d-flex align-items-center justify-content-between px-0">
-						<div class="col-12 d-flex flex-column text-start text-lg-end">
+
+					<div class="col-auto d-flex align-items-center justify-content-end gap-8 ">
+						<div class="d-flex flex-column text-end min-w-80px">
 							<span class="fs-6 fw-normal text-gray-900">\${item.unitName}</span>
 							<span class="fw-semibold text-gray-800 fs-5">\${item.qty}</span>
 						</div>
-					</div>
 		
-				<div class="col-7 col-lg-3 d-flex justify-content-end align-items-center gap-2 px-0">
-	                <a href="#" onclick="return editCartItem(\${index});" class="btn btn-icon btn-light-primary btn-sm" title="Edit">
-	                    <i class="ki-duotone ki-pencil fs-2"><span class="path1"></span><span class="path2"></span></i>
-	                </a>
-	                <a href="#" onclick="return removeCartItem(\${index});" class="btn btn-icon btn-light-danger btn-sm" title="Delete">
-	                    <i class="ki-duotone ki-trash fs-2"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span><span class="path5"></span></i>
-	                </a>
-	                <a class="collapsed pr-group-toggle" data-target="\${groupId}">
-	                    <i class="ki-duotone ki-up-square fs-2hx">
-	                        <span class="path1"></span><span class="path2"></span>
-	                    </i>
-	                </a>
-            	</div>
+					<div class="d-flex align-items-center justify-content-end gap-2 min-w-200px">
+						<a href="#" onclick="return editCartItem(\${index});" class="btn btn-icon btn-light-primary btn-sm" title="Edit">
+							<i class="ki-duotone ki-pencil fs-2"><span class="path1"></span><span class="path2"></span></i>
+						</a>
+						<a href="#" onclick="return removeCartItem(\${index});" class="btn btn-icon btn-light-danger btn-sm" title="Delete">
+							<i class="ki-duotone ki-trash fs-2"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span><span class="path5"></span></i>
+						</a>
+						<a class="collapsed pr-group-toggle" data-target="\${groupId}">
+							<i class="ki-duotone ki-up-square fs-2hx">
+								<span class="path1"></span><span class="path2"></span>
+							</i>
+						</a>
+					</div>
+
+					</div>
 			</div>
 			
 			<div class="collapse border-gray-300 border-top mt-3" id="prGroup_\${groupId}">
@@ -1490,30 +1501,75 @@ function createMrBadge(mrId, refLink){
     </span>`;
 }
 
+// function createPrSourceRow(qty, unitName, baseQty, baseUnitName, savedAt, mrId, refLink, creatorName, itemIndex, srcIndex){
+//     const qtyUnitDisplay = qty + ' ' + unitName + ' (= ' + baseQty + ' ' + baseUnitName + ')';
+
+//     return `
+//     <div class="pr-src-row row g-2 align-items-center mb-4 py-2">
+//         <div class="col-12 col-xl-9">
+//             <div class="row g-2 align-items-center fs-7">
+//                 <div class="col-12 col-md-4">
+//                     <i class="ki-duotone ki-user-tick fs-3 text-muted me-2"><span class="path1"></span><span class="path2"></span><span class="path3"></span></i>
+//                     <span class="text-gray-800 fs-5 fw-normal">\${creatorName || currentUserDisplay}</span>
+//                 </div>
+//                 <div class="col-12 col-md-4 d-flex align-items-center">
+//                     <i class="ki-duotone ki-calendar-2 fs-3 me-2"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span><span class="path5"></span></i>
+//                     <span class="text-gray-800 fs-5 fw-normal">\${savedAt}</span>
+//                 </div>
+//                 <div class="col-12 col-md-4 d-flex align-items-center gap-2">
+//                     <i class="ki-duotone ki-tablet-book fs-3 flex-shrink-0"><span class="path1"></span><span class="path2"></span></i>
+//                     <div class="d-flex flex-wrap align-items-center gap-2">\${createMrBadge(mrId, refLink)}</div>
+//                 </div>
+//             </div>
+//         </div>
+
+//         <div class="col-12 col-xl-3 d-flex align-items-center justify-content-between justify-content-xl-end gap-3">
+//             <span class="text-gray-800 fs-5 fw-normal">\${qtyUnitDisplay}</span>
+
+//             <div class="pr-src-menu position-relative d-inline-block flex-shrink-0">
+//                 <a href="#" class="btn btn-icon btn-sm btn-light-primary w-30px h-30px"
+//                    onclick="return toggleSrcMenu(this, event);" aria-label="More actions" aria-haspopup="true">
+//                     <i class="ki-outline ki-dots-horizontal fs-2"></i>
+//                 </a>
+
+//                 <div class="pr-src-actions position-absolute end-0 top-100 mt-2 bg-body rounded-3 shadow z-index-3">
+//                     <div class="py-2">
+//                         <a href="#" class="pr-src-item d-block px-6 py-3 fs-6 fw-normal text-gray-800 bg-hover-light"
+//                            onclick="event.stopPropagation(); return editSource(\${itemIndex}, \${srcIndex});">Edit</a>
+//                         <a href="#" class="pr-src-item d-block px-6 py-3 fs-6 fw-normal text-gray-800 bg-hover-light"
+//                            onclick="event.stopPropagation(); return removeSource(\${itemIndex}, \${srcIndex});">Delete</a>
+//                     </div>
+//                 </div>
+//             </div>
+//         </div>
+//     </div>`;
+// }
+
 function createPrSourceRow(qty, unitName, baseQty, baseUnitName, savedAt, mrId, refLink, creatorName, itemIndex, srcIndex){
     const qtyUnitDisplay = qty + ' ' + unitName + ' (= ' + baseQty + ' ' + baseUnitName + ')';
 
     return `
-    <div class="pr-src-row row g-2 align-items-center mb-4 py-2">
-        <div class="col-12 col-xl-9">
-            <div class="row g-2 align-items-center fs-7">
-                <div class="col-12 col-md-4">
-                    <i class="ki-duotone ki-user-tick fs-3 text-muted me-2"><span class="path1"></span><span class="path2"></span><span class="path3"></span></i>
-                    <span class="text-gray-800 fs-5 fw-normal">\${creatorName || currentUserDisplay}</span>
+    <div class="pr-src-row d-flex align-items-center justify-content-between gap-3 mb-4 py-2">
+
+        <div class="flex-grow-1 overflow-hidden">
+            <div class="row g-2 fs-7">
+                <div class="col-12 col-xl-4 d-flex align-items-center">
+                    <i class="ki-duotone ki-user-tick fs-3 text-muted me-2 flex-shrink-0"><span class="path1"></span><span class="path2"></span><span class="path3"></span></i>
+                    <span class="text-gray-800 fs-5 fw-normal text-break">\${creatorName || currentUserDisplay}</span>
                 </div>
-                <div class="col-12 col-md-4 d-flex align-items-center">
-                    <i class="ki-duotone ki-calendar-2 fs-3 me-2"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span><span class="path5"></span></i>
+                <div class="col-12 col-xl-4 d-flex align-items-center">
+                    <i class="ki-duotone ki-calendar-2 fs-3 me-2 flex-shrink-0"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span><span class="path5"></span></i>
                     <span class="text-gray-800 fs-5 fw-normal">\${savedAt}</span>
                 </div>
-                <div class="col-12 col-md-4 d-flex align-items-center gap-2">
+                <div class="col-12 col-xl-4 d-flex align-items-center gap-2">
                     <i class="ki-duotone ki-tablet-book fs-3 flex-shrink-0"><span class="path1"></span><span class="path2"></span></i>
                     <div class="d-flex flex-wrap align-items-center gap-2">\${createMrBadge(mrId, refLink)}</div>
                 </div>
             </div>
         </div>
 
-        <div class="col-12 col-xl-3 d-flex align-items-center justify-content-between justify-content-xl-end gap-3">
-            <span class="text-gray-800 fs-5 fw-normal">\${qtyUnitDisplay}</span>
+        <div class="d-flex align-items-center justify-content-end gap-3">
+            <span class="text-gray-800 fs-5 fw-normal text-end">\${qtyUnitDisplay}</span>
 
             <div class="pr-src-menu position-relative d-inline-block flex-shrink-0">
                 <a href="#" class="btn btn-icon btn-sm btn-light-primary w-30px h-30px"

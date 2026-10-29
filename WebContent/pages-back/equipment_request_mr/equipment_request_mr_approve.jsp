@@ -280,7 +280,7 @@
 								</div>
 							</div>
 							<form id="signatureForm" method="post" action="update_signature" enctype="multipart/form-data">
-								<div class="card-body filter-card px-10 py-9 rounded-3 row g-5">
+								<div class="card-body filter-card px-5 px-lg-10 py-9 rounded-3 row g-5">
 									<div class="col-md-6 col-12">
 										<div class="d-flex flex-column align-items-center gap-2">
 											<c:choose>

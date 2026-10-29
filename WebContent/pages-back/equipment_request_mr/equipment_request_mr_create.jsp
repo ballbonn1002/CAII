@@ -227,11 +227,9 @@ prefix="c"%> <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
                     <label class="fw-medium text-gray-800 mb-3"
                       >URL Reference</label
                     >
-                    <textarea
-                      class="form-control"
-                      id="mr_url_ref"
-                      rows="3"
-                    ></textarea>
+                    <textarea class="form-control" id="mr_url_ref"
+                      rows="3" placeholder="https://..." ></textarea>
+                      <div id="urlRefError" class="text-danger fs-8 mt-1"></div>
                   </div>
 
                   <div class="col-12">
@@ -502,6 +500,23 @@ prefix="c"%> <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
         }
       }
     });
+
+    // --- URL Reference: ต้องเป็นลิงก์ (ปล่อยว่างได้) ---
+    function validateUrlRefField() {
+      var $ta = $("#mr_url_ref");
+      var text = ($ta.val() || "").trim();
+
+      if (text !== "" && !/^https?:\/\/\S+$/i.test(text)) {
+        $ta.addClass("is-invalid");
+        $("#urlRefError").text("ต้องเป็นลิงก์ที่ขึ้นต้นด้วย http:// หรือ https:// เท่านั้น");
+        return false;
+      }
+      $ta.removeClass("is-invalid");
+      $("#urlRefError").text("");
+      return true;
+    }
+
+    $("#mr_url_ref").on("input blur", validateUrlRefField);
 
     // --- กันข้อมูลฟอร์มหายตอน refresh (sessionStorage, เก็บเฉพาะ text field ) ---
     const MR_DRAFT_KEY = "mr_draft_form";
@@ -1031,6 +1046,11 @@ prefix="c"%> <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
         return;
       }
 
+      if (!validateUrlRefField()) {
+        $("#mr_url_ref").trigger("focus");
+        return;
+      }
+
       Swal.fire({
         title: "Are you sure?!",
         text: "Do you want to submit this request?",
@@ -1049,6 +1069,10 @@ prefix="c"%> <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
     }
 
     function saveMr(status) {
+      if (!validateUrlRefField()) {
+        $("#mr_url_ref").trigger("focus");
+        return;
+      }
       if (status === "1") {
         const errors = validateMrForm(false);
         if (errors.length > 0) {

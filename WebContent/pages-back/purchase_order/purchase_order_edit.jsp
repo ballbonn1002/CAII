@@ -171,7 +171,7 @@
 										<h3 class="fw-semibold text-gray-900">PO - Header</h3>
 									</div>
 								</div>
-								<div class="card-body filter-card px-10 py-9 rounded-3">
+								<div class="card-body filter-card px-5 px-lg-10 py-9 rounded-3">
 									<div class="row g-5">
 										<div class="col-lg-6 col-md-6 col-12 d-flex align-items-center">
 											<i class="ki-duotone ki-user-tick fs-3 me-3">
@@ -224,7 +224,7 @@
 										</label>
 									</c:if>
 								</div>
-								<div class="card-body filter-card px-10 py-9 rounded-3">
+								<div class="card-body filter-card px-5 px-lg-10 py-9 rounded-3">
 									<c:if test="${poList.status == '1'}">
 										<div id="attachFileWarningBox" class="border border-2 border-warning rounded border-active active w-100"
 											style="${not empty attachmentList ? 'display:none;' : ''}">
@@ -253,7 +253,7 @@
 									</c:if>
 
 									<div class="d-flex flex-column h-100" style="min-height:0;">
-										<div id="attachFileList" class="d-flex flex-column gap-2 mt-2">
+										<div id="attachFileList" class="d-flex flex-column gap-3 gap-lg-5">
 											<c:forEach var="af" items="${attachmentList}">
 												<c:set var="fType" value="${fn:toLowerCase(af.type)}" />
 												<div class="d-flex align-items-center justify-content-center mb-2" data-file-id="${af.fileId}">
@@ -298,8 +298,8 @@
 					</div>
 					
 					
-					<div class="card mb-10 mt-5">
-						<div class="card-header border-0 px-9 pt-7 d-flex align-items-center justify-content-between">
+					<div class="card mb-10">
+						<div class="card-header border-0 px-9 pt-7 d-flex flex-wrap align-items-center justify-content-between gap-3">
 							<div class="card-title">
 								<h3 class="fw-semibold text-gray-900">Vendor</h3>
 							</div>
@@ -491,7 +491,7 @@
 											</div>
 										</div>
 
-										<div class="col-6">
+										<div class="col-12 col-md-6">
 											<div class="border ${empty poList.signDate ? 'border-gray-300' : 'border-success bg-light-success'} rounded-3 h-100 d-flex flex-column align-items-center justify-content-center text-center py-8" id="receiverCard1">
 												<div class="receiver-box d-flex flex-fill flex-column align-items-center justify-content-center gap-2" id="receiverBox1">
 													<c:choose>
@@ -523,11 +523,11 @@
 									<!-- Approved status -->
 									<c:if test="${poList.status == '3' or poList.status == '7'}">
 										<c:if test="${not empty poList.signDate}">
-											<div class="col-6 p-16 m-0">
+											<div class="col-12 col-md-6 p-6 p-md-16 m-0">
 												<div class="d-flex flex-column align-items-center gap-3">
 													<c:if test="${not empty imgPathSignature}">
 														<img src="${pageContext.request.contextPath}${imgPathSignature}"
-															style="max-height: 150px; max-width: 360px; object-fit: contain;" />
+															class="img-fluid d-block mx-auto w-75" />
 													</c:if>
 													<span class="text-primary pt-3 fs-4 fw-medium">ชื่อ ผู้ขอเบิก</span>
 													<div class="d-flex flex-column align-items-center">
@@ -541,11 +541,11 @@
 										</c:if>
 										
 										<c:if test="${not empty poList.approveDate}">
-											<div class="col-6 p-16 m-0">
+											<div class="col-12 col-md-6 p-6 p-md-16 m-0">
 												<div class="d-flex flex-column align-items-center gap-3">
 													<c:if test="${not empty imgPathApproveSignature}">
 														<img src="${pageContext.request.contextPath}${imgPathApproveSignature}"
-															style="max-height: 150px; max-width: 360px; object-fit: contain;" />
+															class="img-fluid d-block mx-auto w-75" />
 													</c:if>
 												
 													<span class="text-primary pt-3 fs-4 fw-medium">ชื่อ ผู้อนุมัติ</span>
@@ -572,7 +572,7 @@
 
 									<!-- Pending status -->
 									<c:if test="${poList.status == '2' or poList.status == '4' or poList.status == '5' or poList.status == '6'}">
-										<div class="col-6">
+										<div class="col-12 col-md-6">
 											<div class="d-flex flex-column align-items-center gap-2">
 												<c:choose>
 													<c:when test="${not empty imgPathSignature}">
@@ -594,7 +594,7 @@
 											</div>
 										</div>
 
-										<div class="col-6">
+										<div class="col-12 col-md-6">
 											<div class="border ${empty poList.signDate ? 'border-gray-300' : 'border-success bg-light-success'} rounded-3 h-100 d-flex flex-column align-items-center justify-content-center text-center py-8">
 												<div class="d-flex flex-fill flex-column align-items-center justify-content-center gap-2">
 													<c:choose>
@@ -829,7 +829,7 @@
 					</div>
 
 					<div class="modal fade" tabindex="-1" id="modal_edit_source">
-						<div class="modal-dialog modal-lg modal-dialog-centered">
+						<div class="modal-dialog modal-dialog-centered">
 							<div class="modal-content">
 								<div class="modal-header">
 									<h3 class="modal-title">Edit PO - Detail</h3>
@@ -848,32 +848,12 @@
 										<span class="fs-6 fw-normal text-gray-900" id="editSrcProduct"></span>
 									</div>
 
-									<div class="d-flex align-items-start justify-content-between gap-5 bg-light rounded p-5 mb-8">
-                                        <div class="d-grid align-items-center flex-grow-1" style="grid-template-columns: auto 1fr; gap: .75rem 1rem;">
-
-                                            <i class="ki-duotone ki-user-tick fs-3 text-muted"><span class="path1"></span><span class="path2"></span><span class="path3"></span></i>
-                                            <span class="text-gray-800 fs-5" id="editSrcCreator"></span>
-
-                                            <i class="ki-duotone ki-calendar-2 fs-3"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span><span class="path5"></span></i>
-                                            <span class="text-gray-800 fs-5" id="editSrcDate"></span>
-
-                                            <i class="ki-duotone ki-tablet-book fs-3"><span class="path1"></span><span class="path2"></span></i>
-                                            <span class="d-flex flex-wrap align-items-center gap-2" id="editSrcMr"></span>
-                                        </div>
-
-                                        <div class="text-end flex-shrink-0">
-                                            <div class="text-muted fs-8">ปัจจุบัน</div>
-                                            <div class="text-gray-900 fs-5 fw-no" id="editSrcCurrent"></div>
-                                        </div>
-
-                                    </div>
-
 									<div class="row g-5">
-										<div class="col-12 col-sm-6 d-flex flex-column">
+										<div class="col-12 d-flex flex-column">
 											<label class="required fw-medium text-gray-800 mb-2">จำนวน</label>
 											<input type="number" class="form-control text-gray-700 h-45px" min="1" step="1" id="edit_src_qty" />
 										</div>
-										<div class="col-12 col-sm-6 d-flex flex-column">
+										<div class="col-12 d-flex flex-column">
 											<label class="required fw-medium text-gray-800 mb-2">Unit</label>
 											<select id="edit_src_unit" class="form-select h-45px" data-control="select2"
 													data-dropdown-parent="#modal_edit_source" data-hide-search="true">
@@ -2015,11 +1995,15 @@ function createPoCard(item,index,poDetailId){
 
     const descText = item.description || '';
     const descriptionHtml = (descText
-        ? '<i class="ki-duotone ki-document fs-2 text-muted me-2">'
+        ? '<i class="ki-duotone ki-document fs-2 text-muted me-2 flex-shrink-0">'
             + '<span class="path1"></span><span class="path2"></span>'
         + '</i>'
-        + '<span class="text-gray-900 fs-5 fw-normal">' + descText + '</span> '
+        + '<span class="text-gray-900 fs-5 fw-norma text-break">' + descText + '</span> '
         : '');
+
+	const descRowHtml = descText
+		? '<div class="d-flex align-items-start ps-9 mt-3">' + descriptionHtml + '</div>'
+		: '';
 
     let actionButtons = '';
     if (canEditPoDetail) {
@@ -2032,58 +2016,58 @@ function createPoCard(item,index,poDetailId){
 	}
 
     return `<div class="po-item-group border-gray-400 border-bottom pt-9 pb-6 px-6">
-    			<div class="d-flex align-items-center justify-content-between row g-3">
-    				<div class="col-12 col-lg-7 d-flex flex-wrap align-items-center">\${icon}
-						<span class="text-gray-900 fs-5 fw-normal me-3">\${category}</span>
-						<span class="text-gray-900 fs-5 fw-normal me-3">\${displayProductName}</span>
+				<div class="row g-3 align-items-start">
 
-						<div class="d-flex align-items-center">
-							\${descriptionHtml}
+					<div class="col-8 col-lg-7 order-1" style="min-width:0;">
+						<div class="d-flex flex-wrap align-items-center">\${icon}
+							<span class="text-gray-900 fs-5 fw-normal me-3">\${category}</span>
+							<span class="text-gray-900 fs-5 fw-normal me-3">\${displayProductName}</span>
+						</div>
+						\${descRowHtml}
+					</div>
+
+					<div class="col-4 col-lg-2 order-2 order-lg-3 d-flex justify-content-end align-items-center gap-2">
+						\${actionButtons}
+						<a class="collapsed po-group-toggle" data-target="\${groupId}">
+							<i class="ki-duotone ki-up-square fs-2hx">
+								<span class="path1"></span><span class="path2"></span>
+							</i>
+						</a>
+					</div>
+
+					<div class="col-12 col-lg-3 order-3 order-lg-2">
+						<div class="po-num-row d-flex align-items-center justify-content-end justify-content-lg-between gap-8 gap-lg-0">
+							<div class="po-num-unit d-flex flex-column text-end">
+								<span class="fs-6 fw-normal text-gray-900">\${item.unitName}</span>
+								<span class="fw-semibold text-gray-800 fs-5">\${displayQty}</span>
+							</div>
+							<div class="po-num-price d-flex flex-column text-end">
+								<span class="fs-6 fw-normal text-gray-900">Price/Unit</span>
+								<span class="fw-semibold text-gray-800 fs-5">\${displayPrice.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span>
+							</div>
+							<div class="po-num-total d-flex flex-column text-end">
+								<span class="fs-6 fw-normal text-gray-900">Total</span>
+								<span class="fs-5 fw-semibold \${totalColorClass}">\${displayTotal.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span>
+							</div>
 						</div>
 					</div>
 
-					<div class="col-12 col-lg-3 d-flex align-items-center justify-content-between px-0">
-						<div class="col-2 d-flex flex-column text-end">
-							<span class="fs-6 fw-normal text-gray-900">\${item.unitName}</span>
-							<span class="fw-semibold text-gray-800 fs-5">\${displayQty}</span>
-					</div>
-
-					<div class="col-4 d-flex flex-column text-end">
-						<span class="fs-6 fw-normal text-gray-900">Price/Unit</span>
-						<span class="fw-semibold text-gray-800 fs-5">\${displayPrice.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span>
-					</div>
-
-					<div class="col-4 d-flex flex-column text-end">
-						<span class="fs-6 fw-normal text-gray-900">Total</span>
-						<span class="fs-5 fw-semibold \${totalColorClass}">\${displayTotal.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span>
-					</div>
-
 				</div>
-
-				<div class="col-12 col-lg-2 d-flex justify-content-end align-items-center gap-2 px-0">
-	                \${actionButtons}
-	                <a class="collapsed po-group-toggle" data-target="\${groupId}">
-	                    <i class="ki-duotone ki-up-square fs-2hx">
-	                        <span class="path1"></span><span class="path2"></span>
-	                    </i>
-	                </a>
-            	</div>
-			</div>
 			
-			<div class="collapse border-gray-300 border-top mt-3" id="poGroup_\${groupId}">
-	            <div class="ps-9 pt-9">
-	                \${
-						(allSources.length > 0)
-							? allSources.map(function(s, i){
-								var srcBaseQty = (s.baseQty != null) ? s.baseQty : s.qty;
-								var menuCtx = (canEditPoDetail && s.poParentId) ? { scope: 'db', a: poDetailId, b: i } : null;
-								return createPoSourceRow(s.qty, s.unitName || item.unitName, srcBaseQty, item.unitName,
-										s.savedAt, s.prId, s.mrIds, s.refLink, s.creatorName, false, menuCtx);
-							}).join('')
-							: createPoSourceRow(item.qty, item.unitName, item.qty, item.unitName, item.savedAt, item.prId, item.mrIds, item.refLink, item.creatorName, false, null)
-					}
-	            </div>
-	        </div>
+				<div class="collapse border-gray-300 border-top mt-3" id="poGroup_\${groupId}">
+					<div class="ps-9 pt-9">
+						\${
+							(allSources.length > 0)
+								? allSources.map(function(s, i){
+									var srcBaseQty = (s.baseQty != null) ? s.baseQty : s.qty;
+									var menuCtx = (canEditPoDetail && s.poParentId) ? { scope: 'db', a: poDetailId, b: i } : null;
+									return createPoSourceRow(s.qty, s.unitName || item.unitName, srcBaseQty, item.unitName,
+											s.savedAt, s.prId, s.mrIds, s.refLink, s.creatorName, false, menuCtx);
+								}).join('')
+								: createPoSourceRow(item.qty, item.unitName, item.qty, item.unitName, item.savedAt, item.prId, item.mrIds, item.refLink, item.creatorName, false, null)
+						}
+					</div>
+				</div>
 
 		</div>
 
@@ -2998,38 +2982,40 @@ function createPoSourceRow(qty, unitName, baseQty, baseUnitName, savedAt, prId, 
         </div>` : '';
 
     return `
-    <div class="d-flex align-items-center justify-content-between row mb-4 py-2">
-        <div class="col-12 col-xl-9">
-            <div class="d-flex align-items-center fs-7">
-                <div class="col-12 col-md-4">
-                    <i class="ki-duotone ki-user-tick fs-3 text-muted me-2">
-                        <span class="path1"></span><span class="path2"></span><span class="path3"></span>
-                    </i>
-                    <span class="text-gray-800 fs-5 fw-normal">\${creatorName || currentUserDisplay}</span>
-                </div>
-                <div class="col-12 col-md-4 d-flex align-items-center">
-                    <i class="ki-duotone ki-calendar-2 fs-3 me-2">
-                        <span class="path1"></span><span class="path2"></span><span class="path3"></span>
-                        <span class="path4"></span><span class="path5"></span>
-                    </i>
-                    <span class="text-gray-800 fs-5 fw-normal">\${savedAt}</span>
-                </div>
-                <div class="col-12 col-md-4 d-flex align-items-center gap-2">
-					<i class="ki-duotone ki-tablet-book fs-3 flex-shrink-0">
-						<span class="path1"></span><span class="path2"></span>
-					</i>
-					<div class="d-flex flex-wrap align-items-center gap-2">
-						\${createPrMrBadges(prId, mrIds, refLink)}
+    	<div class="d-flex align-items-center justify-content-between gap-3 mb-4 py-2">
+
+			<div class="flex-grow-1 overflow-hidden">
+				<div class="row g-2 fs-7">
+					<div class="col-12 col-xl-4 d-flex align-items-center">
+						<i class="ki-duotone ki-user-tick fs-3 text-muted me-2 flex-shrink-0">
+							<span class="path1"></span><span class="path2"></span><span class="path3"></span>
+						</i>
+						<span class="text-gray-800 fs-5 fw-normal text-break">\${creatorName || currentUserDisplay}</span>
+					</div>
+					<div class="col-12 col-xl-4 d-flex align-items-center">
+						<i class="ki-duotone ki-calendar-2 fs-3 me-2 flex-shrink-0">
+							<span class="path1"></span><span class="path2"></span><span class="path3"></span>
+							<span class="path4"></span><span class="path5"></span>
+							</i>
+						<span class="text-gray-800 fs-5 fw-normal">\${savedAt}</span>
+					</div>
+					<div class="col-12 col-xl-4 d-flex align-items-center gap-2">
+						<i class="ki-duotone ki-tablet-book fs-3 flex-shrink-0">
+							<span class="path1"></span><span class="path2"></span>
+						</i>
+						<div class="d-flex flex-wrap align-items-center gap-2">
+							\${createPrMrBadges(prId, mrIds, refLink)}
+						</div>
 					</div>
 				</div>
-            </div>
-        </div>
-		<div class="col-12 col-xl-3 d-flex align-items-center justify-content-between justify-content-xl-end gap-3">
-            <span class="text-gray-800 fs-5 fw-normal">\${qtyUnitDisplay}</span>
-            \${menuHtml}
-        </div>
-		
-    </div>`;
+			</div>
+
+			<div class="d-flex align-items-center justify-content-end gap-3">
+				<span class="text-gray-800 fs-5 fw-normal text-end">\${qtyUnitDisplay}</span>
+				\${menuHtml}
+			</div>
+			
+		</div>`;
 }
 
 // Modal Search PR

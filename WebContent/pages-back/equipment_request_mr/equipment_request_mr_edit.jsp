@@ -163,7 +163,8 @@
 
 									<div class="col-lg-6 col-12">
 										<label class="fw-medium text-gray-800 mb-3">URL Reference</label>
-										<textarea class="form-control" id="mr_url_ref" rows="3"><c:out value="${mr.urlRef}" /></textarea>
+										<textarea class="form-control" id="mr_url_ref" rows="3" placeholder="https://..."><c:out value="${mr.urlRef}" /></textarea>
+										<div id="urlRefError" class="text-danger fs-8 mt-1"></div>
 									</div>
 									
 										<div class="col-12">
@@ -397,7 +398,7 @@
 								</div>
 							</div>
 							<form id="signatureForm" method="post" action="update_signature" enctype="multipart/form-data">
-								<div class="card-body filter-card px-10 py-9 rounded-3 row g-5">
+								<div class="card-body filter-card px-5 px-lg-10 py-9 rounded-3 row g-5">
 									<div class="col-md-6 col-12">
 										<div class="d-flex flex-column align-items-center gap-2">
 											<c:choose>
@@ -1263,6 +1264,24 @@ function loadSubItems(productId) {
 		if (slot === 1) confirmed1 = true;
 	}
 
+	// --- URL Reference: ต้องเป็นลิงก์ (ปล่อยว่างได้) ---
+	function validateUrlRefField() {
+		var $ta = $('#mr_url_ref');
+		if ($ta.length === 0) return true; // สถานะอื่นที่ไม่มีช่องนี้
+		var text = ($ta.val() || '').trim();
+
+		if (text !== '' && !/^https?:\/\/\S+$/i.test(text)) {
+			$ta.addClass('is-invalid');
+			$('#urlRefError').text('ต้องเป็นลิงก์ที่ขึ้นต้นด้วย http:// หรือ https:// เท่านั้น');
+			return false;
+		}
+		$ta.removeClass('is-invalid');
+		$('#urlRefError').text('');
+		return true;
+	}
+
+	$('#mr_url_ref').on('input blur', validateUrlRefField);
+
 	// --- Save / Submit ---
 	function validateMrForm(isSubmit) {
 		let errors = [];
@@ -1289,6 +1308,10 @@ function loadSubItems(productId) {
 			});
 			return;
 		}
+		if (!validateUrlRefField()) {
+			$('#mr_url_ref').trigger('focus');
+			return;
+		}
 
 		Swal.fire({
 			title: "Are you sure?!",
@@ -1308,6 +1331,11 @@ function loadSubItems(productId) {
 	}
 
 	function saveMr(status) {
+		if (!validateUrlRefField()) {
+			$('#mr_url_ref').trigger('focus');
+			return;
+		}
+		
 		if (status === '1') {
 			const errors = validateMrForm(false);
 			if (errors.length > 0) {

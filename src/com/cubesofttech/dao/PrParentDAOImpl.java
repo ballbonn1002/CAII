@@ -112,7 +112,8 @@ public class PrParentDAOImpl implements PrParentDAO {
 	                "uc.name_en AS user_create_nameEN, " +
 	                "uc.name AS user_create_name, " +
 	                "uu.name_en AS user_update_name, " +
-	                "mr.url_ref AS mr_ref_link " +
+	                "mr.url_ref AS mr_ref_link, " +
+					"mr.user_create AS mr_user_create " +
 	                "FROM pr_parent pr " +
 	                "LEFT JOIN user uc ON pr.user_create = uc.id " +
 	                "LEFT JOIN user uu ON pr.user_update = uu.id " +

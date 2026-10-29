@@ -150,11 +150,20 @@
 	color: #fff;
 }
 
+.pr-desc-clamp {
+    display: -webkit-box;
+    /* -webkit-line-clamp: 2; */
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    /* word-break: break-word; */
+}
+
 /* ===== Responsive: sticky action bar (mobile) ===== */
 @media (max-width: 767.98px) {
 	.pr-src-actions {
 		max-width: calc(100vw - 32px);
 	}
+
 }
 </style>
 
@@ -280,7 +289,7 @@
 									</c:if>
 
 									<div class="d-flex flex-column h-100" style="min-height:0;">
-										<div id="attachFileList" class="d-flex flex-column gap-5">
+										<div id="attachFileList" class="d-flex flex-column gap-3 gap-lg-5">
 											<c:forEach var="af" items="${attachmentList}">
 												<c:set var="fType" value="${fn:toLowerCase(af.type)}" />
 												<div class="d-flex align-items-center justify-content-center mb-2" data-file-id="${af.fileId}">
@@ -442,11 +451,11 @@
 									<!-- Approved status -->
 									<c:if test="${prList.status == '3' or prList.status == '7'}">
 										<c:if test="${not empty prList.signDate}">
-											<div class="col-12 col-md-6 p-5 p-md-16 m-0">
+											<div class="col-12 col-md-6 p-6 p-md-16 m-0">
 												<div class="d-flex flex-column align-items-center gap-3">
 													<c:if test="${not empty imgPathSignature}">
 														<img src="${pageContext.request.contextPath}${imgPathSignature}"
-															style="max-height: 150px; max-width: 360px; object-fit: contain;" />
+															class="img-fluid d-block mx-auto w-75" />
 													</c:if>
 													<span class="text-primary pt-3 fs-4 fw-medium">ชื่อ ผู้ขอเบิก</span>
 													<div class="d-flex flex-column align-items-center">
@@ -460,11 +469,11 @@
 										</c:if>
 										
 										<c:if test="${not empty prList.approveDate}">
-											<div class="col-12 col-md-6 p-5 p-md-16 m-0">
+											<div class="col-12 col-md-6 p-6 p-md-16 m-0">
 												<div class="d-flex flex-column align-items-center gap-3">
 													<c:if test="${not empty imgPathApproveSignature}">
 														<img src="${pageContext.request.contextPath}${imgPathApproveSignature}"
-															style="max-height: 150px; max-width: 360px; object-fit: contain;" />
+															class="img-fluid d-block mx-auto w-75" />
 													</c:if>
 												
 													<span class="text-primary pt-3 fs-4 fw-medium">ชื่อ ผู้อนุมัติ</span>
@@ -497,13 +506,13 @@
 													<c:when test="${not empty imgPathSignature}">
 														<div class="sig-box locked">
 															<img src="${pageContext.request.contextPath}${imgPathSignature}"
-																style="max-height: 150px; max-width: 360px; object-fit: contain;" />
+																 style="max-height: 150px; max-width: 360px; object-fit: contain;" />
 															<div class="sig-lock-badge">
 																<i class="ki-duotone ki-lock fs-7"><span class="path1"></span><span class="path2"></span></i>
 																Signature on file
 															</div>
 														</div>
-									<div class=""></div>				</c:when>
+													</c:when>
 													<c:otherwise>
 														<div class="sig-box unuploadable">
 															<span class="text-muted fs-8">No signature</span>
@@ -648,9 +657,10 @@
 										</div>
 
 										<div class="col-lg-6 col-md-6 col-12 d-flex flex-column" id="prRefLinkRow">
-											<label class="fw-medium text-gray-800 mb-2">Ref Link</label>
+											<label class="fw-medium text-gray-800 mb-2">URL Reference</label>
 											<textarea class="form-control text-gray-700" rows="3"
 													name="pr_ref_link" id="pr_ref_link" placeholder="https://..."></textarea>
+											<div id="prRefLinkError" class="text-danger fs-8 mt-1"></div>
 										</div>
 									</div>
 						        </div>
@@ -750,7 +760,7 @@
 					</div>
 
 					<div class="modal fade" tabindex="-1" id="modal_edit_source">
-						<div class="modal-dialog modal-lg modal-dialog-centered">
+						<div class="modal-dialog modal-dialog-centered">
 							<div class="modal-content">
 								<div class="modal-header">
 									<h3 class="modal-title">Edit PR - Detail</h3>
@@ -769,33 +779,12 @@
 										<span class="fs-6 fw-normal text-gray-900" id="editSrcProduct"></span>
 									</div>
 
-									<div class="d-flex align-items-center justify-content-between flex-wrap gap-5 bg-light rounded p-5 mb-8">
-										<div class="d-flex align-items-center flex-wrap gap-8">
-											<div class="d-flex align-items-center">
-												<i class="ki-duotone ki-user-tick fs-3 text-muted me-2"><span class="path1"></span><span class="path2"></span><span class="path3"></span></i>
-												<span class="text-gray-800 fs-5" id="editSrcCreator"></span>
-											</div>
-											<div class="d-flex align-items-center">
-												<i class="ki-duotone ki-calendar-2 fs-3 me-2"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span><span class="path5"></span></i>
-												<span class="text-gray-800 fs-5" id="editSrcDate"></span>
-											</div>
-											<div class="d-flex align-items-center gap-2">
-												<i class="ki-duotone ki-tablet-book fs-3"><span class="path1"></span><span class="path2"></span></i>
-												<span id="editSrcMr"></span>
-											</div>
-										</div>
-										<div class="text-end">
-											<div class="text-muted fs-8">ปัจจุบัน</div>
-											<div class="text-gray-900 fs-5 fw-no" id="editSrcCurrent"></div>
-										</div>
-									</div>
-
 									<div class="row g-5">
-										<div class="col-12 col-sm-6 d-flex flex-column">
+										<div class="col-12 d-flex flex-column">
 											<label class="required fw-medium text-gray-800 mb-2">จำนวน</label>
 											<input type="number" class="form-control text-gray-700 h-45px" min="1" step="1" id="edit_src_qty" />
 										</div>
-										<div class="col-12 col-sm-6 d-flex flex-column">
+										<div class="col-12 d-flex flex-column">
 											<label class="required fw-medium text-gray-800 mb-2">Unit</label>
 											<select id="edit_src_unit" class="form-select h-45px" data-control="select2"
 													data-dropdown-parent="#modal_edit_source" data-hide-search="true">
@@ -1027,6 +1016,8 @@
 		    const createPrModalEl = document.getElementById('modal_create_pr');
 
 		    createPrModalEl.addEventListener('show.bs.modal', function () {
+				$('#pr_ref_link').removeClass('is-invalid');
+				$('#prRefLinkError').text('');
 		      setBtnLoading('#btnSavePrDetail', false);
 		      if (!editingExistingDetailId) {
                     $('#items_type, #product_name').prop('disabled', false);
@@ -1599,6 +1590,24 @@ function mapDbItemsTypeToSelect(val){
         default:  return val;
     }
 }
+
+// --- URL Reference ต้องเป็นลิงก์ (ปล่อยว่างได้) ---
+function validateRefLinkField() {
+    var $ta = $('#pr_ref_link');
+    var text = ($ta.val() || '').trim();
+
+    if (text !== '' && !/^https?:\/\/\S+$/i.test(text)) {
+        $ta.addClass('is-invalid');
+        $('#prRefLinkError').text('ต้องเป็นลิงก์ที่ขึ้นต้นด้วย http:// หรือ https:// เท่านั้น');
+        return false;
+    }
+    $ta.removeClass('is-invalid');
+    $('#prRefLinkError').text('');
+    return true;
+}
+
+$(document.body).on('input blur', '#pr_ref_link', validateRefLinkField);
+
 function validatePrDetailForm(){
     const errors = [];
     if (!editingExistingDetailId) {
@@ -1620,6 +1629,11 @@ function addPrDetailToCart(){
             html: "Please fill in the following fields:<br><strong>" + errors.join(", ") + "</strong>",
             icon: "error", confirmButtonText: "OK"
         });
+        return;
+    }
+
+	 if (!validateRefLinkField()) {
+        $('#pr_ref_link').trigger('focus');
         return;
     }
 
@@ -1769,22 +1783,35 @@ function createPrCard(item,index,prDetailId){
         ? item.parentProductName + ' > ' + (item.productName || '')
         : (item.productName || '');
 		
+	// const descriptionHtml = item.description
+    //     ? '<div class="d-flex align-items-center">'
+    //         + '<i class="ki-duotone ki-document fs-2 text-muted me-2">'
+    //             + '<span class="path1"></span><span class="path2"></span>'
+    //         + '</i>'
+    //         + '<span class="text-gray-900 fs-5 fw-normal">' + item.description + '</span>'
+    //     + '</div>'
+    //     : '';
+
 	const descriptionHtml = item.description
-        ? '<div class="d-flex align-items-center">'
-            + '<i class="ki-duotone ki-document fs-2 text-muted me-2">'
-                + '<span class="path1"></span><span class="path2"></span>'
-            + '</i>'
-            + '<span class="text-gray-900 fs-5 fw-normal">' + item.description + '</span>'
-        + '</div>'
-        : '';
+		? '<i class="ki-duotone ki-document fs-2 text-muted me-2 flex-shrink-0">'
+			+ '<span class="path1"></span><span class="path2"></span>'
+		+ '</i>'
+		+ '<span class="text-gray-900 fs-5 fw-normal pr-desc-clamp">' + item.description + '</span>'
+		: '';
 
     const headerRefLink = item.refLink || '';
     const headerRefLinkHtml = headerRefLink ? `
-        <a href="\${headerRefLink}" target="_blank" rel="noopener" class="text-primary d-inline-flex ms-2" onclick="event.stopPropagation();" title="Ref Link">
-            <i class="ki-duotone ki-fasten fs-2 text-primary"><span class="path1"></span><span class="path2"></span></i>
-        </a>` : '';
+		<a href="\${headerRefLink}" target="_blank" rel="noopener" class="text-primary d-inline-flex ms-2 flex-shrink-0" onclick="event.stopPropagation();" title="URL Reference">
+			<i class="ki-duotone ki-fasten fs-2 text-primary"><span class="path1"></span><span class="path2"></span></i>
+		</a>` : '';
+	const hasDesc = !!item.description;
+	// ไม่มี description แต่มีลิงก์
+	const inlineLinkHtml = (!hasDesc && headerRefLink) ? headerRefLinkHtml : '';
+	const descRowHtml = hasDesc
+		? '<div class="d-flex align-items-start ps-9 mt-3">' + descriptionHtml + headerRefLinkHtml + '</div>'
+		: '';
 
-      let actionButtons = '';
+    let actionButtons = '';
         if (canEditPrDetail) {
             actionButtons = `<a href="#" onclick="return editExistingCartItem('\${prDetailId}');" class="btn btn-icon btn-light-primary btn-sm" title="Edit">
                     <i class="ki-duotone ki-pencil fs-2"><span class="path1"></span><span class="path2"></span></i>
@@ -1794,38 +1821,40 @@ function createPrCard(item,index,prDetailId){
                 </a>`;
         }
 
-    return `<div class="pr-item-group border-gray-400 border-bottom pt-9 pb-6 px-6">
-    			<div class="d-flex align-items-center justify-content-between row g-3">
-    				<div class="col-12 col-lg-7 d-flex flex-wrap align-items-center">\${icon}
-						<span class="text-gray-900 fs-5 fw-normal me-3">\${category}</span>
-						<span class="text-gray-900 fs-5 fw-normal me-3">\${displayProductName}</span>
-
-						\${descriptionHtml} \${headerRefLinkHtml}
+      return `<div class="pr-item-group border-gray-400 border-bottom pt-9 pb-6 px-6">
+    			<div class="row g-3 align-items-center flex-nowrap">
+    				<div class="col" style="min-width:0;">
+						<div class="d-flex flex-wrap align-items-center">\${icon}
+							<span class="text-gray-900 fs-5 fw-normal me-3">\${category}</span>
+							<span class="text-gray-900 fs-5 fw-normal me-3">\${displayProductName}</span>
+							\${inlineLinkHtml}
+						</div>
+						\${descRowHtml}
 					</div>
-		
-					<div class="col-5 col-lg-2 d-flex align-items-center justify-content-between px-0">
-						<div class="col-12 d-flex flex-column text-start text-lg-end">
+
+					<div class="col-auto d-flex align-items-center justify-content-end gap-8 ">
+						<div class="d-flex flex-column text-end min-w-80px">
 							<span class="fs-6 fw-normal text-gray-900">\${item.unitName}</span>
 							<span class="fw-semibold text-gray-800 fs-5">\${displayQty}</span>
 						</div>
+
+						<div class="d-flex align-items-center justify-content-end gap-2 min-w-200px">
+							\${actionButtons}
+							<a class="collapsed pr-group-toggle" data-target="\${groupId}">
+								<i class="ki-duotone ki-up-square fs-2hx">
+									<span class="path1"></span><span class="path2"></span>
+								</i>
+							</a>
+							\${
+								prStatus === '7'
+									? (item.status == 1
+										? '<i class="ki-solid ki-check-square fs-2hx text-success"></i>'
+										: '<i class="ki-solid ki-cross-square fs-2hx text-disabled"></i>')
+									: ''
+							}
+						</div>
 					</div>
-		
-					<div class="col-7 col-lg-3 d-flex justify-content-end align-items-center gap-2 px-0">
-						\${actionButtons}
-						<a class="collapsed pr-group-toggle" data-target="\${groupId}">
-							<i class="ki-duotone ki-up-square fs-2hx">
-								<span class="path1"></span><span class="path2"></span>
-							</i>
-						</a>
-						\${
-							prStatus === '7'
-								? (item.status == 1
-									? '<i class="ki-solid ki-check-square fs-2hx text-success"></i>'
-									: '<i class="ki-solid ki-cross-square fs-2hx text-disabled"></i>')
-								: ''
-						}
-					</div>
-			</div>
+				</div>
 			
 			<div class="collapse border-gray-300 border-top mt-3" id="prGroup_\${groupId}">
 	            <div class="ps-9 pt-9">
@@ -1849,7 +1878,8 @@ function createPrCard(item,index,prDetailId){
 		</div>
 
 		`;
-}
+
+	}
 
 function createMrBadge(mrId, refLink){
     const linkColor = mrId ? 'info' : 'primary';
@@ -1873,6 +1903,52 @@ function createMrBadge(mrId, refLink){
     </span>`;
 }
 
+// function createPrSourceRow(qty, unitName, baseQty, baseUnitName, savedAt, mrId, refLink, creatorName, isNew, menuCtx){
+//     const qtyUnitDisplay = qty + ' ' + unitName + ' (= ' + baseQty + ' ' + baseUnitName + ')';
+
+//     const menuHtml = menuCtx ? `
+//             <div class="pr-src-menu position-relative d-inline-block flex-shrink-0">
+//                 <a href="#" class="btn btn-icon btn-sm btn-light-primary w-30px h-30px"
+//                    onclick="return toggleSrcMenu(this, event);" aria-label="More actions" aria-haspopup="true">
+//                     <i class="ki-outline ki-dots-horizontal fs-2"></i>
+//                 </a>
+
+//                 <div class="pr-src-actions position-absolute end-0 top-100 mt-2 bg-body rounded-3 shadow z-index-3">
+//                     <div class="py-2">
+//                         <a href="#" class="pr-src-item d-block px-6 py-3 fs-6 fw-normal text-gray-800 bg-hover-light"
+//                            onclick="event.stopPropagation(); return editSource('\${menuCtx.scope}', '\${menuCtx.a}', \${menuCtx.b});">Edit</a>
+//                         <a href="#" class="pr-src-item d-block px-6 py-3 fs-6 fw-normal text-gray-800 bg-hover-light"
+//                            onclick="event.stopPropagation(); return removeSource('\${menuCtx.scope}', '\${menuCtx.a}', \${menuCtx.b});">Delete</a>
+//                     </div>
+//                 </div>
+//             </div>` : '';
+
+//     return `
+//     <div class="pr-src-row row g-2 align-items-center mb-4 py-2">
+//         <div class="col-12 col-xl-9">
+//             <div class="row g-2 align-items-center fs-7">
+//                 <div class="col-12 col-md-4">
+//                     <i class="ki-duotone ki-user-tick fs-3 text-muted me-2"><span class="path1"></span><span class="path2"></span><span class="path3"></span></i>
+//                     <span class="text-gray-800 fs-5 fw-normal">\${creatorName || currentUserDisplay}</span>
+//                 </div>
+//                 <div class="col-12 col-md-4 d-flex align-items-center">
+//                     <i class="ki-duotone ki-calendar-2 fs-3 me-2"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span><span class="path5"></span></i>
+//                     <span class="text-gray-800 fs-5 fw-normal">\${savedAt}</span>
+//                 </div>
+//                 <div class="col-12 col-md-4 d-flex align-items-center gap-2">
+//                     <i class="ki-duotone ki-tablet-book fs-3 flex-shrink-0"><span class="path1"></span><span class="path2"></span></i>
+//                     <div class="d-flex flex-wrap align-items-center gap-2">\${createMrBadge(mrId, refLink)}</div>
+//                 </div>
+//             </div>
+//         </div>
+
+//         <div class="col-12 col-xl-3 d-flex align-items-center justify-content-between justify-content-xl-end gap-3">
+//             <span class="text-gray-800 fs-5 fw-normal">\${qtyUnitDisplay}</span>
+//             \${menuHtml}
+//         </div>
+//     </div>`;
+// }
+
 function createPrSourceRow(qty, unitName, baseQty, baseUnitName, savedAt, mrId, refLink, creatorName, isNew, menuCtx){
     const qtyUnitDisplay = qty + ' ' + unitName + ' (= ' + baseQty + ' ' + baseUnitName + ')';
 
@@ -1894,26 +1970,27 @@ function createPrSourceRow(qty, unitName, baseQty, baseUnitName, savedAt, mrId, 
             </div>` : '';
 
     return `
-    <div class="pr-src-row row g-2 align-items-center mb-4 py-2">
-        <div class="col-12 col-xl-9">
-            <div class="row g-2 align-items-center fs-7">
-                <div class="col-12 col-md-4">
-                    <i class="ki-duotone ki-user-tick fs-3 text-muted me-2"><span class="path1"></span><span class="path2"></span><span class="path3"></span></i>
-                    <span class="text-gray-800 fs-5 fw-normal">\${creatorName || currentUserDisplay}</span>
+    <div class="pr-src-row d-flex align-items-center justify-content-between gap-3 mb-4 py-2">
+
+        <div class="flex-grow-1 overflow-hidden">
+            <div class="row g-2 fs-7">
+                <div class="col-12 col-xl-4 d-flex align-items-center">
+                    <i class="ki-duotone ki-user-tick fs-3 text-muted me-2 flex-shrink-0"><span class="path1"></span><span class="path2"></span><span class="path3"></span></i>
+                    <span class="text-gray-800 fs-5 fw-normal text-break">\${creatorName || currentUserDisplay}</span>
                 </div>
-                <div class="col-12 col-md-4 d-flex align-items-center">
-                    <i class="ki-duotone ki-calendar-2 fs-3 me-2"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span><span class="path5"></span></i>
+                <div class="col-12 col-xl-4 d-flex align-items-center">
+                    <i class="ki-duotone ki-calendar-2 fs-3 me-2 flex-shrink-0"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span><span class="path5"></span></i>
                     <span class="text-gray-800 fs-5 fw-normal">\${savedAt}</span>
                 </div>
-                <div class="col-12 col-md-4 d-flex align-items-center gap-2">
+                <div class="col-12 col-xl-4 d-flex align-items-center gap-2">
                     <i class="ki-duotone ki-tablet-book fs-3 flex-shrink-0"><span class="path1"></span><span class="path2"></span></i>
                     <div class="d-flex flex-wrap align-items-center gap-2">\${createMrBadge(mrId, refLink)}</div>
                 </div>
             </div>
         </div>
 
-        <div class="col-12 col-xl-3 d-flex align-items-center justify-content-between justify-content-xl-end gap-3">
-            <span class="text-gray-800 fs-5 fw-normal">\${qtyUnitDisplay}</span>
+        <div class="d-flex align-items-center justify-content-end gap-3">
+            <span class="text-gray-800 fs-5 fw-normal text-end">\${qtyUnitDisplay}</span>
             \${menuHtml}
         </div>
     </div>`;

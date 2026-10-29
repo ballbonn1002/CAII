@@ -123,10 +123,10 @@
 								href="/purchase_requisition_add"><i class="ki-outline ki-plus fs-3 me-1"></i>Create</a>
 							
 						</div>
-						<div class="card-body filter-card px-10 py-9 rounded-3">
+						<div class="card-body filter-card px-5 px-md-10 py-9 rounded-3">
 						<!-- Summary PR -->
 							<div class="d-flex flex-row justify-content-center mb-10">
-								<div class="row align-items-center mt-10 mx-5 fs-6 fw-bold">
+								<div class="d-flex flex-wrap justify-content-center row align-items-center mt-10 mx-5 fs-6 fw-bold">
 
 									<!-- All -->
 									<div class="col-lg-3 col-md-4 col-6 d-flex align-items-center justify-content-center mb-5 summary-card border border-1 border-primary rounded-3 py-3 px-1"

@@ -110,17 +110,17 @@
 						</div>
 					</form>
 					<div class="card mb-10">
-						<div class="card-header border-0 px-9 pt-7 d-flex align-items-center justify-content-between">
+						<div class="card-header border-0 px-5 px-md-9 pt-7 d-flex align-items-center justify-content-between">
 							<div class="card-title">
-								<h3 class="fw-semibold text-gray-900">Equipment Request  List</h3>
+								<h3 class="fw-semibold text-gray-900">Equipment Request List</h3>
 							</div>
 							<a class="btn btn-lg btn-success fw-medium text-white px-6 py-4"
 								href="/equipment_request_mr_add"><i class="ki-outline ki-plus fs-3 me-1"></i>Create</a>
 						</div>
-						<div class="card-body filter-card px-10 py-9 rounded-3">
+						<div class="card-body filter-card px-5 px-md-10 py-9 rounded-3">
 							<!-- Summary MR -->
 							<div class="d-flex flex-row justify-content-center mb-10">
-								<div class="d-flex flex-wrap justify-content-center align-items-center mt-10 mx-5 fs-6 fw-bold gap-3">
+								<div class="d-flex flex-wrap justify-content-center align-items-center mt-5 mt-md-10 mx-0 mx-md-5 fs-6 fw-bold gap-1 gap-md-3 summary-wrap">
 
 									<!-- All -->
 									<div class="d-flex align-items-center justify-content-center summary-card border border-1 border-primary rounded-3 px-6 py-5 min-w-125px"
@@ -373,6 +373,8 @@
 			searching : true,
 			autoWidth : false,
 			info: false,
+			dom: "<'table-responsive'tr>" +
+	     		"<'d-flex flex-stack flex-wrap gap-3 mt-5'<'dt-len'l><'dt-pag'p>>",
 			language: {
 			    zeroRecords: "No data found",
 			    emptyTable: "No data available in table"
