@@ -1444,11 +1444,12 @@
 				<c:forEach var="row" items="${travelListObj}">
 					<div class="liff-swipe mb-5">
 					<div class="liff-swipe-actions d-flex">
-						<a href="${ctx}/line_my_travelV?id=${row.expense_id}"
-							class="btn btn-light-info rounded-0 w-65px p-0 d-flex flex-column align-items-center justify-content-center gap-1 liff-swipe-view liff-open-detail-modal">
+						<button type="button"
+							class="btn btn-light-info rounded-0 w-65px p-0 d-flex flex-column align-items-center justify-content-center gap-1 liff-swipe-view btn-open-modal"
+							data-expense-id="${row.expense_id}">
 							<i class="ki-duotone ki-document fs-1 p-0"><span class="path1"></span><span class="path2"></span></i>
 							<span class="fs-8 fw-semibold">View</span>
-						</a>
+						</button>
 						<a href="${ctx}/line_my_travelE?id=${row.expense_id}"
 							class="btn btn-light-primary rounded-0 w-65px p-0 d-flex flex-column align-items-center justify-content-center gap-1 btn-edit-expense">
 							<i class="ki-duotone ki-pencil fs-1 p-0"><span class="path1"></span><span class="path2"></span></i>
@@ -1507,6 +1508,103 @@
 					</div>
 					</div>
 				</c:forEach>
+				<div id="modalDataStore" class="d-none">
+					<c:forEach var="row" items="${travelListObj}">
+						<div class="modal-data-item" data-id="${row.expense_id}">
+						<div class="card card-bordered">
+							<div class="card-body p-5">
+
+								<div class="d-flex align-items-center gap-3 mb-6">
+									<span class="fw-bold fs-5 text-primary">#${row.expense_id}</span>
+									<span class="badge badge-secondary fs-7 fw-semibold px-3 py-2">Draft</span>
+								</div>
+								<c:set var="userText" value="-" />
+								<c:forEach var="u" items="${userListObj}">
+									<c:if test="${u['id'] == row.user_id}">
+										<c:set var="userText">${not empty u['employee_id'] ? fn:escapeXml(u['employee_id']) : ''} - ${not empty u['name_en'] ? fn:escapeXml(u['name_en']) : ''} - ${not empty u['name'] ? fn:escapeXml(u['name']) : ''} - ${not empty u['department'] ? fn:escapeXml(u['department']) : ''}</c:set>
+									</c:if>
+								</c:forEach>
+
+								<div class="d-flex align-items-center gap-3 mb-5">
+									<i class="ki-duotone ki-user-square fs-2 text-muted"><span class="path1"></span><span class="path2"></span><span class="path3"></span></i>
+									<span class="fw-medium text-gray-900 fs-6">${userText}</span>
+								</div>
+
+								<div class="d-flex align-items-center gap-3 mb-5">
+									<i class="ki-duotone ki-calendar fs-2 text-muted"><span class="path1"></span><span class="path2"></span></i>
+									<span class="fw-semibold text-gray-800 fs-6"><c:choose><c:when test="${not empty row.dt_start}"><fmt:formatDate value="${row.dt_start}" pattern="d MMM yyyy" /></c:when><c:otherwise>-</c:otherwise></c:choose></span>
+								</div>
+
+								<div class="d-flex align-items-center gap-3 mb-5">
+									<i class="ki-duotone ki-notepad fs-2 text-muted"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span><span class="path5"></span></i>
+									<span class="fw-semibold text-gray-700 fs-6 text-break">${not empty row.description ? fn:escapeXml(row.description) : '-'}</span>
+								</div>
+
+								<div class="d-flex align-items-center justify-content-between gap-3 mb-5">
+									<div class="d-flex align-items-center gap-3" style="min-width:0;">
+										<i class="ki-duotone ki-geolocation fs-2 text-primary"><span class="path1"></span><span class="path2"></span></i>
+										<div class="text-break" style="min-width:0;">
+											<span class="text-muted fs-6">Beginning : </span>
+											<span class="fw-semibold text-gray-800 fs-6">${not empty row.from_location ? fn:escapeXml(row.from_location) : '-'}</span>
+										</div>
+									</div>
+									<div class="d-flex align-items-center gap-2 flex-shrink-0">
+										<i class="ki-duotone ki-time fs-2 text-muted"><span class="path1"></span><span class="path2"></span></i>
+										<span class="fw-medium text-gray-700 fs-6"><c:choose><c:when test="${not empty row.dt_start}"><fmt:formatDate value="${row.dt_start}" pattern="H:mm" /></c:when><c:otherwise>-</c:otherwise></c:choose></span>
+									</div>
+								</div>
+
+								<div class="d-flex align-items-center justify-content-between gap-3 mb-5">
+									<div class="d-flex align-items-center gap-3" style="min-width:0;">
+										<i class="ki-duotone ki-geolocation fs-2 text-success"><span class="path1"></span><span class="path2"></span></i>
+										<div class="text-break" style="min-width:0;">
+											<span class="text-muted fs-6">Destination : </span>
+											<span class="fw-medium text-gray-800 fs-6">${not empty row.to_location ? fn:escapeXml(row.to_location) : '-'}</span>
+										</div>
+									</div>
+									<div class="d-flex align-items-center gap-2 flex-shrink-0">
+										<i class="ki-duotone ki-time fs-2 text-muted"><span class="path1"></span><span class="path2"></span></i>
+										<span class="fw-semibold text-gray-700 fs-6"><c:choose><c:when test="${not empty row.dt_end}"><fmt:formatDate value="${row.dt_end}" pattern="H:mm" /></c:when><c:otherwise>-</c:otherwise></c:choose></span>
+									</div>
+								</div>
+
+								<div class="fs-7 text-muted mb-6">Request Date: <fmt:formatDate value="${row.time_create}" pattern="d MMM yyyy, H:mm" /></div>
+
+								<div class="separator separator-dashed mb-6"></div>
+
+								<div class="d-flex align-items-center justify-content-between mb-3">
+									<span class="text-gray-700 fw-medium fs-5">Expense form</span>
+									<span class="badge badge-primary fw-bold fs-6"><fmt:formatNumber value="${row.amount}" pattern="#,##0.00" /> บาท</span>
+								</div>
+
+								<div>
+									<c:forEach var="det" items="${row.details}">
+										<div class="d-flex align-items-start justify-content-between gap-3 py-2">
+											<div class="d-flex align-items-start gap-2" style="min-width:0;">
+												<div class="d-flex align-items-center gap-2 flex-shrink-0">
+													<span class="d-flex justify-content-center flex-shrink-0 w-15px"><span class="rounded-circle flex-shrink-0 w-8px h-8px bg-gray-400" style="transform: translateY(-1px);"></span></span>
+													<span class="fw-semibold text-gray-800 fs-7">${fn:escapeXml(det.travel_type_name)}</span>
+												</div>
+												<c:if test="${not empty det.description}">
+													<div class="d-flex align-items-start gap-1" style="min-width:0;">
+														<i class="ki-duotone ki-document fs-3 flex-shrink-0"><span class="path1"></span><span class="path2"></span></i>
+														<span class="text-gray-600 fs-7 text-break">${fn:escapeXml(det.description)}</span>
+													</div>
+												</c:if>
+											</div>
+											<div class="fw-bold text-primary fs-7 text-nowrap"><fmt:formatNumber value="${det.total}" pattern="#,##0.00" /> บาท</div>
+										</div>
+									</c:forEach>
+									<c:if test="${empty row.details}">
+										<div class="text-gray-500 fs-7 py-2">-</div>
+									</c:if>
+								</div>
+
+							</div>
+						</div>
+						</div>
+					</c:forEach>
+				</div>
 			</c:when>
 
 			<c:otherwise>
@@ -1883,6 +1981,19 @@ function resetCheckboxState() {
     updateSubmitButtonState();
 }
 
+function initModal() {
+    $(document).on('click', '.btn-open-modal', function () {
+        const id = this.getAttribute('data-expense-id');
+        const src = document.querySelector('#modalDataStore .modal-data-item[data-id="' + id + '"]');
+        if (!src) return;
+        fillModal(src);
+    });
+}
+
+function fillModal(src) {
+    liffShowDetailContent(src.firstElementChild.cloneNode(true));
+}
+
 function initDeleteExpense() {
     document.addEventListener('click', function (e) {
         const btn = e.target.closest('.btn-delete-expense');
@@ -1911,7 +2022,7 @@ function initDeleteExpense() {
             btn.disabled = true;
             btn.innerHTML = '<span class="spinner-border spinner-border-sm text-danger"></span>';
 
-            fetch(ctx + '/travel_delete?id=' + encodeURIComponent(expenseId), {
+            fetch(ctx + '/line_travel_delete?id=' + encodeURIComponent(expenseId), {
                 method: 'POST',
                 headers: { 'X-Requested-With': 'XMLHttpRequest' }
             })
@@ -2059,6 +2170,7 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     initDeleteExpense();
+    initModal();
     initSwipeActions();
     document.getElementById('liffDetailModal').addEventListener('show.bs.modal', function () { closeAllSwipes(); });
     initBrowserNavigation();

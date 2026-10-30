@@ -80,15 +80,10 @@
 		<put-attribute name="body"
 			value="/pages-line/my_travel/my_travel_list.jsp" />
 	</definition>
-	<definition name="line_myTravelV" extends="line_baseLayout">
+	<definition name="line_myTravelSR" extends="line_baseLayout">
 		<put-attribute name="title" value="Travel Expense" />
 		<put-attribute name="body"
-			value="/pages-line/my_travel/my_travel_view.jsp" />
-	</definition>
-	<definition name="line_myTravelG" extends="line_baseLayout">
-		<put-attribute name="title" value="Travel Expense" />
-		<put-attribute name="body"
-			value="/pages-line/my_travel/my_travel_group.jsp" />
+			value="/pages-line/my_travel/my_travel_submit.jsp" />
 	</definition>
 	<definition name="line_myTravelA" extends="line_baseLayout">
 		<put-attribute name="title" value="My Travel Add" />

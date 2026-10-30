@@ -92,5 +92,14 @@
                 liffToastError('กรุณาลองใหม่อีกครั้ง', 'โหลดรายละเอียดไม่สำเร็จ');
             });
     }
+
+    window.liffShowDetailContent = function (content) {
+        detailModalUrl = null;
+        clearTimeout(detailSkeletonTimer);
+        body.innerHTML = '';
+        body.appendChild(content);
+        history.pushState({ detailModal: true }, '');
+        detailModal.show();
+    };
 })();
 </script>
