@@ -1002,12 +1002,10 @@ body { padding-bottom: calc(90px + env(safe-area-inset-bottom)); }
 		<i class="ki-duotone ki-delivery-time"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span><span class="path5"></span></i>
 		<span>Travel</span>
 	</a>
-	<%-- ซ่อนหน้า Profile ของ LIFF
 	<a href="my_profile" data-route="my_profile">
 		<i class="ki-duotone ki-profile-circle"><span class="path1"></span><span class="path2"></span><span class="path3"></span></i>
 		<span>Profile</span>
 	</a>
-	--%>
 </nav>
 <div id="liffNavOverlay" class="liff-loading-overlay liff-loading-delayed" style="z-index:99;">
 	<div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading...</span></div>
