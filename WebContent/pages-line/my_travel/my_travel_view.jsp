@@ -58,7 +58,7 @@
 			<div class="d-flex align-items-center justify-content-between gap-3 mb-5">
 				<div class="d-flex align-items-center gap-3" style="min-width:0;">
 					<i class="ki-duotone ki-geolocation fs-2 text-primary"><span class="path1"></span><span class="path2"></span></i>
-					<div>
+					<div class="text-break" style="min-width:0;">
 						<span class="text-muted fs-6">Beginning : </span>
 						<span class="fw-semibold text-gray-800 fs-6">${not empty exp.fromLocation ? fn:escapeXml(exp.fromLocation) : '-'}</span>
 					</div>
@@ -72,7 +72,7 @@
 			<div class="d-flex align-items-center justify-content-between gap-3 mb-5">
 				<div class="d-flex align-items-center gap-3" style="min-width:0;">
 					<i class="ki-duotone ki-geolocation fs-2 text-success"><span class="path1"></span><span class="path2"></span></i>
-					<div>
+					<div class="text-break" style="min-width:0;">
 						<span class="text-muted fs-6">Destination : </span>
 						<span class="fw-medium text-gray-800 fs-6">${not empty exp.toLocation ? fn:escapeXml(exp.toLocation) : '-'}</span>
 					</div>

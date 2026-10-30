@@ -1635,6 +1635,20 @@
 			// พิมพ์ได้เฉพาะตัวเลขกับ : เหมือน legacy
 			el.addEventListener('input', function () {
 				this.value = this.value.replace(/[^0-9:]/g, '');
+				el.dataset.typed = this.value;
+			});
+			el.addEventListener('change', function () {
+				var typed = el.dataset.typed;
+				if (typed === undefined) return;
+				delete el.dataset.typed;
+				var t = /^(\d{1,2}):(\d{2})$/.exec(typed);
+				if (t && parseInt(t[1], 10) < 24 && parseInt(t[2], 10) < 60) {
+					setTime(parseInt(t[1], 10), parseInt(t[2], 10));
+				} else {
+					picker.dates.clear();
+					el.value = '';
+				}
+				checkSubmitState();
 			});
 			el.addEventListener('change.td', checkSubmitState);
 		}
@@ -1662,9 +1676,12 @@
 			var allRequiredFilled = requiredInputIds.every(function(id) {
 				return fieldValue(id) !== "";
 			});
+			var timesValid = [ "beginTime", "destTime" ].every(function(id) {
+				return /^([01]\d|2[0-3]):[0-5]\d$/.test(fieldValue(id));
+			});
 			var isProcessingFiles = travelLoadingFiles.length > 0;
 
-			if (hasExpenseRows && allRequiredFilled && !isProcessingFiles) {
+			if (hasExpenseRows && allRequiredFilled && timesValid && !isProcessingFiles) {
 				btnSubmitSave.removeAttribute("disabled");
 			} else {
 				btnSubmitSave.setAttribute("disabled", "disabled");
