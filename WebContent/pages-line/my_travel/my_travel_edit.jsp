@@ -1641,8 +1641,8 @@
 				var typed = el.dataset.typed;
 				if (typed === undefined) return;
 				delete el.dataset.typed;
-				var t = /^(\d{1,2}):(\d{2})$/.exec(typed);
-				if (t && parseInt(t[1], 10) < 24 && parseInt(t[2], 10) < 60) {
+				var t = /^([01]?\d|2[0-3]):([0-5]\d)$/.exec(typed);
+				if (t) {
 					setTime(parseInt(t[1], 10), parseInt(t[2], 10));
 				} else {
 					picker.dates.clear();
@@ -1729,14 +1729,6 @@
 			}
 		});
 
-		function reindex() {
-			expenseList.querySelectorAll(".expense-row").forEach(function(row, idx) {
-				var no = row.querySelector(".row-no");
-				if (no)
-					no.textContent = String(idx + 1);
-			});
-		}
-
 		function calcTotal() {
 			var sum = 0;
 			expenseList.querySelectorAll(".expense-row").forEach(function(row) {
@@ -1761,7 +1753,6 @@
 			var row = btn.closest(".expense-row");
 			if (row)
 				row.remove();
-			reindex();
 			calcTotal();
 			checkSubmitState();
 		}
@@ -1867,16 +1858,7 @@
 			mGoByEl.selectedIndex = 0;
 			// trigger change ให้ dropdown อัปเดตข้อความ
 			$(mGoByEl).trigger("change");
-			var t1 = document.getElementById("mTotal");
-			var t2 = document.getElementById("mTotalNormal");
-			if (t1)
-				t1.value = "";
-			if (t2)
-				t2.value = "";
 			document.getElementById("mDescription").value = "";
-			document.getElementById("mKilometers").value = "";
-			document.getElementById("distanceGroup").style.display = "none";
-			document.getElementById("totalGroupNormal").style.display = "";
 			delete modalEl.dataset.editRow;
 			checkModalSubmitState();
 		}
@@ -1952,7 +1934,6 @@
 				appendExpenseRow(goByText, goByVal, descVal, totalNum, kmVal);
 			}
 
-			reindex();
 			calcTotal();
 			checkSubmitState();
 			bootstrap.Modal.getOrCreateInstance(modalEl).hide();
@@ -1986,7 +1967,6 @@
 			appendExpenseRow(opt ? opt.text.trim() : "-", goByVal, el.dataset.desc || "", totalNum, el.dataset.km || "0");
 		});
 
-		reindex();
 		calcTotal();
 
 		// รันเช็คสถานะครั้งแรกตอนโหลดหน้าจอ
