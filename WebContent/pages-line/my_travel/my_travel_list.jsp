@@ -1415,7 +1415,6 @@
 
 	<c:url var="createUrl" value="/line_my_travelA" />
 
-	<%-- ปุ่ม + แสดงทุกแท็บ --%>
 	<a href="${createUrl}" class="liff-floating-btn" aria-label="Create">
 		<i class="ki-duotone ki-plus text-white"></i>
 	</a>
@@ -2076,7 +2075,6 @@ window.addEventListener('pageshow', function (e) {
 
 <script>
 /* ---------- toast ---------- */
-// ?saved=add / edit มาจากหน้า Add/Edit
 $(function () {
 	const params = new URLSearchParams(window.location.search);
 	const saved = params.get('saved');

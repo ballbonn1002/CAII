@@ -1379,7 +1379,6 @@
 				</div>
 				<div id="travelFileList" class="d-flex flex-wrap gap-2"></div>
 
-				<%-- ไฟล์เดิมจาก BE ให้ JS วาดแถวแบบเดียวกับไฟล์ใหม่ --%>
 				<div id="travelExistingFiles" class="d-none">
 					<c:forEach var="f" items="${travelFiles}">
 						<span data-file-id="${fn:escapeXml(f.fileId)}" data-name="${fn:escapeXml(f.name)}${fn:escapeXml(f.type)}" data-url="${ctx}${fn:escapeXml(f.path)}"></span>
@@ -1407,7 +1406,6 @@
 					<div id="noDataRow" class="text-center text-muted fs-7 py-8 mb-3 border border-dashed border-gray-300 rounded">No Data</div>
 				</div>
 
-				<%-- รายการเดิมจาก BE ให้ JS วาดการ์ดด้วย buildRowHtml --%>
 				<div id="travelExistingDetails" class="d-none">
 					<c:forEach var="d" items="${detailList}">
 						<span data-go-by="${fn:escapeXml(d.goBy)}" data-km="${fn:escapeXml(d.kilometers)}" data-desc="${fn:escapeXml(d.description)}" data-total="${fn:escapeXml(d.total)}"></span>
@@ -1500,7 +1498,6 @@
 			return el ? el.value.trim() : "";
 		}
 
-		// ไอคอนไฟล์แบบเดียวกับ getFileIconPath ของ create leave (ใช้เฉพาะ svg ที่มีจริง)
 		function getFileIcon(fileName) {
 			var ext = (fileName || '').split('.').pop().toLowerCase();
 			var base = ctx + '/assets/media/svg/files/';
@@ -1552,7 +1549,6 @@
 			});
 		}
 
-		// Request Date ใช้วันที่สร้างรายการ (ไม่มีค่าใช้วันนี้)
 		var reqDateEl = document.getElementById("requestDate");
 		var reqDateValEl = document.getElementById("requestDateVal");
 		if (reqDateEl) {
@@ -1564,10 +1560,8 @@
 		}
 
 		var modalEl = document.getElementById("expenseModal");
-		// Go by ใช้ dropdown แบบ create leave แทน select2
 		liffMountSelectDropdown(document.getElementById("mGoBy"));
 
-		// วันเดินทาง: daterangepicker แบบเดียวกับ create leave
 		var depDisplayEl = document.getElementById("departureDate");
 		var depValEl = document.getElementById("departureDateVal");
 		if (depDisplayEl) {
@@ -1599,7 +1593,6 @@
 			});
 		}
 
-		// เวลาเริ่ม/ถึง: tempusDominus แบบเดียวกับ create leave
 		function createTimePicker(inputId) {
 			var el = document.getElementById(inputId);
 			if (!el) return;
@@ -1625,14 +1618,12 @@
 			function setTime(h, mi) {
 				picker.dates.setValue(tempusDominus.DateTime.convert(new Date(0, 0, 0, h, mi)));
 			}
-			// คงค่าเดิมของรายการ
 			var m = /^(\d{1,2}):(\d{2})$/.exec(initial || '');
 			if (m) setTime(parseInt(m[1], 10), parseInt(m[2], 10));
-			// เปิดครั้งแรกตอนยังว่าง ใส่ 12:00 เหมือน legacy (flatpickr defaultHour)
+			// เปิดครั้งแรกตอนว่างใส่ 12:00 เหมือน legacy
 			el.addEventListener('show.td', function () {
 				if (!el.value) setTime(12, 0);
 			});
-			// พิมพ์ได้เฉพาะตัวเลขกับ : เหมือน legacy
 			el.addEventListener('input', function () {
 				this.value = this.value.replace(/[^0-9:]/g, '');
 				el.dataset.typed = this.value;
@@ -1805,7 +1796,6 @@
 			});
 		}
 
-		// การ์ดรายการ: ยอด | แก้ไข ลบ / ประเภท · รายละเอียด (hidden input ลำดับเดิม)
 		function buildRowHtml(goByText, goByVal, descVal, totalNum, kmVal) {
 			return ("<div class='card-body p-4 d-flex flex-column gap-3'>"
 					+ "<div class='d-flex align-items-center justify-content-between gap-3'>"
@@ -1856,7 +1846,6 @@
 		function resetModal() {
 			mGoByEl.value = "";
 			mGoByEl.selectedIndex = 0;
-			// trigger change ให้ dropdown อัปเดตข้อความ
 			$(mGoByEl).trigger("change");
 			document.getElementById("mDescription").value = "";
 			delete modalEl.dataset.editRow;
@@ -1957,7 +1946,7 @@
 			resetModal();
 		});
 
-		// รายการเดิม ชื่อ Go by เอาจาก option (ประเภทที่ปิดใช้แล้วแสดง -)
+		// Go by ที่ปิดใช้แล้วไม่มีใน option จะแสดง -
 		document.querySelectorAll("#travelExistingDetails > span").forEach(function(el) {
 			var goByVal = el.dataset.goBy || "";
 			var opt = Array.prototype.find.call(mGoByEl.options, function(o) {
@@ -1972,7 +1961,6 @@
 		// รันเช็คสถานะครั้งแรกตอนโหลดหน้าจอ
 		checkSubmitState();
 
-		// แถวไฟล์หน้าตาเดียวกับ lfMakeItem ของหน้า Create Leave
 		function makeTravelFileItem(name, url, onRemove) {
 			var item = document.createElement('div');
 			item.className = 'd-flex w-100 justify-content-between align-items-center p-2 border border-gray-300 rounded bg-white';
@@ -2005,7 +1993,6 @@
 			return item;
 		}
 
-		// ไฟล์เดิมอยู่บนสุด ต่อด้วยไฟล์ใหม่ และแถวที่กำลังประมวลผล
 		function renderNewFileList() {
 			var listDiv = document.getElementById('travelFileList');
 			listDiv.innerHTML = '';
@@ -2078,7 +2065,7 @@
 			return travelSelectedFiles.some(function(f) { return f.name === file.name && f.size === file.size; });
 		}
 
-		// นับเฉพาะไฟล์ใหม่ ไฟล์เดิมอยู่บน server แล้วไม่ได้ส่งไปกับ request
+		// ไฟล์เดิมอยู่บน server แล้ว นับเฉพาะไฟล์ใหม่
 		function travelFilesTotalSize() {
 			var total = 0;
 			travelSelectedFiles.forEach(function(f) { total += f.size; });
@@ -2187,17 +2174,15 @@
 		});
 		renderNewFileList();
 
-		// บันทึกสำเร็จ BE redirect ไป line_my_travel (error จะ forward ไป index.jsp ไม่ redirect)
+		// บันทึกสำเร็จ BE จะ redirect ไป line_my_travel ถ้า error จะ forward ไม่ redirect
 		function isTravelSaved(res) {
 			return res.ok && res.redirected && res.url.indexOf('line_my_travel') !== -1;
 		}
 
-		// session หมด AuthInterceptor redirect ไปหน้า login
 		function isSessionExpired(res) {
 			return res.redirected && res.url.indexOf('/pages-line/index.jsp') !== -1;
 		}
 
-		// ส่ง form ด้วย fetch แบบ doSubmit() ของ create leave จะได้รู้ผลแล้วขึ้น toast
 		var travelSubmitting = false;
 		document.getElementById('travelEditForm').addEventListener('submit', function (e) {
 			e.preventDefault();
@@ -2212,15 +2197,12 @@
 
 			fetch(form.action, { method: 'POST', body: new FormData(form) })
 				.then(function (res) {
-					// session หมด ไปหน้า login
 					if (isSessionExpired(res)) {
 						window.location.href = res.url;
 						return;
 					}
-					// บันทึกไม่สำเร็จ ไป catch
 					if (!isTravelSaved(res)) { throw new Error('save failed'); }
 
-					// บันทึกสำเร็จ ไปหน้า My Travel พร้อม toast
 					var separator = (res.url.indexOf('?') === -1) ? '?' : '&';
 					window.location.href = res.url + separator + 'saved=edit';
 				})
