@@ -31,6 +31,7 @@ public class Constant {
     private static String lineChannel_access_token;
     private String imgContext;
     private String webEnv;
+    private static String version = "20261103";
 
 	public String getGoogleApiKey() {
 		return googleApiKey;
@@ -126,6 +127,14 @@ public class Constant {
 
 	public void setWebEnv(String webEnv) {
 		this.webEnv = webEnv;
+	}
+	
+	public String getVersion() {
+		return version;
+	}
+
+	public void setVersion(String version) {
+		Constant.version = version;
 	}
 
 }

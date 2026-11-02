@@ -1314,3 +1314,6 @@ CREATE TABLE `token_monthly_log_detail` (
   `time_update` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`token_log_id`)
 ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci;
+
+-- PROD 3 NOV 2026
+	
