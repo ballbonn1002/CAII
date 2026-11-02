@@ -756,33 +756,33 @@
 						<c:when test="${mrStatus.statusCode == '6'}"><c:set var="actionLabel" value="Cancel By"/></c:when>
 					</c:choose>
 
-					<div class="card mb-10">
-						<div class="card-body filter-card px-10 py-9 rounded-3">
-							<div class="d-flex align-items-center fs-6">
-								<span>${actionLabel} : ${userUpdate.employeeId} ${userUpdate.nameEN},
-									<c:choose>
-										<c:when test="${not empty mr.approveDate}">
-											<fmt:formatDate value="${mr.approveDate}" pattern="d MMM yyyy HH:mm" />
-										</c:when>
-										<c:otherwise>
-											<fmt:formatDate value="${mr.timeUpdate}" pattern="d MMM yyyy HH:mm" />
-										</c:otherwise>
-									</c:choose>
-								</span>
-
-								<c:if test="${(mrStatus.statusCode == '5' || mrStatus.statusCode == '3') and not empty mr.reason}">
-									<span class="ms-5 d-inline-flex align-items-center">
-										<i class="ki-duotone ki-document fs-3 me-3">
-											<span class="path1"></span>
-											<span class="path2"></span>
-										</i>
-										<span>${mr.reason}</span>
+						<div class="card mb-10">
+							<div class="card-body filter-card px-5 px-lg-10 py-5 py-lg-9 rounded-3">
+								<div class="d-flex flex-column flex-md-row align-items-start align-items-md-center gap-2 gap-md-5 fs-6">
+									<span>${actionLabel} : ${userUpdate.employeeId} ${userUpdate.nameEN},
+										<c:choose>
+											<c:when test="${not empty mr.approveDate}">
+												<fmt:formatDate value="${mr.approveDate}" pattern="d MMM yyyy HH:mm" />
+											</c:when>
+											<c:otherwise>
+												<fmt:formatDate value="${mr.timeUpdate}" pattern="d MMM yyyy HH:mm" />
+											</c:otherwise>
+										</c:choose>
 									</span>
-								</c:if>
+
+									<c:if test="${(mrStatus.statusCode == '5' || mrStatus.statusCode == '3') and not empty mr.reason}">
+										<span class="d-inline-flex align-items-start">
+											<i class="ki-duotone ki-document fs-3 me-3 flex-shrink-0">
+												<span class="path1"></span>
+												<span class="path2"></span>
+											</i>
+											<span class="text-break">${mr.reason}</span>
+										</span>
+									</c:if>
+								</div>
 							</div>
 						</div>
-					</div>
-				</c:if>
+					</c:if>
 
 					<div class="d-flex flex-column-reverse flex-md-row justify-content-md-between gap-5 gap-md-3 mb-10">
 						<div class="d-flex flex-column-reverse flex-md-row gap-5 gap-md-3">

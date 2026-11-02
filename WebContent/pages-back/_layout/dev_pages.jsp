@@ -45,7 +45,7 @@ pageEncoding="UTF-8"%>
                 </div>
               </div>
               <div class="card-body">
-                <div class="d-flex gap-4">
+                <div class="d-flex flex-wrap gap-4">
                   <a
                     href="equipment_request_mr_list"
                     class="btn btn-light-primary d-inline-flex align-items-center px-6 py-3"

@@ -521,8 +521,8 @@
 					</c:choose>
 
 					<div class="card mb-10">
-						<div class="card-body filter-card px-10 py-9 rounded-3">
-							<div class="d-flex align-items-center fs-6">
+						<div class="card-body filter-card px-5 px-lg-10 py-5 py-lg-9 rounded-3">
+							<div class="d-flex flex-column flex-md-row align-items-start align-items-md-center gap-2 gap-md-5 fs-6">
 								<span>${actionLabel} : ${userUpdate.employeeId} ${userUpdate.nameEN},
 									<c:choose>
 										<c:when test="${not empty mr.approveDate}">
@@ -535,12 +535,12 @@
 								</span>
 
 								<c:if test="${(mrStatus.statusCode == '5' || mrStatus.statusCode == '3') and not empty mr.reason}">
-									<span class="ms-5 d-inline-flex align-items-center">
-										<i class="ki-duotone ki-document fs-3 me-3">
+									<span class="d-inline-flex align-items-start">
+										<i class="ki-duotone ki-document fs-3 me-3 flex-shrink-0">
 											<span class="path1"></span>
 											<span class="path2"></span>
 										</i>
-										<span>${mr.reason}</span>
+										<span class="text-break">${mr.reason}</span>
 									</span>
 								</c:if>
 							</div>

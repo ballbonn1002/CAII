@@ -88,7 +88,8 @@
 /* ===== MR Search Modal ===== */
 
 #modal_search_mr .table-responsive {
-    max-height: 300px;
+	min-height: 40vh;
+    max-height: 45vh;
     overflow-y: auto;
 }
 
@@ -624,7 +625,9 @@
 											<label class="required fw-medium text-gray-800 mb-2">Product Name</label>
 											<div class="position-relative d-flex align-items-center">
 												
-												<select name="product_name" id="product_name" class="form-select h-45px" data-control="select2">
+												<select name="product_name" id="product_name" class="form-select h-45px"
+														data-control="select2" data-placeholder="Select Product"
+														data-dropdown-parent="#modal_create_pr">
 													<option value=""></option>
 												</select>
 											</div>
@@ -641,7 +644,8 @@
 										<div class="col-lg-6 col-md-6 col-12 d-flex flex-column">
 											<label class="required fw-medium text-gray-800 mb-2">Unit</label>
 											<div class="position-relative d-flex align-items-center">
-												<select id="unit" class="form-select h-45px" data-control="select2">
+												<select id="unit" class="form-select h-45px" data-control="select2"
+														data-placeholder="Select Unit" data-dropdown-parent="#modal_create_pr">
 													<option value=""></option>
 												</select>
 
@@ -1412,42 +1416,107 @@
 		}
 	})();
 	
-	$('#items_type').on('change', function(){
-		var itemsType = $(this).val();
-		if(!itemsType) return;
-		itemsType = itemsType.trim();
+	// $('#items_type').on('change', function(){
+	// 	var itemsType = $(this).val();
+	// 	if(!itemsType) return;
+	// 	itemsType = itemsType.trim();
 		
+	// 	var $product = $('#product_name');
+
+	// 	$.ajax({
+	// 		 url: ctx + '/get_items_catalog',
+	// 	        type: 'POST',
+	// 	        dataType: 'json',
+	// 	        data: { itemsType: itemsType },
+	// 	        success: function (resp) {
+	// 	            var data = resp.data;
+	// 	            if (!data) return;
+	// 	            var list = (data && data.productList) || [];
+
+	// 	            var options = '';
+	// 	            if (list.length === 0) {
+	// 	                options = '<option value=""></option>';
+	// 	            } else {
+	// 	                list.forEach(function (item, index) {
+	// 	                    options += '<option value="' + item.id + '"' + (index === 0 ? ' selected' : '') + '>' + item.name + '</option>';
+	// 	                });
+	// 	            }
+
+	// 	            $('#product_name').html(options).trigger('change');
+	// 	        },
+	// 	        error: function () {
+	// 	            Swal.fire('Error', 'ไม่สามารถโหลดข้อมูล Items Catalog ได้', 'error');
+	// 	        }
+	// 	    });
+	// })
+
+	$('#items_type').on('change', function(){
+		var itemsType = ($(this).val() || '').trim();
+		if(!itemsType) return;
+
+		var $product = $('#product_name');
+
 		$.ajax({
-			 url: ctx + '/get_items_catalog',
-		        type: 'POST',
-		        dataType: 'json',
-		        data: { itemsType: itemsType },
-		        success: function (resp) {
-		            // if (resp.debug) console.log('[get_items_catalog debug]', resp.debug);
-		            var data = resp.data;
-		            if (!data) return;
-		            var list = (data && data.productList) || [];
+			url: ctx + '/get_items_catalog',
+			type: 'POST',
+			dataType: 'json',
+			data: { itemsType: itemsType },
+			success: function (resp) {
+				var data = resp.data;
+				if (!data) return;
+				var list = (data && data.productList) || [];
 
-		            var options = '';
-		            if (list.length === 0) {
-		                options = '<option value=""></option>';
-		            } else {
-		                list.forEach(function (item, index) {
-		                    options += '<option value="' + item.id + '"' + (index === 0 ? ' selected' : '') + '>' + item.name + '</option>';
-		                });
-		            }
+				if ($product.hasClass('select2-hidden-accessible')) {
+					$product.select2('destroy');
+				}
 
-		            $('#product_name').html(options).trigger('change');
-		        },
-		        error: function () {
-		            Swal.fire('Error', 'ไม่สามารถโหลดข้อมูล Items Catalog ได้', 'error');
-		        }
-		    });
-	})
+				var options = '<option value=""></option>';
+				list.forEach(function (item, index) {
+					options += '<option value="' + item.id + '"' + (index === 0 ? ' selected' : '') + '>' + item.name + '</option>';
+				});
+				$product.html(options);
+
+				$product.select2({
+					placeholder: list.length === 0 ? 'No data' : 'Select Product',
+					dropdownParent: $('#modal_create_pr'),
+					language: { noResults: function(){ return 'No data'; } }
+				});
+
+				if (list.length === 0) {
+					$product.val('');
+				}
+
+				if (editingExistingDetailId) {
+					$product.prop('disabled', true);
+				}
+
+				$product.trigger('change');
+			},
+			error: function () {
+				Swal.fire('Error', 'ไม่สามารถโหลดข้อมูล Items Catalog ได้', 'error');
+			}
+		});
+	});
+
+	function initUnitSelect(hasData){
+		var $unit = $('#unit');
+		if ($unit.hasClass('select2-hidden-accessible')) {
+			$unit.select2('destroy');
+		}
+		$unit.select2({
+			placeholder: hasData ? 'Select Unit' : 'No data',
+			dropdownParent: $('#modal_create_pr'),
+			language: { noResults: function () { return 'No data'; } }
+		});
+	}
 
 	$('#product_name').on('change', function(){
 		var productId = $(this).val();
-		$('#unit').html('<option value=""></option>').data('base-unit-id', '').data('base-unit-name', '').trigger('change');
+		var $unit = $('#unit');
+
+		$unit.html('<option value=""></option>').data('base-unit-id', '').data('base-unit-name', '');
+		initUnitSelect(false);
+		$unit.val('').trigger('change');
 		if(!productId) return;
 
 		$.ajax({
@@ -1460,31 +1529,28 @@
 				if (!data) return;
 				var list = (data && data.unitList) || [];
 
-				var options = '';
+				var options = '<option value=""></option>';
 				var baseUnit = null;
-				if (list.length === 0) {
-					options = '<option value=""></option>';
-				} else {
-					list.forEach(function (item, index) {
-						if (String(item.sequence) === '0') baseUnit = item;
-						options += '<option value="' + item.id + '"'
-							+ ' data-conversion-rate="' + (item.conversionRate != null ? item.conversionRate : 1) + '"'
-							+ ' data-sequence="' + (item.sequence != null ? item.sequence : '') + '"'
-							+ (index === 0 ? ' selected' : '') + '>' + item.name + '</option>';
-					});
-				}
+				list.forEach(function (item, index) {
+					if (String(item.sequence) === '0') baseUnit = item;
+					options += '<option value="' + item.id + '"'
+						+ ' data-conversion-rate="' + (item.conversionRate != null ? item.conversionRate : 1) + '"'
+						+ ' data-sequence="' + (item.sequence != null ? item.sequence : '') + '"'
+						+ (index === 0 ? ' selected' : '') + '>' + item.name + '</option>';
+				});
 
-				$('#unit').html(options)
+				$unit.html(options)
 					.data('base-unit-id', baseUnit ? baseUnit.id : '')
-					.data('base-unit-name', baseUnit ? baseUnit.name : '')
-					.trigger('change');
+					.data('base-unit-name', baseUnit ? baseUnit.name : '');
+				initUnitSelect(list.length > 0);
+				if (list.length === 0) $unit.val('');
+				$unit.trigger('change');
 			},
 			error: function () {
 				Swal.fire('Error', 'ไม่สามารถโหลดข้อมูล Unit ได้', 'error');
 			}
 		});
 	});
-	
 </script>
 
 <script>
