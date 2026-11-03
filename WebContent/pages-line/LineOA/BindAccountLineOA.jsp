@@ -20,7 +20,7 @@
         <p id="user-id" style="color: gray; font-size: 12px;"></p>
     </div>
 	<div>
-		<form id="lineLiffLoginForm" action="lineLiffLogin" method="POST">
+		<form id="lineLiffLoginForm" action="line_lineLiffLogin" method="POST">
 			<input type="hidden" id="lineUserId" name="lineUserId">
 			<input type="hidden" id="typeAction" name="typeAction">
 		</form>
@@ -28,7 +28,7 @@
 </body>
 <script>
 	liff.init({
-	    liffId: "2010304620-MHSiRE9u",
+	    liffId: "2010626368-KRvpzgeB",
 	}).then(() => {
 		
 	    if (!liff.isLoggedIn()) {
