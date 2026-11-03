@@ -412,7 +412,7 @@ public class PurchaseRequisitionAction extends ActionSupport {
                                         User mrUser = userDAO.findById(mrUserId);
                                         if (mrUser != null) {
                                             p.put("userEmployeeId", mrUser.getEmployeeId());
-                                            p.put("user_create_nameEN", mrUser. ());
+                                            p.put("user_create_nameEN", mrUser.getNameEN());
                                         }
                                     }
                                 }
