@@ -405,6 +405,16 @@ public class PurchaseRequisitionAction extends ActionSupport {
                                 } else {
                                     Object mrRefObj = p.get("mr_ref_link");
                                     p.put("ref_link", mrRefObj == null ? "" : String.valueOf(mrRefObj));
+
+                                    Object mrUserObj = p.get("mr_user_create");
+                                    String mrUserId = mrUserObj == null ? "" : String.valueOf(mrUserObj).trim();
+                                    if (!mrUserId.isEmpty()) {
+                                        User mrUser = userDAO.findById(mrUserId);
+                                        if (mrUser != null) {
+                                            p.put("userEmployeeId", mrUser.getEmployeeId());
+                                            p.put("user_create_nameEN", mrUser. ());
+                                        }
+                                    }
                                 }
 
                                 Object parentUnitIdObj = p.get("unit");

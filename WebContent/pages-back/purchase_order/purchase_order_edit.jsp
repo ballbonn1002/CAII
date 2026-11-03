@@ -1825,7 +1825,7 @@ function validatePoDetailForm(){
         if (!$('#unit').val()) errors.push('Unit');
     } else {
         const price = ($('#po_price').val() || '').trim();
-        if (!price || parseFormattedNumber(price) < 0) errors.push('ราคารวม');
+        if (!price || parseFormattedNumber(price) <= 0) errors.push('ราคารวม');
     }
 
     return errors;
@@ -3014,10 +3014,10 @@ function createPoSourceRow(qty, unitName, baseQty, baseUnitName, savedAt, prId, 
         </div>` : '';
 
     return `
-    	<div class="d-flex align-items-center justify-content-between gap-3 mb-4 py-2">
+    	<div class="row g-3 align-items-center mb-4 py-2">
 
-			<div class="flex-grow-1 overflow-hidden">
-				<div class="row g-2 fs-7">
+			<div class="col-8 col-lg-8 order-1" style="min-width:0;">
+				<div class="row gap-3 gap-lg-0 fs-7">
 					<div class="col-12 col-xl-4 d-flex align-items-center">
 						<i class="ki-duotone ki-user-tick fs-3 text-muted me-2 flex-shrink-0">
 							<span class="path1"></span><span class="path2"></span><span class="path3"></span>
@@ -3042,11 +3042,11 @@ function createPoSourceRow(qty, unitName, baseQty, baseUnitName, savedAt, prId, 
 				</div>
 			</div>
 
-			<div class="d-flex align-items-center justify-content-end gap-3">
-				<span class="text-gray-800 fs-5 fw-normal text-end">\${qtyUnitDisplay}</span>
-				\${menuHtml}
-			</div>
-			
+			<div class="col-4 col-lg-4 order-2 d-flex align-items-center justify-content-end gap-5">
+                <span class="text-gray-800 fs-5 fw-normal text-end">\${qtyUnitDisplay}</span>
+                \${menuHtml}
+            </div>
+
 		</div>`;
 }
 

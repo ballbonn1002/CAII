@@ -1904,7 +1904,7 @@ function createPrCard(item,index,prDetailId){
 							<span class="fw-semibold text-gray-800 fs-5">\${displayQty}</span>
 						</div>
 
-						<div class="d-flex align-items-center justify-content-end gap-2 min-w-200px">
+						<div class="d-flex align-items-center justify-content-end gap-2 min-w-150px">
 							\${actionButtons}
 							<a class="collapsed pr-group-toggle" data-target="\${groupId}">
 								<i class="ki-duotone ki-up-square fs-2hx">
@@ -2036,10 +2036,10 @@ function createPrSourceRow(qty, unitName, baseQty, baseUnitName, savedAt, mrId, 
             </div>` : '';
 
     return `
-    <div class="pr-src-row d-flex align-items-center justify-content-between gap-3 mb-4 py-2">
+    <div class="row g-3 align-items-center mb-4 py-2">
 
-        <div class="flex-grow-1 overflow-hidden">
-            <div class="row g-2 fs-7">
+        <div class="col-8 col-lg-8 order-1" style="min-width:0;">
+            <div class="row gap-3 gap-lg-0 fs-7">
                 <div class="col-12 col-xl-4 d-flex align-items-center">
                     <i class="ki-duotone ki-user-tick fs-3 text-muted me-2 flex-shrink-0"><span class="path1"></span><span class="path2"></span><span class="path3"></span></i>
                     <span class="text-gray-800 fs-5 fw-normal text-break">\${creatorName || currentUserDisplay}</span>
@@ -2055,10 +2055,10 @@ function createPrSourceRow(qty, unitName, baseQty, baseUnitName, savedAt, mrId, 
             </div>
         </div>
 
-        <div class="d-flex align-items-center justify-content-end gap-3">
+        <div class="col-4 col-lg-4 order-2 d-flex align-items-center justify-content-end gap-5">
             <span class="text-gray-800 fs-5 fw-normal text-end">\${qtyUnitDisplay}</span>
-            \${menuHtml}
-        </div>
+                \${menuHtml}
+         </div>
     </div>`;
 }
 

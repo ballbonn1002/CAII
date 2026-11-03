@@ -1696,7 +1696,7 @@ function createPoCard(item,index){
     return `<div class="po-item-group border-gray-400 border-bottom pt-9 pb-6 px-6">
 				<div class="row g-3 align-items-start">
 
-					<div class="col-8 col-lg-6 order-1" style="min-width:0;">
+					<div class="col-8 col-lg-7 order-1" style="min-width:0;">
 						<div class="d-flex flex-wrap align-items-center">\${icon}
 							<span class="text-gray-900 fs-5 fw-normal me-3">\${category}</span>
 							<span class="text-gray-900 fs-5 fw-normal me-3">\${item.productName}</span>
@@ -1718,7 +1718,7 @@ function createPoCard(item,index){
 						</a>
 					</div>
 
-					<div class="col-12 col-lg-4 order-3 order-lg-2">
+					<div class="col-12 col-lg-3 order-3 order-lg-2">
 						<div class="po-num-row d-flex align-items-center justify-content-end justify-content-lg-between gap-8 gap-lg-0">
 							<div class="po-num-unit d-flex flex-column text-end">
 								<span class="fs-6 fw-normal text-gray-900">\${item.unitName}</span>
@@ -1823,10 +1823,10 @@ function createPoSourceRow(qty, unitName, baseQty, baseUnitName, savedAt, prId, 
         </div>`;
 
     return `
-		<div class="d-flex align-items-center justify-content-between gap-3 mb-4 py-2">
+		<div class="row g-3 align-items-center mb-4 py-2">
 
-			<div class="flex-grow-1 overflow-hidden">
-				<div class="row g-2 fs-7">
+			<div class="col-8 col-lg-8 order-1" style="min-width:0;">
+				<div class="row gap-3 gap-lg-0 fs-7">
 					<div class="col-12 col-xl-4 d-flex align-items-center">
 						<i class="ki-duotone ki-user-tick fs-3 text-muted me-2 flex-shrink-0">
 							<span class="path1"></span><span class="path2"></span><span class="path3"></span>
@@ -1851,10 +1851,10 @@ function createPoSourceRow(qty, unitName, baseQty, baseUnitName, savedAt, prId, 
 				</div>
 			</div>
 
-			<div class="d-flex align-items-center justify-content-end gap-3">
-				<span class="text-gray-800 fs-5 fw-normal text-end">\${qtyUnitDisplay}</span>
-				\${menuHtml}
-			</div>
+			<div class="col-4 col-lg-4 order-2 d-flex align-items-center justify-content-end gap-5">
+                <span class="text-gray-800 fs-5 fw-normal text-end">\${qtyUnitDisplay}</span>
+                \${menuHtml}
+            </div>
 		</div>`;
 }
 

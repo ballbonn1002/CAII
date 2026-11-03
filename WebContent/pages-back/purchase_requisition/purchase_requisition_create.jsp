@@ -1480,7 +1480,7 @@ function createPrCard(item,index){
 							<span class="fw-semibold text-gray-800 fs-5">\${item.qty}</span>
 						</div>
 		
-					<div class="d-flex align-items-center justify-content-end gap-2 min-w-200px">
+					<div class="d-flex align-items-center justify-content-end gap-2 min-w-150px">
 						<a href="#" onclick="return editCartItem(\${index});" class="btn btn-icon btn-light-primary btn-sm" title="Edit">
 							<i class="ki-duotone ki-pencil fs-2"><span class="path1"></span><span class="path2"></span></i>
 						</a>
@@ -1582,11 +1582,28 @@ function createMrBadge(mrId, refLink){
 function createPrSourceRow(qty, unitName, baseQty, baseUnitName, savedAt, mrId, refLink, creatorName, itemIndex, srcIndex){
     const qtyUnitDisplay = qty + ' ' + unitName + ' (= ' + baseQty + ' ' + baseUnitName + ')';
 
-    return `
-    <div class="pr-src-row d-flex align-items-center justify-content-between gap-3 mb-4 py-2">
+    const menuHtml = `
+            <div class="pr-src-menu position-relative d-inline-block flex-shrink-0">
+                <a href="#" class="btn btn-icon btn-sm btn-light-primary w-30px h-30px"
+                   onclick="return toggleSrcMenu(this, event);" aria-label="More actions" aria-haspopup="true">
+                    <i class="ki-outline ki-dots-horizontal fs-2"></i>
+                </a>
 
-        <div class="flex-grow-1 overflow-hidden">
-            <div class="row g-2 fs-7">
+                <div class="pr-src-actions position-absolute end-0 top-100 mt-2 bg-body rounded-3 shadow z-index-3">
+                    <div class="py-2">
+                        <a href="#" class="pr-src-item d-block px-6 py-3 fs-6 fw-normal text-gray-800 bg-hover-light"
+                           onclick="event.stopPropagation(); return editSource(\${itemIndex}, \${srcIndex});">Edit</a>
+                        <a href="#" class="pr-src-item d-block px-6 py-3 fs-6 fw-normal text-gray-800 bg-hover-light"
+                           onclick="event.stopPropagation(); return removeSource(\${itemIndex}, \${srcIndex});">Delete</a>
+                    </div>
+                </div>
+            </div>`;
+
+    return `
+    <div class="row g-3 align-items-center mb-4 py-2">
+
+        <div class="col-8 col-lg-8 order-1" style="min-width:0;">
+            <div class="row gap-3 gap-lg-0 fs-7">
                 <div class="col-12 col-xl-4 d-flex align-items-center">
                     <i class="ki-duotone ki-user-tick fs-3 text-muted me-2 flex-shrink-0"><span class="path1"></span><span class="path2"></span><span class="path3"></span></i>
                     <span class="text-gray-800 fs-5 fw-normal text-break">\${creatorName || currentUserDisplay}</span>
@@ -1602,25 +1619,10 @@ function createPrSourceRow(qty, unitName, baseQty, baseUnitName, savedAt, mrId, 
             </div>
         </div>
 
-        <div class="d-flex align-items-center justify-content-end gap-3">
+        <div class="col-4 col-lg-4 order-2 d-flex align-items-center justify-content-end gap-5">
             <span class="text-gray-800 fs-5 fw-normal text-end">\${qtyUnitDisplay}</span>
-
-            <div class="pr-src-menu position-relative d-inline-block flex-shrink-0">
-                <a href="#" class="btn btn-icon btn-sm btn-light-primary w-30px h-30px"
-                   onclick="return toggleSrcMenu(this, event);" aria-label="More actions" aria-haspopup="true">
-                    <i class="ki-outline ki-dots-horizontal fs-2"></i>
-                </a>
-
-                <div class="pr-src-actions position-absolute end-0 top-100 mt-2 bg-body rounded-3 shadow z-index-3">
-                    <div class="py-2">
-                        <a href="#" class="pr-src-item d-block px-6 py-3 fs-6 fw-normal text-gray-800 bg-hover-light"
-                           onclick="event.stopPropagation(); return editSource(\${itemIndex}, \${srcIndex});">Edit</a>
-                        <a href="#" class="pr-src-item d-block px-6 py-3 fs-6 fw-normal text-gray-800 bg-hover-light"
-                           onclick="event.stopPropagation(); return removeSource(\${itemIndex}, \${srcIndex});">Delete</a>
-                    </div>
-                </div>
-            </div>
-        </div>
+                \${menuHtml}
+         </div>
     </div>`;
 }
 
