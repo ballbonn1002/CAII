@@ -205,13 +205,13 @@ public class NotificationService {
 			}
 
 			//หาลายเซ็น
-			if (u.getPathSignature() != null) {
+			/*if (u.getPathSignature() != null) {
 				String imgPathSignature = fileAttachmentService.getFileUrl(u.getPathSignature());
 				String signatureFileName = fileAttachmentService.getFileDisplayName(u.getPathSignature());
 
 				request.setAttribute("imgPathSignature", imgPathSignature);
 				request.setAttribute("signatureFileName", signatureFileName);
-			}
+			}*/
 
 
 			//หา borrow
