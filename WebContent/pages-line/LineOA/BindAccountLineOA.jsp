@@ -21,8 +21,8 @@
     </div>
 	<div>
 		<form id="lineLiffLoginForm" action="line_lineLiffLogin" method="POST">
-			<input type="hidden" id="lineUserId" name="lineUserId">
-			<input type="hidden" id="typeAction" name="typeAction">
+			<input type="text" id="lineUserId" name="lineUserId">
+			<input type="text" id="typeAction" name="typeAction">
 		</form>
 	</div>
 </body>
@@ -39,7 +39,7 @@
 	    		let typeValue = params.get("type");
 	    		document.getElementById('typeAction').value = typeValue;
                 document.getElementById('lineUserId').value = profile.userId;
-                document.getElementById('lineLiffLoginForm').submit();
+                //document.getElementById('lineLiffLoginForm').submit();
             });
 	    }
 	}).catch((err) => {
