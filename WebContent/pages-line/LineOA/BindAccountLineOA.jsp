@@ -23,6 +23,7 @@
 		<form id="lineLiffLoginForm" action="line_lineLiffLogin" method="POST">
 			<input type="text" id="lineUserId" name="lineUserId">
 			<input type="text" id="typeAction" name="typeAction">
+			<button type="submit">submit</button>
 		</form>
 	</div>
 </body>
