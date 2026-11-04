@@ -1,12 +1,16 @@
 package com.cubesofttech.action;
 
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.imageio.ImageIO;
+import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -26,6 +30,7 @@ import com.cubesofttech.model.TokenMonthlyLog;
 import com.cubesofttech.model.User;
 import com.cubesofttech.model.UserRedeem;
 import com.cubesofttech.service.CubeTokenService;
+import com.cubesofttech.util.ReportUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.opensymphony.xwork2.ActionSupport;
 
@@ -36,6 +41,10 @@ public class CubeTokenAction extends ActionSupport {
 	HttpServletRequest request = ServletActionContext.getRequest();
 	HttpServletResponse response = ServletActionContext.getResponse();
 	HttpSession session = request.getSession();
+	
+	public static final String LOGOPATH = "logoPath";
+	public static final String JASPERPATH = "/WEB-INF/classes/jasper";
+	public static final String IMAGEPATH = "/images";
 
 	private String target;
 	private Integer id;
@@ -506,6 +515,45 @@ public class CubeTokenAction extends ActionSupport {
 
 		return NONE;
 	}
+	
+	 public String redeemReport() {
+	    	
+	    	try {
+	    		
+	        	Integer redeemId = Integer.parseInt(request.getParameter("redeemId"));
+	        	
+	        	ServletContext context = request.getServletContext();
+	            String jasperPath = context.getRealPath(JASPERPATH);
+	            String imagePath = context.getRealPath(IMAGEPATH);
+	            String serverPath = context.getRealPath("/");
+	            
+	            Map<String, Object> reportParameter = new HashMap<>();
+	            
+	            File logo = new File(imagePath + "/logo_cubesofttech.png");
+	            BufferedImage logoimage = ImageIO.read(logo);
+	            reportParameter.put(LOGOPATH, logoimage);
+	            reportParameter.put("redeemId", redeemId);
+	            reportParameter.put("basePath", serverPath);
+	            
+				ReportUtil.printReportToBrowsePdf(
+					jasperPath + "/",
+					"redeemReport",
+					"redeemReport.pdf",
+					reportParameter,
+					request,
+					response
+				);
+				
+	            return null;
+	            
+			} catch (Exception e) {
+				
+				log.error("Error in redeemReport: " + e.getMessage());
+				return ERROR;
+				
+			}
+	    	
+	    }
 	
 	public String toggleFavorite() {
 

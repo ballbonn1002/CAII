@@ -2053,6 +2053,11 @@
 		<action name="cancelRedeemRequest"
 		class="com.cubesofttech.action.CubeTokenAction"
 		method="updateRedeemStatus" />
+		
+		<action name="redeemReport"
+			class="com.cubesofttech.action.CubeTokenAction" method="redeemReport">
+			<result name="error">/index.jsp</result>
+		</action>
 
 		<!-- ========================== Work Log ============================== -->
 		<action name="work_log"
@@ -2096,11 +2101,6 @@
 			<result name="error">/index.jsp</result>
 		</action>
 		
-		<action name="redeemReport"
-			class="com.cubesofttech.action.ReportAction" method="redeemReport">
-			<result name="error">/index.jsp</result>
-		</action>
-
 		<!-- Action Log -->
 		<action name="action_log"
 			class="com.cubesofttech.action.LogActionAction" method="open">
