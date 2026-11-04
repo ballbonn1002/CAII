@@ -18,7 +18,7 @@ public class AuthInterceptor extends AbstractInterceptor {
 	public String intercept(ActionInvocation invocation) throws Exception {
 		String actionName = invocation.getProxy().getActionName();
 
-	    if ("lineWebhook".equalsIgnoreCase(actionName) || "checkAccount".equalsIgnoreCase(actionName) || "lineLiffLogin".equalsIgnoreCase(actionName)) {
+	    if ("line_lineWebhook".equalsIgnoreCase(actionName) || "line_checkAccount".equalsIgnoreCase(actionName) || "line_lineLiffLogin".equalsIgnoreCase(actionName)) {
 	        return invocation.invoke();
 	    }
 	    
