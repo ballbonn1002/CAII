@@ -2039,23 +2039,23 @@ function createPrSourceRow(qty, unitName, baseQty, baseUnitName, savedAt, mrId, 
     <div class="row g-3 align-items-center mb-4 py-2">
 
         <div class="col-8 col-lg-8 order-1" style="min-width:0;">
-            <div class="row gap-3 gap-lg-0 fs-7">
-                <div class="col-12 col-xl-4 d-flex align-items-center">
+            <div class="d-flex flex-column flex-xl-row gap-3 gap-xl-0 fs-7">
+                <div class="d-flex align-items-center flex-fill">
                     <i class="ki-duotone ki-user-tick fs-3 text-muted me-2 flex-shrink-0"><span class="path1"></span><span class="path2"></span><span class="path3"></span></i>
                     <span class="text-gray-800 fs-5 fw-normal text-break">\${creatorName || currentUserDisplay}</span>
                 </div>
-                <div class="col-12 col-xl-4 d-flex align-items-center">
+                <div class="d-flex align-items-center flex-fill">
                     <i class="ki-duotone ki-calendar-2 fs-3 me-2 flex-shrink-0"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span><span class="path5"></span></i>
                     <span class="text-gray-800 fs-5 fw-normal">\${savedAt}</span>
                 </div>
-                <div class="col-12 col-xl-4 d-flex align-items-center gap-2">
+                <div class="d-flex align-items-center flex-fill gap-2">
                     <i class="ki-duotone ki-tablet-book fs-3 flex-shrink-0"><span class="path1"></span><span class="path2"></span></i>
                     <div class="d-flex flex-wrap align-items-center gap-2">\${createMrBadge(mrId, refLink)}</div>
                 </div>
             </div>
         </div>
 
-        <div class="col-4 col-lg-4 order-2 d-flex align-items-center justify-content-end gap-5">
+        <div class="col-4 col-lg-4 order-2 d-flex align-self-stretch align-items-start align-items-xl-center justify-content-end gap-5">
             <span class="text-gray-800 fs-5 fw-normal text-end">\${qtyUnitDisplay}</span>
                 \${menuHtml}
          </div>

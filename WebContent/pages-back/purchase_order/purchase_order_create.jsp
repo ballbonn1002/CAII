@@ -1696,7 +1696,7 @@ function createPoCard(item,index){
     return `<div class="po-item-group border-gray-400 border-bottom pt-9 pb-6 px-6">
 				<div class="row g-3 align-items-start">
 
-					<div class="col-8 col-lg-7 order-1" style="min-width:0;">
+					<div class="col-8 col-xl-7 order-1" style="min-width:0;">
 						<div class="d-flex flex-wrap align-items-center">\${icon}
 							<span class="text-gray-900 fs-5 fw-normal me-3">\${category}</span>
 							<span class="text-gray-900 fs-5 fw-normal me-3">\${item.productName}</span>
@@ -1704,7 +1704,7 @@ function createPoCard(item,index){
 						\${descRowHtml}
 					</div>
 
-					<div class="col-4 col-lg-2 order-2 order-lg-3 d-flex justify-content-end align-items-center gap-2">
+					<div class="col-4 col-xl-2 order-2 order-xl-3 d-flex justify-content-end align-items-center gap-2">
 						<a href="#" onclick="return editCartItem(\${index});" class="btn btn-icon btn-light-primary btn-sm" title="Edit">
 							<i class="ki-duotone ki-pencil fs-2"><span class="path1"></span><span class="path2"></span></i>
 						</a>
@@ -1718,8 +1718,8 @@ function createPoCard(item,index){
 						</a>
 					</div>
 
-					<div class="col-12 col-lg-3 order-3 order-lg-2">
-						<div class="po-num-row d-flex align-items-center justify-content-end justify-content-lg-between gap-8 gap-lg-0">
+					<div class="col-12 col-xl-3 order-3 order-xl-2">
+						<div class="po-num-row d-flex align-items-center justify-content-end justify-content-xl-between gap-8 gap-xl-0">
 							<div class="po-num-unit d-flex flex-column text-end">
 								<span class="fs-6 fw-normal text-gray-900">\${item.unitName}</span>
 								<span class="fw-semibold text-gray-800 fs-5">\${item.qty}</span>
@@ -1825,22 +1825,22 @@ function createPoSourceRow(qty, unitName, baseQty, baseUnitName, savedAt, prId, 
     return `
 		<div class="row g-3 align-items-center mb-4 py-2">
 
-			<div class="col-8 col-lg-8 order-1" style="min-width:0;">
-				<div class="row gap-3 gap-lg-0 fs-7">
-					<div class="col-12 col-xl-4 d-flex align-items-center">
+			<div class="col-8 col-xl-8 order-1" style="min-width:0;">
+				<div class="d-flex flex-column flex-xl-row gap-3 gap-xl-0 fs-7">
+					<div class="d-flex align-items-center flex-fill">
 						<i class="ki-duotone ki-user-tick fs-3 text-muted me-2 flex-shrink-0">
 							<span class="path1"></span><span class="path2"></span><span class="path3"></span>
 						</i>
 						<span class="text-gray-800 fs-5 fw-normal text-break">\${creatorName || currentUserDisplay}</span>
 					</div>
-					<div class="col-12 col-xl-4 d-flex align-items-center">
+					<div class="d-flex align-items-center flex-fill">
 						<i class="ki-duotone ki-calendar-2 fs-3 me-2 flex-shrink-0">
 							<span class="path1"></span><span class="path2"></span><span class="path3"></span>
 							<span class="path4"></span><span class="path5"></span>
 						</i>
 						<span class="text-gray-800 fs-5 fw-normal">\${savedAt}</span>
 					</div>
-					<div class="col-12 col-xl-4 d-flex align-items-center gap-2">
+					<div class="d-flex align-items-center flex-fill gap-2">
 						<i class="ki-duotone ki-tablet-book fs-3 flex-shrink-0">
 							<span class="path1"></span><span class="path2"></span>
 						</i>
@@ -1851,7 +1851,7 @@ function createPoSourceRow(qty, unitName, baseQty, baseUnitName, savedAt, prId, 
 				</div>
 			</div>
 
-			<div class="col-4 col-lg-4 order-2 d-flex align-items-center justify-content-end gap-5">
+			<div class="col-4 col-xl-4 order-2 d-flex align-self-stretch align-items-start align-items-xl-center justify-content-end gap-5">
                 <span class="text-gray-800 fs-5 fw-normal text-end">\${qtyUnitDisplay}</span>
                 \${menuHtml}
             </div>
