@@ -1325,4 +1325,11 @@ VALUES
 ('cyan', '', '23', 'cube token', '3', 'Received', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'cft.admin', 'cft.admin'),
 ('dark', 'ยกเลิก', '24', 'cube token', '5', 'Cancel', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'cft.admin', 'cft.admin'),
 ('success', '', '25', 'cube token', '4', 'Completed', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'cft.admin', 'cft.admin');
+
+-- Add new action type for performing carry over 
+INSERT INTO `token_action_type` (`action_type_id`, `action_type_name`, `active_status`, `description`, `time_create`, `time_update`, `user_create`, `user_update`)
+VALUES
+(9, 'Carry Over', 'Y', 'ยกยอดสะสมจากปีก่อน', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'cft.admin', 'cft.admin'),
+(10, 'Spend Carry Over', 'Y', 'หักจากแต้มที่ยกยอดมาจากปีก่อน', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'cft.admin', 'cft.admin'),
+(11, 'Spend Current Year', 'Y', 'หักจากแต้มสะสมปีปัจจุบัน', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'cft.admin', 'cft.admin');
 	

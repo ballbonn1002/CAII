@@ -169,7 +169,7 @@ public class CubeTokenService {
 		transactionTemplate.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
 	}
 
-//	@Scheduled(cron = "0 0 2 * * ?", zone = "Asia/Bangkok")
+	@Scheduled(cron = "0 0 2 * * ?", zone = "Asia/Bangkok")
 //	@Scheduled(fixedRate = 10000)
 	public void distributeMonthlyToken() {
 
@@ -919,8 +919,8 @@ public class CubeTokenService {
 		}
 	}
 
-//	@Scheduled(cron = "0 0 1 * * *", zone = "Asia/Bangkok")
-	@Scheduled(fixedRate = 10000)
+	@Scheduled(cron = "0 0 1 * * *", zone = "Asia/Bangkok")
+//	@Scheduled(fixedRate = 10000)
 	@Transactional
 	public void checkWorkHoursForToken() {
 
@@ -928,7 +928,7 @@ public class CubeTokenService {
 
 			log.info("Work hours check for token started.");
 
-			LocalDate targetDate = LocalDate.now().minusDays(0);
+			LocalDate targetDate = LocalDate.now().minusDays(5);
 
 			DayOfWeek dayOfWeek = targetDate.getDayOfWeek();
 
@@ -2590,16 +2590,14 @@ public class CubeTokenService {
 	    int currentMonth = currentDate.getMonthValue();
 
 	    // 1. ตรวจสอบยอด Carry Over คงเหลือ
-	    Double carryOverBalance =
-	            usageTokenDAO.findCarryOverBalance(userId, currentYear);
+	    Double carryOverBalance = usageTokenDAO.findCarryOverBalance(userId, currentYear);
 
 	    if (carryOverBalance == null) {
 	        carryOverBalance = 0D;
 	    }
 
 	    // 2. ตรวจสอบยอดสะสมของปีปัจจุบัน
-	    Double currentYearBalance =
-	            usageTokenDAO.findYearlyBalance(userId, currentYear);
+	    Double currentYearBalance = usageTokenDAO.findYearlyBalance(userId, currentYear);
 
 	    if (currentYearBalance == null) {
 	        currentYearBalance = 0D;
