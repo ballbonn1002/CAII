@@ -78,6 +78,7 @@ public class TokenUsageDAOImpl implements TokenUsageDAO {
 	        "FROM TokenUsage " +
 	        "WHERE userId = :userId " +
 	        "AND actionTypeId = :actionTypeId " +
+	        "AND actionPointId IN (1, 2, 3) " +
 	        "AND month = :month " +
 	        "AND year = :year";
 

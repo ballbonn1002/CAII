@@ -152,6 +152,7 @@ public class CubeTokenService {
 	private static final Integer ACTION_POINT_LEAVE = 6;
 	private static final Integer ACTION_POINT_BACKDATE = 7;
 	private static final Integer ACTION_POINT_NO_RECORD = 8;
+	private static final Integer ACTION_POINT_GPS = 9;
 
 	private static final String STATUS_REDEEM_PENDING = "1";
 	private static final String STATUS_REDEEM_APPROVED = "2";
@@ -228,7 +229,7 @@ public class CubeTokenService {
 					// Gift action type
 					// =================================================
 
-					ActionType giftType = actionTypeDAO.findById(1);
+					ActionType giftType = actionTypeDAO.findById(ACTION_TYPE_GIFT);
 
 					if (giftType == null || !"Y".equalsIgnoreCase(giftType.getActiveStatus())) {
 
@@ -918,8 +919,8 @@ public class CubeTokenService {
 		}
 	}
 
-	@Scheduled(cron = "0 0 1 * * *", zone = "Asia/Bangkok")
-//	@Scheduled(fixedRate = 10000)
+//	@Scheduled(cron = "0 0 1 * * *", zone = "Asia/Bangkok")
+	@Scheduled(fixedRate = 10000)
 	@Transactional
 	public void checkWorkHoursForToken() {
 
@@ -927,9 +928,7 @@ public class CubeTokenService {
 
 			log.info("Work hours check for token started.");
 
-			LocalDate targetDate = LocalDate.now().minusDays(5);
-
-			log.info(targetDate.getDayOfMonth());
+			LocalDate targetDate = LocalDate.now().minusDays(0);
 
 			DayOfWeek dayOfWeek = targetDate.getDayOfWeek();
 
@@ -1107,6 +1106,41 @@ public class CubeTokenService {
 
 					deductUserCubeTokenForBackDateCheckOut(userId, checkout, checkoutTimeCreate);
 				}
+				
+				String checkinLatitude = (String) row[9];
+				String checkinLongitude = (String) row[10];
+				String checkoutLatitude = (String) row[11];
+				String checkoutLongitude = (String) row[12];
+
+				boolean hasCheckinGps =
+				        checkinLatitude != null && !checkinLatitude.trim().isEmpty()
+				        && checkinLongitude != null && !checkinLongitude.trim().isEmpty();
+
+				boolean hasCheckoutGps =
+				        checkoutLatitude != null && !checkoutLatitude.trim().isEmpty()
+				        && checkoutLongitude != null && !checkoutLongitude.trim().isEmpty();
+				
+				// Check-in: ไม่สาย + มี GPS = 1 Token
+				if (!skipMorning
+				        && checkin != null
+				        && !isLate(checkin, workTimeStart)
+				        && hasCheckinGps) {
+
+				    log.info("Check-in condition passed: " + userId);
+
+				    giveUserCubeTokenForCheckinGps(userId, targetDate, checkin);
+				}
+
+				// Check-out: ไม่ออกก่อนเวลา + มี GPS = 1 Token
+				if (!skipAfternoon
+				        && checkout != null
+				        && !isEarlyOut(checkout, workTimeEnd)
+				        && hasCheckoutGps) {
+
+				    log.info("Check-out condition passed: " + userId);
+
+				    giveUserCubeTokenForCheckoutGps(userId, targetDate, checkout);
+				}
 			}
 
 			log.info("Work hours check completed for date: " + targetDate);
@@ -1115,6 +1149,83 @@ public class CubeTokenService {
 
 			log.error("Error checking work hours for token: " + e.getMessage(), e);
 		}
+	}
+	
+	private void giveUserCubeTokenForCheckinGps(String userId, LocalDate targetDate, Timestamp checkinTime) throws Exception {
+		
+		ActionPoint gpsActionPoint = actionPointDAO.findById(ACTION_POINT_GPS);
+		
+		if (gpsActionPoint == null) {
+			log.error("Action point for GPS not found.");
+			return;
+		}
+		
+		if (!"Y".equals(gpsActionPoint.getActiveStatus())) {
+			log.info("Action point for GPS is not active. Skipping token award.");
+			return;
+		}
+		
+		TokenUsage usage = new TokenUsage();
+		
+		usage.setActionTypeId(ACTION_TYPE_GIFT);
+		usage.setActionPointId(ACTION_POINT_GPS);
+		usage.setUserId(userId);
+		usage.setValue(gpsActionPoint.getPoint());
+		usage.setReconcile(null);
+		usage.setYear(targetDate.getYear());
+		usage.setMonth(targetDate.getMonthValue());
+		usage.setUserCreate("system");
+		usage.setTimeCreate(DateUtil.getCurrentTime());
+		usage.setReFlag("N");
+		
+		ObjectNode node = MAPPER.createObjectNode();
+		
+		node.put("type", "add");
+		node.put("reason", "แต้มโบนัส Check-In + เปิดตำแหน่งที่ตั้ง");
+		node.put("date", checkinTime.toLocalDateTime().format(FORMATTER));
+		
+		usage.setDescription(MAPPER.writeValueAsString(node));
+		
+		usageTokenDAO.save(usage);
+		
+	}
+	
+	private void giveUserCubeTokenForCheckoutGps(String userId, LocalDate targetDate, Timestamp checkoutTime) throws Exception {
+		
+		ActionPoint gpsActionPoint = actionPointDAO.findById(ACTION_POINT_GPS);
+		
+		if (gpsActionPoint == null) {
+			log.error("Action point for GPS not found.");
+			return;
+		}
+		
+		if (!"Y".equals(gpsActionPoint.getActiveStatus())) {
+			log.info("Action point for GPS is not active. Skipping token award.");
+			return;
+		}
+		
+		TokenUsage usage = new TokenUsage();
+		
+		usage.setActionTypeId(ACTION_TYPE_GIFT);
+		usage.setActionPointId(ACTION_POINT_GPS);
+		usage.setUserId(userId);
+		usage.setValue(gpsActionPoint.getPoint());
+		usage.setReconcile(null);
+		usage.setYear(targetDate.getYear());
+		usage.setMonth(targetDate.getMonthValue());
+		usage.setUserCreate("system");
+		usage.setTimeCreate(DateUtil.getCurrentTime());
+		usage.setReFlag("N");
+		
+		ObjectNode node = MAPPER.createObjectNode();
+		
+		node.put("type", "add");
+		node.put("reason", "แต้มโบนัส Check-Out + เปิดตำแหน่งที่ตั้ง");
+		node.put("date",  checkoutTime.toLocalDateTime().format(FORMATTER));
+		
+		usage.setDescription(MAPPER.writeValueAsString(node));
+		
+		usageTokenDAO.save(usage);
 	}
 
 	private void checkApprovedLeavesForToken(LocalDate targetDate) throws Exception {

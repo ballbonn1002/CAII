@@ -3168,7 +3168,49 @@ public class WorkHoursDAOImpl implements WorkHoursDAO {
 	            "          AND DATE(wh.work_hours_time_work) = :date " +
 	            "        ORDER BY wh.work_hours_id DESC " +
 	            "        LIMIT 1 " +
-	            "    ) AS checkout_description " +
+	            "    ) AS checkout_description, " +
+	            
+				//CHECKIN GPS
+				"    ( " +
+				"        SELECT wh.latitude " +
+				"        FROM work_hours wh " +
+				"        WHERE wh.user_create = u.id " +
+				"          AND wh.work_hours_type = '1' " +
+				"          AND DATE(wh.work_hours_time_work) = :date " +
+				"        ORDER BY wh.work_hours_id DESC " +
+				"        LIMIT 1 " +
+				"    ) AS checkin_latitude, " +
+				
+				"    ( " +
+				"        SELECT wh.longitude " +
+				"        FROM work_hours wh " +
+				"        WHERE wh.user_create = u.id " +
+				"          AND wh.work_hours_type = '1' " +
+				"          AND DATE(wh.work_hours_time_work) = :date " +
+				"        ORDER BY wh.work_hours_id DESC " +
+				"        LIMIT 1 " +
+				"    ) AS checkin_longitude, " +
+				
+				//CHECKOUT GPS
+				"    ( " +
+				"        SELECT wh.latitude " +
+				"        FROM work_hours wh " +
+				"        WHERE wh.user_create = u.id " +
+				"          AND wh.work_hours_type = '2' " +
+				"          AND DATE(wh.work_hours_time_work) = :date " +
+				"        ORDER BY wh.work_hours_id DESC " +
+				"        LIMIT 1 " +
+				"    ) AS checkout_latitude, " +
+				
+				"    ( " +
+				"        SELECT wh.longitude " +
+				"        FROM work_hours wh " +
+				"        WHERE wh.user_create = u.id " +
+				"          AND wh.work_hours_type = '2' " +
+				"          AND DATE(wh.work_hours_time_work) = :date " +
+				"        ORDER BY wh.work_hours_id DESC " +
+				"        LIMIT 1 " +
+				"    ) AS checkout_longitude " +
 
 	            "FROM user u " +
 	            "WHERE u.enable = '1' " + 
