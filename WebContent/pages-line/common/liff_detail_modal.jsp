@@ -6,6 +6,7 @@
      (ตัด overlay กับหัวหน้าที่มีปุ่ม back ออก) · param title = หัว modal --%>
 <style>
 .modal-open .liff-loading-overlay { z-index: 1060; }
+#liffDetailModal .modal-content { background: var(--bs-app-bg-color); }
 </style>
 
 <div class="modal fade" id="liffDetailModal" tabindex="-1" aria-hidden="true">
@@ -89,7 +90,7 @@
             .catch(function () {
                 if (detailModalUrl !== url) return;
                 detailModal.hide();
-                liffToastError('กรุณาลองใหม่อีกครั้ง', 'โหลดรายละเอียดไม่สำเร็จ');
+                liffToastError("Unable to load details. Please try again.", "Load failed");
             });
     }
 

@@ -1257,7 +1257,7 @@ function changeStatus(id) {
                             liffToastError("Unable to cancel leave. Please try again.", "Cancel failed");
                             return;
                         }
-                        liffToastSuccess("Your leave has been cancelled.", "Cancelled successfully!");
+                        liffToastSuccess("Your leave has been canceled.", "Canceled successfully!");
                         setTimeout(function () {
                             window.location.reload(true);
                         }, 2000);

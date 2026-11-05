@@ -1387,31 +1387,31 @@
 		<li class="nav-item"><a
 			class="nav-link text-active-primary ${statusActiveSafe=='Draft' ? 'active' : ''}"
 			href="${tabDraft}" data-status="Draft">Draft<span
-				class="badge bg-secondary ms-2">${total_status_draft}</span></a></li>
+				class="badge bg-secondary badge-lg fs-6 py-2 justify-content-center ms-2">${total_status_draft}</span></a></li>
 		<li class="nav-item"><a
 			class="nav-link text-active-primary ${statusActiveSafe=='W' ? 'active' : ''}"
 			href="${tabW}" data-status="W">Waiting<span
-				class="badge bg-warning text-white ms-2">${total_status_waiting}</span></a></li>
+				class="badge bg-warning text-white badge-lg fs-6 py-2 justify-content-center ms-2">${total_status_waiting}</span></a></li>
 		<li class="nav-item"><a
 			class="nav-link text-active-primary ${statusActiveSafe=='A' ? 'active' : ''}"
 			href="${tabA}" data-status="A">Approve<span
-				class="badge bg-success text-white ms-2">${total_status_approved}</span></a></li>
+				class="badge bg-success text-white badge-lg fs-6 py-2 justify-content-center ms-2">${total_status_approved}</span></a></li>
 		<li class="nav-item"><a
 			class="nav-link text-active-primary ${statusActiveSafe=='P' ? 'active' : ''}"
 			href="${tabP}" data-status="P">Paid<span
-				class="badge bg-info text-white ms-2">${total_status_paid}</span></a></li>
+				class="badge bg-info text-white badge-lg fs-6 py-2 justify-content-center ms-2">${total_status_paid}</span></a></li>
 		<li class="nav-item"><a
 			class="nav-link text-active-primary ${statusActiveSafe=='C' ? 'active' : ''}"
 			href="${tabC}" data-status="C">Cancel<span
-				class="badge bg-danger text-white ms-2">${total_status_canceled}</span></a></li>
+				class="badge bg-danger text-white badge-lg fs-6 py-2 justify-content-center ms-2">${total_status_canceled}</span></a></li>
 		<li class="nav-item"><a
 			class="nav-link text-active-primary ${statusActiveSafe=='R' ? 'active' : ''}"
 			href="${tabR}" data-status="R">Reject<span
-				class="badge bg-danger text-white ms-2">${total_status_rejected}</span></a></li>
+				class="badge bg-danger text-white badge-lg fs-6 py-2 justify-content-center ms-2">${total_status_rejected}</span></a></li>
 	</ul>
 
 	<form id="submitForm" method="post"
-		action="${ctx}/submit_travelR">
+		action="${ctx}/line_submit_travelR">
 
 	<c:url var="createUrl" value="/line_my_travelA" />
 
@@ -1469,7 +1469,7 @@
 									<input class="form-check-input row-checkbox"
 										type="checkbox" name="ids" value="${row.expense_id}" />
 								</span>
-								<span class="fw-medium text-gray-900 fs-6 lh-1" style="margin-top:13px;">#${row.expense_id}</span>
+								<span class="fw-medium text-gray-900 fs-5 lh-1" style="margin-top:13px;">#${row.expense_id}</span>
 							</label>
 							<div class="d-flex flex-column gap-3 fs-6 text-gray-700 flex-grow-1" style="min-width:0;">
 								<div class="d-flex align-items-center justify-content-between gap-2">
@@ -1479,7 +1479,7 @@
 											<c:otherwise>-</c:otherwise>
 										</c:choose>
 									</span>
-									<span class="badge badge-light-primary fs-6 fw-bold text-nowrap"><fmt:formatNumber value="${row.amount}" pattern="#,##0.00" /> บาท</span>
+									<span class="badge badge-light-primary badge-lg fs-6 fw-bold py-2 text-nowrap"><fmt:formatNumber value="${row.amount}" pattern="#,##0.00" /> บาท</span>
 								</div>
 								<div class="d-flex gap-3" style="min-width:0;">
 									<div class="d-flex flex-column flex-shrink-0 fw-semibold text-gray-900 liff-route-times">
@@ -1516,7 +1516,7 @@
 
 								<div class="d-flex align-items-center gap-3 mb-6">
 									<span class="fw-bold fs-5 text-primary">#${row.expense_id}</span>
-									<span class="badge badge-secondary fs-7 fw-semibold px-3 py-2">Draft</span>
+									<span class="badge badge-secondary badge-lg fs-6 fw-semibold py-2">Draft</span>
 								</div>
 								<c:set var="userText" value="-" />
 								<c:forEach var="u" items="${userListObj}">
@@ -1537,34 +1537,34 @@
 
 								<div class="d-flex align-items-center gap-3 mb-5">
 									<i class="ki-duotone ki-notepad fs-2 text-muted"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span><span class="path5"></span></i>
-									<span class="fw-semibold text-gray-700 fs-6 text-break">${not empty row.description ? fn:escapeXml(row.description) : '-'}</span>
+									<span class="fw-semibold text-gray-700 fs-6 text-break lh-lg">${not empty row.description ? fn:escapeXml(row.description) : '-'}</span>
 								</div>
 
 								<div class="d-flex align-items-center justify-content-between gap-3 mb-5">
 									<div class="d-flex align-items-center gap-3" style="min-width:0;">
 										<i class="ki-duotone ki-geolocation fs-2 text-primary"><span class="path1"></span><span class="path2"></span></i>
-										<div class="text-break" style="min-width:0;">
+										<div class="text-break lh-lg" style="min-width:0;">
 											<span class="text-muted fs-6">Beginning : </span>
 											<span class="fw-semibold text-gray-800 fs-6">${not empty row.from_location ? fn:escapeXml(row.from_location) : '-'}</span>
 										</div>
 									</div>
 									<div class="d-flex align-items-center gap-2 flex-shrink-0">
 										<i class="ki-duotone ki-time fs-2 text-muted"><span class="path1"></span><span class="path2"></span></i>
-										<span class="fw-medium text-gray-700 fs-6"><c:choose><c:when test="${not empty row.dt_start}"><fmt:formatDate value="${row.dt_start}" pattern="H:mm" /></c:when><c:otherwise>-</c:otherwise></c:choose></span>
+										<span class="fw-medium text-gray-700 fs-6 min-w-35px text-end"><c:choose><c:when test="${not empty row.dt_start}"><fmt:formatDate value="${row.dt_start}" pattern="H:mm" /></c:when><c:otherwise>-</c:otherwise></c:choose></span>
 									</div>
 								</div>
 
 								<div class="d-flex align-items-center justify-content-between gap-3 mb-5">
 									<div class="d-flex align-items-center gap-3" style="min-width:0;">
 										<i class="ki-duotone ki-geolocation fs-2 text-success"><span class="path1"></span><span class="path2"></span></i>
-										<div class="text-break" style="min-width:0;">
+										<div class="text-break lh-lg" style="min-width:0;">
 											<span class="text-muted fs-6">Destination : </span>
 											<span class="fw-medium text-gray-800 fs-6">${not empty row.to_location ? fn:escapeXml(row.to_location) : '-'}</span>
 										</div>
 									</div>
 									<div class="d-flex align-items-center gap-2 flex-shrink-0">
 										<i class="ki-duotone ki-time fs-2 text-muted"><span class="path1"></span><span class="path2"></span></i>
-										<span class="fw-semibold text-gray-700 fs-6"><c:choose><c:when test="${not empty row.dt_end}"><fmt:formatDate value="${row.dt_end}" pattern="H:mm" /></c:when><c:otherwise>-</c:otherwise></c:choose></span>
+										<span class="fw-semibold text-gray-700 fs-6 min-w-35px text-end"><c:choose><c:when test="${not empty row.dt_end}"><fmt:formatDate value="${row.dt_end}" pattern="H:mm" /></c:when><c:otherwise>-</c:otherwise></c:choose></span>
 									</div>
 								</div>
 
@@ -1573,8 +1573,8 @@
 								<div class="separator separator-dashed mb-6"></div>
 
 								<div class="d-flex align-items-center justify-content-between mb-3">
-									<span class="text-gray-700 fw-medium fs-5">Expense form</span>
-									<span class="badge badge-primary fw-bold fs-6"><fmt:formatNumber value="${row.amount}" pattern="#,##0.00" /> บาท</span>
+									<span class="page-heading fw-bold fs-4 text-gray-900">Expense form</span>
+									<span class="badge badge-primary badge-lg fs-6 fw-bold py-2 text-nowrap"><fmt:formatNumber value="${row.amount}" pattern="#,##0.00" /> บาท</span>
 								</div>
 
 								<div>
@@ -1583,20 +1583,20 @@
 											<div class="d-flex align-items-start gap-2" style="min-width:0;">
 												<div class="d-flex align-items-center gap-2 flex-shrink-0">
 													<span class="d-flex justify-content-center flex-shrink-0 w-15px"><span class="rounded-circle flex-shrink-0 w-8px h-8px bg-gray-400" style="transform: translateY(-1px);"></span></span>
-													<span class="fw-semibold text-gray-800 fs-7">${fn:escapeXml(det.travel_type_name)}</span>
+													<span class="fw-semibold text-gray-800 fs-6">${fn:escapeXml(det.travel_type_name)}</span>
 												</div>
 												<c:if test="${not empty det.description}">
 													<div class="d-flex align-items-start gap-1" style="min-width:0;">
 														<i class="ki-duotone ki-document fs-3 flex-shrink-0"><span class="path1"></span><span class="path2"></span></i>
-														<span class="text-gray-600 fs-7 text-break">${fn:escapeXml(det.description)}</span>
+														<span class="text-gray-600 fs-6 text-break lh-lg">${fn:escapeXml(det.description)}</span>
 													</div>
 												</c:if>
 											</div>
-											<div class="fw-bold text-primary fs-7 text-nowrap"><fmt:formatNumber value="${det.total}" pattern="#,##0.00" /> บาท</div>
+											<div class="fw-bold text-primary fs-6 text-nowrap"><fmt:formatNumber value="${det.total}" pattern="#,##0.00" /> บาท</div>
 										</div>
 									</c:forEach>
 									<c:if test="${empty row.details}">
-										<div class="text-gray-500 fs-7 py-2">-</div>
+										<div class="text-gray-500 fs-6 py-2">-</div>
 									</c:if>
 								</div>
 
@@ -1620,22 +1620,22 @@
 					<div class="card card-bordered liff-travel-card">
 						<div class="card-body d-flex align-items-stretch gap-4 p-5">
 							<div class="d-flex flex-column align-items-center justify-content-center gap-3 pe-4 border-end border-gray-200 flex-shrink-0">
-								<span class="fw-medium text-gray-900 fs-6 lh-1">#${row.expense_group_id}</span>
+								<span class="fw-medium text-gray-900 fs-5 lh-1">#${row.expense_group_id}</span>
 								<c:choose>
 									<c:when test="${row.status_id == 'W'}">
-										<span class="badge badge-warning fs-7 fw-semibold">Waiting</span>
+										<span class="badge badge-warning badge-lg fs-6 fw-semibold py-2">Waiting</span>
 									</c:when>
 									<c:when test="${row.status_id == 'A'}">
-										<span class="badge badge-success fs-7 fw-semibold">Approved</span>
+										<span class="badge badge-success badge-lg fs-6 fw-semibold py-2">Approved</span>
 									</c:when>
 									<c:when test="${row.status_id == 'P'}">
-										<span class="badge badge-info fs-7 fw-semibold">Paid</span>
+										<span class="badge badge-info badge-lg fs-6 fw-semibold py-2">Paid</span>
 									</c:when>
 									<c:when test="${row.status_id == 'C'}">
-										<span class="badge badge-danger fs-7 fw-semibold">Canceled</span>
+										<span class="badge badge-danger badge-lg fs-6 fw-semibold py-2">Canceled</span>
 									</c:when>
 									<c:when test="${row.status_id == 'R'}">
-										<span class="badge badge-danger fs-7 fw-semibold">Rejected</span>
+										<span class="badge badge-danger badge-lg fs-6 fw-semibold py-2">Rejected</span>
 									</c:when>
 								</c:choose>
 							</div>
@@ -1647,7 +1647,7 @@
 											<c:otherwise><fmt:formatDate value="${row.time_create}" pattern="d MMM yyyy, H:mm" /></c:otherwise>
 										</c:choose>
 									</span>
-									<span class="badge badge-light-primary fs-6 fw-bold text-nowrap"><c:choose><c:when test="${not empty row.total_amount}"><fmt:formatNumber value="${row.total_amount}" pattern="#,##0.00" /> บาท</c:when><c:otherwise>-</c:otherwise></c:choose></span>
+									<span class="badge badge-light-primary badge-lg fs-6 fw-bold py-2 text-nowrap"><c:choose><c:when test="${not empty row.total_amount}"><fmt:formatNumber value="${row.total_amount}" pattern="#,##0.00" /> บาท</c:when><c:otherwise>-</c:otherwise></c:choose></span>
 								</div>
 								<span>${row.item_count} ${row.item_count > 1 ? 'items' : 'item'}</span>
 							</div>
@@ -2046,6 +2046,60 @@ function initDeleteExpense() {
     });
 }
 
+// ปุ่ม Cancel อยู่ในหน้า line_my_travel_group ที่เปิดใน detail modal
+function initCancelGroup() {
+    $(document).on('click', '.btn-cancel-group', function () {
+        const btn = this;
+        const groupId = btn.getAttribute('data-id');
+        if (!groupId) return;
+
+        const modalEl = document.getElementById('liffDetailModal');
+        modalEl.addEventListener('hidden.bs.modal', function () { confirmCancelGroup(btn, groupId); }, { once: true });
+        bootstrap.Modal.getInstance(modalEl).hide();
+    });
+}
+
+function confirmCancelGroup(btn, groupId) {
+    Swal.fire({
+        title: "Are you sure?",
+        text: "You want to cancel travel expense #" + groupId + "!",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: "Cancel Request",
+        cancelButtonText: "Close",
+        customClass: {
+            confirmButton: "btn btn-danger",
+            cancelButton: "btn btn-light"
+        },
+        buttonsStyling: false,
+        reverseButtons: true
+    }).then(function (result) {
+        if (!result.isConfirmed) return;
+
+        btn.disabled = true;
+        liffShowLoading();
+
+        fetch(ctx + '/line_my_travel_group_cancel?expense_group_id=' + encodeURIComponent(groupId), {
+            headers: { 'X-Requested-With': 'XMLHttpRequest' }
+        })
+        .then(function (res) {
+            if (res.redirected && res.url.indexOf('/pages-line/index.jsp') !== -1) {
+                window.location.href = res.url;
+                return;
+            }
+            if (!(res.ok && res.redirected && res.url.indexOf('line_my_travel') !== -1)) {
+                throw new Error('cancel failed');
+            }
+            window.location.href = ctx + '/line_my_travel?status=C&saved=cancel';
+        })
+        .catch(function () {
+            btn.disabled = false;
+            document.getElementById('liffLoadingOverlay').style.display = 'none';
+            liffToastError("Unable to cancel your travel request. Please try again.", "Cancel failed");
+        });
+    });
+}
+
 let swipeDrag = null;
 let swipeMoved = false;
 
@@ -2170,6 +2224,7 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     initDeleteExpense();
+    initCancelGroup();
     initModal();
     initSwipeActions();
     document.getElementById('liffDetailModal').addEventListener('show.bs.modal', function () { closeAllSwipes(); });
@@ -2194,6 +2249,10 @@ $(function () {
 		liffToastSuccess("Your travel expense has been saved.", "Saved successfully!");
 	} else if (saved === 'edit') {
 		liffToastSuccess("Your travel expense has been updated.", "Updated successfully!");
+	} else if (saved === 'submit') {
+		liffToastSuccess("Your travel request has been submitted.", "Submitted successfully!");
+	} else if (saved === 'cancel') {
+		liffToastSuccess("Your travel request has been canceled.", "Canceled successfully!");
 	}
 	if (saved) {
 		params.delete('saved'); // เอาออกจาก URL กัน refresh แล้วขึ้นซ้ำ

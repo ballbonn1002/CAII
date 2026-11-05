@@ -157,7 +157,6 @@
 		<!-- My Travel =========================================================================================================== -->
 
 		<!-- LIFF ไม่ได้ใช้: travel_approve*, travel_setting*, travel_report -->
-		<!-- งาน Submit Request: submit_travelR, travel_submit, my_travel_group_cancel -->
 
 		<!-- Listing -->
 		<action name="line_my_travel"
@@ -216,6 +215,32 @@
 			<result name="error">/pages-line/index.jsp</result>
 		</action>
 		<!-- Delete -->
+
+		<!-- Submit Request -->
+		<action name="line_submit_travelR"
+			class="com.cubesofttech.action.TravelAction" method="submitTravelPreview">
+			<result name="success" type="tiles">line_myTravelSR</result>
+			<result name="error">/pages-line/index.jsp</result>
+		</action>
+
+		<action name="line_travel_submit"
+			class="com.cubesofttech.action.TravelAction" method="submitTravelRequest">
+			<result name="success" type="redirectAction">
+				<param name="actionName">line_my_travel</param>
+			</result>
+			<result name="error">/pages-line/index.jsp</result>
+		</action>
+		<!-- Submit Request -->
+
+		<!-- Cancel -->
+		<action name="line_my_travel_group_cancel"
+			class="com.cubesofttech.action.TravelAction" method="travelCancel">
+			<result name="success" type="redirectAction">
+				<param name="actionName">line_my_travel</param>
+			</result>
+			<result name="error">/pages-line/index.jsp</result>
+		</action>
+		<!-- Cancel -->
 
 		<!-- My Travel =========================================================================================================== -->
 		

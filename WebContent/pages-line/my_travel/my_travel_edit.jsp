@@ -1327,7 +1327,7 @@
 				<div class="liff-field-row mb-3">
 					<label class="liff-field-label" for="departureDate">Day of departure <span class="text-danger">*</span></label>
 					<input type="hidden" id="departureDateVal" name="departureDate" value="<fmt:formatDate value='${expenseObj.dtStart}' pattern='yyyy-MM-dd'/>" />
-					<input type="text" class="form-control liff-field-value" id="departureDate" autocomplete="off" placeholder="DD MMM YYYY" required />
+					<input type="text" class="form-control liff-field-value" id="departureDate" autocomplete="off" placeholder="DD MMM YYYY" required readonly />
 					<i class="ki-duotone ki-calendar fs-4 text-gray-500"><span class="path1"></span><span class="path2"></span></i>
 				</div>
 
@@ -1448,7 +1448,7 @@
 							<span class="text-gray-600 fs-7">Km.</span>
 						</div>
 						<div class="liff-field-row mb-3">
-							<label class="liff-field-label" for="mTotal">Total <span class="text-danger">*</span> <span class="text-muted fw-normal fs-8 ms-1">7 บาท / Km</span></label>
+							<label class="liff-field-label" for="mTotal">Total <span class="text-danger">*</span> <span class="text-muted fw-normal fs-7 ms-1">7 บาท / Km</span></label>
 							<input id="mTotal" type="number" inputmode="decimal" class="form-control liff-field-value" min="0" step="0.01" placeholder="0.00" required />
 							<span class="text-gray-600 fs-7">บาท</span>
 						</div>
@@ -1799,7 +1799,7 @@
 		function buildRowHtml(goByText, goByVal, descVal, totalNum, kmVal) {
 			return ("<div class='card-body p-4 d-flex flex-column gap-3'>"
 					+ "<div class='d-flex align-items-center justify-content-between gap-3'>"
-					+ "<span class='badge badge-primary fs-6 fw-bold text-nowrap'><span class='row-total'>"
+					+ "<span class='badge badge-primary badge-lg fs-6 fw-bold py-2 text-nowrap'><span class='row-total'>"
 					+ totalNum.toFixed(2)
 					+ "</span>&nbsp;บาท</span>"
 					+ "<div class='d-flex align-items-center gap-2 flex-shrink-0'>"
