@@ -1332,4 +1332,6 @@ VALUES
 (9, 'Carry Over', 'Y', 'ยกยอดสะสมจากปีก่อน', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'cft.admin', 'cft.admin'),
 (10, 'Spend Carry Over', 'Y', 'หักจากแต้มที่ยกยอดมาจากปีก่อน', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'cft.admin', 'cft.admin'),
 (11, 'Spend Current Year', 'Y', 'หักจากแต้มสะสมปีปัจจุบัน', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'cft.admin', 'cft.admin');
+
+-- PROD 5 NOV 2026
 	
