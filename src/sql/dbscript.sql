@@ -1316,4 +1316,13 @@ CREATE TABLE `token_monthly_log_detail` (
 ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci;
 
 -- PROD 3 NOV 2026
+
+-- 28/10/2026 Best(Intern): Add document status for redeem approval module
+INSERT INTO `doc_status` (`color`, `description`, `doc_status_id`, `page`, `status_code`, `status_name`, `time_create`, `time_update`, `user_create`, `user_update`)
+VALUES
+('warning', 'รออนุมัติ', '21', 'cube token', '1', 'Pending', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'cft.admin', 'cft.admin'),
+('primary', 'อนุมัติ', '22', 'cube token', '2', 'Approved', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'cft.admin', 'cft.admin'),
+('cyan', '', '23', 'cube token', '3', 'Received', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'cft.admin', 'cft.admin'),
+('dark', 'ยกเลิก', '24', 'cube token', '5', 'Cancel', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'cft.admin', 'cft.admin'),
+('success', '', '25', 'cube token', '4', 'Completed', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'cft.admin', 'cft.admin');
 	
