@@ -28,7 +28,6 @@ import com.cubesofttech.model.ItemPrivilege;
 import com.cubesofttech.model.Product;
 import com.cubesofttech.model.TokenMonthlyLog;
 import com.cubesofttech.model.User;
-import com.cubesofttech.model.UserRedeem;
 import com.cubesofttech.service.CubeTokenService;
 import com.cubesofttech.util.ReportUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;

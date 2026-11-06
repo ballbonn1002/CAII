@@ -52,6 +52,7 @@ public class ReportUtil {
 			response.getOutputStream().close();
 		} catch (Exception e) {
 			e.printStackTrace();
+			throw e;
 		} finally {
 			try {
 				if (conn != null) {
