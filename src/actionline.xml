@@ -251,7 +251,7 @@
 		</action>
 		
 		<action name="line_lineLiffLogin" class="com.cubesofttech.actionline.LineLoginAction" method="liffLogin">
-			<result name="returnCheck" type="redirect">line_check_in_out</result>
+			<result name="returnCheck" type="redirect">line_check_in_out_test</result>
 			<result name="returnCheckList" type="redirect">line_Calendar_Checklist</result>
 			<result name="returnLeave" type="redirect">line_new_myleave_list</result>
 			<result name="error">/pages-line/index.jsp</result>
