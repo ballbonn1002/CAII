@@ -547,7 +547,7 @@ public class CubeTokenAction extends ActionSupport {
 	            
 			} catch (Exception e) {
 				
-				log.error("Error in redeemReport: " + e.getMessage());
+				log.error("Error in redeemReport: " + e);
 				return ERROR;
 				
 			}

@@ -2245,7 +2245,7 @@ public class CubeTokenService {
 			return new ArrayList<>(); // Return an empty list if it's January
 		}
 
-		List<Map<String, Object>> users = usageTokenDAO.findAccumulatedTokenBalanceForAllUser(year);
+		List<Map<String, Object>> users = usageTokenDAO.findYearlyBalanceForAllUsers(year);
 
 		List<Map<String, Object>> result = new ArrayList<>();
 
@@ -3166,7 +3166,7 @@ public class CubeTokenService {
 	@Transactional
 	public void updateRedeemStatus(Integer redeemId, String statusCode, String reason, File signature, String userId,
 			String realPath) throws Exception {
-
+		
 		if (redeemId == null || redeemId <= 0) {
 			throw new IllegalArgumentException("Invalid redeemId");
 		}
@@ -3298,6 +3298,29 @@ public class CubeTokenService {
 		redeem.setStatusLog(MAPPER.writeValueAsString(statusArray));
 
 		userRedeemDAO.update(redeem);
+		
+		if (STATUS_REDEEM_CANCEL.equals(statusCode)) {
+			// If the redeem is canceled, return the item quantity back to the inventory 
+			// Return user's points back to their account
+			
+			ItemPrivilege item = itemPrivilegeDAO.findById(redeem.getItemId());
+			item.setQuantity(item.getQuantity() + 1);
+			
+			itemPrivilegeDAO.update(item);
+			
+			TokenUsage usage = new TokenUsage();
+			usage.setUserId(redeem.getUserId());
+			usage.setActionTypeId(ACTION_TYPE_RETURN);
+			usage.setValue(null);
+			usage.setReconcile(redeem.getToken());
+			usage.setYear(LocalDate.now().getYear());
+			usage.setMonth(LocalDate.now().getMonthValue());
+			usage.setUserCreate(userId);
+			usage.setTimeUpdate(DateUtil.getCurrentTime());
+			usage.setReFlag("N");
+			
+			usageTokenDAO.save(usage);
+		}
 	}
 
 	private boolean isValidTransition(String currentStatus, String nextStatus) {

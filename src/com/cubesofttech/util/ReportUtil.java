@@ -51,7 +51,7 @@ public class ReportUtil {
 			exporter.exportReport();
 			response.getOutputStream().close();
 		} catch (Exception e) {
-			e.printStackTrace();
+			log.error("Error in printReportToBrowsePdf: " + e);
 			throw e;
 		} finally {
 			try {

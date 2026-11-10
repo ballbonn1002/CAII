@@ -132,7 +132,7 @@ public class TokenUsageDAOImpl implements TokenUsageDAO {
 				"    ON tu.action_point_id = tap.action_point_id " +
 
 	            "WHERE tu.user_id = :userId " +
-	            "AND (tu.action_type_id IN (1, 2, 3, 4, 8) OR (tu.action_type_id = 6 AND tu.value IS NOT NULL)) " +
+	            "AND ((tu.action_type_id IN (1, 2, 3, 4, 8) AND tu.value IS NOT NULL) OR (tu.action_type_id = 6 AND tu.value IS NOT NULL)) " +
 	            "AND year = :year " +
 
 	            "ORDER BY tu.time_create ASC";
@@ -161,7 +161,7 @@ public class TokenUsageDAOImpl implements TokenUsageDAO {
 	            // Accumulated token balance
 				"COALESCE(SUM(" +
 				"    CASE " +
-				"        WHEN tu.action_type_id = 5 OR tu.action_type_id = 9" +
+				"        WHEN (tu.action_type_id = 5 OR tu.action_type_id = 9 OR tu.action_type_id = 3) AND tu.reconcile IS NOT NULL " + // Add in reconcile, Carry over , Return 
 				"            THEN GREATEST(COALESCE(tu.reconcile, 0), 0) " +
 				"        WHEN (tu.action_type_id = 6 OR tu.action_type_id = 10 OR tu.action_type_id = 11) AND tu.reconcile IS NOT NULL " + // Exchange, Spend Carry Over, Spend Current Year
 				"            THEN -COALESCE(tu.reconcile, 0) " +
@@ -184,7 +184,7 @@ public class TokenUsageDAOImpl implements TokenUsageDAO {
 
 	            // Return
 	            "    COALESCE(SUM( " +
-	            "        CASE WHEN tu.action_type_id = 3 THEN tu.value " +
+	            "        CASE WHEN tu.action_type_id = 3 AND tu.value IS NOT NULL THEN tu.value " +
 	            "		 ELSE 0 END" +	
 	            "    ), 0) AS return_token, " +
 
@@ -257,7 +257,7 @@ public class TokenUsageDAOImpl implements TokenUsageDAO {
 				// Accumulated token balance
 				"COALESCE(SUM(" +
 				"    CASE " +
-				"        WHEN tu.action_type_id = 5 OR tu.action_type_id = 9 " + // Add in reconcile, Carry Over
+				"        WHEN (tu.action_type_id = 5 OR tu.action_type_id = 9 OR tu.action_type_id = 3) AND tu.reconcile IS NOT NULL " + // Add in reconcile, Carry Over, Return
 				"            THEN GREATEST(COALESCE(tu.reconcile, 0), 0) " + // Exclude negative reconcile values
 				"        WHEN (tu.action_type_id = 6 OR tu.action_type_id = 10 OR tu.action_type_id = 11) AND tu.reconcile IS NOT NULL" + // Exchange, Spend Carry Over, Spend Current Year
 				"            THEN -COALESCE(tu.reconcile, 0) " +
@@ -268,7 +268,7 @@ public class TokenUsageDAOImpl implements TokenUsageDAO {
 	            // Get Token = Gift + Return + Reward + Exchange
 	            "    COALESCE(SUM( " +
 	            "        CASE " +
-	            "            WHEN tu.action_type_id IN (1, 3, 4) " + // Gift, Return, Reward
+	            "            WHEN tu.action_type_id IN (1, 3, 4) AND tu.value IS NOT NULL " + // Gift, Return, Reward
 	            "            THEN tu.value " +
 	            " 			 WHEN tu.action_type_id = 6 AND tu.value IS NOT NULL " + // Exchange
 	            "            THEN tu.value " +
@@ -329,7 +329,7 @@ public class TokenUsageDAOImpl implements TokenUsageDAO {
 	    String sql =
 	            "SELECT COALESCE(SUM( " +
 	            "    CASE " +
-	            "        WHEN tu.action_type_id IN (1, 3, 4) THEN tu.value " + // Gift, Return, Reward
+	            "        WHEN tu.action_type_id IN (1, 3, 4) AND tu.value IS NOT NULL THEN tu.value " + // Gift, Return, Reward
 	            "        WHEN tu.action_type_id = 6 AND tu.value IS NOT NULL THEN tu.value " + // Exchange
 	            "        WHEN tu.action_type_id = 2 OR tu.action_type_id = 8 THEN -tu.value " + // Deduct, Void
 	            "        ELSE 0 " +
@@ -360,7 +360,7 @@ public class TokenUsageDAOImpl implements TokenUsageDAO {
 	            "SELECT " +
 	            "    COALESCE(SUM( " +
 	            "        CASE " +
-	            "            WHEN tu.action_type_id = 5 OR tu.action_type_id = 9 " + // Add in reconcile, Carry Over
+	            "            WHEN (tu.action_type_id = 5 OR tu.action_type_id = 9 OR tu.action_type_id = 3) AND tu.reconcile IS NOT NULL " + // Add in reconcile, Carry Over
 	            "                THEN GREATEST(COALESCE(tu.reconcile, 0), 0) " + // Exclude negative reconcile values
 	            "            WHEN (tu.action_type_id = 6 OR tu.action_type_id = 10 OR tu.action_type_id = 11) AND tu.reconcile IS NOT NULL " +
 	            "                THEN -COALESCE(tu.reconcile, 0) " + // Exchange, Spend Carry Over, Spend Current Year
@@ -369,7 +369,7 @@ public class TokenUsageDAOImpl implements TokenUsageDAO {
 	            "    ), 0) AS token " +
 	            "FROM token_usage tu " +
 	            "WHERE tu.user_id = :userId " +
-	            "AND tu.action_type_id IN (5, 6, 9, 10, 11) " +
+	            "AND tu.action_type_id IN (3, 5, 6, 9, 10, 11) " +
 	            "AND year = :year";
 
 	    SQLQuery query = sessionFactory
@@ -395,7 +395,7 @@ public class TokenUsageDAOImpl implements TokenUsageDAO {
 	            "SELECT " +
 	            "    COALESCE(SUM( " +
 	            "        CASE " +
-	            "            WHEN tu.action_type_id = 5 " + // Add in reconcile
+	            "            WHEN (tu.action_type_id = 5 OR tu.action_type_id = 3) AND tu.reconcile IS NOT NULL" + // Add in reconcile, Return
 	            "                THEN GREATEST(COALESCE(tu.reconcile, 0), 0) " +
 	            "            WHEN tu.action_type_id = 11 AND tu.reconcile IS NOT NULL " + // Spend Current Year
 	            "                THEN -COALESCE(tu.reconcile, 0) " +
@@ -403,7 +403,7 @@ public class TokenUsageDAOImpl implements TokenUsageDAO {
 	            "        END " +
 	            "    ), 0) AS yearly_token " +
 	            "FROM token_usage tu " +
-	            "WHERE tu.user_id = :userId AND tu.action_type_id IN (5, 11)" +
+	            "WHERE tu.user_id = :userId AND tu.action_type_id IN (3, 5, 11)" +
 	            "AND year = :year";
 
 	    SQLQuery query = sessionFactory
@@ -429,7 +429,7 @@ public class TokenUsageDAOImpl implements TokenUsageDAO {
 	            "SELECT " +
 	            "    COALESCE(SUM( " +
 	            "        CASE " +
-	            "            WHEN tu.action_type_id = 5 OR tu.action_type_id = 9 " + // Add in reconcile, Carry Over
+	            "            WHEN (tu.action_type_id = 5 OR tu.action_type_id = 9 OR tu.action_type_id = 3) AND tu.reconcile IS NOT NULL " + // Add in reconcile, Carry Over, Return
 	            "                THEN GREATEST(COALESCE(tu.reconcile, 0), 0) " +
 	            "            WHEN (tu.action_type_id = 10 OR tu.action_type_id = 11) AND tu.reconcile IS NOT NULL " + // Spend Carry Over, Spend Current Year
 	            "                THEN -COALESCE(tu.reconcile, 0) " +
@@ -437,7 +437,7 @@ public class TokenUsageDAOImpl implements TokenUsageDAO {
 	            "        END " +
 	            "    ), 0) AS yearly_token " +
 	            "FROM token_usage tu " +
-	            "WHERE tu.user_id = :userId AND tu.action_type_id IN (5, 9, 10, 11)" +
+	            "WHERE tu.user_id = :userId AND tu.action_type_id IN (3, 5, 9, 10, 11)" +
 	            "AND year = :year";
 
 	    SQLQuery query = sessionFactory
@@ -470,7 +470,7 @@ public class TokenUsageDAOImpl implements TokenUsageDAO {
 		            "    u.path AS filePath, " +
 		            "    COALESCE(SUM( " +
 		            "        CASE " +
-		            "            WHEN tu.action_type_id = 5 OR tu.action_type_id = 9 " +
+		            "            WHEN (tu.action_type_id = 5 OR tu.action_type_id = 9 OR tu.action_type_id = 3) AND tu.reconcile IS NOT NULL " +
 		            "                THEN GREATEST(COALESCE(tu.reconcile, 0), 0) " +
 		            "            WHEN (tu.action_type_id = 10 OR tu.action_type_id = 11) " +
 		            "                AND tu.reconcile IS NOT NULL " +
@@ -481,7 +481,51 @@ public class TokenUsageDAOImpl implements TokenUsageDAO {
 		            "FROM token_usage tu " +
 		            "JOIN user u " +
 		            "    ON u.id = tu.user_id " +
-		            "WHERE tu.year = :year AND tu.action_type_id IN (5, 9, 10, 11) " +
+		            "WHERE tu.year = :year AND tu.action_type_id IN (3, 5, 9, 10, 11) " +
+		            "GROUP BY " +
+		            "    tu.user_id, " +
+		            "    u.name, " +
+		            "    u.name_en, " +
+		            "    u.employee_id, " +
+		            "    u.path " +
+		            "ORDER BY token DESC, u.employee_id ASC";
+		 
+	    return sessionFactory
+	            .getCurrentSession()
+	            .createSQLQuery(sql)
+	            .setParameter("year", year)
+	            .setResultTransformer(
+	                    AliasToEntityMapResultTransformer.INSTANCE
+	            )
+	            .list();
+	}
+	
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<Map<String, Object>> findYearlyBalanceForAllUsers(int year)
+	        throws Exception {
+
+		 String sql =
+		            "SELECT " +
+		            "    tu.user_id AS userId, " +
+		            "    u.name AS nameTh, " +
+		            "    u.name_en AS nameEn, " +
+		            "    u.employee_id AS employeeId, " +
+		            "    u.path AS filePath, " +
+		            "    COALESCE(SUM( " +
+		            "        CASE " +
+		            "            WHEN (tu.action_type_id = 5 OR tu.action_type_id = 3) AND tu.reconcile IS NOT NULL " +
+		            "                THEN GREATEST(COALESCE(tu.reconcile, 0), 0) " +
+		            "            WHEN tu.action_type_id = 11 " +
+		            "                AND tu.reconcile IS NOT NULL " +
+		            "                THEN -COALESCE(tu.reconcile, 0) " +
+		            "            ELSE 0 " +
+		            "        END " +
+		            "    ), 0) AS token " +
+		            "FROM token_usage tu " +
+		            "JOIN user u " +
+		            "    ON u.id = tu.user_id " +
+		            "WHERE tu.year = :year AND tu.action_type_id IN (3, 5, 11) " +
 		            "GROUP BY " +
 		            "    tu.user_id, " +
 		            "    u.name, " +

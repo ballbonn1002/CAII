@@ -23,6 +23,7 @@ public interface TokenUsageDAO {
 	public List<Map<String,Object>> findTokenSummaryForAllUsers(int year) throws Exception;
 	public List<String> findAllUserIds () throws Exception;
 	public List<Map<String,Object>> findAccumulatedTokenBalanceForAllUser(int year) throws Exception;
+	public List<Map<String, Object>> findYearlyBalanceForAllUsers(int year) throws Exception;
 	public boolean existsLeaveDeduction(Integer leaveId) throws Exception;
 	public TokenUsage findExistsAccumulatedToken(String userId, YearMonth yearMonth) throws Exception;
 	public Double findCarryOverBalance(String userId, Integer year) throws Exception;
