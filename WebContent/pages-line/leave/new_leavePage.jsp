@@ -922,11 +922,38 @@ var toISODate = (date) => {
 var toISODate2 = (date) => {
 	return date.substring(3, 5) + "-" + date.substring(0, 2) + "-" + date.substring(6, 10);
 }
+/*
+ * แปลง string วันที่ -> Date (เวลา 00:00 local) โดย parse เอง ไม่พึ่ง Date.parse()
+ * เพราะ Safari ไม่รองรับ format อย่าง "Nov-10-2026" หรือ "11-10-2026" (ได้ Invalid Date)
+ * รองรับ: "10 Nov 2026" (datepicker), "10-11-2026" (dd-mm-yyyy), "Nov 10, 2026" (Gson java.sql.Date), "2026-11-10"
+ * คืน null ถ้า parse ไม่ได้
+ */
+var MONTH_INDEX = { jan: 0, feb: 1, mar: 2, apr: 3, may: 4, jun: 5, jul: 6, aug: 7, sep: 8, oct: 9, nov: 10, dec: 11 };
+var parseDateString = (str) => {
+	if (str === null || str === undefined) return null;
+	str = String(str).trim();
+	let y, m, d, match;
+	if ((match = str.match(/^(\d{1,2})[\s-]([A-Za-z]{3})[A-Za-z]*[\s-](\d{4})$/))) {          // 10 Nov 2026
+		d = +match[1]; m = MONTH_INDEX[match[2].toLowerCase()]; y = +match[3];
+	} else if ((match = str.match(/^([A-Za-z]{3})[A-Za-z]*\s+(\d{1,2}),?\s+(\d{4})/))) {        // Nov 10, 2026
+		m = MONTH_INDEX[match[1].toLowerCase()]; d = +match[2]; y = +match[3];
+	} else if ((match = str.match(/^(\d{1,2})[-\/](\d{1,2})[-\/](\d{4})$/))) {                  // 10-11-2026
+		d = +match[1]; m = +match[2] - 1; y = +match[3];
+	} else if ((match = str.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/))) {                           // 2026-11-10
+		y = +match[1]; m = +match[2] - 1; d = +match[3];
+	} else {
+		return null;
+	}
+	if (m === undefined || isNaN(m) || isNaN(d) || isNaN(y)) return null;
+	return new Date(y, m, d);
+}
 var toTimestamp = (date) => {
-	return Date.parse(toISODate(date));
+	let parsed = parseDateString(date);
+	return parsed ? parsed.getTime() : NaN;
 }
 var toTimestamp2 = (date) => {
-	return Date.parse(toISODate2(date));
+	let parsed = parseDateString(date);
+	return parsed ? parsed.getTime() : NaN;
 }
 var toDisplayDate = (date) => {
 	return date.toLocaleDateString('en-GB').replace('/', '-').replace("/", '-');
@@ -1142,19 +1169,28 @@ $(() => {
 		holiday = JSON.parse('${holiday}');
 
 		for (let i = 0; i < holiday.length; i++) {
-			let start = new Date(holiday[i].start);
-			let end = new Date(holiday[i].end);
+			// parse เอง + เก็บเป็น timestamp เพื่อให้ Safari ทำงานได้
+			let start = parseDateString(holiday[i].start);
+			let end = parseDateString(holiday[i].end);
+			if (!start || !end) continue;
 			for (let j = start; j <= end; j.setDate(j.getDate() + 1)) {
-				holidays.push(toDisplayDate(j));
+				holidays.push(j.getTime());
 			}
 		}
 
 		function handleDateChange() {
 			let amount = 0;
 			let holiday_count = 0;
-			let from = new Date(toISODate($('#date_from').val()));
-			let to = new Date(toISODate($('#date_to').val()));
+			let from = parseDateString($('#date_from').val());
+			let to = parseDateString($('#date_to').val());
 			let halfDay = $('#halfDay').val();
+
+			// วันที่ว่าง/ไม่ถูกต้อง (เช่นถูกเคลียร์ตอน from > to) -> ยังคำนวณไม่ได้
+			if (!from || !to) {
+				$('#amount').val(0);
+				$('#amount_hidden').val(0);
+				return;
+			}
 
 			if (halfDay !== "0") {
 				$('#date_to').val($('#date_from').val());
@@ -1164,10 +1200,9 @@ $(() => {
 			} else {
 				if (from < to) {
 					amount = ((to - from) / 86400000) + 1;
-					for (let i = from; i < to; i.setDate(i.getDate() + 1)) {
+					for (let i = new Date(from.getTime()); i < to; i.setDate(i.getDate() + 1)) {
 						for (let j = 0; j < holidays.length; j++) {
-							let holiday_ts = toTimestamp2(holidays[j]);
-							if (i.getTime() == holiday_ts) holiday_count++;
+							if (i.getTime() == holidays[j]) holiday_count++;
 						}
 						if (i.getDay() == '0' || i.getDay() == '6') holiday_count++;
 					}
