@@ -1782,19 +1782,19 @@ function previewAfterFile(input) {
 	if (input.files && input.files[0]) {
 		const file = input.files[0];
 
-		if (lfIsHeic(file)) {
+		if (liffIsHeicFile(file)) {
 			input.value = '';
 			container.innerHTML = '';
 			showSubmitFile();
-			lfAlertHeic();
+			liffFileAlertHeic(LF_SUPPORTED_TEXT);
 			return;
 		}
 
-		if (LF_FORBIDDEN.test(file.name)) {
+		if (LIFF_FILE_FORBIDDEN.test(file.name)) {
 			input.value = '';
 			container.innerHTML = '';
 			showSubmitFile();
-			lfAlertBadName(file.name);
+			liffFileAlertBadName(file.name);
 			return;
 		}
 
@@ -1831,8 +1831,8 @@ function submitAfterFile() {
 function handleAfterFileSelect(input) {
 	const file = input.files[0];
 	if (!file) return;
-	if (LF_FORBIDDEN.test(file.name)) {
-		lfAlertBadName(file.name);
+	if (LIFF_FILE_FORBIDDEN.test(file.name)) {
+		liffFileAlertBadName(file.name);
 		input.value = '';
 		return;
 	}
@@ -1870,14 +1870,13 @@ function handleAfterFileSelect(input) {
 }
 </script>
 
+<jsp:include page="/pages-line/common/liff_attach_files.jsp" />
+
 <script>
 /* ---------- ไฟล์แนบ: หลายไฟล์ ---------- */
 window.LeaveFiles = window.LeaveFiles || { pending: [], existing: [], deleted: [], loading: [] };
 var LF_LOADING_SEQ = 0;
-
-var LF_FORBIDDEN = /[\/:*?"<>|]/;
-var LF_IMG_LIMIT = 500 * 1024;
-var LF_TOTAL_LIMIT = 2 * 1024 * 1024;
+var LF_SUPPORTED_TEXT = 'PNG, JPG, JPEG, GIF, WEBP, PDF, ZIP';
 
 function getFileIconPath(fileName) {
 	var ext = fileName.split('.').pop().toLowerCase();
@@ -1947,24 +1946,6 @@ function lfMakeItem(name, url, onRemove, disableTrash) {
 	return wrapper;
 }
 
-function lfMakeLoadingItem(name) {
-	var wrapper = document.createElement('div');
-	wrapper.className = 'd-flex w-100 align-items-center p-2 border border-gray-300 rounded bg-white';
-
-	var spinner = document.createElement('span');
-	spinner.className = 'spinner-border spinner-border-sm text-primary me-3 flex-shrink-0';
-	spinner.setAttribute('role', 'status');
-
-	var label = document.createElement('span');
-	label.className = 'text-gray-600 fs-6 text-truncate';
-	label.textContent = 'กำลังประมวลผล ' + name + '...';
-	label.style.maxWidth = '250px';
-
-	wrapper.appendChild(spinner);
-	wrapper.appendChild(label);
-	return wrapper;
-}
-
 function lfRemoveLoading(loadingId) {
 	LeaveFiles.loading = LeaveFiles.loading.filter(function (l) { return l.id !== loadingId; });
 }
@@ -2003,7 +1984,7 @@ function lfPaint(containerId, opts) {
 	}
 	if (!opts.readonly) {
 		for (var k = 0; k < LeaveFiles.loading.length; k++) {
-			c.appendChild(lfMakeLoadingItem(LeaveFiles.loading[k].name));
+			c.appendChild(liffFileMakeLoadingItem(LeaveFiles.loading[k].name));
 		}
 	}
 	if (!c.children.length && opts.emptyText) {
@@ -2021,16 +2002,6 @@ function lfRenderExistingReadonly(containerId) {
 	lfPaint(containerId, { readonly: true });
 }
 
-function lfSourceKey(file) {
-	return file.name + '|' + file.size;
-}
-
-function lfDup(file) {
-	var key = lfSourceKey(file);
-	return LeaveFiles.pending.some(function (f) { return f.sourceKey === key; })
-		|| LeaveFiles.loading.some(function (l) { return l.sourceKey === key; });
-}
-
 function lfUsedNames() {
 	var names = [];
 	LeaveFiles.existing.forEach(function (ex) {
@@ -2040,85 +2011,24 @@ function lfUsedNames() {
 	return names;
 }
 
-function lfUniqueName(fileName) {
-	var used = lfUsedNames();
-	if (used.indexOf(fileName.toLowerCase()) === -1) return fileName;
-	var dot = fileName.lastIndexOf('.');
-	var base = (dot > 0) ? fileName.substring(0, dot) : fileName;
-	var ext = (dot > 0) ? fileName.substring(dot) : '';
-	var n = 2;
-	while (used.indexOf((base + ' (' + n + ')' + ext).toLowerCase()) !== -1) n++;
-	return base + ' (' + n + ')' + ext;
-}
-
-function lfWithUniqueName(file) {
-	var name = lfUniqueName(file.name);
-	if (name === file.name) return file;
-	var renamed = new File([file], name, { type: file.type, lastModified: file.lastModified });
-	renamed.sourceKey = file.sourceKey;
-	return renamed;
-}
-
 function lfCurrentTotalSize() {
 	var total = 0;
 	LeaveFiles.pending.forEach(function (f) { total += f.size; });
 	return total;
 }
 
-// popup ไฟล์ HEIC / ชื่อไฟล์มีอักขระต้องห้าม (ใช้ร่วมทุกจุดที่แนบไฟล์)
-function lfAlertHeic() {
-	Swal.fire({
-		icon: 'error',
-		title: 'ไม่รองรับไฟล์ HEIC',
-		html: 'ไม่รองรับไฟล์นามสกุล .heic กรุณาแปลงก่อนแนบไฟล์'
-			+ '<br><br><span class="text-muted fs-7">ไฟล์ที่รองรับ: PNG, JPG, JPEG, GIF, WEBP, PDF, ZIP</span>',
-		confirmButtonText: 'รับทราบ',
-		buttonsStyling: false,
-		customClass: { confirmButton: "btn btn-primary" }
-	});
-}
-
-function lfAlertBadName(fileName) {
-	Swal.fire({
-		icon: 'error',
-		title: 'Invalid file name',
-		text: 'File name contains invalid characters: ' + fileName,
-		confirmButtonText: 'OK',
-		buttonsStyling: false,
-		customClass: { confirmButton: "btn btn-primary" }
-	});
-}
-
-function lfIsHeic(file) {
-	var name = (file.name || '').toLowerCase();
-	return name.endsWith('.heic') || name.endsWith('.heif')
-		|| file.type === 'image/heic' || file.type === 'image/heif';
-}
-
 function lfCompressIfNeeded(file, loadingId, onDone) {
-	if (file.type && file.type.indexOf('image/') === 0 && file.size > LF_IMG_LIMIT && typeof Compressor !== 'undefined') {
-		new Compressor(file, {
-			quality: 0.8, maxWidth: 1024, maxHeight: 1024,
-			success: function (result) {
-				var compressed = new File([result], file.name, { type: result.type, lastModified: Date.now() });
-				compressed.sourceKey = file.sourceKey;
-				lfTryAddFile(compressed, loadingId, onDone);
-			},
-			error: function (err) {
-				console.error('resize error:', err && err.message);
-				lfTryAddFile(file, loadingId, onDone);
-			}
-		});
-	} else {
-		lfTryAddFile(file, loadingId, onDone);
-	}
+	liffFileCompressImage(file, function (result, err) {
+		if (err) console.error('resize error:', err && err.message);
+		lfTryAddFile(result, loadingId, onDone);
+	});
 }
 
 function lfProcessFile(file, loadingId, onDone) {
-	if (lfIsHeic(file)) {
+	if (liffIsHeicFile(file)) {
 		lfRemoveLoading(loadingId);
 		lfRenderAll();
-		lfAlertHeic();
+		liffFileAlertHeic(LF_SUPPORTED_TEXT);
 		if (onDone) onDone(false);
 		return;
 	}
@@ -2128,20 +2038,13 @@ function lfProcessFile(file, loadingId, onDone) {
 function lfTryAddFile(file, loadingId, onDone) {
 	lfRemoveLoading(loadingId);
 	var currentTotal = lfCurrentTotalSize();
-	if (currentTotal + file.size > LF_TOTAL_LIMIT) {
-		Swal.fire({
-			icon: 'warning',
-			title: 'ไฟล์มีขนาดเกินกำหนด',
-			text: 'ไม่สามารถแนบไฟล์ "' + file.name + '" ได้ เนื่องจากขนาดไฟล์รวมเกินขนาดสูงสุดที่กำหนดไว้',
-			confirmButtonText: 'รับทราบ',
-			buttonsStyling: false,
-			customClass: { confirmButton: "btn btn-primary" }
-		});
+	if (currentTotal + file.size > LIFF_FILE_TOTAL_LIMIT) {
+		liffFileAlertTooBig(file.name);
 		lfRenderAll();
 		if (onDone) onDone(false);
 		return;
 	}
-	LeaveFiles.pending.push(lfWithUniqueName(file));
+	LeaveFiles.pending.push(liffFileWithUniqueName(file, lfUsedNames()));
 	lfSyncInput();
 	lfRenderAll();
 	if (onDone) onDone(true);
@@ -2154,17 +2057,17 @@ function lfAddFiles(fileList, onDone) {
 	}
 
 	Array.prototype.slice.call(fileList).forEach(function (file) {
-		if (LF_FORBIDDEN.test(file.name)) {
-			lfAlertBadName(file.name);
+		if (LIFF_FILE_FORBIDDEN.test(file.name)) {
+			liffFileAlertBadName(file.name);
 			if (onDone) onDone(false);
 			return;
 		}
-		if (lfDup(file)) {
+		if (liffIsDuplicateFile(file, LeaveFiles.pending, LeaveFiles.loading)) {
 			if (onDone) onDone(true);
 			return;
 		}
 
-		file.sourceKey = lfSourceKey(file);
+		file.sourceKey = liffFileSourceKey(file);
 		var loadingId = ++LF_LOADING_SEQ;
 		LeaveFiles.loading.push({ id: loadingId, name: file.name, sourceKey: file.sourceKey });
 		lfRenderAll();
