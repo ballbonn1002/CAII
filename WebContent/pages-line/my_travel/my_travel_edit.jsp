@@ -2061,8 +2061,42 @@
 			travelLoadingFiles = travelLoadingFiles.filter(function(l) { return l.id !== loadingId; });
 		}
 
+		function travelSourceKey(file) {
+			return file.name + '|' + file.size;
+		}
+
 		function isTravelDuplicate(file) {
-			return travelSelectedFiles.some(function(f) { return f.name === file.name && f.size === file.size; });
+			var key = travelSourceKey(file);
+			return travelSelectedFiles.some(function(f) { return f.sourceKey === key; })
+				|| travelLoadingFiles.some(function(l) { return l.sourceKey === key; });
+		}
+
+		function travelUsedNames() {
+			var names = [];
+			travelExistingFiles.forEach(function(ex) {
+				if (deletedFileIds.indexOf(ex.fileId) === -1) names.push(ex.name.toLowerCase());
+			});
+			travelSelectedFiles.forEach(function(f) { names.push(f.name.toLowerCase()); });
+			return names;
+		}
+
+		function travelUniqueName(fileName) {
+			var used = travelUsedNames();
+			if (used.indexOf(fileName.toLowerCase()) === -1) return fileName;
+			var dot = fileName.lastIndexOf('.');
+			var base = (dot > 0) ? fileName.substring(0, dot) : fileName;
+			var ext = (dot > 0) ? fileName.substring(dot) : '';
+			var n = 2;
+			while (used.indexOf((base + ' (' + n + ')' + ext).toLowerCase()) !== -1) n++;
+			return base + ' (' + n + ')' + ext;
+		}
+
+		function travelWithUniqueName(file) {
+			var name = travelUniqueName(file.name);
+			if (name === file.name) return file;
+			var renamed = new File([file], name, { type: file.type, lastModified: file.lastModified });
+			renamed.sourceKey = file.sourceKey;
+			return renamed;
 		}
 
 		// ไฟล์เดิมอยู่บน server แล้ว นับเฉพาะไฟล์ใหม่
@@ -2107,6 +2141,7 @@
 					quality: 0.8, maxWidth: 1024, maxHeight: 1024,
 					success: function(result) {
 						var compressed = new File([result], file.name, { type: result.type, lastModified: Date.now() });
+						compressed.sourceKey = file.sourceKey;
 						tryAddTravelFile(compressed, loadingId);
 					},
 					error: function() {
@@ -2142,7 +2177,7 @@
 				renderNewFileList();
 				return;
 			}
-			travelSelectedFiles.push(file);
+			travelSelectedFiles.push(travelWithUniqueName(file));
 			updateTravelInputFiles();
 			renderNewFileList();
 		}
@@ -2157,8 +2192,9 @@
 					return;
 				}
 
+				file.sourceKey = travelSourceKey(file);
 				var loadingId = ++travelLoadingSeq;
-				travelLoadingFiles.push({ id: loadingId, name: file.name });
+				travelLoadingFiles.push({ id: loadingId, name: file.name, sourceKey: file.sourceKey });
 				renderNewFileList();
 
 				processTravelFile(file, loadingId);
