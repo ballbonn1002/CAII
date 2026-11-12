@@ -8,6 +8,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -26,6 +27,7 @@ import com.cubesofttech.dao.EquipmentDAO;
 import com.cubesofttech.dao.EquipmentStatusDAO;
 import com.cubesofttech.dao.EquipmentTypeDAO;
 import com.cubesofttech.dao.UserDAO;
+import com.cubesofttech.dao.WarehouseDAO;
 import com.cubesofttech.model.Borrow;
 import com.cubesofttech.model.Equipment;
 import com.cubesofttech.model.EquipmentStatus;
@@ -33,6 +35,7 @@ import com.cubesofttech.model.EquipmentType;
 import com.cubesofttech.model.FileUpload;
 import com.cubesofttech.model.User;
 import com.cubesofttech.service.NotificationService;
+import com.cubesofttech.model.Warehouse;
 import com.cubesofttech.util.DateUtil;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -64,6 +67,9 @@ public class BorrowingAction extends ActionSupport {
 
 	@Autowired
 	private NotificationService notificationService;
+
+	@Autowired
+	private WarehouseDAO warehouseDAO;
 
 	public EquipmentDAO getEquipmentDAO() {
 		return equipmentDAO;
@@ -594,6 +600,30 @@ public class BorrowingAction extends ActionSupport {
 	    }
 	}
 	
+	/**
+	 * เติม request attribute "warehouseList" (JSON) ให้ dropdown เลือก warehouse ตอนคืนของใน modal
+	 * (รูปแบบเดียวกับ warehouseList ใน ProductAction.showEquipmentBalancePage() - ส่งเฉพาะ id/ชื่อ/parent)
+	 * เรียกจาก eBorrowEdit() และ newEquipBorrowList()
+	 */
+	private void loadWarehouseListAttribute() throws Exception {
+	    List<Warehouse> warehouses = warehouseDAO.findAll();
+	    if (warehouses == null) {
+	        warehouses = new ArrayList<Warehouse>();
+	    }
+	    List<Map<String, Object>> warehouseOptions = new ArrayList<Map<String, Object>>();
+	    for (Warehouse w : warehouses) {
+	        if (w == null || w.getWarehouseId() == null) {
+	            continue;
+	        }
+	        Map<String, Object> option = new LinkedHashMap<String, Object>();
+	        option.put("warehouseId", w.getWarehouseId());
+	        option.put("warehouseName", w.getWarehouseName());
+	        option.put("parent", (w.getParent() != null) ? w.getParent() : Long.valueOf(0L));
+	        warehouseOptions.add(option);
+	    }
+	    request.setAttribute("warehouseList", new Gson().toJson(warehouseOptions));
+	}
+
 	public String eBorrowEdit() {
 	    try {
 	    	User ur = (User) request.getSession().getAttribute("onlineUser");
@@ -652,7 +682,10 @@ public class BorrowingAction extends ActionSupport {
 	        request.setAttribute("equipId", equipmentId);
 	        request.setAttribute("equipmentbyId", eq);
 	        request.setAttribute("borrowObj", borrow);
-	        
+
+	        // dropdown เลือก warehouse ตอนคืนของใน modal #borrowDetailModal
+	        loadWarehouseListAttribute();
+
 //	        boolean legacyBorrow = isLegacyBorrow(borrow);
 //            request.setAttribute("isLegacyBorrow",legacyBorrow);
 
@@ -735,6 +768,11 @@ public class BorrowingAction extends ActionSupport {
 				String updatedStatusLog = gson.toJson(logList);
 				e.setStatusLog(updatedStatusLog);
 				e.setStatus(status);
+				if ("B".equals(status)) {
+					// ยืมออกจริงแล้ว (อนุมัติทันทีตอนสร้างคำขอ) - ของไม่ได้อยู่ใน warehouse เดิมอีกต่อไป
+					// เคลียร์เป็น 0 (ไม่ใช่ id ของ warehouse จริง) ไว้ก่อน จนกว่าจะคืนแล้วระบุ warehouse ใหม่
+					e.setWarehouseId(Long.valueOf(0L));
+				}
 				equipmentDAO.update(e);
 			}
 
@@ -744,8 +782,8 @@ public class BorrowingAction extends ActionSupport {
 			return ERROR;
 		}
 	}
-	
-	
+
+
 	public String eBorrowUpdate() {
 		try {
 			User user = (User) request.getSession().getAttribute("onlineUser");
@@ -837,9 +875,14 @@ public class BorrowingAction extends ActionSupport {
 					e.setStatusLog(updatedStatusLog);
 				}
 				e.setStatus(status);
+				if ("B".equals(status)) {
+					// ยืมออกจริงแล้ว (แก้สถานะผ่านหน้าแก้ไขรายการยืม) - ของไม่ได้อยู่ใน warehouse เดิมอีกต่อไป
+					// เคลียร์เป็น 0 (ไม่ใช่ id ของ warehouse จริง) ไว้ก่อน จนกว่าจะคืนแล้วระบุ warehouse ใหม่
+					e.setWarehouseId(Long.valueOf(0L));
+				}
 				equipmentDAO.update(e);
 			}
-			
+
 			if (status.equals("R") || status.equals("C")) {
 				Equipment e = equipmentDAO.getById(Integer.parseInt(equipment));
 				String oldStatus = e.getStatus();
@@ -943,13 +986,17 @@ public class BorrowingAction extends ActionSupport {
 			request.setAttribute("borrows", new Gson().toJson(borrows));
 			request.setAttribute("equipments", new Gson().toJson(equipments));
 			request.setAttribute("type", new Gson().toJson(type));
+
+			// dropdown เลือก warehouse ตอนคืนของใน modal #borrowDetailModal
+			loadWarehouseListAttribute();
+
 			return SUCCESS;
 		} catch(Exception e) {
 			e.printStackTrace();
 			return ERROR;
 		}
 	}
-	
+
 	public String myBorrow() {
 		try {
 			List<Borrow> borrows = borrowDAO.findBorrowByUser(onlineUser.getId());
@@ -1013,6 +1060,9 @@ public class BorrowingAction extends ActionSupport {
 					equipment.setStatus("B");
 					equipment.setUserUpdate(onlineUser.getId());
 					equipment.setTimeUpdate(timestamp);
+					// ยืมออกจริงแล้ว (อนุมัติคำขอที่รออยู่) - ของไม่ได้อยู่ใน warehouse เดิมอีกต่อไป
+					// เคลียร์เป็น 0 (ไม่ใช่ id ของ warehouse จริง) ไว้ก่อน จนกว่าจะคืนแล้วระบุ warehouse ใหม่
+					equipment.setWarehouseId(Long.valueOf(0L));
 					String statusLogData = equipment.getStatusLog();
 					
 					Gson gson = new GsonBuilder().setPrettyPrinting().create();
@@ -1185,10 +1235,37 @@ public class BorrowingAction extends ActionSupport {
 			User user = (User) request.getSession().getAttribute("onlineUser");
 			String id = request.getParameter("id");
 			String note = request.getParameter("note");
+			// warehouse ที่จะเก็บเครื่องคืน (ไม่บังคับ) - ไม่ระบุ = ไปตั้งทีหลังได้ที่หน้า Stock Equipment Balance
+			String warehouseIdParam = request.getParameter("warehouseId");
 			Map<String,String> map = new HashMap<String,String>();
 			Borrow borrow = borrowDAO.findById(Integer.parseInt(id));
-			
-			if(borrow.getStatus().equals("T") || borrow.getStatus().equals("B")) 
+
+			// เช็ค warehouse ที่ส่งมาก่อนเริ่มแก้ข้อมูลอะไร - กันข้อมูลครึ่งๆ กลางๆ ถ้า id ที่ส่งมาไม่มีจริงในระบบ
+			Long newWarehouseId = null;
+			if (warehouseIdParam != null && !warehouseIdParam.trim().isEmpty()) {
+				String warehouseErrorDetail = null;
+				try {
+					newWarehouseId = Long.valueOf(warehouseIdParam.trim());
+				} catch (NumberFormatException nfe) {
+					newWarehouseId = null;
+					warehouseErrorDetail = "รหัสคลังที่ส่งมาไม่ถูกต้อง กรุณาเลือกใหม่";
+				}
+				if (warehouseErrorDetail == null && warehouseDAO.findById(newWarehouseId) == null) {
+					warehouseErrorDetail = "คลังที่เลือกไม่มีในระบบแล้ว กรุณาเลือกใหม่";
+				}
+				if (warehouseErrorDetail != null) {
+					log.warn("returnMyNewBorrow: invalid warehouseId, id=" + id + ", warehouseId=" + warehouseIdParam);
+					map.put("message", "invalid warehouse");
+					map.put("detail", warehouseErrorDetail);
+					response.setContentType("application/json");
+					PrintWriter out = response.getWriter();
+					out.println(new Gson().toJson(map));
+					out.flush();
+					return;
+				}
+			}
+
+			if(borrow.getStatus().equals("T") || borrow.getStatus().equals("B"))
 			{
 				if(borrow.getUser_receive() == null || borrow.getUser_receive().trim().isEmpty()) {
 					borrow.setUser_receive(borrow.getUserBorrowid());
@@ -1214,7 +1291,13 @@ public class BorrowingAction extends ActionSupport {
 					equipment.setStatus("A");
 					equipment.setUserUpdate(onlineUser.getId());
 					equipment.setTimeUpdate(timestamp);
-					
+					if (newWarehouseId != null) {
+						// ระบุ warehouse ที่เก็บคืนแล้ว - ไม่ระบุ ปล่อย warehouseId เดิม (0 จากตอนยืมออก) ไว้ก่อน
+						equipment.setWarehouseId(newWarehouseId);
+						log.info("returnMyNewBorrow: set warehouseId=" + newWarehouseId
+								+ " for equipmentId=" + equipment.getEquipmentId());
+					}
+
 					String statusLogData = equipment.getStatusLog();
 					
 					Gson gson = new GsonBuilder().setPrettyPrinting().create();
@@ -1249,6 +1332,7 @@ public class BorrowingAction extends ActionSupport {
 				map.put("message", "success");
 			} else {
 				map.put("message", "something wrong");
+					map.put("detail", "สถานะรายการยืมไม่ถูกต้อง อาจมีการเปลี่ยนสถานะไปแล้ว กรุณารีเฟรชหน้าแล้วลองใหม่");
 			}
 			
 			response.setContentType("application/json");

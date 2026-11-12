@@ -7,6 +7,7 @@ import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -244,9 +245,17 @@ public class EquipmentAction extends ActionSupport {
 			if (datePurchase != null && !datePurchase.trim().isEmpty()) {
 	            try {
 	                SimpleDateFormat sdf = new SimpleDateFormat("dd-MMM-yyyy", Locale.ENGLISH);
-	                Date parsedDate = sdf.parse(datePurchase);    
-	                e.setTimeCreate(new Timestamp(parsedDate.getTime()));
-	                
+	                Date parsedDate = sdf.parse(datePurchase);
+	                // วันที่ใช้ตามที่เลือก (วันที่ซื้อ) แต่เติมเวลาตอนกดสร้างลงไปด้วย ไม่ปล่อยเป็น 00:00:00
+	                Calendar timeCal = Calendar.getInstance();
+	                timeCal.setTimeInMillis(timestamp.getTime());
+	                Calendar createCal = Calendar.getInstance();
+	                createCal.setTime(parsedDate);
+	                createCal.set(Calendar.HOUR_OF_DAY, timeCal.get(Calendar.HOUR_OF_DAY));
+	                createCal.set(Calendar.MINUTE, timeCal.get(Calendar.MINUTE));
+	                createCal.set(Calendar.SECOND, timeCal.get(Calendar.SECOND));
+	                e.setTimeCreate(new Timestamp(createCal.getTimeInMillis()));
+
 	            } catch (Exception ex) {
 	                e.setTimeCreate(timestamp);
 	            }
@@ -334,6 +343,11 @@ public class EquipmentAction extends ActionSupport {
 			e.setRam(ram);
 			e.setSerialNo(serialNo);
 			e.setStatus(status);
+			if ("B".equals(status)) {
+				// ยืมออกจริงแล้ว (แก้สถานะตรงจากหน้า Edit Equipment) - ของไม่ได้อยู่ใน warehouse เดิมอีกต่อไป
+				// เคลียร์เป็น 0 (ไม่ใช่ id ของ warehouse จริง) ไว้ก่อน จนกว่าจะคืนแล้วระบุ warehouse ใหม่
+				e.setWarehouseId(Long.valueOf(0L));
+			}
 			if (datePurchase != null && !datePurchase.trim().isEmpty()) {
 	            try {
 	                SimpleDateFormat sdf = new SimpleDateFormat("dd MMM yyyy", Locale.ENGLISH);

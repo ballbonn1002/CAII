@@ -646,6 +646,13 @@ th.sort:hover {
 						<textarea id="bd_approver_note" class="form-control form-control"
 							rows="4" placeholder="Enter maintenance or repair notes..."></textarea>
 					</div>
+
+					<!-- warehouse ที่จะเก็บเครื่องคืน (ไม่บังคับ) - ตัวเลือกเติมด้วย fillReturnWarehouseOptions() จาก warehouseList -->
+					<div class="mt-7">
+						<label class="form-label fw-semibold fs-6" for="bd_return_warehouse">Warehouse <span class="text-muted fw-normal">(optional)</span></label>
+						<select id="bd_return_warehouse" class="form-select"></select>
+						<div class="text-muted fs-7 mt-2">ถ้าไม่เลือก จะระบุทีหลังได้ที่หน้า Stock Equipment Balance</div>
+					</div>
 				</div>
 
 				<!-- Footer -->
@@ -666,7 +673,44 @@ th.sort:hover {
 	var borrows = ${borrows != null ? borrows : '[]'};
 	var users = ${userList != null ? userList : '[]'};
 	var dbTypeList = ${type != null ? type : '[]'};
+	var warehouseList = ${warehouseList != null ? warehouseList : '[]'};
 
+	// ===== เติม option เลือก warehouse ตอนคืนของ (modal #borrowDetailModal) =====
+	// tree แบบเดียวกับ #equipmentWarehouseSelect ใน stock_equ_balance.jsp (DFS + เยื้องตามชั้น "└ ")
+	// ต่างกันแค่มี option แรกให้เลือก "ระบุภายหลัง" ไว้ด้วย เพราะ warehouse ไม่บังคับตอนคืนของ
+	function fillReturnWarehouseOptions() {
+		var $sel = $('#bd_return_warehouse');
+		if (!$sel.length) { return; }
+		$sel.empty();
+		$sel.append(new Option('— ระบุภายหลัง —', ''));
+		if (!warehouseList || !warehouseList.length) { return; }
+
+		// สร้าง map + tree (parent = 0 หรือหา parent ไม่เจอ = root)
+		var map = {}, roots = [];
+		warehouseList.forEach(function (w) {
+			map[w.warehouseId] = { id: w.warehouseId, parentId: w.parent || 0, name: w.warehouseName, children: [] };
+		});
+		warehouseList.forEach(function (w) {
+			var node = map[w.warehouseId];
+			if (node.parentId === 0 || !map[node.parentId]) { roots.push(node); }
+			else { map[node.parentId].children.push(node); }
+		});
+
+		// เดินแบบ DFS แล้วเยื้องตามระดับชั้น - กันวนซ้ำด้วย visited set และจำกัดความลึกไม่เกิน 50
+		var visited = {};
+		function walk(nodes, level) {
+			if (level > 50) { return; }
+			nodes.forEach(function (n) {
+				if (visited[n.id]) { return; }
+				visited[n.id] = true;
+				var indent = new Array(level + 1).join('    ');
+				var prefix = level > 0 ? (indent + '└ ') : ''; // └
+				$sel.append(new Option(prefix + n.name, n.id));
+				if (n.children.length) { walk(n.children, level + 1); }
+			});
+		}
+		walk(roots, 0);
+	}
 
 	// ฟังก์ชันสร้าง Map สำหรับ Equipment
 	function createEquipmentMap(equipments) {
@@ -1435,7 +1479,9 @@ th.sort:hover {
 		
 			$('#borrowDetailModal').data('borrowId', item.borrow_id);
 			$('#bd_approver_note').val('');
-		
+			fillReturnWarehouseOptions();
+			$('#bd_return_warehouse').val('');
+
 			const canConfirmReceived =
 			    String(item.statusborrow || '').toUpperCase() === 'T' &&
 			    item.user_delivery &&
@@ -1790,7 +1836,7 @@ th.sort:hover {
 		                url: CTX + "/eBorrowReturn",
 		                type: "POST",
 		                dataType: "json",
-		                data: { id: borrowId, note: note },
+		                data: { id: borrowId, note: note, warehouseId: $('#bd_return_warehouse').val() || '' },
 		                success: function(data) {
 		                    if (data && data.message === "success") {
 		                        Swal.fire('Success!', 'Return request submitted successfully!', 'success').then(() => {
@@ -1799,7 +1845,11 @@ th.sort:hover {
 		                            window.location.href = CTX + "/borrow_list.action";
 		                        });
 		                    } else {
-		                        Swal.fire('Error!', "Something went wrong: " + (data ? data.message : "no data"), 'error');
+		                        Swal.fire({
+		                            icon: 'error',
+		                            title: "Something went wrong: " + (data ? data.message : "no data"),
+		                            text: (data && data.detail) ? data.detail : ''
+		                        });
 		                    }
 		                },
 		                error: function(xhr) {

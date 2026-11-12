@@ -512,6 +512,13 @@ a.btn-open-return-modal:hover, a.btn-receive-instead:hover{
 						<div class="text-gray-800 fs-7 mb-4">Specify a note when changing status (optional)</div>
 						<textarea id="bd_approver_note" class="form-control form-control" rows="4" placeholder="Enter maintenance or repair notes..."></textarea>
 					</div>
+
+					<%-- warehouse ที่จะเก็บเครื่องคืน (ไม่บังคับ) - ตัวเลือกเติมด้วย fillReturnWarehouseOptions() จาก warehouseList --%>
+					<div class="mt-7">
+						<label class="form-label fw-semibold fs-6" for="bd_return_warehouse">Warehouse <span class="text-muted fw-normal">(optional)</span></label>
+						<select id="bd_return_warehouse" class="form-select"></select>
+						<div class="text-muted fs-7 mt-2">ถ้าไม่เลือก จะระบุทีหลังได้ที่หน้า Stock Equipment Balance</div>
+					</div>
 				</div>
 
 				<div class="modal-footer border-0 pt-0 pb-6 px-6 d-flex justify-content-end gap-3">
@@ -530,6 +537,7 @@ a.btn-open-return-modal:hover, a.btn-receive-instead:hover{
 	var borrowData = ${borrow != null ? borrow : '{}'};
 	var statusList = ${status != null ? status : '[]'};
 	var borrowWithUserList = ${borrowlistwithUserJSON != null ? borrowlistwithUserJSON : '[]'};
+	var warehouseList = ${warehouseList != null ? warehouseList : '[]'};
 	var CTX = "${pageContext.request.contextPath}";
 
 	// ข้อมูล Equipment ปัจจุบัน
@@ -1121,6 +1129,43 @@ a.btn-open-return-modal:hover, a.btn-receive-instead:hover{
 		
 	}
 
+	// ===== เติม option เลือก warehouse ตอนคืนของ (modal #borrowDetailModal) =====
+	// tree แบบเดียวกับ #equipmentWarehouseSelect ใน stock_equ_balance.jsp (DFS + เยื้องตามชั้น "└ ")
+	// ต่างกันแค่มี option แรกให้เลือก "ระบุภายหลัง" ไว้ด้วย เพราะ warehouse ไม่บังคับตอนคืนของ
+	function fillReturnWarehouseOptions() {
+		var $sel = $('#bd_return_warehouse');
+		if (!$sel.length) { return; }
+		$sel.empty();
+		$sel.append(new Option('— ระบุภายหลัง —', ''));
+		if (!warehouseList || !warehouseList.length) { return; }
+
+		// สร้าง map + tree (parent = 0 หรือหา parent ไม่เจอ = root)
+		var map = {}, roots = [];
+		warehouseList.forEach(function (w) {
+			map[w.warehouseId] = { id: w.warehouseId, parentId: w.parent || 0, name: w.warehouseName, children: [] };
+		});
+		warehouseList.forEach(function (w) {
+			var node = map[w.warehouseId];
+			if (node.parentId === 0 || !map[node.parentId]) { roots.push(node); }
+			else { map[node.parentId].children.push(node); }
+		});
+
+		// เดินแบบ DFS แล้วเยื้องตามระดับชั้น - กันวนซ้ำด้วย visited set และจำกัดความลึกไม่เกิน 50
+		var visited = {};
+		function walk(nodes, level) {
+			if (level > 50) { return; }
+			nodes.forEach(function (n) {
+				if (visited[n.id]) { return; }
+				visited[n.id] = true;
+				var indent = new Array(level + 1).join('    ');
+				var prefix = level > 0 ? (indent + '└ ') : ''; // └
+				$sel.append(new Option(prefix + n.name, n.id));
+				if (n.children.length) { walk(n.children, level + 1); }
+			});
+		}
+		walk(roots, 0);
+	}
+
 	// ===== Open Return Modal =====
 	function openReturnModal() {
 		var modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('borrowDetailModal'));
@@ -1169,6 +1214,8 @@ a.btn-open-return-modal:hover, a.btn-receive-instead:hover{
 
 		// Reset
 		$('#bd_approver_note').val('');
+		fillReturnWarehouseOptions();
+		$('#bd_return_warehouse').val('');
 		var collapse = bootstrap.Collapse.getInstance(document.getElementById('bd_moreDetailCollapse'));
 		if (collapse) collapse.hide();
 		$('#bd_moreDetailToggle').attr('aria-expanded', 'false');
@@ -1213,7 +1260,8 @@ a.btn-open-return-modal:hover, a.btn-receive-instead:hover{
 	                dataType: "json",
 	                data: {
 	                    id: borrowId,
-	                    note: note
+	                    note: note,
+	                    warehouseId: $('#bd_return_warehouse').val() || ''
 	                },
 	                success: function(data) {
 	                    if (data && String(data.message).toLowerCase() === "success") {
@@ -1224,7 +1272,11 @@ a.btn-open-return-modal:hover, a.btn-receive-instead:hover{
 	                            window.location.href = CTX + "/borrow_list";
 	                        });
 	                    } else {
-	                        Swal.fire('Error!', "Something went wrong: " + (data ? data.message : "no data"), 'error');
+	                        Swal.fire({
+	                            icon: 'error',
+	                            title: "Something went wrong: " + (data ? data.message : "no data"),
+	                            text: (data && data.detail) ? data.detail : ''
+	                        });
 	                    }
 	                },
 	                error: function(xhr) {

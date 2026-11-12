@@ -1335,3 +1335,6 @@ VALUES
 
 -- PROD 5 NOV 2026
 	
+-- 10/11/2026 Koy: set warehouse_id = 0 for all equipment with status 'B' (borrowed)
+--                 and warehouse_id not null and not 0, to avoid foreign key constraint issues when deleting warehouses
+UPDATE equipment SET warehouse_id = 0 WHERE status = 'B' AND warehouse_id IS NOT NULL AND warehouse_id <> 0;
