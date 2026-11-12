@@ -512,10 +512,13 @@
 
             if (window.Swal) {
                 Swal.fire({
-                    title: 'ต้องการลบรายการ "' + name + '" ใช่หรือไม่?',
-                    icon: 'question',
+                    title: 'แน่ใจหรือไม่?',
+                    text: 'คุณกำลังจะลบรายการ "' + name + '"',
+                    icon: 'warning',
                     showCancelButton: true,
-                    confirmButtonText: 'ลบ',
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'ใช่ ลบเลย!',
                     cancelButtonText: 'ยกเลิก',
                     reverseButtons: true
                 }).then(function (result) {

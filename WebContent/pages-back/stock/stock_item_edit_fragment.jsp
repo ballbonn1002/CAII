@@ -833,10 +833,29 @@
             </div>
 
             <div class="modal-body">
-                <div class="d-flex align-items-center position-relative mb-6">
-                    <i class="ki-duotone ki-magnifier fs-3 position-absolute ms-5"><span class="path1"></span><span class="path2"></span></i>
-                    <input type="text" id="equipmentPickerSearch" class="form-control form-control-solid ps-14 text-gray-700"
-                           placeholder="ค้นหา Item ID / ชื่อเครื่อง / Serial No" />
+                <div class="d-flex flex-wrap align-items-center gap-3 mb-6">
+                    <div class="d-flex align-items-center position-relative flex-grow-1 min-w-250px">
+                        <i class="ki-duotone ki-magnifier fs-3 position-absolute ms-5"><span class="path1"></span><span class="path2"></span></i>
+                        <input type="text" id="equipmentPickerSearch" class="form-control form-control-solid ps-14 text-gray-700"
+                               placeholder="ค้นหา Item ID / ชื่อเครื่อง / Serial No" />
+                    </div>
+
+                    <%-- Checkbox dropdown filter ตาม Equipment Status (เลือกได้หลายค่า) - default ไม่ติ๊กอะไร = แสดงทุกแถว
+                         รายชื่อ status มาจาก equipmentStatusList (ProductAction.showProductEditPage) กรองด้วย data-status ของแต่ละ <tr> --%>
+                    <div class="dropdown min-w-200px">
+                        <button class="btn btn-white border border-gray-300 rounded-3 d-flex justify-content-between align-items-center w-100 px-4 py-3"
+                                type="button" data-bs-toggle="dropdown" id="pickerStatusFilterBtn">
+                            <span>All Status</span>
+                            <i class="ki-duotone ki-down fs-4"><span class="path1"></span><span class="path2"></span></i>
+                        </button>
+                        <div class="dropdown-menu dropdown-menu-end p-4 shadow rounded-4 min-w-250px" id="pickerStatusFilterMenu">
+                            <div class="mb-4" id="pickerStatusFilterContainer"></div>
+                            <div class="d-flex justify-content-between pt-3 border-top">
+                                <button type="button" class="btn btn-light" id="pickerStatusDeselectAll">Deselect All</button>
+                                <button type="button" class="btn btn-primary" id="pickerStatusSelectAll">Select All</button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
                 <table id="equipmentPickerTable" class="table align-middle fs-6 mb-0">
@@ -851,7 +870,7 @@
                     </thead>
                     <tbody>
                         <c:forEach var="equip" items="${unlinkedEquipment}">
-                            <tr>
+                            <tr data-status="${fn:escapeXml(equip.status)}">
                                 <td class="text-center">
                                     <div class="form-check form-check-custom form-check-solid d-inline-flex">
                                         <input class="form-check-input equipment-pick-checkbox" type="checkbox" value="${equip.equipmentId}" />
@@ -1489,6 +1508,116 @@
             }
         });
 
+        // รายชื่อ status สำหรับ filter ใน popup Link Equipment (ProductAction.showProductEditPage ส่งมา)
+        var equipmentStatusList = ${equipmentStatusList != null ? equipmentStatusList : '[]'};
+
+        // escape ค่าที่ต่อเป็น HTML (statusId / description มาจาก DB)
+        function escapeHtml(s) {
+            return String(s == null ? '' : s)
+                .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+        }
+
+        // ---- Filter: Equipment Status ใน popup (checkbox หลายค่า) ----
+        // default ไม่ติ๊กอะไร = ปุ่มโชว์ "All Status" และแสดงทุกแถว (ไม่ซ่อนเครื่องที่ผู้ใช้อาจต้องการ link)
+        // กรองจาก data-status ของ <tr> (รหัสย่อ) ไม่ได้กรองจากข้อความคอลัมน์ Status เพราะ checkbox โชว์ชื่อเต็ม
+        var pickerSelectedStatuses = [];
+
+        (function buildPickerStatusFilter() {
+            var html = '';
+            $.each(equipmentStatusList || [], function (i, st) {
+                if (!st || st.statusId == null) { return; }
+                html += '<label class="form-check form-check-custom form-check-solid mb-3">'
+                    + '<input class="form-check-input picker-filter-status" type="checkbox" value="' + escapeHtml(st.statusId) + '">'
+                    + '<span class="form-check-label text-gray-600 fw-normal">'
+                    + escapeHtml(st.description || st.statusId)
+                    + '</span></label>';
+            });
+            $('#pickerStatusFilterContainer').html(html);
+            updatePickerStatusLabel();
+        })();
+
+        function readPickerSelectedStatuses() {
+            var vals = [];
+            $('#pickerStatusFilterContainer input[type="checkbox"]:checked').each(function () {
+                vals.push($(this).val());
+            });
+            return vals;
+        }
+
+        // ตามรูปแบบ updateStatusFilterLabel ของหน้า balance: ไม่ติ๊ก/ติ๊กครบ = All Status, 1-2 ค่า = ชื่อ, มากกว่านั้น = N Selected
+        function updatePickerStatusLabel() {
+            var $label = $('#pickerStatusFilterBtn span').first();
+            var total = $('#pickerStatusFilterContainer input[type="checkbox"]').length;
+            if (pickerSelectedStatuses.length === 0 || pickerSelectedStatuses.length === total) {
+                $label.text('All Status');
+                return;
+            }
+            if (pickerSelectedStatuses.length <= 2) {
+                var labels = [];
+                $('#pickerStatusFilterContainer input[type="checkbox"]:checked').each(function () {
+                    labels.push($(this).parent().find('span').text().trim());
+                });
+                $label.text(labels.join(', '));
+            } else {
+                $label.text(pickerSelectedStatuses.length + ' Selected');
+            }
+        }
+
+        // draw ใหม่เฉพาะเมื่อตารางถูก init แล้ว (init ตอน shown.bs.modal ครั้งแรก)
+        function redrawPickerTable() {
+            if ($.fn.dataTable.isDataTable('#equipmentPickerTable')) {
+                $('#equipmentPickerTable').DataTable().draw();
+            }
+        }
+
+        function onPickerStatusChanged() {
+            pickerSelectedStatuses = readPickerSelectedStatuses();
+            updatePickerStatusLabel();
+            redrawPickerTable();
+        }
+
+        // push ครั้งเดียวตอนโหลดหน้า - เช็ค id ตารางทุกครั้งกันไปกระทบตาราง DataTables อื่นในหน้า
+        if ($.fn.dataTable && $.fn.dataTable.ext && $.fn.dataTable.ext.search) {
+            $.fn.dataTable.ext.search.push(function (settings, data, dataIndex) {
+                if (!settings || !settings.nTable || settings.nTable.id !== 'equipmentPickerTable') {
+                    return true;
+                }
+                if (pickerSelectedStatuses.length === 0) {
+                    return true;
+                }
+                var aoRow = settings.aoData ? settings.aoData[dataIndex] : null;
+                var rowStatus = (aoRow && aoRow.nTr) ? ($(aoRow.nTr).attr('data-status') || '') : '';
+                return $.inArray(rowStatus, pickerSelectedStatuses) !== -1;
+            });
+        }
+
+        // กันไม่ให้ dropdown ปิดตอนคลิกข้างในเมนู (ติ๊ก checkbox / กด Select-Deselect All)
+        $('#pickerStatusFilterMenu').on('click', function (e) {
+            e.stopPropagation();
+        });
+
+        $('#pickerStatusFilterContainer').on('change', '.picker-filter-status', onPickerStatusChanged);
+
+        $('#pickerStatusSelectAll').on('click', function () {
+            $('#pickerStatusFilterContainer input[type="checkbox"]').prop('checked', true);
+            onPickerStatusChanged();
+        });
+
+        $('#pickerStatusDeselectAll').on('click', function () {
+            $('#pickerStatusFilterContainer input[type="checkbox"]').prop('checked', false);
+            onPickerStatusChanged();
+        });
+
+        // เครื่องที่ติ๊กไว้ทั้งหมด รวมแถวที่ถูกกรอง/อยู่คนละหน้า - DataTables ถอดแถวที่ไม่ถูกแสดงออกจาก DOM
+        // $('.equipment-pick-checkbox:checked') จึงมองไม่เห็น ต้องผ่าน DataTable().$() (ค่า default ครอบคลุมทุกแถว)
+        function getPickerCheckedBoxes() {
+            if ($.fn.dataTable.isDataTable('#equipmentPickerTable')) {
+                return $('#equipmentPickerTable').DataTable().$('.equipment-pick-checkbox:checked');
+            }
+            return $('.equipment-pick-checkbox:checked');
+        }
+
         $('#equipmentPickerSearch').on('keyup', function () {
             if ($.fn.dataTable.isDataTable('#equipmentPickerTable')) {
                 $('#equipmentPickerTable').DataTable().search(this.value).draw();
@@ -1497,14 +1626,22 @@
 
         // นับจำนวนที่ติ๊กไว้ - checkbox render มาจาก server ตั้งแต่โหลดหน้า (delegate กันเหนียว)
         $('#equipmentPickerTable').on('change', '.equipment-pick-checkbox', function () {
-            $('#equipmentPickerSelectedCount').text($('.equipment-pick-checkbox:checked').length);
+            $('#equipmentPickerSelectedCount').text(getPickerCheckedBoxes().length);
         });
 
         // ปิด modal แล้วเคลียร์สถานะ กันเลือกค้างจากรอบก่อนโผล่มาอีกตอนเปิดใหม่
         $('#equipmentPickerModal').on('hidden.bs.modal', function () {
+            // เคลียร์ checkbox ผ่าน DataTable API ด้วย เพื่อล้างแถวที่ถูกกรอง/อยู่คนละหน้า (ไม่อยู่ใน DOM) ที่ติ๊กค้างไว้
+            if ($.fn.dataTable.isDataTable('#equipmentPickerTable')) {
+                $('#equipmentPickerTable').DataTable().$('.equipment-pick-checkbox').prop('checked', false);
+            }
             $('.equipment-pick-checkbox').prop('checked', false);
             $('#equipmentPickerSelectedCount').text('0');
             $('#equipmentPickerSearch').val('');
+            // รีเซ็ตตัวกรองสถานะกลับเป็น All Status
+            $('#pickerStatusFilterContainer input[type="checkbox"]').prop('checked', false);
+            pickerSelectedStatuses = [];
+            updatePickerStatusLabel();
             currentEquipmentTargetId = null;
             if ($.fn.dataTable.isDataTable('#equipmentPickerTable')) {
                 $('#equipmentPickerTable').DataTable().search('').draw();
@@ -1515,7 +1652,7 @@
         // กับรายการใน popup (ที่เหลือแค่เครื่องว่างจริง) อัปเดตพร้อมกันทั้งคู่
         // productId ที่ผูกคือ sub product หรือตัวแม่เป้าหมาย (currentEquipmentTargetId)
         $('#btnEquipmentPickerSave').on('click', function () {
-            var ids = $('.equipment-pick-checkbox:checked').map(function () { return $(this).val(); }).get();
+            var ids = getPickerCheckedBoxes().map(function () { return $(this).val(); }).get();
             if (ids.length === 0) {
                 if (window.Swal) { Swal.fire('กรุณาเลือกรายการ', 'เลือกอย่างน้อย 1 เครื่อง', 'warning'); }
                 else { alert('กรุณาเลือกอย่างน้อย 1 เครื่อง'); }
@@ -1598,8 +1735,29 @@
             var name = $(this).data('name') || '';
             var id = $(this).data('id');
             if (!id) { return; }
-            if (!confirm('ต้องการลบหน่วย "' + name + '" ใช่หรือไม่?')) { return; }
-            submitPost(URL_PREFIX + '_uom_delete', { unitId: id, productId: PRODUCT_ID });
+
+            function doDeleteUom(confirmed) {
+                if (!confirmed) { return; }
+                submitPost(URL_PREFIX + '_uom_delete', { unitId: id, productId: PRODUCT_ID });
+            }
+
+            if (window.Swal) {
+                Swal.fire({
+                    title: 'แน่ใจหรือไม่?',
+                    text: 'คุณกำลังจะลบหน่วย "' + name + '"',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'ใช่ ลบเลย!',
+                    cancelButtonText: 'ยกเลิก',
+                    reverseButtons: true
+                }).then(function (result) {
+                    doDeleteUom(result.isConfirmed);
+                });
+            } else {
+                doDeleteUom(confirm('ต้องการลบหน่วย "' + name + '" ใช่หรือไม่?'));
+            }
         });
 
         // ==================== Sub product: edit / delete ====================
@@ -1616,8 +1774,29 @@
             var name = $(this).data('name') || '';
             var id = $(this).data('id');
             if (!id) { return; }
-            if (!confirm('ต้องการลบ sub product "' + name + '" ใช่หรือไม่?')) { return; }
-            submitPost(URL_PREFIX + '_sub_delete', { subProductId: id, parentProductId: PRODUCT_ID });
+
+            function doDeleteSub(confirmed) {
+                if (!confirmed) { return; }
+                submitPost(URL_PREFIX + '_sub_delete', { subProductId: id, parentProductId: PRODUCT_ID });
+            }
+
+            if (window.Swal) {
+                Swal.fire({
+                    title: 'แน่ใจหรือไม่?',
+                    text: 'คุณกำลังจะลบ sub product "' + name + '"',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'ใช่ ลบเลย!',
+                    cancelButtonText: 'ยกเลิก',
+                    reverseButtons: true
+                }).then(function (result) {
+                    doDeleteSub(result.isConfirmed);
+                });
+            } else {
+                doDeleteSub(confirm('ต้องการลบ sub product "' + name + '" ใช่หรือไม่?'));
+            }
         });
 
         // ==================== Reorder ด้วย SortableJS ====================
@@ -1728,7 +1907,13 @@
 
 <%-- ==================== Generate QR Code: ปุ่มที่ Product Detail (ตัวแม่) + แต่ละแถว Sub product
      (เฉพาะฝั่ง Consumables/Accessories/Office Supplies) เปิด modal พรีวิว QR แก้ไขเนื้อหาได้ก่อน generate ====================
-     qrcodejs วาดเป็น <canvas> ทำให้ Print/Download อ่านรูปจาก canvas.toDataURL() ได้ตรงๆ --%>
+     qrcodejs วาดเป็น <canvas> ใน #qrGenerateCanvas (ไว้ preview สดๆ ตอนพิมพ์แก้ข้อความ)
+     แต่ Print/Download ไม่ได้ใช้ canvas นั้นตรงๆ - ต้อง "ประกอบใหม่" ผ่าน buildPrintableQrCanvas() ก่อนเสมอ เพราะ:
+       1) ขอบขาวรอบโค้ด (Quiet Zone) ที่เห็นในหน้าจอเป็นแค่ CSS ของ div ที่ห่อ canvas ไว้ (p-4 bg-white)
+          ไม่ได้อยู่ในพิกเซลของ canvas จริง - canvas.toDataURL() จะไม่มีขอบขาวด้วย ถ้าไม่วาดเพิ่มเอง
+          (QR มาตรฐานต้องมีขอบขาวอย่างน้อย 4 module รอบโค้ด ไม่งั้นสแกนเนอร์บางรุ่นอ่านไม่ออกตอนพิมพ์ติดขอบป้าย/กระดาษ)
+       2) ใส่ข้อความที่เข้ารหัสกำกับไว้ใต้รูปด้วย (pattern มาตรฐานของป้าย asset tag) เผื่อโค้ดลบเลือน/สแกนไม่ออก
+          ยังอ่านด้วยตาได้ --%>
 <script>
     $(document).ready(function () {
         function notifyQrError(msg) {
@@ -1750,8 +1935,53 @@
                 text: value,
                 width: 220,
                 height: 220,
-                correctLevel: QRCode.CorrectLevel.M
+                // H = กู้คืนได้ ~30% เผื่อป้ายเปื้อน/รอยขีดข่วน/แปะโค้ง (ข้อมูลที่เข้ารหัสสั้นอยู่แล้วไม่กระทบขนาดโค้ดมาก)
+                correctLevel: QRCode.CorrectLevel.H
             });
+        }
+
+        // ประกอบ canvas สำหรับ Print/Download: เพิ่มขอบขาว (quiet zone) จริงรอบโค้ด + ตัวหนังสือกำกับใต้รูป
+        // คืนค่า null ถ้ายังไม่มี QR ให้ประกอบ (เช่น ช่อง input ว่าง)
+        function buildPrintableQrCanvas() {
+            var $srcCanvas = $('#qrGenerateCanvas canvas');
+            if ($srcCanvas.length === 0) {
+                return null;
+            }
+            var srcCanvas = $srcCanvas.get(0);
+
+            // moduleCount อ่านจาก internal ของ qrcodejs (fallback 25 เผื่อ library เปลี่ยน structure ในอนาคต)
+            var moduleCount = (qrGenerateInstance && qrGenerateInstance._oQRCode && qrGenerateInstance._oQRCode.moduleCount)
+                ? qrGenerateInstance._oQRCode.moduleCount : 25;
+            var cellSize = srcCanvas.width / moduleCount;
+            var quietZone = Math.round(cellSize * 4); // มาตรฐาน QR: ขอบขาวอย่างน้อย 4 module
+
+            var captionText = $.trim($('#qrGenerateInput').val());
+            var captionHeight = captionText ? 36 : 0;
+
+            var outCanvas = document.createElement('canvas');
+            outCanvas.width = srcCanvas.width + quietZone * 2;
+            outCanvas.height = srcCanvas.height + quietZone * 2 + captionHeight;
+
+            var ctx = outCanvas.getContext('2d');
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(0, 0, outCanvas.width, outCanvas.height);
+            ctx.drawImage(srcCanvas, quietZone, quietZone);
+
+            if (captionText) {
+                ctx.fillStyle = '#000000';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                // ลดขนาดฟอนต์ลงเรื่อยๆ ถ้าข้อความยาวเกินความกว้างโค้ด (กันล้นจอตอนพิมพ์)
+                var fontSize = 16;
+                var maxTextWidth = outCanvas.width - quietZone;
+                do {
+                    ctx.font = fontSize + 'px Arial, sans-serif';
+                    fontSize -= 1;
+                } while (ctx.measureText(captionText).width > maxTextWidth && fontSize >= 9);
+                ctx.fillText(captionText, outCanvas.width / 2, quietZone * 2 + srcCanvas.height + captionHeight / 2);
+            }
+
+            return outCanvas;
         }
 
         $(document).on('click', '.btn-generate-qr', function () {
@@ -1771,30 +2001,33 @@
         });
 
         $('#btnQrDownload').on('click', function () {
-            var $canvas = $('#qrGenerateCanvas canvas');
-            if ($canvas.length === 0) {
+            var canvas = buildPrintableQrCanvas();
+            if (!canvas) {
                 notifyQrError('ยังไม่มี QR ให้ดาวน์โหลด กรุณากรอกข้อมูลก่อน');
                 return;
             }
+            // ตั้งชื่อไฟล์ตามข้อมูลที่เข้ารหัส (ตัดอักขระที่ใช้ตั้งชื่อไฟล์ไม่ได้ออก) กันดาวน์โหลดหลายใบแล้วชื่อซ้ำกัน
+            var rawName = $.trim($('#qrGenerateInput').val()).replace(/[\\/:*?"<>|]+/g, '_');
             var link = document.createElement('a');
-            link.download = 'qrcode.png';
-            link.href = $canvas.get(0).toDataURL('image/png');
+            link.download = (rawName ? 'qrcode_' + rawName : 'qrcode') + '.png';
+            link.href = canvas.toDataURL('image/png');
             link.click();
         });
 
         $('#btnQrPrint').on('click', function () {
-            var $canvas = $('#qrGenerateCanvas canvas');
-            if ($canvas.length === 0) {
+            var canvas = buildPrintableQrCanvas();
+            if (!canvas) {
                 notifyQrError('ยังไม่มี QR ให้พิมพ์ กรุณากรอกข้อมูลก่อน');
                 return;
             }
-            var dataUrl = $canvas.get(0).toDataURL('image/png');
+            var dataUrl = canvas.toDataURL('image/png');
             var printWin = window.open('', '_blank');
             if (!printWin) {
                 notifyQrError('เบราว์เซอร์บล็อกหน้าต่างพิมพ์ กรุณาอนุญาต popup แล้วลองใหม่');
                 return;
             }
-            printWin.document.write('<img src="' + dataUrl + '" style="width:300px;height:300px;" onload="window.print();window.close();" />');
+            // width อย่างเดียว (ไม่ fix height) ให้สัดส่วนรูปถูกต้องเสมอ แม้มีตัวหนังสือกำกับใต้ภาพทำให้ภาพไม่เป็นสี่เหลี่ยมจัตุรัส
+            printWin.document.write('<img src="' + dataUrl + '" style="width:300px;" onload="window.print();window.close();" />');
             printWin.document.close();
         });
     });

@@ -34,6 +34,7 @@ import com.cubesofttech.dao.UnitMasterDAO;
 import com.cubesofttech.dao.UnitOfMeasureDAO;
 import com.cubesofttech.dao.UserDAO;
 import com.cubesofttech.dao.WarehouseDAO;
+import com.cubesofttech.model.Borrow;
 import com.cubesofttech.model.Equipment;
 import com.cubesofttech.model.EquipmentStatus;
 import com.cubesofttech.model.FileUpload;
@@ -58,6 +59,13 @@ public class ProductAction extends ActionSupport {
     /** ประเภท item ที่บริหารในหน้า stock: 1=Equipment, 2=Consumable, 3=Accessories, 4=Office Supplies */
     private static final java.util.Set<String> STOCK_ITEM_TYPES =
             new java.util.HashSet<String>(java.util.Arrays.asList("1", "2", "3", "4"));
+
+    /**
+     * key เสมือนใน ownAmountByWarehouseId ของหน้า Stock By Location สำหรับ equipment ที่ยังไม่ผูก product
+     * (product_id ว่าง) - ไม่ใช่ product_id จริง จึงไม่นับใน Products/Distinct Products (ดู rollupProductIds())
+     */
+    private static final String UNLINKED_EQUIPMENT_KEY = "__unlinked_equipment__";
+    private static final String UNLINKED_EQUIPMENT_LABEL = "ไม่ระบุสินค้า (Equipment)";
 
     @Autowired
     private ProductDAO productDAO;
@@ -133,6 +141,9 @@ public class ProductAction extends ActionSupport {
     private String warehouseId;
     private String refNo;
     private String receiveDate;
+
+    // ---- หน้า Stock By Location: scope ลิสต์ให้เหลือเฉพาะคลังที่เลือก (ไม่ส่งมา = มุมมองทั้งบริษัท) ----
+    private Long rootId;
 
     public Integer getProductId() {
         return productId;
@@ -308,6 +319,14 @@ public class ProductAction extends ActionSupport {
 
     public void setReceiveDate(String receiveDate) {
         this.receiveDate = receiveDate;
+    }
+
+    public Long getRootId() {
+        return rootId;
+    }
+
+    public void setRootId(Long rootId) {
+        this.rootId = rootId;
     }
 
     public String productList() {
@@ -576,10 +595,14 @@ public class ProductAction extends ActionSupport {
      *  - แต่ละ node (ทุกระดับ) ค่า Products/On Hand เป็นยอด roll-up รวมทุกคลังลูกในสายของมัน
      *  - คลัง "ใบล่าสุด" (ไม่มีลูกแล้ว) ที่มีของอยู่จริง กดขยายต่อได้อีกชั้นเพื่อดูรายชื่อสินค้าทีละตัว
      *    (แสดงเป็น node ประเภท "product" ซึ่งไม่มีลูกของตัวเอง ใช้กลไก expand/collapse เดียวกันทั้งหมด)
-     *  - Equipment (type 1) ไม่แสดงในหน้านี้: equipment.location เป็น free text ที่ผู้ใช้พิมพ์เอง
-     *    (ตัวอย่างข้อมูลจริงมีทั้งเบอร์โทร/วันที่/ชื่อโปรเจกต์) ไม่ได้ผูกกับตาราง warehouse จริง
-     *    ถ้าเอามากรุ๊ปตรงๆ จะได้ "คลัง" ที่เป็นขยะ ไม่ใช่ข้อมูลที่ใช้งานได้ - ดูยอด Equipment แยกตาม
-     *    location ได้จากหน้า Stock Balance ของแต่ละ item แทน (ตาราง subProductTable คอลัมน์ Location)
+     *  - Equipment (type 1) รวมอยู่ในหน้านี้ด้วย (ตั้งแต่เพิ่ม equipment.warehouse_id ให้ผูกกับ warehouse จริงได้
+     *    ทุกระดับชั้น - ดู stockEquWarehouseSave()) นับ 1 เครื่อง = 1 หน่วย onHand เหมือนสินค้าปกติ
+     *    เครื่องที่ยังไม่ได้ระบุ warehouse (NULL) หรือ status อยู่ใน EquipmentDAO.RETIRED_STATUSES จะไม่ถูกนับ
+     *    เครื่องที่ถูกยืมอยู่ (status = B) ก็ไม่นับยอดคลังเช่นกัน (ของไม่ได้อยู่ในคลังจริงแล้ว) แต่ไปนับรวมอยู่ใน
+     *    กลุ่ม node พิเศษ "Borrowing" ท้าย tree แทน (เฉพาะมุมมองทั้งบริษัท - ดู buildBorrowingNodes())
+     *    เครื่องที่ยังไม่ผูก product (product_id ว่าง) แต่ระบุ warehouse แล้ว แสดงเป็นรายการ "ไม่ระบุสินค้า"
+     *    ในคลังนั้น (ดู UNLINKED_EQUIPMENT_KEY) นับรวมใน On Hand แต่ไม่นับเป็น Products
+     *    ยอด Equipment แยกตาม warehouse ดูละเอียดได้จากหน้า Stock Balance ของแต่ละ item เช่นกัน
      */
     public String showStockByLocationPage() {
         try {
@@ -621,20 +644,26 @@ public class ProductAction extends ActionSupport {
                 }
             }
 
-            // ---- product ตัวแม่ type 2/3/4 เท่านั้น (Equipment ไม่ผูกกับ warehouse จริง - ดู javadoc) ----
+            // ---- product ตัวแม่ทุก type - แยก id เป็น 2 กลุ่มเพราะยอดคงเหลือคนละแหล่ง (type 1 จากตาราง equipment,
+            //      type 2/3/4 จากตาราง stock - ดู skill product-module) แต่ productNameByParent ใช้ร่วมกันทั้งคู่ ----
             List<Map<String, Object>> catalogProducts = productDAO.findAllWithSubProducts(null);
             if (catalogProducts == null) {
                 catalogProducts = new ArrayList<Map<String, Object>>();
             }
             List<String> stockParentIds = new ArrayList<String>();
+            List<String> equipmentParentIds = new ArrayList<String>();
             Map<String, String> productNameByParent = new HashMap<String, String>();
             for (Map<String, Object> p : catalogProducts) {
                 Object pid = (p != null) ? p.get("product_id") : null;
-                if (pid == null || "1".equals(str(p.get("product_type")).trim())) {
+                if (pid == null) {
                     continue;
                 }
                 String pidStr = String.valueOf(pid);
-                stockParentIds.add(pidStr);
+                if ("1".equals(str(p.get("product_type")).trim())) {
+                    equipmentParentIds.add(pidStr);
+                } else {
+                    stockParentIds.add(pidStr);
+                }
                 productNameByParent.put(pidStr, str(p.get("product_name")));
             }
 
@@ -643,6 +672,26 @@ public class ProductAction extends ActionSupport {
             List<String> stockFamilyIds = new ArrayList<String>();
             for (List<String> ids : familyIdsByParent.values()) {
                 stockFamilyIds.addAll(ids);
+            }
+
+            Map<String, List<String>> equipmentFamilyIdsByParent = buildFamilyIdsByParent(equipmentParentIds);
+            Map<String, String> equipmentParentIdBySubId = buildParentIdBySubId(equipmentFamilyIdsByParent);
+            List<String> equipmentFamilyIds = new ArrayList<String>();
+            for (List<String> ids : equipmentFamilyIdsByParent.values()) {
+                equipmentFamilyIds.addAll(ids);
+            }
+
+            // ชื่อสินค้าของกลุ่ม Borrowing ต้องรองรับทั้งตัวแม่ (มีอยู่แล้วใน productNameByParent) และ sub product
+            // เพราะเครื่องจริงมักผูกกับ sub product ไม่ใช่ตัวแม่ (ดู buildEquipmentGroupsForCatalog())
+            Map<String, String> equipmentProductNameById = new HashMap<String, String>(productNameByParent);
+            List<Product> equipmentSubProducts = productDAO.findByParentProductIds(equipmentParentIds);
+            if (equipmentSubProducts != null) {
+                for (Product sub : equipmentSubProducts) {
+                    if (sub == null || sub.getProductId() == null) {
+                        continue;
+                    }
+                    equipmentProductNameById.put(String.valueOf(sub.getProductId()), str(sub.getProductName()));
+                }
             }
 
             // warehouseId จริง -> (parentProductId -> ผลรวม amount_unit) ของคลังนั้นโดยตรง (ไม่ roll-up)
@@ -677,6 +726,72 @@ public class ProductAction extends ActionSupport {
                 }
             }
 
+            // Equipment: นับ 1 เครื่อง = 1 หน่วย onHand รวมเข้า ownAmountByWarehouseId ก้อนเดียวกับ stock เลย
+            // (parentProductId ของฝั่ง equipment กับฝั่ง stock ไม่มีวันซ้ำกัน เพราะ product_type ตัดสินแยกกลุ่มไว้ตั้งแต่ต้น)
+            // ข้ามเครื่องที่ยังไม่ระบุ warehouse (NULL หรือ 0 - 0 คือค่าที่ตั้งไว้ตอนยืมออก ดู
+            // BorrowingAction.eBorrowAdd()/borrowMyNewBorrow() ไม่ใช่ id ของ warehouse จริง) และเครื่องที่ปลดระวางแล้ว
+            // (RETIRED_STATUSES - เผื่อ NULL ด้วย)
+            List<Equipment> equipmentRows = equipmentDAO.findByProductIds(equipmentFamilyIds);
+            if (equipmentRows != null) {
+                for (Equipment eq : equipmentRows) {
+                    if (eq == null || isBlank(eq.getProductId()) || eq.getWarehouseId() == null
+                            || eq.getWarehouseId().longValue() == 0L) {
+                        continue;
+                    }
+                    String status = (eq.getStatus() != null) ? eq.getStatus().trim() : null;
+                    if (status != null && EquipmentDAO.RETIRED_STATUSES.contains(status)) {
+                        continue;
+                    }
+                    // เครื่องที่ถูกยืมอยู่ (status = B) ของไม่ได้อยู่ในคลังจริงแล้ว - ไม่นับยอดคลัง
+                    // ไปนับรวมอยู่ในกลุ่ม node "Borrowing" ท้าย tree แทน (ดูด้านล่าง)
+                    if ("B".equals(status)) {
+                        continue;
+                    }
+                    String subId = eq.getProductId().trim();
+                    String parentId = firstNonBlank(equipmentParentIdBySubId.get(subId), subId);
+                    Long whId = eq.getWarehouseId();
+                    if (!warehouseById.containsKey(whId)) {
+                        orphanWarehouseIds.add(whId);
+                    }
+
+                    Map<String, Double> byParent = ownAmountByWarehouseId.get(whId);
+                    if (byParent == null) {
+                        byParent = new HashMap<String, Double>();
+                        ownAmountByWarehouseId.put(whId, byParent);
+                    }
+                    Double prev = byParent.get(parentId);
+                    byParent.put(parentId, Double.valueOf((prev != null ? prev.doubleValue() : 0d) + 1d));
+                }
+            }
+
+            // Equipment ที่ยังไม่ผูก product (product_id ว่าง) แต่ระบุ warehouse แล้ว - findByProductIds() ข้างบนหาไม่เจอ
+            // ถ้าไม่เติมตรงนี้เครื่องจะหายจากหน้านี้เงียบๆ ทั้งที่อยู่ในคลังจริง จึงรวมไว้ใต้ key เสมือน
+            // UNLINKED_EQUIPMENT_KEY ให้แสดงเป็นรายการ "ไม่ระบุสินค้า" ในคลังนั้น (เงื่อนไขกรองเหมือน loop ด้านบน)
+            List<Equipment> unlinkedEquipment = equipmentDAO.findUnlinked();
+            if (unlinkedEquipment != null) {
+                for (Equipment eq : unlinkedEquipment) {
+                    if (eq == null || eq.getWarehouseId() == null || eq.getWarehouseId().longValue() == 0L) {
+                        continue;
+                    }
+                    String status = (eq.getStatus() != null) ? eq.getStatus().trim() : null;
+                    if (status != null && (EquipmentDAO.RETIRED_STATUSES.contains(status) || "B".equals(status))) {
+                        continue;
+                    }
+                    Long whId = eq.getWarehouseId();
+                    if (!warehouseById.containsKey(whId)) {
+                        orphanWarehouseIds.add(whId);
+                    }
+
+                    Map<String, Double> byParent = ownAmountByWarehouseId.get(whId);
+                    if (byParent == null) {
+                        byParent = new HashMap<String, Double>();
+                        ownAmountByWarehouseId.put(whId, byParent);
+                    }
+                    Double prev = byParent.get(UNLINKED_EQUIPMENT_KEY);
+                    byParent.put(UNLINKED_EQUIPMENT_KEY, Double.valueOf((prev != null ? prev.doubleValue() : 0d) + 1d));
+                }
+            }
+
             // ---- ประกอบ node ทุกใบของ tree (ทุกระดับ) + แตก node ลูกแบบ "product" ให้คลังใบล่าสุดที่มีของ ----
             List<Map<String, Object>> nodes = new ArrayList<Map<String, Object>>();
             for (Warehouse wh : warehouses) {
@@ -693,30 +808,83 @@ public class ProductAction extends ActionSupport {
                         leafIds, childrenByParent, ownAmountByWarehouseId, productNameByParent);
             }
 
-            // ---- สรุปยอดรวม: รวมเฉพาะจาก node รากเท่านั้น (กันบวกซ้ำ เพราะยอด roll-up รวมลูกไว้แล้ว) ----
-            List<Long> rootIds = new ArrayList<Long>();
-            for (Warehouse wh : warehouses) {
-                if (wh == null || wh.getWarehouseId() == null) {
-                    continue;
-                }
-                Long parent = wh.getParent();
-                if (parent == null || parent.longValue() == 0L) {
-                    rootIds.add(wh.getWarehouseId());
+            // ---- โหมด scoped: เลือกดูเฉพาะคลังหนึ่ง + ลูกหลานทุกชั้น (rootId มาจากคลิกแถว warehouse) ----
+            // rootId หาไม่พบใน warehouseById (เช่น ถูกลบไปแล้ว) - fallback เป็นมุมมองทั้งบริษัท ไม่ throw ให้หน้าแตก
+            List<Map<String, Object>> locationBreadcrumb = new ArrayList<Map<String, Object>>();
+            Long selectedWarehouseId = null;
+            Set<Long> scopedIds = null;
+            if (rootId != null) {
+                if (warehouseById.containsKey(rootId)) {
+                    selectedWarehouseId = rootId;
+                    scopedIds = collectDescendantIds(rootId, childrenByParent);
+                    nodes = filterLocationNodesByScope(nodes, scopedIds);
+                    locationBreadcrumb = buildWarehouseBreadcrumb(rootId, warehouseById);
+                } else {
+                    log.warn("showStockByLocationPage: rootId not found, rootId=" + rootId);
                 }
             }
-            rootIds.addAll(orphanWarehouseIds);
 
-            double grandOnHand = 0d;
-            Set<String> distinctProductIds = new HashSet<String>();
-            for (Long rootId : rootIds) {
-                grandOnHand += rollupOnHand(rootId, childrenByParent, ownAmountByWarehouseId);
-                distinctProductIds.addAll(rollupProductIds(rootId, childrenByParent, ownAmountByWarehouseId));
+            // ---- Borrowing: equipment สถานะ B (ถูกยืมอยู่) ต่อท้าย tree เป็นกลุ่มพิเศษ ----
+            // เฉพาะมุมมองทั้งบริษัทเท่านั้น (scoped view ของคลังหนึ่งไม่ต้องแสดง เพราะของไม่ได้อยู่ในคลังนั้นจริง)
+            int totalBorrowed = 0;
+            if (selectedWarehouseId == null) {
+                List<Map<String, Object>> borrowNodes =
+                        buildBorrowingNodes(equipmentRows, equipmentParentIdBySubId, equipmentProductNameById);
+                if (!borrowNodes.isEmpty()) {
+                    nodes.addAll(borrowNodes);
+                    for (Map<String, Object> n : borrowNodes) {
+                        if ("borrow_item".equals(n.get("type"))) {
+                            totalBorrowed++;
+                        }
+                    }
+                }
+            }
+            request.setAttribute("totalBorrowed", Integer.valueOf(totalBorrowed));
+
+            // ---- สรุปยอดรวม ----
+            // โหมดทั้งบริษัท: รวมเฉพาะจาก node รากเท่านั้น (กันบวกซ้ำ เพราะยอด roll-up รวมลูกไว้แล้ว)
+            // โหมด scoped: คำนวณจาก rootId เดียวพอ (roll-up รวมลูกทุกชั้นในสายนั้นไว้ให้แล้ว)
+            double grandOnHand;
+            Set<String> distinctProductIds;
+            int totalLocationsCount;
+            if (selectedWarehouseId != null) {
+                grandOnHand = rollupOnHand(selectedWarehouseId, childrenByParent, ownAmountByWarehouseId);
+                distinctProductIds = rollupProductIds(selectedWarehouseId, childrenByParent, ownAmountByWarehouseId);
+                int leafCount = 0;
+                for (Long id : scopedIds) {
+                    if (leafIds.contains(id)) {
+                        leafCount++;
+                    }
+                }
+                totalLocationsCount = leafCount;
+            } else {
+                List<Long> rootIds = new ArrayList<Long>();
+                for (Warehouse wh : warehouses) {
+                    if (wh == null || wh.getWarehouseId() == null) {
+                        continue;
+                    }
+                    Long parent = wh.getParent();
+                    if (parent == null || parent.longValue() == 0L) {
+                        rootIds.add(wh.getWarehouseId());
+                    }
+                }
+                rootIds.addAll(orphanWarehouseIds);
+
+                grandOnHand = 0d;
+                distinctProductIds = new HashSet<String>();
+                for (Long rid : rootIds) {
+                    grandOnHand += rollupOnHand(rid, childrenByParent, ownAmountByWarehouseId);
+                    distinctProductIds.addAll(rollupProductIds(rid, childrenByParent, ownAmountByWarehouseId));
+                }
+                totalLocationsCount = leafIds.size() + orphanWarehouseIds.size();
             }
 
             request.setAttribute("locationNodes", nodes);
-            request.setAttribute("totalLocations", Integer.valueOf(leafIds.size() + orphanWarehouseIds.size()));
+            request.setAttribute("totalLocations", Integer.valueOf(totalLocationsCount));
             request.setAttribute("totalOnHand", formatQty(grandOnHand));
             request.setAttribute("totalDistinctProducts", Integer.valueOf(distinctProductIds.size()));
+            request.setAttribute("locationBreadcrumb", locationBreadcrumb);
+            request.setAttribute("selectedWarehouseId", selectedWarehouseId);
 
             return SUCCESS;
         } catch (Exception e) {
@@ -756,18 +924,29 @@ public class ProductAction extends ActionSupport {
         int pIdx = 0;
         for (Map.Entry<String, Double> e : own.entrySet()) {
             double amt = (e.getValue() != null) ? e.getValue().doubleValue() : 0d;
-            if (amt == 0d) {
+            // กลุ่ม "ไม่ระบุสินค้า" แยกไปต่อท้ายสุดด้านล่าง ไม่ให้ปนกับสินค้าจริง (HashMap ไม่รับประกันลำดับ)
+            if (amt == 0d || UNLINKED_EQUIPMENT_KEY.equals(e.getKey())) {
                 continue;
             }
-            Map<String, Object> productNode = new LinkedHashMap<String, Object>();
-            productNode.put("id", "p" + warehouseId + "_" + (pIdx++));
-            productNode.put("parentId", String.valueOf(warehouseId));
-            productNode.put("type", "product");
-            productNode.put("name", firstNonBlank(productNameByParent.get(e.getKey()), e.getKey()));
-            productNode.put("productCount", Integer.valueOf(0));
-            productNode.put("onHand", formatQty(amt));
-            nodes.add(productNode);
+            nodes.add(buildLocationProductNode(warehouseId, pIdx++,
+                    firstNonBlank(productNameByParent.get(e.getKey()), e.getKey()), amt));
         }
+        Double unlinked = own.get(UNLINKED_EQUIPMENT_KEY);
+        if (unlinked != null && unlinked.doubleValue() != 0d) {
+            nodes.add(buildLocationProductNode(warehouseId, pIdx++, UNLINKED_EQUIPMENT_LABEL, unlinked.doubleValue()));
+        }
+    }
+
+    /** node ประเภท "product" (สินค้า 1 รายการในคลังใบล่าสุด) ของหน้า Stock By Location */
+    private Map<String, Object> buildLocationProductNode(Long warehouseId, int index, String name, double amt) {
+        Map<String, Object> productNode = new LinkedHashMap<String, Object>();
+        productNode.put("id", "p" + warehouseId + "_" + index);
+        productNode.put("parentId", String.valueOf(warehouseId));
+        productNode.put("type", "product");
+        productNode.put("name", name);
+        productNode.put("productCount", Integer.valueOf(0));
+        productNode.put("onHand", formatQty(amt));
+        return productNode;
     }
 
     /** ยอดคงเหลือรวมของคลังหนึ่ง = ของคลังนั้นเอง + roll-up จากคลังลูกทุกชั้นแบบ recursive */
@@ -793,13 +972,19 @@ public class ProductAction extends ActionSupport {
         return total;
     }
 
-    /** product_id ที่ต่างกันทั้งหมดของคลังหนึ่ง = ของคลังนั้นเอง + roll-up จากคลังลูกทุกชั้นแบบ recursive */
+    /**
+     * product_id ที่ต่างกันทั้งหมดของคลังหนึ่ง = ของคลังนั้นเอง + roll-up จากคลังลูกทุกชั้นแบบ recursive
+     * ไม่นับ UNLINKED_EQUIPMENT_KEY เพราะไม่ใช่ product จริง (ยอดเครื่องยังรวมอยู่ใน rollupOnHand() ตามปกติ)
+     */
     private Set<String> rollupProductIds(Long warehouseId, Map<Long, List<Warehouse>> childrenByParent,
             Map<Long, Map<String, Double>> ownAmountByWarehouseId) {
         Set<String> ids = new HashSet<String>();
         Map<String, Double> own = ownAmountByWarehouseId.get(warehouseId);
         if (own != null) {
             for (Map.Entry<String, Double> e : own.entrySet()) {
+                if (UNLINKED_EQUIPMENT_KEY.equals(e.getKey())) {
+                    continue;
+                }
                 if (e.getValue() != null && e.getValue().doubleValue() != 0d) {
                     ids.add(e.getKey());
                 }
@@ -814,6 +999,65 @@ public class ProductAction extends ActionSupport {
             }
         }
         return ids;
+    }
+
+    /** คลังทั้งหมดในสาย rootId ลงไป (รวมตัว rootId เอง) ไล่ผ่าน childrenByParent ที่มีอยู่แล้ว ไม่ query DB เพิ่ม */
+    private Set<Long> collectDescendantIds(Long rootId, Map<Long, List<Warehouse>> childrenByParent) {
+        Set<Long> ids = new HashSet<Long>();
+        if (rootId == null) {
+            return ids;
+        }
+        ids.add(rootId);
+        List<Warehouse> children = childrenByParent.get(rootId);
+        if (children != null) {
+            for (Warehouse child : children) {
+                if (child != null && child.getWarehouseId() != null) {
+                    ids.addAll(collectDescendantIds(child.getWarehouseId(), childrenByParent));
+                }
+            }
+        }
+        return ids;
+    }
+
+    /**
+     * กรอง node ที่ประกอบไว้แล้วทั้งหมด เหลือเฉพาะคลังในขอบเขต scopedWarehouseIds (ของหน้า scoped view)
+     * node type "warehouse" เช็คที่ id ของตัวเอง, node type "product" (แตกจากคลังใบล่าสุด) เช็คที่ parentId
+     * (คลังต้นสายที่ parent จริงถูกกรองออกไป จะกลายเป็น root เองผ่าน fallback ของ buildLocationTree() ฝั่ง JS)
+     */
+    private List<Map<String, Object>> filterLocationNodesByScope(List<Map<String, Object>> nodes,
+            Set<Long> scopedWarehouseIds) {
+        List<Map<String, Object>> filtered = new ArrayList<Map<String, Object>>();
+        for (Map<String, Object> node : nodes) {
+            if (node == null) {
+                continue;
+            }
+            boolean isProduct = "product".equals(str(node.get("type")));
+            Long checkId = parseLongOrNull(str(isProduct ? node.get("parentId") : node.get("id")));
+            if (checkId != null && scopedWarehouseIds.contains(checkId)) {
+                filtered.add(node);
+            }
+        }
+        return filtered;
+    }
+
+    /** breadcrumb ของคลังที่เลือก: ไล่ขึ้นจาก rootId ผ่าน parent จนถึงรากสุด เรียงจากบนลงมาถึงตัวที่เลือก */
+    private List<Map<String, Object>> buildWarehouseBreadcrumb(Long rootId, Map<Long, Warehouse> warehouseById) {
+        List<Map<String, Object>> trail = new ArrayList<Map<String, Object>>();
+        Long current = rootId;
+        int guard = 0; // กันลูปไม่จบถ้าข้อมูล parent วนกันเอง (ไม่ควรเกิด)
+        while (current != null && guard++ < 50) {
+            Warehouse wh = warehouseById.get(current);
+            if (wh == null) {
+                break;
+            }
+            Map<String, Object> item = new LinkedHashMap<String, Object>();
+            item.put("id", String.valueOf(wh.getWarehouseId()));
+            item.put("name", wh.getWarehouseName());
+            trail.add(0, item);
+            Long parent = wh.getParent();
+            current = (parent != null && parent.longValue() != 0L) ? parent : null;
+        }
+        return trail;
     }
 
     /**
@@ -857,6 +1101,147 @@ public class ProductAction extends ActionSupport {
             }
         }
         return map;
+    }
+
+    /**
+     * สร้าง node กลุ่ม "Borrowing" (equipment สถานะ B ที่ถูกยืมอยู่) ให้ showStockByLocationPage() ต่อท้าย tree คลัง
+     * โครง 4 ระดับ: borrow_root -> borrow_type (กลุ่มตาม product_type) -> borrow_unit (เครื่องจริงแต่ละเครื่อง
+     * ป้ายชื่อ "item no ชื่อสินค้า") -> borrow_item (ใบล่าสุด ป้ายชื่อเป็นผู้ยืม + วันที่ยืม)
+     * ระดับ borrow_type มีแค่ "Equipment" เสมอ เพราะตาราง equipment เก็บเฉพาะสินค้า type 1 เท่านั้น
+     * (Consumables/Accessories/Office Supplies ใช้ตาราง stock แบบนับจำนวน ไม่มีสถานะ "ถูกยืม" ให้ไล่) - ถ้าในอนาคตมี
+     * ช่องทางยืม type อื่นเพิ่ม ต้องขยาย logic ตรงนี้ให้คำนวณ type จริงแทนการ hardcode "Equipment"
+     * id ทุกระดับตั้งใจให้เป็น string ไม่ใช่ตัวเลข (ไม่ชนกับ id คลังที่เป็น Long) - filterLocationNodesByScope()/
+     * appendLocationNode() ใช้ parseLongOrNull() เช็ค id เสมอ จึงคืน null ให้ node พวกนี้โดยอัตโนมัติ ไม่พังและไม่ปนกัน
+     * ไม่มีเครื่องถูกยืมเลย คืน list ว่าง (ไม่สร้าง node Borrowing)
+     */
+    private List<Map<String, Object>> buildBorrowingNodes(List<Equipment> equipmentRows,
+            Map<String, String> equipmentParentIdBySubId, Map<String, String> equipmentProductNameById) throws Exception {
+
+        List<Map<String, Object>> unitNodes = new ArrayList<Map<String, Object>>();
+        List<Map<String, Object>> leafNodes = new ArrayList<Map<String, Object>>();
+        if (equipmentRows == null || equipmentRows.isEmpty()) {
+            return unitNodes;
+        }
+
+        // ผู้ยืมล่าสุดของแต่ละเครื่อง = borrowId มากสุดต่อ equipmentId (ตัวเดียวกับที่ showEquipmentBalancePage ใช้)
+        List<Borrow> borrows = borrowDAO.findAll();
+        if (borrows == null) {
+            borrows = new ArrayList<Borrow>();
+        }
+        Map<String, Borrow> latestBorrowByEquipmentId = new HashMap<String, Borrow>();
+        for (Borrow b : borrows) {
+            if (b == null || isBlank(b.getEquipmentId())) {
+                continue;
+            }
+            String eqId = b.getEquipmentId().trim();
+            Borrow prev = latestBorrowByEquipmentId.get(eqId);
+            boolean replace = (prev == null) || (b.getBorrowId() != null
+                    && (prev.getBorrowId() == null || b.getBorrowId().intValue() > prev.getBorrowId().intValue()));
+            if (replace) {
+                latestBorrowByEquipmentId.put(eqId, b);
+            }
+        }
+
+        // ชื่อผู้ยืม: name_en > name > id (ตัวเดียวกับ pattern userById ใน stock_equ_balance.jsp)
+        List<User> users = userDAO.findAll();
+        if (users == null) {
+            users = new ArrayList<User>();
+        }
+        Map<String, String> userNameById = new HashMap<String, String>();
+        for (User u : users) {
+            if (u == null || isBlank(u.getId())) {
+                continue;
+            }
+            userNameById.put(u.getId().trim(), firstNonBlank(firstNonBlank(u.getNameEN(), u.getName()), u.getId()));
+        }
+
+        Set<String> borrowedParentIds = new HashSet<String>();
+
+        for (Equipment eq : equipmentRows) {
+            if (eq == null || eq.getEquipmentId() == null || isBlank(eq.getProductId())) {
+                continue;
+            }
+            String status = (eq.getStatus() != null) ? eq.getStatus().trim() : null;
+            if (!"B".equals(status) || EquipmentDAO.RETIRED_STATUSES.contains(status)) {
+                continue;
+            }
+
+            String equipmentIdStr = String.valueOf(eq.getEquipmentId());
+            Borrow latest = latestBorrowByEquipmentId.get(equipmentIdStr);
+            String subId = eq.getProductId().trim();
+            borrowedParentIds.add(firstNonBlank(equipmentParentIdBySubId.get(subId), subId));
+
+            // ระดับ borrow_unit: 1 เครื่องจริง = 1 node - มีลูก (borrow_item) แค่ใบเดียวเสมอ เพราะยืมได้ทีละคนต่อเครื่อง
+            // แยกชั้นนี้ไว้เผื่ออนาคตอยากโชว์ประวัติการยืมหลายรายการใต้เครื่องเดียวกัน
+            Map<String, Object> unitNode = new LinkedHashMap<String, Object>();
+            unitNode.put("id", "borrow-unit-" + equipmentIdStr);
+            unitNode.put("parentId", "borrow-type-1");
+            unitNode.put("type", "borrow_unit");
+            unitNode.put("name", buildBorrowUnitLabel(eq, equipmentProductNameById.get(subId)));
+            unitNode.put("productCount", Integer.valueOf(1));
+            unitNode.put("onHand", formatQty(1d));
+            unitNodes.add(unitNode);
+
+            Map<String, Object> leafNode = new LinkedHashMap<String, Object>();
+            leafNode.put("id", "borrow-eq-" + equipmentIdStr);
+            leafNode.put("parentId", "borrow-unit-" + equipmentIdStr);
+            leafNode.put("type", "borrow_item");
+            leafNode.put("name", buildBorrowerLabel(latest, userNameById));
+            leafNode.put("productCount", Integer.valueOf(0));
+            leafNode.put("onHand", formatQty(1d));
+            leafNodes.add(leafNode);
+        }
+
+        if (unitNodes.isEmpty()) {
+            return unitNodes;
+        }
+
+        List<Map<String, Object>> nodes = new ArrayList<Map<String, Object>>();
+
+        Map<String, Object> rootNode = new LinkedHashMap<String, Object>();
+        rootNode.put("id", "borrow-root");
+        rootNode.put("parentId", "0");
+        rootNode.put("type", "borrow_root");
+        rootNode.put("name", "Borrowing");
+        rootNode.put("productCount", Integer.valueOf(borrowedParentIds.size()));
+        rootNode.put("onHand", formatQty((double) unitNodes.size()));
+        nodes.add(rootNode);
+
+        Map<String, Object> typeNode = new LinkedHashMap<String, Object>();
+        typeNode.put("id", "borrow-type-1");
+        typeNode.put("parentId", "borrow-root");
+        typeNode.put("type", "borrow_type");
+        typeNode.put("name", "Equipment");
+        typeNode.put("productCount", Integer.valueOf(borrowedParentIds.size()));
+        typeNode.put("onHand", formatQty((double) unitNodes.size()));
+        nodes.add(typeNode);
+
+        nodes.addAll(unitNodes);
+        nodes.addAll(leafNodes);
+        return nodes;
+    }
+
+    /** ป้ายชื่อ node "borrow_unit" หนึ่งเครื่อง: item no/serial + ชื่อ product/sub */
+    private String buildBorrowUnitLabel(Equipment eq, String productName) {
+        String name = firstNonBlank(productName, eq.getProductId());
+        String tag = firstNonBlank(eq.getItemNo(), eq.getSerialNo());
+        return isBlank(tag) ? name : (tag + " " + name);
+    }
+
+    /** ป้ายชื่อ node "borrow_item" (ใบล่าสุดของเครื่องหนึ่ง): ชื่อผู้ยืม + วันที่ยืม (ถ้ามี) */
+    private String buildBorrowerLabel(Borrow latest, Map<String, String> userNameById) {
+        String name;
+        if (latest != null && !isBlank(latest.getUserBorrowid())) {
+            String userKey = latest.getUserBorrowid().trim();
+            name = firstNonBlank(userNameById.get(userKey), userKey);
+        } else {
+            name = "ไม่ระบุผู้ยืม";
+        }
+        StringBuilder label = new StringBuilder(name);
+        if (latest != null && latest.getDateStart() != null) {
+            label.append(" · ยืม ").append(new SimpleDateFormat("dd/MM/yyyy").format(latest.getDateStart()));
+        }
+        return label.toString();
     }
 
     private Long parseLongOrNull(String value) {
@@ -955,6 +1340,21 @@ public class ProductAction extends ActionSupport {
 
                 // เครื่องที่ยังไม่ผูกกับ catalog ไหนเลย - ใช้เป็นตัวเลือกใน popup
                 request.setAttribute("unlinkedEquipment", equipmentDAO.findUnlinked());
+
+                // รายชื่อ status ทั้งหมด (statusId, description, ...) ส่งเป็น JSON ให้ JS ทำ checkbox filter
+                // "Equipment Status" ใน popup Link Equipment - pattern เดียวกับ showEquipmentBalancePage()
+                // ถ้าดึงไม่ได้ให้ส่ง [] ไปแทน (filter ว่าง แต่หน้า edit ต้องไม่พัง)
+                String equipmentStatusJson = "[]";
+                try {
+                    List<EquipmentStatus> statuses = equipmentStatusDAO.getall();
+                    if (statuses == null) {
+                        statuses = new ArrayList<EquipmentStatus>();
+                    }
+                    equipmentStatusJson = new Gson().toJson(statuses);
+                } catch (Exception ex) {
+                    log.error("showProductEditPage: load equipmentStatusList failed, productId=" + productId, ex);
+                }
+                request.setAttribute("equipmentStatusList", equipmentStatusJson);
             }
 
             return SUCCESS;
@@ -1061,14 +1461,11 @@ public class ProductAction extends ActionSupport {
                     log.warn("stockEquWarehouseSave: invalid warehouseId=" + warehouseId);
                     return writeJson(false, "รหัส warehouse ไม่ถูกต้อง");
                 }
+                // เลือกได้ทุกระดับชั้นแล้ว (เดิมบังคับ parent = 0 เท่านั้น) - dropdown ฝั่ง JS แสดงเป็น tree ให้เลือกชั้นลึกได้
                 Warehouse warehouse = warehouseDAO.findById(newWarehouseId);
                 if (warehouse == null) {
                     log.warn("stockEquWarehouseSave: warehouse not found, warehouseId=" + newWarehouseId);
                     return writeJson(false, "ไม่พบ warehouse ที่เลือก");
-                }
-                if (warehouse.getParent() == null || warehouse.getParent().longValue() != 0L) {
-                    log.warn("stockEquWarehouseSave: warehouse is not top level, warehouseId=" + newWarehouseId);
-                    return writeJson(false, "เลือกได้เฉพาะ warehouse ระดับบนสุดเท่านั้น");
                 }
             }
 
@@ -1482,17 +1879,19 @@ public class ProductAction extends ActionSupport {
             request.setAttribute("borrows", new Gson().toJson(borrowDAO.findAll()));
             request.setAttribute("userList", userDAO.userListJSON());
 
-            // Available -> warehouse ระดับบนสุด (parent = 0) ให้เลือก - ส่งเฉพาะ id/ชื่อ ไม่ส่ง field อื่นของ Warehouse
+            // Available -> เลือก warehouse ได้ทุกระดับ (dropdown ฝั่ง JS แสดงเป็น tree) - ส่งเฉพาะ id/ชื่อ/parent
+            // ไม่ส่ง field อื่นของ Warehouse; parent เป็น NULL ส่งเป็น 0 ให้ตรงกับ convention ของ fillWarehouseTree()
             List<Map<String, Object>> warehouseOptions = new ArrayList<Map<String, Object>>();
-            List<Warehouse> topWarehouses = warehouseDAO.findByParentId(Long.valueOf(0L));
-            if (topWarehouses != null) {
-                for (Warehouse w : topWarehouses) {
+            List<Warehouse> allWarehouses = warehouseDAO.findAll();
+            if (allWarehouses != null) {
+                for (Warehouse w : allWarehouses) {
                     if (w == null || w.getWarehouseId() == null) {
                         continue;
                     }
                     Map<String, Object> option = new LinkedHashMap<String, Object>();
                     option.put("warehouseId", w.getWarehouseId());
                     option.put("warehouseName", w.getWarehouseName());
+                    option.put("parent", (w.getParent() != null) ? w.getParent() : Long.valueOf(0L));
                     warehouseOptions.add(option);
                 }
             }
