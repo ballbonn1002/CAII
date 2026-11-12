@@ -639,4 +639,51 @@ public class BorrowDAOImpl implements BorrowDAO {
 		}
 		return list;
 	}
+	
+	//BorrowHistory
+	@Override
+	public List<Map<String, Object>> findBorrowHistory(String userId, String status) throws Exception {
+	    Session session = this.sessionFactory.getCurrentSession();
+	    List<Map<String, Object>> list = new ArrayList<>();
+	    try {
+	        StringBuilder sql = new StringBuilder();
+	        sql.append("SELECT b.borrow_id AS borrow_id, ")
+	           .append("       b.status AS status, ")
+	           .append("       DATE_FORMAT(b.date_start, '%d %b %Y') AS borrow_date, ")
+	           .append("       b.time_create AS time_create, ")
+	           .append("       u.id AS user_id, u.employee_id AS employee_id, ")
+	           .append("       u.name AS name, u.name_en AS name_en, u.path AS user_image, ")
+	           .append("       d.name AS department_name, ")
+	           .append("       js.name_site AS site_name, ")
+	           .append("       e.equipment_id AS equipment_id, e.item_no AS item_no, ")
+	           .append("       e.name AS equipment_name, e.type AS type ")
+	           .append("FROM borrow b ")
+	           .append("JOIN user u ON b.user_borrowid = u.id ")
+	           .append("LEFT JOIN department d ON u.department_id = d.id ")
+	           .append("LEFT JOIN job_site js ON u.id_sitejob = js.id_sitejob ")
+	           .append("LEFT JOIN equipment e ON b.equipment_id = e.equipment_id ")
+	           .append("WHERE 1=1 ");
+
+	        if (userId != null && !userId.trim().isEmpty()) {
+	            sql.append("AND b.user_borrowid = :userId ");
+	        }
+	        if (status != null && !status.trim().isEmpty() && !"ALL".equalsIgnoreCase(status)) {
+	            sql.append("AND b.status = :status ");
+	        }
+	        sql.append("ORDER BY b.time_create DESC, b.borrow_id DESC");
+
+	        SQLQuery query = session.createSQLQuery(sql.toString());
+	        if (userId != null && !userId.trim().isEmpty()) {
+	            query.setParameter("userId", userId.trim());
+	        }
+	        if (status != null && !status.trim().isEmpty() && !"ALL".equalsIgnoreCase(status)) {
+	            query.setParameter("status", status.trim());
+	        }
+	        query.setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
+	        list = query.list();
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	    }
+	    return list;
+	}
 }

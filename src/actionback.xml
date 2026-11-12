@@ -1742,6 +1742,19 @@
 		<action name="eBorrowLog"
 			class="com.cubesofttech.action.BorrowingAction" method="eBorrowLog">
 		</action>
+		
+		<action name="borrow_history"
+    class="com.cubesofttech.action.BorrowingAction" method="borrowHistory">
+    <result name="success" type="tiles">borrowHistory</result>
+    <result name="error">/index.jsp</result>
+</action>
+
+	 <action name="exportBorrowHistory" 
+	   class="com.cubesofttech.action.BorrowingAction" 
+		method="exportBorrowHistory"> <result name="success" type="stream"> <param 
+		name="contentType">application/vnd.openxmlformats-officedocument.spreadsheetml.sheet</param> 
+		<param name="inputName">inputStream</param> <param name="contentDisposition">attachment;filename="borrowing_history.xlsx"</param> 
+		</result> <result name="error">/index.jsp</result> </action> 
 
 		<action name="deliver_equipment"
 			class="com.cubesofttech.action.BorrowingAction"

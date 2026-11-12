@@ -489,6 +489,11 @@
 			value="/pages-back/borrow/borrow_add.jsp" />
 	</definition>
 	
+	<definition name="borrowHistory" extends="baseLayout">
+    <put-attribute name="title" value="Borrowing History" />
+    <put-attribute name="body" value="/pages-back/borrow/borrow_history.jsp" />
+</definition>
+	
 	<!-- Company -->
 	<definition name="companyList" extends="baseLayout">
 		<put-attribute name="title" value="Company List" />

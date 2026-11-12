@@ -1,6 +1,7 @@
 package com.cubesofttech.action;
 
 import java.io.File;
+
 import java.io.PrintWriter;
 import java.lang.reflect.Type;
 import java.sql.Timestamp;
@@ -41,6 +42,14 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import com.opensymphony.xwork2.ActionSupport;
+
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 public class BorrowingAction extends ActionSupport {
 
@@ -119,6 +128,9 @@ public class BorrowingAction extends ActionSupport {
 	private User onlineUser = (User) request.getSession().getAttribute("onlineUser");
 	private Set<String> userAuthority = (Set<String>) request.getSession().getAttribute("userAuthority");
 	private Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+	
+	private InputStream inputStream;
+	public InputStream getInputStream() { return inputStream; }
 	
 	public String open() {
 		try {
@@ -1668,4 +1680,79 @@ public class BorrowingAction extends ActionSupport {
 //	    return isOldData && allNewFieldsNull;
 //	}
 	
+	
+	// Borrow History
+	public String borrowHistory() {
+	    try {
+	        if (onlineUser == null) return ERROR;
+
+	        String status = request.getParameter("status");
+	        if (status == null || status.isEmpty()) status = "ALL";
+
+	        request.setAttribute("history", new Gson().toJson(borrowDAO.findBorrowHistory(null, status)));
+	        request.setAttribute("selectedStatus", status);
+	        return SUCCESS;
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        return ERROR;
+	    }
+	}
+
+	public String exportBorrowHistory() {
+		try {
+			String userId = request.getParameter("userId");
+			String status = request.getParameter("status");
+			List<Map<String, Object>> history = borrowDAO.findBorrowHistory(userId, status);
+
+			Workbook workbook = new XSSFWorkbook();
+			Sheet sheet = workbook.createSheet("Borrowing History");
+
+			String[] headers = { "#", "Employee ID", "Name EN", "Name TH", "Department", "Job Site",
+					"Borrow ID", "Type", "Item No", "Equipment", "Borrow Date", "Status" };
+			Row headerRow = sheet.createRow(0);
+			for (int i = 0; i < headers.length; i++) {
+				headerRow.createCell(i).setCellValue(headers[i]);
+			}
+
+			int rowNum = 1;
+			for (Map<String, Object> h : history) {
+				Row row = sheet.createRow(rowNum);
+				row.createCell(0).setCellValue(rowNum);
+				row.createCell(1).setCellValue(str(h.get("employee_id")));
+				row.createCell(2).setCellValue(str(h.get("name_en")));
+				row.createCell(3).setCellValue(str(h.get("name")));
+				row.createCell(4).setCellValue(str(h.get("department_name")));
+				row.createCell(5).setCellValue(str(h.get("site_name")));
+				row.createCell(6).setCellValue("#" + str(h.get("borrow_id")));
+				row.createCell(7).setCellValue(str(h.get("type")));
+				row.createCell(8).setCellValue(str(h.get("item_no")));
+				row.createCell(9).setCellValue(str(h.get("equipment_name")));
+				row.createCell(10).setCellValue(str(h.get("borrow_date")));
+				row.createCell(11).setCellValue(statusText(str(h.get("status"))));
+				rowNum++;
+			}
+			for (int i = 0; i < headers.length; i++) sheet.autoSizeColumn(i);
+
+			ByteArrayOutputStream out = new ByteArrayOutputStream();
+			workbook.write(out);
+			workbook.close();
+			inputStream = new ByteArrayInputStream(out.toByteArray());
+			return SUCCESS;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ERROR;
+		}
+	}
+
+	private String str(Object o) { return o == null ? "-" : o.toString(); }
+
+	private String statusText(String s) {
+		switch (s) {
+			case "B": return "Borrowing";
+			case "W": return "Wait for Approve";
+			case "T": return "Waiting for Return";
+			case "R": return "Returned";
+			default:  return s;
+		}
+	}
 }

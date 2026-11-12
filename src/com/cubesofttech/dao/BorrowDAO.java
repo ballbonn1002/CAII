@@ -72,4 +72,6 @@ public interface BorrowDAO {
 	public List<Map<String, Object>> getBorrowListByUserId(String logonUser);
 
 	List<Map<String, Object>> findBorrowWithUserByEquipmentId2(String eId);
+	
+	public List<Map<String, Object>> findBorrowHistory(String userId, String status) throws Exception;
 }
