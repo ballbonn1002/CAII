@@ -2,6 +2,7 @@
 	pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
+<%@ taglib uri="/WEB-INF/tlds/permission.tld" prefix="perm"%>
 
 <style>
 #avatarPreview{
@@ -75,6 +76,17 @@
 			<!--end::Menu wrapper-->
 			<!--begin::Navbar-->
 			<div class="app-navbar flex-shrink-0">
+				<%-- ไอคอนสแกน QR: เห็นเฉพาะผู้มีสิทธิ์ stock.qr.view (ตามที่ทีมตกลง) กดแล้วเปิดกล้อง modal อยู่ท้ายไฟล์ --%>
+				<perm:permission object="stock.qr.view">
+					<div class="app-navbar-item ms-1 ms-md-4" id="header-qr-scan">
+						<div id="btnHeaderQrScan"
+							class="btn btn-icon btn-custom btn-icon-muted btn-active-light btn-active-color-primary w-35px h-35px"
+							role="button" tabindex="0" title="สแกน QR" aria-label="สแกน QR"
+							data-bs-toggle="modal" data-bs-target="#headerQrScanModal">
+							<i class="ki-duotone ki-scan-barcode fs-2"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span><span class="path5"></span><span class="path6"></span><span class="path7"></span><span class="path8"></span></i>
+						</div>
+					</div>
+				</perm:permission>
 				<!--begin::Notifications-->
 				<div class="app-navbar-item ms-1 ms-md-4" id="notification-bell">
 					<!--begin::Menu toggle-->
@@ -644,3 +656,136 @@
 	<!--end::Header container-->
 </div>
 <!--end::Header-->
+
+<%-- ============ Modal: สแกน QR จากไอคอนบนแถบบน ============
+     - อ่านรหัสจากลิงก์ใน QR (…/qr?c=E303) หรือรหัสเปล่า (E303) แล้วไปหน้า qr ของเว็บนี้เสมอ
+       ไม่เปิดลิงก์ตามที่สแกนได้โดยตรง (กัน QR ของที่อื่นพาออกนอกเว็บ)
+     - ไม่มีกล้อง/เปิดกล้องไม่ได้: พิมพ์ Item No. ในช่องด้านล่างแทน
+     - กล้องเปิดได้เฉพาะหน้าที่เข้าผ่าน HTTPS หรือ localhost (ข้อกำหนดของเบราว์เซอร์)
+     - โหลด html5-qrcode ตอนเปิด modal ครั้งแรกเท่านั้น (ไม่โหลดทุกหน้า) --%>
+<perm:permission object="stock.qr.view">
+<div class="modal fade" id="headerQrScanModal" tabindex="-1" aria-hidden="true">
+	<div class="modal-dialog modal-dialog-centered">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h3 class="modal-title fw-bold text-gray-900">สแกน QR</h3>
+				<button type="button" class="btn btn-icon btn-sm btn-active-light-primary" data-bs-dismiss="modal" aria-label="Close">
+					<i class="ki-duotone ki-cross fs-1"><span class="path1"></span><span class="path2"></span></i>
+				</button>
+			</div>
+			<div class="modal-body">
+				<div id="headerQrReader" class="w-100 rounded overflow-hidden"></div>
+				<div id="headerQrError" class="alert alert-danger d-none mt-4 mb-0"></div>
+				<div id="headerQrWarn" class="alert alert-warning d-none mt-4 mb-0"></div>
+				<div class="text-gray-600 fs-7 mt-4">เล็งกล้องไปที่ QR ของอุปกรณ์ ระบบจะพาไปหน้าข้อมูลให้อัตโนมัติ</div>
+				<div class="separator separator-dashed my-6"></div>
+				<label for="headerQrItemNo" class="form-label fw-semibold">ไม่มีกล้อง? พิมพ์ Item No.</label>
+				<div class="input-group">
+					<input type="text" id="headerQrItemNo" class="form-control form-control-solid" maxlength="100" autocomplete="off" placeholder="เช่น NB-0001" />
+					<button type="button" id="btnHeaderQrItemGo" class="btn btn-primary">ไป</button>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
+			</div>
+		</div>
+	</div>
+</div>
+<script>
+	$(document).ready(function () {
+		var CTX = '${pageContext.request.contextPath}';
+		var LIB_URL = CTX + '/assets/plugins/custom/html5-qrcode/html5-qrcode.min.js';
+		var scanner = null;
+		var handled = false;
+		var $modal = $('#headerQrScanModal');
+
+		function showError(msg) { $('#headerQrError').text(msg).removeClass('d-none'); }
+		function showWarn(msg) { $('#headerQrWarn').text(msg).removeClass('d-none'); }
+
+		// รหัสในระบบ = ตัวอักษรใหญ่ 1 ตัว + เลข เช่น E303 (อ่านได้ทั้งจากลิงก์และรหัสเปล่า)
+		function extractCode(text) {
+			var t = $.trim(String(text || ''));
+			if (/^[A-Z][0-9]{1,10}$/.test(t)) { return t; }
+			var m = t.match(/\/qr\?(?:[^#]*&)?c=([A-Z][0-9]{1,10})(?:&|#|$)/);
+			return m ? m[1] : null;
+		}
+
+		function stopScanner() {
+			if (!scanner) { return; }
+			var s = scanner;
+			scanner = null;
+			// stop() ตอนกล้องยังไม่เริ่ม/เริ่มไม่สำเร็จจะ reject - ไม่ต้องสนใจ
+			s.stop().then(function () { s.clear(); }).catch(function () {});
+		}
+
+		function goTo(url) {
+			handled = true;
+			stopScanner();
+			window.location.href = url;
+		}
+
+		function onScanned(text) {
+			if (handled) { return; }   // callback ถูกเรียกซ้ำทุกเฟรมที่เห็นโค้ด
+			var code = extractCode(text);
+			if (!code) {
+				showWarn('QR นี้ไม่ใช่ QR ของระบบนี้ ลองสแกนใหม่');
+				return;
+			}
+			goTo(CTX + '/qr?c=' + encodeURIComponent(code));
+		}
+
+		function ensureLib(done) {
+			if (typeof Html5Qrcode !== 'undefined') { done(true); return; }
+			var el = document.createElement('script');
+			el.src = LIB_URL;
+			el.onload = function () { done(typeof Html5Qrcode !== 'undefined'); };
+			el.onerror = function () { done(false); };
+			document.head.appendChild(el);
+		}
+
+		$modal.on('shown.bs.modal', function () {
+			handled = false;
+			$('#headerQrError, #headerQrWarn').addClass('d-none').text('');
+
+			if (!window.isSecureContext) {
+				showError('เปิดกล้องไม่ได้: ต้องเข้าเว็บผ่าน HTTPS หรือ localhost เท่านั้น (พิมพ์ Item No. ด้านล่างแทนได้)');
+				return;
+			}
+			ensureLib(function (ok) {
+				if (!ok) {
+					showError('โหลดตัวสแกนไม่สำเร็จ กรุณารีเฟรชหน้าแล้วลองใหม่ (พิมพ์ Item No. ด้านล่างแทนได้)');
+					return;
+				}
+				// ผู้ใช้อาจปิด modal ระหว่างรอโหลดไลบรารี
+				if (!$modal.hasClass('show')) { return; }
+				scanner = new Html5Qrcode('headerQrReader');
+				scanner.start({ facingMode: 'environment' }, { fps: 10 }, onScanned, function () {})
+					.catch(function (err) {
+						var name = (err && err.name) ? err.name : '';
+						if (name === 'NotAllowedError' || String(err).indexOf('Permission') !== -1) {
+							showError('ไม่ได้รับอนุญาตให้ใช้กล้อง กรุณาอนุญาตในเบราว์เซอร์แล้วลองใหม่ (พิมพ์ Item No. ด้านล่างแทนได้)');
+						} else if (name === 'NotFoundError' || String(err).indexOf('NotFound') !== -1) {
+							showError('ไม่พบกล้องในอุปกรณ์นี้ พิมพ์ Item No. ด้านล่างแทนได้');
+						} else {
+							showError('เปิดกล้องไม่สำเร็จ: ' + err);
+						}
+						scanner = null;
+					});
+			});
+		});
+
+		$modal.on('hide.bs.modal', stopScanner);
+
+		// พิมพ์ Item No. แทนการสแกน: หน้า qr ค้นหาจาก Item No. ให้ (ไม่พบ = "ไม่พบรายการ")
+		function goItemNo() {
+			var v = $.trim($('#headerQrItemNo').val());
+			if (!v) { showWarn('กรุณาพิมพ์ Item No.'); return; }
+			goTo(CTX + '/qr?item=' + encodeURIComponent(v));
+		}
+		$('#btnHeaderQrItemGo').on('click', goItemNo);
+		$('#headerQrItemNo').on('keydown', function (e) {
+			if (e.key === 'Enter') { e.preventDefault(); goItemNo(); }
+		});
+	});
+</script>
+</perm:permission>

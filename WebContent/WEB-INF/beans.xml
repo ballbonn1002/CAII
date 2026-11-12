@@ -37,6 +37,8 @@
         <property name="lineCallback_url" value="${line.callback_url}" />
         <property name="lineChannel_access_token" value="${line.channel_access_token}" />
         <property name="webEnv" value="${env}" />
+        <!-- โดเมนของลิงก์ใน QR ไม่มีค่าใน properties ก็ไม่ error (ใช้โดเมนของหน้าที่เปิดอยู่แทน) -->
+        <property name="qrBaseUrl" value="${qr.base.url:}" />
     </bean>
     
     <!-- DEV-FSC : ROOT DATA SOURCE [BEGIN]-->

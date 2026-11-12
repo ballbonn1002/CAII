@@ -1338,3 +1338,7 @@ VALUES
 -- 10/11/2026 Koy: set warehouse_id = 0 for all equipment with status 'B' (borrowed)
 --                 and warehouse_id not null and not 0, to avoid foreign key constraint issues when deleting warehouses
 UPDATE equipment SET warehouse_id = 0 WHERE status = 'B' AND warehouse_id IS NOT NULL AND warehouse_id <> 0;
+
+-- 10/11/2026: add permission 'stock.qr.view' in 'authorized_object' table
+INSERT INTO `authorized_object` (`authorized_object_id`, `name`, `description`, `active`, `time_create`, `time_update`, `authorized_object_group_id`)
+VALUES ('stock.qr.view', 'stock.qr.view', 'ดูข้อมูลเต็มจากการสแกน QR และเห็นไอคอนสแกนบนแถบบน', '1', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '2');

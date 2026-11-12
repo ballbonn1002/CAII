@@ -856,6 +856,13 @@
 			value="/pages-back/stock/stock_by_product_list.jsp" />
 	</definition>
 
+	<!-- QR Scan Result -->
+	<definition name="qrView" extends="baseLayout">
+		<put-attribute name="title" value="QR Scan" />
+		<put-attribute name="body"
+			value="/pages-back/qr/qr_view.jsp" />
+	</definition>
+
 	<definition name="stockByLocationList" extends="baseLayout">
 		<put-attribute name="title" value="Stock By Location" />
 		<put-attribute name="body"

@@ -25,6 +25,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cubesofttech.util.DateUtil;
 import com.cubesofttech.util.FileUtil;
+import com.cubesofttech.util.QrLinkUtil;
 import com.cubesofttech.dao.BorrowDAO;
 import com.cubesofttech.dao.EquipmentDAO;
 import com.cubesofttech.dao.EquipmentStatusDAO;
@@ -176,6 +177,11 @@ public class EquipmentAction extends ActionSupport {
 			request.getSession().setAttribute("id_s", id);
 			request.setAttribute("equipment", new Gson().toJson(e));
 			request.setAttribute("equipmentbyId", e);
+			// ลิงก์ที่เข้ารหัสในปุ่ม Generate QR Code (หน้า qr?c=E<id>) + เตือนถ้ายังไม่ตั้งค่า qr.base.url
+			if (e != null) {
+				request.setAttribute("qrLink", QrLinkUtil.equipmentLink(request, e.getEquipmentId()));
+			}
+			request.setAttribute("qrLinkConfigured", QrLinkUtil.isConfigured());
 			request.setAttribute("status", new Gson().toJson(status));
 			request.setAttribute("type", new Gson().toJson(type));
 			//edit on 22/04/20 add -> request.setAttribute("borrowlist", borrow);

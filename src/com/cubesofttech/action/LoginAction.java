@@ -24,6 +24,7 @@ import org.apache.log4j.Logger;
 import org.apache.struts2.ServletActionContext;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.cubesofttech.interceptor.AuthInterceptor;
 import com.cubesofttech.dao.LeaveDAO;
 import com.cubesofttech.dao.NewsDAO;
 import com.cubesofttech.dao.RoleAuthorizedObjectDAO;
@@ -126,6 +127,47 @@ public class LoginAction extends ActionSupport {
 		}
 	}
 	
+	/** ปลายทางหลัง login ที่จำไว้ตอนถูกส่งมาหน้า login (result returnTo ใน actionback.xml) */
+	private String returnTo;
+
+	/** อายุของหน้าที่จำไว้ ถ้าเกินนี้ถือว่าไม่ได้ตั้งใจเปิดแล้ว (นาที) */
+	private static final long RETURN_TO_MAX_AGE_MS = 30L * 60L * 1000L;
+
+	public String getReturnTo() {
+		return returnTo;
+	}
+
+	/**
+	 * login ของหน้า backend: ถ้าก่อนหน้านี้ถูกส่งมาจากหน้าที่จำไว้ (เช่น /qr?c=E303) ให้กลับไปหน้านั้นแทนหน้าหลัก
+	 * ใช้เฉพาะ route authorization (LINE ใช้ login() เดิม)
+	 */
+	public String loginBack() {
+		HttpSession before = request.getSession(false);
+		Object savedPath = (before == null) ? null : before.getAttribute(AuthInterceptor.ATTR_RETURN_TO);
+		Object savedTime = (before == null) ? null : before.getAttribute(AuthInterceptor.ATTR_RETURN_TIME);
+		String result = login();
+		if (!SUCCESS.equals(result) && !INPUT.equals(result)) {
+			return result;
+		}
+		HttpSession session = request.getSession(false);
+		if (session != null) {
+			session.removeAttribute(AuthInterceptor.ATTR_RETURN_TO);
+			session.removeAttribute(AuthInterceptor.ATTR_RETURN_TIME);
+		}
+		if (savedPath instanceof String && savedTime instanceof Long
+				&& System.currentTimeMillis() - ((Long) savedTime).longValue() <= RETURN_TO_MAX_AGE_MS) {
+			String path = (String) savedPath;
+			// กันไว้อีกชั้น: ต้องเป็น path ในเว็บเรา (ไม่ขึ้นต้นด้วย / หรือ \ และไม่มี : ก่อน ?)
+			int q = path.indexOf('?');
+			String head = (q >= 0) ? path.substring(0, q) : path;
+			if (!path.isEmpty() && !path.startsWith("/") && !path.startsWith("\\") && head.indexOf(':') < 0 && head.indexOf('/') < 0) {
+				returnTo = "/" + path;
+				return "returnTo";
+			}
+		}
+		return result;
+	}
+
 	public String login() {
 		try {
 			String userlogin = request.getParameter("username");

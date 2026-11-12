@@ -23,6 +23,7 @@ public class Constant {
     private String googleApiKey;
     private String webPath;
     private static String webContext;
+    private static String qrBaseUrl;
     private static String webContext2;
     private String webLinelogin;
     private static String lineChannel_id;
@@ -63,6 +64,15 @@ public class Constant {
 
 	public void setWebContext(String webContext) {
 		Constant.webContext = webContext;
+	}
+
+	// โดเมนของลิงก์ใน QR (qr.base.url) ว่าง = ใช้โดเมนของหน้าที่เปิดอยู่ ดู QrLinkUtil
+	public static String getQrBaseUrl() {
+		return qrBaseUrl;
+	}
+
+	public void setQrBaseUrl(String qrBaseUrl) {
+		Constant.qrBaseUrl = qrBaseUrl;
 	}
 	
 	public static String getWebContext2() {

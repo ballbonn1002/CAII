@@ -8,7 +8,9 @@
 				class="org.apache.struts2.views.tiles.TilesResult" />
 		</result-types>
 		<action name="authorization"
-			class="com.cubesofttech.action.LoginAction" method="login">
+			class="com.cubesofttech.action.LoginAction" method="loginBack">
+			<!-- กลับไปหน้าที่จำไว้ก่อนถูกส่งมา login (เช่น /qr?c=E303) -->
+			<result name="returnTo" type="redirect">${returnTo}</result>
 			<!-- <result name="success" type="redirectAction">check_in?userId=${onlineUser.id} 
 				</result> -->
 			<result name="success" type="redirectAction">check_in_out</result>
@@ -2619,6 +2621,15 @@
 			<result name="success" type="tiles">stockByProductList</result>
 			<result name="error">/index.jsp</result>
 		</action>
+
+		<!-- QR Scan Result -->
+		<action name="qr"
+			class="com.cubesofttech.service.QrService" method="qrView">
+			<result name="success" type="tiles">qrView</result>
+			<result name="error">/index.jsp</result>
+			<result name="login" type="redirect">/index.jsp</result>
+		</action>
+		<!-- QR Scan Result -->
 
 		<action name="stock_by_location_list"
 			class="com.cubesofttech.action.ProductAction" method="showStockByLocationPage">
