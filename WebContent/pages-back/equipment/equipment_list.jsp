@@ -111,6 +111,7 @@
                                             <th class="min-w-90px text-center text-nowrap">Type</th>
                                             <th class="text-nowrap" style="width: 500px; max-width: 550px;">Equipment / Detail</th>
                                             <th class="min-w-210px text-nowrap">Status</th>
+                                            <th class="min-w-150px text-nowrap">Create Date</th>
                                             <th class="min-w-150px text-end">Actions</th>
                                         </tr>
                                     </thead>
@@ -492,6 +493,7 @@
             lengthMenu: [20, 50, 100],
             info: false,        
             ordering: true,
+            order: [[5, 'desc']], // เรียงตาม Create Date ล่าสุดก่อน
             autoWidth: false,
             headerCallback: function (thead) {
                 $(thead).find('th').each(function (i) {
@@ -567,7 +569,19 @@
                         return getStatusBadgeHtml(val, row);
                     }
                 },
-                // Col 6: Actions
+                // Col 6: Create Date (เรียงด้วย timestamp, ไม่มีค่าให้แสดง "-")
+                {
+                    data: 'timeCreate',
+                    defaultContent: '',
+                    render: function(data, type) {
+                        if (type === 'sort' || type === 'type') {
+                            var t = data ? new Date(data).getTime() : 0;
+                            return isNaN(t) ? 0 : t;
+                        }
+                        return '<span class="text-gray-900 fw-normal fs-6 text-nowrap">' + formatDateTime(data) + '</span>';
+                    }
+                },
+                // Col 7: Actions
                 {
                     data: null,
                     orderable: false,

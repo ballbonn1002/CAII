@@ -182,12 +182,12 @@
                             <span class="badge badge-warning fw-bold fs-7 py-2">Early Out</span>
                             <span class="badge badge-danger fw-bold fs-7 py-2">Unfinished Work</span>
                             <span class="vr mx-1 opacity-25"></span>
-                            <span class="badge badge-light fw-bold fs-7 py-2">Web</span>
-                            <span class="badge badge-light-success fw-bold fs-7 py-2">LINE</span>
-                            <span class="badge badge-danger fw-bold fs-7 py-2" title="ไม่มีลายเซ็น AJAX จากหน้าเว็บของเราเอง ควรตรวจสอบเพิ่มเติม">Unverified</span>
-                            <span class="badge badge-light-danger fw-bold fs-7 py-2" title="ไม่ได้เกิดจากการกดปุ่มจริง อาจเป็น script สั่งคลิกหรือยิง API ตรง">No click</span>
-                            <span class="badge badge-light-danger fw-bold fs-7 py-2" title="ใช้ token ซ้ำ อาจเป็นการก็อป request เดิมไปยิงซ้ำ">Replay</span>
-                            <span class="badge badge-light-warning fw-bold fs-7 py-2" title="token ไม่ตรงกับที่ระบบออกให้ ควรตรวจสอบเพิ่มเติม">Bad token</span>
+                            <span class="badge badge-light fw-bold fs-7 py-2">WEB_FORM</span>
+                            <span class="badge badge-light-success fw-bold fs-7 py-2" title="ลงเวลาผ่าน LINE แยกเป็น LINE_LIFF (หน้าเว็บในแอป LINE) กับ LINE_WEBHOOK (ข้อความในแชท) ชี้เมาส์ที่ป้ายในตารางเพื่อดูว่าเป็นแบบไหน">LINE</span>
+                            <span class="badge badge-danger fw-bold fs-7 py-2" title="ไม่มีลายเซ็น AJAX จากหน้าเว็บของเราเอง ควรตรวจสอบเพิ่มเติม">WEB_UNVERIFIED</span>
+                            <span class="badge badge-light-danger fw-bold fs-7 py-2" title="ไม่ได้เกิดจากการกดปุ่มจริง อาจเป็น script สั่งคลิกหรือยิง API ตรง">TOKEN_MISSING</span>
+                            <span class="badge badge-light-danger fw-bold fs-7 py-2" title="ใช้ token ซ้ำ อาจเป็นการก็อป request เดิมไปยิงซ้ำ">TOKEN_REUSED</span>
+                            <span class="badge badge-light-warning fw-bold fs-7 py-2" title="token ไม่ตรงกับที่ระบบออกให้ ควรตรวจสอบเพิ่มเติม">TOKEN_INVALID</span>
                         </div>
                     </div>
                 
@@ -204,7 +204,7 @@
                                             <th style="width: 150px; max-width: 150px;">Type</th>
                                             <th style="width: 300px; max-width: 300px;">Date - Time</th>
                                             <th class="min-w-100px">Time stamp / IP</th>
-                                            <th class="min-w-100px">Channel</th>
+                                            <th class="min-w-150px">Channel</th>
                                             <th class="text-center min-w-60px">GPS</th>
                                             <th class="min-w-100px">Status</th>
                                             <th class="text-end min-w-70px pe-4">Action</th>
@@ -553,15 +553,18 @@
     function getChannelBadge(channel) {
         channel = String(channel || '').trim();
         if (channel === 'WEB_FORM') {
-            return '<span class="badge badge-light fw-bold fs-7 py-2">Web</span>';
+            return '<span class="badge badge-light fw-bold text-nowrap fs-7 py-2">WEB_FORM</span>';
         } else if (channel === 'LINE_LIFF') {
-            return '<span class="badge badge-light-success fw-bold fs-7 py-2">LINE</span>';
+            // ป้ายเดียวกับ LINE_WEBHOOK แต่ระบุชนิดไว้ในคำอธิบายตอน hover
+            return '<span class="badge badge-light-success fw-bold text-nowrap fs-7 py-2" data-bs-toggle="popover" data-bs-trigger="hover" ' +
+                   'data-bs-placement="top" data-bs-content="LINE_LIFF: ลงเวลาผ่านหน้าเว็บ (LIFF) ที่เปิดในแอป LINE">LINE</span>';
         } else if (channel === 'LINE_WEBHOOK') {
-            return '<span class="badge badge-light-success fw-bold fs-7 py-2">LINE Chat</span>';
+            return '<span class="badge badge-light-success fw-bold text-nowrap fs-7 py-2" data-bs-toggle="popover" data-bs-trigger="hover" ' +
+                   'data-bs-placement="top" data-bs-content="LINE_WEBHOOK: ลงเวลาผ่านข้อความในแชท LINE (Webhook)">LINE</span>';
         } else if (channel === 'WEB_UNVERIFIED') {
-            return '<span class="badge badge-danger fw-bold fs-7 py-2" data-bs-toggle="popover" data-bs-trigger="hover" ' +
+            return '<span class="badge badge-danger fw-bold text-nowrap fs-7 py-2" data-bs-toggle="popover" data-bs-trigger="hover" ' +
                    'data-bs-placement="top" data-bs-content="ไม่มีลายเซ็น AJAX จากหน้าเว็บของเราเอง ควรตรวจสอบเพิ่มเติม">' +
-                   '<i class="ki-duotone ki-shield-cross fs-6 me-1"><span class="path1"></span><span class="path2"></span><span class="path3"></span></i>Unverified</span>';
+                   '<i class="ki-duotone ki-shield-cross fs-6 me-1"><span class="path1"></span><span class="path2"></span><span class="path3"></span></i>WEB_UNVERIFIED</span>';
         }
         // รายการเก่าก่อนมีฟีเจอร์นี้ ไม่มีค่าเก็บไว้
         return '<span class="text-muted fs-7">-</span>';
@@ -573,18 +576,18 @@
         status = String(status || '').trim();
         var label = '', css = '', tip = '';
         if (status === 'TOKEN_MISSING') {
-            label = 'No click'; css = 'badge-light-danger';
+            label = 'TOKEN_MISSING'; css = 'badge-light-danger';
             tip = 'ไม่ได้เกิดจากการกดปุ่มจริง อาจเป็น script สั่งคลิกหรือยิง API ตรง';
         } else if (status === 'TOKEN_REUSED') {
-            label = 'Replay'; css = 'badge-light-danger';
+            label = 'TOKEN_REUSED'; css = 'badge-light-danger';
             tip = 'ใช้ token ซ้ำ อาจเป็นการก็อป request เดิมไปยิงซ้ำ';
         } else if (status === 'TOKEN_INVALID') {
-            label = 'Bad token'; css = 'badge-light-warning';
+            label = 'TOKEN_INVALID'; css = 'badge-light-warning';
             tip = 'token ไม่ตรงกับที่ระบบออกให้ ควรตรวจสอบเพิ่มเติม';
         } else {
             return '';
         }
-        return '<span class="badge ' + css + ' fw-bold fs-7 py-2" data-bs-toggle="popover" data-bs-trigger="hover" ' +
+        return '<span class="badge ' + css + ' fw-bold text-nowrap fs-7 py-2" data-bs-toggle="popover" data-bs-trigger="hover" ' +
                'data-bs-placement="top" data-bs-content="' + tip + '">' +
                '<i class="ki-duotone ki-information-5 fs-6 me-1"><span class="path1"></span><span class="path2"></span><span class="path3"></span></i>' + label + '</span>';
     }

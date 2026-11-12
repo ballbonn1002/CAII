@@ -71,7 +71,6 @@ pageEncoding="UTF-8"%>
                     class="btn btn-light-danger d-inline-flex align-items-center px-6 py-3"
                     >GR - Goods Receipt</a
                   >
-                  
                 </div>
               </div>
             </div>
@@ -88,7 +87,7 @@ pageEncoding="UTF-8"%>
                 </div>
               </div>
               <div class="card-body">
-                <div class="d-flex gap-4">
+                <div class="d-flex flex-wrap gap-4">
                   <a
                     href="company_list"
                     class="btn btn-light-primary d-inline-flex align-items-center px-6 py-3"
@@ -115,7 +114,7 @@ pageEncoding="UTF-8"%>
                 </div>
               </div>
               <div class="card-body">
-                <div class="d-flex gap-4">
+                <div class="d-flex flex-wrap gap-4">
                   <a
                     href="product_list"
                     class="btn btn-light-warning d-inline-flex align-items-center px-6 py-3"
@@ -148,7 +147,7 @@ pageEncoding="UTF-8"%>
                 </div>
               </div>
               <div class="card-body">
-                <div class="d-flex gap-4">
+                <div class="d-flex flex-wrap gap-4">
                   <a
                     href="warehouse_list"
                     class="btn btn-light-primary d-inline-flex align-items-center px-6 py-3"
@@ -183,7 +182,7 @@ pageEncoding="UTF-8"%>
                 </div>
               </div>
               <div class="card-body">
-                <div class="d-flex gap-4">
+                <div class="d-flex flex-wrap gap-4">
                   <!--begin::Notifications-->
                   <div class="position-relative">
                     <!--begin::Menu toggle-->
