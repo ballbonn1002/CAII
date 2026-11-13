@@ -4,8 +4,6 @@
 	<property name="ireport.zoom" value="1.8181818181818217"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="251"/>
-	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="MySQL Docker"/>
-	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
 	<parameter name="logoPath" class="java.lang.Object" isForPrompting="false"/>
 	<parameter name="basePath" class="java.lang.String">
 		<defaultValueExpression><![CDATA[""]]></defaultValueExpression>
