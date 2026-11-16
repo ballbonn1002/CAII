@@ -1342,3 +1342,17 @@ UPDATE equipment SET warehouse_id = 0 WHERE status = 'B' AND warehouse_id IS NOT
 -- 10/11/2026: add permission 'stock.qr.view' in 'authorized_object' table
 INSERT INTO `authorized_object` (`authorized_object_id`, `name`, `description`, `active`, `time_create`, `time_update`, `authorized_object_group_id`)
 VALUES ('stock.qr.view', 'stock.qr.view', 'ดูข้อมูลเต็มจากการสแกน QR และเห็นไอคอนสแกนบนแถบบน', '1', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '2');
+
+
+-- 16/11/2026 Best(Intern): Update token_usage table (fix transaction with 0 value in year or month fileds)
+UPDATE token_usage
+SET
+    `year` = YEAR(time_create),
+    `month` = MONTH(time_create)
+WHERE (`year` = 0 OR `month` = 0) AND time_create IS NOT NULL;
+
+UPDATE token_usage
+SET
+    `year` = YEAR(time_create),
+    `month` = MONTH(time_create)
+WHERE (`year` IS NULL OR `month` IS NULL) AND time_create IS NOT NULL;

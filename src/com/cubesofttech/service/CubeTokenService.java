@@ -813,6 +813,8 @@ public class CubeTokenService {
 			int year = previousMonth.getYear();
 			int month = previousMonth.getMonthValue();
 
+			log.debug("Year " +String.valueOf(year) + " Month " + String.valueOf(month));
+			
 			for (String userId : userIds) {
 
 				Double monthlyBalance = usageTokenDAO.findMonthlyBalance(userId, previousMonth);
@@ -1871,7 +1873,7 @@ public class CubeTokenService {
 		jsonNode.put("type", "deduct");
 		jsonNode.put("reason", "ไม่พบประวัติ Check-In");
 		jsonNode.put("date", eventDate);
-
+		
 		tokenUsage.setUserId(userId);
 		tokenUsage.setActionTypeId(ACTION_TYPE_DUDUCT);
 		tokenUsage.setActionPointId(ACTION_POINT_NO_RECORD);
@@ -1997,6 +1999,7 @@ public class CubeTokenService {
 		tokenUsage.setActionPointId(ACTION_POINT_LATE);
 		tokenUsage.setValue(lateActionPoint.getPoint());
 		tokenUsage.setReconcile(null);
+		tokenUsage.setMonth(checkIn.toLocalDateTime().getMonthValue());
 		tokenUsage.setYear(checkIn.toLocalDateTime().getYear());
 		tokenUsage.setReFlag("Y");
 		tokenUsage.setDescription(MAPPER.writeValueAsString(jsonNode));
@@ -2047,6 +2050,8 @@ public class CubeTokenService {
 		tokenUsage.setValue(earlyOutActionPoint.getPoint());
 		tokenUsage.setReconcile(null);
 		tokenUsage.setReFlag("Y");
+		tokenUsage.setMonth(checkOut.toLocalDateTime().getMonthValue());
+		tokenUsage.setYear(checkOut.toLocalDateTime().getYear());
 		tokenUsage.setDescription(MAPPER.writeValueAsString(jsonNode));
 		tokenUsage.setUserCreate("system");
 		tokenUsage.setTimeCreate(DateUtil.getCurrentTime());

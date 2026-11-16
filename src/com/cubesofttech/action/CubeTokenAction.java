@@ -519,6 +519,7 @@ public class CubeTokenAction extends ActionSupport {
 	    	
 	    	try {
 	    		
+	    		
 	        	Integer redeemId = Integer.parseInt(request.getParameter("redeemId"));
 	        	
 	        	ServletContext context = request.getServletContext();
