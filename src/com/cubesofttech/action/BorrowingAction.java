@@ -1705,12 +1705,13 @@ public class BorrowingAction extends ActionSupport {
 	}
 
 	public String exportBorrowHistory() {
-		try {
-			String userId = request.getParameter("userId");
-			String status = request.getParameter("status");
-			List<Map<String, Object>> history = borrowDAO.findBorrowHistory(userId, status);
+		if (onlineUser == null) return ERROR;
+		String status = request.getParameter("status");
 
-			Workbook workbook = new XSSFWorkbook();
+		try (Workbook workbook = new XSSFWorkbook();
+		     ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+
+			List<Map<String, Object>> history = borrowDAO.findBorrowHistory(null, status);
 			Sheet sheet = workbook.createSheet("Borrowing History");
 
 			String[] headers = { "#", "Employee ID", "Name EN", "Name TH", "Department", "Job Site",
@@ -1739,9 +1740,9 @@ public class BorrowingAction extends ActionSupport {
 			}
 			for (int i = 0; i < headers.length; i++) sheet.autoSizeColumn(i);
 
-			ByteArrayOutputStream out = new ByteArrayOutputStream();
+			
 			workbook.write(out);
-			workbook.close();
+			
 			inputStream = new ByteArrayInputStream(out.toByteArray());
 			return SUCCESS;
 		} catch (Exception e) {
