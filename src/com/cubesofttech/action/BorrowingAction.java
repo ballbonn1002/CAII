@@ -571,9 +571,15 @@ public class BorrowingAction extends ActionSupport {
 			List<EquipmentType> type = equipmentTypeDAO.getall();
 			List<EquipmentStatus> status = equipmentStatusDAO.getall();
 			
+			// เลขเครื่องที่จะเลือกไว้ให้ใน dropdown: ?id= (หน้าสแกน QR) หรือ ?equipmentId= (ปุ่ม Borrow ในหน้า Equipment List)
+			// รับเฉพาะตัวเลข เพราะค่านี้ถูกเขียนลงใน JavaScript ของหน้า borrow_add.jsp ตรงๆ
 			String id = request.getParameter("id");
-			
-			if(id != null) { request.setAttribute("eId", id); }
+			if (id == null || id.trim().isEmpty()) {
+				id = request.getParameter("equipmentId");
+			}
+			if (id != null && id.trim().matches("\\d{1,10}")) {
+				request.setAttribute("eId", id.trim());
+			}
 			request.setAttribute("userList", userJSON);
 			request.setAttribute("type", new Gson().toJson(type));
 			request.setAttribute("equipments", new Gson().toJson(e_available));
