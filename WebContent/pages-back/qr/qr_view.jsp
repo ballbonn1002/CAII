@@ -7,7 +7,7 @@
     qrState : full = ผู้มีสิทธิ์ stock.qr.view เห็นข้อมูลเต็ม
               limited = login แล้วแต่ไม่มีสิทธิ์ เห็นแค่ชื่อ Item No. ประเภท (ข้อมูลอื่นไม่ถูกส่งมาที่หน้านี้เลย)
               notfound = รหัสผิด หรือของถูกลบ
-  รอบแรกรองรับเฉพาะ Equipment
+    qrKind  : E = Equipment, P = สินค้า (Consumables/Accessories), W = ที่เก็บ (warehouse)
 --%>
 <div class="app-main flex-column flex-row-fluid" id="kt_app_main">
     <div class="d-flex flex-column flex-column-fluid">
@@ -56,7 +56,7 @@
                                                     <td class="text-end fw-semibold pe-0"><c:out value="${qrName}" /></td>
                                                 </tr>
                                                 <tr>
-                                                    <td class="text-gray-600 ps-0">Item No.</td>
+                                                    <td class="text-gray-600 ps-0"><c:out value="${empty qrItemNoLabel ? 'Item No.' : qrItemNoLabel}" /></td>
                                                     <td class="text-end fw-semibold pe-0"><c:out value="${qrItemNo}" /></td>
                                                 </tr>
                                                 <tr>
@@ -73,7 +73,138 @@
                                 <a href="${pageContext.request.contextPath}/demo_dashboard" class="btn btn-light w-100">กลับหน้าหลัก</a>
                             </c:when>
 
-                            <%-- ผู้มีสิทธิ์: ข้อมูลเต็ม --%>
+                            <%-- ผู้มีสิทธิ์ + สินค้า (P): ยอดรวมทุกที่เก็บ และยอดแยกตามที่เก็บ --%>
+                            <c:when test="${qrKind == 'P'}">
+                                <div class="card mb-6">
+                                    <div class="card-body">
+                                        <div class="fs-3 fw-bold text-gray-900 mb-1"><c:out value="${qrName}" /></div>
+                                        <div class="text-gray-600 mb-5"><c:out value="${qrItemNo}" /> · <c:out value="${qrTypeLabel}" /></div>
+
+                                        <div class="fs-6 fw-bold text-gray-600 mb-3">คงเหลือรวมทุกที่เก็บ</div>
+                                        <c:choose>
+                                            <c:when test="${empty qrTotals}">
+                                                <div class="text-gray-600">ยังไม่มีสต็อก</div>
+                                            </c:when>
+                                            <c:otherwise>
+                                                <c:forEach var="t" items="${qrTotals}">
+                                                    <c:choose>
+                                                        <%-- มี sub product: แสดงยอดแยกบรรทัดต่อ sub --%>
+                                                        <c:when test="${qrMultiProduct}">
+                                                            <div class="d-flex flex-wrap justify-content-between gap-2 fs-6 mb-2">
+                                                                <span class="text-gray-600"><c:out value="${t.name}" /></span>
+                                                                <span class="fw-bold text-end"><c:out value="${t.text}" /></span>
+                                                            </div>
+                                                        </c:when>
+                                                        <c:otherwise>
+                                                            <div class="fs-2 fw-bold text-gray-900"><c:out value="${t.text}" /></div>
+                                                        </c:otherwise>
+                                                    </c:choose>
+                                                </c:forEach>
+                                            </c:otherwise>
+                                        </c:choose>
+                                    </div>
+                                </div>
+
+                                <c:if test="${not empty qrByLocation}">
+                                    <div class="card mb-6">
+                                        <div class="card-body">
+                                            <div class="fs-6 fw-bold text-gray-600 mb-3">แยกตามที่เก็บ</div>
+                                            <c:forEach var="loc" items="${qrByLocation}" varStatus="ls">
+                                                <c:if test="${not ls.first}"><div class="separator separator-dashed my-4"></div></c:if>
+                                                <div class="fw-semibold text-gray-800 mb-2"><c:out value="${loc.path}" /></div>
+                                                <c:forEach var="ln" items="${loc.lines}">
+                                                    <div class="d-flex flex-wrap justify-content-between gap-2 fs-6 mb-1">
+                                                        <span class="text-gray-600"><c:if test="${qrMultiProduct}"><c:out value="${ln.name}" /></c:if></span>
+                                                        <span class="fw-semibold text-end"><c:out value="${ln.text}" /></span>
+                                                    </div>
+                                                </c:forEach>
+                                            </c:forEach>
+                                        </div>
+                                    </div>
+                                </c:if>
+
+                                <div class="fs-6 fw-bold text-gray-600 mb-3">ทำอะไรต่อ</div>
+                                <div class="d-grid gap-3">
+                                    <%-- พาไปหน้าเดิมของระบบ ซึ่งเช็คสิทธิ์ของหน้านั้นเองตามปกติ --%>
+                                    <a href="${pageContext.request.contextPath}/stock_balance?productId=${qrProductPageId}" class="btn btn-primary btn-lg">ดูรายละเอียดสต็อก</a>
+                                    <a href="${pageContext.request.contextPath}/product_edit?productId=${qrProductPageId}" class="btn btn-light btn-lg">ข้อมูลสินค้า</a>
+                                </div>
+                            </c:when>
+
+                            <%-- ผู้มีสิทธิ์ + ที่เก็บ (W): ของในที่เก็บนี้และที่เก็บย่อย จัดกลุ่มตามที่เก็บย่อย --%>
+                            <c:when test="${qrKind == 'W'}">
+                                <div class="card mb-6">
+                                    <div class="card-body">
+                                        <div class="fs-3 fw-bold text-gray-900 mb-1"><c:out value="${qrName}" /></div>
+                                        <div class="text-gray-600 mb-3"><c:out value="${qrWarehousePath}" /></div>
+                                        <div class="fs-6 text-gray-700">
+                                            <c:out value="${qrItemCount}" /> รายการ · <c:out value="${qrNodeCount}" /> ที่เก็บ (รวมที่เก็บย่อย)
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <c:if test="${qrTruncated}">
+                                    <div class="alert alert-warning mb-6" role="alert">
+                                        <div class="fs-6">ที่เก็บย่อยมีจำนวนมาก แสดงเฉพาะส่วนแรก ดูครบได้ที่หน้า Stock By Location</div>
+                                    </div>
+                                </c:if>
+
+                                <c:choose>
+                                    <c:when test="${empty qrSections}">
+                                        <div class="alert alert-primary mb-6" role="alert">
+                                            <div class="fs-6">ยังไม่มีของในที่เก็บนี้</div>
+                                        </div>
+                                    </c:when>
+                                    <c:otherwise>
+                                        <c:forEach var="sec" items="${qrSections}" varStatus="ss">
+                                            <div class="card mb-6">
+                                                <div class="card-body">
+                                                    <div class="fs-6 fw-bold text-gray-600 mb-3">
+                                                        <c:choose>
+                                                            <c:when test="${sec.isRoot}">ในที่เก็บนี้โดยตรง</c:when>
+                                                            <c:otherwise><c:out value="${sec.label}" /></c:otherwise>
+                                                        </c:choose>
+                                                    </div>
+                                                    <c:forEach var="it" items="${sec.items}" varStatus="is">
+                                                        <c:if test="${not is.first}"><div class="separator separator-dashed my-3"></div></c:if>
+                                                        <c:choose>
+                                                            <%-- Equipment: นับเป็นเครื่องต่อรุ่น กดเพื่อดูรายเครื่อง --%>
+                                                            <c:when test="${not empty it.units}">
+                                                                <a class="d-flex flex-wrap justify-content-between gap-2 fs-6 text-gray-800 text-hover-primary"
+                                                                   data-bs-toggle="collapse" href="#wEq-${ss.index}-${is.index}" role="button" aria-expanded="false">
+                                                                    <span><c:out value="${it.name}" /></span>
+                                                                    <span class="fw-semibold text-end"><c:out value="${it.text}" /></span>
+                                                                </a>
+                                                                <div class="collapse mt-2" id="wEq-${ss.index}-${is.index}">
+                                                                    <c:forEach var="u" items="${it.units}">
+                                                                        <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 fs-7 py-2 border-top">
+                                                                            <span class="fw-semibold"><c:out value="${empty u.itemNo ? '-' : u.itemNo}" /></span>
+                                                                            <span class="text-gray-600">SN: <c:out value="${empty u.serial ? '-' : u.serial}" /></span>
+                                                                            <span class="badge badge-${u.statusColor}"><c:out value="${u.statusText}" /></span>
+                                                                        </div>
+                                                                    </c:forEach>
+                                                                </div>
+                                                            </c:when>
+                                                            <c:otherwise>
+                                                                <div class="d-flex flex-wrap justify-content-between gap-2 fs-6">
+                                                                    <span class="text-gray-800"><c:out value="${it.name}" /></span>
+                                                                    <span class="fw-semibold text-end"><c:out value="${it.text}" /></span>
+                                                                </div>
+                                                            </c:otherwise>
+                                                        </c:choose>
+                                                    </c:forEach>
+                                                </div>
+                                            </div>
+                                        </c:forEach>
+                                    </c:otherwise>
+                                </c:choose>
+
+                                <div class="d-grid gap-3">
+                                    <a href="${pageContext.request.contextPath}/stock_by_location_list?rootId=${qrWarehouseId}" class="btn btn-light btn-lg">ดูใน Stock By Location</a>
+                                </div>
+                            </c:when>
+
+                            <%-- ผู้มีสิทธิ์ + Equipment (E): ข้อมูลเต็มของเครื่อง --%>
                             <c:otherwise>
                                 <div class="card mb-6">
                                     <div class="card-body">

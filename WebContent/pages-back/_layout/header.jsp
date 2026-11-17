@@ -660,7 +660,8 @@
 <%-- ============ Modal: สแกน QR จากไอคอนบนแถบบน ============
      - อ่านรหัสจากลิงก์ใน QR (…/qr?c=E303) หรือรหัสเปล่า (E303) แล้วไปหน้า qr ของเว็บนี้เสมอ
        ไม่เปิดลิงก์ตามที่สแกนได้โดยตรง (กัน QR ของที่อื่นพาออกนอกเว็บ)
-     - ไม่มีกล้อง/เปิดกล้องไม่ได้: พิมพ์ Item No. ในช่องด้านล่างแทน
+     - ไม่มีกล้อง/เปิดกล้องไม่ได้: พิมพ์ในช่องด้านล่างแทน ได้ทั้งรหัสบนป้าย (P12, W5), Item No. ของ Equipment
+       และ Item ID ของสินค้า - หน้า qr เป็นคนค้นให้ (QrService.codeFromItemNo)
      - กล้องเปิดได้เฉพาะหน้าที่เข้าผ่าน HTTPS หรือ localhost (ข้อกำหนดของเบราว์เซอร์)
      - โหลด html5-qrcode ตอนเปิด modal ครั้งแรกเท่านั้น (ไม่โหลดทุกหน้า) --%>
 <perm:permission object="stock.qr.view">
@@ -677,11 +678,11 @@
 				<div id="headerQrReader" class="w-100 rounded overflow-hidden"></div>
 				<div id="headerQrError" class="alert alert-danger d-none mt-4 mb-0"></div>
 				<div id="headerQrWarn" class="alert alert-warning d-none mt-4 mb-0"></div>
-				<div class="text-gray-600 fs-7 mt-4">เล็งกล้องไปที่ QR ของอุปกรณ์ ระบบจะพาไปหน้าข้อมูลให้อัตโนมัติ</div>
+				<div class="text-gray-600 fs-7 mt-4">เล็งกล้องไปที่ QR ของอุปกรณ์ สินค้า หรือที่เก็บ ระบบจะพาไปหน้าข้อมูลให้อัตโนมัติ</div>
 				<div class="separator separator-dashed my-6"></div>
-				<label for="headerQrItemNo" class="form-label fw-semibold">ไม่มีกล้อง? พิมพ์ Item No.</label>
+				<label for="headerQrItemNo" class="form-label fw-semibold">ไม่มีกล้อง? พิมพ์รหัสบนป้าย หรือ Item No. / Item ID</label>
 				<div class="input-group">
-					<input type="text" id="headerQrItemNo" class="form-control form-control-solid" maxlength="100" autocomplete="off" placeholder="เช่น NB-0001" />
+					<input type="text" id="headerQrItemNo" class="form-control form-control-solid" maxlength="100" autocomplete="off" placeholder="เช่น ITEM0224, P12, W5" />
 					<button type="button" id="btnHeaderQrItemGo" class="btn btn-primary">ไป</button>
 				</div>
 			</div>
@@ -776,10 +777,10 @@
 
 		$modal.on('hide.bs.modal', stopScanner);
 
-		// พิมพ์ Item No. แทนการสแกน: หน้า qr ค้นหาจาก Item No. ให้ (ไม่พบ = "ไม่พบรายการ")
+		// พิมพ์แทนการสแกน: หน้า qr ค้นให้ตามลำดับ Item No. ของ Equipment > Item ID ของสินค้า > รหัสบนป้าย (ไม่พบ = "ไม่พบรายการ")
 		function goItemNo() {
 			var v = $.trim($('#headerQrItemNo').val());
-			if (!v) { showWarn('กรุณาพิมพ์ Item No.'); return; }
+			if (!v) { showWarn('กรุณาพิมพ์รหัสบนป้าย Item No. หรือ Item ID'); return; }
 			goTo(CTX + '/qr?item=' + encodeURIComponent(v));
 		}
 		$('#btnHeaderQrItemGo').on('click', goItemNo);

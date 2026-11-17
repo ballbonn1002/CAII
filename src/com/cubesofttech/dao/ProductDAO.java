@@ -60,6 +60,12 @@ public interface ProductDAO {
     boolean existsByProductNo(String productNo, Integer excludeProductId) throws Exception;
 
     /**
+     * หา product จาก product_no (Item ID) ไม่สนตัวพิมพ์เล็ก/ใหญ่ - ใช้กับช่องพิมพ์ในหน้าต่างสแกน QR
+     * ถ้าซ้ำกันหลายตัวคืนตัวที่ product_id น้อยสุด / ไม่พบคืน null
+     */
+    Product findByProductNo(String productNo) throws Exception;
+
+    /**
      * นับจำนวนเครื่องจริง (equipment) ที่ยังนับเป็นของคงเหลือ (ไม่รวม EquipmentDAO.RETIRED_STATUSES)
      * ของตัวแม่ + sub product ทุกตัวในคำสั่งเดียว - ใช้กับ badge จำนวนเครื่องในการ์ด Sub product
      * นับด้วย subquery COUNT(*) GROUP BY product_id ก่อนค่อย join กับตาราง product กันยอดคูณ

@@ -157,7 +157,13 @@
 			</div>
 		</div>
 	</div>
+	<%-- หน้าต่าง Generate QR Code (ปุ่ม class "js-qr-generate" ในแต่ละแถวเปิดหน้าต่างนี้) --%>
+	<jsp:include page="/pages-back/qr/qr_generate_modal.jsp" />
 	<script>
+		// โดเมนของลิงก์ใน QR + ตั้งค่า qr.base.url ไว้แล้วหรือยัง (มาจาก WarehouseAction.list)
+		const QR_BASE_URL = "${fn:escapeXml(qrBaseUrl)}";
+		const QR_CONFIGURED = ${qrLinkConfigured ? "true" : "false"};
+
 		const warehouseList = [
 				<c:forEach items="${warehouseList}" var="wh" varStatus="s">
 					{
@@ -264,6 +270,19 @@
 		    return true;
 		}
 		
+		// เส้นทางเต็มของที่เก็บ เช่น Cube ITF › ตู้ 1 › ชั้น 2 (ชื่อถูก escape จาก JSP แล้ว ใส่ใน attribute ได้)
+		function warehousePath(node){
+		    const names=[];
+		    let current=node;
+		    let guard=0;
+		    while(current && guard<12){
+		        names.unshift(current.name);
+		        current = current.parentId===0 ? null : warehouseState.map[current.parentId];
+		        guard++;
+		    }
+		    return names.join(" › ");
+		}
+
 		function renderRow(node,level){
 
 		    const hasChildren=node.children.length>0;
@@ -307,6 +326,12 @@
 				
 						<td>
 		                	<div class="d-flex justify-content-end aling-items-center gap-3 pe-3">
+			                	<button type="button" class="btn btn-icon btn-light-info w-35px h-35px js-qr-generate" title="Generate QR"
+				                	data-qr-value="\${QR_BASE_URL}/qr?c=W\${node.id}"
+				                	data-qr-label="W\${node.id} : \${warehousePath(node)}"
+				                	data-qr-configured="\${QR_CONFIGURED}">
+				                	<i class="bi bi-qr-code fs-3"></i>
+			                	</button>
 			                	<button class="btn btn-icon btn-light-success w-35px h-35px js-create-btn" data-id="\${node.id}">
 				                	<i class="ki-duotone ki-plus fs-2">
 				                	</i>

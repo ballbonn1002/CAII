@@ -26,6 +26,12 @@ public interface StockDAO {
      */
     public List<Stock> findByProductIds(List<String> productIds) throws Exception;
 
+    /**
+     * ความเคลื่อนไหวสต็อกของคลังหลายใบ (ใช้กับหน้าผลสแกน QR ของที่เก็บ: คลังที่เลือก + ลูกหลานทุกชั้น)
+     * warehouseIds เป็น String เพราะ stock.warehouse_id เป็น varchar - list ว่างคืน list ว่าง (ไม่คืน null)
+     */
+    public List<Stock> findByWarehouseIds(List<String> warehouseIds) throws Exception;
+
     /** ความเคลื่อนไหวที่อ้างอิงเอกสารเดียวกัน (action_ref) */
     public List<Stock> findByActionRef(String actionRef) throws Exception;
 

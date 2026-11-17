@@ -471,6 +471,25 @@ public class EquipmentDAOImpl implements EquipmentDAO {
 	}
 
 	@Override
+	public List<Equipment> findByWarehouseIds(List<Long> warehouseIds) throws Exception {
+		// setParameterList กับ list ว่างจะได้ SQL 'in ()' ซึ่ง MySQL syntax error
+		if (warehouseIds == null || warehouseIds.isEmpty()) {
+			return new ArrayList<Equipment>();
+		}
+
+		Session session = this.sessionFactory.getCurrentSession();
+		List<Equipment> list = null;
+		try {
+			Query query = session.createQuery("from Equipment where warehouseId in (:warehouseIds) order by itemNo asc");
+			query.setParameterList("warehouseIds", warehouseIds);
+			list = query.list();
+		} catch (HibernateException e) {
+			e.printStackTrace();
+		}
+		return (list != null) ? list : new ArrayList<Equipment>();
+	}
+
+	@Override
 	public List<Equipment> findUnlinked() throws Exception {
 		Session session = this.sessionFactory.getCurrentSession();
 		List<Equipment> list = null;

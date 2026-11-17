@@ -15,6 +15,7 @@ import com.cubesofttech.dao.WarehouseDAO;
 import com.cubesofttech.model.User;
 import com.cubesofttech.model.Warehouse;
 import com.cubesofttech.util.DateUtil;
+import com.cubesofttech.util.QrLinkUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.opensymphony.xwork2.ActionSupport;
 
@@ -68,6 +69,9 @@ public class WarehouseAction extends ActionSupport {
 			
 			List<Warehouse> warehouses = warehouseDAO.findAll();
 			request.setAttribute("warehouseList", warehouses);
+			// ปุ่ม Generate QR ของแต่ละที่เก็บ: โดเมนของลิงก์ใน QR (qr.base.url) + ตั้งค่าไว้แล้วหรือยัง
+			request.setAttribute("qrBaseUrl", QrLinkUtil.baseUrl(request));
+			request.setAttribute("qrLinkConfigured", QrLinkUtil.isConfigured());
 			log.info("Retrieved " + warehouses.size() + " warehouses.");
 			return SUCCESS;
 		} catch (Exception e) {

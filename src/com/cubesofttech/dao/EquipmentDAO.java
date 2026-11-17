@@ -87,6 +87,12 @@ public interface EquipmentDAO {
 	List<Equipment> findByProductIds(List<String> productIds) throws Exception;
 
 	/**
+	 * เครื่องจริงที่อยู่ในคลังที่ระบุ (equipment.warehouse_id) - ใช้กับหน้าผลสแกน QR ของที่เก็บ
+	 * ไม่กรอง status (ผู้เรียกกรองเครื่องที่ปลดระวาง/ถูกยืมเอง) list ว่างคืน list ว่าง (ไม่คืน null)
+	 */
+	List<Equipment> findByWarehouseIds(List<Long> warehouseIds) throws Exception;
+
+	/**
 	 * เครื่องที่ยังไม่ได้ผูกกับ catalog ไหนเลย (product_id ว่าง) - ใช้เป็นรายการให้เลือก
 	 * ในหน้า Settings ของ Equipment ตอนกด "เพิ่มเครื่อง" เรียงตาม item_no
 	 * ไม่กรอง status เพื่อให้ตรงกับพฤติกรรมของหน้า equipment_list เดิม (EquipmentAction.table()

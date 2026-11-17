@@ -18,6 +18,10 @@
   ใช้ตัวเดียวกันทั้งสองฝั่งได้เลย เพราะไม่มี redirect
 --%>
 <c:set var="isEquipment" value="${product.productType eq '1'}" />
+<%-- ปุ่ม Generate QR ใช้ได้เฉพาะ Consumables (2) / Accessories (3) ที่หน้าสแกน (QrService รหัส P) รองรับ
+     Equipment ใช้ QR รายเครื่อง (รหัส E) ที่หน้า equipment_edit ส่วน Office Supplies (4) รอเมนู Assets
+     qrBaseUrl / qrLinkConfigured มาจาก ProductAction.showProductEditPage() --%>
+<c:set var="qrEnabled" value="${product.productType eq '2' or product.productType eq '3'}" />
 <c:set var="urlPrefix" value="${isEquipment ? 'stock_equ' : 'product'}" />
 <c:set var="balanceUrl" value="${isEquipment ? 'stock_equ_balance' : 'stock_balance'}" />
 <c:set var="pageTitle" value="${isEquipment ? 'Stock - Equipment' : 'Stock - Consumables'}" />
@@ -74,10 +78,13 @@
                                         <div class="d-flex align-items-center justify-content-between flex-wrap gap-3 mb-8">
                                             <h3 class="page-heading text-gray-900 fw-bold mb-0">Product Detail</h3>
                                             <div class="d-flex align-items-center gap-4">
-                                                <%-- QR เฉพาะฝั่ง Consumables/Accessories/Office Supplies (ไม่ใช่ Equipment) --%>
-                                                <c:if test="${!isEquipment}">
-                                                    <button type="button" class="btn btn-icon btn-sm btn-light-primary btn-generate-qr"
-                                                            data-qr-value="${fn:escapeXml(product.productNo)}" title="Generate QR">
+                                                <%-- QR ของสินค้า (ตัวแม่): ข้อมูล = ลิงก์หน้าสแกน /qr?c=P<product_id> / label = "P<id> : ชื่อ"
+                                                     (ใช้รหัส P<id> แทน Item ID เพราะสั้นและพิมพ์ค้นในช่องสแกนบนแถบบนได้) --%>
+                                                <c:if test="${qrEnabled}">
+                                                    <button type="button" class="btn btn-icon btn-sm btn-light-primary js-qr-generate"
+                                                            data-qr-value="${fn:escapeXml(qrBaseUrl)}/qr?c=P${product.productId}"
+                                                            data-qr-label="P${product.productId} : ${fn:escapeXml(fn:trim(product.productName))}"
+                                                            data-qr-configured="${qrLinkConfigured}" title="Generate QR">
                                                         <i class="bi bi-qr-code fs-3"></i>
                                                     </button>
                                                 </c:if>
@@ -554,10 +561,12 @@
                                                             </td>
                                                         </c:if>
                                                         <td class="text-end text-nowrap">
-                                                            <%-- QR เฉพาะฝั่ง Consumables/Accessories/Office Supplies (ไม่ใช่ Equipment) --%>
-                                                            <c:if test="${!isEquipment}">
-                                                                <button type="button" class="btn btn-icon btn-sm btn-light-primary me-1 btn-generate-qr"
-                                                                        data-qr-value="${fn:escapeXml(sub.productNo)}" title="Generate QR">
+                                                            <%-- QR ของ sub product: /qr?c=P<sub product_id> / label = "P<sub id> : ตัวแม่ (sub)" --%>
+                                                            <c:if test="${qrEnabled}">
+                                                                <button type="button" class="btn btn-icon btn-sm btn-light-primary me-1 js-qr-generate"
+                                                                        data-qr-value="${fn:escapeXml(qrBaseUrl)}/qr?c=P${sub.productId}"
+                                                                        data-qr-label="P${sub.productId} : ${fn:escapeXml(fn:trim(product.productName))} (${fn:escapeXml(fn:trim(sub.productName))})"
+                                                                        data-qr-configured="${qrLinkConfigured}" title="Generate QR">
                                                                     <i class="bi bi-qr-code fs-3"></i>
                                                                 </button>
                                                             </c:if>
@@ -1019,42 +1028,9 @@
     </div>
 </div>
 
-<%-- ============ Modal: Generate QR Code (qrcode.js เก็บไว้ในโปรเจกต์ ไม่พึ่ง CDN) - เฉพาะฝั่ง Consumables/Accessories/Office Supplies
-     เนื้อหาที่เข้ารหัสแก้ไขได้เอง - ช่อง input ตั้งค่า default มาจากปุ่มที่กด (Item ID ของตัวแม่ หรือของ sub product) ============ --%>
-<div class="modal fade" id="qrGenerateModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3 class="modal-title fw-bold text-gray-900">Generate QR Code</h3>
-                <button type="button" class="btn btn-icon btn-sm btn-active-light-primary" data-bs-dismiss="modal" aria-label="Close">
-                    <i class="ki-duotone ki-cross fs-1"><span class="path1"></span><span class="path2"></span></i>
-                </button>
-            </div>
-            <div class="modal-body">
-                <div class="mb-5">
-                    <label class="form-label fw-semibold text-gray-700" for="qrGenerateInput">ข้อมูลที่จะเข้ารหัสใน QR</label>
-                    <input type="text" id="qrGenerateInput" class="form-control form-control-solid" maxlength="500" autocomplete="off" />
-                </div>
-                <div class="text-center">
-                    <div id="qrGenerateCanvas" class="d-inline-block p-4 bg-white rounded border"></div>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-light" data-bs-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-light-primary" id="btnQrPrint">
-                    <i class="ki-duotone ki-printer fs-3 me-1"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span><span class="path5"></span></i>
-                    Print
-                </button>
-                <button type="button" class="btn btn-primary" id="btnQrDownload">
-                    <i class="ki-duotone ki-exit-down fs-3 me-1"><span class="path1"></span><span class="path2"></span></i>
-                    Download
-                </button>
-            </div>
-        </div>
-    </div>
-</div>
+<%-- หน้าต่าง Generate QR Code (ใช้ร่วมกับหน้าอื่น) - ปุ่ม class "js-qr-generate" ด้านบนเปิดหน้าต่างนี้ --%>
+<jsp:include page="/pages-back/qr/qr_generate_modal.jsp" />
 
-<script src="${pageContext.request.contextPath}/assets/plugins/custom/qrcode/qrcode.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
 <script>
     $(document).ready(function () {
@@ -1902,133 +1878,5 @@
 
         initSortable('uomTableBody', '.uom-drag-handle', 'product_uom_reorder', { productId: PRODUCT_ID });
         initSortable('subTableBody', '.sub-drag-handle', 'product_sub_reorder', { parentProductId: PRODUCT_ID }, '.equ-unassigned-row');
-    });
-</script>
-
-<%-- ==================== Generate QR Code: ปุ่มที่ Product Detail (ตัวแม่) + แต่ละแถว Sub product
-     (เฉพาะฝั่ง Consumables/Accessories/Office Supplies) เปิด modal พรีวิว QR แก้ไขเนื้อหาได้ก่อน generate ====================
-     qrcodejs วาดเป็น <canvas> ใน #qrGenerateCanvas (ไว้ preview สดๆ ตอนพิมพ์แก้ข้อความ)
-     แต่ Print/Download ไม่ได้ใช้ canvas นั้นตรงๆ - ต้อง "ประกอบใหม่" ผ่าน buildPrintableQrCanvas() ก่อนเสมอ เพราะ:
-       1) ขอบขาวรอบโค้ด (Quiet Zone) ที่เห็นในหน้าจอเป็นแค่ CSS ของ div ที่ห่อ canvas ไว้ (p-4 bg-white)
-          ไม่ได้อยู่ในพิกเซลของ canvas จริง - canvas.toDataURL() จะไม่มีขอบขาวด้วย ถ้าไม่วาดเพิ่มเอง
-          (QR มาตรฐานต้องมีขอบขาวอย่างน้อย 4 module รอบโค้ด ไม่งั้นสแกนเนอร์บางรุ่นอ่านไม่ออกตอนพิมพ์ติดขอบป้าย/กระดาษ)
-       2) ใส่ข้อความที่เข้ารหัสกำกับไว้ใต้รูปด้วย (pattern มาตรฐานของป้าย asset tag) เผื่อโค้ดลบเลือน/สแกนไม่ออก
-          ยังอ่านด้วยตาได้ --%>
-<script>
-    $(document).ready(function () {
-        function notifyQrError(msg) {
-            if (window.Swal) { Swal.fire('Error', msg || 'เกิดข้อผิดพลาด', 'error'); }
-            else { alert(msg || 'เกิดข้อผิดพลาด'); }
-        }
-
-        var qrGenerateInstance = null;
-
-        function renderQrPreview(text) {
-            var $box = $('#qrGenerateCanvas');
-            $box.empty();
-            qrGenerateInstance = null;
-            var value = $.trim(text);
-            if (!value || typeof QRCode === 'undefined') {
-                return;
-            }
-            qrGenerateInstance = new QRCode($box.get(0), {
-                text: value,
-                width: 220,
-                height: 220,
-                // H = กู้คืนได้ ~30% เผื่อป้ายเปื้อน/รอยขีดข่วน/แปะโค้ง (ข้อมูลที่เข้ารหัสสั้นอยู่แล้วไม่กระทบขนาดโค้ดมาก)
-                correctLevel: QRCode.CorrectLevel.H
-            });
-        }
-
-        // ประกอบ canvas สำหรับ Print/Download: เพิ่มขอบขาว (quiet zone) จริงรอบโค้ด + ตัวหนังสือกำกับใต้รูป
-        // คืนค่า null ถ้ายังไม่มี QR ให้ประกอบ (เช่น ช่อง input ว่าง)
-        function buildPrintableQrCanvas() {
-            var $srcCanvas = $('#qrGenerateCanvas canvas');
-            if ($srcCanvas.length === 0) {
-                return null;
-            }
-            var srcCanvas = $srcCanvas.get(0);
-
-            // moduleCount อ่านจาก internal ของ qrcodejs (fallback 25 เผื่อ library เปลี่ยน structure ในอนาคต)
-            var moduleCount = (qrGenerateInstance && qrGenerateInstance._oQRCode && qrGenerateInstance._oQRCode.moduleCount)
-                ? qrGenerateInstance._oQRCode.moduleCount : 25;
-            var cellSize = srcCanvas.width / moduleCount;
-            var quietZone = Math.round(cellSize * 4); // มาตรฐาน QR: ขอบขาวอย่างน้อย 4 module
-
-            var captionText = $.trim($('#qrGenerateInput').val());
-            var captionHeight = captionText ? 36 : 0;
-
-            var outCanvas = document.createElement('canvas');
-            outCanvas.width = srcCanvas.width + quietZone * 2;
-            outCanvas.height = srcCanvas.height + quietZone * 2 + captionHeight;
-
-            var ctx = outCanvas.getContext('2d');
-            ctx.fillStyle = '#ffffff';
-            ctx.fillRect(0, 0, outCanvas.width, outCanvas.height);
-            ctx.drawImage(srcCanvas, quietZone, quietZone);
-
-            if (captionText) {
-                ctx.fillStyle = '#000000';
-                ctx.textAlign = 'center';
-                ctx.textBaseline = 'middle';
-                // ลดขนาดฟอนต์ลงเรื่อยๆ ถ้าข้อความยาวเกินความกว้างโค้ด (กันล้นจอตอนพิมพ์)
-                var fontSize = 16;
-                var maxTextWidth = outCanvas.width - quietZone;
-                do {
-                    ctx.font = fontSize + 'px Arial, sans-serif';
-                    fontSize -= 1;
-                } while (ctx.measureText(captionText).width > maxTextWidth && fontSize >= 9);
-                ctx.fillText(captionText, outCanvas.width / 2, quietZone * 2 + srcCanvas.height + captionHeight / 2);
-            }
-
-            return outCanvas;
-        }
-
-        $(document).on('click', '.btn-generate-qr', function () {
-            var defaultValue = $(this).data('qr-value');
-            $('#qrGenerateInput').val(defaultValue != null ? String(defaultValue) : '');
-            $('#qrGenerateModal').modal('show');
-        });
-
-        $('#qrGenerateModal').on('shown.bs.modal', function () {
-            renderQrPreview($('#qrGenerateInput').val());
-            $('#qrGenerateInput').trigger('focus').trigger('select');
-        });
-
-        // พิมพ์แก้เนื้อหาในช่อง input แล้ว generate ใหม่ทันที
-        $('#qrGenerateInput').on('input', function () {
-            renderQrPreview($(this).val());
-        });
-
-        $('#btnQrDownload').on('click', function () {
-            var canvas = buildPrintableQrCanvas();
-            if (!canvas) {
-                notifyQrError('ยังไม่มี QR ให้ดาวน์โหลด กรุณากรอกข้อมูลก่อน');
-                return;
-            }
-            // ตั้งชื่อไฟล์ตามข้อมูลที่เข้ารหัส (ตัดอักขระที่ใช้ตั้งชื่อไฟล์ไม่ได้ออก) กันดาวน์โหลดหลายใบแล้วชื่อซ้ำกัน
-            var rawName = $.trim($('#qrGenerateInput').val()).replace(/[\\/:*?"<>|]+/g, '_');
-            var link = document.createElement('a');
-            link.download = (rawName ? 'qrcode_' + rawName : 'qrcode') + '.png';
-            link.href = canvas.toDataURL('image/png');
-            link.click();
-        });
-
-        $('#btnQrPrint').on('click', function () {
-            var canvas = buildPrintableQrCanvas();
-            if (!canvas) {
-                notifyQrError('ยังไม่มี QR ให้พิมพ์ กรุณากรอกข้อมูลก่อน');
-                return;
-            }
-            var dataUrl = canvas.toDataURL('image/png');
-            var printWin = window.open('', '_blank');
-            if (!printWin) {
-                notifyQrError('เบราว์เซอร์บล็อกหน้าต่างพิมพ์ กรุณาอนุญาต popup แล้วลองใหม่');
-                return;
-            }
-            // width อย่างเดียว (ไม่ fix height) ให้สัดส่วนรูปถูกต้องเสมอ แม้มีตัวหนังสือกำกับใต้ภาพทำให้ภาพไม่เป็นสี่เหลี่ยมจัตุรัส
-            printWin.document.write('<img src="' + dataUrl + '" style="width:300px;" onload="window.print();window.close();" />');
-            printWin.document.close();
-        });
     });
 </script>

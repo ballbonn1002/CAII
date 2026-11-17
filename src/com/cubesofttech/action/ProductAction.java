@@ -47,6 +47,7 @@ import com.cubesofttech.model.Warehouse;
 import com.cubesofttech.service.FileAttachmentService;
 import com.google.gson.Gson;
 import com.cubesofttech.util.DateUtil;
+import com.cubesofttech.util.QrLinkUtil;
 import com.opensymphony.xwork2.ActionSupport;
 
 public class ProductAction extends ActionSupport {
@@ -1306,6 +1307,9 @@ public class ProductAction extends ActionSupport {
             request.setAttribute("product", product);
             request.setAttribute("units", units);
             request.setAttribute("subProducts", subProducts);
+            // ปุ่ม Generate QR: โดเมนของลิงก์ใน QR (qr.base.url) + บอกว่าตั้งค่าไว้แล้วหรือยัง (ยังไม่ตั้ง = หน้าต่าง QR เตือน)
+            request.setAttribute("qrBaseUrl", QrLinkUtil.baseUrl(request));
+            request.setAttribute("qrLinkConfigured", QrLinkUtil.isConfigured());
             // ใช้เติม dropdown Equipment Type - โผล่เฉพาะตอน Item Type = Equipment (type '1')
             request.setAttribute("equipmentTypes", equipmentTypeDAO.getall());
             // ใช้เติม dropdown Unit Name ใน modal Create/Edit Unit of Measure - กันสร้างชื่อหน่วยซ้ำ

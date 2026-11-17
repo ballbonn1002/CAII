@@ -88,6 +88,21 @@ public class StockDAOImpl implements StockDAO {
 
     @Override
     @SuppressWarnings("unchecked")
+    public List<Stock> findByWarehouseIds(List<String> warehouseIds) throws Exception {
+        if (warehouseIds == null || warehouseIds.isEmpty()) {
+            return new ArrayList<Stock>();
+        }
+        Session session = this.sessionFactory.getCurrentSession();
+        Query query = session.createQuery(
+                "from Stock where warehouseId in (:warehouseIds) order by timeCreate desc, stockId desc");
+        query.setParameterList("warehouseIds", warehouseIds);
+
+        List<Stock> stocks = query.list();
+        return stocks != null ? stocks : new ArrayList<Stock>();
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
     public List<Stock> findByActionRef(String actionRef) throws Exception {
         if (actionRef == null || actionRef.trim().isEmpty()) {
             return new ArrayList<Stock>();

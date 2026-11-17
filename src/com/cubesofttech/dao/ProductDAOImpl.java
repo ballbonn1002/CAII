@@ -374,6 +374,20 @@ public class ProductDAOImpl implements ProductDAO {
     }
 
     @Override
+    public Product findByProductNo(String productNo) throws Exception {
+        if (productNo == null || productNo.trim().isEmpty()) {
+            return null;
+        }
+        Session session = this.sessionFactory.getCurrentSession();
+        org.hibernate.Query query = session.createQuery(
+                "from Product where lower(trim(productNo)) = :productNo order by productId asc");
+        query.setParameter("productNo", productNo.trim().toLowerCase());
+        query.setMaxResults(1);
+        List<?> list = query.list();
+        return (list == null || list.isEmpty()) ? null : (Product) list.get(0);
+    }
+
+    @Override
     public Map<Integer, Integer> countEquipmentByParentAndSubProducts(Integer parentId) throws Exception {
         Map<Integer, Integer> counts = new LinkedHashMap<Integer, Integer>();
         if (parentId == null) {
