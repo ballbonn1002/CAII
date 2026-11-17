@@ -46,27 +46,27 @@
     
     p.product_no AS product_number
 
-FROM cube.user_redeem ur
+FROM user_redeem ur
 
-INNER JOIN cube.user u_owner
+INNER JOIN user u_owner
     ON u_owner.id = ur.user_id
     
-LEFT JOIN cube.position pos
+LEFT JOIN position pos
     ON pos.position_id = u_owner.position_id
 
-INNER JOIN cube.user u_approve
+INNER JOIN user u_approve
     ON u_approve.id = ur.user_approve
 
-INNER JOIN cube.user u_deliver
+INNER JOIN user u_deliver
     ON u_deliver.id = ur.user_deliver
 
-INNER JOIN cube.item_privilege ip
+INNER JOIN item_privilege ip
     ON ip.item_id = ur.item_id
     
-LEFT JOIN cube.product p
+LEFT JOIN product p
  	ON ip.item_id = p.product_id
 
-INNER JOIN cube.user u_receive
+INNER JOIN user u_receive
     ON u_receive.id = ur.user_receive
 
 WHERE ur.user_redeem_id = $P{redeemId}]]>
