@@ -3215,7 +3215,8 @@ public class WorkHoursDAOImpl implements WorkHoursDAO {
 	            "FROM user u " +
 	            "WHERE u.enable = '1' " + 
 	            "AND u.start_date IS NOT NULL " +
-	            "AND u.start_date <= current_date() ";
+	            "AND u.start_date <= :date " +
+	            "AND (u.end_date IS NULL OR u.end_date >= :date) ";
 
 	    SQLQuery query = sessionFactory
 	            .getCurrentSession()

@@ -13,6 +13,7 @@ import java.time.YearMonth;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.format.TextStyle;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -136,7 +137,7 @@ public class CubeTokenService {
 	private TransactionTemplate transactionTemplate;
 
 	private static final Integer ACTION_TYPE_GIFT = 1;
-	private static final Integer ACTION_TYPE_DUDUCT = 2;
+	private static final Integer ACTION_TYPE_DEDUCT = 2;
 	private static final Integer ACTION_TYPE_RETURN = 3;
 	private static final Integer ACTION_TYPE_REWARD = 4;
 	private static final Integer ACTION_TYPE_ADD_RECONCILE = 5;
@@ -153,6 +154,12 @@ public class CubeTokenService {
 	private static final Integer ACTION_POINT_BACKDATE = 7;
 	private static final Integer ACTION_POINT_NO_RECORD = 8;
 	private static final Integer ACTION_POINT_GPS = 9;
+
+	/*
+	 * Grace period (minutes) before a check-in is treated as late or a check-out as
+	 * early. Seconds are always ignored, so 09:00:59 is not late when this is 0.
+	 */
+	private static final int ATTENDANCE_GRACE_MINUTES = 0;
 
 	private static final String STATUS_REDEEM_PENDING = "1";
 	private static final String STATUS_REDEEM_APPROVED = "2";
@@ -1035,22 +1042,30 @@ public class CubeTokenService {
 
 						LocalTime workEnd = parseTime(workTimeEnd);
 
-						LocalTime morningEnd = LocalTime.of(12, 0);
+						if (leaveStart == null || leaveEnd == null) {
 
-						LocalTime afternoonStart = LocalTime.of(13, 0);
+							log.warn("Invalid leave time for user " + userId + ", start: " + startTime + ", end: "
+									+ endTime);
 
-						// =========================
-						// Morning overlap
-						// =========================
-						if (leaveStart.isBefore(morningEnd) && leaveEnd.isAfter(workStart)) {
-							skipMorning = true;
-						}
+						} else {
 
-						// =========================
-						// Afternoon overlap
-						// =========================
-						if (leaveStart.isBefore(workEnd) && leaveEnd.isAfter(afternoonStart)) {
-							skipAfternoon = true;
+							LocalTime morningEnd = LocalTime.of(12, 0);
+
+							LocalTime afternoonStart = LocalTime.of(13, 0);
+
+							// =========================
+							// Morning overlap
+							// =========================
+							if (workStart != null && leaveStart.isBefore(morningEnd) && leaveEnd.isAfter(workStart)) {
+								skipMorning = true;
+							}
+
+							// =========================
+							// Afternoon overlap
+							// =========================
+							if (workEnd != null && leaveStart.isBefore(workEnd) && leaveEnd.isAfter(afternoonStart)) {
+								skipAfternoon = true;
+							}
 						}
 					}
 				}
@@ -1563,7 +1578,7 @@ public class CubeTokenService {
 		/*
 		 * ========================= Deduct Setting =========================
 		 */
-		ActionType deductType = actionTypeDAO.findById(ACTION_TYPE_DUDUCT);
+		ActionType deductType = actionTypeDAO.findById(ACTION_TYPE_DEDUCT);
 
 		Map<String, Object> deductSetting = new LinkedHashMap<>();
 
@@ -1571,7 +1586,7 @@ public class CubeTokenService {
 
 		deductSetting.put("active", deductActive);
 
-		List<ActionPoint> deductPoints = actionPointDAO.findByActionTypeId(ACTION_TYPE_DUDUCT);
+		List<ActionPoint> deductPoints = actionPointDAO.findByActionTypeId(ACTION_TYPE_DEDUCT);
 
 		List<Map<String, Object>> deductData = new ArrayList<>();
 
@@ -1759,7 +1774,7 @@ public class CubeTokenService {
 		// ========================================
 		// Check deduct action
 		// ========================================
-		ActionType deductType = actionTypeDAO.findById(ACTION_TYPE_DUDUCT);
+		ActionType deductType = actionTypeDAO.findById(ACTION_TYPE_DEDUCT);
 
 		if (deductType == null || !"Y".equals(deductType.getActiveStatus())) {
 
@@ -1790,7 +1805,7 @@ public class CubeTokenService {
 		TokenUsage tokenUsage = new TokenUsage();
 
 		tokenUsage.setUserId(userId);
-		tokenUsage.setActionTypeId(ACTION_TYPE_DUDUCT);
+		tokenUsage.setActionTypeId(ACTION_TYPE_DEDUCT);
 		tokenUsage.setActionPointId(ACTION_POINT_LEAVE);
 		tokenUsage.setValue(leaveActionPoint.getPoint());
 		tokenUsage.setReconcile(null);
@@ -1837,7 +1852,7 @@ public class CubeTokenService {
 			throw new IllegalArgumentException("Work time start is required.");
 		}
 
-		ActionType deductType = actionTypeDAO.findById(ACTION_TYPE_DUDUCT);
+		ActionType deductType = actionTypeDAO.findById(ACTION_TYPE_DEDUCT);
 
 		if (deductType == null || !"Y".equals(deductType.getActiveStatus())) {
 			log.info("Deduct action type is not active. No token deduction will be made for no record.");
@@ -1875,7 +1890,7 @@ public class CubeTokenService {
 		jsonNode.put("date", eventDate);
 		
 		tokenUsage.setUserId(userId);
-		tokenUsage.setActionTypeId(ACTION_TYPE_DUDUCT);
+		tokenUsage.setActionTypeId(ACTION_TYPE_DEDUCT);
 		tokenUsage.setActionPointId(ACTION_POINT_NO_RECORD);
 		tokenUsage.setValue(noRecordActionPoint.getPoint());
 		tokenUsage.setReconcile(null);
@@ -1908,7 +1923,7 @@ public class CubeTokenService {
 			throw new IllegalArgumentException("Work time end is required.");
 		}
 
-		ActionType deductType = actionTypeDAO.findById(ACTION_TYPE_DUDUCT);
+		ActionType deductType = actionTypeDAO.findById(ACTION_TYPE_DEDUCT);
 
 		if (deductType == null || !"Y".equals(deductType.getActiveStatus())) {
 			log.info("Deduct action type is not active. No token deduction will be made for no record.");
@@ -1945,7 +1960,7 @@ public class CubeTokenService {
 		jsonNode.put("date", eventDate);
 
 		tokenUsage.setUserId(userId);
-		tokenUsage.setActionTypeId(ACTION_TYPE_DUDUCT);
+		tokenUsage.setActionTypeId(ACTION_TYPE_DEDUCT);
 		tokenUsage.setActionPointId(ACTION_POINT_NO_RECORD);
 		tokenUsage.setValue(noRecordActionPoint.getPoint());
 		tokenUsage.setReconcile(null);
@@ -1968,7 +1983,7 @@ public class CubeTokenService {
 			throw new IllegalArgumentException("User ID is required.");
 		}
 
-		ActionType deductType = actionTypeDAO.findById(ACTION_TYPE_DUDUCT);
+		ActionType deductType = actionTypeDAO.findById(ACTION_TYPE_DEDUCT);
 
 		if (deductType == null || !"Y".equals(deductType.getActiveStatus())) {
 			log.info("Deduct action type is not active. No token deduction will be made for late check-in.");
@@ -1995,7 +2010,7 @@ public class CubeTokenService {
 		jsonNode.put("date", checkIn.toLocalDateTime().format(FORMATTER));
 
 		tokenUsage.setUserId(userId);
-		tokenUsage.setActionTypeId(ACTION_TYPE_DUDUCT);
+		tokenUsage.setActionTypeId(ACTION_TYPE_DEDUCT);
 		tokenUsage.setActionPointId(ACTION_POINT_LATE);
 		tokenUsage.setValue(lateActionPoint.getPoint());
 		tokenUsage.setReconcile(null);
@@ -2018,7 +2033,7 @@ public class CubeTokenService {
 			throw new IllegalArgumentException("User ID is required.");
 		}
 
-		ActionType deductType = actionTypeDAO.findById(ACTION_POINT_EARLY_OUT);
+		ActionType deductType = actionTypeDAO.findById(ACTION_TYPE_DEDUCT);
 
 		if (deductType == null || !"Y".equals(deductType.getActiveStatus())) {
 			log.info("Deduct action type is not active. No token deduction will be made for late early out.");
@@ -2045,7 +2060,7 @@ public class CubeTokenService {
 		jsonNode.put("date", checkOut.toLocalDateTime().format(FORMATTER));
 
 		tokenUsage.setUserId(userId);
-		tokenUsage.setActionTypeId(ACTION_TYPE_DUDUCT);
+		tokenUsage.setActionTypeId(ACTION_TYPE_DEDUCT);
 		tokenUsage.setActionPointId(ACTION_POINT_EARLY_OUT);
 		tokenUsage.setValue(earlyOutActionPoint.getPoint());
 		tokenUsage.setReconcile(null);
@@ -2077,7 +2092,7 @@ public class CubeTokenService {
 			throw new IllegalArgumentException("Check-in time create timestamp is required.");
 		}
 
-		ActionType deductType = actionTypeDAO.findById(ACTION_TYPE_DUDUCT);
+		ActionType deductType = actionTypeDAO.findById(ACTION_TYPE_DEDUCT);
 
 		if (deductType == null || !"Y".equals(deductType.getActiveStatus())) {
 			log.info("Deduct action type is not active. No token deduction will be made for backdate check-in.");
@@ -2104,7 +2119,7 @@ public class CubeTokenService {
 		jsonNode.put("date", checkIn.toLocalDateTime().format(FORMATTER));
 
 		tokenUsage.setUserId(userId);
-		tokenUsage.setActionTypeId(ACTION_TYPE_DUDUCT);
+		tokenUsage.setActionTypeId(ACTION_TYPE_DEDUCT);
 		tokenUsage.setActionPointId(ACTION_POINT_BACKDATE);
 		tokenUsage.setValue(backDateActionPoint.getPoint());
 		tokenUsage.setReconcile(null);
@@ -2137,7 +2152,7 @@ public class CubeTokenService {
 			throw new IllegalArgumentException("Check-out time create timestamp is required.");
 		}
 
-		ActionType deductType = actionTypeDAO.findById(ACTION_TYPE_DUDUCT);
+		ActionType deductType = actionTypeDAO.findById(ACTION_TYPE_DEDUCT);
 
 		if (deductType == null || !"Y".equals(deductType.getActiveStatus())) {
 			log.info("Deduct action type is not active. No token deduction will be made for backdate check-out.");
@@ -2164,7 +2179,7 @@ public class CubeTokenService {
 		jsonNode.put("date", checkOut.toLocalDateTime().format(FORMATTER));
 
 		tokenUsage.setUserId(userId);
-		tokenUsage.setActionTypeId(ACTION_TYPE_DUDUCT);
+		tokenUsage.setActionTypeId(ACTION_TYPE_DEDUCT);
 		tokenUsage.setActionPointId(ACTION_POINT_BACKDATE);
 		tokenUsage.setValue(backDateActionPoint.getPoint());
 		tokenUsage.setReconcile(null);
@@ -3891,28 +3906,40 @@ public class CubeTokenService {
 
 	private boolean isLate(Timestamp checkin, String workTimeStart) {
 
-		if (checkin == null || workTimeStart == null) {
+		if (checkin == null) {
 			return false;
 		}
 
-		LocalTime actualCheckIn = checkin.toLocalDateTime().toLocalTime();
-
 		LocalTime workStart = parseTime(workTimeStart);
 
-		return workStart != null && actualCheckIn.isAfter(workStart);
+		// No shift configured (00:00) or unparsable shift time: never treat as late
+		if (workStart == null || LocalTime.MIDNIGHT.equals(workStart)) {
+			return false;
+		}
+
+		// Compare at minute precision: a check-in at 09:00:37 is still "09:00"
+		LocalTime actualCheckIn = checkin.toLocalDateTime().toLocalTime().truncatedTo(ChronoUnit.MINUTES);
+
+		return actualCheckIn.isAfter(workStart.plusMinutes(ATTENDANCE_GRACE_MINUTES));
 	}
 
 	private boolean isEarlyOut(Timestamp checkout, String workTimeEnd) {
 
-		if (checkout == null || workTimeEnd == null) {
+		if (checkout == null) {
 			return false;
 		}
 
-		LocalTime actualCheckOut = checkout.toLocalDateTime().toLocalTime();
-
 		LocalTime workEnd = parseTime(workTimeEnd);
 
-		return workEnd != null && actualCheckOut.isBefore(workEnd);
+		// No shift configured (00:00) or unparsable shift time: never treat as early out
+		if (workEnd == null || LocalTime.MIDNIGHT.equals(workEnd)) {
+			return false;
+		}
+
+		// Compare at minute precision: a check-out at 18:00:05 is still "18:00"
+		LocalTime actualCheckOut = checkout.toLocalDateTime().toLocalTime().truncatedTo(ChronoUnit.MINUTES);
+
+		return actualCheckOut.isBefore(workEnd.minusMinutes(ATTENDANCE_GRACE_MINUTES));
 	}
 
 	private boolean isBackdated(Timestamp workTime, Timestamp timeCreate, String description, LocalDate targetDate)
@@ -3994,12 +4021,31 @@ public class CubeTokenService {
 			return null;
 		}
 
-		String[] parts = time.trim().split(":");
+		// Accept both "9:00" and "9.00" (legacy data stores the dot form)
+		String[] parts = time.trim().replace('.', ':').split(":");
 
-		int hour = Integer.parseInt(parts[0]);
-		int minute = Integer.parseInt(parts[1]);
+		if (parts.length < 2) {
+			log.warn("Invalid time format (expected H:mm), value: " + time);
+			return null;
+		}
 
-		return LocalTime.of(hour, minute);
+		try {
+
+			int hour = Integer.parseInt(parts[0].trim());
+			int minute = Integer.parseInt(parts[1].trim());
+
+			if (hour < 0 || hour > 23 || minute < 0 || minute > 59) {
+				log.warn("Invalid time value (expected H:mm), value: " + time);
+				return null;
+			}
+
+			return LocalTime.of(hour, minute);
+
+		} catch (NumberFormatException e) {
+
+			log.warn("Invalid time value (expected H:mm), value: " + time);
+			return null;
+		}
 	}
 
 	private static class DistributionData {
