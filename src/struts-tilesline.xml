@@ -97,6 +97,14 @@
 	</definition>
 	<!-- My Travel -->
 
+	<!-- My Profile -->
+	<definition name="line_my_profile" extends="line_baseLayout">
+		<put-attribute name="title" value="My Profile" />
+		<put-attribute name="body"
+			value="/pages-line/my_profile/my_profile.jsp" />
+	</definition>
+	<!-- My Profile -->
+
 	<!-- Line OA -->
 	<definition name="line_bind_account" template="/pages-line/LineOA/BindAccountLineOA.jsp">
 		<put-attribute name="title" value="Bind Account" />
