@@ -45,6 +45,10 @@
 .liff-borrow-row { padding-block: 19.5px; }
 .liff-borrow-name { cursor: pointer; }
 .liff-borrow-name:hover { color: var(--bs-gray-900); }
+.liff-news-img { display: block; width: 100%; aspect-ratio: 16 / 9; object-fit: cover; }
+.liff-news-img-blank { object-fit: contain; padding: 2rem; background: var(--bs-gray-100); }
+.liff-news-carousel .carousel-indicators [data-bs-target] { width: 8px; height: 8px; margin: 0 4px; border: 0; border-radius: 4px; background-color: var(--bs-red); transition: width .3s ease, opacity .3s ease; }
+.liff-news-carousel .carousel-indicators .active { width: 24px; }
 .liff-sig-box { position: relative; width: 100%; height: 180px; border-radius: 10px; border: 2px dashed var(--bs-gray-400); background: var(--bs-card-bg); display: flex; flex-direction: column; align-items: center; justify-content: center; overflow: hidden; }
 .liff-sig-box.is-locked { border-style: solid; border-color: var(--bs-gray-300); }
 .liff-sig-box img { max-width: 100%; max-height: 160px; object-fit: contain; }
@@ -146,6 +150,56 @@
 					</div>
 				</div>
 			</div>
+
+			<jsp:useBean id="newsNow" class="java.util.Date" />
+			<fmt:formatDate var="newsToday" value="${newsNow}" pattern="yyyy-MM-dd" />
+			<c:set var="newsCount" value="0" />
+			<c:forEach var="ann" items="${announcementList}">
+				<fmt:formatDate var="annDateStr" value="${ann.announcement_date}" pattern="yyyy-MM-dd" />
+				<c:if test="${newsCount < 3 and ann.status ne '0' and annDateStr <= newsToday}">
+					<c:set var="newsCount" value="${newsCount + 1}" />
+				</c:if>
+			</c:forEach>
+			<c:if test="${newsCount > 0}">
+					<div class="d-flex justify-content-between align-items-center">
+						<span class="d-flex align-items-center gap-2 fs-1 fw-bold lh-1 text-gray-800"><i class="ki-duotone ki-satellite fs-2 text-danger"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span><span class="path5"></span><span class="path6"></span></i>News</span>
+					</div>
+					<div id="newsCarousel" class="carousel slide liff-news-carousel" data-bs-touch="true" data-bs-interval="false">
+						<div class="carousel-inner">
+							<c:set var="newsIdx" value="0" />
+							<c:forEach var="ann" items="${announcementList}">
+								<fmt:formatDate var="annDateStr" value="${ann.announcement_date}" pattern="yyyy-MM-dd" />
+								<c:if test="${newsIdx < 3 and ann.status ne '0' and annDateStr <= newsToday}">
+									<div class="carousel-item ${newsIdx == 0 ? 'active' : ''}">
+										<a href="${ctx}/announcementRead?id=${ann.announcementId}" class="liff-home-card d-block text-reset position-relative">
+											<c:if test="${newsIdx == 0}"><span class="badge badge-lg badge-danger position-absolute top-0 end-0 mt-4 me-4">New</span></c:if>
+											<c:choose>
+												<c:when test="${not empty ann.fileUpload and not empty ann.fileUpload.path}">
+													<img src="${fn:escapeXml(ann.fileUpload.path)}" alt="${fn:escapeXml(ann.topic)}" class="liff-news-img" draggable="false" onerror="this.onerror=null; this.src='${ctx}/assets/media/svg/files/blank-image.svg'; this.classList.add('liff-news-img-blank');">
+												</c:when>
+												<c:otherwise>
+													<img src="${ctx}/assets/media/svg/files/blank-image.svg" alt="${fn:escapeXml(ann.topic)}" class="liff-news-img liff-news-img-blank" draggable="false">
+												</c:otherwise>
+											</c:choose>
+											<div class="d-flex flex-column gap-2 p-5">
+												<span class="fs-6 fw-bold text-gray-800">${fn:escapeXml(ann.topic)}</span>
+												<span class="d-flex align-items-center gap-1 fs-7 text-gray-600"><i class="ki-duotone ki-calendar-2 fs-6"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span><span class="path5"></span></i><fmt:formatDate value="${ann.announcement_date}" pattern="d MMM yyyy" /></span>
+											</div>
+										</a>
+									</div>
+									<c:set var="newsIdx" value="${newsIdx + 1}" />
+								</c:if>
+							</c:forEach>
+						</div>
+						<c:if test="${newsCount > 1}">
+							<div class="carousel-indicators position-relative m-0 mt-3">
+								<c:forEach begin="0" end="${newsCount - 1}" var="i">
+									<button type="button" data-bs-target="#newsCarousel" data-bs-slide-to="${i}" class="${i == 0 ? 'active' : ''}" aria-label="News ${i + 1}" ${i == 0 ? 'aria-current="true"' : ''}></button>
+								</c:forEach>
+							</div>
+						</c:if>
+					</div>
+			</c:if>
 
 		</div>
 	</div>
@@ -356,6 +410,9 @@
 	var ctx = '${ctx}';
 	var year = new Date().getFullYear();
 	$('#yearlyCubeToken-year, #rankingCubeToken-year').text(year);
+
+	var newsCarousel = document.getElementById('newsCarousel');
+	if (newsCarousel) bootstrap.Carousel.getOrCreateInstance(newsCarousel, { interval: false, touch: true });
 
 	function showMain(show) {
 		$('#profileMain').toggleClass('d-none', !show);
