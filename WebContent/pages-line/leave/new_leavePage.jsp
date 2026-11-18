@@ -2062,6 +2062,7 @@ function lfCompressIfNeeded(file, loadingId, onDone) {
 function lfProcessFile(file, loadingId, onDone) {
 	if (liffIsHeicFile(file)) {
 		lfRemoveLoading(loadingId);
+		lfSyncInput();
 		lfRenderAll();
 		liffFileAlertHeic(LF_SUPPORTED_TEXT);
 		if (onDone) onDone(false);
@@ -2075,6 +2076,7 @@ function lfTryAddFile(file, loadingId, onDone) {
 	var currentTotal = lfCurrentTotalSize();
 	if (currentTotal + file.size > LIFF_FILE_TOTAL_LIMIT) {
 		liffFileAlertTooBig(file.name);
+		lfSyncInput();
 		lfRenderAll();
 		if (onDone) onDone(false);
 		return;
@@ -2094,10 +2096,12 @@ function lfAddFiles(fileList, onDone) {
 	Array.prototype.slice.call(fileList).forEach(function (file) {
 		if (LIFF_FILE_FORBIDDEN.test(file.name)) {
 			liffFileAlertBadName(file.name);
+			lfSyncInput();
 			if (onDone) onDone(false);
 			return;
 		}
 		if (liffIsDuplicateFile(file, LeaveFiles.pending, LeaveFiles.loading)) {
+			lfSyncInput();
 			if (onDone) onDone(true);
 			return;
 		}

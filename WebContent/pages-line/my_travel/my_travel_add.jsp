@@ -1825,6 +1825,7 @@
 		function processTravelFile(file, loadingId) {
 			if (liffIsHeicFile(file)) {
 				removeTravelLoading(loadingId);
+				updateTravelInputFiles();
 				renderTravelFileList();
 				liffFileAlertHeic(TRAVEL_FILE_SUPPORTED_TEXT);
 				return;
@@ -1838,6 +1839,7 @@
 			removeTravelLoading(loadingId);
 			if (travelFilesTotalSize() + file.size > LIFF_FILE_TOTAL_LIMIT) {
 				liffFileAlertTooBig(file.name);
+				updateTravelInputFiles();
 				renderTravelFileList();
 				return;
 			}
@@ -1850,9 +1852,11 @@
 			Array.prototype.slice.call(fileList).forEach(function(file) {
 				if (LIFF_FILE_FORBIDDEN.test(file.name)) {
 					liffFileAlertBadName(file.name);
+					updateTravelInputFiles();
 					return;
 				}
 				if (liffIsDuplicateFile(file, travelSelectedFiles, travelLoadingFiles)) {
+					updateTravelInputFiles();
 					return;
 				}
 
