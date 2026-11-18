@@ -45,6 +45,11 @@
 .liff-borrow-row { padding-block: 19.5px; }
 .liff-borrow-name { cursor: pointer; }
 .liff-borrow-name:hover { color: var(--bs-gray-900); }
+.liff-sig-box { position: relative; width: 100%; height: 180px; border-radius: 10px; border: 2px dashed var(--bs-gray-400); background: var(--bs-card-bg); display: flex; flex-direction: column; align-items: center; justify-content: center; overflow: hidden; }
+.liff-sig-box.is-locked { border-style: solid; border-color: var(--bs-gray-300); }
+.liff-sig-box img { max-width: 100%; max-height: 160px; object-fit: contain; }
+.liff-sig-box canvas { position: absolute; inset: 0; width: 100%; height: 100%; touch-action: none; cursor: crosshair; }
+.liff-sig-box .liff-sig-hint { pointer-events: none; }
 </style>
 
 	<!-- หน้า Home -->
@@ -104,6 +109,7 @@
 									<a href="javascript:void(0)" class="liff-borrow-name d-block fs-6 fw-semibold text-gray-900 text-decoration-none text-truncate">${empty item.name ? '-' : fn:escapeXml(item.name)}</a>
 									<span class="d-flex align-items-center gap-1 fs-7 text-gray-800"><i class="ki-duotone ki-calendar-2 fs-6"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span><span class="path5"></span></i><fmt:formatDate value="${item.time_create}" pattern="d MMM yy, HH:mm" /></span>
 								</div>
+								<button type="button" class="liff-borrow-action btn btn-sm btn-success flex-shrink-0" data-borrow-id="${item.borrow_id}">${needReceive ? 'Confirm Receive' : 'Return'}</button>
 							</div>
 						</c:if>
 					</c:forEach>
@@ -264,6 +270,85 @@
 		</div>
 	</div>
 
+	<!-- Popup Notification (Received / Return) -->
+	<c:if test="${actionCount > 0}">
+	<div class="modal fade" id="notificationModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-hidden="true">
+		<div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+			<div class="modal-content">
+				<div class="modal-header border-0 pb-0">
+					<h3 class="modal-title text-gray-900">Notification</h3>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+				</div>
+				<div class="modal-body d-flex flex-column gap-5 p-5">
+					<span class="fs-3 fw-bold text-gray-900">ตรวจพบอุปกรณ์รอตอบรับ</span>
+
+					<div class="d-flex flex-column gap-3">
+						<span class="fs-4 fw-semibold text-gray-800">Signature</span>
+						<c:choose>
+							<c:when test="${not empty imgPathSignature}">
+								<div class="liff-sig-box is-locked">
+									<img src="${fn:escapeXml(imgPathSignature)}" alt="Signature" />
+									<div class="position-absolute top-0 end-0 mt-2 me-3 d-flex align-items-center gap-1 text-gray-500 fs-8">
+										<i class="ki-duotone ki-lock fs-7 text-gray-500"><span class="path1"></span><span class="path2"></span><span class="path3"></span></i> Signature on file
+									</div>
+								</div>
+							</c:when>
+							<c:otherwise>
+								<div class="liff-sig-box" id="sigBox">
+									<span class="liff-sig-hint text-muted fs-7" id="sigHint">Sign inside this box</span>
+									<canvas id="sigCanvas"></canvas>
+								</div>
+								<div class="d-flex justify-content-end">
+									<button type="button" class="btn btn-sm btn-light" id="sigClearBtn" disabled>Clear signature</button>
+								</div>
+							</c:otherwise>
+						</c:choose>
+					</div>
+
+					<c:forEach var="item" items="${borrowList}">
+						<c:set var="needReceive" value="${item.status == 'B' and not empty item.user_delivery and empty item.user_receive and empty item.user_return and empty item.user_return_receive}" />
+						<c:set var="needReturn" value="${item.status == 'T' and not empty item.user_delivery and not empty item.user_receive and empty item.user_return and empty item.user_return_receive}" />
+						<c:if test="${needReceive or needReturn}">
+							<div class="liff-borrow-modal-item d-flex flex-column gap-4 border border-warning rounded-2 p-4" data-borrow-id="${item.borrow_id}">
+								<div class="d-flex align-items-center gap-3">
+									<span class="liff-borrow-icon">
+										<c:choose>
+											<c:when test="${item.type eq 'c'}"><i class="ki-duotone ki-laptop fs-2 text-danger"><span class="path1"></span><span class="path2"></span></i></c:when>
+											<c:when test="${item.type eq 'in'}"><i class="ki-duotone ki-keyboard fs-2 text-danger"><span class="path1"></span><span class="path2"></span></i></c:when>
+											<c:when test="${item.type eq 'L' or item.type eq 'sl'}"><i class="ki-duotone ki-verify fs-2 text-danger"><span class="path1"></span><span class="path2"></span></i></c:when>
+											<c:when test="${item.type eq 'Mob'}"><i class="ki-duotone ki-phone fs-2 text-danger"><span class="path1"></span><span class="path2"></span></i></c:when>
+											<c:when test="${item.type eq 'p'}"><i class="ki-duotone ki-wifi-square fs-2 text-danger"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span></i></c:when>
+											<c:otherwise><i class="ki-duotone ki-dots-square fs-2 text-danger"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span></i></c:otherwise>
+										</c:choose>
+									</span>
+									<div class="d-flex flex-column min-w-0">
+										<span class="fs-6 fw-semibold text-gray-900 text-break">${fn:escapeXml(item.item_no)} ${fn:escapeXml(item.name)}</span>
+										<c:choose>
+											<c:when test="${needReceive}"><span class="fs-7 text-gray-700">ส่งมอบ : <fmt:formatDate value="${item.time_delivery}" pattern="dd MMM yyyy" /></span></c:when>
+											<c:otherwise><span class="fs-7 text-gray-700">ขอคืน : <fmt:formatDate value="${item.time_update}" pattern="dd MMM yyyy" /></span></c:otherwise>
+										</c:choose>
+									</div>
+								</div>
+								<c:choose>
+									<c:when test="${needReceive}"><button type="button" class="btn btn-success btnReceived w-100" data-id="${item.borrow_id}" <c:if test="${empty imgPathSignature}">disabled</c:if>>Received</button></c:when>
+									<c:otherwise><button type="button" class="btn btn-success btnReturn w-100" data-id="${item.borrow_id}" <c:if test="${empty imgPathSignature}">disabled</c:if>>Return</button></c:otherwise>
+								</c:choose>
+							</div>
+						</c:if>
+					</c:forEach>
+				</div>
+				<div class="modal-footer border-0 pt-0">
+					<button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	</c:if>
+
+	<div id="liffLoadingOverlay" class="liff-loading-overlay liff-loading-delayed" style="z-index:1060;">
+		<div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading...</span></div>
+	</div>
+
 </div>
 
 <script type="text/javascript">
@@ -288,6 +373,162 @@
 		showMain(false);
 		var tabEl = document.querySelector('#profileDetail a[href="#tabBorrow"]');
 		if (tabEl) tabEl.click();
+	});
+
+	$('#profileMain').on('click', '.liff-borrow-action', function () {
+		var modalElement = document.getElementById('notificationModal');
+		if (!modalElement) return;
+		var borrowId = String($(this).data('borrow-id'));
+		$(modalElement).find('.liff-borrow-modal-item').each(function () {
+			$(this).toggleClass('d-none', String($(this).data('borrow-id')) !== borrowId);
+		});
+		bootstrap.Modal.getOrCreateInstance(modalElement).show();
+	});
+
+	function hideLoading() {
+		$('#liffLoadingOverlay').hide();
+	}
+
+	var hasSignature = ${not empty imgPathSignature ? 'true' : 'false'};
+	var canvas = document.getElementById('sigCanvas');
+	var signed = false;
+
+	function setBorrowButtonsReady() {
+		$('.btnReceived, .btnReturn').prop('disabled', !(hasSignature || signed));
+	}
+
+	if (canvas) {
+		var pad = canvas.getContext('2d');
+		var drawing = false;
+		var hint = document.getElementById('sigHint');
+		var clearBtn = document.getElementById('sigClearBtn');
+
+		function setupCanvas() {
+			var ratio = window.devicePixelRatio || 1;
+			canvas.width = canvas.offsetWidth * ratio;
+			canvas.height = canvas.offsetHeight * ratio;
+			pad.setTransform(ratio, 0, 0, ratio, 0, 0);
+			pad.lineWidth = 2.5;
+			pad.lineCap = 'round';
+			pad.lineJoin = 'round';
+			pad.strokeStyle = getComputedStyle(document.documentElement).getPropertyValue('--bs-primary').trim() || '#1B84FF';
+		}
+
+		function clearSignature() {
+			setupCanvas();
+			signed = false;
+			hint.classList.remove('d-none');
+			clearBtn.disabled = true;
+			setBorrowButtonsReady();
+		}
+
+		function pointOf(e) {
+			var rect = canvas.getBoundingClientRect();
+			return { x: e.clientX - rect.left, y: e.clientY - rect.top };
+		}
+
+		canvas.addEventListener('pointerdown', function (e) {
+			drawing = true;
+			canvas.setPointerCapture(e.pointerId);
+			var p = pointOf(e);
+			pad.beginPath();
+			pad.moveTo(p.x, p.y);
+		});
+
+		canvas.addEventListener('pointermove', function (e) {
+			if (!drawing) return;
+			var p = pointOf(e);
+			pad.lineTo(p.x, p.y);
+			pad.stroke();
+			if (!signed) {
+				signed = true;
+				hint.classList.add('d-none');
+				clearBtn.disabled = false;
+				setBorrowButtonsReady();
+			}
+		});
+
+		canvas.addEventListener('pointerup', function () { drawing = false; });
+		canvas.addEventListener('pointercancel', function () { drawing = false; });
+		clearBtn.addEventListener('click', clearSignature);
+
+		document.getElementById('notificationModal').addEventListener('shown.bs.modal', clearSignature);
+	}
+
+	function getSignatureBlob() {
+		return new Promise(function (resolve) {
+			if (hasSignature || !canvas) { resolve(null); return; }
+			canvas.toBlob(resolve, 'image/png');
+		});
+	}
+
+	function saveSignature() {
+		return getSignatureBlob().then(function (blob) {
+			if (!blob) return;
+			var formData = new FormData();
+			formData.append('fileUpload', blob, 'signature.png');
+			return fetch(ctx + '/update_signature', { method: 'POST', body: formData })
+				.then(function (res) { if (!res.ok) throw new Error(res.status); });
+		});
+	}
+
+	function postBorrowAction(url, borrowId, errorText) {
+		liffShowLoading();
+		saveSignature()
+			.catch(function () {
+				hideLoading();
+				liffToastError('Unable to save your signature. Please try again.', 'Save failed');
+				throw null;
+			})
+			.then(function () {
+				return fetch(url, {
+					method: 'POST',
+					headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+					body: 'id=' + encodeURIComponent(borrowId)
+				}).catch(function () {
+					hideLoading();
+					liffToastError(errorText, 'Error');
+					throw null;
+				});
+			})
+			.then(function () { location.reload(); })
+			.catch(function () {});
+	}
+
+	//----- Received -----
+	$(document).on('click', '.btnReceived', function (e) {
+		e.preventDefault();
+		var borrowId = $(this).data('id');
+		Swal.fire({
+			title: 'Are you sure?!',
+			text: 'Have you received this equipment?',
+			icon: 'question',
+			showCancelButton: true,
+			confirmButtonText: 'Yes, received it',
+			cancelButtonText: 'Cancel',
+			buttonsStyling: false,
+			customClass: { confirmButton: 'btn btn-success', cancelButton: 'btn btn-secondary' }
+		}).then(function (result) {
+			if (result.isConfirmed) postBorrowAction(ctx + '/received_equipment.action', borrowId, 'Failed to received equipment');
+		});
+	});
+
+	//----- Return -----
+	$(document).on('click', '.btnReturn', function (e) {
+		e.preventDefault();
+		var borrowId = $(this).data('id');
+		Swal.fire({
+			title: 'Confirm Return?',
+			text: 'Confirm that you have returned this equipment.',
+			icon: 'question',
+			showCancelButton: true,
+			confirmButtonText: 'Yes, returned',
+			cancelButtonText: 'Cancel',
+			buttonsStyling: false,
+			customClass: { confirmButton: 'btn btn-success', cancelButton: 'btn btn-secondary' }
+		}).then(function (result) {
+			if (result.isConfirmed) postBorrowAction(ctx + '/return_equipment.action', borrowId, 'Failed to return equipment');
+		});
 	});
 
 	function makeAvatar(user) {
