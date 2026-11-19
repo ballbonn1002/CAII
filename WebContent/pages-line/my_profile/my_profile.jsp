@@ -49,11 +49,6 @@
 .liff-news-img-blank { object-fit: contain; padding: 2rem; background: var(--bs-gray-100); }
 .liff-news-carousel .carousel-indicators [data-bs-target] { width: 8px; height: 8px; margin: 0 4px; border: 0; border-radius: 4px; background-color: var(--bs-red); transition: width .3s ease, opacity .3s ease; }
 .liff-news-carousel .carousel-indicators .active { width: 24px; }
-.liff-sig-box { position: relative; width: 100%; height: 180px; border-radius: 10px; border: 2px dashed var(--bs-gray-400); background: var(--bs-card-bg); display: flex; flex-direction: column; align-items: center; justify-content: center; overflow: hidden; }
-.liff-sig-box.is-locked { border-style: solid; border-color: var(--bs-gray-300); }
-.liff-sig-box img { max-width: 100%; max-height: 160px; object-fit: contain; }
-.liff-sig-box canvas { position: absolute; inset: 0; width: 100%; height: 100%; touch-action: none; cursor: crosshair; }
-.liff-sig-box .liff-sig-hint { pointer-events: none; }
 </style>
 
 	<!-- หน้า Home -->
@@ -338,25 +333,10 @@
 
 					<div class="d-flex flex-column gap-3">
 						<span class="fs-4 fw-semibold text-gray-800">Signature</span>
-						<c:choose>
-							<c:when test="${not empty imgPathSignature}">
-								<div class="liff-sig-box is-locked">
-									<img src="${fn:escapeXml(imgPathSignature)}" alt="Signature" />
-									<div class="position-absolute top-0 end-0 mt-2 me-3 d-flex align-items-center gap-1 text-gray-500 fs-8">
-										<i class="ki-duotone ki-lock fs-7 text-gray-500"><span class="path1"></span><span class="path2"></span><span class="path3"></span></i> Signature on file
-									</div>
-								</div>
-							</c:when>
-							<c:otherwise>
-								<div class="liff-sig-box" id="sigBox">
-									<span class="liff-sig-hint text-muted fs-7" id="sigHint">Sign inside this box</span>
-									<canvas id="sigCanvas"></canvas>
-								</div>
-								<div class="d-flex justify-content-end">
-									<button type="button" class="btn btn-sm btn-light" id="sigClearBtn" disabled>Clear signature</button>
-								</div>
-							</c:otherwise>
-						</c:choose>
+						<jsp:include page="/pages-line/common/liff_signature_pad.jsp">
+							<jsp:param name="signatureUrl" value="${imgPathSignature}" />
+							<jsp:param name="editable" value="true" />
+						</jsp:include>
 					</div>
 
 					<c:forEach var="item" items="${borrowList}">
@@ -448,74 +428,20 @@
 
 	var hasSignature = ${not empty imgPathSignature ? 'true' : 'false'};
 	var canvas = document.getElementById('sigCanvas');
-	var signed = false;
+	var sigPad = canvas ? liffSignaturePad(canvas, setBorrowButtonsReady) : null;
 
 	function setBorrowButtonsReady() {
-		$('.btnReceived, .btnReturn').prop('disabled', !(hasSignature || signed));
+		$('.btnReceived, .btnReturn').prop('disabled', !(hasSignature || (sigPad && sigPad.isSigned())));
 	}
 
-	if (canvas) {
-		var pad = canvas.getContext('2d');
-		var drawing = false;
-		var hint = document.getElementById('sigHint');
-		var clearBtn = document.getElementById('sigClearBtn');
-
-		function setupCanvas() {
-			var ratio = window.devicePixelRatio || 1;
-			canvas.width = canvas.offsetWidth * ratio;
-			canvas.height = canvas.offsetHeight * ratio;
-			pad.setTransform(ratio, 0, 0, ratio, 0, 0);
-			pad.lineWidth = 2.5;
-			pad.lineCap = 'round';
-			pad.lineJoin = 'round';
-			pad.strokeStyle = getComputedStyle(document.documentElement).getPropertyValue('--bs-primary').trim() || '#1B84FF';
-		}
-
-		function clearSignature() {
-			setupCanvas();
-			signed = false;
-			hint.classList.remove('d-none');
-			clearBtn.disabled = true;
-			setBorrowButtonsReady();
-		}
-
-		function pointOf(e) {
-			var rect = canvas.getBoundingClientRect();
-			return { x: e.clientX - rect.left, y: e.clientY - rect.top };
-		}
-
-		canvas.addEventListener('pointerdown', function (e) {
-			drawing = true;
-			canvas.setPointerCapture(e.pointerId);
-			var p = pointOf(e);
-			pad.beginPath();
-			pad.moveTo(p.x, p.y);
-		});
-
-		canvas.addEventListener('pointermove', function (e) {
-			if (!drawing) return;
-			var p = pointOf(e);
-			pad.lineTo(p.x, p.y);
-			pad.stroke();
-			if (!signed) {
-				signed = true;
-				hint.classList.add('d-none');
-				clearBtn.disabled = false;
-				setBorrowButtonsReady();
-			}
-		});
-
-		canvas.addEventListener('pointerup', function () { drawing = false; });
-		canvas.addEventListener('pointercancel', function () { drawing = false; });
-		clearBtn.addEventListener('click', clearSignature);
-
-		document.getElementById('notificationModal').addEventListener('shown.bs.modal', clearSignature);
+	if (sigPad) {
+		document.getElementById('notificationModal').addEventListener('shown.bs.modal', sigPad.clear);
 	}
 
 	function getSignatureBlob() {
 		return new Promise(function (resolve) {
-			if (hasSignature || !canvas) { resolve(null); return; }
-			canvas.toBlob(resolve, 'image/png');
+			if (hasSignature || !sigPad) { resolve(null); return; }
+			sigPad.toBlob().then(resolve);
 		});
 	}
 
