@@ -178,7 +178,7 @@
 						<div class="btn bg-body btn-active-primary w-100 h-100 d-flex flex-column align-items-center justify-content-center py-12 rounded-3">
 							<span class="fw-semibold fs-1 mb-3 text-gray-800">Borrow</span>
 							<div class="report-card-img">
-								<img src="${pageContext.request.contextPath}/assets/media/svg/illustrations/easy/borrowHistory.svg"
+								<img src="${pageContext.request.contextPath}/assets/media/svg/illustrations/easy/borrowingHistory.svg"
 								     onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
 								     class="mh-175px" 
 								     style="object-fit: contain; width: 100%; max-height: 160px;" 
