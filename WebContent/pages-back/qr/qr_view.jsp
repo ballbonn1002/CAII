@@ -86,6 +86,11 @@
                                                 <div class="text-gray-600">ยังไม่มีสต็อก</div>
                                             </c:when>
                                             <c:otherwise>
+                                                <%-- ตัวแม่ที่มี sub: ยอดรวมทุก sub ตัวใหญ่ด้านบน แล้วแยกบรรทัดต่อ sub ด้านล่าง --%>
+                                                <c:if test="${qrMultiProduct and not empty qrGrandTotal}">
+                                                    <div class="fs-2 fw-bold text-gray-900"><c:out value="${qrGrandTotal}" /></div>
+                                                    <div class="separator separator-dashed my-4"></div>
+                                                </c:if>
                                                 <c:forEach var="t" items="${qrTotals}">
                                                     <c:choose>
                                                         <%-- มี sub product: แสดงยอดแยกบรรทัดต่อ sub --%>

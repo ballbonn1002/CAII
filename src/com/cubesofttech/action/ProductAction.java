@@ -505,7 +505,7 @@ public class ProductAction extends ActionSupport {
             }
 
             // ---- Consumable/Accessory/Office: reconcile ล่าสุดต่อ sub product รวมขึ้นตัวแม่
-            //      + ผลรวม amount_unit ต่อคลัง (!= 0 = คลังนั้นมียอดคงเหลือจริง) ----
+            //      + ผลรวมต่อคลังเป็นหน่วยหลัก (amount_convert, != 0 = คลังนั้นมียอดคงเหลือจริง) ----
             Map<String, Double> stockOnHandByParent = new HashMap<String, Double>();
             Map<String, Map<String, Double>> stockByParentWarehouse = new HashMap<String, Map<String, Double>>();
             List<Stock> stockRows = stockDAO.findByProductIds(stockFamilyIds);
@@ -527,7 +527,7 @@ public class ProductAction extends ActionSupport {
                     }
 
                     if (!isBlank(row.getWarehouseId())) {
-                        double amt = (row.getAmountUnit() != null) ? row.getAmountUnit().doubleValue() : 0d;
+                        double amt = stockQtyInMainUnit(row);
                         Map<String, Double> whMap = stockByParentWarehouse.get(parentId);
                         if (whMap == null) {
                             whMap = new HashMap<String, Double>();
@@ -695,7 +695,7 @@ public class ProductAction extends ActionSupport {
                 }
             }
 
-            // warehouseId จริง -> (parentProductId -> ผลรวม amount_unit) ของคลังนั้นโดยตรง (ไม่ roll-up)
+            // warehouseId จริง -> (parentProductId -> ผลรวมเป็นหน่วยหลัก) ของคลังนั้นโดยตรง (ไม่ roll-up)
             Map<Long, Map<String, Double>> ownAmountByWarehouseId = new HashMap<Long, Map<String, Double>>();
             // warehouse_id ใน stock ที่ไม่พบในตาราง warehouse จริง (ข้อมูลตกหล่น) - ยังต้องโชว์ไม่ทิ้งยอดไปเงียบๆ
             Set<Long> orphanWarehouseIds = new HashSet<Long>();
@@ -716,7 +716,7 @@ public class ProductAction extends ActionSupport {
                         orphanWarehouseIds.add(whId);
                     }
 
-                    double amt = (row.getAmountUnit() != null) ? row.getAmountUnit().doubleValue() : 0d;
+                    double amt = stockQtyInMainUnit(row);
                     Map<String, Double> byParent = ownAmountByWarehouseId.get(whId);
                     if (byParent == null) {
                         byParent = new HashMap<String, Double>();
@@ -2133,7 +2133,7 @@ public class ProductAction extends ActionSupport {
     /**
      * ยอดคงเหลือเป็นกลุ่มตาม sub product (ไซซ์) เรียงตาม sequence
      *  - total : ยอดคงเหลือจริง ดึงจาก stock.reconcile (แถวล่าสุด)
-     *  - rows  : รายการแยกคลังจากตาราง stock โดยตรง (ผลรวม amount_unit ต่อคลัง) - warehouse จาก WarehouseDAO เหมือนเดิม
+     *  - rows  : รายการแยกคลังจากตาราง stock โดยตรง (ผลรวมต่อคลังเป็นหน่วยหลัก ดู stockQtyInMainUnit) - warehouse จาก WarehouseDAO เหมือนเดิม
      * โครงสร้าง: [{ key, label, total, rows:[{warehouse, amount}] }]
      */
     private List<Map<String, Object>> buildBalances(List<Product> subProducts, List<Warehouse> warehouses,
@@ -2148,7 +2148,7 @@ public class ProductAction extends ActionSupport {
                 }
                 String subKey = str(row.getProductId());
                 String whKey = str(row.getWarehouseId());
-                double amt = (row.getAmountUnit() != null) ? row.getAmountUnit().doubleValue() : 0d;
+                double amt = stockQtyInMainUnit(row);
 
                 Map<String, Double> whMap = bySubWh.get(subKey);
                 if (whMap == null) {
@@ -2289,6 +2289,23 @@ public class ProductAction extends ActionSupport {
             map.put(key, Double.valueOf(reconcile));
         }
         return map;
+    }
+
+    /**
+     * จำนวนของแถว stock เป็นหน่วยหลัก (amount_convert = amount_unit x conversion_rate ของหน่วยที่รับเข้า)
+     * ต้องใช้ตัวนี้ทุกครั้งที่ "บวกรวมหลายแถว" เพราะแต่ละแถวอาจรับเข้าคนละหน่วย (เช่น 2 กล่อง + 6 ด้าม)
+     * ถ้าเอา amount_unit มาบวกกันตรงๆ จะได้ 8 แทนที่จะเป็น 30 ด้าม และไม่ตรงกับยอดรวม (reconcile) ของหน้าเดียวกัน
+     * แถวเก่าที่ไม่มี amount_convert ใช้ amount_unit แทน (เหมือน QrService.stockAmount)
+     * หมายเหตุ: ประวัติรับเข้ารายเอกสารยังใช้ amount_unit ได้ เพราะแสดงคู่กับหน่วยของแถวนั้นเอง
+     */
+    private static double stockQtyInMainUnit(Stock row) {
+        if (row == null) {
+            return 0d;
+        }
+        if (row.getAmountConvert() != null) {
+            return row.getAmountConvert().doubleValue();
+        }
+        return (row.getAmountUnit() != null) ? row.getAmountUnit().doubleValue() : 0d;
     }
 
     private Map<String, Object> balanceRow(String warehouse, double amount) {

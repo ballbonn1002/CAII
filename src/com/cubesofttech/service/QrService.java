@@ -609,6 +609,18 @@ public class QrService {
 		attrs.put("qrProductPageId", pageId);
 		attrs.put("qrMultiProduct", Boolean.valueOf(family.size() > 1));
 		attrs.put("qrTotals", totals);
+		// ตัวแม่ที่มี sub: ยอดรวมทุก sub (เหมือนปุ่ม All ในหน้า Stock Balance) ใช้หน่วยของตัวที่สแกน
+		// (sub ไม่มีหน่วยของตัวเอง จึงใช้หน่วยของตัวแม่ - ดู unitsOf(Product, ...))
+		if (family.size() > 1 && !totals.isEmpty()) {
+			double grandTotal = 0d;
+			for (Map<String, Double> byWh : netByProduct.values()) {
+				for (Double v : byWh.values()) {
+					grandTotal += v.doubleValue();
+				}
+			}
+			attrs.put("qrGrandTotal", formatAmount(grandTotal,
+					unitsOf(product, String.valueOf(product.getProductId()), unitCache)));
+		}
 		attrs.put("qrByLocation", byLocation);
 	}
 
