@@ -1351,7 +1351,7 @@ SET
     `month` = MONTH(time_create)
 WHERE (`year` = 0 OR `month` = 0) AND time_create IS NOT NULL;
 
--- PROD 17 NOV 2026
+
 
 
 UPDATE token_usage
@@ -1359,3 +1359,5 @@ SET
     `year` = YEAR(time_create),
     `month` = MONTH(time_create)
 WHERE (`year` IS NULL OR `month` IS NULL) AND time_create IS NOT NULL;
+
+-- PROD 20 NOV 2026
