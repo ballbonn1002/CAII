@@ -87,6 +87,8 @@ body {
 	z-index: 100;
 }
 .liff-floating-btn .ki-duotone { font-size: 1.75rem; }
+.liff-submit-bar { display: flex; gap: 10px; margin-top: 20px; }
+.liff-submit-bar .btn { flex: 1; }
 /* ปุ่มเลือกปี */
 #yearFilterBtn { font-size: 13px; font-weight: 600; color: var(--bs-gray-700); border: 1px solid var(--bs-gray-300); border-radius: 8px; padding: 6px 16px; background-color: var(--bs-gray-100); }
 #yearFilterBtn:hover, #yearFilterBtn:focus, #yearFilterBtn:active { background-color: var(--bs-gray-100); border-color: var(--bs-primary); box-shadow: none; }
