@@ -265,7 +265,20 @@
 						</div>
 						<div class="liff-info-row">
 							<span class="d-flex align-items-center gap-3"><span class="symbol symbol-35px symbol-circle"><span class="symbol-label bg-light-primary"><i class="ki-duotone ki-brifecase-timer text-primary"><span class="path1"></span><span class="path2"></span><span class="path3"></span></i></span></span><span class="text-gray-600">${fn:escapeXml(user.workTimeStart)} - ${fn:escapeXml(user.workTimeEnd)}</span></span>
-							<span class="fw-semibold text-gray-800">${user.workDayStart == 1 ? 'Mon' : user.workDayStart == 2 ? 'Tue' : user.workDayStart == 3 ? 'Wed' : user.workDayStart == 4 ? 'Thu' : user.workDayStart == 5 ? 'Fri' : user.workDayStart == 6 ? 'Sat' : user.workDayStart == 7 ? 'Sun' : ''} ${user.workDayEnd == 1 ? '- Mon' : user.workDayEnd == 2 ? '- Tue' : user.workDayEnd == 3 ? '- Wed' : user.workDayEnd == 4 ? '- Thu' : user.workDayEnd == 5 ? '- Fri' : user.workDayEnd == 6 ? '- Sat' : user.workDayEnd == 7 ? '- Sun' : ''}</span>
+							<span class="fw-semibold text-gray-800">${user.workDayStart == 1 ? 'Mon' :
+								user.workDayStart == 2 ? 'Tue' :
+								user.workDayStart == 3 ? 'Wed' :
+								user.workDayStart == 4 ? 'Thu' :
+								user.workDayStart == 5 ? 'Fri' :
+								user.workDayStart == 6 ? 'Sat' :
+								user.workDayStart == 7 ? 'Sun' : ''}
+								${user.workDayEnd == 1 ? '- Mon' :
+								user.workDayEnd == 2 ? '- Tue' :
+								user.workDayEnd == 3 ? '- Wed' :
+								user.workDayEnd == 4 ? '- Thu' :
+								user.workDayEnd == 5 ? '- Fri' :
+								user.workDayEnd == 6 ? '- Sat' :
+								user.workDayEnd == 7 ? '- Sun' : ''}</span>
 						</div>
 						<div class="liff-info-row">
 							<span class="d-flex align-items-center gap-3"><span class="symbol symbol-35px symbol-circle"><span class="symbol-label bg-light-primary"><i class="ki-duotone ki-security-user text-primary"><span class="path1"></span><span class="path2"></span></i></span></span><span class="text-gray-600">Manager</span></span>
