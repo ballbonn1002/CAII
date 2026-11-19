@@ -1093,8 +1093,6 @@
 <style>
 .liff-upload-badge { box-sizing: border-box; display: inline-flex; align-items: center; justify-content: center; gap: 10px; margin-left: auto; width: 84px; height: 24px; padding: 0 8px; border-radius: 5.53px; background: var(--bs-primary-bg-subtle); color: var(--bs-primary); font-weight: 600; font-size: 12px; white-space: nowrap; cursor: pointer; }
 .liff-upload-badge i { color: var(--bs-primary); }
-.liff-submit-bar { display: flex; gap: 10px; margin-top: 20px; }
-.liff-submit-bar .btn { flex: 1; }
 #travelAddForm > .card { box-shadow: 0px 3px 4px 0px #00000008; }
 #expenseModal .liff-field-value[type=number] { -moz-appearance: textfield; }
 #expenseModal .liff-field-value[type=number]::-webkit-inner-spin-button, #expenseModal .liff-field-value[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }

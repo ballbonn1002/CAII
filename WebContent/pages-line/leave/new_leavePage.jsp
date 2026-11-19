@@ -515,8 +515,6 @@
 #leaveTypes { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 .liff-upload-badge { box-sizing: border-box; display: inline-flex; align-items: center; justify-content: center; gap: 10px; margin-left: auto; width: 84px; height: 24px; padding: 0 8px; border-radius: 5.53px; opacity: 1; background: var(--bs-primary-bg-subtle); color: var(--bs-primary); font-weight: 600; font-size: 12px; white-space: nowrap; cursor: pointer; }
 .liff-upload-badge i { color: var(--bs-primary); }
-.liff-submit-bar { display: flex; gap: 10px; margin-top: 20px; }
-.liff-submit-bar .btn { flex: 1; }
 #alert_evidence:empty, #filePreviewContainer:empty, #exitingFilePreviewContainer:empty { margin: 0 !important; }</style>
 
 <div class="liff-shell">

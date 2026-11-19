@@ -21,8 +21,6 @@
 	.liff-sig-box img { max-width: 100%; max-height: 160px; object-fit: contain; }
 	.liff-sig-box canvas { position: absolute; inset: 0; width: 100%; height: 100%; touch-action: none; cursor: crosshair; }
 	.liff-sig-box .liff-sig-hint { pointer-events: none; }
-	.liff-submit-bar { display: flex; gap: 10px; margin-top: 20px; }
-	.liff-submit-bar .btn { flex: 1; }
 	.liff-total-icon { font-size: min(calc(1.7rem + 5.4vw), 42px); }
 	</style>
 
