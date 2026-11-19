@@ -137,6 +137,7 @@ $(document).ready(function () {
 		"Material Request" : { icon : "ki-delivery-3",      paths : 5, bg : "bg-light-success", color : "text-success" },
 		"เบิกค่าเดินทาง"           : { icon : "ki-car-2",           paths : 6, bg : "bg-light-success", color : "text-success" },
 		"Announcement"       : { icon : "ki-notification-status", paths : 6, bg : "bg-light-danger", color : "text-danger" },
+		"Help Support"       : { icon : "ki-message-question", paths : 3, bg : "bg-light-info", color : "text-info" },
 	};
 	var DEFAULT_ICON = { icon : "ki-notification-status", paths : 4, bg : "bg-light-primary", color : "text-primary" };
 
@@ -260,12 +261,14 @@ $(document).ready(function () {
 		$badge.text(status);
 		if (status === "Reject" || status === "Cancel") {
 			$badge.addClass("badge-light-danger");
-		} else if (status === "Approve" || status === "Confirm Received" || status === "Confirm Returned") {
+		} else if (status === "Approve" || status === "Confirm Received" || status === "Confirm Returned" || status === "Resolved") {
 			$badge.addClass("badge-light-success");
-		} else if (status === "Wait for approve" || status === "Waiting Approve" || status === "Wait Confirm Received" || status === "Wait Returned") {
+		} else if (status === "Wait for approve" || status === "Waiting Approve" || status === "Wait Confirm Received" || status === "Wait Returned" || status === "New") {
 			$badge.addClass("badge-light-warning");
 		} else if (status === "Paid") {
 			$badge.addClass("badge-light-info");
+		} else if (status === "Closed") {
+			$badge.addClass("badge-light-dark");
 		} else {
 			$badge.addClass("badge-light-primary");
 		}
@@ -299,6 +302,9 @@ $(document).ready(function () {
 		},
 		"Borrow" : function (id, functionId) {
 			return "borrow_edit?id=" + encodeURIComponent(functionId);
+		},
+		"Help Support" : function (id, functionId) {
+			return "help_support_edit?supportId=" + encodeURIComponent(functionId);
 		}
 	};
 

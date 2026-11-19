@@ -139,7 +139,7 @@ request.setAttribute("guideCollapsed", isCollapsed);
 				<span class="me-2"><span class="fw-bolder">Status </span>
 					หากอยู่ในสถานะ <span class="badge badge-light-success fw-bold mx-1">Resolved</span>
 					และไม่ได้รับการยืนยันภายใน 5 วันจะปรับสถานะเป็น <span
-					class="badge badge-light-danger fw-bold mx-1">Closed</span>
+					class="badge badge-light-dark fw-bold mx-1">Closed</span>
 					อัตโนมัติ หากมีปัญหาเพิ่มกรุณาสร้างรายการเข้ามาในระบบอีกครั้ง</span>
 			</div>
 

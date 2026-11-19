@@ -38,6 +38,8 @@ public class NotificationService {
 	private static final String TITLE_ANNOUNCEMENT = "Announcement";
 	private static final String TITLE_BORROW = "My Borrow";
 	private static final String TITLE_BORROW_APPROVE = "Borrow Approve";
+	private static final String TITLE_HELP_SUPPORT = "Help Support";
+	private static final String AUTHORIZED_OBJECT_HELP_SUPPORT = "helpsupport.manage";
 	private static final String AUTHORIZED_OBJECT_LEAVE_APPROVE = "leave.approve";
 	private static final String AUTHORIZED_OBJECT_TRAVEL_APPROVE = "expense.approve";
 	private static final String AUTHORIZED_OBJECT_BORROW_APPROVE = "borrow.approved";
@@ -166,6 +168,19 @@ public class NotificationService {
 				saveNotification(userId, userId, TITLE_BORROW, message, description, actorId, funcId, "U");
 				break;
 
+			case TITLE_HELP_SUPPORT:
+				// แจ้งผู้มีสิทธิ์ helpsupport.manage ทุกคน (รวมถึงคนที่เป็นผู้กระทำเองด้วย)
+				List<User> helpSupportManagers = userDAO.findEnabledUsersByAuthorizedObjectId(AUTHORIZED_OBJECT_HELP_SUPPORT);
+				if (helpSupportManagers == null || helpSupportManagers.isEmpty()) {
+					log.debug("No enabled user found with authorized_object_id = " + AUTHORIZED_OBJECT_HELP_SUPPORT);
+					break;
+				}
+				for (User manager : helpSupportManagers) {
+					saveNotification(userId, manager.getId(), title, message, description, actorId, funcId, "A");
+				}
+				saveNotification(userId, userId, title, message, description, actorId, funcId, "U");
+				break;
+
 			default:
 				//saveNotification(userId, title, message, description, actorId, funcId);
 				break;
@@ -205,13 +220,13 @@ public class NotificationService {
 			}
 
 			//หาลายเซ็น
-			/*if (u.getPathSignature() != null) {
+			if (u.getPathSignature() != null) {
 				String imgPathSignature = fileAttachmentService.getFileUrl(u.getPathSignature());
 				String signatureFileName = fileAttachmentService.getFileDisplayName(u.getPathSignature());
 
 				request.setAttribute("imgPathSignature", imgPathSignature);
 				request.setAttribute("signatureFileName", signatureFileName);
-			}*/
+			}
 
 
 			//หา borrow

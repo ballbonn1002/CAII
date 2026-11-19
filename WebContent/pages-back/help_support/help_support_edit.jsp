@@ -213,8 +213,8 @@
 
                             <!-- Update Section (Form) -->
                             <form action="help_support_admin_reply" method="post" id="updateStatusForm">
-                                <input type="hidden" name="supportId" value="<s:property value='supportId'/>" /> <input
-                                    type="hidden" name="newStatus" id="statusInput" value="" />
+                                <input type="hidden" name="supportId" value="<s:property value='supportId'/>" /> 
+                                <input type="hidden" name="newStatus" id="statusInput" value="" />
 
                                 <!-- Footer Buttons -->
                                 <div class="d-flex justify-content-between align-items-center mt-8 pb-8">
@@ -230,7 +230,7 @@
                                                 test="#request.support.userCreate != null && #request.support.userCreate.trim() == #session.onlineUser.id">
                                                 <s:if test="#request.support.status == 'Resolved'">
                                                     <button type="button" class="btn btn-primary px-6 fw-bold"
-                                                        onclick="$('#statusInput').val('In Progress'); $('#updateStatusForm').submit();">Re-Open</button>
+                                                        onclick="openAdminReply('Re-Open')">Re-Open</button>
                                                     <button type="button" class="btn btn-dark px-6 fw-bold"
                                                         onclick="$('#statusInput').val('Closed'); $('#updateStatusForm').submit();">Closed</button>
                                                 </s:if>
@@ -690,7 +690,7 @@
                             document.getElementById('adminNewStatus').value = 'Resolved';
                             title.textContent = 'Mark as Resolved';
                             alertEl.className = 'alert d-flex align-items-center gap-3 mb-8 border border-dashed border-success';
-                            alertText.innerHTML = 'คุณกำลังจะปรับสถานะเป็น <span class="badge badge-light-success fw-bold fs-8 px-3 py-1">Resolved</span> กรุณาระบุข้อความสรุปการแก้ไข (ถ้ามี)';
+                            alertText.innerHTML = 'คุณกำลังจะปรับสถานะเป็น <span class="badge badge-light-success fw-bold fs-8 px-3 py-1">Resolved</span> กรุณาระบุข้อความสรุปการแก้ไข';
                             submitBtn.className = 'btn btn-success px-8 fw-bold';
                             submitBtn.textContent = 'Confirm';
                         } else if (mode === 'Closed') {
@@ -703,6 +703,13 @@
                         } else if (mode === 'In Progress') {
                             document.getElementById('adminNewStatus').value = 'In Progress';
                             title.textContent = 'Set In Progress';
+                            alertEl.className = 'alert d-flex align-items-center gap-3 mb-8 border border-dashed border-primary';
+                            alertText.innerHTML = 'คุณกำลังจะปรับสถานะเป็น <span class="badge badge-light-primary fw-bold fs-8 px-3 py-1">In Progress</span> กรุณาระบุข้อความ';
+                            submitBtn.className = 'btn btn-primary px-8 fw-bold';
+                            submitBtn.textContent = 'Confirm';
+                        } else if (mode === 'Re-Open') {
+                        	document.getElementById('adminNewStatus').value = 'In Progress';
+                            title.textContent = 'Re-Open Ticket';
                             alertEl.className = 'alert d-flex align-items-center gap-3 mb-8 border border-dashed border-primary';
                             alertText.innerHTML = 'คุณกำลังจะปรับสถานะเป็น <span class="badge badge-light-primary fw-bold fs-8 px-3 py-1">In Progress</span> กรุณาระบุข้อความ';
                             submitBtn.className = 'btn btn-primary px-8 fw-bold';

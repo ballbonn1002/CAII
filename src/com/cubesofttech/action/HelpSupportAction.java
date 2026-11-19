@@ -1,7 +1,9 @@
 package com.cubesofttech.action;
 
+import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -10,6 +12,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.apache.log4j.Logger;
+import org.json.JSONObject;
 import org.apache.struts2.ServletActionContext;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -19,6 +22,7 @@ import com.cubesofttech.dao.UserDAO;
 import com.cubesofttech.model.Support;
 import com.cubesofttech.model.SupportMenu;
 import com.cubesofttech.model.User;
+import com.cubesofttech.service.NotificationService;
 import com.cubesofttech.util.DateUtil;
 import com.cubesofttech.util.FileUtil;
 import com.opensymphony.xwork2.ActionSupport;
@@ -45,6 +49,9 @@ public class HelpSupportAction extends ActionSupport {
 
     @Autowired
     private com.cubesofttech.dao.FileUploadDAO fileUploadDAO;
+
+    @Autowired
+    private NotificationService notificationService;
 
     private String categorized;
     private String supportMenuId;
@@ -182,6 +189,9 @@ public class HelpSupportAction extends ActionSupport {
                             now);
                 }
             }
+
+            // 4. แจ้งเตือนผู้มีสิทธิ์ helpsupport.manage ว่ามี ticket ใหม่
+            notifyHelpSupport(support, "New", currentUserId);
 
             return SUCCESS;
         } catch (Exception e) {
@@ -329,6 +339,9 @@ public class HelpSupportAction extends ActionSupport {
                 support.setUserUpdate(currentUserId);
                 support.setTimeUpdate(now);
                 supportDAO.update(support);
+
+                // เจ้าของ ticket เป็นคนเปลี่ยนสถานะเอง (re-open / close) -> แจ้งผู้ดูแล
+                notifyHelpSupport(support, newStatus, currentUserId);
             }
             return SUCCESS;
         } catch (Exception e) {
@@ -451,6 +464,33 @@ public class HelpSupportAction extends ActionSupport {
         } catch (Exception e) {
             log.error(e);
             return ERROR;
+        }
+    }
+
+    /**
+     * ส่ง notification ของ Help Support (title = "Help Support")
+     * -> แจ้งผู้มีสิทธิ์ helpsupport.manage ทุกคน
+     * ถ้าส่งไม่สำเร็จจะ log ไว้เฉยๆ ไม่ให้กระทบการทำงานหลัก
+     */
+    private void notifyHelpSupport(Support support, String statusWord, String actorId) {
+        if (support == null || support.getSupportId() == null) {
+            return;
+        }
+        try {
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
+            String issueDateNoti = support.getIssueDate() != null ? sdf.format(support.getIssueDate()) : "";
+
+            JSONObject messageJson = new JSONObject();
+            messageJson.put("supportId", support.getSupportId());
+            messageJson.put("typeName", "Help Support");
+            messageJson.put("status", statusWord != null ? statusWord : "");
+            messageJson.put("startDate", issueDateNoti);
+            messageJson.put("endDate", "");
+
+            notificationService.create(support.getUserId(), "Help Support", messageJson.toString(), null, actorId,
+                    support.getSupportId().toString());
+        } catch (Exception e) {
+            log.error("Unable to create help support notification. supportId = " + support.getSupportId(), e);
         }
     }
 
