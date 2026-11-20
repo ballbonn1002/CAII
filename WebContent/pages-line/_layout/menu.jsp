@@ -994,7 +994,7 @@ body { padding-bottom: calc(90px + env(safe-area-inset-bottom)); }
 		<i class="ki-duotone ki-calendar-tick"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span><span class="path5"></span><span class="path6"></span></i>
 		<span>Check List</span>
 	</a>
-	<a href="line_my_profile" data-route="line_my_profile">
+	<a href="line_my_profile" data-route="line_my_profile,line_cubeTokenRankingPage">
 		<i class="ki-duotone ki-cube-2"><span class="path1"></span><span class="path2"></span><span class="path3"></span></i>
 		<span>Home</span>
 	</a>
@@ -1017,7 +1017,8 @@ body { padding-bottom: calc(90px + env(safe-area-inset-bottom)); }
 		var cur = (location.pathname.split('/').pop() || 'index')
 			.replace(/\.(jsp|action|html|php)$/i, '');
 		$('.liff-nav a[data-route]').each(function () {
-			$(this).toggleClass('active', new RegExp('^' + $(this).data('route') + '$', 'i').test(cur));
+			var list = $(this).data('route').toString().split(',');
+			$(this).toggleClass('active', list.some(function (s) { return new RegExp('^' + s.trim() + '$', 'i').test(cur); }));
 		});
 	}
 	$(function () {
