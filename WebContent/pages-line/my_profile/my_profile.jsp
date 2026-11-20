@@ -469,26 +469,24 @@
 	}
 
 	function postBorrowAction(url, borrowId, errorText) {
+		var failText = 'Unable to save your signature. Please try again.';
+		var failTitle = 'Save failed';
 		liffShowLoading();
 		saveSignature()
-			.catch(function () {
-				hideLoading();
-				liffToastError('Unable to save your signature. Please try again.', 'Save failed');
-				throw null;
-			})
 			.then(function () {
+				failText = errorText;
+				failTitle = 'Error';
 				return fetch(url, {
 					method: 'POST',
 					headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
 					body: 'id=' + encodeURIComponent(borrowId)
-				}).catch(function () {
-					hideLoading();
-					liffToastError(errorText, 'Error');
-					throw null;
 				});
 			})
 			.then(function () { location.reload(); })
-			.catch(function () {});
+			.catch(function () {
+				hideLoading();
+				liffToastError(failText, failTitle);
+			});
 	}
 
 	//----- Received -----
