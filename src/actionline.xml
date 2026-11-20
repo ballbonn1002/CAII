@@ -250,6 +250,12 @@
 			<result name="success" type="tiles">line_my_profile</result>
 			<result name="error">/pages-line/index.jsp</result>
 		</action>
+
+		<action name="line_cubeTokenRankingPage"
+			class="com.cubesofttech.action.CubeTokenAction" method="cubeTokenRankingPage">
+			<result name="success" type="tiles">line_cubeTokenRanking</result>
+			<result name="error">/pages-line/index.jsp</result>
+		</action>
 		<!-- My Profile =========================================================================================================== -->
 
 		<!-- POST /webhook/LineOA/LineLiff -->

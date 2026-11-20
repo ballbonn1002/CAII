@@ -29,14 +29,6 @@
 .liff-token-num { font-weight: 600; line-height: 1.21; }
 .liff-token-redeem { display: block; background: var(--bs-gray-100); color: var(--bs-red); border-radius: 50px; padding: 13px 26px; text-align: center; font-weight: 600; }
 .liff-token-redeem:hover { color: var(--bs-red); }
-.liff-rank-row { display: flex; align-items: center; gap: 10px; }
-.liff-rank-no { min-width: 22px; flex: none; text-align: center; font-size: 2.5rem; }
-.liff-rank-avatar { width: 50px; height: 50px; border-radius: 50%; border: 2px solid var(--bs-gray-200); object-fit: cover; flex: none; }
-.liff-rank-initial { display: inline-flex; align-items: center; justify-content: center; background: var(--bs-primary-light); color: var(--bs-primary); font-weight: 600; }
-@media (max-width: 374.98px) {
-	.liff-rank-card { padding: 1.25rem !important; }
-	.liff-rank-avatar { width: 40px; height: 40px; }
-}
 .liff-info-row { display: flex; justify-content: space-between; align-items: center; gap: 1rem; padding: 1rem 0; border-bottom: 1px solid var(--bs-gray-200); }
 .liff-info-row:last-child { border-bottom: 0; }
 .liff-info-row .symbol-label .ki-duotone { font-size: 20px; }
@@ -135,16 +127,9 @@
 				</div>
 			</div>
 
-			<div class="liff-home-card">
-				<div class="liff-rank-card d-flex flex-column gap-4 p-7">
-					<span class="fs-3 fw-bold lh-1 text-center" style="color: var(--bs-red);">Cube Token Ranking <span id="rankingCubeToken-year"></span></span>
-					<div id="leaderboardTop3" class="d-flex flex-column gap-4">
-						<div class="liff-rank-row"><span class="liff-skel" style="width:100%; height:50px;"></span></div>
-						<div class="liff-rank-row"><span class="liff-skel" style="width:100%; height:50px;"></span></div>
-						<div class="liff-rank-row"><span class="liff-skel" style="width:100%; height:50px;"></span></div>
-					</div>
-				</div>
-			</div>
+			<a href="${ctx}/line_cubeTokenRankingPage" class="liff-home-card d-block text-reset" onclick="liffShowLoading();">
+				<jsp:include page="/pages-line/cube_token/liff_token_ranking_card.jsp" />
+			</a>
 
 			<jsp:useBean id="newsNow" class="java.util.Date" />
 			<fmt:formatDate var="newsToday" value="${newsNow}" pattern="yyyy-MM-dd" />
@@ -402,7 +387,7 @@
 (function () {
 	var ctx = '${ctx}';
 	var year = new Date().getFullYear();
-	$('#yearlyCubeToken-year, #rankingCubeToken-year').text(year);
+	$('#yearlyCubeToken-year').text(year);
 
 	var newsCarousel = document.getElementById('newsCarousel');
 	if (newsCarousel) bootstrap.Carousel.getOrCreateInstance(newsCarousel, { interval: false, touch: true });
@@ -438,6 +423,10 @@
 	function hideLoading() {
 		$('#liffLoadingOverlay').hide();
 	}
+
+	window.addEventListener('pageshow', function (e) {
+		if (e.persisted) hideLoading();
+	});
 
 	var hasSignature = ${not empty imgPathSignature ? 'true' : 'false'};
 	var canvas = document.getElementById('sigCanvas');
@@ -525,31 +514,6 @@
 		});
 	});
 
-	function makeAvatar(user) {
-		var name = user.nameEn || user.nameTh || '-';
-		var $initial = $('<span class="liff-rank-avatar liff-rank-initial"></span>').text(name.trim().charAt(0).toUpperCase());
-		if (user.filePath) {
-			return $('<img class="liff-rank-avatar">').attr('src', ctx + user.filePath).attr('alt', name)
-				.on('error', function () { $(this).replaceWith($initial.attr('style', this.getAttribute('style'))); });
-		}
-		return $initial;
-	}
-
-	var RANK_COLORS = { 1: '#E3A302', 2: 'var(--bs-gray-500)', 3: '#97766F' };
-
-	function makeRankRow(user) {
-		var sites = (user.jobsiteList || []).map(function (s) { return s.name_site; }).filter(Boolean);
-		var $row = $('<div class="liff-rank-row"></div>');
-		var rankColor = RANK_COLORS[Number(user.rank)] || 'var(--bs-gray-900)';
-		$row.append($('<span class="liff-rank-no fw-bold lh-1"></span>').css('color', rankColor).text(user.rankDisplay));
-		$row.append(makeAvatar(user).css('border-color', rankColor));
-		$row.append($('<div class="d-flex flex-column flex-grow-1 min-w-0"></div>')
-			.append($('<span class="fs-6 fw-semibold text-dark text-truncate"></span>').text(user.nameEn || user.nameTh || '-'))
-			.append($('<span class="fs-7 text-primary text-truncate"></span>').text(sites.length ? sites.join(', ') : '-')));
-		$row.append($('<span class="fs-5 fw-semibold text-dark flex-shrink-0"></span>').text(user.token));
-		return $row;
-	}
-
 	function rankText(data) {
 		var raw = String(data || '--').replace('#', '');
 		if (!/^\d+$/.test(raw)) { return raw; }
@@ -595,14 +559,7 @@
 	function loadTop3() {
 		$.ajax({ url: ctx + '/getTokenRanking', type: 'GET', data: { year: year }, dataType: 'json' })
 			.done(function (res) {
-				var $box = $('#leaderboardTop3').empty();
-				var users = (res.success && res.data) ? res.data : [];
-				var top = users.filter(function (u) { return Number(u.rank) <= 3; });
-				if (!top.length) {
-					$box.append('<div class="text-center text-gray-600 fs-7 py-6">No ranking data available.</div>');
-					return;
-				}
-				top.forEach(function (u) { $box.append(makeRankRow(u)); });
+				liffTokenTop3('#leaderboardTop3', (res.success && res.data) ? res.data : []);
 			})
 			.fail(function () {
 				$('#leaderboardTop3').empty().append('<div class="text-center text-gray-600 fs-7 py-6">-</div>');
