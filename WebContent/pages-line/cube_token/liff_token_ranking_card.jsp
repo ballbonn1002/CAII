@@ -1,7 +1,5 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
-<jsp:useBean id="rankNow" class="java.util.Date" />
 <style>
 .liff-rank-row { display: flex; align-items: center; gap: 10px; }
 .liff-rank-no { min-width: 22px; flex: none; text-align: center; font-size: 2.5rem; }
@@ -15,7 +13,7 @@
 </style>
 
 <div class="liff-rank-card d-flex flex-column gap-4 p-7">
-	<span class="fs-3 fw-bold lh-1 text-center" style="color: var(--bs-red);">Cube Token Ranking <fmt:formatDate value="${rankNow}" pattern="yyyy" /></span>
+	<span class="fs-1 fw-bold lh-1 text-center" style="color: var(--bs-red);">Cube Token Ranking <span id="rankingCubeToken-year"></span></span>
 	<div id="leaderboardTop3" class="d-flex flex-column gap-4" data-user-id="${fn:escapeXml(onlineUser.id)}">
 		<div class="liff-rank-row"><span class="liff-skel" style="width:100%; height:50px;"></span></div>
 		<div class="liff-rank-row"><span class="liff-skel" style="width:100%; height:50px;"></span></div>
@@ -24,6 +22,8 @@
 </div>
 
 <script>
+document.getElementById('rankingCubeToken-year').textContent = new Date().getFullYear();
+
 var LIFF_RANK_COLORS = { 1: '#E3A302', 2: 'var(--bs-gray-500)', 3: '#97766F' };
 
 function liffRankAvatar(user) {
