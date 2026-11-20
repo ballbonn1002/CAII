@@ -10,7 +10,7 @@
 
 <div class="liff-shell">
 <style>
-.liff-home { --liff-home-abstract-opacity: .35; margin: calc(-1 * env(safe-area-inset-top, 0px)) calc(50% - 50vw) 0; container-type: inline-size; }
+.liff-home { --liff-home-abstract-opacity: .35; margin: calc(-1 * env(safe-area-inset-top, 0px)) calc(50% - min(50vw, 240px)) 0; container-type: inline-size; }
 #profileDetail.liff-home { --liff-home-abstract-opacity: .2; }
 .liff-home-head { position: relative; isolation: isolate; overflow: hidden; display: flex; justify-content: space-between; align-items: center; gap: 1rem; padding: calc(2rem + max(44px, env(safe-area-inset-top, 0px))) 19.5px calc(1.875rem + 32px); color: #071437; background: linear-gradient(119deg, #FCE8E9 30%, #D9232E 100%); }
 .liff-home-head::before { content: ""; position: absolute; top: -227px; top: calc(100cqw * -227 / 393); right: 1px; bottom: 0; left: 0; z-index: -1; pointer-events: none; background: url('${ctx}/assets/media/svg/shapes/abstract-5.svg') center top / 151% auto no-repeat; opacity: var(--liff-home-abstract-opacity); }
@@ -18,7 +18,7 @@
 .liff-profile-head { flex-direction: column; align-items: stretch; background: linear-gradient(151deg, #B91F28 20%, #D9232E 40%, #D9232E 65%, #FCE8E9 100%); }
 #btnProfileBack.liff-back-btn { background: transparent; border-color: transparent; }
 .liff-home-name { font-size: 22.75px; font-weight: 700; line-height: 1.21; overflow-wrap: anywhere; }
-.liff-home-body { position: relative; margin-top: -32px; background: var(--bs-body-bg); border-radius: 32px 32px 0 0; padding: 19.5px 19.5px 125px; display: flex; flex-direction: column; gap: 19.5px; }
+.liff-home-body { position: relative; margin-top: -32px; background: var(--bs-body-bg); border-radius: 32px 32px 0 0; padding: 19.5px 19.5px 0; display: flex; flex-direction: column; gap: 19.5px; }
 .liff-home-card { border: 1px solid var(--bs-gray-200); border-radius: 16px; box-shadow: var(--bs-root-card-box-shadow); background: var(--bs-body-bg); overflow: hidden; }
 .liff-profile-avatar { width: 65px; height: 65px; border-radius: 50%; object-fit: cover; border: 1px solid #FFFFFF; }
 .liff-profile-avatar-lg { width: 90px; height: 90px; border: 2px solid var(--bs-gray-300); }
