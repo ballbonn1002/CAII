@@ -307,11 +307,11 @@
 		return res.redirected && res.url.indexOf('/pages-line/index.jsp') !== -1;
 	}
 
-	var travelSubmitting = false;
+	var isTravelSubmitting = false;
 	form.addEventListener('submit', function (e) {
 		e.preventDefault();
-		if (travelSubmitting) { return; }
-		travelSubmitting = true;
+		if (isTravelSubmitting) { return; }
+		isTravelSubmitting = true;
 		btnSubmit.disabled = true;
 
 		var spinner = $('#liffLoadingOverlay');
@@ -333,7 +333,7 @@
 				window.location.href = ctx + '/line_my_travel?status=W&saved=submit';
 			})
 			.catch(function () {
-				travelSubmitting = false;
+				isTravelSubmitting = false;
 				spinner.css('display', 'none');
 				checkSubmitReady();
 				liffToastError("Unable to submit your travel request. Please try again.", "Submit failed");

@@ -2122,11 +2122,11 @@
 			return res.redirected && res.url.indexOf('/pages-line/index.jsp') !== -1;
 		}
 
-		var travelSubmitting = false;
+		var isTravelSubmitting = false;
 		document.getElementById('travelEditForm').addEventListener('submit', function (e) {
 			e.preventDefault();
-			if (travelSubmitting) { return; }
-			travelSubmitting = true;
+			if (isTravelSubmitting) { return; }
+			isTravelSubmitting = true;
 
 			var form = this;
 			var spinner = $('#liffLoadingOverlay');
@@ -2146,7 +2146,7 @@
 					window.location.href = res.url + separator + 'saved=edit';
 				})
 				.catch(function () {
-					travelSubmitting = false;
+					isTravelSubmitting = false;
 					spinner.css('display', 'none');
 					checkSubmitState();
 					liffToastError("Unable to save your travel expense. Please try again.", "Save failed");

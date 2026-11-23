@@ -2101,7 +2101,7 @@ function confirmCancelGroup(btn, groupId) {
 }
 
 let swipeDrag = null;
-let swipeMoved = false;
+let hasSwiped = false;
 
 function swipeActionsWidth(swipe) {
     return swipe.querySelector('.liff-swipe-actions').offsetWidth;
@@ -2140,7 +2140,7 @@ function endSwipe() {
 
 function initSwipeActions() {
     document.addEventListener('touchstart', function (e) {
-        swipeMoved = false;
+        hasSwiped = false;
         const swipe = e.target.closest('.liff-swipe');
         if (!swipe) { closeAllSwipes(); return; }
         if (e.target.closest('.liff-swipe-actions, label')) return;
@@ -2158,7 +2158,7 @@ function initSwipeActions() {
             if (Math.abs(dx) < 6 && Math.abs(dy) < 6) return;
             if (!e.cancelable || Math.abs(dx) < Math.abs(dy) * 0.6) { swipeDrag = null; closeAllSwipes(); return; }
             swipeDrag.moved = true;
-            swipeMoved = true;
+            hasSwiped = true;
             closeAllSwipes(swipeDrag.swipe);
             swipeDrag.swipe.classList.add('is-swiping');
         }
@@ -2218,7 +2218,7 @@ document.addEventListener('DOMContentLoaded', function () {
     $(document).on('click', '.btn-edit-expense, .liff-floating-btn', liffShowLoading);
     $(document).on('click', '.liff-swipe .liff-travel-card', function (e) {
         if ($(e.target).closest('label').length) return;
-        if (swipeMoved) return;
+        if (hasSwiped) return;
         const swipe = this.closest('.liff-swipe');
         if (swipe.classList.contains('is-open')) closeSwipe(swipe);
     });

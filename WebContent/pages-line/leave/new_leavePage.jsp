@@ -774,7 +774,7 @@
 /* sync dropdown ประเภทการลา กับ radio เดิม (#leaveTypes) ทั้งสองทาง */
 (function () {
 	var $select = null;
-	var syncing = false;
+	var isSyncing = false;
 
 	function labelTextFor(radio) {
 		// ชื่อประเภทอยู่หลัง <input> เป็น text node
@@ -805,13 +805,13 @@
 	}
 
 	function onSelectChange() {
-		if (syncing) return;
+		if (isSyncing) return;
 		var radio = document.getElementById('lt_' + $select.value);
 		if (!radio) return;
-		syncing = true;
+		isSyncing = true;
 		radio.checked = true;
 		$(radio).trigger('change');
-		syncing = false;
+		isSyncing = false;
 	}
 
 	document.addEventListener('DOMContentLoaded', function () {
@@ -1570,7 +1570,7 @@ function createTimePicker(inputId, defaultHour) {
 
 <script>
 /* ---------- submit ---------- */
-var leaveSubmitting = false; // กันกดซ้ำ
+var isLeaveSubmitting = false; // กันกดซ้ำ
 
 // บันทึกสำเร็จ redirect ไปหน้า list
 function isLeaveSaved(res) {
@@ -1583,8 +1583,8 @@ function isSessionExpired(res) {
 }
 
 function doSubmit() {
-	if (leaveSubmitting) { return; }
-	leaveSubmitting = true;
+	if (isLeaveSubmitting) { return; }
+	isLeaveSubmitting = true;
 
 	var spinner = $('#liffLoadingOverlay');
 	var form = $('#formid');
@@ -1615,7 +1615,7 @@ function doSubmit() {
 			window.location.href = res.url + separator + savedParam;
 		})
 		.catch(function () {
-			leaveSubmitting = false;
+			isLeaveSubmitting = false;
 			spinner.css('display', 'none');
 			$('#submitBtn, #lbafterFile, #afterFileSubmitBtn').prop('disabled', false).removeClass('disabled');
 			liffToastError("Unable to submit your leave request. Please try again.", "Submit failed");
@@ -1632,7 +1632,7 @@ function lfHasAnyFile() {
 }
 
 function beforeSubmit() {
-	if (leaveSubmitting) { return; } // กำลังส่งอยู่ ไม่ต้องทำอะไรเพิ่ม
+	if (isLeaveSubmitting) { return; } // กำลังส่งอยู่ ไม่ต้องทำอะไรเพิ่ม
 	if (LeaveFiles.loading.length > 0) { return; } // ไฟล์ยังประมวลผลไม่เสร็จ disabled ปุ่มไว้
 	var form = $('#formid');
 	if (!form[0].reportValidity()) {

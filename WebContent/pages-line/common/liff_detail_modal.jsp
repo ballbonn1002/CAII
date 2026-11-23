@@ -30,7 +30,7 @@
     const detailModal = new bootstrap.Modal(modalEl);
     let detailModalUrl = null;
     let detailSkeletonTimer = null;
-    let skipNextPopstate = false;
+    let isModalHistoryBack = false;
 
     $(document).on('click', '.liff-open-detail-modal', function (e) {
         e.preventDefault();
@@ -41,14 +41,14 @@
         detailModalUrl = null;
         clearTimeout(detailSkeletonTimer);
         if (history.state && history.state.detailModal) {
-            skipNextPopstate = true;
+            isModalHistoryBack = true;
             history.back();
         }
     });
 
     window.addEventListener('popstate', function (e) {
-        if (skipNextPopstate) {
-            skipNextPopstate = false;
+        if (isModalHistoryBack) {
+            isModalHistoryBack = false;
             e.stopImmediatePropagation();
         } else if (modalEl.classList.contains('show')) {
             detailModal.hide();

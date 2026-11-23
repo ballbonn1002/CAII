@@ -41,8 +41,8 @@
 function liffSignaturePad(canvas, onChange) {
 	var wrap = canvas.closest('.liff-sig-pad');
 	var pad = canvas.getContext('2d');
-	var drawing = false;
-	var signed = false;
+	var isDrawing = false;
+	var hasSigned = false;
 	var hint = wrap.querySelector('.liff-sig-hint');
 	var clearBtn = wrap.querySelector('.liff-sig-clear');
 
@@ -59,7 +59,7 @@ function liffSignaturePad(canvas, onChange) {
 
 	function clearSignature() {
 		setupCanvas();
-		signed = false;
+		hasSigned = false;
 		hint.classList.remove('d-none');
 		clearBtn.disabled = true;
 		onChange();
@@ -71,7 +71,7 @@ function liffSignaturePad(canvas, onChange) {
 	}
 
 	canvas.addEventListener('pointerdown', function (e) {
-		drawing = true;
+		isDrawing = true;
 		canvas.setPointerCapture(e.pointerId);
 		var p = pointOf(e);
 		pad.beginPath();
@@ -79,26 +79,26 @@ function liffSignaturePad(canvas, onChange) {
 	});
 
 	canvas.addEventListener('pointermove', function (e) {
-		if (!drawing) return;
+		if (!isDrawing) return;
 		var p = pointOf(e);
 		pad.lineTo(p.x, p.y);
 		pad.stroke();
-		if (!signed) {
-			signed = true;
+		if (!hasSigned) {
+			hasSigned = true;
 			hint.classList.add('d-none');
 			clearBtn.disabled = false;
 			onChange();
 		}
 	});
 
-	canvas.addEventListener('pointerup', function () { drawing = false; });
-	canvas.addEventListener('pointercancel', function () { drawing = false; });
+	canvas.addEventListener('pointerup', function () { isDrawing = false; });
+	canvas.addEventListener('pointercancel', function () { isDrawing = false; });
 	clearBtn.addEventListener('click', clearSignature);
 
 	setupCanvas();
 
 	return {
-		isSigned: function () { return signed; },
+		isSigned: function () { return hasSigned; },
 		clear: clearSignature,
 		resize: setupCanvas,
 		toBlob: function () {
