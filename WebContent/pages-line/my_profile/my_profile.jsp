@@ -81,15 +81,13 @@
 					<c:set var="actionCount" value="${actionCount + 1}" />
 				</c:if>
 			</c:forEach>
+			<c:if test="${actionCount > 0}">
 			<div class="liff-home-card">
 				<div class="liff-borrow-head fs-3 justify-content-between">
 					<span>Action Required</span>
 					<span class="badge badge-danger badge-circle">${actionCount}</span>
 				</div>
 				<div class="d-flex flex-column gap-4 p-6">
-					<c:if test="${actionCount == 0}">
-						<div class="text-center text-gray-600 fs-7 py-3">No action required</div>
-					</c:if>
 					<c:forEach var="item" items="${borrowList}">
 						<c:set var="needReceive" value="${item.status == 'B' and not empty item.user_delivery and empty item.user_receive and empty item.user_return and empty item.user_return_receive}" />
 						<c:set var="needReturn" value="${item.status == 'T' and not empty item.user_delivery and not empty item.user_receive and empty item.user_return and empty item.user_return_receive}" />
@@ -106,6 +104,7 @@
 					</c:forEach>
 				</div>
 			</div>
+			</c:if>
 
 			<div class="liff-home-card liff-token-card">
 				<div class="d-flex flex-column gap-5 px-4 py-5">
@@ -377,7 +376,7 @@
 	</div>
 	</c:if>
 
-	<div id="liffLoadingOverlay" class="liff-loading-overlay liff-loading-delayed" style="z-index:1060;">
+	<div id="liffLoadingOverlay" class="liff-loading-overlay liff-loading-delayed" style="display:flex; z-index:1060;">
 		<div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading...</span></div>
 	</div>
 
@@ -537,7 +536,7 @@
 	}
 
 	function loadSummary() {
-		$.ajax({ url: ctx + '/tokenSummary', type: 'GET', data: { year: year }, dataType: 'json' })
+		return $.ajax({ url: ctx + '/tokenSummary', type: 'GET', data: { year: year }, dataType: 'json' })
 			.done(function (res) {
 				if (!res.success || !res.data) { return failSummary(); }
 				$('#tokenYearly').text(formatToken(res.data.yearlyToken));
@@ -551,13 +550,13 @@
 	}
 
 	function loadRank() {
-		$.ajax({ url: ctx + '/getUserCurrentRank', type: 'GET', data: { year: year }, dataType: 'json' })
+		return $.ajax({ url: ctx + '/getUserCurrentRank', type: 'GET', data: { year: year }, dataType: 'json' })
 			.done(function (res) { $('#tokenRank').text('My rank is ' + (res.success ? rankText(res.data) : '-')); })
 			.fail(function () { $('#tokenRank').text('My rank is -'); });
 	}
 
 	function loadTop3() {
-		$.ajax({ url: ctx + '/getTokenRanking', type: 'GET', data: { year: year }, dataType: 'json' })
+		return $.ajax({ url: ctx + '/getTokenRanking', type: 'GET', data: { year: year }, dataType: 'json' })
 			.done(function (res) {
 				liffTokenTop3('#leaderboardTop3', (res.success && res.data) ? res.data : []);
 			})
@@ -567,8 +566,6 @@
 			});
 	}
 
-	loadSummary();
-	loadRank();
-	loadTop3();
+	Promise.allSettled([loadSummary(), loadRank(), loadTop3()]).then(hideLoading);
 })();
 </script>
