@@ -213,7 +213,13 @@ function liffInitDone(formSelector) {
 }
 
 function liffShowLoading() {
-	document.getElementById('liffLoadingOverlay').style.display = 'flex';
+	var overlay = document.getElementById('liffLoadingOverlay');
+	overlay.classList.remove('liff-loading-delayed');
+	overlay.style.display = 'flex';
+}
+
+function liffHideLoading() {
+	document.getElementById('liffLoadingOverlay').style.display = 'none';
 }
 </script>
 <!--end::LIFF form init-->

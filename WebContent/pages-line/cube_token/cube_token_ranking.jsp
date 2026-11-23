@@ -22,7 +22,7 @@
 .dropdown-menu[aria-labelledby="yearFilterBtn"] .dropdown-item.active, .dropdown-menu[aria-labelledby="yearFilterBtn"] .dropdown-item:active { background-color: var(--bs-red); }
 </style>
 
-<div id="liffLoadingOverlay" class="liff-loading-overlay liff-loading-delayed">
+<div id="liffLoadingOverlay" class="liff-loading-overlay liff-loading-delayed" style="display:flex;">
 	<div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading...</span></div>
 </div>
 
@@ -98,7 +98,7 @@
 	}
 
 	window.addEventListener('pageshow', function (e) {
-		if (e.persisted) $('#liffLoadingOverlay').hide();
+		if (e.persisted) liffHideLoading();
 	});
 
 	function emptyText(text) {
@@ -125,7 +125,7 @@
 				$('#leaderboardTop3, #rankingOthers').empty().append(emptyText('-'));
 				liffToastError('Unable to load the leaderboard. Please try again.', 'Load failed');
 			})
-			.always(function () { $('#liffLoadingOverlay').hide(); });
+			.always(function () { liffHideLoading(); });
 	}
 
 	$('.dropdown-menu[aria-labelledby="yearFilterBtn"]').on('click', '.dropdown-item', function () {

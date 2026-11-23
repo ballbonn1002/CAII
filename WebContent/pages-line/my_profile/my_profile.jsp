@@ -501,12 +501,8 @@
 		bootstrap.Modal.getOrCreateInstance(modalElement).show();
 	});
 
-	function hideLoading() {
-		$('#liffLoadingOverlay').hide();
-	}
-
 	window.addEventListener('pageshow', function (e) {
-		if (e.persisted) hideLoading();
+		if (e.persisted) liffHideLoading();
 	});
 
 	var hasSignature = ${not empty imgPathSignature ? 'true' : 'false'};
@@ -576,7 +572,7 @@
 					location.replace(ctx + '/line_my_profile?saved=signature');
 				})
 				.catch(function () {
-					hideLoading();
+					liffHideLoading();
 					liffToastError('Unable to save your signature. Please try again.', 'Save failed');
 				});
 		});
@@ -598,7 +594,7 @@
 			})
 			.then(function () { location.reload(); })
 			.catch(function () {
-				hideLoading();
+				liffHideLoading();
 				liffToastError(failText, failTitle);
 			});
 	}
@@ -692,7 +688,7 @@
 			});
 	}
 
-	Promise.allSettled([loadSummary(), loadRank(), loadTop3()]).then(hideLoading);
+	Promise.allSettled([loadSummary(), loadRank(), loadTop3()]).then(liffHideLoading);
 })();
 </script>
 
@@ -898,12 +894,12 @@
 			})
 			.then(function (res) {
 				if (!res.ok) throw new Error(res.status);
-				$('#liffLoadingOverlay').hide();
+				liffHideLoading();
 				closeResetPasswordForm();
 				liffToastSuccess('Your password has been updated.', 'Updated successfully!');
 			})
 			.catch(function (err) {
-				$('#liffLoadingOverlay').hide();
+				liffHideLoading();
 				if (err.message === 'invalid') {
 					isCurrentPwValid = false;
 					showError('currentPw', 'currentPwError');
