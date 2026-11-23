@@ -39,6 +39,7 @@
 .liff-borrow-name:hover { color: var(--bs-gray-900); }
 .liff-news-img { display: block; width: 100%; aspect-ratio: 16 / 9; object-fit: cover; }
 .liff-news-img-blank { object-fit: contain; padding: 2rem; background: var(--bs-gray-100); }
+.liff-news-title { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; overflow-wrap: anywhere; line-height: 1.4; min-height: 2.8em; }
 .liff-news-carousel .carousel-indicators [data-bs-target] { width: 8px; height: 8px; margin: 0 4px; border: 0; border-radius: 4px; background-color: var(--bs-red); transition: width .3s ease, opacity .3s ease; }
 .liff-news-carousel .carousel-indicators .active { width: 24px; }
 </style>
@@ -161,8 +162,11 @@
 												</c:otherwise>
 											</c:choose>
 											<div class="d-flex flex-column gap-2 p-5">
-												<span class="fs-6 fw-bold text-gray-800">${fn:escapeXml(ann.topic)}</span>
-												<span class="d-flex align-items-center gap-1 fs-7 text-gray-600"><i class="ki-duotone ki-calendar-2 fs-6"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span><span class="path5"></span></i><fmt:formatDate value="${ann.announcement_date}" pattern="d MMM yyyy" /></span>
+												<span class="liff-news-title fs-6 fw-bold text-gray-800">${fn:escapeXml(ann.topic)}</span>
+												<div class="d-flex align-items-center gap-4 fs-6 text-gray-600">
+													<span class="d-flex align-items-center gap-1"><i class="ki-duotone ki-calendar-2 fs-6"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span><span class="path5"></span></i><fmt:formatDate value="${ann.announcement_date}" pattern="d MMM yyyy" /></span>
+													<span class="d-flex align-items-center gap-1 flex-shrink-0"><i class="ki-duotone ki-eye fs-6"><span class="path1"></span><span class="path2"></span><span class="path3"></span></i>${empty ann.readcount ? 0 : ann.readcount} Views</span>
+												</div>
 											</div>
 										</a>
 									</div>
