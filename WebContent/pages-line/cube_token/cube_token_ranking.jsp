@@ -18,7 +18,7 @@
 .liff-rank-list-no { min-width: 48px; flex: none; }
 .liff-rank-list-row .liff-rank-avatar { width: 40px; height: 40px; }
 .liff-rank-list-row.is-me { background: #FFF2F2; border-radius: 8px; margin-inline: -.5rem; padding-inline: .5rem; }
-.liff-home-head #yearFilterBtn:hover, .liff-home-head #yearFilterBtn:focus, .liff-home-head #yearFilterBtn:active { border-color: var(--bs-red); }
+.liff-home-head #yearFilterBtn, .liff-home-head #yearFilterBtn:hover, .liff-home-head #yearFilterBtn:focus, .liff-home-head #yearFilterBtn:active { background-color: transparent; border-color: var(--bs-white); color: var(--bs-white); }
 .dropdown-menu[aria-labelledby="yearFilterBtn"] .dropdown-item.active, .dropdown-menu[aria-labelledby="yearFilterBtn"] .dropdown-item:active { background-color: var(--bs-red); }
 </style>
 
