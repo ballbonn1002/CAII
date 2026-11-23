@@ -1141,7 +1141,7 @@ function leaveStatus(id) {
 	// กด Back กลับมา (bfcache) ซ่อน spinner / skeleton
 	window.addEventListener('pageshow', function(e) {
 		if (!e.persisted) return;
-		document.getElementById('liffLoadingOverlay').style.display = 'none';
+		liffHideLoading();
 		hideSortLoading();
 	});
 </script>

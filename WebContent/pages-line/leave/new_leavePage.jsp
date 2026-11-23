@@ -1586,10 +1586,9 @@ function doSubmit() {
 	if (isLeaveSubmitting) { return; }
 	isLeaveSubmitting = true;
 
-	var spinner = $('#liffLoadingOverlay');
 	var form = $('#formid');
 	if (typeof lfSyncInput === 'function') { lfSyncInput(); } // รวมไฟล์แนบเข้า #myFile
-	spinner.css('display', 'flex');
+	liffShowLoading();
 	// field ที่ disabled ไม่ถูกส่ง เปิดชั่วคราว
 	var disabledInputs = form.find(':input:disabled').prop('disabled', false);
 	var formData = new FormData(form[0]);
@@ -1616,7 +1615,7 @@ function doSubmit() {
 		})
 		.catch(function () {
 			isLeaveSubmitting = false;
-			spinner.css('display', 'none');
+			liffHideLoading();
 			$('#submitBtn, #lbafterFile, #afterFileSubmitBtn').prop('disabled', false).removeClass('disabled');
 			liffToastError("Unable to submit your leave request. Please try again.", "Submit failed");
 		});

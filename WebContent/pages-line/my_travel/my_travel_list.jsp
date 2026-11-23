@@ -2094,7 +2094,7 @@ function confirmCancelGroup(btn, groupId) {
         })
         .catch(function () {
             btn.disabled = false;
-            document.getElementById('liffLoadingOverlay').style.display = 'none';
+            liffHideLoading();
             liffToastError("Unable to cancel your travel request. Please try again.", "Cancel failed");
         });
     });
@@ -2236,7 +2236,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
 window.addEventListener('pageshow', function (e) {
     if (!e.persisted) return;
-    document.getElementById('liffLoadingOverlay').style.display = 'none';
+    liffHideLoading();
 });
 </script>
 

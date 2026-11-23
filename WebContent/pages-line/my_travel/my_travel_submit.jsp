@@ -314,8 +314,7 @@
 		isTravelSubmitting = true;
 		btnSubmit.disabled = true;
 
-		var spinner = $('#liffLoadingOverlay');
-		spinner.removeClass('liff-loading-delayed').css('display', 'flex');
+		liffShowLoading();
 
 		var formData = new FormData(form);
 		getSignatureBlob()
@@ -334,7 +333,7 @@
 			})
 			.catch(function () {
 				isTravelSubmitting = false;
-				spinner.css('display', 'none');
+				liffHideLoading();
 				checkSubmitReady();
 				liffToastError("Unable to submit your travel request. Please try again.", "Submit failed");
 			});

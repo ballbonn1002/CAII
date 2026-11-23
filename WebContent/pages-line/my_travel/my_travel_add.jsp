@@ -1887,8 +1887,7 @@
 			isTravelSubmitting = true;
 
 			var form = this;
-			var spinner = $('#liffLoadingOverlay');
-			spinner.css('display', 'flex');
+			liffShowLoading();
 			btnSubmitSave.setAttribute('disabled', 'disabled');
 			updateTravelInputFiles();
 
@@ -1905,7 +1904,7 @@
 				})
 				.catch(function () {
 					isTravelSubmitting = false;
-					spinner.css('display', 'none');
+					liffHideLoading();
 					checkSubmitState();
 					liffToastError("Unable to save your travel expense. Please try again.", "Save failed");
 				});
