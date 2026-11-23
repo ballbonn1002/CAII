@@ -6,9 +6,9 @@
 
 <div class="liff-shell">
 <style>
-.liff-home { margin: calc(-1 * env(safe-area-inset-top, 0px)) calc(50% - min(50vw, 240px)) 0; container-type: inline-size; min-height: 100vh; background: linear-gradient(180deg, #D9232E 18.27%, #FFFFFF 42.31%); }
-.liff-home-head { position: relative; z-index: 1; isolation: isolate; overflow: hidden; display: flex; flex-direction: column; align-items: stretch; gap: 1rem; padding: calc(2rem + max(44px, env(safe-area-inset-top, 0px))) 19.5px 1.5rem; }
-.liff-home-head::before { content: ""; position: absolute; top: calc(100cqw * -158 / 393); right: calc(100cqw * -20 / 393); bottom: 0; left: calc(100cqw * -8 / 393); z-index: -1; pointer-events: none; background: url('${ctx}/assets/media/svg/shapes/abstract-5.svg') center top / 151% auto no-repeat; opacity: .2; }
+.liff-home { position: relative; isolation: isolate; overflow: hidden; margin: calc(-1 * env(safe-area-inset-top, 0px)) calc(50% - min(50vw, 240px)) 0; container-type: inline-size; min-height: 100vh; background: linear-gradient(180deg, #D9232E 0, #D9232E 150px, #FFFFFF 520px); }
+.liff-home::before { content: ""; position: absolute; top: calc(100cqw * -158 / 393); right: calc(100cqw * -20 / 393); left: calc(100cqw * -8 / 393); height: calc(100cqw * 700 / 393); z-index: -1; pointer-events: none; background: url('${ctx}/assets/media/svg/shapes/abstract-5.svg') center top / 151% auto no-repeat; opacity: .2; }
+.liff-home-head { position: relative; z-index: 1; display: flex; flex-direction: column; align-items: stretch; gap: 1rem; padding: calc(2rem + max(44px, env(safe-area-inset-top, 0px))) 19.5px 1.5rem; }
 .liff-home-head .liff-back-btn { background: transparent; border-color: transparent; }
 .liff-home-body { padding: 0 19.5px; display: flex; flex-direction: column; gap: 19.5px; }
 .liff-rank-stat { flex: 1 1 0; min-width: 0; }
