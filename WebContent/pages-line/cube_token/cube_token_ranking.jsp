@@ -7,7 +7,7 @@
 <div class="liff-shell">
 <style>
 .liff-home { margin: calc(-1 * env(safe-area-inset-top, 0px)) calc(50% - min(50vw, 240px)) 0; container-type: inline-size; min-height: 100vh; background: linear-gradient(180deg, #D9232E 18.27%, #FFFFFF 42.31%); }
-.liff-home-head { position: relative; isolation: isolate; overflow: hidden; display: flex; flex-direction: column; align-items: stretch; gap: 1rem; padding: calc(2rem + max(44px, env(safe-area-inset-top, 0px))) 19.5px 1.5rem; }
+.liff-home-head { position: relative; z-index: 1; isolation: isolate; overflow: hidden; display: flex; flex-direction: column; align-items: stretch; gap: 1rem; padding: calc(2rem + max(44px, env(safe-area-inset-top, 0px))) 19.5px 1.5rem; }
 .liff-home-head::before { content: ""; position: absolute; top: calc(100cqw * -158 / 393); right: calc(100cqw * -20 / 393); bottom: 0; left: calc(100cqw * -8 / 393); z-index: -1; pointer-events: none; background: url('${ctx}/assets/media/svg/shapes/abstract-5.svg') center top / 151% auto no-repeat; opacity: .2; }
 .liff-home-head .liff-back-btn { background: transparent; border-color: transparent; }
 .liff-home-body { padding: 0 19.5px; display: flex; flex-direction: column; gap: 19.5px; }
@@ -18,6 +18,8 @@
 .liff-rank-list-no { min-width: 48px; flex: none; }
 .liff-rank-list-row .liff-rank-avatar { width: 40px; height: 40px; }
 .liff-rank-list-row.is-me { background: #FFF2F2; border-radius: 8px; margin-inline: -.5rem; padding-inline: .5rem; }
+.liff-home-head #yearFilterBtn:hover, .liff-home-head #yearFilterBtn:focus, .liff-home-head #yearFilterBtn:active { border-color: var(--bs-red); }
+.dropdown-menu[aria-labelledby="yearFilterBtn"] .dropdown-item.active, .dropdown-menu[aria-labelledby="yearFilterBtn"] .dropdown-item:active { background-color: var(--bs-red); }
 </style>
 
 <div id="liffLoadingOverlay" class="liff-loading-overlay liff-loading-delayed">
@@ -31,6 +33,16 @@
 				<i class="ki-duotone ki-arrow-left fs-3 text-white"><span class="path1"></span><span class="path2"></span></i>
 			</a>
 			<h1 class="liff-page-title text-white mb-0 flex-grow-1">Leaderboard</h1>
+			<c:set var="currentYearInt"><%= java.time.Year.now().getValue() %></c:set>
+			<div class="dropdown">
+				<button class="btn btn-sm" type="button" id="yearFilterBtn" data-bs-toggle="dropdown" data-bs-popper-config='{"strategy":"fixed"}' aria-expanded="false">${currentYearInt}</button>
+				<ul class="dropdown-menu dropdown-menu-end" aria-labelledby="yearFilterBtn">
+					<c:forEach var="i" begin="0" end="1">
+						<c:set var="y" value="${currentYearInt - i}" />
+						<li><a class="dropdown-item ${i == 0 ? 'active' : ''}" href="javascript:void(0)" data-year="${y}">${y}</a></li>
+					</c:forEach>
+				</ul>
+			</div>
 		</div>
 	</div>
 
@@ -93,22 +105,40 @@
 		return $('<div class="text-center text-gray-600 fs-7 py-6"></div>').text(text);
 	}
 
-	$.ajax({ url: ctx + '/getUserCurrentRank', type: 'GET', data: { year: year }, dataType: 'json' })
-		.done(function (res) { $('#myRank').text(res.success ? res.data : '-'); })
-		.fail(function () { $('#myRank').text('-'); });
+	function loadRanking() {
+		$('#rankingCubeToken-year').text(year);
 
-	$.ajax({ url: ctx + '/getTokenRanking', type: 'GET', data: { year: year }, dataType: 'json' })
-		.done(function (res) {
-			var users = (res.success && res.data) ? res.data : [];
-			var others = users.filter(function (u) { return Number(u.rank) > 3; });
-			var $others = $('#rankingOthers').empty();
-			liffTokenTop3('#leaderboardTop3', users);
-			if (others.length) { others.forEach(function (u) { $others.append(makeRankRow(u)); }); }
-			else { $others.append(emptyText('-')); }
-		})
-		.fail(function () {
-			$('#leaderboardTop3, #rankingOthers').empty().append(emptyText('-'));
-			liffToastError('Unable to load the leaderboard. Please try again.', 'Load failed');
-		});
+		$.ajax({ url: ctx + '/getUserCurrentRank', type: 'GET', data: { year: year }, dataType: 'json' })
+			.done(function (res) { $('#myRank').text(res.success ? res.data : '-'); })
+			.fail(function () { $('#myRank').text('-'); });
+
+		$.ajax({ url: ctx + '/getTokenRanking', type: 'GET', data: { year: year }, dataType: 'json' })
+			.done(function (res) {
+				var users = (res.success && res.data) ? res.data : [];
+				var others = users.filter(function (u) { return Number(u.rank) > 3; });
+				var $others = $('#rankingOthers').empty();
+				liffTokenTop3('#leaderboardTop3', users);
+				if (others.length) { others.forEach(function (u) { $others.append(makeRankRow(u)); }); }
+				else { $others.append(emptyText('-')); }
+			})
+			.fail(function () {
+				$('#leaderboardTop3, #rankingOthers').empty().append(emptyText('-'));
+				liffToastError('Unable to load the leaderboard. Please try again.', 'Load failed');
+			})
+			.always(function () { $('#liffLoadingOverlay').hide(); });
+	}
+
+	$('.dropdown-menu[aria-labelledby="yearFilterBtn"]').on('click', '.dropdown-item', function () {
+		var selectedYear = Number($(this).data('year'));
+		if (selectedYear === year) return;
+		year = selectedYear;
+		$(this).closest('.dropdown-menu').find('.dropdown-item').removeClass('active');
+		$(this).addClass('active');
+		$('#yearFilterBtn').text(year);
+		liffShowLoading();
+		loadRanking();
+	});
+
+	loadRanking();
 })();
 </script>
