@@ -56,7 +56,7 @@ function liffTokenTop3(box, users) {
 		$row.append($('<div class="d-flex flex-column flex-grow-1 min-w-0"></div>')
 			.append(isMe ? $('<div class="d-flex align-items-center gap-2 min-w-0"></div>').append($name, '<span class="badge flex-shrink-0" style="background: var(--bs-red); color: #FFFFFF;">You</span>') : $name)
 			.append($('<span class="fs-7 text-primary text-truncate"></span>').text(sites.length ? sites.join(', ') : '-')));
-		$row.append($('<span class="fs-5 fw-semibold text-dark flex-shrink-0"></span>').text(user.token));
+		$row.append($('<span class="fs-4 fw-semibold text-dark flex-shrink-0"></span>').text(user.token));
 		$box.append($row);
 	});
 }

@@ -54,7 +54,7 @@
 		</div>
 
 		<div class="card card-bordered rounded-4 px-5 py-4">
-			<h3 class="fs-5 fw-bold text-gray-900 mb-2">Other Ranking</h3>
+			<h3 class="fs-3 fw-bold mb-2" style="color: var(--bs-red);">Other Ranking</h3>
 			<div id="rankingOthers" data-user-id="${fn:escapeXml(onlineUser.id)}">
 				<div class="liff-rank-list-row"><span class="liff-skel" style="width:100%; height:40px;"></span></div>
 				<div class="liff-rank-list-row"><span class="liff-skel" style="width:100%; height:40px;"></span></div>
@@ -80,8 +80,8 @@
 		$row.append(liffRankAvatar(user));
 		$row.append($('<div class="d-flex flex-column flex-grow-1 min-w-0"></div>')
 			.append(isMe ? $('<div class="d-flex align-items-center gap-2 min-w-0"></div>').append($name, '<span class="badge flex-shrink-0" style="background: var(--bs-red); color: #FFFFFF;">You</span>') : $name)
-			.append($('<span class="fs-7 text-gray-500"></span>').text(user.employeeId || '-')));
-		$row.append($('<span class="fs-6 fw-bold text-primary flex-shrink-0"></span>').text(Number(user.token).toLocaleString('en-US')));
+			.append($('<span class="fs-7 text-primary"></span>').text(user.employeeId || '-')));
+		$row.append($('<span class="fs-5 fw-bold text-dark flex-shrink-0"></span>').text(Number(user.token).toLocaleString('en-US')));
 		return $row;
 	}
 
