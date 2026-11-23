@@ -11,11 +11,9 @@
 .liff-home-head { position: relative; z-index: 1; display: flex; flex-direction: column; align-items: stretch; gap: 1rem; padding: calc(2rem + max(44px, env(safe-area-inset-top, 0px))) 19.5px 1.5rem; }
 .liff-home-head .liff-back-btn { background: transparent; border-color: transparent; }
 .liff-home-body { padding: 0 19.5px; display: flex; flex-direction: column; gap: 19.5px; }
-.liff-rank-stat { flex: 1 1 0; min-width: 0; }
 .liff-rank-stat-sep { border-right: 0.25px solid rgba(238, 179, 179, 1); }
 .liff-rank-list-row { display: flex; align-items: center; gap: .75rem; padding: .625rem 0; border-bottom: 1px solid var(--bs-gray-200); }
 .liff-rank-list-row:last-child { border-bottom: 0; }
-.liff-rank-list-no { min-width: 48px; flex: none; }
 .liff-rank-list-row .liff-rank-avatar { width: 40px; height: 40px; }
 .liff-rank-list-row.is-me { background: #FFF2F2; border-radius: 8px; margin-inline: -.5rem; padding-inline: .5rem; }
 .liff-home-head #yearFilterBtn, .liff-home-head #yearFilterBtn:hover, .liff-home-head #yearFilterBtn:focus, .liff-home-head #yearFilterBtn:active { background-color: transparent; border-color: var(--bs-white); color: var(--bs-white); }
@@ -50,11 +48,11 @@
 		<div class="card card-bordered rounded-4">
 			<div class="card-body p-5 d-flex align-items-center gap-4">
 				<i class="ki-duotone ki-cube-2 fs-3x flex-shrink-0" style="color: var(--bs-red);"><span class="path1"></span><span class="path2"></span><span class="path3"></span></i>
-				<div class="d-flex flex-column align-items-start gap-2 pe-4 liff-rank-stat liff-rank-stat-sep">
-					<span id="myRank" class="fs-2hx fw-bold lh-1" style="color: #B91F28;"><span class="liff-skel" style="width:48px; height:32px;"></span></span>
+				<div class="d-flex flex-column align-items-start gap-2 pe-4 flex-root min-w-0 liff-rank-stat-sep">
+					<span id="myRank" class="fs-2hx fw-bold lh-1" style="color: #B91F28;"><span class="liff-skel w-50px h-30px"></span></span>
 					<span class="fs-7 text-gray-500">Current Rank</span>
 				</div>
-				<div class="d-flex flex-column align-items-start gap-2 liff-rank-stat">
+				<div class="d-flex flex-column align-items-start gap-2 flex-root min-w-0">
 					<span class="fs-2hx fw-bold lh-1" style="color: #B91F28;"><c:choose><c:when test="${not empty userInfo.currentBalance}">${userInfo.currentBalance.intValue()}</c:when><c:otherwise>-</c:otherwise></c:choose></span>
 					<span class="fs-7 text-gray-500">My Cube Token</span>
 				</div>
@@ -68,8 +66,8 @@
 		<div class="card card-bordered rounded-4 px-5 py-4">
 			<h3 class="fs-3 fw-bold mb-2" style="color: var(--bs-red);">Other Ranking</h3>
 			<div id="rankingOthers" data-user-id="${fn:escapeXml(onlineUser.id)}">
-				<div class="liff-rank-list-row"><span class="liff-skel" style="width:100%; height:40px;"></span></div>
-				<div class="liff-rank-list-row"><span class="liff-skel" style="width:100%; height:40px;"></span></div>
+				<div class="liff-rank-list-row"><span class="liff-skel w-100 h-40px"></span></div>
+				<div class="liff-rank-list-row"><span class="liff-skel w-100 h-40px"></span></div>
 			</div>
 		</div>
 	</div>
@@ -88,10 +86,10 @@
 		var isMe = String(user.userId) === myUserId;
 		var $name = $('<span class="fs-6 fw-semibold text-gray-900 text-truncate"></span>').text(user.nameEn || user.nameTh || '-');
 		var $row = $('<div class="liff-rank-list-row"></div>').toggleClass('is-me', isMe);
-		$row.append($('<span class="liff-rank-list-no fs-2x fw-normal lh-base text-center text-gray-600"></span>').text(user.rankDisplay));
+		$row.append($('<span class="min-w-50px flex-shrink-0 fs-2x fw-normal lh-base text-center text-gray-600"></span>').text(user.rankDisplay));
 		$row.append(liffRankAvatar(user));
 		$row.append($('<div class="d-flex flex-column flex-grow-1 min-w-0"></div>')
-			.append(isMe ? $('<div class="d-flex align-items-center gap-2 min-w-0"></div>').append($name, '<span class="badge flex-shrink-0" style="background: var(--bs-red); color: #FFFFFF;">You</span>') : $name)
+			.append(isMe ? $('<div class="d-flex align-items-center gap-2 min-w-0"></div>').append($name, '<span class="badge flex-shrink-0 text-white" style="background: var(--bs-red);">You</span>') : $name)
 			.append($('<span class="fs-7 text-primary"></span>').text(user.employeeId || '-')));
 		$row.append($('<span class="fs-5 fw-bold text-dark flex-shrink-0"></span>').text(Number(user.token).toLocaleString('en-US')));
 		return $row;

@@ -1,7 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
 <style>
-.liff-rank-row { display: flex; align-items: center; gap: 10px; }
 .liff-rank-no { min-width: 22px; flex: none; text-align: center; font-size: 2.5rem; }
 .liff-rank-avatar { width: 50px; height: 50px; border-radius: 50%; border: 2px solid var(--bs-gray-200); object-fit: cover; flex: none; }
 .liff-rank-row.is-me { background: #FFF2F2; border-radius: 8px; margin: -.375rem -.5rem; padding: .375rem .5rem; }
@@ -15,9 +14,9 @@
 <div class="liff-rank-card d-flex flex-column gap-4 p-7">
 	<span class="fs-1 fw-bold lh-1 text-center" style="color: var(--bs-red);">Cube Token Ranking <span id="rankingCubeToken-year"></span></span>
 	<div id="leaderboardTop3" class="d-flex flex-column gap-4" data-user-id="${fn:escapeXml(onlineUser.id)}">
-		<div class="liff-rank-row"><span class="liff-skel" style="width:100%; height:50px;"></span></div>
-		<div class="liff-rank-row"><span class="liff-skel" style="width:100%; height:50px;"></span></div>
-		<div class="liff-rank-row"><span class="liff-skel" style="width:100%; height:50px;"></span></div>
+		<div class="liff-rank-row d-flex align-items-center gap-3"><span class="liff-skel w-100 h-50px"></span></div>
+		<div class="liff-rank-row d-flex align-items-center gap-3"><span class="liff-skel w-100 h-50px"></span></div>
+		<div class="liff-rank-row d-flex align-items-center gap-3"><span class="liff-skel w-100 h-50px"></span></div>
 	</div>
 </div>
 
@@ -50,11 +49,11 @@ function liffTokenTop3(box, users) {
 		var rankColor = LIFF_RANK_COLORS[Number(user.rank)] || 'var(--bs-gray-900)';
 		var isMe = String(user.userId) === myUserId;
 		var $name = $('<span class="fs-6 fw-semibold text-dark text-truncate"></span>').text(user.nameEn || user.nameTh || '-');
-		var $row = $('<div class="liff-rank-row"></div>').toggleClass('is-me', isMe);
+		var $row = $('<div class="liff-rank-row d-flex align-items-center gap-3"></div>').toggleClass('is-me', isMe);
 		$row.append($('<span class="liff-rank-no fw-bold lh-1"></span>').css('color', rankColor).text(user.rankDisplay));
 		$row.append(liffRankAvatar(user).css('border-color', rankColor));
 		$row.append($('<div class="d-flex flex-column flex-grow-1 min-w-0"></div>')
-			.append(isMe ? $('<div class="d-flex align-items-center gap-2 min-w-0"></div>').append($name, '<span class="badge flex-shrink-0" style="background: var(--bs-red); color: #FFFFFF;">You</span>') : $name)
+			.append(isMe ? $('<div class="d-flex align-items-center gap-2 min-w-0"></div>').append($name, '<span class="badge flex-shrink-0 text-white" style="background: var(--bs-red);">You</span>') : $name)
 			.append($('<span class="fs-7 text-primary text-truncate"></span>').text(sites.length ? sites.join(', ') : '-')));
 		$row.append($('<span class="fs-4 fw-semibold text-dark flex-shrink-0"></span>').text(user.token));
 		$box.append($row);
