@@ -9,6 +9,7 @@
 .liff-sig-box .liff-sig-hint { pointer-events: none; }
 </style>
 
+<c:set var="sigId" value="${empty param.idPrefix ? 'sig' : fn:escapeXml(param.idPrefix)}" />
 <div class="liff-sig-pad">
 	<c:choose>
 		<c:when test="${not empty param.signatureUrl}">
@@ -20,12 +21,12 @@
 			</div>
 		</c:when>
 		<c:when test="${param.editable == 'true'}">
-			<div class="liff-sig-box" id="sigBox">
-				<span class="liff-sig-hint text-muted fs-7" id="sigHint">Sign inside this box</span>
-				<canvas id="sigCanvas"></canvas>
+			<div class="liff-sig-box" id="${sigId}Box">
+				<span class="liff-sig-hint text-muted fs-7" id="${sigId}Hint">Sign inside this box</span>
+				<canvas id="${sigId}Canvas"></canvas>
 			</div>
 			<div class="d-flex justify-content-end mt-2">
-				<button type="button" class="btn btn-sm btn-light liff-sig-clear" id="sigClearBtn" disabled>Clear signature</button>
+				<button type="button" class="btn btn-sm btn-light liff-sig-clear" id="${sigId}ClearBtn" disabled>Clear signature</button>
 			</div>
 		</c:when>
 		<c:otherwise>

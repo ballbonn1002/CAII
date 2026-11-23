@@ -39,6 +39,7 @@
 .liff-borrow-name:hover { color: var(--bs-gray-900); }
 .liff-news-img { display: block; width: 100%; aspect-ratio: 16 / 9; object-fit: cover; }
 .liff-news-img-blank { object-fit: contain; padding: 2rem; background: var(--bs-gray-100); }
+.liff-field-row:has(.input-error) { border-bottom-color: var(--bs-danger); }
 .liff-news-title { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; overflow-wrap: anywhere; line-height: 1.4; min-height: 2.8em; }
 .liff-news-carousel .carousel-indicators [data-bs-target] { width: 8px; height: 8px; margin: 0 4px; border: 0; border-radius: 4px; background-color: var(--bs-red); transition: width .3s ease, opacity .3s ease; }
 .liff-news-carousel .carousel-indicators .active { width: 24px; }
@@ -313,7 +314,73 @@
 					</div>
 
 					<div class="tab-pane fade" id="tabSecurity" role="tabpanel">
-						<div class="text-center text-gray-600 fs-7 py-6">-</div>
+						<div class="d-flex flex-column gap-8">
+							<div class="d-flex flex-column gap-4">
+								<div class="d-flex justify-content-between align-items-center gap-3">
+									<div class="d-flex flex-column min-w-0">
+										<span class="fs-6 fw-bold text-gray-800">Password</span>
+										<span class="fs-5 fw-medium text-muted">************</span>
+									</div>
+									<button type="button" id="btnResetPassword" class="btn btn-light fw-medium flex-shrink-0">Reset Password</button>
+								</div>
+
+								<form id="resetPasswordForm" class="d-none" autocomplete="off" onsubmit="return false;">
+									<div class="liff-field-row">
+										<label class="liff-field-label" for="currentPw">Current Password <span class="text-danger">*</span></label>
+										<input type="password" class="form-control liff-field-value" name="currentPw" id="currentPw" oninput="validateCurrentPassword();" />
+										<span class="btn btn-sm btn-icon toggle-password" data-eye-target="currentPw">
+											<i class="ki-duotone ki-eye-slash fs-2"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span></i>
+											<i class="ki-duotone ki-eye fs-2 d-none"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span></i>
+										</span>
+									</div>
+									<div id="currentPwError" class="text-danger fs-7 fw-medium d-none mt-2">Incorrect password.</div>
+
+									<div class="liff-field-row">
+										<label class="liff-field-label" for="newPw">New Password <span class="text-danger">*</span></label>
+										<input type="password" class="form-control liff-field-value" name="newPw" id="newPw" oninput="validateNewPassword();" minlength="6" disabled />
+										<span class="btn btn-sm btn-icon toggle-password d-none" data-eye-target="newPw">
+											<i class="ki-duotone ki-eye-slash fs-2"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span></i>
+											<i class="ki-duotone ki-eye fs-2 d-none"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span></i>
+										</span>
+									</div>
+									<div id="newPwError" class="text-danger fs-7 fw-medium d-none mt-2">New password must be different from Current Password.</div>
+
+									<div class="liff-field-row">
+										<label class="liff-field-label" for="confirmNewPw">Confirm New Password <span class="text-danger">*</span></label>
+										<input type="password" class="form-control liff-field-value" name="confirmNewPw" id="confirmNewPw" oninput="validateConfirmPassword()" minlength="6" disabled />
+										<span class="btn btn-sm btn-icon toggle-password d-none" data-eye-target="confirmNewPw">
+											<i class="ki-duotone ki-eye-slash fs-2"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span></i>
+											<i class="ki-duotone ki-eye fs-2 d-none"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span></i>
+										</span>
+									</div>
+									<div id="confirmNewPwError" class="text-danger fs-7 fw-medium d-none mt-2">The password is incorrect. Please enter it again.</div>
+
+									<p id="pwPattern" class="fs-7 fw-normal text-muted mt-3 mb-5">Password must be at least 6 character.</p>
+									<div class="d-flex gap-3">
+										<button type="button" onclick="confirmLeaveForm()" class="btn btn-light fw-medium flex-grow-1">Cancel</button>
+										<button type="button" onclick="validatePassword()" class="btn btn-success fw-medium flex-grow-1">Update Password</button>
+									</div>
+								</form>
+							</div>
+
+							<div class="d-flex flex-column gap-4">
+								<span class="fs-6 fw-bold text-gray-800">Signature</span>
+								<div id="securitySigView" class="d-flex flex-column gap-3 ${empty imgPathSignature ? 'd-none' : ''}">
+									<div class="liff-sig-box is-locked"><img id="securitySigImg" src="${fn:escapeXml(imgPathSignature)}" alt="Signature" /></div>
+									<button type="button" id="btnChangeSignature" class="btn btn-light fw-medium">Change Signature</button>
+								</div>
+								<div id="securitySigEdit" class="d-flex flex-column gap-3 ${empty imgPathSignature ? '' : 'd-none'}">
+									<jsp:include page="/pages-line/common/liff_signature_pad.jsp">
+										<jsp:param name="editable" value="true" />
+										<jsp:param name="idPrefix" value="securitySig" />
+									</jsp:include>
+									<div class="d-flex gap-3">
+										<button type="button" id="btnCancelSignature" class="btn btn-light fw-medium flex-grow-1 ${empty imgPathSignature ? 'd-none' : ''}">Cancel</button>
+										<button type="button" id="btnSaveSignature" class="btn btn-success fw-medium flex-grow-1" disabled>Save Signature</button>
+									</div>
+								</div>
+							</div>
+						</div>
 					</div>
 				</div>
 			</div>
@@ -407,6 +474,17 @@
 	});
 	$('#btnProfileBack').on('click', function () { showMain(true); });
 
+	var params = new URLSearchParams(window.location.search);
+	if (params.get('saved') === 'signature') {
+		showMain(false);
+		var securityTab = document.querySelector('#profileDetail a[href="#tabSecurity"]');
+		if (securityTab) bootstrap.Tab.getOrCreateInstance(securityTab).show();
+		liffToastSuccess('Your signature has been saved.', 'Saved successfully!');
+		params.delete('saved');
+		var qs = params.toString();
+		history.replaceState(null, '', window.location.pathname + (qs ? '?' + qs : ''));
+	}
+
 	$('#profileMain').on('click', '.liff-borrow-name', function () {
 		showMain(false);
 		var tabEl = document.querySelector('#profileDetail a[href="#tabBorrow"]');
@@ -450,15 +528,59 @@
 		});
 	}
 
+	function uploadSignature(blob) {
+		var formData = new FormData();
+		formData.append('fileUpload', blob, 'signature.png');
+		return fetch(ctx + '/update_signature', { method: 'POST', body: formData })
+			.then(function (res) { if (!res.ok) throw new Error(res.status); });
+	}
+
 	function saveSignature() {
 		return getSignatureBlob().then(function (blob) {
-			if (!blob) return;
-			var formData = new FormData();
-			formData.append('fileUpload', blob, 'signature.png');
-			return fetch(ctx + '/update_signature', { method: 'POST', body: formData })
-				.then(function (res) { if (!res.ok) throw new Error(res.status); });
+			if (blob) return uploadSignature(blob);
 		});
 	}
+
+	var securitySigPad = liffSignaturePad(document.getElementById('securitySigCanvas'), function () {
+		$('#btnSaveSignature').prop('disabled', !securitySigPad.isSigned());
+	});
+
+	function showSecuritySigEdit(show) {
+		$('#securitySigView').toggleClass('d-none', show);
+		$('#securitySigEdit').toggleClass('d-none', !show);
+		if (show) securitySigPad.clear();
+	}
+
+	$('#profileDetail a[href="#tabSecurity"]').on('shown.bs.tab', function () {
+		if (!$('#securitySigEdit').hasClass('d-none')) securitySigPad.clear();
+	});
+	$('#btnChangeSignature').on('click', function () { showSecuritySigEdit(true); });
+	$('#btnCancelSignature').on('click', function () { showSecuritySigEdit(false); });
+
+	$('#btnSaveSignature').on('click', function () {
+		Swal.fire({
+			title: 'Are you sure?!',
+			text: 'Do you want to save the changes?',
+			icon: 'warning',
+			showCancelButton: true,
+			confirmButtonText: 'Save',
+			cancelButtonText: 'Close',
+			buttonsStyling: false,
+			customClass: { confirmButton: 'btn btn-success', cancelButton: 'btn btn-secondary' }
+		}).then(function (result) {
+			if (!result.isConfirmed) return;
+			liffShowLoading();
+			securitySigPad.toBlob()
+				.then(uploadSignature)
+				.then(function () {
+					location.replace(ctx + '/line_my_profile?saved=signature');
+				})
+				.catch(function () {
+					hideLoading();
+					liffToastError('Unable to save your signature. Please try again.', 'Save failed');
+				});
+		});
+	});
 
 	function postBorrowAction(url, borrowId, errorText) {
 		var failText = 'Unable to save your signature. Please try again.';
@@ -572,4 +694,293 @@
 
 	Promise.allSettled([loadSummary(), loadRank(), loadTop3()]).then(hideLoading);
 })();
+</script>
+
+<script type="text/javascript">
+	function toggleEyeIcon() {
+		document.querySelectorAll('#resetPasswordForm .toggle-password').forEach(function (btn) {
+			if (btn.dataset.bound === 'true') return;
+			btn.dataset.bound = 'true';
+
+			btn.addEventListener('click', function () {
+				var input = document.getElementById(this.dataset.eyeTarget);
+				if (input.disabled) return;
+
+				var eyeSlash = this.querySelector('.ki-eye-slash');
+				var eye = this.querySelector('.ki-eye');
+
+				if (input.type === 'password') {
+					input.type = 'text';
+					eyeSlash.classList.add('d-none');
+					eye.classList.remove('d-none');
+				} else {
+					input.type = 'password';
+					eye.classList.add('d-none');
+					eyeSlash.classList.remove('d-none');
+				}
+			});
+		});
+	}
+
+	var isCurrentPwValid = false;
+	var isNewPwValid = false;
+
+	function showError(inputId, errorId) {
+		document.getElementById(inputId).classList.add('input-error');
+		document.getElementById(errorId).classList.remove('d-none');
+	}
+
+	function clearError(inputId, errorId) {
+		document.getElementById(inputId).classList.remove('input-error');
+		document.getElementById(errorId).classList.add('d-none');
+	}
+
+	function validateCurrentPassword() {
+		var password = document.getElementById('currentPw').value.trim();
+
+		if (password === '') {
+			isCurrentPwValid = false;
+			showError('currentPw', 'currentPwError');
+			return;
+		}
+
+		fetch('${ctx}/validate_current_password', {
+			method: 'POST',
+			headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+			body: 'currentPw=' + encodeURIComponent(password)
+		})
+			.then(function (res) { return res.json(); })
+			.then(function (data) {
+				if (data.valid) {
+					isCurrentPwValid = true;
+					clearError('currentPw', 'currentPwError');
+					enableNewPwInput(true);
+				} else {
+					isCurrentPwValid = false;
+					showError('currentPw', 'currentPwError');
+					enableNewPwInput(false);
+				}
+			})
+			.catch(function () {
+				isCurrentPwValid = false;
+				showError('currentPw', 'currentPwError');
+			});
+	}
+
+	function validateNewPassword() {
+		var currentPw = document.getElementById('currentPw').value.trim();
+		var newPw = document.getElementById('newPw').value.trim();
+		var pattern = /^\S{6,}$/;
+
+		clearError('newPw', 'newPwError');
+		setPwPattern('normal');
+
+		if (newPw === '') {
+			isNewPwValid = false;
+			return false;
+		}
+
+		if (newPw === currentPw) {
+			isNewPwValid = false;
+			showError('newPw', 'newPwError');
+			return false;
+		}
+
+		if (!pattern.test(newPw)) {
+			isNewPwValid = false;
+			setPwPattern('error');
+			return false;
+		}
+
+		isNewPwValid = true;
+		return true;
+	}
+
+	function validateConfirmPassword() {
+		var newPw = document.getElementById('newPw').value.trim();
+		var confirmPw = document.getElementById('confirmNewPw').value.trim();
+
+		if (confirmPw === '') {
+			clearError('confirmNewPw', 'confirmNewPwError');
+			return true;
+		}
+
+		if (newPw !== confirmPw) {
+			showError('confirmNewPw', 'confirmNewPwError');
+			return false;
+		}
+
+		clearError('confirmNewPw', 'confirmNewPwError');
+		return true;
+	}
+
+	function validatePassword() {
+		var errorFields = [];
+		var isValid = true;
+
+		var currentPw = document.getElementById('currentPw').value.trim();
+		var newPwInput = document.getElementById('newPw');
+		var newPwValue = newPwInput.value.trim();
+		var confirmNewPw = document.getElementById('confirmNewPw').value.trim();
+
+		if (!currentPw) errorFields.push('Current Password');
+
+		if (!newPwInput.disabled) {
+			if (!newPwValue) {
+				errorFields.push('New Password');
+			}
+			if (isNewPwValid && !confirmNewPw) {
+				errorFields.push('Confirm New Password');
+			} else if (!newPwValue && !confirmNewPw) {
+				errorFields.push('Confirm New Password');
+			}
+		}
+
+		if (errorFields.length > 0) {
+			Swal.fire({
+				title: 'Please complete the form!',
+				html: 'Please fill in the following fields:<br><strong>' + errorFields.join(', ') + '</strong>',
+				icon: 'error',
+				confirmButtonText: 'OK',
+				buttonsStyling: false,
+				customClass: { confirmButton: 'btn btn-danger' }
+			});
+			return false;
+		}
+
+		if (!isCurrentPwValid) {
+			showError('currentPw', 'currentPwError');
+			isValid = false;
+		}
+
+		if (!newPwInput.disabled) {
+			var isPwPatternOk = validateNewPassword();
+			var isConfirmOk = validateConfirmPassword();
+			if (!isPwPatternOk || !isConfirmOk) {
+				isValid = false;
+			}
+		}
+
+		if (!isValid) return false;
+
+		Swal.fire({
+			title: 'Are you sure?!',
+			text: 'Do you want to save the changes?',
+			icon: 'warning',
+			showCancelButton: true,
+			confirmButtonText: 'Save',
+			cancelButtonText: 'Close',
+			buttonsStyling: false,
+			customClass: { confirmButton: 'btn btn-success', cancelButton: 'btn btn-secondary' }
+		}).then(function (result) {
+			if (result.isConfirmed) {
+				updatePassword();
+			}
+		});
+	}
+
+	function updatePassword() {
+		var body = $('#resetPasswordForm').serialize();
+		liffShowLoading();
+		fetch('${ctx}/validate_current_password', {
+			method: 'POST',
+			headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+			body: 'currentPw=' + encodeURIComponent(document.getElementById('currentPw').value.trim())
+		})
+			.then(function (res) { return res.json(); })
+			.then(function (data) {
+				if (!data.valid) throw new Error('invalid');
+				return fetch('${ctx}/update_password', {
+					method: 'POST',
+					headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+					body: body
+				});
+			})
+			.then(function (res) {
+				if (!res.ok) throw new Error(res.status);
+				$('#liffLoadingOverlay').hide();
+				closeResetPasswordForm();
+				liffToastSuccess('Your password has been updated.', 'Updated successfully!');
+			})
+			.catch(function (err) {
+				$('#liffLoadingOverlay').hide();
+				if (err.message === 'invalid') {
+					isCurrentPwValid = false;
+					showError('currentPw', 'currentPwError');
+					return;
+				}
+				liffToastError('Unable to update your password. Please try again.', 'Save failed');
+			});
+	}
+
+	function enableNewPwInput(enable) {
+		var newPw = document.getElementById('newPw');
+		var confirmNewPw = document.getElementById('confirmNewPw');
+		var newPwEye = document.querySelector('[data-eye-target="newPw"]');
+		var confirmNewPwEye = document.querySelector('[data-eye-target="confirmNewPw"]');
+
+		newPw.disabled = !enable;
+		confirmNewPw.disabled = !enable;
+
+		if (enable) {
+			newPwEye.classList.remove('d-none');
+			confirmNewPwEye.classList.remove('d-none');
+		} else {
+			newPw.value = '';
+			confirmNewPw.value = '';
+			newPw.type = 'password';
+			confirmNewPw.type = 'password';
+			newPwEye.classList.add('d-none');
+			confirmNewPwEye.classList.add('d-none');
+			newPwEye.querySelector('.ki-eye').classList.add('d-none');
+			newPwEye.querySelector('.ki-eye-slash').classList.remove('d-none');
+			confirmNewPwEye.querySelector('.ki-eye').classList.add('d-none');
+			confirmNewPwEye.querySelector('.ki-eye-slash').classList.remove('d-none');
+		}
+	}
+
+	function setPwPattern(state) {
+		var pwPattern = document.getElementById('pwPattern');
+		pwPattern.classList.remove('text-muted', 'text-danger');
+		pwPattern.classList.add(state === 'error' ? 'text-danger' : 'text-muted');
+	}
+
+	function closeResetPasswordForm() {
+		var form = document.getElementById('resetPasswordForm');
+		var currentPwEye = document.querySelector('[data-eye-target="currentPw"]');
+		form.reset();
+		isCurrentPwValid = false;
+		isNewPwValid = false;
+		enableNewPwInput(false);
+		setPwPattern('normal');
+		clearError('currentPw', 'currentPwError');
+		clearError('newPw', 'newPwError');
+		clearError('confirmNewPw', 'confirmNewPwError');
+		document.getElementById('currentPw').type = 'password';
+		currentPwEye.querySelector('.ki-eye').classList.add('d-none');
+		currentPwEye.querySelector('.ki-eye-slash').classList.remove('d-none');
+		form.classList.add('d-none');
+		document.getElementById('btnResetPassword').classList.remove('d-none');
+	}
+
+	function confirmLeaveForm() {
+		Swal.fire({
+			title: 'Are you sure?!',
+			text: 'Closing will discard any unsaved data.',
+			icon: 'warning',
+			showCancelButton: true,
+			confirmButtonText: 'Yes, discard it',
+			cancelButtonText: 'Cancel',
+			buttonsStyling: false,
+			customClass: { confirmButton: 'btn btn-danger', cancelButton: 'btn btn-secondary' }
+		}).then(function (result) {
+			if (result.isConfirmed) closeResetPasswordForm();
+		});
+	}
+
+	document.getElementById('btnResetPassword').addEventListener('click', function () {
+		this.classList.add('d-none');
+		document.getElementById('resetPasswordForm').classList.remove('d-none');
+		toggleEyeIcon();
+	});
 </script>
