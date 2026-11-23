@@ -55,6 +55,7 @@ body {
 	letter-spacing: 0px;
 }
 .liff-shell { --liff-gutter: 1.5rem; width: calc(100% - 32px); max-width: 393px; margin: 0 auto; }
+.min-w-0 { min-width: 0 !important; }
 .liff-back-btn { display: inline-flex; align-items: center; justify-content: center; width: 36px; height: 36px; border-radius: 10px; background: #F8F9FB; border: 1px solid #E4E6EF; }
 .liff-loading-overlay {
 	position: fixed; inset: 0;
