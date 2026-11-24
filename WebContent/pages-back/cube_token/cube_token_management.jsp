@@ -676,6 +676,10 @@
 						const deductToken = Number(user.deduct_token || 0);
 						const yearlyToken = Number(user.yearly_token || 0);
 
+						// Ranking มาจาก backend แล้ว (ไม่ต้องคำนวณใหม่ตอน filter)
+						const rank = Number(user.rank || 0);
+						const rankDisplay = user.rankDisplay || user.rank || "-";
+
 
 						// ==========================================
 						// Render Row
@@ -688,9 +692,10 @@
 								data-employee-status="\${escapeHtml(user.employee_status || '')}"
 						    >
 
-								<!-- # -->
-								<td class="text-center">
+								<!-- RANKING -->
+								<td class="text-center" data-order="\${rank}">
 									<span class="fw-bold fs-7 text-gray-900">
+										\${escapeHtml(rankDisplay)}
 									</span>
 								</td>
 
@@ -805,34 +810,7 @@
 					table = $("#kt_datatable_zero_configuration").DataTable({
 					    pageLength: 25,
 						lengthMenu: [10, 25, 50, 100],
-						drawCallback: function(settings) {
-					        const api = this.api();
-					        const pageInfo = api.page.info();
-
-					        const order = api.order();
-
-					        const isIndexDesc =
-					            order.length > 0 &&
-					            order[0][0] === 0 &&
-					            order[0][1] === "desc";
-
-					        api.rows({
-					            page: "current"
-					        }).nodes().each(function(row, index) {
-
-					            let rowNumber;
-
-					            if (isIndexDesc) {
-					                rowNumber = pageInfo.recordsDisplay - pageInfo.start - index;
-					            } else {
-					                rowNumber = pageInfo.start + index + 1;
-					            }
-
-					            $(row)
-					                .find("td:first span")
-					                .text(rowNumber);
-					        });
-					    }
+						order: [[0, "asc"]]
 					});
 					
 					table.draw();
