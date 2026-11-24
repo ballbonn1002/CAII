@@ -182,7 +182,7 @@
 
 .symbol.rank-2 .symbol-label {
 	background-color: var(--bs-border-color) !important;
-		color: var(--bs-text-gray-700) !important;
+	color: var(--bs-text-gray-700) !important;
 }
 
 [data-bs-theme="dark"] .symbol.rank-2 .symbol-label {
@@ -239,7 +239,7 @@
 }
 
 .gx-custom {
-	 --bs-gutter-x: 3rem !important;
+	--bs-gutter-x: 3rem !important;
 }
 
 /* Mobile */
@@ -272,6 +272,169 @@
 	}
 	.symbol.rank-3 {
 		border: 2px solid var(--bs-orange) !important;
+	}
+}
+
+/* ===== Redeem reward card (same as privilege.jsp) ===== */
+.image-cover {
+	object-fit: cover;
+	height: clamp(160px, 20vw, 313px);
+}
+
+.bg-dark-light {
+	background-color: var(--bs-dark-light) !important;
+}
+
+.redeem-btn {
+	position: relative;
+	overflow: hidden;
+	background-color: var(--bs-light) !important;
+	border: 1px solid var(--bs-primary-border-subtle) !important;
+	color: var(--bs-primary) !important;
+	transition: background-color 0.25s ease, color 0.25s ease;
+}
+
+.redeem-btn[disabled] {
+	background-color: var(--bs-gray-200) !important;
+	border: 1px solid var(--bs-gray-200) !important;
+	color: var(--bs-text-muted) !important;
+}
+
+.redeem-btn .ki-parcel {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	opacity: 0 !important;
+	color: var(--bs-white) !important;
+	transform: translate(-50%, -50%) translateX(-35px);
+	transition: opacity 0.4s ease, transform 0.5s
+		cubic-bezier(0.22, 1, 0.36, 1) !important;
+}
+
+.redeem-text {
+	display: inline-block;
+	transform: translateX(0);
+	transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.redeem-btn:hover {
+	background-color: var(--bs-primary) !important;
+	color: var(--bs-white) !important;
+}
+
+.redeem-btn:hover .ki-parcel {
+	opacity: 1 !important;
+	transform: translate(-50%, -50%) translateX(-50px);
+}
+
+.redeem-btn:hover .redeem-text {
+	transform: translateX(12px);
+}
+
+.details-truncate {
+	display: -webkit-box;
+	-webkit-box-orient: vertical;
+	-webkit-line-clamp: 2;
+	overflow: hidden;
+}
+
+.effective-date {
+	background: rgba(0, 0, 0, 0.15);
+	transition: background 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.item-card:hover .effective-date {
+	background: rgba(0, 0, 0, 0.5);
+}
+
+.badge-gray-500 {
+	background-color: rgba(219, 223, 233, 1) !important;
+	color: var(--bs-text-muted) !important;
+}
+
+@media ( max-width : 767.98px) {
+	.redeem-btn:hover .ki-parcel {
+		opacity: 1 !important;
+		transform: translate(-50%, -50%) translateX(-40px);
+	}
+}
+
+@media ( min-width : 768px) and (max-width: 991.98px) {
+	.redeem-btn:hover .ki-parcel {
+		transform: translate(-50%, -50%) translateX(-45px);
+	}
+}
+
+.reward-carousel .carousel-control-prev,
+.reward-carousel .carousel-control-next {
+	top: 42%;
+	width: 40px;
+	height: 40px;
+	opacity: 1;
+	border-radius: 50%;
+	border: 1px solid var(--bs-gray-300);
+	background-color: var(--bs-body-bg);
+	box-shadow: var(--bs-box-shadow-sm);
+	color: var(--bs-primary);
+	transition: background-color .2s ease-in-out, color .2s ease-in-out,
+		border-color .2s ease-in-out;
+}
+
+.reward-carousel .carousel-indicators [data-bs-target].active {
+    width: 40px !important;
+}
+
+.reward-carousel .carousel-control-prev {
+	left: -10px;
+}
+
+.reward-carousel .carousel-control-next {
+	right: -10px;
+}
+
+.reward-carousel .carousel-control-prev:hover,
+.reward-carousel .carousel-control-next:hover {
+	background-color: var(--bs-primary);
+	border-color: var(--bs-primary);
+	color: var(--bs-white);
+}
+
+.reward-carousel .carousel-indicators {
+	position: relative;
+	inset: auto;
+	display: flex;
+	justify-content: center;
+	gap: .5rem;
+	margin: 1.5rem 0 0;
+}
+
+.reward-carousel .carousel-indicators [data-bs-target] {
+	width: 10px;
+	height: 10px;
+	margin: 0;
+	border: 0;
+	border-radius: 50%;
+	background-color: var(--bs-gray-300);
+	opacity: 1;
+	transition: width .2s ease, background-color .2s ease;
+}
+
+.reward-carousel .carousel-indicators [data-bs-target].active {
+	width: 24px;
+	border-radius: 5px;
+	background-color: var(--bs-primary);
+}
+
+[data-bs-theme="dark"] .reward-carousel .carousel-control-prev,
+[data-bs-theme="dark"] .reward-carousel .carousel-control-next {
+	background-color: var(--bs-gray-800);
+	border-color: var(--bs-gray-700);
+}
+
+@media ( max-width : 1199.98px) {
+	.reward-carousel .carousel-control-prev,
+	.reward-carousel .carousel-control-next {
+		display: none;
 	}
 }
 
@@ -463,7 +626,8 @@
 							<span class="text-gray-600 mt-4"> Loading... </span>
 						</div>
 
-						<div class="token-podium d-none" style="max-width: 1500px; margin: 0 auto;">
+						<div class="token-podium d-none"
+							style="max-width: 1500px; margin: 0 auto;">
 
 							<div
 								class="row align-items-end justify-content-center gx-2 gx-md-10">
@@ -498,10 +662,12 @@
 
 												<div class="position-relative">
 
-													<i class="ki-duotone ki-medal-star text-white" style="font-size: clamp(5.25rem, 10vw, 80px);">
-														<span class="path1"> </span> <span class="path2"></span> <span
+													<i class="ki-duotone ki-medal-star text-white"
+														style="font-size: clamp(5.25rem, 10vw, 80px);"> <span
+														class="path1"> </span> <span class="path2"></span> <span
 														class="path3"></span> <span class="path4"></span>
-													</i> <span class="fw-bold fs-8 rank-label rank-2" id="2ndRankDisplay"> 2 </span>
+													</i> <span class="fw-bold fs-8 rank-label rank-2"
+														id="2ndRankDisplay"> 2 </span>
 												</div>
 
 												<div class="d-flex flex-column align-items-center">
@@ -552,10 +718,12 @@
 
 												<div class="position-relative">
 
-													<i class="ki-duotone ki-medal-star text-white" style="font-size: clamp(6rem, 10vw, 120px);">
-														<span class="path1"> </span> <span class="path2"></span> <span
+													<i class="ki-duotone ki-medal-star text-white"
+														style="font-size: clamp(6rem, 10vw, 120px);"> <span
+														class="path1"> </span> <span class="path2"></span> <span
 														class="path3"></span> <span class="path4"></span>
-													</i> <span class="fw-bold fs-7 rank-label rank-1" id="1stRankDisplay"> 1 </span>
+													</i> <span class="fw-bold fs-7 rank-label rank-1"
+														id="1stRankDisplay"> 1 </span>
 												</div>
 
 												<div class="d-flex flex-column align-items-center mt-xl-3">
@@ -603,10 +771,12 @@
 
 												<div class="position-relative">
 
-													<i class="ki-duotone ki-medal-star text-white"  style="font-size: clamp(5.25rem, 10vw, 80px);">
-														<span class="path1"> </span> <span class="path2"></span> <span
+													<i class="ki-duotone ki-medal-star text-white"
+														style="font-size: clamp(5.25rem, 10vw, 80px);"> <span
+														class="path1"> </span> <span class="path2"></span> <span
 														class="path3"></span> <span class="path4"></span>
-													</i> <span class="fw-bold fs-8 rank-label rank-3" id="3rdRankDisplay"> 3 </span>
+													</i> <span class="fw-bold fs-8 rank-label rank-3"
+														id="3rdRankDisplay"> 3 </span>
 												</div>
 
 
@@ -654,6 +824,49 @@
 
 					</div>
 				</div>
+
+				<div class="d-flex align-items-center justify-content-between mt-10">
+					<h3 class="text-gray-900 fw-bold">Redeem Rewards</h3>
+					<a href="${pageContext.request.contextPath}/privilegePage" class="btn btn-secondary text-gray-700">View All</a>
+				</div>
+
+				<!--begin::Reward carousel-->
+				<div id="rewardItemCarousel" class="carousel slide reward-carousel mt-4">
+					<!--begin::Carousel-->
+					<div class="carousel-inner pt-4" id="rewardCarouselInner">
+						<div class="carousel-item active">
+							<div
+								class="d-flex flex-column align-items-center justify-content-center py-20">
+								<div class="spinner-border text-primary" role="status">
+									<span class="visually-hidden">Loading...</span>
+								</div>
+								<span class="text-gray-600 mt-4">Loading...</span>
+							</div>
+						</div>
+					</div>
+					<!--end::Carousel-->
+
+					<!--begin::Controls-->
+					<button class="carousel-control-prev d-none" type="button"
+						data-bs-target="#rewardItemCarousel" data-bs-slide="prev">
+						<i class="ki-duotone ki-left fs-1"> <span class="path1"></span>
+							<span class="path2"></span>
+						</i> <span class="visually-hidden">Previous</span>
+					</button>
+
+					<button class="carousel-control-next d-none" type="button"
+						data-bs-target="#rewardItemCarousel" data-bs-slide="next">
+						<i class="ki-duotone ki-right fs-1"> <span class="path1"></span>
+							<span class="path2"></span>
+						</i> <span class="visually-hidden">Next</span>
+					</button>
+					<!--end::Controls-->
+
+					<!--begin::Indicators-->
+					<div class="carousel-indicators" id="rewardCarouselIndicators"></div>
+					<!--end::Indicators-->
+				</div>
+				<!--end::Reward carousel-->
 			</div>
 		</div>
 	</div>
@@ -663,6 +876,8 @@
     let firstPlaces = [];
     let secondPlaces = [];
     let thirdPlaces = [];
+
+    let userCurrentBalance = 0;
 	
 	$(document).ready(function() {
 
@@ -717,6 +932,17 @@
 
         loadUserRanking(year);
         loadTokenRanking(year);
+        loadUserBalanceAndRewards();
+
+        $(document).on("click", ".favorite-icon", toggleRewardFavorite);
+
+        $(document).on("click", "#rewardCarouselInner .item-card", function() {
+
+            const itemId = $(this).data("item-id");
+
+            window.location = "${pageContext.request.contextPath}/privilegePage?itemId="
+                + encodeURIComponent(itemId);
+        });
     });
 	
 	function showSameRankUsers(rank, token, users) {
@@ -1315,7 +1541,7 @@
 	    // Error
 	    // ==========================================
 	    function showRankingError() {
-	
+
 	        container.html(`
 	            <div class="text-center py-10">
 	                <i class="ki-duotone ki-information-5 fs-3x text-danger mb-4">
@@ -1329,6 +1555,425 @@
 	            </div>
 	        `);
 	    }
+	}
+
+	// ==========================================
+	// Redeem reward carousel
+	// ==========================================
+	const REWARD_CAROUSEL_LIMIT = 12;
+	const REWARD_CAROUSEL_ITEMS_PER_SLIDE = 4;
+	const REWARD_CAROUSEL_INTERVAL = 8000;
+
+	// Load current user balance first, then render the reward cards
+	function loadUserBalanceAndRewards() {
+
+	    $.ajax({
+	        url: "${pageContext.request.contextPath}/getUserAccumelatedToken",
+	        type: "GET",
+	        dataType: "json",
+
+	        success: function(response) {
+
+	            if (response && response.success) {
+	                userCurrentBalance = Number(response.data) || 0;
+	            } else {
+	                userCurrentBalance = 0;
+	            }
+	        },
+
+	        error: function(xhr, status, error) {
+
+	            console.error("Error loading user balance:", error);
+	            userCurrentBalance = 0;
+	        },
+
+	        complete: function() {
+	            loadRewardCarousel();
+	        }
+	    });
+	}
+
+	function loadRewardCarousel() {
+
+	    $.ajax({
+	        url: "${pageContext.request.contextPath}/getRewardItemCarousel",
+	        type: "GET",
+	        data: {
+	            limit: REWARD_CAROUSEL_LIMIT
+	        },
+	        dataType: "json",
+
+	        success: function(response) {
+
+	            const items = response && Array.isArray(response.data) ? response.data : [];
+
+	            if (!response || !response.success || items.length === 0) {
+	                renderRewardCarouselEmpty();
+	                return;
+	            }
+
+	            renderRewardCarousel(items);
+	        },
+
+	        error: function(xhr, status, error) {
+
+	            console.error("Error loading reward carousel:", error);
+	            renderRewardCarouselEmpty();
+	        }
+	    });
+	}
+
+	function renderRewardCarousel(items) {
+
+	    const $inner = $("#rewardCarouselInner");
+	    const $indicators = $("#rewardCarouselIndicators");
+
+	    $inner.empty();
+	    $indicators.empty();
+
+	    const slideCount = Math.ceil(items.length / REWARD_CAROUSEL_ITEMS_PER_SLIDE);
+
+	    for (let i = 0; i < items.length; i += REWARD_CAROUSEL_ITEMS_PER_SLIDE) {
+
+	        const slideItems = items.slice(i, i + REWARD_CAROUSEL_ITEMS_PER_SLIDE);
+	        const slideIndex = i / REWARD_CAROUSEL_ITEMS_PER_SLIDE;
+
+	        const $slide = $("<div>").addClass(
+	            "carousel-item" + (slideIndex === 0 ? " active" : "")
+	        );
+
+	        const $row = $("<div>").addClass("row row-cols-2 row-cols-xl-4 g-3 g-md-6");
+
+	        slideItems.forEach(function(item) {
+	            $row.append(buildRewardCard(item));
+	        });
+
+	        $slide.append($row);
+	        $inner.append($slide);
+
+	        $indicators.append(`
+	            <button
+	                type="button"
+	                data-bs-target="#rewardItemCarousel"
+	                data-bs-slide-to="\${slideIndex}"
+	                class="\${slideIndex === 0 ? 'active' : ''}"
+	                aria-label="Slide \${slideIndex + 1}"
+	                aria-current="\${slideIndex === 0 ? 'true' : 'false'}"></button>
+	        `);
+	    }
+
+	    initRewardCarousel(slideCount > 1);
+	    toggleRewardCarouselControls(slideCount > 1);
+	}
+
+	function renderRewardCarouselEmpty() {
+
+	    $("#rewardCarouselIndicators").empty();
+
+	    $("#rewardCarouselInner").html(`
+	        <div class="carousel-item active">
+	            <div class="d-flex flex-column align-items-center justify-content-center text-center py-20">
+	                <i class="ki-duotone ki-gift fs-5tx fs-md-3x text-gray-400">
+	                    <span class="path1"></span>
+	                    <span class="path2"></span>
+	                    <span class="path3"></span>
+	                    <span class="path4"></span>
+	                </i>
+
+	                <div class="fw-bold fs-3 text-gray-700 mt-5">No rewards available</div>
+	                <div class="text-gray-500 fs-6 mt-2">There are currently no rewards to redeem.</div>
+	            </div>
+	        </div>
+	    `);
+
+	    initRewardCarousel(false);
+	    toggleRewardCarouselControls(false);
+	}
+
+	function toggleRewardCarouselControls(show) {
+
+	    const $controls = $(
+	        "#rewardCarouselIndicators, " +
+	        "#rewardItemCarousel .carousel-control-prev, " +
+	        "#rewardItemCarousel .carousel-control-next"
+	    );
+
+	    $controls.toggleClass("d-none", !show);
+	}
+
+	function initRewardCarousel(autoSlide) {
+
+	    const carouselEl = document.getElementById("rewardItemCarousel");
+
+	    if (!carouselEl || !window.bootstrap) {
+	        return;
+	    }
+
+	    const existing = bootstrap.Carousel.getInstance(carouselEl);
+
+	    if (existing) {
+	        existing.dispose();
+	    }
+
+	    new bootstrap.Carousel(carouselEl, {
+	        interval: REWARD_CAROUSEL_INTERVAL,
+	        ride: autoSlide ? "carousel" : false,
+	        pause: "hover",
+	        touch: true
+	    });
+	}
+
+	function buildRewardCard(item) {
+
+	    const itemId = escapeHtml(item.itemId);
+	    const itemName = escapeHtml(item.itemName || "-");
+	    const details = escapeHtml(item.details || "").replace(/\r\n|\n|\r/g, "<br>");
+	    const token = Number(item.token) || 0;
+	    const addedMoney = Number(item.addedMoney) || 0;
+	    const quantity = Number(item.quantity) || 0;
+	    const soldOut = quantity <= 0;
+	    const insufficientBalance = userCurrentBalance < token;
+	    const isDisabled = soldOut || insufficientBalance;
+	    const isFavorite = Number(item.isFavorite) === 1 || item.isFavorite === true;
+	    const coverPath = "${pageContext.request.contextPath}" + (item.coverPath || "");
+	    const effectiveDate = formatDate(item.startDate) + " - " + formatDate(item.endDate);
+
+	    return `
+	        <div class="col">
+
+	            <div class="card card-px-0 h-100 cursor-pointer item-card" data-item-id="\${itemId}">
+
+	                <!--begin::Image-->
+	                <div class="position-relative image-container">
+
+	                    <div class="position-relative overflow-hidden bg-dark-light rounded-top">
+
+	                        <img src="\${escapeHtml(coverPath)}"
+	                            class="w-100 image-cover lozad"
+	                            alt="\${itemName}">
+
+	                        \${soldOut ? `
+	                        <div class="position-absolute translate-middle top-50 start-50 w-100">
+
+	                            <div
+	                                class="d-flex justify-content-center align-items-center bg-danger text-white text-uppercase fw-bold fs-2 py-2">
+
+	                                sold out
+
+	                            </div>
+
+	                        </div>
+	                        ` : ""}
+
+	                    </div>
+
+	                    <!--begin::Stock-->
+	                    <div
+	                        class="d-flex w-100 justify-content-between position-absolute top-0 start-0 mt-3 ms-3 p-0">
+
+	                        <div>
+
+	                            <span
+	                                class="badge badge-lg \${soldOut ? 'badge-gray-500' : 'badge-primary'} fw-normal fs-7 py-2 px-3" style="border: 1px solid rgba(241, 241, 244, 1);">
+
+	                                \${quantity} Remaining
+
+	                            </span>
+
+	                        </div>
+	                        <!--end::Stock-->
+
+	                        <!--begin::Favorite-->
+	                        <div
+	                            class="cursor-pointer ps-6 favorite-icon position-relative"
+	                            data-item-id="\${itemId}">
+
+	                            <i class="position-absolute end-25 top-50 mt-4 me-2 me-md-4 translate-middle \${isFavorite ? 'ki-solid' : 'ki-outline' } ki-heart fs-3x fs-md-1 \${isFavorite ? 'text-danger' : ''}">
+
+	                                <span class="path1"></span>
+	                                <span class="path2"></span>
+
+	                            </i>
+
+	                        </div>
+	                        <!--end::Favorite-->
+
+	                    </div>
+
+	                    <div
+	                        class="effective-date position-absolute translate-middle-x bottom-0 start-50 w-100 d-flex align-items-center justify-content-center text-center p-4">
+
+	                        <div class="fs-7 text-white fw-normal">\${effectiveDate}</div>
+
+	                    </div>
+
+	                </div>
+	                <!--end::Image-->
+
+	                <!--begin::Card body-->
+	                <div class="card-body d-flex flex-column p-6">
+
+	                    <!--begin::Title-->
+	                    <div class="mb-2">
+	                        <div
+	                            class="fw-bold fs-4 text-gray-700 text-truncate item-name">
+
+	                            \${itemName}
+
+	                        </div>
+
+	                        <div
+	                            class="fw-bold fs-6 text-gray-600 details-truncate mt-2">
+
+	                            \${details || "-"}
+
+	                        </div>
+
+	                    </div>
+	                    <!--end::Title-->
+
+	                    <!--begin::Price-->
+	                    <div class="mt-auto pt-10">
+
+	                        <div class="d-flex align-items-center justify-content-between">
+
+	                            <!-- Token -->
+	                            <div class="d-flex align-items-center gap-2">
+
+	                                <i class="ki-duotone ki-cube-2 fs-2x text-primary">
+
+	                                    <span class="path1"></span>
+	                                    <span class="path2"></span>
+	                                    <span class="path3"></span>
+
+	                                </i>
+
+	                                <span class="fw-bold fs-3 text-\${insufficientBalance ? 'warning' : 'gray-800'}">
+
+	                                    \${token.toLocaleString()}
+
+	                                </span>
+
+	                                \${insufficientBalance ? `
+	                                <i class="ki-solid ki-information-5 fs-1 text-warning">
+	                                    <span class="path1"></span>
+	                                    <span class="path2"></span>
+	                                    <span class="path3"></span>
+	                                </i>
+	                                ` : ""}
+
+	                            </div>
+
+	                            <!-- Additional -->
+	                            <div class="fw-medium fs-5 text-gray-700">
+
+	                                + &#3647; \${addedMoney.toLocaleString()}
+
+	                            </div>
+
+	                        </div>
+
+	                    </div>
+	                    <!--end::Price-->
+
+	                    <!--begin::Button-->
+	                    <div class="pt-6">
+
+	                        <button type="button" data-item-id="\${itemId}"
+	                            class="btn btn-icon w-100 fw-semibold p-1 redeem-btn">
+
+	                            <i
+	                                class="ki-duotone ki-parcel fs-2x text-primary position-absolute">
+
+	                                <span class="path1"></span>
+	                                <span class="path2"></span>
+	                                <span class="path3"></span>
+	                                <span class="path4"></span>
+	                                <span class="path5"></span>
+
+	                            </i>
+
+	                            <span class="redeem-text">
+	                                \${isDisabled ? "รายละเอียด" : "แลกของรางวัล"}
+	                            </span>
+
+	                        </button>
+
+	                    </div>
+	                    <!--end::Button-->
+
+	                </div>
+	                <!--end::Card body-->
+
+	            </div>
+
+	        </div>
+	    `;
+	}
+
+	function toggleRewardFavorite(event) {
+
+	    event.preventDefault();
+	    event.stopPropagation();
+
+	    const $favorite = $(this);
+	    const itemId = $favorite.data("item-id");
+	    const $icon = $favorite.find("i");
+
+	    // Update UI first (optimistic)
+	    const wasFavorite = $icon.hasClass("ki-solid");
+
+	    setRewardFavoriteIcon($icon, !wasFavorite);
+
+	    $.ajax({
+	        url: "${pageContext.request.contextPath}/toggleFavorite",
+	        type: "POST",
+	        data: {
+	            itemId: itemId
+	        },
+	        dataType: "json",
+
+	        success: function(response) {
+
+	            if (!response.success) {
+	                setRewardFavoriteIcon($icon, wasFavorite);
+	            }
+	        },
+
+	        error: function(xhr, status, error) {
+
+	            console.error("Toggle favorite error:", error);
+	            setRewardFavoriteIcon($icon, wasFavorite);
+	        }
+	    });
+	}
+
+	function setRewardFavoriteIcon($icon, isFavorite) {
+
+	    $icon
+	        .toggleClass("ki-solid", isFavorite)
+	        .toggleClass("ki-outline", !isFavorite)
+	        .toggleClass("text-danger", isFavorite)
+	        .toggleClass("text-gray-600", !isFavorite);
+	}
+
+	function formatDate(value) {
+
+	    if (!value) {
+	        return "-";
+	    }
+
+	    const date = new Date(value);
+
+	    if (isNaN(date.getTime())) {
+	        return "-";
+	    }
+
+	    const day = date.getDate();
+	    const month = date.toLocaleString("en-US", { month: "short" });
+	    const year = String(date.getFullYear()).slice(-2);
+
+	    return day + " " + month + " " + year;
 	}
 
 </script>

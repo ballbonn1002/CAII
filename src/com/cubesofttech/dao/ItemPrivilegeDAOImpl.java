@@ -5,6 +5,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 
+import org.hibernate.Query;
 import org.hibernate.SessionFactory;
 import org.hibernate.transform.AliasToEntityMapResultTransformer;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,7 +51,7 @@ public class ItemPrivilegeDAOImpl implements ItemPrivilegeDAO {
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public List<Map<String, Object>> findAllWithUserFavorite(String userId) throws Exception {
+	public List<Map<String, Object>> findAllWithUserFavorite(String userId, Integer limit) throws Exception {
 
 		String sql =
 		        "SELECT " +
@@ -76,13 +77,21 @@ public class ItemPrivilegeDAOImpl implements ItemPrivilegeDAO {
 		        "ORDER BY " +
 		        "    CASE WHEN uf.user_favorite_id IS NOT NULL THEN 0 ELSE 1 END, " +
 		        "    ip.item_id ASC";
+		
+		if (limit != null && limit > 0) {
+		    sql += " LIMIT :limit";
+		}
+		
+		Query query = sessionFactory.getCurrentSession().createSQLQuery(sql);
+		
+		query.setParameter("userId", userId);
+		query.setParameter("date", Date.valueOf(LocalDate.now()));
 
-	    return sessionFactory.getCurrentSession()
-	            .createSQLQuery(sql)
-	            .setParameter("userId", userId)
-	            .setParameter("date", Date.valueOf(LocalDate.now()))
-	            .setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE)
-	            .list();
+		if (limit != null && limit > 0) {
+		    query.setParameter("limit", limit);
+		}
+
+	    return query.setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE).list();
 	}
 
 }

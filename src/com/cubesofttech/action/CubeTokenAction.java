@@ -80,8 +80,9 @@ public class CubeTokenAction extends ActionSupport {
 	private List<ItemPrivilege> itemPrivileges;
 	private List<Product> products;
 	private Integer productId;
+	private Integer limit = null;
 	private ItemPrivilege item;
-
+	
 	private int year;
 
 	private Integer logId;
@@ -157,7 +158,10 @@ public class CubeTokenAction extends ActionSupport {
 		try {
 
 			List<Map<String, Object>> logDetail = cubeTokenService.getTokenMonthlyLogDetailsByLogId(logId);
+			TokenMonthlyLog log =  cubeTokenService.getTokenMonthlyLogById(logId);
+			
 			request.setAttribute("detail", logDetail);
+			request.setAttribute("log", log);
 
 			return SUCCESS;
 
@@ -409,8 +413,9 @@ public class CubeTokenAction extends ActionSupport {
 		try {
 
 			User user = (User) session.getAttribute("user");
+			
 
-			List<Map<String, Object>> items = cubeTokenService.getAllRewardItemsWithFavoriteStatus(user.getId());
+			List<Map<String, Object>> items = cubeTokenService.getAllRewardItemsWithFavoriteStatus(user.getId(), limit);
 
 			writeSuccessResponse(items, HttpServletResponse.SC_OK, "Reward item list retrieved successfully");
 
@@ -424,6 +429,35 @@ public class CubeTokenAction extends ActionSupport {
 		return NONE;
 	}
 	
+	public String getRewardItemCarousel() {
+
+		try {
+
+			User user = (User) session.getAttribute("user");
+
+			if (user == null) {
+				writeErrorResponse(HttpServletResponse.SC_UNAUTHORIZED, "User not logged in");
+				return NONE;
+			}
+
+			// Each carousel slide shows 4 items, so the default is 3 slides
+			int carouselLimit = (limit != null && limit > 0) ? limit : 12;
+
+			List<Map<String, Object>> items = cubeTokenService.getAllRewardItemsWithFavoriteStatus(user.getId(),
+					carouselLimit);
+
+			writeSuccessResponse(items, HttpServletResponse.SC_OK, "Reward item carousel retrieved successfully");
+
+		} catch (Exception e) {
+
+			log.error("Error in getRewardItemCarousel: " + e.getMessage(), e);
+			writeErrorResponse(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Internal server error");
+
+		}
+
+		return NONE;
+	}
+
 	public String getRewardItemList() {
 
 		try {
@@ -1714,6 +1748,10 @@ public class CubeTokenAction extends ActionSupport {
 
 	public void setSignatureContentType(String signatureContentType) {
 		this.signatureContentType = signatureContentType;
+	}
+	
+	public void setLimit(Integer limit) {
+		this.limit = limit;
 	}
 
 }

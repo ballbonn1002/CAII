@@ -1999,6 +1999,10 @@
         class="com.cubesofttech.action.CubeTokenAction"
         method="getRewardItemWithFavoriteList" />
         
+        <action name="getRewardItemCarousel"
+        class="com.cubesofttech.action.CubeTokenAction"
+        method="getRewardItemCarousel" />
+
         <action name="getRewardItemList"
         class="com.cubesofttech.action.CubeTokenAction"
         method="getRewardItemList" />

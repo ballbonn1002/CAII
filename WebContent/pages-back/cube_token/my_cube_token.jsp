@@ -143,7 +143,6 @@
 		font-weight: 500 !important;
 		line-height: 1.5 !important;
 	}
-	
 	.button-label {
 		display: none !important;
 	}
@@ -361,9 +360,9 @@
 													border border-gray-300 border-dashed
 													rounded h-100">
 
-											<span class="fw-bold fs-4 text-gray-900"
-												id="employeePosition"> ${userInfo.position} </span> <span
-												class="fw-bold fs-6 text-gray-600"> Position </span>
+											<span class="fw-bold fs-6 text-gray-600"> Position </span> <span
+												class="fw-bold fs-4 text-gray-900" id="employeePosition">
+												${userInfo.position} </span>
 
 										</div>
 
@@ -379,9 +378,9 @@
 													border border-gray-300 border-dashed
 													rounded h-100">
 
+											<span class="fw-bold fs-6 text-gray-600"> Department </span>
 											<span class="fw-bold fs-4 text-gray-900"
-												id="employeeDepartment"> ${userInfo.department} </span> <span
-												class="fw-bold fs-6 text-gray-600"> Department </span>
+												id="employeeDepartment"> ${userInfo.department} </span>
 										</div>
 
 									</div>
@@ -395,7 +394,8 @@
 													border border-gray-300 border-dashed
 													rounded h-100">
 
-											<span class="fw-bold fs-4 text-gray-900"> <c:choose>
+											<span class="fw-bold fs-6 text-gray-600"> Site </span> <span
+												class="fw-bold fs-4 text-gray-900"> <c:choose>
 													<c:when test="${not empty userInfo.jobsiteList}">
 														<c:forEach var="site" items="${userInfo.jobsiteList}"
 															varStatus="status">
@@ -411,7 +411,7 @@
 													</c:otherwise>
 												</c:choose>
 
-											</span> <span class="fw-bold fs-6 text-gray-600"> Site </span>
+											</span>
 										</div>
 									</div>
 								</div>
@@ -426,7 +426,7 @@
 						<div class="row g-5 flex-grow-1">
 
 							<!-- ================= TOTAL TOKEN ================= -->
-							<div class="col-6 d-flex">
+							<div class="col-4 d-flex">
 								<div class="card card-flush mt-6 w-100 h-100">
 									<div
 										class="d-flex flex-column
@@ -450,8 +450,8 @@
 													">
 											<span class="fw-bold fs-2qx text-gray-800 token-value"
 												data-field="cubeToken"> - </span> <span
-												class="fs-4 fw-bold text-primary"> Cube Token </span> <span
-												class="fs-6 text-gray-600"> สะสมทั้งหมด </span>
+												class="fs-4 fw-bold text-primary text-center"> Total Score </span> <span
+												class="fs-6 text-gray-600 text-center"> คะแนนสะสมทั้งหมด </span>
 										</div>
 
 									</div>
@@ -462,7 +462,7 @@
 
 
 							<!-- ================= YEARLY TOKEN ================= -->
-							<div class="col-6 d-flex">
+							<div class="col-4 d-flex">
 
 								<div class="card card-flush mt-6 w-100 h-100">
 
@@ -488,8 +488,49 @@
 
 											<span class="fw-bold fs-2qx text-gray-800 token-value"
 												data-field="yearlyCubeToken"> - </span> <span
-												class="fs-4 fw-bold text-primary"> Cube Token </span> <span
-												class="fs-6 fw-semibold text-gray-600"> สะสมรายปี <span
+												class="fs-4 fw-bold text-primary text-center"> This Year's Score
+											</span> <span class="fs-6 fw-semibold text-gray-600">
+												คะแนนสะสมของปีนี้ <span class="d-none"
+												id="yearlyCubeToken-year">2026</span>
+											</span>
+										</div>
+
+									</div>
+
+								</div>
+
+							</div>
+							
+							<!-- ================= MONTHLY TOKEN ================= -->
+							<div class="col-4 d-flex">
+
+								<div class="card card-flush mt-6 w-100 h-100">
+
+									<div
+										class="d-flex flex-column
+												align-items-center
+												justify-content-center
+												h-100 gap-1">
+										<!-- Icon -->
+										<div>
+											<i class="ki-duotone ki-cube-3 fs-4x text-primary"> <span
+												class="path1"></span> <span class="path2"></span> <span
+												class="path3"></span>
+											</i>
+										</div>
+
+										<!-- Token Information -->
+										<div
+											class="d-flex flex-column
+													align-items-center
+													justify-content-center
+													">
+
+											<span class="fw-bold fs-2qx text-gray-800 token-value"
+												data-field="monthlyCubeToken"> - </span> <span
+												class="fs-4 fw-bold text-primary text-center"> This Month's Score
+											</span> <span class="fs-6 fw-semibold text-gray-600">
+												คะแนนสะสมของปีนี้ <span class="d-none"
 												id="yearlyCubeToken-year">2026</span>
 											</span>
 										</div>
@@ -768,10 +809,11 @@
 								class="d-flex align-items-center justify-content-start gap-3
 							           btn
 							           responsive-button w-100"
-								type="button" onClick="window.location.href='${pageContext.request.contextPath}/privilegeHistory'">
+								type="button"
+								onClick="window.location.href='${pageContext.request.contextPath}/privilegeHistory'">
 
-								<i class="ki-duotone ki-handcart fs-1"></i> <span class="fs-6 button-label">
-									Redeem History </span>
+								<i class="ki-duotone ki-handcart fs-1"></i> <span
+									class="fs-6 button-label"> Redeem History </span>
 
 							</button>
 						</div>
@@ -790,14 +832,13 @@
 				</div>
 
 				<!--begin::Exchange Cube Token Modal-->
-				<div class="modal fade" tabindex="-1" id="exchangeTokenModal"
+				<div class="modal fade" \tabindex="-1" id="exchangeTokenModal"
 					aria-hidden="true">
 					<div class="modal-dialog modal-lg modal-dialog-centered">
 						<div class="modal-content">
 							<!--begin::Modal Header-->
 							<div class="modal-header border-0 pb-4">
-								<h2 class="modal-title fw-bold text-gray-900">Exchange Cube
-									Token</h2>
+								<h2 class="modal-title fw-bold text-gray-900">Exchange</h2>
 								<!--begin::Close-->
 								<div class="btn btn-icon btn-sm btn-active-light-primary ms-2"
 									data-bs-dismiss="modal">
@@ -825,13 +866,10 @@
 									<div
 										class="bg-light-info border border-info border-opacity-25 rounded px-6 py-5">
 										<div
-											class="d-flex align-items-center justify-content-center gap-3">
-											<span id="exchangeCubeRate" class="fw-bold text-info fs-1">
-												1 </span> <span class="text-gray-600 fw-semibold fs-6"> Cube
-												Token </span> <span class="text-gray-500 fs-5"> = </span> <span
-												id="exchangeMonthlyRate" class="fw-bold text-info fs-1">
-												1 </span> <span class="text-gray-600 fw-semibold fs-6">
-												Monthly Token </span>
+											class="d-flex align-items-center justify-content-center gap-3 py-1">
+											<span id="exchangeCubeRate" class="fw-semibold text-info fs-4">
+												เบิก Total Score แลกเป็น This Year's Score อัตราแลกเปลี่ยน
+												1:1 คะแนน</span>
 										</div>
 									</div>
 									<!--end::Rate Box-->
@@ -843,18 +881,25 @@
 								<!--begin::Exchange Amount-->
 								<div class="mb-7">
 									<!--begin::Label-->
-									<div class="d-flex align-items-center mb-2">
-										<span class="fw-bold text-gray-800 fs-5"> Exchange
+									<div class="d-flex justify-content-between align-items-center mb-2">
+										<div class="d-flex align-items-center"><span class="fw-bold text-gray-800 fs-5"> Exchange
 											Amount </span> <i
 											class="ki-duotone ki-arrow-right-left fs-2 text-gray-600 ms-3">
 											<span class="path1"></span> <span class="path2"></span> <span
 											class="path3"></span> <span class="path4"></span> <span
 											class="path5"></span> <span class="path6"></span>
-										</i>
+										</i></div>
+										
+										<div class="text-gray-700 fs-5 mt-3">
+										Max redemption: <span id="exchangeMaxRedemption"
+											class="text-gray-800 fw-medium">0</span> <span
+											class="text-gray-800 fw-medium"> Token </span>
+									</div>
+										
 									</div>
 									<!--end::Label-->
 									<!--begin::Current Balance-->
-									<div class="text-gray-700 fs-5 mb-4">
+									<div class="text-gray-700 fs-5 mb-4 d-none">
 										Current Balance: <span id="exchangeCurrentBalance"
 											class="text-gray-800 fs-5 fw-medium">-</span> <span
 											class="text-gray-800 fs-5 fw-medium"> Token </span>
@@ -869,19 +914,11 @@
 									</div>
 									<!--end::Amount Input-->
 									<!--begin::Max Redemption-->
-									<div class="text-gray-700 fs-5 mt-3">
-										Max redemption: <span id="exchangeMaxRedemption"
-											class="text-gray-800 fw-medium">-</span> <span
-											class="text-gray-800 fw-medium"> Token </span>
-									</div>
 									<!--end::Max Redemption-->
 								</div>
 								<!--end::Exchange Amount-->
-								<!--begin::Divider-->
-								<div class="separator separator-dashed mb-6"></div>
-								<!--end::Divider-->
 								<!--begin::Receive-->
-								<div class="d-flex align-items-center mb-4">
+								<div class="d-flex align-items-center mb-4 d-none">
 									<div
 										class="d-inline-flex align-items-center px-4 py-3 border border-dashed border-gray-300 rounded">
 										<span class="text-success fw-bold fs-6"> Receive </span> <span
@@ -892,7 +929,7 @@
 								</div>
 								<!--end::Receive-->
 								<!--begin::Remaining-->
-								<div class="text-gray-700 fs-5">
+								<div class="text-gray-700 fs-5 d-none">
 									Remaining: <span id="exchangeRemainingBalance"
 										class="text-gray-800 fs-5 fw-normal">38</span> <span
 										class="text-gray-800 fs-5 fw-normal"> Token</span>
@@ -951,6 +988,10 @@
 		            $("[data-field='cubeToken']").text(
 		                formatToken(data.accumulatedToken)
 		            );
+		            
+		            $("[data-field='monthlyCubeToken']").text(
+			                formatToken(data.monthlyToken)
+			        );
 		            
 		            $("[data-field='yearlyCubeToken']").text(
 			                formatToken(data.yearlyToken)
@@ -1161,7 +1202,7 @@
 									</div>
 									
 									<div class="card-toolbar">
-										<div class="d-flex align-items-center gap-2 gap-md-4">
+										<div class="d-flex flex-wrap align-items-center gap-2 gap-md-4">
 											<div class="d-flex align-items-center justify-content-center gap-2 gap-md-3">
 												<!-- Cube Token Icon -->
 												<i class="ki-duotone ki-cube-3 fs-1 text-primary"> <span
@@ -1173,10 +1214,10 @@
 												</i>
 			
 												<!-- Label -->
-												<span class="text-gray-800 fs-6"> Cube Token </span>
+												<span class="text-gray-800 fs-6"> This Month's Score </span>
 			
 												<!-- Balance -->
-												<span class="fw-semibold text-gray-700 fs-3"> \${month.summary.balance} </span>
+												<span class="fw-bold text-gray-700 fs-3"> \${month.summary.balance} </span>
 											</div>
 											
 											<!-- Metronic Vertical Separator -->
@@ -1187,10 +1228,10 @@
 											<div class="d-flex align-items-center justify-content-center gap-2 gap-md-3">
 												
 												<!-- Label -->
-												<span class="text-gray-800 fs-6"> เข้ายอดสะสม </span>
+												<span class="text-gray-800 fs-6"> Accumulated Score </span>
 			
 												<!-- Balance -->
-												<span class="fw-semibold text-gray-700 fs-3"> \${Math.max(month.summary.balance, 0)} </span>
+												<span class="fw-bold text-primary fs-3"> \${Math.max(month.summary.balance, 0)} </span>
 											</div>
 											
 											<!-- Collapse Button -->
@@ -1454,7 +1495,7 @@
 								p-4 p-md-6
 								border border-dashed border-success rounded">
 
-								<div class="row row-cols-2 row-cols-md-4 g-2 g-md-3">
+								<div class="row row-cols-2 row-cols-md-4 g-2 g-md-3 me-6">
 									<!-- Gift -->
 									<div class="col">
 										<div class="token-summary-item
@@ -1571,7 +1612,7 @@
 								p-4 p-md-6
 								border border-dashed border-danger rounded">
 
-								<div class="row row-cols-2 row-cols-md-5 g-2 g-md-3">
+								<div class="row row-cols-2 row-cols-md-5 g-2 g-md-3 me-6">
 
 									<!-- Late -->
 									<div class="col">

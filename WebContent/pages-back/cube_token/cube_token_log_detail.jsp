@@ -67,7 +67,7 @@
 					class="page-title d-flex flex-column justify-content-center flex-wrap me-3">
 					<h1
 						class="page-heading d-flex text-gray-700 fw-semibold flex-column justify-content-center my-0">
-						Privilege Management</h1>
+						Token Monthly Log</h1>
 					<ul
 						class="breadcrumb breadcrumb-separatorless fw-semibold fs-7 my-0 pt-1">
 						<li class="breadcrumb-item text-muted"><a
@@ -77,11 +77,11 @@
 							class="bullet bg-gray-500 w-5px h-2px"></span></li>
 						<li class="breadcrumb-item text-muted"><a
 							href="cubeTokenLogs" class="text-muted text-hover-primary">Cube
-								Token Logs</a></li>
+								Token Log</a></li>
 						<li class="breadcrumb-item"><span
 							class="bullet bg-gray-500 w-5px h-2px"></span></li>
-						<li class="breadcrumb-item text-muted"><a href="#"
-							class="text-muted text-hover-primary">Log Detail</a></li>
+						<li class="breadcrumb-item text-muted"><a href="#" id="log_detail_link"
+							class="text-muted text-hover-primary">Token Monthly Log Detail</a></li>
 
 					</ul>
 				</div>
@@ -283,10 +283,12 @@
 		        return;
 		    }
 		    
+		    $("#log_detail_link").attr("href", `/cubeTokenLogDetail?logId=\${logId}`);
+		    
 		    $("#retryBtn").on("click", retry);
 		    
 		    $("#logId").text(`#\${logId}`);
-		    $("#logDate").text(new Date().toLocaleDateString("en-US"));
+		    $("#logDate").text(new Date("${log.dateTime}").toLocaleDateString("en-US"));
 		    
 		    filter($(".total-log-card"));
 		    

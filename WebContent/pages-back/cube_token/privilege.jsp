@@ -186,6 +186,11 @@
 	color: var(--bs-text-muted) !important;
 }
 
+.item-card-highlight {
+	box-shadow: 0 0 0 3px var(--bs-primary) !important;
+	transition: box-shadow 0.3s ease;
+}
+
 .timeline-horizontal {
 	--bs-timeline-icon-size: 38px;
 	--bs-timeline-icon-space: 0.35rem;
@@ -320,6 +325,7 @@
 		<div id="kt_app_content" class="app-content flex-column-fluid ">
 			<div id="kt_app_content_container"
 				class="app-container container-fluid">
+
 
 				<div class="row g-5 align-items-stretch mb-12">
 
@@ -506,7 +512,7 @@
 						<div class="row g-5 flex-grow-1">
 
 							<!-- ================= TOTAL TOKEN ================= -->
-							<div class="col-6 d-flex">
+							<div class="col-4 d-flex">
 								<div class="card card-flush mt-6 w-100 h-100">
 									<div
 										class="d-flex flex-column
@@ -530,8 +536,8 @@
 													">
 											<span class="fw-bold fs-2qx text-gray-800 token-value"
 												data-field="cubeToken"> - </span> <span
-												class="fs-4 fw-bold text-primary"> Cube Token </span> <span
-												class="fs-6 text-gray-600"> สะสมทั้งหมด </span>
+												class="fs-4 fw-bold text-primary text-center"> Total Score </span> <span
+												class="fs-6 text-gray-600 text-center"> คะแนนสะสมทั้งหมด </span>
 										</div>
 
 									</div>
@@ -542,7 +548,7 @@
 
 
 							<!-- ================= YEARLY TOKEN ================= -->
-							<div class="col-6 d-flex">
+							<div class="col-4 d-flex">
 
 								<div class="card card-flush mt-6 w-100 h-100">
 
@@ -568,9 +574,47 @@
 
 											<span class="fw-bold fs-2qx text-gray-800 token-value"
 												data-field="yearlyCubeToken"> - </span> <span
-												class="fs-4 fw-bold text-primary"> Cube Token </span> <span
-												class="fs-6 fw-semibold text-gray-600"> สะสมรายปี <span
-												id="yearlyCubeToken-year">2026</span>
+												class="fs-4 fw-bold text-primary text-center"> This Year's Score </span> <span
+												class="fs-6 fw-semibold text-gray-600 text-center"> คะแนนสะสมของปีนี้
+											</span>
+										</div>
+
+									</div>
+
+								</div>
+
+							</div>
+							
+							<!-- ================= MONTHLY TOKEN ================= -->
+							<div class="col-4 d-flex">
+
+								<div class="card card-flush mt-6 w-100 h-100">
+
+									<div
+										class="d-flex flex-column
+												align-items-center
+												justify-content-center
+												h-100 gap-1">
+										<!-- Icon -->
+										<div>
+											<i class="ki-duotone ki-cube-3 fs-4x text-primary"> <span
+												class="path1"></span> <span class="path2"></span> <span
+												class="path3"></span>
+											</i>
+										</div>
+
+										<!-- Token Information -->
+										<div
+											class="d-flex flex-column
+													align-items-center
+													justify-content-center
+													">
+
+											<span class="fw-bold fs-2qx text-gray-800 token-value"
+												data-field="monthlyCubeToken"> - </span> <span
+												class="fs-4 fw-bold text-primary text-center"> This Month's Score
+											</span> <span class="fs-6 fw-semibold text-gray-600 text-center">
+												คะแนนสะสมเดือนนี้ 
 											</span>
 										</div>
 
@@ -702,8 +746,8 @@
 											</div>
 
 											<div class="d-flex gap-3 align-items-center mt-6">
-												<i class="ki-duotone ki-information-5 text-primary fs-1"> <span
-													class="path1"></span> <span class="path2"></span> <span
+												<i class="ki-duotone ki-information-5 text-primary fs-1">
+													<span class="path1"></span> <span class="path2"></span> <span
 													class="path3"></span>
 												</i>
 												<div class="fw-medium fs-7 text-gray-700">รูปภาพเพื่อประกอบการโฆษณาเท่านั้น</div>
@@ -769,19 +813,22 @@
 													<div class="fw-medium fs-5" id="remainingBalance"></div>
 												</div>
 
-												<div
-													class="d-flex align-items-center gap-2 bg-light-danger rounded border border-danger py-2 px-3 mt-4"
-													id="insufficientBalanceWarning">
-													<i class="ki-duotone ki-information-3 fs-1 text-danger">
-														<span class="path1"></span> <span class="path2"></span> <span
-														class="path3"></span>
-													</i>
-													<div class="fw-medium fs-7 text-gray-700">ขออภัย
-														แต้มของคุณไม่เพียงพอในการแลกสินค้าชินนี้</div>
-												</div>
+
 											</div>
 										</div>
 									</div>
+
+								</div>
+
+								<div
+									class="d-flex align-items-center gap-2 bg-light-danger rounded border border-danger py-2 px-3 mt-7"
+									id="insufficientBalanceWarning">
+									<i class="ki-duotone ki-information-3 fs-1 text-danger"> <span
+										class="path1"></span> <span class="path2"></span> <span
+										class="path3"></span>
+									</i>
+									<div class="fw-medium fs-5 text-danger">ขออภัย
+										แต้มของคุณไม่เพียงพอในการแลกสินค้าชินนี้</div>
 								</div>
 
 							</div>
@@ -814,6 +861,9 @@
     let rewardItems = {};
     let userCurrentBalance = 0;
     const favoriteTimers = {};
+
+    // ทำ deep link (?itemId=) แค่ครั้งแรกที่โหลดหน้าเท่านั้น
+    let itemDeepLinkHandled = false;
     
     
     $(document).ready(function() {
@@ -1337,6 +1387,9 @@
 
                     $container.append(html);
                 });
+
+                // เลื่อนหน้าจอไปยัง item ที่ถูกเลือกจากหน้าอื่น (?itemId=)
+                setTimeout(scrollToItemFromUrl, 350);
             },
 
             error: function(xhr, status, error) {
@@ -1366,6 +1419,52 @@
     
     }
     
+    // เลื่อนหน้าจอไปยัง item ที่ระบุใน URL (?itemId=) แล้วเปิด modal แลกของรางวัลของ item นั้น
+    // ทำงานครั้งเดียวหลังโหลดหน้าเท่านั้น (หลังแลกของ/reload list จะไม่ scroll หรือเปิด modal ซ้ำ)
+    function scrollToItemFromUrl() {
+
+        if (itemDeepLinkHandled) {
+            return;
+        }
+
+        itemDeepLinkHandled = true;
+
+        const targetItemId = new URLSearchParams(window.location.search).get("itemId");
+
+        if (!targetItemId) {
+            return;
+        }
+
+        // ลบ itemId ออกจาก URL กันการ scroll/modal ซ้ำตอน refresh
+        const url = new URL(window.location.href);
+        url.searchParams.delete("itemId");
+        window.history.replaceState({}, "", url);
+
+        const $target = $(".card-container .item-card").filter(function() {
+            return String($(this).data("item-id")) === String(targetItemId);
+        });
+
+        if ($target.length === 0) {
+            return;
+        }
+
+        $target[0].scrollIntoView({
+            behavior: "smooth",
+            block: "center"
+        });
+
+        $target.addClass("item-card-highlight");
+
+        setTimeout(function() {
+            $target.removeClass("item-card-highlight");
+        }, 2500);
+
+        // เปิด modal หลังเลื่อนหน้าจอเสร็จ
+        setTimeout(function() {
+            openRedeemModal(targetItemId);
+        }, 600);
+    }
+
     function filterRewardItems() {
         const searchText = $("#searchInput").val().trim().toLowerCase();
         const filter = $("#filterSelect").val();
@@ -1621,6 +1720,10 @@
 	            
 	            $("[data-field='yearlyCubeToken']").text(
 		                formatToken(data.yearlyToken)
+		        );
+	            
+	            $("[data-field='monthlyCubeToken']").text(
+		                formatToken(data.monthlyToken)
 		        );
 
 /* 	            $("[data-field='gift']").text(

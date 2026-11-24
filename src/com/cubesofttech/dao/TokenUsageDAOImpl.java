@@ -242,7 +242,7 @@ public class TokenUsageDAOImpl implements TokenUsageDAO {
 	@Override
 	@SuppressWarnings("unchecked")
 	public List<Map<String, Object>> findTokenSummaryForAllUsers(int year) throws Exception {
-
+		
 	    String sql =
 	            "SELECT " +
 	            "    u.id AS user_id, " +
@@ -285,7 +285,19 @@ public class TokenUsageDAOImpl implements TokenUsageDAO {
 	            "            THEN tu.value " +
 	            "            ELSE 0 " +
 	            "        END " +
-	            "    ), 0) AS deduct_token " +
+	            "    ), 0) AS deduct_token, " +
+	            
+	            
+				// Yearly Balance
+				"COALESCE(SUM( " +
+			            "        CASE " +
+			            "            WHEN (tu.action_type_id = 5 OR tu.action_type_id = 3) AND tu.reconcile IS NOT NULL" + // Add in reconcile, Return
+			            "                THEN GREATEST(COALESCE(tu.reconcile, 0), 0) " +
+			            "            WHEN tu.action_type_id = 11 AND tu.reconcile IS NOT NULL " + // Spend Current Year
+			            "                THEN -COALESCE(tu.reconcile, 0) " +
+			            "            ELSE 0 " +
+			            "        END " +
+			            "    ), 0) AS yearly_token " +
 
 	            "FROM user u " +
 
@@ -304,6 +316,7 @@ public class TokenUsageDAOImpl implements TokenUsageDAO {
 				"    u.path " +
 				
 				"ORDER BY " +
+				"    reconcile DESC, " +
 				"    u.employee_id ASC, " +
 				"    u.name_en ASC, " +
 				"    u.name ASC, " +

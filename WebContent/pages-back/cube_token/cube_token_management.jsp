@@ -169,12 +169,13 @@
 								<thead>
 									<tr
 										class="text-start text-gray-500 fw-bold fs-7 text-uppercase gs-0">
-										<th class="text-center min-w-50px">#</th>
+										<th class="text-center min-w-50px">RANKING</th>
 										<th style="min-width: 60px">EMP. ID</th>
 										<th class="min-w-100px">NAME</th>
-										<th style="min-width: 120px">RECONCILE</th>
-										<th style="min-width: 120px">GET TOKEN</th>
-										<th style="min-width: 120px">DEDUCT TOKEN</th>
+										<th class="text-end" style="min-width: 120px">TOTAL SCORE</th>
+										<th class="text-end" style="min-width: 160px">THIS YEAR'S SCORE</th>
+										<th class="text-end" style="min-width: 120px">GET TOKEN</th>
+										<th class="text-end" style="min-width: 120px">DEDUCT TOKEN</th>
 										<th class="text-end min-w-150px pe-3">ACTION</th>
 									</tr>
 								</thead>
@@ -673,6 +674,7 @@
 						const reconcile = Number(user.reconcile || 0);
 						const getToken = Number(user.get_token || 0);
 						const deductToken = Number(user.deduct_token || 0);
+						const yearlyToken = Number(user.yearly_token || 0);
 
 
 						// ==========================================
@@ -748,15 +750,22 @@
 
 
 								<!-- RECONCILE -->
-								<td>
+								<td class="text-end">
 									<span class="text-gray-800">
 										\${reconcile}
+									</span>
+								</td>
+								
+								<!-- YEARLY TOKEN -->
+								<td class="text-end">
+									<span class="text-gray-800">
+										\${yearlyToken}
 									</span>
 								</td>
 
 
 								<!-- GET TOKEN -->
-								<td>
+								<td class="text-end">
 									<span class="text-gray-800">
 										\${getToken}
 									</span>
@@ -764,7 +773,7 @@
 
 
 								<!-- DEDUCT TOKEN -->
-								<td>
+								<td class="text-end">
 									<span class="text-gray-800">
 										\${deductToken}
 									</span>

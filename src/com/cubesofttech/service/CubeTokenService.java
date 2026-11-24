@@ -1628,54 +1628,82 @@ public class CubeTokenService {
 		Map<String, Object> result = new LinkedHashMap<>();
 
 		result.put("accumulatedToken", getDouble(row, "token"));
-
 		result.put("yearlyToken", getUserYearlyTokenBalance(userId, year));
+		result.put("monthlyToken", getUserCurrentMonthlyBalance(userId));
 
 		result.put("gift", getDouble(row, "gift"));
-
 		result.put("reward", getDouble(row, "reward"));
-
 		result.put("return", getDouble(row, "return_token"));
-
 		result.put("exchange", getDouble(row, "exchange"));
-
 		result.put("late", getDouble(row, "late"));
-
 		result.put("earlyOut", getDouble(row, "early_out"));
-
 		result.put("leave", getDouble(row, "leave_token"));
-
 		result.put("backDate", getDouble(row, "back_date"));
-
 		result.put("noRecord", getDouble(row, "no_record"));
 
 		return result;
 	}
 
+
 	@Transactional(readOnly = true)
 	public List<Map<String, Object>> getTokenSummaryForAllUsers(Integer year) throws Exception {
-
-		if (year > LocalDate.now().getYear()) {
-			throw new IllegalArgumentException("Year cannot be in the future.");
-		}
-
-		if (year == null || year <= 0) {
-			year = LocalDate.now().getYear();
-		}
-
-		List<Map<String, Object>> summaryList = usageTokenDAO.findTokenSummaryForAllUsers(year);
-
-		for (Map<String, Object> row : summaryList) {
-
-			if (row.get("file_path") != null) {
-				String filePath = fileAttachmentService.getFileUrl(row.get("file_path").toString());
-				row.put("file_path", filePath);
-			}
-
-		}
-
-		return summaryList;
+	
+	    if (year != null && year > LocalDate.now().getYear()) {
+	        throw new IllegalArgumentException("Year cannot be in the future.");
+	    }
+	
+	    if (year == null || year <= 0) {
+	        year = LocalDate.now().getYear();
+	    }
+	
+	    List<Map<String, Object>> summaryList = usageTokenDAO.findTokenSummaryForAllUsers(year);
+	
+	    int ranking = 1;
+	    double previousToken = Double.NaN;
+	
+	    for (int i = 0; i < summaryList.size(); i++) {
+	
+	        Map<String, Object> row = summaryList.get(i);
+	
+	        double token = row.get("reconcile") != null
+	                ? ((Number) row.get("reconcile")).doubleValue()
+	                : 0.0;
+	
+	        // Calculate ranking
+	        if (i > 0 && Double.compare(token, previousToken) != 0) {
+	            ranking = i + 1;
+	        }
+	
+	        previousToken = token;
+	
+	        // Check tie
+	        boolean tied = false;
+	
+	        if (i > 0) {
+	            double prevToken = ((Number) summaryList.get(i - 1).get("reconcile")).doubleValue();
+	            tied = Double.compare(token, prevToken) == 0;
+	        }
+	
+	        if (i + 1 < summaryList.size()) {
+	            double nextToken = ((Number) summaryList.get(i + 1).get("reconcile")).doubleValue();
+	            tied = tied || Double.compare(token, nextToken) == 0;
+	        }
+	
+	        row.put("rank", ranking);
+	        row.put("rankDisplay", tied ? "T" + ranking : String.valueOf(ranking));
+	
+	        // Convert file path to URL
+	        if (row.get("file_path") != null) {
+	            String filePath = fileAttachmentService.getFileUrl(
+	                    row.get("file_path").toString()
+	            );
+	            row.put("file_path", filePath);
+	        }
+	    }
+	
+	    return summaryList;
 	}
+
 
 	public List<Integer> getTokenAvailableYears(String userId) throws Exception {
 
@@ -2469,8 +2497,26 @@ public class CubeTokenService {
 
 			detail.put("jobsiteList", MAPPER.writeValueAsString(userJobsiteList));
 		}
+		
+		System.out.println(details);
 
 		return details;
+	}
+	
+	@Transactional(readOnly = true)
+	public TokenMonthlyLog getTokenMonthlyLogById(Integer logId) throws Exception {
+
+		if (logId == null || logId <= 0) {
+			throw new IllegalArgumentException("Invalid log ID.");
+		}
+
+		TokenMonthlyLog log = tokenMonthlyLogDAO.findById(logId);
+
+		if (log == null) {
+			throw new IllegalArgumentException("Log not found for ID: " + logId);
+		}
+
+		return log;
 	}
 
 	@Transactional
@@ -3123,9 +3169,9 @@ public class CubeTokenService {
 		return itemPrivilegeDAO.findAll();
 	}
 
-	public List<Map<String, Object>> getAllRewardItemsWithFavoriteStatus(String userId) throws Exception {
+	public List<Map<String, Object>> getAllRewardItemsWithFavoriteStatus(String userId, Integer limit) throws Exception {
 
-		return itemPrivilegeDAO.findAllWithUserFavorite(userId);
+		return itemPrivilegeDAO.findAllWithUserFavorite(userId, limit);
 	}
 
 	@Transactional(readOnly = true)
@@ -3966,20 +4012,20 @@ public class CubeTokenService {
 			return false;
 		}
 
-		LocalDate createDate = timeCreate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-
-		/*
-		 * จำนวนวันทำการที่ผ่านไประหว่าง targetDate -> createDate
-		 */
-		int businessDays = countBusinessDays(targetDate, createDate);
-
-		/*
-		 * ลงย้อนหลัง 0 หรือ 1 วันทำการ ไม่ถือเป็น Backdate ที่ต้องหัก Token
-		 */
-		if (businessDays <= 1) {
-
-			return false;
-		}
+//		LocalDate createDate = timeCreate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+//
+//		/*
+//		 * จำนวนวันทำการที่ผ่านไประหว่าง targetDate -> createDate
+//		 */
+//		int businessDays = countBusinessDays(targetDate, createDate);
+//
+//		/*
+//		 * ลงย้อนหลัง 0 หรือ 1 วันทำการ ไม่ถือเป็น Backdate ที่ต้องหัก Token
+//		 */
+//		if (businessDays <= 1) {
+//
+//			return false;
+//		}
 
 		return true;
 	}

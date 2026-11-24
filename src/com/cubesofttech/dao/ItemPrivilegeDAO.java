@@ -11,6 +11,6 @@ public interface ItemPrivilegeDAO {
 	public void delete(ItemPrivilege itemPrivilege) throws Exception;
 	public ItemPrivilege findById(Integer itemId) throws Exception;
 	public List<ItemPrivilege> findAll() throws Exception;
-	public List<Map<String, Object>> findAllWithUserFavorite(String userId) throws Exception;
+	public List<Map<String, Object>> findAllWithUserFavorite(String userId, Integer limit) throws Exception;
 }
 
