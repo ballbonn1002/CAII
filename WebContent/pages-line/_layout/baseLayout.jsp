@@ -24,7 +24,7 @@
 <link rel="shortcut icon" href="assets/media/logos/cube-small-ico.ico" />
 
 <!--begin::Fonts(mandatory for all pages)-->
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@300;400;500;600;700&display=swap" />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@600&family=IBM+Plex+Sans+Thai:wght@300;400;500;600;700&display=swap" />
 <!--end::Fonts-->
 <!--begin::Vendor Stylesheets(used for this page only)-->
 <link href="assets/plugins/custom/fullcalendar/fullcalendar.bundle.css" rel="stylesheet" type="text/css" />

@@ -26,9 +26,7 @@
 .liff-borrow-head { background: #FFF2F2; padding: 13px; display: flex; align-items: center; gap: .5rem; color: #071437; font-weight: 600; }
 .liff-borrow-icon { width: 38px; height: 38px; border-radius: 7.6px; background: var(--bs-danger-light); display: inline-flex; align-items: center; justify-content: center; flex: none; }
 .liff-token-card { background: url('${ctx}/assets/media/svg/shapes/wave-bg-red.svg') right top / cover no-repeat, conic-gradient(from 180deg at 50% 50%, #D9232E 0deg, #F04449 133.27deg, #F04449 221.54deg, #D9232E 360deg); color: #FFFFFF; }
-.liff-token-num { font-weight: 600; line-height: 1.21; }
-.liff-token-redeem { display: block; background: var(--bs-gray-100); color: var(--bs-red); border-radius: 50px; padding: 13px 26px; text-align: center; font-weight: 600; }
-.liff-token-redeem:hover { color: var(--bs-red); }
+.liff-token-num { font-family: Inter, Helvetica, sans-serif; font-weight: 600; line-height: 1; }
 .liff-info-row { display: flex; justify-content: space-between; align-items: center; gap: 1rem; padding: 1rem 0; border-bottom: 1px solid var(--bs-gray-200); }
 .liff-info-row:last-child { border-bottom: 0; }
 .liff-info-row .symbol-label .ki-duotone { font-size: 20px; }
@@ -110,22 +108,26 @@
 			</c:if>
 
 			<div class="liff-home-card liff-token-card">
-				<div class="d-flex flex-column gap-5 px-4 py-5">
+				<div class="d-flex flex-column px-5 py-6" style="gap: 22.75px;">
 					<div class="d-flex justify-content-between align-items-center gap-3">
 						<span class="d-flex align-items-center gap-2 fs-3 fw-semibold"><i class="ki-duotone ki-cube-2 fs-2 text-white"><span class="path1"></span><span class="path2"></span><span class="path3"></span></i>My Cube Token</span>
-						<span id="tokenRank" class="badge badge-light fs-5 text-gray-800"><span class="liff-skel w-80px"></span></span>
+						<span id="tokenRank" class="badge bg-transparent border border-white fs-5 text-white"><span class="liff-skel w-80px"></span></span>
 					</div>
-					<div class="d-flex">
-						<div class="d-flex flex-column flex-grow-1 gap-5">
-							<span class="fs-5">This Year (<span id="yearlyCubeToken-year"></span>)</span>
-							<span class="liff-token-num fs-1"><span id="tokenYearly">-</span> <span class="fs-7 fw-normal">Token</span></span>
+					<div class="d-flex justify-content-around">
+						<div class="d-flex flex-column align-items-center gap-2">
+							<span id="tokenMonthly" class="liff-token-num display-6">-</span>
+							<span class="fs-5">Month</span>
 						</div>
-						<div class="d-flex flex-column flex-grow-1 gap-5">
+						<div class="d-flex flex-column align-items-center gap-2">
+							<span id="tokenYearly" class="liff-token-num display-6">-</span>
+							<span class="fs-5">Year</span>
+						</div>
+						<div class="d-flex flex-column align-items-center gap-2">
+							<span id="tokenTotal" class="liff-token-num display-6">-</span>
 							<span class="fs-5">Total</span>
-							<span class="liff-token-num fs-1"><span id="tokenTotal">-</span> <span class="fs-7 fw-normal">Token</span></span>
 						</div>
 					</div>
-					<a href="${ctx}/privilegePage" class="liff-token-redeem fs-5">Go to Redeem</a>
+					<a href="${ctx}/privilegePage" class="d-block text-center fs-5 fw-semibold text-white">Go to Redeem &gt;</a>
 				</div>
 			</div>
 
@@ -458,7 +460,6 @@
 (function () {
 	var ctx = '${ctx}';
 	var year = new Date().getFullYear();
-	$('#yearlyCubeToken-year').text(year);
 
 	var newsCarousel = document.getElementById('newsCarousel');
 	if (newsCarousel) bootstrap.Carousel.getOrCreateInstance(newsCarousel, { interval: false, touch: true });
@@ -662,13 +663,14 @@
 		return $.ajax({ url: ctx + '/tokenSummary', type: 'GET', data: { year: year }, dataType: 'json' })
 			.done(function (res) {
 				if (!res.success || !res.data) { return failSummary(); }
+				$('#tokenMonthly').text(formatToken(res.data.monthlyToken));
 				$('#tokenYearly').text(formatToken(res.data.yearlyToken));
 				$('#tokenTotal').text(formatToken(res.data.accumulatedToken));
 			})
 			.fail(failSummary);
 	}
 	function failSummary() {
-		$('#tokenYearly, #tokenTotal').text('-');
+		$('#tokenMonthly, #tokenYearly, #tokenTotal').text('-');
 		liffToastError('Unable to load Cube Token. Please try again.', 'Load failed');
 	}
 
