@@ -1,10 +1,12 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
 
 <%-- ฟังก์ชันแนบไฟล์ที่ใช้ร่วมกัน: Leave Add/Edit, Travel Add, Travel Edit --%>
 <script>
 var LIFF_FILE_FORBIDDEN = /[\/:*?"<>|]/;
 var LIFF_FILE_IMAGE_LIMIT = 500 * 1024;
 var LIFF_FILE_TOTAL_LIMIT = 2 * 1024 * 1024;
+var LIFF_FILE_USER_ID = '${fn:escapeXml(onlineUser.id)}';
 
 function liffFileSourceKey(file) {
 	return file.name + '|' + file.size;
@@ -26,8 +28,16 @@ function liffFileUniqueName(fileName, usedNames) {
 	return base + ' (' + n + ')' + ext;
 }
 
-function liffFileWithUniqueName(file, usedNames) {
-	var name = liffFileUniqueName(file.name, usedNames);
+function liffFileImageName(file, menu) {
+	if (!/\.(jpe?g|png)$/i.test(file.name)) return file.name;
+	var ext = file.name.substring(file.name.lastIndexOf('.')).toLowerCase();
+	var d = new Date();
+	var date = d.getFullYear() + String(d.getMonth() + 1).padStart(2, '0') + String(d.getDate()).padStart(2, '0');
+	return menu + '_' + LIFF_FILE_USER_ID + '_' + date + ext;
+}
+
+function liffFileWithUniqueName(file, usedNames, menu) {
+	var name = liffFileUniqueName(liffFileImageName(file, menu), usedNames);
 	if (name === file.name) return file;
 	var renamed = new File([file], name, { type: file.type, lastModified: file.lastModified });
 	renamed.sourceKey = file.sourceKey;

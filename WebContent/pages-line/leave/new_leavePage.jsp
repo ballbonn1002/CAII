@@ -2078,7 +2078,7 @@ function lfTryAddFile(file, loadingId, onDone) {
 		if (onDone) onDone(false);
 		return;
 	}
-	LeaveFiles.pending.push(liffFileWithUniqueName(file, lfUsedNames()));
+	LeaveFiles.pending.push(liffFileWithUniqueName(file, lfUsedNames(), 'leave'));
 	lfSyncInput();
 	lfRenderAll();
 	if (onDone) onDone(true);

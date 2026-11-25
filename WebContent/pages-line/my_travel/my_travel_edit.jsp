@@ -2078,7 +2078,7 @@
 				renderNewFileList();
 				return;
 			}
-			travelSelectedFiles.push(liffFileWithUniqueName(file, travelUsedNames()));
+			travelSelectedFiles.push(liffFileWithUniqueName(file, travelUsedNames(), 'travel'));
 			updateTravelInputFiles();
 			renderNewFileList();
 		}
