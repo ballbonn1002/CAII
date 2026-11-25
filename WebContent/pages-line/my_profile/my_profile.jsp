@@ -98,6 +98,7 @@
 								<span class="liff-borrow-icon"><i class="ki-duotone ki-laptop fs-2 text-danger"><span class="path1"></span><span class="path2"></span></i></span>
 								<div class="d-flex flex-column flex-grow-1 min-w-0">
 									<a href="javascript:void(0)" class="liff-borrow-name d-block fs-6 fw-semibold text-gray-900 text-decoration-none text-truncate">${empty item.name ? '-' : fn:escapeXml(item.name)}</a>
+									<span class="fs-7 text-gray-500">${empty item.item_no ? '-' : fn:escapeXml(item.item_no)}</span>
 									<span class="d-flex align-items-center gap-1 fs-7 text-gray-800"><i class="ki-duotone ki-calendar-2 fs-6"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span><span class="path5"></span></i><fmt:formatDate value="${item.time_create}" pattern="d MMM yy, HH:mm" /></span>
 								</div>
 								<button type="button" class="liff-borrow-action btn btn-sm btn-success flex-shrink-0" data-borrow-id="${item.borrow_id}">${needReceive ? 'Confirm Receive' : 'Return'}</button>
