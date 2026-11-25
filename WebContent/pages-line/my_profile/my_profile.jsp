@@ -299,8 +299,9 @@
 											</div>
 											<c:choose>
 												<c:when test="${item.status == 'R'}"><span class="badge badge-lg bg-success text-white fs-6 py-2 flex-shrink-0">Returned</span></c:when>
-												<c:when test="${item.status == 'B'}"><span class="badge badge-lg bg-warning text-white fs-6 py-2 flex-shrink-0">Borrowing</span></c:when>
-												<c:when test="${item.status == 'W'}"><span class="badge badge-lg badge-secondary text-dark fs-6 py-2 flex-shrink-0">Waiting</span></c:when>
+												<c:when test="${item.status == 'B' and not empty item.user_receive}"><span class="badge badge-lg bg-primary text-white fs-6 py-2 flex-shrink-0">Received</span></c:when>
+												<c:when test="${item.status == 'B'}"><span class="badge badge-lg bg-success text-white fs-6 py-2 flex-shrink-0">Approved</span></c:when>
+												<c:when test="${item.status == 'W'}"><span class="badge badge-lg bg-warning text-white fs-6 py-2 flex-shrink-0">Pending</span></c:when>
 												<c:when test="${item.status == 'C'}"><span class="badge badge-lg bg-dark text-white fs-6 py-2 flex-shrink-0">Cancel</span></c:when>
 												<c:when test="${item.status == 'T'}"><span class="badge badge-lg bg-warning text-white fs-6 py-2 flex-shrink-0">Waiting for Return</span></c:when>
 												<c:otherwise><span class="badge badge-lg bg-light-secondary text-gray-600 fs-6 py-2 flex-shrink-0">-</span></c:otherwise>
