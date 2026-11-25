@@ -47,7 +47,7 @@
 	<div id="profileMain" class="liff-home">
 		<div class="liff-home-head">
 			<div class="d-flex flex-column gap-2 min-w-0">
-				<span class="fs-6">Hello, Welcome to Cube</span>
+				<span class="fs-6">Hello, Welcome to Cube 😊</span>
 				<span class="liff-home-name">${fn:escapeXml(displayName)}</span>
 				<div class="d-flex flex-wrap gap-3">
 					<c:choose>
