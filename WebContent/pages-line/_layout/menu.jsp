@@ -978,6 +978,7 @@ body { padding-bottom: calc(90px + env(safe-area-inset-bottom)); }
 	color: var(--bs-gray-500);
 	text-decoration: none;
 	border-top: 2px solid transparent;
+	transition: none;
 }
 .liff-nav a i { font-size: 24px; }
 .liff-nav a.active { color: var(--bs-red); border-top-color: var(--bs-red); }
@@ -998,7 +999,7 @@ body { padding-bottom: calc(90px + env(safe-area-inset-bottom)); }
 		<i class="ki-duotone ki-cube-2"><span class="path1"></span><span class="path2"></span><span class="path3"></span></i>
 		<span>Home</span>
 	</a>
-	<a href="line_new_myleave_list?Id=${onlineUser.id}" data-route="line_new_myleave_list">
+	<a href="line_new_myleave_list?Id=${onlineUser.id}" data-route="line_new_myleave_list" data-loading-now>
 		<i class="ki-duotone ki-pulse"><span class="path1"></span><span class="path2"></span></i>
 		<span>Leave</span>
 	</a>
@@ -1032,7 +1033,7 @@ body { padding-bottom: calc(90px + env(safe-area-inset-bottom)); }
 		}
 		$('.liff-nav a').removeClass('active');
 		$(this).addClass('active');
-		$('#liffNavOverlay').css('display', 'flex');
+		$('#liffNavOverlay').toggleClass('liff-loading-delayed', !$(this).is('[data-loading-now]')).css('display', 'flex');
 	});
 	window.addEventListener('pageshow', function (e) {
 		if (e.persisted) {
