@@ -358,7 +358,7 @@
 									<p id="pwPattern" class="fs-7 fw-normal text-muted mt-3 mb-5">Password must be at least 6 character.</p>
 									<div class="d-flex gap-3">
 										<button type="button" onclick="confirmLeaveForm()" class="btn btn-light fw-medium flex-grow-1">Cancel</button>
-										<button type="button" onclick="validatePassword()" class="btn btn-success fw-medium flex-grow-1">Update Password</button>
+										<button type="button" id="btnUpdatePassword" onclick="validatePassword()" class="btn btn-success fw-medium flex-grow-1" disabled>Update Password</button>
 									</div>
 								</form>
 							</div>
@@ -737,6 +737,7 @@
 		if (password === '') {
 			isCurrentPwValid = false;
 			showError('currentPw', 'currentPwError');
+			checkPasswordReady();
 			return;
 		}
 
@@ -756,11 +757,19 @@
 					showError('currentPw', 'currentPwError');
 					enableNewPwInput(false);
 				}
+				checkPasswordReady();
 			})
 			.catch(function () {
 				isCurrentPwValid = false;
 				showError('currentPw', 'currentPwError');
+				checkPasswordReady();
 			});
+	}
+
+	function checkPasswordReady() {
+		var newPw = document.getElementById('newPw').value.trim();
+		var confirmPw = document.getElementById('confirmNewPw').value.trim();
+		document.getElementById('btnUpdatePassword').disabled = !(isCurrentPwValid && isNewPwValid && newPw !== '' && confirmPw === newPw);
 	}
 
 	function validateNewPassword() {
@@ -903,6 +912,7 @@
 				if (err.message === 'invalid') {
 					isCurrentPwValid = false;
 					showError('currentPw', 'currentPwError');
+					checkPasswordReady();
 					return;
 				}
 				liffToastError('Unable to update your password. Please try again.', 'Save failed');
@@ -955,6 +965,7 @@
 		document.getElementById('currentPw').type = 'password';
 		currentPwEye.querySelector('.ki-eye').classList.add('d-none');
 		currentPwEye.querySelector('.ki-eye-slash').classList.remove('d-none');
+		checkPasswordReady();
 		form.classList.add('d-none');
 		document.getElementById('btnResetPassword').classList.remove('d-none');
 	}
@@ -979,4 +990,7 @@
 		document.getElementById('resetPasswordForm').classList.remove('d-none');
 		toggleEyeIcon();
 	});
+
+	document.getElementById('newPw').addEventListener('input', checkPasswordReady);
+	document.getElementById('confirmNewPw').addEventListener('input', checkPasswordReady);
 </script>
