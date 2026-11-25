@@ -495,6 +495,8 @@
   var isGridView = false;
   var activeFilters  = { status: '1', employee_type: '', employee_status: '', anniversaries: '', birthdays: '' };
   var sortedCardCache = null;
+  var sortApi = {};                 // ถูกเติม sortRows/sortCards จาก IIFE ส่วน sorting
+  var suppressNameSearch = false;   // กัน handler ของ #name2 ทำงานซ้ำตอนเราตั้งค่า dropdown ด้วยโค้ด
 
 
 
@@ -636,8 +638,8 @@
     });
   }
 
-  function renderTableBirthdayIcons() {
-      $rowsAll().each(function() {
+  function renderTableBirthdayIcons($rows) {
+      ($rows || $rowsAll()).each(function() {
           var $tr = $(this);
           var $cell = $tr.find('.bday-cell');
 
@@ -713,9 +715,11 @@
 	}
 
   
-  function renderPeriods() {
+  function renderPeriods($rows) {
       // Table View Period rendering
-      document.querySelectorAll('.period-text').forEach(function (el) {
+      // render เฉพาะแถวที่กำลังแสดง (ถ้าไม่ส่งมา = ทุกแถว)
+      var periodEls = $rows ? $rows.find('.period-text').get() : Array.prototype.slice.call(document.querySelectorAll('.period-text'));
+      periodEls.forEach(function (el) {
         const sISO = el.getAttribute('data-start');
         const eISO = el.getAttribute('data-end');
         const sTxt = fmtDateDMY(sISO);
@@ -837,10 +841,12 @@
       }
     }
     var et = (activeFilters.employee_type || '');
-    if (et !== '' && $card.attr('data-employee-type') !== et) return false;
+    // data-employee-type / data-employee-status อยู่ที่ .card ด้านใน ไม่ใช่ที่ .grid-card ที่ห่ออยู่
+    var $inner = $card.find('.card').first();
+    if (et !== '' && String($inner.attr('data-employee-type')) !== et) return false;
     
     var es = (activeFilters.employee_status || '');
-    if (es !== '' && $card.attr('data-employee-status') !== es) return false;
+    if (es !== '' && String($inner.attr('data-employee-status')) !== es) return false;
 
     var an = String(activeFilters.anniversaries || '');
     if (an === '1' && $card.attr('data-anniv-thismonth') !== '1') return false;
@@ -906,19 +912,18 @@
     $nav.html(html);
   }
   
-  function renumberTableRows(startIndex){
+  function renumberTableRows(startIndex, $rows){
 		 startIndex = startIndex || 0;
 		 let count = startIndex + 1;
 
-		  $('#myTable tbody tr:visible').each(function () {
+		  // ใช้ชุดแถวที่ส่งเข้ามาโดยตรง (เลี่ยง :visible ที่บังคับ browser คำนวณ layout ทุกแถว)
+		  ($rows || $('#myTable tbody tr:visible')).each(function () {
 		    $(this).find('.row-number').text(count++);
 		  });
 	}
 
   function showTablePage(page) {
-    annotateAnniversaries();
-    annotateBirthdays();
-
+    // annotateAnniversaries/annotateBirthdays ถูกเรียกครั้งเดียวตอนโหลดหน้า (ดูท้ายไฟล์) ไม่ต้องคำนวณซ้ำทุกครั้งที่เปลี่ยนหน้า
     const $all = $rowsAll();
     const $eligible = $rowsEligible();
     const totalEligible = $eligible.length;
@@ -926,21 +931,20 @@
     currentPage = Math.min(Math.max(page, 1), totalPages);
     const start = (currentPage - 1) * tableItemsPerPage;
     const end   = start + tableItemsPerPage;
-    $all.hide();
-    $eligible.slice(start, end).show();
+    var $pageRows = $eligible.slice(start, end);
+    $all.addClass('d-none');
+    $pageRows.removeClass('d-none');
     renderTablePagination(totalPages);
-    renderPeriods();
-    renderTableBirthdayIcons(); 
-    
-    renumberTableRows(start);
+    renderPeriods($pageRows);
+    renderTableBirthdayIcons($pageRows);
+
+    renumberTableRows(start, $pageRows);
     
     updateShowingText(totalEligible, $all.length);
   }
 
   function showGridPage(page) {
-	    annotateAnniversaries();
-	    annotateBirthdays();
-
+	    // annotate* ถูกเรียกครั้งเดียวตอนโหลดหน้าแล้ว
 	    var $all = $gridCardsAll();
 	    var source = sortedCardCache ? sortedCardCache : $all.get();
 
@@ -997,8 +1001,7 @@
     $rowsAll().attr('data-filtered','1');
     $gridCardsAll().attr('data-filtered','1'); 
     activeFilters = { status: '1', employee_type: '', employee_status: '', birthdays: '', anniversaries: '' };
-    sortedCardCache = null
-    sortedCache = null
+    sortedCardCache = null;
     currentPage = 1;
     $('#statusSelect').val('1').trigger('change.select2');
     $('#employeeTypeSelect').val('all').trigger('change.select2');
@@ -1006,33 +1009,26 @@
     $('#birthdaysSelect').val('all').trigger('change.select2');
     $('#anniversariesSelect').val('all').trigger('change.select2');
     
+    // ตั้งค่า dropdown ด้วยโค้ด: ปิด handler ชั่วคราว ไม่ให้เรียก showAllUsers วนซ้ำ
+    suppressNameSearch = true;
     $('#name2').val('All').trigger('change.select2');
-    
+    suppressNameSearch = false;
+
     var currentSortMode = $('#sortSelect').val() || 'empid-asc';
     if (isGridView) {
-        sortCards(currentSortMode);
-        showGridPage(1); 
+        sortApi.sortCards(currentSortMode);
+        showGridPage(1);
     } else {
-        sortRows(currentSortMode); 
+        sortApi.sortRows(currentSortMode);
     }
   }
 
   function searchBySelectValue(user_id) {
 	  user_id = (user_id || '').trim();
     if (!user_id) { showAllUsers(); return; }
-    $.ajax({
-      url: "search-User",
-      type: "POST",
-      dataType: "json",
-      data: { "user_id": user_id },
-      success: function (data) {
-        const selectedId = String((data && (data.id || data.user_id)) || user_id).trim();
-        showOnlyUserWithReset(selectedId);
-      },
-      error: function () {
-        showOnlyUserWithReset(user_id);
-      }
-    });
+    // ข้อมูลทุกคนอยู่ในหน้าแล้ว กรองฝั่ง client ได้เลย ไม่ต้องยิง search-User ไป server
+    // (เดิมยิง AJAX แต่ผลลัพธ์ก็ได้ id เดิม และ error ก็ fallback มากรองเอง)
+    showOnlyUserWithReset(user_id);
   }
 
   //sorting
@@ -1041,7 +1037,7 @@
     var sortedCache = null;
     function textOf($tr, idx){ return ($tr.children().eq(idx).text() || '').replace(/\u00A0/g,' ').trim(); }
     function empIdKey($tr){
-      var raw = textOf($tr,0);
+      var raw = textOf($tr,1); // คอลัมน์ 0 คือเลขลำดับ (#) คอลัมน์ 1 คือ Emp. ID
       var num = parseInt((raw.match(/\d+/)||[''])[0],10);
       return {raw: raw.toLowerCase(), num: isNaN(num)?-1:num};
     }
@@ -1087,9 +1083,16 @@
         }
       });
       sortedCache = rows;
+      // จัดลำดับแถวใน DOM ให้ตรงกับผล sort (เดิมเรียงแค่ใน array ทำให้หน้าจอไม่เปลี่ยนลำดับ)
+      var tbodyEl = $(tableSelector + ' tbody')[0];
+      if (tbodyEl) {
+        var frag = document.createDocumentFragment();
+        rows.forEach(function (r) { frag.appendChild(r); });
+        tbodyEl.appendChild(frag);
+      }
       showTablePage = function(page){
         var $all = $($rowsAll());
-        $all.hide();
+        $all.addClass('d-none');
         var eligible = [];
         $(sortedCache).each(function(){
           if (rowPassesFilters($(this))) eligible.push(this);
@@ -1099,12 +1102,13 @@
         currentPage = Math.min(Math.max(page, 1), totalPages);
         var start = (currentPage - 1) * tableItemsPerPage;
         var end   = start + tableItemsPerPage;
-        $(eligible.slice(start,end)).show();
+        var $pageRows = $(eligible.slice(start,end));
+        $pageRows.removeClass('d-none');
         renderTablePagination(totalPages);
-        renderPeriods();
-        renderTableBirthdayIcons(); 
-        
-        renumberTableRows(start);
+        renderPeriods($pageRows);
+        renderTableBirthdayIcons($pageRows);
+
+        renumberTableRows(start, $pageRows);
         
         updateShowingText(totalEligible, $all.length);
       };
@@ -1141,9 +1145,27 @@
         }
 
         function nameKeyCard($c) {
-            var name = $c.find('.employee-info span:first').text().trim() || 
-                       $c.find('.fw-bold').first().text().trim();
+            // บรรทัดแรกใน .employee-info คือ name_en (ไม่มี span ใน markup จึงใช้ div)
+            var name = $c.find('.employee-info > div').first().text().trim();
             return name.toLowerCase();
+        }
+
+        function startMsCard($c) {
+            var d = toISODateOnly($c.find('.period-display').attr('data-start') || '');
+            return d ? d.getTime() : 0;
+        }
+
+        function periodDaysCard($c) {
+            var el = $c.find('.period-display')[0];
+            if (!el) return 0;
+            var s = toISODateOnly(el.getAttribute('data-start') || '');
+            var e = el.getAttribute('data-end') ? toISODateOnly(el.getAttribute('data-end')) : new Date();
+            return (s && e) ? Math.round((e - s) / 86400000) : 0;
+        }
+
+        function birthMsCard($c) {
+            var d = toDateYmd(($c.find('.birth-age').attr('data-birth-date') || '').trim());
+            return d ? d.getTime() : 0;
         }
 
         function siteKeyCard($c) {
@@ -1178,6 +1200,10 @@
         $.each(cards, function(i, card) { $container.append(card); });
         sortedCardCache = cards;
     }
+
+    // เปิดให้โค้ดนอก IIFE นี้ (เช่น showAllUsers) เรียกใช้ได้
+    sortApi.sortRows = sortRows;
+    sortApi.sortCards = sortCards;
   })();
 
 
@@ -1317,27 +1343,17 @@
       refreshCurrentView();
     });
 
-    $("#name2").on("change select2:select", function () {
-      const user_id = ($(this).val() || '').toString().trim();
-      searchBySelectValue(user_id);
+    // handler เดียวสำหรับ dropdown ค้นหา (เดิมผูกไว้ 2 ชุด + ฟังทั้ง change และ select2:select ทำให้ทำงานซ้ำหลายรอบ)
+    // select2 จะยิง 'change' ทั้งตอนเลือกและตอนกดล้างค่า จึงฟังแค่ 'change'
+    $("#name2").on("change", function () {
+      if (suppressNameSearch) return;
+      const val = ($(this).val() || '').toString().trim();
+      if (val === '' || val.toLowerCase() === 'all') {
+        showAllUsers();
+        return;
+      }
+      searchBySelectValue(val);
     });
-    $("#name2").on("select2:select change", function (e) {
-	    const val = ($(this).val() || '').toString().trim();
-	
-	    if (val === '' || val === 'All') {
-	    	setTimeout(function () {
-	            showAllUsers();
-	            $el.select2('close'); 
-	          }, 0);
-
-	          return;
-	        }
-	
-	    searchBySelectValue(val);
-	  })
-	  .on("select2:clear", function () {
-	    showAllUsers();      
-  });
 
     
     window.addUser = function () { window.location.href = 'user-add'; };

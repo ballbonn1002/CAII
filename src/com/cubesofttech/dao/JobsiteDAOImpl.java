@@ -91,6 +91,27 @@ public class JobsiteDAOImpl implements JobsiteDAO {
 	}
 
 	@Override
+	public List<Map<String, Object>> findAllJobsiteTeamMembers() throws Exception {
+		Session session = this.sessionFactory.getCurrentSession();
+
+		List<Map<String, Object>> list = null;
+		try {
+			String sql = "SELECT jst.user_id AS user_id, js.id_sitejob AS id_sitejob, js.name_site AS name_site, "
+					+ "CASE WHEN js.is_active = '1' THEN 1 ELSE 0 END AS is_active_flag "
+					+ "FROM job_site_team jst "
+					+ "INNER JOIN job_site js ON jst.id_sitejob = js.id_sitejob "
+					+ "ORDER BY js.id_sitejob ASC";
+
+			SQLQuery query = session.createSQLQuery(sql);
+			query.setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
+			list = query.list();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return list;
+	}
+
+	@Override
 	public List<Map<String, Object>> findAll() throws Exception {
 		Session session = this.sessionFactory.getCurrentSession();
 

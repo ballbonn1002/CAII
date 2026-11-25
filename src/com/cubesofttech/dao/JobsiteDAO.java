@@ -20,6 +20,12 @@ public interface JobsiteDAO {
 	public List<Map<String, Object>> getNameSiteListByUserId(String userId) throws Exception;
 	
 	public List<Map<String, Object>> findJobsiteUser(String userId) throws Exception;
+
+	/**
+	 * ดึงความสัมพันธ์ user กับ job_site ของ "ทุกคน" ด้วย query เดียว (ใช้แทนการเรียกทีละ user ในลูป)
+	 * คอลัมน์ที่ได้: user_id, id_sitejob, name_site, is_active_flag (1 = active, 0 = ไม่ active)
+	 */
+	public List<Map<String, Object>> findAllJobsiteTeamMembers() throws Exception;
 	
 	public List<Map<String, Object>> findAll() throws Exception;
 	

@@ -540,50 +540,68 @@ public class UserAction extends ActionSupport {
 			}
 			
 			List<Map<String, Object>> cubesoftUsers = userDAO.Query_Userlist();
+			if (cubesoftUsers == null) {
+				cubesoftUsers = new ArrayList<>();
+			}
+
+			// ดึง job site ของ "ทุก user" ด้วย query เดียว แล้วจัดกลุ่มตาม user_id
+			// (แทนการยิง query 2 ครั้งต่อ user ในลูป ซึ่งทำให้หน้าโหลดช้า)
+			Map<String, List<Map<String, Object>>> allSitesByUser = new HashMap<>(); // ทุก site ที่ user อยู่ในทีม
+			Map<String, List<Map<String, Object>>> activeSitesByUser = new HashMap<>(); // เฉพาะ site ที่ is_active = 1
+			try {
+				List<Map<String, Object>> teamRows = jobsiteDAO.findAllJobsiteTeamMembers();
+				if (teamRows != null) {
+					for (Map<String, Object> row : teamRows) {
+						Object uidObj = row.get("user_id");
+						if (uidObj == null) {
+							continue;
+						}
+						String key = uidObj.toString().trim();
+
+						List<Map<String, Object>> all = allSitesByUser.get(key);
+						if (all == null) {
+							all = new ArrayList<>();
+							allSitesByUser.put(key, all);
+						}
+						all.add(row);
+
+						if ("1".equals(String.valueOf(row.get("is_active_flag")))) {
+							List<Map<String, Object>> active = activeSitesByUser.get(key);
+							if (active == null) {
+								active = new ArrayList<>();
+								activeSitesByUser.put(key, active);
+							}
+							active.add(row);
+						}
+					}
+				}
+			} catch (Exception ex) {
+				log.error("list(): load job sites failed", ex);
+			}
 
 			for (Map<String, Object> map : cubesoftUsers) {
-				String userId = (String) map.get("id");
+				Object idObj = map.get("id");
+				String userKey = (idObj != null) ? idObj.toString().trim() : "";
 
-				List<Map<String, Object>> siteList = jobsiteDAO.getNameSiteListByUserId(userId);
-				if (siteList == null) {
-					siteList = new ArrayList<>();
+				List<Map<String, Object>> siteList = activeSitesByUser.get(userKey);
+				map.put("job_site", siteList != null ? siteList : new ArrayList<Map<String, Object>>());
+
+				List<Map<String, Object>> relatedSites = allSitesByUser.get(userKey);
+				if (relatedSites == null) {
+					relatedSites = new ArrayList<>();
 				}
-				map.put("job_site", siteList);
+				map.put("job_site_all", relatedSites);
 
-				try {
-					List<Map<String, Object>> rawSites = jobsiteDAO.findJobsiteUser(userId);
-
-					List<Map<String, Object>> relatedSites = new ArrayList<>();
-					if (rawSites != null) {
-						for (Map<String, Object> js : rawSites) {
-							Object rel = js.get("is_related");
-							if ("1".equals(String.valueOf(rel))) {
-								relatedSites.add(js);
-							}
-						}
+				StringBuilder sb = new StringBuilder();
+				for (Map<String, Object> js : relatedSites) {
+					Object nameObj = js.get("name_site");
+					if (nameObj != null) {
+						if (sb.length() > 0)
+							sb.append(", ");
+						sb.append(nameObj.toString());
 					}
-
-					map.put("job_site_all", relatedSites);
-
-					if (!relatedSites.isEmpty()) {
-						StringBuilder sb = new StringBuilder();
-						for (Map<String, Object> js : relatedSites) {
-							Object nameObj = js.get("name_site");
-							if (nameObj != null) {
-								if (sb.length() > 0)
-									sb.append(", ");
-								sb.append(nameObj.toString());
-							}
-						}
-						map.put("job_site_all_names", sb.toString());
-					} else {
-						map.put("job_site_all_names", "");
-					}
-
-				} catch (Exception ex) {
-					map.put("job_site_all", new ArrayList<Map<String, Object>>());
-					map.put("job_site_all_names", "");
 				}
+				map.put("job_site_all_names", sb.toString());
 
 				Object pathObj = map.get("path");
 				String imgPath = (pathObj != null) ? fileAttachmentService.getFileUrl(pathObj.toString()) : null;
@@ -627,13 +645,8 @@ public class UserAction extends ActionSupport {
 				map.put("position_name", positionName);
 			}
 			
-			/*
-			 * String cubesoftUsersJson = new Gson().toJson(cubesoftUsers);
-			 * request.setAttribute("cubesoftUsersJson", cubesoftUsersJson);
-			 */
+			// หมายเหตุ: เดิมมี usersJson (Gson ทั้งก้อน) แต่ไม่มี JSP/Java ใดใช้ จึงเอาออกเพื่อลดเวลา serialize
 			request.setAttribute("cubesoftUser", cubesoftUsers);
-			String cubesoftUsersJson = new com.google.gson.Gson().toJson(cubesoftUsers);
-			request.setAttribute("usersJson", cubesoftUsersJson);
 			return SUCCESS;
 		} catch (Exception e) {
 			e.printStackTrace();
