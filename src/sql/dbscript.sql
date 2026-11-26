@@ -1361,3 +1361,12 @@ SET
 WHERE (`year` IS NULL OR `month` IS NULL) AND time_create IS NOT NULL;
 
 -- PROD 20 NOV 2026
+
+-- 25/11/2026 Phone: add permission LINE LIFF menu (line.*.view) in 'authorized_object' table, group 10 'LINE LIFF'
+INSERT INTO `authorized_object` (`authorized_object_id`, `name`, `description`, `active`, `time_create`, `time_update`, `authorized_object_group_id`)
+VALUES
+('line.checkin.view', 'line.checkin.view', 'เห็นเมนู IN/OUT ใน LINE LIFF', '1', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '10'),
+('line.checklist.view', 'line.checklist.view', 'เห็นเมนู Check List ใน LINE LIFF', '1', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '10'),
+('line.home.view', 'line.home.view', 'เห็นเมนู Home ใน LINE LIFF', '1', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '10'),
+('line.leave.view', 'line.leave.view', 'เห็นเมนู Leave ใน LINE LIFF', '1', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '10'),
+('line.travel.view', 'line.travel.view', 'เห็นเมนู Travel ใน LINE LIFF', '1', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '10');
