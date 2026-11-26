@@ -221,7 +221,7 @@
                       <th class="min-w-250px">User</th>
                       <th class="min-w-100px">Borrow ID</th>
                       <th class="w-80px text-center">Type</th>
-                      <th class="min-w-250px w-30">Item No / Equipment</th>
+                      <th class="min-w-250px">Item No / Equipment</th>
                       <th class="min-w-125px">Borrow Date</th>
                       <th class="w-80px text-center">Status</th>
                       <th class="text-center min-w-100px">Actions</th>
@@ -245,8 +245,14 @@
   var CTX = "${pageContext.request.contextPath}";
   var historyList    = ${empty history ? '[]' : history};
   var selectedStatus = "${selectedStatus}";
+  var AVATAR_COLORS  = ['primary'];   // ใช้ใน getAvatar() — ประกาศไว้บนสุดก่อน renderTable ทำงาน
 
-  function esc(s) { return $('<div>').text(s == null ? '' : s).html(); }
+  // escape ค่าก่อนใส่ HTML — รวมเครื่องหมายคำพูด เพื่อใช้ใน attribute (src="...") ได้ปลอดภัย
+  function esc(s) {
+    return $('<div>').text(s == null ? '' : s).html()
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
+  }
 
   function getTypeIcon(type) {
     switch ((type || '').toLowerCase()) {
@@ -268,16 +274,14 @@
 
   function renderTable(data) {
     var $tb = $('#historyBody').empty();
-    var blank = CTX + '/assets/media/avatars/blank.png';
-/* 
+/*
     if (!data.length) {
         $tb.append('<tr><td colspan="8" class="text-center text-gray-500 py-10">No data</td></tr>');
       } */
     data.forEach(function (r, i) {
-      var img  = r.user_image ? CTX + r.user_image : blank;
       var site = r.site_name ? '<span class="badge badge-primary mt-1">' + esc(r.site_name) + '</span>' : '';
       $tb.append(
-        '<tr>' +
+        '<tr data-user="' + esc(r.user_id) + '">' +
           '<td class="fw-bold">' + (i + 1) + '</td>' +
           '<td><div class="d-flex align-items-center">' +
           getAvatar(r) +
@@ -286,7 +290,7 @@
           '<td class="text-nowrap" data-order="' + Number(r.borrow_id) + '">#' + esc(r.borrow_id) + '</td>' +
           '<td class="text-center">' + getTypeIcon(r.type) + '</td>' +
           '<td><div class="text-gray-900">' + esc(r.item_no) + '</div><div class="text-gray-700 mt-2">' + esc(r.equipment_name) + '</div></td>' +
-          '<td class="text-nowrap">' + esc(r.borrow_date) + '</td>' +
+          '<td class="text-nowrap" data-order="' + esc(r.borrow_date_sort || '') + '">' + esc(r.borrow_date) + '</td>' +
           '<td class="text-center">' + getStatusBadge(r.status) + '</td>' +
           '<td class="text-center">' +
           '<div class="d-flex justify-content-center gap-2 flex-nowrap">' +
@@ -336,7 +340,7 @@
       pagingType: "simple_numbers",
       columnDefs: [
         { orderable: true,  targets: [1, 2, 3, 4, 5, 6] },
-        { orderable: false, targets: [1, 7] }   // # และ ACTIONS
+        { orderable: false, targets: [0, 7] }   // # และ ACTIONS
       ],
       order: [],
       headerCallback: function (thead) {
@@ -375,18 +379,25 @@
       table.search(this.value).draw();
     });
 
-    // Download Excel
+    // เปลี่ยน Status แล้วหน้าโหลดใหม่ → เติมคำค้นหาเดิมกลับ (form ส่ง keyword มาใน URL)
+    var keywordFromUrl = new URLSearchParams(window.location.search).get('keyword');
+    if (keywordFromUrl) {
+      $('#keyword').val(keywordFromUrl);
+      table.search(keywordFromUrl).draw();
+    }
+
+    // Download Excel (ส่ง status + keyword เพื่อให้ไฟล์ตรงกับที่เห็นบนจอ)
     $('#btnExport').on('click', function (e) {
       e.preventDefault();
-      window.location = 'exportBorrowHistory?status=' + encodeURIComponent($('#status').val());
+      window.location = 'exportBorrowHistory?status=' + encodeURIComponent($('#status').val()) +
+                        '&keyword=' + encodeURIComponent($('#keyword').val());
     });
   });
   
   // รูปโปรไฟล์: มีรูปใช้รูป, ไม่มีรูป/โหลดไม่ได้ → วงกลมตัวอักษรแรกของชื่อ
-    var AVATAR_COLORS = ['primary'];
-
   function getAvatar(r) {
-    var name    = r.name_en || r.name || r.employee_id || '?';
+    // แปลงเป็น String เสมอ กัน .length / .charCodeAt พังถ้าค่าที่ได้ไม่ใช่สตริง
+    var name    = String(r.name_en || '?');
     var initial = String(name).trim().charAt(0).toUpperCase();
 
     // เลือกสีจากชื่อ (ชื่อเดียวกันได้สีเดิมเสมอ)
@@ -403,6 +414,7 @@
       : '';
 
     return '<div class="symbol symbol-40px symbol-circle me-3 flex-shrink-0">' + image + label + '</div>';
+    
   }
 </script>
 </body>

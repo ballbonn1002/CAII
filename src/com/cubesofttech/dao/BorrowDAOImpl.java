@@ -650,6 +650,7 @@ public class BorrowDAOImpl implements BorrowDAO {
 	        sql.append("SELECT b.borrow_id AS borrow_id, ")
 	           .append("       b.status AS status, ")
 	           .append("       DATE_FORMAT(b.date_start, '%d %b %Y') AS borrow_date, ")
+	           .append("       DATE_FORMAT(b.date_start, '%Y-%m-%d') AS borrow_date_sort, ")
 	           .append("       b.time_create AS time_create, ")
 	           .append("       u.id AS user_id, u.employee_id AS employee_id, ")
 	           .append("       u.name AS name, u.name_en AS name_en, u.path AS user_image, ")

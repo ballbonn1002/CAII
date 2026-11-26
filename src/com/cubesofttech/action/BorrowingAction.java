@@ -7,6 +7,7 @@ import java.lang.reflect.Type;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -1692,8 +1693,8 @@ public class BorrowingAction extends ActionSupport {
 	    try {
 	        if (onlineUser == null) return ERROR;
 
-	        String status = request.getParameter("status");
-	        if (status == null || status.isEmpty()) status = "ALL";
+	        // รับเฉพาะค่า status ที่รู้จัก (กัน XSS เพราะค่านี้ถูกพิมพ์ลง JS ใน JSP)
+	        String status = normalizeHistoryStatus(request.getParameter("status"));
 
 	        request.setAttribute("history", new Gson().toJson(borrowDAO.findBorrowHistory(null, status)));
 	        request.setAttribute("selectedStatus", status);
@@ -1706,12 +1707,13 @@ public class BorrowingAction extends ActionSupport {
 
 	public String exportBorrowHistory() {
 		if (onlineUser == null) return ERROR;
-		String status = request.getParameter("status");
+		String status = normalizeHistoryStatus(request.getParameter("status"));
 
 		try (Workbook workbook = new XSSFWorkbook();
 		     ByteArrayOutputStream out = new ByteArrayOutputStream()) {
 
-			List<Map<String, Object>> history = borrowDAO.findBorrowHistory(null, status);
+			List<Map<String, Object>> history = filterHistoryByKeyword(
+					borrowDAO.findBorrowHistory(null, status), request.getParameter("keyword"));
 			Sheet sheet = workbook.createSheet("Borrowing History");
 
 			String[] headers = { "#", "Employee ID", "Name EN", "Name TH", "Department", "Job Site",
@@ -1749,6 +1751,38 @@ public class BorrowingAction extends ActionSupport {
 			e.printStackTrace();
 			return ERROR;
 		}
+	}
+
+	/** status ที่อนุญาตของหน้า Borrow History — ค่าอื่นทั้งหมดถือเป็น "ALL" */
+	private static final List<String> HISTORY_STATUSES = Arrays.asList("ALL", "B", "W", "T", "R");
+
+	private String normalizeHistoryStatus(String status) {
+		return (status != null && HISTORY_STATUSES.contains(status)) ? status : "ALL";
+	}
+
+	/**
+	 * กรองรายการ Borrow History ตามคำค้นหา (ตัวพิมพ์เล็ก/ใหญ่ไม่สนใจ) ให้ตรงกับช่อง Search บนหน้าจอ
+	 * ถ้า keyword ว่าง = คืนรายการเดิม, ถ้า list เป็น null = คืน list ว่าง
+	 */
+	private List<Map<String, Object>> filterHistoryByKeyword(List<Map<String, Object>> list, String keyword) {
+		if (list == null) return new ArrayList<Map<String, Object>>();
+		if (keyword == null || keyword.trim().isEmpty()) return list;
+
+		String kw = keyword.trim().toLowerCase(Locale.ENGLISH);
+		String[] fields = { "employee_id", "name_en", "name", "department_name", "site_name",
+				"borrow_id", "item_no", "equipment_name", "borrow_date" };
+
+		List<Map<String, Object>> result = new ArrayList<Map<String, Object>>();
+		for (Map<String, Object> row : list) {
+			for (String f : fields) {
+				Object v = row.get(f);
+				if (v != null && v.toString().toLowerCase(Locale.ENGLISH).contains(kw)) {
+					result.add(row);
+					break;
+				}
+			}
+		}
+		return result;
 	}
 
 	private String str(Object o) { return o == null ? "-" : o.toString(); }
