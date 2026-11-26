@@ -688,7 +688,7 @@
 													<option value="equipment" selected>Equipment</option>
 						                            <option value="consumables">Consumables</option>
 													<option value="accessory">Accessory</option>
-						                            <option value="office">Office supplies</option>
+						                            <option value="office">Assets</option>
 												</select>
 											</div>
 										</div>
@@ -777,7 +777,7 @@
 					                            <option value="equipment">Equipment</option>
 					                            <option value="consumables">Consumables</option>
 												<option value="accessory">Accessory</option>
-					                            <option value="office">Office supplies</option>
+					                            <option value="office">Assets</option>
 					                        </select>
 					                    </div>
 					                </div>
@@ -2008,7 +2008,7 @@ function createPoCard(item,index,poDetailId){
             </div>
         `;
     }else{
-        category="Office supplies";
+        category="Assets";
         icon=`
             <div class="symbol symbol-40px me-4">
                 <i class="ki-duotone ki-parcel fs-2 text-success">
@@ -3079,7 +3079,7 @@ function getCategoryIcon(productType){
         case '1': return { name: 'Equipment', icon: '<i class="ki-duotone ki-monitor-mobile fs-2 text-primary"><span class="path1"></span><span class="path2"></span></i>' };
         case '2': return { name: 'Consumables', icon: '<i class="ki-duotone ki-lots-shopping fs-2 text-orange"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span><span class="path5"></span><span class="path6"></span><span class="path7"></span><span class="path8"></span></i>' };
         case '3': return { name: 'Accessory', icon: '<i class="ki-duotone ki-medal-star fs-2 text-teal"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span></i>' };
-        case '4': return { name: 'Office supplies', icon: '<i class="ki-duotone ki-parcel fs-2 text-success"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span><span class="path5"></span></i>' };
+        case '4': return { name: 'Assets', icon: '<i class="ki-duotone ki-parcel fs-2 text-success"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span><span class="path5"></span></i>' };
         default:  return { name: '-', icon: '' };
     }
 }

@@ -411,7 +411,7 @@ String targetURL = Constant.getWebContext2() + "/authorization?token=" + token;
 										<span class="path3"></span><span class="path4"></span>
 										<span class="path5"></span>
 								</i>
-							</span> <span class="menu-title">Office Supplies</span>
+							</span> <span class="menu-title">Assets</span>
 							</i>
 							</a>
 						</div>
@@ -470,7 +470,7 @@ String targetURL = Constant.getWebContext2() + "/authorization?token=" + token;
 									<a class="menu-link" href="stock_offs_list"
 										data-route="stock_offs_list"> <span class="menu-icon">
 											<span class="bullet bullet-dot"></span>
-									</span> <span class="menu-title">Office Supplies</span>
+									</span> <span class="menu-title">Assets</span>
 									</a>
 								</div>								
 							</div>

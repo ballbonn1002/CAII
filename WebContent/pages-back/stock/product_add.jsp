@@ -53,7 +53,7 @@
                                                 <label class="form-label fw-semibold text-gray-700" for="productType">
                                                     Item Type <span class="text-danger">*</span>
                                                 </label>
-                                                <%-- product_type: 1=Equipment, 2=Consumable, 3=Accessories, 4=Office Supplies (ดู skill product-module) --%>
+                                                <%-- product_type: 1=Equipment, 2=Consumable, 3=Accessories, 4=Assets (ดู skill product-module) --%>
                                                 <select id="productType" name="productType" required class="form-select text-gray-700">
                                                     <c:choose>
                                                         <c:when test="${not empty productTypes}">
@@ -69,7 +69,7 @@
                                                             <option value="1">Equipment</option>
                                                             <option value="2" selected>Consumables</option>
                                                             <option value="3">Accessories</option>
-                                                            <option value="4">Office Supplies</option>
+                                                            <option value="4">Assets</option>
                                                         </c:otherwise>
                                                     </c:choose>
                                                 </select>

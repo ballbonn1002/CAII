@@ -79,7 +79,7 @@
                                     <div class="card card-bordered h-100 cursor-pointer type-filter-card" data-type="4">
                                         <div class="card-body d-flex align-items-center gap-3 py-4 px-5">
                                             <i class="ki-duotone ki-parcel fs-2x text-info"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span><span class="path5"></span></i>
-                                            <span class="text-gray-600 fw-semibold fs-6">Office Supplies</span>
+                                            <span class="text-gray-600 fw-semibold fs-6">Assets</span>
                                             <span class="text-gray-900 fw-bold fs-4 ms-auto">${empty typeCounts['4'] ? 0 : typeCounts['4']} <span class="fs-7 fw-semibold text-gray-500">items</span></span>
                                         </div>
                                     </div>
@@ -148,7 +148,7 @@
                                                         </c:when>
                                                         <c:when test="${product.product_type eq '4'}">
                                                             <i class="ki-duotone ki-parcel fs-2 text-info"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span><span class="path5"></span></i>
-                                                            <span>Office Supplies</span>
+                                                            <span>Assets</span>
                                                         </c:when>
                                                         <c:otherwise><span class="text-muted">-</span></c:otherwise>
                                                     </c:choose>

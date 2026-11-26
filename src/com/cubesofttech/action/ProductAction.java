@@ -59,7 +59,7 @@ public class ProductAction extends ActionSupport {
     private final HttpServletRequest request = ServletActionContext.getRequest();
     private final HttpServletResponse response = ServletActionContext.getResponse();
     
-    /** ประเภท item ที่บริหารในหน้า stock: 1=Equipment, 2=Consumable, 3=Accessories, 4=Office Supplies */
+    /** ประเภท item ที่บริหารในหน้า stock: 1=Equipment, 2=Consumable, 3=Accessories, 4=Assets */
     private static final java.util.Set<String> STOCK_ITEM_TYPES =
             new java.util.HashSet<String>(java.util.Arrays.asList("1", "2", "3", "4"));
 
@@ -1114,7 +1114,7 @@ public class ProductAction extends ActionSupport {
      * โครง 4 ระดับ: borrow_root -> borrow_type (กลุ่มตาม product_type) -> borrow_unit (เครื่องจริงแต่ละเครื่อง
      * ป้ายชื่อ "item no ชื่อสินค้า") -> borrow_item (ใบล่าสุด ป้ายชื่อเป็นผู้ยืม + วันที่ยืม)
      * ระดับ borrow_type มีแค่ "Equipment" เสมอ เพราะตาราง equipment เก็บเฉพาะสินค้า type 1 เท่านั้น
-     * (Consumables/Accessories/Office Supplies ใช้ตาราง stock แบบนับจำนวน ไม่มีสถานะ "ถูกยืม" ให้ไล่) - ถ้าในอนาคตมี
+     * (Consumables/Accessories/Assets ใช้ตาราง stock แบบนับจำนวน ไม่มีสถานะ "ถูกยืม" ให้ไล่) - ถ้าในอนาคตมี
      * ช่องทางยืม type อื่นเพิ่ม ต้องขยาย logic ตรงนี้ให้คำนวณ type จริงแทนการ hardcode "Equipment"
      * id ทุกระดับตั้งใจให้เป็น string ไม่ใช่ตัวเลข (ไม่ชนกับ id คลังที่เป็น Long) - filterLocationNodesByScope()/
      * appendLocationNode() ใช้ parseLongOrNull() เช็ค id เสมอ จึงคืน null ให้ node พวกนี้โดยอัตโนมัติ ไม่พังและไม่ปนกัน

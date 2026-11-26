@@ -138,7 +138,7 @@
                                                             <option value="1" <c:if test="${product.productType eq '1'}">selected</c:if>>Equipment</option>
                                                             <option value="2" <c:if test="${product.productType eq '2'}">selected</c:if>>Consumables</option>
                                                             <option value="3" <c:if test="${product.productType eq '3'}">selected</c:if>>Accessories</option>
-                                                            <option value="4" <c:if test="${product.productType eq '4'}">selected</c:if>>Office Supplies</option>
+                                                            <option value="4" <c:if test="${product.productType eq '4'}">selected</c:if>>Assets</option>
                                                         </c:otherwise>
                                                     </c:choose>
                                                 </select>

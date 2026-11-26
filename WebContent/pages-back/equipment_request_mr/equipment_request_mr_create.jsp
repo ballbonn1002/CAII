@@ -418,7 +418,7 @@ prefix="c"%> <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
       1: "Equipment",
       2: "Consumables",
       3: "Accessory",
-      4: "Office supplies",
+      4: "Assets",
     };
 
     var requesterSign = null;
@@ -443,7 +443,7 @@ prefix="c"%> <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
         icon: '<i class="ki-duotone ki-medal-star fs-2 text-teal"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span></i>',
       },
       4: {
-        label: "Office supplies",
+        label: "Assets",
         color: "text-success",
         icon: '<i class="ki-duotone ki-parcel fs-2 text-success"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span><span class="path5"></span></i>',
       },

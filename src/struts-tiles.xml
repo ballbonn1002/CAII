@@ -914,7 +914,7 @@
 	</definition>
 
 	<definition name="stockOffsList" extends="baseLayout">
-		<put-attribute name="title" value="Stock - Office Supplies" />
+		<put-attribute name="title" value="Stock - Assets" />
 		<put-attribute name="body"
 			value="/pages-back/stock/stock_offs_list.jsp" />
 	</definition>
