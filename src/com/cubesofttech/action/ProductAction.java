@@ -830,7 +830,7 @@ public class ProductAction extends ActionSupport {
             int totalBorrowed = 0;
             if (selectedWarehouseId == null) {
                 List<Map<String, Object>> borrowNodes =
-                        buildBorrowingNodes(equipmentRows, equipmentParentIdBySubId, equipmentProductNameById);
+                        buildBorrowingNodes(equipmentRows, unlinkedEquipment, equipmentParentIdBySubId, equipmentProductNameById);
                 if (!borrowNodes.isEmpty()) {
                     nodes.addAll(borrowNodes);
                     for (Map<String, Object> n : borrowNodes) {
@@ -1115,12 +1115,22 @@ public class ProductAction extends ActionSupport {
      * appendLocationNode() ใช้ parseLongOrNull() เช็ค id เสมอ จึงคืน null ให้ node พวกนี้โดยอัตโนมัติ ไม่พังและไม่ปนกัน
      * ไม่มีเครื่องถูกยืมเลย คืน list ว่าง (ไม่สร้าง node Borrowing)
      */
-    private List<Map<String, Object>> buildBorrowingNodes(List<Equipment> equipmentRows,
+    private List<Map<String, Object>> buildBorrowingNodes(List<Equipment> equipmentRows, List<Equipment> unlinkedEquipment,
             Map<String, String> equipmentParentIdBySubId, Map<String, String> equipmentProductNameById) throws Exception {
 
         List<Map<String, Object>> unitNodes = new ArrayList<Map<String, Object>>();
         List<Map<String, Object>> leafNodes = new ArrayList<Map<String, Object>>();
-        if (equipmentRows == null || equipmentRows.isEmpty()) {
+
+        // รวมเครื่องที่ผูก product แล้ว + เครื่องที่ยังไม่ผูก product (product_id ว่าง) เข้าด้วยกัน
+        // ไม่งั้นเครื่องที่ถูกยืมแต่ยังไม่ผูก product จะหายจากกลุ่ม Borrowing เงียบๆ (ยอดไม่ตรงกับจำนวนที่ยืมจริง)
+        List<Equipment> allEquipment = new ArrayList<Equipment>();
+        if (equipmentRows != null) {
+            allEquipment.addAll(equipmentRows);
+        }
+        if (unlinkedEquipment != null) {
+            allEquipment.addAll(unlinkedEquipment);
+        }
+        if (allEquipment.isEmpty()) {
             return unitNodes;
         }
 
@@ -1158,8 +1168,8 @@ public class ProductAction extends ActionSupport {
 
         Set<String> borrowedParentIds = new HashSet<String>();
 
-        for (Equipment eq : equipmentRows) {
-            if (eq == null || eq.getEquipmentId() == null || isBlank(eq.getProductId())) {
+        for (Equipment eq : allEquipment) {
+            if (eq == null || eq.getEquipmentId() == null) {
                 continue;
             }
             String status = (eq.getStatus() != null) ? eq.getStatus().trim() : null;
@@ -1169,8 +1179,15 @@ public class ProductAction extends ActionSupport {
 
             String equipmentIdStr = String.valueOf(eq.getEquipmentId());
             Borrow latest = latestBorrowByEquipmentId.get(equipmentIdStr);
-            String subId = eq.getProductId().trim();
-            borrowedParentIds.add(firstNonBlank(equipmentParentIdBySubId.get(subId), subId));
+            String subId = isBlank(eq.getProductId()) ? null : eq.getProductId().trim();
+            String productName;
+            if (subId != null) {
+                borrowedParentIds.add(firstNonBlank(equipmentParentIdBySubId.get(subId), subId));
+                productName = equipmentProductNameById.get(subId);
+            } else {
+                // ยังไม่ผูก product: ไม่นับเป็น Products (ไม่ใช่ product จริง) แต่ยังนับเป็นเครื่องที่ถูกยืม
+                productName = UNLINKED_EQUIPMENT_LABEL;
+            }
 
             // ระดับ borrow_unit: 1 เครื่องจริง = 1 node - มีลูก (borrow_item) แค่ใบเดียวเสมอ เพราะยืมได้ทีละคนต่อเครื่อง
             // แยกชั้นนี้ไว้เผื่ออนาคตอยากโชว์ประวัติการยืมหลายรายการใต้เครื่องเดียวกัน
@@ -1178,7 +1195,7 @@ public class ProductAction extends ActionSupport {
             unitNode.put("id", "borrow-unit-" + equipmentIdStr);
             unitNode.put("parentId", "borrow-type-1");
             unitNode.put("type", "borrow_unit");
-            unitNode.put("name", buildBorrowUnitLabel(eq, equipmentProductNameById.get(subId)));
+            unitNode.put("name", buildBorrowUnitLabel(eq, productName));
             unitNode.put("productCount", Integer.valueOf(1));
             unitNode.put("onHand", formatQty(1d));
             unitNodes.add(unitNode);

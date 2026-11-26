@@ -1335,8 +1335,8 @@ VALUES
 
 -- PROD 5 NOV 2026
 	
--- 12/11/2026 Koy: set warehouse_id = 0 for all equipment with status 'B' (borrowed)
---                 and warehouse_id not null and not 0, to avoid foreign key constraint issues when deleting warehouses
+-- 12/11/2026 Koy: set warehouse_id = 0 for equipment with status 'B' (borrowed) that still point to a real warehouse
+--                 (0 = borrowed / not in any warehouse) so Stock By Location does not count borrowed items in the old warehouse
 UPDATE equipment SET warehouse_id = 0 WHERE status = 'B' AND warehouse_id IS NOT NULL AND warehouse_id <> 0;
 
 -- 12/11/2026: add permission 'stock.qr.view' in 'authorized_object' table
