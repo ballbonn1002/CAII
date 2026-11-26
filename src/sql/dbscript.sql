@@ -1370,3 +1370,55 @@ VALUES
 ('line.home.view', 'line.home.view', 'เห็นเมนู Home ใน LINE LIFF', '1', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '10'),
 ('line.leave.view', 'line.leave.view', 'เห็นเมนู Leave ใน LINE LIFF', '1', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '10'),
 ('line.travel.view', 'line.travel.view', 'เห็นเมนู Travel ใน LINE LIFF', '1', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '10');
+
+-- 19/11/2026 Koy: create table 'asset' (เมนู Assets แทน Office Supplies - เก็บรายชิ้น แยกจากตาราง equipment)
+--   item_no      สร้างอัตโนมัติ AST0001, AST0002, ...
+--   product_id   รุ่นในเมนู Product (product_type '4') ไม่บังคับ - int ตรงกับ product.product_id
+--   warehouse_id ที่อยู่ปัจจุบัน (ตาราง warehouse) NULL = ยังไม่ระบุ
+--   status       U = ใช้งานอยู่, S = เก็บไว้, D = ชำรุด
+CREATE TABLE `asset` (
+    `asset_id` INT NOT NULL AUTO_INCREMENT,
+    `item_no` VARCHAR(20) NOT NULL,
+    `name` VARCHAR(255) NOT NULL,
+    `product_id` INT NULL,
+    `serial_no` VARCHAR(100) NULL,
+    `warehouse_id` BIGINT NULL,
+    `status` VARCHAR(1) NOT NULL DEFAULT 'U',
+    `purchase_date` DATE NULL,
+    `price` DECIMAL(12,2) NULL,
+    `image` VARCHAR(255) NULL,
+    `note` VARCHAR(1000) NULL,
+    `user_create` VARCHAR(32) NULL,
+    `time_create` TIMESTAMP NULL DEFAULT NULL,
+    `user_update` VARCHAR(32) NULL,
+    `time_update` TIMESTAMP NULL DEFAULT NULL,
+    PRIMARY KEY (`asset_id`),
+    UNIQUE KEY `uk_asset_item_no` (`item_no`),
+    KEY `idx_asset_product_id` (`product_id`),
+    KEY `idx_asset_warehouse_id` (`warehouse_id`)
+) ENGINE=InnoDB
+DEFAULT CHARSET=utf8mb4
+COLLATE=utf8mb4_unicode_ci;
+
+-- 19/11/2026 Koy: add permission 'assetlist.view' in 'authorized_object' table (เห็นเมนู Assets + เพิ่ม/แก้ไข/ลบ/ย้ายที่)
+INSERT INTO `authorized_object` (`authorized_object_id`, `name`, `description`, `active`, `time_create`, `time_update`, `authorized_object_group_id`)
+VALUES ('assetlist.view', 'assetlist.view', 'เห็นเมนู Assets และเพิ่ม แก้ไข ลบ ย้ายที่ Asset ได้', '1', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '2');
+
+-- 25/11/2026: create table 'asset_log' (ประวัติการย้ายที่ของ Asset - 1 แถว = ย้าย 1 ชิ้น 1 ครั้ง)
+--   from_warehouse_id ที่เดิม (NULL = ก่อนหน้านั้นยังไม่เคยระบุที่อยู่) / to_warehouse_id ที่ใหม่ / description หมายเหตุการย้าย
+--   ชิ้นที่มีแถวในตารางนี้แล้วลบไม่ได้ (ฝั่งโปรแกรมเช็คให้) ต้องเปลี่ยนสถานะแทน
+CREATE TABLE `asset_log` (
+    `log_id` INT NOT NULL AUTO_INCREMENT,
+    `asset_id` INT NOT NULL,
+    `from_warehouse_id` BIGINT NULL,
+    `to_warehouse_id` BIGINT NOT NULL,
+    `description` VARCHAR(500) NULL,
+    `user_create` VARCHAR(32) NULL,
+    `time_create` TIMESTAMP NULL DEFAULT NULL,
+    `user_update` VARCHAR(32) NULL,
+    `time_update` TIMESTAMP NULL DEFAULT NULL,
+    PRIMARY KEY (`log_id`),
+    KEY `idx_asset_log_asset_id` (`asset_id`)
+) ENGINE=InnoDB
+DEFAULT CHARSET=utf8mb4
+COLLATE=utf8mb4_unicode_ci;

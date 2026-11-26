@@ -23,6 +23,7 @@ import org.apache.struts2.ServletActionContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.cubesofttech.dao.AssetDAO;
 import com.cubesofttech.dao.BorrowDAO;
 import com.cubesofttech.dao.EquipmentDAO;
 import com.cubesofttech.dao.EquipmentStatusDAO;
@@ -30,6 +31,7 @@ import com.cubesofttech.dao.ProductDAO;
 import com.cubesofttech.dao.StockDAO;
 import com.cubesofttech.dao.UnitOfMeasureDAO;
 import com.cubesofttech.dao.WarehouseDAO;
+import com.cubesofttech.model.Asset;
 import com.cubesofttech.model.Equipment;
 import com.cubesofttech.model.EquipmentStatus;
 import com.cubesofttech.model.Product;
@@ -63,6 +65,10 @@ public class QrService {
 	public static final char TYPE_PRODUCT = 'P';
 	/** ที่เก็บ / warehouse (รหัส W<warehouse_id>) */
 	public static final char TYPE_WAREHOUSE = 'W';
+	/** Asset 1 ชิ้น (รหัส A<asset_id>) */
+	public static final char TYPE_ASSET = 'A';
+	/** สิทธิ์เมนู Assets ใช้ตัดสินว่าจะโชว์ปุ่มไปหน้าแก้ไข Asset หรือไม่ */
+	private static final String PERMISSION_ASSET = "assetlist.view";
 
 	private static final String PRODUCT_TYPE_CONSUMABLES = "2";
 	private static final String PRODUCT_TYPE_ACCESSORIES = "3";
@@ -95,6 +101,9 @@ public class QrService {
 	@Autowired
 	private UnitOfMeasureDAO unitOfMeasureDAO;
 
+	@Autowired
+	private AssetDAO assetDAO;
+
 	/** รหัสที่แยกแล้ว เช่น E303 = type E, id 303 */
 	public static class QrCode {
 		private final char type;
@@ -119,7 +128,7 @@ public class QrService {
 		public String name;
 		public String itemNo;
 		public String typeLabel;
-		/** ชนิดของรหัส: E, P หรือ W */
+		/** ชนิดของรหัส: E, P, W หรือ A */
 		public char kind;
 		/** ป้ายของช่อง itemNo ในหน้าแบบจำกัด (Equipment = Item No., สินค้า = Item ID, ที่เก็บ = ที่เก็บ) */
 		public String itemNoLabel;
@@ -127,6 +136,7 @@ public class QrService {
 		Equipment equipment;
 		Product product;
 		Warehouse warehouse;
+		Asset asset;
 	}
 
 	/** ข้อมูลเต็ม (เรียกเฉพาะผู้มีสิทธิ์) */
@@ -193,6 +203,14 @@ public class QrService {
 		} catch (Exception e) {
 			log.warn("codeFromItemNo: product lookup failed, itemNo=" + itemNo, e);
 		}
+		try {
+			Asset asset = assetDAO.findByItemNo(text);
+			if (asset != null && asset.getAssetId() != null) {
+				return TYPE_ASSET + String.valueOf(asset.getAssetId());
+			}
+		} catch (Exception e) {
+			log.warn("codeFromItemNo: asset lookup failed, itemNo=" + itemNo, e);
+		}
 		String upper = text.toUpperCase(Locale.ENGLISH);
 		if (CODE_PATTERN.matcher(upper).matches()) {
 			return upper;
@@ -242,6 +260,11 @@ public class QrService {
 				putWarehouseFull(attrs, basic.warehouse);
 				return attrs;
 			}
+			if (basic.kind == TYPE_ASSET) {
+				attrs.put("qrState", "full");
+				putAssetFull(attrs, basic.asset, userAuthority);
+				return attrs;
+			}
 
 			// ข้อมูลเต็ม (เฉพาะคนที่มีสิทธิ์)
 			QrFull full = loadFull(basic);
@@ -288,7 +311,7 @@ public class QrService {
 		}
 	}
 
-	/** ข้อมูลพื้นฐานของรหัสนี้ คืน null ถ้าไม่พบ หรือยังไม่รองรับประเภทนั้น (รองรับ E, P ของ type 2/3, W) */
+	/** ข้อมูลพื้นฐานของรหัสนี้ คืน null ถ้าไม่พบ หรือยังไม่รองรับประเภทนั้น (รองรับ E, P ของ type 2/3, W, A) */
 	public QrBasic loadBasic(QrCode code) throws Exception {
 		if (code == null) {
 			return null;
@@ -298,6 +321,9 @@ public class QrService {
 		}
 		if (code.getType() == TYPE_WAREHOUSE) {
 			return loadWarehouseBasic(code.getId());
+		}
+		if (code.getType() == TYPE_ASSET) {
+			return loadAssetBasic(code.getId());
 		}
 		if (code.getType() != TYPE_EQUIPMENT) {
 			return null;
@@ -628,6 +654,46 @@ public class QrService {
 	// รหัส W (ที่เก็บ / warehouse)
 	// =====================================================================
 
+	private QrBasic loadAssetBasic(int assetId) throws Exception {
+		Asset asset = assetDAO.findById(Integer.valueOf(assetId));
+		if (asset == null) {
+			return null;
+		}
+		QrBasic basic = new QrBasic();
+		basic.kind = TYPE_ASSET;
+		basic.itemNoLabel = "Item No.";
+		basic.asset = asset;
+		basic.name = nvl(asset.getName());
+		basic.itemNo = nvl(asset.getItemNo());
+		basic.typeLabel = "Assets";
+		return basic;
+	}
+
+	/** ข้อมูลเต็มของ Asset 1 ชิ้น (เรียกเฉพาะผู้มีสิทธิ์ stock.qr.view) */
+	private void putAssetFull(Map<String, Object> attrs, Asset asset, Set<String> userAuthority) {
+		attrs.put("qrAssetId", asset.getAssetId());
+		attrs.put("qrSerialNo", nvl(asset.getSerialNo()));
+		attrs.put("qrStatusCode", nvl(asset.getStatus()));
+		attrs.put("qrStatusText", asset.getStatusLabel());
+		// ใน JSP ต่อเป็น badge-${qrStatusColor} เหมือน Equipment จึงใส่ light- ให้ตรงกับป้ายหน้ารายการ Assets
+		attrs.put("qrStatusColor", "light-" + asset.getStatusColor());
+		attrs.put("qrLocation", locationPath(asset.getWarehouseId()));
+		String model = "ไม่ระบุรุ่น";
+		if (asset.getProductId() != null) {
+			Map<Integer, Product> cache = new HashMap<Integer, Product>();
+			Product product = findProductQuietly(String.valueOf(asset.getProductId()), cache);
+			model = (product != null) ? productDisplayName(product, cache) : ("สินค้า #" + asset.getProductId());
+		}
+		attrs.put("qrCatalog", model);
+		if (asset.getPurchaseDate() != null) {
+			attrs.put("qrPurchaseDate", new SimpleDateFormat("d MMM yyyy", new Locale("th", "TH")).format(asset.getPurchaseDate()));
+		}
+		if (!nvl(asset.getNote()).trim().isEmpty()) {
+			attrs.put("qrNote", asset.getNote().trim());
+		}
+		attrs.put("qrCanEditAsset", Boolean.valueOf(userAuthority != null && userAuthority.contains(PERMISSION_ASSET)));
+	}
+
 	private QrBasic loadWarehouseBasic(int warehouseId) throws Exception {
 		Warehouse warehouse = warehouseDAO.findById(Long.valueOf(warehouseId));
 		if (warehouse == null) {
@@ -649,6 +715,7 @@ public class QrService {
 	 *  - Consumables/Accessories : ยอดสุทธิจาก stock (หน่วยหลัก + หน่วยใหญ่)
 	 *  - Equipment : นับเป็นจำนวนเครื่องต่อรุ่น กดดูรายเครื่องได้ (Item No., Serial, สถานะ)
 	 *    ไม่นับเครื่องที่ปลดระวาง (S, Z, L) และเครื่องที่ถูกยืมอยู่ (B) เหมือนหน้า Stock By Location
+	 *  - Assets : นับเป็นชิ้นต่อรุ่น กดดูรายชิ้นได้ (Item No., Serial, สถานะ) นับทุกสถานะ
 	 */
 	private void putWarehouseFull(Map<String, Object> attrs, Warehouse root) throws Exception {
 		Map<Long, Warehouse> warehouseById = warehouseMap(warehouseDAO.findAll());
@@ -746,6 +813,29 @@ public class QrService {
 			}
 		}
 
+		// warehouseId -> (productId หรือ "" ถ้ายังไม่ผูกรุ่น -> Asset ในรุ่นนั้น) นับทุกสถานะ แต่ละชิ้นโชว์ป้ายสถานะของตัวเอง
+		Map<Long, Map<String, List<Asset>>> assetsByWarehouse = new HashMap<Long, Map<String, List<Asset>>>();
+		List<Asset> assetRows = assetDAO.findByWarehouseIds(subtree);
+		if (assetRows != null) {
+			for (Asset a : assetRows) {
+				if (a == null || a.getWarehouseId() == null) {
+					continue;
+				}
+				Map<String, List<Asset>> byModel = assetsByWarehouse.get(a.getWarehouseId());
+				if (byModel == null) {
+					byModel = new HashMap<String, List<Asset>>();
+					assetsByWarehouse.put(a.getWarehouseId(), byModel);
+				}
+				String modelKey = (a.getProductId() == null) ? "" : String.valueOf(a.getProductId());
+				List<Asset> pieces = byModel.get(modelKey);
+				if (pieces == null) {
+					pieces = new ArrayList<Asset>();
+					byModel.put(modelKey, pieces);
+				}
+				pieces.add(a);
+			}
+		}
+
 		Map<Integer, Product> productCache = new HashMap<Integer, Product>();
 		Map<String, List<UnitOfMeasure>> unitCache = new HashMap<String, List<UnitOfMeasure>>();
 		Map<String, String[]> statusCache = new HashMap<String, String[]>();
@@ -789,6 +879,30 @@ public class QrService {
 						unitRows.add(unit);
 					}
 					Map<String, Object> item = line(name, e.getValue().size() + " เครื่อง");
+					item.put("units", unitRows);
+					items.add(item);
+				}
+			}
+
+			Map<String, List<Asset>> assetModels = assetsByWarehouse.get(whId);
+			if (assetModels != null) {
+				for (Map.Entry<String, List<Asset>> e : assetModels.entrySet()) {
+					String modelKey = e.getKey();
+					String name = "ไม่ระบุรุ่น";
+					if (!modelKey.isEmpty()) {
+						Product p = findProductQuietly(modelKey, productCache);
+						name = (p != null) ? productDisplayName(p, productCache) : ("สินค้า #" + modelKey);
+					}
+					List<Map<String, Object>> unitRows = new ArrayList<Map<String, Object>>();
+					for (Asset a : e.getValue()) {
+						Map<String, Object> unit = new HashMap<String, Object>();
+						unit.put("itemNo", nvl(a.getItemNo()));
+						unit.put("serial", nvl(a.getSerialNo()));
+						unit.put("statusText", a.getStatusLabel());
+						unit.put("statusColor", "light-" + a.getStatusColor());
+						unitRows.add(unit);
+					}
+					Map<String, Object> item = line(name, e.getValue().size() + " ชิ้น");
 					item.put("units", unitRows);
 					items.add(item);
 				}

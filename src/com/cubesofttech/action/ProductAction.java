@@ -33,7 +33,9 @@ import com.cubesofttech.dao.StockDAO;
 import com.cubesofttech.dao.UnitMasterDAO;
 import com.cubesofttech.dao.UnitOfMeasureDAO;
 import com.cubesofttech.dao.UserDAO;
+import com.cubesofttech.dao.AssetDAO;
 import com.cubesofttech.dao.WarehouseDAO;
+import com.cubesofttech.model.Asset;
 import com.cubesofttech.model.Borrow;
 import com.cubesofttech.model.Equipment;
 import com.cubesofttech.model.EquipmentStatus;
@@ -79,6 +81,9 @@ public class ProductAction extends ActionSupport {
 
     @Autowired
     private WarehouseDAO warehouseDAO;
+
+    @Autowired
+    private AssetDAO assetDAO;
 
     @Autowired
     private UserDAO userDAO;
@@ -1376,6 +1381,11 @@ public class ProductAction extends ActionSupport {
                     log.error("showProductEditPage: load equipmentStatusList failed, productId=" + productId, ex);
                 }
                 request.setAttribute("equipmentStatusList", equipmentStatusJson);
+            }
+
+            // Assets (type 4): การ์ดผูก/เอา Asset ออกจากรุ่น (ดู product_assets_card.jsp) ดึงข้อมูลเฉพาะตอนมีสิทธิ์เมนู Assets
+            if (product.getProductType() != null && "4".equals(product.getProductType().trim())) {
+                putAssetAttributes(product, subProducts);
             }
 
             return SUCCESS;
@@ -3090,6 +3100,119 @@ public class ProductAction extends ActionSupport {
                 && p.getProductType() != null
                 && STOCK_ITEM_TYPES.contains(p.getProductType().trim())
                 && "0".equals(p.getParentProductId());
+    }
+
+    /**
+     * ข้อมูลการ์ด Assets ในหน้าแก้ไข Product ประเภท 4 (ตัวแม่ + sub product เป็น "รุ่น" ของ Asset)
+     *  - assetsEnabled      : มีสิทธิ์ assetlist.view หรือไม่ (ไม่มี = ไม่แสดงการ์ด และไม่ส่งข้อมูล Asset มาที่หน้านี้เลย)
+     *  - assetTargets       : รุ่นที่ผูกได้ (ตัวแม่ก่อน ตามด้วย sub product ตาม sequence)
+     *  - linkedAssets       : Asset ที่ผูกกับตัวแม่หรือ sub ใดๆ ของ Product นี้
+     *  - unlinkedAssets     : Asset ที่ยังไม่มีรุ่น ใช้เป็นตัวเลือกใน Link Assets
+     * ทุก list ไม่เป็น null เพื่อกัน NPE ฝั่ง JSP
+     */
+    @SuppressWarnings("unchecked")
+    private void putAssetAttributes(Product product, List<Product> subProducts) {
+        try {
+            javax.servlet.http.HttpSession session = request.getSession(false);
+            java.util.Set<String> authority = (session == null) ? null : (java.util.Set<String>) session.getAttribute("userAuthority");
+            boolean enabled = authority != null && authority.contains("assetlist.view");
+            request.setAttribute("assetsEnabled", Boolean.valueOf(enabled));
+            if (!enabled) {
+                return;
+            }
+
+            List<Map<String, Object>> targets = new ArrayList<Map<String, Object>>();
+            Map<Integer, String> modelNames = new HashMap<Integer, String>();
+            List<Integer> familyIds = new ArrayList<Integer>();
+            Map<String, Object> parentTarget = new HashMap<String, Object>();
+            parentTarget.put("id", product.getProductId());
+            parentTarget.put("name", product.getProductName());
+            parentTarget.put("isParent", Boolean.TRUE);
+            targets.add(parentTarget);
+            modelNames.put(product.getProductId(), product.getProductName());
+            familyIds.add(product.getProductId());
+            if (subProducts != null) {
+                for (Product sub : subProducts) {
+                    if (sub == null || sub.getProductId() == null) {
+                        continue;
+                    }
+                    Map<String, Object> t = new HashMap<String, Object>();
+                    t.put("id", sub.getProductId());
+                    t.put("name", sub.getProductName());
+                    t.put("isParent", Boolean.FALSE);
+                    targets.add(t);
+                    modelNames.put(sub.getProductId(), sub.getProductName());
+                    familyIds.add(sub.getProductId());
+                }
+            }
+
+            // ที่อยู่เป็นเส้นทางเต็ม (คลัง › ตู้ › ชั้น) สร้างจาก warehouse ทั้งหมดครั้งเดียว
+            Map<Long, Warehouse> warehouseById = new HashMap<Long, Warehouse>();
+            List<Warehouse> warehouses = warehouseDAO.findAll();
+            if (warehouses != null) {
+                for (Warehouse w : warehouses) {
+                    if (w != null && w.getWarehouseId() != null) {
+                        warehouseById.put(w.getWarehouseId(), w);
+                    }
+                }
+            }
+
+            List<Map<String, Object>> linked = new ArrayList<Map<String, Object>>();
+            List<Asset> linkedRows = assetDAO.findByProductIds(familyIds);
+            if (linkedRows != null) {
+                for (Asset a : linkedRows) {
+                    linked.add(assetRow(a, modelNames, warehouseById));
+                }
+            }
+            List<Map<String, Object>> unlinked = new ArrayList<Map<String, Object>>();
+            List<Asset> unlinkedRows = assetDAO.findUnlinked();
+            if (unlinkedRows != null) {
+                for (Asset a : unlinkedRows) {
+                    unlinked.add(assetRow(a, modelNames, warehouseById));
+                }
+            }
+
+            request.setAttribute("assetTargets", targets);
+            request.setAttribute("linkedAssets", linked);
+            request.setAttribute("unlinkedAssets", unlinked);
+        } catch (Exception e) {
+            // การ์ด Assets พังต้องไม่ทำให้หน้าแก้ไข Product ทั้งหน้าพัง
+            log.error("putAssetAttributes failed, productId=" + product.getProductId(), e);
+            request.setAttribute("assetsEnabled", Boolean.FALSE);
+        }
+    }
+
+    /** 1 แถวของตาราง Asset ในหน้าแก้ไข Product */
+    private Map<String, Object> assetRow(Asset a, Map<Integer, String> modelNames, Map<Long, Warehouse> warehouseById) {
+        Map<String, Object> row = new HashMap<String, Object>();
+        row.put("assetId", a.getAssetId());
+        row.put("itemNo", a.getItemNo() == null ? "" : a.getItemNo());
+        row.put("name", a.getName() == null ? "" : a.getName());
+        row.put("serialNo", a.getSerialNo() == null ? "" : a.getSerialNo());
+        row.put("productId", a.getProductId());
+        String model = (a.getProductId() == null) ? "" : modelNames.get(a.getProductId());
+        row.put("model", model == null ? "" : model);
+        row.put("status", a.getStatus() == null ? "" : a.getStatus());
+        row.put("statusLabel", a.getStatusLabel());
+        row.put("statusColor", a.getStatusColor());
+        StringBuilder path = new StringBuilder();
+        Long current = a.getWarehouseId();
+        // จำกัดความลึกกันข้อมูลวนลูป
+        for (int depth = 0; depth < 12 && current != null && current.longValue() > 0L; depth++) {
+            Warehouse w = warehouseById.get(current);
+            if (w == null) {
+                break;
+            }
+            String wName = (w.getWarehouseName() == null) ? "" : w.getWarehouseName();
+            if (path.length() == 0) {
+                path.append(wName);
+            } else {
+                path.insert(0, wName + " › ");
+            }
+            current = w.getParent();
+        }
+        row.put("location", path.length() == 0 ? "ยังไม่ระบุที่เก็บ" : path.toString());
+        return row;
     }
 
     /**

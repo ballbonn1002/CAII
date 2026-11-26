@@ -19,7 +19,7 @@
 --%>
 <c:set var="isEquipment" value="${product.productType eq '1'}" />
 <%-- ปุ่ม Generate QR ใช้ได้เฉพาะ Consumables (2) / Accessories (3) ที่หน้าสแกน (QrService รหัส P) รองรับ
-     Equipment ใช้ QR รายเครื่อง (รหัส E) ที่หน้า equipment_edit ส่วน Office Supplies (4) รอเมนู Assets
+     Equipment ใช้ QR รายเครื่อง (รหัส E) ที่หน้า equipment_edit ส่วน Assets (4) ใช้ QR รายชิ้น (รหัส A) ที่หน้า asset_edit
      qrBaseUrl / qrLinkConfigured มาจาก ProductAction.showProductEditPage() --%>
 <c:set var="qrEnabled" value="${product.productType eq '2' or product.productType eq '3'}" />
 <c:set var="urlPrefix" value="${isEquipment ? 'stock_equ' : 'product'}" />
@@ -682,6 +682,11 @@
                         </div>
                     </div>
                 </div>
+
+                <%-- การ์ด Assets: ผูก / เอา Asset ออกจากรุ่น (แสดงเฉพาะ Product ประเภท 4 และผู้มีสิทธิ์ assetlist.view) --%>
+                <c:if test="${product.productType eq '4'}">
+                    <jsp:include page="product_assets_card.jsp" />
+                </c:if>
 
                 <%-- ปุ่ม Back กลับไปหน้ารายการ Product --%>
                 <div class="d-flex justify-content-start mt-8">

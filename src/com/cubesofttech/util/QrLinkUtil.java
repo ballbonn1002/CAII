@@ -54,4 +54,12 @@ public final class QrLinkUtil {
 		}
 		return baseUrl(request) + "/qr?c=E" + equipmentId;
 	}
+
+	/** ลิงก์ QR ของ Asset 1 ชิ้น (ใช้ asset_id ที่ไม่เปลี่ยน ไม่ใช้ Item No. ที่ออกให้อัตโนมัติ) */
+	public static String assetLink(HttpServletRequest request, Integer assetId) {
+		if (assetId == null) {
+			return "";
+		}
+		return baseUrl(request) + "/qr?c=A" + assetId;
+	}
 }
