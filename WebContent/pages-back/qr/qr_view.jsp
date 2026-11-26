@@ -7,7 +7,7 @@
     qrState : full = ผู้มีสิทธิ์ stock.qr.view เห็นข้อมูลเต็ม
               limited = login แล้วแต่ไม่มีสิทธิ์ เห็นแค่ชื่อ Item No. ประเภท (ข้อมูลอื่นไม่ถูกส่งมาที่หน้านี้เลย)
               notfound = รหัสผิด หรือของถูกลบ
-    qrKind  : E = Equipment, P = สินค้า (Consumables/Accessories), W = ที่เก็บ (warehouse)
+    qrKind  : E = Equipment, P = สินค้า (Consumables/Accessories), W = ที่เก็บ (warehouse), A = Assets (รายชิ้น)
 --%>
 <div class="app-main flex-column flex-row-fluid" id="kt_app_main">
     <div class="d-flex flex-column flex-column-fluid">
@@ -86,6 +86,11 @@
                                                 <div class="text-gray-600">ยังไม่มีสต็อก</div>
                                             </c:when>
                                             <c:otherwise>
+                                                <%-- ตัวแม่ที่มี sub: ยอดรวมทุก sub ตัวใหญ่ด้านบน แล้วแยกบรรทัดต่อ sub ด้านล่าง --%>
+                                                <c:if test="${qrMultiProduct and not empty qrGrandTotal}">
+                                                    <div class="fs-2 fw-bold text-gray-900"><c:out value="${qrGrandTotal}" /></div>
+                                                    <div class="separator separator-dashed my-4"></div>
+                                                </c:if>
                                                 <c:forEach var="t" items="${qrTotals}">
                                                     <c:choose>
                                                         <%-- มี sub product: แสดงยอดแยกบรรทัดต่อ sub --%>
@@ -202,6 +207,57 @@
                                 <div class="d-grid gap-3">
                                     <a href="${pageContext.request.contextPath}/stock_by_location_list?rootId=${qrWarehouseId}" class="btn btn-light btn-lg">ดูใน Stock By Location</a>
                                 </div>
+                            </c:when>
+
+                            <%-- ผู้มีสิทธิ์ + Asset (A): ข้อมูลเต็มของ 1 ชิ้น --%>
+                            <c:when test="${qrKind == 'A'}">
+                                <div class="card mb-6">
+                                    <div class="card-body">
+                                        <div class="fs-3 fw-bold text-gray-900 mb-1"><c:out value="${qrName}" /></div>
+                                        <div class="text-gray-600 mb-4"><c:out value="${qrItemNo}" /> · <c:out value="${qrTypeLabel}" /></div>
+
+                                        <span class="badge badge-${qrStatusColor} fs-7 mb-2"><c:out value="${qrStatusText}" /></span>
+
+                                        <div class="separator separator-dashed my-5"></div>
+
+                                        <table class="table table-borderless align-middle fs-6 mb-0">
+                                            <tbody>
+                                                <tr>
+                                                    <td class="text-gray-600 ps-0">อยู่ที่</td>
+                                                    <td class="text-end fw-semibold pe-0"><c:out value="${qrLocation}" /></td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="text-gray-600 ps-0">รุ่น</td>
+                                                    <td class="text-end fw-semibold pe-0"><c:out value="${qrCatalog}" /></td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="text-gray-600 ps-0">Serial No.</td>
+                                                    <td class="text-end fw-semibold pe-0"><c:out value="${empty qrSerialNo ? '-' : qrSerialNo}" /></td>
+                                                </tr>
+                                                <c:if test="${not empty qrPurchaseDate}">
+                                                    <tr>
+                                                        <td class="text-gray-600 ps-0">วันที่ซื้อ</td>
+                                                        <td class="text-end fw-semibold pe-0"><c:out value="${qrPurchaseDate}" /></td>
+                                                    </tr>
+                                                </c:if>
+                                                <c:if test="${not empty qrNote}">
+                                                    <tr>
+                                                        <td class="text-gray-600 ps-0">หมายเหตุ</td>
+                                                        <td class="text-end fw-semibold pe-0"><c:out value="${qrNote}" /></td>
+                                                    </tr>
+                                                </c:if>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+
+                                <%-- ปุ่มไปหน้าแก้ไข Asset เฉพาะคนที่มีสิทธิ์เมนู Assets (หน้านั้นเช็คสิทธิ์ซ้ำอีกชั้น) --%>
+                                <c:if test="${qrCanEditAsset}">
+                                    <div class="fs-6 fw-bold text-gray-600 mb-3">ทำอะไรต่อ</div>
+                                    <div class="d-grid gap-3">
+                                        <a href="${pageContext.request.contextPath}/asset_edit?id=${qrAssetId}" class="btn btn-primary btn-lg">ดู / แก้ไข Asset</a>
+                                    </div>
+                                </c:if>
                             </c:when>
 
                             <%-- ผู้มีสิทธิ์ + Equipment (E): ข้อมูลเต็มของเครื่อง --%>

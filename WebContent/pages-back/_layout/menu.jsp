@@ -375,6 +375,19 @@ String targetURL = Constant.getWebContext2() + "/authorization?token=" + token;
 						<!--end:Equipment-->
 					</perm:permission>
 					<!--end:Menu item-->
+					<!--begin:Assets (สิทธิ์แยกจาก Equipment: assetlist.view)-->
+					<perm:permission object="assetlist.view">
+						<div class="menu-item">
+							<a class="menu-link" href="asset_list"
+								data-route="asset_list"> <span class="menu-icon">
+									<i class="ki-duotone ki-cube-2 fs-1"> <span class="path1"></span>
+										<span class="path2"></span> <span class="path3"></span>
+								</i>
+							</span> <span class="menu-title">Assets</span>
+							</a>
+						</div>
+					</perm:permission>
+					<!--end:Assets-->
 					<!--begin:Consumables
 					<div class="menu-item">
 						<a class="menu-link" href="#"
@@ -398,7 +411,7 @@ String targetURL = Constant.getWebContext2() + "/authorization?token=" + token;
 										<span class="path3"></span><span class="path4"></span>
 										<span class="path5"></span>
 								</i>
-							</span> <span class="menu-title">Office Supplies</span>
+							</span> <span class="menu-title">Assets</span>
 							</i>
 							</a>
 						</div>
@@ -457,7 +470,7 @@ String targetURL = Constant.getWebContext2() + "/authorization?token=" + token;
 									<a class="menu-link" href="stock_offs_list"
 										data-route="stock_offs_list"> <span class="menu-icon">
 											<span class="bullet bullet-dot"></span>
-									</span> <span class="menu-title">Office Supplies</span>
+									</span> <span class="menu-title">Assets</span>
 									</a>
 								</div>								
 							</div>

@@ -97,6 +97,19 @@
 	</definition>
 	<!-- My Travel -->
 
+	<!-- My Profile -->
+	<definition name="line_my_profile" extends="line_baseLayout">
+		<put-attribute name="title" value="My Profile" />
+		<put-attribute name="body"
+			value="/pages-line/my_profile/my_profile.jsp" />
+	</definition>
+	<definition name="line_cubeTokenRanking" extends="line_baseLayout">
+		<put-attribute name="title" value="Cube Token Ranking" />
+		<put-attribute name="body"
+			value="/pages-line/cube_token/cube_token_ranking.jsp" />
+	</definition>
+	<!-- My Profile -->
+
 	<!-- Line OA -->
 	<definition name="line_bind_account" template="/pages-line/LineOA/BindAccountLineOA.jsp">
 		<put-attribute name="title" value="Bind Account" />

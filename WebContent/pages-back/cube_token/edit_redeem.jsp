@@ -941,7 +941,7 @@
 	            		
 	            	case "4":
 	            		iconClass = "ki-parcel text-info";
-	            		productTypeText = "Office Supplies";	
+	            		productTypeText = "Assets";	
 	            		break;
 	            		
 	            	default:
@@ -1095,7 +1095,7 @@
 	            		
 	            	case "4":
 	            		iconClass = "ki-parcel text-info";
-	            		productTypeText = "Office Supplies";	
+	            		productTypeText = "Assets";	
 	            		break;
 	            		
 	            	default:

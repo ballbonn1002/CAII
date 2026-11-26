@@ -24,7 +24,7 @@
 <link rel="shortcut icon" href="assets/media/logos/cube-small-ico.ico" />
 
 <!--begin::Fonts(mandatory for all pages)-->
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@300;400;500;600;700&display=swap" />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@600&family=IBM+Plex+Sans+Thai:wght@300;400;500;600;700&display=swap" />
 <!--end::Fonts-->
 <!--begin::Vendor Stylesheets(used for this page only)-->
 <link href="assets/plugins/custom/fullcalendar/fullcalendar.bundle.css" rel="stylesheet" type="text/css" />
@@ -55,6 +55,7 @@ body {
 	letter-spacing: 0px;
 }
 .liff-shell { --liff-gutter: 1.5rem; width: calc(100% - 32px); max-width: 393px; margin: 0 auto; }
+.min-w-0 { min-width: 0 !important; }
 .liff-back-btn { display: inline-flex; align-items: center; justify-content: center; width: 36px; height: 36px; border-radius: 10px; background: #F8F9FB; border: 1px solid #E4E6EF; }
 .liff-loading-overlay {
 	position: fixed; inset: 0;
@@ -87,6 +88,8 @@ body {
 	z-index: 100;
 }
 .liff-floating-btn .ki-duotone { font-size: 1.75rem; }
+.liff-submit-bar { display: flex; gap: 10px; margin-top: 20px; }
+.liff-submit-bar .btn { flex: 1; }
 /* ปุ่มเลือกปี */
 #yearFilterBtn { font-size: 13px; font-weight: 600; color: var(--bs-gray-700); border: 1px solid var(--bs-gray-300); border-radius: 8px; padding: 6px 16px; background-color: var(--bs-gray-100); }
 #yearFilterBtn:hover, #yearFilterBtn:focus, #yearFilterBtn:active { background-color: var(--bs-gray-100); border-color: var(--bs-primary); box-shadow: none; }
@@ -210,7 +213,13 @@ function liffInitDone(formSelector) {
 }
 
 function liffShowLoading() {
-	document.getElementById('liffLoadingOverlay').style.display = 'flex';
+	var overlay = document.getElementById('liffLoadingOverlay');
+	overlay.classList.remove('liff-loading-delayed');
+	overlay.style.display = 'flex';
+}
+
+function liffHideLoading() {
+	document.getElementById('liffLoadingOverlay').style.display = 'none';
 }
 </script>
 <!--end::LIFF form init-->

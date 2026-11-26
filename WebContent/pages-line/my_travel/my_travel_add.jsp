@@ -1093,8 +1093,6 @@
 <style>
 .liff-upload-badge { box-sizing: border-box; display: inline-flex; align-items: center; justify-content: center; gap: 10px; margin-left: auto; width: 84px; height: 24px; padding: 0 8px; border-radius: 5.53px; background: var(--bs-primary-bg-subtle); color: var(--bs-primary); font-weight: 600; font-size: 12px; white-space: nowrap; cursor: pointer; }
 .liff-upload-badge i { color: var(--bs-primary); }
-.liff-submit-bar { display: flex; gap: 10px; margin-top: 20px; }
-.liff-submit-bar .btn { flex: 1; }
 #travelAddForm > .card { box-shadow: 0px 3px 4px 0px #00000008; }
 #expenseModal .liff-field-value[type=number] { -moz-appearance: textfield; }
 #expenseModal .liff-field-value[type=number]::-webkit-inner-spin-button, #expenseModal .liff-field-value[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
@@ -1276,15 +1274,15 @@
 </div>
 
 
+<jsp:include page="/pages-line/common/liff_attach_files.jsp" />
+
 <script>
 	(function() {
 
 		var CAR_PRIVATE_ID = "6";
 		var RATE_PER_KM = 7;
 
-		var TRAVEL_FILE_FORBIDDEN = /[\/:*?"<>|]/;
-		var TRAVEL_FILE_IMAGE_LIMIT = 500 * 1024;
-		var TRAVEL_FILE_TOTAL_LIMIT = 2 * 1024 * 1024;
+		var TRAVEL_FILE_SUPPORTED_TEXT = 'PDF, DOC, DOCX, XLSX, PPTX, CSV, PNG, JPG, JPEG, GIF, WEBP, MP4';
 		var travelSelectedFiles = [];
 		var travelLoadingFiles = [];
 		var travelLoadingSeq = 0;
@@ -1788,7 +1786,7 @@
 			});
 
 			travelLoadingFiles.forEach(function(loading) {
-				listDiv.appendChild(makeTravelLoadingItem(loading.name));
+				listDiv.appendChild(liffFileMakeLoadingItem(loading.name));
 			});
 
 			checkSubmitState();
@@ -1808,30 +1806,12 @@
 			document.getElementById('filesUploadFileName').value = JSON.stringify(fileNames);
 		}
 
-		function makeTravelLoadingItem(name) {
-			var wrapper = document.createElement('div');
-			wrapper.className = 'd-flex w-100 align-items-center p-2 border border-gray-300 rounded bg-white';
-
-			var spinner = document.createElement('span');
-			spinner.className = 'spinner-border spinner-border-sm text-primary me-3 flex-shrink-0';
-			spinner.setAttribute('role', 'status');
-
-			var label = document.createElement('span');
-			label.className = 'text-gray-600 fs-6 text-truncate';
-			label.textContent = 'กำลังประมวลผล ' + name + '...';
-			label.style.maxWidth = '250px';
-
-			wrapper.appendChild(spinner);
-			wrapper.appendChild(label);
-			return wrapper;
-		}
-
 		function removeTravelLoading(loadingId) {
 			travelLoadingFiles = travelLoadingFiles.filter(function(l) { return l.id !== loadingId; });
 		}
 
-		function isTravelDuplicate(file) {
-			return travelSelectedFiles.some(function(f) { return f.name === file.name && f.size === file.size; });
+		function travelUsedNames() {
+			return travelSelectedFiles.map(function(f) { return f.name.toLowerCase(); });
 		}
 
 		function travelFilesTotalSize() {
@@ -1840,93 +1820,47 @@
 			return total;
 		}
 
-		function alertTravelHeic() {
-			Swal.fire({
-				icon: 'error',
-				title: 'ไม่รองรับไฟล์ HEIC',
-				html: 'ไม่รองรับไฟล์นามสกุล .heic กรุณาแปลงก่อนแนบไฟล์'
-					+ '<br><br><span class="text-muted fs-7">ไฟล์ที่รองรับ: PDF, DOC, DOCX, XLSX, PPTX, CSV, PNG, JPG, JPEG, GIF, WEBP, MP4</span>',
-				confirmButtonText: 'รับทราบ',
-				buttonsStyling: false,
-				customClass: { confirmButton: "btn btn-primary" }
-			});
-		}
-
-		function alertTravelBadName(fileName) {
-			Swal.fire({
-				icon: 'error',
-				title: 'Invalid file name',
-				text: 'File name contains invalid characters: ' + fileName,
-				confirmButtonText: 'OK',
-				buttonsStyling: false,
-				customClass: { confirmButton: "btn btn-primary" }
-			});
-		}
-
-		function isTravelHeic(file) {
-			var name = (file.name || '').toLowerCase();
-			return name.endsWith('.heic') || name.endsWith('.heif')
-				|| file.type === 'image/heic' || file.type === 'image/heif';
-		}
-
-		function compressTravelFileIfNeeded(file, loadingId) {
-			if (file.type && file.type.indexOf('image/') === 0 && file.size > TRAVEL_FILE_IMAGE_LIMIT && typeof Compressor !== 'undefined') {
-				new Compressor(file, {
-					quality: 0.8, maxWidth: 1024, maxHeight: 1024,
-					success: function(result) {
-						var compressed = new File([result], file.name, { type: result.type, lastModified: Date.now() });
-						tryAddTravelFile(compressed, loadingId);
-					},
-					error: function() {
-						tryAddTravelFile(file, loadingId);
-					}
-				});
-			} else {
-				tryAddTravelFile(file, loadingId);
-			}
-		}
-
 		function processTravelFile(file, loadingId) {
-			if (isTravelHeic(file)) {
+			if (liffIsHeicFile(file)) {
 				removeTravelLoading(loadingId);
+				updateTravelInputFiles();
 				renderTravelFileList();
-				alertTravelHeic();
+				liffFileAlertHeic(TRAVEL_FILE_SUPPORTED_TEXT);
 				return;
 			}
-			compressTravelFileIfNeeded(file, loadingId);
+			liffFileCompressImage(file, function(result) {
+				tryAddTravelFile(result, loadingId);
+			});
 		}
 
 		function tryAddTravelFile(file, loadingId) {
 			removeTravelLoading(loadingId);
-			if (travelFilesTotalSize() + file.size > TRAVEL_FILE_TOTAL_LIMIT) {
-				Swal.fire({
-					icon: 'warning',
-					title: 'ไฟล์มีขนาดเกินกำหนด',
-					text: 'ไม่สามารถแนบไฟล์ "' + file.name + '" ได้ เนื่องจากขนาดไฟล์รวมเกินขนาดสูงสุดที่กำหนดไว้',
-					confirmButtonText: 'รับทราบ',
-					buttonsStyling: false,
-					customClass: { confirmButton: "btn btn-primary" }
-				});
+			if (travelFilesTotalSize() + file.size > LIFF_FILE_TOTAL_LIMIT) {
+				liffFileAlertTooBig(file.name);
+				updateTravelInputFiles();
 				renderTravelFileList();
 				return;
 			}
-			travelSelectedFiles.push(file);
+			travelSelectedFiles.push(liffFileWithUniqueName(file, travelUsedNames(), 'travel'));
 			updateTravelInputFiles();
 			renderTravelFileList();
 		}
 
 		function addTravelFiles(fileList) {
 			Array.prototype.slice.call(fileList).forEach(function(file) {
-				if (TRAVEL_FILE_FORBIDDEN.test(file.name)) {
-					alertTravelBadName(file.name);
+				if (LIFF_FILE_FORBIDDEN.test(file.name)) {
+					liffFileAlertBadName(file.name);
+					updateTravelInputFiles();
 					return;
 				}
-				if (isTravelDuplicate(file)) {
+				if (liffIsDuplicateFile(file, travelSelectedFiles, travelLoadingFiles)) {
+					updateTravelInputFiles();
 					return;
 				}
 
+				file.sourceKey = liffFileSourceKey(file);
 				var loadingId = ++travelLoadingSeq;
-				travelLoadingFiles.push({ id: loadingId, name: file.name });
+				travelLoadingFiles.push({ id: loadingId, name: file.name, sourceKey: file.sourceKey });
 				renderTravelFileList();
 
 				processTravelFile(file, loadingId);
@@ -1946,15 +1880,14 @@
 			return res.redirected && res.url.indexOf('/pages-line/index.jsp') !== -1;
 		}
 
-		var travelSubmitting = false;
+		var isTravelSubmitting = false;
 		document.getElementById('travelAddForm').addEventListener('submit', function (e) {
 			e.preventDefault();
-			if (travelSubmitting) { return; }
-			travelSubmitting = true;
+			if (isTravelSubmitting) { return; }
+			isTravelSubmitting = true;
 
 			var form = this;
-			var spinner = $('#liffLoadingOverlay');
-			spinner.css('display', 'flex');
+			liffShowLoading();
 			btnSubmitSave.setAttribute('disabled', 'disabled');
 			updateTravelInputFiles();
 
@@ -1970,8 +1903,8 @@
 					window.location.href = res.url + separator + 'saved=add';
 				})
 				.catch(function () {
-					travelSubmitting = false;
-					spinner.css('display', 'none');
+					isTravelSubmitting = false;
+					liffHideLoading();
 					checkSubmitState();
 					liffToastError("Unable to save your travel expense. Please try again.", "Save failed");
 				});

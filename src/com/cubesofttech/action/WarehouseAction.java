@@ -1,5 +1,6 @@
 package com.cubesofttech.action;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -11,7 +12,9 @@ import org.apache.log4j.Logger;
 import org.apache.struts2.ServletActionContext;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.cubesofttech.dao.EquipmentDAO;
 import com.cubesofttech.dao.WarehouseDAO;
+import com.cubesofttech.model.Equipment;
 import com.cubesofttech.model.User;
 import com.cubesofttech.model.Warehouse;
 import com.cubesofttech.util.DateUtil;
@@ -22,6 +25,8 @@ import com.opensymphony.xwork2.ActionSupport;
 public class WarehouseAction extends ActionSupport {
 	@Autowired
 	private WarehouseDAO warehouseDAO;
+	@Autowired
+	private EquipmentDAO equipmentDAO;
 
 	private static final long serialVersionUID = 1L;
 	HttpServletRequest request = ServletActionContext.getRequest();
@@ -280,6 +285,44 @@ public class WarehouseAction extends ActionSupport {
 			}
 
 			List<Warehouse> childWarehouses = warehouseDAO.findByParentId(warehouseId);
+			if (childWarehouses == null) {
+				childWarehouses = new ArrayList<Warehouse>();
+			}
+
+			// กันลบคลังที่ยังมีเครื่องอยู่ (คลังนี้ + คลังลูกที่จะถูกลบตามไปด้วย)
+			// ไม่งั้น equipment.warehouse_id จะค้างเป็นเลขคลังที่ไม่มีแล้ว (โผล่เป็น "คลัง #N (ไม่พบในระบบ)")
+			// เครื่องเลิกใช้ (S, Z, L) ไม่นับ เพราะไม่ถูกนับเป็นของในคลังอยู่แล้ว
+			List<Long> idsToDelete = new ArrayList<Long>();
+			idsToDelete.add(warehouseId);
+			for (Warehouse child : childWarehouses) {
+				if (child != null && child.getWarehouseId() != null) {
+					idsToDelete.add(child.getWarehouseId());
+				}
+			}
+			List<Equipment> equipmentInWarehouse = equipmentDAO.findByWarehouseIds(idsToDelete);
+			int equipmentCount = 0;
+			if (equipmentInWarehouse != null) {
+				for (Equipment eq : equipmentInWarehouse) {
+					if (eq == null) {
+						continue;
+					}
+					String eqStatus = (eq.getStatus() != null) ? eq.getStatus().trim() : null;
+					if (eqStatus != null && EquipmentDAO.RETIRED_STATUSES.contains(eqStatus)) {
+						continue;
+					}
+					equipmentCount++;
+				}
+			}
+			if (equipmentCount > 0) {
+				log.warn("Cannot delete warehouse " + warehouseId + ": still has " + equipmentCount + " equipment");
+				response.setStatus(HttpServletResponse.SC_CONFLICT);
+				Map<String, Object> error = new HashMap<>();
+				error.put("message", "ลบไม่ได้ เพราะยังมีเครื่อง " + equipmentCount
+						+ " เครื่องอยู่ในที่เก็บนี้ (รวมที่เก็บย่อย) กรุณาย้ายเครื่องออกก่อน");
+
+				new ObjectMapper().writeValue(response.getWriter(), error);
+				return NONE;
+			}
 
 			for (Warehouse child : childWarehouses) {
 				warehouseDAO.delete(child);

@@ -57,6 +57,19 @@
 			value="/pages-back/table/demo_table.jsp" />
 	</definition>
 
+	<!-- Assets -->
+	<definition name="assetList" extends="baseLayout">
+		<put-attribute name="title" value="Assets" />
+		<put-attribute name="body"
+			value="/pages-back/asset/asset_list.jsp" />
+	</definition>
+
+	<definition name="assetEdit" extends="baseLayout">
+		<put-attribute name="title" value="Asset" />
+		<put-attribute name="body"
+			value="/pages-back/asset/asset_edit.jsp" />
+	</definition>
+
 	<!-- Equipment List -->
 	<definition name="equipmentList" extends="baseLayout">
 		<put-attribute name="title" value="Equipment List" />
@@ -886,6 +899,12 @@
 			value="/pages-back/stock/stock_balance.jsp" />
 	</definition>
 
+	<definition name="stockHistory" extends="baseLayout">
+		<put-attribute name="title" value="Stock - History" />
+		<put-attribute name="body"
+			value="/pages-back/stock/stock_history.jsp" />
+	</definition>
+
 	<!-- Equipment ใช้หน้า settings คนละไฟล์กับ Consumables เพราะยอดคงเหลือ
 	     คิดจากเครื่องจริงในตาราง equipment ไม่ได้คิดจากตาราง stock -->
 	<definition name="stockEquEdit" extends="baseLayout">
@@ -901,7 +920,7 @@
 	</definition>
 
 	<definition name="stockOffsList" extends="baseLayout">
-		<put-attribute name="title" value="Stock - Office Supplies" />
+		<put-attribute name="title" value="Stock - Assets" />
 		<put-attribute name="body"
 			value="/pages-back/stock/stock_offs_list.jsp" />
 	</definition>

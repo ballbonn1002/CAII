@@ -403,7 +403,7 @@ String targetURL = Constant.getWebContext2() + "/line_authorization?token=" + to
 										<span class="path3"></span><span class="path4"></span>
 										<span class="path5"></span>
 								</i>
-							</span> <span class="menu-title">Office Supplies</span>
+							</span> <span class="menu-title">Assets</span>
 							</i>
 							</a>
 						</div>
@@ -462,7 +462,7 @@ String targetURL = Constant.getWebContext2() + "/line_authorization?token=" + to
 									<a class="menu-link" href="stock_offs_list"
 										data-route="stock_offs_list"> <span class="menu-icon">
 											<span class="bullet bullet-dot"></span>
-									</span> <span class="menu-title">Office Supplies</span>
+									</span> <span class="menu-title">Assets</span>
 									</a>
 								</div>								
 							</div>
@@ -978,33 +978,34 @@ body { padding-bottom: calc(90px + env(safe-area-inset-bottom)); }
 	color: var(--bs-gray-500);
 	text-decoration: none;
 	border-top: 2px solid transparent;
+	transition: none;
 }
 .liff-nav a i { font-size: 24px; }
-.liff-nav a.active { color: var(--bs-primary); border-top-color: var(--bs-primary); }
-.liff-nav a.active i { color: var(--bs-primary); }
+.liff-nav a.active { color: var(--bs-red); border-top-color: var(--bs-red); }
+.liff-nav a.active i { color: var(--bs-red); }
 </style>
 
 <%-- Note: line_profile: not now --%>
 <nav class="liff-nav">
 	<a href="line_check_in_out" data-route="line_check_in_out">
-		<i class="ki-duotone ki-home-2"><span class="path1"></span><span class="path2"></span></i>
-		<span>Home</span>
+		<i class="ki-duotone ki-time"><span class="path1"></span><span class="path2"></span></i>
+		<span>IN/OUT</span>
 	</a>
 	<a href="line_Calendar_Checklist" data-route="line_Calendar_Checklist">
 		<i class="ki-duotone ki-calendar-tick"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span><span class="path5"></span><span class="path6"></span></i>
 		<span>Check List</span>
 	</a>
-	<a href="line_new_myleave_list?Id=${onlineUser.id}" data-route="line_new_myleave_list">
+	<a href="line_my_profile" data-route="line_my_profile,line_cubeTokenRankingPage">
+		<i class="ki-duotone ki-cube-2"><span class="path1"></span><span class="path2"></span><span class="path3"></span></i>
+		<span>Home</span>
+	</a>
+	<a href="line_new_myleave_list?Id=${onlineUser.id}" data-route="line_new_myleave_list" data-loading-now>
 		<i class="ki-duotone ki-pulse"><span class="path1"></span><span class="path2"></span></i>
 		<span>Leave</span>
 	</a>
 	<a href="line_my_travel" data-route="line_my_travel">
 		<i class="ki-duotone ki-delivery-time"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span><span class="path5"></span></i>
 		<span>Travel</span>
-	</a>
-	<a href="my_profile" data-route="my_profile">
-		<i class="ki-duotone ki-profile-circle"><span class="path1"></span><span class="path2"></span><span class="path3"></span></i>
-		<span>Profile</span>
 	</a>
 </nav>
 <div id="liffNavOverlay" class="liff-loading-overlay liff-loading-delayed" style="z-index:99;">
@@ -1017,7 +1018,8 @@ body { padding-bottom: calc(90px + env(safe-area-inset-bottom)); }
 		var cur = (location.pathname.split('/').pop() || 'index')
 			.replace(/\.(jsp|action|html|php)$/i, '');
 		$('.liff-nav a[data-route]').each(function () {
-			$(this).toggleClass('active', new RegExp('^' + $(this).data('route') + '$', 'i').test(cur));
+			var list = $(this).data('route').toString().split(',');
+			$(this).toggleClass('active', list.some(function (s) { return new RegExp('^' + s.trim() + '$', 'i').test(cur); }));
 		});
 	}
 	$(function () {
@@ -1031,7 +1033,7 @@ body { padding-bottom: calc(90px + env(safe-area-inset-bottom)); }
 		}
 		$('.liff-nav a').removeClass('active');
 		$(this).addClass('active');
-		$('#liffNavOverlay').css('display', 'flex');
+		$('#liffNavOverlay').toggleClass('liff-loading-delayed', !$(this).is('[data-loading-now]')).css('display', 'flex');
 	});
 	window.addEventListener('pageshow', function (e) {
 		if (e.persisted) {

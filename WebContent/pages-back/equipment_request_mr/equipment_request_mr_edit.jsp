@@ -292,7 +292,7 @@
 																<span class="path1"></span><span class="path2"></span>
 																<span class="path3"></span><span class="path4"></span>
 																<span class="path5"></span>
-															</i><span>Office Supplies</span>
+															</i><span>Assets</span>
 														</c:if>
 													</div>
 												</span>
@@ -711,7 +711,7 @@
 																	<span class="path1"></span><span class="path2"></span>
 																	<span class="path3"></span><span class="path4"></span>
 																	<span class="path5"></span>
-																</i><span>Office Supplies</span>
+																</i><span>Assets</span>
 															</c:if>
 														</div>
 													</span>
@@ -822,7 +822,7 @@
 <script type="text/javascript">
 	const ctx = "${pageContext.request.contextPath}";
 	const currentUserDisplay = "${fn:escapeXml(loginUser.employeeId)} - ${fn:escapeXml(loginUser.nameEN)}";
-	const ITEM_TYPE_LABELS = { '1': 'Equipment', '2': 'Consumables', '3': 'Accessory', '4': 'Office supplies' };
+	const ITEM_TYPE_LABELS = { '1': 'Equipment', '2': 'Consumables', '3': 'Accessory', '4': 'Assets' };
 
 	var requesterSign = null;
 	var receiverCard = document.getElementById('receiverCard1');
@@ -837,7 +837,7 @@
 			icon: '<i class="ki-duotone ki-lots-shopping fs-2 text-orange"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span><span class="path5"></span><span class="path6"></span><span class="path7"></span><span class="path8"></span></i>' },
 		'3': { label: 'Accessory', color: 'text-teal',
 			icon: '<i class="ki-duotone ki-medal-star fs-2 text-teal"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span></i>' },
-		'4': { label: 'Office supplies', color: 'text-success',
+		'4': { label: 'Assets', color: 'text-success',
 			icon: '<i class="ki-duotone ki-parcel fs-2 text-success"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span><span class="path5"></span></i>' }
 	};
 

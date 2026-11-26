@@ -19,7 +19,7 @@
 --%>
 <c:set var="isEquipment" value="${product.productType eq '1'}" />
 <%-- ปุ่ม Generate QR ใช้ได้เฉพาะ Consumables (2) / Accessories (3) ที่หน้าสแกน (QrService รหัส P) รองรับ
-     Equipment ใช้ QR รายเครื่อง (รหัส E) ที่หน้า equipment_edit ส่วน Office Supplies (4) รอเมนู Assets
+     Equipment ใช้ QR รายเครื่อง (รหัส E) ที่หน้า equipment_edit ส่วน Assets (4) ใช้ QR รายชิ้น (รหัส A) ที่หน้า asset_edit
      qrBaseUrl / qrLinkConfigured มาจาก ProductAction.showProductEditPage() --%>
 <c:set var="qrEnabled" value="${product.productType eq '2' or product.productType eq '3'}" />
 <c:set var="urlPrefix" value="${isEquipment ? 'stock_equ' : 'product'}" />
@@ -39,7 +39,7 @@
                     </ul>
                 </div>
 
-                <div class="d-flex align-items-center gap-3">
+                <div class="d-flex align-items-center flex-wrap gap-3">
                     <a href="${urlPrefix}_edit?productId=${product.productId}" class="btn btn-light-primary d-inline-flex align-items-center px-5 py-3 active">
                         <i class="ki-duotone ki-setting-2 fs-3 me-2"><span class="path1"></span><span class="path2"></span></i>
                         <span class="fw-semibold">Product</span>
@@ -58,6 +58,11 @@
                     <a href="${balanceUrl}?productId=${product.productId}" class="btn btn-light d-inline-flex align-items-center px-5 py-3">
                         <i class="ki-duotone ki-cube-2 fs-3 me-2 text-gray-500"><span class="path1"></span><span class="path2"></span><span class="path3"></span></i>
                         <span class="fw-semibold text-gray-700">Stock Balance</span>
+                    </a>
+                    <%-- ประวัติรับเข้า/เบิกออก: หน้า stock_history รองรับทุกประเภท (Equipment แสดงตามเครื่องที่เพิ่มเข้ามา) --%>
+                    <a href="stock_history?productId=${product.productId}" class="btn btn-light d-inline-flex align-items-center px-5 py-3">
+                        <i class="ki-duotone ki-time fs-3 me-2 text-gray-500"><span class="path1"></span><span class="path2"></span></i>
+                        <span class="fw-semibold text-gray-700">History Stock</span>
                     </a>
                 </div>
             </div>
@@ -85,7 +90,7 @@
                                                             data-qr-value="${fn:escapeXml(qrBaseUrl)}/qr?c=P${product.productId}"
                                                             data-qr-label="P${product.productId} : ${fn:escapeXml(fn:trim(product.productName))}"
                                                             data-qr-configured="${qrLinkConfigured}" title="Generate QR">
-                                                        <i class="bi bi-qr-code fs-3"></i>
+                                                        <i class="ki-duotone ki-scan-barcode fs-3"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span><span class="path5"></span><span class="path6"></span><span class="path7"></span><span class="path8"></span></i>
                                                     </button>
                                                 </c:if>
                                                 <div class="form-check form-switch form-check-custom form-check-solid">
@@ -138,7 +143,7 @@
                                                             <option value="1" <c:if test="${product.productType eq '1'}">selected</c:if>>Equipment</option>
                                                             <option value="2" <c:if test="${product.productType eq '2'}">selected</c:if>>Consumables</option>
                                                             <option value="3" <c:if test="${product.productType eq '3'}">selected</c:if>>Accessories</option>
-                                                            <option value="4" <c:if test="${product.productType eq '4'}">selected</c:if>>Office Supplies</option>
+                                                            <option value="4" <c:if test="${product.productType eq '4'}">selected</c:if>>Assets</option>
                                                         </c:otherwise>
                                                     </c:choose>
                                                 </select>
@@ -567,7 +572,7 @@
                                                                         data-qr-value="${fn:escapeXml(qrBaseUrl)}/qr?c=P${sub.productId}"
                                                                         data-qr-label="P${sub.productId} : ${fn:escapeXml(fn:trim(product.productName))} (${fn:escapeXml(fn:trim(sub.productName))})"
                                                                         data-qr-configured="${qrLinkConfigured}" title="Generate QR">
-                                                                    <i class="bi bi-qr-code fs-3"></i>
+                                                                    <i class="ki-duotone ki-scan-barcode fs-3"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span><span class="path5"></span><span class="path6"></span><span class="path7"></span><span class="path8"></span></i>
                                                                 </button>
                                                             </c:if>
                                                             <button type="button" class="btn btn-icon btn-sm btn-light-primary me-1 btn-edit-sub" title="Edit">
@@ -682,6 +687,11 @@
                         </div>
                     </div>
                 </div>
+
+                <%-- การ์ด Assets: ผูก / เอา Asset ออกจากรุ่น (แสดงเฉพาะ Product ประเภท 4 และผู้มีสิทธิ์ assetlist.view) --%>
+                <c:if test="${product.productType eq '4'}">
+                    <jsp:include page="product_assets_card.jsp" />
+                </c:if>
 
                 <%-- ปุ่ม Back กลับไปหน้ารายการ Product --%>
                 <div class="d-flex justify-content-start mt-8">

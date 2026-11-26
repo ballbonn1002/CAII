@@ -485,7 +485,7 @@
 	                color: "text-success"
 	            },
 	            "4": {
-	                label: "Office Supplies",
+	                label: "Assets",
 	                icon: "ki-parcel",
 	                color: "text-info"
 	            }

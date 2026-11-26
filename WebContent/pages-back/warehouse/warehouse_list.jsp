@@ -330,7 +330,7 @@
 				                	data-qr-value="\${QR_BASE_URL}/qr?c=W\${node.id}"
 				                	data-qr-label="W\${node.id} : \${warehousePath(node)}"
 				                	data-qr-configured="\${QR_CONFIGURED}">
-				                	<i class="bi bi-qr-code fs-3"></i>
+				                	<i class="ki-duotone ki-scan-barcode fs-3"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span><span class="path5"></span><span class="path6"></span><span class="path7"></span><span class="path8"></span></i>
 			                	</button>
 			                	<button class="btn btn-icon btn-light-success w-35px h-35px js-create-btn" data-id="\${node.id}">
 				                	<i class="ki-duotone ki-plus fs-2">

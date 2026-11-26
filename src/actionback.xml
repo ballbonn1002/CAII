@@ -64,6 +64,60 @@
 			<result name="error">/index.jsp</result>
 		</action>
 
+		<!-- Assets (เมนูใหม่ แทน Office Supplies) - ทุก action เช็คสิทธิ์ assetlist.view ใน AssetAction เอง -->
+		<action name="asset_list"
+			class="com.cubesofttech.action.AssetAction" method="assetList">
+			<result name="success" type="tiles">assetList</result>
+			<result name="error">/index.jsp</result>
+			<result name="login" type="redirect">/index.jsp</result>
+			<result name="forbidden" type="redirect">/check_in_out</result>
+		</action>
+		<action name="asset_add"
+			class="com.cubesofttech.action.AssetAction" method="assetAdd">
+			<result name="success" type="tiles">assetEdit</result>
+			<result name="error">/index.jsp</result>
+			<result name="login" type="redirect">/index.jsp</result>
+			<result name="forbidden" type="redirect">/check_in_out</result>
+		</action>
+		<action name="asset_edit"
+			class="com.cubesofttech.action.AssetAction" method="assetEdit">
+			<result name="success" type="tiles">assetEdit</result>
+			<result name="list" type="redirect">/asset_list</result>
+			<result name="error">/index.jsp</result>
+			<result name="login" type="redirect">/index.jsp</result>
+			<result name="forbidden" type="redirect">/check_in_out</result>
+		</action>
+		<!-- invalid = ข้อมูลในฟอร์มไม่ผ่าน แสดงฟอร์มเดิม / input = Struts ตีกลับเอง (เช่น ไฟล์ใหญ่เกิน) -->
+		<action name="asset_save"
+			class="com.cubesofttech.action.AssetAction" method="assetSave">
+			<result name="success" type="redirect">/asset_list</result>
+			<result name="list" type="redirect">/asset_list</result>
+			<result name="invalid" type="tiles">assetEdit</result>
+			<result name="input" type="redirect">/asset_list</result>
+			<result name="error">/index.jsp</result>
+			<result name="login" type="redirect">/index.jsp</result>
+			<result name="forbidden" type="redirect">/check_in_out</result>
+		</action>
+		<action name="asset_delete"
+			class="com.cubesofttech.action.AssetAction" method="assetDelete">
+			<result name="success" type="redirect">/asset_list</result>
+			<result name="error">/index.jsp</result>
+			<result name="login" type="redirect">/index.jsp</result>
+			<result name="forbidden" type="redirect">/check_in_out</result>
+		</action>
+		<!-- Assets: ผูก / เอา Asset ออกจากรุ่น (AJAX ตอบ JSON, เช็คสิทธิ์ assetlist.view ใน AssetAction) -->
+		<action name="asset_link_save"
+			class="com.cubesofttech.action.AssetAction" method="assetLinkSave">
+		</action>
+		<action name="asset_unlink_save"
+			class="com.cubesofttech.action.AssetAction" method="assetUnlinkSave">
+		</action>
+		<!-- Assets: ย้ายที่หลายชิ้นพร้อมกัน + เก็บประวัติ (AJAX ตอบ JSON) -->
+		<action name="asset_move_save"
+			class="com.cubesofttech.action.AssetAction" method="assetMoveSave">
+		</action>
+		<!-- Assets -->
+
 		<!-- Equipment List -->
 		<action name="equipment_list"
 			class="com.cubesofttech.action.EquipmentAction" method="table">
@@ -2677,6 +2731,14 @@
 			<result name="success" type="tiles">stockBalance</result>
 			<result name="error">/index.jsp</result>
 		</action>
+
+		<!-- Stock History (ประวัติรับเข้า/เบิกออก) แยกจากหน้า Stock Balance -->
+		<action name="stock_history"
+			class="com.cubesofttech.action.ProductAction" method="showStockHistoryPage">
+			<result name="success" type="tiles">stockHistory</result>
+			<result name="error">/index.jsp</result>
+		</action>
+		<!-- Stock History -->
 
 		<!-- Add Stock (บันทึกรับเข้า/Good Receipt) จากหน้า Stock Balance -->
 		<action name="stock_add"

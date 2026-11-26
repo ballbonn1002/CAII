@@ -244,6 +244,20 @@
 
 		<!-- My Travel =========================================================================================================== -->
 		
+		<!-- My Profile =========================================================================================================== -->
+		<action name="line_my_profile"
+			class="com.cubesofttech.action.UserAction" method="my_profile">
+			<result name="success" type="tiles">line_my_profile</result>
+			<result name="error">/pages-line/index.jsp</result>
+		</action>
+
+		<action name="line_cubeTokenRankingPage"
+			class="com.cubesofttech.action.CubeTokenAction" method="cubeTokenRankingPage">
+			<result name="success" type="tiles">line_cubeTokenRanking</result>
+			<result name="error">/pages-line/index.jsp</result>
+		</action>
+		<!-- My Profile =========================================================================================================== -->
+
 		<!-- POST /webhook/LineOA/LineLiff -->
 		<action name="line_checkAccount" class="com.cubesofttech.actionline.LineLoginAction" method="">
 			<result name="success" type="tiles">line_bind_account</result>
