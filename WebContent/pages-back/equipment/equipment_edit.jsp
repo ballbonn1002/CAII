@@ -51,7 +51,7 @@
                                                     data-qr-value="${fn:escapeXml(qrLink)}"
                                                     data-qr-label="${fn:escapeXml(fn:trim(qrLabelDefault))}"
                                                     data-qr-configured="${qrLinkConfigured}">
-                                                <i class="bi bi-qr-code-scan me-2"></i>Generate QR Code
+                                                <i class="ki-duotone ki-scan-barcode me-2"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span><span class="path5"></span><span class="path6"></span><span class="path7"></span><span class="path8"></span></i>Generate QR Code
                                             </button>
                                         </div>
 

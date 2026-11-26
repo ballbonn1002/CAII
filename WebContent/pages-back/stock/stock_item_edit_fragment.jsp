@@ -90,7 +90,7 @@
                                                             data-qr-value="${fn:escapeXml(qrBaseUrl)}/qr?c=P${product.productId}"
                                                             data-qr-label="P${product.productId} : ${fn:escapeXml(fn:trim(product.productName))}"
                                                             data-qr-configured="${qrLinkConfigured}" title="Generate QR">
-                                                        <i class="bi bi-qr-code fs-3"></i>
+                                                        <i class="ki-duotone ki-scan-barcode fs-3"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span><span class="path5"></span><span class="path6"></span><span class="path7"></span><span class="path8"></span></i>
                                                     </button>
                                                 </c:if>
                                                 <div class="form-check form-switch form-check-custom form-check-solid">
@@ -572,7 +572,7 @@
                                                                         data-qr-value="${fn:escapeXml(qrBaseUrl)}/qr?c=P${sub.productId}"
                                                                         data-qr-label="P${sub.productId} : ${fn:escapeXml(fn:trim(product.productName))} (${fn:escapeXml(fn:trim(sub.productName))})"
                                                                         data-qr-configured="${qrLinkConfigured}" title="Generate QR">
-                                                                    <i class="bi bi-qr-code fs-3"></i>
+                                                                    <i class="ki-duotone ki-scan-barcode fs-3"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span><span class="path5"></span><span class="path6"></span><span class="path7"></span><span class="path8"></span></i>
                                                                 </button>
                                                             </c:if>
                                                             <button type="button" class="btn btn-icon btn-sm btn-light-primary me-1 btn-edit-sub" title="Edit">
