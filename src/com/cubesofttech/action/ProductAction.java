@@ -1586,37 +1586,16 @@ public class ProductAction extends ActionSupport {
     }
 
     /**
-     * หน้า Stock Balance ของ consumable หนึ่งตัว
-     *  - historiesIn : ประวัติรับเข้า (IN) จากตาราง stock โดยตรง (ไม่ผ่าน good_receipt แล้ว)
+     * หน้า Stock Balance ของ consumable หนึ่งตัว (ประวัติรับเข้าแยกไปอยู่หน้า Stock History แล้ว)
      *  - subProducts : รายการ sub product จากตาราง product
      *  - warehouses  : คลังจากตาราง warehouse
      *  - balances / sizeSummaries : ยอดรับเข้าสรุปตาม sub product x warehouse (คำนวณจาก IN)
      */
     public String showStockBalancePage() {
         try {
-            if (getOnlineUser() == null) {
-                log.warn("showStockBalancePage: no online user in session");
-                return ERROR;
-            }
-            if (productId == null) {
-                log.warn("showStockBalancePage: productId is required");
-                return ERROR;
-            }
-
-            Product product = productDAO.findById(productId);
+            // ตรวจ login / productId / ชนิดสินค้า ใช้ชุดเดียวกับหน้า Stock History (null = เข้าหน้านี้ไม่ได้)
+            Product product = loadConsumableStockProduct("showStockBalancePage", false);
             if (product == null) {
-                log.warn("showStockBalancePage: product not found, productId=" + productId);
-                return ERROR;
-            }
-            if (!isEditableStockItem(product)) {
-                log.warn("showStockBalancePage: not a consumable, productId=" + productId
-                        + ", productType=" + product.getProductType());
-                return ERROR;
-            }
-            // Equipment ยอดคงเหลือคิดจากเครื่องจริง ไม่ใช่จากตาราง stock - ต้องไป stock_equ_balance
-            // ถ้าปล่อยผ่าน หน้านี้จะโชว์ยอด 0 ทั้งที่มีเครื่องอยู่ ซึ่งทำให้เข้าใจผิด
-            if ("1".equals(product.getProductType().trim())) {
-                log.warn("showStockBalancePage: equipment must use stock_equ_balance, productId=" + productId);
                 return ERROR;
             }
 
@@ -1656,15 +1635,13 @@ public class ProductAction extends ActionSupport {
                 }
             }
 
-            // ความเคลื่อนไหว "รับเข้า" (IN) จากตาราง stock โดยตรง (ใช้กับ History + รายการแยกคลัง)
+            // ความเคลื่อนไหว "รับเข้า" (IN) จากตาราง stock โดยตรง (ใช้คิดยอดแยกคลัง)
+            // ประวัติรับเข้า (History) ย้ายไปอยู่หน้า stock_history แล้ว - ดู showStockHistoryPage()
             // ไม่ผ่าน good_receipt แล้ว (เปลี่ยนจากเดิม 26/08/2026 - ดู stockAdd)
             List<Stock> inRows = stockDAO.findByProductIds(balanceGroupIds);
 
-            Map<String, String> subNameById = buildSubProductNameMap(balanceGroups);
             Map<String, String> whNameById = buildWarehouseNameMap(warehouses);
-            Map<String, String> userNameById = buildUserDisplayMap(inRows);
 
-            List<Map<String, Object>> historiesIn = buildHistoriesIn(inRows, subNameById, whNameById, userNameById);
             List<Map<String, Object>> balances = buildBalances(balanceGroups, warehouses, inRows, whNameById, reconcileBySub);
             List<Map<String, Object>> sizeSummaries = buildSizeSummaries(balanceGroups, reconcileBySub);
 
@@ -1672,9 +1649,6 @@ public class ProductAction extends ActionSupport {
             request.setAttribute("subProducts", subProducts);
             request.setAttribute("warehouses", warehouses);
             request.setAttribute("units", units);
-            request.setAttribute("historiesIn", historiesIn);
-            // ยังไม่มีแหล่งข้อมูลฝั่งเบิกออก (OUT) - ส่ง list ว่างไปก่อน
-            request.setAttribute("historiesOut", new ArrayList<Map<String, Object>>());
             request.setAttribute("balances", balances);
             request.setAttribute("sizeSummaries", sizeSummaries);
 
@@ -1686,7 +1660,142 @@ public class ProductAction extends ActionSupport {
     }
 
     /**
-     * บันทึกรับเข้าสต็อก (ปุ่ม Add Stock ในหน้า Stock Balance ของ consumable/accessory/office supply)
+     * หน้า Stock History ของ consumable หนึ่งตัว (แยกจากหน้า Stock Balance)
+     *  - historiesIn  : ประวัติรับเข้า (IN) จากตาราง stock โดยตรง (ใช้ buildHistoriesIn ตัวเดียวกับที่เคยอยู่ในหน้า Balance)
+     *                   ถ้าเป็น Equipment ใช้ buildEquipmentHistoriesIn() แทน (ไม่มีตาราง stock) + isEquipmentHistory = true
+     *  - historiesOut : ยังไม่มีแหล่งข้อมูลฝั่งเบิกออก - ส่ง list ว่างไปก่อน
+     */
+    public String showStockHistoryPage() {
+        try {
+            Product product = loadConsumableStockProduct("showStockHistoryPage", true);
+            if (product == null) {
+                return ERROR;
+            }
+
+            String productIdStr = String.valueOf(productId);
+
+            // กลุ่มที่ใช้ดึงประวัติ: sub product เรียงตาม sequence / ไม่มี sub = ตัวแม่เอง (เหมือนหน้า Stock Balance)
+            List<Product> subProducts = productDAO.findByParentProductIds(
+                    Collections.singletonList(productIdStr));
+            if (subProducts == null) {
+                subProducts = new ArrayList<Product>();
+            }
+            sortSubProductsBySequence(subProducts);
+
+            // Equipment ไม่มีตาราง stock - สร้างประวัติรับเข้าจากเครื่องจริง (ดู buildEquipmentHistoriesIn)
+            if (isEquipmentProduct(product)) {
+                List<String> targetIds = new ArrayList<String>();
+                targetIds.add(productIdStr);
+                for (Product sub : subProducts) {
+                    if (sub != null && sub.getProductId() != null) {
+                        targetIds.add(String.valueOf(sub.getProductId()));
+                    }
+                }
+                List<Equipment> equipments = equipmentDAO.findByProductIds(targetIds);
+                if (equipments == null) {
+                    equipments = new ArrayList<Equipment>();
+                }
+
+                // หน่วย = unit หลักของ product (ตัวแรกตาม sequence) ไม่มีใช้ "ตัว"
+                String unitName = "ตัว";
+                List<UnitOfMeasure> equUnits = unitOfMeasureDAO.findByProductId(productIdStr);
+                if (equUnits != null && !equUnits.isEmpty() && equUnits.get(0) != null
+                        && !isBlank(equUnits.get(0).getUnitName())) {
+                    unitName = equUnits.get(0).getUnitName();
+                }
+
+                List<String> equUserIds = new ArrayList<String>();
+                for (Equipment eq : equipments) {
+                    if (eq != null) {
+                        equUserIds.add(str(eq.getUserCreate()));
+                    }
+                }
+                Map<String, String> equUserNameById = buildUserDisplayMapByIds(equUserIds);
+
+                request.setAttribute("product", product);
+                request.setAttribute("isEquipmentHistory", Boolean.TRUE);
+                request.setAttribute("historiesIn", buildEquipmentHistoriesIn(product, equipments, unitName, equUserNameById));
+                request.setAttribute("historiesOut", new ArrayList<Map<String, Object>>());
+                return SUCCESS;
+            }
+
+            List<Product> historyGroups = subProducts.isEmpty() ? Collections.singletonList(product) : subProducts;
+
+            List<String> groupIds = new ArrayList<String>();
+            for (Product g : historyGroups) {
+                if (g != null && g.getProductId() != null) {
+                    groupIds.add(String.valueOf(g.getProductId()));
+                }
+            }
+
+            List<Stock> inRows = stockDAO.findByProductIds(groupIds);
+            if (inRows == null) {
+                inRows = new ArrayList<Stock>();
+            }
+            List<Warehouse> warehouses = warehouseDAO.findAll();
+            if (warehouses == null) {
+                warehouses = new ArrayList<Warehouse>();
+            }
+
+            Map<String, String> subNameById = buildSubProductNameMap(historyGroups);
+            Map<String, String> whNameById = buildWarehouseNameMap(warehouses);
+            Map<String, String> userNameById = buildUserDisplayMap(inRows);
+
+            List<Map<String, Object>> historiesIn = buildHistoriesIn(inRows, subNameById, whNameById, userNameById);
+            if (historiesIn == null) {
+                historiesIn = new ArrayList<Map<String, Object>>();
+            }
+
+            request.setAttribute("product", product);
+            request.setAttribute("isEquipmentHistory", Boolean.FALSE);
+            request.setAttribute("historiesIn", historiesIn);
+            // ยังไม่มีแหล่งข้อมูลฝั่งเบิกออก (OUT) - ส่ง list ว่างไปก่อน
+            request.setAttribute("historiesOut", new ArrayList<Map<String, Object>>());
+
+            return SUCCESS;
+        } catch (Exception e) {
+            log.error("showStockHistoryPage failed, productId=" + productId, e);
+            return ERROR;
+        }
+    }
+
+    /**
+     * โหลดและตรวจ product สำหรับหน้า Stock Balance / Stock History (ใช้ร่วมกัน 2 หน้า)
+     * คืน null เมื่อเข้าหน้านี้ไม่ได้: ไม่ได้ login, ไม่มี productId, ไม่พบ product,
+     * ไม่ใช่ item หลักของ stock หรือเป็น Equipment (ต้องใช้ stock_equ_balance)
+     * allowEquipment = true ใช้กับหน้า Stock History ที่รองรับ Equipment ด้วย (หน้า Balance ต้องส่ง false)
+     */
+    private Product loadConsumableStockProduct(String caller, boolean allowEquipment) throws Exception {
+        if (getOnlineUser() == null) {
+            log.warn(caller + ": no online user in session");
+            return null;
+        }
+        if (productId == null) {
+            log.warn(caller + ": productId is required");
+            return null;
+        }
+
+        Product product = productDAO.findById(productId);
+        if (product == null) {
+            log.warn(caller + ": product not found, productId=" + productId);
+            return null;
+        }
+        if (!isEditableStockItem(product)) {
+            log.warn(caller + ": not a consumable, productId=" + productId
+                    + ", productType=" + product.getProductType());
+            return null;
+        }
+        // Equipment ยอดคงเหลือคิดจากเครื่องจริง ไม่ใช่จากตาราง stock - ต้องไป stock_equ_balance
+        // ถ้าปล่อยผ่าน หน้านี้จะโชว์ยอด 0 ทั้งที่มีเครื่องอยู่ ซึ่งทำให้เข้าใจผิด
+        if (!allowEquipment && "1".equals(product.getProductType().trim())) {
+            log.warn(caller + ": equipment must use stock_equ_balance, productId=" + productId);
+            return null;
+        }
+        return product;
+    }
+
+    /**
+     * บันทึกรับเข้าสต็อก (ปุ่ม Add Stock ในหน้า Stock Balance ของ consumable/accessory)
      * ลงบัญชีตรงที่ตาราง stock เท่านั้น (action_type = direct_issue) - ไม่สร้างเอกสาร good_receipt /
      * good_receipt_detail แล้ว (เปลี่ยนจากเดิม 26/08/2026 ตามที่ระบุว่าให้บันทึกลงแค่ตาราง stock)
      * - รองรับทั้งกรณีมี sub product (amount_&lt;subProductId&gt; ต่อแถว) และไม่มี sub product
@@ -2064,15 +2173,24 @@ public class ProductAction extends ActionSupport {
      * ดึงเฉพาะ id ที่ไม่ซ้ำจาก stockRows (findById รายตัว) เพื่อจำกัดจำนวน query
      */
     private Map<String, String> buildUserDisplayMap(List<Stock> stockRows) throws Exception {
+        List<String> userIds = new ArrayList<String>();
+        if (stockRows != null) {
+            for (Stock row : stockRows) {
+                if (row != null) {
+                    userIds.add(str(row.getUserCreate()));
+                }
+            }
+        }
+        return buildUserDisplayMapByIds(userIds);
+    }
+
+    /** เหมือน buildUserDisplayMap แต่รับรายการ user id ตรงๆ (ใช้ร่วมกับประวัติของ Equipment) */
+    private Map<String, String> buildUserDisplayMapByIds(List<String> userIds) throws Exception {
         Map<String, String> map = new HashMap<String, String>();
-        if (stockRows == null) {
+        if (userIds == null) {
             return map;
         }
-        for (Stock row : stockRows) {
-            if (row == null) {
-                continue;
-            }
-            String userId = str(row.getUserCreate());
+        for (String userId : userIds) {
             if (isBlank(userId) || map.containsKey(userId)) {
                 continue;
             }
@@ -2097,6 +2215,89 @@ public class ProductAction extends ActionSupport {
             map.put(String.valueOf(wh.getWarehouseId()), wh.getWarehouseName());
         }
         return map;
+    }
+
+    /**
+     * ประวัติรับเข้า (IN) ของ Equipment - จัดกลุ่มชั่วคราวจากเครื่องที่เพิ่มเข้ามา
+     * (ตอนนี้ Equipment ยังไม่มีใบรับเข้า: 1 บล็อก = เครื่องที่ product_id + ชื่อ + ผู้บันทึก + เวลา (ระดับนาที) เดียวกัน)
+     * TODO: เมื่อ Equipment มีใบรับเข้า (good_receipt) ให้แก้เฉพาะ method นี้ - จัดกลุ่มตามใบรับเข้า และใส่ refNo = good_receipt.gr_ref
+     * JSP (stock_history.jsp) ไม่ต้องแก้ เพราะ refNo ว่างอยู่ตอนนี้จึงซ่อน badge เลขอ้างอิงไว้เอง
+     * ผลลัพธ์ต่อบล็อก: {name, amount, unit, user, date, refNo, productTypeLabel, equipmentType, items:[itemNo]}
+     * บล็อกเรียงล่าสุดก่อน นับเครื่องทุกสถานะ (รวมปลดระวาง) เพราะเป็นประวัติรับเข้า ไม่ใช่ยอดคงเหลือ
+     */
+    private List<Map<String, Object>> buildEquipmentHistoriesIn(Product product, List<Equipment> equipments,
+            String unit, Map<String, String> userNameById) {
+        List<Map<String, Object>> result = new ArrayList<Map<String, Object>>();
+        if (equipments == null || equipments.isEmpty()) {
+            return result;
+        }
+
+        // เรียงล่าสุดก่อน (เครื่องที่ไม่มีเวลาไว้ท้ายสุด)
+        List<Equipment> sorted = new ArrayList<Equipment>();
+        for (Equipment eq : equipments) {
+            if (eq != null) {
+                sorted.add(eq);
+            }
+        }
+        Collections.sort(sorted, new Comparator<Equipment>() {
+            @Override
+            public int compare(Equipment x, Equipment y) {
+                if (x.getTimeCreate() == null && y.getTimeCreate() == null) {
+                    return 0;
+                }
+                if (x.getTimeCreate() == null) {
+                    return 1;
+                }
+                if (y.getTimeCreate() == null) {
+                    return -1;
+                }
+                return y.getTimeCreate().compareTo(x.getTimeCreate());
+            }
+        });
+
+        SimpleDateFormat minuteFmt = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+        Map<String, Map<String, Object>> byBatch = new LinkedHashMap<String, Map<String, Object>>();
+        for (Equipment eq : sorted) {
+            String minute = (eq.getTimeCreate() != null) ? minuteFmt.format(eq.getTimeCreate()) : "";
+            String name = !isBlank(eq.getName()) ? eq.getName().trim() : str(product.getProductName());
+            String batchKey = str(eq.getProductId()) + "|" + name + "|" + str(eq.getUserCreate()) + "|" + minute;
+
+            Map<String, Object> entry = byBatch.get(batchKey);
+            if (entry == null) {
+                entry = new HashMap<String, Object>();
+                entry.put("name", name);
+                entry.put("unit", str(unit));
+                entry.put("user", resolveName(userNameById, str(eq.getUserCreate())));
+                entry.put("date", formatDateTime(eq.getTimeCreate()));
+                // ยังไม่มีใบรับเข้า -> ว่างไว้ (JSP ซ่อน badge) / อนาคตใส่ good_receipt.gr_ref
+                entry.put("refNo", "");
+                entry.put("productTypeLabel", "Equipment");
+                entry.put("equipmentType", str(eq.getType()));
+                entry.put("items", new ArrayList<String>());
+                byBatch.put(batchKey, entry);
+            }
+            if (isBlank(str(entry.get("equipmentType"))) && !isBlank(str(eq.getType()))) {
+                entry.put("equipmentType", str(eq.getType()));
+            }
+            if (!isBlank(eq.getItemNo())) {
+                @SuppressWarnings("unchecked")
+                List<String> items = (List<String>) entry.get("items");
+                items.add(eq.getItemNo().trim());
+            }
+            // นับจำนวนเครื่องในบล็อก (รวมเครื่องที่ไม่มี Item No.)
+            Integer count = (Integer) entry.get("_count");
+            entry.put("_count", Integer.valueOf(count == null ? 1 : count.intValue() + 1));
+        }
+
+        for (Map<String, Object> entry : byBatch.values()) {
+            entry.put("amount", formatQty(((Integer) entry.get("_count")).doubleValue()));
+            entry.remove("_count");
+            @SuppressWarnings("unchecked")
+            List<String> items = (List<String>) entry.get("items");
+            Collections.sort(items);
+            result.add(entry);
+        }
+        return result;
     }
 
     /**

@@ -2732,6 +2732,14 @@
 			<result name="error">/index.jsp</result>
 		</action>
 
+		<!-- Stock History (ประวัติรับเข้า/เบิกออก) แยกจากหน้า Stock Balance -->
+		<action name="stock_history"
+			class="com.cubesofttech.action.ProductAction" method="showStockHistoryPage">
+			<result name="success" type="tiles">stockHistory</result>
+			<result name="error">/index.jsp</result>
+		</action>
+		<!-- Stock History -->
+
 		<!-- Add Stock (บันทึกรับเข้า/Good Receipt) จากหน้า Stock Balance -->
 		<action name="stock_add"
 			class="com.cubesofttech.action.ProductAction" method="stockAdd">

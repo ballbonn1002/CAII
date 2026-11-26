@@ -39,7 +39,7 @@
                     </ul>
                 </div>
 
-                <div class="d-flex align-items-center gap-3">
+                <div class="d-flex align-items-center flex-wrap gap-3">
                     <a href="${urlPrefix}_edit?productId=${product.productId}" class="btn btn-light-primary d-inline-flex align-items-center px-5 py-3 active">
                         <i class="ki-duotone ki-setting-2 fs-3 me-2"><span class="path1"></span><span class="path2"></span></i>
                         <span class="fw-semibold">Product</span>
@@ -58,6 +58,11 @@
                     <a href="${balanceUrl}?productId=${product.productId}" class="btn btn-light d-inline-flex align-items-center px-5 py-3">
                         <i class="ki-duotone ki-cube-2 fs-3 me-2 text-gray-500"><span class="path1"></span><span class="path2"></span><span class="path3"></span></i>
                         <span class="fw-semibold text-gray-700">Stock Balance</span>
+                    </a>
+                    <%-- ประวัติรับเข้า/เบิกออก: หน้า stock_history รองรับทุกประเภท (Equipment แสดงตามเครื่องที่เพิ่มเข้ามา) --%>
+                    <a href="stock_history?productId=${product.productId}" class="btn btn-light d-inline-flex align-items-center px-5 py-3">
+                        <i class="ki-duotone ki-time fs-3 me-2 text-gray-500"><span class="path1"></span><span class="path2"></span></i>
+                        <span class="fw-semibold text-gray-700">History Stock</span>
                     </a>
                 </div>
             </div>

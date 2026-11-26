@@ -899,6 +899,12 @@
 			value="/pages-back/stock/stock_balance.jsp" />
 	</definition>
 
+	<definition name="stockHistory" extends="baseLayout">
+		<put-attribute name="title" value="Stock - History" />
+		<put-attribute name="body"
+			value="/pages-back/stock/stock_history.jsp" />
+	</definition>
+
 	<!-- Equipment ใช้หน้า settings คนละไฟล์กับ Consumables เพราะยอดคงเหลือ
 	     คิดจากเครื่องจริงในตาราง equipment ไม่ได้คิดจากตาราง stock -->
 	<definition name="stockEquEdit" extends="baseLayout">
